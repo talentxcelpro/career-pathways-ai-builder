@@ -114,72 +114,96 @@ const TXCMining: React.FC = () => {
           </p>
         </div>
 
-        {/* How It Works */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5" />
-              How TXC Mining Works
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center">
-                <div className="bg-primary/10 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                  <Zap className="h-8 w-8 text-primary" />
+        {/* Active Mining Session - Apple-inspired Design */}
+        <div className="mb-8 relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-500/95 via-green-500/95 to-teal-500/95 dark:from-emerald-600/90 dark:via-green-600/90 dark:to-teal-600/90 shadow-2xl">
+          {/* Backdrop blur effect */}
+          <div className="absolute inset-0 backdrop-blur-3xl bg-white/10 dark:bg-black/10"></div>
+          
+          {/* Content */}
+          <div className="relative px-8 py-12">
+            <div className="text-center">
+              {/* Animated Icon */}
+              <div className="relative inline-flex items-center justify-center mb-6">
+                <div className="absolute inset-0 bg-white/20 dark:bg-white/10 rounded-full blur-xl animate-pulse"></div>
+                <div className="relative bg-white/90 dark:bg-white/20 rounded-full p-5 backdrop-blur-sm shadow-lg">
+                  <Coins className="h-16 w-16 text-emerald-600 dark:text-emerald-300 animate-bounce" />
                 </div>
-                <h3 className="font-semibold mb-2">Complete Activities</h3>
-                <p className="text-sm text-muted-foreground">
+                <Sparkles className="h-7 w-7 text-yellow-300 absolute -top-1 -right-1 animate-pulse" />
+              </div>
+              
+              {/* Title */}
+              <h3 className="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">
+                ⛏️ Active Mining Session
+              </h3>
+              
+              {/* Subtitle */}
+              <p className="text-lg text-white/90 mb-8 max-w-md mx-auto font-medium">
+                Your activities are earning TXC tokens in real-time!
+              </p>
+              
+              {/* Feature Pills */}
+              <div className="flex flex-wrap justify-center gap-3">
+                <div className="group bg-white/95 dark:bg-white/10 backdrop-blur-md px-5 py-3 rounded-2xl shadow-lg hover:scale-105 transition-all duration-300 hover:shadow-xl">
+                  <div className="flex items-center gap-2">
+                    <Zap className="h-5 w-5 text-yellow-500 group-hover:animate-pulse" />
+                    <p className="text-sm font-semibold text-gray-800 dark:text-white">Fast Earning</p>
+                  </div>
+                </div>
+                
+                <div className="group bg-white/95 dark:bg-white/10 backdrop-blur-md px-5 py-3 rounded-2xl shadow-lg hover:scale-105 transition-all duration-300 hover:shadow-xl">
+                  <div className="flex items-center gap-2">
+                    <Trophy className="h-5 w-5 text-emerald-600 dark:text-emerald-300 group-hover:animate-pulse" />
+                    <p className="text-sm font-semibold text-gray-800 dark:text-white">Rewards Ready</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* How It Works - Apple-inspired Design */}
+        <div className="mb-8 bg-background/60 backdrop-blur-xl rounded-3xl border border-border/50 shadow-lg overflow-hidden">
+          <div className="px-8 py-10">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="bg-primary/10 rounded-2xl p-2.5">
+                <Target className="h-6 w-6 text-primary" />
+              </div>
+              <h2 className="text-2xl font-bold tracking-tight">How TXC Mining Works</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="group text-center space-y-4 p-6 rounded-2xl hover:bg-muted/50 transition-all duration-300">
+                <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-3xl w-20 h-20 flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300 shadow-sm">
+                  <Zap className="h-10 w-10 text-primary" />
+                </div>
+                <h3 className="font-semibold text-lg">Complete Activities</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   Create posts, connect with professionals, build your profile, and engage with the community.
                 </p>
               </div>
               
-              <div className="text-center">
-                <div className="bg-primary/10 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                  <Coins className="h-8 w-8 text-primary" />
+              <div className="group text-center space-y-4 p-6 rounded-2xl hover:bg-muted/50 transition-all duration-300">
+                <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-3xl w-20 h-20 flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300 shadow-sm">
+                  <Coins className="h-10 w-10 text-primary" />
                 </div>
-                <h3 className="font-semibold mb-2">Earn TXC Tokens</h3>
-                <p className="text-sm text-muted-foreground">
+                <h3 className="font-semibold text-lg">Earn TXC Tokens</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   Each activity rewards you with TXC tokens. Different activities have different reward amounts.
                 </p>
               </div>
               
-              <div className="text-center">
-                <div className="bg-primary/10 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                  <Trophy className="h-8 w-8 text-primary" />
+              <div className="group text-center space-y-4 p-6 rounded-2xl hover:bg-muted/50 transition-all duration-300">
+                <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-3xl w-20 h-20 flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300 shadow-sm">
+                  <Trophy className="h-10 w-10 text-primary" />
                 </div>
-                <h3 className="font-semibold mb-2">Unlock Features</h3>
-                <p className="text-sm text-muted-foreground">
+                <h3 className="font-semibold text-lg">Unlock Features</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   Use your earned TXC to purchase premium features, upgrades, and exclusive tools.
                 </p>
               </div>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Symbolic Mining Visual */}
-        <Card className="mb-8 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border-green-200">
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <div className="relative inline-block mb-4">
-                <Coins className="h-20 w-20 text-green-600 animate-bounce" />
-                <Sparkles className="h-8 w-8 text-yellow-500 absolute -top-2 -right-2 animate-pulse" />
-              </div>
-              <h3 className="text-2xl font-bold text-green-700 mb-2">⛏️ Active Mining Session</h3>
-              <p className="text-muted-foreground mb-4">Your activities are earning TXC tokens in real-time!</p>
-              <div className="flex justify-center gap-4">
-                <div className="bg-white dark:bg-slate-800 px-4 py-2 rounded-lg shadow">
-                  <Zap className="h-5 w-5 text-yellow-500 mx-auto mb-1" />
-                  <p className="text-sm font-semibold">Fast Earning</p>
-                </div>
-                <div className="bg-white dark:bg-slate-800 px-4 py-2 rounded-lg shadow">
-                  <Trophy className="h-5 w-5 text-green-600 mx-auto mb-1" />
-                  <p className="text-sm font-semibold">Rewards Ready</p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Mining Dashboard */}
         <TXCMiningDashboard />
