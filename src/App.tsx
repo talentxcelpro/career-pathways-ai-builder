@@ -57,6 +57,8 @@ import { MobileAppWrapper } from "./components/mobile/MobileAppWrapper";
 
 import EnhancedUploadResume from './pages/resume/EnhancedUploadResume';
 import ResumeNew from './pages/resume/ResumeNew';
+import UnifiedResumeHub from './pages/resume/UnifiedResumeHub';
+import UnifiedResumeBuilder from './pages/resume/UnifiedResumeBuilder';
 import Tools from './pages/Tools';
 import SEODashboard from './pages/SEODashboard';
 import PublicResumeBuilder from './pages/tools/PublicResumeBuilder';
@@ -341,6 +343,13 @@ const App = () => {
                                 <Route path="/dashboard" element={<UnifiedDashboard />} />
                                 <Route path="/mobile/reels" element={<React.Suspense fallback={<div>Loading...</div>}><MobileReelsPage /></React.Suspense>} />
                                  <Route path="/mobile/passport" element={<MobilePassport />} />
+                                 
+                                 {/* Unified Resume Builder */}
+                                 <Route path="/resume" element={<UnifiedResumeHub />} />
+                                 <Route path="/resume/build" element={<UnifiedResumeBuilder />} />
+                                 <Route path="/resume/build/:id" element={<UnifiedResumeBuilder />} />
+                                 
+                                 {/* Legacy Resume Routes - kept for backward compatibility */}
                                  <Route path="/resume-builder/upload-enhanced" element={<EnhancedUploadResume />} />
                                  <Route path="/resume/builder" element={<ResumeBuilderV2 />} />
                                  <Route path="/resume/templates" element={<ResumeTemplates />} />
