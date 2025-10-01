@@ -40,6 +40,10 @@ serve(async (req) => {
     const { extractedText, fileName: requestFileName } = requestBody;
     fileName = requestFileName || 'resume';
 
+    console.log('📄 Received request for file:', fileName);
+    console.log('📝 Extracted text length:', extractedText?.length || 0);
+    console.log('📋 First 500 chars of text:', extractedText?.substring(0, 500));
+
     if (!extractedText || extractedText.trim().length === 0) {
       console.warn('⚠️ No extracted text provided, using fallback parsing');
       
@@ -213,7 +217,8 @@ Guidelines:
     const aiData = await response.json();
     const parsedText = aiData.choices[0].message.content;
 
-    console.log('Raw AI response received');
+    console.log('✅ Raw AI response received');
+    console.log('🤖 AI parsed response preview:', parsedText.substring(0, 300));
 
     // Extract JSON from response (handle markdown code blocks)
     let parsedResume;
