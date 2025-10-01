@@ -171,6 +171,10 @@ const emailTemplates = {
   'campaign.email': {
     subject: "{{subject}}",
     html: "{{html_content}}"
+  },
+  'campaign_email': {
+    subject: "{{subject}}",
+    html: "{{html_content}}"
   }
 };
 
