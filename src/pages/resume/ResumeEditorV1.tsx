@@ -8,11 +8,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { useResumeData } from "@/hooks/useResumeData";
 import { useResumeExport, ExportSettings } from "@/hooks/useResumeExport";
 import { useSectionEnhancer } from "@/hooks/useSectionEnhancer";
-// import { useJobTargeting } from "@/hooks/useJobTargeting";
 import { toast } from "sonner";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Download, Save, Target, FileText, Layout } from "lucide-react";
 import { JobTargetingPanel } from "@/components/resume/enhanced/JobTargetingPanel";
 import { TemplateRenderer } from "@/components/resume/templates/TemplateRenderer";
+import { resumeTemplates } from "@/data/resumeTemplates";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Simple Sortable item for sections list
 function SortableItem({ id, label, selected, onSelect }: { id: string; label: string; selected: boolean; onSelect: (id: string) => void }) {
@@ -97,48 +101,102 @@ const Toolbar = ({
   selectedTemplateId?: string;
   onSelectTemplate: (id: string) => void;
 }) => {
+  const [activeTab, setActiveTab] = useState('edit');
+
   return (
-    <aside className="w-72 border-r px-4 py-4 space-y-4">
-      <section>
-        <h2 className="text-sm font-medium">Templates</h2>
-        <div className="mt-2 grid grid-cols-2 gap-2 max-h-56 overflow-auto pr-1">
-          {templates.map((t) => (
-            <button key={t.id} onClick={() => onSelectTemplate(t.id)}
-              className={`border rounded p-2 text-left ${selectedTemplateId === t.id ? 'ring-2 ring-primary' : ''}`}
-            >
-              <div className="text-xs font-medium line-clamp-1">{t.name}</div>
-              {t.preview_url && (
-                <img src={t.preview_url} alt={`${t.name} resume template preview`} loading="lazy"
-                  className="mt-1 h-16 w-full object-cover rounded"
-                  onError={(e) => {
-                    const img = e.currentTarget as HTMLImageElement;
-                    img.src = '/placeholder.svg';
-                    img.onerror = null;
-                  }}
-                />
-              )}
-            </button>
-          ))}
-        </div>
-      </section>
+    <aside className="w-80 border-r px-4 py-4 flex flex-col h-screen overflow-hidden">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
+        <TabsList className="grid w-full grid-cols-4 mb-4">
+          <TabsTrigger value="edit" className="text-xs">
+            <FileText className="h-3 w-3" />
+          </TabsTrigger>
+          <TabsTrigger value="enhance" className="text-xs">
+            <Sparkles className="h-3 w-3" />
+          </TabsTrigger>
+          <TabsTrigger value="ats" className="text-xs">
+            <Target className="h-3 w-3" />
+          </TabsTrigger>
+          <TabsTrigger value="templates" className="text-xs">
+            <Layout className="h-3 w-3" />
+          </TabsTrigger>
+        </TabsList>
 
-      <section className="pt-2 border-t">
-        <h2 className="text-sm font-medium">AI & ATS</h2>
-        <div className="mt-2 flex flex-col gap-2">
-          <button onClick={onRunATS} className="rounded border px-3 py-2">Run ATS Check</button>
-          <button onClick={onImprove} disabled={!selectedSection} className="rounded border px-3 py-2 disabled:opacity-60">
-            Improve Section {selectedSection ? `(${SECTION_LABELS[selectedSection] || selectedSection})` : ''}
-          </button>
-        </div>
-      </section>
+        <div className="flex-1 overflow-auto">
+          <TabsContent value="edit" className="mt-0 space-y-4">
+            <section className="pt-2">
+              <h2 className="text-sm font-medium mb-3">Edit Content</h2>
+              <p className="text-xs text-muted-foreground">Select a section below to edit</p>
+            </section>
+          </TabsContent>
 
-      <section className="pt-2 border-t">
-        <h2 className="text-sm font-medium">Export</h2>
-        <div className="mt-2 flex gap-2">
-          <button onClick={() => onExport('pdf')} className="rounded border px-3 py-2" disabled={exportBusy}>PDF</button>
-          <button onClick={() => onExport('docx')} className="rounded border px-3 py-2" disabled={exportBusy}>DOCX</button>
+          <TabsContent value="enhance" className="mt-0 space-y-4">
+            <section>
+              <h2 className="text-sm font-medium mb-3">AI Enhance</h2>
+              <Button onClick={onImprove} disabled={!selectedSection} size="sm" className="w-full">
+                <Sparkles className="h-3 w-3 mr-2" />
+                Improve {selectedSection ? SECTION_LABELS[selectedSection] : 'Section'}
+              </Button>
+            </section>
+          </TabsContent>
+
+          <TabsContent value="ats" className="mt-0 space-y-4">
+            <section>
+              <h2 className="text-sm font-medium mb-3">ATS Score</h2>
+              <Button onClick={onRunATS} size="sm" className="w-full">
+                <Target className="h-3 w-3 mr-2" />
+                Run ATS Check
+              </Button>
+            </section>
+          </TabsContent>
+
+          <TabsContent value="templates" className="mt-0 space-y-3">
+            <section>
+              <h2 className="text-sm font-medium mb-3">Templates</h2>
+              <p className="text-xs text-muted-foreground mb-4">Choose from {templates.length} professional templates</p>
+              <div className="space-y-3">
+                {templates.map((template) => (
+                  <Card
+                    key={template.id}
+                    className={`cursor-pointer transition-all hover:shadow-md ${
+                      selectedTemplateId === template.id ? 'ring-2 ring-primary' : ''
+                    }`}
+                    onClick={() => onSelectTemplate(template.id)}
+                  >
+                    <div className="p-3 space-y-2">
+                      <div className="aspect-[8.5/11] bg-gradient-to-br from-muted to-muted/50 rounded flex items-center justify-center text-xs text-muted-foreground">
+                        {template.name}
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-sm line-clamp-1">{template.name}</h4>
+                        <p className="text-xs text-muted-foreground line-clamp-2">{(template as any).description}</p>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <Badge variant="secondary" className="text-xs">
+                          ATS {(template as any).atsScore || 90}%
+                        </Badge>
+                        {selectedTemplateId === template.id && (
+                          <Badge variant="default" className="text-xs">Selected</Badge>
+                        )}
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </section>
+          </TabsContent>
         </div>
-      </section>
+
+        <div className="pt-4 border-t space-y-2">
+          <Button onClick={() => onExport('pdf')} variant="outline" size="sm" className="w-full" disabled={exportBusy}>
+            <Download className="h-3 w-3 mr-2" />
+            PDF
+          </Button>
+          <Button onClick={() => onExport('docx')} variant="outline" size="sm" className="w-full" disabled={exportBusy}>
+            <Download className="h-3 w-3 mr-2" />
+            DOCX
+          </Button>
+        </div>
+      </Tabs>
     </aside>
   );
 };
@@ -801,23 +859,10 @@ const ResumeEditorV1: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  // Load templates
+  // Load templates from static data instead of database
   useEffect(() => {
-    let mounted = true;
-    (async () => {
-      const { data, error } = await supabase.from('resume_templates').select('*').eq('is_active', true).order('is_premium', { ascending: true });
-      if (error) {
-        console.error('Failed to load templates', error);
-      } else if (mounted) {
-        const mapped = (data as any[] || []).map((t) => ({
-          ...t,
-          preview_url: t.preview_image_url || t.preview_url || '/placeholder.svg',
-        }));
-        setTemplates(mapped as any);
-        setSelectedTemplateId((mapped?.[0]?.id as string) || 'two-col');
-      }
-    })();
-    return () => { mounted = false; };
+    setTemplates(resumeTemplates as any);
+    setSelectedTemplateId(resumeTemplates[0]?.id || 'classic');
   }, []);
 
   // Save handler (updates ai_resumes.content)
