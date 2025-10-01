@@ -3,7 +3,9 @@ import { useParams } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { FileText, Sparkles, Target, Palette, Download, Save, BarChart3 } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { FileText, Sparkles, Target, Palette, Download, Save, BarChart3, Check } from "lucide-react";
 import { useResumeData } from "@/hooks/useResumeData";
 import { useResumeBuilder } from "@/hooks/useResumeBuilder";
 import { toast } from "sonner";
@@ -17,11 +19,12 @@ import { exportToPDF, exportToDOCX } from "@/services/resumeExportService";
 import { ATSScoreDisplay, ATSDetailedAnalysis } from "@/components/resume/ats/ATSScoreDisplay";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { resumeTemplates } from "@/data/resumeTemplates";
 
 const UnifiedResumeBuilder = () => {
   const { id } = useParams();
   const { resumeData, isLoading } = useResumeData();
-  const { saveResume, isSaving, hasChanges } = useResumeBuilder(resumeData || undefined);
+  const { saveResume, isSaving, hasChanges, updateResumeData } = useResumeBuilder(resumeData || undefined);
   const [activeTab, setActiveTab] = useState("edit");
   const [atsScore, setAtsScore] = useState(75);
   const [atsAnalysis, setAtsAnalysis] = useState<ATSAnalysisResult | undefined>();
@@ -30,6 +33,7 @@ const UnifiedResumeBuilder = () => {
   const [jobDescription, setJobDescription] = useState("");
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
+  const [selectedTemplateId, setSelectedTemplateId] = useState(resumeData?.settings?.templateId || 'classic');
 
   // Sync local data with resume data
   useEffect(() => {
@@ -409,21 +413,96 @@ const UnifiedResumeBuilder = () => {
             </TabsContent>
 
             <TabsContent value="templates" className="mt-0">
-              <div className="max-w-4xl mx-auto">
-                <h3 className="text-2xl font-bold mb-6">Choose Template</h3>
-                <p className="text-muted-foreground mb-8">
-                  Select a professional template for your resume.
-                </p>
+              <div className="max-w-5xl mx-auto">
+                <div className="mb-6">
+                  <h3 className="text-2xl font-bold mb-2">Choose Your Template</h3>
+                  <p className="text-muted-foreground">
+                    Select from {resumeTemplates.length} professional, ATS-optimized templates
+                  </p>
+                </div>
                 
-                <div className="grid grid-cols-3 gap-4">
-                  {["Modern", "Professional", "Creative"].map((template) => (
-                    <div key={template} className="border border-border rounded-lg p-4 hover:border-primary cursor-pointer transition-colors">
-                      <div className="aspect-[3/4] bg-muted rounded mb-3 flex items-center justify-center">
-                        <span className="text-muted-foreground">{template}</span>
-                      </div>
-                      <h4 className="font-semibold text-center">{template}</h4>
-                    </div>
-                  ))}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {resumeTemplates.map((template) => {
+                    const isSelected = selectedTemplateId === template.id;
+                    const templateData = template as any;
+                    
+                    return (
+                      <Card 
+                        key={template.id}
+                        className={`cursor-pointer transition-all hover:shadow-lg ${
+                          isSelected ? 'ring-2 ring-primary' : ''
+                        }`}
+                        onClick={() => {
+                          setSelectedTemplateId(template.id);
+                          if (updateResumeData && resumeData) {
+                            updateResumeData({
+                              settings: {
+                                ...resumeData.settings,
+                                templateId: template.id
+                              }
+                            });
+                          }
+                          toast.success(`Template changed to ${template.name}`);
+                        }}
+                      >
+                        <div className="p-4 space-y-3">
+                          {/* Template Preview */}
+                          <div className="aspect-[8.5/11] bg-gradient-to-br from-muted to-muted/50 rounded-lg flex items-center justify-center relative overflow-hidden">
+                            <div className="text-center p-4">
+                              <div className="text-xs font-mono text-muted-foreground mb-2">
+                                {template.name}
+                              </div>
+                              <div className="space-y-1">
+                                <div className="h-2 w-20 bg-primary/20 rounded mx-auto" />
+                                <div className="h-1 w-16 bg-primary/10 rounded mx-auto" />
+                                <div className="h-1 w-24 bg-primary/10 rounded mx-auto mt-3" />
+                                <div className="h-1 w-20 bg-primary/10 rounded mx-auto" />
+                              </div>
+                            </div>
+                            {isSelected && (
+                              <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full p-1">
+                                <Check className="h-4 w-4" />
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Template Info */}
+                          <div className="space-y-2">
+                            <div>
+                              <h4 className="font-semibold line-clamp-1">{template.name}</h4>
+                              <p className="text-xs text-muted-foreground line-clamp-2">
+                                {templateData.description}
+                              </p>
+                            </div>
+
+                            {/* Features */}
+                            <div className="flex flex-wrap gap-1">
+                              {templateData.features?.slice(0, 2).map((feature: string) => (
+                                <Badge key={feature} variant="secondary" className="text-xs">
+                                  {feature}
+                                </Badge>
+                              ))}
+                            </div>
+
+                            {/* ATS Score & Selection */}
+                            <div className="flex items-center justify-between pt-2 border-t">
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs text-muted-foreground">ATS</span>
+                                <span className="text-sm font-semibold text-primary">
+                                  {templateData.atsScore || 90}%
+                                </span>
+                              </div>
+                              {isSelected && (
+                                <Badge variant="default" className="text-xs">
+                                  Selected
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </Card>
+                    );
+                  })}
                 </div>
               </div>
             </TabsContent>
