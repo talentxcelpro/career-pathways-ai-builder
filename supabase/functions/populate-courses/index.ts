@@ -7,63 +7,69 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  // Handle CORS
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { batchSize = 5, skipExisting = true } = await req.json().catch(() => ({}));
-    
-    console.log(`Starting course population with batch size: ${batchSize}, skipExisting: ${skipExisting}`);
+    console.log('🚀 Function invoked successfully');
     
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Get courses that need population
+    // Parse request body
+    const body = await req.json().catch(() => ({ batchSize: 5, skipExisting: true }));
+    const { batchSize = 5, skipExisting = true } = body;
+    
+    console.log(`📊 Processing with batchSize: ${batchSize}, skipExisting: ${skipExisting}`);
+
+    // Get courses without modules
     let coursesQuery = supabaseClient
       .from('courses')
       .select('id, title, category, difficulty_level')
-      .order('title');
+      .order('title')
+      .limit(batchSize);
 
     if (skipExisting) {
-      // Only get courses without modules
-      const { data: coursesWithModules } = await supabaseClient
+      const { data: modulesData } = await supabaseClient
         .from('course_modules')
         .select('course_id');
       
-      const courseIdsWithModules = coursesWithModules?.map(m => m.course_id) || [];
+      const courseIdsWithModules = [...new Set(modulesData?.map(m => m.course_id) || [])];
       
       if (courseIdsWithModules.length > 0) {
         coursesQuery = coursesQuery.not('id', 'in', `(${courseIdsWithModules.join(',')})`);
       }
     }
 
-    const { data: courses, error: coursesError } = await coursesQuery.limit(batchSize);
+    const { data: courses, error: coursesError } = await coursesQuery;
 
     if (coursesError) {
-      console.error('Error fetching courses:', coursesError);
+      console.error('❌ Error fetching courses:', coursesError);
       throw coursesError;
     }
-    
+
     if (!courses || courses.length === 0) {
-      console.log('No courses found to populate');
-      return new Response(JSON.stringify({ 
-        success: true,
-        message: 'All courses already populated',
-        coursesPopulated: 0,
-        modulesCreated: 0,
-        lessonsCreated: 0,
-        assessmentsCreated: 0,
-        remaining: 0
-      }), {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
+      console.log('✅ All courses already populated');
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: 'All courses already populated',
+          coursesPopulated: 0,
+          modulesCreated: 0,
+          lessonsCreated: 0,
+          assessmentsCreated: 0,
+          remaining: 0
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
-    console.log(`Processing ${courses.length} courses`);
+    console.log(`📚 Processing ${courses.length} courses`);
+
     let totalModules = 0;
     let totalLessons = 0;
     let totalAssessments = 0;
@@ -71,242 +77,225 @@ serve(async (req) => {
 
     // Process each course
     for (const course of courses) {
+      console.log(`📖 Processing: ${course.title}`);
+      
       try {
-        console.log(`Processing course: ${course.title}`);
-        const modules = getCourseModules(course.title, course.category, course.difficulty_level);
+        const modules = getCourseModules(course.title, course.difficulty_level);
         
-        for (const moduleInfo of modules) {
-          try {
-            const { data: module, error: moduleError } = await supabaseClient
-              .from('course_modules')
-              .insert({
-                course_id: course.id,
-                title: moduleInfo.title,
-                description: moduleInfo.description,
-                module_order: moduleInfo.order,
-                duration_minutes: moduleInfo.duration
-              })
-              .select()
-              .single();
-
-            if (moduleError) {
-              console.error('Module error:', moduleError);
-              errors.push({ course: course.title, module: moduleInfo.title, error: moduleError.message });
-              continue;
-            }
-
-            totalModules++;
-
-            if (module && moduleInfo.lessons) {
-              for (const lessonInfo of moduleInfo.lessons) {
-                try {
-                  const { error: lessonError } = await supabaseClient
-                    .from('course_lessons')
-                    .insert({
-                      module_id: module.id,
-                      title: lessonInfo.title,
-                      content: lessonInfo.content,
-                      lesson_type: lessonInfo.type,
-                      video_url: null,
-                      duration_minutes: lessonInfo.duration,
-                      lesson_order: lessonInfo.order,
-                      is_free: lessonInfo.isFree
-                    });
-
-                  if (!lessonError) {
-                    totalLessons++;
-                  } else {
-                    console.error('Lesson error:', lessonError);
-                    errors.push({ course: course.title, lesson: lessonInfo.title, error: lessonError.message });
-                  }
-                } catch (lessonException) {
-                  console.error('Lesson exception:', lessonException);
-                  errors.push({ course: course.title, lesson: lessonInfo.title, error: String(lessonException) });
-                }
-              }
-            }
-          } catch (moduleException) {
-            console.error('Module exception:', moduleException);
-            errors.push({ course: course.title, module: moduleInfo.title, error: String(moduleException) });
-          }
-        }
-
-        // Create assessment for each course
-        try {
-          const { error: assessmentError } = await supabaseClient
-            .from('course_assessments')
+        for (let i = 0; i < modules.length; i++) {
+          const moduleInfo = modules[i];
+          
+          const { data: module, error: moduleError } = await supabaseClient
+            .from('course_modules')
             .insert({
               course_id: course.id,
-              title: `${course.title} - Final Assessment`,
-              description: `Comprehensive assessment covering all modules of ${course.title}`,
-              questions: getCourseAssessment(course.title),
-              passing_score: 75,
-              time_limit_minutes: 90,
-              max_attempts: 3
-            });
-          
-          if (!assessmentError) {
-            totalAssessments++;
-          } else {
-            console.error('Assessment error:', assessmentError);
-            errors.push({ course: course.title, type: 'assessment', error: assessmentError.message });
+              title: moduleInfo.title,
+              description: moduleInfo.description,
+              module_order: moduleInfo.order,
+              duration_minutes: moduleInfo.duration
+            })
+            .select()
+            .single();
+
+          if (moduleError) {
+            console.error(`❌ Module error for ${course.title}:`, moduleError);
+            errors.push({ course: course.title, error: moduleError.message });
+            continue;
           }
-        } catch (assessmentException) {
-          console.error('Assessment exception:', assessmentException);
-          errors.push({ course: course.title, type: 'assessment', error: String(assessmentException) });
+
+          totalModules++;
+
+          // Insert lessons
+          if (module && moduleInfo.lessons) {
+            for (const lessonInfo of moduleInfo.lessons) {
+              const { error: lessonError } = await supabaseClient
+                .from('course_lessons')
+                .insert({
+                  module_id: module.id,
+                  title: lessonInfo.title,
+                  content: lessonInfo.content,
+                  lesson_type: lessonInfo.type,
+                  video_url: null,
+                  duration_minutes: lessonInfo.duration,
+                  lesson_order: lessonInfo.order,
+                  is_free: lessonInfo.isFree
+                });
+
+              if (!lessonError) {
+                totalLessons++;
+              } else {
+                errors.push({ course: course.title, lesson: lessonInfo.title, error: lessonError.message });
+              }
+            }
+          }
         }
-      } catch (courseException) {
-        console.error('Course exception:', courseException);
-        errors.push({ course: course.title, error: String(courseException) });
+
+        // Create assessment
+        const { error: assessmentError } = await supabaseClient
+          .from('course_assessments')
+          .insert({
+            course_id: course.id,
+            title: `${course.title} - Final Assessment`,
+            description: `Comprehensive assessment covering all modules`,
+            questions: getCourseAssessment(course.title),
+            passing_score: 75,
+            time_limit_minutes: 90,
+            max_attempts: 3
+          });
+        
+        if (!assessmentError) {
+          totalAssessments++;
+        } else {
+          errors.push({ course: course.title, type: 'assessment', error: assessmentError.message });
+        }
+      } catch (error) {
+        console.error(`❌ Error processing ${course.title}:`, error);
+        errors.push({ course: course.title, error: String(error) });
       }
     }
 
-    // Get remaining courses count
+    // Get remaining count
     const { count: remainingCount } = await supabaseClient
       .from('courses')
-      .select('*', { count: 'exact', head: true })
-      .not('id', 'in', `(${courses.map(c => c.id).join(',')})`);
+      .select('*', { count: 'exact', head: true });
 
-    console.log(`Completed! Modules: ${totalModules}, Lessons: ${totalLessons}, Assessments: ${totalAssessments}`);
-    if (errors.length > 0) {
-      console.error('Errors encountered:', errors);
-    }
+    const processedIds = courses.map(c => c.id);
+    const remaining = (remainingCount || 0) - processedIds.length;
+
+    console.log(`✅ Completed: ${totalModules} modules, ${totalLessons} lessons, ${totalAssessments} assessments`);
 
     return new Response(
       JSON.stringify({
         success: true,
-        message: `Populated ${courses.length} courses with ${totalModules} modules, ${totalLessons} lessons, and ${totalAssessments} assessments`,
+        message: `Processed ${courses.length} courses`,
         coursesPopulated: courses.length,
         modulesCreated: totalModules,
         lessonsCreated: totalLessons,
         assessmentsCreated: totalAssessments,
-        remaining: remainingCount || 0,
+        remaining: Math.max(0, remaining),
         errors: errors.length > 0 ? errors : undefined
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
-    console.error('Fatal error:', error);
+    console.error('❌ Fatal error:', error);
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         success: false,
-        error: error.message,
-        details: String(error)
+        error: error instanceof Error ? error.message : String(error)
       }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });
 
-function getCourseModules(courseTitle: string, category: string, level: string) {
-  const baseModules = [
+function getCourseModules(courseTitle: string, level: string) {
+  return [
     {
-      title: 'Course Introduction & Fundamentals',
-      description: 'Welcome to the course! Learn the foundations and what you\'ll accomplish.',
+      title: 'Introduction & Fundamentals',
+      description: `Welcome to ${courseTitle}! Learn the foundations.`,
       order: 1,
       duration: 240,
       lessons: [
-        { title: 'Welcome & Course Overview', content: `Welcome to ${courseTitle}! This comprehensive course will take you from ${level} level to mastery. You'll learn industry-standard practices and complete real-world projects.`, type: 'text', video_url: null, duration: 20, order: 1, isFree: true },
-        { title: 'Setting Up Your Environment', content: 'Complete setup guide for all tools, software, and resources you\'ll need throughout this course.', type: 'text', video_url: null, duration: 30, order: 2, isFree: true },
-        { title: 'Understanding Key Concepts', content: 'Deep dive into the fundamental concepts that form the foundation of this subject.', type: 'text', video_url: null, duration: 45, order: 3, isFree: false },
-        { title: 'Industry Best Practices', content: 'Learn the standards and best practices used by professionals in the field.', type: 'text', video_url: null, duration: 30, order: 4, isFree: false },
-        { title: 'Module Assessment', content: 'Test your understanding of the fundamental concepts.', type: 'quiz', video_url: null, duration: 15, order: 5, isFree: false }
+        { title: 'Course Overview', content: `Welcome to ${courseTitle} (${level})`, type: 'text', duration: 20, order: 1, isFree: true },
+        { title: 'Setup Guide', content: 'Complete setup instructions', type: 'text', duration: 30, order: 2, isFree: true },
+        { title: 'Key Concepts', content: 'Fundamental concepts explained', type: 'text', duration: 45, order: 3, isFree: false },
+        { title: 'Best Practices', content: 'Industry best practices', type: 'text', duration: 30, order: 4, isFree: false },
+        { title: 'Quiz', content: 'Test your knowledge', type: 'quiz', duration: 15, order: 5, isFree: false }
       ]
     },
     {
-      title: 'Core Skills Development',
-      description: 'Build essential skills and techniques used daily by professionals.',
+      title: 'Core Skills',
+      description: 'Build essential professional skills',
       order: 2,
       duration: 300,
       lessons: [
-        { title: 'Essential Techniques - Part 1', content: 'Master the first set of core techniques and workflows.', type: 'text', video_url: null, duration: 50, order: 1, isFree: false },
-        { title: 'Essential Techniques - Part 2', content: 'Continue building your core skill set with advanced techniques.', type: 'text', video_url: null, duration: 50, order: 2, isFree: false },
-        { title: 'Hands-On Practice Session', content: 'Apply what you\'ve learned through guided practice exercises.', type: 'text', video_url: null, duration: 60, order: 3, isFree: false },
-        { title: 'Common Mistakes & Solutions', content: 'Learn from common errors and how to avoid them.', type: 'text', video_url: null, duration: 40, order: 4, isFree: false },
-        { title: 'Skill Development Project', content: 'Complete your first project applying core skills.', type: 'quiz', video_url: null, duration: 100, order: 5, isFree: false }
+        { title: 'Techniques Part 1', content: 'Core techniques', type: 'text', duration: 50, order: 1, isFree: false },
+        { title: 'Techniques Part 2', content: 'Advanced techniques', type: 'text', duration: 50, order: 2, isFree: false },
+        { title: 'Practice Session', content: 'Hands-on exercises', type: 'text', duration: 60, order: 3, isFree: false },
+        { title: 'Common Mistakes', content: 'Learn from errors', type: 'text', duration: 40, order: 4, isFree: false },
+        { title: 'Project', content: 'Apply your skills', type: 'quiz', duration: 100, order: 5, isFree: false }
       ]
     },
     {
-      title: 'Advanced Concepts & Techniques',
-      description: 'Take your skills to the next level with advanced methodologies.',
+      title: 'Advanced Concepts',
+      description: 'Master advanced methodologies',
       order: 3,
       duration: 320,
       lessons: [
-        { title: 'Advanced Methodology Introduction', content: 'Introduction to professional-level approaches and frameworks.', type: 'text', video_url: null, duration: 45, order: 1, isFree: false },
-        { title: 'Deep Dive - Advanced Technique 1', content: 'Master advanced techniques used by industry experts.', type: 'text', video_url: null, duration: 60, order: 2, isFree: false },
-        { title: 'Deep Dive - Advanced Technique 2', content: 'Continue exploring sophisticated approaches to complex problems.', type: 'text', video_url: null, duration: 60, order: 3, isFree: false },
-        { title: 'Integration & Optimization', content: 'Learn how to integrate techniques and optimize your workflow.', type: 'text', video_url: null, duration: 55, order: 4, isFree: false },
-        { title: 'Case Studies & Real-World Applications', content: 'Analyze real-world case studies and learn from industry examples.', type: 'text', video_url: null, duration: 60, order: 5, isFree: false },
-        { title: 'Advanced Project Assignment', content: 'Apply advanced concepts in a comprehensive project.', type: 'quiz', video_url: null, duration: 40, order: 6, isFree: false }
+        { title: 'Advanced Introduction', content: 'Professional approaches', type: 'text', duration: 45, order: 1, isFree: false },
+        { title: 'Technique 1', content: 'Expert techniques', type: 'text', duration: 60, order: 2, isFree: false },
+        { title: 'Technique 2', content: 'Complex problem solving', type: 'text', duration: 60, order: 3, isFree: false },
+        { title: 'Optimization', content: 'Workflow optimization', type: 'text', duration: 55, order: 4, isFree: false },
+        { title: 'Case Studies', content: 'Real-world examples', type: 'text', duration: 60, order: 5, isFree: false },
+        { title: 'Advanced Project', content: 'Comprehensive project', type: 'quiz', duration: 40, order: 6, isFree: false }
       ]
     },
     {
-      title: 'Professional Tools & Frameworks',
-      description: 'Master industry-standard tools and frameworks used by professionals.',
+      title: 'Professional Tools',
+      description: 'Master industry-standard tools',
       order: 4,
       duration: 280,
       lessons: [
-        { title: 'Tool Overview & Selection', content: 'Survey of professional tools and when to use each one.', type: 'text', video_url: null, duration: 40, order: 1, isFree: false },
-        { title: 'Primary Tool Deep Dive', content: 'Comprehensive training on the most essential tool in the field.', type: 'text', video_url: null, duration: 70, order: 2, isFree: false },
-        { title: 'Supporting Tools & Integration', content: 'Learn complementary tools and how they work together.', type: 'text', video_url: null, duration: 60, order: 3, isFree: false },
-        { title: 'Workflow Automation', content: 'Streamline your processes with automation techniques.', type: 'text', video_url: null, duration: 50, order: 4, isFree: false },
-        { title: 'Tool Mastery Project', content: 'Build a project using professional tools and frameworks.', type: 'quiz', video_url: null, duration: 60, order: 5, isFree: false }
+        { title: 'Tool Overview', content: 'Professional tools survey', type: 'text', duration: 40, order: 1, isFree: false },
+        { title: 'Primary Tool', content: 'Essential tool training', type: 'text', duration: 70, order: 2, isFree: false },
+        { title: 'Tool Integration', content: 'Complementary tools', type: 'text', duration: 60, order: 3, isFree: false },
+        { title: 'Automation', content: 'Process automation', type: 'text', duration: 50, order: 4, isFree: false },
+        { title: 'Tool Project', content: 'Tools in action', type: 'quiz', duration: 60, order: 5, isFree: false }
       ]
     },
     {
-      title: 'Real-World Applications & Projects',
-      description: 'Apply everything you\'ve learned to realistic, industry-style projects.',
+      title: 'Real-World Projects',
+      description: 'Industry-style projects',
       order: 5,
       duration: 360,
       lessons: [
-        { title: 'Project Planning & Requirements', content: 'Learn how to scope and plan professional projects.', type: 'text', video_url: null, duration: 50, order: 1, isFree: false },
-        { title: 'Implementation Phase 1', content: 'Begin building your comprehensive project.', type: 'text', video_url: null, duration: 80, order: 2, isFree: false },
-        { title: 'Implementation Phase 2', content: 'Continue development with advanced features.', type: 'text', video_url: null, duration: 80, order: 3, isFree: false },
-        { title: 'Testing & Quality Assurance', content: 'Ensure your project meets professional standards.', type: 'text', video_url: null, duration: 50, order: 4, isFree: false },
-        { title: 'Refinement & Optimization', content: 'Polish and optimize your project for production.', type: 'text', video_url: null, duration: 60, order: 5, isFree: false },
-        { title: 'Project Completion & Review', content: 'Final review and feedback on your project.', type: 'quiz', video_url: null, duration: 40, order: 6, isFree: false }
+        { title: 'Project Planning', content: 'Professional planning', type: 'text', duration: 50, order: 1, isFree: false },
+        { title: 'Implementation Phase 1', content: 'Build your project', type: 'text', duration: 80, order: 2, isFree: false },
+        { title: 'Implementation Phase 2', content: 'Advanced features', type: 'text', duration: 80, order: 3, isFree: false },
+        { title: 'Testing & QA', content: 'Quality assurance', type: 'text', duration: 50, order: 4, isFree: false },
+        { title: 'Optimization', content: 'Polish your work', type: 'text', duration: 60, order: 5, isFree: false },
+        { title: 'Project Review', content: 'Final feedback', type: 'quiz', duration: 40, order: 6, isFree: false }
       ]
     },
     {
-      title: 'Industry Best Practices & Standards',
-      description: 'Learn professional standards, ethics, and industry conventions.',
+      title: 'Best Practices',
+      description: 'Professional standards',
       order: 6,
       duration: 260,
       lessons: [
-        { title: 'Professional Standards Overview', content: 'Understanding industry standards and why they matter.', type: 'text', video_url: null, duration: 40, order: 1, isFree: false },
-        { title: 'Code of Ethics & Professionalism', content: 'Professional conduct and ethical considerations in the field.', type: 'text', video_url: null, duration: 45, order: 2, isFree: false },
-        { title: 'Documentation & Communication', content: 'Professional documentation and communication best practices.', type: 'text', video_url: null, duration: 50, order: 3, isFree: false },
-        { title: 'Collaboration & Teamwork', content: 'Working effectively in professional team environments.', type: 'text', video_url: null, duration: 45, order: 4, isFree: false },
-        { title: 'Continuous Learning & Growth', content: 'Staying current in a rapidly evolving field.', type: 'text', video_url: null, duration: 40, order: 5, isFree: false },
-        { title: 'Professional Practice Assessment', content: 'Evaluate your understanding of professional standards.', type: 'quiz', video_url: null, duration: 40, order: 6, isFree: false }
+        { title: 'Standards Overview', content: 'Industry standards', type: 'text', duration: 40, order: 1, isFree: false },
+        { title: 'Ethics', content: 'Professional conduct', type: 'text', duration: 45, order: 2, isFree: false },
+        { title: 'Documentation', content: 'Best practices', type: 'text', duration: 50, order: 3, isFree: false },
+        { title: 'Teamwork', content: 'Collaboration skills', type: 'text', duration: 45, order: 4, isFree: false },
+        { title: 'Growth', content: 'Continuous learning', type: 'text', duration: 40, order: 5, isFree: false },
+        { title: 'Assessment', content: 'Standards quiz', type: 'quiz', duration: 40, order: 6, isFree: false }
       ]
     },
     {
       title: 'Capstone Project',
-      description: 'Demonstrate mastery through a comprehensive, portfolio-worthy project.',
+      description: 'Portfolio-worthy project',
       order: 7,
       duration: 480,
       lessons: [
-        { title: 'Capstone Project Brief', content: 'Understanding the capstone project requirements and expectations.', type: 'text', video_url: null, duration: 30, order: 1, isFree: false },
-        { title: 'Research & Planning Phase', content: 'Conduct research and create a detailed project plan.', type: 'text', video_url: null, duration: 60, order: 2, isFree: false },
-        { title: 'Design & Architecture', content: 'Design your project architecture and create wireframes/mockups.', type: 'text', video_url: null, duration: 70, order: 3, isFree: false },
-        { title: 'Core Implementation', content: 'Build the core functionality of your capstone project.', type: 'text', video_url: null, duration: 120, order: 4, isFree: false },
-        { title: 'Advanced Features & Polish', content: 'Add advanced features and professional polish.', type: 'text', video_url: null, duration: 100, order: 5, isFree: false },
-        { title: 'Testing & Deployment', content: 'Test thoroughly and deploy your project.', type: 'text', video_url: null, duration: 60, order: 6, isFree: false },
-        { title: 'Project Presentation & Portfolio', content: 'Present your project and add it to your portfolio.', type: 'quiz', video_url: null, duration: 40, order: 7, isFree: false }
+        { title: 'Project Brief', content: 'Requirements overview', type: 'text', duration: 30, order: 1, isFree: false },
+        { title: 'Research Phase', content: 'Planning your project', type: 'text', duration: 60, order: 2, isFree: false },
+        { title: 'Design', content: 'Architecture design', type: 'text', duration: 70, order: 3, isFree: false },
+        { title: 'Core Build', content: 'Main functionality', type: 'text', duration: 120, order: 4, isFree: false },
+        { title: 'Polish', content: 'Advanced features', type: 'text', duration: 100, order: 5, isFree: false },
+        { title: 'Deployment', content: 'Launch your project', type: 'text', duration: 60, order: 6, isFree: false },
+        { title: 'Presentation', content: 'Portfolio showcase', type: 'quiz', duration: 40, order: 7, isFree: false }
       ]
     }
   ];
-
-  return baseModules;
 }
 
 function getCourseAssessment(courseTitle: string) {
   return [
     {
       id: '1',
-      question: 'Which concept is fundamental to understanding ' + courseTitle + '?',
+      question: `Which concept is fundamental to ${courseTitle}?`,
       type: 'single',
       options: ['Core Principle A', 'Core Principle B', 'Core Principle C', 'Core Principle D'],
       correct_answers: [0],
@@ -314,7 +303,7 @@ function getCourseAssessment(courseTitle: string) {
     },
     {
       id: '2',
-      question: 'What are the key benefits of applying best practices? (Select all that apply)',
+      question: 'What are the key benefits of applying best practices?',
       type: 'multiple',
       options: ['Improved quality', 'Better efficiency', 'Enhanced collaboration', 'Reduced errors'],
       correct_answers: [0, 1, 2, 3],
@@ -330,7 +319,7 @@ function getCourseAssessment(courseTitle: string) {
     },
     {
       id: '4',
-      question: 'Which tools are essential for this field? (Multiple answers)',
+      question: 'Which tools are essential for this field?',
       type: 'multiple',
       options: ['Primary Tool', 'Supporting Tool A', 'Supporting Tool B', 'Optional Tool'],
       correct_answers: [0, 1, 2],

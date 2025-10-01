@@ -51,83 +51,54 @@ const PopulateCoursesAdmin = () => {
       let allErrors: any[] = [];
 
       // Process in batches until no courses remain
-      while (true) {
-        console.log('Invoking populate-courses function...');
+      let batchCount = 0;
+      const maxBatches = 20; // Safety limit
+      
+      while (batchCount < maxBatches) {
+        batchCount++;
+        console.log(`🔄 Batch ${batchCount}: Invoking populate-courses...`);
         
-        // Get the current session for authentication
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        // Try direct fetch if supabase.functions.invoke fails
-        let data, error;
-        
-        try {
-          const response = await supabase.functions.invoke('populate-courses', {
-            body: { batchSize: 5, skipExisting: true }
-          });
-          data = response.data;
-          error = response.error;
-          
-          console.log('Function response via invoke:', { data, error });
-        } catch (invokeError) {
-          console.error('Invoke method failed, trying direct fetch:', invokeError);
-          
-          // Fallback to direct fetch
-          const fetchResponse = await fetch(
-            'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/populate-courses',
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${session?.access_token || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc'}`,
-                'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc'
-              },
-              body: JSON.stringify({ batchSize: 5, skipExisting: true })
-            }
-          );
-          
-          console.log('Direct fetch response status:', fetchResponse.status);
-          
-          if (!fetchResponse.ok) {
-            const errorText = await fetchResponse.text();
-            console.error('Direct fetch error response:', errorText);
-            throw new Error(`HTTP ${fetchResponse.status}: ${errorText}`);
-          }
-          
-          data = await fetchResponse.json();
-          console.log('Function response via direct fetch:', data);
-        }
+        const { data, error } = await supabase.functions.invoke('populate-courses', {
+          body: { batchSize: 5, skipExisting: true }
+        });
+
+        console.log(`📊 Batch ${batchCount} response:`, { data, error });
 
         if (error) {
-          console.error('Function invocation error:', error);
-          throw new Error(`Edge Function Error: ${error.message || JSON.stringify(error)}`);
+          console.error('❌ Function error:', error);
+          throw new Error(`Function failed: ${error.message || JSON.stringify(error)}`);
         }
 
-        if (!data.coursesPopulated || data.coursesPopulated === 0) {
-          // All done
-          break;
+        if (!data || !data.success) {
+          console.error('❌ Invalid response:', data);
+          throw new Error(`Invalid response from function: ${JSON.stringify(data)}`);
         }
 
-        totalProcessed += data.coursesPopulated;
-        totalModules += data.modulesCreated;
-        totalLessons += data.lessonsCreated;
-        totalAssessments += data.assessmentsCreated;
+        totalProcessed += data.coursesPopulated || 0;
+        totalModules += data.modulesCreated || 0;
+        totalLessons += data.lessonsCreated || 0;
+        totalAssessments += data.assessmentsCreated || 0;
         
-        if (data.errors) {
+        if (data.errors && data.errors.length > 0) {
           allErrors = [...allErrors, ...data.errors];
+          console.warn('⚠️ Errors in batch:', data.errors);
         }
 
         // Update progress
-        const progressPercent = Math.round((totalProcessed / (count || 1)) * 100);
-        setProgress(progressPercent);
+        if (count && count > 0) {
+          const progressPercent = Math.min(100, Math.round((totalProcessed / count) * 100));
+          setProgress(progressPercent);
+        }
 
-        toast.success(`Processed ${totalProcessed} of ${count} courses...`);
+        toast.success(`Batch ${batchCount}: Processed ${data.coursesPopulated} courses (${totalProcessed} total)`);
 
-        // Check if we're done
-        if (data.remaining === 0) {
+        // Check if done
+        if (data.remaining === 0 || data.coursesPopulated === 0) {
+          console.log('✅ All courses processed');
           break;
         }
 
-        // Small delay between batches to avoid overwhelming the system
+        // Small delay between batches
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
 
