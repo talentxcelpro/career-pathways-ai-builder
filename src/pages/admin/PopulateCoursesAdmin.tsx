@@ -19,12 +19,30 @@ const PopulateCoursesAdmin = () => {
     setProgress(0);
 
     try {
+      console.log('Starting course population process...');
+      console.log('Supabase URL:', 'https://dthlgsnakhoftinssokm.supabase.co');
+      
+      // Test if we can reach Supabase at all
+      console.log('Testing Supabase connection...');
+      const { data: testData, error: testError } = await supabase
+        .from('courses')
+        .select('id')
+        .limit(1);
+      
+      if (testError) {
+        console.error('Supabase connection test failed:', testError);
+        throw new Error(`Database connection failed: ${testError.message}`);
+      }
+      
+      console.log('Supabase connection successful');
+      
       // Get total courses count first
       const { count } = await supabase
         .from('courses')
         .select('*', { count: 'exact', head: true });
       
       setTotalCourses(count || 0);
+      console.log(`Total courses found: ${count}`);
 
       let totalProcessed = 0;
       let totalModules = 0;
@@ -34,11 +52,55 @@ const PopulateCoursesAdmin = () => {
 
       // Process in batches until no courses remain
       while (true) {
-        const { data, error } = await supabase.functions.invoke('populate-courses', {
-          body: { batchSize: 5, skipExisting: true }
-        });
+        console.log('Invoking populate-courses function...');
+        
+        // Get the current session for authentication
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        // Try direct fetch if supabase.functions.invoke fails
+        let data, error;
+        
+        try {
+          const response = await supabase.functions.invoke('populate-courses', {
+            body: { batchSize: 5, skipExisting: true }
+          });
+          data = response.data;
+          error = response.error;
+          
+          console.log('Function response via invoke:', { data, error });
+        } catch (invokeError) {
+          console.error('Invoke method failed, trying direct fetch:', invokeError);
+          
+          // Fallback to direct fetch
+          const fetchResponse = await fetch(
+            'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/populate-courses',
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${session?.access_token || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc'}`,
+                'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc'
+              },
+              body: JSON.stringify({ batchSize: 5, skipExisting: true })
+            }
+          );
+          
+          console.log('Direct fetch response status:', fetchResponse.status);
+          
+          if (!fetchResponse.ok) {
+            const errorText = await fetchResponse.text();
+            console.error('Direct fetch error response:', errorText);
+            throw new Error(`HTTP ${fetchResponse.status}: ${errorText}`);
+          }
+          
+          data = await fetchResponse.json();
+          console.log('Function response via direct fetch:', data);
+        }
 
-        if (error) throw error;
+        if (error) {
+          console.error('Function invocation error:', error);
+          throw new Error(`Edge Function Error: ${error.message || JSON.stringify(error)}`);
+        }
 
         if (!data.coursesPopulated || data.coursesPopulated === 0) {
           // All done
@@ -90,10 +152,20 @@ const PopulateCoursesAdmin = () => {
       setProgress(100);
     } catch (error: any) {
       console.error('Error populating courses:', error);
-      toast.error(`Failed to populate courses: ${error.message}`);
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name,
+        fullError: error
+      });
+      
+      const errorMessage = error.message || 'Unknown error occurred';
+      toast.error(`Failed: ${errorMessage}`);
+      
       setResult({
         error: true,
-        message: error.message
+        message: errorMessage,
+        details: error.stack || String(error)
       });
     } finally {
       setIsPopulating(false);
@@ -230,10 +302,21 @@ const PopulateCoursesAdmin = () => {
                   Error Occurred
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-red-600">{result.message}</p>
+              <CardContent className="space-y-2">
+                <p className="text-red-600 font-semibold">{result.message}</p>
+                {result.details && (
+                  <details className="text-xs text-red-800 mt-2">
+                    <summary className="cursor-pointer font-medium">Technical Details</summary>
+                    <pre className="mt-2 p-2 bg-red-100 rounded overflow-auto max-h-40">
+                      {result.details}
+                    </pre>
+                  </details>
+                )}
                 <p className="text-sm text-muted-foreground mt-2">
                   You can retry the operation. The system will skip already populated courses.
+                </p>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Check the browser console (F12) for more details.
                 </p>
               </CardContent>
             </Card>
