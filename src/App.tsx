@@ -197,6 +197,11 @@ const App = () => {
         enableRoutePreloading();
       });
 
+      // Initialize AI-powered performance features
+      import('@/hooks/usePredictivePreloading').then(({ routePredictor }) => {
+        console.log('🤖 AI-powered performance features initialized');
+      });
+
       // Track initial load performance
       advancedPerformanceMonitor.trackRouteChange('/', startTime);
     } catch (error) {
