@@ -1,5 +1,4 @@
 import { supabase } from "@/integrations/supabase/client";
-import { extractTextFromFile } from "@/utils/resumeTextExtraction";
 
 export interface ParsedResume {
   personalInfo: {
@@ -54,63 +53,42 @@ export interface ParsedResume {
  */
 export const parseResumeFile = async (file: File): Promise<ParsedResume> => {
   try {
-    console.log('🚀 Starting resume parsing for:', file.name, 'Type:', file.type, 'Size:', file.size);
+    console.log('📄 Parsing:', file.name);
     
-    // Use the proven extraction utility
-    console.log('📄 Extracting text using proven utility...');
-    const extractedText = await extractTextFromFile(file);
+    // Extract text
+    let text = '';
     
-    console.log('📋 Extracted text length:', extractedText.length);
-    if (extractedText.length > 0) {
-      console.log('📋 First 500 chars:', extractedText.substring(0, 500));
-      console.log('📋 Last 200 chars:', extractedText.substring(Math.max(0, extractedText.length - 200)));
-    }
-    
-    // Validate extraction before sending to AI
-    if (!extractedText || extractedText.trim().length < 50) {
-      console.error('❌ Extraction failed or insufficient text:', extractedText.length, 'chars');
-      throw new Error(
-        'Could not extract enough text from the resume. Please ensure:\n' +
-        '1. The file is not corrupted\n' +
-        '2. The file contains readable text (not just images)\n' +
-        '3. Try saving the file in a different format (PDF or DOCX)'
-      );
-    }
-    
-    console.log('✅ Text extraction successful, proceeding to AI parsing...');
-
-    console.log('📋 Extracted text length:', extractedText.length);
-    console.log('📋 First 200 chars:', extractedText.substring(0, 200));
-
-    // Call the AI resume parser edge function with extracted text
-    const { data, error } = await supabase.functions.invoke('ai-resume-parser', {
-      body: {
-        extractedText: extractedText,
-        fileName: file.name
+    if (file.type.includes('word') || file.name.endsWith('.docx')) {
+      const mammoth = await import('mammoth');
+      const buffer = await file.arrayBuffer();
+      const result = await mammoth.extractRawText({ arrayBuffer: buffer });
+      text = result.value;
+    } else if (file.type.includes('pdf')) {
+      const pdfjsLib = await import('pdfjs-dist');
+      pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+      const buffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        text += content.items.map((item: any) => item.str).join(' ') + '\n';
       }
+    }
+    
+    console.log('✅ Extracted:', text.length, 'chars');
+    if (text.length < 50) throw new Error('Not enough text extracted');
+
+    // Send to AI
+    const { data, error } = await supabase.functions.invoke('ai-resume-parser', {
+      body: { extractedText: text, fileName: file.name }
     });
 
-    if (error) {
-      console.error('Resume parsing error:', error);
-      throw new Error(error.message || 'Failed to parse resume');
-    }
-
-    if (!data.success) {
-      throw new Error(data.error || 'Parsing failed');
-    }
-
-    console.log('✅ AI parsing completed successfully');
-    console.log('📊 Parsed resume data:', data.data);
-
-    // Transform the AI response to match the expected ParsedResume format
-    const aiResume = data.data?.structured_resume;
+    if (error || !data?.success) throw new Error('AI parsing failed');
     
-    if (!aiResume) {
-      throw new Error('No structured resume data returned from AI');
-    }
+    const aiResume = data.data?.structured_resume;
+    if (!aiResume) throw new Error('No resume data returned');
 
-    // Map AI response to ParsedResume interface
-    const parsedResume: ParsedResume = {
+    return {
       personalInfo: {
         fullName: aiResume.name || '',
         email: aiResume.email || '',
@@ -153,28 +131,9 @@ export const parseResumeFile = async (file: File): Promise<ParsedResume> => {
       projects: aiResume.projects || []
     };
 
-    console.log('✅ Resume transformation complete:', parsedResume);
-    return parsedResume;
-
   } catch (error) {
-    console.error('Error parsing resume:', error);
-    
-    // Return empty structure as fallback
-    return {
-      personalInfo: {
-        fullName: '',
-        email: '',
-        phone: '',
-        location: ''
-      },
-      experience: [],
-      education: [],
-      skills: {
-        technical: [],
-        soft: [],
-        languages: []
-      }
-    };
+    console.error('❌ Parse error:', error);
+    throw error;
   }
 };
 
