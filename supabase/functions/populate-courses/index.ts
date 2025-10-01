@@ -12,30 +12,41 @@ serve(async (req) => {
   }
 
   try {
+    console.log('Starting course population...');
+    
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
     // Get all courses
+    console.log('Fetching courses...');
     const { data: courses, error: coursesError } = await supabaseClient
       .from('courses')
       .select('id, title, category, difficulty_level')
       .order('title');
 
-    if (coursesError) throw coursesError;
+    if (coursesError) {
+      console.error('Error fetching courses:', coursesError);
+      throw coursesError;
+    }
+    
     if (!courses || courses.length === 0) {
+      console.log('No courses found');
       return new Response(JSON.stringify({ error: 'No courses found' }), {
         status: 404,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
 
+    console.log(`Found ${courses.length} courses to populate`);
     let totalModules = 0;
     let totalLessons = 0;
+    let totalAssessments = 0;
 
     // Populate each course with modules and lessons
     for (const course of courses) {
+      console.log(`Processing course: ${course.title}`);
       const modules = getCourseModules(course.title, course.category, course.difficulty_level);
       
       for (const moduleInfo of modules) {
@@ -75,32 +86,43 @@ serve(async (req) => {
 
             if (!lessonError) {
               totalLessons++;
+            } else {
+              console.error('Lesson error:', lessonError);
             }
           }
         }
+      }
 
-        // Create assessment for each course
-        await supabaseClient
-          .from('course_assessments')
-          .insert({
-            course_id: course.id,
-            title: `${course.title} - Final Assessment`,
-            description: `Comprehensive assessment covering all modules of ${course.title}`,
-            questions: getCourseAssessment(course.title),
-            passing_score: 75,
-            time_limit_minutes: 90,
-            max_attempts: 3
-          });
+      // Create ONE assessment per course (outside the module loop)
+      const { error: assessmentError } = await supabaseClient
+        .from('course_assessments')
+        .insert({
+          course_id: course.id,
+          title: `${course.title} - Final Assessment`,
+          description: `Comprehensive assessment covering all modules of ${course.title}`,
+          questions: getCourseAssessment(course.title),
+          passing_score: 75,
+          time_limit_minutes: 90,
+          max_attempts: 3
+        });
+      
+      if (!assessmentError) {
+        totalAssessments++;
+      } else {
+        console.error('Assessment error:', assessmentError);
       }
     }
+
+    console.log(`Completed! Modules: ${totalModules}, Lessons: ${totalLessons}, Assessments: ${totalAssessments}`);
 
     return new Response(
       JSON.stringify({
         success: true,
-        message: `Populated ${courses.length} courses with ${totalModules} modules and ${totalLessons} lessons`,
+        message: `Populated ${courses.length} courses with ${totalModules} modules, ${totalLessons} lessons, and ${totalAssessments} assessments`,
         coursesPopulated: courses.length,
         modulesCreated: totalModules,
-        lessonsCreated: totalLessons
+        lessonsCreated: totalLessons,
+        assessmentsCreated: totalAssessments
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

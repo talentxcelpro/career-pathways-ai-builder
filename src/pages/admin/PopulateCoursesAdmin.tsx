@@ -91,6 +91,10 @@ const PopulateCoursesAdmin = () => {
                     <p className="font-semibold">Lessons Created:</p>
                     <p className="text-2xl text-green-700">{result.lessonsCreated}</p>
                   </div>
+                  <div>
+                    <p className="font-semibold">Assessments Created:</p>
+                    <p className="text-2xl text-green-700">{result.assessmentsCreated || 0}</p>
+                  </div>
                 </div>
                 <p className="text-green-600 mt-4">{result.message}</p>
               </CardContent>
