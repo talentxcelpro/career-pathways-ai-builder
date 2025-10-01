@@ -1,5 +1,5 @@
 import { NavItem } from "../types/nav-item";
-import ReferAndEarn from "../pages/ReferAndEarn";
+import { Navigate } from "react-router-dom";
 import PersonalizedReferral from "../pages/PersonalizedReferral";
 import ReferralCenter from "../pages/ReferralCenter";
 
@@ -7,7 +7,7 @@ export const referralRoutes: NavItem[] = [
   {
     title: "Refer & Earn",
     to: "/refer-and-earn",
-    page: <ReferAndEarn />,
+    page: <Navigate to="/passport" replace />,
   },
   {
     title: "Referral Center",
