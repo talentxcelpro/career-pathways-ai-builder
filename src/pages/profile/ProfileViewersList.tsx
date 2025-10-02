@@ -14,6 +14,7 @@ export default function ProfileViewersList() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const FREE_VIEWER_LIMIT = 5;
+
   const { data: viewers, isLoading } = useQuery({
     queryKey: ['profile-viewers', user?.id],
     queryFn: async () => {
@@ -34,7 +35,7 @@ export default function ProfileViewersList() {
 
       if (error) throw error;
 
-      // Get viewer IDs (excluding nulls for anonymous views)
+      // Get unique viewer IDs (excluding nulls for anonymous views)
       const viewerIds = [...new Set(viewsData
         .map(view => view.viewer_id)
         .filter(Boolean) as string[])];
@@ -45,20 +46,29 @@ export default function ProfileViewersList() {
         .select('id, full_name, profile_picture_url, title, current_company')
         .in('id', viewerIds);
 
-      // Combine views with profile data
-      const viewsWithProfiles = viewsData.map(view => ({
-        ...view,
-        profiles: view.viewer_id 
-          ? profilesData?.find(p => p.id === view.viewer_id) || null
-          : null
-      }));
+      // Group views by viewer_id and get the most recent view for each unique viewer
+      const uniqueViewersMap = new Map();
+      viewsData.forEach(view => {
+        const key = view.viewer_id || `anonymous-${view.id}`;
+        if (!uniqueViewersMap.has(key) || 
+            new Date(view.viewed_at) > new Date(uniqueViewersMap.get(key).viewed_at)) {
+          uniqueViewersMap.set(key, {
+            ...view,
+            profiles: view.viewer_id 
+              ? profilesData?.find(p => p.id === view.viewer_id) || null
+              : null
+          });
+        }
+      });
 
-      return viewsWithProfiles;
+      return Array.from(uniqueViewersMap.values()).sort((a, b) => 
+        new Date(b.viewed_at).getTime() - new Date(a.viewed_at).getTime()
+      );
     },
     enabled: !!user
   });
 
-  // Redirect if not authenticated
+  // Redirect if not authenticated - this page is private to the user only
   React.useEffect(() => {
     if (!user && !isLoading) {
       navigate('/auth/login');
@@ -166,7 +176,10 @@ export default function ProfileViewersList() {
                     <p className="text-sm text-muted-foreground mb-4">
                       Upgrade to Premium to see everyone who's viewed your profile and gain access to advanced analytics
                     </p>
-                    <Button className="gap-2">
+                    <Button 
+                      className="gap-2"
+                      onClick={() => navigate('/pro/subscription')}
+                    >
                       <Crown className="h-4 w-4" />
                       Upgrade to Premium
                     </Button>
