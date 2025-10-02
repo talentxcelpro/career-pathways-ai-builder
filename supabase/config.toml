@@ -126,6 +126,13 @@ verify_jwt = false
 [functions.populate-courses]
 verify_jwt = false
 
+# TXC Bonuses
+[functions.award-joining-bonus]
+verify_jwt = false
+
+[functions.notify-joining-bonus]
+verify_jwt = false
+
 # SEO & Sitemaps
 [functions.generate-sitemap]
 verify_jwt = false
