@@ -19,11 +19,15 @@ export default function ProfileViewersList() {
     queryFn: async () => {
       if (!user) throw new Error('Not authenticated');
 
+      // First check if there are any views at all
       const { data, error } = await supabase
         .from('profile_views')
         .select(`
-          *,
-          viewer:profiles!profile_views_viewer_id_fkey(
+          id,
+          viewer_id,
+          viewed_at,
+          view_type,
+          profiles!inner(
             id,
             full_name,
             profile_picture_url,
@@ -90,16 +94,21 @@ export default function ProfileViewersList() {
           ) : (
             <>
               <div className="space-y-4">
-                {displayedViewers.map((view: any) => (
+                {displayedViewers.map((view: any) => {
+                  // Access the nested profiles object correctly
+                  const viewerProfile = view.profiles;
+                  const viewerId = view.viewer_id || viewerProfile?.id;
+                  
+                  return (
                 <Link
                   key={view.id}
-                  to={`/profile/${view.viewer?.id}`}
+                  to={`/profile/${viewerId}`}
                   className="flex items-start gap-4 p-4 rounded-lg hover:bg-accent transition-colors"
                 >
                   <Avatar className="h-12 w-12">
-                    <AvatarImage src={view.viewer?.profile_picture_url} />
+                    <AvatarImage src={viewerProfile?.profile_picture_url} />
                     <AvatarFallback>
-                      {view.viewer?.full_name?.[0] || 'U'}
+                      {viewerProfile?.full_name?.[0] || 'U'}
                     </AvatarFallback>
                   </Avatar>
                   
@@ -107,12 +116,12 @@ export default function ProfileViewersList() {
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <p className="font-semibold text-foreground">
-                          {view.viewer?.full_name || 'Anonymous User'}
+                          {viewerProfile?.full_name || 'Anonymous User'}
                         </p>
-                        {view.viewer?.title && (
+                        {viewerProfile?.title && (
                           <p className="text-sm text-muted-foreground">
-                            {view.viewer.title}
-                            {view.viewer.current_company && ` at ${view.viewer.current_company}`}
+                            {viewerProfile.title}
+                            {viewerProfile.current_company && ` at ${viewerProfile.current_company}`}
                           </p>
                         )}
                       </div>
@@ -122,14 +131,15 @@ export default function ProfileViewersList() {
                       </Badge>
                     </div>
                     
-                    {view.source && (
+                    {view.view_type && (
                       <p className="text-xs text-muted-foreground mt-1">
-                        Viewed from: {view.source}
+                        View type: {view.view_type}
                       </p>
                     )}
                   </div>
                 </Link>
-              ))}
+                  );
+              })}
               </div>
 
               {/* Upgrade Prompt */}

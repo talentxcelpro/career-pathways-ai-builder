@@ -165,32 +165,32 @@ export const EngagementActions: React.FC<EngagementActionsProps> = ({
   }
 
   return (
-    <div className={cn("flex items-center justify-between", className)}>
-      <div className="flex items-center gap-2">
+    <div className={cn("flex items-center justify-between pt-3 border-t border-border/40", className)}>
+      <div className="flex items-center gap-1">
         <Button
           variant="ghost"
           size="sm"
           onClick={handleLike}
           disabled={isLiking}
           className={cn(
-            "gap-2",
+            "gap-2 hover:bg-red-50 dark:hover:bg-red-950/20",
             displayStats.isLiked && "text-red-500 hover:text-red-600"
           )}
         >
-          <Heart className={cn("h-4 w-4", displayStats.isLiked && "fill-current")} />
-          <span>{displayStats.likes}</span>
-          <span className="sr-only">likes</span>
+          <Heart className={cn("h-5 w-5", displayStats.isLiked && "fill-current")} />
+          <span className="font-medium">{displayStats.likes}</span>
+          <span className="hidden sm:inline text-sm">Like</span>
         </Button>
 
         <Button
           variant="ghost"
           size="sm"
           onClick={handleComment}
-          className="gap-2"
+          className="gap-2 hover:bg-blue-50 dark:hover:bg-blue-950/20"
         >
-          <MessageCircle className="h-4 w-4" />
-          <span>{displayStats.comments}</span>
-          <span className="sr-only">comments</span>
+          <MessageCircle className="h-5 w-5" />
+          <span className="font-medium">{displayStats.comments}</span>
+          <span className="hidden sm:inline text-sm">Comment</span>
         </Button>
 
         <Button
@@ -198,11 +198,11 @@ export const EngagementActions: React.FC<EngagementActionsProps> = ({
           size="sm"
           onClick={handleShare}
           disabled={isSharing}
-          className="gap-2"
+          className="gap-2 hover:bg-green-50 dark:hover:bg-green-950/20"
         >
-          <Share className="h-4 w-4" />
-          <span>{displayStats.shares}</span>
-          <span className="sr-only">shares</span>
+          <Share className="h-5 w-5" />
+          <span className="font-medium">{displayStats.shares}</span>
+          <span className="hidden sm:inline text-sm">Share</span>
         </Button>
       </div>
 
@@ -219,10 +219,11 @@ export const EngagementActions: React.FC<EngagementActionsProps> = ({
           size="sm"
           onClick={handleBookmark}
           className={cn(
+            "hover:bg-yellow-50 dark:hover:bg-yellow-950/20",
             displayStats.isBookmarked && "text-yellow-500 hover:text-yellow-600"
           )}
         >
-          <Bookmark className={cn("h-4 w-4", displayStats.isBookmarked && "fill-current")} />
+          <Bookmark className={cn("h-5 w-5", displayStats.isBookmarked && "fill-current")} />
           <span className="sr-only">bookmark</span>
         </Button>
       </div>
