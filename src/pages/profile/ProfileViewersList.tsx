@@ -19,28 +19,41 @@ export default function ProfileViewersList() {
     queryFn: async () => {
       if (!user) throw new Error('Not authenticated');
 
-      // First check if there are any views at all
-      const { data, error } = await supabase
+      // Fetch profile views with optional viewer profiles
+      const { data: viewsData, error } = await supabase
         .from('profile_views')
         .select(`
           id,
           viewer_id,
           viewed_at,
-          view_type,
-          profiles!inner(
-            id,
-            full_name,
-            profile_picture_url,
-            title,
-            current_company
-          )
+          view_type
         `)
         .eq('profile_id', user.id)
         .order('viewed_at', { ascending: false })
         .limit(50);
 
       if (error) throw error;
-      return data;
+
+      // Get viewer IDs (excluding nulls for anonymous views)
+      const viewerIds = [...new Set(viewsData
+        .map(view => view.viewer_id)
+        .filter(Boolean) as string[])];
+
+      // Fetch profiles for viewers
+      const { data: profilesData } = await supabase
+        .from('profiles')
+        .select('id, full_name, profile_picture_url, title, current_company')
+        .in('id', viewerIds);
+
+      // Combine views with profile data
+      const viewsWithProfiles = viewsData.map(view => ({
+        ...view,
+        profiles: view.viewer_id 
+          ? profilesData?.find(p => p.id === view.viewer_id) || null
+          : null
+      }));
+
+      return viewsWithProfiles;
     },
     enabled: !!user
   });
