@@ -610,6 +610,78 @@ export type Database = {
         }
         Relationships: []
       }
+      colleges: {
+        Row: {
+          accreditation: string[] | null
+          average_package: number | null
+          contact_email: string | null
+          contact_phone: string | null
+          courses_offered: string[] | null
+          created_at: string
+          description: string | null
+          established_year: number | null
+          facilities: string[] | null
+          highest_package: number | null
+          id: string
+          is_verified: boolean | null
+          location: string | null
+          logo_url: string | null
+          name: string
+          placement_percentage: number | null
+          rating: number | null
+          total_students: number | null
+          type: string | null
+          updated_at: string
+          website_url: string | null
+        }
+        Insert: {
+          accreditation?: string[] | null
+          average_package?: number | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          courses_offered?: string[] | null
+          created_at?: string
+          description?: string | null
+          established_year?: number | null
+          facilities?: string[] | null
+          highest_package?: number | null
+          id?: string
+          is_verified?: boolean | null
+          location?: string | null
+          logo_url?: string | null
+          name: string
+          placement_percentage?: number | null
+          rating?: number | null
+          total_students?: number | null
+          type?: string | null
+          updated_at?: string
+          website_url?: string | null
+        }
+        Update: {
+          accreditation?: string[] | null
+          average_package?: number | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          courses_offered?: string[] | null
+          created_at?: string
+          description?: string | null
+          established_year?: number | null
+          facilities?: string[] | null
+          highest_package?: number | null
+          id?: string
+          is_verified?: boolean | null
+          location?: string | null
+          logo_url?: string | null
+          name?: string
+          placement_percentage?: number | null
+          rating?: number | null
+          total_students?: number | null
+          type?: string | null
+          updated_at?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
       comment_likes: {
         Row: {
           comment_id: string

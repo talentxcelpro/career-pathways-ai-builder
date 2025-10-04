@@ -37,7 +37,7 @@ export const resumeTemplates: ResumeTemplate[] = [
     industry: ['technology', 'finance', 'consulting'] as any,
     usageCount: 0,
     rating: 4.8,
-    preview: '/templates/modern-professional.png',
+    preview: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"%3E%3Crect fill="%23ffffff" width="400" height="500"/%3E%3Crect fill="%232563eb" width="400" height="60"/%3E%3Ctext x="20" y="38" font-size="22" fill="white" font-weight="bold"%3EModern Professional%3C/text%3E%3Crect fill="%23f3f4f6" width="360" height="40" x="20" y="80" rx="4"/%3E%3Crect fill="%23f3f4f6" width="360" height="120" x="20" y="135" rx="4"/%3E%3Crect fill="%23f3f4f6" width="360" height="100" x="20" y="270" rx="4"/%3E%3C/svg%3E',
     atsOptimized: true,
     isRecommended: true
   },
@@ -70,7 +70,7 @@ export const resumeTemplates: ResumeTemplate[] = [
     industry: ['corporate', 'consulting', 'finance'],
     usageCount: 0,
     rating: 4.9,
-    preview: '/templates/executive-premium.png',
+    preview: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"%3E%3Crect fill="%23f8f9fa" width="400" height="500"/%3E%3Crect fill="%231f2937" width="120" height="500"/%3E%3Ctext x="140" y="50" font-size="24" fill="%231f2937" font-weight="bold"%3EExecutive%3C/text%3E%3Ctext x="140" y="75" font-size="12" fill="%236b7280"%3ELeadership Focus%3C/text%3E%3Crect fill="white" width="240" height="60" x="140" y="100" rx="4"/%3E%3Crect fill="white" width="240" height="100" x="140" y="175" rx="4"/%3E%3Crect fill="%23374151" width="100" height="80" x="10" y="20" rx="4"/%3E%3C/svg%3E',
     atsOptimized: true
   },
   {
@@ -102,7 +102,7 @@ export const resumeTemplates: ResumeTemplate[] = [
     industry: ['technology', 'startup'],
     usageCount: 0,
     rating: 4.9,
-    preview: '/templates/tech-specialist.png',
+    preview: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"%3E%3Crect fill="%23ffffff" width="400" height="500"/%3E%3Crect fill="%230d9488" width="150" height="500"/%3E%3Ctext x="165" y="35" font-size="24" fill="%231f2937" font-weight="bold"%3ETech Specialist%3C/text%3E%3Ctext x="165" y="58" font-size="11" fill="%236b7280"%3EEngineering Focus%3C/text%3E%3Crect fill="%23f0fdfa" width="220" height="70" x="165" y="80" rx="4"/%3E%3Crect fill="%23f0fdfa" width="220" height="110" x="165" y="165" rx="4"/%3E%3Crect fill="%2314b8a6" width="130" height="90" x="10" y="10" rx="4"/%3E%3C/svg%3E',
     atsOptimized: true,
     isRecommended: true
   },
@@ -135,7 +135,7 @@ export const resumeTemplates: ResumeTemplate[] = [
     industry: ['creative', 'marketing'],
     usageCount: 0,
     rating: 4.7,
-    preview: '/templates/creative-portfolio.png',
+    preview: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"%3E%3Cdefs%3E%3ClinearGradient id="g2" x1="0" y1="0" x2="1" y2="1"%3E%3Cstop offset="0%25" stop-color="%23ec4899"/%3E%3Cstop offset="100%25" stop-color="%23a855f7"/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill="%23fef2f2" width="400" height="500"/%3E%3Crect fill="url(%23g2)" width="400" height="100"/%3E%3Ctext x="20" y="55" font-size="26" fill="white" font-weight="bold"%3ECreative Portfolio%3C/text%3E%3Crect fill="white" width="180" height="90" x="20" y="130" rx="8"/%3E%3Crect fill="white" width="180" height="90" x="210" y="130" rx="8"/%3E%3C/svg%3E',
     atsOptimized: false
   },
   {
@@ -167,7 +167,7 @@ export const resumeTemplates: ResumeTemplate[] = [
     industry: ['technology', 'finance', 'healthcare', 'education', 'consulting'],
     usageCount: 0,
     rating: 4.9,
-    preview: '/templates/minimalist-ats.png',
+    preview: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"%3E%3Crect fill="%23ffffff" width="400" height="500"/%3E%3Ctext x="20" y="40" font-size="24" fill="%23111827" font-weight="bold"%3EMinimalist ATS%3C/text%3E%3Crect fill="%23f3f4f6" width="360" height="30" x="20" y="60" rx="2"/%3E%3Crect fill="%23f3f4f6" width="360" height="80" x="20" y="105" rx="2"/%3E%3Crect fill="%23f3f4f6" width="360" height="140" x="20" y="200" rx="2"/%3E%3C/svg%3E',
     atsOptimized: true,
     isRecommended: true
   },
@@ -200,7 +200,7 @@ export const resumeTemplates: ResumeTemplate[] = [
     industry: ['technology', 'education', 'startup'],
     usageCount: 0,
     rating: 4.6,
-    preview: '/templates/entry-level-fresh.png',
+    preview: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"%3E%3Crect fill="%23f0f9ff" width="400" height="500"/%3E%3Crect fill="%230ea5e9" width="400" height="70"/%3E%3Ctext x="20" y="42" font-size="24" fill="white" font-weight="bold"%3EEntry Level%3C/text%3E%3Crect fill="white" width="360" height="50" x="20" y="90" rx="4"/%3E%3Crect fill="white" width="360" height="100" x="20" y="155" rx="4"/%3E%3C/svg%3E',
     atsOptimized: true
   },
   {
@@ -232,7 +232,7 @@ export const resumeTemplates: ResumeTemplate[] = [
     industry: ['technology', 'consulting', 'sales', 'marketing'],
     usageCount: 0,
     rating: 4.7,
-    preview: '/templates/career-switcher.png',
+    preview: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"%3E%3Crect fill="%23fefce8" width="400" height="500"/%3E%3Crect fill="%23eab308" width="400" height="65"/%3E%3Ctext x="20" y="40" font-size="22" fill="white" font-weight="bold"%3ECareer Switcher%3C/text%3E%3Crect fill="white" width="360" height="90" x="20" y="85" rx="4"/%3E%3Crect fill="white" width="360" height="110" x="20" y="190" rx="4"/%3E%3C/svg%3E',
     atsOptimized: true
   },
   {
@@ -264,7 +264,7 @@ export const resumeTemplates: ResumeTemplate[] = [
     industry: ['education', 'research'],
     usageCount: 0,
     rating: 4.8,
-    preview: '/templates/academic-research.png',
+    preview: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"%3E%3Crect fill="%23f9fafb" width="400" height="500"/%3E%3Ctext x="20" y="35" font-size="22" fill="%23111827" font-weight="600"%3EAcademic Research%3C/text%3E%3Crect fill="%23e5e7eb" width="360" height="35" x="20" y="55" rx="2"/%3E%3Crect fill="%23e5e7eb" width="360" height="85" x="20" y="105" rx="2"/%3E%3Crect fill="%23e5e7eb" width="360" height="120" x="20" y="205" rx="2"/%3E%3C/svg%3E',
     atsOptimized: true
   },
   {
@@ -296,7 +296,7 @@ export const resumeTemplates: ResumeTemplate[] = [
     industry: ['sales', 'marketing', 'startup'],
     usageCount: 0,
     rating: 4.8,
-    preview: '/templates/sales-marketing.png',
+    preview: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"%3E%3Crect fill="%23fff7ed" width="400" height="500"/%3E%3Crect fill="%23f97316" width="400" height="75"/%3E%3Ctext x="20" y="45" font-size="24" fill="white" font-weight="bold"%3ESales%26Marketing%3C/text%3E%3Crect fill="white" width="360" height="60" x="20" y="95" rx="4"/%3E%3Crect fill="white" width="360" height="95" x="20" y="170" rx="4"/%3E%3C/svg%3E',
     atsOptimized: true
   },
   {
@@ -328,7 +328,7 @@ export const resumeTemplates: ResumeTemplate[] = [
     industry: ['healthcare'],
     usageCount: 0,
     rating: 4.7,
-    preview: '/templates/healthcare-medical.png',
+    preview: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"%3E%3Crect fill="%23ecfdf5" width="400" height="500"/%3E%3Crect fill="%2310b981" width="400" height="70"/%3E%3Ctext x="20" y="42" font-size="23" fill="white" font-weight="bold"%3EHealthcare Medical%3C/text%3E%3Crect fill="white" width="360" height="55" x="20" y="90" rx="4"/%3E%3Crect fill="white" width="360" height="100" x="20" y="160" rx="4"/%3E%3C/svg%3E',
     atsOptimized: true
   },
   // Regional & Cultural Styles
@@ -361,7 +361,7 @@ export const resumeTemplates: ResumeTemplate[] = [
     industry: ['consulting', 'corporate', 'finance'],
     usageCount: 0,
     rating: 4.7,
-    preview: '/templates/european-elegant.png',
+    preview: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"%3E%3Crect fill="%23fefce8" width="400" height="500"/%3E%3Ctext x="150" y="35" font-size="22" fill="%23854d0e" text-anchor="middle" font-weight="600"%3EEuropean Elegant%3C/text%3E%3Crect fill="white" width="300" height="50" x="50" y="60" rx="3"/%3E%3Crect fill="white" width="300" height="100" x="50" y="125" rx="3"/%3E%3C/svg%3E',
     atsOptimized: false
   },
   {
@@ -393,7 +393,7 @@ export const resumeTemplates: ResumeTemplate[] = [
     industry: ['technology', 'finance', 'engineering'],
     usageCount: 0,
     rating: 4.8,
-    preview: '/templates/asian-professional.png',
+    preview: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"%3E%3Crect fill="%23fef2f2" width="400" height="500"/%3E%3Crect fill="%23dc2626" width="400" height="65"/%3E%3Ctext x="20" y="40" font-size="22" fill="white" font-weight="bold"%3EAsian Professional%3C/text%3E%3Crect fill="white" width="360" height="50" x="20" y="85" rx="3"/%3E%3Crect fill="white" width="360" height="90" x="20" y="150" rx="3"/%3E%3C/svg%3E',
     atsOptimized: true
   },
   {
@@ -425,7 +425,7 @@ export const resumeTemplates: ResumeTemplate[] = [
     industry: ['sales', 'marketing', 'creative'],
     usageCount: 0,
     rating: 4.6,
-    preview: '/templates/latin-american-vibrant.png',
+    preview: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"%3E%3Crect fill="%23fff1f2" width="400" height="500"/%3E%3Crect fill="%23fb923c" width="400" height="80"/%3E%3Ctext x="20" y="48" font-size="24" fill="white" font-weight="bold"%3ELatin American%3C/text%3E%3Crect fill="white" width="360" height="60" x="20" y="100" rx="4"/%3E%3Crect fill="white" width="360" height="95" x="20" y="175" rx="4"/%3E%3C/svg%3E',
     atsOptimized: false
   },
   {
@@ -457,7 +457,7 @@ export const resumeTemplates: ResumeTemplate[] = [
     industry: ['finance', 'legal', 'corporate', 'consulting'],
     usageCount: 0,
     rating: 4.8,
-    preview: '/templates/middle-eastern-conservative.png',
+    preview: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"%3E%3Crect fill="%23faf5ff" width="400" height="500"/%3E%3Crect fill="%235b21b6" width="400" height="70"/%3E%3Ctext x="20" y="42" font-size="21" fill="white" font-weight="bold"%3EMiddle Eastern%3C/text%3E%3Crect fill="white" width="360" height="50" x="20" y="90" rx="3"/%3E%3Crect fill="white" width="360" height="100" x="20" y="155" rx="3"/%3E%3C/svg%3E',
     atsOptimized: true
   },
   {
@@ -489,7 +489,7 @@ export const resumeTemplates: ResumeTemplate[] = [
     industry: ['technology', 'creative', 'startup'],
     usageCount: 0,
     rating: 4.9,
-    preview: '/templates/scandinavian-minimal.png',
+    preview: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"%3E%3Crect fill="%23f8fafc" width="400" height="500"/%3E%3Ctext x="20" y="40" font-size="24" fill="%23111827" font-weight="300"%3EScandinavian%3C/text%3E%3Crect fill="%23e2e8f0" width="360" height="30" x="20" y="60" rx="2"/%3E%3Crect fill="%23e2e8f0" width="360" height="80" x="20" y="105" rx="2"/%3E%3Crect fill="%23e2e8f0" width="360" height="120" x="20" y="200" rx="2"/%3E%3C/svg%3E',
     atsOptimized: true
   },
   // Industry-Specific Templates
@@ -522,7 +522,7 @@ export const resumeTemplates: ResumeTemplate[] = [
     industry: ['legal'],
     usageCount: 0,
     rating: 4.8,
-    preview: '/templates/legal-professional.png',
+    preview: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"%3E%3Crect fill="%23f9fafb" width="400" height="500"/%3E%3Crect fill="%231f2937" width="400" height="65"/%3E%3Ctext x="20" y="40" font-size="22" fill="white" font-weight="bold"%3ELegal Professional%3C/text%3E%3Crect fill="white" width="360" height="50" x="20" y="85" rx="2"/%3E%3Crect fill="white" width="360" height="100" x="20" y="150" rx="2"/%3E%3C/svg%3E',
     atsOptimized: true
   },
   {
@@ -554,7 +554,7 @@ export const resumeTemplates: ResumeTemplate[] = [
     industry: ['finance', 'corporate'],
     usageCount: 0,
     rating: 4.9,
-    preview: '/templates/finance-banking.png',
+    preview: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"%3E%3Crect fill="%23eff6ff" width="400" height="500"/%3E%3Crect fill="%231e40af" width="400" height="70"/%3E%3Ctext x="20" y="42" font-size="23" fill="white" font-weight="bold"%3EFinance%26Banking%3C/text%3E%3Crect fill="white" width="360" height="55" x="20" y="90" rx="3"/%3E%3Crect fill="white" width="360" height="100" x="20" y="160" rx="3"/%3E%3C/svg%3E',
     atsOptimized: true
   },
   {
@@ -586,7 +586,7 @@ export const resumeTemplates: ResumeTemplate[] = [
     industry: ['engineering', 'technology'],
     usageCount: 0,
     rating: 4.7,
-    preview: '/templates/engineering-blueprint.png',
+    preview: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"%3E%3Crect fill="%23dbeafe" width="400" height="500"/%3E%3Crect fill="%230369a1" width="400" height="70"/%3E%3Ctext x="20" y="42" font-size="22" fill="white" font-weight="bold"%3EEngineering%3C/text%3E%3Crect fill="white" width="360" height="55" x="20" y="90" rx="3"/%3E%3Crect fill="white" width="360" height="105" x="20" y="160" rx="3"/%3E%3C/svg%3E',
     atsOptimized: true
   },
   {
@@ -618,7 +618,7 @@ export const resumeTemplates: ResumeTemplate[] = [
     industry: ['nonprofit', 'education'],
     usageCount: 0,
     rating: 4.6,
-    preview: '/templates/nonprofit-impact.png',
+    preview: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"%3E%3Crect fill="%23f0fdf4" width="400" height="500"/%3E%3Crect fill="%2316a34a" width="400" height="70"/%3E%3Ctext x="20" y="42" font-size="22" fill="white" font-weight="bold"%3ENonprofit Impact%3C/text%3E%3Crect fill="white" width="360" height="55" x="20" y="90" rx="4"/%3E%3Crect fill="white" width="360" height="100" x="20" y="160" rx="4"/%3E%3C/svg%3E',
     atsOptimized: true
   },
   {
@@ -650,7 +650,7 @@ export const resumeTemplates: ResumeTemplate[] = [
     industry: ['creative', 'consulting', 'technology'],
     usageCount: 0,
     rating: 4.7,
-    preview: '/templates/freelancer-portfolio.png',
+    preview: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"%3E%3Crect fill="%23fef3c7" width="400" height="500"/%3E%3Crect fill="%23f59e0b" width="400" height="75"/%3E%3Ctext x="20" y="45" font-size="23" fill="white" font-weight="bold"%3EFreelancer%3C/text%3E%3Crect fill="white" width="170" height="90" x="20" y="95" rx="6"/%3E%3Crect fill="white" width="170" height="90" x="210" y="95" rx="6"/%3E%3C/svg%3E',
     atsOptimized: false
   },
   // Experience-Based Templates
@@ -683,7 +683,7 @@ export const resumeTemplates: ResumeTemplate[] = [
     industry: ['corporate', 'finance', 'consulting'],
     usageCount: 0,
     rating: 4.9,
-    preview: '/templates/senior-executive.png',
+    preview: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"%3E%3Crect fill="%23f3f4f6" width="400" height="500"/%3E%3Crect fill="%23374151" width="130" height="500"/%3E%3Ctext x="145" y="45" font-size="24" fill="%23111827" font-weight="bold"%3ESenior Executive%3C/text%3E%3Crect fill="white" width="240" height="60" x="145" y="70" rx="3"/%3E%3Crect fill="white" width="240" height="100" x="145" y="145" rx="3"/%3E%3C/svg%3E',
     atsOptimized: true
   },
   {
@@ -715,7 +715,7 @@ export const resumeTemplates: ResumeTemplate[] = [
     industry: ['technology', 'consulting', 'corporate', 'startup'],
     usageCount: 0,
     rating: 4.8,
-    preview: '/templates/mid-career-professional.png',
+    preview: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"%3E%3Crect fill="%23ffffff" width="400" height="500"/%3E%3Crect fill="%233b82f6" width="400" height="65"/%3E%3Ctext x="20" y="40" font-size="22" fill="white" font-weight="bold"%3EMid-Career Pro%3C/text%3E%3Crect fill="%23eff6ff" width="360" height="50" x="20" y="85" rx="3"/%3E%3Crect fill="%23eff6ff" width="360" height="100" x="20" y="150" rx="3"/%3E%3C/svg%3E',
     atsOptimized: true
   },
   {
@@ -747,7 +747,7 @@ export const resumeTemplates: ResumeTemplate[] = [
     industry: ['consulting', 'corporate', 'technology'],
     usageCount: 0,
     rating: 4.8,
-    preview: '/templates/international-professional.png',
+    preview: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"%3E%3Crect fill="%23fafaf9" width="400" height="500"/%3E%3Crect fill="%236366f1" width="400" height="70"/%3E%3Ctext x="20" y="42" font-size="21" fill="white" font-weight="bold"%3EInternational Pro%3C/text%3E%3Crect fill="white" width="360" height="55" x="20" y="90" rx="3"/%3E%3Crect fill="white" width="360" height="100" x="20" y="160" rx="3"/%3E%3C/svg%3E',
     atsOptimized: true
   },
   // Modern Styles
@@ -780,7 +780,7 @@ export const resumeTemplates: ResumeTemplate[] = [
     industry: ['startup', 'technology'],
     usageCount: 0,
     rating: 4.7,
-    preview: '/templates/tech-startup.png',
+    preview: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"%3E%3Crect fill="%23fef2f2" width="400" height="500"/%3E%3Crect fill="%23ef4444" width="400" height="75"/%3E%3Ctext x="20" y="45" font-size="24" fill="white" font-weight="bold"%3ETech Startup%3C/text%3E%3Crect fill="white" width="360" height="60" x="20" y="95" rx="5"/%3E%3Crect fill="white" width="360" height="95" x="20" y="170" rx="5"/%3E%3C/svg%3E',
     atsOptimized: false
   },
   {
@@ -812,7 +812,7 @@ export const resumeTemplates: ResumeTemplate[] = [
     industry: ['creative', 'marketing'],
     usageCount: 0,
     rating: 4.8,
-    preview: '/templates/creative-agency.png',
+    preview: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"%3E%3Cdefs%3E%3ClinearGradient id="g3" x1="0" y1="0" x2="1" y2="1"%3E%3Cstop offset="0%25" stop-color="%23f472b6"/%3E%3Cstop offset="100%25" stop-color="%23c026d3"/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill="%23fdf4ff" width="400" height="500"/%3E%3Crect fill="url(%23g3)" width="400" height="90"/%3E%3Ctext x="20" y="52" font-size="25" fill="white" font-weight="bold"%3ECreative Agency%3C/text%3E%3Crect fill="white" width="180" height="85" x="20" y="110" rx="7"/%3E%3Crect fill="white" width="180" height="85" x="210" y="110" rx="7"/%3E%3C/svg%3E',
     atsOptimized: false
   }
 ];
