@@ -19,56 +19,84 @@ export const useUserManagement = () => {
   const { data: users, isLoading, error, refetch } = useQuery({
     queryKey: ['admin-users', searchTerm, roleFilter, statusFilter, verificationFilter, completionFilter, currentPage, pageSize],
     queryFn: async () => {
-      let query = supabase
+      // First, get all auth users with their email addresses
+      const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
+      
+      if (authError) {
+        console.error('Error fetching auth users:', authError);
+        throw authError;
+      }
+
+      // Get all profiles
+      const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (searchTerm.trim()) {
-        query = query.ilike('full_name', `%${searchTerm}%`);
-      }
-
-      // Handle role filtering - for admin roles we'll filter in post-processing
-      if (roleFilter !== 'all' && roleFilter !== 'admin') {
-        query = query.eq('user_role', roleFilter as UserRole);
-      }
-
-      if (statusFilter === 'active') {
-        query = query.eq('profile_completed', true);
-      } else if (statusFilter === 'inactive') {
-        query = query.eq('profile_completed', false);
-      }
-
-      // Use actual verification_status field
-      if (verificationFilter === 'verified') {
-        query = query.eq('verification_status', 'verified');
-      } else if (verificationFilter === 'unverified') {
-        query = query.neq('verification_status', 'verified');
-      }
-
-      if (completionFilter !== 'all') {
-      // Note: completion_percentage field filtering implementation
-      if (completionFilter === 'low') {
-        // Users with low completion (0-25%) - will be calculated client-side for now
-      } else if (completionFilter === 'medium') {
-        // Users with medium completion (26-75%)
-      } else if (completionFilter === 'high') {
-        // Users with high completion (76-100%)
-      }
-        // This will be enhanced when we add completion_percentage field
-      }
-
-      // Apply pagination only if pageSize is not 'all'
-      if (pageSize !== -1) {
-        const from = (currentPage - 1) * pageSize;
-        const to = from + pageSize - 1;
-        query = query.range(from, to);
-      }
-
-      const { data: profilesData, error: profilesError } = await query;
       if (profilesError) {
         console.error('Error fetching profiles:', profilesError);
         throw profilesError;
+      }
+
+      // Merge auth users with profiles
+      const allUsers = (authUsers?.users || []).map(authUser => {
+        const profile = profilesData?.find(p => p.id === authUser.id);
+        
+        return {
+          id: authUser.id,
+          email: authUser.email || 'No email',
+          full_name: profile?.full_name || authUser.user_metadata?.full_name || null,
+          created_at: profile?.created_at || authUser.created_at,
+          profile_completed: profile?.profile_completed || false,
+          verification_status: profile?.verification_status || 'unverified',
+          user_role: profile?.user_role || null,
+          phone: profile?.phone || authUser.phone || null,
+          location: profile?.location || null,
+          title: profile?.title || null,
+          about: profile?.about || null,
+          profile_picture_url: profile?.profile_picture_url || null,
+          email_confirmed_at: authUser.email_confirmed_at,
+          last_sign_in_at: authUser.last_sign_in_at,
+          ...profile
+        };
+      });
+
+      // Apply filters
+      let filteredUsers = allUsers;
+
+      // Search filter
+      if (searchTerm.trim()) {
+        const lowerSearchTerm = searchTerm.toLowerCase();
+        filteredUsers = filteredUsers.filter(user => 
+          user.email?.toLowerCase().includes(lowerSearchTerm) ||
+          user.full_name?.toLowerCase().includes(lowerSearchTerm)
+        );
+      }
+
+      // Role filter (will be applied after getting admin roles)
+      if (roleFilter !== 'all' && roleFilter !== 'admin') {
+        filteredUsers = filteredUsers.filter(user => user.user_role === roleFilter);
+      }
+
+      // Status filter
+      if (statusFilter === 'active') {
+        filteredUsers = filteredUsers.filter(user => user.profile_completed === true);
+      } else if (statusFilter === 'inactive') {
+        filteredUsers = filteredUsers.filter(user => user.profile_completed === false);
+      }
+
+      // Verification filter
+      if (verificationFilter === 'verified') {
+        filteredUsers = filteredUsers.filter(user => user.verification_status === 'verified');
+      } else if (verificationFilter === 'unverified') {
+        filteredUsers = filteredUsers.filter(user => user.verification_status !== 'verified');
+      }
+
+      // Apply pagination
+      if (pageSize !== -1) {
+        const from = (currentPage - 1) * pageSize;
+        const to = from + pageSize;
+        filteredUsers = filteredUsers.slice(from, to);
       }
 
       // Get all user roles for admin detection
@@ -78,98 +106,41 @@ export const useUserManagement = () => {
         .eq('is_active', true)
         .in('role', ['super_admin', 'admin', 'moderator']);
 
-      // Add admin roles to profiles - emails are already in profiles table
-      const profilesWithEmails = (profilesData || []).map((profile) => {
-        const adminRoles = (allUserRoles || []).filter(role => role.user_id === profile.id);
+      // Add admin roles to users
+      const usersWithAdminRoles = filteredUsers.map((user) => {
+        const adminRoles = (allUserRoles || []).filter(role => role.user_id === user.id);
         
         return {
-          ...profile,
-          email: profile.email || 'No email',
+          ...user,
           admin_roles: adminRoles
         };
       });
 
       // Filter by admin role if needed
-      let filteredProfiles = profilesWithEmails;
+      let finalUsers = usersWithAdminRoles;
       if (roleFilter === 'admin') {
-        filteredProfiles = profilesWithEmails.filter(profile => 
-          profile.admin_roles && profile.admin_roles.length > 0
+        finalUsers = usersWithAdminRoles.filter(user => 
+          user.admin_roles && user.admin_roles.length > 0
         );
       }
 
-      // Apply search term filter on emails after fetching (if needed for email search)
-      if (searchTerm.trim()) {
-        const lowerSearchTerm = searchTerm.toLowerCase();
-        filteredProfiles = filteredProfiles.filter(profile => 
-          profile.email?.toLowerCase().includes(lowerSearchTerm) ||
-          profile.full_name?.toLowerCase().includes(lowerSearchTerm)
-        );
-      }
-
-      return filteredProfiles;
+      return finalUsers;
     },
     retry: 1,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  // Get total count for pagination
+  // Get total count for pagination - just return the filtered users length
   const { data: totalCount } = useQuery({
     queryKey: ['admin-users-count', searchTerm, roleFilter, statusFilter, verificationFilter, completionFilter],
     queryFn: async () => {
-      let query = supabase
-        .from('profiles')
-        .select('*', { count: 'exact', head: true });
-
-      // Search filtering is handled in post-processing for emails and names
-
-      if (roleFilter === 'admin') {
-        // For admin filter, we need to count profiles that have admin roles
-        const { data: adminUsers } = await supabase
-          .from('user_roles')
-          .select('user_id')
-          .in('role', ['super_admin', 'admin', 'moderator'])
-          .eq('is_active', true);
-        
-        if (adminUsers && adminUsers.length > 0) {
-          const adminUserIds = adminUsers.map(u => u.user_id);
-          query = query.in('id', adminUserIds);
-        } else {
-          query = query.eq('id', '00000000-0000-0000-0000-000000000000'); // No results
-        }
-      } else if (roleFilter !== 'all') {
-        query = query.eq('user_role', roleFilter as UserRole);
-      }
-
-      if (statusFilter === 'active') {
-        query = query.eq('profile_completed', true);
-      } else if (statusFilter === 'inactive') {
-        query = query.eq('profile_completed', false);
-      }
-
-      // Use actual verification_status field
-      if (verificationFilter === 'verified') {
-        query = query.eq('verification_status', 'verified');
-      } else if (verificationFilter === 'unverified') {
-        query = query.neq('verification_status', 'verified');
-      }
-
-      if (completionFilter !== 'all') {
-      // Note: completion_percentage field filtering implementation
-      if (completionFilter === 'low') {
-        // Users with low completion (0-25%) - will be calculated client-side for now
-      } else if (completionFilter === 'medium') {
-        // Users with medium completion (26-75%)
-      } else if (completionFilter === 'high') {
-        // Users with high completion (76-100%)
-      }
-      }
-
-      const { count, error } = await query;
-      if (error) throw error;
-      return count || 0;
+      // We'll calculate this from the actual filtered users
+      // since we're now using auth.admin.listUsers()
+      return users?.length || 0;
     },
     retry: 1,
     staleTime: 5 * 60 * 1000,
+    enabled: !!users, // Only run when users are loaded
   });
 
   const { data: userStats } = useQuery({
