@@ -50,7 +50,7 @@ export const useTXCMining = () => {
         .eq('activity_type', action)
         .order('created_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle(); // Fix 406 error - use maybeSingle() instead of single()
 
       if (lastReward) {
         const lastRewardTime = new Date(lastReward.created_at);
