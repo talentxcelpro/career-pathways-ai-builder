@@ -8,6 +8,7 @@ import Terms from "../pages/auth/Terms";
 import PrivacyPolicy from "../pages/auth/PrivacyPolicy";
 import { AuthPage } from "../pages/auth/AuthPage";
 import { AuthErrorBoundaryWrapper } from "../components/auth/AuthErrorBoundaryWrapper";
+import { OnboardingFlow } from "../pages/auth/OnboardingFlow";
 
 export const authRoutes = [
   {
@@ -61,5 +62,11 @@ export const authRoutes = [
     to: "/privacypolicy",
     page: <PrivacyPolicy />,
     isPublic: true
+  },
+  {
+    title: "Onboarding",
+    to: "/onboarding",
+    page: <OnboardingFlow />,
+    isPublic: false
   },
 ];
