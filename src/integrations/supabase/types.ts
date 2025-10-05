@@ -20207,6 +20207,27 @@ export type Database = {
         }
         Relationships: []
       }
+      user_scores: {
+        Row: {
+          career_readiness_score: number | null
+          last_updated: string | null
+          profile_completion_score: number | null
+          user_id: string
+        }
+        Insert: {
+          career_readiness_score?: number | null
+          last_updated?: string | null
+          profile_completion_score?: number | null
+          user_id: string
+        }
+        Update: {
+          career_readiness_score?: number | null
+          last_updated?: string | null
+          profile_completion_score?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_security_settings: {
         Row: {
           account_status: string | null
