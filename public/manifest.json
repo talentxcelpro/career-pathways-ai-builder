@@ -1,4 +1,5 @@
 {
+  "id": "/",
   "name": "CareerCatalyst - AI-Powered Career Platform",
   "short_name": "CareerCatalyst",
   "description": "Transform your career with AI-powered tools and professional networking",
@@ -110,7 +111,13 @@
   "launch_handler": {
     "client_mode": ["navigate-existing", "auto"]
   },
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
+  "related_applications": [],
   "prefer_related_applications": false,
+  "scope_extensions": [
+    {"origin": "*.talentxcel.in"},
+    {"origin": "*.careercatalyst.com"}
+  ],
   "edge_side_panel": {
     "preferred_width": 480
   }
