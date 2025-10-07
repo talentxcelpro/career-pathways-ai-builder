@@ -15,20 +15,22 @@
   "categories": ["business", "productivity", "education"],
   "icons": [
     {
-      "src": "/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png",
+      "src": "/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    },
-    {
-      "src": "/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png",
-      "sizes": "144x144",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
   "screenshots": [
