@@ -4,11 +4,13 @@
   "description": "Transform your career with AI-powered tools and professional networking",
   "start_url": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "background_color": "#ffffff",
   "theme_color": "#0066FF",
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "en",
+  "dir": "ltr",
   "categories": ["business", "productivity", "education"],
   "icons": [
     {
@@ -26,6 +28,22 @@
       "sizes": "144x144",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "CareerCatalyst Dashboard"
+    },
+    {
+      "src": "/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "CareerCatalyst Mobile"
     }
   ],
   "shortcuts": [
@@ -51,6 +69,47 @@
       "icons": [{"src": "/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png", "sizes": "96x96"}]
     }
   ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "media",
+          "accept": ["image/*", "application/pdf"]
+        }
+      ]
+    }
+  },
+  "file_handlers": [
+    {
+      "action": "/open-resume",
+      "accept": {
+        "application/pdf": [".pdf"],
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"]
+      },
+      "icons": [
+        {
+          "src": "/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png",
+          "sizes": "96x96"
+        }
+      ],
+      "launch_type": "single-client"
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+careercatalyst",
+      "url": "/connect?target=%s"
+    }
+  ],
+  "launch_handler": {
+    "client_mode": ["navigate-existing", "auto"]
+  },
   "prefer_related_applications": false,
   "edge_side_panel": {
     "preferred_width": 480
