@@ -9,7 +9,7 @@ export const FeaturesSection = () => {
       icon: FileText,
       title: "Resume Builder",
       description: "Create professional resumes with AI-powered suggestions and templates",
-      link: "/resume-builder"
+      link: "/resume"
     },
     {
       icon: CreditCard,
@@ -27,13 +27,13 @@ export const FeaturesSection = () => {
       icon: Target,
       title: "Personalized Career Paths",
       description: "AI-driven recommendations tailored to your goals and skills",
-      link: "https://talentxcel.in/career-map"
+      link: "/career-map"
     },
     {
       icon: GraduationCap,
       title: "AI-Powered Learning Hub",
       description: "Upskill with courses designed for your career trajectory",
-      link: "https://talentxcel.in/learning"
+      link: "/learning"
     },
     {
       icon: Briefcase,
@@ -45,13 +45,13 @@ export const FeaturesSection = () => {
       icon: BarChart3,
       title: "Career Analytics",
       description: "Track your progress with detailed insights and metrics",
-      link: "https://talentxcel.in/tools"
+      link: "/tools"
     },
     {
       icon: Shield,
       title: "Trusted Platform",
       description: "Secure, professional environment with verified profiles",
-      link: "/security"
+      link: "/about"
     }
   ];
 
