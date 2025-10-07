@@ -30,15 +30,22 @@
     <link rel="icon" href="/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png" type="image/png">
     <link rel="canonical" href="https://talentxcel.in/" />
     
-    <!-- Critical preconnect only -->
+    <!-- Critical preconnect and DNS prefetch -->
+    <link rel="dns-prefetch" href="https://dthlgsnakhoftinssokm.supabase.co">
     <link rel="preconnect" href="https://dthlgsnakhoftinssokm.supabase.co" crossorigin>
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
     
     <!-- Preload hero image with highest priority -->
-    <link rel="preload" href="/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" as="image" fetchpriority="high">
+    <link rel="preload" href="/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" as="image" fetchpriority="high" imagesrcset="/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png 1x" imagesizes="(max-width: 768px) 100vw, 50vw">
     
     <!-- Preload critical JavaScript -->
     <link rel="modulepreload" href="/src/main.tsx">
+    
+    <!-- Prefetch likely next pages -->
+    <link rel="prefetch" href="/jobs" as="document">
+    <link rel="prefetch" href="/network" as="document">
     
     <!-- Inline critical font CSS -->
     <style>

@@ -139,20 +139,38 @@ export const UserAvatar: React.FC<{
 };
 
 /**
- * Hero image component with high priority loading
+ * Hero image component with high priority loading and performance optimizations
  */
 export const HeroImage: React.FC<{
   src: string;
   alt: string;
   className?: string;
 }> = ({ src, alt, className }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+
   return (
-    <OptimizedImage
-      src={src}
-      alt={alt}
-      priority={true}
-      className={cn('w-full h-auto', className)}
-      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-    />
+    <div className="relative">
+      <img
+        src={src}
+        alt={alt}
+        loading="eager"
+        fetchPriority="high"
+        decoding="async"
+        onLoad={() => setIsLoaded(true)}
+        className={cn(
+          "transition-opacity duration-300 will-change-transform w-full h-auto",
+          isLoaded ? "opacity-100" : "opacity-0",
+          className
+        )}
+        style={{
+          contentVisibility: 'auto',
+          containIntrinsicSize: '800px 600px',
+        }}
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+      />
+      {!isLoaded && (
+        <div className="absolute inset-0 bg-muted animate-pulse rounded-3xl" />
+      )}
+    </div>
   );
 };

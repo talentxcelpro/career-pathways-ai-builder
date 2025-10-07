@@ -39,10 +39,34 @@ export default defineConfig(({ mode }) => ({
   build: {
     rollupOptions: {
       output: {
-        // Reduce chunk size and improve loading
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          ui: ['@radix-ui/react-tooltip', '@radix-ui/react-popover', '@radix-ui/react-dialog'],
+        // Aggressive code splitting for better caching and loading
+        manualChunks: (id) => {
+          // Core React libraries
+          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
+            return 'react-vendor';
+          }
+          // Radix UI components
+          if (id.includes('@radix-ui')) {
+            return 'radix-ui';
+          }
+          // Supabase
+          if (id.includes('@supabase')) {
+            return 'supabase';
+          }
+          // Other large libraries
+          if (id.includes('node_modules/framer-motion')) {
+            return 'animations';
+          }
+          if (id.includes('node_modules/recharts')) {
+            return 'charts';
+          }
+          if (id.includes('node_modules/lucide-react')) {
+            return 'icons';
+          }
+          // Other vendor libraries
+          if (id.includes('node_modules')) {
+            return 'vendor';
+          }
         },
         // Add hash to chunks for better caching
         chunkFileNames: 'assets/[name]-[hash].js',
@@ -51,7 +75,7 @@ export default defineConfig(({ mode }) => ({
       },
     },
     // Optimize chunk size
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 500,
     // Improve build stability
     sourcemap: false,
     // Reduce bundle size
@@ -60,7 +84,12 @@ export default defineConfig(({ mode }) => ({
       compress: {
         drop_console: mode === 'production',
         drop_debugger: true,
+        pure_funcs: mode === 'production' ? ['console.log', 'console.info', 'console.debug'] : [],
       },
     },
+    // Enable CSS code splitting
+    cssCodeSplit: true,
+    // Optimize asset inline limit
+    assetsInlineLimit: 4096,
   },
 }));
