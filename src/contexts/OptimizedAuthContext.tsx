@@ -69,8 +69,8 @@ export const OptimizedAuthProvider = ({ children }: { children: ReactNode }) => 
         } else if (event === 'SIGNED_IN' && session?.user) {
           const currentPath = window.location.pathname;
           
-          // Only redirect if on auth pages
-          if (currentPath.startsWith('/auth') || currentPath === '/') {
+          // Only redirect if on auth pages (NOT from index)
+          if (currentPath.startsWith('/auth')) {
             const redirectPath = localStorage.getItem('subdomain_redirect') || '/network';
             navigate(redirectPath, { replace: true });
             localStorage.removeItem('subdomain_redirect');
