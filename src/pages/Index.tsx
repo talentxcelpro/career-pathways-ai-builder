@@ -15,6 +15,15 @@ const Index = () => {
   const showFinalLaunch = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('final_launch') === '1';
   const showLaunchStatus = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('launch_status') === '1';
 
+  // Debug logging
+  useEffect(() => {
+    console.log('🏠 Index.tsx - Auth state:', { 
+      user: user?.email || 'none', 
+      loading, 
+      path: window.location.pathname 
+    });
+  }, [user, loading]);
+
   // Detect iOS Safari asynchronously
   useEffect(() => {
     setTimeout(() => {

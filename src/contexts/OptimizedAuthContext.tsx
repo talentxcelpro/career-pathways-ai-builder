@@ -52,10 +52,7 @@ export const OptimizedAuthProvider = ({ children }: { children: ReactNode }) => 
       async (event, session) => {
         if (!mounted) return;
 
-        // Minimal logging in production
-        if (process.env.NODE_ENV === 'development') {
-          console.log('Auth state:', event, session?.user?.email);
-        }
+        console.log('🔐 Auth event:', event, 'User:', session?.user?.email || 'none', 'Path:', window.location.pathname);
         
         setSession(session);
         setUser(session?.user ?? null);
@@ -84,20 +81,24 @@ export const OptimizedAuthProvider = ({ children }: { children: ReactNode }) => 
     // Get initial session
     const initAuth = async () => {
       try {
+        console.log('🚀 Initializing auth...');
         const { data: { session } } = await supabase.auth.getSession();
+        
+        console.log('✅ Initial session:', session?.user?.email || 'none');
         
         if (mounted) {
           setSession(session);
           setUser(session?.user ?? null);
         }
       } catch (error) {
-        console.error('Auth initialization failed:', error);
+        console.error('❌ Auth initialization failed:', error);
         if (mounted) {
           setSession(null);
           setUser(null);
         }
       } finally {
         if (mounted) {
+          console.log('🏁 Auth loading complete');
           setLoading(false);
         }
       }
