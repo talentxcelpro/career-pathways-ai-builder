@@ -29,12 +29,21 @@ const Index = () => {
     }, 100);
   }, []);
 
+  // Show loading state while checking auth
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   // Redirect logged-in users to network page
-  if (user && !loading) {
+  if (user) {
     return <Navigate to="/network" replace />;
   }
 
-  // Render immediately - no loading state blocking
+  // Render landing page for non-authenticated users
   return (
     <ErrorBoundary
       FallbackComponent={() => (
