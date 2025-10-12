@@ -82,7 +82,6 @@ const NetworkPage = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [connections, setConnections] = useState<Connection[]>([]);
   const [pendingRequests, setPendingRequests] = useState<Connection[]>([]);
-  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   
   // Use real-time connections hook for discover tab
   const { 
@@ -269,290 +268,213 @@ const NetworkPage = () => {
   };
 
   const ProfileCard = ({ profile }: { profile: NetworkProfile }) => (
-    <div 
-      className="glass-card group relative overflow-hidden border border-primary/20 hover:border-primary/50 transition-all duration-300 hover:scale-[1.02] cursor-pointer"
-      onMouseEnter={() => setHoveredCard(profile.id)}
-      onMouseLeave={() => setHoveredCard(null)}
-      onClick={() => handleProfileClick(profile.id)}
-    >
-      {/* Animated gradient background */}
-      <div className={`absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-ai-violet/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
-      
-      {/* Accent line */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-ai-violet to-accent"></div>
-      
-      <div className="relative z-10 p-5">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-start gap-3 flex-1">
+    <Card className="hover:shadow-lg transition-all duration-200 border-slate-200">
+      <CardHeader className="pb-3 cursor-pointer" onClick={() => handleProfileClick(profile.id)}>
+        <div className="flex items-start justify-between">
+          <div className="flex items-start gap-3">
             <div className="relative">
-              <Avatar className="w-14 h-14 border-2 border-primary/30 ring-2 ring-transparent group-hover:ring-primary/20 transition-all">
+              <Avatar className="w-12 h-12">
                 <AvatarImage src={profile.avatar} alt={profile.name} />
-                <AvatarFallback className="bg-gradient-to-br from-primary to-ai-violet text-white font-bold">
-                  {profile.name.split(' ').map(n => n[0]).join('')}
-                </AvatarFallback>
+                <AvatarFallback>{profile.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
               </Avatar>
               {profile.isOnline && (
-                <div className="absolute -bottom-1 -right-1 flex items-center justify-center">
-                  <div className="absolute w-5 h-5 bg-success rounded-full animate-ping opacity-75"></div>
-                  <div className="relative w-5 h-5 bg-success border-2 border-background rounded-full"></div>
-                </div>
+                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="font-bold text-foreground truncate group-hover:text-primary transition-colors">{profile.name}</h3>
-              <p className="text-sm text-muted-foreground font-medium truncate">{profile.title}</p>
-              <p className="text-xs text-muted-foreground/80 truncate flex items-center gap-1 mt-1">
+              <h3 className="font-semibold text-slate-900 truncate">{profile.name}</h3>
+              <p className="text-sm text-slate-600 truncate">{profile.title}</p>
+              <p className="text-sm text-slate-500 truncate flex items-center gap-1">
                 <Building className="w-3 h-3" />
                 {profile.company}
               </p>
             </div>
           </div>
-          <div className="flex flex-col items-end gap-1">
+          <div className="flex items-center gap-1">
             {profile.connectionStatus === 'connected' && (
-              <Badge className="bg-gradient-to-r from-success to-success/80 text-white border-0 text-xs font-semibold">
-                Connected
-              </Badge>
+              <Badge variant="secondary" className="text-xs">Connected</Badge>
             )}
             {profile.connectionStatus === 'pending' && (
-              <Badge className="bg-gradient-to-r from-warning to-warning/80 text-white border-0 text-xs font-semibold">
-                Pending
-              </Badge>
+              <Badge variant="outline" className="text-xs">Pending</Badge>
             )}
-            <span className="text-[10px] text-muted-foreground font-medium">{profile.lastActive}</span>
           </div>
         </div>
+      </CardHeader>
       
-        
+      <CardContent className="pt-0">
         <div className="space-y-3">
           {/* Location and Experience */}
-          <div className="flex items-center gap-3 text-[11px] font-medium">
-            <div className="flex items-center gap-1 text-muted-foreground">
-              <MapPin className="w-3 h-3 text-primary" />
+          <div className="flex items-center gap-4 text-xs text-slate-500">
+            <div className="flex items-center gap-1">
+              <MapPin className="w-3 h-3" />
               {profile.location}
             </div>
-            <div className="w-px h-3 bg-border"></div>
-            <div className="flex items-center gap-1 text-muted-foreground">
-              <Briefcase className="w-3 h-3 text-ai-violet" />
+            <div className="flex items-center gap-1">
+              <Briefcase className="w-3 h-3" />
               {profile.experience}
             </div>
           </div>
 
-          {/* Skills - Edgy badges */}
-          <div className="flex flex-wrap gap-1.5">
-            {profile.skills.slice(0, 3).map((skill, idx) => (
-              <Badge 
-                key={skill} 
-                className={`text-[10px] font-semibold border-0 ${
-                  idx === 0 ? 'bg-primary/20 text-primary' :
-                  idx === 1 ? 'bg-ai-violet/20 text-ai-violet' :
-                  'bg-accent/20 text-accent'
-                }`}
-              >
+          {/* Skills */}
+          <div className="flex flex-wrap gap-1">
+            {profile.skills.slice(0, 3).map(skill => (
+              <Badge key={skill} variant="outline" className="text-xs">
                 {skill}
               </Badge>
             ))}
             {profile.skills.length > 3 && (
-              <Badge className="text-[10px] font-semibold bg-muted text-muted-foreground border-0">
+              <Badge variant="outline" className="text-xs">
                 +{profile.skills.length - 3}
               </Badge>
             )}
           </div>
 
           {/* Mutual Connections */}
-          <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
-            <Users className="w-3.5 h-3.5 text-primary" />
-            <span className="font-semibold text-foreground">{profile.mutualConnections}</span> mutual
+          <div className="flex items-center gap-1 text-xs text-slate-600">
+            <Users className="w-3 h-3" />
+            {profile.mutualConnections} mutual connections
           </div>
 
-          {/* Action Buttons - Edgy design */}
-          <div className="flex gap-2 pt-2" onClick={(e) => e.stopPropagation()}>
-            {profile.connectionStatus === 'none' && (
-              <Button 
-                size="sm" 
-                className="flex-1 bg-gradient-to-r from-primary to-ai-violet hover:from-primary/90 hover:to-ai-violet/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all hover:scale-105" 
-                onClick={(e) => { e.stopPropagation(); handleConnect(profile.id); }}
-                disabled={discoverLoading}
-              >
-                <UserPlus className="w-4 h-4 mr-1.5" />
-                Connect
-              </Button>
-            )}
-            {profile.connectionStatus === 'connected' && (
-              <>
-                <Button 
-                  size="sm" 
-                  className="flex-1 glass-button border-primary/30 hover:border-primary hover:scale-105 transition-all font-semibold"
-                  onClick={(e) => { e.stopPropagation(); handleMessage(profile.id); }}
-                >
-                  <MessageCircle className="w-4 h-4 mr-1.5" />
-                  Message
-                </Button>
-                <Button 
-                  size="sm" 
-                  className="glass-button border-ai-violet/30 hover:border-ai-violet hover:scale-110 transition-all"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <Phone className="w-4 h-4" />
-                </Button>
-              </>
-            )}
-            {profile.connectionStatus === 'pending' && activeTab === 'requests' && (
-              <>
-                <Button 
-                  size="sm" 
-                  className="flex-1 bg-gradient-to-r from-success to-success/80 hover:from-success/90 hover:to-success/70 text-white font-semibold shadow-lg shadow-success/30"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const request = pendingRequests.find(r => r.profiles?.id === profile.id);
-                    if (request) handleAcceptRequest(request.id);
-                  }}
-                >
-                  Accept
-                </Button>
-                <Button 
-                  size="sm" 
-                  className="glass-button border-destructive/30 hover:border-destructive font-semibold"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const request = pendingRequests.find(r => r.profiles?.id === profile.id);
-                    if (request) handleDeclineRequest(request.id);
-                  }}
-                >
-                  Decline
-                </Button>
-              </>
-            )}
-            {profile.connectionStatus === 'pending' && activeTab !== 'requests' && (
-              <Button size="sm" className="flex-1 glass-button border-warning/30 font-semibold" disabled>
-                <Clock className="w-4 h-4 mr-1.5" />
-                Pending
-              </Button>
-            )}
-          </div>
+              {/* Action Buttons */}
+              <div className="flex gap-2 pt-2">
+                {profile.connectionStatus === 'none' && (
+                  <Button 
+                    size="sm" 
+                    className="flex-1" 
+                    onClick={() => handleConnect(profile.id)}
+                    disabled={discoverLoading}
+                  >
+                    <UserPlus className="w-4 h-4 mr-1" />
+                    Connect
+                  </Button>
+                )}
+                {profile.connectionStatus === 'connected' && (
+                  <>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="flex-1"
+                      onClick={() => handleMessage(profile.id)}
+                    >
+                      <MessageCircle className="w-4 h-4 mr-1" />
+                      Message
+                    </Button>
+                    <Button size="sm" variant="outline">
+                      <Phone className="w-4 h-4" />
+                    </Button>
+                  </>
+                )}
+                {profile.connectionStatus === 'pending' && activeTab === 'requests' && (
+                  <>
+                    <Button 
+                      size="sm" 
+                      className="flex-1"
+                      onClick={() => {
+                        const request = pendingRequests.find(r => r.profiles?.id === profile.id);
+                        if (request) handleAcceptRequest(request.id);
+                      }}
+                    >
+                      Accept
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => {
+                        const request = pendingRequests.find(r => r.profiles?.id === profile.id);
+                        if (request) handleDeclineRequest(request.id);
+                      }}
+                    >
+                      Decline
+                    </Button>
+                  </>
+                )}
+                {profile.connectionStatus === 'pending' && activeTab !== 'requests' && (
+                  <Button size="sm" variant="outline" className="flex-1" disabled>
+                    <Clock className="w-4 h-4 mr-1" />
+                    Pending
+                  </Button>
+                )}
+              </div>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-ai-violet/10 relative overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 -left-4 w-96 h-96 bg-primary/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-float"></div>
-        <div className="absolute top-1/2 -right-4 w-96 h-96 bg-ai-violet/30 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-float" style={{animationDelay: '2s'}}></div>
-        <div className="absolute -bottom-8 left-1/3 w-96 h-96 bg-accent/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-float" style={{animationDelay: '4s'}}></div>
-      </div>
-
-      {/* Edgy Header */}
-      <div className="glass-navbar border-b border-white/10 sticky top-0 z-50 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-4 py-6">
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <div className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="space-y-2 animate-fade-in">
-              <div className="flex items-center gap-3">
-                <div className="w-1 h-12 bg-gradient-to-b from-primary via-ai-violet to-accent rounded-full animate-glow-pulse"></div>
-                <div>
-                  <h1 className="text-4xl font-black bg-gradient-to-r from-primary via-ai-violet to-accent bg-clip-text text-transparent">
-                    Network
-                  </h1>
-                  <p className="text-muted-foreground font-medium">Level up your professional circle</p>
-                </div>
-              </div>
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900">Professional Network</h1>
+              <p className="text-slate-600">Connect with industry professionals and grow your career</p>
             </div>
-            <div className="flex items-center gap-3 animate-fade-in delay-100">
+            <div className="flex items-center gap-2">
               <Button 
-                variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                variant={viewMode === 'grid' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setViewMode('grid')}
-                className="glass-button hover:scale-105 transition-transform"
               >
-                <Grid className="w-5 h-5" />
+                <Grid className="w-4 h-4" />
               </Button>
               <Button 
-                variant={viewMode === 'list' ? 'default' : 'ghost'}
+                variant={viewMode === 'list' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setViewMode('list')}
-                className="glass-button hover:scale-105 transition-transform"
               >
-                <List className="w-5 h-5" />
+                <List className="w-4 h-4" />
               </Button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-8 relative z-10">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          {/* Edgy Tab Navigation */}
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-8 animate-fade-in-up">
-            <TabsList className="glass-card p-2 grid grid-cols-4 lg:grid-cols-8 w-full lg:w-fit gap-1 border border-primary/20">
-              <TabsTrigger 
-                value="discover" 
-                className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-ai-violet data-[state=active]:text-white font-semibold transition-all"
-              >
-                <Search className="w-4 h-4" />
-                <span className="hidden sm:inline">Discover</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="connections" 
-                className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-ai-violet data-[state=active]:text-white font-semibold transition-all"
-              >
-                <Users className="w-4 h-4" />
-                <span className="hidden sm:inline">Network</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="requests" 
-                className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-ai-violet data-[state=active]:text-white font-semibold transition-all"
-              >
-                <UserPlus className="w-4 h-4" />
-                <span className="hidden sm:inline">Requests</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="messages" 
-                className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-ai-violet data-[state=active]:text-white font-semibold transition-all"
-              >
-                <MessageCircle className="w-4 h-4" />
-                <span className="hidden sm:inline">Messages</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="skill-swap" 
-                className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-ai-violet data-[state=active]:text-white font-semibold transition-all"
-              >
-                <Award className="w-4 h-4" />
-                <span className="hidden sm:inline">Skills</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="eventless" 
-                className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-ai-violet data-[state=active]:text-white font-semibold transition-all"
-              >
-                <Video className="w-4 h-4" />
-                <span className="hidden sm:inline">Video</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="proof" 
-                className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-ai-violet data-[state=active]:text-white font-semibold transition-all"
-              >
-                <Shield className="w-4 h-4" />
-                <span className="hidden sm:inline">Verified</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="interests" 
-                className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-ai-violet data-[state=active]:text-white font-semibold transition-all"
-              >
-                <Star className="w-4 h-4" />
-                <span className="hidden sm:inline">Communities</span>
-              </TabsTrigger>
-            </TabsList>
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          {/* Tab Navigation */}
+          <div className="flex items-center justify-between mb-6">
+          <TabsList className="grid grid-cols-8 w-fit">
+            <TabsTrigger value="discover" className="flex items-center gap-2">
+              <Search className="w-4 h-4" />
+              <span className="hidden sm:inline">Discover</span>
+            </TabsTrigger>
+            <TabsTrigger value="connections" className="flex items-center gap-2">
+              <Users className="w-4 h-4" />
+              <span className="hidden sm:inline">My Network</span>
+            </TabsTrigger>
+            <TabsTrigger value="requests" className="flex items-center gap-2">
+              <UserPlus className="w-4 h-4" />
+              <span className="hidden sm:inline">Requests</span>
+            </TabsTrigger>
+            <TabsTrigger value="messages" className="flex items-center gap-2">
+              <MessageCircle className="w-4 h-4" />
+              <span className="hidden sm:inline">Messages</span>
+            </TabsTrigger>
+            <TabsTrigger value="skill-swap" className="flex items-center gap-2">
+              <Award className="w-4 h-4" />
+              <span className="hidden sm:inline">Skill Swap</span>
+            </TabsTrigger>
+            <TabsTrigger value="eventless" className="flex items-center gap-2">
+              <Video className="w-4 h-4" />
+              <span className="hidden sm:inline">Video Intros</span>
+            </TabsTrigger>
+            <TabsTrigger value="proof" className="flex items-center gap-2">
+              <Shield className="w-4 h-4" />
+              <span className="hidden sm:inline">Verified</span>
+            </TabsTrigger>
+            <TabsTrigger value="interests" className="flex items-center gap-2">
+              <Star className="w-4 h-4" />
+              <span className="hidden sm:inline">Communities</span>
+            </TabsTrigger>
+          </TabsList>
 
-            {/* Edgy Search Bar */}
-            <div className="flex items-center gap-3 w-full lg:w-auto">
-              <div className="flex-1 lg:w-72">
-                <GlobalSearch placeholder="Search network..." />
+            {/* Global Search Bar */}
+            <div className="flex items-center gap-2">
+              <div className="w-64">
+                <GlobalSearch placeholder="Search posts, people, hashtags..." />
               </div>
-              <Button 
-                variant="outline" 
-                size="icon" 
-                className="glass-button hover:scale-110 transition-all border-primary/30 hover:border-primary"
-              >
+              <Button variant="outline" size="icon">
                 <Filter className="w-4 h-4" />
               </Button>
             </div>
@@ -561,45 +483,32 @@ const NetworkPage = () => {
           {/* Tab Content */}
           <TabsContent value="discover">
             <div className="space-y-6">
-              {/* Edgy Stats Cards */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 stagger-children">
-                <div className="glass-card p-6 border border-primary/30 hover:border-primary transition-all hover:scale-105 group relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <div className="relative z-10">
-                    <div className="text-3xl font-black bg-gradient-to-r from-primary to-ai-violet bg-clip-text text-transparent mb-1">
-                      {discoverProfiles.length}
-                    </div>
-                    <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Professionals</div>
-                  </div>
-                </div>
-                <div className="glass-card p-6 border border-success/30 hover:border-success transition-all hover:scale-105 group relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-success/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <div className="relative z-10">
-                    <div className="text-3xl font-black text-success mb-1">
-                      {connections.length}
-                    </div>
-                    <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Connected</div>
-                  </div>
-                </div>
-                <div className="glass-card p-6 border border-warning/30 hover:border-warning transition-all hover:scale-105 group relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-warning/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <div className="relative z-10">
-                    <div className="text-3xl font-black text-warning mb-1">
-                      {pendingRequests.length}
-                    </div>
-                    <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Pending</div>
-                  </div>
-                </div>
-                <div className="glass-card p-6 border border-accent/30 hover:border-accent transition-all hover:scale-105 group relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-accent/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <div className="relative z-10">
-                    <div className="text-3xl font-black text-accent mb-1 flex items-center gap-2">
-                      {stats.online}
-                      <span className="w-2 h-2 bg-success rounded-full animate-pulse"></span>
-                    </div>
-                    <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Online Now</div>
-                  </div>
-                </div>
+              {/* Stats */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <Card>
+                  <CardContent className="p-4 text-center">
+                    <div className="text-2xl font-bold text-primary">{discoverProfiles.length}</div>
+                    <div className="text-sm text-slate-600">Professionals Found</div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4 text-center">
+                    <div className="text-2xl font-bold text-green-600">{connections.length}</div>
+                    <div className="text-sm text-slate-600">Connections</div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4 text-center">
+                    <div className="text-2xl font-bold text-orange-600">{pendingRequests.length}</div>
+                    <div className="text-sm text-slate-600">Pending</div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4 text-center">
+                    <div className="text-2xl font-bold text-blue-600">{stats.online}</div>
+                    <div className="text-sm text-slate-600">Online Now</div>
+                  </CardContent>
+                </Card>
               </div>
 
               {discoverLoading ? (

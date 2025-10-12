@@ -89,6 +89,13 @@ export const OptimizedAuthProvider = ({ children }: { children: ReactNode }) => 
         if (mounted) {
           setSession(session);
           setUser(session?.user ?? null);
+          
+          // Auto-redirect for authenticated users on home page
+          if (session?.user && window.location.pathname === '/') {
+            const redirectPath = localStorage.getItem('subdomain_redirect') || '/network';
+            navigate(redirectPath, { replace: true });
+            localStorage.removeItem('subdomain_redirect');
+          }
         }
       } catch (error) {
         console.error('Auth initialization failed:', error);
