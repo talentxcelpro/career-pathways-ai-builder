@@ -6,11 +6,11 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { LandingPage } from '@/components/landing/LandingPage';
 import { FinalLaunchRunner } from '@/components/deployment/FinalLaunchRunner';
 import { LaunchStatusSummary } from '@/components/admin/LaunchStatusSummary';
-import { useAuth } from '@/contexts/AuthContext';
+import { useOptimizedAuth } from '@/contexts/OptimizedAuthContext';
 
 const Index = () => {
   const [disableOneTap, setDisableOneTap] = useState(false);
-  const { user, loading } = useAuth();
+  const { user, loading } = useOptimizedAuth();
   
   const showFinalLaunch = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('final_launch') === '1';
   const showLaunchStatus = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('launch_status') === '1';
@@ -29,13 +29,10 @@ const Index = () => {
     }, 100);
   }, []);
 
-  // Handle redirect after render for logged-in users
-  useEffect(() => {
-    if (user && !loading) {
-      console.log('🚀 Redirecting logged-in user to /network');
-      window.location.href = '/network';
-    }
-  }, [user, loading]);
+  // Redirect logged-in users to network page
+  if (user && !loading) {
+    return <Navigate to="/network" replace />;
+  }
 
   // Render immediately - no loading state blocking
   return (
