@@ -52,7 +52,10 @@ export const OptimizedAuthProvider = ({ children }: { children: ReactNode }) => 
       async (event, session) => {
         if (!mounted) return;
 
-        console.log('🔐 Auth event:', event, 'User:', session?.user?.email || 'none', 'Path:', window.location.pathname);
+        // Minimal logging in production
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Auth state:', event, session?.user?.email);
+        }
         
         setSession(session);
         setUser(session?.user ?? null);
@@ -66,8 +69,8 @@ export const OptimizedAuthProvider = ({ children }: { children: ReactNode }) => 
         } else if (event === 'SIGNED_IN' && session?.user) {
           const currentPath = window.location.pathname;
           
-          // Only redirect if on auth pages (NOT from index)
-          if (currentPath.startsWith('/auth')) {
+          // Only redirect if on auth pages
+          if (currentPath.startsWith('/auth') || currentPath === '/') {
             const redirectPath = localStorage.getItem('subdomain_redirect') || '/network';
             navigate(redirectPath, { replace: true });
             localStorage.removeItem('subdomain_redirect');
@@ -81,24 +84,27 @@ export const OptimizedAuthProvider = ({ children }: { children: ReactNode }) => 
     // Get initial session
     const initAuth = async () => {
       try {
-        console.log('🚀 Initializing auth...');
         const { data: { session } } = await supabase.auth.getSession();
-        
-        console.log('✅ Initial session:', session?.user?.email || 'none');
         
         if (mounted) {
           setSession(session);
           setUser(session?.user ?? null);
+          
+          // Auto-redirect for authenticated users on home page
+          if (session?.user && window.location.pathname === '/') {
+            const redirectPath = localStorage.getItem('subdomain_redirect') || '/network';
+            navigate(redirectPath, { replace: true });
+            localStorage.removeItem('subdomain_redirect');
+          }
         }
       } catch (error) {
-        console.error('❌ Auth initialization failed:', error);
+        console.error('Auth initialization failed:', error);
         if (mounted) {
           setSession(null);
           setUser(null);
         }
       } finally {
         if (mounted) {
-          console.log('🏁 Auth loading complete');
           setLoading(false);
         }
       }

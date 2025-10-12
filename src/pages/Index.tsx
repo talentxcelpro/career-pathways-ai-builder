@@ -6,23 +6,14 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { LandingPage } from '@/components/landing/LandingPage';
 import { FinalLaunchRunner } from '@/components/deployment/FinalLaunchRunner';
 import { LaunchStatusSummary } from '@/components/admin/LaunchStatusSummary';
-import { useOptimizedAuth } from '@/contexts/OptimizedAuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Index = () => {
   const [disableOneTap, setDisableOneTap] = useState(false);
-  const { user, loading } = useOptimizedAuth();
+  const { user, loading } = useAuth();
   
   const showFinalLaunch = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('final_launch') === '1';
   const showLaunchStatus = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('launch_status') === '1';
-
-  // Debug logging
-  useEffect(() => {
-    console.log('🏠 Index.tsx - Auth state:', { 
-      user: user?.email || 'none', 
-      loading, 
-      path: window.location.pathname 
-    });
-  }, [user, loading]);
 
   // Detect iOS Safari asynchronously
   useEffect(() => {
@@ -38,21 +29,15 @@ const Index = () => {
     }, 100);
   }, []);
 
-  // Show loading state while checking auth
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
+  // Handle redirect after render for logged-in users
+  useEffect(() => {
+    if (user && !loading) {
+      console.log('🚀 Redirecting logged-in user to /network');
+      window.location.href = '/network';
+    }
+  }, [user, loading]);
 
-  // Redirect logged-in users to network page
-  if (user) {
-    return <Navigate to="/network" replace />;
-  }
-
-  // Render landing page for non-authenticated users
+  // Render immediately - no loading state blocking
   return (
     <ErrorBoundary
       FallbackComponent={() => (
