@@ -21582,7 +21582,7 @@ export type Database = {
               p_description?: string
               p_user_id: string
             }
-        Returns: undefined
+        Returns: string
       }
       backfill_admin_connections: {
         Args: Record<PropertyKey, never>
@@ -22246,22 +22246,19 @@ export type Database = {
             }
           | { p_limit?: number; p_offset?: number }
         Returns: {
-          comments_count: number
+          author_id: string
+          content: string
           created_at: string
-          description: string
-          duration_seconds: number
-          has_liked: boolean
           id: string
-          is_following: boolean
+          is_liked: boolean
+          is_shared: boolean
           likes_count: number
+          media_type: string
+          media_url: string
           shares_count: number
-          tags: string[]
-          thumbnail_url: string
-          title: string
-          user_avatar: string
+          user_full_name: string
           user_id: string
-          user_name: string
-          video_url: string
+          user_profile_picture: string
           views_count: number
         }[]
       }
@@ -22325,12 +22322,11 @@ export type Database = {
       get_txc_activity_leaderboard: {
         Args: Record<PropertyKey, never> | { limit_count?: number }
         Returns: {
-          balance: number
-          full_name: string
-          profile_picture_url: string
+          rank: number
           total_earned: number
-          transactions_count: number
+          txc_balance: number
           user_id: string
+          user_name: string
         }[]
       }
       get_txc_user_analytics: {
@@ -22343,13 +22339,20 @@ export type Database = {
           | { p_employer_id?: string; p_job_id?: string }
         Returns: {
           company_name: string
+          conversion_rate: number
+          created_at: string
+          employer_id: string
           expires_at: string
-          id: string
           is_active: boolean
           is_featured: boolean
           is_government_job: boolean
+          job_id: string
           job_status: string
+          location: string
           title: string
+          total_applications: number
+          total_external_redirects: number
+          total_views: number
         }[]
       }
       get_unread_message_count: {
