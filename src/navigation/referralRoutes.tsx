@@ -13,6 +13,7 @@ export const referralRoutes: NavItem[] = [
     title: "Referral Center",
     to: "/referral",
     page: <ReferralCenter />,
+    requiresAuth: true,
   },
   {
     title: "Referral",
