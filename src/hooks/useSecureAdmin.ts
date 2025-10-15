@@ -1,150 +1,107 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { 
-  callAdminFunction, 
-  validateUserPermission, 
-  logSecurityEvent 
-} from '@/utils/secureSupabaseClient';
+import { supabase } from '@/integrations/supabase/client';
 
-interface SecureAdminState {
-  isAdmin: boolean;
-  isSuperAdmin: boolean;
-  permissions: {
-    canManageUsers: boolean;
-    canManageRoles: boolean;
-    canAccessSystemSettings: boolean;
-    canViewSecurityLogs: boolean;
-  };
-  isLoading: boolean;
-}
-
+/**
+ * Secure admin hook with server-side validation
+ * Never relies on client-side state for authorization
+ * All admin operations must be validated server-side via RLS or SECURITY DEFINER functions
+ */
 export const useSecureAdmin = () => {
   const { user } = useAuth();
-  const [adminState, setAdminState] = useState<SecureAdminState>({
-    isAdmin: false,
-    isSuperAdmin: false,
-    permissions: {
-      canManageUsers: false,
-      canManageRoles: false,
-      canAccessSystemSettings: false,
-      canViewSecurityLogs: false,
-    },
-    isLoading: true,
-  });
-
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [lastValidated, setLastValidated] = useState<Date | null>(null);
+  
   useEffect(() => {
-    const checkAdminPermissions = async () => {
-      if (!user) {
-        setAdminState(prev => ({ ...prev, isLoading: false }));
+    const validateAdminStatus = async () => {
+      if (!user?.id) {
+        setIsAdmin(false);
+        setIsSuperAdmin(false);
+        setIsLoading(false);
+        setLastValidated(null);
         return;
       }
 
       try {
-        // Check various admin levels
-        const [
-          isAdmin,
-          isSuperAdmin,
-          canManageUsers,
-          canManageRoles,
-          canAccessSystemSettings,
-          canViewSecurityLogs
-        ] = await Promise.all([
-          validateUserPermission('admin'),
-          validateUserPermission('super_admin'),
-          validateUserPermission('admin'),
-          validateUserPermission('super_admin'),
-          validateUserPermission('super_admin'),
-          validateUserPermission('moderator'),
-        ]);
-
-        setAdminState({
-          isAdmin,
-          isSuperAdmin,
-          permissions: {
-            canManageUsers,
-            canManageRoles,
-            canAccessSystemSettings,
-            canViewSecurityLogs,
-          },
-          isLoading: false,
-        });
-
-        // Log admin access attempt
-        if (isAdmin) {
-          await logSecurityEvent('admin_access', 'Admin panel accessed', {
-            adminLevel: isSuperAdmin ? 'super_admin' : 'admin'
-          });
+        // Server-side validation via secure RPC
+        const { data: isAdminResult, error: adminError } = await supabase.rpc('is_current_user_admin');
+        
+        if (adminError) {
+          console.error('Admin validation error:', adminError);
+          setIsAdmin(false);
+          setIsSuperAdmin(false);
+          setLastValidated(null);
+          return;
         }
 
+        setIsAdmin(isAdminResult || false);
+
+        // Check for super admin specifically
+        if (isAdminResult) {
+          const { data: roleData, error: roleError } = await supabase.rpc('get_user_app_role', {
+            _user_id: user.id
+          });
+          
+          if (!roleError && roleData === 'super_admin') {
+            setIsSuperAdmin(true);
+          }
+        }
+
+        setLastValidated(new Date());
+
       } catch (error) {
-        console.error('Failed to check admin permissions:', error);
-        setAdminState(prev => ({ ...prev, isLoading: false }));
-        
-        // Log failed permission check
-        await logSecurityEvent('permission_check_failed', 'Failed to validate admin permissions', {
-          error: error.message
-        });
+        console.error('Error validating admin status:', error);
+        setIsAdmin(false);
+        setIsSuperAdmin(false);
+        setLastValidated(null);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    checkAdminPermissions();
-  }, [user]);
+    validateAdminStatus();
+    
+    // Re-validate every 5 minutes
+    const interval = setInterval(validateAdminStatus, 5 * 60 * 1000);
+    
+    return () => clearInterval(interval);
+  }, [user?.id]);
 
-  // Secure function to call admin operations
-  const executeAdminOperation = async (
-    operation: string,
-    payload: any = {},
-    requiredRole: 'super_admin' | 'admin' | 'moderator' = 'admin'
-  ) => {
+  /**
+   * Perform an admin action with server-side validation
+   * All mutations should use this to ensure proper authorization
+   */
+  const performAdminAction = async <T,>(
+    action: () => Promise<T>,
+    actionName: string
+  ): Promise<{ success: boolean; data?: T; error?: string }> => {
+    if (!isAdmin) {
+      return { success: false, error: 'Unauthorized: Admin access required' };
+    }
+
     try {
-      // Double-check permissions before executing
-      const hasPermission = await validateUserPermission(requiredRole);
-      if (!hasPermission) {
-        throw new Error('Insufficient permissions for this operation');
-      }
-
-      // Log the operation attempt
-      await logSecurityEvent('admin_operation', `Executing ${operation}`, {
-        operation,
-        requiredRole,
-        payload: { ...payload, sensitive: '[REDACTED]' } // Remove sensitive data from logs
+      // Log the admin action (will be validated server-side)
+      await supabase.rpc('audit_admin_action', {
+        p_action_type: actionName,
+        p_target_resource: 'system',
+        p_details: {}
       });
 
-      // Execute the operation
-      const result = await callAdminFunction(operation, payload, requiredRole);
-      
-      if (result.error) {
-        await logSecurityEvent('admin_operation_failed', `Operation ${operation} failed`, {
-          operation,
-          error: result.error.message
-        });
-        throw result.error;
-      }
-
-      // Log successful operation
-      await logSecurityEvent('admin_operation_success', `Operation ${operation} completed`, {
-        operation
-      });
-
-      return result.data;
-    } catch (error) {
-      console.error(`Admin operation ${operation} failed:`, error);
-      throw error;
+      const data = await action();
+      return { success: true, data };
+    } catch (error: any) {
+      console.error(`Admin action '${actionName}' failed:`, error);
+      return { success: false, error: error.message || 'Action failed' };
     }
   };
 
   return {
-    ...adminState,
-    executeAdminOperation,
-    refreshPermissions: () => {
-      setAdminState(prev => ({ ...prev, isLoading: true }));
-      // Re-trigger the effect
-      checkAdminPermissions();
-    }
+    isAdmin,
+    isSuperAdmin,
+    isLoading,
+    lastValidated,
+    performAdminAction
   };
-};
-
-// Wrapper function for the effect
-const checkAdminPermissions = async () => {
-  // This will be replaced by the effect logic
 };

@@ -6,33 +6,37 @@ import { AdminRole, AdminPermissions, ROLE_PERMISSIONS } from '@/types/admin';
 
 export const useAdminPermissions = () => {
   const { user } = useAuth();
-  const [adminRole, setAdminRole] = useState<AdminRole>('moderator');
-  const [permissions, setPermissions] = useState<AdminPermissions>(ROLE_PERMISSIONS.moderator);
+  // Security: Start with null role (fail closed)
+  const [adminRole, setAdminRole] = useState<AdminRole | null>(null);
+  const [permissions, setPermissions] = useState<AdminPermissions>({} as AdminPermissions);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchAdminRole = async () => {
       if (!user?.id) {
-        setAdminRole('moderator');
-        setPermissions(ROLE_PERMISSIONS.moderator);
+        // Security: Fail closed - no role on unauthenticated
+        setAdminRole(null as any);
+        setPermissions({} as AdminPermissions);
         setIsLoading(false);
         return;
       }
 
       try {
-        // Simplified role fetch without complex state tracking
+        // Server-side role validation via secure RPC
         const { data, error } = await supabase.rpc('get_user_app_role', {
           _user_id: user.id
         });
 
         if (error) {
           console.error('Error fetching user role:', error);
-          setAdminRole('moderator');
-          setPermissions(ROLE_PERMISSIONS.moderator);
+          // Security: Fail closed on error - no access
+          setAdminRole(null as any);
+          setPermissions({} as AdminPermissions);
+          setIsLoading(false);
           return;
         }
 
-        // Secure role mapping - default to lowest privilege level
+        // Secure role mapping - server-validated roles only
         const roleMapping: Record<string, AdminRole> = {
           'super_admin': 'super_admin',
           'admin': 'content_admin',
@@ -40,21 +44,25 @@ export const useAdminPermissions = () => {
           'employer': 'job_admin'
         };
         
-        // Only assign admin roles to explicitly defined roles, default to null for security
+        // Only assign explicitly defined roles, fail closed on unknown
         const mappedRole = roleMapping[data] || null;
         if (!mappedRole) {
-          console.warn('Unknown role detected:', data);
-          setAdminRole('moderator');
-          setPermissions(ROLE_PERMISSIONS.moderator);
+          console.warn('Unknown or unauthorized role detected:', data);
+          // Security: Fail closed - no access for unknown roles
+          setAdminRole(null as any);
+          setPermissions({} as AdminPermissions);
+          setIsLoading(false);
           return;
         }
+        
         setAdminRole(mappedRole);
         setPermissions(ROLE_PERMISSIONS[mappedRole]);
 
       } catch (error) {
         console.error('Error in fetchAdminRole:', error);
-        setAdminRole('moderator');
-        setPermissions(ROLE_PERMISSIONS.moderator);
+        // Security: Fail closed on exception
+        setAdminRole(null as any);
+        setPermissions({} as AdminPermissions);
       } finally {
         setIsLoading(false);
       }
@@ -64,8 +72,9 @@ export const useAdminPermissions = () => {
   }, [user?.id]);
 
   const hasPermission = (permission: keyof AdminPermissions): boolean => {
-    if (!user) return false;
-    return permissions[permission];
+    // Security: Require authenticated user and valid role
+    if (!user || !adminRole) return false;
+    return permissions[permission] === true;
   };
 
   const isAdmin = adminRole === 'super_admin' || adminRole === 'content_admin';
