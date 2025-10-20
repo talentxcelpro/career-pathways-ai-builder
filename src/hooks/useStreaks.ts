@@ -52,10 +52,12 @@ export const useStreaks = () => {
     enabled: !!user
   });
 
-  // Update streak mutation
   const updateStreakMutation = useMutation({
     mutationFn: async () => {
-      if (!user || !streakData) throw new Error('User not authenticated');
+      if (!user || !streakData) {
+        // Silently skip for unauthenticated users
+        return null;
+      }
 
       const today = new Date().toISOString().split('T')[0];
       const lastActivity = new Date(streakData.last_activity_date).toISOString().split('T')[0];
