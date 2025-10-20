@@ -29,20 +29,18 @@ const Index = () => {
     }, 100);
   }, []);
 
-  // Handle redirect after render for logged-in users
-  useEffect(() => {
-    if (user && !loading) {
-      console.log('🚀 Redirecting logged-in user to /network');
-      window.location.href = '/network';
-    }
-  }, [user, loading]);
+  // Don't redirect here - let OptimizedAuthContext handle it
+  // Just render the landing page
+  
+  if (loading) {
+    return null; // Let auth load first
+  }
 
-  // Render immediately - no loading state blocking
   return (
     <ErrorBoundary
       FallbackComponent={() => (
         <div className="min-h-screen flex items-center justify-center bg-background mobile-optimized">
-          <div className="text-sm text-muted-foreground">Loading home...</div>
+          <div className="text-sm text-muted-foreground">Loading...</div>
         </div>
       )}
     >

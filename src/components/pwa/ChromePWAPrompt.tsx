@@ -17,15 +17,18 @@ export const ChromePWAPrompt = () => {
   const [showPrompt, setShowPrompt] = useState(false);
 
   useEffect(() => {
+    // Only show in production
+    if (import.meta.env.DEV) return;
+
     const handler = (e: Event) => {
       e.preventDefault();
       const promptEvent = e as BeforeInstallPromptEvent;
       setDeferredPrompt(promptEvent);
       
-      // Auto-show prompt after 3 seconds
+      // Auto-show prompt after 5 seconds (give page time to load)
       setTimeout(() => {
         setShowPrompt(true);
-      }, 3000);
+      }, 5000);
     };
 
     window.addEventListener('beforeinstallprompt', handler);
