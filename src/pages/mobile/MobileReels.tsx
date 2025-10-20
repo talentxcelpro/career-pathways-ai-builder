@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { InfiniteReelsFeed } from '@/components/reels/InfiniteReelsFeed';
 import { ReelsUploadModal } from '@/components/mobile/ReelsUploadModal';
@@ -8,11 +7,26 @@ import { Button } from '@/components/ui/button';
 import { Plus, Home, Search, User, Heart, MessageCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { realtimeManager } from '@/lib/realtimeManager';
 
 export const MobileReels = () => {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [activeTab, setActiveTab] = useState<'following' | 'explore'>('explore');
   const navigate = useNavigate();
+
+  // Disable realtime on this page to prevent binding conflicts
+  useEffect(() => {
+    console.log('🎬 MobileReels: Disabling realtime to prevent conflicts');
+    try {
+      realtimeManager.cleanup();
+    } catch (error) {
+      console.warn('Failed to cleanup realtime:', error);
+    }
+    
+    return () => {
+      console.log('🎬 MobileReels: Component unmounting');
+    };
+  }, []);
 
   const handleUploadSuccess = () => {
     toast.success("Your reel has been uploaded successfully!");
