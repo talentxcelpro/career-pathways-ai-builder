@@ -61,52 +61,7 @@ export function usePWA() {
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
 
-    // Enhanced cleanup with version invalidation
-    const cleanupServiceWorkers = async () => {
-      if ('serviceWorker' in navigator) {
-        try {
-          const registrations = await navigator.serviceWorker.getRegistrations();
-          for (const registration of registrations) {
-            await registration.unregister();
-            console.log('🧹 PWA: Unregistered service worker');
-          }
-          
-          if ('caches' in window) {
-            const cacheNames = await caches.keys();
-            await Promise.all(
-              cacheNames.map(cacheName => {
-                console.log('🧹 PWA: Deleting cache:', cacheName);
-                return caches.delete(cacheName);
-              })
-            );
-            console.log('🧹 PWA: Cleared all caches');
-          }
-
-          // Clear storage data that might cause version conflicts
-          if ('localStorage' in window) {
-            const keys = Object.keys(localStorage);
-            keys.forEach(key => {
-              if (key.includes('cache') || key.includes('version') || key.includes('sw') || 
-                  key.includes('career-dashboard') || key.includes('gamification') || 
-                  key.includes('talentxcel')) {
-                localStorage.removeItem(key);
-                console.log('🧹 PWA: Cleared localStorage key:', key);
-              }
-            });
-          }
-
-          // Clear sessionStorage as well
-          if ('sessionStorage' in window) {
-            sessionStorage.clear();
-            console.log('🧹 PWA: Cleared sessionStorage');
-          }
-        } catch (error) {
-          console.warn('PWA cleanup error:', error);
-        }
-      }
-    };
-    
-    cleanupServiceWorkers();
+    // Removed aggressive cleanup - it was clearing app data on every load
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);

@@ -27,6 +27,7 @@ import { ReactErrorBoundary } from './components/error/ReactErrorBoundary';
 import { AsyncGoogleOneTap } from '@/components/performance/AsyncGoogleOneTap';
 import { InstallPrompt, InstallButton } from '@/components/pwa/InstallPrompt';
 import { IOSInstallPrompt } from '@/components/pwa/IOSInstallPrompt';
+import { ChromePWAPrompt } from '@/components/pwa/ChromePWAPrompt';
 import { CopilotProvider } from "@/components/ai/CopilotProvider";
 import { SafeRealtimeProvider } from "@/components/realtime/SafeRealtimeProvider";
 import { SitemapRedirect } from "@/components/seo/SitemapRedirect";
@@ -469,6 +470,9 @@ const App = () => {
            <MobileStatusBar />
            {/* Real-time Connection Status */}
            <ConnectionStatusIndicator />
+           {/* PWA Install Prompts */}
+           <ChromePWAPrompt />
+           <IOSInstallPrompt />
            {/* Performance Dashboard - Dev Mode Only */}
            {import.meta.env.DEV && <PerformanceDashboard />}
          </QueryClientProvider>
