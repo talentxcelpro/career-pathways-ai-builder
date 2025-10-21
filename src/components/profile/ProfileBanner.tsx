@@ -49,10 +49,13 @@ export const ProfileBanner: React.FC<ProfileBannerProps> = ({
     try {
       const uploadedUrl = await uploadFile(file);
       
-      const updateField = type === 'banner' ? 'banner_url' : 'profile_picture_url';
+      const updateField = type === 'banner' ? 'cover_image_url' : 'profile_picture_url';
       const { error } = await supabase
         .from('profiles')
-        .update({ [updateField]: uploadedUrl })
+        .update({ 
+          [updateField]: uploadedUrl,
+          updated_at: new Date().toISOString()
+        })
         .eq('id', profile?.id);
 
       if (error) {
@@ -61,7 +64,7 @@ export const ProfileBanner: React.FC<ProfileBannerProps> = ({
       }
       
       toast.success(`${type} updated successfully!`);
-      setTimeout(() => window.location.reload(), 1000);
+      setTimeout(() => window.location.reload(), 800);
     } catch (error) {
       console.error('Upload error:', error);
       toast.error(`Failed to update ${type}`);
@@ -167,7 +170,7 @@ export const ProfileBanner: React.FC<ProfileBannerProps> = ({
         <div 
           className="h-48 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800"
           style={{
-            backgroundImage: profile?.banner_url ? `url(${profile.banner_url})` : undefined,
+            backgroundImage: profile?.cover_image_url ? `url(${profile.cover_image_url})` : undefined,
             backgroundSize: 'cover',
             backgroundPosition: 'center'
           }}

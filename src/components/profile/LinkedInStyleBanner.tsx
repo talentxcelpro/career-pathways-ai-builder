@@ -40,7 +40,7 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
       if (type === 'avatar') {
         await updateProfilePicture.mutateAsync(uploadedUrl);
       } else {
-        await updateProfile.mutateAsync({ banner_url: uploadedUrl } as any);
+        await updateProfile.mutateAsync({ cover_image_url: uploadedUrl } as any);
       }
 
       toast.success(`${type} updated successfully!`);
@@ -74,9 +74,9 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
       <Card className="overflow-hidden border border-gray-200 shadow-sm bg-white rounded-lg">
         {/* Banner Image - Fixed aspect ratio */}
         <div className="relative w-full bg-gradient-to-r from-blue-500 to-blue-600 overflow-hidden" style={{ aspectRatio: '3 / 1', minHeight: '80px' }}>
-          {profile?.banner_url ? (
+          {profile?.cover_image_url ? (
             <img 
-              src={profile.banner_url} 
+              src={profile.cover_image_url} 
               alt="Profile banner"
               className="w-full h-full object-cover object-center"
               style={{ minHeight: '64px' }}
