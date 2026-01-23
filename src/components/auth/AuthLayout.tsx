@@ -36,7 +36,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, descrip
             <h1 className="text-2xl font-bold bg-gradient-to-r from-slate-900 via-blue-800 to-indigo-800 bg-clip-text text-transparent">
               TalentXcel
             </h1>
-            <p className="text-sm text-slate-600 font-medium">Your Career. One Platform. Endless Possibilities.</p>
+            <p className="text-sm text-slate-600 font-medium">Careers, Designed — Not Discovered</p>
           </div>
         </div>
         
