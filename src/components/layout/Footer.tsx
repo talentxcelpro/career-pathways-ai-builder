@@ -22,7 +22,7 @@ export const Footer = () => {
               Empowering professionals with AI-powered tools for career growth, job discovery, and skill development.
             </p>
             <p className="text-gray-400 text-sm">
-              © 2025 TalentXcel. All rights reserved.
+              © 2026 TalentXcel Technologies Pvt Ltd. All rights reserved.
             </p>
           </div>
 
@@ -100,7 +100,7 @@ export const Footer = () => {
         <div className="border-t border-gray-700 mt-8 pt-8">
           <div className="flex justify-center">
             <p className="text-gray-400 text-sm text-center">
-              © 2025 TalentXcel. All rights reserved.
+              © 2026 TalentXcel Technologies Pvt Ltd. All rights reserved.
             </p>
           </div>
         </div>

@@ -35,7 +35,7 @@ export const LandingFooter: React.FC = () => {
               Empowering professionals with AI-powered tools for career growth, job discovery, and skill development.
             </p>
             <p className="text-slate-400 text-sm">
-              © 2025 TalentXcel. All rights reserved.
+              © 2026 TalentXcel Technologies Pvt Ltd. All rights reserved.
             </p>
           </div>
 
@@ -92,7 +92,7 @@ export const LandingFooter: React.FC = () => {
         {/* Bottom copyright */}
         <div className="border-t border-slate-700 mt-8 pt-8 text-center">
           <p className="text-slate-400 text-sm">
-            © 2025 TalentXcel. All rights reserved.
+            © 2026 TalentXcel Technologies Pvt Ltd. All rights reserved.
           </p>
         </div>
       </div>

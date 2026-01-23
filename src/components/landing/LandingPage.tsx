@@ -5,7 +5,7 @@ import { FeaturesSection } from './FeaturesSection';
 import { WhyTalentXcel } from './WhyTalentXcel';
 import { CTABanner } from './CTABanner';
 import { SEOJobCategories } from '@/components/seo/SEOJobCategories';
-
+import { ChatrServiceSection } from './ChatrServiceSection';
 import { LandingFooter } from './LandingFooter';
 
 // Lazy load news widget for faster initial load
@@ -18,6 +18,7 @@ export const LandingPage = () => {
     <div className="min-h-screen">
       <AppleHeroSection />
       <FeaturesSection />
+      <ChatrServiceSection />
       <SEOJobCategories />
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
