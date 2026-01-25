@@ -38,6 +38,7 @@ import { SkillSwapNetwork } from '@/components/network/advanced/SkillSwapNetwork
 import { EventlessNetworking } from '@/components/network/advanced/EventlessNetworking';
 import { NetworkingWithProof } from '@/components/network/advanced/NetworkingWithProof';
 import { InterestFirstNetwork } from '@/components/network/advanced/InterestFirstNetwork';
+import { ChatrNetworkBanner } from '@/components/network/ChatrNetworkBanner';
 
 interface NetworkProfile {
   id: string;
@@ -557,6 +558,9 @@ const NetworkPage = () => {
               </Button>
             </div>
           </div>
+
+          {/* CHATR Promotion Banner */}
+          <ChatrNetworkBanner />
 
           {/* Tab Content */}
           <TabsContent value="discover">
