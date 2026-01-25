@@ -68,7 +68,7 @@ export const BrandedFooter: React.FC = () => {
         </div>
 
         <div className="border-t border-primary-foreground/20 mt-8 pt-8 text-center text-sm text-primary-foreground/60">
-          <p>2025 © 2024 TalentXcel. All rights reserved. Powered by AI.</p>
+          <p>© 2026 TalentXcel. All rights reserved. Powered by AI.</p>
         </div>
       </div>
     </footer>
