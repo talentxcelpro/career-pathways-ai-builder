@@ -152,7 +152,7 @@ export const Navbar = () => {
   }
 
   return (
-    <nav className="bg-white/70 dark:bg-slate-900/70 backdrop-blur-2xl backdrop-saturate-150 shadow-sm border-b border-white/20 dark:border-slate-800/20 sticky top-0 z-50 supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-slate-900/60">
+    <nav className="bg-background/70 backdrop-blur-2xl backdrop-saturate-150 shadow-sm border-b border-border/20 sticky top-0 z-50 supports-[backdrop-filter]:bg-background/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-12">
           {/* Apple-style compact logo */}
@@ -220,7 +220,7 @@ export const Navbar = () => {
                     <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                       <Avatar className="h-8 w-8">
                         <AvatarImage src={profile?.profile_picture_url} />
-                        <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+                        <AvatarFallback className="bg-gradient-to-r from-primary to-secondary text-primary-foreground">
                           {getInitials()}
                         </AvatarFallback>
                       </Avatar>
@@ -339,8 +339,8 @@ export const Navbar = () => {
                     to={item.to}
                     className={`flex items-center space-x-3 px-3 py-2 rounded-md text-base font-medium transition-colors
                       ${isActive 
-                        ? 'bg-blue-100 text-blue-700' 
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                        ? 'bg-primary/10 text-primary' 
+                        : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                       }`}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
