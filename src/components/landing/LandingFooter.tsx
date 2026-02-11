@@ -18,7 +18,7 @@ export const LandingFooter: React.FC = () => {
   ];
 
   return (
-    <footer className="bg-slate-900 text-slate-100 py-12 px-4">
+    <footer className="bg-foreground text-background py-12 px-4">
       <div className="max-w-6xl mx-auto">
         <div className="grid md:grid-cols-4 gap-8">
           {/* Brand Section */}
@@ -31,10 +31,10 @@ export const LandingFooter: React.FC = () => {
               />
               <span className="font-bold text-xl">TalentXcel</span>
             </div>
-            <p className="text-slate-300 mb-4">
+            <p className="text-background/70 mb-4">
               Empowering professionals with AI-powered tools for career growth, job discovery, and skill development.
             </p>
-            <p className="text-slate-400 text-sm">
+            <p className="text-background/50 text-sm">
               © 2026 TalentXcel Technologies Pvt Ltd. All rights reserved.
             </p>
           </div>
@@ -47,7 +47,7 @@ export const LandingFooter: React.FC = () => {
                 <li key={link.name}>
                   <Link
                     to={link.href}
-                    className="text-slate-300 hover:text-slate-100 transition-colors"
+                    className="text-background/70 hover:text-background transition-colors"
                   >
                     {link.name}
                   </Link>
@@ -64,7 +64,7 @@ export const LandingFooter: React.FC = () => {
                 <li key={link.name}>
                   <Link
                     to={link.href}
-                    className="text-slate-300 hover:text-slate-100 transition-colors"
+                    className="text-background/70 hover:text-background transition-colors"
                   >
                     {link.name}
                   </Link>
@@ -76,13 +76,13 @@ export const LandingFooter: React.FC = () => {
           {/* Social Connect */}
           <div>
             <h3 className="font-semibold text-lg mb-4">Connect With Us</h3>
-            <div className="text-slate-300">
+            <div className="text-background/70">
               <SocialConnect
                 showDescription={false}
                 variant="compact"
                 size="sm"
               />
-              <p className="text-sm text-slate-400 mt-3">
+              <p className="text-sm text-background/50 mt-3">
                 Follow us for career tips, job updates, and industry insights.
               </p>
             </div>
@@ -90,8 +90,8 @@ export const LandingFooter: React.FC = () => {
         </div>
         
         {/* Bottom copyright */}
-        <div className="border-t border-slate-700 mt-8 pt-8 text-center">
-          <p className="text-slate-400 text-sm">
+        <div className="border-t border-background/20 mt-8 pt-8 text-center">
+          <p className="text-background/50 text-sm">
             © 2026 TalentXcel Technologies Pvt Ltd. All rights reserved.
           </p>
         </div>

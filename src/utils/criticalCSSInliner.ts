@@ -22,8 +22,8 @@ export const inlineCriticalCSS = () => {
       transform: translate(-50%, -50%);
       width: 40px;
       height: 40px;
-      border: 3px solid #f3f4f6;
-      border-top-color: #3b82f6;
+      border: 3px solid hsl(var(--muted, 220 14% 96%));
+      border-top-color: hsl(var(--primary, 212 100% 48%));
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
@@ -37,17 +37,6 @@ export const inlineCriticalCSS = () => {
       background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    
-    /* Hide initially to prevent FOUC */
-    #root {
-      opacity: 0;
-      animation: fadeIn 0.3s ease-in forwards;
-      animation-delay: 0.1s;
-    }
-    
-    @keyframes fadeIn {
-      to { opacity: 1; }
     }
   `;
 
