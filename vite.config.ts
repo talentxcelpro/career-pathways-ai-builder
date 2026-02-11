@@ -18,9 +18,10 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
       "react": path.resolve(__dirname, "./node_modules/react"),
       "react-dom": path.resolve(__dirname, "./node_modules/react-dom"),
-      "react/jsx-runtime": path.resolve(__dirname, "./node_modules/react/jsx-runtime"),
+      "react/jsx-runtime": path.resolve(__dirname, "./node_modules/react/jsx-runtime.js"),
+      "react/jsx-dev-runtime": path.resolve(__dirname, "./node_modules/react/jsx-dev-runtime.js"),
     },
-    dedupe: ["react", "react-dom", "react/jsx-runtime"],
+    dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"],
   },
   define: {
     global: "globalThis",
@@ -30,11 +31,13 @@ export default defineConfig(({ mode }) => ({
       'react', 
       'react-dom', 
       'react/jsx-runtime',
+      'react/jsx-dev-runtime',
       '@radix-ui/react-tooltip',
       '@radix-ui/react-popover',
       '@radix-ui/react-dialog'
     ],
     exclude: [],
+    // Force re-optimization with a cache-busting comment: v2
     force: true,
   },
   build: {
