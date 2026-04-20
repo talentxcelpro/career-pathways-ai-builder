@@ -135,6 +135,14 @@ import { MobileStatusBar } from "@/components/mobile/MobileStatusBar";
 import { PhaseInitializer } from "@/components/PhaseInitializer";
 import AdminVideoManager from "./pages/AdminVideoManager";
 import CourseManagementPage from "./pages/admin/CourseManagementPage";
+import CompanyOSLayout from "./pages/company-os/CompanyOSLayout";
+import CEODashboard from "./pages/company-os/CEODashboard";
+import DecisionQueue from "./pages/company-os/DecisionQueue";
+import CompanyOSEngineering from "./pages/company-os/Engineering";
+import CompanyOSSales from "./pages/company-os/Sales";
+import CompanyOSMarketing from "./pages/company-os/Marketing";
+import CompanyOSHR from "./pages/company-os/HR";
+import CompanyOSFinance from "./pages/company-os/Finance";
 import CourseDetail from "./pages/learning/CourseDetail";
 import CoursePlayer from "./pages/learning/CoursePlayer";
 import Communication from "./pages/Communication";
@@ -431,6 +439,16 @@ const App = () => {
                                     <CourseManagementPage />
                                   </AdminLayout>
                                 } />
+                                {/* AI Company OS — Superuser only */}
+                                <Route path="/company-os" element={<CompanyOSLayout />}>
+                                  <Route index element={<CEODashboard />} />
+                                  <Route path="decisions" element={<DecisionQueue />} />
+                                  <Route path="engineering" element={<CompanyOSEngineering />} />
+                                  <Route path="sales" element={<CompanyOSSales />} />
+                                  <Route path="marketing" element={<CompanyOSMarketing />} />
+                                  <Route path="hr" element={<CompanyOSHR />} />
+                                  <Route path="finance" element={<CompanyOSFinance />} />
+                                </Route>
                                 <Route path="/news" element={<NewsPage />} />
                                 <Route path="/news/:slug" element={<NewsPage />} />
                                 <Route path="/employer/cv-database" element={<CVDatabase />} />
