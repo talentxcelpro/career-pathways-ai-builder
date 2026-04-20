@@ -166,6 +166,144 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_company_decisions: {
+        Row: {
+          confidence_score: number | null
+          created_at: string
+          created_by_agent: string | null
+          decision_type: string
+          department: Database["public"]["Enums"]["ai_department"]
+          executed_at: string | null
+          id: string
+          payload: Json | null
+          priority: number
+          requires_approval: boolean
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["ai_decision_status"]
+          summary: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string
+          created_by_agent?: string | null
+          decision_type: string
+          department: Database["public"]["Enums"]["ai_department"]
+          executed_at?: string | null
+          id?: string
+          payload?: Json | null
+          priority?: number
+          requires_approval?: boolean
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["ai_decision_status"]
+          summary?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string
+          created_by_agent?: string | null
+          decision_type?: string
+          department?: Database["public"]["Enums"]["ai_department"]
+          executed_at?: string | null
+          id?: string
+          payload?: Json | null
+          priority?: number
+          requires_approval?: boolean
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["ai_decision_status"]
+          summary?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ai_company_goals: {
+        Row: {
+          created_at: string
+          current_value: number | null
+          department: Database["public"]["Enums"]["ai_department"]
+          description: string | null
+          due_date: string | null
+          id: string
+          priority: number
+          status: string
+          target_value: number | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_value?: number | null
+          department: Database["public"]["Enums"]["ai_department"]
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          priority?: number
+          status?: string
+          target_value?: number | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_value?: number | null
+          department?: Database["public"]["Enums"]["ai_department"]
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          priority?: number
+          status?: string
+          target_value?: number | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ai_company_metrics: {
+        Row: {
+          created_at: string
+          department: Database["public"]["Enums"]["ai_department"]
+          id: string
+          metadata: Json | null
+          metric_key: string
+          metric_unit: string | null
+          metric_value: number
+          period: string | null
+          recorded_at: string
+        }
+        Insert: {
+          created_at?: string
+          department: Database["public"]["Enums"]["ai_department"]
+          id?: string
+          metadata?: Json | null
+          metric_key: string
+          metric_unit?: string | null
+          metric_value: number
+          period?: string | null
+          recorded_at?: string
+        }
+        Update: {
+          created_at?: string
+          department?: Database["public"]["Enums"]["ai_department"]
+          id?: string
+          metadata?: Json | null
+          metric_key?: string
+          metric_unit?: string | null
+          metric_value?: number
+          period?: string | null
+          recorded_at?: string
+        }
+        Relationships: []
+      }
       ai_cover_letters: {
         Row: {
           company_name: string | null
@@ -278,6 +416,170 @@ export type Database = {
           },
         ]
       }
+      ai_engineering_sprints: {
+        Row: {
+          created_at: string
+          end_date: string | null
+          goal: string | null
+          id: string
+          name: string
+          start_date: string | null
+          status: string
+          updated_at: string
+          velocity_target: number | null
+        }
+        Insert: {
+          created_at?: string
+          end_date?: string | null
+          goal?: string | null
+          id?: string
+          name: string
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+          velocity_target?: number | null
+        }
+        Update: {
+          created_at?: string
+          end_date?: string | null
+          goal?: string | null
+          id?: string
+          name?: string
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+          velocity_target?: number | null
+        }
+        Relationships: []
+      }
+      ai_engineering_tasks: {
+        Row: {
+          assignee: string | null
+          created_at: string
+          description: string | null
+          estimated_hours: number | null
+          id: string
+          priority: number
+          sprint_id: string | null
+          status: string
+          task_type: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assignee?: string | null
+          created_at?: string
+          description?: string | null
+          estimated_hours?: number | null
+          id?: string
+          priority?: number
+          sprint_id?: string | null
+          status?: string
+          task_type?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assignee?: string | null
+          created_at?: string
+          description?: string | null
+          estimated_hours?: number | null
+          id?: string
+          priority?: number
+          sprint_id?: string | null
+          status?: string
+          task_type?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_engineering_tasks_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "ai_engineering_sprints"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_finance_entries: {
+        Row: {
+          amount: number
+          category: string | null
+          created_at: string
+          currency: string | null
+          department: Database["public"]["Enums"]["ai_department"] | null
+          description: string | null
+          entry_date: string
+          entry_type: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          category?: string | null
+          created_at?: string
+          currency?: string | null
+          department?: Database["public"]["Enums"]["ai_department"] | null
+          description?: string | null
+          entry_date?: string
+          entry_type: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          category?: string | null
+          created_at?: string
+          currency?: string | null
+          department?: Database["public"]["Enums"]["ai_department"] | null
+          description?: string | null
+          entry_date?: string
+          entry_type?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ai_hr_candidates: {
+        Row: {
+          ai_score: number | null
+          created_at: string
+          email: string | null
+          full_name: string
+          id: string
+          notes: string | null
+          resume_url: string | null
+          role: string | null
+          stage: string
+          updated_at: string
+        }
+        Insert: {
+          ai_score?: number | null
+          created_at?: string
+          email?: string | null
+          full_name: string
+          id?: string
+          notes?: string | null
+          resume_url?: string | null
+          role?: string | null
+          stage?: string
+          updated_at?: string
+        }
+        Update: {
+          ai_score?: number | null
+          created_at?: string
+          email?: string | null
+          full_name?: string
+          id?: string
+          notes?: string | null
+          resume_url?: string | null
+          role?: string | null
+          stage?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ai_job_matches: {
         Row: {
           applied_at: string | null
@@ -328,6 +630,51 @@ export type Database = {
           },
         ]
       }
+      ai_marketing_campaigns: {
+        Row: {
+          budget: number | null
+          channel: string
+          created_at: string
+          end_date: string | null
+          id: string
+          metrics: Json | null
+          name: string
+          objective: string | null
+          spent: number | null
+          start_date: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          budget?: number | null
+          channel: string
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          metrics?: Json | null
+          name: string
+          objective?: string | null
+          spent?: number | null
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          budget?: number | null
+          channel?: string
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          metrics?: Json | null
+          name?: string
+          objective?: string | null
+          spent?: number | null
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ai_resumes: {
         Row: {
           ats_score: number | null
@@ -377,6 +724,57 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      ai_sales_leads: {
+        Row: {
+          company: string | null
+          created_at: string
+          currency: string | null
+          deal_value: number | null
+          email: string | null
+          id: string
+          name: string
+          next_action_at: string | null
+          notes: string | null
+          phone: string | null
+          score: number | null
+          source: string | null
+          stage: string
+          updated_at: string
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          currency?: string | null
+          deal_value?: number | null
+          email?: string | null
+          id?: string
+          name: string
+          next_action_at?: string | null
+          notes?: string | null
+          phone?: string | null
+          score?: number | null
+          source?: string | null
+          stage?: string
+          updated_at?: string
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          currency?: string | null
+          deal_value?: number | null
+          email?: string | null
+          id?: string
+          name?: string
+          next_action_at?: string | null
+          notes?: string | null
+          phone?: string | null
+          score?: number | null
+          source?: string | null
+          stage?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       cleanup_backup_log: {
         Row: {
@@ -22423,7 +22821,9 @@ export type Database = {
       is_domain_blocked: { Args: { domain_to_check: string }; Returns: boolean }
       is_ip_blocked: { Args: { p_ip_address: unknown }; Returns: boolean }
       is_pro_user: { Args: { p_user_id: string }; Returns: boolean }
-      is_super_admin: { Args: never; Returns: boolean }
+      is_super_admin:
+        | { Args: never; Returns: boolean }
+        | { Args: { _user_id: string }; Returns: boolean }
       log_agent_activity: {
         Args: {
           p_agent_id: string
@@ -22976,6 +23376,19 @@ export type Database = {
       }
     }
     Enums: {
+      ai_decision_status:
+        | "pending"
+        | "approved"
+        | "rejected"
+        | "modified"
+        | "auto_executed"
+      ai_department:
+        | "engineering"
+        | "sales"
+        | "marketing"
+        | "hr"
+        | "finance"
+        | "executive"
       app_role:
         | "super_admin"
         | "admin"
@@ -23157,6 +23570,21 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      ai_decision_status: [
+        "pending",
+        "approved",
+        "rejected",
+        "modified",
+        "auto_executed",
+      ],
+      ai_department: [
+        "engineering",
+        "sales",
+        "marketing",
+        "hr",
+        "finance",
+        "executive",
+      ],
       app_role: [
         "super_admin",
         "admin",
