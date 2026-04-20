@@ -136,3 +136,9 @@ verify_jwt = false
 # SEO & Sitemaps
 [functions.generate-sitemap]
 verify_jwt = false
+# AI Company OS
+[functions.ai-cto-plan]
+verify_jwt = true
+
+[functions.ai-cto-execute]
+verify_jwt = true
