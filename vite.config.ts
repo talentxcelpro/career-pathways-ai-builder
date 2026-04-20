@@ -16,10 +16,6 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "react": path.resolve(__dirname, "./node_modules/react"),
-      "react-dom": path.resolve(__dirname, "./node_modules/react-dom"),
-      "react/jsx-runtime": path.resolve(__dirname, "./node_modules/react/jsx-runtime.js"),
-      "react/jsx-dev-runtime": path.resolve(__dirname, "./node_modules/react/jsx-dev-runtime.js"),
     },
     dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"],
   },
@@ -28,36 +24,35 @@ export default defineConfig(({ mode }) => ({
   },
   optimizeDeps: {
     include: [
-      'react', 
-      'react-dom', 
+      'react',
+      'react-dom',
       'react/jsx-runtime',
       'react/jsx-dev-runtime',
       '@radix-ui/react-tooltip',
       '@radix-ui/react-popover',
-      '@radix-ui/react-dialog'
+      '@radix-ui/react-dialog',
     ],
-    exclude: [],
-    // Force re-optimization with a cache-busting comment: v2
-    force: true,
   },
   build: {
     rollupOptions: {
       output: {
-        // Aggressive code splitting for better caching and loading
+        // Keep React and all related runtime in a single chunk to avoid
+        // multiple React instances / null import issues.
         manualChunks: (id) => {
-          // Core React libraries
-          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
+          if (
+            id.includes('node_modules/react/') ||
+            id.includes('node_modules/react-dom/') ||
+            id.includes('node_modules/scheduler/') ||
+            id.includes('node_modules/react-is/')
+          ) {
             return 'react-vendor';
           }
-          // Radix UI components
           if (id.includes('@radix-ui')) {
             return 'radix-ui';
           }
-          // Supabase
           if (id.includes('@supabase')) {
             return 'supabase';
           }
-          // Other large libraries
           if (id.includes('node_modules/framer-motion')) {
             return 'animations';
           }
@@ -67,22 +62,17 @@ export default defineConfig(({ mode }) => ({
           if (id.includes('node_modules/lucide-react')) {
             return 'icons';
           }
-          // Other vendor libraries
           if (id.includes('node_modules')) {
             return 'vendor';
           }
         },
-        // Add hash to chunks for better caching
         chunkFileNames: 'assets/[name]-[hash].js',
         entryFileNames: 'assets/[name]-[hash].js',
         assetFileNames: 'assets/[name]-[hash].[ext]',
       },
     },
-    // Optimize chunk size
     chunkSizeWarningLimit: 500,
-    // Improve build stability
     sourcemap: false,
-    // Reduce bundle size
     minify: 'terser',
     terserOptions: {
       compress: {
@@ -91,9 +81,7 @@ export default defineConfig(({ mode }) => ({
         pure_funcs: mode === 'production' ? ['console.log', 'console.info', 'console.debug'] : [],
       },
     },
-    // Enable CSS code splitting
     cssCodeSplit: true,
-    // Optimize asset inline limit
     assetsInlineLimit: 4096,
   },
 }));
