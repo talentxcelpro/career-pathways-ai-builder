@@ -899,7 +899,7 @@ export type Database = {
           id: string
           job_page_views: number | null
           page_views: number | null
-          profile_engagement_time: unknown
+          profile_engagement_time: string | null
           session_date: string | null
           traffic_sources: Json | null
           unique_visitors: number | null
@@ -912,7 +912,7 @@ export type Database = {
           id?: string
           job_page_views?: number | null
           page_views?: number | null
-          profile_engagement_time?: unknown
+          profile_engagement_time?: string | null
           session_date?: string | null
           traffic_sources?: Json | null
           unique_visitors?: number | null
@@ -925,7 +925,7 @@ export type Database = {
           id?: string
           job_page_views?: number | null
           page_views?: number | null
-          profile_engagement_time?: unknown
+          profile_engagement_time?: string | null
           session_date?: string | null
           traffic_sources?: Json | null
           unique_visitors?: number | null
@@ -13193,7 +13193,7 @@ export type Database = {
           last_run_at: string | null
           max_jobs_per_run: number | null
           next_run_at: string | null
-          scraping_frequency: unknown
+          scraping_frequency: string
           source_category: string
           success_count: number | null
           target_urls: string[] | null
@@ -13208,7 +13208,7 @@ export type Database = {
           last_run_at?: string | null
           max_jobs_per_run?: number | null
           next_run_at?: string | null
-          scraping_frequency?: unknown
+          scraping_frequency?: string
           source_category: string
           success_count?: number | null
           target_urls?: string[] | null
@@ -13223,7 +13223,7 @@ export type Database = {
           last_run_at?: string | null
           max_jobs_per_run?: number | null
           next_run_at?: string | null
-          scraping_frequency?: unknown
+          scraping_frequency?: string
           source_category?: string
           success_count?: number | null
           target_urls?: string[] | null
