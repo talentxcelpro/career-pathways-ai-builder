@@ -38,7 +38,25 @@ export default function DecisionQueue() {
   });
 
   const review = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: "approved" | "rejected" }) => {
+    mutationFn: async ({
+      id,
+      status,
+      decision_type,
+    }: {
+      id: string;
+      status: "approved" | "rejected";
+      decision_type: string;
+    }) => {
+      // For known auto-executable decisions, route through the matching agent function.
+      if (status === "approved" && decision_type === "create_sprint") {
+        const { data, error } = await supabase.functions.invoke("ai-cto-execute", {
+          body: { decision_id: id },
+        });
+        if (error) throw error;
+        if ((data as any)?.error) throw new Error((data as any).error);
+        return;
+      }
+
       const { error } = await supabase
         .from("ai_company_decisions")
         .update({
@@ -110,7 +128,13 @@ export default function DecisionQueue() {
                 <div className="flex shrink-0 gap-2">
                   <Button
                     size="sm"
-                    onClick={() => review.mutate({ id: d.id, status: "approved" })}
+                    onClick={() =>
+                      review.mutate({
+                        id: d.id,
+                        status: "approved",
+                        decision_type: d.decision_type,
+                      })
+                    }
                     disabled={review.isPending}
                   >
                     <Check className="mr-1 h-4 w-4" /> Approve
@@ -118,7 +142,13 @@ export default function DecisionQueue() {
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => review.mutate({ id: d.id, status: "rejected" })}
+                    onClick={() =>
+                      review.mutate({
+                        id: d.id,
+                        status: "rejected",
+                        decision_type: d.decision_type,
+                      })
+                    }
                     disabled={review.isPending}
                   >
                     <X className="mr-1 h-4 w-4" /> Reject
