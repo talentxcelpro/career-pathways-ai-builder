@@ -148,3 +148,9 @@ verify_jwt = true
 
 [functions.ai-sales-execute]
 verify_jwt = true
+
+[functions.ai-cmo-plan]
+verify_jwt = true
+
+[functions.ai-cmo-execute]
+verify_jwt = true
