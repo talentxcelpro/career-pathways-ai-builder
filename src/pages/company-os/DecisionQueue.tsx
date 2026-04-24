@@ -51,6 +51,7 @@ export default function DecisionQueue() {
       const executors: Record<string, string> = {
         create_sprint: "ai-cto-execute",
         send_outreach: "ai-sales-execute",
+        launch_campaign: "ai-cmo-execute",
       };
       if (status === "approved" && executors[decision_type]) {
         const { data, error } = await supabase.functions.invoke(
