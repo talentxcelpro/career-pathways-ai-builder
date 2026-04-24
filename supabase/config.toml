@@ -154,3 +154,9 @@ verify_jwt = true
 
 [functions.ai-cmo-execute]
 verify_jwt = true
+
+[functions.ai-hr-screen]
+verify_jwt = true
+
+[functions.ai-hr-execute]
+verify_jwt = true
