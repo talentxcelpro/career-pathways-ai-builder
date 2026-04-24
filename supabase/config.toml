@@ -142,3 +142,9 @@ verify_jwt = true
 
 [functions.ai-cto-execute]
 verify_jwt = true
+
+[functions.ai-sales-draft]
+verify_jwt = true
+
+[functions.ai-sales-execute]
+verify_jwt = true

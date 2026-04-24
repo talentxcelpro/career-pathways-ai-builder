@@ -48,10 +48,15 @@ export default function DecisionQueue() {
       decision_type: string;
     }) => {
       // For known auto-executable decisions, route through the matching agent function.
-      if (status === "approved" && decision_type === "create_sprint") {
-        const { data, error } = await supabase.functions.invoke("ai-cto-execute", {
-          body: { decision_id: id },
-        });
+      const executors: Record<string, string> = {
+        create_sprint: "ai-cto-execute",
+        send_outreach: "ai-sales-execute",
+      };
+      if (status === "approved" && executors[decision_type]) {
+        const { data, error } = await supabase.functions.invoke(
+          executors[decision_type],
+          { body: { decision_id: id } },
+        );
         if (error) throw error;
         if ((data as any)?.error) throw new Error((data as any).error);
         return;
