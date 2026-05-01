@@ -186,11 +186,11 @@ const ProfileEdit = () => {
       });
       navigate('/profile');
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Save error:', error);
       toast({
-        title: "Error",
-        description: "Failed to update profile. Please try again.",
+        title: "Error saving profile",
+        description: error?.message || error?.details || error?.hint || "Failed to update profile. Please try again.",
         variant: "destructive",
       });
     }
