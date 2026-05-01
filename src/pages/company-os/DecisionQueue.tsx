@@ -53,6 +53,7 @@ export default function DecisionQueue() {
         send_outreach: "ai-sales-execute",
         launch_campaign: "ai-cmo-execute",
         screen_candidates: "ai-hr-execute",
+        apply_budget_actions: "ai-cfo-execute",
       };
       if (status === "approved" && executors[decision_type]) {
         const { data, error } = await supabase.functions.invoke(
