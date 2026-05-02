@@ -137,56 +137,33 @@ export default {
 				}
 			},
 			fontSize: {
-				// Apple-inspired responsive typography that scales automatically
-				'display': [
-					'clamp(2rem, 5vw, 4rem)', 
-					{ lineHeight: '1.1', fontWeight: '700', letterSpacing: '-0.04em' }
-				],
-				'headline': [
-					'clamp(1.75rem, 4vw, 3rem)', 
-					{ lineHeight: '1.15', fontWeight: '600', letterSpacing: '-0.03em' }
-				],
-				'title': [
-					'clamp(1.5rem, 3vw, 2.5rem)', 
-					{ lineHeight: '1.2', fontWeight: '600', letterSpacing: '-0.02em' }
-				],
-				'subtitle': [
-					'clamp(1.25rem, 2.5vw, 2rem)', 
-					{ lineHeight: '1.25', fontWeight: '500', letterSpacing: '-0.015em' }
-				],
-				'subheading': [
-					'clamp(1.125rem, 2vw, 1.75rem)', 
-					{ lineHeight: '1.3', fontWeight: '500', letterSpacing: '-0.01em' }
-				],
-				
-				// Apple-style responsive body text
-				'body-large': [
-					'clamp(1rem, 1.5vw, 1.375rem)', 
-					{ lineHeight: '1.5', fontWeight: '400', letterSpacing: '-0.005em' }
-				],
-				'body': [
-					'clamp(0.875rem, 1.25vw, 1.125rem)', 
-					{ lineHeight: '1.55', fontWeight: '400', letterSpacing: '0' }
-				],
-				'body-small': [
-					'clamp(0.75rem, 1vw, 1rem)', 
-					{ lineHeight: '1.5', fontWeight: '400', letterSpacing: '0' }
-				],
-				'caption': [
-					'clamp(0.625rem, 0.875vw, 0.875rem)', 
-					{ lineHeight: '1.4', fontWeight: '500', letterSpacing: '0.01em' }
-				],
-				
-				// Apple system responsive sizing
-				'xs': ['clamp(0.625rem, 0.75vw, 0.75rem)', { lineHeight: '1.4' }],
-				'sm': ['clamp(0.75rem, 0.875vw, 0.875rem)', { lineHeight: '1.5' }],
-				'base': ['clamp(0.875rem, 1vw, 1rem)', { lineHeight: '1.5' }],
-				'lg': ['clamp(1rem, 1.125vw, 1.125rem)', { lineHeight: '1.5' }],
-				'xl': ['clamp(1.125rem, 1.25vw, 1.25rem)', { lineHeight: '1.4' }],
-				'2xl': ['clamp(1.25rem, 1.5vw, 1.5rem)', { lineHeight: '1.3' }],
-				'3xl': ['clamp(1.5rem, 2vw, 1.875rem)', { lineHeight: '1.25' }],
-				'4xl': ['clamp(1.875rem, 2.5vw, 2.25rem)', { lineHeight: '1.2' }],
-				'5xl': ['clamp(2.25rem, 3vw, 3rem)', { lineHeight: '1.1' }],
+				// Apple-grade fixed type ramp — consistent across every page & viewport.
+				// Use semantic classes (display-1, headline, body, eyebrow) for hierarchy.
+				'eyebrow':    ['0.75rem',  { lineHeight: '1rem',     fontWeight: '600', letterSpacing: '0.08em',  textTransform: 'uppercase' as any }],
+				'caption':    ['0.75rem',  { lineHeight: '1rem',     fontWeight: '500', letterSpacing: '0' }],
+				'body-sm':    ['0.8125rem',{ lineHeight: '1.25rem',  fontWeight: '400', letterSpacing: '-0.003em' }],
+				'body':       ['0.9375rem',{ lineHeight: '1.5rem',   fontWeight: '400', letterSpacing: '-0.006em' }],
+				'body-lg':    ['1.0625rem',{ lineHeight: '1.625rem', fontWeight: '400', letterSpacing: '-0.011em' }],
+				'title-3':    ['1.1875rem',{ lineHeight: '1.5rem',   fontWeight: '600', letterSpacing: '-0.014em' }],
+				'title-2':    ['1.375rem', { lineHeight: '1.75rem',  fontWeight: '600', letterSpacing: '-0.018em' }],
+				'title-1':    ['1.75rem',  { lineHeight: '2.125rem', fontWeight: '600', letterSpacing: '-0.022em' }],
+				'headline':   ['2.125rem', { lineHeight: '2.5rem',   fontWeight: '600', letterSpacing: '-0.024em' }],
+				'display-3':  ['2.5rem',   { lineHeight: '2.875rem', fontWeight: '600', letterSpacing: '-0.026em' }],
+				'display-2':  ['3.25rem',  { lineHeight: '3.5rem',   fontWeight: '600', letterSpacing: '-0.028em' }],
+				'display-1':  ['4rem',     { lineHeight: '4.25rem',  fontWeight: '600', letterSpacing: '-0.032em' }],
+
+				// Tailwind defaults — fixed sizes (no clamp) so utilities are predictable.
+				'xs':   ['0.75rem',   { lineHeight: '1rem' }],
+				'sm':   ['0.875rem',  { lineHeight: '1.25rem' }],
+				'base': ['1rem',      { lineHeight: '1.5rem' }],
+				'lg':   ['1.125rem',  { lineHeight: '1.625rem' }],
+				'xl':   ['1.25rem',   { lineHeight: '1.75rem' }],
+				'2xl':  ['1.5rem',    { lineHeight: '2rem' }],
+				'3xl':  ['1.875rem',  { lineHeight: '2.25rem' }],
+				'4xl':  ['2.25rem',   { lineHeight: '2.5rem' }],
+				'5xl':  ['3rem',      { lineHeight: '1.1' }],
+				'6xl':  ['3.75rem',   { lineHeight: '1.05' }],
+				'7xl':  ['4.5rem',    { lineHeight: '1.05' }],
 			},
 			letterSpacing: {
 				'tighter': '-0.04em', // Apple ultra-tight for displays
