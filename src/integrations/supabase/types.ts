@@ -1676,6 +1676,7 @@ export type Database = {
       connections: {
         Row: {
           connected_at: string | null
+          connected_user_id: string | null
           created_at: string | null
           id: string
           message: string | null
@@ -1683,9 +1684,11 @@ export type Database = {
           requester_id: string
           status: string | null
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           connected_at?: string | null
+          connected_user_id?: string | null
           created_at?: string | null
           id?: string
           message?: string | null
@@ -1693,9 +1696,11 @@ export type Database = {
           requester_id: string
           status?: string | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           connected_at?: string | null
+          connected_user_id?: string | null
           created_at?: string | null
           id?: string
           message?: string | null
@@ -1703,6 +1708,7 @@ export type Database = {
           requester_id?: string
           status?: string | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -8707,6 +8713,36 @@ export type Database = {
         }
         Relationships: []
       }
+      portfolio_items: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          project_url: string | null
+          title: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          project_url?: string | null
+          title?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          project_url?: string | null
+          title?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       portfolio_websites: {
         Row: {
           analytics_data: Json | null
@@ -8761,6 +8797,7 @@ export type Database = {
           likes_count: number
           post_id: string
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           author_id: string
@@ -8770,6 +8807,7 @@ export type Database = {
           likes_count?: number
           post_id: string
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           author_id?: string
@@ -8779,6 +8817,7 @@ export type Database = {
           likes_count?: number
           post_id?: string
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -8827,6 +8866,35 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "post_hashtag_suggestions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_likes: {
+        Row: {
+          created_at: string | null
+          id: string
+          post_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          post_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          post_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_likes_post_id_fkey"
             columns: ["post_id"]
             isOneToOne: false
             referencedRelation: "posts"
@@ -20538,6 +20606,7 @@ export type Database = {
           total_referrals: number | null
           total_rewards_value: number | null
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           created_at?: string | null
@@ -20552,6 +20621,7 @@ export type Database = {
           total_referrals?: number | null
           total_rewards_value?: number | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           created_at?: string | null
@@ -20566,6 +20636,7 @@ export type Database = {
           total_referrals?: number | null
           total_rewards_value?: number | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -20783,6 +20854,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_streaks: {
+        Row: {
+          created_at: string | null
+          id: string
+          last_active_date: string | null
+          streak_count: number | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          last_active_date?: string | null
+          streak_count?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          last_active_date?: string | null
+          streak_count?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
       user_subscriptions: {
         Row: {
