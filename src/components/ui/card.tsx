@@ -1,21 +1,29 @@
-
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Apple-grade Card
+ * - Hairline border, no heavy shadows by default
+ * - Generous padding rhythm (p-6 / p-8 via size)
+ * - Tokenized only; legacy variants kept as soft aliases
+ */
 const Card = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    variant?: 'default' | 'premium' | 'glass' | 'elegant' | 'floating';
+    variant?: "default" | "muted" | "outline" | "premium" | "glass" | "elegant" | "floating"
   }
->(({ className, variant = 'default', ...props }, ref) => {
-  const variantClasses = {
-    default: "rounded-lg border bg-card text-card-foreground shadow-card",
-    premium: "rounded-lg border bg-gradient-card text-card-foreground shadow-elegant hover:shadow-float transition-all duration-500",
-    glass: "rounded-lg border border-glass-border bg-gradient-glass backdrop-blur-apple text-card-foreground shadow-glass",
-    elegant: "rounded-lg border bg-card text-card-foreground shadow-elegant hover:shadow-glow transition-all duration-300",
-    floating: "rounded-lg border bg-card text-card-foreground shadow-float hover:shadow-elegant transform hover:scale-[1.02] transition-all duration-300"
-  };
+>(({ className, variant = "default", ...props }, ref) => {
+  const variantClasses: Record<string, string> = {
+    default: "rounded-2xl border border-border bg-card text-card-foreground",
+    muted: "rounded-2xl border border-border bg-muted/40 text-card-foreground",
+    outline: "rounded-2xl border border-border bg-transparent text-card-foreground",
+    // Legacy aliases — flattened to Apple-grade
+    premium: "rounded-2xl border border-border bg-card text-card-foreground transition-colors duration-200",
+    glass: "rounded-2xl border border-border/60 bg-background/70 text-card-foreground backdrop-blur-xl",
+    elegant: "rounded-2xl border border-border bg-card text-card-foreground transition-colors duration-200",
+    floating: "rounded-2xl border border-border bg-card text-card-foreground shadow-sm transition-shadow duration-200 hover:shadow-md",
+  }
 
   return (
     <div
@@ -23,7 +31,7 @@ const Card = React.forwardRef<
       className={cn(variantClasses[variant], className)}
       {...props}
     />
-  );
+  )
 })
 Card.displayName = "Card"
 
@@ -33,7 +41,7 @@ const CardHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex flex-col space-y-1.5 p-6 animate-fade-in-down", className)}
+    className={cn("flex flex-col space-y-2 p-6", className)}
     {...props}
   />
 ))
@@ -46,7 +54,7 @@ const CardTitle = React.forwardRef<
   <h3
     ref={ref}
     className={cn(
-      "text-subheading font-heading leading-none tracking-tight text-card-foreground",
+      "text-title-2 font-semibold tracking-[-0.01em] text-card-foreground",
       className
     )}
     {...props}
@@ -60,7 +68,7 @@ const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn("text-body-small text-muted-foreground leading-relaxed", className)}
+    className={cn("text-sm leading-relaxed text-muted-foreground", className)}
     {...props}
   />
 ))
@@ -70,7 +78,7 @@ const CardContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("p-6 pt-0 animate-fade-in", className)} {...props} />
+  <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
 ))
 CardContent.displayName = "CardContent"
 
