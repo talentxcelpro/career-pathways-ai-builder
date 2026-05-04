@@ -18,25 +18,28 @@ import { SkillsSection } from '@/components/profile/edit/SkillsSection';
 import { ResumeUploadSection } from '@/components/profile/edit/ResumeUploadSection';
 import { BasicInformationSection } from '@/components/profile/edit/BasicInformationSection';
 import { ProfessionalDetailsSection } from '@/components/profile/edit/ProfessionalDetailsSection';
+import { useAuth } from '@/contexts/AuthContext';
 
 const ProfileEdit = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { user: currentUser, loading: authLoading, refreshSession } = useAuth();
   const { uploadFile, uploading } = useFileUpload({
     bucket: 'resumes',
     maxSize: 50 * 1024 * 1024, // 50MB for resumes
     allowedTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
   });
-  
-  // Get current user
-  const { data: currentUser } = useQuery({
-    queryKey: ['currentUser'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      return user;
-    }
-  });
+  const resolveAuthenticatedUser = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) return session.user;
+
+    await refreshSession();
+    const { data: { session: refreshedSession } } = await supabase.auth.getSession();
+    if (refreshedSession?.user) return refreshedSession.user;
+
+    throw new Error('Your session could not be restored. Please sign in again.');
+  };
 
   // Get profile data
   const { data: profile, isLoading } = useQuery({
@@ -53,7 +56,7 @@ const ProfileEdit = () => {
       if (error) throw error;
       return data;
     },
-    enabled: !!currentUser?.id
+    enabled: !authLoading && !!currentUser?.id
   });
 
   const [formData, setFormData] = useState({
@@ -125,25 +128,20 @@ const ProfileEdit = () => {
   // Save profile mutation
   const saveProfileMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      console.log('Starting save mutation...');
-      console.log('User ID:', currentUser?.id);
-      
-      if (!currentUser?.id) throw new Error('No user ID');
+      const activeUser = await resolveAuthenticatedUser();
 
       const updateData = {
-        id: currentUser.id,
+        id: activeUser.id,
         ...data,
-        username: profile?.username || `user${currentUser.id.slice(0, 8)}`, // Preserve existing username
+        username: profile?.username || `user${activeUser.id.slice(0, 8)}`,
         updated_at: new Date().toISOString()
       };
-      
-      console.log('Update data:', updateData);
 
       // Try to update existing profile first
       const { data: updated, error: updateError } = await supabase
         .from('profiles')
         .update(updateData)
-        .eq('id', currentUser.id)
+        .eq('id', activeUser.id)
         .select()
         .maybeSingle();
 
@@ -156,13 +154,13 @@ const ProfileEdit = () => {
       // If no existing profile, create one with required fields
       let finalUsername = profile?.username as string | undefined;
       if (!finalUsername) {
-        const sourceName = data.full_name || (currentUser?.user_metadata as any)?.full_name || currentUser?.email?.split('@')[0] || 'user';
+        const sourceName = data.full_name || (activeUser.user_metadata as any)?.full_name || activeUser.email?.split('@')[0] || 'user';
         const { data: genUsername } = await supabase.rpc('generate_username_from_name', { full_name: sourceName });
-        finalUsername = (genUsername as unknown as string) || `user${currentUser.id.slice(0, 8)}`;
+        finalUsername = (genUsername as unknown as string) || `user${activeUser.id.slice(0, 8)}`;
       }
 
       const insertData = {
-        id: currentUser.id,
+        id: activeUser.id,
         username: finalUsername,
         ...data,
         updated_at: new Date().toISOString()
