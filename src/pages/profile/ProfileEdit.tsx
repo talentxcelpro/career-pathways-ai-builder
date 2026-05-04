@@ -196,10 +196,11 @@ const ProfileEdit = () => {
 
   const handleResumeUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file || !currentUser?.id) return;
+    if (!file) return;
 
     try {
-      const url = await uploadFile(file, currentUser.id);
+      const activeUser = await resolveAuthenticatedUser();
+      const url = await uploadFile(file, activeUser.id);
       setFormData(prev => ({ ...prev, resume_url: url }));
       
       toast({
@@ -217,10 +218,6 @@ const ProfileEdit = () => {
   };
 
   const handleSave = () => {
-    console.log('Save button clicked');
-    console.log('Form data:', formData);
-    console.log('Current user:', currentUser);
-    
     if (!formData.full_name.trim()) {
       toast({
         title: "Name required",
@@ -230,15 +227,33 @@ const ProfileEdit = () => {
       return;
     }
 
-    console.log('About to save profile...');
+    if (authLoading) {
+      toast({
+        title: "Still signing you in",
+        description: "Please wait a moment while we restore your session.",
+      });
+      return;
+    }
+
     saveProfileMutation.mutate(formData);
   };
 
-  if (isLoading) {
+  if (authLoading || isLoading) {
     return (
       <ProfileLayout title="Edit Profile" description="Update your professional information">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      </ProfileLayout>
+    );
+  }
+
+  if (!currentUser) {
+    return (
+      <ProfileLayout title="Edit Profile" description="Update your professional information">
+        <div className="flex min-h-[400px] flex-col items-center justify-center gap-4 text-center">
+          <p className="text-body text-muted-foreground">Please sign in to edit your profile.</p>
+          <Button onClick={() => navigate('/auth/login')}>Sign in</Button>
         </div>
       </ProfileLayout>
     );
