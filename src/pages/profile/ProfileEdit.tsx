@@ -156,7 +156,7 @@ const ProfileEdit = () => {
       // If no existing profile, create one with required fields
       let finalUsername = profile?.username as string | undefined;
       if (!finalUsername) {
-        const sourceName = data.full_name || (activeUser.user_metadata as any)?.full_name || activeUser.email?.split('@')[0] || 'user';
+        const sourceName = data.full_name || activeUser.user_metadata?.full_name || activeUser.email?.split('@')[0] || 'user';
         const { data: genUsername } = await supabase.rpc('generate_username_from_name', { full_name: sourceName });
         finalUsername = (genUsername as unknown as string) || `user${activeUser.id.slice(0, 8)}`;
       }
@@ -186,11 +186,12 @@ const ProfileEdit = () => {
       });
       navigate('/profile');
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error('Save error:', error);
+      const profileError = error as { message?: string; details?: string; hint?: string };
       toast({
         title: "Error saving profile",
-        description: error?.message || error?.details || error?.hint || "Failed to update profile. Please try again.",
+        description: profileError.message || profileError.details || profileError.hint || "Failed to update profile. Please try again.",
         variant: "destructive",
       });
     }
