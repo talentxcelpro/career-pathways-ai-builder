@@ -15,18 +15,12 @@ import { Share2, Eye, Download, ExternalLink } from 'lucide-react';
 import { incrementProfileView } from '@/utils/profileHelpers';
 import { useState } from 'react';
 import ProBadge from '@/components/network/ProBadge';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Profile = () => {
   const navigate = useNavigate();
   const [showShareDialog, setShowShareDialog] = useState(false);
-
-  const { data: currentUser } = useQuery({
-    queryKey: ['currentUser'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      return user;
-    }
-  });
+  const { user: currentUser, loading: authLoading } = useAuth();
 
   const { data: profile, isLoading, error } = useQuery({
     queryKey: ['profile', currentUser?.id],
@@ -46,7 +40,7 @@ const Profile = () => {
       
       return data;
     },
-    enabled: !!currentUser?.id
+    enabled: !authLoading && !!currentUser?.id
   });
 
   // Track profile view (for analytics)
@@ -58,12 +52,12 @@ const Profile = () => {
 
   // Redirect to login if not authenticated
   useEffect(() => {
-    if (!currentUser && !isLoading) {
+    if (!authLoading && !currentUser) {
       navigate('/auth/login');
     }
-  }, [currentUser, isLoading, navigate]);
+  }, [authLoading, currentUser, navigate]);
 
-  if (isLoading) {
+  if (authLoading || isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">

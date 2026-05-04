@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useTXCIntegration } from './useTXCIntegration';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface ProfileUpdateData {
   id?: string;
@@ -24,19 +25,34 @@ interface ProfileUpdateData {
   allow_profile_sharing?: boolean;
   custom_profile_url?: string;
   resume_url?: string;
-  work_experiences?: Array<any>;
+  work_experiences?: unknown[];
   username?: string;
   custom_url_slug?: string;
 }
 
+type ProfileUpdateError = {
+  message?: string;
+};
+
 export function useProfileUpdate() {
   const queryClient = useQueryClient();
   const { triggerProfileCompleted, triggerSkillAdded } = useTXCIntegration();
+  const { refreshSession } = useAuth();
+
+  const resolveAuthenticatedUser = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) return session.user;
+
+    await refreshSession();
+    const { data: { session: refreshedSession } } = await supabase.auth.getSession();
+    if (refreshedSession?.user) return refreshedSession.user;
+
+    throw new Error('Your session could not be restored. Please sign in again.');
+  };
 
   const updateProfile = useMutation({
     mutationFn: async (data: ProfileUpdateData) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
+      const user = await resolveAuthenticatedUser();
 
       // Always use UPDATE for existing profiles - much safer than upsert
       const updateData = {
@@ -70,46 +86,32 @@ export function useProfileUpdate() {
       
       // Trigger TXC mining for profile updates
       if (variables.skills) {
-        await triggerSkillAdded();
+        const earned = await triggerSkillAdded();
+        if (earned) queryClient.invalidateQueries({ queryKey: ['token-balance'] });
       }
       
       // Check if profile is becoming more complete and trigger completion bonus
       const completionFields = ['full_name', 'title', 'about', 'location', 'skills', 'current_company'];
       
-      // Try to earn TXC for profile completion
-      try {
-        const { useTXCMining } = await import('@/hooks/useTXCMining');
-        const { useTokenBalance } = await import('@/hooks/useTokenBalance');
-        const { earnTXC } = useTXCMining();
-        const { refreshBalance } = useTokenBalance();
-        
-        const earned = await earnTXC('profile_completed');
-        if (earned) {
-          await refreshBalance();
-          queryClient.invalidateQueries({ queryKey: ['token-balance'] });
-        }
-      } catch (error) {
-        console.error('Error earning TXC for profile completion:', error);
-      }
       const completedFields = completionFields.filter(field => variables[field as keyof ProfileUpdateData]);
       
       if (completedFields.length >= 4) {
-        await triggerProfileCompleted();
+        const earned = await triggerProfileCompleted();
+        if (earned) queryClient.invalidateQueries({ queryKey: ['token-balance'] });
       }
       
       toast.success('Profile updated successfully');
       return data;
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error('Profile update error:', error);
-      toast.error(error.message || 'Failed to update profile');
+      toast.error((error as ProfileUpdateError).message || 'Failed to update profile');
     }
   });
 
   const updateProfilePicture = useMutation({
     mutationFn: async (profilePictureUrl: string) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
+      const user = await resolveAuthenticatedUser();
 
       const { data, error } = await supabase
         .from('profiles')
@@ -128,7 +130,7 @@ export function useProfileUpdate() {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
       toast.success('Profile picture updated successfully');
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error('Profile picture update error:', error);
       toast.error('Failed to update profile picture');
     }

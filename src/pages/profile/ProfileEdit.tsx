@@ -18,25 +18,39 @@ import { SkillsSection } from '@/components/profile/edit/SkillsSection';
 import { ResumeUploadSection } from '@/components/profile/edit/ResumeUploadSection';
 import { BasicInformationSection } from '@/components/profile/edit/BasicInformationSection';
 import { ProfessionalDetailsSection } from '@/components/profile/edit/ProfessionalDetailsSection';
+import { useAuth } from '@/contexts/AuthContext';
+
+type WorkExperience = {
+  id: string;
+  company: string;
+  position: string;
+  startDate: string;
+  endDate: string;
+  isCurrent: boolean;
+  description: string;
+  location: string;
+};
 
 const ProfileEdit = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { user: currentUser, loading: authLoading, refreshSession } = useAuth();
   const { uploadFile, uploading } = useFileUpload({
     bucket: 'resumes',
     maxSize: 50 * 1024 * 1024, // 50MB for resumes
     allowedTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
   });
-  
-  // Get current user
-  const { data: currentUser } = useQuery({
-    queryKey: ['currentUser'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      return user;
-    }
-  });
+  const resolveAuthenticatedUser = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) return session.user;
+
+    await refreshSession();
+    const { data: { session: refreshedSession } } = await supabase.auth.getSession();
+    if (refreshedSession?.user) return refreshedSession.user;
+
+    throw new Error('Your session could not be restored. Please sign in again.');
+  };
 
   // Get profile data
   const { data: profile, isLoading } = useQuery({
@@ -53,7 +67,7 @@ const ProfileEdit = () => {
       if (error) throw error;
       return data;
     },
-    enabled: !!currentUser?.id
+    enabled: !authLoading && !!currentUser?.id
   });
 
   const [formData, setFormData] = useState({
@@ -75,19 +89,10 @@ const ProfileEdit = () => {
     allow_profile_sharing: true,
     custom_profile_url: '',
     resume_url: '',
-    work_experiences: [] as Array<{
-      id: string;
-      company: string;
-      position: string;
-      startDate: string;
-      endDate: string;
-      isCurrent: boolean;
-      description: string;
-      location: string;
-    }>
+    work_experiences: [] as WorkExperience[]
   });
 
-  const handleFieldChange = (field: string, value: string | number | Array<any>) => {
+  const handleFieldChange = (field: string, value: string | number | boolean | unknown[] | Record<string, string>) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -117,7 +122,7 @@ const ProfileEdit = () => {
         allow_profile_sharing: profile.allow_profile_sharing ?? true,
         custom_profile_url: profile.custom_profile_url || generateCustomProfileUrl(profile.full_name || ''),
         resume_url: profile.resume_url || '',
-        work_experiences: (profile.work_experiences as any) || []
+        work_experiences: (profile.work_experiences as WorkExperience[]) || []
       });
     }
   }, [profile]);
@@ -125,25 +130,20 @@ const ProfileEdit = () => {
   // Save profile mutation
   const saveProfileMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      console.log('Starting save mutation...');
-      console.log('User ID:', currentUser?.id);
-      
-      if (!currentUser?.id) throw new Error('No user ID');
+      const activeUser = await resolveAuthenticatedUser();
 
       const updateData = {
-        id: currentUser.id,
+        id: activeUser.id,
         ...data,
-        username: profile?.username || `user${currentUser.id.slice(0, 8)}`, // Preserve existing username
+        username: profile?.username || `user${activeUser.id.slice(0, 8)}`,
         updated_at: new Date().toISOString()
       };
-      
-      console.log('Update data:', updateData);
 
       // Try to update existing profile first
       const { data: updated, error: updateError } = await supabase
         .from('profiles')
         .update(updateData)
-        .eq('id', currentUser.id)
+        .eq('id', activeUser.id)
         .select()
         .maybeSingle();
 
@@ -156,13 +156,13 @@ const ProfileEdit = () => {
       // If no existing profile, create one with required fields
       let finalUsername = profile?.username as string | undefined;
       if (!finalUsername) {
-        const sourceName = data.full_name || (currentUser?.user_metadata as any)?.full_name || currentUser?.email?.split('@')[0] || 'user';
+        const sourceName = data.full_name || activeUser.user_metadata?.full_name || activeUser.email?.split('@')[0] || 'user';
         const { data: genUsername } = await supabase.rpc('generate_username_from_name', { full_name: sourceName });
-        finalUsername = (genUsername as unknown as string) || `user${currentUser.id.slice(0, 8)}`;
+        finalUsername = (genUsername as unknown as string) || `user${activeUser.id.slice(0, 8)}`;
       }
 
       const insertData = {
-        id: currentUser.id,
+        id: activeUser.id,
         username: finalUsername,
         ...data,
         updated_at: new Date().toISOString()
@@ -186,11 +186,12 @@ const ProfileEdit = () => {
       });
       navigate('/profile');
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error('Save error:', error);
+      const profileError = error as { message?: string; details?: string; hint?: string };
       toast({
         title: "Error saving profile",
-        description: error?.message || error?.details || error?.hint || "Failed to update profile. Please try again.",
+        description: profileError.message || profileError.details || profileError.hint || "Failed to update profile. Please try again.",
         variant: "destructive",
       });
     }
@@ -198,10 +199,11 @@ const ProfileEdit = () => {
 
   const handleResumeUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file || !currentUser?.id) return;
+    if (!file) return;
 
     try {
-      const url = await uploadFile(file, currentUser.id);
+      const activeUser = await resolveAuthenticatedUser();
+      const url = await uploadFile(file, activeUser.id);
       setFormData(prev => ({ ...prev, resume_url: url }));
       
       toast({
@@ -219,10 +221,6 @@ const ProfileEdit = () => {
   };
 
   const handleSave = () => {
-    console.log('Save button clicked');
-    console.log('Form data:', formData);
-    console.log('Current user:', currentUser);
-    
     if (!formData.full_name.trim()) {
       toast({
         title: "Name required",
@@ -232,15 +230,33 @@ const ProfileEdit = () => {
       return;
     }
 
-    console.log('About to save profile...');
+    if (authLoading) {
+      toast({
+        title: "Still signing you in",
+        description: "Please wait a moment while we restore your session.",
+      });
+      return;
+    }
+
     saveProfileMutation.mutate(formData);
   };
 
-  if (isLoading) {
+  if (authLoading || isLoading) {
     return (
       <ProfileLayout title="Edit Profile" description="Update your professional information">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      </ProfileLayout>
+    );
+  }
+
+  if (!currentUser) {
+    return (
+      <ProfileLayout title="Edit Profile" description="Update your professional information">
+        <div className="flex min-h-[400px] flex-col items-center justify-center gap-4 text-center">
+          <p className="text-body text-muted-foreground">Please sign in to edit your profile.</p>
+          <Button onClick={() => navigate('/auth/login')}>Sign in</Button>
         </div>
       </ProfileLayout>
     );
@@ -346,11 +362,8 @@ const ProfileEdit = () => {
             Cancel
           </Button>
           <Button 
-            onClick={(e) => {
-              console.log('Button clicked event:', e);
-              handleSave();
-            }} 
-            disabled={saveProfileMutation.isPending}
+            onClick={handleSave}
+            disabled={authLoading || saveProfileMutation.isPending}
           >
             {saveProfileMutation.isPending ? (
               <>Saving...</>
