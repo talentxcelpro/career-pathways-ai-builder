@@ -25,10 +25,14 @@ interface ProfileUpdateData {
   allow_profile_sharing?: boolean;
   custom_profile_url?: string;
   resume_url?: string;
-  work_experiences?: Array<any>;
+  work_experiences?: unknown[];
   username?: string;
   custom_url_slug?: string;
 }
+
+type ProfileUpdateError = {
+  message?: string;
+};
 
 export function useProfileUpdate() {
   const queryClient = useQueryClient();
@@ -112,9 +116,9 @@ export function useProfileUpdate() {
       toast.success('Profile updated successfully');
       return data;
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error('Profile update error:', error);
-      toast.error(error.message || 'Failed to update profile');
+      toast.error((error as ProfileUpdateError).message || 'Failed to update profile');
     }
   });
 
@@ -139,7 +143,7 @@ export function useProfileUpdate() {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
       toast.success('Profile picture updated successfully');
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error('Profile picture update error:', error);
       toast.error('Failed to update profile picture');
     }
