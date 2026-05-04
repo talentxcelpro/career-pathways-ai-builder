@@ -20,6 +20,17 @@ import { BasicInformationSection } from '@/components/profile/edit/BasicInformat
 import { ProfessionalDetailsSection } from '@/components/profile/edit/ProfessionalDetailsSection';
 import { useAuth } from '@/contexts/AuthContext';
 
+type WorkExperience = {
+  id: string;
+  company: string;
+  position: string;
+  startDate: string;
+  endDate: string;
+  isCurrent: boolean;
+  description: string;
+  location: string;
+};
+
 const ProfileEdit = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -78,19 +89,10 @@ const ProfileEdit = () => {
     allow_profile_sharing: true,
     custom_profile_url: '',
     resume_url: '',
-    work_experiences: [] as Array<{
-      id: string;
-      company: string;
-      position: string;
-      startDate: string;
-      endDate: string;
-      isCurrent: boolean;
-      description: string;
-      location: string;
-    }>
+    work_experiences: [] as WorkExperience[]
   });
 
-  const handleFieldChange = (field: string, value: string | number | Array<any>) => {
+  const handleFieldChange = (field: string, value: string | number | boolean | unknown[] | Record<string, string>) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -120,7 +122,7 @@ const ProfileEdit = () => {
         allow_profile_sharing: profile.allow_profile_sharing ?? true,
         custom_profile_url: profile.custom_profile_url || generateCustomProfileUrl(profile.full_name || ''),
         resume_url: profile.resume_url || '',
-        work_experiences: (profile.work_experiences as any) || []
+        work_experiences: (profile.work_experiences as WorkExperience[]) || []
       });
     }
   }, [profile]);
