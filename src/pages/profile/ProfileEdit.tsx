@@ -359,11 +359,8 @@ const ProfileEdit = () => {
             Cancel
           </Button>
           <Button 
-            onClick={(e) => {
-              console.log('Button clicked event:', e);
-              handleSave();
-            }} 
-            disabled={saveProfileMutation.isPending}
+            onClick={handleSave}
+            disabled={authLoading || saveProfileMutation.isPending}
           >
             {saveProfileMutation.isPending ? (
               <>Saving...</>
