@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useTXCIntegration } from './useTXCIntegration';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface ProfileUpdateData {
   id?: string;
@@ -32,11 +33,22 @@ interface ProfileUpdateData {
 export function useProfileUpdate() {
   const queryClient = useQueryClient();
   const { triggerProfileCompleted, triggerSkillAdded } = useTXCIntegration();
+  const { refreshSession } = useAuth();
+
+  const resolveAuthenticatedUser = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) return session.user;
+
+    await refreshSession();
+    const { data: { session: refreshedSession } } = await supabase.auth.getSession();
+    if (refreshedSession?.user) return refreshedSession.user;
+
+    throw new Error('Your session could not be restored. Please sign in again.');
+  };
 
   const updateProfile = useMutation({
     mutationFn: async (data: ProfileUpdateData) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
+      const user = await resolveAuthenticatedUser();
 
       // Always use UPDATE for existing profiles - much safer than upsert
       const updateData = {
@@ -108,8 +120,7 @@ export function useProfileUpdate() {
 
   const updateProfilePicture = useMutation({
     mutationFn: async (profilePictureUrl: string) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
+      const user = await resolveAuthenticatedUser();
 
       const { data, error } = await supabase
         .from('profiles')
