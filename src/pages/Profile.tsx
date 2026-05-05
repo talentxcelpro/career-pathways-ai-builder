@@ -196,7 +196,10 @@ const Profile = () => {
           {/* About Section */}
           {profile?.about && (
             <div className="mb-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-2">About</h2>
+              <div className="mb-2 flex items-center justify-between gap-3">
+                <h2 className="text-lg font-semibold text-gray-900">About</h2>
+                <ListenButton text={profile.about} source={`${profile?.full_name || 'Profile'} · About`} />
+              </div>
               <p className="text-gray-700 whitespace-pre-wrap">{profile.about}</p>
             </div>
           )}
