@@ -11,6 +11,8 @@ import { NavItem } from "./types/nav-item";
 import { Navbar } from "./components/navigation/Navbar";
 import { FooterWrapper } from "./components/layout/FooterWrapper";
 import { OptimizedAuthProvider } from "./contexts/OptimizedAuthContext";
+import { VoicePlayerProvider } from "@/contexts/VoicePlayerContext";
+import { VoiceMiniPlayer } from "@/components/voice/VoiceMiniPlayer";
 import { TXCAutoMiner } from '@/components/txc/TXCAutoMiner';
 import { FinalLaunchChecklist } from '@/components/deployment/FinalLaunchChecklist';
 import { AuthErrorRecovery } from "./components/auth/AuthErrorRecovery";
