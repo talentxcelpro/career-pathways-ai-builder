@@ -484,6 +484,8 @@ const App = () => {
                     <PageSpecificBottomNav />
                   </Suspense>
                     </NotificationProvider>
+                    <VoiceMiniPlayer />
+                  </VoicePlayerProvider>
                   </OptimizedAuthProvider>
               </BrowserRouter>
            </HelmetProvider>
