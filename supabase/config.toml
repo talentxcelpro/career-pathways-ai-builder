@@ -166,3 +166,6 @@ verify_jwt = true
 
 [functions.ai-cfo-execute]
 verify_jwt = true
+
+[functions.elevenlabs-tts]
+verify_jwt = false
