@@ -171,22 +171,25 @@ const Profile = () => {
             </div>
             
             {/* Action Buttons */}
-            <div className="flex space-x-2">
-              <Button variant="outline" onClick={() => navigate('/profile/edit')}>
-                Edit Profile
-              </Button>
-              <Button variant="outline" onClick={() => setShowShareDialog(true)}>
-                <Share2 className="h-4 w-4 mr-2" />
-                Share
-              </Button>
-              {profile?.resume_url && (
-                <Button variant="outline" asChild>
-                  <a href={profile.resume_url} target="_blank" rel="noopener noreferrer">
-                    <Download className="h-4 w-4 mr-2" />
-                    Resume
-                  </a>
+            <div className="flex flex-col items-end gap-2">
+              <SessionStatusIndicator />
+              <div className="flex space-x-2">
+                <Button variant="outline" onClick={() => navigate('/profile/edit')}>
+                  Edit Profile
                 </Button>
-              )}
+                <Button variant="outline" onClick={() => setShowShareDialog(true)}>
+                  <Share2 className="h-4 w-4 mr-2" />
+                  Share
+                </Button>
+                {profile?.resume_url && (
+                  <Button variant="outline" asChild>
+                    <a href={profile.resume_url} target="_blank" rel="noopener noreferrer">
+                      <Download className="h-4 w-4 mr-2" />
+                      Resume
+                    </a>
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
           
