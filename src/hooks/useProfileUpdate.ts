@@ -39,13 +39,25 @@ export function useProfileUpdate() {
   const { triggerProfileCompleted, triggerSkillAdded } = useTXCIntegration();
   const { refreshSession } = useAuth();
 
+  // Wait for an active session, retrying briefly while a refresh is in flight.
   const resolveAuthenticatedUser = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session?.user) return session.user;
+    const tryGet = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      return session?.user ?? null;
+    };
 
-    await refreshSession();
-    const { data: { session: refreshedSession } } = await supabase.auth.getSession();
-    if (refreshedSession?.user) return refreshedSession.user;
+    let user = await tryGet();
+    if (user) return user;
+
+    // Attempt explicit refresh, swallow errors (refresh may already be in flight)
+    try { await refreshSession(); } catch (_) { /* noop */ }
+
+    // Poll briefly (up to ~5s) for the session to settle
+    for (let i = 0; i < 10; i++) {
+      user = await tryGet();
+      if (user) return user;
+      await new Promise(r => setTimeout(r, 500));
+    }
 
     throw new Error('Your session could not be restored. Please sign in again.');
   };

@@ -19,6 +19,7 @@ import { ResumeUploadSection } from '@/components/profile/edit/ResumeUploadSecti
 import { BasicInformationSection } from '@/components/profile/edit/BasicInformationSection';
 import { ProfessionalDetailsSection } from '@/components/profile/edit/ProfessionalDetailsSection';
 import { useAuth } from '@/contexts/AuthContext';
+import { SessionStatusIndicator } from '@/components/auth/SessionStatusIndicator';
 
 type WorkExperience = {
   id: string;
@@ -42,13 +43,18 @@ const ProfileEdit = () => {
     allowedTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
   });
   const resolveAuthenticatedUser = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session?.user) return session.user;
-
-    await refreshSession();
-    const { data: { session: refreshedSession } } = await supabase.auth.getSession();
-    if (refreshedSession?.user) return refreshedSession.user;
-
+    const tryGet = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      return session?.user ?? null;
+    };
+    let user = await tryGet();
+    if (user) return user;
+    try { await refreshSession(); } catch (_) { /* noop */ }
+    for (let i = 0; i < 10; i++) {
+      user = await tryGet();
+      if (user) return user;
+      await new Promise(r => setTimeout(r, 500));
+    }
     throw new Error('Your session could not be restored. Please sign in again.');
   };
 
@@ -357,23 +363,26 @@ const ProfileEdit = () => {
         />
 
         {/* Save Button */}
-        <div className="flex justify-end space-x-4">
-          <Button variant="outline" onClick={() => navigate('/profile')}>
-            Cancel
-          </Button>
-          <Button 
-            onClick={handleSave}
-            disabled={authLoading || saveProfileMutation.isPending}
-          >
-            {saveProfileMutation.isPending ? (
-              <>Saving...</>
-            ) : (
-              <>
-                <Save className="h-4 w-4 mr-2" />
-                Save Changes
-              </>
-            )}
-          </Button>
+        <div className="flex flex-col-reverse items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <SessionStatusIndicator />
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" onClick={() => navigate('/profile')}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSave}
+              disabled={authLoading || saveProfileMutation.isPending}
+            >
+              {saveProfileMutation.isPending ? (
+                <>Saving...</>
+              ) : (
+                <>
+                  <Save className="h-4 w-4 mr-2" />
+                  Save Changes
+                </>
+              )}
+            </Button>
+          </div>
         </div>
       </div>
     </ProfileLayout>
