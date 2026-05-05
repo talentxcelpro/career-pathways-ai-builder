@@ -19,6 +19,7 @@ import { ResumeUploadSection } from '@/components/profile/edit/ResumeUploadSecti
 import { BasicInformationSection } from '@/components/profile/edit/BasicInformationSection';
 import { ProfessionalDetailsSection } from '@/components/profile/edit/ProfessionalDetailsSection';
 import { useAuth } from '@/contexts/AuthContext';
+import { SessionStatusIndicator } from '@/components/auth/SessionStatusIndicator';
 
 type WorkExperience = {
   id: string;
