@@ -17,6 +17,7 @@ import { useState } from 'react';
 import ProBadge from '@/components/network/ProBadge';
 import { useAuth } from '@/contexts/AuthContext';
 import { SessionStatusIndicator } from '@/components/auth/SessionStatusIndicator';
+import { ListenButton } from '@/components/voice/ListenButton';
 
 const Profile = () => {
   const navigate = useNavigate();
