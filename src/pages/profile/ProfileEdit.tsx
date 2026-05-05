@@ -363,23 +363,26 @@ const ProfileEdit = () => {
         />
 
         {/* Save Button */}
-        <div className="flex justify-end space-x-4">
-          <Button variant="outline" onClick={() => navigate('/profile')}>
-            Cancel
-          </Button>
-          <Button 
-            onClick={handleSave}
-            disabled={authLoading || saveProfileMutation.isPending}
-          >
-            {saveProfileMutation.isPending ? (
-              <>Saving...</>
-            ) : (
-              <>
-                <Save className="h-4 w-4 mr-2" />
-                Save Changes
-              </>
-            )}
-          </Button>
+        <div className="flex flex-col-reverse items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <SessionStatusIndicator />
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" onClick={() => navigate('/profile')}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSave}
+              disabled={authLoading || saveProfileMutation.isPending}
+            >
+              {saveProfileMutation.isPending ? (
+                <>Saving...</>
+              ) : (
+                <>
+                  <Save className="h-4 w-4 mr-2" />
+                  Save Changes
+                </>
+              )}
+            </Button>
+          </div>
         </div>
       </div>
     </ProfileLayout>
