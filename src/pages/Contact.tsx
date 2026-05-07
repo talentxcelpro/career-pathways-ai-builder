@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Mail, MapPin, Clock, MessageCircle, Phone } from "lucide-react";
 import { toast } from "sonner";
+import { PageShell } from "@/components/layout/PageShell";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -32,20 +34,16 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white py-16">
-        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl font-bold mb-4">We're Here to Help</h1>
-          <p className="text-xl text-blue-100">Get in touch with our team - we'd love to hear from you</p>
-          <p className="text-sm text-blue-200 mt-2">
-            <strong>Effective:</strong> July 01, 2025
-          </p>
-        </div>
-      </div>
-
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div className="min-h-screen bg-background">
+      <PageShell width="lg" pad="lg">
+        <PageHeader
+          eyebrow="Contact"
+          title="We're here to help"
+          description="Get in touch with our team — we'd love to hear from you."
+          size="md"
+          align="center"
+        />
+        <div className="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Contact Form */}
           <Card>
             <CardHeader>
@@ -186,7 +184,7 @@ const Contact = () => {
             </Card>
           </div>
         </div>
-      </div>
+      </PageShell>
     </div>
   );
 };
