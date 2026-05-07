@@ -5,6 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Target, CheckCircle2, ListChecks } from 'lucide-react';
 import { updateMetaTags } from '@/utils/metaTags';
+import { PageShell } from '@/components/layout/PageShell';
+import { PageHeader } from '@/components/layout/PageHeader';
 
 const CareerGoals: React.FC = () => {
   const [goals, setGoals] = React.useState<string[]>(['Improve system design skills', 'Publish 2 technical blog posts']);
@@ -75,7 +77,7 @@ const CareerGoals: React.FC = () => {
             </CardContent>
           </Card>
         </div>
-      </main>
+      </PageShell>
     </div>
   );
 };
