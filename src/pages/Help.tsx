@@ -19,6 +19,8 @@ import {
   ExternalLink
 } from "lucide-react";
 import { toast } from "sonner";
+import { PageShell } from "@/components/layout/PageShell";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 const Help = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -490,7 +492,7 @@ const Help = () => {
             </div>
           </CardContent>
         </Card>
-      </div>
+      </PageShell>
     </div>
   );
 };
