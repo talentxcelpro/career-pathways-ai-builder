@@ -47,21 +47,15 @@
     <link rel="prefetch" href="/jobs" as="document">
     <link rel="prefetch" href="/network" as="document">
     
-    <!-- Inline critical font CSS -->
+    <!-- SF Pro is provided by the OS on Apple devices via -apple-system / BlinkMacSystemFont.
+         Inter is kept only as a local fallback for non-Apple OSes (no network fetch). -->
     <style>
       @font-face {
         font-family: 'Inter';
         font-style: normal;
-        font-weight: 400;
+        font-weight: 100 900;
         font-display: swap;
-        src: local('Inter'), local('Inter-Regular'), url(https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2) format('woff2');
-      }
-      @font-face {
-        font-family: 'Inter';
-        font-style: normal;
-        font-weight: 600;
-        font-display: swap;
-        src: local('Inter SemiBold'), local('Inter-SemiBold'), url(https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuGKYAZ9hiJ-Ek-_EeA.woff2) format('woff2');
+        src: local('Inter'), local('Inter-Regular');
       }
     </style>
     
@@ -106,20 +100,8 @@
     <meta name="mobile-web-app-capable" content="yes" />
     
     
-    <!-- Load Inter font with all weights for consistent typography -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"></noscript>
+    <!-- Typography: SF Pro via system stack (no web font fetch needed) -->
     
-    <!-- System Font Fallback CSS -->
-    <style>
-      @font-face {
-        font-family: 'Inter';
-        src: local('Inter'), local('Inter-Regular');
-        font-weight: 100 900;
-        font-style: normal;
-        font-display: swap;
-      }
-    </style>
     
     
     <!-- Google One Tap Sign-In - Loaded asynchronously by React -->
@@ -151,7 +133,7 @@
     
     <!-- Inline critical CSS for instant render -->
     <style>
-      body{margin:0;padding:0;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-weight:400;letter-spacing:-0.011em}
+      body{margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',Roboto,Inter,sans-serif;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-weight:400;letter-spacing:-0.011em;font-size:17px}
       #root{min-height:100vh;opacity:0;animation:fadeIn .2s ease-out forwards}
       @keyframes fadeIn{to{opacity:1}}
       .min-h-screen{min-height:100vh}

@@ -10,12 +10,14 @@ export default {
 	],
 	prefix: "",
 	theme: {
-	fontFamily: {
-			// Unified Inter-based font system for consistent, modern look
-			sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
-			heading: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-			display: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-			mono: ['SF Mono', 'Monaco', 'Menlo', 'Roboto Mono', 'Source Code Pro', 'monospace'],
+		fontFamily: {
+			// SF Pro system stack — renders SF Pro Display/Text on Apple devices,
+			// with high-quality fallbacks (Segoe UI / Roboto / Inter) elsewhere.
+			sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Inter', 'Arial', 'sans-serif'],
+			text: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Inter', 'Arial', 'sans-serif'],
+			heading: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Inter', 'sans-serif'],
+			display: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Inter', 'sans-serif'],
+			mono: ['"SF Mono"', 'Monaco', 'Menlo', '"Roboto Mono"', '"Source Code Pro"', 'monospace'],
 		},
 		container: {
 			center: true,
