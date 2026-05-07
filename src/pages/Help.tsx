@@ -356,8 +356,7 @@ const Help = () => {
           align="center"
         />
 
-        <div className="mt-12">
-        <div className="mb-12">
+        <div className="mt-12 mb-12">
           <div className="relative max-w-2xl mx-auto">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
             <Input
