@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Clock, DollarSign, Users, Zap } from 'lucide-react';
+import { PageShell, Section } from '@/components/layout/PageShell';
+import { PageHeader } from '@/components/layout/PageHeader';
 
 const Careers = () => {
   const openPositions = [
@@ -41,18 +43,15 @@ const Careers = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
-      <div className="max-w-7xl mx-auto px-4 py-16">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="text-4xl lg:text-6xl font-bold text-slate-900 mb-6">
-            Join the TalentXcel Team
-          </h1>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-            Help us build the future of career development. We're a passionate team creating AI-powered tools 
-            that help millions of professionals advance their careers worldwide.
-          </p>
-        </div>
+    <div className="min-h-screen bg-background">
+      <PageShell width="xl" pad="lg">
+        <PageHeader
+          eyebrow="Careers"
+          title="Join the TalentXcel team"
+          description="Help us build the future of career development. We're a passionate team creating AI-powered tools that help millions of professionals advance their careers worldwide."
+          size="lg"
+          align="center"
+        />
 
         {/* Company Values */}
         <div className="grid md:grid-cols-3 gap-8 mb-16">
@@ -97,9 +96,8 @@ const Careers = () => {
           </Card>
         </div>
 
-        {/* Open Positions */}
-        <div>
-          <h2 className="text-3xl font-bold text-slate-900 mb-8 text-center">Open Positions</h2>
+        <Section spacing="lg">
+          <h2 className="text-title-1 text-foreground mb-8 text-center">Open Positions</h2>
           <div className="grid gap-6">
             {openPositions.map((position, index) => (
               <Card key={index} className="hover:shadow-lg transition-shadow">
@@ -136,21 +134,21 @@ const Careers = () => {
               </Card>
             ))}
           </div>
-        </div>
+        </Section>
 
         {/* CTA */}
         <div className="text-center mt-16">
-          <h3 className="text-2xl font-bold text-slate-900 mb-4">
+          <h3 className="text-title-1 text-foreground mb-4">
             Don't see a perfect fit?
           </h3>
-          <p className="text-slate-600 mb-6">
+          <p className="text-body text-muted-foreground mb-6">
             We're always looking for talented individuals to join our team.
           </p>
           <Button variant="outline" size="lg">
             Send Us Your Resume
           </Button>
         </div>
-      </div>
+      </PageShell>
     </div>
   );
 };
