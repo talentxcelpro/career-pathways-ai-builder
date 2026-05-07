@@ -5,6 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Target, CheckCircle2, ListChecks } from 'lucide-react';
 import { updateMetaTags } from '@/utils/metaTags';
+import { PageShell } from '@/components/layout/PageShell';
+import { PageHeader } from '@/components/layout/PageHeader';
 
 const CareerGoals: React.FC = () => {
   const [goals, setGoals] = React.useState<string[]>(['Improve system design skills', 'Publish 2 technical blog posts']);
@@ -25,20 +27,14 @@ const CareerGoals: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="px-4 pt-8">
-        <div className="max-w-5xl mx-auto flex items-center gap-3">
-          <div className="p-3 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/20">
-            <Target className="h-6 w-6 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold">Career Goals</h1>
-            <p className="text-muted-foreground">Smart goal setting and milestone tracking</p>
-          </div>
-        </div>
-      </header>
+      <PageShell width="lg" pad="md">
+        <PageHeader
+          eyebrow="Career"
+          title="Career Goals"
+          description="Smart goal setting and milestone tracking."
+        />
 
-      <main className="px-4 py-6">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card className="md:col-span-2">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -81,7 +77,7 @@ const CareerGoals: React.FC = () => {
             </CardContent>
           </Card>
         </div>
-      </main>
+      </PageShell>
     </div>
   );
 };
