@@ -491,8 +491,7 @@ const App = () => {
            </HelmetProvider>
            {/* Mobile Status Bar - Shows offline/battery status */}
            <MobileStatusBar />
-           {/* Real-time Connection Status */}
-           <ConnectionStatusIndicator />
+            {/* Real-time Connection Status indicator removed per UX request */}
            {/* PWA Install Prompts */}
            <ChromePWAPrompt />
            <IOSInstallPrompt />
