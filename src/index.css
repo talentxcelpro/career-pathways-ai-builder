@@ -873,12 +873,12 @@ img.loaded {
     /* Sidebar colors */
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 210 29% 10%;
-    --sidebar-primary: 203 89% 53%;
+    --sidebar-primary: 212 100% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 210 29% 91%;
     --sidebar-accent-foreground: 210 29% 10%;
     --sidebar-border: 210 29% 91%;
-    --sidebar-ring: 203 89% 53%;
+    --sidebar-ring: 212 100% 48%;
   }
 
   .dark {
