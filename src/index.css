@@ -925,16 +925,16 @@ img.loaded {
 
     --border: 228 30% 22%;
     --input: 228 30% 18%;
-    --ring: 228 63% 55%;
+    --ring: 212 100% 56%;
 
     --sidebar-background: 210 29% 8%;
     --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 203 89% 53%;
+    --sidebar-primary: 212 100% 56%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 210 29% 15%;
     --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 210 29% 15%;
-    --sidebar-ring: 203 89% 53%;
+    --sidebar-ring: 212 100% 56%;
     
     /* TalentXcel Dark Mode Premium Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));
