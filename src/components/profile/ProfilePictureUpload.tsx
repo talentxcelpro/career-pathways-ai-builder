@@ -33,13 +33,15 @@ export const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
     if (!file) return;
 
     try {
-      // Upload file to storage
-      const url = await uploadFile(file, `${userId}/avatar.${file.name.split('.').pop()}`);
+      // Upload file to storage with timestamped name to bypass CDN/browser cache
+      const url = await uploadFile(file);
       if (url) {
+        // Cache-bust the public URL so the new image renders immediately
+        const bustedUrl = `${url}${url.includes('?') ? '&' : '?'}v=${Date.now()}`;
         // Update profile picture in database
-        await updateProfilePicture.mutateAsync(url);
+        await updateProfilePicture.mutateAsync(bustedUrl);
         // Call the callback for local state update
-        onImageChange(url);
+        onImageChange(bustedUrl);
       }
     } catch (error) {
       console.error('Upload failed:', error);
