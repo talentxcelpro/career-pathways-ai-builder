@@ -873,12 +873,12 @@ img.loaded {
     /* Sidebar colors */
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 210 29% 10%;
-    --sidebar-primary: 203 89% 53%;
+    --sidebar-primary: 212 100% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 210 29% 91%;
     --sidebar-accent-foreground: 210 29% 10%;
     --sidebar-border: 210 29% 91%;
-    --sidebar-ring: 203 89% 53%;
+    --sidebar-ring: 212 100% 48%;
   }
 
   .dark {
@@ -891,11 +891,11 @@ img.loaded {
     --popover: 228 63% 10%;
     --popover-foreground: 0 0% 92%; /* Slightly darker for better readability */
 
-    /* TalentXcel Brand Colors - Dark Mode */
-    --primary: 228 63% 55%;
+    /* TalentXcel Brand — unified Apple Blue across light/dark */
+    --primary: 212 100% 56%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 228 63% 70%;
-    --primary-lighter: 228 63% 25%;
+    --primary-light: 212 100% 70%;
+    --primary-lighter: 212 100% 30%;
 
     --brand-green: 142 64% 55%;
     --brand-green-foreground: 0 0% 100%;
@@ -925,16 +925,16 @@ img.loaded {
 
     --border: 228 30% 22%;
     --input: 228 30% 18%;
-    --ring: 228 63% 55%;
+    --ring: 212 100% 56%;
 
     --sidebar-background: 210 29% 8%;
     --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 203 89% 53%;
+    --sidebar-primary: 212 100% 56%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 210 29% 15%;
     --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 210 29% 15%;
-    --sidebar-ring: 203 89% 53%;
+    --sidebar-ring: 212 100% 56%;
     
     /* TalentXcel Dark Mode Premium Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));

@@ -97,27 +97,32 @@ export function useFileUpload(options?: UseFileUploadOptions) {
         }
       }
 
-      console.log(`Uploading file to bucket: ${bucket}, path: ${fileName}`);
+      console.log(`[upload] bucket=${bucket} path=${fileName} size=${file.size} type=${file.type}`);
 
-      const result = await optimizedStorage.uploadFile(bucket, fileName, file, {
-        cacheControl: '31536000',
-        upsert: true
-      });
+      // Direct supabase storage call — bypass cache layer that was suppressing errors / serving stale results
+      const { data, error: uploadError } = await supabase.storage
+        .from(bucket)
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: true,
+          contentType: file.type,
+        });
 
-      if (result.error) {
-        console.error('Upload error:', result.error);
-        throw result.error;
+      if (uploadError) {
+        console.error('[upload] storage error:', JSON.stringify(uploadError), uploadError);
+        throw uploadError;
       }
 
-      const publicUrl = await optimizedStorage.getPublicUrl(bucket, result.data.path);
+      const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(data.path);
+      const publicUrl = urlData.publicUrl;
 
       setProgress(100);
       toast.success('File uploaded successfully');
       return publicUrl;
     } catch (error: any) {
-      console.error('Upload failed:', error);
-      const errorMessage = error.message || 'Upload failed';
-      toast.error(errorMessage);
+      console.error('[upload] failed:', JSON.stringify(error), error);
+      const errorMessage = error?.message || error?.error || 'Upload failed';
+      toast.error(`Upload failed: ${errorMessage}`);
       throw error;
     } finally {
       setUploading(false);
