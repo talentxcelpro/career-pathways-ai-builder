@@ -891,11 +891,11 @@ img.loaded {
     --popover: 228 63% 10%;
     --popover-foreground: 0 0% 92%; /* Slightly darker for better readability */
 
-    /* TalentXcel Brand Colors - Dark Mode */
-    --primary: 228 63% 55%;
+    /* TalentXcel Brand — unified Apple Blue across light/dark */
+    --primary: 212 100% 56%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 228 63% 70%;
-    --primary-lighter: 228 63% 25%;
+    --primary-light: 212 100% 70%;
+    --primary-lighter: 212 100% 30%;
 
     --brand-green: 142 64% 55%;
     --brand-green-foreground: 0 0% 100%;
