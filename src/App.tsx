@@ -131,7 +131,7 @@ import ProviderDashboard from "./pages/ProviderDashboard";
 import { CompletedCareerIntelligenceSystem } from "./pages/CompletedCareerIntelligenceSystem";
 import { turboCore } from "@/utils/turboCore";
 import { advancedPerformanceMonitor } from "@/utils/advancedPerformanceMonitor";
-import { PerformanceDashboard } from "@/components/performance/PerformanceDashboard";
+
 import { ConnectionStatusIndicator } from "@/components/realtime/ConnectionStatusIndicator";
 import { MobileStatusBar } from "@/components/mobile/MobileStatusBar";
 import { PhaseInitializer } from "@/components/PhaseInitializer";
@@ -495,8 +495,6 @@ const App = () => {
            {/* PWA Install Prompts */}
            <ChromePWAPrompt />
            <IOSInstallPrompt />
-           {/* Performance Dashboard - Dev Mode Only */}
-           {import.meta.env.DEV && <PerformanceDashboard />}
          </QueryClientProvider>
      </ErrorBoundary>
   );
