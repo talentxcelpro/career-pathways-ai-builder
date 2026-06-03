@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 interface ProfileUpdateData {
   id?: string;
   profile_picture_url?: string;
+  profile_photo_url?: string;
   banner_url?: string;
   full_name?: string;
   title?: string;
@@ -32,6 +33,22 @@ interface ProfileUpdateData {
 
 type ProfileUpdateError = {
   message?: string;
+};
+
+const PROFILE_UPDATE_TIMEOUT_MS = 30000;
+
+const withTimeout = async <T,>(promise: PromiseLike<T>, message: string): Promise<T> => {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeoutId = setTimeout(() => reject(new Error(message)), PROFILE_UPDATE_TIMEOUT_MS);
+  });
+
+  try {
+    return await Promise.race([Promise.resolve(promise), timeoutPromise]);
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
+  }
 };
 
 export function useProfileUpdate() {
@@ -125,17 +142,22 @@ export function useProfileUpdate() {
     mutationFn: async (profilePictureUrl: string) => {
       const user = await resolveAuthenticatedUser();
 
-      const { data, error } = await supabase
-        .from('profiles')
-        .update({ 
-          profile_picture_url: profilePictureUrl,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id)
-        .select()
-        .single();
+      const { data, error } = await withTimeout(
+        supabase
+          .from('profiles')
+          .update({ 
+            profile_picture_url: profilePictureUrl,
+            profile_photo_url: profilePictureUrl,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', user.id)
+          .select()
+          .maybeSingle(),
+        'Profile update timed out. Please refresh and try again.'
+      );
 
       if (error) throw error;
+      if (!data) throw new Error('Profile not found - please refresh and try again');
       return data;
     },
     onSuccess: () => {

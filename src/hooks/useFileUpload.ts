@@ -4,6 +4,22 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { optimizedStorage } from '@/utils/optimizedStorage';
 
+const UPLOAD_TIMEOUT_MS = 30000;
+
+const withTimeout = async <T,>(promise: PromiseLike<T>, message: string): Promise<T> => {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeoutId = setTimeout(() => reject(new Error(message)), UPLOAD_TIMEOUT_MS);
+  });
+
+  try {
+    return await Promise.race([Promise.resolve(promise), timeoutPromise]);
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
+  }
+};
+
 interface UseFileUploadOptions {
   bucket: string;
   maxSize?: number; // in bytes
@@ -52,7 +68,10 @@ export function useFileUpload(options?: UseFileUploadOptions) {
     setProgress(0);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await withTimeout(
+        supabase.auth.getUser(),
+        'Authentication check timed out. Please refresh and try again.'
+      );
       if (!user) throw new Error('User not authenticated');
 
       const fileExt = file.name.split('.').pop();
@@ -100,13 +119,16 @@ export function useFileUpload(options?: UseFileUploadOptions) {
       console.log(`[upload] bucket=${bucket} path=${fileName} size=${file.size} type=${file.type}`);
 
       // Direct supabase storage call — bypass cache layer that was suppressing errors / serving stale results
-      const { data, error: uploadError } = await supabase.storage
-        .from(bucket)
-        .upload(fileName, file, {
-          cacheControl: '3600',
-          upsert: true,
-          contentType: file.type,
-        });
+      const { data, error: uploadError } = await withTimeout(
+        supabase.storage
+          .from(bucket)
+          .upload(fileName, file, {
+            cacheControl: '3600',
+            upsert: true,
+            contentType: file.type,
+          }),
+        'Upload timed out. Please check your connection and try again.'
+      );
 
       if (uploadError) {
         console.error('[upload] storage error:', JSON.stringify(uploadError), uploadError);

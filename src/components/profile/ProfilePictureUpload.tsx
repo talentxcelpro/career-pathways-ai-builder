@@ -1,5 +1,5 @@
 
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Camera, Upload } from "lucide-react";
 import { useFileUpload } from '@/hooks/useFileUpload';
@@ -21,6 +21,7 @@ export const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
   onImageChange
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [previewUrl, setPreviewUrl] = useState(currentImageUrl || '');
   const { uploadFile, uploading } = useFileUpload({
     bucket: 'avatars',
     maxSize: 5 * 1024 * 1024,
@@ -28,9 +29,16 @@ export const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
   });
   const { updateProfilePicture } = useProfileUpdate();
 
+  useEffect(() => {
+    setPreviewUrl(currentImageUrl || '');
+  }, [currentImageUrl]);
+
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+
+    const localPreviewUrl = URL.createObjectURL(file);
+    setPreviewUrl(localPreviewUrl);
 
     try {
       // Upload file to storage with timestamped name to bypass CDN/browser cache
@@ -40,17 +48,21 @@ export const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
         const bustedUrl = `${url}${url.includes('?') ? '&' : '?'}v=${Date.now()}`;
         // Update profile picture in database
         await updateProfilePicture.mutateAsync(bustedUrl);
+        setPreviewUrl(bustedUrl);
         // Call the callback for local state update
         onImageChange(bustedUrl);
       }
     } catch (error) {
       console.error('Upload failed:', error);
+      setPreviewUrl(currentImageUrl || '');
       toast.error('Failed to upload profile picture');
-    }
+    } finally {
+      URL.revokeObjectURL(localPreviewUrl);
 
-    // Reset input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      // Reset input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
@@ -67,7 +79,7 @@ export const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
     <div className="flex flex-col items-center space-y-4">
       <div className="relative group">
         <UserAvatar 
-          src={currentImageUrl}
+          src={previewUrl}
           userName={userName}
           size="2xl"
           alt={userName || 'Profile'} 
