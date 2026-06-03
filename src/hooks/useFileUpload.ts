@@ -6,7 +6,7 @@ import { optimizedStorage } from '@/utils/optimizedStorage';
 
 const UPLOAD_TIMEOUT_MS = 30000;
 
-const withTimeout = async <T,>(promise: Promise<T>, message: string): Promise<T> => {
+const withTimeout = async <T,>(promise: PromiseLike<T>, message: string): Promise<T> => {
   let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
   const timeoutPromise = new Promise<never>((_, reject) => {
@@ -14,7 +14,7 @@ const withTimeout = async <T,>(promise: Promise<T>, message: string): Promise<T>
   });
 
   try {
-    return await Promise.race([promise, timeoutPromise]);
+    return await Promise.race([Promise.resolve(promise), timeoutPromise]);
   } finally {
     if (timeoutId) clearTimeout(timeoutId);
   }
