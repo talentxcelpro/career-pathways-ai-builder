@@ -119,11 +119,16 @@ export function useFileUpload(options?: UseFileUploadOptions) {
       console.log(`[upload] bucket=${bucket} path=${fileName} size=${file.size} type=${file.type}`);
 
       // Direct supabase storage call — bypass cache layer that was suppressing errors / serving stale results
+      // Short cache for user-mutable images so updates propagate quickly even
+      // without query-string cache-busting. Other buckets keep a longer cache.
+      const mutableImageBuckets = new Set(['avatars', 'banners', 'profile-pictures']);
+      const cacheControl = mutableImageBuckets.has(bucket) ? '60' : '3600';
+
       const { data, error: uploadError } = await withTimeout(
         supabase.storage
           .from(bucket)
           .upload(fileName, file, {
-            cacheControl: '3600',
+            cacheControl,
             upsert: true,
             contentType: file.type,
           }),
