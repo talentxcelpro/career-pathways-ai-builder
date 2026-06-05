@@ -108,7 +108,7 @@ import { VideoCall } from "@/components/realtime/VideoCall";
 import { RealTimeChat } from "@/components/realtime/RealTimeChat";
 import { LiveEvent } from "@/components/realtime/LiveEvent";
 import UserProfile from "./pages/UserProfile";
-import CompanyDetail from "./pages/companies/CompanyDetail";
+// CompanyDetail is loaded lazily via CompanyDetailPage in companiesRoutes/employerProfileRoutes
 import AIAgentDashboard from "./pages/ai/AIAgentDashboard";
 import AICareerIntelligence from "./pages/AICareerIntelligence";
 import AICareerHub from "./pages/AICareerHub";
