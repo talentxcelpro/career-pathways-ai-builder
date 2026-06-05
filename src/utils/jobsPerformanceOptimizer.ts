@@ -212,23 +212,13 @@ export const optimizeJobImages = () => {
 };
 
 // Bundle optimization - preload critical components
+// NOTE: These components are statically imported by Jobs.tsx / MobileJobs.tsx,
+// so they are already part of the main bundle. Adding dynamic imports here
+// caused Vite warnings ("dynamic import will not move module into another chunk")
+// and prevented proper code splitting. This is now a no-op kept for API
+// compatibility with existing callers.
 export const preloadJobsComponents = async () => {
-  console.log('🔄 Preloading jobs components...');
-  
-  const componentPromises = [
-    import('@/components/jobs/TalentSparkJobCard'),
-    import('@/components/jobs/SwipeableJobCard'),
-    import('@/components/jobs/GlobalSearch'),
-    import('@/components/jobs/ComprehensiveJobFilters'),
-    import('@/components/jobs/JobCategoriesGrid'),
-    import('@/components/ui/button'),
-    import('@/components/ui/input'),
-    import('@/components/ui/badge'),
-    import('@/components/ui/card'),
-  ];
-
-  await Promise.allSettled(componentPromises);
-  console.log('✅ Jobs components preloaded');
+  return;
 };
 
 // Memory optimization for large job lists
