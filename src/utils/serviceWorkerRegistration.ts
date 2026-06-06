@@ -15,24 +15,24 @@ export function registerServiceWorker() {
           registration.update();
         }, 60 * 60 * 1000);
 
-        // Handle updates
+        // Auto-apply updates silently — never block the user with a confirm()
+        // dialog (users dismiss it, then stay on stale JS forever which breaks
+        // features like profile/banner uploads after a deploy).
         registration.addEventListener('updatefound', () => {
           const newWorker = registration.installing;
           if (!newWorker) return;
 
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              // New version available
-              console.log('🔄 New version available! Reload to update.');
-              
-              // Optionally show a toast notification
-              if (window.confirm('New version available! Reload to update?')) {
-                newWorker.postMessage({ type: 'SKIP_WAITING' });
-                window.location.reload();
-              }
+              console.log('🔄 New version installed — activating.');
+              newWorker.postMessage({ type: 'SKIP_WAITING' });
+              // controllerchange handler below will reload exactly once
             }
           });
         });
+
+        // Trigger an immediate update check on every page load
+        registration.update().catch(() => {});
       } catch (error) {
         console.error('❌ Service Worker registration failed:', error);
       }
