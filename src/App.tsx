@@ -102,6 +102,7 @@ import JobsByLocation from "@/pages/JobsByLocation";
 import JobsBySkill from "@/pages/JobsBySkill";
 import Platform from "./pages/Platform";
 import DebugPage from "./pages/DebugPage";
+import SystemDiagnostics from "./pages/SystemDiagnostics";
 import CareerPassportDashboard from "./pages/passport/CareerPassportDashboard";
 import { CVDatabase } from "@/components/employer/CVDatabase";
 import { VideoCall } from "@/components/realtime/VideoCall";
@@ -355,6 +356,7 @@ const App = () => {
                                 <Route path="/roadmap" element={<CareerRoadmapGenerator />} />
                                 <Route path="/career-goals" element={<CareerGoals />} />
                                 <Route path="/debug" element={<DebugPage />} />
+                                <Route path="/diagnostics" element={<SystemDiagnostics />} />
                                 <Route path="/passport" element={<CareerPassportDashboard />} />
                                 <Route path="/passport/user/:userId" element={<CareerPassportDashboard />} />
                                 <Route path="/passport/:userId" element={<FastPassportRedirect />} />
