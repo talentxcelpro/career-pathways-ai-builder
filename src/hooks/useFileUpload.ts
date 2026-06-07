@@ -141,7 +141,18 @@ export function useFileUpload(options?: UseFileUploadOptions) {
       }
 
       const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(data.path);
-      const publicUrl = urlData.publicUrl;
+      let publicUrl = urlData.publicUrl;
+
+      // Per-upload cache-busting for mutable image buckets so profile images
+      // never show a stale version after re-upload. We use a short hash of the
+      // path + upload timestamp so the URL is deterministic per upload (not
+      // changing on every render) but unique per new upload.
+      if (mutableImageBuckets.has(bucket)) {
+        const stamp = Date.now().toString(36);
+        const hash = (data.path.length * 2654435761 >>> 0).toString(36).slice(0, 4);
+        const v = `${stamp}${hash}`;
+        publicUrl = `${publicUrl}${publicUrl.includes('?') ? '&' : '?'}v=${v}`;
+      }
 
       setProgress(100);
       toast.success('File uploaded successfully');
