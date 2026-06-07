@@ -356,6 +356,7 @@ const App = () => {
                                 <Route path="/roadmap" element={<CareerRoadmapGenerator />} />
                                 <Route path="/career-goals" element={<CareerGoals />} />
                                 <Route path="/debug" element={<DebugPage />} />
+                                <Route path="/diagnostics" element={<SystemDiagnostics />} />
                                 <Route path="/passport" element={<CareerPassportDashboard />} />
                                 <Route path="/passport/user/:userId" element={<CareerPassportDashboard />} />
                                 <Route path="/passport/:userId" element={<FastPassportRedirect />} />
