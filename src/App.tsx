@@ -102,6 +102,7 @@ import JobsByLocation from "@/pages/JobsByLocation";
 import JobsBySkill from "@/pages/JobsBySkill";
 import Platform from "./pages/Platform";
 import DebugPage from "./pages/DebugPage";
+import SystemDiagnostics from "./pages/SystemDiagnostics";
 import CareerPassportDashboard from "./pages/passport/CareerPassportDashboard";
 import { CVDatabase } from "@/components/employer/CVDatabase";
 import { VideoCall } from "@/components/realtime/VideoCall";
