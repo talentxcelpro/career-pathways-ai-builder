@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useOptimizedAuth } from "@/contexts/OptimizedAuthContext";
@@ -8,9 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BadgeCheck, GraduationCap, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
+import CredentialDetailDialog, {
+  CredentialDetail,
+} from "../components/CredentialDetailDialog";
 
 const EducationTimeline: React.FC = () => {
   const { user } = useOptimizedAuth();
+  const [active, setActive] = useState<CredentialDetail | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ["passport-education", user?.id],
@@ -25,6 +29,28 @@ const EducationTimeline: React.FC = () => {
       return data ?? [];
     },
   });
+
+  const openEdu = (edu: any) => {
+    setActive({
+      id: edu.id,
+      type: "education",
+      title: edu.degree || "Qualification",
+      issuer: edu.institution || "Institution",
+      status: "verified",
+      issuedAt: edu.graduation_date,
+      hash: edu.id,
+      description: edu.description,
+      skills: edu.relevant_coursework,
+      meta: [
+        edu.field_of_study && { label: "Field", value: edu.field_of_study },
+        edu.gpa_honors && { label: "GPA / Honors", value: edu.gpa_honors },
+        edu.start_date && {
+          label: "Started",
+          value: new Date(edu.start_date).getFullYear().toString(),
+        },
+      ].filter(Boolean) as any,
+    });
+  };
 
   return (
     <div className="space-y-10">
@@ -67,7 +93,10 @@ const EducationTimeline: React.FC = () => {
                 <span className="absolute -left-[41px] flex h-6 w-6 items-center justify-center rounded-full border border-border/80 bg-background">
                   <span className="h-2 w-2 rounded-full bg-foreground" />
                 </span>
-                <div className="flex flex-col gap-2">
+                <button
+                  onClick={() => openEdu(edu)}
+                  className="flex w-full flex-col gap-2 text-left"
+                >
                   <p className="text-eyebrow text-muted-foreground">{year}</p>
                   <div className="flex flex-wrap items-center gap-2">
                     <h3 className="text-title-2 text-foreground">
@@ -97,12 +126,18 @@ const EducationTimeline: React.FC = () => {
                           ))}
                       </div>
                     )}
-                </div>
+                </button>
               </li>
             );
           })}
         </ol>
       )}
+
+      <CredentialDetailDialog
+        open={!!active}
+        onOpenChange={(o) => !o && setActive(null)}
+        credential={active}
+      />
     </div>
   );
 };
