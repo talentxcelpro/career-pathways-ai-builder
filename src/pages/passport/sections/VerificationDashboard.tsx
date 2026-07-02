@@ -86,29 +86,39 @@ const VerificationDashboard: React.FC = () => {
         <h2 className="text-title-1 text-foreground">Signal breakdown</h2>
         <div className="mt-4 divide-y divide-border/60 rounded-2xl border border-border/60 bg-card">
           {trust.signals.map((s) => (
-            <div
-              key={s.label}
-              className="flex items-center justify-between px-5 py-4"
-            >
-              <div className="flex items-center gap-3">
-                {s.status === "verified" ? (
-                  <CheckCircle2 className="h-5 w-5 text-foreground" />
-                ) : (
-                  <Clock className="h-5 w-5 text-muted-foreground" />
-                )}
-                <div>
-                  <p className="text-body text-foreground">{s.label}</p>
-                  <p className="text-xs text-muted-foreground">
-                    Weight {s.weight}%
-                  </p>
+            <div key={s.key} className="px-5 py-4">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  {s.status === "verified" ? (
+                    <CheckCircle2 className="h-5 w-5 text-foreground" />
+                  ) : (
+                    <Clock className="h-5 w-5 text-muted-foreground" />
+                  )}
+                  <div>
+                    <p className="text-body text-foreground">{s.label}</p>
+                    <p className="text-xs text-muted-foreground">
+                      Weight {s.weight}% · {s.detail}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="tabular-nums text-title-3 text-foreground">
+                    {s.score}
+                  </span>
+                  <Badge
+                    variant={s.status === "verified" ? "default" : "secondary"}
+                    className="rounded-full capitalize"
+                  >
+                    {s.status}
+                  </Badge>
                 </div>
               </div>
-              <Badge
-                variant={s.status === "verified" ? "default" : "secondary"}
-                className="rounded-full"
-              >
-                {s.status === "verified" ? "Verified" : "Pending"}
-              </Badge>
+              <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-muted">
+                <div
+                  className="h-full rounded-full bg-foreground transition-all"
+                  style={{ width: `${s.score}%` }}
+                />
+              </div>
             </div>
           ))}
         </div>
