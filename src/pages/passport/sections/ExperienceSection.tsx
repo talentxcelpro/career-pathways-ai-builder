@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useOptimizedAuth } from "@/contexts/OptimizedAuthContext";
@@ -8,9 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { BadgeCheck, Briefcase, Plus } from "lucide-react";
+import CredentialDetailDialog, {
+  CredentialDetail,
+} from "../components/CredentialDetailDialog";
 
 const ExperienceSection: React.FC = () => {
   const { user } = useOptimizedAuth();
+  const [active, setActive] = useState<CredentialDetail | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ["passport-experience", user?.id],
@@ -25,6 +29,24 @@ const ExperienceSection: React.FC = () => {
       return data ?? [];
     },
   });
+
+  const openExp = (exp: any) => {
+    setActive({
+      id: exp.id,
+      type: "experience",
+      title: exp.job_title || exp.title || "Role",
+      issuer: exp.company || "Company",
+      status: "verified",
+      issuedAt: exp.start_date,
+      expiresAt: exp.is_current ? null : exp.end_date,
+      hash: exp.id,
+      description: exp.description,
+      meta: [
+        exp.location && { label: "Location", value: exp.location },
+        exp.employment_type && { label: "Type", value: exp.employment_type },
+      ].filter(Boolean) as any,
+    });
+  };
 
   return (
     <div className="space-y-10">
@@ -69,31 +91,42 @@ const ExperienceSection: React.FC = () => {
                 <span className="absolute -left-[41px] flex h-6 w-6 items-center justify-center rounded-full border border-border/80 bg-background">
                   <span className="h-2 w-2 rounded-full bg-foreground" />
                 </span>
-                <p className="text-eyebrow text-muted-foreground">
-                  {start} {end ? `— ${end}` : ""}
-                </p>
-                <div className="mt-1 flex flex-wrap items-center gap-2">
-                  <h3 className="text-title-2 text-foreground">
-                    {exp.job_title || exp.title}
-                  </h3>
-                  <Badge className="gap-1 rounded-full">
-                    <BadgeCheck className="h-3 w-3" /> Verified
-                  </Badge>
-                </div>
-                <p className="mt-1 text-body text-muted-foreground">
-                  {exp.company}
-                  {exp.location ? ` · ${exp.location}` : ""}
-                </p>
-                {exp.description && (
-                  <p className="mt-3 max-w-2xl text-body text-muted-foreground">
-                    {exp.description}
+                <button
+                  onClick={() => openExp(exp)}
+                  className="w-full text-left"
+                >
+                  <p className="text-eyebrow text-muted-foreground">
+                    {start} {end ? `— ${end}` : ""}
                   </p>
-                )}
+                  <div className="mt-1 flex flex-wrap items-center gap-2">
+                    <h3 className="text-title-2 text-foreground">
+                      {exp.job_title || exp.title}
+                    </h3>
+                    <Badge className="gap-1 rounded-full">
+                      <BadgeCheck className="h-3 w-3" /> Verified
+                    </Badge>
+                  </div>
+                  <p className="mt-1 text-body text-muted-foreground">
+                    {exp.company}
+                    {exp.location ? ` · ${exp.location}` : ""}
+                  </p>
+                  {exp.description && (
+                    <p className="mt-3 max-w-2xl text-body text-muted-foreground line-clamp-3">
+                      {exp.description}
+                    </p>
+                  )}
+                </button>
               </li>
             );
           })}
         </ol>
       )}
+
+      <CredentialDetailDialog
+        open={!!active}
+        onOpenChange={(o) => !o && setActive(null)}
+        credential={active}
+      />
     </div>
   );
 };
