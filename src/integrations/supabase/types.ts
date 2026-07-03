@@ -10562,6 +10562,7 @@ export type Database = {
           oauth_provider: string | null
           onboarding_completed: boolean | null
           open_to_remote: boolean | null
+          passport_visibility: Json
           phone: string | null
           portfolio_url: string | null
           preferences: Json | null
@@ -10666,6 +10667,7 @@ export type Database = {
           oauth_provider?: string | null
           onboarding_completed?: boolean | null
           open_to_remote?: boolean | null
+          passport_visibility?: Json
           phone?: string | null
           portfolio_url?: string | null
           preferences?: Json | null
@@ -10770,6 +10772,7 @@ export type Database = {
           oauth_provider?: string | null
           onboarding_completed?: boolean | null
           open_to_remote?: boolean | null
+          passport_visibility?: Json
           phone?: string | null
           portfolio_url?: string | null
           preferences?: Json | null

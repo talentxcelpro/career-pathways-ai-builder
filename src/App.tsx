@@ -105,6 +105,7 @@ import DebugPage from "./pages/DebugPage";
 import SystemDiagnostics from "./pages/SystemDiagnostics";
 import CareerPassportDashboard from "./pages/passport/CareerPassportDashboard";
 import PassportLayout from "./pages/passport/PassportLayout";
+import PublicPassport from "./pages/passport/PublicPassport";
 import { CVDatabase } from "@/components/employer/CVDatabase";
 import { VideoCall } from "@/components/realtime/VideoCall";
 import { RealTimeChat } from "@/components/realtime/RealTimeChat";
@@ -360,6 +361,7 @@ const App = () => {
                                 <Route path="/diagnostics" element={<SystemDiagnostics />} />
                                 <Route path="/passport" element={<PassportLayout />} />
                                 <Route path="/passport/section/:section" element={<PassportLayout />} />
+                                <Route path="/passport/public/:identifier" element={<PublicPassport />} />
                                 <Route path="/passport/legacy" element={<CareerPassportDashboard />} />
                                 <Route path="/passport/user/:userId" element={<CareerPassportDashboard />} />
                                 <Route path="/passport/:userId" element={<FastPassportRedirect />} />
