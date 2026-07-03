@@ -105,6 +105,7 @@ import DebugPage from "./pages/DebugPage";
 import SystemDiagnostics from "./pages/SystemDiagnostics";
 import CareerPassportDashboard from "./pages/passport/CareerPassportDashboard";
 import PassportLayout from "./pages/passport/PassportLayout";
+import PublicPassport from "./pages/passport/PublicPassport";
 import { CVDatabase } from "@/components/employer/CVDatabase";
 import { VideoCall } from "@/components/realtime/VideoCall";
 import { RealTimeChat } from "@/components/realtime/RealTimeChat";
