@@ -26,10 +26,16 @@ import CertificatesSection from "./sections/CertificatesSection";
 import ExperienceSection from "./sections/ExperienceSection";
 import VerificationDashboard from "./sections/VerificationDashboard";
 import ComingSoonSection from "./sections/ComingSoonSection";
+import CareerTimeline from "./sections/CareerTimeline";
+import SharePassport from "./sections/SharePassport";
+import RecruiterView from "./sections/RecruiterView";
+import AICoach from "./sections/AICoach";
+import { Sparkles } from "lucide-react";
 
 type SectionKey =
   | "overview"
   | "profile"
+  | "timeline"
   | "education"
   | "certificates"
   | "experience"
@@ -39,6 +45,7 @@ type SectionKey =
   | "research"
   | "awards"
   | "verification"
+  | "coach"
   | "wallet"
   | "share"
   | "recruiter";
@@ -51,6 +58,7 @@ const NAV: {
 }[] = [
   { key: "overview", label: "Overview", icon: LayoutDashboard },
   { key: "profile", label: "Profile", icon: User },
+  { key: "timeline", label: "Timeline", icon: Sparkles },
   { key: "education", label: "Education", icon: GraduationCap },
   { key: "certificates", label: "Certificates", icon: Award },
   { key: "experience", label: "Experience", icon: Briefcase },
@@ -60,9 +68,10 @@ const NAV: {
   { key: "research", label: "Research", icon: BookOpen, soon: true },
   { key: "awards", label: "Awards", icon: Trophy, soon: true },
   { key: "verification", label: "Verification", icon: ShieldCheck },
+  { key: "coach", label: "AI Coach", icon: Sparkles },
   { key: "wallet", label: "Wallet", icon: Wallet, soon: true },
-  { key: "share", label: "Share", icon: Share2, soon: true },
-  { key: "recruiter", label: "Recruiter View", icon: Building2, soon: true },
+  { key: "share", label: "Share", icon: Share2 },
+  { key: "recruiter", label: "Recruiter View", icon: Building2 },
 ];
 
 const VALID = new Set(NAV.map((n) => n.key));
@@ -81,6 +90,8 @@ const PassportLayout: React.FC = () => {
         return <PassportOverview />;
       case "profile":
         return <PassportProfile />;
+      case "timeline":
+        return <CareerTimeline />;
       case "education":
         return <EducationTimeline />;
       case "certificates":
@@ -89,6 +100,12 @@ const PassportLayout: React.FC = () => {
         return <ExperienceSection />;
       case "verification":
         return <VerificationDashboard />;
+      case "coach":
+        return <AICoach />;
+      case "share":
+        return <SharePassport />;
+      case "recruiter":
+        return <RecruiterView />;
       default:
         return (
           <ComingSoonSection
