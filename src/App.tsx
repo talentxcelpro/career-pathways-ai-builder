@@ -360,6 +360,7 @@ const App = () => {
                                 <Route path="/diagnostics" element={<SystemDiagnostics />} />
                                 <Route path="/passport" element={<PassportLayout />} />
                                 <Route path="/passport/section/:section" element={<PassportLayout />} />
+                                <Route path="/passport/public/:identifier" element={<PublicPassport />} />
                                 <Route path="/passport/legacy" element={<CareerPassportDashboard />} />
                                 <Route path="/passport/user/:userId" element={<CareerPassportDashboard />} />
                                 <Route path="/passport/:userId" element={<FastPassportRedirect />} />
