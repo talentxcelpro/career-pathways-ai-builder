@@ -98,7 +98,7 @@ const SharePassport: React.FC = () => {
   };
 
   const downloadQr = () => {
-    const svg = document.getElementById("passport-qr") as SVGSVGElement | null;
+    const svg = document.getElementById("passport-qr") as unknown as SVGSVGElement | null;
     if (!svg) return;
     const serializer = new XMLSerializer();
     const src = serializer.serializeToString(svg);
