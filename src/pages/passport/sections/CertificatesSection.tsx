@@ -74,8 +74,8 @@ const CertificatesSection: React.FC = () => {
     <div className="space-y-10">
       <PageHeader
         eyebrow="Certificates"
-        title="Blockchain-verified credentials"
-        description="Every certificate carries a tamper-proof hash and QR — recruiters can verify instantly."
+        title="Verified credentials"
+        description="Every certificate carries a tamper-proof signature and QR — recruiters can verify instantly."
       />
 
       {isLoading ? (
