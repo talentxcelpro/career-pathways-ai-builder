@@ -31,7 +31,7 @@ const clamp = (n: number) => Math.max(0, Math.min(100, Math.round(n)));
 /**
  * Deterministic Trust Score. Each signal produces its own 0–100 score based on
  * real verification fields; the overall score is the weighted mean.
- * Blockchain lives underneath — users see one number per signal.
+ * Verification anchoring lives underneath — users see one number per signal.
  */
 export function computeTrustScore(input: TrustInput): TrustResult {
   const p = input.profile ?? {};
