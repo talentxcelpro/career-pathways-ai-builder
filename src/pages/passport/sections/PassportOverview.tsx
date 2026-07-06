@@ -20,8 +20,9 @@ import {
   Share2,
   ArrowRight,
   BadgeCheck,
+  Sparkles,
 } from "lucide-react";
-import { computeTrustScore } from "../lib/trustScore";
+import { computeTrustScore, computeTrustPillars, computeCareerDNA } from "../lib/trustScore";
 
 const PassportOverview: React.FC = () => {
   const { user } = useOptimizedAuth();
@@ -67,6 +68,11 @@ const PassportOverview: React.FC = () => {
   });
 
   const trust = computeTrustScore({
+    profile: data?.profile,
+    counts: data?.counts,
+  });
+  const pillars = computeTrustPillars(trust);
+  const dna = computeCareerDNA({
     profile: data?.profile,
     counts: data?.counts,
   });
@@ -116,20 +122,29 @@ const PassportOverview: React.FC = () => {
             <p className="mt-4 max-w-md text-body text-muted-foreground">
               {trust.summary}
             </p>
-            <div className="mt-6 flex flex-wrap gap-2">
-              {trust.signals.map((s) => (
-                <Badge
-                  key={s.label}
-                  variant={s.status === "verified" ? "default" : "secondary"}
-                  className={
-                    s.status === "verified"
-                      ? "gap-1 rounded-full"
-                      : "gap-1 rounded-full opacity-70"
-                  }
-                >
-                  {s.status === "verified" && <BadgeCheck className="h-3 w-3" />}
-                  {s.label}
-                </Badge>
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              {pillars.map((p) => (
+                <div key={p.key} className="rounded-xl border border-border/60 bg-background/60 p-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {p.status === "verified" ? (
+                        <BadgeCheck className="h-4 w-4 text-foreground" />
+                      ) : (
+                        <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+                      )}
+                      <span className="text-sm text-foreground">{p.label}</span>
+                    </div>
+                    <span className="tabular-nums text-sm font-medium text-foreground">
+                      {p.score}
+                    </span>
+                  </div>
+                  <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="h-full rounded-full bg-foreground transition-all"
+                      style={{ width: `${p.score}%` }}
+                    />
+                  </div>
+                </div>
               ))}
             </div>
           </div>
