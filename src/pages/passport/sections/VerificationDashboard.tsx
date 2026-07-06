@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Clock, ShieldCheck, Link2 } from "lucide-react";
-import { computeTrustScore } from "../lib/trustScore";
+import { computeTrustScore, computeTrustPillars } from "../lib/trustScore";
 
 const VerificationDashboard: React.FC = () => {
   const { user } = useOptimizedAuth();
@@ -49,6 +49,7 @@ const VerificationDashboard: React.FC = () => {
     profile: data?.profile,
     counts: data?.counts,
   });
+  const pillars = computeTrustPillars(trust);
 
   return (
     <div className="space-y-10">
@@ -74,7 +75,7 @@ const VerificationDashboard: React.FC = () => {
           </div>
           <div className="flex items-center gap-2 rounded-full border border-border/60 px-4 py-2 text-sm text-muted-foreground">
             <ShieldCheck className="h-4 w-4 text-foreground" />
-            Blockchain anchoring{" "}
+            Tamper-proof verification{" "}
             <span className="text-foreground">Active</span>
           </div>
         </div>
@@ -87,6 +88,38 @@ const VerificationDashboard: React.FC = () => {
           />
         </div>
       </Card>
+
+      {/* Pillars — the 5 things recruiters actually read */}
+      <div>
+        <h2 className="text-title-1 text-foreground">Trust pillars</h2>
+        <p className="mt-1 text-body text-muted-foreground">
+          Five signals a recruiter reviews at a glance.
+        </p>
+        <div className="mt-4 grid gap-3 md:grid-cols-5">
+          {pillars.map((p) => (
+            <Card key={p.key} className="border-border/60 p-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-foreground">{p.label}</span>
+                <Badge
+                  variant={p.status === "verified" ? "default" : "secondary"}
+                  className="rounded-full capitalize"
+                >
+                  {p.status}
+                </Badge>
+              </div>
+              <p className="mt-3 tabular-nums text-display-2 font-semibold tracking-tight text-foreground">
+                {p.score}
+              </p>
+              <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                <div
+                  className="h-full rounded-full bg-foreground transition-all"
+                  style={{ width: `${p.score}%` }}
+                />
+              </div>
+            </Card>
+          ))}
+        </div>
+      </div>
 
       <div>
         <h2 className="text-title-1 text-foreground">Signal breakdown</h2>
@@ -140,10 +173,10 @@ const VerificationDashboard: React.FC = () => {
               How verification works
             </h3>
             <p className="mt-1 max-w-2xl text-body text-muted-foreground">
-              Each credential is hashed and anchored so it can be independently
-              verified by any employer or institution. Users see a single trust
-              score; recruiters can drill into every signal from the public
-              passport link.
+              Every credential is cryptographically hashed the moment it lands
+              in your Passport, so any employer or institution can confirm it
+              hasn't been altered. You see one Trust Score; recruiters can drill
+              into every signal from your public passport link.
             </p>
           </div>
         </div>
