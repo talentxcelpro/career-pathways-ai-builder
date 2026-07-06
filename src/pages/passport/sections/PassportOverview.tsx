@@ -165,6 +165,44 @@ const PassportOverview: React.FC = () => {
         </div>
       </Card>
 
+      {/* Career DNA */}
+      <Card className="border-border/60 p-6 md:p-8">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-eyebrow text-muted-foreground">Career DNA</p>
+            <h2 className="mt-1 text-title-1 text-foreground">
+              How you show up, at a glance
+            </h2>
+            <p className="mt-1 max-w-xl text-body text-muted-foreground">
+              Five traits derived from your verified passport data. Updates as
+              your credentials, roles, and projects grow.
+            </p>
+          </div>
+          <div className="hidden rounded-full border border-border/60 px-3 py-1 text-xs text-muted-foreground sm:flex sm:items-center sm:gap-1.5">
+            <Sparkles className="h-3.5 w-3.5" /> Continuously computed
+          </div>
+        </div>
+        <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+          {dna.map((t) => (
+            <div key={t.key} className="rounded-xl border border-border/60 p-4">
+              <div className="flex items-baseline justify-between">
+                <span className="text-sm text-foreground">{t.label}</span>
+                <span className="tabular-nums text-title-3 text-foreground">
+                  {t.score}
+                </span>
+              </div>
+              <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                <div
+                  className="h-full rounded-full bg-foreground transition-all"
+                  style={{ width: `${t.score}%` }}
+                />
+              </div>
+              <p className="mt-3 text-xs text-muted-foreground">{t.hint}</p>
+            </div>
+          ))}
+        </div>
+      </Card>
+
       {/* Credential grid */}
       <div>
         <h2 className="text-title-1 text-foreground">Your credentials</h2>
