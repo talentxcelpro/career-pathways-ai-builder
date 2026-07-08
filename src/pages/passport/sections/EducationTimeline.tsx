@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import CredentialDetailDialog, {
   CredentialDetail,
 } from "../components/CredentialDetailDialog";
+import CopilotPanel from "../components/CopilotPanel";
 
 const EducationTimeline: React.FC = () => {
   const { user } = useOptimizedAuth();
