@@ -9,6 +9,7 @@ import { Award, BadgeCheck, QrCode } from "lucide-react";
 import CredentialDetailDialog, {
   CredentialDetail,
 } from "../components/CredentialDetailDialog";
+import CopilotPanel from "../components/CopilotPanel";
 
 interface CertRow extends CredentialDetail {}
 
