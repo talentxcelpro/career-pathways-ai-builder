@@ -134,6 +134,8 @@ const EducationTimeline: React.FC = () => {
         </ol>
       )}
 
+      <CopilotPanel section="education" />
+
       <CredentialDetailDialog
         open={!!active}
         onOpenChange={(o) => !o && setActive(null)}
