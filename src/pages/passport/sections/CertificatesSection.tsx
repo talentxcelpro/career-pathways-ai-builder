@@ -131,6 +131,8 @@ const CertificatesSection: React.FC = () => {
         </div>
       )}
 
+      <CopilotPanel section="certificates" />
+
       <CredentialDetailDialog
         open={!!active}
         onOpenChange={(o) => !o && setActive(null)}
