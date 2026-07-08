@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Clock, ShieldCheck, Link2 } from "lucide-react";
 import { computeTrustScore, computeTrustPillars } from "../lib/trustScore";
+import CopilotPanel from "../components/CopilotPanel";
 
 const VerificationDashboard: React.FC = () => {
   const { user } = useOptimizedAuth();
