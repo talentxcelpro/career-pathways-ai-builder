@@ -9,6 +9,7 @@ import { Award, BadgeCheck, QrCode } from "lucide-react";
 import CredentialDetailDialog, {
   CredentialDetail,
 } from "../components/CredentialDetailDialog";
+import CopilotPanel from "../components/CopilotPanel";
 
 interface CertRow extends CredentialDetail {}
 
@@ -129,6 +130,8 @@ const CertificatesSection: React.FC = () => {
           ))}
         </div>
       )}
+
+      <CopilotPanel section="certificates" />
 
       <CredentialDetailDialog
         open={!!active}

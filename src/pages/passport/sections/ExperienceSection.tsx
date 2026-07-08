@@ -11,6 +11,7 @@ import { BadgeCheck, Briefcase, Plus } from "lucide-react";
 import CredentialDetailDialog, {
   CredentialDetail,
 } from "../components/CredentialDetailDialog";
+import CopilotPanel from "../components/CopilotPanel";
 
 const ExperienceSection: React.FC = () => {
   const { user } = useOptimizedAuth();
@@ -121,6 +122,8 @@ const ExperienceSection: React.FC = () => {
           })}
         </ol>
       )}
+
+      <CopilotPanel section="experience" />
 
       <CredentialDetailDialog
         open={!!active}

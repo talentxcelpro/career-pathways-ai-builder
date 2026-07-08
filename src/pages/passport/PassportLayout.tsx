@@ -30,6 +30,7 @@ import CareerTimeline from "./sections/CareerTimeline";
 import SharePassport from "./sections/SharePassport";
 import RecruiterView from "./sections/RecruiterView";
 import AICoach from "./sections/AICoach";
+import WalletSection from "./sections/WalletSection";
 import { Sparkles } from "lucide-react";
 
 type SectionKey =
@@ -69,7 +70,7 @@ const NAV: {
   { key: "awards", label: "Awards", icon: Trophy, soon: true },
   { key: "verification", label: "Verification", icon: ShieldCheck },
   { key: "coach", label: "AI Coach", icon: Sparkles },
-  { key: "wallet", label: "Wallet", icon: Wallet, soon: true },
+  { key: "wallet", label: "Wallet", icon: Wallet },
   { key: "share", label: "Share", icon: Share2 },
   { key: "recruiter", label: "Recruiter View", icon: Building2 },
 ];
@@ -102,6 +103,8 @@ const PassportLayout: React.FC = () => {
         return <VerificationDashboard />;
       case "coach":
         return <AICoach />;
+      case "wallet":
+        return <WalletSection />;
       case "share":
         return <SharePassport />;
       case "recruiter":
