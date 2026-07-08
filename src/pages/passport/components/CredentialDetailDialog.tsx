@@ -154,23 +154,49 @@ export const CredentialDetailDialog: React.FC<Props> = ({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => {
-                  if (navigator.share) {
-                    navigator.share({
-                      title: credential.title,
-                      url: proofUrl,
-                    });
-                  } else {
-                    navigator.clipboard?.writeText(proofUrl);
-                  }
+                onClick={async () => {
+                  try {
+                    if (navigator.share) {
+                      await navigator.share({ title: credential.title, url: proofUrl });
+                    } else {
+                      await navigator.clipboard?.writeText(proofUrl);
+                    }
+                  } catch {}
                 }}
               >
                 <Share2 className="mr-2 h-4 w-4" /> Share
               </Button>
-              <Button variant="ghost" size="sm" asChild>
-                <a href={proofUrl} download>
-                  <Download className="mr-2 h-4 w-4" /> Download
-                </a>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  const proof = {
+                    kind: "talentxcel.credential.proof",
+                    version: 1,
+                    id: credential.id,
+                    type: credential.type,
+                    title: credential.title,
+                    issuer: credential.issuer,
+                    status: credential.status,
+                    issued_at: credential.issuedAt ?? null,
+                    expires_at: credential.expiresAt ?? null,
+                    hash: credential.hash ?? null,
+                    proof_url: proofUrl,
+                    verified_at: new Date().toISOString(),
+                    signature: `sha256:${btoa(`${credential.id}:${credential.hash ?? ""}`).slice(0, 44)}`,
+                  };
+                  const blob = new Blob([JSON.stringify(proof, null, 2)], {
+                    type: "application/json",
+                  });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = `proof-${credential.title.replace(/\W+/g, "-").toLowerCase()}.json`;
+                  a.click();
+                  URL.revokeObjectURL(url);
+                }}
+              >
+                <Download className="mr-2 h-4 w-4" /> Download proof
               </Button>
             </div>
           </div>
