@@ -123,6 +123,8 @@ const ExperienceSection: React.FC = () => {
         </ol>
       )}
 
+      <CopilotPanel section="experience" />
+
       <CredentialDetailDialog
         open={!!active}
         onOpenChange={(o) => !o && setActive(null)}
