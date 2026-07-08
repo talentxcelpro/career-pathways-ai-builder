@@ -70,7 +70,7 @@ const NAV: {
   { key: "awards", label: "Awards", icon: Trophy, soon: true },
   { key: "verification", label: "Verification", icon: ShieldCheck },
   { key: "coach", label: "AI Coach", icon: Sparkles },
-  { key: "wallet", label: "Wallet", icon: Wallet, soon: true },
+  { key: "wallet", label: "Wallet", icon: Wallet },
   { key: "share", label: "Share", icon: Share2 },
   { key: "recruiter", label: "Recruiter View", icon: Building2 },
 ];
