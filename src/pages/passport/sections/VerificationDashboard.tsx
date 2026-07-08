@@ -182,6 +182,8 @@ const VerificationDashboard: React.FC = () => {
           </div>
         </div>
       </Card>
+
+      <CopilotPanel section="verification" title="How do I raise my Trust Score?" />
     </div>
   );
 };
