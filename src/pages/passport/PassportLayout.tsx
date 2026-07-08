@@ -30,6 +30,7 @@ import CareerTimeline from "./sections/CareerTimeline";
 import SharePassport from "./sections/SharePassport";
 import RecruiterView from "./sections/RecruiterView";
 import AICoach from "./sections/AICoach";
+import WalletSection from "./sections/WalletSection";
 import { Sparkles } from "lucide-react";
 
 type SectionKey =
