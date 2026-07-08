@@ -103,6 +103,8 @@ const PassportLayout: React.FC = () => {
         return <VerificationDashboard />;
       case "coach":
         return <AICoach />;
+      case "wallet":
+        return <WalletSection />;
       case "share":
         return <SharePassport />;
       case "recruiter":
