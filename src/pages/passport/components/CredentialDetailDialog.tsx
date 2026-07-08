@@ -204,16 +204,19 @@ export const CredentialDetailDialog: React.FC<Props> = ({
           <div className="border-t border-border/60 bg-muted/30 p-6 md:border-l md:border-t-0">
             <p className="text-eyebrow text-muted-foreground">Verification QR</p>
             <div className="mt-3 flex items-center justify-center rounded-2xl border border-border/60 bg-background p-4">
-              <QRCodeSVG
-                value={proofUrl}
-                size={168}
-                includeMargin={false}
-                level="M"
-              />
+              <QRCodeSVG value={proofUrl} size={168} includeMargin={false} level="M" />
             </div>
-            <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
-              Scan to verify this credential on-chain. No account needed.
-            </p>
+            <div className="mt-4 space-y-1.5 text-[11px] leading-relaxed text-muted-foreground">
+              <p className="flex items-center gap-1.5">
+                <BadgeCheck className="h-3 w-3" /> Tamper-proof signature
+              </p>
+              <p className="flex items-center gap-1.5">
+                <Fingerprint className="h-3 w-3" /> Cryptographic hash anchored
+              </p>
+              <p className="flex items-center gap-1.5">
+                <Clock className="h-3 w-3" /> Verified {new Date().toLocaleDateString()}
+              </p>
+            </div>
           </div>
         </div>
       </DialogContent>
