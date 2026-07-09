@@ -1,6 +1,8 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
+import JSZip from "jszip";
 import { supabase } from "@/integrations/supabase/client";
 import { useOptimizedAuth } from "@/contexts/OptimizedAuthContext";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -13,6 +15,7 @@ import {
   BadgeCheck,
   Briefcase,
   Clock,
+  DownloadCloud,
   GraduationCap,
   Link2,
   QrCode,
@@ -21,6 +24,7 @@ import {
 } from "lucide-react";
 import CredentialDetailDialog, {
   CredentialDetail,
+  buildProofPayload,
 } from "../components/CredentialDetailDialog";
 import CopilotPanel from "../components/CopilotPanel";
 import { toast } from "sonner";
@@ -30,11 +34,16 @@ type Filter = "all" | "certificate" | "education" | "experience";
 const iconFor = (t: CredentialDetail["type"]) =>
   t === "certificate" ? Award : t === "education" ? GraduationCap : Briefcase;
 
+const proofUrlFor = (id: string) =>
+  `${window.location.origin}/passport/proof/${id}`;
+
 const WalletSection: React.FC = () => {
   const { user } = useOptimizedAuth();
   const [active, setActive] = useState<CredentialDetail | null>(null);
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
+  const [downloading, setDownloading] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const { data, isLoading } = useQuery({
     queryKey: ["passport-wallet", user?.id],
@@ -111,6 +120,28 @@ const WalletSection: React.FC = () => {
     },
   });
 
+  // Deep-link: /passport/proof/:id redirects here with ?proof=<id> — auto-open the matching card.
+  useEffect(() => {
+    const proofId = searchParams.get("proof");
+    if (!proofId || !data) return;
+    const match = data.find((c) => c.id === proofId);
+    if (match) {
+      setActive(match);
+      // Scroll the underlying card into view for context after the dialog closes.
+      queueMicrotask(() => {
+        document
+          .getElementById(`wallet-card-${match.id}`)
+          ?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    } else {
+      toast.error("Credential not found in your wallet");
+    }
+    // Clear the query param so refresh doesn't keep re-opening.
+    const next = new URLSearchParams(searchParams);
+    next.delete("proof");
+    setSearchParams(next, { replace: true });
+  }, [data, searchParams, setSearchParams]);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return (data ?? []).filter((c) => {
@@ -132,12 +163,86 @@ const WalletSection: React.FC = () => {
   }, [data]);
 
   const copyLink = async (c: CredentialDetail) => {
-    const url = `${window.location.origin}/passport/proof/${c.id}`;
     try {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(proofUrlFor(c.id));
       toast.success("Proof link copied");
     } catch {
       toast.error("Could not copy link");
+    }
+  };
+
+  const downloadAllProofs = async () => {
+    const verified = (data ?? []).filter((c) => c.status === "verified");
+    if (verified.length === 0) {
+      toast.info("No verified credentials to export yet");
+      return;
+    }
+    setDownloading(true);
+    try {
+      const zip = new JSZip();
+      const folder = zip.folder("proofs")!;
+      const index: any[] = [];
+      const usedNames = new Set<string>();
+      for (const c of verified) {
+        const payload = buildProofPayload(c);
+        let base = `${c.type}-${c.title}`.replace(/\W+/g, "-").toLowerCase().slice(0, 60) || c.id;
+        let name = `${base}.json`;
+        let i = 2;
+        while (usedNames.has(name)) name = `${base}-${i++}.json`;
+        usedNames.add(name);
+        folder.file(name, JSON.stringify(payload, null, 2));
+        index.push({
+          file: `proofs/${name}`,
+          id: payload.id,
+          type: payload.type,
+          title: payload.title,
+          issuer: payload.issuer,
+          issued_at: payload.issued_at,
+          proof_url: payload.proof_url,
+          hash: payload.hash,
+        });
+      }
+      zip.file(
+        "manifest.json",
+        JSON.stringify(
+          {
+            kind: "talentxcel.wallet.export",
+            version: 1,
+            exported_at: new Date().toISOString(),
+            user_id: user?.id ?? null,
+            total: verified.length,
+            credentials: index,
+          },
+          null,
+          2,
+        ),
+      );
+      zip.file(
+        "README.txt",
+        [
+          "TalentXcel Career Passport — Verified Proofs export",
+          "",
+          `Exported: ${new Date().toISOString()}`,
+          `Total credentials: ${verified.length}`,
+          "",
+          "Each file under /proofs is a signed proof payload. Recruiters can",
+          "verify by opening the proof_url or scanning the QR from the wallet.",
+        ].join("\n"),
+      );
+      const blob = await zip.generateAsync({ type: "blob" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      const stamp = new Date().toISOString().slice(0, 10);
+      a.href = url;
+      a.download = `talentxcel-proofs-${stamp}.zip`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success(`Exported ${verified.length} verified proof${verified.length === 1 ? "" : "s"}`);
+    } catch (e) {
+      console.error(e);
+      toast.error("Could not build proofs archive");
+    } finally {
+      setDownloading(false);
     }
   };
 
@@ -177,14 +282,26 @@ const WalletSection: React.FC = () => {
             {f === "all" ? "All" : `${f}s`} · {counts[f]}
           </button>
         ))}
-        <div className="relative ml-auto w-full max-w-xs">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search credentials"
-            className="pl-9"
-          />
+        <div className="ml-auto flex items-center gap-2">
+          <div className="relative w-full max-w-xs">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search credentials"
+              className="pl-9"
+            />
+          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={downloadAllProofs}
+            disabled={downloading || counts.verified === 0}
+            title="Export every verified proof as a single ZIP"
+          >
+            <DownloadCloud className="mr-2 h-4 w-4" />
+            {downloading ? "Packaging…" : "Download all proofs"}
+          </Button>
         </div>
       </div>
 
@@ -202,9 +319,15 @@ const WalletSection: React.FC = () => {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((c) => {
             const Icon = iconFor(c.type);
-            const proofUrl = `${window.location.origin}/passport/proof/${c.id}`;
+            const proofUrl = proofUrlFor(c.id);
             return (
-              <Card key={c.id} className="flex flex-col border-border/60 p-5">
+              <Card
+                key={c.id}
+                id={`wallet-card-${c.id}`}
+                className={`flex flex-col border-border/60 p-5 transition-shadow ${
+                  active?.id === c.id ? "ring-2 ring-foreground/40" : ""
+                }`}
+              >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-2">
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted">
@@ -226,9 +349,14 @@ const WalletSection: React.FC = () => {
                 <p className="mt-1 text-sm text-muted-foreground line-clamp-1">{c.issuer}</p>
 
                 <div className="mt-4 flex items-center gap-3 rounded-xl border border-border/60 bg-muted/30 p-3">
-                  <div className="rounded-md bg-background p-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setActive(c)}
+                    className="rounded-md bg-background p-1.5 transition-transform hover:scale-[1.03]"
+                    aria-label="Open verified proof"
+                  >
                     <QRCodeSVG value={proofUrl} size={56} level="M" />
-                  </div>
+                  </button>
                   <div className="min-w-0 flex-1">
                     <p className="text-eyebrow text-muted-foreground">Scan to verify</p>
                     <p className="mt-1 truncate font-mono text-[11px] text-muted-foreground">
