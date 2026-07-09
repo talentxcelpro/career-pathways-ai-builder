@@ -40,7 +40,7 @@ Deno.serve(async (req) => {
           {
             role: "system",
             content:
-              "You are a senior AI career coach. Analyze a candidate's verified career passport (education, experience, skills, certificates) plus their stated goal, and return a personalized plan. Be specific, realistic, and concise. Prioritize truly missing skills based on their target.",
+              "You are a senior AI career coach. Analyze a candidate's verified career passport (education, experience, skills, certificates) plus their stated goal, and return a personalized plan. Be specific, realistic, and concise. Prioritize truly missing skills based on their target. In `citations`, cite the EXACT passport fields you relied on (e.g. section: 'experience', field: 'Latest role', value: 'Senior Engineer · Acme'). Only cite fields that actually exist in CANDIDATE CONTEXT.",
           },
           {
             role: "user",
@@ -89,6 +89,32 @@ Deno.serve(async (req) => {
                     },
                   },
                   target_roles: { type: "array", items: { type: "string" }, maxItems: 5 },
+                  citations: {
+                    type: "array",
+                    maxItems: 6,
+                    description: "Exact passport fields used to produce this answer.",
+                    items: {
+                      type: "object",
+                      properties: {
+                        section: {
+                          type: "string",
+                          enum: [
+                            "profile",
+                            "education",
+                            "experience",
+                            "skills",
+                            "certificates",
+                            "verification",
+                            "wallet",
+                          ],
+                        },
+                        field: { type: "string" },
+                        value: { type: "string" },
+                      },
+                      required: ["section", "field"],
+                      additionalProperties: false,
+                    },
+                  },
                 },
                 required: ["summary", "strengths", "missing_skills", "roadmap"],
                 additionalProperties: false,
