@@ -48,7 +48,6 @@ import { BlogPost } from "@/pages/BlogPost";
 import NotFound from "@/pages/NotFound";
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
-import { SearchConsoleVerification } from "./components/analytics/SearchConsoleVerification";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { AdminLayout } from "./components/admin/AdminLayout";
 import { PublicAccessGuard } from "./components/auth/PublicAccessGuard";
