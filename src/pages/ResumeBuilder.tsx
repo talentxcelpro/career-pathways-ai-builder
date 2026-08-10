@@ -34,18 +34,13 @@ const ResumeBuilder = () => {
       "@type": "SoftwareApplication",
       "name": "TalentXcel Resume Builder",
       "description": "Free ATS-friendly resume builder with professional templates",
-      "url": `${window.location.origin}/resume-builder`,
+      "url": "https://talentxcel.in/public/resume-builder",
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web",
       "offers": {
         "@type": "Offer",
         "price": "0",
         "priceCurrency": "INR"
-      },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.8",
-        "reviewCount": "2500"
       }
     };
 
