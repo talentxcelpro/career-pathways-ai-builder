@@ -143,13 +143,6 @@ export const generateOrganizationStructuredData = (company: any) => {
       company.linkedin_url,
       `https://talentxcel.in/companies/${company.id}`
     ].filter(Boolean),
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.5",
-      "bestRating": "5",
-      "worstRating": "1",
-      "ratingCount": "100"
-    },
     "contactPoint": {
       "@type": "ContactPoint",
       "telephone": company.phone,
@@ -271,13 +264,6 @@ export const generateSoftwareApplicationStructuredData = (tool: any) => {
       "price": "0",
       "priceCurrency": "INR",
       "category": "free"
-    },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.7",
-      "bestRating": "5",
-      "worstRating": "1",
-      "ratingCount": "500"
     },
     "screenshot": tool.screenshot_url,
     "downloadUrl": `https://talentxcel.in${tool.path}`,

@@ -9,6 +9,7 @@ import {
 import { updateMetaTags } from '@/utils/metaTags';
 import { injectStructuredData } from '@/utils/structuredData';
 import { generateMetaDescription, validateMetaTags } from '@/utils/seoValidator';
+import { DEFAULT_TITLE, absoluteUrl, canonicalFor, isNoindexPath } from '@/config/seo';
 
 interface SEOConfig {
   title?: string;
@@ -31,7 +32,7 @@ export const useSEO = (config: SEOConfig = {}) => {
 
   useEffect(() => {
     const {
-      title = 'TalentXcel - AI-Powered Career Platform',
+      title = DEFAULT_TITLE,
       description,
       keywords = [],
       image = '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png',
@@ -56,8 +57,8 @@ export const useSEO = (config: SEOConfig = {}) => {
     updateMetaTags({
       title,
       description: finalDescription,
-      image: image.startsWith('http') ? image : `https://talentxcel.in${image}`,
-      url: `https://talentxcel.in${location.pathname}`,
+      image: absoluteUrl(image),
+      url: canonicalFor(location.pathname),
       type: 'website',
       keywords
     });
@@ -71,7 +72,7 @@ export const useSEO = (config: SEOConfig = {}) => {
       canonicalLink.rel = 'canonical';
       document.head.appendChild(canonicalLink);
     }
-    canonicalLink.href = canonical || `https://talentxcel.in${location.pathname}`;
+    canonicalLink.href = canonicalFor(canonical || location.pathname);
 
     // Update robots meta
     let robotsMeta = document.querySelector('meta[name="robots"]') as HTMLMetaElement;
@@ -80,7 +81,7 @@ export const useSEO = (config: SEOConfig = {}) => {
       robotsMeta.name = 'robots';
       document.head.appendChild(robotsMeta);
     }
-    robotsMeta.content = noindex ? 'noindex,nofollow' : 'index,follow';
+    robotsMeta.content = noindex || isNoindexPath(location.pathname) ? 'noindex,nofollow' : 'index,follow';
 
     // Inject structured data
     if (structuredData) {
@@ -88,14 +89,6 @@ export const useSEO = (config: SEOConfig = {}) => {
     } else if (breadcrumbs.length > 0) {
       const breadcrumbData = generateBreadcrumbStructuredData(breadcrumbs);
       injectStructuredData(breadcrumbData);
-    }
-
-    // Google Analytics page view tracking
-    if (window.gtag) {
-      window.gtag('config', 'GA_MEASUREMENT_ID', {
-        page_path: location.pathname,
-        page_title: title
-      });
     }
 
   }, [location.pathname, config]);

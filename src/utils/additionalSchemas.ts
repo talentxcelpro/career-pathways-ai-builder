@@ -63,13 +63,19 @@ export const generateReviewStructuredData = (reviews: any[]): string => {
       "@type": "Brand",
       "name": "TalentXcel"
     },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.8",
-      "reviewCount": reviews.length,
-      "bestRating": "5",
-      "worstRating": "1"
-    },
+    ...(reviews.length > 0 && reviews.every((r) => typeof r?.rating === 'number')
+      ? {
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": (
+              reviews.reduce((sum, r) => sum + Number(r.rating), 0) / reviews.length
+            ).toFixed(1),
+            "reviewCount": reviews.length,
+            "bestRating": "5",
+            "worstRating": "1"
+          }
+        }
+      : {}),
     "review": reviews.map(review => ({
       "@type": "Review",
       "reviewRating": {
@@ -266,11 +272,15 @@ export const generateLocalBusinessStructuredData = (business: any): string => {
     "telephone": business.phone,
     "openingHours": business.opening_hours || "Mo-Fr 09:00-18:00",
     "priceRange": business.price_range || "$$",
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": business.rating || "4.5",
-      "reviewCount": business.review_count || "50"
-    }
+    ...(business.rating && business.review_count
+      ? {
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": business.rating,
+            "reviewCount": business.review_count
+          }
+        }
+      : {})
   };
 
   return JSON.stringify(structuredData, null, 2);
@@ -302,11 +312,15 @@ export const generateProductStructuredData = (product: any): string => {
         "name": "TalentXcel"
       }
     },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": product.rating || "4.7",
-      "reviewCount": product.review_count || "100"
-    },
+    ...(product.rating && product.review_count
+      ? {
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": product.rating,
+            "reviewCount": product.review_count
+          }
+        }
+      : {}),
     "category": product.category || "Career Tools"
   };
 

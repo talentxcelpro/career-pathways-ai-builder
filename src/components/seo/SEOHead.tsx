@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { updateMetaTags } from '@/utils/metaTags';
 import { injectStructuredData } from '@/utils/structuredData';
+import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, absoluteUrl, canonicalFor, isNoindexPath } from '@/config/seo';
 
 interface SEOHeadProps {
   title?: string;
@@ -20,8 +21,8 @@ interface SEOHeadProps {
 }
 
 export const SEOHead: React.FC<SEOHeadProps> = ({
-  title = 'TalentXcel - Career Platform',
-  description = 'Find your dream job, grow your skills, and advance your career with AI-powered tools. Connect with professionals, learn new skills, and access exclusive opportunities.',
+  title = DEFAULT_TITLE,
+  description = DEFAULT_DESCRIPTION,
   image = '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png',
   url,
   type = 'website',
@@ -39,8 +40,8 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
     updateMetaTags({
       title,
       description,
-      image: image.startsWith('http') ? image : `https://talentxcel.in${image}`,
-      url: url || window.location.href,
+      image: absoluteUrl(image),
+      url: canonicalFor(url || window.location.pathname),
       type,
     });
 
@@ -81,11 +82,13 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
       canonicalLink.rel = 'canonical';
       document.head.appendChild(canonicalLink);
     }
-    canonicalLink.href = canonical || url || window.location.href;
+    // Canonical always resolves to the primary production domain, without
+    // query strings or hashes, so preview/secondary domains never self-canonicalise.
+    canonicalLink.href = canonicalFor(canonical || url || window.location.pathname);
 
     // Robots meta tag
     const robotsContent = [];
-    if (noindex) robotsContent.push('noindex');
+    if (noindex || isNoindexPath(window.location.pathname)) robotsContent.push('noindex');
     if (nofollow) robotsContent.push('nofollow');
     if (robotsContent.length === 0) {
       robotsContent.push('index', 'follow');
@@ -97,29 +100,9 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
       injectStructuredData(structuredData);
     }
 
-    // Add hreflang for international SEO (fixed property name)
-    const addHrefLang = (lang: string, href: string) => {
-      let hrefLangLink = document.querySelector(`link[hreflang="${lang}"]`) as HTMLLinkElement;
-      if (!hrefLangLink) {
-        hrefLangLink = document.createElement('link');
-        hrefLangLink.rel = 'alternate';
-        hrefLangLink.hreflang = lang; // Fixed: was hrefLang, now hreflang
-        document.head.appendChild(hrefLangLink);
-      }
-      hrefLangLink.href = href;
-    };
-
-    const currentUrl = url || window.location.href;
-    addHrefLang('en', currentUrl);
-    addHrefLang('hi', currentUrl); // Hindi support for Indian market
-    addHrefLang('x-default', currentUrl);
-
     return () => {
-      // Cleanup structured data on unmount
-      const existingScript = document.querySelector('script[type="application/ld+json"]');
-      if (existingScript) {
-        existingScript.remove();
-      }
+      // No cleanup: removing arbitrary JSON-LD here would strip the
+      // sitewide Organization/WebSite schema from index.html.
     };
   }, [title, description, image, url, type, structuredData, keywords, author, publishedTime, modifiedTime, canonical, noindex, nofollow]);
 

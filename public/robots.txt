@@ -1,41 +1,20 @@
 # ==========================================================
-# TalentXcel Robots.txt - Enterprise SEO Configuration
-# Optimized for performance and compliance
+# TalentXcel robots.txt
+# Primary indexable domain: https://talentxcel.in
 # ==========================================================
 
-# ==========================================================
-# SPECIFIC BOT RULES (Must come before User-agent: *)
-# ==========================================================
-
-# Job Aggregator Bots
-User-agent: Indeed
-Allow: /jobs/
-Crawl-delay: 5
-
-User-agent: NaukriBot
-Allow: /jobs/
-Crawl-delay: 10
-
-User-agent: CareerBuilder
-Allow: /jobs/
-Crawl-delay: 5
-
-User-agent: JoobleBot
-Allow: /jobs/
-Crawl-delay: 8
-
-# Media Crawlers
-User-agent: Googlebot-Image
-Allow: /uploads/images/
-Allow: /lovable-uploads/
-
-User-agent: Googlebot-Video
-Allow: /uploads/videos/
-
-User-agent: AdsBot-Google
+# ----------------------------------------------------------
+# Specific bots (must come before User-agent: *)
+# ----------------------------------------------------------
+User-agent: Googlebot
 Allow: /
 
-# Social Media Bots
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
 User-agent: Twitterbot
 Allow: /
 
@@ -45,20 +24,7 @@ Allow: /
 User-agent: LinkedInBot
 Allow: /
 
-User-agent: WhatsApp
-Allow: /
-
-User-agent: TelegramBot
-Allow: /
-
-# AI & ML Crawlers
-User-agent: ChatGPT-User
-Allow: /
-
 User-agent: GPTBot
-Allow: /
-
-User-agent: Google-Extended
 Allow: /
 
 User-agent: PerplexityBot
@@ -67,7 +33,6 @@ Allow: /
 User-agent: ClaudeBot
 Allow: /
 
-# SEO & Analysis Crawlers
 User-agent: AhrefsBot
 Allow: /
 Crawl-delay: 5
@@ -76,116 +41,51 @@ User-agent: SemrushBot
 Allow: /
 Crawl-delay: 5
 
-User-agent: MJ12bot
-Allow: /
-Crawl-delay: 10
-
-User-agent: ScreamingFrogSEOSpider
-Allow: /
-
-# ==========================================================
-# GENERAL RULES (All other bots)
-# ==========================================================
+# ----------------------------------------------------------
+# All other bots
+# ----------------------------------------------------------
 User-agent: *
 Allow: /
 Crawl-delay: 2
 
-# ==========================================================
-# PRIVATE & RESTRICTED AREAS
-# ==========================================================
-
-# Authentication & User Private Areas
+# Authentication, onboarding and account areas
 Disallow: /auth/
-Disallow: /api/auth/
-Disallow: /api/user/
-Disallow: /api/private/
+Disallow: /onboarding
+Disallow: /dashboard
+Disallow: /my-applications
 
-# Jobs Module - Private Areas
-Disallow: /jobs/apply/
-Disallow: /jobs/dashboard/
-Disallow: /jobs/my-applications/
+# Admin and internal tooling
+Disallow: /admin/
+Disallow: /diagnostics
+Disallow: /debug
+Disallow: /testing
+Disallow: /launch/
+Disallow: /access-control-test
+Disallow: /realtime-demo
+Disallow: /mobile-demo
 
-# Companies - Admin Areas
-Disallow: /companies/admin/
-Disallow: /companies/settings/
+# Employer/private workspaces
+Disallow: /employer/settings/
+Disallow: /employer/dashboard/
 
-# Network - Private Areas
+# Private user areas
+Disallow: /profile/edit/
+Disallow: /profile/settings/
 Disallow: /network/messages/
 Disallow: /network/notifications/
 Disallow: /network/settings/
-
-# Resume - Private Areas
-Disallow: /resume/user/
-Disallow: /resume/private/
-Disallow: /resume/edit/
+Disallow: /learning/my-courses
+Disallow: /learning/my-progress
 Disallow: /resume/my-resumes/
-
-# Tools - Private Areas
-Disallow: /tools/internal/
-Disallow: /tools/private/
-
-# Learning - Private Areas
-Disallow: /learning/my-courses/
-Disallow: /learning/progress/
-Disallow: /learning/dashboard/
-
-# Colleges - Admin Areas
-Disallow: /colleges/admin/
-Disallow: /colleges/private/
-
-# Career Map - Private Areas
-Disallow: /careermap/private/
-Disallow: /careermap/user/
-
-# Career Passport - Private Areas
-Disallow: /careerpassport/user/
-Disallow: /careerpassport/private/
-
-# Employer - Private Areas
-Disallow: /employer/settings/
-Disallow: /employer/dashboard/
-Disallow: /employer/private/
-
-# Marketplace - Private Areas
 Disallow: /marketplace/orders/
-Disallow: /marketplace/private/
 
-# Events - Private Areas
-Disallow: /events/private/
-Disallow: /events/settings/
+# Tracking parameters (avoid duplicate URLs)
+Disallow: /*?*utm_
+Disallow: /*?*gclid=
+Disallow: /*?*fbclid=
+Disallow: /*?*ref=
 
-# Admin Areas
-Disallow: /admin/
-
-# ==========================================================
-# PARAMETER & FILE RESTRICTIONS
-# ==========================================================
-Disallow: /*?*utm_*
-Disallow: /*?*ref=*
-Disallow: /*?*gclid=*
-Disallow: /*?*fbclid=*
-Disallow: /*.json$
-Disallow: /*.pdf$
-Disallow: /*.doc$
-Disallow: /*.docx$
-
-# ==========================================================
-# SITEMAP DECLARATIONS
-# ==========================================================
-
-# Master Sitemap Index
-Sitemap: https://talentxcel.in/sitemap-index.xml
-
-# Module-wise Sitemaps (Generated Dynamically)
-Sitemap: https://talentxcel.in/sitemap-jobs.xml
-Sitemap: https://talentxcel.in/sitemap-companies.xml
-Sitemap: https://talentxcel.in/sitemap-network.xml
-Sitemap: https://talentxcel.in/sitemap-resume.xml
-Sitemap: https://talentxcel.in/sitemap-tools.xml
-Sitemap: https://talentxcel.in/sitemap-learning.xml
-Sitemap: https://talentxcel.in/sitemap-colleges.xml
-Sitemap: https://talentxcel.in/sitemap-careermap.xml
-Sitemap: https://talentxcel.in/sitemap-careerpassport.xml
-Sitemap: https://talentxcel.in/sitemap-employer.xml
-Sitemap: https://talentxcel.in/sitemap-marketplace.xml
-Sitemap: https://talentxcel.in/sitemap-events.xml
+# ----------------------------------------------------------
+# Sitemap
+# ----------------------------------------------------------
+Sitemap: https://talentxcel.in/sitemap.xml
