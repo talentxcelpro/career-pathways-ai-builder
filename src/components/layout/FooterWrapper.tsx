@@ -11,7 +11,25 @@ export const FooterWrapper: React.FC = () => {
   }
   
   // Show full footer only on homepage
-  if (location.pathname === '/') {
+  // Show the full footer (with the public site directory) on the homepage and
+  // across the public marketing / SEO information architecture.
+  const IA_PREFIXES = [
+    '/industries',
+    '/locations',
+    '/resources',
+    '/employers',
+    '/company-info',
+    '/resume-builder',
+    '/ai-career-coach',
+    '/job-matching',
+    '/reverse-job-search',
+    '/career-coaching',
+    '/staffing',
+    '/recruitment',
+    '/rpo',
+    '/staff-augmentation',
+  ];
+  if (location.pathname === '/' || IA_PREFIXES.some((p) => location.pathname === p || location.pathname.startsWith(`${p}/`))) {
     return <Footer />;
   }
   
