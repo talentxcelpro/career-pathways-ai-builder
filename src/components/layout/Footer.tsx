@@ -95,7 +95,31 @@ export const Footer = () => {
             </div>
           </div>
         </div>
-        
+
+        {/* Public information architecture — sitewide crawlable links */}
+        <nav aria-label="Site directory" className="border-t border-background/20 mt-8 pt-8 grid grid-cols-2 md:grid-cols-5 gap-8">
+          {[
+            { heading: 'For Candidates', links: CANDIDATE_SERVICES.map((s) => ({ to: `/${s.slug}`, label: s.title })) },
+            { heading: 'For Employers', links: [{ to: '/employers', label: 'Hiring Solutions' }, ...EMPLOYER_SERVICES.map((s) => ({ to: `/${s.slug}`, label: s.title }))] },
+            { heading: 'Industries', links: [...INDUSTRY_HUBS.slice(0, 6).map((i) => ({ to: `/industries/${i.slug}`, label: i.name })), { to: '/industries', label: 'All industries' }] },
+            { heading: 'Locations', links: [...LOCATION_HUBS.slice(1, 7).map((l) => ({ to: `/locations/${l.slug}`, label: l.name })), { to: '/locations', label: 'All locations' }] },
+            { heading: 'Resources', links: [...RESOURCE_HUBS.map((r) => ({ to: `/resources/${r.slug}`, label: r.name })), { to: '/company-info', label: 'Company' }] },
+          ].map((col) => (
+            <div key={col.heading}>
+              <h3 className="font-semibold text-sm mb-3">{col.heading}</h3>
+              <ul className="space-y-2">
+                {col.links.map((link) => (
+                  <li key={link.to}>
+                    <Link to={link.to} className="text-sm text-background/70 hover:text-background transition-colors">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </nav>
+
         {/* Divider and bottom section */}
         <div className="border-t border-background/20 mt-8 pt-8">
           <div className="flex justify-center">
