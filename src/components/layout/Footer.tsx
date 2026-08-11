@@ -2,6 +2,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { SocialConnect } from '../social/SocialConnect';
+import {
+  CANDIDATE_SERVICES,
+  EMPLOYER_SERVICES,
+  INDUSTRY_HUBS,
+  LOCATION_HUBS,
+  RESOURCE_HUBS,
+} from '@/config/publicIA';
 
 export const Footer = () => {
   return (
