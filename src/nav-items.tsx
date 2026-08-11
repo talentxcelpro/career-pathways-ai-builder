@@ -28,6 +28,7 @@ import { analyticsRoutes } from "./navigation/analyticsRoutes";
 import { growthRoutes } from "./navigation/growthRoutes";
 import { gamificationRoutes } from "./navigation/gamificationRoutes";
 import { publicRoutes } from "./navigation/publicRoutes";
+import { informationArchitectureRoutes } from "./navigation/informationArchitectureRoutes";
 import AIAgentDashboard from "./pages/ai/AIAgentDashboard";
 import CampaignManager from "./pages/CampaignManager";
 import MobileSearch from "./pages/mobile/MobileSearch";
@@ -147,6 +148,9 @@ export const savedJobsRoutes = [
 ];
 
 export const navItems = [
+  // Public SEO information architecture — registered first so its static
+  // paths win over legacy dynamic routes (/employers/:name, /resources/:tool).
+  ...informationArchitectureRoutes,
   ...publicRoutes,
   ...coreRoutes,
   ...authRoutes,

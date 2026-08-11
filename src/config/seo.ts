@@ -5,6 +5,8 @@
  * talentxcel.net is a secondary/alias domain and must never be canonical.
  */
 
+import { INDUSTRY_HUBS, LOCATION_HUBS, RESOURCE_HUBS } from './publicIA';
+
 export const PRODUCTION_ORIGIN = 'https://talentxcel.in';
 
 export const SECONDARY_ORIGINS = ['https://talentxcel.net', 'https://www.talentxcel.net'];
@@ -78,6 +80,41 @@ export const INDEXABLE_ROUTES: IndexableRoute[] = [
   { path: '/terms', changefreq: 'yearly', priority: '0.3' },
   { path: '/privacypolicy', changefreq: 'yearly', priority: '0.3' },
   { path: '/return-refund-policy', changefreq: 'yearly', priority: '0.3' },
+  { path: '/company-info', changefreq: 'monthly', priority: '0.5' },
+
+  // Candidate services
+  { path: '/resume-builder', changefreq: 'weekly', priority: '0.9' },
+  { path: '/ai-career-coach', changefreq: 'weekly', priority: '0.8' },
+  { path: '/job-matching', changefreq: 'weekly', priority: '0.8' },
+  { path: '/reverse-job-search', changefreq: 'weekly', priority: '0.8' },
+  { path: '/career-coaching', changefreq: 'monthly', priority: '0.7' },
+
+  // Employer services
+  { path: '/employers', changefreq: 'weekly', priority: '0.9' },
+  { path: '/staffing', changefreq: 'monthly', priority: '0.8' },
+  { path: '/recruitment', changefreq: 'monthly', priority: '0.8' },
+  { path: '/rpo', changefreq: 'monthly', priority: '0.8' },
+  { path: '/staff-augmentation', changefreq: 'monthly', priority: '0.8' },
+
+  // Hubs
+  { path: '/industries', changefreq: 'weekly', priority: '0.8' },
+  ...INDUSTRY_HUBS.map((hub) => ({
+    path: `/industries/${hub.slug}`,
+    changefreq: 'weekly' as const,
+    priority: '0.7',
+  })),
+  { path: '/locations', changefreq: 'weekly', priority: '0.8' },
+  ...LOCATION_HUBS.map((hub) => ({
+    path: `/locations/${hub.slug}`,
+    changefreq: 'daily' as const,
+    priority: '0.7',
+  })),
+  { path: '/resources', changefreq: 'weekly', priority: '0.7' },
+  ...RESOURCE_HUBS.map((hub) => ({
+    path: `/resources/${hub.slug}`,
+    changefreq: 'monthly' as const,
+    priority: '0.6',
+  })),
 ];
 
 /** True when a path should carry noindex. */
