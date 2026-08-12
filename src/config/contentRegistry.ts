@@ -135,7 +135,16 @@ const HANDCRAFTED_GUIDES: ContentItem[] = [
   },
 ];
 
-// 35 Expanded Editorial Topics for 2,000+ Substantive Articles
+// Search-Intent Angles for Natural Human-Centric Article Slugs
+const SEARCH_ANGLES = [
+  'complete-guide', 'step-by-step-roadmap', 'top-strategies-for-success',
+  'best-practices-and-frameworks', 'key-skills-and-competencies',
+  'industry-benchmarks-and-trends', 'expert-tips-for-professionals',
+  'common-pitfalls-and-how-to-avoid-them', 'proven-methodologies',
+  'action-plan-for-career-growth'
+];
+
+// 35 High-Intent Editorial Topics
 const EDITORIAL_TOPICS = [
   'Career Development Strategy', 'Job Search Mastery', 'ATS Resume Optimization', 'Interview Preparation',
   'Technical Interview DSA', 'System Design Mastery', 'Behavioral Interview STAR Method', 'Workplace Leadership',
@@ -152,13 +161,16 @@ function generateEditorialArticles(): ContentItem[] {
   const items: ContentItem[] = [];
 
   EDITORIAL_TOPICS.forEach((topic) => {
-    // Generate 60 distinct articles per topic (35 * 60 = 2,100 articles)
-    for (let i = 1; i <= 60; i++) {
-      const slug = `${toSlug(topic)}-vol-${i}`;
+    // Generate distinct articles per topic with human search-intent slugs
+    SEARCH_ANGLES.forEach((angle, idx) => {
+      const topicSlug = toSlug(topic);
+      const slug = `${topicSlug}-${angle}`;
+      const title = `${topic}: ${angle.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} | TalentXcel`;
+
       items.push({
-        id: `art-${toSlug(topic)}-${i}`,
+        id: `art-${topicSlug}-${idx + 1}`,
         slug,
-        title: `${topic}: Actionable Insights, Case Studies & Frameworks (Volume ${i})`,
+        title,
         description: `In-depth analysis and practical guide on ${topic.toLowerCase()} in India and global job markets. Strategic steps, common pitfalls, and skill requirements.`,
         category: 'Article',
         author: AUTHOR_EDITORIAL,
@@ -189,7 +201,7 @@ function generateEditorialArticles(): ContentItem[] {
         indexable: true,
         ctaType: 'candidate',
       });
-    }
+    });
   });
 
   return items;
