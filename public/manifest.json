@@ -1,8 +1,8 @@
 {
   "id": "/",
-  "name": "CareerCatalyst - AI-Powered Career Platform",
-  "short_name": "CareerCatalyst",
-  "description": "Transform your career with AI-powered tools and professional networking",
+  "name": "TalentXcel — AI Career Platform for Jobs, Skills & Hiring",
+  "short_name": "TalentXcel",
+  "description": "Careers, Designed — Not Discovered. Search verified jobs, build an ATS-ready resume, prepare for interviews and grow your skills.",
   "start_url": "/",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
@@ -39,14 +39,14 @@
       "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "CareerCatalyst Dashboard"
+      "label": "TalentXcel Dashboard"
     },
     {
       "src": "/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png",
       "sizes": "750x1334",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "CareerCatalyst Mobile"
+      "label": "TalentXcel Mobile"
     }
   ],
   "shortcuts": [
@@ -106,7 +106,7 @@
   ],
   "protocol_handlers": [
     {
-      "protocol": "web+careercatalyst",
+      "protocol": "web+talentxcel",
       "url": "/connect?target=%s"
     }
   ],
@@ -117,8 +117,7 @@
   "related_applications": [],
   "prefer_related_applications": false,
   "scope_extensions": [
-    {"origin": "*.talentxcel.in"},
-    {"origin": "*.careercatalyst.com"}
+    {"origin": "*.talentxcel.in"}
   ],
   "edge_side_panel": {
     "preferred_width": 480

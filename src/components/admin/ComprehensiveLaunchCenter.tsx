@@ -24,7 +24,7 @@ export const ComprehensiveLaunchCenter: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Rocket className="w-6 h-6" />
-            CareerCatalyst Launch Center
+            TalentXcel Launch Center
           </CardTitle>
         </CardHeader>
         <CardContent>

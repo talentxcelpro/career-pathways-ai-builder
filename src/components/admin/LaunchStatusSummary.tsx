@@ -105,7 +105,7 @@ export const LaunchStatusSummary: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-2xl">
             <Rocket className="w-6 h-6" />
-            CareerCatalyst Launch Status
+            TalentXcel Launch Status
           </CardTitle>
         </CardHeader>
         <CardContent>

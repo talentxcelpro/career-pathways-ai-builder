@@ -47,8 +47,8 @@ export const cleanEmailTemplate = (template: string): string => {
   
   // Replace test email addresses
   cleaned = cleaned
-    .replace(/test@example\.com/g, 'support@careercatalyst.com')
-    .replace(/admin@test\.com/g, 'admin@careercatalyst.com');
+    .replace(/test@example\.com/g, 'support@talentxcel.in')
+    .replace(/admin@test\.com/g, 'admin@talentxcel.in');
     
   // Remove mock job data
   cleaned = cleaned.replace(/salary_range:\s*"₹\d+-\d+\s*LPA"/g, 'salary_range: "Competitive"');

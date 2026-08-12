@@ -137,7 +137,7 @@ export const Phase2LaunchOptimizer: React.FC = () => {
 
       gtag('js', new Date());
       gtag('config', 'G-MEASUREMENT_ID', {
-        page_title: 'CareerCatalyst',
+        page_title: 'TalentXcel',
         page_location: window.location.href,
         send_page_view: true
       });
@@ -151,9 +151,9 @@ export const Phase2LaunchOptimizer: React.FC = () => {
     const structuredData = {
       "@context": "https://schema.org",
       "@type": "WebApplication",
-      "name": "CareerCatalyst",
-      "description": "AI-Powered Career Growth Platform",
-      "url": "https://careercatalyst.com",
+      "name": "TalentXcel",
+      "description": "AI-Powered Career Platform",
+      "url": "https://talentxcel.in",
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web",
       "offers": {

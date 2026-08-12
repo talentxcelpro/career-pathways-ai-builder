@@ -149,7 +149,7 @@ export const LaunchReadinessAnalyzer: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <TrendingUp className="w-6 h-6" />
-            CareerCatalyst Launch Readiness Analysis
+            TalentXcel Launch Readiness Analysis
           </CardTitle>
         </CardHeader>
         <CardContent>
