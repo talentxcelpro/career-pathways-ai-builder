@@ -1,8 +1,11 @@
 /**
  * TalentXcel Public Discovery & Segmented Sitemap Generator
  *
- * Generates segmented XML sitemaps for all 14 public entity types and editorial content categories,
+ * Generates segmented XML sitemaps for all 14 public entity types, editorial content categories,
+ * and high-intent career discovery pages (Role + Location combinations),
  * referencing them in a master sitemap index (/sitemap.xml).
+ *
+ * Performs GLOBAL URL DEDUPLICATION to ensure 0 duplicates exist across sitemap files.
  * Runs before `vite dev` and `vite build` via predev/prebuild hooks.
  */
 
@@ -21,14 +24,12 @@ interface SitemapEntry {
   lastmod?: string;
 }
 
-// 1. Core Public Base Pages
+// 1. Core Public Base Pages (Excludes /jobs and /passport which have their own dedicated sitemaps)
 const BASE_PAGES: SitemapEntry[] = [
   { path: '/', changefreq: 'daily', priority: '1.0' },
-  { path: '/jobs', changefreq: 'daily', priority: '0.9' },
   { path: '/companies', changefreq: 'daily', priority: '0.8' },
   { path: '/network', changefreq: 'daily', priority: '0.8' },
   { path: '/learning', changefreq: 'weekly', priority: '0.8' },
-  { path: '/passport', changefreq: 'weekly', priority: '0.8' },
   { path: '/employer', changefreq: 'weekly', priority: '0.8' },
   { path: '/about', changefreq: 'monthly', priority: '0.6' },
   { path: '/contact', changefreq: 'monthly', priority: '0.5' },
@@ -100,98 +101,102 @@ function generateSegmentedSitemaps() {
     mkdirSync(publicDir, { recursive: true });
   }
 
-  // 1. Services
-  const serviceEntries: SitemapEntry[] = [
+  const seenUrls = new Set<string>();
+
+  const deduplicate = (entries: SitemapEntry[]): SitemapEntry[] => {
+    return entries.filter((e) => {
+      const fullUrl = `${PRODUCTION_ORIGIN}${e.path === '/' ? '/' : e.path.replace(/\/+$/, '')}`;
+      if (seenUrls.has(fullUrl)) {
+        return false;
+      }
+      seenUrls.add(fullUrl);
+      return true;
+    });
+  };
+
+  // 1. Base Pages
+  const baseEntries = deduplicate(BASE_PAGES);
+
+  // 2. Jobs & Passports
+  const jobEntries = deduplicate([{ path: '/jobs', changefreq: 'daily', priority: '0.9' }]);
+  const passportEntries = deduplicate([{ path: '/passport', changefreq: 'weekly', priority: '0.8' }]);
+
+  // 3. Services
+  const serviceEntries = deduplicate([
     ...CANDIDATE_SERVICES.map((s) => ({ path: `/${s.slug}`, changefreq: 'weekly' as const, priority: '0.8' })),
     ...EMPLOYER_SERVICES.map((s) => ({ path: `/${s.slug}`, changefreq: 'weekly' as const, priority: '0.8' })),
-  ];
+  ]);
 
-  // 2. Industries
-  const industryEntries: SitemapEntry[] = INDUSTRY_HUBS.map((hub) => ({
-    path: `/industries/${hub.slug}`,
-    changefreq: 'weekly',
-    priority: '0.7',
-  }));
+  // 4. Industries & Locations
+  const industryEntries = deduplicate(INDUSTRY_HUBS.map((hub) => ({ path: `/industries/${hub.slug}`, changefreq: 'weekly', priority: '0.7' })));
+  const locationEntries = deduplicate(LOCATION_HUBS.map((hub) => ({ path: `/locations/${hub.slug}`, changefreq: 'weekly', priority: '0.7' })));
+  const resourceEntries = deduplicate(RESOURCE_HUBS.map((hub) => ({ path: `/resources/${hub.slug}`, changefreq: 'weekly', priority: '0.7' })));
 
-  // 3. Locations
-  const locationEntries: SitemapEntry[] = LOCATION_HUBS.map((hub) => ({
-    path: `/locations/${hub.slug}`,
-    changefreq: 'weekly',
-    priority: '0.7',
-  }));
-
-  // 4. Resources Hubs
-  const resourceEntries: SitemapEntry[] = RESOURCE_HUBS.map((hub) => ({
-    path: `/resources/${hub.slug}`,
-    changefreq: 'weekly',
-    priority: '0.7',
-  }));
-
-  // 5. Roles & Skills (derived from JOB_CATEGORIES)
+  // 5. Roles & Skills
   const roleSet = new Set<string>();
   const skillSet = new Set<string>();
-
   Object.values(JOB_CATEGORIES).forEach((cat) => {
     cat.roles.forEach((r) => roleSet.add(r));
     cat.skills.forEach((s) => skillSet.add(s));
   });
 
-  const roleEntries: SitemapEntry[] = Array.from(roleSet).map((role) => ({
+  const roleEntries = deduplicate(Array.from(roleSet).map((role) => ({
     path: `/roles/${encodeURIComponent(role.toLowerCase().replace(/\s+/g, '-'))}`,
     changefreq: 'weekly',
     priority: '0.7',
-  }));
+  })));
 
-  const skillEntries: SitemapEntry[] = Array.from(skillSet).map((skill) => ({
+  const skillEntries = deduplicate(Array.from(skillSet).map((skill) => ({
     path: `/skills/${encodeURIComponent(skill.toLowerCase().replace(/\s+/g, '-'))}`,
     changefreq: 'weekly',
     priority: '0.7',
-  }));
+  })));
 
-  // 6. Learning / Courses
-  const learningEntries: SitemapEntry[] = (coursesDatabase || []).map((course) => ({
+  // 6. High-Intent Role + Location Combinations
+  const roleLocationList: SitemapEntry[] = [];
+  const rolesList = Array.from(roleSet);
+  LOCATION_HUBS.forEach((locHub) => {
+    rolesList.forEach((role) => {
+      const roleSlug = encodeURIComponent(role.toLowerCase().replace(/\s+/g, '-'));
+      roleLocationList.push({
+        path: `/jobs/${roleSlug}/${locHub.slug}`,
+        changefreq: 'weekly',
+        priority: '0.7',
+      });
+    });
+  });
+  const roleLocationEntries = deduplicate(roleLocationList);
+
+  // 7. Learning / Courses
+  const learningEntries = deduplicate((coursesDatabase || []).map((course) => ({
     path: `/courses/${course.id}`,
     changefreq: 'monthly',
     priority: '0.6',
-  }));
+  })));
 
-  // 7. Companies
-  const companyEntries: SitemapEntry[] = [
+  // 8. Companies & Colleges
+  const companyEntries = deduplicate([
     { path: '/companies/talentxcel', changefreq: 'weekly', priority: '0.8' },
     { path: '/companies/tech-corp', changefreq: 'monthly', priority: '0.6' },
-  ];
+  ]);
 
-  // 8. Colleges
-  const collegeEntries: SitemapEntry[] = [
+  const collegeEntries = deduplicate([
     { path: '/colleges/iit-delhi', changefreq: 'monthly', priority: '0.6' },
     { path: '/colleges/iit-bombay', changefreq: 'monthly', priority: '0.6' },
-  ];
+  ]);
 
-  // 9. Jobs
-  const jobEntries: SitemapEntry[] = [
-    { path: '/jobs', changefreq: 'daily', priority: '0.9' },
-  ];
+  // 9. Authors & News
+  const authorEntries = deduplicate([{ path: '/authors/talentxcel-editorial', changefreq: 'monthly', priority: '0.5' }]);
+  const newsEntries = deduplicate([{ path: '/news/future-of-ai-recruitment-in-india', changefreq: 'monthly', priority: '0.6' }]);
 
-  // 10. Passports
-  const passportEntries: SitemapEntry[] = [
-    { path: '/passport', changefreq: 'weekly', priority: '0.8' },
-  ];
-
-  // 11. Authors
-  const authorEntries: SitemapEntry[] = [
-    { path: '/authors/talentxcel-editorial', changefreq: 'monthly', priority: '0.5' },
-  ];
-
-  // 12. Segment Content Registry Guides
-  const resumeGuideEntries: SitemapEntry[] = [];
-  const interviewGuideEntries: SitemapEntry[] = [];
-  const skillGuideEntries: SitemapEntry[] = [];
-  const careerPathEntries: SitemapEntry[] = [];
-  const employerGuideEntries: SitemapEntry[] = [];
-  const salaryGuideEntries: SitemapEntry[] = [];
-  const generalArticleEntries: SitemapEntry[] = [
-    { path: '/news/future-of-ai-recruitment-in-india', changefreq: 'monthly', priority: '0.6' },
-  ];
+  // 10. Content Registry Guides
+  const resumeGuideList: SitemapEntry[] = [];
+  const interviewGuideList: SitemapEntry[] = [];
+  const skillGuideList: SitemapEntry[] = [];
+  const careerPathList: SitemapEntry[] = [];
+  const employerGuideList: SitemapEntry[] = [];
+  const salaryGuideList: SitemapEntry[] = [];
+  const generalArticleList: SitemapEntry[] = [];
 
   CONTENT_REGISTRY.filter((item) => item.indexable).forEach((item) => {
     const entry: SitemapEntry = {
@@ -203,51 +208,59 @@ function generateSegmentedSitemaps() {
 
     switch (item.category) {
       case 'ResumeGuide':
-        resumeGuideEntries.push(entry);
+        resumeGuideList.push(entry);
         break;
       case 'InterviewGuide':
-        interviewGuideEntries.push(entry);
+        interviewGuideList.push(entry);
         break;
       case 'SkillGuide':
-        skillGuideEntries.push(entry);
+        skillGuideList.push(entry);
         break;
       case 'CareerPath':
       case 'CareerGuide':
-        careerPathEntries.push(entry);
+        careerPathList.push(entry);
         break;
       case 'EmployerGuide':
       case 'HRGuide':
-        employerGuideEntries.push(entry);
+        employerGuideList.push(entry);
         break;
       case 'SalaryGuide':
-        salaryGuideEntries.push(entry);
+        salaryGuideList.push(entry);
         break;
       default:
-        generalArticleEntries.push(entry);
+        generalArticleList.push(entry);
         break;
     }
   });
 
-  // 13. People / Profiles (Indexable public profiles)
-  const peopleEntries: SitemapEntry[] = [
-    { path: '/profile/arshid-hussain-wani', changefreq: 'weekly', priority: '0.7' },
-  ];
+  const resumeGuideEntries = deduplicate(resumeGuideList);
+  const interviewGuideEntries = deduplicate(interviewGuideList);
+  const skillGuideEntries = deduplicate(skillGuideList);
+  const careerPathEntries = deduplicate(careerPathList);
+  const employerGuideEntries = deduplicate(employerGuideList);
+  const salaryGuideEntries = deduplicate(salaryGuideList);
+  const generalArticleEntries = deduplicate(generalArticleList);
+
+  // 11. People / Profiles
+  const peopleEntries = deduplicate([{ path: '/profile/arshid-hussain-wani', changefreq: 'weekly', priority: '0.7' }]);
 
   // Segment Map Definition
   const segments: { filename: string; entries: SitemapEntry[] }[] = [
-    { filename: 'sitemap-base.xml', entries: BASE_PAGES },
+    { filename: 'sitemap-base.xml', entries: baseEntries },
+    { filename: 'sitemap-jobs.xml', entries: jobEntries },
+    { filename: 'sitemap-passports.xml', entries: passportEntries },
     { filename: 'sitemap-services.xml', entries: serviceEntries },
     { filename: 'sitemap-industries.xml', entries: industryEntries },
     { filename: 'sitemap-locations.xml', entries: locationEntries },
     { filename: 'sitemap-resources.xml', entries: resourceEntries },
     { filename: 'sitemap-roles.xml', entries: roleEntries },
     { filename: 'sitemap-skills.xml', entries: skillEntries },
+    { filename: 'sitemap-role-locations.xml', entries: roleLocationEntries },
     { filename: 'sitemap-learning.xml', entries: learningEntries },
     { filename: 'sitemap-companies.xml', entries: companyEntries },
     { filename: 'sitemap-colleges.xml', entries: collegeEntries },
-    { filename: 'sitemap-jobs.xml', entries: jobEntries },
-    { filename: 'sitemap-passports.xml', entries: passportEntries },
     { filename: 'sitemap-authors.xml', entries: authorEntries },
+    { filename: 'sitemap-news.xml', entries: newsEntries },
     { filename: 'sitemap-articles.xml', entries: generalArticleEntries },
     { filename: 'sitemap-career-paths.xml', entries: careerPathEntries },
     { filename: 'sitemap-resume-guides.xml', entries: resumeGuideEntries },
@@ -263,10 +276,12 @@ function generateSegmentedSitemaps() {
   let totalUrls = 0;
 
   segments.forEach(({ filename, entries }) => {
-    const xml = buildUrlSetXml(entries);
-    writeFileSync(resolve(publicDir, filename), xml);
-    sitemapFiles.push({ filename, count: entries.length });
-    totalUrls += entries.length;
+    if (entries.length > 0) {
+      const xml = buildUrlSetXml(entries);
+      writeFileSync(resolve(publicDir, filename), xml);
+      sitemapFiles.push({ filename, count: entries.length });
+      totalUrls += entries.length;
+    }
   });
 
   // Write Master Sitemap Index (/sitemap.xml)
