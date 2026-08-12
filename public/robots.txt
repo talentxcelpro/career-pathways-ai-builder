@@ -3,17 +3,40 @@
 # Primary indexable domain: https://talentxcel.in
 # ==========================================================
 
-# ----------------------------------------------------------
-# Specific bots (must come before User-agent: *)
-# ----------------------------------------------------------
-User-agent: Googlebot
-Allow: /
+# ------------------------------
+# Job Aggregators
+# ------------------------------
+
+User-agent: Indeed
+Allow: /jobs/
+
+User-agent: NaukriBot
+Allow: /jobs/
+
+User-agent: CareerBuilder
+Allow: /jobs/
+
+User-agent: JoobleBot
+Allow: /jobs/
+
+
+# ------------------------------
+# Media Crawlers
+# ------------------------------
 
 User-agent: Googlebot-Image
 Allow: /
 
-User-agent: Bingbot
+User-agent: Googlebot-Video
 Allow: /
+
+User-agent: AdsBot-Google
+Allow: /
+
+
+# ------------------------------
+# Social Crawlers
+# ------------------------------
 
 User-agent: Twitterbot
 Allow: /
@@ -24,7 +47,24 @@ Allow: /
 User-agent: LinkedInBot
 Allow: /
 
+User-agent: WhatsApp
+Allow: /
+
+User-agent: TelegramBot
+Allow: /
+
+
+# ------------------------------
+# AI Crawlers
+# ------------------------------
+
+User-agent: ChatGPT-User
+Allow: /
+
 User-agent: GPTBot
+Allow: /
+
+User-agent: Google-Extended
 Allow: /
 
 User-agent: PerplexityBot
@@ -33,28 +73,90 @@ Allow: /
 User-agent: ClaudeBot
 Allow: /
 
+
+# ------------------------------
+# SEO Crawlers
+# ------------------------------
+
 User-agent: AhrefsBot
 Allow: /
-Crawl-delay: 5
 
 User-agent: SemrushBot
 Allow: /
-Crawl-delay: 5
 
-# ----------------------------------------------------------
-# All other bots
-# ----------------------------------------------------------
+User-agent: MJ12bot
+Allow: /
+
+User-agent: ScreamingFrogSEOSpider
+Allow: /
+
+
+# ==========================================================
+# GENERAL CRAWL POLICY
+# ==========================================================
+
 User-agent: *
 Allow: /
-Crawl-delay: 2
 
-# Authentication, onboarding and account areas
+# ------------------------------
+# Private / Restricted Areas
+# ------------------------------
+
 Disallow: /auth/
+Disallow: /api/auth/
+Disallow: /api/user/
+Disallow: /api/private/
+
 Disallow: /onboarding
 Disallow: /dashboard
 Disallow: /my-applications
 
-# Admin and internal tooling
+Disallow: /jobs/apply/
+Disallow: /jobs/dashboard/
+Disallow: /jobs/my-applications/
+
+Disallow: /companies/admin/
+Disallow: /companies/settings/
+
+Disallow: /network/messages/
+Disallow: /network/notifications/
+Disallow: /network/settings/
+
+Disallow: /resume/user/
+Disallow: /resume/private/
+Disallow: /resume/edit/
+Disallow: /resume/my-resumes/
+
+Disallow: /profile/edit/
+Disallow: /profile/settings/
+
+Disallow: /tools/internal/
+Disallow: /tools/private/
+
+Disallow: /learning/my-courses
+Disallow: /learning/my-progress
+Disallow: /learning/progress/
+Disallow: /learning/dashboard/
+
+Disallow: /colleges/admin/
+Disallow: /colleges/private/
+
+Disallow: /careermap/private/
+Disallow: /careermap/user/
+
+Disallow: /careerpassport/user/
+Disallow: /careerpassport/private/
+
+Disallow: /employer/settings/
+Disallow: /employer/dashboard/
+Disallow: /employer/private/
+
+Disallow: /marketplace/orders/
+Disallow: /marketplace/private/
+
+Disallow: /events/private/
+Disallow: /events/settings/
+
 Disallow: /admin/
 Disallow: /diagnostics
 Disallow: /debug
@@ -64,28 +166,19 @@ Disallow: /access-control-test
 Disallow: /realtime-demo
 Disallow: /mobile-demo
 
-# Employer/private workspaces
-Disallow: /employer/settings/
-Disallow: /employer/dashboard/
 
-# Private user areas
-Disallow: /profile/edit/
-Disallow: /profile/settings/
-Disallow: /network/messages/
-Disallow: /network/notifications/
-Disallow: /network/settings/
-Disallow: /learning/my-courses
-Disallow: /learning/my-progress
-Disallow: /resume/my-resumes/
-Disallow: /marketplace/orders/
+# ==========================================================
+# PARAMETER URL CONTROL
+# ==========================================================
 
-# Tracking parameters (avoid duplicate URLs)
 Disallow: /*?*utm_
+Disallow: /*?*ref=
 Disallow: /*?*gclid=
 Disallow: /*?*fbclid=
-Disallow: /*?*ref=
 
-# ----------------------------------------------------------
-# Sitemap
-# ----------------------------------------------------------
+
+# ==========================================================
+# SITEMAP
+# ==========================================================
+
 Sitemap: https://talentxcel.in/sitemap.xml
