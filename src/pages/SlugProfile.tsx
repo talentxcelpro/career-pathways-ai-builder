@@ -105,12 +105,19 @@ const SlugProfile = () => {
         {/* Robots: only index when the profile meets the quality gate */}
         <meta name="robots" content={isIndexable ? 'index,follow' : 'noindex,nofollow'} />
         <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content={fullTitle} />
+        <meta property="og:description" content={profile.about ? profile.about.substring(0, 160) : `${profile.full_name}'s professional profile on TalentXcel.`} />
         <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:type" content="profile" />
+        {profile.profile_picture_url && <meta property="og:image" content={profile.profile_picture_url} />}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={fullTitle} />
+        <meta name="twitter:description" content={profile.about ? profile.about.substring(0, 160) : `${profile.full_name}'s professional profile on TalentXcel.`} />
+        {profile.profile_picture_url && <meta name="twitter:image" content={profile.profile_picture_url} />}
+        <script type="application/ld+json">
+          {JSON.stringify(jsonLd)}
+        </script>
       </Helmet>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
 
       <main className="min-h-screen bg-background">
         <div ref={profileRef} className="max-w-4xl mx-auto px-4 py-6 space-y-6">
