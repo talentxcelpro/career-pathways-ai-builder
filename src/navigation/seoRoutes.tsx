@@ -194,10 +194,4 @@ export const seoRoutes = [
     icon: <Code className="h-4 w-4" />,
     page: <ComprehensiveSEOGenerator pageType="tool" />,
   },
-  {
-    title: "Career Resources",
-    to: "/resources/:tool",
-    icon: <Code className="h-4 w-4" />,
-    page: <ComprehensiveSEOGenerator pageType="tool" />,
-  },
 ];

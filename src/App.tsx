@@ -275,6 +275,14 @@ const App = () => {
                 <Route path="/tools" element={<Tools />} />
                 <Route path="/resources/:slug" element={<ResourceDetail />} />
                 <Route path="/resources" element={<Blog />} />
+                <Route path="/skills/:skill" element={<JobsBySkill />} />
+                <Route path="/skills" element={<JobsBySkill />} />
+                <Route path="/roles/:role" element={<JobsByRole />} />
+                <Route path="/roles" element={<JobsByRole />} />
+                <Route path="/locations/:location" element={<JobsByLocation />} />
+                <Route path="/locations" element={<JobsByLocation />} />
+                <Route path="/industries/:industry" element={<IndustryJobs />} />
+                <Route path="/industries" element={<IndustryJobs />} />
                 
                 {/* Specific Job Detail Routes - UUID patterns */}
                 <Route path="/jobs/:slugOrId" element={
