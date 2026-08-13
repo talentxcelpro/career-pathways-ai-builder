@@ -82,6 +82,7 @@ const InterviewPrep                   = lazy(() => import('./pages/tools/Intervi
 const ProfileOptimizer                = lazy(() => import('./pages/tools/ProfileOptimizer').then(m => ({ default: m.ProfileOptimizer })));
 const SalaryAnalyzer                  = lazy(() => import('./pages/tools/SalaryAnalyzer'));
 const SkillAssessor                   = lazy(() => import('./pages/tools/SkillAssessor'));
+const SkillAssessmentEngine           = lazy(() => import('./pages/tools/SkillAssessmentEngine'));
 const JobMatcher                      = lazy(() => import('./pages/tools/JobMatcher'));
 const ResumeTemplates                 = lazy(() => import('./pages/ResumeTemplates'));
 const ResumeEdit                      = lazy(() => import('./pages/resume/ResumeEditorPage').then(m => ({ default: m.ResumeEditorPage })));
@@ -282,6 +283,8 @@ const App = () => {
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/terms-of-service" element={<Terms />} />
                 <Route path="/tools" element={<Tools />} />
+                <Route path="/tools/skill-assessment-engine" element={<SkillAssessmentEngine />} />
+                <Route path="/tools/skill-assessment" element={<SkillAssessmentEngine />} />
                 <Route path="/resources/:slug" element={<ResourceDetail />} />
                 <Route path="/resources" element={<Blog />} />
                 <Route path="/skills/:skill" element={<JobsBySkill />} />
