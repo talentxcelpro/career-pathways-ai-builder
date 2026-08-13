@@ -1,13 +1,11 @@
 
-/* Critical CSS - Inlined for above-the-fold content */
+/* Import mobile-first & dark text optimizations */
+@import url('./styles/mobile-first-global.css');
+@import './styles/apple-dark-text.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Import mobile-first optimizations */
-@import url('./styles/mobile-first-global.css');
-@import './styles/apple-dark-text.css';
 
 /* Native app-like styles */
 .native-app-style {
