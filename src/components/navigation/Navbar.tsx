@@ -312,21 +312,13 @@ export const Navbar = () => {
             </>
           ) : (
             /* Guest Navigation */
-            <div className="flex items-center space-x-2">
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => navigate('/auth/login')}
-                className="text-slate-700 hover:text-slate-900 font-semibold cursor-pointer"
-              >
-                Sign In
-              </Button>
+            <div className="flex items-center">
               <Button 
                 size="sm"
                 onClick={() => navigate('/auth/register')}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg cursor-pointer"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg px-4 cursor-pointer shadow-sm"
               >
-                Get Started
+                Get Started Free
               </Button>
             </div>
           )}
