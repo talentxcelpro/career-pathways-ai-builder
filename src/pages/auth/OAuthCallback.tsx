@@ -6,59 +6,91 @@ import { toast } from 'sonner';
 
 const OAuthCallback = () => {
   const navigate = useNavigate();
-  const [status, setStatus] = useState<'processing' | 'success' | 'error'>('processing');
+  const [status, setStatus] = useState<'processing' | 'success' | 'error' | 'retrying'>('processing');
 
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        console.log('Processing OAuth callback...');
-        setStatus('processing');
-        
-        // Check if there is a 'code' parameter in the URL (PKCE flow used by LinkedIn)
+        // ── Parse both search params and hash fragment ──────────────────────
         const requestUrl = new URL(window.location.href);
-        const code = requestUrl.searchParams.get('code');
 
+        // Supabase can put error in hash OR search params
+        const hashParams   = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+        const errorCode    = requestUrl.searchParams.get('error')    || hashParams.get('error');
+        const errorDesc    = requestUrl.searchParams.get('error_description') || hashParams.get('error_description');
+
+        // ── Detect the GoTrue NULL column bug and auto-retry ─────────────
+        const isNullBug = errorCode === 'server_error' &&
+          (errorDesc?.includes('Scan error') || errorDesc?.includes('NULL') || errorDesc?.includes('converting NULL'));
+
+        if (isNullBug) {
+          console.warn('[OAuthCallback] GoTrue NULL column bug detected, auto-retrying LinkedIn OAuth…');
+          setStatus('retrying');
+          // Small delay so the user sees the retrying state, then re-initiate
+          await new Promise(r => setTimeout(r, 800));
+          const { error: retryError } = await supabase.auth.signInWithOAuth({
+            provider: 'linkedin_oidc',
+            options: {
+              redirectTo: `${window.location.origin}/auth/callback`,
+              scopes: 'openid profile email',
+            },
+          });
+          if (retryError) {
+            setStatus('error');
+            toast.error('LinkedIn sign in failed. Please try again.');
+            setTimeout(() => window.location.replace('/auth/login'), 2500);
+          }
+          // browser will redirect to LinkedIn — nothing more to do
+          return;
+        }
+
+        // ── Normal error (not the NULL bug) ──────────────────────────────
+        if (errorCode) {
+          console.error('[OAuthCallback] Auth error:', errorCode, errorDesc);
+          setStatus('error');
+          toast.error(errorDesc ? decodeURIComponent(errorDesc) : 'Sign in failed. Please try again.');
+          setTimeout(() => window.location.replace('/auth/login'), 2500);
+          return;
+        }
+
+        // ── PKCE code exchange ────────────────────────────────────────────
+        const code = requestUrl.searchParams.get('code');
         if (code) {
-          console.log('Exchanging auth code for session...');
           const { data: exchangeData, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
           if (!exchangeError && exchangeData?.session) {
-            console.log('OAuth code exchange successful');
             setStatus('success');
             toast.success('Signed in successfully!');
             window.location.replace('/network');
             return;
           }
           if (exchangeError) {
-            console.error('Code exchange error:', exchangeError);
+            console.error('[OAuthCallback] Code exchange error:', exchangeError);
           }
         }
 
-        // Fallback: Check existing session
+        // ── Fallback: check existing session ─────────────────────────────
         const { data, error } = await supabase.auth.getSession();
-        
         if (error) {
-          console.error('OAuth callback error:', error);
+          console.error('[OAuthCallback] getSession error:', error);
           setStatus('error');
           toast.error('Sign in failed. Please try again.');
-          setTimeout(() => window.location.replace('/auth/login'), 2000);
+          setTimeout(() => window.location.replace('/auth/login'), 2500);
           return;
         }
 
-        if (data.session && data.session.user) {
-          console.log('OAuth authentication successful');
+        if (data.session?.user) {
           setStatus('success');
           window.location.replace('/network');
         } else {
-          console.log('No session found in callback');
           setStatus('error');
           toast.error('Sign in failed. Please try again.');
-          setTimeout(() => window.location.replace('/auth/login'), 2000);
+          setTimeout(() => window.location.replace('/auth/login'), 2500);
         }
-      } catch (error) {
-        console.error('OAuth callback processing error:', error);
+      } catch (err) {
+        console.error('[OAuthCallback] Unexpected error:', err);
         setStatus('error');
         toast.error('Sign in failed. Please try again.');
-        setTimeout(() => navigate('/auth/login'), 2000);
+        setTimeout(() => navigate('/auth/login'), 2500);
       }
     };
 
@@ -68,11 +100,15 @@ const OAuthCallback = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
       <div className="text-center max-w-md mx-auto p-8">
-        {status === 'processing' && (
+        {(status === 'processing' || status === 'retrying') && (
           <>
             <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-6"></div>
-            <h2 className="text-xl font-semibold text-gray-800 mb-2">Signing you in...</h2>
-            <p className="text-gray-600">Please wait while we complete your sign in</p>
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">
+              {status === 'retrying' ? 'Reconnecting…' : 'Signing you in...'}
+            </h2>
+            <p className="text-gray-600">
+              {status === 'retrying' ? 'One moment, retrying your LinkedIn sign in' : 'Please wait while we complete your sign in'}
+            </p>
           </>
         )}
         
