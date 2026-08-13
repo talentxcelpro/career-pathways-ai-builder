@@ -101,6 +101,7 @@ import AIServicesPage from "@/pages/AIServicesPage";
 import JobsByRole from "@/pages/JobsByRole";
 import JobsByLocation from "@/pages/JobsByLocation";
 import JobsBySkill from "@/pages/JobsBySkill";
+import IndustryJobs from "@/pages/seo/IndustryJobs";
 import Platform from "./pages/Platform";
 import DebugPage from "./pages/DebugPage";
 import SystemDiagnostics from "./pages/SystemDiagnostics";
