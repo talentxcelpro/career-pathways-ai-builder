@@ -51,11 +51,18 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
         return;
       }
 
-      // Existing onAuthStateChange listener handles redirect / returnUrl behavior.
+      toast.success('Welcome to TalentXcel!');
+
+      // Immediate blazing fast redirect
+      const searchParams = new URLSearchParams(window.location.search);
+      const redirectParam = searchParams.get('redirect') || searchParams.get('returnUrl');
+      const targetUrl = redirectParam || localStorage.getItem('subdomain_redirect') || '/network';
+      localStorage.removeItem('subdomain_redirect');
+
+      window.location.replace(targetUrl);
     } catch (error: any) {
       if (isDev) console.error('Google sign in error:', error);
       toast.error('Google sign in failed. Please try again.');
-    } finally {
       loadingRef.current = false;
       setLoading(false);
     }
