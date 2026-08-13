@@ -88,9 +88,16 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
           theme: 'outline',
           size: 'large',
           text: 'continue_with',
-          width: 320,
+          width: 340,
           logo_alignment: 'center',
         });
+
+        // Trigger Google One Tap automatically for instant 1-tap login
+        try {
+          google.accounts.id.prompt();
+        } catch (e) {
+          // ignore prompt suppression
+        }
 
         setGsiReady(true);
       })
@@ -104,34 +111,31 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
   }, [handleCredentialResponse]);
 
   const buttonClass = variant === 'prominent'
-    ? "h-9 text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
-    : "h-8";
+    ? "h-11 text-sm font-semibold shadow-md hover:shadow-xl transition-all duration-200 transform hover:scale-[1.01] active:scale-[0.99] bg-gradient-to-r from-white via-blue-50/20 to-white border-2 border-slate-200/90 text-slate-800 hover:border-blue-500/40 hover:shadow-blue-500/10 rounded-xl"
+    : "h-9 text-xs font-semibold shadow-sm hover:shadow transition-all border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg";
 
   return (
     <div className="space-y-3">
       {variant === 'prominent' && (
-        <div className="text-center mb-4">
-          <p className="text-sm font-semibold text-foreground flex items-center justify-center gap-2">
+        <div className="text-center mb-3">
+          <p className="text-sm font-bold text-foreground flex items-center justify-center gap-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
             ⚡ Fast Login
           </p>
-          <p className="text-xs text-muted-foreground">Sign up with one click</p>
+          <p className="text-xs text-muted-foreground font-medium">Sign up with one click</p>
         </div>
       )}
 
-      <div className="relative">
+      <div className="relative group">
         <Button
           type="button"
           disabled={loading || !gsiReady}
           aria-label="Continue with Google"
-          className={`w-full ${buttonClass} ${variant === 'prominent'
-            ? 'bg-white border-2 border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 shadow-md'
-            : 'border border-gray-300 hover:bg-gray-50'
-          } transition-colors duration-200 flex items-center justify-center gap-3 py-3`}
+          className={`w-full ${buttonClass} transition-all duration-200 flex items-center justify-center gap-3 py-3`}
         >
           {loading ? (
-            <Loader2 className="h-4 w-4 animate-spin text-gray-600" />
+            <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
           ) : (
-            <svg className="h-5 w-5" viewBox="0 0 24 24">
+            <svg className="h-5 w-5 transition-transform duration-200 group-hover:scale-110" viewBox="0 0 24 24">
               <path
                 fill="#4285F4"
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
