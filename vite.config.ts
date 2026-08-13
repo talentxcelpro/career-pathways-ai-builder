@@ -64,6 +64,15 @@ export default defineConfig(({ mode }) => ({
           if (id.includes('node_modules/lucide-react')) {
             return 'icons';
           }
+          if (id.includes('node_modules/pdfjs-dist') || id.includes('node_modules/jspdf') || id.includes('node_modules/html2canvas')) {
+            return 'pdf-vendor';
+          }
+          if (id.includes('node_modules/@tanstack')) {
+            return 'query-vendor';
+          }
+          if (id.includes('node_modules/date-fns') || id.includes('node_modules/lodash')) {
+            return 'utils-vendor';
+          }
           if (id.includes('node_modules')) {
             return 'vendor';
           }
