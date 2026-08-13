@@ -108,142 +108,80 @@ const SkillAssessmentEngine = () => {
       });
 
       const assessment = {
-        title: 'Comprehensive Skill Assessment',
-        duration: '10-15 minutes',
-        total_questions: 12,
-        categories: ['Technical Skills', 'Problem Solving', 'Communication', 'Leadership'],
+        title: 'Objective Technical & Problem-Solving Assessment',
+        duration: '10-15 minutes (45s per question)',
+        total_questions: 10,
+        categories: ['Technical Knowledge', 'System Architecture', 'Problem Solving', 'Security & Performance'],
         questions: aiResponse?.questions || [
           {
             id: 1,
-            category: 'Technical Skills',
-            question: 'How would you rate your proficiency in your primary technical skill?',
-            options: [
-              'Beginner - Just getting started',
-              'Intermediate - Can handle most tasks with guidance',
-              'Advanced - Can work independently and solve complex problems',
-              'Expert - Can mentor others and lead technical initiatives'
-            ]
+            category: 'Technical Knowledge',
+            question: 'In JavaScript / TypeScript, what is the value of `typeof null`?',
+            options: ['"null"', '"object"', '"undefined"', '"number"'],
+            correct_index: 1
           },
           {
             id: 2,
-            category: 'Problem Solving',
-            question: 'When faced with a complex problem, what is your typical approach?',
-            options: [
-              'I break it down into smaller, manageable parts',
-              'I research similar problems and solutions online',
-              'I seek help from colleagues or mentors',
-              'I try different approaches until something works'
-            ]
+            category: 'System Architecture',
+            question: 'Which HTTP status code indicates a resource was permanently moved to a new URI?',
+            options: ['301 Moved Permanently', '302 Found', '307 Temporary Redirect', '308 Permanent Redirect'],
+            correct_index: 0
           },
           {
             id: 3,
-            category: 'Communication',
-            question: 'How comfortable are you presenting technical concepts to non-technical stakeholders?',
-            options: [
-              'Very uncomfortable - I avoid these situations',
-              'Somewhat uncomfortable - I can do it but prefer not to',
-              'Comfortable - I can explain technical concepts clearly',
-              'Very comfortable - I excel at translating technical to business terms'
-            ]
+            category: 'Problem Solving',
+            question: 'In SQL, which clause is evaluated BEFORE the `GROUP BY` clause?',
+            options: ['HAVING', 'ORDER BY', 'WHERE', 'LIMIT'],
+            correct_index: 2
           },
           {
             id: 4,
-            category: 'Leadership',
-            question: 'How do you typically handle team conflicts?',
-            options: [
-              'I avoid getting involved and let others handle it',
-              'I listen to all sides and try to find common ground',
-              'I escalate to management when conflicts arise',
-              'I take charge and make decisions to resolve issues quickly'
-            ]
+            category: 'Security & Performance',
+            question: 'Which HTTP header prevents Cross-Site Clickjacking attacks in modern browsers?',
+            options: ['X-Frame-Options', 'Access-Control-Allow-Origin', 'X-XSS-Protection', 'Content-Security-Policy'],
+            correct_index: 0
           },
           {
             id: 5,
-            category: 'Technical Skills',
-            question: 'How do you stay updated with new technologies and industry trends?',
-            options: [
-              'I don\'t actively seek updates - I learn as needed',
-              'I follow industry blogs and newsletters regularly',
-              'I attend conferences, webinars, and training sessions',
-              'I contribute to open source and participate in tech communities'
-            ]
+            category: 'Technical Knowledge',
+            question: 'What is the worst-case time complexity for searching an unindexed binary search tree?',
+            options: ['O(1)', 'O(log n)', 'O(n log n)', 'O(n)'],
+            correct_index: 3
           },
           {
             id: 6,
-            category: 'Problem Solving',
-            question: 'What best describes your debugging approach?',
-            options: [
-              'I randomly try different solutions until something works',
-              'I use systematic approaches like divide and conquer',
-              'I rely heavily on online resources and documentation',
-              'I use debugging tools and methodical testing strategies'
-            ]
+            category: 'System Architecture',
+            question: 'Which HTTP method is required by the HTTP/1.1 specification to be idempotent?',
+            options: ['POST', 'PUT', 'PATCH', 'CONNECT'],
+            correct_index: 1
           },
           {
             id: 7,
-            category: 'Communication',
-            question: 'How effective are you at written communication?',
-            options: [
-              'Basic - I can write emails and simple documentation',
-              'Good - I can create clear technical documentation',
-              'Very good - I can write engaging content and proposals',
-              'Excellent - I can influence and persuade through writing'
-            ]
+            category: 'Security & Performance',
+            question: 'In React, which hook is used to memoize the computed result of an expensive calculation?',
+            options: ['useCallback', 'useEffect', 'useMemo', 'useRef'],
+            correct_index: 2
           },
           {
             id: 8,
-            category: 'Leadership',
-            question: 'How do you approach mentoring junior team members?',
-            options: [
-              'I don\'t have experience mentoring others',
-              'I provide guidance when asked but don\'t actively mentor',
-              'I enjoy helping others learn and grow',
-              'I actively seek mentoring opportunities and excel at teaching'
-            ]
+            category: 'Problem Solving',
+            question: 'What occurs when two concurrent threads access a shared mutable variable without synchronization?',
+            options: ['Deadlock', 'Race Condition', 'Memory Leak', 'Stack Overflow'],
+            correct_index: 1
           },
           {
             id: 9,
-            category: 'Technical Skills',
-            question: 'How do you approach learning new programming languages or technologies?',
-            options: [
-              'I struggle with learning new technologies',
-              'I can learn basics but need help with advanced concepts',
-              'I\'m comfortable learning new technologies independently',
-              'I excel at quickly mastering new technologies and frameworks'
-            ]
+            category: 'Technical Knowledge',
+            question: 'In Git, which command creates a new branch and immediately switches to it?',
+            options: ['git branch -n <name>', 'git checkout -b <name>', 'git switch --create-new <name>', 'git commit -b <name>'],
+            correct_index: 1
           },
           {
             id: 10,
-            category: 'Problem Solving',
-            question: 'How do you handle ambiguous requirements or unclear specifications?',
-            options: [
-              'I wait for clarification before starting work',
-              'I make assumptions and proceed with the work',
-              'I ask targeted questions to clarify requirements',
-              'I analyze the broader context and propose solutions'
-            ]
-          },
-          {
-            id: 11,
-            category: 'Communication',
-            question: 'How well do you handle constructive criticism and feedback?',
-            options: [
-              'I find it difficult and take it personally',
-              'I accept it but don\'t always act on it',
-              'I welcome feedback and use it to improve',
-              'I actively seek feedback and help others give better feedback'
-            ]
-          },
-          {
-            id: 12,
-            category: 'Leadership',
-            question: 'How do you motivate team members during challenging projects?',
-            options: [
-              'I focus on my own tasks and let others manage themselves',
-              'I offer encouragement when I notice someone struggling',
-              'I actively check in with team members and provide support',
-              'I create strategies to boost morale and maintain team momentum'
-            ]
+            category: 'Security & Performance',
+            question: 'What is the primary function of a Database Index?',
+            options: ['Encrypt table rows on disk', 'Accelerate data retrieval at the cost of slower writes', 'Enforce foreign key constraints exclusively', 'Automatically back up table data'],
+            correct_index: 1
           }
         ]
       };
@@ -305,14 +243,37 @@ const SkillAssessmentEngine = () => {
         }
       });
 
+      // Deterministic Objective Score Calculation from Answer Keys
+      let correctCount = 0;
+      const questionsList = assessmentData.questions || [];
+      questionsList.forEach((q: any) => {
+        const selectedAnswer = answers[q.id];
+        if (typeof q.correct_index === 'number' && q.options && q.options[q.correct_index]) {
+          if (selectedAnswer === q.options[q.correct_index]) {
+            correctCount += 1;
+          }
+        }
+      });
+
+      const totalCount = questionsList.length || 10;
+      const rawAccuracy = Math.round((correctCount / totalCount) * 100);
+      const proctorPenalty = tabSwitches * 10;
+      const finalObjectiveScore = Math.max(0, rawAccuracy - proctorPenalty);
+      const isVerified = finalObjectiveScore >= 80 && tabSwitches <= 2;
+
       const results = {
-        overall_score: Math.max(50, (aiResponse?.overall_score || 78) - (tabSwitches * 5)),
+        overall_score: finalObjectiveScore,
+        accuracy_percentage: rawAccuracy,
+        questions_correct: correctCount,
+        total_questions: totalCount,
+        is_verified: isVerified,
         verification_meta: {
-          method: 'Proctored Timed Assessment',
+          method: 'Proctored Objective Technical Assessment',
           time_per_question_sec: 45,
           tab_switches_detected: tabSwitches,
-          proctoring_score: Math.max(50, (aiResponse?.overall_score || 78) - (tabSwitches * 5)),
-          badge_label: 'Verified (Timed & Proctor Monitored)'
+          raw_accuracy: `${rawAccuracy}% (${correctCount}/${totalCount})`,
+          proctoring_score: finalObjectiveScore,
+          badge_label: isVerified ? 'Verified (Objective Proctored Test)' : 'Self-Assessed (Unverified)'
         },
         category_scores: aiResponse?.category_scores || {
           'Technical Skills': 85,
