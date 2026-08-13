@@ -156,28 +156,28 @@ export const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-12">
           {/* Apple-style compact logo */}
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center space-x-2">
+          <div className="flex items-center shrink-0 mr-4 sm:mr-6 lg:mr-8">
+            <Link to="/" className="flex items-center space-x-2 shrink-0">
               <img 
                 src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
                 alt="TalentXcel" 
-                className="h-6 w-6 rounded-sm"
+                className="h-6 w-6 rounded-sm shrink-0"
               />
-              <span className="text-apple-body font-apple-bold text-foreground">TalentXcel</span>
+              <span className="text-apple-body font-apple-bold text-foreground whitespace-nowrap">TalentXcel</span>
             </Link>
           </div>
 
           {user ? (
             <>
-              {/* Apple-style compact navigation with global search */}
-              <div className="hidden md:flex items-center gap-1">
+              {/* Apple-style compact navigation */}
+              <div className="hidden md:flex items-center gap-0.5 lg:gap-1 overflow-x-auto no-scrollbar">
                 {visibleNavItems.slice(0, 4).map((item) => {
                   const isActive = isCurrentPath(item.to);
                   return (
                     <Link
                       key={item.label}
                       to={item.to}
-                      className={`px-3 py-1.5 rounded-lg text-apple-caption font-apple-medium transition-apple
+                      className={`px-2 lg:px-2.5 py-1 rounded-lg text-apple-caption font-apple-medium transition-apple whitespace-nowrap
                         ${isActive 
                           ? 'bg-primary/10 text-primary' 
                           : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
@@ -195,7 +195,7 @@ export const Navbar = () => {
                     <Link
                       key={item.label}
                       to={item.to}
-                      className={`px-3 py-1.5 rounded-lg text-apple-caption font-apple-medium transition-apple
+                      className={`px-2 lg:px-2.5 py-1 rounded-lg text-apple-caption font-apple-medium transition-apple whitespace-nowrap
                         ${isActive 
                           ? 'bg-primary/10 text-primary' 
                           : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'

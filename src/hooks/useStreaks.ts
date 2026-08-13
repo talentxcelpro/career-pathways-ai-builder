@@ -101,7 +101,7 @@ export const useStreaks = () => {
 
       // Celebrate milestones
       const milestones = [3, 7, 14, 30, 60, 100, 365];
-      if (milestones.includes(data.current_streak)) {
+      if (data?.current_streak && milestones.includes(data.current_streak)) {
         toast.success(
           `🔥 ${data.current_streak} Day Streak!`,
           {

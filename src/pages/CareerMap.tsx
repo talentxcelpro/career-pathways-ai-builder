@@ -218,14 +218,14 @@ const CareerMap = () => {
           <div className="mb-8">
             <div className="text-center mb-4">
               <h2 className="text-lg font-bold text-text-primary mb-1 font-display">Your Career Progress</h2>
-              <p className="text-xs text-text-secondary flex items-center justify-center gap-2">
+              <div className="text-xs text-text-secondary flex items-center justify-center gap-2">
                 Live data from your TalentXcel profile
                 {isConnected && (
                   <Badge className="bg-green-50 text-green-700 border-0 px-1.5 py-0.5 rounded-md text-xs">
                     Live
                   </Badge>
                 )}
-              </p>
+              </div>
             </div>
             
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
