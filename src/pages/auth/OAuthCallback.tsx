@@ -14,7 +14,26 @@ const OAuthCallback = () => {
         console.log('Processing OAuth callback...');
         setStatus('processing');
         
-        // Handle the OAuth callback
+        // Check if there is a 'code' parameter in the URL (PKCE flow used by LinkedIn)
+        const requestUrl = new URL(window.location.href);
+        const code = requestUrl.searchParams.get('code');
+
+        if (code) {
+          console.log('Exchanging auth code for session...');
+          const { data: exchangeData, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+          if (!exchangeError && exchangeData?.session) {
+            console.log('OAuth code exchange successful');
+            setStatus('success');
+            toast.success('Signed in successfully!');
+            navigate('/network', { replace: true });
+            return;
+          }
+          if (exchangeError) {
+            console.error('Code exchange error:', exchangeError);
+          }
+        }
+
+        // Fallback: Check existing session
         const { data, error } = await supabase.auth.getSession();
         
         if (error) {
