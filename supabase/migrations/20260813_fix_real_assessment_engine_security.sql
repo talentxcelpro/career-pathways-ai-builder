@@ -46,6 +46,98 @@
 --      not just theoretically fixed.
 
 -- ---------------------------------------------------------------------------
+-- 0. Ensure target tables exist before adding RLS policies, triggers & seeding
+-- ---------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS public.assessment_categories (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  description TEXT,
+  slug TEXT UNIQUE NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS public.assessments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  category_id UUID REFERENCES public.assessment_categories(id) ON DELETE SET NULL,
+  title TEXT NOT NULL,
+  description TEXT,
+  duration_minutes INT DEFAULT 15,
+  passing_score INT DEFAULT 80,
+  total_questions INT DEFAULT 8,
+  is_published BOOLEAN DEFAULT true,
+  settings JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS public.assessment_questions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  assessment_id UUID REFERENCES public.assessments(id) ON DELETE CASCADE,
+  question_text TEXT NOT NULL,
+  question_type TEXT DEFAULT 'multiple_choice',
+  options JSONB NOT NULL DEFAULT '[]'::jsonb,
+  correct_answer JSONB,
+  explanation TEXT,
+  points INT DEFAULT 1,
+  difficulty_score INT DEFAULT 1,
+  time_limit_seconds INT DEFAULT 45,
+  sort_order INT DEFAULT 1,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS public.assessment_attempts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL,
+  assessment_id UUID REFERENCES public.assessments(id) ON DELETE CASCADE,
+  status TEXT DEFAULT 'started',
+  total_score INT DEFAULT 0,
+  percentage_score NUMERIC DEFAULT 0,
+  passed BOOLEAN DEFAULT false,
+  started_at TIMESTAMPTZ DEFAULT now(),
+  completed_at TIMESTAMPTZ
+);
+
+CREATE TABLE IF NOT EXISTS public.assessment_responses (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  attempt_id UUID REFERENCES public.assessment_attempts(id) ON DELETE CASCADE,
+  question_id UUID REFERENCES public.assessment_questions(id) ON DELETE CASCADE,
+  user_answer JSONB,
+  is_correct BOOLEAN DEFAULT false,
+  points_earned INT DEFAULT 0,
+  time_spent_seconds INT DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  CONSTRAINT assessment_responses_attempt_question_key UNIQUE (attempt_id, question_id)
+);
+
+-- Enable RLS on newly/existing tables
+ALTER TABLE public.assessments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.assessment_questions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.assessment_attempts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.assessment_responses ENABLE ROW LEVEL SECURITY;
+
+-- Add RLS policy for assessment_attempts if missing
+DROP POLICY IF EXISTS "Users can manage their own assessment attempts" ON public.assessment_attempts;
+CREATE POLICY "Users can manage their own assessment attempts"
+  ON public.assessment_attempts
+  FOR ALL
+  USING (auth.uid() = user_id);
+
+-- Add RLS policy for assessment_responses if missing
+DROP POLICY IF EXISTS "Users can manage their own assessment responses" ON public.assessment_responses;
+CREATE POLICY "Users can manage their own assessment responses"
+  ON public.assessment_responses
+  FOR ALL
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.assessment_attempts
+      WHERE assessment_attempts.id = assessment_responses.attempt_id
+        AND assessment_attempts.user_id = auth.uid()
+    )
+  );
+
+-- ---------------------------------------------------------------------------
 -- A. Stop leaking correct_answer/explanation to the client
 -- ---------------------------------------------------------------------------
 
