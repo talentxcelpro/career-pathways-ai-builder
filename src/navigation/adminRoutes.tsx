@@ -1,208 +1,209 @@
-import { lazy } from "react";
+import { lazy, Suspense } from 'react';;
 import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag, Bot, Globe, AlertTriangle, Link, Newspaper, Coins, Upload, Database, Rocket, Eye } from "lucide-react";
-import { LinkedInImportManager } from "../components/admin/LinkedInImportManager";
-import { TokenWallet } from "../components/blockchain/TokenWallet";
-import { BotPostManager } from "../components/admin/BotPostManager";
-import TXCTokenManagement from "../pages/admin/TXCTokenManagement";
-import TXCAwardsAndBonuses from "../pages/admin/TXCAwardsAndBonuses";
-import TXCAnalytics from "../pages/admin/TXCAnalytics";
-import TXCBackfill from "../pages/admin/TXCBackfill";
-import TXCStore from "../pages/admin/TXCStore";
-import TXCSpendingHistory from "../pages/admin/TXCSpendingHistory";
-import LinkedInBulkUpload from "../pages/admin/LinkedInBulkUpload";
-import LinkedInJobScraper from "../pages/admin/LinkedInJobScraper";
-import LinkedInAnalytics from "../pages/admin/LinkedInAnalytics";
-import EnterpriseSolutions from "../pages/admin/EnterpriseSolutions";
-import EnterpriseAnalytics from "../pages/admin/EnterpriseAnalytics";
-import EnterpriseClients from "../pages/admin/EnterpriseClients";
-import EnterpriseBilling from "../pages/admin/EnterpriseBilling";
-import SEOSuite from "../pages/admin/SEOSuite";
-import TalentDatabase from "../pages/admin/TalentDatabase";
-import CareerPlatform from "../pages/admin/CareerPlatform";
-import { BotIdentityManager } from "../components/admin/BotIdentityManager";
-import { TestimonialsManagement } from "../components/admin/TestimonialsManagement";
-import { VerificationManagement } from "../components/admin/VerificationManagement";
-import EmployerRequestsAdmin from "../pages/admin/EmployerRequestsAdmin";
-import AdminDashboard from "../pages/admin/AdminDashboard";
-import AdminManagement from "../pages/admin/AdminManagement";
-import UserManagement from "../pages/admin/UserManagement";
-import HomeManagement from "../pages/admin/HomeManagement";
-import NetworkManagement from "../pages/admin/NetworkManagement";
-import JobsManagement from "../pages/admin/JobsManagement";
-import ResumeManagement from "../pages/admin/ResumeManagement";
-import ToolsManagement from "../pages/admin/ToolsManagement";
-import CompaniesManagement from "../pages/admin/CompaniesManagement";
-import LearningManagement from "../pages/admin/LearningManagement";
-import CareerMapManagement from "../pages/admin/CareerMapManagement";
+
+const BulkUserImports = lazy(() => import('../pages/admin/BulkUserImports'));
+const Phase1Dashboard = lazy(() => import('../components/network/Phase1Dashboard'));
+const EnterpriseOverview = lazy(() => import('../pages/admin/EnterpriseOverview'));
+const LinkedInImporter = lazy(() => import('../pages/admin/LinkedInImporter'));
+const EdgeFunctionsMonitor = lazy(() => import('../pages/admin/EdgeFunctionsMonitor'));
+const NewsManagement = lazy(() => import('../pages/admin/NewsManagement'));
+const ProductRequirementDocument = lazy(() => import('../pages/admin/ProductRequirementDocument'));
+const NewsAutomationPage = lazy(() => import('../pages/admin/NewsAutomationPage'));
+const AgentOperationsPage = lazy(() => import('../pages/admin/AgentOperations'));
+const LinkBuildingDashboard = lazy(() => import('../pages/admin/LinkBuildingDashboard'));
+const JobDataManager = lazy(() => import('../components/admin/JobDataManager').then(m => ({ default: m.JobDataManager })));
+const SEODashboardNew = lazy(() => import('../components/admin/SEODashboardNew').then(m => ({ default: m.SEODashboardNew })));
+const SEODashboard = lazy(() => import('../components/admin/SEODashboard').then(m => ({ default: m.SEODashboard })));
+const BacklinkDashboard = lazy(() => import('../pages/admin/BacklinkDashboard'));
+const IntegrationHub = lazy(() => import('../pages/admin/IntegrationHub'));
+const PerformanceMonitoring = lazy(() => import('../pages/admin/PerformanceMonitoring'));
+const AdvancedAnalyticsDashboard = lazy(() => import('../pages/admin/AdvancedAnalyticsDashboard'));
+const FeatureFlagsManager = lazy(() => import('../pages/admin/FeatureFlagsManager'));
+const AdvancedContentHub = lazy(() => import('../pages/admin/AdvancedContentHub'));
+const AIAssistantPanel = lazy(() => import('../pages/admin/AIAssistantPanel'));
+const SmartPageBuilder = lazy(() => import('../pages/admin/SmartPageBuilder'));
+const AdCampaignManager = lazy(() => import('../pages/admin/AdCampaignManager'));
+const AdvancedSEOManager = lazy(() => import('../pages/admin/AdvancedSEOManager'));
+const SEOManagement = lazy(() => import('../pages/admin/SEOManagement'));
+const ProUsersPage = lazy(() => import('../components/admin/ProUsersPage').then(m => ({ default: m.ProUsersPage })));
+const CollegesManagement = lazy(() => import('../pages/admin/CollegesManagement'));
+const BotManagement = lazy(() => import('../pages/admin/BotManagement'));
+const AdminAIManagement = lazy(() => import('../pages/AdminAIManagement'));
+const AIMLTrainingCenter = lazy(() => import('../pages/admin/AIMLTrainingCenter'));
+const EmailAutomationPage = lazy(() => import('../pages/admin/EmailAutomation'));
+const CreateCourse = lazy(() => import('../pages/admin/learning/CreateCourse'));
+const SecurityMonitoring = lazy(() => import('../components/admin/SecurityMonitoring'));
+const SecurityLogs = lazy(() => import('../pages/admin/SecurityLogs'));
+const AnalyticsReports = lazy(() => import('../pages/admin/AnalyticsReports'));
+const CareerMapManagement = lazy(() => import('../pages/admin/CareerMapManagement'));
+const LearningManagement = lazy(() => import('../pages/admin/LearningManagement'));
+const CompaniesManagement = lazy(() => import('../pages/admin/CompaniesManagement'));
+const ToolsManagement = lazy(() => import('../pages/admin/ToolsManagement'));
+const ResumeManagement = lazy(() => import('../pages/admin/ResumeManagement'));
+const JobsManagement = lazy(() => import('../pages/admin/JobsManagement'));
+const NetworkManagement = lazy(() => import('../pages/admin/NetworkManagement'));
+const HomeManagement = lazy(() => import('../pages/admin/HomeManagement'));
+const UserManagement = lazy(() => import('../pages/admin/UserManagement'));
+const AdminManagement = lazy(() => import('../pages/admin/AdminManagement'));
+const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard'));
+const EmployerRequestsAdmin = lazy(() => import('../pages/admin/EmployerRequestsAdmin'));
+const VerificationManagement = lazy(() => import('../components/admin/VerificationManagement').then(m => ({ default: m.VerificationManagement })));
+const TestimonialsManagement = lazy(() => import('../components/admin/TestimonialsManagement').then(m => ({ default: m.TestimonialsManagement })));
+const BotIdentityManager = lazy(() => import('../components/admin/BotIdentityManager').then(m => ({ default: m.BotIdentityManager })));
+const CareerPlatform = lazy(() => import('../pages/admin/CareerPlatform'));
+const TalentDatabase = lazy(() => import('../pages/admin/TalentDatabase'));
+const SEOSuite = lazy(() => import('../pages/admin/SEOSuite'));
+const EnterpriseBilling = lazy(() => import('../pages/admin/EnterpriseBilling'));
+const EnterpriseClients = lazy(() => import('../pages/admin/EnterpriseClients'));
+const EnterpriseAnalytics = lazy(() => import('../pages/admin/EnterpriseAnalytics'));
+const EnterpriseSolutions = lazy(() => import('../pages/admin/EnterpriseSolutions'));
+const LinkedInAnalytics = lazy(() => import('../pages/admin/LinkedInAnalytics'));
+const LinkedInJobScraper = lazy(() => import('../pages/admin/LinkedInJobScraper'));
+const LinkedInBulkUpload = lazy(() => import('../pages/admin/LinkedInBulkUpload'));
+const TXCSpendingHistory = lazy(() => import('../pages/admin/TXCSpendingHistory'));
+const TXCStore = lazy(() => import('../pages/admin/TXCStore'));
+const TXCBackfill = lazy(() => import('../pages/admin/TXCBackfill'));
+const TXCAnalytics = lazy(() => import('../pages/admin/TXCAnalytics'));
+const TXCAwardsAndBonuses = lazy(() => import('../pages/admin/TXCAwardsAndBonuses'));
+const TXCTokenManagement = lazy(() => import('../pages/admin/TXCTokenManagement'));
+const BotPostManager = lazy(() => import('../components/admin/BotPostManager').then(m => ({ default: m.BotPostManager })));
+const TokenWallet = lazy(() => import('../components/blockchain/TokenWallet').then(m => ({ default: m.TokenWallet })));
+const LinkedInImportManager = lazy(() => import('../components/admin/LinkedInImportManager').then(m => ({ default: m.LinkedInImportManager })));
 // Removed traditional pricing - using TXC only
-import AnalyticsReports from "../pages/admin/AnalyticsReports";
-import SecurityLogs from "../pages/admin/SecurityLogs";
-import SecurityMonitoring from "../components/admin/SecurityMonitoring";
-import CreateCourse from "../pages/admin/learning/CreateCourse";
 // Removed traditional pricing plans - using TXC only
-import EmailAutomationPage from "../pages/admin/EmailAutomation";
-import AIMLTrainingCenter from "../pages/admin/AIMLTrainingCenter";
-import AdminAIManagement from "../pages/AdminAIManagement";
-import BotManagement from "../pages/admin/BotManagement";
-import CollegesManagement from "../pages/admin/CollegesManagement";
-import { ProUsersPage } from "../components/admin/ProUsersPage";
-import SEOManagement from "../pages/admin/SEOManagement";
-import AdvancedSEOManager from "../pages/admin/AdvancedSEOManager";
-import AdCampaignManager from "../pages/admin/AdCampaignManager";
-import SmartPageBuilder from "../pages/admin/SmartPageBuilder";
-import AIAssistantPanel from "../pages/admin/AIAssistantPanel";
-import AdvancedContentHub from "../pages/admin/AdvancedContentHub";
-import FeatureFlagsManager from "../pages/admin/FeatureFlagsManager";
-import AdvancedAnalyticsDashboard from "../pages/admin/AdvancedAnalyticsDashboard";
-import PerformanceMonitoring from "../pages/admin/PerformanceMonitoring";
-import IntegrationHub from "../pages/admin/IntegrationHub";
-import BacklinkDashboard from "../pages/admin/BacklinkDashboard";
-import { SEODashboard } from "../components/admin/SEODashboard";
-import { SEODashboardNew } from "../components/admin/SEODashboardNew";
-import { JobDataManager } from "../components/admin/JobDataManager";
-import LinkBuildingDashboard from "../pages/admin/LinkBuildingDashboard";
-import AgentOperationsPage from "../pages/admin/AgentOperations";
-import NewsAutomationPage from "../pages/admin/NewsAutomationPage";
-import ProductRequirementDocument from "../pages/admin/ProductRequirementDocument";
-import NewsManagement from "../pages/admin/NewsManagement";
-import EdgeFunctionsMonitor from "../pages/admin/EdgeFunctionsMonitor";
-import LinkedInImporter from "../pages/admin/LinkedInImporter";
-import EnterpriseOverview from "../pages/admin/EnterpriseOverview";
-import Phase1Dashboard from "../components/network/Phase1Dashboard";
-import BulkUserImports from "../pages/admin/BulkUserImports";
 
 export const adminRoutes = [
   {
     title: "Admin Dashboard",
     to: "/admin",
     icon: <Shield className="h-4 w-4" />,
-    page: <AdminDashboard />,
+    page: <Suspense fallback={null}><AdminDashboard /></Suspense>,
     isPublic: true,
   },
   {
     title: "Bulk User Imports",
     to: "/admin/bulk-imports",
     icon: <Upload className="h-4 w-4" />,
-    page: <BulkUserImports />,
+    page: <Suspense fallback={null}><BulkUserImports /></Suspense>,
     isPublic: true,
   },
   {
     title: "Phase 1",
     to: "/admin/phase1",
     icon: <Rocket className="h-4 w-4" />,
-    page: <Phase1Dashboard />,
+    page: <Suspense fallback={null}><Phase1Dashboard /></Suspense>,
     isPublic: true,
   },
   {
     title: "User Management",
     to: "/admin/users",
     icon: <Users className="h-4 w-4" />,
-    page: <UserManagement />,
+    page: <Suspense fallback={null}><UserManagement /></Suspense>,
     isPublic: true,
   },
   {
     title: "Pro Users",
     to: "/admin/pro-users",
     icon: <Crown className="h-4 w-4" />,
-    page: <ProUsersPage />,
+    page: <Suspense fallback={null}><ProUsersPage /></Suspense>,
     isPublic: true,
   },
   {
     title: "Testimonials",
     to: "/admin/testimonials",
     icon: <MessageSquare className="h-4 w-4" />,
-    page: <TestimonialsManagement />,
+    page: <Suspense fallback={null}><TestimonialsManagement /></Suspense>,
     isPublic: true,
   },
   {
     title: "Verification",
     to: "/admin/verification",
     icon: <Shield className="h-4 w-4" />,
-    page: <VerificationManagement />,
+    page: <Suspense fallback={null}><VerificationManagement /></Suspense>,
     isPublic: true,
   },
   {
     title: "Employer Requests",
     to: "/admin/employer-requests",
     icon: <Building2 className="h-4 w-4" />,
-    page: <EmployerRequestsAdmin />,
+    page: <Suspense fallback={null}><EmployerRequestsAdmin /></Suspense>,
     isPublic: true,
   },
   {
     title: "Jobs Management",
     to: "/admin/jobs",
     icon: <Briefcase className="h-4 w-4" />,
-    page: <JobsManagement />,
+    page: <Suspense fallback={null}><JobsManagement /></Suspense>,
     isPublic: true,
   },
   {
     title: "Job Data Quality",
     to: "/admin/jobs/quality",
     icon: <AlertTriangle className="h-4 w-4" />,
-    page: <JobDataManager />,
+    page: <Suspense fallback={null}><JobDataManager /></Suspense>,
     isPublic: true,
   },
   {
     title: "Companies Management",
     to: "/admin/companies",
     icon: <Building2 className="h-4 w-4" />,
-    page: <CompaniesManagement />,
+    page: <Suspense fallback={null}><CompaniesManagement /></Suspense>,
     isPublic: true,
   },
   {
     title: "Network Management",
     to: "/admin/network",
     icon: <Network className="h-4 w-4" />,
-    page: <NetworkManagement />,
+    page: <Suspense fallback={null}><NetworkManagement /></Suspense>,
     isPublic: true,
   },
   {
     title: "Learning Management",
     to: "/admin/learning",
     icon: <GraduationCap className="h-4 w-4" />,
-    page: <LearningManagement />,
+    page: <Suspense fallback={null}><LearningManagement /></Suspense>,
     isPublic: true,
   },
   {
     title: "Colleges Management",
     to: "/admin/colleges",
     icon: <GraduationCap className="h-4 w-4" />,
-    page: <CollegesManagement />,
+    page: <Suspense fallback={null}><CollegesManagement /></Suspense>,
     isPublic: true,
   },
   {
     title: "Career Map Management",
     to: "/admin/career-map",
     icon: <Map className="h-4 w-4" />,
-    page: <CareerMapManagement />,
+    page: <Suspense fallback={null}><CareerMapManagement /></Suspense>,
     isPublic: true,
   },
   {
     title: "Resume Management",
     to: "/admin/resumes",
     icon: <FileText className="h-4 w-4" />,
-    page: <ResumeManagement />,
+    page: <Suspense fallback={null}><ResumeManagement /></Suspense>,
     isPublic: true,
   },
   {
     title: "Tools Management",
     to: "/admin/tools",
     icon: <Wrench className="h-4 w-4" />,
-    page: <ToolsManagement />,
+    page: <Suspense fallback={null}><ToolsManagement /></Suspense>,
     isPublic: true,
   },
   {
     title: "Home Management",
     to: "/admin/home",
     icon: <Home className="h-4 w-4" />,
-    page: <HomeManagement />,
+    page: <Suspense fallback={null}><HomeManagement /></Suspense>,
     isPublic: true,
   },
   {
     title: "Analytics & Reports",
     to: "/admin/analytics",
     icon: <BarChart3 className="h-4 w-4" />,
-    page: <AnalyticsReports />,
+    page: <Suspense fallback={null}><AnalyticsReports /></Suspense>,
     isPublic: true,
   },
   // Removed traditional pricing & payments - using TXC only
@@ -210,77 +211,77 @@ export const adminRoutes = [
     title: "Security Monitoring",
     to: "/admin/security",
     icon: <Lock className="h-4 w-4" />,
-    page: <SecurityMonitoring />,
+    page: <Suspense fallback={null}><SecurityMonitoring /></Suspense>,
     isPublic: true,
   },
   {
     title: "Security Logs",
     to: "/admin/security-logs",
     icon: <Lock className="h-4 w-4" />,
-    page: <SecurityLogs />,
+    page: <Suspense fallback={null}><SecurityLogs /></Suspense>,
     isPublic: true,
   },
   {
     title: "Email Automation",
     to: "/admin/email-automation", 
     icon: <Mail className="h-4 w-4" />,
-    page: <EmailAutomationPage />,
+    page: <Suspense fallback={null}><EmailAutomationPage /></Suspense>,
     isPublic: true,
   },
   {
     title: "AI/ML Training Center",
     to: "/admin/ai-ml-training",
     icon: <Brain className="h-4 w-4" />,
-    page: <AIMLTrainingCenter />,
+    page: <Suspense fallback={null}><AIMLTrainingCenter /></Suspense>,
     isPublic: true,
   },
   {
     title: "AI Management",
     to: "/admin/ai-management",
     icon: <Brain className="h-4 w-4" />,
-    page: <AdminAIManagement />,
+    page: <Suspense fallback={null}><AdminAIManagement /></Suspense>,
     isPublic: true,
   },
   {
     title: "Bot Management",
     to: "/admin/bots",
     icon: <Bot className="h-4 w-4" />,
-    page: <BotManagement />,
+    page: <Suspense fallback={null}><BotManagement /></Suspense>,
     isPublic: true,
   },
   {
     title: "Bot Post Manager",
     to: "/admin/bot-posts",
     icon: <Bot className="h-4 w-4" />,
-    page: <BotPostManager />,
+    page: <Suspense fallback={null}><BotPostManager /></Suspense>,
     isPublic: true,
   },
   {
     title: "Bot Identity Manager",
     to: "/admin/bot-identity",
     icon: <Bot className="h-4 w-4" />,
-    page: <BotIdentityManager />,
+    page: <Suspense fallback={null}><BotIdentityManager /></Suspense>,
     isPublic: true,
   },
   {
     title: "AI Agent Operations",
     to: "/admin/agent-operations",
     icon: <Bot className="h-4 w-4" />,
-    page: <AgentOperationsPage />,
+    page: <Suspense fallback={null}><AgentOperationsPage /></Suspense>,
     isPublic: true,
   },
   {
     title: "Admin Management",
     to: "/admin/admins",
     icon: <Shield className="h-4 w-4" />,
-    page: <AdminManagement />,
+    page: <Suspense fallback={null}><AdminManagement /></Suspense>,
     isPublic: true,
   },
   {
     title: "Create Course",
     to: "/admin/learning/create",
     icon: <Plus className="h-4 w-4" />,
-    page: <CreateCourse />,
+    page: <Suspense fallback={null}><CreateCourse /></Suspense>,
     isPublic: true,
   },
   // Removed traditional pricing plan creation - using TXC only
@@ -288,28 +289,28 @@ export const adminRoutes = [
     title: "SEO Management",
     to: "/admin/seo",
     icon: <Search className="h-4 w-4" />,
-    page: <SEOManagement />,
+    page: <Suspense fallback={null}><SEOManagement /></Suspense>,
     isPublic: true,
   },
   {
     title: "Advanced SEO Manager",
     to: "/admin/advanced-seo",
     icon: <Search className="h-4 w-4" />,
-    page: <AdvancedSEOManager />,
+    page: <Suspense fallback={null}><AdvancedSEOManager /></Suspense>,
     isPublic: true,
   },
   {
     title: "SEO Sitemap Dashboard",
     to: "/admin/seo-sitemap",
     icon: <Globe className="h-4 w-4" />,
-    page: <SEODashboard />,
+    page: <Suspense fallback={null}><SEODashboard /></Suspense>,
     isPublic: true,
   },
   {
     title: "SEO Enhancement Dashboard",
     to: "/admin/seo-enhancement",
     icon: <Search className="h-4 w-4" />,
-    page: <SEODashboardNew />,
+    page: <Suspense fallback={null}><SEODashboardNew /></Suspense>,
     isPublic: true,
   },
   {
@@ -323,196 +324,196 @@ export const adminRoutes = [
     title: "Ad Campaign Manager", 
     to: "/admin/ad-campaigns",
     icon: <Megaphone className="h-4 w-4" />,
-    page: <AdCampaignManager />,
+    page: <Suspense fallback={null}><AdCampaignManager /></Suspense>,
     isPublic: true,
   },
   {
     title: "Smart Page Builder",
     to: "/admin/page-builder", 
     icon: <Layout className="h-4 w-4" />,
-    page: <SmartPageBuilder />,
+    page: <Suspense fallback={null}><SmartPageBuilder /></Suspense>,
     isPublic: true,
   },
   {
     title: "AI Assistant Panel",
     to: "/admin/ai-assistant",
     icon: <Brain className="h-4 w-4" />,
-    page: <AIAssistantPanel />,
+    page: <Suspense fallback={null}><AIAssistantPanel /></Suspense>,
     isPublic: true,
   },
   {
     title: "Advanced Content Hub",
     to: "/admin/content-hub",
     icon: <FileText className="h-4 w-4" />,
-    page: <AdvancedContentHub />,
+    page: <Suspense fallback={null}><AdvancedContentHub /></Suspense>,
     isPublic: true,
   },
   {
     title: "Feature Flags Manager",
     to: "/admin/feature-flags",
     icon: <Flag className="h-4 w-4" />,
-    page: <FeatureFlagsManager />,
+    page: <Suspense fallback={null}><FeatureFlagsManager /></Suspense>,
     isPublic: true,
   },
   {
     title: "Analytics Dashboard",
     to: "/admin/analytics-dashboard",
     icon: <BarChart3 className="h-4 w-4" />,
-    page: <AdvancedAnalyticsDashboard />,
+    page: <Suspense fallback={null}><AdvancedAnalyticsDashboard /></Suspense>,
     isPublic: true,
   },
   {
     title: "Performance Monitoring",
     to: "/admin/performance-monitoring",
     icon: <Shield className="h-4 w-4" />,
-    page: <PerformanceMonitoring />,
+    page: <Suspense fallback={null}><PerformanceMonitoring /></Suspense>,
     isPublic: true,
   },
   {
     title: "Integration Hub",
     to: "/admin/integration-hub",
     icon: <Network className="h-4 w-4" />,
-    page: <IntegrationHub />,
+    page: <Suspense fallback={null}><IntegrationHub /></Suspense>,
     isPublic: true,
   },
   {
     title: "Link Building Command Center",
     to: "/admin/link-building",
     icon: <Link className="h-4 w-4" />,
-    page: <LinkBuildingDashboard />,
+    page: <Suspense fallback={null}><LinkBuildingDashboard /></Suspense>,
     isPublic: true,
   },
   {
     title: "Backlink System",
     to: "/admin/backlinks",
     icon: <Network className="h-4 w-4" />,
-    page: <BacklinkDashboard />,
+    page: <Suspense fallback={null}><BacklinkDashboard /></Suspense>,
     isPublic: true,
   },
   {
     title: "News Automation",
     to: "/admin/news-automation",
     icon: <Newspaper className="h-4 w-4" />,
-    page: <NewsAutomationPage />,
+    page: <Suspense fallback={null}><NewsAutomationPage /></Suspense>,
     isPublic: true,
   },
   {
     title: "Product Requirements (PRD)",
     to: "/admin/prd", 
     icon: <FileText className="h-4 w-4" />,
-    page: <ProductRequirementDocument />,
+    page: <Suspense fallback={null}><ProductRequirementDocument /></Suspense>,
     isPublic: true,
   },
   {
     title: "LinkedIn Import Manager",
     to: "/admin/linkedin-import",
     icon: <Upload className="h-4 w-4" />,
-    page: <LinkedInImportManager />,
+    page: <Suspense fallback={null}><LinkedInImportManager /></Suspense>,
     isPublic: true,
   },
   {
     title: "Token Wallet System",
     to: "/admin/token-wallet",
     icon: <Coins className="h-4 w-4" />,
-    page: <TokenWallet />,
+    page: <Suspense fallback={null}><TokenWallet /></Suspense>,
     isPublic: true,
   },
   {
     title: "TXC Token Management",
     to: "/admin/txc-tokens",
     icon: <Coins className="h-4 w-4" />,
-    page: <TXCTokenManagement />,
+    page: <Suspense fallback={null}><TXCTokenManagement /></Suspense>,
     isPublic: true,
   },
   {
     title: "TXC Awards & Bonuses",
     to: "/admin/txc-awards",
     icon: <Coins className="h-4 w-4" />,
-    page: <TXCAwardsAndBonuses />,
+    page: <Suspense fallback={null}><TXCAwardsAndBonuses /></Suspense>,
     isPublic: true,
   },
   {
     title: "TXC Backfill System",
     to: "/admin/txc-backfill",
     icon: <Coins className="h-4 w-4" />,
-    page: <TXCBackfill />,
+    page: <Suspense fallback={null}><TXCBackfill /></Suspense>,
     isPublic: true,
   },
   {
     title: "TXC Analytics",
     to: "/admin/txc-analytics",
     icon: <BarChart3 className="h-4 w-4" />,
-    page: <TXCAnalytics />,
+    page: <Suspense fallback={null}><TXCAnalytics /></Suspense>,
     isPublic: true,
   },
   {
     title: "TXC Store",
     to: "/admin/txc-store",
     icon: <Coins className="h-4 w-4" />,
-    page: <TXCStore />,
+    page: <Suspense fallback={null}><TXCStore /></Suspense>,
     isPublic: true,
   },
   {
     title: "TXC Spending History",
     to: "/admin/txc-spending",
     icon: <Coins className="h-4 w-4" />,
-    page: <TXCSpendingHistory />,
+    page: <Suspense fallback={null}><TXCSpendingHistory /></Suspense>,
     isPublic: true,
   },
   {
     title: "LinkedIn Bulk Upload",
     to: "/admin/linkedin-bulk-upload",
     icon: <Upload className="h-4 w-4" />,
-    page: <LinkedInBulkUpload />,
+    page: <Suspense fallback={null}><LinkedInBulkUpload /></Suspense>,
     isPublic: true,
   },
   {
     title: "LinkedIn Job Scraper",
     to: "/admin/linkedin-scraper",
     icon: <Bot className="h-4 w-4" />,
-    page: <LinkedInJobScraper />,
+    page: <Suspense fallback={null}><LinkedInJobScraper /></Suspense>,
     isPublic: true,
   },
   {
     title: "LinkedIn Analytics",
     to: "/admin/linkedin-analytics",
     icon: <BarChart3 className="h-4 w-4" />,
-    page: <LinkedInAnalytics />,
+    page: <Suspense fallback={null}><LinkedInAnalytics /></Suspense>,
     isPublic: true,
   },
   {
     title: "Enterprise Solutions",
     to: "/admin/enterprise",
     icon: <Building2 className="h-4 w-4" />,
-    page: <EnterpriseSolutions />,
+    page: <Suspense fallback={null}><EnterpriseSolutions /></Suspense>,
     isPublic: true,
   },
   {
     title: "Enterprise Analytics",
     to: "/admin/enterprise/analytics",
     icon: <BarChart3 className="h-4 w-4" />,
-    page: <EnterpriseAnalytics />,
+    page: <Suspense fallback={null}><EnterpriseAnalytics /></Suspense>,
     isPublic: true,
   },
   {
     title: "Enterprise Clients",
     to: "/admin/enterprise/clients",
     icon: <Building2 className="h-4 w-4" />,
-    page: <EnterpriseClients />,
+    page: <Suspense fallback={null}><EnterpriseClients /></Suspense>,
     isPublic: true,
   },
   {
     title: "Enterprise Billing",
     to: "/admin/enterprise/billing",
     icon: <CreditCard className="h-4 w-4" />,
-    page: <EnterpriseBilling />,
+    page: <Suspense fallback={null}><EnterpriseBilling /></Suspense>,
     isPublic: true,
   },
   {
     title: "SEO Suite",
     to: "/admin/seo-suite",
     icon: <Search className="h-4 w-4" />,
-    page: <SEOSuite />,
+    page: <Suspense fallback={null}><SEOSuite /></Suspense>,
     isPublic: true,
   },
   {
@@ -527,42 +528,42 @@ export const adminRoutes = [
     title: "Talent Database",
     to: "/admin/talent-database",
     icon: <Database className="h-4 w-4" />,
-    page: <TalentDatabase />,
+    page: <Suspense fallback={null}><TalentDatabase /></Suspense>,
     isPublic: true,
   },
   {
     title: "Career Platform",
     to: "/admin/career-platform",
     icon: <Rocket className="h-4 w-4" />,
-    page: <CareerPlatform />,
+    page: <Suspense fallback={null}><CareerPlatform /></Suspense>,
     isPublic: true,
   },
   {
     title: "News Management",
     to: "/admin/news-management",
     icon: <Newspaper className="h-4 w-4" />,
-    page: <NewsManagement />,
+    page: <Suspense fallback={null}><NewsManagement /></Suspense>,
     isPublic: true,
   },
   {
     title: "Edge Functions Monitor",
     to: "/admin/edge-functions-monitor",
     icon: <Eye className="h-4 w-4" />,
-    page: <EdgeFunctionsMonitor />,
+    page: <Suspense fallback={null}><EdgeFunctionsMonitor /></Suspense>,
     isPublic: true,
   },
   {
     title: "LinkedIn Importer",
     to: "/admin/linkedin-importer",
     icon: <Upload className="h-4 w-4" />,
-    page: <LinkedInImporter />,
+    page: <Suspense fallback={null}><LinkedInImporter /></Suspense>,
     isPublic: true,
   },
   {
     title: "Enterprise Overview",
     to: "/admin/enterprise-overview",
     icon: <Building2 className="h-4 w-4" />,
-    page: <EnterpriseOverview />,
+    page: <Suspense fallback={null}><EnterpriseOverview /></Suspense>,
     isPublic: true,
   }
 ];

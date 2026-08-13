@@ -1,19 +1,21 @@
+import { lazy, Suspense } from 'react';
 // Import refactored route modules
 import { employerCoreRoutes } from "./employer/coreRoutes";
 import { employerJobRoutes } from "./employer/jobRoutes";
 import { employerProfileRoutes } from "./employer/profileRoutes";
 import { employerCRMRoutes } from "./employer/crmRoutes";
-import RequestAccess from "../pages/employer/RequestAccess";
-import EmployerLanding from "../pages/employer/EmployerLanding";
-import CompanyDashboard from "../pages/companies/CompanyDashboard";
 import { EmployerAccessGuard } from "../components/employer/EmployerAccessGuard";
+
+const CompanyDashboard = lazy(() => import('../pages/companies/CompanyDashboard'));
+const EmployerLanding = lazy(() => import('../pages/employer/EmployerLanding'));
+const RequestAccess = lazy(() => import('../pages/employer/RequestAccess'));
 
 export const employerRoutes = [
   // Employer Landing Page (public route)
   {
     title: "Employer",
     to: "/employer",
-    page: <EmployerLanding />,
+    page: <Suspense fallback={null}><EmployerLanding /></Suspense>,
     requiresAuth: false,
     isPublic: true,
   },
@@ -22,7 +24,7 @@ export const employerRoutes = [
   {
     title: "Request Employer Access",
     to: "/employer/request-access",
-    page: <RequestAccess />,
+    page: <Suspense fallback={null}><RequestAccess /></Suspense>,
     requiresAuth: false,
   },
   
@@ -30,7 +32,7 @@ export const employerRoutes = [
   {
     title: "Company Dashboard",
     to: "/company/dashboard",
-    page: <CompanyDashboard />,
+    page: <Suspense fallback={null}><CompanyDashboard /></Suspense>,
   },
   
   // Core employer functionality

@@ -1,17 +1,19 @@
-import AIServicesPage from '../pages/AIServicesPage';
-import JobMatchGPTPage from '../pages/JobMatchGPTPage';
+import { lazy, Suspense } from 'react';
+
+const JobMatchGPTPage = lazy(() => import('../pages/JobMatchGPTPage'));
+const AIServicesPage = lazy(() => import('../pages/AIServicesPage'));
 
 export const aiRoutes = [
   {
     title: "AI Services",
     to: "/ai-services",
-    page: <AIServicesPage />,
+    page: <Suspense fallback={null}><AIServicesPage /></Suspense>,
     isPublic: false
   },
   {
     title: "Job Match GPT",
     to: "/job-match-gpt",
-    page: <JobMatchGPTPage />,
+    page: <Suspense fallback={null}><JobMatchGPTPage /></Suspense>,
     isPublic: true,
     icon: "brain",
     description: "AI-powered resume analysis and job matching"

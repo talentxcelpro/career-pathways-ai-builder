@@ -1,15 +1,17 @@
+import { lazy, Suspense } from 'react';
 import { TrendingUp, Users, Star, BarChart3 } from "lucide-react";
-import UserAcquisitionPage from "../pages/growth/UserAcquisitionPage";
-import ContentStudioPage from "../pages/growth/ContentStudioPage";
-import EnhancedCompanyPage from "../pages/growth/EnhancedCompanyPage";
-import AdvancedAnalyticsPage from "../pages/growth/AdvancedAnalyticsPage";
+
+const AdvancedAnalyticsPage = lazy(() => import('../pages/growth/AdvancedAnalyticsPage'));
+const EnhancedCompanyPage = lazy(() => import('../pages/growth/EnhancedCompanyPage'));
+const ContentStudioPage = lazy(() => import('../pages/growth/ContentStudioPage'));
+const UserAcquisitionPage = lazy(() => import('../pages/growth/UserAcquisitionPage'));
 
 export const growthRoutes = [
   {
     title: "User Acquisition Hub",
     to: "/growth/acquisition",
     icon: <Users className="h-4 w-4" />,
-    page: <UserAcquisitionPage />,
+    page: <Suspense fallback={null}><UserAcquisitionPage /></Suspense>,
     description: "Advanced referral system and growth tools",
     isPublic: true,
   },
@@ -17,7 +19,7 @@ export const growthRoutes = [
     title: "Content Creation Studio",
     to: "/growth/content-studio",
     icon: <Star className="h-4 w-4" />,
-    page: <ContentStudioPage />,
+    page: <Suspense fallback={null}><ContentStudioPage /></Suspense>,
     description: "AI-powered content creation and scheduling",
     isPublic: true,
   },
@@ -25,7 +27,7 @@ export const growthRoutes = [
     title: "Enhanced Company Profiles",
     to: "/growth/company-profiles",
     icon: <TrendingUp className="h-4 w-4" />,
-    page: <EnhancedCompanyPage />,
+    page: <Suspense fallback={null}><EnhancedCompanyPage /></Suspense>,
     description: "Rich company pages with media and analytics",
     isPublic: true,
   },
@@ -33,7 +35,7 @@ export const growthRoutes = [
     title: "Advanced Analytics",
     to: "/growth/analytics",
     icon: <BarChart3 className="h-4 w-4" />,
-    page: <AdvancedAnalyticsPage />,
+    page: <Suspense fallback={null}><AdvancedAnalyticsPage /></Suspense>,
     description: "Deep hiring insights and competitor analysis",
     isPublic: true,
   },

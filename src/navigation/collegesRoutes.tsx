@@ -1,54 +1,56 @@
+import { lazy, Suspense } from 'react';
 
-import EnhancedColleges from "../pages/enhanced/Colleges";
-import CollegeDetail from "../pages/colleges/CollegeDetail";
-import CollegeCreationRequest from "../pages/colleges/CollegeCreationRequest";
-import CollegeAdminDashboard from "../pages/colleges/CollegeAdminDashboard";
-import CollegeChatAI from "../pages/colleges/CollegeChatAI";
-import CollegeCompare from "../pages/colleges/CollegeCompare";
-import CollegeApply from "../pages/colleges/CollegeApply";
-import EnhancedCollegeCreation from "../pages/colleges/EnhancedCollegeCreation";
+const EnhancedCollegeCreation = lazy(() => import('../pages/colleges/EnhancedCollegeCreation'));
+const CollegeApply = lazy(() => import('../pages/colleges/CollegeApply'));
+const CollegeCompare = lazy(() => import('../pages/colleges/CollegeCompare'));
+const CollegeChatAI = lazy(() => import('../pages/colleges/CollegeChatAI'));
+const CollegeAdminDashboard = lazy(() => import('../pages/colleges/CollegeAdminDashboard'));
+const CollegeCreationRequest = lazy(() => import('../pages/colleges/CollegeCreationRequest'));
+const CollegeDetail = lazy(() => import('../pages/colleges/CollegeDetail'));
+const EnhancedColleges = lazy(() => import('../pages/enhanced/Colleges'));
+
 
 export const collegesRoutes = [
   {
     title: "Colleges",
     to: "/colleges",
-    page: <EnhancedColleges />,
+    page: <Suspense fallback={null}><EnhancedColleges /></Suspense>,
     isPublic: true,
     requiresAuth: false,
   },
   {
     title: "College Detail",
     to: "/colleges/:id",
-    page: <CollegeDetail />,
+    page: <Suspense fallback={null}><CollegeDetail /></Suspense>,
   },
   {
     title: "College Chat AI",
     to: "/colleges/:id/chat",
-    page: <CollegeChatAI />,
+    page: <Suspense fallback={null}><CollegeChatAI /></Suspense>,
   },
   {
     title: "College Compare",
     to: "/colleges/compare",
-    page: <CollegeCompare />,
+    page: <Suspense fallback={null}><CollegeCompare /></Suspense>,
   },
   {
     title: "College Apply",
     to: "/colleges/:id/apply",
-    page: <CollegeApply />,
+    page: <Suspense fallback={null}><CollegeApply /></Suspense>,
   },
   {
     title: "Create College Request",
     to: "/colleges/create-request",
-    page: <CollegeCreationRequest />,
+    page: <Suspense fallback={null}><CollegeCreationRequest /></Suspense>,
   },
   {
     title: "Enhanced College Creation",
     to: "/colleges/create",
-    page: <EnhancedCollegeCreation />,
+    page: <Suspense fallback={null}><EnhancedCollegeCreation /></Suspense>,
   },
   {
     title: "College Admin Dashboard",
     to: "/colleges/admin-dashboard",
-    page: <CollegeAdminDashboard />,
+    page: <Suspense fallback={null}><CollegeAdminDashboard /></Suspense>,
   },
 ];
