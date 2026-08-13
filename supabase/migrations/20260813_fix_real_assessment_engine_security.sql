@@ -46,8 +46,12 @@
 --      not just theoretically fixed.
 
 -- ---------------------------------------------------------------------------
--- 0. Ensure target tables exist before adding RLS policies, triggers & seeding
+-- 0. Ensure target tables and columns exist before adding RLS, views & seeding
 -- ---------------------------------------------------------------------------
+
+ALTER TABLE public.assessments ADD COLUMN IF NOT EXISTS is_published BOOLEAN DEFAULT true;
+ALTER TABLE public.assessments ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true;
+ALTER TABLE public.assessments ADD COLUMN IF NOT EXISTS category_id UUID;
 
 CREATE TABLE IF NOT EXISTS public.assessment_categories (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
