@@ -52,6 +52,9 @@
 ALTER TABLE public.assessments ADD COLUMN IF NOT EXISTS is_published BOOLEAN DEFAULT true;
 ALTER TABLE public.assessments ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true;
 ALTER TABLE public.assessments ADD COLUMN IF NOT EXISTS category_id UUID;
+ALTER TABLE public.assessments ADD COLUMN IF NOT EXISTS duration_minutes INT DEFAULT 15;
+ALTER TABLE public.assessments ADD COLUMN IF NOT EXISTS passing_score INT DEFAULT 80;
+ALTER TABLE public.assessments ADD COLUMN IF NOT EXISTS total_questions INT DEFAULT 8;
 
 CREATE TABLE IF NOT EXISTS public.assessment_categories (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

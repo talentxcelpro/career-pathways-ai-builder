@@ -384,7 +384,7 @@ const SkillAssessmentEngine = () => {
                     </Label>
                   </div>
                 ))}
-              </RadioGroup
+              </RadioGroup>
 
               <div className="flex justify-end pt-4 border-t">
                 {isLastQuestion ? (
