@@ -130,14 +130,14 @@
     font-weight: 400;
     line-height: 1.5;
     letter-spacing: -0.011em;
-    /* Body baseline per spec: ~17px mobile, ~18px desktop */
-    font-size: 17px;
+    /* Body baseline scaled -10% smaller: ~15px mobile, ~16px desktop */
+    font-size: 15px;
   }
   @media (min-width: 768px) {
-    body { font-size: 18px; }
+    body { font-size: 16px; }
   }
 
-  /* Headings use SF Pro Display */
+  /* Headings scaled 25% smaller across platform */
   h1, h2, h3, h4, h5, h6, .font-heading, .font-display {
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Inter, sans-serif;
     font-weight: 600;
@@ -145,15 +145,16 @@
     line-height: 1.15;
   }
 
-  h1 { font-weight: 700; letter-spacing: -0.028em; }
-  h2 { font-weight: 600; letter-spacing: -0.024em; }
-  h3 { font-weight: 600; letter-spacing: -0.02em; }
-  h4, h5, h6 { font-weight: 500; letter-spacing: -0.014em; }
+  h1 { font-size: 1.6875rem; font-weight: 700; letter-spacing: -0.028em; }
+  h2 { font-size: 1.3125rem; font-weight: 600; letter-spacing: -0.024em; }
+  h3 { font-size: 1.125rem; font-weight: 600; letter-spacing: -0.02em; }
+  h4 { font-size: 0.9375rem; font-weight: 500; letter-spacing: -0.014em; }
+  h5, h6 { font-size: 0.84rem; font-weight: 500; letter-spacing: -0.014em; }
 
-  /* Small/secondary text uses SF Pro Text (12–14px) */
+  /* Small/secondary text uses SF Pro Text (11–12px) */
   small, .text-small, .font-text {
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Inter, sans-serif;
-    font-size: 13px;
+    font-size: 12px;
     letter-spacing: -0.006em;
   }
 
