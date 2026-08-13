@@ -93,19 +93,31 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
     loadingRef.current = true;
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'linkedin_oidc',
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
           scopes: 'openid profile email',
+          skipBrowserRedirect: true,
         },
       });
+
       if (error) {
         toast.error(error.message || 'LinkedIn sign in failed.');
+        loadingRef.current = false;
+        setLoading(false);
+        return;
+      }
+
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        toast.error('Could not generate LinkedIn login link.');
+        loadingRef.current = false;
+        setLoading(false);
       }
     } catch (err: any) {
       toast.error('LinkedIn sign in error.');
-    } finally {
       loadingRef.current = false;
       setLoading(false);
     }

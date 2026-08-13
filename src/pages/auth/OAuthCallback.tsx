@@ -25,7 +25,7 @@ const OAuthCallback = () => {
             console.log('OAuth code exchange successful');
             setStatus('success');
             toast.success('Signed in successfully!');
-            navigate('/network', { replace: true });
+            window.location.replace('/network');
             return;
           }
           if (exchangeError) {
@@ -40,19 +40,19 @@ const OAuthCallback = () => {
           console.error('OAuth callback error:', error);
           setStatus('error');
           toast.error('Sign in failed. Please try again.');
-          setTimeout(() => navigate('/auth/login'), 2000);
+          setTimeout(() => window.location.replace('/auth/login'), 2000);
           return;
         }
 
         if (data.session && data.session.user) {
           console.log('OAuth authentication successful');
           setStatus('success');
-          navigate('/network', { replace: true });
+          window.location.replace('/network');
         } else {
           console.log('No session found in callback');
           setStatus('error');
           toast.error('Sign in failed. Please try again.');
-          setTimeout(() => navigate('/auth/login'), 2000);
+          setTimeout(() => window.location.replace('/auth/login'), 2000);
         }
       } catch (error) {
         console.error('OAuth callback processing error:', error);
