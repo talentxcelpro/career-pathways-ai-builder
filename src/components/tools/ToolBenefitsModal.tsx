@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Dialog,
   DialogContent,
@@ -69,6 +70,7 @@ interface Feature {
 
 export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOpen = false, onOpenChange, onStartTesting }) => {
   const [isModalOpen, setIsModalOpen] = useState(isOpen);
+  const navigate = useNavigate();
 
   // Early return if tool is null to prevent rendering issues
   if (!tool) {
@@ -84,6 +86,33 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
     setIsModalOpen(open);
     if (onOpenChange) {
       onOpenChange(open);
+    }
+  };
+
+  const handleLaunchTool = () => {
+    handleOpenChange(false);
+    if (onStartTesting) {
+      onStartTesting();
+    }
+    
+    if (tool?.slug) {
+      const routeMap: Record<string, string> = {
+        'job-application-funnel': '/tools/job-matcher',
+        'resume-performance-insights': '/resume',
+        'career-growth-score': '/career-intelligence',
+        'ai-career-pathfinder': '/roadmap-builder',
+        'skill-gap-analyzer': '/skills-assessment',
+        'interview-simulator': '/tools/interview-prep',
+        'salary-market-insights': '/tools/salary-analyzer',
+        'resume-builder-pro': '/resume/build',
+        'cover-letter-generator': '/tools/cover-letter',
+        'profile-optimizer': '/tools/profile-optimizer',
+        'skill-assessment-engine': '/tools/skill-assessment-engine',
+        'skills-verification-center': '/skills-verification',
+        'instant-networking-system': '/instant-networking',
+      };
+      const targetRoute = routeMap[tool.slug] || (tool.slug.startsWith('/') ? tool.slug : `/tools/${tool.slug}`);
+      navigate(targetRoute);
     }
   };
 
@@ -818,23 +847,23 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
       
       <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden bg-gradient-to-br from-white/95 via-white/90 to-purple-50/30 backdrop-blur-xl border-2 border-white/20 shadow-2xl rounded-3xl">
         <DialogHeader className="pb-6">
-          <DialogTitle className="flex items-center gap-4 text-2xl font-semibold">
-            <div className="p-3 bg-gradient-to-br from-purple-100/80 to-blue-100/80 rounded-2xl backdrop-blur-sm border border-white/40 shadow-lg">
+          <DialogTitle className="flex items-center gap-4 text-2xl font-bold">
+            <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl text-white shadow-md">
               {tool.icon && React.createElement(tool.icon, { 
-                className: "h-7 w-7 text-purple-600" 
+                className: "h-7 w-7 stroke-[2.2]" 
               })}
             </div>
             <div className="flex flex-col">
-              <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+              <span className="text-slate-900 dark:text-white font-extrabold tracking-tight">
                 {tool.name}
               </span>
-              <span className="text-sm font-normal text-slate-600">
-                Benefits & Features Overview
+              <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400">
+                Overview & Capabilities
               </span>
             </div>
           </DialogTitle>
-          <DialogDescription className="text-base text-slate-700 leading-relaxed">
-            Discover how {tool.name} can accelerate your career growth and maximize your potential
+          <DialogDescription className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
+            Unlock actionable AI insights designed to advance your professional trajectory with {tool.name}.
           </DialogDescription>
         </DialogHeader>
 
@@ -1232,21 +1261,21 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
         </Tabs>
 
         {/* CTA Section */}
-        <div className="flex items-center justify-between p-8 bg-gradient-to-r from-purple-50/80 via-blue-50/80 to-purple-50/80 rounded-3xl border-2 border-white/40 backdrop-blur-sm shadow-xl">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 sm:p-8 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-3xl border border-slate-800 backdrop-blur-xl shadow-xl">
           <div>
-            <h4 className="font-semibold text-xl bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-              Ready to accelerate your career?
+            <h4 className="font-extrabold text-lg sm:text-xl text-white">
+              Ready to elevate your career with AI?
             </h4>
-            <p className="text-sm text-slate-600 mt-1">
-              Join thousands of professionals already using {tool.name}
+            <p className="text-xs sm:text-sm text-slate-300 mt-1">
+              Get instant, personalized recommendations tailored to your goals with {tool.name}.
             </p>
           </div>
           <Button 
-            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-2xl px-8 py-6 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-            onClick={() => handleOpenChange(false)}
+            className="w-full sm:w-auto bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white rounded-2xl px-8 py-6 text-sm font-bold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] flex items-center justify-center shrink-0"
+            onClick={handleLaunchTool}
           >
-            Start Using Tool
-            <ArrowRight className="ml-3 h-5 w-5" />
+            Launch {tool.name} Now
+            <ArrowRight className="ml-2.5 h-5 w-5" />
           </Button>
         </div>
         </div>
