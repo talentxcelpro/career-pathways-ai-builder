@@ -88,6 +88,29 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
     }
   }, [handleCredentialResponse]);
 
+  const handleLinkedInSignIn = useCallback(async () => {
+    if (loadingRef.current) return;
+    loadingRef.current = true;
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'linkedin_oidc',
+        options: {
+          redirectTo: `${window.location.origin}/network`,
+          scopes: 'openid profile email',
+        },
+      });
+      if (error) {
+        toast.error(error.message || 'LinkedIn sign in failed.');
+      }
+    } catch (err: any) {
+      toast.error('LinkedIn sign in error.');
+    } finally {
+      loadingRef.current = false;
+      setLoading(false);
+    }
+  }, []);
+
   // Initialize Google Identity Services and render the real (transparent) Google
   // button on top of the existing TalentXcel-styled button so the click goes
   // straight to Google — never to Supabase's /auth/v1/authorize endpoint.
@@ -194,6 +217,24 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
           }}
         />
       </div>
+
+      {/* LinkedIn OIDC Sign-In */}
+      <Button
+        type="button"
+        disabled={loading}
+        onClick={handleLinkedInSignIn}
+        aria-label="Continue with LinkedIn"
+        className={`w-full ${buttonClass} bg-[#0A66C2] hover:bg-[#004182] text-white border-none transition-all duration-200 flex items-center justify-center gap-3 py-3 cursor-pointer`}
+      >
+        <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24">
+          <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.25V10.9H6.46M7.86 6.75a1.63 1.63 0 1 0 0 3.26 1.63 1.63 0 0 0 0-3.26Z" />
+        </svg>
+        {showText && (
+          <span className="font-semibold text-white">
+            {loading ? 'Connecting...' : 'Continue with LinkedIn'}
+          </span>
+        )}
+      </Button>
 
       {variant === 'prominent' && (
         <p className="text-xs text-gray-500 text-center mt-4">
