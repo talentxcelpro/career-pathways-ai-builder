@@ -165,6 +165,15 @@ const JobLocationPage                 = lazy(() => import('@/pages/seo/JobLocati
 const CareerPlatformShowcasePage = lazy(() => import("./pages/CareerPlatformShowcase"));
 const Jobs1 = lazy(() => import("./pages/Jobs1"));
 
+// ── Infrastructure imports (kept static — tiny, needed on every page) ─────
+import { turboCore } from "@/utils/turboCore";
+import { advancedPerformanceMonitor } from "@/utils/advancedPerformanceMonitor";
+import { ConnectionStatusIndicator } from "@/components/realtime/ConnectionStatusIndicator";
+import { MobileStatusBar } from "@/components/mobile/MobileStatusBar";
+import { PhaseInitializer } from "@/components/PhaseInitializer";
+import { communicationRoutes } from "./navigation/communicationRoutes";
+import { JobsPage } from "@/components/performance/LazyRoutes";
+
 // Create query client optimized for performance and SEO
 const queryClient = new QueryClient({
   defaultOptions: {
