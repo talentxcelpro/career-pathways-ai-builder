@@ -127,7 +127,8 @@
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, 'Helvetica Neue', Inter, Arial, sans-serif;
-    font-weight: 400;
+    font-weight: 500;
+    color: hsl(240 10% 4%);
     line-height: 1.5;
     letter-spacing: -0.011em;
     /* Body baseline scaled -10% smaller: ~15px mobile, ~16px desktop */
@@ -137,24 +138,27 @@
     body { font-size: 16px; }
   }
 
-  /* Headings scaled 25% smaller across platform */
+  /* Headings scaled 25% smaller & darker black font-bold across platform */
   h1, h2, h3, h4, h5, h6, .font-heading, .font-display {
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Inter, sans-serif;
-    font-weight: 600;
+    font-weight: 700;
+    color: hsl(240 10% 4%);
     letter-spacing: -0.022em;
     line-height: 1.15;
   }
 
   h1 { font-size: 1.6875rem; font-weight: 700; letter-spacing: -0.028em; }
-  h2 { font-size: 1.3125rem; font-weight: 600; letter-spacing: -0.024em; }
-  h3 { font-size: 1.125rem; font-weight: 600; letter-spacing: -0.02em; }
-  h4 { font-size: 0.9375rem; font-weight: 500; letter-spacing: -0.014em; }
-  h5, h6 { font-size: 0.84rem; font-weight: 500; letter-spacing: -0.014em; }
+  h2 { font-size: 1.3125rem; font-weight: 700; letter-spacing: -0.024em; }
+  h3 { font-size: 1.125rem; font-weight: 700; letter-spacing: -0.02em; }
+  h4 { font-size: 0.9375rem; font-weight: 600; letter-spacing: -0.014em; }
+  h5, h6 { font-size: 0.84rem; font-weight: 600; letter-spacing: -0.014em; }
 
-  /* Small/secondary text uses SF Pro Text (11–12px) */
+  /* Small/secondary text uses SF Pro Text (11–12px) font-medium */
   small, .text-small, .font-text {
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Inter, sans-serif;
     font-size: 12px;
+    font-weight: 500;
+    color: hsl(220 15% 25%);
     letter-spacing: -0.006em;
   }
 
@@ -733,39 +737,39 @@ img.loaded {
 
 @layer base {
   :root {
-    /* Apple-inspired Professional Color Palette */
-    --background: 0 0% 99%; /* Pure white background like Apple */
-    --foreground: 210 11% 15%; /* Apple's neutral dark text */
+    /* Apple-inspired Professional Color Palette - Darker Black High Contrast */
+    --background: 0 0% 99%;
+    --foreground: 240 10% 4%; /* Darker black #09090b */
 
     --card: 0 0% 100%;
-    --card-foreground: 210 11% 15%;
+    --card-foreground: 240 10% 4%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 210 11% 15%;
+    --popover-foreground: 240 10% 4%;
 
     /* Apple Blue + AI Violet Primary Colors */
     --primary: 212 100% 48%; /* Apple Blue #007AFF */
     --primary-foreground: 0 0% 100%;
-    --primary-light: 212 100% 58%; /* Lighter Apple blue */
-    --primary-lighter: 212 100% 85%; /* Very light Apple blue */
+    --primary-light: 212 100% 58%;
+    --primary-lighter: 212 100% 85%;
 
     /* AI-Inspired Violet Colors */
-    --ai-violet: 251 91% 95%; /* Light AI violet #f0f0ff */
-    --ai-violet-medium: 251 91% 73%; /* Medium AI violet #a855f7 */
-    --ai-violet-dark: 251 91% 50%; /* Deep AI violet #8b5cf6 */
+    --ai-violet: 251 91% 95%;
+    --ai-violet-medium: 251 91% 73%;
+    --ai-violet-dark: 251 91% 50%;
     --ai-violet-foreground: 0 0% 100%;
     
     /* Learning Hub specific colors */
-    --learning-primary: 212 100% 48%; /* Apple Blue */
-    --learning-secondary: 251 91% 73%; /* AI Violet */
-    --learning-accent: 35 91% 62%; /* Apple Orange */
-    --learning-success: 120 60% 50%; /* Apple Green */
+    --learning-primary: 212 100% 48%;
+    --learning-secondary: 251 91% 73%;
+    --learning-accent: 35 91% 62%;
+    --learning-success: 120 60% 50%;
 
-    --secondary: 251 91% 50%; /* AI Violet as secondary */
+    --secondary: 251 91% 50%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 220 14% 96%; /* Apple's light gray */
-    --muted-foreground: 215 20% 65%; /* Apple's secondary text */
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 15% 25%; /* Darker slate #2b303a for crisp readable secondary text */
 
     --accent: 251 91% 73%; /* AI Violet medium as accent */
     --accent-foreground: 0 0% 100%;
