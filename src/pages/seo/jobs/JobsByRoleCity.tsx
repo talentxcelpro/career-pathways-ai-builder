@@ -252,7 +252,7 @@ export const JobsByRoleCity: React.FC = () => {
     );
   }
 
-  const roleCta = getCta('RoleCity');
+  const roleCta = getCta('RoleLocationDiscovery');
 
   return (
     <div className="min-h-screen bg-background text-foreground">
