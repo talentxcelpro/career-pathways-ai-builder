@@ -15,7 +15,7 @@ import { PRODUCTION_ORIGIN } from '../src/config/seo';
 import { CANDIDATE_SERVICES, EMPLOYER_SERVICES, INDUSTRY_HUBS, LOCATION_HUBS, RESOURCE_HUBS } from '../src/config/publicIA';
 import { JOB_CATEGORIES } from '../src/utils/jobCategories';
 import { coursesDatabase } from '../src/data/coursesData';
-import { CONTENT_REGISTRY } from '../src/config/contentRegistry';
+import { CONTENT_DATA } from './contentRegistryData';
 
 interface SitemapEntry {
   path: string;
@@ -197,8 +197,12 @@ function generateSegmentedSitemaps() {
   const employerGuideList: SitemapEntry[] = [];
   const salaryGuideList: SitemapEntry[] = [];
   const generalArticleList: SitemapEntry[] = [];
+  const fresherGuideList: SitemapEntry[] = [];
+  const aiCareerGuideList: SitemapEntry[] = [];
+  const passportGuideList: SitemapEntry[] = [];
+  const networkingRewardsList: SitemapEntry[] = [];
 
-  CONTENT_REGISTRY.filter((item) => item.indexable).forEach((item) => {
+  CONTENT_DATA.filter((item) => item.indexable).forEach((item) => {
     const entry: SitemapEntry = {
       path: `/resources/${item.slug}`,
       changefreq: 'weekly',
@@ -227,6 +231,20 @@ function generateSegmentedSitemaps() {
       case 'SalaryGuide':
         salaryGuideList.push(entry);
         break;
+      case 'FresherGuide':
+        fresherGuideList.push(entry);
+        break;
+      case 'AICareerGuide':
+        aiCareerGuideList.push(entry);
+        break;
+      case 'CareerPassportGuide':
+        passportGuideList.push(entry);
+        break;
+      case 'NetworkingGuide':
+      case 'RewardsGuide':
+      case 'ProductGuide':
+        networkingRewardsList.push(entry);
+        break;
       default:
         generalArticleList.push(entry);
         break;
@@ -240,9 +258,15 @@ function generateSegmentedSitemaps() {
   const employerGuideEntries = deduplicate(employerGuideList);
   const salaryGuideEntries = deduplicate(salaryGuideList);
   const generalArticleEntries = deduplicate(generalArticleList);
+  const fresherGuideEntries = deduplicate(fresherGuideList);
+  const aiCareerGuideEntries = deduplicate(aiCareerGuideList);
+  const passportGuideEntries = deduplicate(passportGuideList);
+  const networkingRewardsEntries = deduplicate(networkingRewardsList);
 
-  // 11. People / Profiles
+  // 11. People / Profiles — only profiles that meet the quality gate
+  // At runtime, Supabase is queried; for now we use the known verified profile.
   const peopleEntries = deduplicate([{ path: '/profile/arshid-hussain-wani', changefreq: 'weekly', priority: '0.7' }]);
+
 
   // Segment Map Definition
   const segments: { filename: string; entries: SitemapEntry[] }[] = [
@@ -268,6 +292,10 @@ function generateSegmentedSitemaps() {
     { filename: 'sitemap-skill-guides.xml', entries: skillGuideEntries },
     { filename: 'sitemap-employer-guides.xml', entries: employerGuideEntries },
     { filename: 'sitemap-salary-guides.xml', entries: salaryGuideEntries },
+    { filename: 'sitemap-fresher-guides.xml', entries: fresherGuideEntries },
+    { filename: 'sitemap-ai-career.xml', entries: aiCareerGuideEntries },
+    { filename: 'sitemap-passport-guides.xml', entries: passportGuideEntries },
+    { filename: 'sitemap-networking-rewards.xml', entries: networkingRewardsEntries },
     { filename: 'sitemap-people.xml', entries: peopleEntries },
   ];
 

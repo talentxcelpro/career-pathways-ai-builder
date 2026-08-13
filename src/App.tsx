@@ -46,6 +46,8 @@ import JobDetails from "@/pages/jobs/JobDetails";
 import Blog from "@/pages/Blog";
 import { BlogPost } from "@/pages/BlogPost";
 import NotFound from "@/pages/NotFound";
+import ResourceDetail from "@/pages/resources/ResourceDetail";
+import SlugProfile from "@/pages/SlugProfile";
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
@@ -271,6 +273,8 @@ const App = () => {
                                 
                 {/* PRIORITY ROUTES - These must come BEFORE navItems.map to take precedence */}
                 <Route path="/tools" element={<Tools />} />
+                <Route path="/resources/:slug" element={<ResourceDetail />} />
+                <Route path="/resources" element={<Blog />} />
                 
                 {/* Specific Job Detail Routes - UUID patterns */}
                 <Route path="/jobs/:slugOrId" element={
@@ -321,8 +325,13 @@ const App = () => {
                                   );
                                 })}
 
+                                {/* Public Professional Identity — /profile/:username */}
+                                {/* IMPORTANT: This route must come BEFORE ProfileUrlRedirect */}
+                                {/* It serves as the canonical SEO URL for public professional profiles */}
+                                {/* robots meta: index only when is_public=true AND quality gate passed */}
+                                <Route path="/profile/:username" element={<SlugProfile />} />
+
                                 {/* Legacy UUID-based profile redirects */}
-                                <Route path="/profile/:id" element={<ProfileUrlRedirect />} />
                                 <Route path="/network/people/:id" element={<ProfileUrlRedirect />} />
                                 <Route path="/user/:id" element={<ProfileUrlRedirect />} />
                                 <Route path="/platform" element={<Platform />} />

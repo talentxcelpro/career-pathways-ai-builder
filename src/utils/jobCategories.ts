@@ -21,12 +21,20 @@ export const JOB_CATEGORIES = {
       'Data Analyst',
       'Database Administrator',
       'Systems Administrator',
-      'Network Engineer'
+      'Network Engineer',
+      'Site Reliability Engineer',
+      'Platform Engineer',
+      'Solutions Architect',
+      'Embedded Systems Engineer',
+      'Blockchain Developer',
+      'Game Developer',
     ],
     skills: [
-      'JavaScript', 'Python', 'Java', 'React', 'Node.js', 'AWS', 'Docker', 
+      'JavaScript', 'Python', 'Java', 'React', 'Node.js', 'AWS', 'Docker',
       'Kubernetes', 'SQL', 'MongoDB', 'Git', 'HTML/CSS', 'TypeScript',
-      'Angular', 'Vue.js', 'Spring Boot', 'Django', 'Flask', 'PostgreSQL'
+      'Angular', 'Vue.js', 'Spring Boot', 'Django', 'Flask', 'PostgreSQL',
+      'Azure', 'GCP', 'Terraform', 'Linux', 'Microservices', 'GraphQL',
+      'Redis', 'Kafka', 'Elasticsearch', 'CI/CD', 'Agile', 'Scrum',
     ]
   },
   HEALTHCARE: {
@@ -251,9 +259,196 @@ export const JOB_CATEGORIES = {
     skills: [
       'Adobe Creative Suite', 'Video Production', 'Social Media Management', 'Content Writing',
       'Photography', 'Audio Production', 'Storytelling', 'Brand Management',
-      'Digital Marketing', 'Media Planning', 'Creative Strategy'
+      'Digital Marketing', 'Media Planning', 'Creative Strategy', 'Figma',
     ]
-  }
+  },
+  HR: {
+    name: 'Human Resources',
+    roles: [
+      'HR Manager',
+      'HR Business Partner',
+      'Talent Acquisition Manager',
+      'Recruiter',
+      'HR Generalist',
+      'Compensation & Benefits Manager',
+      'Learning & Development Manager',
+      'HR Operations Manager',
+      'Payroll Specialist',
+      'HR Analyst',
+      'Employee Relations Manager',
+      'Diversity & Inclusion Manager',
+      'Organizational Development Consultant',
+      'HRIS Specialist',
+      'HR Director',
+      'CHRO',
+    ],
+    skills: [
+      'Talent Acquisition', 'Recruitment', 'HRMS', 'Payroll', 'Labor Law',
+      'Employee Relations', 'Performance Management', 'Onboarding', 'HRIS',
+      'Compensation & Benefits', 'Learning & Development', 'HR Analytics',
+      'Employer Branding', 'Workforce Planning', 'Change Management',
+      'Succession Planning', 'SAP HR', 'Workday', 'ATS',
+    ]
+  },
+  LEGAL: {
+    name: 'Legal & Compliance',
+    roles: [
+      'Legal Counsel',
+      'Corporate Lawyer',
+      'Compliance Officer',
+      'Contract Manager',
+      'Legal Analyst',
+      'Paralegal',
+      'Intellectual Property Lawyer',
+      'Employment Lawyer',
+      'Legal Associate',
+      'Company Secretary',
+      'Regulatory Affairs Manager',
+      'Risk & Compliance Manager',
+    ],
+    skills: [
+      'Contract Drafting', 'Legal Research', 'Corporate Law', 'Compliance Management',
+      'Regulatory Affairs', 'Intellectual Property', 'Litigation', 'Legal Documentation',
+      'Due Diligence', 'Labor Law', 'GDPR', 'Risk Management',
+    ]
+  },
+  LOGISTICS: {
+    name: 'Logistics & Supply Chain',
+    roles: [
+      'Supply Chain Manager',
+      'Logistics Manager',
+      'Warehouse Manager',
+      'Procurement Manager',
+      'Inventory Manager',
+      'Fleet Manager',
+      'Supply Chain Analyst',
+      'Customs & Trade Compliance Manager',
+      'Freight Coordinator',
+      'Distribution Manager',
+      'Import Export Manager',
+      'Demand Planning Manager',
+      'Last Mile Delivery Manager',
+    ],
+    skills: [
+      'Supply Chain Management', 'Logistics Operations', 'Procurement', 'Inventory Management',
+      'SAP SCM', 'ERP Systems', 'Warehouse Management Systems', 'Lean Logistics',
+      'Freight Management', 'Trade Compliance', 'Demand Planning', 'Vendor Management',
+      'Cold Chain Management', 'Reverse Logistics',
+    ]
+  },
+  AUTOMOTIVE: {
+    name: 'Automotive & Engineering',
+    roles: [
+      'Automotive Engineer',
+      'Mechanical Design Engineer',
+      'Quality Engineer',
+      'Production Engineer',
+      'R&D Engineer',
+      'Embedded Systems Engineer',
+      'Vehicle Dynamics Engineer',
+      'Powertrain Engineer',
+      'Manufacturing Engineer',
+      'Tooling Engineer',
+      'Safety Engineer',
+      'Electric Vehicle Engineer',
+      'Supply Chain Engineer',
+    ],
+    skills: [
+      'AutoCAD', 'SolidWorks', 'CATIA', 'Vehicle Dynamics', 'Embedded Systems',
+      'ADAS', 'Electric Vehicles', 'Manufacturing Processes', 'FMEA',
+      'Six Sigma', 'Quality Control', 'AUTOSAR', 'CAN Bus', 'MATLAB',
+    ]
+  },
+  TELECOM: {
+    name: 'Telecommunications',
+    roles: [
+      'Network Engineer',
+      'RF Engineer',
+      'Telecom Solutions Architect',
+      'NOC Engineer',
+      '5G Network Engineer',
+      'Telecom Project Manager',
+      'OSS/BSS Engineer',
+      'Fiber Optic Engineer',
+      'Telecom Sales Manager',
+      'VoIP Engineer',
+      'Satellite Communication Engineer',
+    ],
+    skills: [
+      '5G', 'LTE', 'RF Engineering', 'Network Planning', 'OSS/BSS',
+      'Fiber Optics', 'IP Networking', 'VoIP', 'MPLS', 'SDN/NFV',
+      'Telecom Billing', 'Network Optimization', 'Cisco', 'Ericsson', 'Nokia',
+    ]
+  },
+  REAL_ESTATE: {
+    name: 'Real Estate & Construction',
+    roles: [
+      'Real Estate Agent',
+      'Property Manager',
+      'Real Estate Developer',
+      'Site Engineer',
+      'Project Manager',
+      'Quantity Surveyor',
+      'Architect',
+      'Civil Engineer',
+      'Structural Engineer',
+      'Interior Designer',
+      'Facility Manager',
+      'Real Estate Analyst',
+      'Valuation Manager',
+      'Safety Officer',
+    ],
+    skills: [
+      'AutoCAD', 'Revit', 'Project Management', 'Quantity Surveying', 'Structural Analysis',
+      'Construction Management', 'Building Regulations', 'RERA Compliance', 'Property Valuation',
+      'Real Estate Law', 'Facility Management', 'MS Project', 'BIM', 'QGIS',
+    ]
+  },
+  ENERGY: {
+    name: 'Energy & Utilities',
+    roles: [
+      'Electrical Engineer',
+      'Solar Project Engineer',
+      'Wind Energy Engineer',
+      'Power Plant Manager',
+      'Energy Analyst',
+      'EHS Manager',
+      'Renewable Energy Consultant',
+      'Grid Engineer',
+      'Oil & Gas Engineer',
+      'Energy Auditor',
+      'Process Engineer',
+      'Control Systems Engineer',
+    ],
+    skills: [
+      'Electrical Engineering', 'Solar Energy', 'Wind Energy', 'Power Systems',
+      'SCADA', 'PLC Programming', 'Energy Management', 'EHS', 'Grid Management',
+      'AutoCAD Electrical', 'Power Plant Operations', 'Renewables Policy', 'Energy Auditing',
+    ]
+  },
+  ECOMMERCE: {
+    name: 'E-commerce & D2C',
+    roles: [
+      'E-commerce Manager',
+      'Category Manager',
+      'Marketplace Manager',
+      'D2C Brand Manager',
+      'Growth Hacker',
+      'Performance Marketing Manager',
+      'Catalog Manager',
+      'Customer Experience Manager',
+      'E-commerce Operations Manager',
+      'Pricing Analyst',
+      'Returns & Logistics Manager',
+      'E-commerce Analyst',
+    ],
+    skills: [
+      'Shopify', 'Amazon Seller Central', 'Flipkart Seller Panel', 'Digital Marketing',
+      'Performance Marketing', 'SEO/SEM', 'Google Analytics', 'Facebook Ads',
+      'Product Catalog Management', 'Pricing Strategy', 'Customer Retention',
+      'Conversion Rate Optimization', 'Email Marketing', 'Customer Segmentation',
+    ]
+  },
 };
 
 export const EMPLOYMENT_TYPES = [

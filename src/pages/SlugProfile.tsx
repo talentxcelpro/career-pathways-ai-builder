@@ -1,10 +1,12 @@
 import React from 'react';
 import { useParams, Navigate, Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { useSlugProfile } from '@/hooks/useSlugProfile';
 import { useSEO } from '@/hooks/useSEO';
 import { useViewportProfileTracking } from '@/hooks/useViewportProfileTracking';
 import { useAccurateProfileStats } from '@/hooks/useAccurateProfileStats';
-import { Loader2, MapPin, ExternalLink, Calendar, Users, Eye, Phone, Mail } from 'lucide-react';
+import { getCta } from '@/config/ctaSystem';
+import { Loader2, MapPin, ExternalLink, Calendar, Users, Eye, Phone, Mail, Award, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -33,17 +35,30 @@ const SlugProfile = () => {
     }
   }, [trackElementRef, profile?.id]);
 
+  // Profile indexability:
+  // Index ONLY when is_public is explicitly true AND profile has meaningful content.
+  // Meaningful = has a full_name AND (title OR at least 1 skill).
+  const profileSlug = (profile as any)?.username || (profile as any)?.slug || username;
+  const hasPublicFlag = (profile as any)?.is_public === true;
+  const hasMeaningfulContent =
+    profile?.full_name &&
+    (profile?.title || ((profile as any)?.skills?.length ?? 0) > 0);
+  const isIndexable = hasPublicFlag && hasMeaningfulContent;
+
+  const canonicalUrl = `https://talentxcel.in/profile/${profileSlug}`;
+
   // Set up SEO
   useSEO({
-    title: profile ? `${profile.full_name} (@${(profile as any).username || profile.slug}) - TalentXcel` : 'Profile - TalentXcel',
-    description: profile 
+    title: profile ? `${profile.full_name} (@${profileSlug}) - TalentXcel` : 'Profile - TalentXcel',
+    description: profile
       ? `${profile.full_name}'s professional profile on TalentXcel. ${profile.title ? `${profile.title}. ` : ''}${profile.about ? profile.about.substring(0, 150) + '...' : 'Connect and explore their career journey.'}`
       : 'View professional profile on TalentXcel.',
-    keywords: profile 
-      ? [profile.full_name, (profile as any).username || (profile as any).slug, 'professional profile', 'TalentXcel', profile.title, profile.location].filter(Boolean)
+    keywords: profile
+      ? [profile.full_name, profileSlug, 'professional profile', 'TalentXcel', profile.title, profile.location].filter(Boolean)
       : ['professional profile', 'TalentXcel'],
-    canonical: `https://talentxcel.in/${username}`
+    canonical: canonicalUrl,
   });
+
 
   if (isLoading) {
     return (
@@ -76,17 +91,27 @@ const SlugProfile = () => {
     description: profile.about,
     worksFor: {
       '@type': 'Organization',
-      name: 'TalentXcel'
-    }
+      name: 'TalentXcel',
+      url: 'https://talentxcel.in',
+    },
+    ...(profile.location ? { address: { '@type': 'PostalAddress', addressLocality: profile.location } } : {}),
   };
+
+  const profileCta = getCta('Profile');
 
   return (
     <>
+      <Helmet>
+        {/* Robots: only index when the profile meets the quality gate */}
+        <meta name="robots" content={isIndexable ? 'index,follow' : 'noindex,nofollow'} />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:url" content={canonicalUrl} />
+      </Helmet>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      
+
       <main className="min-h-screen bg-background">
         <div ref={profileRef} className="max-w-4xl mx-auto px-4 py-6 space-y-6">
           {/* Cover Image Section */}
