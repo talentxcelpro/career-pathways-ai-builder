@@ -102,6 +102,8 @@ import JobsByRole from "@/pages/JobsByRole";
 import JobsByLocation from "@/pages/JobsByLocation";
 import JobsBySkill from "@/pages/JobsBySkill";
 import IndustryJobs from "@/pages/seo/IndustryJobs";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import Terms from "./pages/auth/Terms";
 import Platform from "./pages/Platform";
 import DebugPage from "./pages/DebugPage";
 import SystemDiagnostics from "./pages/SystemDiagnostics";
@@ -273,6 +275,11 @@ const App = () => {
                                 } />
                                 
                 {/* PRIORITY ROUTES - These must come BEFORE navItems.map to take precedence */}
+                <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/privacypolicy" element={<PrivacyPolicy />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/terms-of-service" element={<Terms />} />
                 <Route path="/tools" element={<Tools />} />
                 <Route path="/resources/:slug" element={<ResourceDetail />} />
                 <Route path="/resources" element={<Blog />} />
