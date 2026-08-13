@@ -1,5 +1,4 @@
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { 
@@ -10,8 +9,7 @@ import {
   Zap, 
   Crown,
   Flame,
-  Sparkles,
-  Layers
+  Sparkles
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -47,119 +45,106 @@ export const GameProgressHeader: React.FC<GameProgressHeaderProps> = ({
   const masteryPercent = totalTools > 0 ? Math.round((completedTools / totalTools) * 100) : 0;
 
   const getLevelBadge = (level: number) => {
-    if (level >= 10) return { icon: Crown, title: 'Master', color: 'from-amber-500 to-yellow-400 text-amber-950', ring: 'ring-amber-400/30' };
-    if (level >= 5) return { icon: Star, title: 'Expert', color: 'from-purple-500 to-indigo-500 text-white', ring: 'ring-purple-500/30' };
-    if (level >= 2) return { icon: Target, title: 'Advanced', color: 'from-blue-500 to-cyan-400 text-white', ring: 'ring-blue-500/30' };
-    return { icon: Zap, title: 'Beginner', color: 'from-sky-500 to-indigo-500 text-white', ring: 'ring-sky-500/30' };
+    if (level >= 10) return { icon: Crown, title: 'Master', color: 'from-amber-500 to-yellow-400 text-amber-950' };
+    if (level >= 5) return { icon: Star, title: 'Expert', color: 'from-purple-500 to-indigo-500 text-white' };
+    if (level >= 2) return { icon: Target, title: 'Advanced', color: 'from-blue-500 to-cyan-400 text-white' };
+    return { icon: Zap, title: 'Beginner', color: 'from-indigo-600 to-blue-500 text-white' };
   };
 
   const levelBadge = getLevelBadge(userLevel);
 
   return (
-    <div className="mb-8 space-y-6">
-      {/* Apple-style Hero Banner */}
-      <div className="relative text-center space-y-3 px-4 pt-2">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/5 dark:bg-white/10 border border-slate-900/10 dark:border-white/15 backdrop-blur-xl shadow-sm text-xs font-semibold tracking-wide text-slate-700 dark:text-slate-200">
-          <Sparkles className="w-3.5 h-3.5 text-indigo-500 animate-pulse" />
-          <span>TalentXcel Career OS Suite</span>
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-          <span className="text-slate-500 dark:text-slate-400 font-normal">26 Pro Tools Active</span>
+    <div className="mb-5 space-y-4">
+      {/* Compact Apple-style Hero Banner */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1 pb-1">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+              Welcome back, <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 font-extrabold">{userName}</span>
+            </h1>
+            <Badge variant="outline" className="hidden sm:inline-flex text-[10px] font-semibold rounded-full px-2 py-0.5 bg-indigo-50/80 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-300 border-indigo-200/60 dark:border-indigo-800/60">
+              <Sparkles className="w-2.5 h-2.5 mr-1 text-indigo-500" />
+              Pro Toolkit Active
+            </Badge>
+          </div>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium max-w-2xl leading-normal">
+            Your personal AI career acceleration toolkit. Level up skills, build verified proof, and land top opportunities.
+          </p>
         </div>
-
-        <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
-          Welcome back, <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500">{userName}</span>
-        </h1>
-        <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 font-medium max-w-xl mx-auto leading-relaxed">
-          Your personal AI career acceleration toolkit. Level up skills, build verified proof, and land top opportunities.
-        </p>
       </div>
 
-      {/* Apple iOS Widget-Style 4-Card Hero Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 px-2 sm:px-0">
+      {/* Sleek Compact 4-Card Progress Row */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
         
-        {/* Card 1: Level & XP */}
-        <div className="group relative rounded-3xl p-5 transition-all duration-300 bg-white/80 dark:bg-slate-900/70 border border-slate-200/80 dark:border-slate-800/80 backdrop-blur-xl shadow-lg hover:shadow-xl hover:-translate-y-1">
-          <div className="flex items-center justify-between mb-3">
-            <div className={cn("w-10 h-10 rounded-2xl bg-gradient-to-br flex items-center justify-center shadow-md", levelBadge.color)}>
-              <levelBadge.icon className="w-5 h-5 text-white" />
+        {/* Card 1: Level */}
+        <div className="rounded-2xl p-3.5 transition-all duration-200 bg-white/90 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800/80 backdrop-blur-xl shadow-xs hover:shadow-md">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <div className={cn("w-7 h-7 rounded-lg bg-gradient-to-br flex items-center justify-center shadow-xs", levelBadge.color)}>
+                <levelBadge.icon className="w-3.5 h-3.5 text-white" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-900 dark:text-white">Level {userLevel}</p>
+                <p className="text-[10px] text-slate-400 font-medium">{levelBadge.title}</p>
+              </div>
             </div>
-            <Badge variant="outline" className="text-[11px] font-semibold rounded-full px-2.5 py-0.5 border-indigo-200 dark:border-indigo-800 bg-indigo-50/80 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-300">
-              Level {userLevel}
-            </Badge>
+            <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">{Math.round(nextLevelProgress)}%</span>
           </div>
-          <div>
-            <div className="flex items-baseline justify-between mb-1">
-              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Progression</span>
-              <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">{Math.round(nextLevelProgress)}%</span>
-            </div>
-            <Progress value={nextLevelProgress} className="h-2 rounded-full bg-slate-100 dark:bg-slate-800" />
-            <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-2 font-medium">
-              {levelBadge.title} Status
-            </p>
-          </div>
+          <Progress value={nextLevelProgress} className="h-1.5 rounded-full bg-slate-100 dark:bg-slate-800" />
         </div>
 
-        {/* Card 2: Completed Tools Mastery */}
-        <div className="group relative rounded-3xl p-5 transition-all duration-300 bg-white/80 dark:bg-slate-900/70 border border-slate-200/80 dark:border-slate-800/80 backdrop-blur-xl shadow-lg hover:shadow-xl hover:-translate-y-1">
-          <div className="flex items-center justify-between mb-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-md text-white">
-              <Trophy className="w-5 h-5" />
+        {/* Card 2: Mastery */}
+        <div className="rounded-2xl p-3.5 transition-all duration-200 bg-white/90 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800/80 backdrop-blur-xl shadow-xs hover:shadow-md">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-xs text-white">
+                <Trophy className="w-3.5 h-3.5" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-900 dark:text-white">{completedTools}/{totalTools} <span className="text-[10px] font-normal text-slate-400">Tools</span></p>
+                <p className="text-[10px] text-slate-400 font-medium">{unlockedToolsCount} available</p>
+              </div>
             </div>
-            <Badge variant="outline" className="text-[11px] font-semibold rounded-full px-2.5 py-0.5 border-emerald-200 dark:border-emerald-800 bg-emerald-50/80 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-300">
-              {masteryPercent}% Mastery
-            </Badge>
+            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">{masteryPercent}%</span>
           </div>
-          <div>
-            <div className="flex items-baseline justify-between mb-1">
-              <span className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">{completedTools}<span className="text-sm font-normal text-slate-400">/{totalTools}</span></span>
-              <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">Completed</span>
-            </div>
-            <Progress value={masteryPercent} className="h-2 rounded-full bg-slate-100 dark:bg-slate-800" />
-            <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-2 font-medium">
-              {unlockedToolsCount} tools available to run
-            </p>
-          </div>
+          <Progress value={masteryPercent} className="h-1.5 rounded-full bg-slate-100 dark:bg-slate-800" />
         </div>
 
         {/* Card 3: Daily Streak */}
-        <div className="group relative rounded-3xl p-5 transition-all duration-300 bg-white/80 dark:bg-slate-900/70 border border-slate-200/80 dark:border-slate-800/80 backdrop-blur-xl shadow-lg hover:shadow-xl hover:-translate-y-1">
-          <div className="flex items-center justify-between mb-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-md text-white">
-              <Flame className="w-5 h-5" />
+        <div className="rounded-2xl p-3.5 transition-all duration-200 bg-white/90 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800/80 backdrop-blur-xl shadow-xs hover:shadow-md">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-xs text-white">
+                <Flame className="w-3.5 h-3.5" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-900 dark:text-white">{currentStreak} Day Streak</p>
+                <p className="text-[10px] text-amber-600 dark:text-amber-400 font-medium">
+                  {currentStreak > 0 ? '🔥 Streak Active!' : 'Run a tool today!'}
+                </p>
+              </div>
             </div>
-            <Badge variant="outline" className="text-[11px] font-semibold rounded-full px-2.5 py-0.5 border-amber-200 dark:border-amber-800 bg-amber-50/80 dark:bg-amber-950/50 text-amber-600 dark:text-amber-300">
+            <Badge variant="outline" className="text-[10px] font-bold rounded-full px-2 py-0 border-amber-200 text-amber-600 bg-amber-50/50">
               Active
             </Badge>
           </div>
-          <div>
-            <div className="flex items-baseline gap-1">
-              <span className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">{currentStreak}</span>
-              <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">Day Streak</span>
-            </div>
-            <p className="text-xs text-amber-600 dark:text-amber-400 font-semibold mt-2">
-              {currentStreak > 0 ? '🔥 On Fire! Keep it up!' : '⚡ Run a tool today to start!'}
-            </p>
-          </div>
         </div>
 
-        {/* Card 4: TXC Token Balance */}
-        <div className="group relative rounded-3xl p-5 transition-all duration-300 bg-white/80 dark:bg-slate-900/70 border border-slate-200/80 dark:border-slate-800/80 backdrop-blur-xl shadow-lg hover:shadow-xl hover:-translate-y-1">
-          <div className="flex items-center justify-between mb-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-md text-white">
-              <Coins className="w-5 h-5" />
+        {/* Card 4: Tokens */}
+        <div className="rounded-2xl p-3.5 transition-all duration-200 bg-white/90 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800/80 backdrop-blur-xl shadow-xs hover:shadow-md">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-xs text-white">
+                <Coins className="w-3.5 h-3.5" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-900 dark:text-white">{totalTXC.toLocaleString()} <span className="text-violet-600 font-extrabold text-[11px]">TXC</span></p>
+                <p className="text-[10px] text-slate-400 font-medium">Earn on completions</p>
+              </div>
             </div>
-            <Badge variant="outline" className="text-[11px] font-semibold rounded-full px-2.5 py-0.5 border-violet-200 dark:border-violet-800 bg-violet-50/80 dark:bg-violet-950/50 text-violet-600 dark:text-violet-300">
+            <Badge variant="outline" className="text-[10px] font-bold rounded-full px-2 py-0 border-violet-200 text-violet-600 bg-violet-50/50">
               Tokens
             </Badge>
-          </div>
-          <div>
-            <div className="flex items-baseline gap-1">
-              <span className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">{totalTXC.toLocaleString()}</span>
-              <span className="text-xs font-bold text-violet-600 dark:text-violet-400">TXC</span>
-            </div>
-            <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-2 font-medium">
-              Earn tokens on every completed tool
-            </p>
           </div>
         </div>
 
