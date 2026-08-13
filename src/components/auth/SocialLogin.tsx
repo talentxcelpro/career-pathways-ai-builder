@@ -96,7 +96,7 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'linkedin_oidc',
         options: {
-          redirectTo: `${window.location.origin}/network`,
+          redirectTo: `${window.location.origin}/auth/callback`,
           scopes: 'openid profile email',
         },
       });
