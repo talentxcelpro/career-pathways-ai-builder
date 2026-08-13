@@ -201,7 +201,7 @@ export function getTXCRewardsByCategory(category: TXCReward['category']): TXCRew
  * This function ensures the policy hasn't been tampered with
  */
 export function verifyPolicyIntegrity(): boolean {
-  const expectedActionCount = 15; // Total number of actions in policy
+  const expectedActionCount = 16; // Total number of actions in policy
   const actualActionCount = Object.keys(OFFICIAL_TXC_MINING_POLICY).length;
   
   // Check if all required actions exist
@@ -209,7 +209,7 @@ export function verifyPolicyIntegrity(): boolean {
     'daily_login', 'post_created', 'connection_made', 'profile_completed',
     'resume_created', 'job_applied', 'recommendation_given', 'skill_added',
     'course_completed', 'feedback_given', 'joining_bonus', 'referral_made',
-    'post_liked', 'comment_made', 'article_posted'
+    'post_liked', 'comment_made', 'article_posted', 'social_activity_bonus'
   ];
   
   const hasAllRequired = requiredActions.every(action => 

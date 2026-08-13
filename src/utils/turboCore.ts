@@ -65,14 +65,7 @@ class TurboCore {
     (heroLink as any).fetchPriority = 'high';
     document.head.appendChild(heroLink);
 
-    // Critical font preload
-    const fontLink = document.createElement('link');
-    fontLink.rel = 'preload';
-    fontLink.href = 'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfMZ.woff2';
-    fontLink.as = 'font';
-    fontLink.type = 'font/woff2';
-    fontLink.crossOrigin = 'anonymous';
-    document.head.appendChild(fontLink);
+
 
     // DNS prefetch critical domains
     ['//dthlgsnakhoftinssokm.supabase.co', '//fonts.gstatic.com'].forEach(domain => {

@@ -202,14 +202,6 @@ export const initializePerformanceOptimizations = () => {
   
   // Preload critical chunks
   preloadCriticalChunks();
-  
-  // Setup font optimization with performance hints
-  const fontLink = document.createElement('link');
-  fontLink.rel = 'preload';
-  fontLink.as = 'font';
-  fontLink.type = 'font/woff2';
-  fontLink.crossOrigin = 'anonymous';
-  document.head.appendChild(fontLink);
 
   // Add performance monitoring
   if ('performance' in window && 'observe' in window.PerformanceObserver.prototype) {
