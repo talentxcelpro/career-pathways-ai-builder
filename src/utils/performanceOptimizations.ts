@@ -4,19 +4,7 @@
  * Preload critical resources for faster page loads
  */
 export const preloadCriticalResources = () => {
-  // Preload Supabase client if not already loaded
-  const link = document.createElement('link');
-  link.rel = 'preload';
-  link.as = 'script';
-  link.href = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
-  document.head.appendChild(link);
-
-  // Preload Google Identity Services
-  const googleLink = document.createElement('link');
-  googleLink.rel = 'preload';
-  googleLink.as = 'script';
-  googleLink.href = 'https://accounts.google.com/gsi/client';
-  document.head.appendChild(googleLink);
+  // Supabase client is bundled locally via npm; no obsolete CDN fetching needed.
 };
 
 /**
