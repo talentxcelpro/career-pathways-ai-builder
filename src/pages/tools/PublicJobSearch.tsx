@@ -18,10 +18,30 @@ import {
 } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
 
 export default function PublicJobSearch() {
   const [searchQuery, setSearchQuery] = useState('');
   const [location, setLocation] = useState('');
+  const [savedJobs, setSavedJobs] = useState<string[]>([]);
+  const [appliedJobs, setAppliedJobs] = useState<string[]>([]);
+
+  const handleToggleSave = (jobTitle: string) => {
+    if (savedJobs.includes(jobTitle)) {
+      setSavedJobs(savedJobs.filter(t => t !== jobTitle));
+      toast.info(`Removed ${jobTitle} from saved jobs.`);
+    } else {
+      setSavedJobs([...savedJobs, jobTitle]);
+      toast.success(`Saved ${jobTitle} to your saved listings!`);
+    }
+  };
+
+  const handleApply = (jobTitle: string) => {
+    if (!appliedJobs.includes(jobTitle)) {
+      setAppliedJobs([...appliedJobs, jobTitle]);
+      toast.success(`🎉 Application submitted for ${jobTitle}!`);
+    }
+  };
 
   const featuredJobs = [
     {
@@ -247,9 +267,23 @@ export default function PublicJobSearch() {
                         </div>
                       </div>
                       
-                      <div className="flex gap-2">
-                        <Button variant="outline">Save</Button>
-                        <Button>Apply Now</Button>
+                      <div className="flex items-center gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleToggleSave(job.title)}
+                          className="rounded-xl text-xs font-semibold"
+                        >
+                          {savedJobs.includes(job.title) ? 'Saved ✓' : 'Save'}
+                        </Button>
+                        <Button 
+                          size="sm"
+                          disabled={appliedJobs.includes(job.title)}
+                          onClick={() => handleApply(job.title)}
+                          className={appliedJobs.includes(job.title) ? "bg-emerald-600 text-white rounded-xl text-xs font-bold" : "rounded-xl text-xs font-bold"}
+                        >
+                          {appliedJobs.includes(job.title) ? 'Applied ✓' : 'Apply Now'}
+                        </Button>
                       </div>
                     </div>
                   </CardContent>
