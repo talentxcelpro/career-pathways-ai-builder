@@ -69,9 +69,16 @@ export const CandidateCard: React.FC<CandidateCardProps> = ({
               <p className="text-sm text-muted-foreground">{candidate.email}</p>
             </div>
           </div>
-          <Badge className={getSourceBadgeColor(candidate.source)}>
-            {candidate.source === 'application' ? 'Applied' : 'Platform'}
-          </Badge>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {Boolean((candidate as any).reverse_pitched || ((candidate as any).match_score && (candidate as any).match_score >= 80)) && (
+              <Badge className="bg-purple-100 text-purple-800 border-purple-200">
+                ⚡ Reverse Pitched {(candidate as any).match_score ? `(${(candidate as any).match_score}%)` : ''}
+              </Badge>
+            )}
+            <Badge className={getSourceBadgeColor(candidate.source)}>
+              {candidate.source === 'application' ? 'Applied' : 'Platform'}
+            </Badge>
+          </div>
         </div>
 
         {candidate.title && (

@@ -272,6 +272,23 @@ const CRMCandidateDetail = () => {
                 </div>
               )}
 
+              {/* STAR Interview & AI Verification Score */}
+              {Boolean((candidate as any)?.star_score || (candidate as any)?.interview_score) && (
+                <div className="p-3 bg-purple-50/80 border border-purple-200 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-semibold text-purple-900 text-sm flex items-center gap-1.5">
+                      🎙️ STAR Interview Evaluation & Readiness
+                    </h4>
+                    <Badge className="bg-purple-600 text-white">
+                      {(candidate as any).star_score || (candidate as any).interview_score || 85}% Score
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-purple-700 mt-1">
+                    Candidate has completed structured STAR behavioral rehearsal & technical assessment verification.
+                  </p>
+                </div>
+              )}
+
               <div className="flex gap-2 pt-4">
                 <CandidateTagManager candidateId={candidateId!} existingTags={tags} />
               </div>
