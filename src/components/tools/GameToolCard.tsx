@@ -6,7 +6,6 @@ import { Progress } from '@/components/ui/progress';
 import { 
   Lock, 
   CheckCircle2, 
-  Star, 
   Clock, 
   Crown,
   Zap,
@@ -15,7 +14,8 @@ import {
   Sparkles,
   ArrowRight,
   Shield,
-  Target
+  Target,
+  ChevronRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { TXCFeaturePurchase } from '@/components/txc/TXCFeaturePurchase';
@@ -50,290 +50,147 @@ export const GameToolCard: React.FC<GameToolCardProps> = ({
 }) => {
   const IconComponent = tool.icon;
 
+  const getCategoryStyles = (category: string) => {
+    const cat = category.toLowerCase();
+    if (cat.includes('career') || cat.includes('growth')) {
+      return { gradient: 'from-blue-600 to-indigo-600', bg: 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800' };
+    }
+    if (cat.includes('interview') || cat.includes('prep')) {
+      return { gradient: 'from-purple-600 to-pink-600', bg: 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800' };
+    }
+    if (cat.includes('resume') || cat.includes('cv')) {
+      return { gradient: 'from-emerald-600 to-teal-600', bg: 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800' };
+    }
+    if (cat.includes('job') || cat.includes('search')) {
+      return { gradient: 'from-amber-500 to-orange-600', bg: 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800' };
+    }
+    return { gradient: 'from-indigo-600 to-cyan-600', bg: 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800' };
+  };
+
   const getDifficultyBadge = (difficulty: string) => {
     switch (difficulty) {
       case 'beginner': 
         return { 
-          color: 'bg-gradient-to-r from-emerald-500/10 to-green-500/10 text-emerald-700 border-emerald-500/30', 
+          color: 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200/80 dark:border-emerald-800/80', 
           icon: Sparkles,
-          gradient: 'from-emerald-500 to-green-500'
         };
       case 'intermediate': 
         return { 
-          color: 'bg-gradient-to-r from-amber-500/10 to-orange-500/10 text-amber-700 border-amber-500/30', 
+          color: 'bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-200/80 dark:border-amber-800/80', 
           icon: Target,
-          gradient: 'from-amber-500 to-orange-500'
         };
       case 'advanced': 
         return { 
-          color: 'bg-gradient-to-r from-violet-500/10 to-purple-500/10 text-violet-700 border-violet-500/30', 
+          color: 'bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border-purple-200/80 dark:border-purple-800/80', 
           icon: Crown,
-          gradient: 'from-violet-500 to-purple-500'
         };
       default: 
         return { 
-          color: 'bg-gradient-to-r from-slate-500/10 to-gray-500/10 text-slate-700 border-slate-500/30', 
+          color: 'bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800', 
           icon: Shield,
-          gradient: 'from-slate-500 to-gray-500'
         };
     }
   };
 
   const difficultyBadge = getDifficultyBadge(tool.difficulty);
-
-  if (viewMode === 'list') {
-    return (
-      <Card className={cn(
-        "group relative overflow-hidden transition-all duration-300 hover:shadow-lg border-border/50",
-        tool.isLocked ? "opacity-60" : "hover:shadow-xl hover:-translate-y-1",
-        tool.isCompleted && "ring-2 ring-green-500/20 bg-green-50/50"
-      )}>
-        <CardContent className="p-6">
-          <div className="flex items-center gap-6">
-            {/* Icon */}
-            <div className={cn(
-              "relative flex items-center justify-center w-16 h-16 rounded-2xl transition-all duration-300",
-              tool.isLocked ? "bg-muted/50" : "bg-primary/10 group-hover:bg-primary/20",
-              tool.isCompleted && "bg-green-500/10"
-            )}>
-              {tool.isLocked && <Lock className="absolute top-1 right-1 w-4 h-4 text-muted-foreground/60" />}
-              {tool.isCompleted && <CheckCircle2 className="absolute -top-1 -right-1 w-5 h-5 text-green-500" />}
-              <IconComponent className={cn(
-                "w-8 h-8 transition-all duration-300",
-                tool.isLocked ? "text-muted-foreground/60" : "text-primary group-hover:text-primary/80",
-                tool.isCompleted && "text-green-600"
-              )} />
-            </div>
-
-            {/* Content */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between mb-2">
-                <div>
-                  <h3 className="font-semibold text-lg text-foreground mb-1 group-hover:text-primary transition-colors">
-                    {tool.name}
-                  </h3>
-                  <p className="text-sm text-muted-foreground line-clamp-2">
-                    {tool.description}
-                  </p>
-                </div>
-                <div className="flex flex-col items-end gap-2">
-                  <Badge className={cn("border", difficultyBadge.color)}>
-                    <difficultyBadge.icon className="w-3 h-3 mr-1" />
-                    {tool.difficulty}
-                  </Badge>
-                  {tool.usageCount > 0 && (
-                    <Badge variant="outline" className="text-xs">
-                      {tool.usageCount} uses
-                    </Badge>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <Clock className="w-3 h-3" />
-                    {tool.estimatedTime}
-                  </div>
-                  <Badge variant="outline" className="text-xs">{tool.category}</Badge>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  {tool.isLocked ? (
-                    tool.txc_cost > 0 ? (
-                      <TXCFeaturePurchase
-                        featureId={`tool-${tool.id}`}
-                        featureName={tool.name}
-                        cost={tool.txc_cost}
-                        onSuccess={() => onUnlockClick(tool)}
-                        size="sm"
-                        variant="outline"
-                      />
-                    ) : (
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        disabled
-                        className="text-muted-foreground"
-                      >
-                        <Lock className="w-4 h-4 mr-1" />
-                        Locked
-                      </Button>
-                    )
-                  ) : (
-                    <Button 
-                      onClick={() => onToolClick(tool)}
-                      size="sm"
-                      className="bg-primary hover:bg-primary/90"
-                    >
-                      <Play className="w-4 h-4 mr-1" />
-                      {tool.isCompleted ? 'Use Again' : 'Start'}
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+  const categoryStyle = getCategoryStyles(tool.category);
 
   return (
-    <Card className={cn(
-      "group relative overflow-hidden transition-all duration-700 ease-out border-0 bg-gradient-to-br from-background via-background/80 to-background/60 backdrop-blur-xl",
-      "shadow-[0_8px_32px_-12px_rgba(0,0,0,0.25)] hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.35)]",
-      tool.isLocked 
-        ? "opacity-60 scale-95" 
-        : "hover:scale-[1.02] hover:-translate-y-1",
-      tool.isCompleted && "ring-1 ring-emerald-500/40 shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+    <div className={cn(
+      "group relative rounded-3xl transition-all duration-300 ease-out flex flex-col justify-between overflow-hidden",
+      "bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800/80",
+      "shadow-md hover:shadow-2xl hover:-translate-y-1.5",
+      tool.isLocked && "opacity-75 bg-slate-50/50 dark:bg-slate-900/40",
+      tool.isCompleted && "ring-2 ring-emerald-500/30 border-emerald-200 dark:border-emerald-900"
     )}>
       
-      {/* Apple-style gradient mesh */}
-      <div className={cn(
-        "absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700",
-        `bg-gradient-to-br ${difficultyBadge.gradient}/10 via-primary/5 to-accent/10`
-      )} />
-      
-      {/* Glass morphism effect */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-white/5 to-transparent opacity-60" />
-      
-      {/* Lock state overlay */}
-      {tool.isLocked && (
-        <div className="absolute inset-0 bg-background/40 backdrop-blur-md z-10 flex items-center justify-center rounded-2xl">
-          <div className="text-center p-6 space-y-3">
-            <div className="w-12 h-12 mx-auto bg-muted/50 rounded-2xl flex items-center justify-center">
-              <Lock className="w-6 h-6 text-muted-foreground/70" />
-            </div>
-            <p className="text-sm text-muted-foreground/90 font-medium max-w-32 leading-relaxed">
-              {tool.unlockRequirement || 'Complete previous tools'}
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Success state indicator */}
-      {tool.isCompleted && (
-        <div className="absolute -top-1 -right-1 z-20">
-          <div className="bg-gradient-to-r from-emerald-500 to-green-500 text-white p-2.5 rounded-full shadow-lg ring-2 ring-white/20">
-            <Trophy className="w-4 h-4" />
-          </div>
-        </div>
-      )}
-
-      <CardHeader className="relative z-10 p-6 pb-4">
+      {/* Top Header Card Info */}
+      <div className="p-5 sm:p-6 pb-2">
         <div className="flex items-start justify-between mb-4">
-          {/* Tool icon with Apple-style design */}
+          {/* iOS Squircle App Icon */}
           <div className={cn(
-            "relative flex items-center justify-center w-16 h-16 rounded-3xl transition-all duration-500 shadow-lg",
-            "before:absolute before:inset-0 before:rounded-3xl before:bg-gradient-to-br before:opacity-20",
-            tool.isLocked 
-              ? "bg-muted/30 before:from-muted before:to-muted/50" 
-              : `bg-gradient-to-br ${difficultyBadge.gradient}/20 before:${difficultyBadge.gradient} group-hover:scale-110 group-hover:shadow-xl`,
-            tool.isCompleted && "ring-2 ring-emerald-500/30 shadow-emerald-500/20"
+            "w-14 h-14 rounded-2xl flex items-center justify-center transition-transform duration-300 shadow-md group-hover:scale-105",
+            tool.isLocked
+              ? "bg-slate-100 dark:bg-slate-800 text-slate-400"
+              : `bg-gradient-to-br ${categoryStyle.gradient} text-white shadow-indigo-500/20`
           )}>
-            <IconComponent className={cn(
-              "relative z-10 w-8 h-8 transition-all duration-500",
-              tool.isLocked 
-                ? "text-muted-foreground/60" 
-                : `text-transparent bg-gradient-to-br ${difficultyBadge.gradient} bg-clip-text group-hover:scale-110`,
-              tool.isCompleted && "text-emerald-600"
-            )} />
+            <IconComponent className="w-7 h-7 stroke-[2.2]" />
           </div>
-          
+
           {/* Badges */}
-          <div className="flex flex-col items-end gap-2">
-            <Badge className={cn(
-              "border-0 shadow-sm font-medium px-3 py-1.5 text-xs",
-              difficultyBadge.color
-            )}>
-              <difficultyBadge.icon className="w-3 h-3 mr-1.5" />
+          <div className="flex flex-col items-end gap-1.5">
+            <Badge variant="outline" className={cn("text-[11px] font-semibold rounded-full px-2.5 py-0.5 border shadow-2xs", difficultyBadge.color)}>
+              <difficultyBadge.icon className="w-3 h-3 mr-1" />
               {tool.difficulty.charAt(0).toUpperCase() + tool.difficulty.slice(1)}
             </Badge>
-            {tool.usageCount > 0 && (
-              <Badge variant="outline" className="text-xs bg-background/60 backdrop-blur-sm">
-                {tool.usageCount} use{tool.usageCount !== 1 ? 's' : ''}
+            {tool.isCompleted && (
+              <Badge className="text-[10px] font-bold rounded-full px-2 py-0.5 bg-emerald-500 text-white border-0 shadow-xs flex items-center gap-1">
+                <CheckCircle2 className="w-3 h-3" /> Done
               </Badge>
             )}
           </div>
         </div>
 
-        <CardTitle className="text-xl font-bold leading-tight mb-3 text-foreground group-hover:text-primary transition-colors duration-300 tracking-tight">
+        {/* Title & Description */}
+        <h3 className="text-lg font-extrabold text-slate-900 dark:text-white tracking-tight mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
           {tool.name}
-        </CardTitle>
-        <CardDescription className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
+        </h3>
+        <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed font-normal">
           {tool.description}
-        </CardDescription>
-      </CardHeader>
+        </p>
+      </div>
 
-      <CardContent className="relative z-10 p-6 pt-2">
-        {/* Progress indicator for active tools */}
-        {tool.progress > 0 && (
-          <div className="mb-5 p-3 bg-gradient-to-r from-primary/10 to-accent/10 rounded-2xl backdrop-blur-sm">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-xs font-medium text-muted-foreground">Progress</span>
-              <span className="text-xs font-bold text-primary">{tool.progress}%</span>
-            </div>
-            <Progress value={tool.progress} className="h-2.5 bg-muted/30" />
-          </div>
-        )}
-
-        {/* Metadata row */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/20 px-3 py-2 rounded-full">
-            <Clock className="w-3.5 h-3.5" />
-            <span className="font-medium">{tool.estimatedTime}</span>
-          </div>
-          <Badge variant="outline" className="text-xs bg-background/60 backdrop-blur-sm border-border/50 px-3 py-1">
+      {/* Card Footer Actions */}
+      <div className="p-5 sm:p-6 pt-3 space-y-4">
+        {/* Meta pill bar */}
+        <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800/80">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400">
+            <Clock className="w-3.5 h-3.5 text-slate-400" />
+            {tool.estimatedTime}
+          </span>
+          <Badge variant="outline" className={cn("text-[11px] font-medium rounded-full px-2.5 py-0.5 border", categoryStyle.bg)}>
             {tool.category}
           </Badge>
         </div>
 
-        {/* CTA Button with Apple-style design */}
-        <div className="space-y-3">
+        {/* Action Button */}
+        <div>
           {tool.isLocked ? (
-            <>
-              {tool.txc_cost > 0 ? (
-                <TXCFeaturePurchase
-                  featureId={`tool-${tool.id}`}
-                  featureName={tool.name}
-                  cost={tool.txc_cost}
-                  onSuccess={() => onUnlockClick(tool)}
-                  className="w-full"
-                  size="default"
-                />
-              ) : (
-                <Button 
-                  variant="outline" 
-                  className="w-full h-12 bg-muted/20 border-muted/50 text-muted-foreground cursor-not-allowed" 
-                  disabled
-                >
-                  <Lock className="w-4 h-4 mr-2" />
-                  Complete Requirements
-                </Button>
-              )}
-            </>
+            tool.txc_cost > 0 ? (
+              <TXCFeaturePurchase
+                featureId={`tool-${tool.id}`}
+                featureName={tool.name}
+                cost={tool.txc_cost}
+                onSuccess={() => onUnlockClick(tool)}
+                className="w-full rounded-2xl h-11 text-xs font-semibold shadow-md"
+                size="default"
+              />
+            ) : (
+              <Button 
+                variant="outline" 
+                className="w-full h-11 rounded-2xl bg-slate-100 dark:bg-slate-800/60 border-slate-200 dark:border-slate-800 text-slate-400 dark:text-slate-500 text-xs font-semibold cursor-not-allowed" 
+                disabled
+              >
+                <Lock className="w-3.5 h-3.5 mr-1.5" />
+                Locked
+              </Button>
+            )
           ) : (
             <Button 
               onClick={() => onToolClick(tool)}
               className={cn(
-                "w-full h-12 font-semibold transition-all duration-300 shadow-lg hover:shadow-xl",
-                "bg-gradient-to-r hover:scale-[1.02] active:scale-[0.98]",
+                "w-full h-11 rounded-2xl font-bold text-xs tracking-wide transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2",
                 tool.isCompleted 
-                  ? "from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600" 
-                  : `${difficultyBadge.gradient} hover:shadow-primary/25`
+                  ? "bg-slate-900 hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 text-white" 
+                  : `bg-gradient-to-r ${categoryStyle.gradient} text-white hover:opacity-95`
               )}
-              size="default"
             >
-              <div className="flex items-center justify-center gap-2">
-                <Play className="w-4 h-4" />
-                <span>{tool.isCompleted ? 'Use Again' : 'Start Tool'}</span>
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-              </div>
+              <span>{tool.isCompleted ? 'Run Again' : 'Launch Tool'}</span>
+              <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </Button>
           )}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
