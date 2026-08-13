@@ -1,42 +1,43 @@
+import { lazy, Suspense } from 'react';
 
 import { BookOpen } from "lucide-react";
-import Learning from "../pages/Learning";
-import LearningHub from "../pages/LearningHub";
-import CompleteLearningHub from "../pages/learning/CompleteLearningHub";
-import AllCourses from "../pages/learning/AllCourses";
-import CourseDetail from "../pages/learning/CourseDetail";
-import CoursePlayer from "../pages/learning/CoursePlayer";
-import MyCoursesPage from "../pages/learning/MyCoursesPage";
-import MyProgress from "../pages/learning/MyProgress";
-import LearningPathsPage from "../pages/learning/LearningPathsPage";
-import LearningPathDetail from "../pages/learning/LearningPathDetail";
-import Certificates from "../pages/learning/Certificates";
-import EmploymentBridgePage from "../pages/learning/EmploymentBridgePage";
-import JobFocusedCourses from "../pages/learning/JobFocusedCourses";
-import SkillMarketTrends from "../pages/learning/SkillMarketTrends";
-import CareerAnalytics from "../pages/learning/CareerAnalytics";
-import SkillAssessment from "../pages/learning/SkillAssessment";
-import CareerRoadmap from "../pages/learning/CareerRoadmap";
-import QuickLearningPage from "../pages/learning/QuickLearningPage";
-import CommunityLearning from "../pages/learning/CommunityLearning";
-import LearningSearch from "../pages/learning/LearningSearch";
-import LearningAnalyticsPage from "../pages/learning/LearningAnalyticsPage";
-import { LearningJobPipelineDashboard } from "../pages/LearningJobPipelineDashboard";
-import { SmartLearningSystem } from "../pages/SmartLearningSystem";
-import { CompanyPartnershipPortal } from "../pages/CompanyPartnershipPortal";
-import IndividualsPage from "../pages/learning/IndividualsPage";
-import BusinessesPage from "../pages/learning/BusinessesPage";
-import UniversitiesPage from "../pages/learning/UniversitiesPage";
-import GovernmentsPage from "../pages/learning/GovernmentsPage";
-import AIFeaturesPage from "../pages/learning/AIFeaturesPage";
-import AdminCourses from "../pages/admin/AdminCourses";
+const Learning = lazy(() => import('../pages/Learning'));
+const LearningHub = lazy(() => import('../pages/LearningHub'));
+const CompleteLearningHub = lazy(() => import('../pages/learning/CompleteLearningHub'));
+const AllCourses = lazy(() => import('../pages/learning/AllCourses'));
+const CourseDetail = lazy(() => import('../pages/learning/CourseDetail'));
+const CoursePlayer = lazy(() => import('../pages/learning/CoursePlayer'));
+const MyCoursesPage = lazy(() => import('../pages/learning/MyCoursesPage'));
+const MyProgress = lazy(() => import('../pages/learning/MyProgress'));
+const LearningPathsPage = lazy(() => import('../pages/learning/LearningPathsPage'));
+const LearningPathDetail = lazy(() => import('../pages/learning/LearningPathDetail'));
+const Certificates = lazy(() => import('../pages/learning/Certificates'));
+const EmploymentBridgePage = lazy(() => import('../pages/learning/EmploymentBridgePage'));
+const JobFocusedCourses = lazy(() => import('../pages/learning/JobFocusedCourses'));
+const SkillMarketTrends = lazy(() => import('../pages/learning/SkillMarketTrends'));
+const CareerAnalytics = lazy(() => import('../pages/learning/CareerAnalytics'));
+const SkillAssessment = lazy(() => import('../pages/learning/SkillAssessment'));
+const CareerRoadmap = lazy(() => import('../pages/learning/CareerRoadmap'));
+const QuickLearningPage = lazy(() => import('../pages/learning/QuickLearningPage'));
+const CommunityLearning = lazy(() => import('../pages/learning/CommunityLearning'));
+const LearningSearch = lazy(() => import('../pages/learning/LearningSearch'));
+const LearningAnalyticsPage = lazy(() => import('../pages/learning/LearningAnalyticsPage'));
+const LearningJobPipelineDashboard = lazy(() => import('../pages/LearningJobPipelineDashboard').then(m => ({ default: m.LearningJobPipelineDashboard })));
+const SmartLearningSystem = lazy(() => import('../pages/SmartLearningSystem').then(m => ({ default: m.SmartLearningSystem })));
+const CompanyPartnershipPortal = lazy(() => import('../pages/CompanyPartnershipPortal').then(m => ({ default: m.CompanyPartnershipPortal })));
+const IndividualsPage = lazy(() => import('../pages/learning/IndividualsPage'));
+const BusinessesPage = lazy(() => import('../pages/learning/BusinessesPage'));
+const UniversitiesPage = lazy(() => import('../pages/learning/UniversitiesPage'));
+const GovernmentsPage = lazy(() => import('../pages/learning/GovernmentsPage'));
+const AIFeaturesPage = lazy(() => import('../pages/learning/AIFeaturesPage'));
+const AdminCourses = lazy(() => import('../pages/admin/AdminCourses'));
 
 export const learningRoutes = [
   {
     title: "Learning Hub",
     to: "/learning",
     icon: <BookOpen className="h-4 w-4" />,
-    page: <LearningHub />,
+    page: <Suspense fallback={null}><LearningHub /></Suspense>,
     isPublic: true,
     requiresAuth: false,
     requiresAdminAccess: false,
@@ -44,7 +45,7 @@ export const learningRoutes = [
   {
     title: "Complete Learning Hub",
     to: "/learning/comprehensive-courses",
-    page: <CompleteLearningHub />,
+    page: <Suspense fallback={null}><CompleteLearningHub /></Suspense>,
     isPublic: true,
     requiresAuth: false,
     requiresAdminAccess: false,
@@ -52,195 +53,195 @@ export const learningRoutes = [
   {
     title: "All Courses",
     to: "/learning/courses",
-    page: <AllCourses />,
+    page: <Suspense fallback={null}><AllCourses /></Suspense>,
     isPublic: true,
   },
   {
     title: "Course Detail",
     to: "/learning/courses/:id",
-    page: <CourseDetail />,
+    page: <Suspense fallback={null}><CourseDetail /></Suspense>,
     isPublic: true,
   },
   {
     title: "Course Detail (Direct)",
     to: "/learning/:id",
-    page: <CourseDetail />,
+    page: <Suspense fallback={null}><CourseDetail /></Suspense>,
     isPublic: true,
   },
   {
     title: "Course Player",
     to: "/learning/courses/:id/player",
-    page: <CoursePlayer />,
+    page: <Suspense fallback={null}><CoursePlayer /></Suspense>,
     isPublic: true,
     requiresAuth: false,
   },
   {
     title: "Course Player (Direct)",
     to: "/learning/:id/player",
-    page: <CoursePlayer />,
+    page: <Suspense fallback={null}><CoursePlayer /></Suspense>,
     isPublic: true,
     requiresAuth: false,
   },
   {
     title: "My Courses",
     to: "/learning/my-courses",
-    page: <MyCoursesPage />,
+    page: <Suspense fallback={null}><MyCoursesPage /></Suspense>,
     isPublic: true,
   },
   {
     title: "My Progress",
     to: "/learning/my-progress",
-    page: <MyProgress />,
+    page: <Suspense fallback={null}><MyProgress /></Suspense>,
     isPublic: true,
   },
   {
     title: "Learning Paths",
     to: "/learning/paths",
-    page: <LearningPathsPage />,
+    page: <Suspense fallback={null}><LearningPathsPage /></Suspense>,
     isPublic: true,
   },
   {
     title: "Learning Path Detail",
     to: "/learning/paths/:id",
-    page: <LearningPathDetail />,
+    page: <Suspense fallback={null}><LearningPathDetail /></Suspense>,
     isPublic: true,
   },
   {
     title: "Employment Bridge",
     to: "/learning/employment-bridge",
-    page: <EmploymentBridgePage />,
+    page: <Suspense fallback={null}><EmploymentBridgePage /></Suspense>,
     isPublic: true,
   },
   {
     title: "Employment Bridge Overview",
     to: "/learning/employment-bridge/overview",
-    page: <EmploymentBridgePage />,
+    page: <Suspense fallback={null}><EmploymentBridgePage /></Suspense>,
     isPublic: true,
   },
   {
     title: "Employment Bridge Modules",
     to: "/learning/employment-bridge/modules",
-    page: <EmploymentBridgePage />,
+    page: <Suspense fallback={null}><EmploymentBridgePage /></Suspense>,
     isPublic: true,
   },
   {
     title: "Employment Bridge Certificate",
     to: "/learning/employment-bridge/certificate",
-    page: <EmploymentBridgePage />,
+    page: <Suspense fallback={null}><EmploymentBridgePage /></Suspense>,
     isPublic: true,
   },
   {
     title: "Job-Focused Courses",
     to: "/learning/job-focused-courses",
-    page: <JobFocusedCourses />,
+    page: <Suspense fallback={null}><JobFocusedCourses /></Suspense>,
     isPublic: true,
   },
   {
     title: "Skill Market Trends",
     to: "/learning/skill-market-trends",
-    page: <SkillMarketTrends />,
+    page: <Suspense fallback={null}><SkillMarketTrends /></Suspense>,
     isPublic: true,
   },
   {
     title: "Career Analytics",
     to: "/learning/career-analytics",
-    page: <CareerAnalytics />,
+    page: <Suspense fallback={null}><CareerAnalytics /></Suspense>,
     isPublic: true,
   },
   {
     title: "Skill Assessment",
     to: "/learning/skill-assessment",
-    page: <SkillAssessment />,
+    page: <Suspense fallback={null}><SkillAssessment /></Suspense>,
     isPublic: true,
   },
   {
     title: "Career Roadmap",
     to: "/learning/career-roadmap",
-    page: <CareerRoadmap />,
+    page: <Suspense fallback={null}><CareerRoadmap /></Suspense>,
     isPublic: true,
   },
   {
     title: "Quick Learning",
     to: "/learning/quick-learn",
-    page: <QuickLearningPage />,
+    page: <Suspense fallback={null}><QuickLearningPage /></Suspense>,
     isPublic: true,
   },
   {
     title: "Community Learning",
     to: "/learning/community",
-    page: <CommunityLearning />,
+    page: <Suspense fallback={null}><CommunityLearning /></Suspense>,
     isPublic: true,
   },
   {
     title: "Learning Search",
     to: "/learning/search",
-    page: <LearningSearch />,
+    page: <Suspense fallback={null}><LearningSearch /></Suspense>,
     isPublic: true,
   },
   {
     title: "Learning Analytics",
     to: "/learning/analytics",
-    page: <LearningAnalyticsPage />,
+    page: <Suspense fallback={null}><LearningAnalyticsPage /></Suspense>,
     isPublic: true,
   },
   {
     title: "Certificates",
     to: "/learning/certificates",
-    page: <Certificates />,
+    page: <Suspense fallback={null}><Certificates /></Suspense>,
     isPublic: true,
   },
   {
     title: "Pipeline Dashboard",
     to: "/learning/pipeline",
-    page: <LearningJobPipelineDashboard />,
+    page: <Suspense fallback={null}><LearningJobPipelineDashboard /></Suspense>,
     isPublic: true,
   },
   {
     title: "Learning System",
     to: "/learning/system",
-    page: <SmartLearningSystem />,
+    page: <Suspense fallback={null}><SmartLearningSystem /></Suspense>,
     isPublic: true,
   },
   {
     title: "Company Portal",
     to: "/learning/company-portal",
-    page: <CompanyPartnershipPortal />,
+    page: <Suspense fallback={null}><CompanyPartnershipPortal /></Suspense>,
     isPublic: true,
   },
   {
     title: "For Individuals",
     to: "/learning/individuals",
-    page: <IndividualsPage />,
+    page: <Suspense fallback={null}><IndividualsPage /></Suspense>,
     isPublic: true,
   },
   {
     title: "For Businesses",
     to: "/learning/businesses",
-    page: <BusinessesPage />,
+    page: <Suspense fallback={null}><BusinessesPage /></Suspense>,
     isPublic: true,
   },
   {
     title: "For Universities",
     to: "/learning/universities",
-    page: <UniversitiesPage />,
+    page: <Suspense fallback={null}><UniversitiesPage /></Suspense>,
     isPublic: true,
   },
   {
     title: "For Governments",
     to: "/learning/governments",
-    page: <GovernmentsPage />,
+    page: <Suspense fallback={null}><GovernmentsPage /></Suspense>,
     isPublic: true,
   },
   {
     title: "AI Features",
     to: "/learning/ai-features",
-    page: <AIFeaturesPage />,
+    page: <Suspense fallback={null}><AIFeaturesPage /></Suspense>,
     isPublic: true,
   },
   {
     title: "Admin - Courses",
     to: "/admin/courses",
-    page: <AdminCourses />,
+    page: <Suspense fallback={null}><AdminCourses /></Suspense>,
     isPublic: false,
     requiresAuth: true,
     requiresAdminAccess: true,
