@@ -34,14 +34,6 @@ export const profileRoutes = [
     isPublic: true,
   },
   {
-    title: "Profile by Username",
-    to: "/:username",
-    icon: "user",
-    page: <SlugProfile />,
-    description: "View user profile by username",
-    isPublic: true
-  },
-  {
     title: "User Profile (Redirect)",
     to: "/user/:username",
     icon: "user",
