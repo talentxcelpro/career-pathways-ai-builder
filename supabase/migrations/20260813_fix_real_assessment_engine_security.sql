@@ -262,6 +262,8 @@ CREATE TRIGGER trg_block_direct_attempt_score_update
 -- points, compute percentage_score against maximum possible points for that
 -- assessment (not just max of answered questions), and record passing status.
 
+DROP FUNCTION IF EXISTS public.calculate_assessment_score(uuid);
+
 CREATE OR REPLACE FUNCTION public.calculate_assessment_score(attempt_id_param uuid)
 RETURNS jsonb
 LANGUAGE plpgsql
