@@ -140,7 +140,7 @@ export const Navbar = () => {
   };
 
   const getEmployerButtonAction = () => {
-    if (!user) return () => navigate('/auth/register');
+    if (!user) return () => navigate('/auth/login');
     if (hasEmployerAccess) return () => navigate('/employer');
     if (employerStatus === 'pending') return () => navigate('/employer/request-access');
     return () => navigate('/employer/request-access');
@@ -312,16 +312,21 @@ export const Navbar = () => {
             </>
           ) : (
             /* Guest Navigation */
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
               <Button 
                 variant="ghost" 
-                onClick={getEmployerButtonAction()}
-                className={`
-                  ${employerStatus === 'pending' ? 'text-yellow-600 hover:text-yellow-700' : ''}
-                  ${hasEmployerAccess ? 'text-green-600 hover:text-green-700' : ''}
-                `}
+                size="sm"
+                onClick={() => navigate('/auth/login')}
+                className="text-slate-700 hover:text-slate-900 font-semibold cursor-pointer"
               >
-                {getEmployerButtonText()}
+                Sign In
+              </Button>
+              <Button 
+                size="sm"
+                onClick={() => navigate('/auth/register')}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg cursor-pointer"
+              >
+                Get Started
               </Button>
             </div>
           )}

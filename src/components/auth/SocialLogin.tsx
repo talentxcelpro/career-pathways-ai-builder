@@ -214,7 +214,7 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
         <div
           ref={gsiButtonRef}
           aria-hidden="true"
-          className="absolute inset-0 flex items-center justify-center overflow-hidden opacity-0 [&>div]:!w-full [&_iframe]:!w-full cursor-pointer"
+          className="absolute inset-0 z-10 flex items-center justify-center overflow-hidden opacity-0 [&>div]:!w-full [&>div]:!h-full [&_iframe]:!w-full [&_iframe]:!h-full cursor-pointer"
           style={{
             pointerEvents: loading ? 'none' : 'auto',
             colorScheme: 'light',
