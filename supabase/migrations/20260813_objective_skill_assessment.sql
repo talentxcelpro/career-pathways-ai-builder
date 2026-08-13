@@ -22,6 +22,37 @@
 -- Only RLS policies and row data change.
 
 -- ---------------------------------------------------------------------------
+-- 0. Ensure target tables exist before configuring RLS policies & seeding
+-- ---------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS public.assessments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title TEXT NOT NULL,
+  description TEXT,
+  assessment_type TEXT DEFAULT 'skill_test',
+  questions JSONB NOT NULL DEFAULT '[]'::jsonb,
+  passing_score INT DEFAULT 80,
+  time_limit_minutes INT DEFAULT 15,
+  max_attempts INT DEFAULT 3,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS public.user_assessments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL,
+  assessment_id UUID NOT NULL,
+  attempt_number INT DEFAULT 1,
+  status TEXT DEFAULT 'started',
+  score INT,
+  answers JSONB DEFAULT '{}'::jsonb,
+  time_spent_seconds INT,
+  started_at TIMESTAMPTZ DEFAULT now(),
+  completed_at TIMESTAMPTZ
+);
+
+-- ---------------------------------------------------------------------------
 -- 1. Lock down direct client access to the answer key
 -- ---------------------------------------------------------------------------
 
