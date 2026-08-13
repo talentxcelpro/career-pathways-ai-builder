@@ -70,23 +70,32 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
 
   const handleFallbackClick = useCallback(async () => {
     if (loadingRef.current) return;
+    loadingRef.current = true;
+    setLoading(true);
     try {
-      await loadGoogleIdentityServices();
-      const google = (window as any).google;
-      if (google?.accounts?.id) {
-        google.accounts.id.initialize({
-          client_id: GOOGLE_CLIENT_ID,
-          callback: handleCredentialResponse,
-          ux_mode: 'popup',
-          context: 'signin',
-          itp_support: true,
-        });
-        google.accounts.id.prompt();
+      // Primary: Supabase OAuth redirect — always works regardless of browser
+      // cookie settings, popup blockers, or GSI One-Tap suppression quotas.
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+          queryParams: { access_type: 'offline', prompt: 'select_account' },
+        },
+      });
+      if (error) {
+        if (isDev) console.error('Google OAuth error:', error);
+        toast.error('Google sign in failed. Please try again.');
+        loadingRef.current = false;
+        setLoading(false);
       }
+      // On success browser redirects to Google — nothing else needed
     } catch (e) {
-      if (isDev) console.error('Fallback Google sign in error:', e);
+      if (isDev) console.error('Google sign in error:', e);
+      toast.error('Google sign in failed. Please try again.');
+      loadingRef.current = false;
+      setLoading(false);
     }
-  }, [handleCredentialResponse]);
+  }, []);
 
   const handleLinkedInSignIn = useCallback(async () => {
     if (loadingRef.current) return;
