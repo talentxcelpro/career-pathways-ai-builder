@@ -8,13 +8,6 @@
  *   - ONLY logs anonymous, contextual parameters (page_type, role_slug, city_slug, cta_type, destination).
  */
 
-declare global {
-  interface Window {
-    gtag?: (...args: any[]) => void;
-    dataLayer?: any[];
-  }
-}
-
 // ─── Event Parameter Interfaces ─────────────────────────────────────────────
 
 export interface DiscoveryPageViewParams {

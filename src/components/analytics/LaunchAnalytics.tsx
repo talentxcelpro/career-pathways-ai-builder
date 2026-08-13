@@ -1,12 +1,5 @@
 import React, { useEffect } from 'react';
 
-declare global {
-  interface Window {
-    gtag: (...args: any[]) => void;
-    dataLayer: any[];
-  }
-}
-
 export const LaunchAnalytics: React.FC = () => {
   useEffect(() => {
     // Initialize Google Analytics 4
