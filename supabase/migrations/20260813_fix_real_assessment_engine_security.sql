@@ -272,7 +272,7 @@ INSERT INTO public.assessments (
   total_questions = EXCLUDED.total_questions,
   is_published = EXCLUDED.is_published;
 
--- 8 objective questions with explicit correct_answer values (0-indexed or literal JSON string matching option).
+-- 8 objective questions with explicit correct_answer values.
 INSERT INTO public.assessment_questions (
   id, assessment_id, question_text, question_type, options, correct_answer, explanation, points, sort_order, is_active
 ) VALUES
@@ -298,12 +298,12 @@ INSERT INTO public.assessment_questions (
 ),
 (
   '88888888-8888-4888-8888-888888888803',
-  '88888888-8888-4888-8888-888888888803',
+  '77777777-7777-4777-8777-777777777777',
   'What is the worst-case time complexity of searching an element in a balanced Binary Search Tree (BST)?',
   'multiple_choice',
   '["O(1)", "O(log n)", "O(n)", "O(n log n)"]'::jsonb,
   '"O(log n)"'::jsonb,
-  'A balanced BST maintains height log(n), making lookup O(log n) worst-case. (Unbalanced BST can degenerate to O(n)).',
+  'A balanced BST maintains height log(n), making lookup O(log n) worst-case.',
   1, 3, true
 ),
 (
