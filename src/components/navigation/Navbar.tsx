@@ -313,13 +313,23 @@ export const Navbar = () => {
           ) : (
             /* Guest Navigation */
             <div className="flex items-center">
-              <Button 
-                size="sm"
-                onClick={() => navigate('/auth/register')}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg px-4 cursor-pointer shadow-sm"
-              >
-                Get Started Free
-              </Button>
+              {location.pathname === '/auth/register' ? (
+                <Button 
+                  size="sm"
+                  onClick={() => navigate('/auth/login')}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg px-4 cursor-pointer shadow-sm"
+                >
+                  Sign In
+                </Button>
+              ) : (
+                <Button 
+                  size="sm"
+                  onClick={() => navigate('/auth/register')}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg px-4 cursor-pointer shadow-sm"
+                >
+                  Get Started Free
+                </Button>
+              )}
             </div>
           )}
         </div>
