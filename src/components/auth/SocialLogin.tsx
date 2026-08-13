@@ -61,6 +61,26 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
     }
   }, []);
 
+  const handleFallbackClick = useCallback(async () => {
+    if (loadingRef.current) return;
+    try {
+      await loadGoogleIdentityServices();
+      const google = (window as any).google;
+      if (google?.accounts?.id) {
+        google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          callback: handleCredentialResponse,
+          ux_mode: 'popup',
+          context: 'signin',
+          itp_support: true,
+        });
+        google.accounts.id.prompt();
+      }
+    } catch (e) {
+      if (isDev) console.error('Fallback Google sign in error:', e);
+    }
+  }, [handleCredentialResponse]);
+
   // Initialize Google Identity Services and render the real (transparent) Google
   // button on top of the existing TalentXcel-styled button so the click goes
   // straight to Google — never to Supabase's /auth/v1/authorize endpoint.
@@ -92,13 +112,6 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
           logo_alignment: 'center',
         });
 
-        // Trigger Google One Tap automatically for instant 1-tap login
-        try {
-          google.accounts.id.prompt();
-        } catch (e) {
-          // ignore prompt suppression
-        }
-
         setGsiReady(true);
       })
       .catch((error) => {
@@ -111,8 +124,8 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
   }, [handleCredentialResponse]);
 
   const buttonClass = variant === 'prominent'
-    ? "h-11 text-sm font-semibold shadow-md hover:shadow-xl transition-all duration-200 transform hover:scale-[1.01] active:scale-[0.99] bg-gradient-to-r from-white via-blue-50/20 to-white border-2 border-slate-200/90 text-slate-800 hover:border-blue-500/40 hover:shadow-blue-500/10 rounded-xl"
-    : "h-9 text-xs font-semibold shadow-sm hover:shadow transition-all border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg";
+    ? "h-12 text-sm font-semibold shadow-sm hover:shadow-md transition-all duration-200 bg-white border-2 border-slate-200 text-slate-800 hover:bg-slate-50 hover:border-slate-300 rounded-xl"
+    : "h-10 text-xs font-semibold shadow-sm hover:shadow transition-all bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg";
 
   return (
     <div className="space-y-3">
@@ -128,9 +141,10 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
       <div className="relative group">
         <Button
           type="button"
-          disabled={loading || !gsiReady}
+          disabled={loading}
+          onClick={handleFallbackClick}
           aria-label="Continue with Google"
-          className={`w-full ${buttonClass} transition-all duration-200 flex items-center justify-center gap-3 py-3`}
+          className={`w-full ${buttonClass} transition-all duration-200 flex items-center justify-center gap-3 py-3 cursor-pointer`}
         >
           {loading ? (
             <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
@@ -155,7 +169,7 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
             </svg>
           )}
           {showText && (
-            <span className="font-semibold">
+            <span className="font-semibold text-slate-800">
               {loading ? 'Signing in...' : 'Continue with Google'}
             </span>
           )}
@@ -166,9 +180,9 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
         <div
           ref={gsiButtonRef}
           aria-hidden="true"
-          className="absolute inset-0 flex items-center justify-center overflow-hidden opacity-0 [&>div]:!w-full [&_iframe]:!w-full"
+          className="absolute inset-0 flex items-center justify-center overflow-hidden opacity-0 [&>div]:!w-full [&_iframe]:!w-full cursor-pointer"
           style={{
-            pointerEvents: loading || !gsiReady ? 'none' : 'auto',
+            pointerEvents: loading ? 'none' : 'auto',
             colorScheme: 'light',
           }}
         />
