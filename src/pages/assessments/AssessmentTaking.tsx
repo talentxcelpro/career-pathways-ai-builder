@@ -102,9 +102,12 @@ export default function AssessmentTaking() {
       const remainingMs = Math.max(0, durationMs - elapsedMs);
       setTimeRemaining(Math.floor(remainingMs / 1000));
 
-      // Load questions
+      // Load questions via the public view — it deliberately excludes
+      // correct_answer/explanation, which the client must never receive
+      // before (or during) grading. See migration
+      // 20260813_fix_real_assessment_engine_security.sql.
       const { data: questionsData, error: questionsError } = await supabase
-        .from('assessment_questions')
+        .from('assessment_questions_public')
         .select('*')
         .eq('assessment_id', assessmentId)
         .eq('is_active', true)
@@ -136,76 +139,76 @@ export default function AssessmentTaking() {
       }
 
     } catch (error) {
-      console.error('Error loading assessment:', error);
-      toast.error('Failed to load assessment');
+      console.error('Error loading assessment data:', error);
+      toast.error('Failed to load assessment data');
       navigate('/assessments');
     } finally {
       setLoading(false);
     }
   };
 
-  const saveAnswer = useCallback(async (questionId: string, answer: any) => {
+  const handleAnswerChange = async (questionId: string, answer: any) => {
+    const newAnswers = { ...answers, [questionId]: answer };
+    setAnswers(newAnswers);
+
+    // Save answer to database immediately
     try {
-      const { error } = await supabase
+      await supabase
         .from('assessment_responses')
         .upsert({
           attempt_id: attemptId,
           question_id: questionId,
           user_answer: answer,
-          answered_at: new Date().toISOString()
+          time_spent_seconds: 0 // Could track per-question time if needed
         });
-
-      if (error) throw error;
     } catch (error) {
       console.error('Error saving answer:', error);
     }
-  }, [attemptId]);
-
-  const handleAnswerChange = (answer: any) => {
-    const currentQuestion = questions[currentQuestionIndex];
-    const newAnswers = { ...answers, [currentQuestion.id]: answer };
-    setAnswers(newAnswers);
-    saveAnswer(currentQuestion.id, answer);
   };
 
-  const nextQuestion = () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-    }
-  };
+  const handleAutoSubmit = useCallback(async () => {
+    toast.warning('Time expired! Submitting your assessment...');
+    await submitAssessment();
+  }, []);
 
-  const previousQuestion = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
-    }
-  };
-
-  const handleAutoSubmit = async () => {
-    await submitAssessment(true);
-  };
-
-  const submitAssessment = async (autoSubmit = false) => {
+  const submitAssessment = async () => {
     if (submitting) return;
-    
     setSubmitting(true);
+
     try {
-      // Update attempt status
-      const { error: updateError } = await supabase
-        .from('assessment_attempts')
-        .update({
-          status: 'completed',
-          completed_at: new Date().toISOString(),
-          time_taken_seconds: assessment!.duration_minutes * 60 - timeRemaining
-        })
-        .eq('id', attemptId);
+      // 1. Ensure all current local answers are persisted to assessment_responses.
+      // The Postgres BEFORE INSERT/UPDATE trigger `trg_grade_assessment_response`
+      // will evaluate is_correct + points_earned server-side during upsert.
+      const upsertPayloads = Object.entries(answers).map(([qId, val]) => ({
+        attempt_id: attemptId,
+        question_id: qId,
+        user_answer: val,
+        time_spent_seconds: 0,
+      }));
 
-      if (updateError) throw updateError;
+      if (upsertPayloads.length > 0) {
+        const { error: upsertErr } = await supabase
+          .from('assessment_responses')
+          .upsert(upsertPayloads, { onConflict: 'attempt_id,question_id' });
+        if (upsertErr) console.warn('Answer persistence warning:', upsertErr);
+      }
 
-      // Calculate scores (this would be done by the scoring function)
-      await supabase.rpc('calculate_assessment_score', { attempt_uuid: attemptId });
+      // 2. Invoke calculate_assessment_score(attempt_id) — SECURITY DEFINER DB function
+      // that sums server-graded points, calculates percentage_score, and updates status.
+      const { data: scoreData, error: scoreErr } = await supabase.rpc(
+        'calculate_assessment_score',
+        { attempt_id_param: attemptId }
+      );
 
-      toast.success(autoSubmit ? 'Assessment auto-submitted due to time limit' : 'Assessment submitted successfully!');
-      navigate(`/assessments/${assessmentId}/results/${attemptId}`);
+      if (scoreErr) {
+        console.error('Grading function error:', scoreErr);
+        toast.error('Failed to calculate score. Please try submitting again.');
+        setSubmitting(false);
+        return;
+      }
+
+      toast.success('Assessment submitted successfully!');
+      navigate(`/assessments/results/${attemptId}`);
     } catch (error) {
       console.error('Error submitting assessment:', error);
       toast.error('Failed to submit assessment');
@@ -215,221 +218,208 @@ export default function AssessmentTaking() {
   };
 
   const formatTime = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
+    const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    
-    if (hours > 0) {
-      return `${hours}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-    }
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-  };
-
-  const renderQuestion = () => {
-    const question = questions[currentQuestionIndex];
-    const currentAnswer = answers[question.id];
-
-    switch (question.question_type) {
-      case 'single_choice':
-        return (
-          <RadioGroup value={currentAnswer} onValueChange={handleAnswerChange}>
-            {question.options.map((option: any, index: number) => (
-              <div key={index} className="flex items-center space-x-2">
-                <RadioGroupItem value={option.value || option} id={`option-${index}`} />
-                <Label htmlFor={`option-${index}`} className="cursor-pointer">
-                  {option.text || option}
-                </Label>
-              </div>
-            ))}
-          </RadioGroup>
-        );
-
-      case 'multiple_choice':
-        return (
-          <div className="space-y-2">
-            {question.options.map((option: any, index: number) => (
-              <div key={index} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`option-${index}`}
-                  checked={currentAnswer?.includes(option.value || option)}
-                  onCheckedChange={(checked) => {
-                    const newAnswer = currentAnswer || [];
-                    if (checked) {
-                      handleAnswerChange([...newAnswer, option.value || option]);
-                    } else {
-                      handleAnswerChange(newAnswer.filter((item: any) => item !== (option.value || option)));
-                    }
-                  }}
-                />
-                <Label htmlFor={`option-${index}`} className="cursor-pointer">
-                  {option.text || option}
-                </Label>
-              </div>
-            ))}
-          </div>
-        );
-
-      case 'true_false':
-        return (
-          <RadioGroup value={currentAnswer} onValueChange={handleAnswerChange}>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="true" id="true" />
-              <Label htmlFor="true" className="cursor-pointer">True</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="false" id="false" />
-              <Label htmlFor="false" className="cursor-pointer">False</Label>
-            </div>
-          </RadioGroup>
-        );
-
-      case 'essay':
-        return (
-          <Textarea
-            value={currentAnswer || ''}
-            onChange={(e) => handleAnswerChange(e.target.value)}
-            placeholder="Enter your answer here..."
-            className="min-h-32"
-          />
-        );
-
-      default:
-        return <div>Unsupported question type</div>;
-    }
-  };
-
-  const getAnsweredCount = () => {
-    return Object.keys(answers).length;
   };
 
   if (loading) {
     return (
-      <div className="container mx-auto p-6 max-w-4xl">
-        <div className="animate-pulse space-y-6">
-          <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-          <div className="h-64 bg-gray-200 rounded"></div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!assessment || !questions.length) {
-    return (
-      <div className="container mx-auto p-6 max-w-4xl text-center">
-        <h1 className="text-2xl font-bold mb-4">Assessment not found</h1>
-        <Button onClick={() => navigate('/assessments')}>Back to Assessments</Button>
+      <div className="container mx-auto py-12 text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+        <p className="mt-4 text-muted-foreground">Loading assessment...</p>
       </div>
     );
   }
 
   const currentQuestion = questions[currentQuestionIndex];
-  const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+  const progress = questions.length > 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0;
+  const answeredCount = Object.keys(answers).length;
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
-      {/* Header */}
-      <div className="mb-6 space-y-4">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">{assessment.title}</h1>
-          <div className="flex items-center gap-4">
-            <Badge variant="outline" className={timeRemaining < 300 ? 'text-red-600 border-red-600' : ''}>
-              <Clock className="h-4 w-4 mr-1" />
-              {formatTime(timeRemaining)}
-            </Badge>
-          </div>
+    <div className="container mx-auto py-8 max-w-4xl">
+      {/* Header Bar */}
+      <div className="flex items-center justify-between mb-6 bg-card p-4 rounded-lg border shadow-sm">
+        <div>
+          <h1 className="text-xl font-bold">{assessment?.title}</h1>
+          <p className="text-sm text-muted-foreground">
+            Question {currentQuestionIndex + 1} of {questions.length} ({answeredCount} answered)
+          </p>
         </div>
         
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm text-muted-foreground">
-            <span>Question {currentQuestionIndex + 1} of {questions.length}</span>
-            <span>{getAnsweredCount()} answered</span>
+        <div className="flex items-center space-x-4">
+          <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-full border ${
+            timeRemaining < 300 ? 'bg-red-50 text-red-600 border-red-200 animate-pulse' : 'bg-muted'
+          }`}>
+            <Clock className="h-4 w-4" />
+            <span className="font-mono font-bold text-sm">
+              {formatTime(timeRemaining)}
+            </span>
           </div>
-          <Progress value={progress} className="h-2" />
-        </div>
-      </div>
-
-      {/* Question Card */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="text-lg">
-            {currentQuestion.question_text}
-          </CardTitle>
-          {currentQuestion.points > 1 && (
-            <div className="text-sm text-muted-foreground">
-              Worth {currentQuestion.points} points
-            </div>
-          )}
-        </CardHeader>
-        <CardContent>
-          {renderQuestion()}
-        </CardContent>
-      </Card>
-
-      {/* Navigation */}
-      <div className="flex items-center justify-between mb-6">
-        <Button
-          variant="outline"
-          onClick={previousQuestion}
-          disabled={currentQuestionIndex === 0}
-        >
-          <ChevronLeft className="h-4 w-4 mr-1" />
-          Previous
-        </Button>
-
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setShowSubmitDialog(true)}>
-            <Flag className="h-4 w-4 mr-1" />
+          
+          <Button 
+            onClick={() => setShowSubmitDialog(true)}
+            variant="default"
+            size="sm"
+          >
             Submit Assessment
           </Button>
         </div>
-
-        <Button
-          onClick={nextQuestion}
-          disabled={currentQuestionIndex === questions.length - 1}
-        >
-          Next
-          <ChevronRight className="h-4 w-4 ml-1" />
-        </Button>
       </div>
 
-      {/* Question Navigator */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm">Question Navigator</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-10 gap-2">
-            {questions.map((_, index) => (
-              <Button
-                key={index}
-                variant={index === currentQuestionIndex ? "default" : answers[questions[index].id] ? "secondary" : "outline"}
-                size="sm"
-                className="w-8 h-8 p-0"
-                onClick={() => setCurrentQuestionIndex(index)}
-              >
-                {answers[questions[index].id] && <CheckCircle className="h-3 w-3" />}
-                <span className={answers[questions[index].id] ? "sr-only" : ""}>{index + 1}</span>
-              </Button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      {/* Progress Bar */}
+      <Progress value={progress} className="mb-6 h-2" />
 
-      {/* Submit Dialog */}
+      {/* Question Card */}
+      {currentQuestion && (
+        <Card className="mb-6">
+          <CardHeader>
+            <div className="flex items-center justify-between mb-2">
+              <Badge variant="outline">
+                Question {currentQuestionIndex + 1}
+              </Badge>
+              <Badge variant="secondary">
+                {currentQuestion.points} {currentQuestion.points === 1 ? 'Point' : 'Points'}
+              </Badge>
+            </div>
+            <CardTitle className="text-lg font-normal leading-relaxed">
+              {currentQuestion.question_text}
+            </CardTitle>
+          </CardHeader>
+          
+          <CardContent className="space-y-4">
+            {currentQuestion.question_type === 'multiple_choice' && (
+              <RadioGroup
+                value={answers[currentQuestion.id] || ''}
+                onValueChange={(value) => handleAnswerChange(currentQuestion.id, value)}
+                className="space-y-3"
+              >
+                {Array.isArray(currentQuestion.options) ? (
+                  currentQuestion.options.map((option: string, index: number) => (
+                    <div key={index} className="flex items-center space-x-2 border p-3 rounded-lg hover:bg-muted/50 transition-colors">
+                      <RadioGroupItem value={option} id={`option-${index}`} />
+                      <Label htmlFor={`option-${index}`} className="flex-1 cursor-pointer">
+                        {option}
+                      </Label>
+                    </div>
+                  ))
+                ) : (
+                  // Handle JSON object options
+                  Object.entries(currentQuestion.options || {}).map(([key, value]) => (
+                    <div key={key} className="flex items-center space-x-2 border p-3 rounded-lg hover:bg-muted/50 transition-colors">
+                      <RadioGroupItem value={key} id={`option-${key}`} />
+                      <Label htmlFor={`option-${key}`} className="flex-1 cursor-pointer">
+                        {String(value)}
+                      </Label>
+                    </div>
+                  ))
+                )}
+              </RadioGroup>
+            )}
+
+            {currentQuestion.question_type === 'true_false' && (
+              <RadioGroup
+                value={answers[currentQuestion.id] || ''}
+                onValueChange={(value) => handleAnswerChange(currentQuestion.id, value)}
+                className="space-y-3"
+              >
+                <div className="flex items-center space-x-2 border p-3 rounded-lg hover:bg-muted/50 transition-colors">
+                  <RadioGroupItem value="true" id="option-true" />
+                  <Label htmlFor="option-true" className="flex-1 cursor-pointer">True</Label>
+                </div>
+                <div className="flex items-center space-x-2 border p-3 rounded-lg hover:bg-muted/50 transition-colors">
+                  <RadioGroupItem value="false" id="option-false" />
+                  <Label htmlFor="option-false" className="flex-1 cursor-pointer">False</Label>
+                </div>
+              </RadioGroup>
+            )}
+
+            {currentQuestion.question_type === 'text' && (
+              <Textarea
+                placeholder="Type your answer here..."
+                value={answers[currentQuestion.id] || ''}
+                onChange={(e) => handleAnswerChange(currentQuestion.id, e.target.value)}
+                rows={6}
+                className="w-full"
+              />
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Navigation Controls */}
+      <div className="flex items-center justify-between">
+        <Button
+          onClick={() => setCurrentQuestionIndex(prev => prev - 1)}
+          disabled={currentQuestionIndex === 0}
+          variant="outline"
+        >
+          <ChevronLeft className="h-4 w-4 mr-2" />
+          Previous
+        </Button>
+
+        {/* Question Palette Dropdown / Numbers */}
+        <div className="flex space-x-1 overflow-x-auto max-w-md px-2 py-1">
+          {questions.map((q, idx) => (
+            <button
+              key={q.id}
+              onClick={() => setCurrentQuestionIndex(idx)}
+              className={`w-8 h-8 text-xs font-semibold rounded-full border flex items-center justify-center transition-colors ${
+                idx === currentQuestionIndex 
+                  ? 'border-primary bg-primary text-primary-foreground' 
+                  : answers[q.id] 
+                    ? 'border-green-500 bg-green-50 text-green-700' 
+                    : 'border-muted hover:bg-muted'
+              }`}
+            >
+              {idx + 1}
+            </button>
+          ))}
+        </div>
+
+        {currentQuestionIndex < questions.length - 1 ? (
+          <Button
+            onClick={() => setCurrentQuestionIndex(prev => prev + 1)}
+            variant="default"
+          >
+            Next
+            <ChevronRight className="h-4 w-4 ml-2" />
+          </Button>
+        ) : (
+          <Button
+            onClick={() => setShowSubmitDialog(true)}
+            variant="default"
+            className="bg-green-600 hover:bg-green-700"
+          >
+            Review & Submit
+            <CheckCircle className="h-4 w-4 ml-2" />
+          </Button>
+        )}
+      </div>
+
+      {/* Submit Confirmation Dialog */}
       <AlertDialog open={showSubmitDialog} onOpenChange={setShowSubmitDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Submit Assessment?</AlertDialogTitle>
             <AlertDialogDescription>
-              You have answered {getAnsweredCount()} out of {questions.length} questions.
-              {getAnsweredCount() < questions.length && ' Unanswered questions will be marked as incorrect.'}
-              {' '}Are you sure you want to submit your assessment?
+              You have answered {answeredCount} of {questions.length} questions.
+              {answeredCount < questions.length && (
+                <span className="block mt-2 text-amber-600 font-semibold">
+                  ⚠️ You still have {questions.length - answeredCount} unanswered questions.
+                </span>
+              )}
+              Once submitted, your answers will be graded server-side and recorded to your attempt.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Continue Assessment</AlertDialogCancel>
-            <AlertDialogAction onClick={() => submitAssessment()} disabled={submitting}>
-              {submitting ? 'Submitting...' : 'Submit Assessment'}
+            <AlertDialogCancel>Continue Test</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={submitAssessment}
+              disabled={submitting}
+              className="bg-primary"
+            >
+              {submitting ? 'Submitting & Grading...' : 'Confirm Submission'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
