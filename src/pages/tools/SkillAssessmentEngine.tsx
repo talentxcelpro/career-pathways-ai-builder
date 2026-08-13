@@ -38,6 +38,45 @@ const SkillAssessmentEngine = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [assessmentData, setAssessmentData] = useState<any>(null);
+  const [tabSwitches, setTabSwitches] = useState(0);
+  const [questionTimeLeft, setQuestionTimeLeft] = useState(45);
+
+  // Anti-Cheat: Track window blur / tab switches during active assessment
+  useEffect(() => {
+    if (!isStarted || isCompleting) return;
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        setTabSwitches(prev => {
+          const updated = prev + 1;
+          toast.warning(`⚠️ Anti-Cheat Alert: Tab switch detected (${updated}). Proctoring active.`);
+          return updated;
+        });
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [isStarted, isCompleting]);
+
+  // Anti-Cheat: 45-second question timer
+  useEffect(() => {
+    if (!isStarted || isCompleting) return;
+
+    setQuestionTimeLeft(45);
+    const interval = setInterval(() => {
+      setQuestionTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          handleNext();
+          return 45;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [currentQuestion, isStarted, isCompleting]);
 
   useEffect(() => {
     if (user) {
@@ -267,7 +306,14 @@ const SkillAssessmentEngine = () => {
       });
 
       const results = {
-        overall_score: aiResponse?.overall_score || 78,
+        overall_score: Math.max(50, (aiResponse?.overall_score || 78) - (tabSwitches * 5)),
+        verification_meta: {
+          method: 'Proctored Timed Assessment',
+          time_per_question_sec: 45,
+          tab_switches_detected: tabSwitches,
+          proctoring_score: Math.max(50, (aiResponse?.overall_score || 78) - (tabSwitches * 5)),
+          badge_label: 'Verified (Timed & Proctor Monitored)'
+        },
         category_scores: aiResponse?.category_scores || {
           'Technical Skills': 85,
           'Problem Solving': 80,

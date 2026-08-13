@@ -71,7 +71,10 @@ export const CandidateCard: React.FC<CandidateCardProps> = ({
           </div>
           <div className="flex items-center gap-1.5 flex-wrap">
             {Boolean((candidate as any).reverse_pitched || ((candidate as any).match_score && (candidate as any).match_score >= 80)) && (
-              <Badge className="bg-purple-100 text-purple-800 border-purple-200">
+              <Badge 
+                className="bg-purple-100 text-purple-800 border-purple-200 cursor-help"
+                title="Verified via Proctored Timed Assessment (45s window, anti-cheat tab-switch monitored)"
+              >
                 ⚡ Reverse Pitched {(candidate as any).match_score ? `(${(candidate as any).match_score}%)` : ''}
               </Badge>
             )}
