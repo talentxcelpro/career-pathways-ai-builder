@@ -776,6 +776,239 @@ export type Database = {
         }
         Relationships: []
       }
+      assessment_attempts: {
+        Row: {
+          assessment_id: string | null
+          completed_at: string | null
+          id: string
+          passed: boolean | null
+          percentage_score: number | null
+          started_at: string | null
+          status: string | null
+          total_score: number | null
+          user_id: string
+        }
+        Insert: {
+          assessment_id?: string | null
+          completed_at?: string | null
+          id?: string
+          passed?: boolean | null
+          percentage_score?: number | null
+          started_at?: string | null
+          status?: string | null
+          total_score?: number | null
+          user_id: string
+        }
+        Update: {
+          assessment_id?: string | null
+          completed_at?: string | null
+          id?: string
+          passed?: boolean | null
+          percentage_score?: number | null
+          started_at?: string | null
+          status?: string | null
+          total_score?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_attempts_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "assessments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assessment_categories: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
+      assessment_questions: {
+        Row: {
+          assessment_id: string | null
+          correct_answer: Json | null
+          created_at: string | null
+          difficulty_score: number | null
+          explanation: string | null
+          id: string
+          is_active: boolean | null
+          options: Json
+          points: number | null
+          question_text: string
+          question_type: string | null
+          sort_order: number | null
+          time_limit_seconds: number | null
+        }
+        Insert: {
+          assessment_id?: string | null
+          correct_answer?: Json | null
+          created_at?: string | null
+          difficulty_score?: number | null
+          explanation?: string | null
+          id?: string
+          is_active?: boolean | null
+          options?: Json
+          points?: number | null
+          question_text: string
+          question_type?: string | null
+          sort_order?: number | null
+          time_limit_seconds?: number | null
+        }
+        Update: {
+          assessment_id?: string | null
+          correct_answer?: Json | null
+          created_at?: string | null
+          difficulty_score?: number | null
+          explanation?: string | null
+          id?: string
+          is_active?: boolean | null
+          options?: Json
+          points?: number | null
+          question_text?: string
+          question_type?: string | null
+          sort_order?: number | null
+          time_limit_seconds?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_questions_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "assessments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assessment_responses: {
+        Row: {
+          attempt_id: string | null
+          created_at: string | null
+          id: string
+          is_correct: boolean | null
+          points_earned: number | null
+          question_id: string | null
+          time_spent_seconds: number | null
+          user_answer: Json | null
+        }
+        Insert: {
+          attempt_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_correct?: boolean | null
+          points_earned?: number | null
+          question_id?: string | null
+          time_spent_seconds?: number | null
+          user_answer?: Json | null
+        }
+        Update: {
+          attempt_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_correct?: boolean | null
+          points_earned?: number | null
+          question_id?: string | null
+          time_spent_seconds?: number | null
+          user_answer?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_responses_attempt_id_fkey"
+            columns: ["attempt_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_attempts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assessment_responses_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assessment_responses_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_questions_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assessments: {
+        Row: {
+          assessment_type: string | null
+          category_id: string | null
+          created_at: string | null
+          description: string | null
+          duration_minutes: number | null
+          id: string
+          is_active: boolean | null
+          is_published: boolean | null
+          max_attempts: number | null
+          passing_score: number | null
+          questions: Json
+          time_limit_minutes: number | null
+          title: string
+          total_questions: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          assessment_type?: string | null
+          category_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          is_active?: boolean | null
+          is_published?: boolean | null
+          max_attempts?: number | null
+          passing_score?: number | null
+          questions?: Json
+          time_limit_minutes?: number | null
+          title: string
+          total_questions?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          assessment_type?: string | null
+          category_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          is_active?: boolean | null
+          is_published?: boolean | null
+          max_attempts?: number | null
+          passing_score?: number | null
+          questions?: Json
+          time_limit_minutes?: number | null
+          title?: string
+          total_questions?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       cleanup_backup_log: {
         Row: {
           backup_created_at: string | null
@@ -21828,6 +22061,29 @@ export type Database = {
       }
     }
     Views: {
+      assessment_questions_public: {
+        Row: {
+          assessment_id: string | null
+          difficulty_score: number | null
+          id: string | null
+          is_active: boolean | null
+          options: Json | null
+          points: number | null
+          question_text: string | null
+          question_type: string | null
+          sort_order: number | null
+          time_limit_seconds: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_questions_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "assessments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       employer_cv_database: {
         Row: {
           application_id: string | null
@@ -22080,8 +22336,8 @@ export type Database = {
       backfill_admin_connections: { Args: never; Returns: number }
       batch_refresh_career_passports: { Args: never; Returns: Json }
       calculate_assessment_score: {
-        Args: { attempt_uuid: string }
-        Returns: undefined
+        Args: { attempt_id_param: string }
+        Returns: Json
       }
       calculate_career_passport_completion: {
         Args: { user_uuid: string }
