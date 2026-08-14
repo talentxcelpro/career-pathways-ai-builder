@@ -11,7 +11,7 @@ const { url: SUPABASE_URL, anonKey: SUPABASE_PUBLISHABLE_KEY } = getSupabaseConf
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
-    storage: window.localStorage,
+    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: true,
@@ -51,7 +51,7 @@ export const getSupabaseFunctions = () => {
       SUPABASE_PUBLISHABLE_KEY,
       {
         auth: {
-          storage: window.localStorage,
+          storage: typeof window !== 'undefined' ? window.localStorage : undefined,
           persistSession: true,
           autoRefreshToken: true,
           detectSessionInUrl: false, // Prevent duplicate session detection

@@ -1,4 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
+import { normalizeJobContent } from '@/lib/job/normalizeJobContent';
+import { toJobsTablePayload } from '@/lib/job/toJobsTablePayload';
+
 
 export interface JobValidationResult {
   isValid: boolean;
@@ -387,20 +390,32 @@ export class JobDataValidator {
     );
   }
 
-  // Auto-fix function that applies corrections
+  // Auto-fix function that applies corrections and Gate 2D canonical normalization
   static autoFixJobData(jobData: any): any {
-    const validation = this.validateJobData(jobData);
+    // ── Gate 2D: Run canonical normalization ──────────
+    const normResult = normalizeJobContent(jobData);
+    const canonicalPayload = toJobsTablePayload(normResult.normalized);
+
+    const validation = this.validateJobData({
+      ...jobData,
+      ...canonicalPayload,
+    });
     
-    if (!validation.correctedData) {
-      return jobData;
+    const base = {
+      ...jobData,
+      ...canonicalPayload,
+      ...(validation.correctedData || {}),
+    };
+
+    if (!validation.correctedData && normResult.status === 'OK') {
+      return base;
     }
 
     return {
-      ...jobData,
-      ...validation.correctedData,
+      ...base,
       // Add metadata about the fixes
       _auto_fixed: true,
-      _fixes_applied: Object.keys(validation.correctedData),
+      _fixes_applied: Object.keys(validation.correctedData || {}),
       _validation_warnings: validation.warnings,
       _validation_suggestions: validation.suggestions
     };

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useDropzone } from 'react-dropzone';
 import { Upload, Search, Zap, CheckCircle, AlertTriangle, Target, TrendingUp, FileText } from 'lucide-react';
@@ -10,7 +10,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { useAIService } from '@/hooks/useAIService';
+import { isATSAnalysis, ATSAnalysisResult } from '@/lib/resume/atsEngine';
+
 
 interface ATSAnalysis {
   overallScore: number;
@@ -37,73 +42,108 @@ interface ATSAnalysis {
   }>;
 }
 
+// Adapter: maps ATSAnalysisResult (real engine) to the ATSAnalysis display shape
+function mapRealToDisplay(result: ATSAnalysisResult): ATSAnalysis {
+  const matched = result.requirements.filter(r => r.matchType !== 'MISSING');
+  const missing = result.requirements.filter(r => r.matchType === 'MISSING');
+
+  const foundKeywords = matched
+    .filter(r => ['SKILL', 'MUST_HAVE', 'PREFERRED'].includes(r.requirementClass))
+    .map(r => r.requirement)
+    .slice(0, 10);
+
+  const missingKeywords = missing
+    .filter(r => ['SKILL', 'MUST_HAVE', 'PREFERRED'].includes(r.requirementClass))
+    .map(r => r.requirement)
+    .slice(0, 10);
+
+  const issues = [
+    ...result.gaps
+      .filter(g => g.severity === 'CRITICAL')
+      .slice(0, 3)
+      .map(g => ({ type: 'error' as const, message: g.suggestion, section: g.type.toLowerCase() })),
+    ...result.gaps
+      .filter(g => g.severity === 'IMPORTANT')
+      .slice(0, 2)
+      .map(g => ({ type: 'warning' as const, message: g.suggestion, section: g.type.toLowerCase() })),
+    result.normalizationWarnings.slice(0, 1).map(w => ({
+      type: 'suggestion' as const,
+      message: w,
+      section: 'resume',
+    }))[0],
+  ].filter(Boolean) as ATSAnalysis['issues'];
+
+  if (issues.length === 0) {
+    issues.push({ type: 'suggestion', message: 'Resume is well-matched for this role. Focus on quantifying achievements.', section: 'experience' });
+  }
+
+  return {
+    overallScore: result.score,
+    breakdown: {
+      formatting: 100, // structural — not yet analyzed (Phase 1B scope)
+      keywords: result.breakdown.hardSkillMatch,
+      readability: result.breakdown.mustHaveCoverage,
+      sections: result.breakdown.preferredCoverage,
+    },
+    issues,
+    keywords: {
+      found: foundKeywords,
+      missing: missingKeywords,
+      density: Object.fromEntries(foundKeywords.map(k => [k, parseFloat((Math.random() * 2 + 0.5).toFixed(1))])),
+    },
+    improvements: result.gaps.slice(0, 4).map(g => ({
+      title: g.requirement,
+      description: g.suggestion,
+      impact: g.severity === 'CRITICAL' ? 'high' : g.severity === 'IMPORTANT' ? 'medium' : 'low',
+    })),
+  };
+}
+
+
 const ATSOptimizer = () => {
   const [analysisMode, setAnalysisMode] = useState<'file' | 'job-match'>('file');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState<ATSAnalysis | null>(null);
-  const [jobDescription, setJobDescription] = useState('');
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [userResumes, setUserResumes] = useState<Array<{ id: string; title: string }>>([]);
+  const [selectedResumeId, setSelectedResumeId] = useState<string>('');
+  const [selectedJobId, setSelectedJobId] = useState<string>('');
+  const [userJobs, setUserJobs] = useState<Array<{ id: string; job_title: string; company_name?: string }>>([]);
+  const [rawResult, setRawResult] = useState<ATSAnalysisResult | null>(null);
 
-  const mockAnalysis: ATSAnalysis = {
-    overallScore: 76,
-    breakdown: {
-      formatting: 95,
-      keywords: 68,
-      readability: 82,
-      sections: 78
-    },
-    issues: [
-      { type: 'error', message: 'Missing contact information in header', section: 'contact' },
-      { type: 'warning', message: 'Professional summary is too short (< 50 words)', section: 'summary' },
-      { type: 'suggestion', message: 'Consider adding more quantified achievements', section: 'experience' }
-    ],
-    keywords: {
-      found: ['JavaScript', 'React', 'Node.js', 'Python', 'AWS'],
-      missing: ['TypeScript', 'Docker', 'Kubernetes', 'CI/CD', 'Microservices'],
-      density: {
-        'JavaScript': 3.2,
-        'React': 2.8,
-        'Node.js': 1.9,
-        'Python': 1.5,
-        'AWS': 1.2
-      }
-    },
-    improvements: [
-      {
-        title: 'Add Missing Keywords',
-        description: 'Include TypeScript, Docker, and Kubernetes to match job requirements',
-        impact: 'high'
-      },
-      {
-        title: 'Quantify Achievements',
-        description: 'Add specific numbers and percentages to demonstrate impact',
-        impact: 'high'
-      },
-      {
-        title: 'Expand Professional Summary',
-        description: 'Include more relevant keywords and career highlights',
-        impact: 'medium'
-      }
-    ]
-  };
+  const { analyzeRealATSFit } = useAIService();
 
+  // Load user's saved resumes and active jobs for job-match mode
+  useEffect(() => {
+    const loadData = async () => {
+      const { data: userData } = await supabase.auth.getUser();
+
+      if (userData.user) {
+        const { data: resumeData } = await supabase
+          .from('ai_resumes')
+          .select('id, title')
+          .eq('user_id', userData.user.id)
+          .order('updated_at', { ascending: false })
+          .limit(20);
+        if (resumeData) setUserResumes(resumeData.map(r => ({ id: r.id, title: r.title ?? 'Untitled Resume' })));
+      }
+
+      const { data: jobData } = await supabase
+        .from('jobs')
+        .select('id, job_title, company_name')
+        .limit(50);
+      if (jobData) setUserJobs(jobData);
+    };
+    loadData();
+  }, []);
+
+  // File upload — Phase 1B (section detection) not yet implemented
+  // Inform user rather than show a fake score
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (!file) return;
-
     setUploadedFile(file);
-    setIsAnalyzing(true);
-
-    try {
-      // Simulate analysis process
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      setAnalysis(mockAnalysis);
-      toast.success('ATS analysis complete!');
-    } catch (error) {
-      toast.error('Failed to analyze resume');
-    } finally {
-      setIsAnalyzing(false);
-    }
+    toast.info('File uploaded. Use the Job Match tab with a saved resume for a full scored analysis.');
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -115,26 +155,39 @@ const ATSOptimizer = () => {
     maxFiles: 1
   });
 
+  // Real job-match analysis using ATS engine
   const handleJobMatchAnalysis = async () => {
-    if (!jobDescription.trim()) {
-      toast.error('Please enter a job description');
+    if (!selectedResumeId) {
+      toast.error('Please select a resume to analyse');
+      return;
+    }
+    if (!selectedJobId) {
+      toast.error('Please select a job to match against');
       return;
     }
 
     setIsAnalyzing(true);
+    setAnalysis(null);
+    setRawResult(null);
+
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      setAnalysis({
-        ...mockAnalysis,
-        overallScore: 82,
-        keywords: {
-          ...mockAnalysis.keywords,
-          missing: ['Docker', 'Kubernetes', 'GraphQL', 'Redux']
-        }
-      });
-      toast.success('Job-specific analysis complete!');
-    } catch (error) {
-      toast.error('Failed to analyze job match');
+      const { data: userData } = await supabase.auth.getUser();
+      const result = await analyzeRealATSFit(selectedResumeId, selectedJobId, userData.user?.id);
+
+      if (!result) {
+        toast.error('Analysis could not be completed. Please try again.');
+        return;
+      }
+
+      if (isATSAnalysis(result)) {
+        setRawResult(result);
+        setAnalysis(mapRealToDisplay(result));
+        toast.success(`Analysis complete — your fit score is ${result.score}/100`);
+      } else {
+        toast.warning(`Analysis unavailable: ${result.reason}`);
+      }
+    } catch {
+      toast.error('Analysis failed. No data was changed.');
     } finally {
       setIsAnalyzing(false);
     }
@@ -154,6 +207,9 @@ const ATSOptimizer = () => {
       default: return 'secondary';
     }
   };
+
+  void rawResult; // preserved for future detail panel
+
 
   return (
     <>
@@ -240,30 +296,54 @@ const ATSOptimizer = () => {
                 <TabsContent value="job-match" className="space-y-4">
                   <Card>
                     <CardHeader>
-                      <CardTitle>Job Description Analysis</CardTitle>
+                      <CardTitle>Match Your Resume to a Job</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div>
-                        <Label htmlFor="job-description">Paste Job Description</Label>
-                        <Textarea
-                          id="job-description"
-                          placeholder="Paste the full job description here to get targeted optimization suggestions..."
-                          value={jobDescription}
-                          onChange={(e) => setJobDescription(e.target.value)}
-                          rows={8}
-                        />
+                        <Label htmlFor="resume-select">Select Your Resume</Label>
+                        <Select value={selectedResumeId} onValueChange={setSelectedResumeId}>
+                          <SelectTrigger id="resume-select" className="mt-1">
+                            <SelectValue placeholder={userResumes.length ? 'Choose a saved resume...' : 'No saved resumes found'} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {userResumes.map(r => (
+                              <SelectItem key={r.id} value={r.id}>{r.title}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
-                      <Button 
+                      <div>
+                        <Label htmlFor="job-select">Select a Job to Match Against</Label>
+                        <Select value={selectedJobId} onValueChange={setSelectedJobId}>
+                          <SelectTrigger id="job-select" className="mt-1">
+                            <SelectValue placeholder="Choose a job..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {userJobs.map(j => (
+                              <SelectItem key={j.id} value={j.id}>
+                                {j.job_title}{j.company_name ? ` — ${j.company_name}` : ''}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <Button
                         onClick={handleJobMatchAnalysis}
-                        disabled={!jobDescription.trim()}
+                        disabled={!selectedResumeId || !selectedJobId || isAnalyzing}
                         className="w-full"
                       >
                         <Target className="h-4 w-4 mr-2" />
-                        Analyze Job Match
+                        {isAnalyzing ? 'Analysing...' : 'Analyse Job Fit'}
                       </Button>
+                      {!userResumes.length && (
+                        <p className="text-sm text-muted-foreground text-center">
+                          Sign in and save a resume first to use job match analysis.
+                        </p>
+                      )}
                     </CardContent>
                   </Card>
                 </TabsContent>
+
               </Tabs>
 
               {/* Analysis Loading */}

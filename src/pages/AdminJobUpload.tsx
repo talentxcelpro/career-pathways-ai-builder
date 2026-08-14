@@ -4,6 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { executeJobUpload } from '@/utils/uploadNewJobs';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { normalizeJobContent } from '@/lib/job/normalizeJobContent';
+import { toJobsTablePayload } from '@/lib/job/toJobsTablePayload';
 
 const AdminJobUpload = () => {
   const [isUploading, setIsUploading] = useState(false);
@@ -532,9 +534,31 @@ Why Join TalentXcel?
 
       for (const job of talentxcelJobs) {
         try {
+          // ── Gate 2D: Run canonical normalization pipeline ──────────
+          const normResult = normalizeJobContent(job);
+          const canonicalPayload = toJobsTablePayload(normResult.normalized);
+
+          const insertPayload = {
+            // Canonical base (includes employment_type normalized to kebab-case)
+            ...canonicalPayload,
+            // Path-3 specific fields preserved from source
+            company_id: job.company_id,
+            seo_slug: job.seo_slug,
+            job_tags: job.job_tags,
+            benefits: job.benefits,
+            salary_min: job.salary_min,
+            salary_max: job.salary_max,
+            salary_currency: job.salary_currency,
+            posted_by: job.posted_by,
+            expires_at: job.expires_at,
+            job_status: job.job_status,
+            is_remote: job.is_remote,
+          };
+
           const { error } = await supabase
             .from('jobs')
-            .insert([job]);
+            .insert([insertPayload]);
+
 
           if (error) {
             errors.push(`${job.title}: ${error.message}`);

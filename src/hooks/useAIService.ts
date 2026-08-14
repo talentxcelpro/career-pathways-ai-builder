@@ -7,6 +7,8 @@ import { useState, useCallback, useRef } from 'react';
 import { aiServiceManager, AIServiceRequest, AIServiceResponse, AIFeedback } from '@/services/ai-service-manager';
 import { CoreResumeData } from '@/types/resume-core';
 import { toast } from 'sonner';
+import { analyzeATSFit, serializeATSResultForStorage, isATSAnalysis, ATSFitResult } from '@/lib/resume/atsEngine';
+
 
 export interface UseAIServiceOptions {
   enableFeedback?: boolean;
@@ -225,7 +227,7 @@ export function useAIService(options: UseAIServiceOptions = {}) {
     );
   }, [executeOperation]);
 
-  // ATS Optimization
+  // ATS Optimization (legacy — passes resume data as CoreResumeData shape)
   const optimizeForATS = useCallback(async (
     resumeData: CoreResumeData,
     jobDescription: string,
@@ -239,6 +241,44 @@ export function useAIService(options: UseAIServiceOptions = {}) {
       aiServiceManager.optimizeForATS(resumeData, jobDescription, options)
     );
   }, [executeOperation]);
+
+  // Phase 1 Real ATS Fit Analysis — uses real resume + job records from Supabase
+  const analyzeRealATSFit = useCallback(async (
+    resumeId: string,
+    jobId: string,
+    userId?: string
+  ): Promise<ATSFitResult | null> => {
+    updateState({
+      isProcessing: true,
+      currentOperation: 'ATS Fit Analysis',
+      progress: 10,
+      error: null,
+    });
+    try {
+      updateState({ progress: 30 });
+      const result = await analyzeATSFit(resumeId, jobId, userId);
+      updateState({ progress: 90 });
+      if (isATSAnalysis(result)) {
+        toast.success(`ATS analysis complete — score: ${result.score}/100`);
+      } else {
+        toast.warning(`ATS analysis unavailable: ${result.reason}`);
+      }
+      return result;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'ATS analysis failed';
+      updateState({ error: message });
+      toast.error('ATS analysis could not be completed. Your application was still submitted.');
+      return null;
+    } finally {
+      setTimeout(() => updateState({ isProcessing: false, currentOperation: null, progress: 0 }), 1000);
+    }
+  }, [updateState]);
+
+  // Serialize ATS result for application_data storage — safe merge helper
+  const getATSStoragePayload = useCallback((result: ATSFitResult) => {
+    return serializeATSResultForStorage(result);
+  }, []);
+
 
   // Feedback submission
   const submitFeedback = useCallback(async (
@@ -424,6 +464,10 @@ export function useAIService(options: UseAIServiceOptions = {}) {
     prepareForInterview,
     getCareerAdvice,
     optimizeForATS,
+
+    // Phase 1 Real ATS Engine
+    analyzeRealATSFit,
+    getATSStoragePayload,
 
     // Legacy compatibility
     invokeAITool,

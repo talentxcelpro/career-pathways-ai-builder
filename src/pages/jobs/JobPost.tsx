@@ -22,6 +22,9 @@ import AIJobGenerator from "@/components/jobs/AIJobGenerator";
 import AITestButton from "@/components/jobs/AITestButton";
 import { IndustryJobPostForm } from "@/components/jobs/IndustryJobPostForm";
 import { validateJobData } from "@/utils/jobCategories";
+import { normalizeJobContent } from '@/lib/job/normalizeJobContent';
+import { toJobsTablePayload } from '@/lib/job/toJobsTablePayload';
+
 
 function JobPostContent() {
   const navigate = useNavigate();
@@ -204,23 +207,27 @@ function JobPostContent() {
 
       console.log('Posting job with data:', jobData);
 
+      // ── Gate 2D: Run canonical normalization pipeline ──────────
+      const normResult = normalizeJobContent(jobData);
+      const canonicalPayload = toJobsTablePayload(normResult.normalized);
+
       // Prepare data with proper null handling and correct column names
       const insertData = {
-        // Required fields for database
-        title: jobData.job_title, // Map job_title to title
-        description: jobData.job_description || jobData.job_summary, // Map to description
-        
+        // Base canonical payload (normalized title, description, employment_type, requirement arrays)
+        ...canonicalPayload,
+
         // Map form fields to correct database columns
         job_title: jobData.job_title,
-        company_name: jobData.company_name,
+        company_name: canonicalPayload.company_name || jobData.company_name,
         job_summary: jobData.job_summary,
         job_description: jobData.job_description,
         location_city: jobData.location_city,
         location_state: jobData.location_state,
-        employment_type: jobData.employment_type,
+        employment_type: canonicalPayload.employment_type,
         work_mode: jobData.work_mode,
         work_schedule: jobData.work_schedule,
-        experience_level: jobData.experience_level,
+        experience_level: canonicalPayload.experience_level || jobData.experience_level,
+
         
         // Contact information
         contact_name: jobData.contact_name,

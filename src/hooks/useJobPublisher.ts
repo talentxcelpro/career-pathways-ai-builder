@@ -1,6 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { normalizeJobContent } from '@/lib/job/normalizeJobContent';
+import { toJobsTablePayload } from '@/lib/job/toJobsTablePayload';
 
 export const usePublishScrapedJobs = () => {
   const queryClient = useQueryClient();
@@ -233,30 +235,25 @@ export const useTriggerDailyJobScraping = () => {
                 console.log(`📝 Publishing job: "${job.title}"`);
                 console.log(`📋 Job data structure:`, JSON.stringify(job, null, 2));
                 
-                // Validate required fields
-                if (!job.title || !job.description) {
-                  console.warn(`⚠️ Skipping job with missing required fields:`, { title: job.title, hasDescription: !!job.description });
+                // ── Gate 2D: Run canonical normalization pipeline ──────────
+                const normResult = normalizeJobContent(job);
+                const canonicalPayload = toJobsTablePayload(normResult.normalized);
+
+                // Skip if normalization could not produce a usable title/description
+                if (!canonicalPayload.title || !canonicalPayload.description) {
+                  console.warn(`⚠️ Skipping job — normalization produced no title/description:`, { title: job.title });
                   continue;
                 }
 
-                const mappedEmploymentType = mapEmploymentType(job.job_type);
-                const mappedExperienceLevel = mapExperienceLevel(job.experience_level);
-
-                console.log(`📝 Mapping job: "${job.title}" - Type: ${job.job_type} → ${mappedEmploymentType}, Experience: ${job.experience_level} → ${mappedExperienceLevel}`);
-
                 const jobData = {
-                  title: job.title,
-                  description: job.description,
-                  location: job.location || 'Remote',
-                  employment_type: mappedEmploymentType,
-                  experience_level: mappedExperienceLevel,
+                  ...canonicalPayload,
+                  // Path-2 specific fields not in canonical payload
                   external_url: job.url,
-                  is_active: true,
                   posted_at: new Date().toISOString(),
                   expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
                   posted_by: user.id,
-                  company_name: job.company || 'Unknown Company'
                 };
+
 
                 console.log(`🚀 About to insert job data:`, JSON.stringify(jobData, null, 2));
 

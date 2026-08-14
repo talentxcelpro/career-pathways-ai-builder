@@ -2,6 +2,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useTXCIntegration } from './useTXCIntegration';
+import { analyzeATSFit, serializeATSResultForStorage } from '@/lib/resume/atsEngine';
+
 
 export interface JobApplication {
   id: string;
@@ -180,3 +182,60 @@ export const useDeleteJobApplication = () => {
     }
   });
 };
+
+/**
+ * useAnalyzeAndPersistATSFit
+ *
+ * Phase 1: After a job application is submitted, run the real ATS analysis
+ * and persist results into job_applications.application_data.
+ *
+ * SAFE MERGE: Only writes to the 'ats_analysis' key inside application_data.
+ * All other keys in application_data are preserved unchanged.
+ *
+ * NON-BLOCKING: If analysis fails for any reason, the application record
+ * is unchanged and the user is shown 'ATS analysis unavailable' — not an error.
+ *
+ * MASTER RESUME: ai_resumes.content is never written to.
+ */
+export const useAnalyzeAndPersistATSFit = () => {
+  return async (params: {
+    applicationId: string;
+    resumeId: string;
+    jobId: string;
+    userId: string;
+    existingApplicationData?: Record<string, unknown>;
+  }): Promise<{ persisted: boolean; score: number | null }> => {
+    const { applicationId, resumeId, jobId, userId, existingApplicationData = {} } = params;
+
+    try {
+      // Run the real ATS analysis (read-only against ai_resumes and jobs)
+      const atsResult = await analyzeATSFit(resumeId, jobId, userId);
+      const atsPayload = serializeATSResultForStorage(atsResult);
+
+      // Safe merge: preserve all existing application_data keys
+      const mergedData = {
+        ...existingApplicationData,
+        ...atsPayload, // adds/overwrites only 'ats_analysis' key
+      };
+
+      // Write merged result back to job_applications.application_data
+      const { error } = await supabase
+        .from('job_applications')
+        .update({ application_data: mergedData })
+        .eq('id', applicationId);
+
+      if (error) {
+        console.error('[ATS] Failed to persist analysis:', error.message);
+        return { persisted: false, score: null };
+      }
+
+      const score = 'score' in atsResult ? atsResult.score : null;
+      return { persisted: true, score };
+
+    } catch (err) {
+      // Never propagate — ATS analysis is background enrichment, not a blocker
+      console.error('[ATS] Analysis error (non-blocking):', err);
+      return { persisted: false, score: null };
+    }
+  };
+};
