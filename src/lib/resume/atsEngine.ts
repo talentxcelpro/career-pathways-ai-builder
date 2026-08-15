@@ -369,8 +369,23 @@ function estimateCandidateExperience(experience: Record<string, unknown>[]): num
 
     const parseDate = (s: string): Date | null => {
       if (!s) return null;
-      // YYYY-MM or YYYY-MM-DD
-      const parts = s.split('-');
+      // Month YYYY (e.g. "March 2023", "July 2021") or YYYY
+      const monthYearMatch = s.match(/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+(\d{4})/i);
+      if (monthYearMatch) {
+        const months: Record<string, number> = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
+        const month = months[monthYearMatch[1].toLowerCase().slice(0, 3)] ?? 0;
+        const year = parseInt(monthYearMatch[2], 10);
+        if (!isNaN(year)) return new Date(year, month, 1);
+      }
+
+      const yearOnlyMatch = s.match(/\b(19\d\d|20\d\d)\b/);
+      if (yearOnlyMatch) {
+        const year = parseInt(yearOnlyMatch[1], 10);
+        if (!isNaN(year)) return new Date(year, 0, 1);
+      }
+
+      // YYYY-MM or YYYY-MM-DD or MM/YYYY
+      const parts = s.split(/[-/]/);
       if (parts.length >= 2) {
         const year = parseInt(parts[0], 10);
         const month = parseInt(parts[1], 10) - 1;

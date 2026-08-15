@@ -40,6 +40,8 @@ import { SEOCompaniesLocation } from "@/components/seo/SEOCompaniesLocation";
 import { SEOPosts } from "@/components/seo/SEOPosts";
 import { JobUrlRedirect } from "@/components/seo/JobUrlRedirect";
 import ProfileUrlRedirect from "@/components/profile/ProfileUrlRedirect";
+import UniversalProfileRouteHandler from "@/components/profile/UniversalProfileRouteHandler";
+import LegacyProfileRedirect from "@/components/profile/LegacyProfileRedirect";
 import FastPassportRedirect from "@/components/passport/FastPassportRedirect";
 import { EnhancedSEODemoWrapper } from "@/components/seo/EnhancedSEODemoWrapper";
 import JobDetails from "@/pages/jobs/JobDetails";
@@ -345,11 +347,8 @@ const App = () => {
                                   );
                                 })}
 
-                                {/* Public Professional Identity — /profile/:username */}
-                                {/* IMPORTANT: This route must come BEFORE ProfileUrlRedirect */}
-                                {/* It serves as the canonical SEO URL for public professional profiles */}
-                                {/* robots meta: index only when is_public=true AND quality gate passed */}
-                                <Route path="/profile/:username" element={<SlugProfile />} />
+                                {/* Legacy profile route -> redirects to canonical /:username */}
+                                <Route path="/profile/:username" element={<LegacyProfileRedirect />} />
 
                                 {/* Legacy UUID-based profile redirects */}
                                 <Route path="/network/people/:id" element={<ProfileUrlRedirect />} />
@@ -396,7 +395,7 @@ const App = () => {
                                 <Route path="/passport/user/:userId" element={<CareerPassportDashboard />} />
                                 <Route path="/passport/:userId" element={<FastPassportRedirect />} />
                                 <Route path="/passport/:username" element={<CareerPassportDashboard />} />
-                                <Route path="/@:username" element={<CareerPassportDashboard />} />
+                                <Route path="/@:username" element={<UniversalProfileRouteHandler />} />
                                 <Route path="/qr-networking" element={<QRNetworking />} />
                                 <Route path="/career-intelligence-dashboard" element={<CareerIntelligenceDashboard />} />
                                 <Route path="/instant-networking" element={<InstantNetworkingSystem />} />
@@ -506,6 +505,9 @@ const App = () => {
                                 <Route path="/sitemap.xml" element={<SitemapRedirect />} />
                                 <Route path="/sitemap-dynamic.xml" element={<SitemapRedirect />} />
                                 
+                                {/* Universal Public Profile Route — /{username} */}
+                                <Route path="/:username" element={<UniversalProfileRouteHandler />} />
+
                                 {/* Catchall 404 route - must be last */}
                                 <Route path="*" element={<NotFound />} />
                               </Routes>

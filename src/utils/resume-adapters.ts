@@ -344,55 +344,55 @@ export function editorToCore(editor: EditorResume): CoreResumeData {
   }));
   
   // Education
-  core.education = (editor.education || []).map(edu => ({
-    id: edu.id,
-    degree: edu.degree,
-    institution: edu.institution,
-    location: edu.location,
-    startDate: edu.startDate,
-    endDate: edu.endDate,
-    description: edu.description,
-    relevantCoursework: edu.achievements || [],
+  core.education = (editor.education || []).map((edu: any) => ({
+    id: edu.id || `edu-${Date.now()}`,
+    degree: edu.degree || '',
+    institution: edu.institution || edu.school || '',
+    location: edu.location || '',
+    startDate: edu.startDate || '',
+    endDate: edu.endDate || '',
+    description: edu.description || '',
+    relevantCoursework: edu.achievements || edu.relevantCoursework || [],
+    gpa: edu.gpa || '',
+    honors: edu.honors || ''
   }));
   
-  // Skills - Convert grouped skills to individual skill objects
+  // Skills - Convert flat string arrays, object arrays, or grouped skills objects to CoreSkill[]
   const skills: CoreSkill[] = [];
-  
-  (editor.skills?.technical || []).forEach((name, i) => {
-    skills.push({
-      id: `tech-${i}`,
-      name,
-      level: 'intermediate',
-      category: 'technical',
+  const rawSkills = editor.skills;
+
+  if (Array.isArray(rawSkills)) {
+    rawSkills.forEach((s: any, i: number) => {
+      if (typeof s === 'string') {
+        if (s.trim()) {
+          skills.push({ id: `skill-${i}`, name: s.trim(), level: 'intermediate', category: 'technical' });
+        }
+      } else if (s && typeof s === 'object') {
+        const skillName = s.name || s.skillName || '';
+        if (skillName.trim()) {
+          skills.push({
+            id: s.id || `skill-${i}`,
+            name: skillName.trim(),
+            level: s.level || 'intermediate',
+            category: s.category || 'technical'
+          });
+        }
+      }
     });
-  });
-  
-  (editor.skills?.soft || []).forEach((name, i) => {
-    skills.push({
-      id: `soft-${i}`,
-      name,
-      level: 'intermediate',
-      category: 'soft',
+  } else if (rawSkills && typeof rawSkills === 'object') {
+    (rawSkills.technical || []).forEach((name: string, i: number) => {
+      if (name?.trim()) skills.push({ id: `tech-${i}`, name: name.trim(), level: 'intermediate', category: 'technical' });
     });
-  });
-  
-  (editor.skills?.languages || []).forEach((name, i) => {
-    skills.push({
-      id: `lang-${i}`,
-      name,
-      level: 'intermediate',
-      category: 'language',
+    (rawSkills.soft || []).forEach((name: string, i: number) => {
+      if (name?.trim()) skills.push({ id: `soft-${i}`, name: name.trim(), level: 'intermediate', category: 'soft' });
     });
-  });
-  
-  (editor.skills?.tools || []).forEach((name, i) => {
-    skills.push({
-      id: `tool-${i}`,
-      name,
-      level: 'intermediate',
-      category: 'tool',
+    (rawSkills.languages || []).forEach((name: string, i: number) => {
+      if (name?.trim()) skills.push({ id: `lang-${i}`, name: name.trim(), level: 'intermediate', category: 'language' });
     });
-  });
+    (rawSkills.tools || []).forEach((name: string, i: number) => {
+      if (name?.trim()) skills.push({ id: `tool-${i}`, name: name.trim(), level: 'intermediate', category: 'tool' });
+    });
+  }
   
   core.skills = skills;
   

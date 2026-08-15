@@ -25,19 +25,19 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-foreground text-background hover:bg-foreground/90",
+          "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm",
         primary:
-          "bg-primary text-primary-foreground hover:bg-primary/90",
+          "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         outline:
-          "border border-border bg-transparent text-foreground hover:bg-muted",
+          "border border-border bg-background text-foreground hover:bg-muted hover:text-foreground shadow-sm",
         ghost:
-          "bg-transparent text-foreground hover:bg-muted",
+          "bg-transparent text-foreground hover:bg-muted hover:text-foreground",
         link:
           "rounded-none px-0 text-primary underline-offset-4 hover:underline",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm",
         // --- Legacy aliases, toned down to match Apple-grade system ---
         brand:
           "bg-primary text-primary-foreground hover:bg-primary/90",

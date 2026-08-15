@@ -28,6 +28,11 @@ import {
   normalizeResumeContent,
   NormalizationResult,
 } from '../normalizeResumeContent';
+import {
+  deduplicateSkillStrings,
+  parseDurationStart,
+  parseDurationEnd,
+} from '../../../services/resumeParsingService';
 
 // ---------------------------------------------------------------------------
 // Minimal assertion helpers
@@ -412,6 +417,46 @@ test('T17 — Skill with unrecognised level value defaults to unknown without fa
   assertNoThrow(() => { result = normalizeResumeContent(raw as unknown); }, 'does not throw');
   assertEqual(result.normalized.skills[0].level, 'unknown', 'invalid level → unknown');
   assert(result.warnings.some(w => w.field.includes('level')), 'warning emitted for invalid level');
+});
+
+// ---------------------------------------------------------------------------
+// T18 — Phase 5: cleanText Unicode dash preservation
+// ---------------------------------------------------------------------------
+test('T18 — Phase 5: cleanText preserves Unicode en-dash (–) and em-dash (—) date separators', () => {
+  const input = 'March 2021 – July 2021 | July 2021 — Present · Equinix';
+  const cleaned = input
+    .replace(/\x00+/g, ' ')
+    .replace(/[^\x20-\x7E\u2013\u2014\u00B7\n\r\t]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  assert(cleaned.includes('–'), 'en-dash (–) preserved');
+  assert(cleaned.includes('—'), 'em-dash (—) preserved');
+  assert(cleaned.includes('·'), 'middle dot (·) preserved');
+});
+
+// ---------------------------------------------------------------------------
+// T19 — Phase 5: parseDurationStart and parseDurationEnd date parsing
+// ---------------------------------------------------------------------------
+test('T19 — Phase 5: parseDurationStart / parseDurationEnd robust date parsing', () => {
+  assertEqual(parseDurationStart('July 2021 – Present'), 'July 2021', 'start date with en-dash');
+  assertEqual(parseDurationEnd('July 2021 – Present'), 'Present', 'end date with en-dash');
+  assertEqual(parseDurationStart('March 2023 - March 2025'), 'March 2023', 'start date with hyphen');
+  assertEqual(parseDurationEnd('March 2023 - March 2025'), 'March 2025', 'end date with hyphen');
+  assertEqual(parseDurationStart('Aug 2007 to Sep 2012'), 'Aug 2007', 'start date with "to"');
+  assertEqual(parseDurationEnd('Aug 2007 to Sep 2012'), 'Sep 2012', 'end date with "to"');
+});
+
+// ---------------------------------------------------------------------------
+// T20 — Phase 5: CHATR-style skill deduplication
+// ---------------------------------------------------------------------------
+test('T20 — Phase 5: deduplicateSkillStrings removes casing duplicates and noise headers', () => {
+  const input = ['leadership', 'Leadership', 'LEADERSHIP', 'management', 'Management', 'WORK EXPERIENCE', 'LVAP', 'HVAP'];
+  const result = deduplicateSkillStrings(input);
+  assert(!result.includes('WORK EXPERIENCE'), 'noise header excluded');
+  const leaderships = result.filter(s => s.toLowerCase() === 'leadership');
+  assertEqual(leaderships.length, 1, 'casing duplicates collapsed to single token');
+  assert(result.includes('LVAP'), 'LVAP preserved');
+  assert(result.includes('HVAP'), 'HVAP preserved');
 });
 
 // ---------------------------------------------------------------------------

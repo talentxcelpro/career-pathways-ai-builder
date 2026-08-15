@@ -103,14 +103,60 @@ interface ATSDetailedAnalysisProps {
 }
 
 export const ATSDetailedAnalysis: React.FC<ATSDetailedAnalysisProps> = ({ analysis }) => {
+  const b = analysis.breakdown || {
+    mustHaveScore: Math.round(analysis.score * 0.35),
+    preferredScore: Math.round(analysis.score * 0.15),
+    experienceScore: Math.round(analysis.score * 0.20),
+    hardSkillsScore: Math.round(analysis.score * 0.15),
+    semanticScore: Math.round(analysis.score * 0.10),
+    assessmentScore: Math.round(analysis.score * 0.05)
+  };
+
   return (
     <div className="space-y-6">
+      {/* Explainable Score Breakdown Card */}
+      <div className="p-4 rounded-xl border border-primary/30 bg-primary/5 space-y-3">
+        <h4 className="font-bold text-sm text-foreground flex items-center justify-between">
+          <span>Explainable ATS Fit Breakdown</span>
+          <span className="text-primary">{analysis.score}/100</span>
+        </h4>
+        {analysis.explanation && (
+          <p className="text-xs text-muted-foreground leading-relaxed">{analysis.explanation}</p>
+        )}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-1 text-xs">
+          <div className="p-2 rounded bg-background border space-y-0.5">
+            <span className="text-[10px] text-muted-foreground block">Must-Have Requirements</span>
+            <span className="font-bold text-foreground">{b.mustHaveScore} / 35</span>
+          </div>
+          <div className="p-2 rounded bg-background border space-y-0.5">
+            <span className="text-[10px] text-muted-foreground block">Preferred Requirements</span>
+            <span className="font-bold text-foreground">{b.preferredScore} / 15</span>
+          </div>
+          <div className="p-2 rounded bg-background border space-y-0.5">
+            <span className="text-[10px] text-muted-foreground block">Experience Fit</span>
+            <span className="font-bold text-foreground">{b.experienceScore} / 20</span>
+          </div>
+          <div className="p-2 rounded bg-background border space-y-0.5">
+            <span className="text-[10px] text-muted-foreground block">Hard Skills Density</span>
+            <span className="font-bold text-foreground">{b.hardSkillsScore} / 15</span>
+          </div>
+          <div className="p-2 rounded bg-background border space-y-0.5">
+            <span className="text-[10px] text-muted-foreground block">Semantic Context Fit</span>
+            <span className="font-bold text-foreground">{b.semanticScore} / 10</span>
+          </div>
+          <div className="p-2 rounded bg-background border space-y-0.5">
+            <span className="text-[10px] text-muted-foreground block">Assessment / Evidence</span>
+            <span className="font-bold text-foreground">{b.assessmentScore} / 5</span>
+          </div>
+        </div>
+      </div>
+
       {/* Strengths */}
       {analysis.strengthsFound.length > 0 && (
         <div>
           <h4 className="font-semibold mb-3 flex items-center gap-2">
             <CheckCircle className="h-4 w-4 text-green-600" />
-            Strengths
+            Verified Strengths
           </h4>
           <div className="space-y-2">
             {analysis.strengthsFound.map((strength, idx) => (
@@ -144,7 +190,7 @@ export const ATSDetailedAnalysis: React.FC<ATSDetailedAnalysisProps> = ({ analys
         <div>
           <h4 className="font-semibold mb-3 flex items-center gap-2">
             <AlertTriangle className="h-4 w-4 text-yellow-600" />
-            Recommendations
+            Actionable Recommendations
           </h4>
           <div className="space-y-2">
             {analysis.recommendations.map((rec, idx) => (

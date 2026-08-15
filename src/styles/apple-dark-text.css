@@ -157,9 +157,8 @@ p {
   line-height: 1.6;
 }
 
-/* Enhance existing button text */
+/* Enhance existing button text styling without overriding variant text colors */
 button, .btn {
-  color: hsl(var(--text-primary-dark));
   font-weight: 500;
   letter-spacing: 0.005em;
 }

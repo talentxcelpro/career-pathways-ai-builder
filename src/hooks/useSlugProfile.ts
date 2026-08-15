@@ -19,6 +19,10 @@ export interface SlugProfile {
   portfolio_url: string | null;
   skills: string[] | null;
   slug: string;
+  username?: string | null;
+  user_type?: string | null;
+  company_name?: string | null;
+  is_public?: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -30,22 +34,28 @@ export function useSlugProfile(slug?: string) {
       if (!slug) return null;
       
       // Remove @ symbol if present
-      const cleanSlug = slug.startsWith('@') ? slug.slice(1) : slug;
+      const cleanSlug = slug.startsWith('@') ? slug.slice(1).trim() : slug.trim();
+      if (!cleanSlug) return null;
       
+      // Perform case-insensitive query matching on slug OR username
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .or(`slug.eq.${cleanSlug},username.eq.${cleanSlug}`)
+        .or(`slug.ilike.${cleanSlug},username.ilike.${cleanSlug}`)
+        .limit(1)
         .maybeSingle();
 
-      if (error) throw error;
-      return data as SlugProfile;
+      if (error) {
+        console.error('Error fetching slug profile:', error);
+        throw error;
+      }
+      
+      return data as SlugProfile | null;
     },
-    enabled: !!slug,
+    enabled: Boolean(slug),
   });
 }
 
-// Hook for slug routing compatibility with existing username routing
 export function useSlugRouting() {
   return useUsernameRouting();
 }

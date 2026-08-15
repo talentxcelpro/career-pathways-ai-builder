@@ -407,9 +407,13 @@ export class ResumeTextExtractor {
    * Clean and structure extracted text for better AI parsing
    */
   cleanText(text: string): string {
+    // Phase 5 Fix 1: Preserve Unicode punctuation legitimately used in resumes.
+    // En-dash (–, \u2013) and em-dash (—, \u2014) appear in date ranges.
+    // Middle dot (·, \u00B7) appears in bullet lists.
+    // Stripping these caused "July 2021 – Present" → "- Present |" corruption.
     return text
       .replace(/\x00+/g, ' ') // Remove null characters
-      .replace(/[^\x20-\x7E\n\r\t]/g, ' ') // Keep only printable ASCII + whitespace
+      .replace(/[^\x20-\x7E\u2013\u2014\u00B7\n\r\t]/g, ' ') // Keep ASCII + en-dash, em-dash, middle dot
       .replace(/\s+/g, ' ') // Normalize whitespace
       .replace(/\n\s*\n/g, '\n') // Remove empty lines
       .replace(/\t+/g, ' ') // Convert tabs to spaces

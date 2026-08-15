@@ -31,38 +31,36 @@ const UploadResume = () => {
       
       toast.success('Resume parsed successfully!', { description: 'Opening editor...' });
       
-      // Check if user is authenticated
-      const { data: auth } = await supabase.auth.getUser();
-      
-      if (auth?.user) {
-        // User is logged in - save to database
-        const title = parsedData?.personalInfo?.fullName
-          ? `${parsedData.personalInfo.fullName}'s Resume`
-          : 'My Resume';
+      // Check if user is authenticated and attempt DB save gracefully
+      try {
+        const { data: auth } = await supabase.auth.getUser();
+        if (auth?.user) {
+          const title = parsedData?.personalInfo?.fullName
+            ? `${parsedData.personalInfo.fullName}'s Resume`
+            : 'My Resume';
 
-        const { data: inserted, error } = await supabase
-          .from('ai_resumes')
-          .insert({
-            user_id: auth.user.id,
-            title,
-            content: parsedData,
-            is_primary: false,
-            ats_score: 0,
-          })
-          .select('id')
-          .single();
+          const { data: inserted, error } = await supabase
+            .from('ai_resumes')
+            .insert({
+              user_id: auth.user.id,
+              title,
+              content: parsedData,
+              is_primary: false,
+              ats_score: 0,
+            })
+            .select('id')
+            .single();
 
-        if (error) throw error;
-        
-        const newId = inserted?.id;
-        if (newId) {
-          // Navigate to editor with saved resume ID
-          navigate(`/resume/build/${newId}`);
-          return;
+          if (!error && inserted?.id) {
+            navigate(`/resume/build/${inserted.id}`);
+            return;
+          }
         }
+      } catch (dbErr) {
+        console.warn('⚠️ Supabase DB insert skipped, navigating with in-memory state:', dbErr);
       }
       
-      // Not signed in or save failed - go to editor with data in state
+      // Navigate to editor with parsed data in state
       navigate('/resume/build', { state: { resumeData: parsedData } });
       
     } catch (error) {
@@ -132,7 +130,7 @@ const UploadResume = () => {
               <Button
                 onClick={handleUpload}
                 disabled={!file || uploading}
-                className="w-full"
+                className="w-full bg-primary text-primary-foreground font-semibold shadow-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
                 size="lg"
               >
                 {uploading ? (

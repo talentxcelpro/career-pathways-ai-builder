@@ -8,6 +8,7 @@ interface OptimizedAuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
+  isAuthenticated: boolean;
   signOut: () => Promise<void>;
   refreshSession: () => Promise<void>;
 }
@@ -135,6 +136,7 @@ export const OptimizedAuthProvider = ({ children }: { children: ReactNode }) => 
     user,
     session,
     loading,
+    isAuthenticated: Boolean(user && session),
     signOut,
     refreshSession
   };
