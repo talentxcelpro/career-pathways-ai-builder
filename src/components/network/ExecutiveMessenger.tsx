@@ -95,15 +95,24 @@ export const ExecutiveMessenger: React.FC = () => {
 
   // Fetch Current User Profile Identity
   const { data: myProfile } = useQuery({
-    queryKey: ['my-profile-identity-v1', currentUserId],
+    queryKey: ['my-profile-identity-v2', currentUserId],
     queryFn: async () => {
       if (!currentUserId) return null;
       const { data } = await supabase
         .from('profiles')
         .select('*')
-        .or(`id.eq.${currentUserId},user_id.eq.${currentUserId}`)
+        .eq('id', currentUserId)
         .maybeSingle();
-      return data;
+
+      if (data) return data;
+
+      const { data: fallback } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', currentUserId)
+        .maybeSingle();
+
+      return fallback;
     },
     enabled: !!currentUserId
   });
@@ -114,7 +123,7 @@ export const ExecutiveMessenger: React.FC = () => {
 
   // 2. Query REAL Conversations from Supabase Database
   const { data: conversations = [], isLoading: isLoadingConvs } = useQuery({
-    queryKey: ['real-user-conversations', currentUserId],
+    queryKey: ['real-user-conversations-v3', currentUserId],
     queryFn: async () => {
       if (!currentUserId) return [];
       
@@ -124,10 +133,7 @@ export const ExecutiveMessenger: React.FC = () => {
         .filter('participants', 'cs', `{${currentUserId}}`)
         .order('last_updated', { ascending: false });
 
-      if (error) {
-        console.warn("Conversations fetch warning:", error);
-        return [];
-      }
+      if (error) return [];
       return convData || [];
     },
     enabled: !!currentUserId
@@ -142,7 +148,7 @@ export const ExecutiveMessenger: React.FC = () => {
     }
   }, [routeConvId, conversations, selectedConversationId]);
 
-  // 3. Fetch Real Profiles from Supabase for ALL participants across all conversations
+  // 3. Fetch Real Profiles from Supabase with Safe Dual Promise Queries
   const allParticipantIds = Array.from(new Set(
     conversations
       .flatMap((c: any) => c.participants || [])
@@ -150,19 +156,20 @@ export const ExecutiveMessenger: React.FC = () => {
   ));
 
   const { data: profilesMap = {} } = useQuery({
-    queryKey: ['real-user-profiles-map-v2', allParticipantIds],
+    queryKey: ['real-user-profiles-map-v3', allParticipantIds],
     queryFn: async () => {
       if (allParticipantIds.length === 0) return {};
       
-      const { data: profiles, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .or(`id.in.(${allParticipantIds.join(',')}),user_id.in.(${allParticipantIds.join(',')})`);
+      // Dual query to safely match both id and user_id without PostgREST syntax errors
+      const [resById, resByUserId] = await Promise.all([
+        supabase.from('profiles').select('*').in('id', allParticipantIds),
+        supabase.from('profiles').select('*').in('user_id', allParticipantIds)
+      ]);
 
-      if (error) console.warn("Profiles fetch error:", error);
-
+      const allProfiles = [...(resById.data || []), ...(resByUserId.data || [])];
       const map: Record<string, any> = {};
-      (profiles || []).forEach(p => {
+
+      allProfiles.forEach(p => {
         if (p.id) map[p.id] = p;
         if (p.user_id) map[p.user_id] = p;
       });
@@ -185,7 +192,7 @@ export const ExecutiveMessenger: React.FC = () => {
 
   // 4. Query REAL Messages from Supabase for Selected Conversation
   const { data: dbMessages = [], isLoading: isLoadingMsgs } = useQuery({
-    queryKey: ['real-user-messages', selectedConversationId],
+    queryKey: ['real-user-messages-v3', selectedConversationId],
     queryFn: async () => {
       if (!selectedConversationId) return [];
       const { data, error } = await supabase
@@ -194,10 +201,7 @@ export const ExecutiveMessenger: React.FC = () => {
         .eq('conversation_id', selectedConversationId)
         .order('created_at', { ascending: true });
 
-      if (error) {
-        console.warn("Messages fetch error:", error);
-        return [];
-      }
+      if (error) return [];
       return data || [];
     },
     enabled: !!selectedConversationId
@@ -235,7 +239,7 @@ export const ExecutiveMessenger: React.FC = () => {
             ...prev,
             [msg.conversation_id]: [...(prev[msg.conversation_id] || []), msg]
           }));
-          queryClient.invalidateQueries({ queryKey: ['real-user-conversations'] });
+          queryClient.invalidateQueries({ queryKey: ['real-user-conversations-v3'] });
         }
       })
       .on('broadcast', { event: 'CLIENT_CALL_INVITE' }, (payload: any) => {
@@ -309,8 +313,8 @@ export const ExecutiveMessenger: React.FC = () => {
     onSuccess: () => {
       setMessageInput('');
       setAttachedMedia(null);
-      queryClient.invalidateQueries({ queryKey: ['real-user-messages', selectedConversationId] });
-      queryClient.invalidateQueries({ queryKey: ['real-user-conversations', currentUserId] });
+      queryClient.invalidateQueries({ queryKey: ['real-user-messages-v3', selectedConversationId] });
+      queryClient.invalidateQueries({ queryKey: ['real-user-conversations-v3', currentUserId] });
     },
     onError: (err: any) => {
       toast.error(err.message || 'Failed to send message');
