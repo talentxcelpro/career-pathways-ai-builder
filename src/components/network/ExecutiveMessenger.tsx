@@ -25,6 +25,7 @@ import {
   X
 } from 'lucide-react';
 import { generateGeminiSmartReply } from '@/utils/geminiAi';
+import { ExecutiveCallModal } from '@/components/network/ExecutiveCallModal';
 
 interface Message {
   id: string;
@@ -96,6 +97,10 @@ export const ExecutiveMessenger: React.FC = () => {
   const [isGeneratingAi, setIsGeneratingAi] = useState(false);
   const [optimisticMessages, setOptimisticMessages] = useState<Message[]>([]);
   const [attachedMedia, setAttachedMedia] = useState<string | null>(null);
+
+  // Call modal states
+  const [isCallOpen, setIsCallOpen] = useState(false);
+  const [activeCallType, setActiveCallType] = useState<'audio' | 'video'>('video');
 
   // 1. Fetch Current Logged In User
   useEffect(() => {
@@ -298,6 +303,12 @@ export const ExecutiveMessenger: React.FC = () => {
     }
   };
 
+  // Call Initiator
+  const startCall = (type: 'audio' | 'video') => {
+    setActiveCallType(type);
+    setIsCallOpen(true);
+  };
+
   // Active Partner Details
   const partnerName = getProfileDisplayName(partnerProfile, activeOtherId);
   const partnerAvatar = partnerProfile?.profile_picture_url;
@@ -324,6 +335,17 @@ export const ExecutiveMessenger: React.FC = () => {
   return (
     <div className="w-full h-[calc(100vh-140px)] min-h-[600px] max-w-7xl mx-auto rounded-3xl border border-slate-200/80 dark:border-border/60 shadow-xl bg-white dark:bg-card overflow-hidden flex flex-col md:flex-row">
       
+      {/* Executive Call Modal Component */}
+      <ExecutiveCallModal
+        isOpen={isCallOpen}
+        onClose={() => setIsCallOpen(false)}
+        targetUserId={activeOtherId}
+        targetName={partnerName}
+        targetAvatar={partnerAvatar}
+        targetTitle={partnerTitle}
+        callType={activeCallType}
+      />
+
       {/* ============================================================================ */}
       {/* LEFT COLUMN: REAL USER CONVERSATION LIST */}
       {/* ============================================================================ */}
@@ -473,7 +495,7 @@ export const ExecutiveMessenger: React.FC = () => {
               </div>
             </div>
 
-            {/* Quick Actions Bar */}
+            {/* Quick Actions Bar with HD Call Buttons */}
             <div className="flex items-center gap-2">
               {partnerUsername && (
                 <Link to={`/passport/public/${partnerUsername}`} target="_blank">
@@ -483,10 +505,21 @@ export const ExecutiveMessenger: React.FC = () => {
                 </Link>
               )}
 
-              <Button variant="ghost" size="sm" className="rounded-xl h-8 w-8 p-0 text-muted-foreground">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => startCall('audio')}
+                className="rounded-xl h-8 w-8 p-0 border-emerald-200 text-emerald-600 hover:bg-emerald-50"
+              >
                 <Phone className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="sm" className="rounded-xl h-8 w-8 p-0 text-muted-foreground">
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => startCall('video')}
+                className="rounded-xl h-8 w-8 p-0 border-blue-200 text-blue-600 hover:bg-blue-50"
+              >
                 <Video className="h-4 w-4" />
               </Button>
             </div>
