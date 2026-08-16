@@ -4,7 +4,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Users, Circle } from 'lucide-react';
+import { Users, Circle, MessageSquare, ChevronDown, Sparkles } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 
 interface UserPresenceProps {
   userId?: string;
@@ -14,209 +16,164 @@ interface OnlineUser {
   user_id: string;
   user_name: string;
   user_avatar?: string;
+  user_title?: string;
   last_seen: string;
-  current_page?: string;
   is_online: boolean;
 }
 
 export const UserPresence: React.FC<UserPresenceProps> = ({ userId }) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([]);
-  const [userStatus, setUserStatus] = useState<'online' | 'away' | 'offline'>('online');
+  const [isOpen, setIsOpen] = useState(false);
+
+  // Fetch current user's profile info
+  const { data: myProfile } = useQuery({
+    queryKey: ['my-presence-profile', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data } = await supabase
+        .from('profiles')
+        .select('id, full_name, profile_picture_url, title, email')
+        .eq('id', user.id)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!user?.id
+  });
+
+  const myDisplayName = myProfile?.full_name || (user?.email ? user.email.split('@')[0] : 'You');
+  const myAvatar = myProfile?.profile_picture_url;
 
   useEffect(() => {
     if (!user?.id) return;
 
-    // Subscribe to presence updates
-    const presenceChannel = supabase
-      .channel('user_presence')
-      .on('presence', { event: 'sync' }, () => {
-        const presenceState = presenceChannel.presenceState();
-        const users = Object.values(presenceState)
-          .flat()
-          .map((presence: any) => ({
-            user_id: presence.user_id,
-            user_name: presence.user_name || 'Unknown User',
-            user_avatar: presence.user_avatar,
-            last_seen: presence.last_seen,
-            current_page: presence.current_page,
-            is_online: true
-          }));
+    // Set up real-time presence channel
+    const presenceChannel = supabase.channel('user_presence_global', {
+      config: {
+        presence: {
+          key: user.id,
+        },
+      },
+    });
+
+    presenceChannel
+      .on('presence', { event: 'sync' }, async () => {
+        const state = presenceChannel.presenceState();
+        const rawUsers = Object.values(state).flat() as any[];
         
-        setOnlineUsers(users);
-      })
-      .on('presence', { event: 'join' }, ({ newPresences }) => {
-        console.log('Users joined:', newPresences);
-      })
-      .on('presence', { event: 'leave' }, ({ leftPresences }) => {
-        console.log('Users left:', leftPresences);
+        // Collect user IDs to resolve real names & avatars
+        const userIds = Array.from(new Set(rawUsers.map(u => u.user_id).filter(Boolean)));
+        
+        let profileMap: Record<string, any> = {};
+        if (userIds.length > 0) {
+          const { data: profiles } = await supabase
+            .from('profiles')
+            .select('id, full_name, profile_picture_url, title, email')
+            .in('id', userIds);
+
+          (profiles || []).forEach(p => {
+            profileMap[p.id] = p;
+          });
+        }
+
+        const formatted: OnlineUser[] = rawUsers.map(p => {
+          const prof = profileMap[p.user_id];
+          const name = prof?.full_name || p.user_name || (prof?.email ? prof.email.split('@')[0] : 'Professional Member');
+          const avatar = prof?.profile_picture_url || p.user_avatar;
+          const title = prof?.title || 'Executive Member';
+
+          return {
+            user_id: p.user_id,
+            user_name: name,
+            user_avatar: avatar,
+            user_title: title,
+            last_seen: p.last_seen || new Date().toISOString(),
+            is_online: true
+          };
+        });
+
+        // Deduplicate by user_id
+        const unique = Array.from(new Map(formatted.map(item => [item.user_id, item])).values());
+        setOnlineUsers(unique);
       })
       .subscribe(async (status) => {
         if (status === 'SUBSCRIBED') {
-          // Track current user's presence
           await presenceChannel.track({
             user_id: user.id,
-            user_name: user.email,
-            user_avatar: null,
+            user_name: myDisplayName,
+            user_avatar: myAvatar,
             last_seen: new Date().toISOString(),
-            current_page: window.location.pathname,
-            status: 'online'
+            current_page: window.location.pathname
           });
         }
       });
 
-    // Update presence on page visibility change
-    const handleVisibilityChange = async () => {
-      if (document.hidden) {
-        setUserStatus('away');
-        await presenceChannel.track({
-          user_id: user.id,
-          user_name: user.email,
-          status: 'away',
-          last_seen: new Date().toISOString()
-        });
-      } else {
-        setUserStatus('online');
-        await presenceChannel.track({
-          user_id: user.id,
-          user_name: user.email,
-          status: 'online',
-          last_seen: new Date().toISOString(),
-          current_page: window.location.pathname
-        });
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    // Update database presence
-    updateDatabasePresence(true);
-
-    // Heartbeat to keep presence alive
-    const heartbeatInterval = setInterval(() => {
-      if (!document.hidden) {
-        presenceChannel.track({
-          user_id: user.id,
-          user_name: user.email,
-          last_seen: new Date().toISOString(),
-          status: userStatus
-        });
-        updateDatabasePresence(true);
-      }
-    }, 30000); // Update every 30 seconds
-
     return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      clearInterval(heartbeatInterval);
-      updateDatabasePresence(false);
-      presenceChannel.unsubscribe();
+      supabase.removeChannel(presenceChannel);
     };
-  }, [user?.id, userStatus]);
+  }, [user?.id, myDisplayName, myAvatar]);
 
-  const updateDatabasePresence = async (isOnline: boolean) => {
-    if (!user?.id) return;
+  if (!user) return null;
 
-    const { error } = await supabase
-      .from('user_presence')
-      .upsert({
-        user_id: user.id,
-        is_online: isOnline,
-        last_seen: new Date().toISOString(),
-        current_page: window.location.pathname,
-        updated_at: new Date().toISOString()
-      });
-
-    if (error) {
-      console.error('Error updating presence:', error);
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'online': return 'bg-green-500';
-      case 'away': return 'bg-yellow-500';
-      case 'offline': return 'bg-gray-400';
-      default: return 'bg-gray-400';
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'online': return 'Online';
-      case 'away': return 'Away';
-      case 'offline': return 'Offline';
-      default: return 'Unknown';
-    }
-  };
-
-  // If userId is provided, show presence for that specific user
-  if (userId && userId !== user?.id) {
-    const targetUser = onlineUsers.find(u => u.user_id === userId);
-    
-    if (!targetUser) return null;
-
-    return (
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <div className="relative">
-          <Circle className={`h-2 w-2 ${getStatusColor('online')}`} />
-        </div>
-        <span>{getStatusText('online')}</span>
-      </div>
-    );
-  }
-
-  // Show online users widget
+  // Render a compact, elegant floating presence trigger widget
   return (
-    <Card className="fixed bottom-20 right-4 w-72 z-50 shadow-lg">
-      <CardHeader className="py-3">
-        <CardTitle className="text-sm flex items-center gap-2">
-          <Users className="h-4 w-4" />
-          Online Now ({onlineUsers.length})
-        </CardTitle>
-      </CardHeader>
-      
-      <CardContent className="py-2">
-        <div className="space-y-2 max-h-40 overflow-y-auto">
-          {/* Current user status */}
-          <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
-            <Avatar className="h-6 w-6">
-              <AvatarFallback className="text-xs">
-                {user?.email?.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <span className="text-xs font-medium">You</span>
-            <Badge variant="outline" className="ml-auto">
-              <Circle className={`h-2 w-2 mr-1 ${getStatusColor(userStatus)}`} />
-              {getStatusText(userStatus)}
-            </Badge>
-          </div>
+    <div className="fixed bottom-4 right-20 z-40 hidden sm:block">
+      {isOpen ? (
+        <Card className="w-80 shadow-2xl border border-slate-200 dark:border-border rounded-3xl bg-white dark:bg-card overflow-hidden">
+          <CardHeader className="p-3.5 bg-slate-900 text-white flex flex-row items-center justify-between">
+            <CardTitle className="text-xs font-extrabold flex items-center gap-2">
+              <Users className="h-4 w-4 text-emerald-400" />
+              Online Now ({onlineUsers.length})
+            </CardTitle>
+            <button onClick={() => setIsOpen(false)} className="text-slate-400 hover:text-white">
+              <ChevronDown className="h-4 w-4" />
+            </button>
+          </CardHeader>
 
-          {/* Other online users */}
-          {onlineUsers
-            .filter(u => u.user_id !== user?.id)
-            .slice(0, 10)
-            .map((onlineUser) => (
-              <div key={onlineUser.user_id} className="flex items-center gap-2 p-1">
-                <Avatar className="h-6 w-6">
-                  <AvatarImage src={onlineUser.user_avatar} />
-                  <AvatarFallback className="text-xs">
-                    {onlineUser.user_name.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-xs flex-1 truncate">{onlineUser.user_name}</span>
-                <div className="relative">
-                  <Circle className="h-2 w-2 bg-green-500" />
+          <CardContent className="p-2 space-y-1 max-h-60 overflow-y-auto">
+            {onlineUsers.length === 0 ? (
+              <p className="text-xs text-muted-foreground p-4 text-center">No other members online</p>
+            ) : (
+              onlineUsers.map((onlineUser) => (
+                <div
+                  key={onlineUser.user_id}
+                  onClick={() => {
+                    navigate('/network/messages');
+                    setIsOpen(false);
+                  }}
+                  className="flex items-center gap-2.5 p-2 rounded-2xl hover:bg-slate-100 dark:hover:bg-muted cursor-pointer transition-colors"
+                >
+                  <div className="relative shrink-0">
+                    <Avatar className="h-8 w-8 border border-slate-200">
+                      <AvatarImage src={onlineUser.user_avatar} alt={onlineUser.user_name} />
+                      <AvatarFallback className="font-bold text-xs bg-slate-900 text-white">
+                        {onlineUser.user_name.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-white dark:ring-card"></span>
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-extrabold text-foreground truncate">{onlineUser.user_name}</p>
+                    <p className="text-[10px] text-muted-foreground font-semibold truncate">{onlineUser.user_title}</p>
+                  </div>
+
+                  <MessageSquare className="h-3.5 w-3.5 text-blue-600 shrink-0" />
                 </div>
-              </div>
-            ))}
-          
-          {onlineUsers.length === 1 && (
-            <p className="text-xs text-muted-foreground text-center py-2">
-              No other users online
-            </p>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+              ))
+            )}
+          </CardContent>
+        </Card>
+      ) : (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-slate-900 text-white text-xs font-extrabold shadow-lg hover:bg-slate-800 transition-all border border-slate-800"
+        >
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Online ({onlineUsers.length})</span>
+        </button>
+      )}
+    </div>
   );
 };
