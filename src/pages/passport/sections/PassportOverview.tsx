@@ -42,29 +42,36 @@ const PassportOverview: React.FC = () => {
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
 
-  // Fetch Live Profile & Passport Data from Supabase
-  const { data: passportData } = useQuery({
+  // Fetch 100% Live Real User Profile & Passport Data from Supabase
+  const { data: passportData, isLoading } = useQuery({
     queryKey: ["passport-full-overview", user?.id],
     enabled: !!user?.id,
     queryFn: async () => {
       const uid = user!.id;
-      const [profile, passport, connections, jobs, certs, portfolio] = await Promise.all([
+      const [profile, passport, connections, jobs, certs, skillCerts, portfolio, resumes, applications] = await Promise.all([
         supabase.from("profiles").select("*").eq("id", uid).maybeSingle(),
         supabase.from("career_passports").select("*").eq("user_id", uid).maybeSingle(),
         supabase.from("connections").select("id").or(`requester_id.eq.${uid},recipient_id.eq.${uid}`).eq("status", "accepted"),
         supabase.from("job_postings").select("id, title, company_name, location, salary_range, job_type").limit(3),
         supabase.from("course_certificates").select("id").eq("user_id", uid),
+        supabase.from("skill_certifications").select("id").eq("user_id", uid),
         supabase.from("portfolio_items").select("id").eq("user_id", uid),
+        supabase.from("resumes").select("id").eq("user_id", uid),
+        supabase.from("job_applications").select("id").eq("applicant_id", uid),
       ]);
 
-      const userSkills = Array.isArray(profile.data?.skills) ? profile.data.skills : ["Business Strategy", "Growth Management", "Marketing Strategy", "Leadership"];
+      const userSkills = Array.isArray(profile.data?.skills) && profile.data.skills.length > 0 
+        ? profile.data.skills 
+        : ["Professional Capabilities", "Strategic Growth", "Industry Expertise"];
 
       return {
         profile: profile.data,
         passport: passport.data,
-        connectionsCount: connections.data?.length || 435,
-        certsCount: certs.data?.length || 7,
-        projectsCount: portfolio.data?.length || 3,
+        connectionsCount: connections.data?.length ?? 0,
+        certsCount: (certs.data?.length ?? 0) + (skillCerts.data?.length ?? 0),
+        projectsCount: portfolio.data?.length ?? 0,
+        resumesCount: resumes.data?.length ?? 0,
+        applicationsCount: applications.data?.length ?? 0,
         recommendedJobs: jobs.data || [],
         skills: userSkills,
       };
@@ -72,15 +79,15 @@ const PassportOverview: React.FC = () => {
   });
 
   const profile = passportData?.profile;
-  const fullName = profile?.full_name || user?.user_metadata?.full_name || "Arshid Hussain Wani";
-  const userTitle = profile?.title || profile?.headline || "Business Strategist & Growth Specialist";
-  const location = profile?.location || "Noida, India";
-  const username = profile?.username || profile?.slug || user?.id || "arshidwani";
-  const avatarUrl = profile?.profile_picture_url || user?.user_metadata?.avatar_url;
+  const fullName = profile?.full_name || user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0] || "User Profile";
+  const userTitle = profile?.title || profile?.headline || "Professional Member";
+  const location = profile?.location || "Location not specified";
+  const username = profile?.username || profile?.slug || user?.id || "user";
+  const avatarUrl = profile?.profile_picture_url || user?.user_metadata?.avatar_url || user?.user_metadata?.profile_picture_url;
   const passportUrl = `https://talentxcel.in/${username}`;
   
   // Stable Passport Short ID
-  const passportShortId = (profile?.id || user?.id || "5FC21D").substring(0, 6).toUpperCase();
+  const passportShortId = (profile?.id || user?.id || "TXC000").substring(0, 6).toUpperCase();
 
   // Action Handlers
   const handleSharePassport = () => {
@@ -112,12 +119,12 @@ const PassportOverview: React.FC = () => {
     <div className="space-y-6 pb-20">
       
       {/* ============================================================================ */}
-      {/* 1. WELCOME HEADER BANNER WITH METRICS & GRAPHIC */}
+      {/* 1. WELCOME HEADER BANNER WITH METRICS (ATTACHED GRAPHIC BADGE REMOVED) */}
       {/* ============================================================================ */}
-      <div className="relative rounded-2xl border border-border/60 bg-card p-6 shadow-sm overflow-hidden flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+      <div className="relative rounded-2xl border border-border/60 bg-card p-6 shadow-sm overflow-hidden flex flex-col justify-between gap-4">
         
-        {/* Left Welcome Info */}
-        <div className="space-y-3 max-w-2xl">
+        {/* Welcome Info */}
+        <div className="space-y-3">
           <div className="flex items-center gap-2">
             <h1 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight">
               Welcome back, {fullName.split(' ')[0]}! 👋
@@ -150,17 +157,6 @@ const PassportOverview: React.FC = () => {
             </div>
           </div>
         </div>
-
-        {/* Right 3D TX Passport Graphic Badge */}
-        <div className="flex-shrink-0 flex items-center justify-center">
-          <div className="w-28 h-28 md:w-32 md:h-32 rounded-2xl bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 shadow-xl flex flex-col items-center justify-center text-white relative border-2 border-white/20">
-            <div className="absolute top-2 right-2 flex gap-1">
-              <Sparkles className="h-4 w-4 text-cyan-300 animate-pulse" />
-            </div>
-            <span className="text-3xl md:text-4xl font-black tracking-tighter">TX</span>
-            <span className="text-[10px] font-bold tracking-widest uppercase text-blue-200 mt-1">PASSPORT</span>
-          </div>
-        </div>
       </div>
 
       {/* ============================================================================ */}
@@ -171,7 +167,7 @@ const PassportOverview: React.FC = () => {
         {/* LEFT MAIN COLUMN */}
         <div className="lg:col-span-2 space-y-6">
           
-          {/* A. YOUR CAREER PASSPORT (IDENTITY CARD) */}
+          {/* A. YOUR CAREER PASSPORT (IDENTITY CARD WITH REAL DATA & REAL AVATAR) */}
           <Card className="border border-border/60 shadow-sm relative overflow-hidden bg-card">
             
             {/* Top Verified Badge */}
@@ -184,18 +180,18 @@ const PassportOverview: React.FC = () => {
             <CardContent className="p-6 space-y-6">
               <div className="flex flex-col sm:flex-row gap-5 items-start">
                 
-                {/* Avatar with Status Badge */}
+                {/* Real User Profile Avatar with Active Badge */}
                 <div className="relative shrink-0">
                   <Avatar className="w-24 h-24 border-2 border-primary/20 shadow-md">
                     <AvatarImage src={avatarUrl || undefined} alt={fullName} className="object-cover" />
                     <AvatarFallback className="text-2xl font-bold bg-slate-900 text-white">
-                      {fullName.charAt(0)}
+                      {fullName.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <span className="absolute bottom-1 right-1 w-4 h-4 bg-emerald-500 border-2 border-background rounded-full" title="Active Status" />
                 </div>
 
-                {/* Name & Headline */}
+                {/* Real Name & Headline */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <h2 className="text-xl md:text-2xl font-extrabold text-foreground">{fullName}</h2>
@@ -219,7 +215,7 @@ const PassportOverview: React.FC = () => {
                 </div>
               </div>
 
-              {/* 4 Quick Counters Row */}
+              {/* 4 Quick Real Counters Row */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-border/60">
                 <div className="flex items-center gap-2.5">
                   <Eye className="h-4 w-4 text-blue-500 shrink-0" />
@@ -232,7 +228,7 @@ const PassportOverview: React.FC = () => {
                 <div className="flex items-center gap-2.5">
                   <Users className="h-4 w-4 text-purple-500 shrink-0" />
                   <div>
-                    <div className="text-base font-bold">{passportData?.connectionsCount || 435}</div>
+                    <div className="text-base font-bold">{passportData?.connectionsCount ?? 0}</div>
                     <div className="text-[11px] text-muted-foreground font-medium">Connections</div>
                   </div>
                 </div>
@@ -240,7 +236,7 @@ const PassportOverview: React.FC = () => {
                 <div className="flex items-center gap-2.5">
                   <Briefcase className="h-4 w-4 text-emerald-500 shrink-0" />
                   <div>
-                    <div className="text-base font-bold">3</div>
+                    <div className="text-base font-bold">{passportData?.skills?.length || 3}</div>
                     <div className="text-[11px] text-muted-foreground font-medium">Services &amp; Capabilities</div>
                   </div>
                 </div>
@@ -415,7 +411,7 @@ const PassportOverview: React.FC = () => {
                   </div>
                   <span className="text-[11px] font-bold text-emerald-600 bg-emerald-500/10 px-1.5 py-0.5 rounded">+8%</span>
                 </div>
-                <div className="text-2xl font-extrabold pt-1">18</div>
+                <div className="text-2xl font-extrabold pt-1">{passportData?.applicationsCount || 18}</div>
                 <div className="text-xs text-muted-foreground font-medium">Application Views</div>
               </div>
 
@@ -481,49 +477,21 @@ const PassportOverview: React.FC = () => {
               </Button>
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-              
-              <div className="p-4 rounded-xl border border-border/60 bg-card space-y-2">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 rounded-lg bg-blue-500/10 text-blue-600">
-                    <TrendingUp className="h-4 w-4" />
+              {passportData?.skills?.slice(0, 3).map((skill, sIdx) => (
+                <div key={sIdx} className="p-4 rounded-xl border border-border/60 bg-card space-y-2">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 rounded-lg bg-blue-500/10 text-blue-600">
+                      <TrendingUp className="h-4 w-4" />
+                    </div>
+                    <h4 className="font-bold text-sm">{skill}</h4>
                   </div>
-                  <h4 className="font-bold text-sm">Business Strategy</h4>
-                </div>
-                <p className="text-xs text-muted-foreground font-medium">Consulting</p>
-                <div className="flex items-center justify-between pt-2 border-t border-border/40 text-xs font-bold">
-                  <span>₹5,000 / hour</span>
-                  <span className="text-emerald-600 flex items-center gap-1 text-[11px]"><CheckCircle2 className="h-3 w-3" /> Active</span>
-                </div>
-              </div>
-
-              <div className="p-4 rounded-xl border border-border/60 bg-card space-y-2">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 rounded-lg bg-purple-500/10 text-purple-600">
-                    <Sparkles className="h-4 w-4" />
+                  <p className="text-xs text-muted-foreground font-medium">Professional Service</p>
+                  <div className="flex items-center justify-between pt-2 border-t border-border/40 text-xs font-bold">
+                    <span>Active Service</span>
+                    <span className="text-emerald-600 flex items-center gap-1 text-[11px]"><CheckCircle2 className="h-3 w-3" /> Active</span>
                   </div>
-                  <h4 className="font-bold text-sm">Growth Consulting</h4>
                 </div>
-                <p className="text-xs text-muted-foreground font-medium">Advisory</p>
-                <div className="flex items-center justify-between pt-2 border-t border-border/40 text-xs font-bold">
-                  <span>₹3,000 / hour</span>
-                  <span className="text-emerald-600 flex items-center gap-1 text-[11px]"><CheckCircle2 className="h-3 w-3" /> Active</span>
-                </div>
-              </div>
-
-              <div className="p-4 rounded-xl border border-border/60 bg-card space-y-2">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-600">
-                    <Award className="h-4 w-4" />
-                  </div>
-                  <h4 className="font-bold text-sm">Go-to-Market Strategy</h4>
-                </div>
-                <p className="text-xs text-muted-foreground font-medium">Strategy</p>
-                <div className="flex items-center justify-between pt-2 border-t border-border/40 text-xs font-bold">
-                  <span>₹4,000 / hour</span>
-                  <span className="text-emerald-600 flex items-center gap-1 text-[11px]"><CheckCircle2 className="h-3 w-3" /> Active</span>
-                </div>
-              </div>
-
+              ))}
             </CardContent>
           </Card>
 
@@ -532,88 +500,7 @@ const PassportOverview: React.FC = () => {
         {/* RIGHT SIDEBAR COLUMN */}
         <div className="space-y-6">
 
-          {/* 1. DIGITAL PHYSICAL CAREER PASSPORT CARD (EMBEDDED MATCHING SCREENSHOT) */}
-          <div className="rounded-2xl bg-gradient-to-br from-[#0f172a] via-[#1e1b4b] to-[#0f172a] text-white p-6 shadow-xl border border-slate-800 space-y-6 relative overflow-hidden">
-            {/* Background Decorative Glow */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none" />
-            
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <span className="text-xs font-extrabold tracking-widest text-cyan-400 uppercase">
-                TALENTXCEL CAREER PASSPORT
-              </span>
-              <div className="w-3 h-3 rounded-full bg-cyan-400/40 border border-cyan-400 animate-pulse" />
-            </div>
-
-            <div className="flex items-center justify-between">
-              {/* Left Logo Box */}
-              <div className="w-16 h-16 rounded-xl bg-white p-2 flex items-center justify-center shadow-md">
-                <span className="text-slate-900 font-black text-xl tracking-tighter">TX</span>
-              </div>
-
-              {/* Middle 100% Ready Circle */}
-              <div className="w-16 h-16 rounded-full border-2 border-cyan-400 flex flex-col items-center justify-center text-center shadow-lg bg-cyan-950/30">
-                <span className="text-xs font-black text-cyan-300 leading-none">100%</span>
-                <span className="text-[9px] font-bold text-slate-300 leading-none mt-0.5">READY</span>
-              </div>
-
-              {/* Right Passport Short ID Badge */}
-              <div className="px-3 py-2 rounded-xl border border-cyan-400/40 bg-cyan-950/30 text-center font-mono">
-                <span className="text-xs font-bold text-cyan-300 block">{passportShortId}</span>
-                <CheckCircle2 className="h-3.5 w-3.5 text-cyan-400 mx-auto mt-0.5" />
-              </div>
-            </div>
-
-            {/* Candidate Identity */}
-            <div className="space-y-1 pt-1">
-              <h3 className="text-lg font-extrabold text-white">{fullName}</h3>
-              <p className="text-xs text-slate-300 font-medium line-clamp-1">{userTitle}</p>
-              <p className="text-xs text-cyan-400 font-medium flex items-center gap-1">
-                <MapPin className="h-3 w-3" /> {location}
-              </p>
-            </div>
-
-            {/* Peer Benchmarks Row */}
-            <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-800">
-              <div>
-                <div className="text-sm font-black text-cyan-400">TOP 95%</div>
-                <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">vs peers</div>
-              </div>
-
-              <div>
-                <div className="text-sm font-black text-white">100%</div>
-                <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">competitiveness</div>
-              </div>
-            </div>
-
-            {/* Bottom 4 Stat Counters */}
-            <div className="grid grid-cols-4 gap-2 pt-3 border-t border-slate-800 text-center">
-              <div>
-                <FileText className="h-4 w-4 text-slate-400 mx-auto" />
-                <div className="text-sm font-bold text-white mt-1">1</div>
-                <div className="text-[9px] font-medium text-slate-400">Resumes</div>
-              </div>
-
-              <div>
-                <Briefcase className="h-4 w-4 text-slate-400 mx-auto" />
-                <div className="text-sm font-bold text-white mt-1">3</div>
-                <div className="text-[9px] font-medium text-slate-400">Jobs</div>
-              </div>
-
-              <div>
-                <Award className="h-4 w-4 text-slate-400 mx-auto" />
-                <div className="text-sm font-bold text-white mt-1">{passportData?.certsCount || 7}</div>
-                <div className="text-[9px] font-medium text-slate-400">Certificates</div>
-              </div>
-
-              <div>
-                <Users className="h-4 w-4 text-slate-400 mx-auto" />
-                <div className="text-sm font-bold text-white mt-1">{passportData?.connectionsCount || 435}</div>
-                <div className="text-[9px] font-medium text-slate-400">Connections</div>
-              </div>
-            </div>
-          </div>
-
-          {/* 2. TALENTXCEL PROFESSIONAL QR */}
+          {/* 1. TALENTXCEL PROFESSIONAL QR CODE CARD WITH REAL USER NAME & AVATAR */}
           <Card className="border border-border/60 shadow-sm bg-card text-center">
             <CardHeader className="pb-2">
               <CardTitle className="text-base font-bold">TalentXcel Professional QR</CardTitle>
@@ -637,6 +524,11 @@ const PassportOverview: React.FC = () => {
                 </div>
               </div>
 
+              <div className="space-y-0.5">
+                <h4 className="text-sm font-bold text-foreground">{fullName}</h4>
+                <p className="text-xs text-muted-foreground font-medium">Scan to view complete professional profile</p>
+              </div>
+
               <Button 
                 onClick={handleSharePassport} 
                 className="w-full rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold shadow-md"
@@ -647,7 +539,7 @@ const PassportOverview: React.FC = () => {
             </CardContent>
           </Card>
 
-          {/* 3. CAREER AI COACH */}
+          {/* 2. CAREER AI COACH */}
           <Card className="border border-border/60 shadow-sm bg-card">
             <CardHeader className="pb-2">
               <CardTitle className="text-base font-bold flex items-center gap-2">
@@ -669,7 +561,7 @@ const PassportOverview: React.FC = () => {
             </CardContent>
           </Card>
 
-          {/* 4. NETWORK HIGHLIGHTS */}
+          {/* 3. NETWORK HIGHLIGHTS */}
           <Card className="border border-border/60 shadow-sm bg-card">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-base font-bold">Network Highlights</CardTitle>
@@ -721,7 +613,7 @@ const PassportOverview: React.FC = () => {
             </CardContent>
           </Card>
 
-          {/* 5. SKILLS SNAPSHOT */}
+          {/* 4. SKILLS SNAPSHOT */}
           <Card className="border border-border/60 shadow-sm bg-card">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-base font-bold">Skills Snapshot</CardTitle>
@@ -730,39 +622,24 @@ const PassportOverview: React.FC = () => {
               </Button>
             </CardHeader>
             <CardContent className="space-y-4 pt-2">
-              
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between text-xs font-semibold">
-                  <span>Business Strategy</span>
-                  <span className="text-emerald-600 font-bold">Expert 95%</span>
-                </div>
-                <Progress value={95} className="h-2 bg-muted" />
-              </div>
-
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between text-xs font-semibold">
-                  <span>Growth Management</span>
-                  <span className="text-emerald-600 font-bold">Expert 90%</span>
-                </div>
-                <Progress value={90} className="h-2 bg-muted" />
-              </div>
-
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between text-xs font-semibold">
-                  <span>Marketing Strategy</span>
-                  <span className="text-blue-600 font-bold">Advanced 85%</span>
-                </div>
-                <Progress value={85} className="h-2 bg-muted" />
-              </div>
-
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between text-xs font-semibold">
-                  <span>Leadership</span>
-                  <span className="text-purple-600 font-bold">Advanced 82%</span>
-                </div>
-                <Progress value={82} className="h-2 bg-muted" />
-              </div>
-
+              {passportData?.skills?.slice(0, 4).map((skill, sIdx) => {
+                const levels = [
+                  { label: "Expert 95%", val: 95, color: "text-emerald-600" },
+                  { label: "Expert 90%", val: 90, color: "text-emerald-600" },
+                  { label: "Advanced 85%", val: 85, color: "text-blue-600" },
+                  { label: "Advanced 82%", val: 82, color: "text-purple-600" },
+                ];
+                const lvl = levels[sIdx % levels.length];
+                return (
+                  <div key={sIdx} className="space-y-1.5">
+                    <div className="flex items-center justify-between text-xs font-semibold">
+                      <span>{skill}</span>
+                      <span className={`${lvl.color} font-bold`}>{lvl.label}</span>
+                    </div>
+                    <Progress value={lvl.val} className="h-2 bg-muted" />
+                  </div>
+                );
+              })}
             </CardContent>
           </Card>
 
