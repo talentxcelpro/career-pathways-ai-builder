@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useQuery } from "@tanstack/react-query";
 import { QRCodeSVG } from "qrcode.react";
@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Progress } from "@/components/ui/progress";
 import { generateAndDownloadVCard } from "@/utils/vcardGenerator";
 import { toast } from "sonner";
 import {
@@ -32,18 +33,20 @@ import {
   Globe,
   Eye,
   Users,
-  FileText
+  FileText,
+  TrendingUp,
+  Target,
+  ChevronRight,
+  User,
+  Star,
+  Trophy,
+  Check,
+  MessageCircle,
+  Building2,
+  Zap,
+  FolderGit2
 } from "lucide-react";
 import { computeTrustScore } from "./lib/trustScore";
-
-const DEFAULT_VIS = {
-  education: true,
-  experience: true,
-  certificates: true,
-  skills: true,
-  contact: true,
-  trust_score: true,
-};
 
 async function findProfile(identifier: string) {
   const cleaned = identifier.startsWith("@") ? identifier.slice(1) : identifier;
@@ -63,7 +66,9 @@ async function findProfile(identifier: string) {
 
 const PublicPassport: React.FC = () => {
   const { identifier } = useParams<{ identifier: string }>();
+  const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
+  const [activeTab, setActiveTab] = useState<"about" | "experience" | "services" | "projects" | "achievements" | "credentials" | "reviews">("about");
 
   const { data, isLoading } = useQuery({
     queryKey: ["public-passport", identifier],
@@ -79,13 +84,13 @@ const PublicPassport: React.FC = () => {
           supabase.from("course_certificates").select("id, courses(title)").eq("user_id", uid),
           supabase.from("skill_certifications").select("id, skill_name, issuer, verification_status").eq("user_id", uid),
           supabase.from("user_skills").select("id, skill_name").eq("user_id", uid),
-          supabase.from("portfolio_items").select("id").eq("user_id", uid),
+          supabase.from("portfolio_items").select("id, title, description, category").eq("user_id", uid),
           supabase.from("connections").select("id").or(`requester_id.eq.${uid},recipient_id.eq.${uid}`).eq("status", "accepted"),
         ]);
 
-      const userSkills = Array.isArray(profile.skills) && profile.skills.length > 0
-        ? profile.skills
-        : (skills.data?.map((s: any) => s.skill_name) || ["Business Analysis", "Branding", "Customer Retention", "Public Speaking", "Sales, Marketing , Startup incubation", "Bootstrap", "Python (Pandas, NumPy)"]);
+      const dbSkills = skills.data?.map((s: any) => s.skill_name) || [];
+      const profileSkills = Array.isArray(profile.skills) ? profile.skills : [];
+      const userSkills = profileSkills.length > 0 ? profileSkills : (dbSkills.length > 0 ? dbSkills : ["Business Analysis", "Branding", "Customer Retention", "Public Speaking", "Sales", "Marketing", "Startup Incubation", "Bootstrapping", "Python (Pandas, NumPy)"]);
 
       return {
         profile,
@@ -106,22 +111,18 @@ const PublicPassport: React.FC = () => {
           })),
         ],
         skills: userSkills,
+        projects: portfolio.data ?? [],
         counts: {
           education: edu.data?.length ?? 0,
           experience: exp.data?.length ?? 0,
-          connections: connections.data?.length ?? 435,
+          connections: connections.data?.length ?? 250,
           certificates: (courseCerts.data?.length ?? 0) + (skillCerts.data?.length ?? 0) || 7,
           skills: userSkills.length,
-          projects: portfolio.data?.length ?? 3,
+          projects: portfolio.data?.length ?? 20,
         },
       };
     },
   });
-
-  const vis = useMemo(() => {
-    if (!data?.profile) return DEFAULT_VIS;
-    return { ...DEFAULT_VIS, ...((data.profile as any).passport_visibility ?? {}) };
-  }, [data]);
 
   const trust = useMemo(
     () =>
@@ -165,12 +166,17 @@ const PublicPassport: React.FC = () => {
   }
 
   const p: any = data.profile;
-  const fullName = p.full_name || "Professional Profile";
+  const fullName = p.full_name || "TalentXcelServices";
   const title = p.title || p.headline || "Director Operations";
   const location = p.location || "India";
   const avatarUrl = p.profile_picture_url || p.profile_photo_url;
+  const headline = p.headline || "Transforming Businesses and Lives";
+  const aboutText = p.about || "We help businesses unlock their full potential through strategic consulting, operational excellence, and innovative solutions. Our mission is to transform businesses and lives through impact-driven work.";
+  const website = p.website || "https://chatrbusinessai.in";
+  const industry = p.industry || "Consulting & Business Services";
+  const languages = p.languages ? (Array.isArray(p.languages) ? p.languages.join(", ") : p.languages) : "English, Hindi";
   const username = p.username || p.slug || identifier;
-  const passportShortId = (p.id || "5FC21D").substring(0, 6).toUpperCase();
+  const passportShortId = (p.id || "5FC21D0D").substring(0, 8).toUpperCase();
   const publicUrl = typeof window !== "undefined" ? window.location.href : `https://talentxcel.in/passport/public/${username}`;
 
   const handleSharePassport = () => {
@@ -185,10 +191,10 @@ const PublicPassport: React.FC = () => {
       generateAndDownloadVCard({
         fullName,
         title,
-        headline: p.headline,
+        headline,
         email: p.email,
         phone: p.phone,
-        website: p.website,
+        website,
         location,
         linkedin: p.linkedin_url,
       });
@@ -201,359 +207,595 @@ const PublicPassport: React.FC = () => {
   return (
     <PageShell width="xl" pad="md">
       <Helmet>
-        <title>{fullName} · Verified Career Passport · TalentXcel</title>
+        <title>{fullName} · Career Passport · TalentXcel</title>
         <meta
           name="description"
-          content={`${fullName}'s verified Career Passport on TalentXcel. Trust score ${trust.score}/100.`}
+          content={`${fullName}'s verified Career Passport on TalentXcel.`}
         />
-        <meta property="og:title" content={`${fullName} · Career Passport`} />
-        <meta property="og:description" content={p.headline || p.about || ""} />
-        <meta property="og:type" content="profile" />
-        {avatarUrl && <meta property="og:image" content={avatarUrl} />}
       </Helmet>
 
-      {/* ============================================================================ */}
-      {/* 1. HYPER-PREMIUM EXECUTIVE HERO BANNER */}
-      {/* ============================================================================ */}
-      <div className="relative rounded-2xl overflow-hidden shadow-xl border border-border/50 bg-gradient-to-r from-[#0f172a] via-[#1e1b4b] to-[#0f172a] text-white mb-6">
-        
-        {/* Background Mesh Overlay */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-500/20 via-purple-500/10 to-transparent pointer-events-none" />
+      <div className="space-y-6 pb-20">
 
-        <div className="relative p-6 md:p-8 flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">
-          <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center">
+        {/* ============================================================================ */}
+        {/* 1. PROFILE HERO SECTION (EXACT MOCKUP MATCH WITH 3D GRAPHIC & CONTRAST BADGES) */}
+        {/* ============================================================================ */}
+        <div className="relative rounded-3xl border border-blue-100 dark:border-border/60 bg-gradient-to-r from-blue-50/70 via-indigo-50/40 to-blue-50/70 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900 p-6 md:p-8 shadow-sm overflow-hidden">
+          
+          {/* Top Pill Badge & Top Right Actions */}
+          <div className="flex items-center justify-between mb-6">
+            <Badge className="bg-blue-600 text-white font-bold px-3 py-1 rounded-full text-xs flex items-center gap-1.5 shadow-sm">
+              <CheckCircle2 className="h-3.5 w-3.5" />
+              Verified Professional
+            </Badge>
+
+            <Button 
+              onClick={handleSharePassport} 
+              variant="outline" 
+              className="rounded-full bg-white dark:bg-card border-slate-200 dark:border-border text-xs font-bold shadow-sm"
+            >
+              <Share2 className="h-3.5 w-3.5 mr-1.5 text-primary" />
+              {copied ? "Copied!" : "Share Profile"}
+            </Button>
+          </div>
+
+          {/* Identity & 3D TX Chip Graphic Container */}
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
             
-            {/* Glowing Avatar Frame */}
-            <div className="relative shrink-0">
-              <div className="w-24 h-24 md:w-28 md:h-28 rounded-full p-1 bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 shadow-2xl">
-                <Avatar className="w-full h-full rounded-full border-2 border-slate-900">
+            {/* Identity Info */}
+            <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center">
+              
+              {/* Profile Avatar with Active Status Indicator */}
+              <div className="relative shrink-0">
+                <Avatar className="w-24 h-24 sm:w-28 sm:h-28 border-4 border-white dark:border-slate-800 shadow-xl bg-white">
                   <AvatarImage src={avatarUrl || undefined} alt={fullName} className="object-cover" />
-                  <AvatarFallback className="text-3xl font-black bg-slate-900 text-white">
+                  <AvatarFallback className="text-3xl font-extrabold bg-slate-900 text-white">
                     {fullName.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
+                <span className="absolute bottom-1 right-1 w-5 h-5 bg-emerald-500 border-2 border-white dark:border-slate-800 rounded-full shadow-md" title="Active Status" />
               </div>
-              <span className="absolute bottom-1 right-1 w-5 h-5 bg-emerald-500 border-2 border-slate-900 rounded-full shadow-md" title="Verified Identity" />
+
+              {/* Name, Title, Location & Headline */}
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">{fullName}</h1>
+                  <CheckCircle2 className="h-6 w-6 text-blue-600 fill-blue-600/20 shrink-0" />
+                </div>
+                
+                <p className="text-base font-bold text-muted-foreground">{title}</p>
+                
+                <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-muted-foreground pt-0.5">
+                  <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5 text-primary" /> {location}</span>
+                  <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5 text-primary" /> Member since 2025</span>
+                </div>
+
+                <p className="text-xs sm:text-sm font-semibold text-primary pt-1">{headline}</p>
+              </div>
             </div>
 
-            {/* Candidate Identity - HIGH CONTRAST BRIGHT TEXT */}
-            <div className="space-y-2">
-              <div className="flex flex-wrap items-center gap-2.5">
-                <h1 className="text-2xl md:text-3xl font-black tracking-tight text-white flex items-center gap-2">
-                  {fullName}
-                  <CheckCircle2 className="h-6 w-6 text-cyan-400 fill-cyan-400/20 shrink-0" />
-                </h1>
-                <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 font-semibold px-2.5 py-0.5 rounded-full text-xs">
-                  Verified Identity
-                </Badge>
+            {/* Right 3D TX Passport Graphic Art */}
+            <div className="hidden lg:flex shrink-0 items-center justify-center relative w-64 h-36">
+              <div className="w-28 h-32 rounded-2xl bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 shadow-2xl flex flex-col items-center justify-center text-white border-2 border-white/30 transform rotate-6 hover:rotate-0 transition-transform duration-300">
+                <div className="absolute top-2 right-2">
+                  <Sparkles className="h-4 w-4 text-cyan-300 animate-pulse" />
+                </div>
+                <span className="text-3xl font-black tracking-tighter">TX</span>
+                <span className="text-[9px] font-bold tracking-widest uppercase text-blue-200 mt-1">PASSPORT</span>
               </div>
-
-              <p className="text-base md:text-lg font-semibold text-slate-200">{title}</p>
               
-              <div className="flex flex-wrap items-center gap-4 text-xs md:text-sm text-slate-300 font-medium pt-0.5">
-                <span className="flex items-center gap-1.5 text-cyan-300 font-bold">
-                  <MapPin className="h-4 w-4" /> {location}
-                </span>
-                <span className="flex items-center gap-1.5 text-slate-300">
-                  <Calendar className="h-4 w-4 text-cyan-400" /> Member since 2025
-                </span>
-                <span className="flex items-center gap-1.5 text-slate-300">
-                  <ShieldCheck className="h-4 w-4 text-emerald-400" /> Trust Score {trust.score}/100
-                </span>
+              {/* Floating Icon Badges */}
+              <div className="absolute -left-2 top-4 w-9 h-9 rounded-full bg-white dark:bg-card shadow-lg flex items-center justify-center text-blue-600 border border-slate-100">
+                <User className="h-4 w-4" />
               </div>
-
-              {p.headline && (
-                <p className="text-xs md:text-sm text-slate-300 max-w-xl line-clamp-2 pt-1 font-medium">{p.headline}</p>
-              )}
+              <div className="absolute left-6 bottom-2 w-9 h-9 rounded-full bg-white dark:bg-card shadow-lg flex items-center justify-center text-indigo-600 border border-slate-100">
+                <Briefcase className="h-4 w-4" />
+              </div>
+              <div className="absolute right-0 top-2 w-9 h-9 rounded-full bg-white dark:bg-card shadow-lg flex items-center justify-center text-purple-600 border border-slate-100">
+                <GraduationCap className="h-4 w-4" />
+              </div>
+              <div className="absolute right-4 bottom-4 w-9 h-9 rounded-full bg-white dark:bg-card shadow-lg flex items-center justify-center text-emerald-600 border border-slate-100">
+                <TrendingUp className="h-4 w-4" />
+              </div>
             </div>
 
           </div>
 
-          {/* Action Buttons Toolbar */}
-          <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-            <Button 
-              onClick={handleSharePassport} 
-              className="flex-1 md:flex-none rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/20 backdrop-blur-sm"
-            >
-              <Share2 className="h-3.5 w-3.5 mr-1.5 text-cyan-300" />
-              {copied ? "Copied!" : "Share Profile"}
-            </Button>
+          {/* 5 Counter Metrics Pill Bar */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 pt-6 mt-6 border-t border-blue-200/60 dark:border-border/60">
+            <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-white/80 dark:bg-card border border-slate-200/60 dark:border-border/60 shadow-sm">
+              <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600 shrink-0">
+                <TrendingUp className="h-4 w-4" />
+              </div>
+              <div>
+                <div className="text-sm font-extrabold text-foreground">95%</div>
+                <div className="text-[10px] font-semibold text-muted-foreground">Career Ready</div>
+              </div>
+            </div>
 
-            <Button 
-              onClick={handleDownloadVCard} 
-              className="flex-1 md:flex-none rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md"
-            >
-              <Download className="h-3.5 w-3.5 mr-1.5" />
-              Download vCard
-            </Button>
+            <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-white/80 dark:bg-card border border-slate-200/60 dark:border-border/60 shadow-sm">
+              <div className="p-2 rounded-xl bg-blue-500/10 text-blue-600 shrink-0">
+                <Target className="h-4 w-4" />
+              </div>
+              <div>
+                <div className="text-sm font-extrabold text-foreground">98%</div>
+                <div className="text-[10px] font-semibold text-muted-foreground">Competitiveness</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-white/80 dark:bg-card border border-slate-200/60 dark:border-border/60 shadow-sm">
+              <div className="p-2 rounded-xl bg-purple-500/10 text-purple-600 shrink-0">
+                <Users className="h-4 w-4" />
+              </div>
+              <div>
+                <div className="text-sm font-extrabold text-foreground">12</div>
+                <div className="text-[10px] font-semibold text-muted-foreground">Services</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-white/80 dark:bg-card border border-slate-200/60 dark:border-border/60 shadow-sm">
+              <div className="p-2 rounded-xl bg-amber-500/10 text-amber-600 shrink-0">
+                <Users className="h-4 w-4" />
+              </div>
+              <div>
+                <div className="text-sm font-extrabold text-foreground">{data.counts.connections}+</div>
+                <div className="text-[10px] font-semibold text-muted-foreground">Connections</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-white/80 dark:bg-card border border-slate-200/60 dark:border-border/60 shadow-sm col-span-2 sm:col-span-1">
+              <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-600 shrink-0">
+                <Briefcase className="h-4 w-4" />
+              </div>
+              <div>
+                <div className="text-sm font-extrabold text-foreground">{data.counts.projects}+</div>
+                <div className="text-[10px] font-semibold text-muted-foreground">Projects</div>
+              </div>
+            </div>
           </div>
 
         </div>
-      </div>
 
-      {/* ============================================================================ */}
-      {/* 2. MAIN 2-COLUMN PUBLIC PASSPORT LAYOUT */}
-      {/* ============================================================================ */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* ============================================================================ */}
+        {/* 2. MAIN 2-COLUMN GRID */}
+        {/* ============================================================================ */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        {/* LEFT COLUMN */}
-        <div className="lg:col-span-2 space-y-6">
+          {/* LEFT MAIN COLUMN */}
+          <div className="lg:col-span-2 space-y-6">
 
-          {/* A. SKILLS & EXPERTISE */}
-          {vis.skills && data.skills.length > 0 && (
+            {/* A. SKILLS & EXPERTISE SECTION */}
             <Card className="border border-border/60 shadow-sm bg-card">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg font-bold flex items-center gap-2">
-                  <Wrench className="h-5 w-5 text-primary" />
-                  Skills &amp; Expertise
-                </CardTitle>
+              <CardHeader className="flex flex-row items-center justify-between pb-3">
+                <CardTitle className="text-base font-bold">Skills &amp; Expertise</CardTitle>
+                <Button variant="link" size="sm" onClick={() => navigate('/skills')} className="text-xs font-bold text-primary p-0">
+                  View All Skills <ChevronRight className="h-3.5 w-3.5 ml-0.5" />
+                </Button>
               </CardHeader>
               <CardContent className="pt-0">
                 <div className="flex flex-wrap gap-2">
-                  {data.skills.map((skill: any, idx: number) => {
-                    const skillName = typeof skill === "string" ? skill : skill.skill_name;
-                    return (
-                      <Badge 
-                        key={idx} 
-                        variant="secondary"
-                        className="rounded-xl px-3 py-1.5 text-xs font-semibold bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-colors"
-                      >
-                        {skillName}
-                      </Badge>
-                    );
-                  })}
+                  {data.skills.map((skill: string, idx: number) => (
+                    <Badge 
+                      key={idx} 
+                      variant="secondary"
+                      className="rounded-full px-3.5 py-1.5 text-xs font-semibold bg-slate-100 dark:bg-muted text-slate-800 dark:text-slate-200 border border-slate-200/80 dark:border-border/60 hover:bg-primary/10 hover:text-primary transition-colors cursor-pointer"
+                    >
+                      {skill}
+                    </Badge>
+                  ))}
                 </div>
               </CardContent>
             </Card>
-          )}
 
-          {/* B. PROFESSIONAL SUMMARY / ABOUT */}
-          {p.about && (
-            <Card className="border border-border/60 shadow-sm bg-card">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg font-bold flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-blue-500" />
-                  Professional Summary
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <p className="text-sm text-muted-foreground leading-relaxed font-medium">
-                  {p.about}
-                </p>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* C. VERIFIED WORK EXPERIENCE */}
-          {vis.experience && data.experience.length > 0 && (
-            <Card className="border border-border/60 shadow-sm bg-card">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg font-bold flex items-center gap-2">
-                  <Briefcase className="h-5 w-5 text-emerald-500" />
-                  Work Experience
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <ol className="relative border-l-2 border-primary/20 pl-6 space-y-6">
-                  {data.experience.map((x: any) => (
-                    <li key={x.id} className="relative">
-                      <span className="absolute -left-[31px] top-1.5 h-4 w-4 rounded-full border-2 border-primary bg-background" />
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-base font-bold text-foreground">{x.job_title || x.title}</h3>
-                        <Badge variant="outline" className="text-[11px] font-semibold">
-                          {x.start_date ? new Date(x.start_date).getFullYear() : "2022"} — {x.is_current ? "Present" : (x.end_date ? new Date(x.end_date).getFullYear() : "Present")}
-                        </Badge>
-                      </div>
-                      <p className="text-sm font-semibold text-primary mt-0.5">{x.company}</p>
-                      {x.description && (
-                        <p className="text-xs text-muted-foreground font-medium mt-2 leading-relaxed">
-                          {x.description}
-                        </p>
-                      )}
-                    </li>
-                  ))}
-                </ol>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* D. EDUCATION */}
-          {vis.education && data.education.length > 0 && (
-            <Card className="border border-border/60 shadow-sm bg-card">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg font-bold flex items-center gap-2">
-                  <GraduationCap className="h-5 w-5 text-purple-500" />
-                  Education &amp; Credentials
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0 space-y-4">
-                {data.education.map((e: any) => (
-                  <div key={e.id} className="p-3 rounded-xl border border-border/60 bg-muted/20 flex items-start justify-between">
-                    <div>
-                      <h4 className="text-sm font-bold text-foreground">{e.degree}</h4>
-                      <p className="text-xs font-semibold text-muted-foreground mt-0.5">{e.institution}</p>
-                      {e.field_of_study && <p className="text-[11px] text-muted-foreground mt-1">{e.field_of_study}</p>}
+            {/* B. 3-GRID FEATURED SECTION */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              
+              {/* 1. Featured Strengths */}
+              <Card className="border border-border/60 shadow-sm bg-card p-4 space-y-3">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Featured Strengths</h3>
+                <div className="space-y-2.5">
+                  <div>
+                    <div className="flex items-center justify-between text-xs font-bold">
+                      <span>Business Strategy</span>
+                      <span className="text-primary">95%</span>
                     </div>
-                    <Badge variant="secondary" className="text-[10px] font-bold">
-                      {e.graduation_date ? new Date(e.graduation_date).getFullYear() : "Graduated"}
-                    </Badge>
+                    <Progress value={95} className="h-1.5 bg-muted mt-1" />
                   </div>
-                ))}
-              </CardContent>
-            </Card>
-          )}
 
-        </div>
+                  <div>
+                    <div className="flex items-center justify-between text-xs font-bold">
+                      <span>Operational Excellence</span>
+                      <span className="text-primary">92%</span>
+                    </div>
+                    <Progress value={92} className="h-1.5 bg-muted mt-1" />
+                  </div>
 
-        {/* RIGHT SIDEBAR COLUMN */}
-        <div className="space-y-6">
+                  <div>
+                    <div className="flex items-center justify-between text-xs font-bold">
+                      <span>Team Leadership</span>
+                      <span className="text-primary">90%</span>
+                    </div>
+                    <Progress value={90} className="h-1.5 bg-muted mt-1" />
+                  </div>
 
-          {/* 1. DIGITAL VERIFIED CAREER PASSPORT IDENTITY CARD */}
-          <div className="rounded-2xl bg-slate-950 text-white p-6 shadow-2xl border border-slate-700/80 space-y-6 relative overflow-hidden">
-            
-            {/* Top Header */}
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <span className="text-xs font-black tracking-widest text-cyan-300 uppercase">
-                TALENTXCEL CAREER PASSPORT
-              </span>
-              <Badge className="bg-cyan-950 border border-cyan-400/50 text-cyan-300 font-mono text-[10px]">
-                ID: TX-{passportShortId}
-              </Badge>
+                  <div>
+                    <div className="flex items-center justify-between text-xs font-bold">
+                      <span>Process Optimization</span>
+                      <span className="text-primary">88%</span>
+                    </div>
+                    <Progress value={88} className="h-1.5 bg-muted mt-1" />
+                  </div>
+                </div>
+              </Card>
+
+              {/* 2. Profile Highlights */}
+              <Card className="border border-border/60 shadow-sm bg-card p-4 space-y-3">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Profile Highlights</h3>
+                <div className="space-y-2 text-xs font-medium">
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-600 shrink-0"><User className="h-3.5 w-3.5" /></div>
+                    <div>
+                      <div className="font-bold">5+ Years</div>
+                      <div className="text-[11px] text-muted-foreground">Professional Experience</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-600 shrink-0"><ShieldCheck className="h-3.5 w-3.5" /></div>
+                    <div>
+                      <div className="font-bold">Worked with</div>
+                      <div className="text-[11px] text-muted-foreground">50+ Clients</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-1.5 rounded-lg bg-purple-500/10 text-purple-600 shrink-0"><Building2 className="h-3.5 w-3.5" /></div>
+                    <div>
+                      <div className="font-bold">Industry Focus</div>
+                      <div className="text-[11px] text-muted-foreground">Consulting, IT, SaaS</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-1.5 rounded-lg bg-amber-500/10 text-amber-600 shrink-0"><Globe className="h-3.5 w-3.5" /></div>
+                    <div>
+                      <div className="font-bold">Global Mindset</div>
+                      <div className="text-[11px] text-muted-foreground">India &amp; International</div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+
+              {/* 3. Top Services */}
+              <Card className="border border-border/60 shadow-sm bg-card p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Top Services</h3>
+                  <Button variant="link" size="sm" onClick={() => navigate('/services')} className="text-[11px] font-bold text-primary p-0 h-auto">
+                    View All <ChevronRight className="h-3 w-3 ml-0.5" />
+                  </Button>
+                </div>
+                <div className="space-y-2 text-xs font-semibold">
+                  <div className="flex items-center justify-between p-2 rounded-lg bg-muted/30 border border-border/40 hover:bg-muted/60 cursor-pointer">
+                    <span>Business Strategy Consulting</span>
+                    <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+                  </div>
+                  <div className="flex items-center justify-between p-2 rounded-lg bg-muted/30 border border-border/40 hover:bg-muted/60 cursor-pointer">
+                    <span>Operational Excellence</span>
+                    <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+                  </div>
+                  <div className="flex items-center justify-between p-2 rounded-lg bg-muted/30 border border-border/40 hover:bg-muted/60 cursor-pointer">
+                    <span>Process Optimization</span>
+                    <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+                  </div>
+                  <div className="flex items-center justify-between p-2 rounded-lg bg-muted/30 border border-border/40 hover:bg-muted/60 cursor-pointer">
+                    <span>Performance Improvement</span>
+                    <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+                  </div>
+                </div>
+              </Card>
+
             </div>
 
-            {/* Center User Info & Live SVG QR Code */}
-            <div className="flex items-center justify-between gap-4">
-              <div className="space-y-1.5 flex-1 min-w-0">
-                <div className="w-12 h-12 rounded-xl bg-white p-1 flex items-center justify-center shrink-0 shadow-md">
-                  {avatarUrl ? (
-                    <img src={avatarUrl} alt={fullName} className="w-full h-full object-cover rounded-lg" />
+            {/* C. MULTI-TAB NAVIGATION BAR */}
+            <div className="border-b border-border/60 flex items-center gap-1 overflow-x-auto no-scrollbar pt-2">
+              <button 
+                onClick={() => setActiveTab("about")}
+                className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-colors border-b-2 whitespace-nowrap flex items-center gap-1.5 ${
+                  activeTab === "about"
+                    ? "border-primary text-primary bg-primary/5"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <User className="h-3.5 w-3.5" /> About
+              </button>
+
+              <button 
+                onClick={() => setActiveTab("experience")}
+                className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-colors border-b-2 whitespace-nowrap flex items-center gap-1.5 ${
+                  activeTab === "experience"
+                    ? "border-primary text-primary bg-primary/5"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Briefcase className="h-3.5 w-3.5" /> Experience
+              </button>
+
+              <button 
+                onClick={() => setActiveTab("services")}
+                className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-colors border-b-2 whitespace-nowrap flex items-center gap-1.5 ${
+                  activeTab === "services"
+                    ? "border-primary text-primary bg-primary/5"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Zap className="h-3.5 w-3.5" /> Services
+              </button>
+
+              <button 
+                onClick={() => setActiveTab("projects")}
+                className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-colors border-b-2 whitespace-nowrap flex items-center gap-1.5 ${
+                  activeTab === "projects"
+                    ? "border-primary text-primary bg-primary/5"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <FolderGit2 className="h-3.5 w-3.5" /> Projects
+              </button>
+
+              <button 
+                onClick={() => setActiveTab("achievements")}
+                className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-colors border-b-2 whitespace-nowrap flex items-center gap-1.5 ${
+                  activeTab === "achievements"
+                    ? "border-primary text-primary bg-primary/5"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Trophy className="h-3.5 w-3.5" /> Achievements
+              </button>
+
+              <button 
+                onClick={() => setActiveTab("credentials")}
+                className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-colors border-b-2 whitespace-nowrap flex items-center gap-1.5 ${
+                  activeTab === "credentials"
+                    ? "border-primary text-primary bg-primary/5"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Award className="h-3.5 w-3.5" /> Credentials
+              </button>
+
+              <button 
+                onClick={() => setActiveTab("reviews")}
+                className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-colors border-b-2 whitespace-nowrap flex items-center gap-1.5 ${
+                  activeTab === "reviews"
+                    ? "border-primary text-primary bg-primary/5"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Star className="h-3.5 w-3.5" /> Reviews
+              </button>
+            </div>
+
+            {/* D. TAB CONTENT CONTAINER */}
+            <Card className="border border-border/60 shadow-sm bg-card p-6">
+              
+              {activeTab === "about" && (
+                <div className="space-y-6">
+                  {/* About Text */}
+                  <div>
+                    <h3 className="text-base font-bold text-foreground mb-2">About {fullName}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed font-medium">
+                      {aboutText}
+                    </p>
+                  </div>
+
+                  {/* Details Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-border/60">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-xl bg-blue-500/10 text-blue-600 shrink-0"><Globe className="h-4 w-4" /></div>
+                      <div>
+                        <div className="text-[11px] font-semibold text-muted-foreground">Website</div>
+                        <a href={website} target="_blank" rel="noreferrer" className="text-xs font-bold text-primary hover:underline truncate block">
+                          {website.replace(/^https?:\/\//, '')}
+                        </a>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-xl bg-purple-500/10 text-purple-600 shrink-0"><Building2 className="h-4 w-4" /></div>
+                      <div>
+                        <div className="text-[11px] font-semibold text-muted-foreground">Industry</div>
+                        <div className="text-xs font-bold text-foreground">{industry}</div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600 shrink-0"><MessageCircle className="h-4 w-4" /></div>
+                      <div>
+                        <div className="text-[11px] font-semibold text-muted-foreground">Languages</div>
+                        <div className="text-xs font-bold text-foreground">{languages}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Key Achievements Cards */}
+                  <div className="pt-4 border-t border-border/60 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Key Achievements</h4>
+                      <Button variant="link" size="sm" onClick={() => setActiveTab("achievements")} className="text-xs font-bold text-primary p-0 h-auto">
+                        View All <ChevronRight className="h-3 w-3 ml-0.5" />
+                      </Button>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      <div className="p-3 rounded-xl border border-amber-200/80 bg-amber-50/50 dark:bg-amber-950/20 text-center space-y-1">
+                        <Trophy className="h-5 w-5 text-amber-500 mx-auto" />
+                        <div className="text-[10px] font-semibold text-muted-foreground">Top Consultant</div>
+                        <div className="text-xs font-extrabold text-foreground">2025</div>
+                      </div>
+
+                      <div className="p-3 rounded-xl border border-emerald-200/80 bg-emerald-50/50 dark:bg-emerald-950/20 text-center space-y-1">
+                        <Star className="h-5 w-5 text-emerald-500 mx-auto" />
+                        <div className="text-[10px] font-semibold text-muted-foreground">Client Satisfaction</div>
+                        <div className="text-xs font-extrabold text-foreground">98%</div>
+                      </div>
+
+                      <div className="p-3 rounded-xl border border-purple-200/80 bg-purple-50/50 dark:bg-purple-950/20 text-center space-y-1">
+                        <Briefcase className="h-5 w-5 text-purple-500 mx-auto" />
+                        <div className="text-[10px] font-semibold text-muted-foreground">Successful Projects</div>
+                        <div className="text-xs font-extrabold text-foreground">20+</div>
+                      </div>
+
+                      <div className="p-3 rounded-xl border border-blue-200/80 bg-blue-50/50 dark:bg-blue-950/20 text-center space-y-1">
+                        <Award className="h-5 w-5 text-blue-500 mx-auto" />
+                        <div className="text-[10px] font-semibold text-muted-foreground">5 Star Rating</div>
+                        <div className="text-xs font-extrabold text-foreground">4.9/5</div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              )}
+
+              {activeTab === "experience" && (
+                <div className="space-y-4">
+                  <h3 className="text-base font-bold text-foreground">Work Experience</h3>
+                  {data.experience.length > 0 ? (
+                    <ol className="relative border-l-2 border-primary/20 pl-6 space-y-6">
+                      {data.experience.map((x: any) => (
+                        <li key={x.id} className="relative">
+                          <span className="absolute -left-[31px] top-1.5 h-4 w-4 rounded-full border-2 border-primary bg-background" />
+                          <div className="flex items-center justify-between">
+                            <h4 className="text-sm font-bold text-foreground">{x.job_title || x.title}</h4>
+                            <Badge variant="outline" className="text-[11px] font-semibold">
+                              {x.start_date ? new Date(x.start_date).getFullYear() : "2022"} — {x.is_current ? "Present" : (x.end_date ? new Date(x.end_date).getFullYear() : "Present")}
+                            </Badge>
+                          </div>
+                          <p className="text-xs font-bold text-primary mt-0.5">{x.company}</p>
+                          {x.description && (
+                            <p className="text-xs text-muted-foreground font-medium mt-2 leading-relaxed">
+                              {x.description}
+                            </p>
+                          )}
+                        </li>
+                      ))}
+                    </ol>
                   ) : (
-                    <span className="text-slate-900 font-black text-lg">TX</span>
+                    <p className="text-xs text-muted-foreground font-medium">5+ Years of Verified Leadership and Operations Experience.</p>
                   )}
                 </div>
-                <h4 className="text-base font-black text-white truncate pt-1">{fullName}</h4>
-                <p className="text-xs text-cyan-300 font-bold line-clamp-1">{title}</p>
-                <p className="text-[11px] text-slate-300 font-medium flex items-center gap-1">
-                  <MapPin className="h-3 w-3 text-cyan-300" /> {location}
-                </p>
-              </div>
+              )}
 
-              {/* Live SVG QR Code Frame */}
-              <div className="p-2 rounded-xl bg-white shadow-md border border-slate-200 shrink-0">
-                <QRCodeSVG value={publicUrl} size={90} level="M" />
-              </div>
-            </div>
+              {activeTab !== "about" && activeTab !== "experience" && (
+                <div className="py-8 text-center space-y-2">
+                  <Sparkles className="h-8 w-8 text-primary mx-auto" />
+                  <h4 className="text-sm font-bold text-foreground uppercase tracking-wider">{activeTab} Portfolio</h4>
+                  <p className="text-xs text-muted-foreground font-medium">Verified credentials and items available upon contact.</p>
+                </div>
+              )}
 
-            {/* Peer Benchmarks */}
-            <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-800 text-center">
-              <div className="bg-slate-900/90 p-2.5 rounded-xl border border-slate-800">
-                <div className="text-xs font-black text-cyan-300">TOP 95%</div>
-                <div className="text-[9px] font-bold text-slate-300 uppercase">VS PEERS</div>
-              </div>
-
-              <div className="bg-slate-900/90 p-2.5 rounded-xl border border-slate-800">
-                <div className="text-xs font-black text-white">100%</div>
-                <div className="text-[9px] font-bold text-slate-300 uppercase">COMPETITIVENESS</div>
-              </div>
-            </div>
-
-            {/* Bottom 4 Stat Counters */}
-            <div className="grid grid-cols-4 gap-2 pt-3 border-t border-slate-800 text-center">
-              <div>
-                <FileText className="h-4 w-4 text-cyan-300 mx-auto" />
-                <div className="text-xs font-bold text-white mt-1">1</div>
-                <div className="text-[9px] font-medium text-slate-300">Resumes</div>
-              </div>
-
-              <div>
-                <Briefcase className="h-4 w-4 text-cyan-300 mx-auto" />
-                <div className="text-xs font-bold text-white mt-1">3</div>
-                <div className="text-[9px] font-medium text-slate-300">Jobs</div>
-              </div>
-
-              <div>
-                <Award className="h-4 w-4 text-cyan-300 mx-auto" />
-                <div className="text-xs font-bold text-white mt-1">{data.counts.certificates}</div>
-                <div className="text-[9px] font-medium text-slate-300">Certificates</div>
-              </div>
-
-              <div>
-                <Users className="h-4 w-4 text-cyan-300 mx-auto" />
-                <div className="text-xs font-bold text-white mt-1">{data.counts.connections}</div>
-                <div className="text-[9px] font-medium text-slate-300">Connections</div>
-              </div>
-            </div>
+            </Card>
 
           </div>
 
-          {/* 2. TRUST SCORE BREAKDOWN CARD */}
-          {vis.trust_score && (
-            <Card className="border border-border/60 shadow-sm bg-card">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base font-bold flex items-center justify-between">
-                  <span>Trust Score Breakdown</span>
-                  <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/30">
-                    {trust.score}/100
-                  </Badge>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2.5 pt-2 text-xs">
-                {trust.signals.map((s) => (
-                  <div key={s.key} className="flex items-center justify-between p-2 rounded-lg bg-muted/30 border border-border/40 font-semibold">
-                    <span className="text-foreground">{s.label}</span>
-                    <span className="text-primary font-bold">{s.score}</span>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          )}
+          {/* RIGHT SIDEBAR COLUMN (EXACT MOCKUP PASSPORT DIGITAL CARD) */}
+          <div className="space-y-6">
 
-          {/* 3. CONTACT & VERIFICATION DETAILS */}
-          {vis.contact && (p.email || p.phone || p.website || p.linkedin_url) && (
-            <Card className="border border-border/60 shadow-sm bg-card">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base font-bold">Contact Info</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 pt-2 text-xs font-medium">
-                {p.email && (
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Mail className="h-4 w-4 text-primary shrink-0" />
-                    <span className="truncate">{p.email}</span>
+            <Card className="border border-blue-200/80 dark:border-border/60 shadow-xl bg-card overflow-hidden">
+              
+              {/* Passport Header */}
+              <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-4 text-white flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-extrabold tracking-wide">TalentXcel</h3>
+                  <p className="text-[10px] text-blue-100 font-semibold">Professional Career Passport</p>
+                </div>
+                <Badge className="bg-white/20 text-white border-white/30 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <ShieldCheck className="h-3 w-3" /> TX-VERIFIED
+                </Badge>
+              </div>
+
+              <CardContent className="p-5 space-y-5">
+                
+                {/* Avatar, Info & QR Code */}
+                <div className="flex items-start justify-between gap-3">
+                  <div className="space-y-1 flex-1 min-w-0">
+                    <div className="w-12 h-12 rounded-xl bg-white p-1 flex items-center justify-center shrink-0 border border-slate-200 shadow-sm">
+                      {avatarUrl ? (
+                        <img src={avatarUrl} alt={fullName} className="w-full h-full object-cover rounded-lg" />
+                      ) : (
+                        <span className="text-slate-900 font-black text-lg">TX</span>
+                      )}
+                    </div>
+                    <h4 className="text-sm font-extrabold text-foreground truncate pt-1">{fullName}</h4>
+                    <p className="text-xs text-primary font-bold line-clamp-1">{title}</p>
+                    <p className="text-[11px] text-muted-foreground font-medium flex items-center gap-1">
+                      <MapPin className="h-3 w-3 text-primary" /> {location}
+                    </p>
                   </div>
-                )}
-                {p.phone && (
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Phone className="h-4 w-4 text-primary shrink-0" />
-                    <span>{p.phone}</span>
+
+                  {/* QR Code Frame */}
+                  <div className="p-2 rounded-xl bg-white shadow-md border border-slate-200 shrink-0">
+                    <QRCodeSVG value={publicUrl} size={85} level="M" />
                   </div>
-                )}
-                {p.website && (
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <LinkIcon className="h-4 w-4 text-primary shrink-0" />
-                    <a href={p.website} target="_blank" rel="noreferrer" className="underline hover:text-primary truncate">
-                      {p.website}
-                    </a>
+                </div>
+
+                {/* Professional Summary */}
+                <div className="space-y-1 pt-2 border-t border-border/60">
+                  <h5 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Professional Summary</h5>
+                  <p className="text-xs text-foreground font-semibold line-clamp-2">{headline}</p>
+                </div>
+
+                {/* Core Skills */}
+                <div className="space-y-1.5 pt-2 border-t border-border/60">
+                  <h5 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Core Skills</h5>
+                  <div className="flex flex-wrap gap-1">
+                    {data.skills.slice(0, 8).map((sk: string, sIdx: number) => (
+                      <span key={sIdx} className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-muted text-foreground border border-border/40">
+                        {sk}
+                      </span>
+                    ))}
                   </div>
-                )}
-                {p.linkedin_url && (
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <ExternalLink className="h-4 w-4 text-primary shrink-0" />
-                    <a href={p.linkedin_url} target="_blank" rel="noreferrer" className="underline hover:text-primary">
-                      LinkedIn Profile
-                    </a>
+                </div>
+
+                {/* Passport Buttons */}
+                <div className="space-y-2 pt-2 border-t border-border/60">
+                  <Button 
+                    onClick={() => navigate('/passport')} 
+                    className="w-full rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
+                    View Full Passport
+                  </Button>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button 
+                      onClick={handleDownloadVCard} 
+                      variant="outline" 
+                      className="rounded-xl text-[11px] font-bold border-slate-200"
+                    >
+                      <Download className="h-3 w-3 mr-1" />
+                      vCard
+                    </Button>
+
+                    <Button 
+                      onClick={handleSharePassport} 
+                      variant="outline" 
+                      className="rounded-xl text-[11px] font-bold border-slate-200"
+                    >
+                      <Share2 className="h-3 w-3 mr-1" />
+                      Save QR
+                    </Button>
                   </div>
-                )}
+                </div>
+
               </CardContent>
+
             </Card>
-          )}
+
+          </div>
 
         </div>
 
       </div>
-
-      <p className="mt-12 text-center text-xs text-muted-foreground font-medium">
-        Powered by TalentXcel Universal Career Passport · Verified &amp; Secured
-      </p>
 
     </PageShell>
   );
