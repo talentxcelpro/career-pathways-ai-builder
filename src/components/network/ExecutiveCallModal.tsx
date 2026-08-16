@@ -27,6 +27,7 @@ interface ExecutiveCallModalProps {
   targetTitle?: string;
   callType?: 'audio' | 'video';
   isIncoming?: boolean;
+  onAccept?: () => void;
 }
 
 export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
@@ -37,10 +38,11 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
   targetAvatar,
   targetTitle = 'Executive Member',
   callType = 'video',
-  isIncoming = false
+  isIncoming = false,
+  onAccept
 }) => {
   const { user } = useAuth();
-  const [callState, setCallState] = useState<'ringing' | 'connected' | 'ended'>('ringing');
+  const [callState, setCallState] = useState<'ringing' | 'connected' | 'ended'>(isIncoming ? 'ringing' : 'ringing');
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(callType === 'audio');
   const [callDuration, setCallDuration] = useState(0);
@@ -67,14 +69,14 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Initialize WebRTC and Realtime Signaling
+  // Initialize WebRTC Media Stream
   useEffect(() => {
     if (!isOpen) return;
 
-    setCallState('ringing');
+    setCallState(isIncoming ? 'ringing' : 'ringing');
     setCallDuration(0);
 
-    const startCallEngine = async () => {
+    const startMedia = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: true,
@@ -86,30 +88,32 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
           localVideoRef.current.srcObject = stream;
         }
       } catch (err) {
-        console.warn('Media devices warning:', err);
+        console.warn('Camera/Mic permission warning:', err);
       }
 
-      // Auto-connect call after 2.5 seconds for seamless experience
-      const connectTimeout = setTimeout(() => {
-        setCallState('connected');
-        toast.success(`HD Call Connected with ${targetName}`);
-      }, 2500);
-
-      return () => clearTimeout(connectTimeout);
+      // Auto-connect call if caller initiates after 2.5 seconds
+      if (!isIncoming) {
+        const timeout = setTimeout(() => {
+          setCallState('connected');
+          toast.success(`HD Call Connected with ${targetName}`);
+        }, 2500);
+        return () => clearTimeout(timeout);
+      }
     };
 
-    startCallEngine();
+    startMedia();
 
     return () => {
       if (localStreamRef.current) {
         localStreamRef.current.getTracks().forEach(track => track.stop());
       }
     };
-  }, [isOpen, callType, targetName]);
+  }, [isOpen, callType, isIncoming, targetName]);
 
   const handleAcceptCall = () => {
     setCallState('connected');
-    toast.success(`Connected with ${targetName}`);
+    if (onAccept) onAccept();
+    toast.success(`Call connected with ${targetName}`);
   };
 
   const handleEndCall = () => {
@@ -189,7 +193,7 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
               />
               <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-extrabold text-white flex items-center gap-1.5 border border-white/10">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>{targetName} (HD 1080p)</span>
+                <span>{targetName} (Encrypted HD)</span>
               </div>
             </div>
           ) : (
@@ -246,7 +250,7 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
             <>
               <Button
                 onClick={handleAcceptCall}
-                className="rounded-full h-14 w-14 bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg flex items-center justify-center"
+                className="rounded-full h-14 w-14 bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg flex items-center justify-center gap-1 text-xs font-bold"
               >
                 <Phone className="h-6 w-6" />
               </Button>

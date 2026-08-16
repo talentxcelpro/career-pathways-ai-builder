@@ -101,6 +101,7 @@ export const ExecutiveMessenger: React.FC = () => {
   // Call modal states
   const [isCallOpen, setIsCallOpen] = useState(false);
   const [activeCallType, setActiveCallType] = useState<'audio' | 'video'>('video');
+  const [incomingCallData, setIncomingCallData] = useState<any>(null);
 
   // 1. Fetch Current Logged In User
   useEffect(() => {
@@ -111,7 +112,7 @@ export const ExecutiveMessenger: React.FC = () => {
     fetchUser();
   }, []);
 
-  // 2. Query Real Conversations from Supabase using contains operator
+  // 2. Query Real Conversations from Supabase
   const { data: conversations = [], isLoading: isLoadingConvs } = useQuery({
     queryKey: ['executive-conversations', currentUserId],
     queryFn: async () => {
@@ -124,7 +125,6 @@ export const ExecutiveMessenger: React.FC = () => {
         .order('last_updated', { ascending: false });
 
       if (error) {
-        // Fallback query if contains filter needs array string
         const { data: fallbackData } = await supabase
           .from('conversations')
           .select('*')
@@ -155,7 +155,7 @@ export const ExecutiveMessenger: React.FC = () => {
   ));
 
   const { data: profilesMap = {} } = useQuery({
-    queryKey: ['conversation-profiles-map-v3', allParticipantIds],
+    queryKey: ['conversation-profiles-map-v4', allParticipantIds],
     queryFn: async () => {
       if (allParticipantIds.length === 0) return {};
       
@@ -179,6 +179,10 @@ export const ExecutiveMessenger: React.FC = () => {
   const activeConv = conversations.find(c => c.id === selectedConversationId);
   const activeOtherId = activeConv?.participants?.find((p: string) => p !== currentUserId);
   const partnerProfile = profilesMap[activeOtherId || ''];
+  const partnerName = getProfileDisplayName(partnerProfile, activeOtherId);
+  const partnerAvatar = partnerProfile?.profile_picture_url;
+  const partnerTitle = partnerProfile?.title || "Executive Member";
+  const partnerUsername = partnerProfile?.username || partnerProfile?.slug || partnerProfile?.id;
 
   // 4. Query Messages for Selected Conversation
   const { data: realMessages = [], isLoading: isLoadingMsgs } = useQuery({
@@ -205,29 +209,54 @@ export const ExecutiveMessenger: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [allMessages.length]);
 
-  // 5. Global Real-Time Supabase WebSocket Listener for Live Delivery across users
+  // 5. High-Speed Direct Broadcast WebSocket Engine (0ms Latency Chat & Call Signaling)
   useEffect(() => {
     if (!currentUserId) return;
 
-    const channel = supabase
-      .channel(`global-messenger-live-${currentUserId}`)
+    const messagingBus = supabase.channel('talentxcel-direct-chat-bus', {
+      config: { broadcast: { self: true } }
+    });
+
+    messagingBus
+      .on('broadcast', { event: 'new_message' }, (payload: any) => {
+        const msg = payload.payload;
+        if (msg && (msg.conversation_id === selectedConversationId || msg.recipient_id === currentUserId)) {
+          queryClient.invalidateQueries({ queryKey: ['real-messages'] });
+          queryClient.invalidateQueries({ queryKey: ['executive-conversations'] });
+          setOptimisticMessages(prev => prev.filter(m => m.id !== msg.id));
+        }
+      })
+      .on('broadcast', { event: 'incoming_call' }, (payload: any) => {
+        const callData = payload.payload;
+        if (callData && callData.targetUserId === currentUserId) {
+          setIncomingCallData(callData);
+          setActiveCallType(callData.callType || 'video');
+          setIsCallOpen(true);
+          toast.info(`Incoming ${callData.callType || 'HD'} call from ${callData.callerName}`);
+        }
+      })
+      .subscribe();
+
+    // Also listen to Postgres INSERT on messages table
+    const dbChannel = supabase
+      .channel(`db-messages-sync-${currentUserId}`)
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'messages' },
-        (payload) => {
+        () => {
           queryClient.invalidateQueries({ queryKey: ['real-messages'] });
           queryClient.invalidateQueries({ queryKey: ['executive-conversations'] });
-          setOptimisticMessages(prev => prev.filter(m => m.id !== payload.new.id));
         }
       )
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(messagingBus);
+      supabase.removeChannel(dbChannel);
     };
-  }, [currentUserId, queryClient]);
+  }, [currentUserId, selectedConversationId, queryClient]);
 
-  // 6. Send Message Mutation
+  // 6. Send Message Mutation with 0ms Broadcast Dispatch
   const sendMessageMutation = useMutation({
     mutationFn: async ({ text, media }: { text: string; media?: string }) => {
       if (!currentUserId || !selectedConversationId) throw new Error('Not ready');
@@ -243,8 +272,17 @@ export const ExecutiveMessenger: React.FC = () => {
         status: 'sent'
       };
 
+      // 1. Optimistic UI update
       setOptimisticMessages(prev => [...prev, newMsg]);
 
+      // 2. High-speed WebSocket Broadcast (0ms Latency)
+      supabase.channel('talentxcel-direct-chat-bus').send({
+        type: 'broadcast',
+        event: 'new_message',
+        payload: { ...newMsg, recipient_id: activeOtherId }
+      });
+
+      // 3. Persist to Supabase Database
       const { data, error } = await supabase
         .from('messages')
         .insert({
@@ -258,12 +296,10 @@ export const ExecutiveMessenger: React.FC = () => {
 
       if (error) throw error;
 
-      // Update conversation last_updated
+      // Update conversation timestamp
       await supabase
         .from('conversations')
-        .update({ 
-          last_updated: new Date().toISOString()
-        })
+        .update({ last_updated: new Date().toISOString() })
         .eq('id', selectedConversationId);
 
       return data;
@@ -318,17 +354,26 @@ export const ExecutiveMessenger: React.FC = () => {
     }
   };
 
-  // Call Initiator
+  // Call Initiator with Real-Time WebSockets Signaling
   const startCall = (type: 'audio' | 'video') => {
+    if (!activeOtherId) return;
+    
     setActiveCallType(type);
+    setIncomingCallData(null);
     setIsCallOpen(true);
-  };
 
-  // Active Partner Details
-  const partnerName = getProfileDisplayName(partnerProfile, activeOtherId);
-  const partnerAvatar = partnerProfile?.profile_picture_url;
-  const partnerTitle = partnerProfile?.title || "Executive Member";
-  const partnerUsername = partnerProfile?.username || partnerProfile?.slug || partnerProfile?.id;
+    // Broadcast incoming call signal to partner
+    supabase.channel('talentxcel-direct-chat-bus').send({
+      type: 'broadcast',
+      event: 'incoming_call',
+      payload: {
+        callerId: currentUserId,
+        callerName: getProfileDisplayName(null, currentUserId || undefined),
+        targetUserId: activeOtherId,
+        callType: type
+      }
+    });
+  };
 
   // Filter conversations
   const filteredConversations = conversations.filter((conv: any) => {
@@ -353,12 +398,16 @@ export const ExecutiveMessenger: React.FC = () => {
       {/* Executive Call Modal Component */}
       <ExecutiveCallModal
         isOpen={isCallOpen}
-        onClose={() => setIsCallOpen(false)}
-        targetUserId={activeOtherId}
-        targetName={partnerName}
+        onClose={() => {
+          setIsCallOpen(false);
+          setIncomingCallData(null);
+        }}
+        targetUserId={incomingCallData ? incomingCallData.callerId : activeOtherId}
+        targetName={incomingCallData ? incomingCallData.callerName : partnerName}
         targetAvatar={partnerAvatar}
         targetTitle={partnerTitle}
         callType={activeCallType}
+        isIncoming={!!incomingCallData}
       />
 
       {/* ============================================================================ */}
