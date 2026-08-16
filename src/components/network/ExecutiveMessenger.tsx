@@ -333,7 +333,7 @@ export const ExecutiveMessenger: React.FC = () => {
   });
 
   return (
-    <div className="w-full h-[calc(100vh-140px)] min-h-[600px] max-w-7xl mx-auto rounded-3xl border border-slate-200/80 dark:border-border/60 shadow-xl bg-white dark:bg-card overflow-hidden flex flex-col md:flex-row">
+    <div className="w-full h-[calc(100vh-100px)] min-h-[580px] max-w-7xl mx-auto rounded-3xl border border-slate-200/80 dark:border-border/60 shadow-xl bg-white dark:bg-card overflow-hidden flex flex-col md:flex-row">
       
       {/* Executive Call Modal Component */}
       <ExecutiveCallModal
@@ -468,59 +468,59 @@ export const ExecutiveMessenger: React.FC = () => {
       {/* RIGHT COLUMN: REAL CHAT THREAD WORKSPACE */}
       {/* ============================================================================ */}
       {selectedConversationId ? (
-        <div className="flex-1 flex flex-col h-full bg-white dark:bg-card">
+        <div className="flex-1 flex flex-col h-full bg-white dark:bg-card overflow-hidden">
           
-          {/* Top Active Chat Header */}
-          <div className="p-4 border-b border-slate-200/80 dark:border-border/60 flex items-center justify-between bg-white dark:bg-card shadow-2xs z-10">
+          {/* Top Active Chat Header (PROMINENT HD CALL BUTTONS) */}
+          <div className="p-3 sm:p-4 border-b border-slate-200/80 dark:border-border/60 flex items-center justify-between bg-slate-900 text-white shadow-md z-20 shrink-0">
             
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <Avatar className="w-10 h-10 border border-slate-200">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="relative shrink-0">
+                <Avatar className="w-10 h-10 border border-slate-700">
                   <AvatarImage src={partnerAvatar || undefined} alt={partnerName} />
-                  <AvatarFallback className="font-extrabold text-xs bg-slate-900 text-white">
+                  <AvatarFallback className="font-extrabold text-xs bg-blue-600 text-white">
                     {partnerName.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-white dark:ring-card"></span>
+                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 rounded-full ring-2 ring-slate-900"></span>
               </div>
 
-              <div>
+              <div className="min-w-0">
                 <div className="flex items-center gap-1.5">
-                  <h3 className="text-sm font-extrabold text-foreground">{partnerName}</h3>
-                  <ShieldCheck className="h-4 w-4 text-blue-600" />
+                  <h3 className="text-sm font-extrabold text-white truncate">{partnerName}</h3>
+                  <ShieldCheck className="h-4 w-4 text-blue-400 shrink-0" />
                 </div>
-                <p className="text-[11px] text-muted-foreground font-semibold flex items-center gap-1.5">
-                  <span className="text-emerald-600 font-bold">🟢 Active Now</span> • {partnerTitle}
+                <p className="text-[11px] text-slate-300 font-semibold truncate flex items-center gap-1.5">
+                  <span className="text-emerald-400 font-bold">🟢 Active Now</span> • {partnerTitle}
                 </p>
               </div>
             </div>
 
-            {/* Quick Actions Bar with HD Call Buttons */}
-            <div className="flex items-center gap-2">
+            {/* Quick Actions Bar with PROMINENT HD Audio & Video Call Text Buttons */}
+            <div className="flex items-center gap-2 shrink-0">
               {partnerUsername && (
-                <Link to={`/passport/public/${partnerUsername}`} target="_blank">
-                  <Button variant="outline" size="sm" className="rounded-xl text-xs font-bold gap-1 text-blue-600 border-blue-200">
+                <Link to={`/passport/public/${partnerUsername}`} target="_blank" className="hidden lg:block">
+                  <Button variant="outline" size="sm" className="rounded-xl text-xs font-bold gap-1 text-blue-300 border-blue-700 bg-slate-800 hover:bg-slate-700">
                     Passport <ExternalLink className="h-3.5 w-3.5" />
                   </Button>
                 </Link>
               )}
 
               <Button
-                variant="outline"
                 size="sm"
                 onClick={() => startCall('audio')}
-                className="rounded-xl h-8 w-8 p-0 border-emerald-200 text-emerald-600 hover:bg-emerald-50"
+                className="rounded-xl h-8 px-3 text-xs font-extrabold bg-emerald-600 hover:bg-emerald-500 text-white flex items-center gap-1.5 shadow-sm"
               >
-                <Phone className="h-4 w-4" />
+                <Phone className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Audio Call</span>
               </Button>
 
               <Button
-                variant="outline"
                 size="sm"
                 onClick={() => startCall('video')}
-                className="rounded-xl h-8 w-8 p-0 border-blue-200 text-blue-600 hover:bg-blue-50"
+                className="rounded-xl h-8 px-3 text-xs font-extrabold bg-blue-600 hover:bg-blue-500 text-white flex items-center gap-1.5 shadow-sm"
               >
-                <Video className="h-4 w-4" />
+                <Video className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Video Call</span>
               </Button>
             </div>
 
@@ -539,7 +539,7 @@ export const ExecutiveMessenger: React.FC = () => {
                 </div>
                 <h3 className="text-sm font-extrabold text-foreground">Start Messaging {partnerName}</h3>
                 <p className="text-xs text-muted-foreground max-w-sm font-medium">
-                  Send a message or use TalentXcel Copilot AI Smart Reply below to draft a professional response.
+                  Send a message or click 📞 Audio Call or 📹 Video Call above to start an instant HD call.
                 </p>
               </div>
             ) : (
@@ -582,7 +582,7 @@ export const ExecutiveMessenger: React.FC = () => {
           </div>
 
           {/* ✨ 1-Click TalentXcel Copilot AI Smart Replies Bar */}
-          <div className="px-4 py-2 border-t border-slate-200/60 dark:border-border/40 bg-purple-500/5 flex flex-wrap items-center gap-1.5">
+          <div className="px-4 py-2 border-t border-slate-200/60 dark:border-border/40 bg-purple-500/5 flex flex-wrap items-center gap-1.5 shrink-0">
             <span className="text-[11px] font-extrabold text-purple-700 dark:text-purple-300 flex items-center gap-1 shrink-0">
               <Sparkles className="h-3 w-3 text-purple-600" />
               Copilot AI Reply:
@@ -626,7 +626,7 @@ export const ExecutiveMessenger: React.FC = () => {
           )}
 
           {/* Message Input Controls */}
-          <div className="p-3 border-t border-slate-200/80 dark:border-border/60 flex items-center gap-2 bg-white dark:bg-card">
+          <div className="p-3 border-t border-slate-200/80 dark:border-border/60 flex items-center gap-2 bg-white dark:bg-card shrink-0">
             
             <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*,application/pdf" className="hidden" />
 
