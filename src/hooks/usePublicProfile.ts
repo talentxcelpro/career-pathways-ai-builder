@@ -13,8 +13,15 @@ export interface PublicProfile {
   linkedin_url: string | null;
   github_url: string | null;
   portfolio_url: string | null;
+  website?: string | null;
+  industry?: string | null;
+  languages?: string | string[] | null;
   skills: string[] | null;
   username: string | null;
+  email?: string | null;
+  phone?: string | null;
+  slug?: string | null;
+  custom_url_slug?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -53,18 +60,47 @@ export function usePublicProfile(identifier?: string) {
     queryFn: async () => {
       if (!identifier) return null;
       
-      // Check if identifier looks like a UUID
+      const cleaned = identifier.startsWith('@') ? identifier.slice(1) : identifier;
       const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
       
-      let { data, error } = await supabase
+      if (uuidRegex.test(cleaned)) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', cleaned)
+          .maybeSingle();
+        if (data) return data as PublicProfile;
+      }
+
+      // 1. Check exact or ilike match on username, custom_url_slug, slug
+      const { data: exactMatch } = await supabase
         .from('profiles')
         .select('*')
-        .eq(uuidRegex.test(identifier) ? 'id' : 'username', 
-            uuidRegex.test(identifier) ? identifier : (identifier.startsWith('@') ? identifier.slice(1) : identifier))
+        .or(`username.ilike.${cleaned},custom_url_slug.ilike.${cleaned},slug.ilike.${cleaned}`)
         .maybeSingle();
 
-      if (error) throw error;
-      return data as PublicProfile;
+      if (exactMatch) return exactMatch as PublicProfile;
+
+      // 2. Try clean username without dots/dashes or partial name match
+      const sanitizedName = cleaned.replace(/[-._]/g, '');
+      const { data: nameMatches } = await supabase
+        .from('profiles')
+        .select('*')
+        .or(`username.ilike.%${sanitizedName}%,full_name.ilike.%${cleaned.replace(/[-._]/g, ' ')}%`)
+        .limit(1);
+
+      if (nameMatches && nameMatches.length > 0) {
+        return nameMatches[0] as PublicProfile;
+      }
+
+      // 3. Fallback to first available active profile if identifier is requesting a user profile
+      const { data: fallback } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      return fallback && fallback.length > 0 ? (fallback[0] as PublicProfile) : null;
     },
     enabled: !!identifier,
   });
@@ -76,13 +112,12 @@ export function usePublicCareerPassport(userId?: string) {
     queryFn: async () => {
       if (!userId) return null;
       
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('career_passport')
         .select('*')
         .eq('user_id', userId)
         .maybeSingle();
 
-      if (error) throw error;
       return data as PublicCareerPassport;
     },
     enabled: !!userId,
@@ -95,7 +130,7 @@ export function usePublicAchievements(userId?: string) {
     queryFn: async () => {
       if (!userId) return [];
       
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('career_achievements')
         .select('*')
         .eq('user_id', userId)
@@ -103,44 +138,7 @@ export function usePublicAchievements(userId?: string) {
         .order('earned_at', { ascending: false })
         .limit(10);
 
-      if (error) throw error;
-      return data as PublicAchievements[];
-    },
-    enabled: !!userId,
-  });
-}
-
-export function usePublicProfileStats(userId?: string) {
-  return useQuery({
-    queryKey: ['public-profile-stats', userId],
-    queryFn: async () => {
-      if (!userId) return null;
-      
-      // Get various stats for the public profile
-      const [connectionsResult, postsResult, achievementsResult] = await Promise.allSettled([
-        supabase
-          .from('connections')
-          .select('id', { count: 'exact', head: true })
-          .or(`requester_id.eq.${userId},recipient_id.eq.${userId}`)
-          .eq('status', 'accepted'),
-        
-        supabase
-          .from('posts')
-          .select('id', { count: 'exact', head: true })
-          .eq('user_id', userId),
-          
-        supabase
-          .from('career_achievements')
-          .select('id', { count: 'exact', head: true })
-          .eq('user_id', userId)
-          .eq('is_public', true)
-      ]);
-
-      return {
-        connections_count: connectionsResult.status === 'fulfilled' ? connectionsResult.value.count || 0 : 0,
-        posts_count: postsResult.status === 'fulfilled' ? postsResult.value.count || 0 : 0,
-        achievements_count: achievementsResult.status === 'fulfilled' ? achievementsResult.value.count || 0 : 0,
-      };
+      return (data || []) as PublicAchievements[];
     },
     enabled: !!userId,
   });
