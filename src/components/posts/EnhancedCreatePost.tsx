@@ -38,7 +38,7 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
   const [isUploading, setIsUploading] = useState(false);
   const [mediaUrls, setMediaUrls] = useState<string[]>([]);
 
-  // Gemini AI Post Assistant states
+  // TalentXcel Copilot Assistant states
   const [showGeminiAssistant, setShowGeminiAssistant] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
   const [aiTone, setAiTone] = useState('Thought Leader');
@@ -81,10 +81,10 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
     setTags(tags.filter(t => t !== tagToRemove));
   };
 
-  // Generate Post with Gemini AI
+  // Generate Post with TalentXcel Copilot
   const handleGeminiPostGenerate = async () => {
     if (!aiTopic.trim()) {
-      toast.error("Please enter a topic for Gemini AI");
+      toast.error("Please enter a topic for TalentXcel Copilot");
       return;
     }
 
@@ -99,10 +99,10 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
         setTags(Array.from(new Set([...tags, ...cleanTags])));
       }
       
-      toast.success("Gemini AI drafted your post!");
+      toast.success("TalentXcel Copilot drafted your post!");
       setShowGeminiAssistant(false);
     } catch (err: any) {
-      toast.error("Gemini AI generation failed");
+      toast.error("TalentXcel Copilot generation failed");
     } finally {
       setIsGeneratingAi(false);
     }
@@ -158,7 +158,7 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
   return (
     <Card className="w-full border border-slate-200/80 dark:border-border/60 shadow-sm bg-white dark:bg-card rounded-3xl overflow-hidden p-5 space-y-4">
       
-      {/* Header with Gemini AI Copilot Trigger */}
+      {/* Header with TalentXcel Copilot Trigger */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Sparkles className="h-4 w-4 text-blue-600" />
@@ -172,17 +172,17 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
           className="rounded-full text-xs font-extrabold border-purple-300 dark:border-purple-800 bg-gradient-to-r from-purple-500/10 to-indigo-500/10 text-purple-700 dark:text-purple-300 hover:bg-purple-500/20 px-3 h-7 gap-1.5"
         >
           <Wand2 className="h-3.5 w-3.5 text-purple-600" />
-          <span>Gemini AI Copilot</span>
+          <span>TalentXcel Copilot</span>
         </Button>
       </div>
 
-      {/* ✨ Gemini AI Post Assistant Copilot Drawer */}
+      {/* ✨ TalentXcel Copilot Assistant Drawer */}
       {showGeminiAssistant && (
         <div className="p-4 rounded-2xl bg-gradient-to-r from-purple-500/10 via-indigo-500/10 to-blue-500/10 border border-purple-200 dark:border-purple-900/60 space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-extrabold text-purple-900 dark:text-purple-200 flex items-center gap-1.5">
               <Sparkles className="h-3.5 w-3.5 text-purple-600" />
-              Gemini AI Post Assistant
+              TalentXcel Post Assistant
             </span>
             <X className="h-4 w-4 cursor-pointer text-muted-foreground" onClick={() => setShowGeminiAssistant(false)} />
           </div>
