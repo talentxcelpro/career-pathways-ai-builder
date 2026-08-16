@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useParams, Navigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { PageShell } from "@/components/layout/PageShell";
+import { ProfileSidebarNav } from "@/components/navigation/ProfileSidebarNav";
 import {
   LayoutDashboard,
   User,
@@ -17,6 +18,7 @@ import {
   Wallet,
   Share2,
   Building2,
+  Sparkles
 } from "lucide-react";
 
 import PassportOverview from "./sections/PassportOverview";
@@ -31,7 +33,6 @@ import SharePassport from "./sections/SharePassport";
 import RecruiterView from "./sections/RecruiterView";
 import AICoach from "./sections/AICoach";
 import WalletSection from "./sections/WalletSection";
-import { Sparkles } from "lucide-react";
 
 type SectionKey =
   | "overview"
@@ -85,10 +86,22 @@ const PassportLayout: React.FC = () => {
     return <Navigate to="/passport" replace />;
   }
 
+  // When viewing Overview (/passport), render the full-screen hyper-premium Career Passport dashboard with Left Desktop Sidebar Nav!
+  if (active === "overview") {
+    return (
+      <div className="min-h-screen bg-slate-50/50 dark:bg-background">
+        <div className="max-w-7xl mx-auto flex items-start">
+          <ProfileSidebarNav />
+          <div className="flex-1 min-w-0 px-4 md:px-6 py-6">
+            <PassportOverview />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const renderSection = () => {
     switch (active) {
-      case "overview":
-        return <PassportOverview />;
       case "profile":
         return <PassportProfile />;
       case "timeline":
@@ -119,57 +132,57 @@ const PassportLayout: React.FC = () => {
   };
 
   return (
-    <PageShell width="xl" pad="md">
-      <div className="grid gap-8 md:grid-cols-[240px_1fr]">
-        <aside className="md:sticky md:top-24 md:self-start">
-          <div className="mb-4">
-            <p className="text-eyebrow text-muted-foreground">TalentXcel</p>
-            <h2 className="text-title-2 tracking-tight text-foreground">
-              Career Passport
-            </h2>
-          </div>
-          <nav className="flex flex-row gap-1 overflow-x-auto md:flex-col md:overflow-visible">
-            {NAV.map((item) => {
-              const isActive = item.key === active;
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.key}
-                  to={
-                    item.key === "overview"
-                      ? "/passport"
-                      : `/passport/section/${item.key}`
-                  }
-                  className={cn(
-                    "group flex items-center gap-2 whitespace-nowrap rounded-full px-3 py-2 text-sm transition-colors md:whitespace-normal md:rounded-lg md:px-3 md:py-2",
-                    isActive
-                      ? "bg-foreground text-background"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                  )}
-                >
-                  <Icon className="h-4 w-4 shrink-0" />
-                  <span className="flex-1">{item.label}</span>
-                  {item.soon && (
-                    <span
-                      className={cn(
-                        "hidden rounded-full px-1.5 py-0.5 text-[10px] uppercase tracking-wide md:inline",
-                        isActive
-                          ? "bg-background/10 text-background/70"
-                          : "bg-muted text-muted-foreground",
-                      )}
-                    >
-                      Soon
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
-          </nav>
-        </aside>
+    <div className="min-h-screen bg-slate-50/50 dark:bg-background">
+      <div className="max-w-7xl mx-auto flex items-start">
+        <ProfileSidebarNav />
+        <div className="flex-1 min-w-0 px-4 md:px-6 py-6">
+          <PageShell width="xl" pad="none">
+            <div className="grid gap-8 md:grid-cols-[240px_1fr]">
+              <aside className="md:sticky md:top-24 md:self-start">
+                <div className="mb-4">
+                  <p className="text-eyebrow text-muted-foreground">TalentXcel</p>
+                  <h2 className="text-title-2 tracking-tight text-foreground">
+                    Career Passport
+                  </h2>
+                </div>
+                <nav className="flex flex-row gap-1 overflow-x-auto md:flex-col md:overflow-visible">
+                  {NAV.map((item) => {
+                    const isActive = item.key === active;
+                    const Icon = item.icon;
+                    return (
+                      <Link
+                        key={item.key}
+                        to={
+                          item.key === "overview"
+                            ? "/passport"
+                            : `/passport/section/${item.key}`
+                        }
+                        className={cn(
+                          "flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors whitespace-nowrap",
+                          isActive
+                            ? "bg-primary text-primary-foreground font-semibold"
+                            : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                        )}
+                      >
+                        <Icon className="h-4 w-4" />
+                        <span>{item.label}</span>
+                        {item.soon && (
+                          <span className="ml-auto text-[10px] uppercase font-bold text-muted-foreground">
+                            Soon
+                          </span>
+                        )}
+                      </Link>
+                    );
+                  })}
+                </nav>
+              </aside>
 
-        <main className="min-w-0">{renderSection()}</main>
+              <main>{renderSection()}</main>
+            </div>
+          </PageShell>
+        </div>
       </div>
-    </PageShell>
+    </div>
   );
 };
 
