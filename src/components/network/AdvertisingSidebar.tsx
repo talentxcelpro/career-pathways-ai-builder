@@ -1,9 +1,9 @@
 import React from 'react';
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ExternalLink, Sparkles, Crown, Zap, Star, User, Briefcase, Search, CheckCircle2, ChevronRight } from "lucide-react";
+import { ExternalLink, Crown, Zap, Star, User, Briefcase, Search, CheckCircle2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,7 +16,7 @@ interface AdvertisingSidebarProps {
 export const AdvertisingSidebar: React.FC<AdvertisingSidebarProps> = () => {
   const navigate = useNavigate();
 
-  // Fetch connection suggestions for People You May Know
+  // Fetch connection suggestions for People You May Know directly from Supabase profiles
   const { data: suggestions } = useQuery({
     queryKey: ['sidebar-connection-suggestions'],
     queryFn: async () => {
@@ -24,7 +24,7 @@ export const AdvertisingSidebar: React.FC<AdvertisingSidebarProps> = () => {
       if (!user) return [];
       const { data } = await supabase
         .from('profiles')
-        .select('id, full_name, title, profile_picture_url, location')
+        .select('id, full_name, title, profile_picture_url, location, username, slug')
         .neq('id', user.id)
         .limit(3);
       return data || [];
@@ -45,7 +45,7 @@ export const AdvertisingSidebar: React.FC<AdvertisingSidebarProps> = () => {
           </Badge>
         </div>
 
-        {/* 3D Gem Graphic Mockup Illustration */}
+        {/* 3D Gem Graphic Illustration */}
         <div className="relative w-full h-32 flex items-center justify-center my-2">
           <div className="w-20 h-24 bg-gradient-to-br from-cyan-300 via-blue-500 to-purple-600 rounded-2xl rotate-45 shadow-2xl flex items-center justify-center border-2 border-white/40 transform group-hover:scale-105 transition-transform duration-300">
             <div className="transform -rotate-45 text-white font-black text-2xl tracking-tighter drop-shadow-md">
@@ -123,7 +123,7 @@ export const AdvertisingSidebar: React.FC<AdvertisingSidebarProps> = () => {
         </div>
       </div>
 
-      {/* 3. PEOPLE YOU MAY KNOW CARD */}
+      {/* 3. PEOPLE YOU MAY KNOW CARD - UNIVERSAL CAREER PASSPORT LINKED */}
       <Card className="border border-slate-200/80 dark:border-border/60 shadow-sm bg-white dark:bg-card rounded-3xl p-4">
         <div className="flex items-center justify-between mb-3 px-1">
           <h3 className="text-xs font-extrabold text-foreground tracking-tight">People You May Know</h3>
@@ -136,9 +136,12 @@ export const AdvertisingSidebar: React.FC<AdvertisingSidebarProps> = () => {
           {suggestions && suggestions.length > 0 ? (
             suggestions.map((person) => (
               <div key={person.id} className="flex items-center justify-between gap-3 p-2 rounded-2xl hover:bg-slate-50 dark:hover:bg-muted/40 transition-colors">
-                <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                <div 
+                  onClick={() => navigate(`/passport/public/${person.username || person.slug || person.id}`)}
+                  className="flex items-center gap-2.5 min-w-0 flex-1 cursor-pointer"
+                >
                   <Avatar className="w-9 h-9 border border-slate-200 dark:border-border">
-                    <AvatarImage src={person.profile_picture_url || undefined} alt={person.full_name} />
+                    <AvatarImage src={person.profile_picture_url || undefined} />
                     <AvatarFallback className="font-bold text-xs bg-slate-900 text-white">
                       {person.full_name?.charAt(0) || "P"}
                     </AvatarFallback>
@@ -154,7 +157,7 @@ export const AdvertisingSidebar: React.FC<AdvertisingSidebarProps> = () => {
 
                 <Button 
                   size="sm" 
-                  onClick={() => navigate(`/passport/public/${person.id}`)}
+                  onClick={() => navigate(`/passport/public/${person.username || person.slug || person.id}`)}
                   className="rounded-xl text-[11px] font-bold bg-blue-600 hover:bg-blue-500 text-white px-3 h-7 shadow-sm"
                 >
                   Connect
@@ -163,7 +166,7 @@ export const AdvertisingSidebar: React.FC<AdvertisingSidebarProps> = () => {
             ))
           ) : (
             <div className="flex items-center justify-between gap-3 p-2 rounded-2xl hover:bg-slate-50 dark:hover:bg-muted/40 transition-colors">
-              <div className="flex items-center gap-2.5 min-w-0 flex-1">
+              <div className="flex items-center gap-2.5 min-w-0 flex-1 cursor-pointer" onClick={() => navigate('/network/discover')}>
                 <Avatar className="w-9 h-9 border border-slate-200 dark:border-border">
                   <AvatarImage src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200" alt="Priya Sharma" />
                   <AvatarFallback className="font-bold text-xs bg-slate-900 text-white">PS</AvatarFallback>
