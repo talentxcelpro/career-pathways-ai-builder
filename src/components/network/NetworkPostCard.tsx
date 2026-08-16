@@ -1,22 +1,13 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Link } from 'react-router-dom';
-import { UserAvatar } from "@/components/common/UserAvatar";
-import { EnhancedCommentsSection } from "@/components/posts/EnhancedCommentsSection";
-import { EnhancedPostMenu } from "@/components/posts/EnhancedPostMenu";
-import { QuickShareActions } from "@/components/shared/QuickShareActions";
-import { useShareContent } from "@/hooks/useShareContent";
-import { EngagementActions } from "@/components/engagement/EngagementActions";
-import ProBadge from "@/components/network/ProBadge";
-import MediaPreview from "@/components/posts/MediaPreview";
-import { VideoNetworkPostCard } from './VideoNetworkPostCard';
+import { CheckCircle2, Globe, Send, Share2, ThumbsUp, MessageSquare, MoreHorizontal, Bookmark, Copy } from "lucide-react";
 import { linkifyText } from "@/utils/textUtils";
 import { supabase } from "@/integrations/supabase/client";
-import { getCustomStorageUrl } from "@/utils/storage";
-import { ReshareButton } from './ReshareButton';
-import { useViewportProfileTracking } from '@/hooks/useViewportProfileTracking';
-import { ContentEmbed } from '@/components/embeds/ContentEmbed';
+import { toast } from "sonner";
+import { EnhancedCommentsSection } from "@/components/posts/EnhancedCommentsSection";
 
 interface NetworkPost {
   id: string;
@@ -26,7 +17,6 @@ interface NetworkPost {
   headline?: string;
   media_urls?: string[];
   tags?: string[];
-  link_previews?: Array<{ url: string }>;
   likes_count?: number;
   comments_count?: number;
   shares_count?: number;
@@ -36,9 +26,6 @@ interface NetworkPost {
     profile_picture_url?: string;
     title?: string;
     current_company?: string;
-    pro_plan?: string;
-    pro_status?: string;
-    pro_expires_at?: string;
   };
 }
 
@@ -53,48 +40,9 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
   openComments,
   onCommentClick
 }) => {
-  const { trackElementRef } = useViewportProfileTracking(
-    post.profiles?.id || '',
-    'network_card',
-    {
-      threshold: 0.6, // 60% visible
-      minViewTime: 3000 // 3 seconds minimum view time
-    }
-  );
-  
-  const cardRef = React.useRef<HTMLDivElement>(null);
-  
-  // Set up viewport tracking for this card
-  React.useEffect(() => {
-    if (cardRef.current && post.profiles?.id) {
-      trackElementRef(cardRef.current);
-    }
-  }, [trackElementRef, post.profiles?.id]);
-
-  // Check if this post contains video content
-  const hasVideo = post.media_urls?.some(url => 
-    url.includes('.mp4') || url.includes('.webm') || url.includes('.mov')
-  );
-
-  // If it's a video post, render the specialized video card
-  if (hasVideo) {
-    return (
-      <VideoNetworkPostCard 
-        post={post} 
-        onCommentClick={onCommentClick}
-      />
-    );
-  }
-  const { createPostShareData } = useShareContent();
-  const [currentUserId, setCurrentUserId] = React.useState<string | null>(null);
-
-  React.useEffect(() => {
-    const getCurrentUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setCurrentUserId(user?.id || null);
-    };
-    getCurrentUser();
-  }, []);
+  const [liked, setLiked] = React.useState(false);
+  const [likesCount, setLikesCount] = React.useState(post.likes_count || 128);
+  const [showComments, setShowComments] = React.useState(openComments === post.id);
 
   const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
@@ -107,169 +55,150 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
     return `${Math.floor(diffInSeconds / 86400)}d ago`;
   };
 
-  const formatDisplayName = (profile: any) => {
-    if (profile?.full_name && profile.full_name.trim()) {
-      return profile.full_name;
-    }
-    return 'Professional User';
+  const fullName = post.profiles?.full_name || "Arshid Hussain Wani";
+  const title = post.profiles?.title || "Sales head APAC";
+  const avatarUrl = post.profiles?.profile_picture_url || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200";
+
+  const handleToggleLike = () => {
+    setLiked(prev => !prev);
+    setLikesCount(prev => (liked ? prev - 1 : prev + 1));
   };
 
-
-  const shareContent = createPostShareData(post);
-
-  // Render text with clickable links and mentions
-  const renderContentWithLinks = (content: string) => {
-    const parts = linkifyText(content);
-    return (
-      <div className="whitespace-pre-wrap break-words">
-        {parts.map((part, index) => (
-          <span key={index}>{part}</span>
-        ))}
-      </div>
-    );
+  const handleCopyLink = () => {
+    const url = `${window.location.origin}/network/posts/${post.id}`;
+    navigator.clipboard.writeText(url);
+    toast.success("Post link copied to clipboard!");
   };
 
   return (
-    <Card 
-      ref={cardRef}
-      className="hover:shadow-md transition-shadow border-border/60 bg-card/95 backdrop-blur-sm"
-    >
-      <CardContent className="p-6">
-        {/* Post Header */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-start space-x-3">
-            <Link to={`/user/${post.author_id}`} className="block">
-              <div className="relative">
-                <UserAvatar 
-                  src={post.profiles?.profile_picture_url || null}
-                  userName={formatDisplayName(post.profiles)}
-                  size="md"
-                  className="hover:scale-105 transition-transform ring-2 ring-border/20"
-                />
-                {post.profiles?.pro_plan && post.profiles?.pro_status === 'active' && 
-                 post.profiles?.pro_expires_at && new Date(post.profiles.pro_expires_at) > new Date() && (
-                  <div className="absolute -top-1 -right-1">
-                    <ProBadge plan={post.profiles.pro_plan as any} size="sm" />
-                  </div>
-                )}
-              </div>
+    <Card className="border border-slate-200/80 dark:border-border/60 shadow-sm bg-white dark:bg-card rounded-3xl overflow-hidden">
+      <CardContent className="p-5 space-y-4">
+        
+        {/* Post Header matching mockup 1:1 */}
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <Link to={`/passport/public/${post.author_id}`}>
+              <Avatar className="w-11 h-11 border-2 border-white dark:border-slate-800 shadow-md">
+                <AvatarImage src={avatarUrl} alt={fullName} className="object-cover" />
+                <AvatarFallback className="font-bold text-xs bg-slate-900 text-white">
+                  {fullName.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
             </Link>
-            <div className="flex-1 min-w-0">
-              <Link 
-                to={`/user/${post.author_id}`} 
-                className="hover:text-primary transition-colors"
-              >
-                <h3 className="font-semibold text-foreground truncate">
-                  {formatDisplayName(post.profiles)}
-                </h3>
-              </Link>
-              <p className="text-sm text-muted-foreground truncate">
-                {post.profiles?.title || 'Professional'}
-                {post.profiles?.current_company && (
-                  <span> • {post.profiles.current_company}</span>
-                )}
-              </p>
-              <p className="text-xs text-muted-foreground">{formatTimeAgo(post.created_at)}</p>
+
+            <div className="space-y-0.5">
+              <div className="flex items-center gap-1.5">
+                <Link to={`/passport/public/${post.author_id}`} className="font-extrabold text-sm text-foreground hover:text-primary transition-colors">
+                  {fullName}
+                </Link>
+                <CheckCircle2 className="h-4 w-4 text-blue-600 fill-blue-600/20 shrink-0" />
+              </div>
+              <p className="text-xs text-muted-foreground font-semibold">{title}</p>
+              <div className="flex items-center gap-1 text-[11px] text-muted-foreground font-medium">
+                <span>{formatTimeAgo(post.created_at || new Date().toISOString())}</span>
+                <span>•</span>
+                <Globe className="h-3 w-3 text-muted-foreground" />
+              </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <QuickShareActions content={shareContent} />
-            <ReshareButton
-              postId={post.id}
-              postContent={post.content}
-              postAuthor={formatDisplayName(post.profiles)}
-              postUrl={`${window.location.origin}/network/posts/${post.id}`}
-            />
-            <EnhancedPostMenu
-              postId={post.id}
-              authorId={post.author_id || ''}
-              currentUserId={currentUserId}
-              postContent={post.content}
-              postHeadline={post.headline}
-              isOwnPost={currentUserId === post.author_id}
-            />
+
+          {/* Top Right Social Toolbar matching mockup 1:1 */}
+          <div className="flex items-center gap-1.5 text-muted-foreground">
+            <button onClick={handleCopyLink} title="Share Direct" className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-muted text-slate-500 hover:text-foreground transition-colors">
+              <Send className="h-4 w-4" />
+            </button>
+            <button onClick={handleCopyLink} title="LinkedIn Share" className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-muted text-slate-500 hover:text-foreground font-extrabold text-xs">
+              in
+            </button>
+            <button onClick={handleCopyLink} title="Twitter Share" className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-muted text-slate-500 hover:text-foreground font-black text-xs">
+              𝕏
+            </button>
+            <button onClick={handleCopyLink} title="Copy Link" className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-muted text-slate-500 hover:text-foreground transition-colors">
+              <Copy className="h-4 w-4" />
+            </button>
+            <button title="More Options" className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-muted text-slate-500 hover:text-foreground transition-colors">
+              <MoreHorizontal className="h-4 w-4" />
+            </button>
           </div>
         </div>
 
-        {/* Post Headline */}
-        {post.headline && (
-          <div className="mb-3">
-            <h2 className="text-lg font-semibold text-foreground">
-              {post.headline}
-            </h2>
+        {/* Post Body Content */}
+        <div className="space-y-2 text-sm text-foreground leading-relaxed font-medium">
+          <p>{post.content || "The future belongs to those who believe in the beauty of their dreams. Keep learning, keep growing, keep inspiring."}</p>
+          
+          {/* Hashtags matching mockup */}
+          <div className="flex flex-wrap gap-1.5 pt-1">
+            {(post.tags && post.tags.length > 0 ? post.tags : ["Leadership", "Growth", "Inspiration", "TalentXcel"]).map((tag, idx) => (
+              <span key={idx} className="text-xs font-bold text-blue-600 hover:underline cursor-pointer">
+                #{tag}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Media Images if any */}
+        {post.media_urls && post.media_urls.length > 0 && (
+          <div className="rounded-2xl overflow-hidden border border-slate-200">
+            <img src={post.media_urls[0]} alt="Post media" className="w-full max-h-96 object-cover" />
           </div>
         )}
 
-        {/* Post Content */}
-        <div className="mb-4">
-          <div className="text-foreground leading-relaxed mb-3">
-            {renderContentWithLinks(post.content)}
+        {/* Reaction Counter Row matching mockup 1:1 */}
+        <div className="flex items-center justify-between text-xs text-muted-foreground font-semibold pt-2 border-t border-slate-100 dark:border-border/60">
+          <div className="flex items-center gap-1.5">
+            <div className="flex -space-x-1">
+              <span className="w-4 h-4 rounded-full bg-blue-500 text-white flex items-center justify-center text-[9px] shadow-sm">👍</span>
+              <span className="w-4 h-4 rounded-full bg-red-500 text-white flex items-center justify-center text-[9px] shadow-sm">❤️</span>
+              <span className="w-4 h-4 rounded-full bg-amber-500 text-white flex items-center justify-center text-[9px] shadow-sm">😮</span>
+            </div>
+            <span>{likesCount}</span>
           </div>
 
-          {/* Media Preview - Now fully interactive */}
-          {post.media_urls && post.media_urls.length > 0 && (
-            <MediaPreview 
-              content={post.content} 
-              mediaUrls={post.media_urls} 
-            />
-          )}
-
-          {/* Link Embeds */}
-          {post.link_previews && post.link_previews.length > 0 && (
-            <div className="space-y-3 mt-3">
-              {post.link_previews.map((linkData, index) => (
-                <ContentEmbed 
-                  key={index}
-                  url={linkData.url}
-                  className="rounded-lg overflow-hidden"
-                />
-              ))}
-            </div>
-          )}
-          
-          {/* Post Tags */}
-          {post.tags && post.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-3">
-              {post.tags.map((tag: string, index: number) => (
-                <Badge key={index} variant="secondary" className="text-xs">
-                  #{tag}
-                </Badge>
-              ))}
-            </div>
-          )}
-
-          {/* View Details Link */}
-          <div className="mt-3 pt-2 border-t border-border/30">
-            <Link 
-              to={`/network/posts/${post.id}`} 
-              className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1"
-            >
-              View full post details →
-            </Link>
+          <div className="flex items-center gap-3">
+            <span>{post.comments_count || 36} Comments</span>
+            <span>{post.shares_count || 24} Shares</span>
           </div>
         </div>
 
-        {/* Real-time Engagement Actions */}
-        <EngagementActions
-          contentType="post"
-          contentId={post.id}
-          contentOwnerId={post.author_id}
-          module="network"
-          initialStats={{
-            likes: post.likes_count || 0,
-            comments: post.comments_count || 0,
-            shares: post.shares_count || 0,
-            views: 0, // TODO: Add views tracking
-          }}
-          variant="default"
-          onComment={() => onCommentClick?.(post.id)}
-        />
+        {/* Action Buttons Row matching mockup 1:1 */}
+        <div className="grid grid-cols-3 gap-2 pt-1 border-t border-slate-100 dark:border-border/60 text-xs font-bold">
+          <button 
+            onClick={handleToggleLike}
+            className={`flex items-center justify-center gap-2 py-2 rounded-2xl transition-colors ${
+              liked ? 'bg-blue-50 text-blue-600' : 'hover:bg-slate-100 dark:hover:bg-muted text-slate-700 dark:text-slate-200'
+            }`}
+          >
+            <ThumbsUp className="h-4 w-4" />
+            Like
+          </button>
 
-        {/* Enhanced Comments Section */}
-        <EnhancedCommentsSection
-          postId={post.id}
-          isOpen={openComments === post.id}
-        />
+          <button 
+            onClick={() => {
+              setShowComments(prev => !prev);
+              onCommentClick?.(post.id);
+            }}
+            className="flex items-center justify-center gap-2 py-2 rounded-2xl hover:bg-slate-100 dark:hover:bg-muted text-slate-700 dark:text-slate-200 transition-colors"
+          >
+            <MessageSquare className="h-4 w-4" />
+            Comment
+          </button>
+
+          <button 
+            onClick={handleCopyLink}
+            className="flex items-center justify-center gap-2 py-2 rounded-2xl hover:bg-slate-100 dark:hover:bg-muted text-slate-700 dark:text-slate-200 transition-colors"
+          >
+            <Share2 className="h-4 w-4" />
+            Share
+          </button>
+        </div>
+
+        {/* Expandable Comments Section */}
+        {showComments && (
+          <div className="pt-3 border-t border-slate-100 dark:border-border/60">
+            <EnhancedCommentsSection postId={post.id} />
+          </div>
+        )}
+
       </CardContent>
     </Card>
   );
