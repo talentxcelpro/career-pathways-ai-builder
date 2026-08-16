@@ -93,6 +93,25 @@ export const ExecutiveMessenger: React.FC = () => {
     fetchUser();
   }, []);
 
+  // Fetch Current User Profile Identity
+  const { data: myProfile } = useQuery({
+    queryKey: ['my-profile-identity-v1', currentUserId],
+    queryFn: async () => {
+      if (!currentUserId) return null;
+      const { data } = await supabase
+        .from('profiles')
+        .select('*')
+        .or(`id.eq.${currentUserId},user_id.eq.${currentUserId}`)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!currentUserId
+  });
+
+  const myDisplayName = getProfileDisplayName(myProfile, currentUserId || undefined);
+  const myAvatar = myProfile?.profile_picture_url;
+  const myTitle = myProfile?.title || "Executive Member";
+
   // 2. Query REAL Conversations from Supabase Database
   const { data: conversations = [], isLoading: isLoadingConvs } = useQuery({
     queryKey: ['real-user-conversations', currentUserId],
@@ -131,7 +150,7 @@ export const ExecutiveMessenger: React.FC = () => {
   ));
 
   const { data: profilesMap = {} } = useQuery({
-    queryKey: ['real-user-profiles-map-v1', allParticipantIds],
+    queryKey: ['real-user-profiles-map-v2', allParticipantIds],
     queryFn: async () => {
       if (allParticipantIds.length === 0) return {};
       
@@ -345,13 +364,15 @@ export const ExecutiveMessenger: React.FC = () => {
     setIncomingCallData(null);
     setIsCallOpen(true);
 
-    // Broadcast incoming call signal to partner
+    // Broadcast incoming call signal with REAL caller name, avatar, and title
     supabase.channel('talentxcel-global-broadcast-v1').send({
       type: 'broadcast',
       event: 'CLIENT_CALL_INVITE',
       payload: {
         callerId: currentUserId,
-        callerName: getProfileDisplayName(null, currentUserId || undefined),
+        callerName: myDisplayName,
+        callerAvatar: myAvatar,
+        callerTitle: myTitle,
         targetUserId: activeOtherId,
         callType: type
       }
@@ -387,8 +408,8 @@ export const ExecutiveMessenger: React.FC = () => {
         }}
         targetUserId={incomingCallData ? incomingCallData.callerId : activeOtherId}
         targetName={incomingCallData ? incomingCallData.callerName : partnerName}
-        targetAvatar={partnerAvatar}
-        targetTitle={partnerTitle}
+        targetAvatar={incomingCallData ? incomingCallData.callerAvatar : partnerAvatar}
+        targetTitle={incomingCallData ? incomingCallData.callerTitle : partnerTitle}
         callType={activeCallType}
         isIncoming={!!incomingCallData}
       />
