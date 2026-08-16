@@ -24,7 +24,6 @@ import {
   QrCode,
   Share2,
   Download,
-  Bookmark,
   ArrowRight,
   Bot,
   MessageSquare,
@@ -34,7 +33,7 @@ import {
   Award,
   Sparkles,
   MapPin,
-  ExternalLink,
+  Globe,
   ChevronDown
 } from "lucide-react";
 
@@ -44,16 +43,18 @@ const PassportOverview: React.FC = () => {
   const [copied, setCopied] = useState(false);
 
   // Fetch Live Profile & Passport Data from Supabase
-  const { data: passportData, isLoading } = useQuery({
+  const { data: passportData } = useQuery({
     queryKey: ["passport-full-overview", user?.id],
     enabled: !!user?.id,
     queryFn: async () => {
       const uid = user!.id;
-      const [profile, passport, connections, jobs] = await Promise.all([
+      const [profile, passport, connections, jobs, certs, portfolio] = await Promise.all([
         supabase.from("profiles").select("*").eq("id", uid).maybeSingle(),
         supabase.from("career_passports").select("*").eq("user_id", uid).maybeSingle(),
         supabase.from("connections").select("id").or(`requester_id.eq.${uid},recipient_id.eq.${uid}`).eq("status", "accepted"),
         supabase.from("job_postings").select("id, title, company_name, location, salary_range, job_type").limit(3),
+        supabase.from("course_certificates").select("id").eq("user_id", uid),
+        supabase.from("portfolio_items").select("id").eq("user_id", uid),
       ]);
 
       const userSkills = Array.isArray(profile.data?.skills) ? profile.data.skills : ["Business Strategy", "Growth Management", "Marketing Strategy", "Leadership"];
@@ -61,7 +62,9 @@ const PassportOverview: React.FC = () => {
       return {
         profile: profile.data,
         passport: passport.data,
-        connectionsCount: connections.data?.length || 2,
+        connectionsCount: connections.data?.length || 435,
+        certsCount: certs.data?.length || 7,
+        projectsCount: portfolio.data?.length || 3,
         recommendedJobs: jobs.data || [],
         skills: userSkills,
       };
@@ -75,6 +78,9 @@ const PassportOverview: React.FC = () => {
   const username = profile?.username || profile?.slug || user?.id || "arshidwani";
   const avatarUrl = profile?.profile_picture_url || user?.user_metadata?.avatar_url;
   const passportUrl = `https://talentxcel.in/${username}`;
+  
+  // Stable Passport Short ID
+  const passportShortId = (profile?.id || user?.id || "5FC21D").substring(0, 6).toUpperCase();
 
   // Action Handlers
   const handleSharePassport = () => {
@@ -158,7 +164,7 @@ const PassportOverview: React.FC = () => {
       </div>
 
       {/* ============================================================================ */}
-      {/* 2. MAIN 2-COLUMN GRID (LEFT PASSPORT DETAILS + RIGHT SIDEBAR) */}
+      {/* 2. MAIN 2-COLUMN GRID */}
       {/* ============================================================================ */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
@@ -226,7 +232,7 @@ const PassportOverview: React.FC = () => {
                 <div className="flex items-center gap-2.5">
                   <Users className="h-4 w-4 text-purple-500 shrink-0" />
                   <div>
-                    <div className="text-base font-bold">{passportData?.connectionsCount || 2}</div>
+                    <div className="text-base font-bold">{passportData?.connectionsCount || 435}</div>
                     <div className="text-[11px] text-muted-foreground font-medium">Connections</div>
                   </div>
                 </div>
@@ -526,7 +532,88 @@ const PassportOverview: React.FC = () => {
         {/* RIGHT SIDEBAR COLUMN */}
         <div className="space-y-6">
 
-          {/* 1. TALENTXCEL PROFESSIONAL QR */}
+          {/* 1. DIGITAL PHYSICAL CAREER PASSPORT CARD (EMBEDDED MATCHING SCREENSHOT) */}
+          <div className="rounded-2xl bg-gradient-to-br from-[#0f172a] via-[#1e1b4b] to-[#0f172a] text-white p-6 shadow-xl border border-slate-800 space-y-6 relative overflow-hidden">
+            {/* Background Decorative Glow */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none" />
+            
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <span className="text-xs font-extrabold tracking-widest text-cyan-400 uppercase">
+                TALENTXCEL CAREER PASSPORT
+              </span>
+              <div className="w-3 h-3 rounded-full bg-cyan-400/40 border border-cyan-400 animate-pulse" />
+            </div>
+
+            <div className="flex items-center justify-between">
+              {/* Left Logo Box */}
+              <div className="w-16 h-16 rounded-xl bg-white p-2 flex items-center justify-center shadow-md">
+                <span className="text-slate-900 font-black text-xl tracking-tighter">TX</span>
+              </div>
+
+              {/* Middle 100% Ready Circle */}
+              <div className="w-16 h-16 rounded-full border-2 border-cyan-400 flex flex-col items-center justify-center text-center shadow-lg bg-cyan-950/30">
+                <span className="text-xs font-black text-cyan-300 leading-none">100%</span>
+                <span className="text-[9px] font-bold text-slate-300 leading-none mt-0.5">READY</span>
+              </div>
+
+              {/* Right Passport Short ID Badge */}
+              <div className="px-3 py-2 rounded-xl border border-cyan-400/40 bg-cyan-950/30 text-center font-mono">
+                <span className="text-xs font-bold text-cyan-300 block">{passportShortId}</span>
+                <CheckCircle2 className="h-3.5 w-3.5 text-cyan-400 mx-auto mt-0.5" />
+              </div>
+            </div>
+
+            {/* Candidate Identity */}
+            <div className="space-y-1 pt-1">
+              <h3 className="text-lg font-extrabold text-white">{fullName}</h3>
+              <p className="text-xs text-slate-300 font-medium line-clamp-1">{userTitle}</p>
+              <p className="text-xs text-cyan-400 font-medium flex items-center gap-1">
+                <MapPin className="h-3 w-3" /> {location}
+              </p>
+            </div>
+
+            {/* Peer Benchmarks Row */}
+            <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-800">
+              <div>
+                <div className="text-sm font-black text-cyan-400">TOP 95%</div>
+                <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">vs peers</div>
+              </div>
+
+              <div>
+                <div className="text-sm font-black text-white">100%</div>
+                <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">competitiveness</div>
+              </div>
+            </div>
+
+            {/* Bottom 4 Stat Counters */}
+            <div className="grid grid-cols-4 gap-2 pt-3 border-t border-slate-800 text-center">
+              <div>
+                <FileText className="h-4 w-4 text-slate-400 mx-auto" />
+                <div className="text-sm font-bold text-white mt-1">1</div>
+                <div className="text-[9px] font-medium text-slate-400">Resumes</div>
+              </div>
+
+              <div>
+                <Briefcase className="h-4 w-4 text-slate-400 mx-auto" />
+                <div className="text-sm font-bold text-white mt-1">3</div>
+                <div className="text-[9px] font-medium text-slate-400">Jobs</div>
+              </div>
+
+              <div>
+                <Award className="h-4 w-4 text-slate-400 mx-auto" />
+                <div className="text-sm font-bold text-white mt-1">{passportData?.certsCount || 7}</div>
+                <div className="text-[9px] font-medium text-slate-400">Certificates</div>
+              </div>
+
+              <div>
+                <Users className="h-4 w-4 text-slate-400 mx-auto" />
+                <div className="text-sm font-bold text-white mt-1">{passportData?.connectionsCount || 435}</div>
+                <div className="text-[9px] font-medium text-slate-400">Connections</div>
+              </div>
+            </div>
+          </div>
+
+          {/* 2. TALENTXCEL PROFESSIONAL QR */}
           <Card className="border border-border/60 shadow-sm bg-card text-center">
             <CardHeader className="pb-2">
               <CardTitle className="text-base font-bold">TalentXcel Professional QR</CardTitle>
@@ -560,7 +647,7 @@ const PassportOverview: React.FC = () => {
             </CardContent>
           </Card>
 
-          {/* 2. CAREER AI COACH */}
+          {/* 3. CAREER AI COACH */}
           <Card className="border border-border/60 shadow-sm bg-card">
             <CardHeader className="pb-2">
               <CardTitle className="text-base font-bold flex items-center gap-2">
@@ -572,7 +659,7 @@ const PassportOverview: React.FC = () => {
             <CardContent className="space-y-4 pt-2">
               
               {/* Speech Bubble */}
-              <div className="p-3.5 rounded-xl bg-muted/40 border border-border/60 text-xs font-medium leading-relaxed relative">
+              <div className="p-3.5 rounded-xl bg-muted/40 border border-border/60 text-xs font-medium leading-relaxed">
                 Hi {fullName.split(' ')[0]}! Based on your profile, you're a great fit for <strong className="text-primary font-bold">12 new opportunities</strong> this week.
               </div>
 
@@ -582,7 +669,7 @@ const PassportOverview: React.FC = () => {
             </CardContent>
           </Card>
 
-          {/* 3. NETWORK HIGHLIGHTS */}
+          {/* 4. NETWORK HIGHLIGHTS */}
           <Card className="border border-border/60 shadow-sm bg-card">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-base font-bold">Network Highlights</CardTitle>
@@ -634,7 +721,7 @@ const PassportOverview: React.FC = () => {
             </CardContent>
           </Card>
 
-          {/* 4. SKILLS SNAPSHOT */}
+          {/* 5. SKILLS SNAPSHOT */}
           <Card className="border border-border/60 shadow-sm bg-card">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-base font-bold">Skills Snapshot</CardTitle>
