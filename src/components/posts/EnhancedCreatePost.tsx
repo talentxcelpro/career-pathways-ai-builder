@@ -1,7 +1,5 @@
-
 import React, { useState, useRef } from 'react';
-import { getCustomStorageUrl } from '@/utils/storage';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -18,30 +16,11 @@ import {
   Lock, 
   X,
   Loader2,
-  BarChart3
+  ChevronDown
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { useUrlDetection } from '@/hooks/useUrlDetection';
-import { optimizedStorage } from '@/utils/optimizedStorage';
-
-interface MediaFile {
-  id: string;
-  url: string;
-  type: 'image' | 'video';
-  file: File;
-  name: string;
-}
-
-interface AIScore {
-  score: number;
-  tone: string;
-  ctaStrength: number;
-  hashtagRelevance: number;
-  viralityPotential: string;
-  suggestions: string[];
-}
 
 interface EnhancedCreatePostProps {
   onPostCreate?: (post: any) => void;
@@ -50,196 +29,56 @@ interface EnhancedCreatePostProps {
 export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCreate }) => {
   const { user } = useAuth();
   const [content, setContent] = useState('');
-  
-  // URL detection for link previews
-  const { detectedUrls } = useUrlDetection(content);
-  const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([]);
   const [location, setLocation] = useState('');
   const [showLocationInput, setShowLocationInput] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState('');
+  const [showTagInput, setShowTagInput] = useState(false);
   const [privacy, setPrivacy] = useState<'public' | 'connections' | 'private'>('public');
   const [isPosting, setIsPosting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [aiScore, setAiScore] = useState<AIScore>({
-    score: 0,
-    tone: 'neutral',
-    ctaStrength: 0,
-    hashtagRelevance: 0,
-    viralityPotential: 'medium',
-    suggestions: []
-  });
+  const [mediaUrls, setMediaUrls] = useState<string[]>([]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
 
-  const analyzeContent = async (text: string) => {
-    if (!text.trim()) return;
-    
-    setIsAnalyzing(true);
-    try {
-      // Simulate AI analysis with realistic scoring
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      const wordCount = text.split(' ').length;
-      const hasHashtags = text.includes('#');
-      const hasEmoji = /[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]/u.test(text);
-      const hasQuestion = text.includes('?');
-      const hasExclamation = text.includes('!');
-      
-      // Calculate scores based on content analysis
-      let score = Math.min(85, Math.max(45, 50 + (wordCount > 20 ? 15 : 0) + (hasHashtags ? 10 : 0) + (hasEmoji ? 10 : 0)));
-      let ctaStrength = (hasQuestion || hasExclamation) ? Math.random() * 40 + 60 : Math.random() * 60 + 20;
-      let hashtagRelevance = hasHashtags ? Math.random() * 30 + 70 : Math.random() * 50 + 25;
-      
-      const tones = ['professional', 'casual', 'enthusiastic', 'informative', 'inspirational'];
-      const tone = tones[Math.floor(Math.random() * tones.length)];
-      
-      const viralityOptions = ['low', 'medium', 'high'];
-      const viralityPotential = viralityOptions[score > 70 ? 2 : score > 55 ? 1 : 0];
-      
-      const suggestions = [
-        hasHashtags ? null : 'Consider adding relevant hashtags to increase discoverability',
-        hasEmoji ? null : 'Adding emojis can make your post more engaging',
-        wordCount < 15 ? 'Try expanding your content for better engagement' : null,
-        !hasQuestion && !hasExclamation ? 'Consider adding a call-to-action to boost engagement' : null
-      ].filter(Boolean) as string[];
-
-      setAiScore({
-        score: Math.round(score),
-        tone,
-        ctaStrength: Math.round(ctaStrength),
-        hashtagRelevance: Math.round(hashtagRelevance),
-        viralityPotential,
-        suggestions
-      });
-    } catch (error) {
-      console.error('Error analyzing content:', error);
-      toast.error('Failed to analyze content');
-    } finally {
-      setIsAnalyzing(false);
-    }
-  };
-
   const handleFileUpload = async (files: FileList | null, type: 'image' | 'video') => {
     if (!files || files.length === 0) return;
-
     setIsUploading(true);
-    const newFiles: MediaFile[] = [];
-
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      
-      // Validate file type
-      const fileType = file.type.split('/')[0];
-      if (type === 'image' && fileType !== 'image') {
-        toast.error(`${file.name} is not an image file`);
-        continue;
+    try {
+      const uploaded: string[] = [];
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const fileExt = file.name.split('.').pop();
+        const filePath = `post-media/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+        const { error: uploadError } = await supabase.storage.from('post-media').upload(filePath, file);
+        if (uploadError) throw uploadError;
+        const { data: { publicUrl } } = supabase.storage.from('post-media').getPublicUrl(filePath);
+        uploaded.push(publicUrl);
       }
-      if (type === 'video' && fileType !== 'video') {
-        toast.error(`${file.name} is not a video file`);
-        continue;
-      }
-
-      // Validate file size (50MB limit for videos, 10MB for others)
-      const maxSize = file.type.startsWith('video/') ? 50 * 1024 * 1024 : 10 * 1024 * 1024;
-      if (file.size > maxSize) {
-        const maxSizeMB = file.type.startsWith('video/') ? 50 : 10;
-        toast.error(`${file.name} is too large. Maximum size is ${maxSizeMB}MB.`);
-        continue;
-      }
-
-      const fileExtension = file.name.split('.').pop();
-      const randomId = Math.random().toString(36).substring(2, 15);
-      const filename = `${randomId}.${fileExtension}`;
-      const filePath = `${user?.id}/${filename}`;
-
-      try {
-        const result = await optimizedStorage.uploadFile(
-          'post-media',
-          filePath,
-          file,
-          {
-            cacheControl: '31536000',
-            upsert: true
-          }
-        );
-
-        if (result.error) {
-          console.error('Error uploading file:', result.error);
-          toast.error(`Failed to upload ${file.name}`);
-          continue;
-        }
-
-        const publicUrl = await optimizedStorage.getPublicUrl('post-media', result.data.path);
-        const url = getCustomStorageUrl(publicUrl);
-        newFiles.push({
-          id: randomId,
-          url: url,
-          type: type,
-          file: file,
-          name: file.name,
-        });
-        toast.success(`${file.name} uploaded successfully!`);
-      } catch (uploadError) {
-        console.error('Upload error:', uploadError);
-        toast.error(`Failed to upload ${file.name}`);
-      }
-    }
-
-    setMediaFiles(prev => [...prev, ...newFiles]);
-    setIsUploading(false);
-  };
-
-  const handleRemoveMedia = (id: string) => {
-    setMediaFiles(prev => prev.filter(file => file.id !== id));
-  };
-
-  const handlePhotoClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleVideoClick = () => {
-    videoInputRef.current?.click();
-  };
-
-  const handleLocationClick = () => {
-    setShowLocationInput(!showLocationInput);
-  };
-
-  const getCurrentLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setLocation(`${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
-          toast.success('Location detected!');
-        },
-        (error) => {
-          console.error('Error getting location:', error);
-          toast.error('Failed to get location. Please enter manually.');
-        }
-      );
-    } else {
-      toast.error('Geolocation is not supported by this browser.');
+      setMediaUrls(prev => [...prev, ...uploaded]);
+      toast.success(`${type === 'image' ? 'Photos' : 'Video'} attached!`);
+    } catch (err: any) {
+      toast.error(`Upload failed: ${err.message || 'Error'}`);
+    } finally {
+      setIsUploading(false);
     }
   };
 
   const handleAddTag = () => {
     if (newTag.trim() && !tags.includes(newTag.trim())) {
-      setTags(prev => [...prev, newTag.trim()]);
+      setTags([...tags, newTag.trim().replace(/^#/, '')]);
       setNewTag('');
     }
   };
 
   const handleRemoveTag = (tagToRemove: string) => {
-    setTags(prev => prev.filter(tag => tag !== tagToRemove));
+    setTags(tags.filter(t => t !== tagToRemove));
   };
 
   const handleSubmit = async () => {
-    if (!content.trim()) {
-      toast.error('Please write something before posting');
+    if (!content.trim() && mediaUrls.length === 0) {
+      toast.error('Please write something or attach media');
       return;
     }
 
@@ -250,327 +89,200 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
 
     setIsPosting(true);
     try {
-      console.log('Creating enhanced post with user:', user.id);
-      
-      // Prepare link previews data
-      const linkPreviews = detectedUrls.map(urlData => ({
-        url: urlData.url
-      }));
-
       const { data: postData, error } = await supabase
         .from('posts')
         .insert({
           content,
-          post_type: 'text',
+          post_type: mediaUrls.length > 0 ? 'media' : 'text',
           author_id: user.id,
           user_id: user.id,
-          media_urls: mediaFiles.map(file => file.url),
+          media_urls: mediaUrls,
           location: location || null,
           visibility: privacy,
           origin: 'feed',
-          tags: tags,
-          link_previews: linkPreviews.length > 0 ? linkPreviews : null
+          tags: tags
         })
         .select()
         .single();
 
-      if (error) {
-        console.error('Database error creating post:', error);
-        throw error;
-      }
-
-      console.log('Post created successfully:', postData);
-
-      // AI score analysis complete - stored in component state for display
-      console.log('AI analysis completed:', aiScore);
+      if (error) throw error;
 
       onPostCreate?.(postData);
-      
-      // Reset form
       setContent('');
-      setMediaFiles([]);
+      setMediaUrls([]);
       setLocation('');
       setShowLocationInput(false);
       setTags([]);
       setPrivacy('public');
-      setAiScore({
-        score: 0,
-        tone: 'neutral',
-        ctaStrength: 0,
-        hashtagRelevance: 0,
-        viralityPotential: 'medium',
-        suggestions: []
-      });
       
-      toast.success('Enhanced post created successfully!');
-    } catch (error) {
-      console.error('Error creating enhanced post:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      toast.error(`Failed to create post: ${errorMessage}`);
+      toast.success('Post created successfully!');
+    } catch (error: any) {
+      toast.error(`Failed to create post: ${error.message || 'Error'}`);
     } finally {
       setIsPosting(false);
     }
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-purple-600" />
-          Create Enhanced Post
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex items-start gap-3">
-          <Avatar className="h-10 w-10">
-            <AvatarImage src={user?.user_metadata?.avatar_url} />
-            <AvatarFallback>
-              {user?.user_metadata?.full_name?.[0] || user?.email?.[0] || 'U'}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex-1">
-            <Textarea
-              placeholder="Share your thoughts..."
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              onBlur={() => analyzeContent(content)}
-              className="min-h-[120px] resize-none border-0 p-0 text-lg placeholder:text-muted-foreground focus-visible:ring-0"
-            />
-          </div>
+    <Card className="w-full border border-slate-200/80 dark:border-border/60 shadow-sm bg-white dark:bg-card rounded-3xl overflow-hidden p-5 space-y-4">
+      
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Sparkles className="h-4 w-4 text-blue-600" />
+          <h2 className="text-sm font-extrabold text-foreground tracking-tight">Create Enhanced Post</h2>
         </div>
 
-        {/* Hidden file inputs */}
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={(e) => handleFileUpload(e.target.files, 'image')}
-          accept="image/*"
-          multiple
-          className="hidden"
-        />
-        <input
-          type="file"
-          ref={videoInputRef}
-          onChange={(e) => handleFileUpload(e.target.files, 'video')}
-          accept="video/*"
-          multiple
-          className="hidden"
-        />
-
-        {/* AI Analysis Results */}
-        {(aiScore.score > 0 || isAnalyzing) && (
-          <div className="p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border">
-            <div className="flex items-center gap-2 mb-3">
-              <BarChart3 className="h-4 w-4 text-purple-600" />
-              <span className="font-medium text-purple-800">AI Content Analysis</span>
-              {isAnalyzing && <Loader2 className="h-4 w-4 animate-spin text-purple-600" />}
-            </div>
-            
-            {!isAnalyzing && (
-              <div className="grid grid-cols-2 gap-4 mb-3">
-                <div className="space-y-1">
-                  <div className="text-sm text-gray-600">Overall Score</div>
-                  <div className="text-2xl font-bold text-purple-600">{aiScore.score}/100</div>
-                </div>
-                <div className="space-y-1">
-                  <div className="text-sm text-gray-600">Tone</div>
-                  <Badge variant="secondary" className="capitalize">{aiScore.tone}</Badge>
-                </div>
-                <div className="space-y-1">
-                  <div className="text-sm text-gray-600">CTA Strength</div>
-                  <div className="text-lg font-semibold">{aiScore.ctaStrength}%</div>
-                </div>
-                <div className="space-y-1">
-                  <div className="text-sm text-gray-600">Virality Potential</div>
-                  <Badge 
-                    variant={aiScore.viralityPotential === 'high' ? 'default' : 'secondary'}
-                    className="capitalize"
-                  >
-                    {aiScore.viralityPotential}
-                  </Badge>
-                </div>
-              </div>
-            )}
-
-            {aiScore.suggestions.length > 0 && (
-              <div className="space-y-2">
-                <div className="text-sm font-medium text-gray-700">Suggestions:</div>
-                <ul className="text-sm text-gray-600 space-y-1">
-                  {aiScore.suggestions.map((suggestion, index) => (
-                    <li key={index} className="flex items-start gap-1">
-                      <span className="text-purple-500 mt-1">•</span>
-                      {suggestion}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Location Input */}
-        {showLocationInput && (
-          <div className="p-3 border rounded-lg bg-gray-50">
-            <div className="flex items-center gap-2 mb-2">
-              <MapPin className="h-4 w-4 text-gray-600" />
-              <span className="text-sm font-medium">Add Location</span>
-            </div>
-            <div className="flex gap-2">
-              <Input
-                placeholder="Enter location or click to detect"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                className="flex-1"
-              />
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={getCurrentLocation}
-                className="whitespace-nowrap"
-              >
-                Detect
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => {
-                  setShowLocationInput(false);
-                  setLocation('');
-                }}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* Tags Input */}
-        <div className="space-y-2">
-          <div className="flex gap-2">
-            <Input
-              placeholder="Add tags..."
-              value={newTag}
-              onChange={(e) => setNewTag(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleAddTag()}
-              className="flex-1"
-            />
-            <Button variant="outline" size="sm" onClick={handleAddTag}>
-              <Hash className="h-4 w-4" />
-            </Button>
-          </div>
-          {tags.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {tags.map((tag) => (
-                <Badge key={tag} variant="secondary" className="flex items-center gap-1">
-                  #{tag}
-                  <X 
-                    className="h-3 w-3 cursor-pointer" 
-                    onClick={() => handleRemoveTag(tag)}
-                  />
-                </Badge>
-              ))}
-            </div>
-          )}
+        <div className="flex items-center gap-1 text-[11px] font-extrabold text-muted-foreground bg-slate-100 dark:bg-muted px-2.5 py-1 rounded-full border border-slate-200/60 dark:border-border">
+          <span>TalentXcel</span>
         </div>
+      </div>
 
-        {/* Media Preview */}
-        {mediaFiles.length > 0 && (
-          <div className="grid grid-cols-2 gap-2">
-            {mediaFiles.map((file) => (
-              <div key={file.id} className="relative group">
-                {file.type === 'image' ? (
-                  <img 
-                    src={file.url} 
-                    alt={file.name}
-                    className="w-full h-32 object-cover rounded-lg"
-                  />
-                ) : (
-                  <video 
-                    src={file.url}
-                    className="w-full h-32 object-cover rounded-lg"
-                    controls
-                  />
-                )}
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0"
-                  onClick={() => handleRemoveMedia(file.id)}
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              </div>
+      {/* Input Container matching mockup */}
+      <div className="relative rounded-2xl bg-slate-50/80 dark:bg-muted/30 border border-slate-200/80 dark:border-border/60 p-4 space-y-3">
+        <Textarea
+          placeholder="Share your thoughts..."
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          className="min-h-[90px] border-0 p-0 bg-transparent text-sm placeholder:text-muted-foreground focus-visible:ring-0 resize-none font-medium text-foreground"
+        />
+
+        {/* Tag Input Toggle Button inside box */}
+        <div className="flex items-center justify-between pt-2 border-t border-slate-200/60 dark:border-border/40">
+          <div className="flex flex-wrap items-center gap-1.5 flex-1 min-w-0">
+            {tags.map((tag) => (
+              <Badge key={tag} variant="secondary" className="rounded-lg text-[10px] font-bold bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200">
+                #{tag}
+                <X className="h-3 w-3 ml-1 cursor-pointer" onClick={() => handleRemoveTag(tag)} />
+              </Badge>
             ))}
-          </div>
-        )}
-
-        {/* Action Buttons */}
-        <div className="flex items-center justify-between pt-4 border-t">
-          <div className="flex gap-2">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={handlePhotoClick}
-              disabled={isUploading}
-            >
-              {isUploading ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : <ImagePlus className="h-4 w-4 mr-1" />}
-              Photo
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={handleVideoClick}
-              disabled={isUploading}
-            >
-              <Video className="h-4 w-4 mr-1" />
-              Video
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={handleLocationClick}
-            >
-              <MapPin className="h-4 w-4 mr-1" />
-              Location
-            </Button>
+            {showTagInput ? (
+              <div className="flex items-center gap-1 max-w-xs">
+                <Input 
+                  placeholder="Add tag..." 
+                  value={newTag} 
+                  onChange={(e) => setNewTag(e.target.value)} 
+                  onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
+                  className="h-7 text-xs rounded-xl"
+                />
+                <Button size="sm" onClick={handleAddTag} className="h-7 px-2 text-xs rounded-xl">Add</Button>
+                <X className="h-4 w-4 cursor-pointer text-muted-foreground" onClick={() => setShowTagInput(false)} />
+              </div>
+            ) : (
+              <span className="text-xs text-muted-foreground font-medium">Add tags...</span>
+            )}
           </div>
 
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1">
-              {privacy === 'public' && <Globe className="h-4 w-4 text-green-600" />}
-              {privacy === 'connections' && <Users className="h-4 w-4 text-blue-600" />}
-              {privacy === 'private' && <Lock className="h-4 w-4 text-gray-600" />}
-              <select 
-                value={privacy} 
-                onChange={(e) => setPrivacy(e.target.value as any)}
-                className="text-sm border-0 bg-transparent"
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setShowTagInput(prev => !prev)} 
+            className="rounded-xl h-8 w-8 p-0 border-slate-200 dark:border-border shrink-0"
+          >
+            <Hash className="h-4 w-4 text-slate-700 dark:text-slate-300" />
+          </Button>
+        </div>
+      </div>
+
+      {/* Hidden File Inputs */}
+      <input type="file" ref={fileInputRef} onChange={(e) => handleFileUpload(e.target.files, 'image')} accept="image/*" multiple className="hidden" />
+      <input type="file" ref={videoInputRef} onChange={(e) => handleFileUpload(e.target.files, 'video')} accept="video/*" multiple className="hidden" />
+
+      {/* Location Input Box */}
+      {showLocationInput && (
+        <div className="flex items-center gap-2 p-2 rounded-xl bg-slate-50 dark:bg-muted border border-slate-200/80">
+          <MapPin className="h-4 w-4 text-primary" />
+          <Input 
+            placeholder="Enter location..." 
+            value={location} 
+            onChange={(e) => setLocation(e.target.value)} 
+            className="h-8 text-xs bg-transparent border-0 focus-visible:ring-0"
+          />
+          <X className="h-4 w-4 cursor-pointer text-muted-foreground" onClick={() => setShowLocationInput(false)} />
+        </div>
+      )}
+
+      {/* Media Previews */}
+      {mediaUrls.length > 0 && (
+        <div className="grid grid-cols-3 gap-2">
+          {mediaUrls.map((url, idx) => (
+            <div key={idx} className="relative rounded-xl overflow-hidden h-24 border border-slate-200">
+              <img src={url} alt="Media" className="w-full h-full object-cover" />
+              <button 
+                onClick={() => setMediaUrls(mediaUrls.filter((_, i) => i !== idx))} 
+                className="absolute top-1 right-1 p-1 bg-black/60 text-white rounded-full"
               >
-                <option value="public">Public</option>
-                <option value="connections">Connections</option>
-                <option value="private">Private</option>
-              </select>
+                <X className="h-3 w-3" />
+              </button>
             </div>
+          ))}
+        </div>
+      )}
 
-            <Button 
-              onClick={handleSubmit} 
-              disabled={!content.trim() || isPosting || isUploading}
-              className="bg-purple-600 hover:bg-purple-700"
+      {/* Attachment Actions Row matching mockup */}
+      <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+        
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => fileInputRef.current?.click()} 
+            disabled={isUploading}
+            className="rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100"
+          >
+            <ImagePlus className="h-4 w-4 mr-1 text-blue-600" />
+            Photo
+          </Button>
+
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => videoInputRef.current?.click()} 
+            disabled={isUploading}
+            className="rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100"
+          >
+            <Video className="h-4 w-4 mr-1 text-purple-600" />
+            Video
+          </Button>
+
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => setShowLocationInput(prev => !prev)} 
+            className="rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100"
+          >
+            <MapPin className="h-4 w-4 mr-1 text-emerald-600" />
+            Location
+          </Button>
+
+          {/* Privacy Dropdown */}
+          <div className="flex items-center gap-1 bg-slate-100 dark:bg-muted px-2.5 py-1.5 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-200 border border-slate-200/60 dark:border-border">
+            <Globe className="h-3.5 w-3.5 text-emerald-600" />
+            <select 
+              value={privacy} 
+              onChange={(e) => setPrivacy(e.target.value as any)}
+              className="bg-transparent border-0 text-xs font-bold focus:outline-none cursor-pointer"
             >
-              {isPosting ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin mr-1" />
-                  Posting...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="h-4 w-4 mr-1" />
-                  Post
-                </>
-              )}
-            </Button>
+              <option value="public">Public</option>
+              <option value="connections">Connections</option>
+              <option value="private">Private</option>
+            </select>
+            <ChevronDown className="h-3 w-3 text-muted-foreground" />
           </div>
         </div>
-      </CardContent>
+
+        {/* Action Button */}
+        <Button 
+          onClick={handleSubmit} 
+          disabled={(!content.trim() && mediaUrls.length === 0) || isPosting || isUploading}
+          className="rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 shadow-md flex items-center gap-1.5"
+        >
+          {isPosting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+          Post
+        </Button>
+
+      </div>
+
     </Card>
   );
 };

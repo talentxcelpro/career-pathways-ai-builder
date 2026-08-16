@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Camera, Edit, MapPin, Building2, Eye, Users } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Badge } from '@/components/ui/badge';
+import { Camera, Edit3, Zap, CheckCircle2, MapPin, Briefcase, Building2, ChevronRight, ShieldCheck, Users, ArrowUpDown, Bookmark, Clock, Settings, Eye } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useFileUpload } from '@/hooks/useFileUpload';
 import { toast } from 'sonner';
 import { useProfileUpdate } from '@/hooks/useProfileUpdate';
@@ -19,14 +20,15 @@ interface LinkedInStyleBannerProps {
 
 export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
   profile,
-  isOwnProfile = false,
-  stats = { connections: 0, profileViews: 0 }
+  isOwnProfile = true,
+  stats = { connections: 250, profileViews: 120 }
 }) => {
+  const navigate = useNavigate();
   const [uploading, setUploading] = useState<'banner' | 'avatar' | null>(null);
   
   const { uploadFile } = useFileUpload({
     bucket: 'avatars',
-    maxSize: 5 * 1024 * 1024, // 5MB
+    maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/*']
   });
 
@@ -36,13 +38,11 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
     setUploading(type);
     try {
       const uploadedUrl = await uploadFile(file);
-
       if (type === 'avatar') {
         await updateProfilePicture.mutateAsync(uploadedUrl);
       } else {
         await updateProfile.mutateAsync({ cover_image_url: uploadedUrl } as any);
       }
-
       toast.success(`${type} updated successfully!`);
       setTimeout(() => window.location.reload(), 800);
     } catch (error) {
@@ -53,146 +53,154 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
     }
   };
 
-  const formatDisplayName = (profile: any) => {
-    if (profile?.full_name && profile.full_name.trim()) {
-      return profile.full_name;
-    }
-    return 'Professional User';
-  };
-
-  const generateInitials = (profile: any) => {
-    const displayName = formatDisplayName(profile);
-    const names = displayName.split(' ');
-    if (names.length === 1) {
-      return names[0].charAt(0).toUpperCase();
-    }
-    return names[0].charAt(0).toUpperCase() + names[names.length - 1].charAt(0).toUpperCase();
-  };
+  const fullName = profile?.full_name || "TalentXcelServices";
+  const title = profile?.title || profile?.headline || "Transforming Businesses and Lives";
+  const company = profile?.company || profile?.organization || "TalentXcel Services";
+  const location = profile?.location || "India";
+  const avatarUrl = profile?.profile_picture_url || profile?.profile_photo_url;
+  const coverUrl = profile?.cover_image_url;
 
   return (
-    <div className="w-full max-w-xs mx-auto">
-      <Card className="overflow-hidden border border-gray-200 shadow-sm bg-white rounded-lg">
-        {/* Banner Image - Fixed aspect ratio */}
-        <div className="relative w-full bg-gradient-to-r from-blue-500 to-blue-600 overflow-hidden" style={{ aspectRatio: '3 / 1', minHeight: '80px' }}>
-          {profile?.cover_image_url ? (
-            <img 
-              src={profile.cover_image_url} 
-              alt="Profile banner"
-              className="w-full h-full object-cover object-center"
-              style={{ minHeight: '64px' }}
-            />
+    <div className="space-y-4">
+      {/* 1. PROFILE CARD MATCHING MOCKUP 1:1 */}
+      <Card className="overflow-hidden border border-slate-200/80 dark:border-border/60 shadow-sm bg-white dark:bg-card rounded-3xl">
+        
+        {/* Cover Banner Header */}
+        <div className="relative w-full h-24 sm:h-28 bg-gradient-to-r from-[#0d1b2a] via-[#1b263b] to-[#0d1b2a] overflow-hidden flex items-center justify-between px-4">
+          {coverUrl ? (
+            <img src={coverUrl} alt="Cover" className="absolute inset-0 w-full h-full object-cover opacity-80" />
           ) : (
-            <img 
-              src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&h=200"
-              alt="Default banner"
-              className="w-full h-full object-cover object-center"
-              style={{ minHeight: '64px' }}
-            />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-cyan-600/30 via-teal-700/20 to-slate-950" />
           )}
+
+          {/* Chatr Logo watermark badge in cover banner */}
+          <div className="relative z-10 flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
+            <span className="text-sm font-black text-white tracking-tighter">chatr</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-cyan-400" />
+          </div>
+
+          {/* Camera Edit Button */}
           {isOwnProfile && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="absolute top-1 right-1 h-5 w-5 p-0 bg-black/20 hover:bg-black/30 rounded-full"
-              onClick={() => {
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.accept = 'image/*';
-                input.onchange = (e) => {
-                  const file = (e.target as HTMLInputElement).files?.[0];
-                  if (file) handleImageUpload('banner', file);
-                };
-                input.click();
-              }}
-              disabled={uploading === 'banner'}
-            >
-              <Camera className="h-2.5 w-2.5 text-white" />
-            </Button>
+            <label className="relative z-10 p-2 rounded-full bg-black/40 hover:bg-black/60 text-white cursor-pointer backdrop-blur-md transition-colors">
+              <Camera className="h-4 w-4" />
+              <input 
+                type="file" 
+                accept="image/*" 
+                className="hidden" 
+                onChange={(e) => e.target.files?.[0] && handleImageUpload('banner', e.target.files[0])} 
+              />
+            </label>
           )}
         </div>
 
-        {/* Profile Content - Reduced padding */}
-        <CardContent className="p-3 text-center">
-          {/* Profile Picture - Smaller size */}
-          <div className="relative mb-3 flex justify-center">
-            <Avatar className="w-16 h-16 border-2 border-white shadow-md">
-              <AvatarImage src={profile?.profile_picture_url} className="object-cover" />
-              <AvatarFallback className="bg-gradient-to-br from-blue-600 to-blue-700 text-white font-bold text-sm">
-                {generateInitials(profile)}
+        {/* Profile Avatar & Details Content */}
+        <CardContent className="px-5 pb-5 pt-0 relative flex flex-col items-center text-center">
+          
+          {/* Circular Overlapping Avatar */}
+          <div className="relative -mt-12 mb-3">
+            <Avatar className="w-24 h-24 border-4 border-white dark:border-slate-900 shadow-xl bg-slate-900">
+              <AvatarImage src={avatarUrl || undefined} alt={fullName} className="object-cover" />
+              <AvatarFallback className="text-2xl font-black bg-slate-900 text-white">
+                {fullName.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            {isOwnProfile && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="absolute -bottom-1 -right-6 h-5 w-5 p-0 bg-gray-100 hover:bg-gray-200 rounded-full shadow-sm"
-                onClick={() => {
-                  const input = document.createElement('input');
-                  input.type = 'file';
-                  input.accept = 'image/*';
-                  input.onchange = (e) => {
-                    const file = (e.target as HTMLInputElement).files?.[0];
-                    if (file) handleImageUpload('avatar', file);
-                  };
-                  input.click();
-                }}
-                disabled={uploading === 'avatar'}
-              >
-                <Camera className="h-2.5 w-2.5 text-gray-600" />
-              </Button>
-            )}
+            <span className="absolute bottom-1 right-1 w-4 h-4 bg-emerald-500 border-2 border-white dark:border-slate-900 rounded-full shadow-md" />
           </div>
 
-          {/* Name - Smaller text */}
-          <div className="mb-2">
-            <h2 className="text-base font-semibold text-gray-900 truncate">
-              {formatDisplayName(profile)}
-            </h2>
-          </div>
-
-          {/* Professional headline - Smaller text */}
-          {profile?.headline || profile?.title ? (
-            <p className="text-xs text-gray-700 mb-2 leading-relaxed truncate">
-              {profile.headline || profile.title}
-            </p>
-          ) : null}
-
-          {/* Company - Smaller size */}
-          {profile?.current_company && (
-            <div className="flex items-center justify-center gap-1 mb-2">
-              <Building2 className="h-2.5 w-2.5 text-gray-500" />
-              <p className="text-xs font-medium text-gray-800 truncate">
-                {profile.current_company}
-              </p>
+          {/* Candidate Name & Verified Badge */}
+          <div className="space-y-1">
+            <div className="flex items-center justify-center gap-1.5">
+              <h2 className="text-base font-extrabold text-foreground tracking-tight">{fullName}</h2>
+              <CheckCircle2 className="h-4 w-4 text-blue-600 fill-blue-600/20 shrink-0" />
             </div>
-          )}
 
-          {/* Location - Smaller text */}
-          {profile?.location && (
-            <p className="text-xs text-gray-500 truncate mb-2">
-              {profile.location}
-            </p>
-          )}
-
-          {/* Action buttons - Smaller spacing */}
-          <div className="mt-3 space-y-2">
-            {isOwnProfile && (
-              <Link to="/profile/edit">
-                <Button variant="outline" size="sm" className="w-full text-xs h-7">
-                  <Edit className="h-2.5 w-2.5 mr-1" />
-                  Edit profile
-                </Button>
-              </Link>
-            )}
+            <p className="text-xs font-semibold text-muted-foreground max-w-xs">{title}</p>
             
-            {/* Upgrade Now button */}
-            <Link to="/pro/subscription">
-              <Button size="sm" className="w-full text-xs h-7 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600">
-                Upgrade Now
-              </Button>
-            </Link>
+            <div className="flex items-center justify-center gap-2 text-[11px] font-medium text-muted-foreground pt-0.5">
+              <span className="flex items-center gap-1"><Briefcase className="h-3 w-3 text-primary" /> {company}</span>
+              <span>•</span>
+              <span className="flex items-center gap-1"><MapPin className="h-3 w-3 text-primary" /> {location}</span>
+            </div>
           </div>
+
+          {/* Action Buttons Row */}
+          <div className="grid grid-cols-2 gap-2.5 w-full pt-4 mt-2 border-t border-slate-100 dark:border-border/60">
+            <Button 
+              onClick={() => navigate('/profile/edit')} 
+              variant="outline" 
+              className="rounded-2xl text-xs font-bold border-slate-200 dark:border-border/60 bg-slate-50 dark:bg-muted/40 hover:bg-slate-100 text-slate-700 dark:text-slate-200"
+            >
+              <Edit3 className="h-3.5 w-3.5 mr-1 text-slate-500" />
+              Edit Profile
+            </Button>
+
+            <Button 
+              onClick={() => navigate('/pro')} 
+              className="rounded-2xl text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-md"
+            >
+              <Zap className="h-3.5 w-3.5 mr-1" />
+              Upgrade Now
+            </Button>
+          </div>
+
         </CardContent>
+
+      </Card>
+
+      {/* 2. NAVIGATION MENU CARD MATCHING MOCKUP 1:1 */}
+      <Card className="border border-slate-200/80 dark:border-border/60 shadow-sm bg-white dark:bg-card rounded-3xl p-4">
+        <h3 className="text-xs font-extrabold uppercase tracking-wider text-muted-foreground mb-3 px-1">Navigation</h3>
+        
+        <div className="space-y-1">
+          <Link to="/network/verified" className="flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-100/80 dark:hover:bg-muted/50 transition-colors group">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-blue-500/10 text-blue-600"><ShieldCheck className="h-4 w-4" /></div>
+              <span className="text-xs font-bold text-slate-700 dark:text-slate-200 group-hover:text-primary">Verified</span>
+            </div>
+            <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
+          </Link>
+
+          <Link to="/network/connections" className="flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-100/80 dark:hover:bg-muted/50 transition-colors group">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-purple-500/10 text-purple-600"><Users className="h-4 w-4" /></div>
+              <span className="text-xs font-bold text-slate-700 dark:text-slate-200 group-hover:text-primary">My Network</span>
+            </div>
+            <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
+          </Link>
+
+          <Link to="/network/skill-swap" className="flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-100/80 dark:hover:bg-muted/50 transition-colors group">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600"><ArrowUpDown className="h-4 w-4" /></div>
+              <span className="text-xs font-bold text-slate-700 dark:text-slate-200 group-hover:text-primary">Skill Swap</span>
+            </div>
+            <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
+          </Link>
+
+          <Link to="/saved-jobs" className="flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-100/80 dark:hover:bg-muted/50 transition-colors group">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-amber-500/10 text-amber-600"><Bookmark className="h-4 w-4" /></div>
+              <span className="text-xs font-bold text-slate-700 dark:text-slate-200 group-hover:text-primary">Saved Items</span>
+            </div>
+            <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
+          </Link>
+
+          <Link to="/profile/analytics" className="flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-100/80 dark:hover:bg-muted/50 transition-colors group">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-600"><Clock className="h-4 w-4" /></div>
+              <span className="text-xs font-bold text-slate-700 dark:text-slate-200 group-hover:text-primary">My Activities</span>
+            </div>
+            <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
+          </Link>
+
+          <Link to="/profile/settings" className="flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-100/80 dark:hover:bg-muted/50 transition-colors group">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-slate-500/10 text-slate-600 dark:text-slate-400"><Settings className="h-4 w-4" /></div>
+              <span className="text-xs font-bold text-slate-700 dark:text-slate-200 group-hover:text-primary">Settings</span>
+            </div>
+            <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
+          </Link>
+        </div>
+
       </Card>
     </div>
   );
