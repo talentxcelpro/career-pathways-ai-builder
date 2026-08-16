@@ -8,9 +8,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useFileUpload } from '@/hooks/useFileUpload';
 import { toast } from 'sonner';
 import { useProfileUpdate } from '@/hooks/useProfileUpdate';
+import { useAuth } from '@/contexts/AuthContext';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 interface LinkedInStyleBannerProps {
-  profile: any;
+  profile?: any;
   isOwnProfile?: boolean;
   stats?: {
     connections: number;
@@ -19,12 +22,30 @@ interface LinkedInStyleBannerProps {
 }
 
 export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
-  profile,
+  profile: propProfile,
   isOwnProfile = true,
   stats = { connections: 250, profileViews: 120 }
 }) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [uploading, setUploading] = useState<'banner' | 'avatar' | null>(null);
+
+  // Fetch real live profile from Supabase profiles table
+  const { data: dbProfile } = useQuery({
+    queryKey: ['live-user-profile-card', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!user?.id
+  });
+
+  const liveProfile = dbProfile || propProfile || user?.user_metadata || {};
   
   const { uploadFile } = useFileUpload({
     bucket: 'avatars',
@@ -53,12 +74,12 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
     }
   };
 
-  const fullName = profile?.full_name || "TalentXcelServices";
-  const title = profile?.title || profile?.headline || "Transforming Businesses and Lives";
-  const company = profile?.company || profile?.organization || "TalentXcel Services";
-  const location = profile?.location || "India";
-  const avatarUrl = profile?.profile_picture_url || profile?.profile_photo_url;
-  const coverUrl = profile?.cover_image_url;
+  const fullName = liveProfile?.full_name || liveProfile?.name || user?.email?.split('@')[0] || "TalentXcelServices";
+  const title = liveProfile?.title || liveProfile?.headline || "Transforming Businesses and Lives";
+  const company = liveProfile?.company || liveProfile?.current_company || liveProfile?.organization || "TalentXcel Services";
+  const location = liveProfile?.location || "India";
+  const avatarUrl = liveProfile?.profile_picture_url || liveProfile?.profile_photo_url || liveProfile?.avatar_url;
+  const coverUrl = liveProfile?.cover_image_url;
 
   return (
     <div className="space-y-4">
