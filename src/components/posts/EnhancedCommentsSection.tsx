@@ -8,26 +8,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { MoreHorizontal, Edit, Trash2, Flag, Smile } from 'lucide-react';
-import { EmojiPicker } from './EmojiPicker';
+import { MoreHorizontal, Edit, Trash2, Send, Loader2 } from 'lucide-react';
 
 interface EnhancedCommentsSectionProps {
   postId: string;
-  isOpen: boolean;
+  isOpen?: boolean;
 }
 
-export const EnhancedCommentsSection: React.FC<EnhancedCommentsSectionProps> = ({ postId, isOpen }) => {
+export const EnhancedCommentsSection: React.FC<EnhancedCommentsSectionProps> = ({ postId, isOpen = true }) => {
   const [newComment, setNewComment] = useState('');
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editContent, setEditContent] = useState('');
@@ -43,6 +34,7 @@ export const EnhancedCommentsSection: React.FC<EnhancedCommentsSectionProps> = (
     getCurrentUser();
   }, []);
 
+  // Query real comments from Supabase post_comments table
   const { data: comments, isLoading } = useQuery({
     queryKey: ['comments', postId],
     queryFn: async () => {
@@ -54,87 +46,65 @@ export const EnhancedCommentsSection: React.FC<EnhancedCommentsSectionProps> = (
 
       if (commentsError) throw commentsError;
 
+      if (!commentsData || commentsData.length === 0) return [];
+
       // Get unique author IDs
       const authorIds: string[] = Array.from(new Set(
         commentsData
-          .map((comment: any) => comment.author_id)
+          .map((c: any) => c.author_id || c.user_id)
           .filter((id: any): id is string => typeof id === 'string' && id !== null)
       ));
 
       if (authorIds.length === 0) {
-        return commentsData.map((comment: any) => ({ ...comment, profiles: null }));
+        return commentsData.map((c: any) => ({ ...c, profiles: null }));
       }
 
-      // Get profiles for all comment authors
-      const { data: profilesData, error: profilesError } = await supabase
+      // Fetch profiles for comment authors
+      const { data: profilesData } = await supabase
         .from('profiles')
-        .select('id, full_name, profile_picture_url')
+        .select('id, full_name, profile_picture_url, title')
         .in('id', authorIds);
 
-      if (profilesError) throw profilesError;
+      const profilesMap = new Map((profilesData || []).map((p: any) => [p.id, p]));
 
-      // Create a map of profiles by ID for easy lookup
-      const profilesMap = new Map(profilesData.map((profile: any) => [profile.id, profile]));
-
-      // Combine comments with their profiles
-      const commentsWithProfiles = commentsData.map((comment: any) => ({
+      return commentsData.map((comment: any) => ({
         ...comment,
-        profiles: profilesMap.get(comment.author_id) || null
+        profiles: profilesMap.get(comment.author_id || comment.user_id) || null
       }));
-
-      return commentsWithProfiles;
     },
     enabled: isOpen
   });
 
+  // Add Comment Mutation
   const addCommentMutation = useMutation({
     mutationFn: async (content: string) => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
+      if (!user) throw new Error('You must be logged in to comment');
 
       const { error } = await supabase
         .from('post_comments')
         .insert({
           post_id: postId,
           author_id: user.id,
-          content
+          user_id: user.id,
+          content: content.trim()
         });
 
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['comments', postId] });
+      queryClient.invalidateQueries({ queryKey: ['post-engagement-real', postId] });
       queryClient.invalidateQueries({ queryKey: ['posts'] });
       setNewComment('');
-      toast.success('Comment added!');
+      toast.success('Comment posted!');
     },
-    onError: (error) => {
-      toast.error('Failed to add comment');
-      console.error('Comment error:', error);
+    onError: (error: any) => {
+      toast.error(error.message || 'Failed to post comment');
     }
   });
 
-  const editCommentMutation = useMutation({
-    mutationFn: async ({ commentId, content }: { commentId: string; content: string }) => {
-      const { error } = await supabase
-        .from('post_comments')
-        .update({ content, updated_at: new Date().toISOString() })
-        .eq('id', commentId);
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['comments', postId] });
-      setEditingCommentId(null);
-      setEditContent('');
-      toast.success('Comment updated!');
-    },
-    onError: (error) => {
-      toast.error('Failed to update comment');
-      console.error('Edit comment error:', error);
-    }
-  });
-
+  // Delete Comment Mutation
   const deleteCommentMutation = useMutation({
     mutationFn: async (commentId: string) => {
       const { error } = await supabase
@@ -146,229 +116,124 @@ export const EnhancedCommentsSection: React.FC<EnhancedCommentsSectionProps> = (
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['comments', postId] });
+      queryClient.invalidateQueries({ queryKey: ['post-engagement-real', postId] });
       queryClient.invalidateQueries({ queryKey: ['posts'] });
-      toast.success('Comment deleted!');
+      toast.success('Comment deleted');
     },
-    onError: (error) => {
+    onError: () => {
       toast.error('Failed to delete comment');
-      console.error('Delete comment error:', error);
     }
   });
 
   const handleAddComment = () => {
     if (!newComment.trim()) {
-      toast.error('Please write a comment before posting');
+      toast.error('Please write something before posting');
       return;
     }
     addCommentMutation.mutate(newComment);
   };
 
-  const handleEditComment = (comment: any) => {
-    setEditingCommentId(comment.id);
-    setEditContent(comment.content);
-  };
-
-  const handleSaveEdit = () => {
-    if (!editContent.trim()) {
-      toast.error('Comment cannot be empty');
-      return;
-    }
-    if (editingCommentId) {
-      editCommentMutation.mutate({ commentId: editingCommentId, content: editContent });
-    }
-  };
-
-  const handleCancelEdit = () => {
-    setEditingCommentId(null);
-    setEditContent('');
-  };
-
-  const handleDeleteComment = (commentId: string) => {
-    if (window.confirm('Are you sure you want to delete this comment?')) {
-      deleteCommentMutation.mutate(commentId);
-    }
-  };
-
-  const handleReportComment = () => {
-    const reason = window.prompt('Why are you reporting this comment?');
-    if (reason) {
-      toast.success('Comment reported successfully');
-    }
-  };
-
-  const formatTimeAgo = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-    
-    if (diffInSeconds < 60) return 'Just now';
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-    return `${Math.floor(diffInSeconds / 86400)}d ago`;
-  };
-
-  const formatDisplayName = (profile: any) => {
-    if (profile?.full_name && profile.full_name.trim()) {
-      return profile.full_name;
-    }
-    if (profile?.display_name && profile.display_name.trim()) {
-      return profile.display_name;
-    }
-    if (profile?.username && profile.username.trim()) {
-      return `@${profile.username}`;
-    }
-    return 'TalentXcel User';
-  };
-
-  const generateInitials = (profile: any) => {
-    const displayName = formatDisplayName(profile);
-    if (displayName === 'TalentXcel User') return 'TU';
-    if (displayName.startsWith('@')) return displayName.charAt(1).toUpperCase();
-    
-    const names = displayName.split(' ');
-    if (names.length === 1) {
-      return names[0].charAt(0).toUpperCase();
-    }
-    return names[0].charAt(0).toUpperCase() + names[names.length - 1].charAt(0).toUpperCase();
-  };
-
   if (!isOpen) return null;
 
   return (
-    <div className="mt-4 border-t pt-4 max-h-[300px] md:max-h-[400px] overflow-y-auto">
-      {/* Add Comment Form */}
-      <div className="flex space-x-2 mb-3">
-        <Avatar className="h-6 w-6 md:h-7 md:w-7 flex-shrink-0">
-          <AvatarFallback className="text-xs">You</AvatarFallback>
+    <div className="space-y-4 pt-2">
+      
+      {/* Comment Input Container */}
+      <div className="flex gap-2.5 items-start">
+        <Avatar className="w-8 h-8 shrink-0 mt-0.5 border border-slate-200">
+          <AvatarImage src={undefined} />
+          <AvatarFallback className="bg-slate-900 text-white font-bold text-xs">U</AvatarFallback>
         </Avatar>
-        <div className="flex-1">
+
+        <div className="flex-1 space-y-2">
           <Textarea
             placeholder="Write a comment..."
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            className="min-h-[40px] md:min-h-[48px] max-h-[60px] md:max-h-[80px] resize-none text-xs md:text-sm"
+            className="min-h-[60px] text-xs rounded-2xl border-slate-200/80 focus-visible:ring-1 focus-visible:ring-primary p-3 resize-none font-medium"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleAddComment();
+              }
+            }}
           />
-          <div className="flex justify-between items-center mt-1.5">
-            <EmojiPicker onEmojiSelect={(emoji) => setNewComment(prev => prev + emoji)}>
-              <Button variant="ghost" size="sm" type="button" className="h-7 px-2">
-                <Smile className="h-3.5 w-3.5" />
-              </Button>
-            </EmojiPicker>
-            <Button 
-              onClick={handleAddComment}
-              disabled={addCommentMutation.isPending || !newComment.trim()}
+
+          <div className="flex justify-end">
+            <Button
               size="sm"
-              className="h-7 text-xs px-3"
+              onClick={handleAddComment}
+              disabled={!newComment.trim() || addCommentMutation.isPending}
+              className="rounded-xl h-8 px-4 text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white flex items-center gap-1.5 shadow-sm"
             >
-              {addCommentMutation.isPending ? 'Posting...' : 'Post'}
+              {addCommentMutation.isPending ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Send className="h-3.5 w-3.5" />
+              )}
+              Post
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Comments List */}
-      <div className="space-y-2 md:space-y-3">
-        {isLoading ? (
-          <div className="text-xs md:text-sm text-muted-foreground">Loading comments...</div>
-        ) : comments && comments.length > 0 ? (
-          comments.map((comment: any) => (
-            <div key={comment.id} className="flex space-x-1.5 md:space-x-2">
-              <Avatar className="h-6 w-6 md:h-7 md:w-7 flex-shrink-0">
-                <AvatarImage src={comment.profiles?.profile_picture_url} />
-                <AvatarFallback className="text-xs">
-                  {generateInitials(comment.profiles)}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                {editingCommentId === comment.id ? (
-                  <div className="space-y-2">
-                    <Textarea
-                      value={editContent}
-                      onChange={(e) => setEditContent(e.target.value)}
-                      className="min-h-[80px] resize-none"
-                    />
-                    <div className="flex gap-2">
-                      <Button 
-                        size="sm" 
-                        onClick={handleSaveEdit}
-                        disabled={editCommentMutation.isPending || !editContent.trim()}
-                      >
-                        {editCommentMutation.isPending ? 'Saving...' : 'Save'}
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        onClick={handleCancelEdit}
-                      >
-                        Cancel
-                      </Button>
+      {/* Loading state */}
+      {isLoading && (
+        <div className="flex justify-center p-4">
+          <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+        </div>
+      )}
+
+      {/* Real Comments List */}
+      {!isLoading && comments && comments.length > 0 && (
+        <div className="space-y-3 pt-2">
+          {comments.map((comment: any) => {
+            const authorName = comment.profiles?.full_name || "Professional User";
+            const authorAvatar = comment.profiles?.profile_picture_url;
+            const authorTitle = comment.profiles?.title || "Member";
+            const isOwnComment = currentUserId === (comment.author_id || comment.user_id);
+
+            return (
+              <div key={comment.id} className="flex gap-2.5 items-start group">
+                <Avatar className="w-8 h-8 shrink-0 mt-0.5 border border-slate-200">
+                  <AvatarImage src={authorAvatar || undefined} alt={authorName} />
+                  <AvatarFallback className="font-bold text-xs bg-slate-900 text-white">
+                    {authorName.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+
+                <div className="flex-1 bg-slate-50 dark:bg-muted/40 p-3 rounded-2xl border border-slate-200/60 dark:border-border/40 relative">
+                  <div className="flex items-center justify-between gap-2">
+                    <div>
+                      <p className="font-extrabold text-xs text-foreground">{authorName}</p>
+                      <p className="text-[10px] text-muted-foreground">{authorTitle}</p>
                     </div>
-                  </div>
-                ) : (
-                  <div className="bg-muted rounded-lg p-2 md:p-2.5">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="font-medium text-[11px] md:text-xs">
-                          {formatDisplayName(comment.profiles)}
-                        </div>
-                        <div className="text-[11px] md:text-xs mt-0.5 md:mt-1">
-                          {comment.content}
-                        </div>
-                      </div>
-                      
-                      {/* Comment Actions */}
+
+                    {isOwnComment && (
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-5 w-5 md:h-6 md:w-6 p-0">
-                            <MoreHorizontal className="h-2.5 w-2.5 md:h-3 md:w-3" />
+                          <Button variant="ghost" size="sm" className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <MoreHorizontal className="h-3.5 w-3.5 text-muted-foreground" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-40">
-                          {currentUserId === comment.author_id && (
-                            <>
-                              <DropdownMenuItem onClick={() => handleEditComment(comment)}>
-                                <Edit className="h-3 w-3 mr-2" />
-                                Edit
-                              </DropdownMenuItem>
-                              <DropdownMenuItem 
-                                onClick={() => handleDeleteComment(comment.id)}
-                                className="text-destructive focus:text-destructive"
-                              >
-                                <Trash2 className="h-3 w-3 mr-2" />
-                                Delete
-                              </DropdownMenuItem>
-                            </>
-                          )}
-                          {currentUserId !== comment.author_id && (
-                            <DropdownMenuItem 
-                              onClick={handleReportComment}
-                              className="text-destructive focus:text-destructive"
-                            >
-                              <Flag className="h-3 w-3 mr-2" />
-                              Report
-                            </DropdownMenuItem>
-                          )}
+                        <DropdownMenuContent align="end" className="text-xs">
+                          <DropdownMenuItem onClick={() => deleteCommentMutation.mutate(comment.id)} className="text-red-600 font-bold">
+                            <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+                            Delete Comment
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
-                    </div>
-                  </div>
-                )}
-                
-                {editingCommentId !== comment.id && (
-                  <div className="text-[10px] md:text-xs text-muted-foreground mt-0.5 md:mt-1">
-                    {formatTimeAgo(comment.created_at)}
-                    {comment.updated_at !== comment.created_at && (
-                      <span className="ml-1">(edited)</span>
                     )}
                   </div>
-                )}
+
+                  <p className="text-xs text-foreground mt-1.5 font-medium leading-relaxed">{comment.content}</p>
+                </div>
               </div>
-            </div>
-          ))
-        ) : (
-          <div className="text-xs md:text-sm text-muted-foreground">No comments yet. Be the first to comment!</div>
-        )}
-      </div>
+            );
+          })}
+        </div>
+      )}
+
     </div>
   );
 };

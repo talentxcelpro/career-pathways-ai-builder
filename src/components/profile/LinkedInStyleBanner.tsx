@@ -86,19 +86,13 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
       {/* 1. PROFILE CARD MATCHING MOCKUP 1:1 */}
       <Card className="overflow-hidden border border-slate-200/80 dark:border-border/60 shadow-sm bg-white dark:bg-card rounded-3xl">
         
-        {/* Cover Banner Header */}
-        <div className="relative w-full h-24 sm:h-28 bg-gradient-to-r from-[#0d1b2a] via-[#1b263b] to-[#0d1b2a] overflow-hidden flex items-center justify-between px-4">
+        {/* Cover Banner Header - Clean without chatr badge */}
+        <div className="relative w-full h-24 sm:h-28 bg-gradient-to-r from-[#0d1b2a] via-[#1b263b] to-[#0d1b2a] overflow-hidden flex items-center justify-end px-4">
           {coverUrl ? (
             <img src={coverUrl} alt="Cover" className="absolute inset-0 w-full h-full object-cover opacity-80" />
           ) : (
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-cyan-600/30 via-teal-700/20 to-slate-950" />
           )}
-
-          {/* Chatr Logo watermark badge in cover banner */}
-          <div className="relative z-10 flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
-            <span className="text-sm font-black text-white tracking-tighter">chatr</span>
-            <span className="w-2.5 h-2.5 rounded-full bg-cyan-400" />
-          </div>
 
           {/* Camera Edit Button */}
           {isOwnProfile && (
