@@ -141,7 +141,7 @@ export const networkRoutes = [
   {
     title: "Message Conversation",
     to: "/network/messages/:id",
-    page: <Suspense fallback={null}><MessageConversation /></Suspense>,
+    page: <Suspense fallback={null}><Messages /></Suspense>,
   },
   {
     title: "Message Requests",

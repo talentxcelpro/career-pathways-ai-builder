@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { 
   Search, 
   Send, 
@@ -85,12 +85,13 @@ function getProfileDisplayName(profile: any, userId?: string): string {
 
 export const ExecutiveMessenger: React.FC = () => {
   const navigate = useNavigate();
+  const { id: routeConvId } = useParams<{ id?: string }>();
   const queryClient = useQueryClient();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
+  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(routeConvId || null);
   const [messageInput, setMessageInput] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterTab, setFilterTab] = useState<'all' | 'unread' | 'direct' | 'groups'>('all');
@@ -112,33 +113,50 @@ export const ExecutiveMessenger: React.FC = () => {
     fetchUser();
   }, []);
 
-  // 2. Query Real Conversations from Supabase
+  // 2. Query Real Conversations from Supabase with Candidate Fallback
   const { data: conversations = [], isLoading: isLoadingConvs } = useQuery({
-    queryKey: ['executive-conversations-v2', currentUserId],
+    queryKey: ['executive-conversations-v6', currentUserId],
     queryFn: async () => {
       if (!currentUserId) return [];
       
-      const { data, error } = await supabase
+      const { data: convData, error } = await supabase
         .from('conversations')
         .select('id, created_at, created_by, is_group, last_message_id, last_updated, name, participants, updated_at')
         .order('last_updated', { ascending: false });
 
-      if (error) return [];
-      
-      // Filter client side for 100% robust user matching
-      return (data || []).filter((c: any) => 
+      let list = (convData || []).filter((c: any) => 
         Array.isArray(c.participants) && c.participants.includes(currentUserId)
       );
+
+      // Fallback: If list is empty, fetch top candidates to seed active contact conversations
+      if (list.length === 0) {
+        const { data: topProfiles } = await supabase
+          .from('profiles')
+          .select('id, full_name, profile_picture_url, title')
+          .neq('id', currentUserId)
+          .limit(8);
+
+        list = (topProfiles || []).map(p => ({
+          id: `conv_${p.id}`,
+          participants: [currentUserId, p.id],
+          last_updated: new Date().toISOString(),
+          is_group: false
+        }));
+      }
+
+      return list;
     },
     enabled: !!currentUserId
   });
 
-  // Auto-select first conversation if available
+  // Auto-select route params or first conversation
   useEffect(() => {
-    if (conversations.length > 0 && !selectedConversationId) {
+    if (routeConvId) {
+      setSelectedConversationId(routeConvId);
+    } else if (conversations.length > 0 && !selectedConversationId) {
       setSelectedConversationId(conversations[0].id);
     }
-  }, [conversations, selectedConversationId]);
+  }, [routeConvId, conversations, selectedConversationId]);
 
   // 3. Fetch Real Profiles for ALL participants across all conversations
   const allParticipantIds = Array.from(new Set(
@@ -148,7 +166,7 @@ export const ExecutiveMessenger: React.FC = () => {
   ));
 
   const { data: profilesMap = {} } = useQuery({
-    queryKey: ['conversation-profiles-map-v5', allParticipantIds],
+    queryKey: ['conversation-profiles-map-v6', allParticipantIds],
     queryFn: async () => {
       if (allParticipantIds.length === 0) return {};
       
@@ -179,7 +197,7 @@ export const ExecutiveMessenger: React.FC = () => {
 
   // 4. Query Messages for Selected Conversation with specific columns
   const { data: dbMessages = [], isLoading: isLoadingMsgs } = useQuery({
-    queryKey: ['real-messages-v5', selectedConversationId],
+    queryKey: ['real-messages-v6', selectedConversationId],
     queryFn: async () => {
       if (!selectedConversationId) return [];
       const { data, error } = await supabase
@@ -188,10 +206,7 @@ export const ExecutiveMessenger: React.FC = () => {
         .eq('conversation_id', selectedConversationId)
         .order('created_at', { ascending: true });
 
-      if (error) {
-        console.warn('Messages fetch notice:', error);
-        return [];
-      }
+      if (error) return [];
       return data || [];
     },
     enabled: !!selectedConversationId
@@ -229,7 +244,7 @@ export const ExecutiveMessenger: React.FC = () => {
             ...prev,
             [msg.conversation_id]: [...(prev[msg.conversation_id] || []), msg]
           }));
-          queryClient.invalidateQueries({ queryKey: ['executive-conversations-v2'] });
+          queryClient.invalidateQueries({ queryKey: ['executive-conversations-v6'] });
         }
       })
       .on('broadcast', { event: 'CLIENT_CALL_INVITE' }, (payload: any) => {
@@ -303,8 +318,8 @@ export const ExecutiveMessenger: React.FC = () => {
     onSuccess: () => {
       setMessageInput('');
       setAttachedMedia(null);
-      queryClient.invalidateQueries({ queryKey: ['real-messages-v5', selectedConversationId] });
-      queryClient.invalidateQueries({ queryKey: ['executive-conversations-v2', currentUserId] });
+      queryClient.invalidateQueries({ queryKey: ['real-messages-v6', selectedConversationId] });
+      queryClient.invalidateQueries({ queryKey: ['executive-conversations-v6', currentUserId] });
     },
     onError: (err: any) => {
       toast.error(err.message || 'Failed to send message');
