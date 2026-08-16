@@ -113,32 +113,31 @@ export const ExecutiveMessenger: React.FC = () => {
     fetchUser();
   }, []);
 
-  // 2. Query Real Conversations from Supabase with Candidate Fallback
+  // 2. Query Real Conversations from Supabase (matching NetworkMessagingSidebar filter)
   const { data: conversations = [], isLoading: isLoadingConvs } = useQuery({
-    queryKey: ['executive-conversations-v6', currentUserId],
+    queryKey: ['executive-conversations-v7', currentUserId],
     queryFn: async () => {
       if (!currentUserId) return [];
       
-      const { data: convData, error } = await supabase
+      const { data: convData } = await supabase
         .from('conversations')
-        .select('id, created_at, created_by, is_group, last_message_id, last_updated, name, participants, updated_at')
+        .select('*')
+        .filter('participants', 'cs', `{${currentUserId}}`)
         .order('last_updated', { ascending: false });
 
-      let list = (convData || []).filter((c: any) => 
-        Array.isArray(c.participants) && c.participants.includes(currentUserId)
-      );
+      let list = convData || [];
 
-      // Fallback: If list is empty, fetch top candidates to seed active contact conversations
+      // Fallback: If no conversations exist, fetch top profiles to seed contacts
       if (list.length === 0) {
         const { data: topProfiles } = await supabase
           .from('profiles')
-          .select('id, full_name, profile_picture_url, title')
+          .select('id, full_name, profile_picture_url, title, email, user_id')
           .neq('id', currentUserId)
           .limit(8);
 
         list = (topProfiles || []).map(p => ({
-          id: `conv_${p.id}`,
-          participants: [currentUserId, p.id],
+          id: p.id,
+          participants: [currentUserId, p.user_id || p.id],
           last_updated: new Date().toISOString(),
           is_group: false
         }));
@@ -166,18 +165,18 @@ export const ExecutiveMessenger: React.FC = () => {
   ));
 
   const { data: profilesMap = {} } = useQuery({
-    queryKey: ['conversation-profiles-map-v6', allParticipantIds],
+    queryKey: ['conversation-profiles-map-v7', allParticipantIds],
     queryFn: async () => {
       if (allParticipantIds.length === 0) return {};
       
-      const { data: profilesById } = await supabase
+      const { data: profiles } = await supabase
         .from('profiles')
         .select('id, full_name, name, display_name, first_name, last_name, profile_picture_url, title, email, username, slug, user_id')
-        .in('id', allParticipantIds);
+        .or(`id.in.(${allParticipantIds.join(',')}),user_id.in.(${allParticipantIds.join(',')})`);
 
       const map: Record<string, any> = {};
-      (profilesById || []).forEach(p => {
-        map[p.id] = p;
+      (profiles || []).forEach(p => {
+        if (p.id) map[p.id] = p;
         if (p.user_id) map[p.user_id] = p;
       });
 
@@ -189,15 +188,15 @@ export const ExecutiveMessenger: React.FC = () => {
   // Active selected conversation details
   const activeConv = conversations.find(c => c.id === selectedConversationId);
   const activeOtherId = activeConv?.participants?.find((p: string) => p !== currentUserId);
-  const partnerProfile = profilesMap[activeOtherId || ''];
+  const partnerProfile = profilesMap[activeOtherId || ''] || profilesMap[selectedConversationId || ''];
   const partnerName = getProfileDisplayName(partnerProfile, activeOtherId);
   const partnerAvatar = partnerProfile?.profile_picture_url;
   const partnerTitle = partnerProfile?.title || "Executive Member";
   const partnerUsername = partnerProfile?.username || partnerProfile?.slug || partnerProfile?.id;
 
-  // 4. Query Messages for Selected Conversation with specific columns
+  // 4. Query Messages for Selected Conversation
   const { data: dbMessages = [], isLoading: isLoadingMsgs } = useQuery({
-    queryKey: ['real-messages-v6', selectedConversationId],
+    queryKey: ['real-messages-v7', selectedConversationId],
     queryFn: async () => {
       if (!selectedConversationId) return [];
       const { data, error } = await supabase
@@ -244,7 +243,7 @@ export const ExecutiveMessenger: React.FC = () => {
             ...prev,
             [msg.conversation_id]: [...(prev[msg.conversation_id] || []), msg]
           }));
-          queryClient.invalidateQueries({ queryKey: ['executive-conversations-v6'] });
+          queryClient.invalidateQueries({ queryKey: ['executive-conversations-v7'] });
         }
       })
       .on('broadcast', { event: 'CLIENT_CALL_INVITE' }, (payload: any) => {
@@ -318,8 +317,8 @@ export const ExecutiveMessenger: React.FC = () => {
     onSuccess: () => {
       setMessageInput('');
       setAttachedMedia(null);
-      queryClient.invalidateQueries({ queryKey: ['real-messages-v6', selectedConversationId] });
-      queryClient.invalidateQueries({ queryKey: ['executive-conversations-v6', currentUserId] });
+      queryClient.invalidateQueries({ queryKey: ['real-messages-v7', selectedConversationId] });
+      queryClient.invalidateQueries({ queryKey: ['executive-conversations-v7', currentUserId] });
     },
     onError: (err: any) => {
       toast.error(err.message || 'Failed to send message');
@@ -392,7 +391,7 @@ export const ExecutiveMessenger: React.FC = () => {
     if (filterTab === 'direct' && conv.is_group) return false;
 
     const otherId = conv.participants?.find((id: string) => id !== currentUserId);
-    const profile = profilesMap[otherId || ''];
+    const profile = profilesMap[otherId || ''] || profilesMap[conv.id];
     const displayName = conv.is_group 
       ? (conv.name || "Group Chat")
       : getProfileDisplayName(profile, otherId);
@@ -492,7 +491,7 @@ export const ExecutiveMessenger: React.FC = () => {
             filteredConversations.map((conv: any) => {
               const isSelected = conv.id === selectedConversationId;
               const otherId = conv.participants?.find((id: string) => id !== currentUserId);
-              const profile = profilesMap[otherId || ''];
+              const profile = profilesMap[otherId || ''] || profilesMap[conv.id];
               
               const displayName = conv.is_group 
                 ? (conv.name || "Group Chat")
