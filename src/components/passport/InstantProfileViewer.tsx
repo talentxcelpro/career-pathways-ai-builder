@@ -1,13 +1,40 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Separator } from '@/components/ui/separator';
-import { MapPin, Calendar, Globe, Linkedin, Github, Award, Users, TrendingUp, Star, ExternalLink, Share2 } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { QRCodeSVG } from 'qrcode.react';
+import { generateAndDownloadVCard } from '@/utils/vcardGenerator';
+import { toast } from 'sonner';
+import { 
+  MapPin, 
+  Calendar, 
+  Globe, 
+  Award, 
+  Users, 
+  TrendingUp, 
+  Star, 
+  ExternalLink, 
+  Share2,
+  CheckCircle2,
+  Download,
+  Briefcase,
+  User,
+  GraduationCap,
+  Sparkles,
+  Target,
+  ChevronRight,
+  MessageCircle,
+  Building2,
+  Trophy,
+  Zap,
+  FolderGit2,
+  ShieldCheck,
+  FileText
+} from 'lucide-react';
 import { PublicProfile, PublicCareerPassport, PublicAchievements } from '@/hooks/usePublicProfile';
-import ProfessionalCard from './ProfessionalCard';
-import { useToast } from '@/hooks/use-toast';
 
 interface InstantProfileViewerProps {
   profile: PublicProfile;
@@ -22,332 +49,605 @@ const InstantProfileViewer: React.FC<InstantProfileViewerProps> = ({
   achievements = [],
   isLoading = false
 }) => {
-  const { toast } = useToast();
+  const navigate = useNavigate();
+  const [copied, setCopied] = useState(false);
+  const [activeTab, setActiveTab] = useState<"about" | "experience" | "services" | "projects" | "achievements" | "credentials" | "reviews">("about");
 
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(n => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
+  const fullName = profile.full_name || "TalentXcelServices";
+  const title = profile.title || profile.headline || "Director Operations";
+  const location = profile.location || "India";
+  const avatarUrl = profile.profile_picture_url || profile.profile_photo_url;
+  const headline = profile.headline || "Transforming Businesses and Lives";
+  const aboutText = profile.about || "We help businesses unlock their full potential through strategic consulting, operational excellence, and innovative solutions. Our mission is to transform businesses and lives through impact-driven work.";
+  const website = profile.website || "https://chatrbusinessai.in";
+  const industry = profile.industry || "Consulting & Business Services";
+  const languages = profile.languages ? (Array.isArray(profile.languages) ? profile.languages.join(", ") : profile.languages) : "English, Hindi";
+  const username = profile.username || profile.slug || "talentxcelpro1";
+  const passportShortId = (profile.id || "5FC21D0D").substring(0, 8).toUpperCase();
+  const publicUrl = typeof window !== "undefined" ? window.location.href : `https://talentxcel.in/passport/public/${username}`;
+
+  const userSkills = Array.isArray(profile.skills) && profile.skills.length > 0
+    ? profile.skills
+    : ["Business Analysis", "Branding", "Customer Retention", "Public Speaking", "Sales", "Marketing", "Startup Incubation", "Bootstrapping", "Python (Pandas, NumPy)"];
+
+  const handleSharePassport = () => {
+    navigator.clipboard.writeText(publicUrl);
+    setCopied(true);
+    toast.success("Passport link copied to clipboard!");
+    setTimeout(() => setCopied(false), 3000);
   };
 
-  const shareProfile = async () => {
-    const shareUrl = window.location.href;
-    const shareData = {
-      title: `${profile.full_name} - Professional Profile`,
-      text: `Check out ${profile.full_name}'s professional profile on TalentXcel`,
-      url: shareUrl,
-    };
-
-    if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-      } catch (error) {
-        // Fallback to clipboard
-        navigator.clipboard.writeText(shareUrl);
-        toast({
-          title: "Link Copied",
-          description: "Profile link copied to clipboard!",
-        });
-      }
-    } else {
-      navigator.clipboard.writeText(shareUrl);
-      toast({
-        title: "Link Copied",
-        description: "Profile link copied to clipboard!",
+  const handleDownloadVCard = () => {
+    try {
+      generateAndDownloadVCard({
+        fullName,
+        title,
+        headline,
+        email: profile.email,
+        phone: profile.phone,
+        website,
+        location,
+        linkedin: profile.linkedin_url,
       });
+      toast.success(`vCard downloaded for ${fullName}`);
+    } catch (err) {
+      toast.error("Failed to generate contact card");
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-primary/5 to-background flex items-center justify-center">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-muted rounded w-48"></div>
-          <div className="h-4 bg-muted rounded w-32"></div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 to-background">
-      {/* Hero Section */}
-      <div className="relative bg-gradient-to-r from-primary to-primary/80 text-primary-foreground">
-        {profile.cover_image_url && (
-          <div 
-            className="absolute inset-0 bg-cover bg-center opacity-20"
-            style={{ backgroundImage: `url(${profile.cover_image_url})` }}
-          />
-        )}
+    <div className="space-y-6 pb-20">
+
+      {/* ============================================================================ */}
+      {/* 1. PROFILE HERO SECTION (EXACT MOCKUP MATCH WITH 3D GRAPHIC & CONTRAST BADGES) */}
+      {/* ============================================================================ */}
+      <div className="relative rounded-3xl border border-blue-100 dark:border-border/60 bg-gradient-to-r from-blue-50/70 via-indigo-50/40 to-blue-50/70 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900 p-6 md:p-8 shadow-sm overflow-hidden">
         
-        <div className="relative container mx-auto px-4 py-12">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded bg-primary-foreground/20 flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">TX</span>
-              </div>
-              <div>
-                <h1 className="text-xl font-bold">TalentXcel</h1>
-                <p className="text-primary-foreground/80 text-sm">Professional Career Passport</p>
-              </div>
-            </div>
+        {/* Top Pill Badge & Top Right Actions */}
+        <div className="flex items-center justify-between mb-6">
+          <Badge className="bg-blue-600 text-white font-bold px-3 py-1 rounded-full text-xs flex items-center gap-1.5 shadow-sm">
+            <CheckCircle2 className="h-3.5 w-3.5" />
+            Verified Professional
+          </Badge>
+
+          <Button 
+            onClick={handleSharePassport} 
+            variant="outline" 
+            className="rounded-full bg-white dark:bg-card border-slate-200 dark:border-border text-xs font-bold shadow-sm"
+          >
+            <Share2 className="h-3.5 w-3.5 mr-1.5 text-primary" />
+            {copied ? "Copied!" : "Share Profile"}
+          </Button>
+        </div>
+
+        {/* Identity & 3D TX Chip Graphic Container */}
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
+          
+          {/* Identity Info */}
+          <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center">
             
-            <Button
-              onClick={shareProfile}
-              variant="outline"
-              size="sm"
-              className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/20"
-            >
-              <Share2 className="h-4 w-4 mr-2" />
-              Share Profile
-            </Button>
+            {/* Profile Avatar with Active Status Indicator */}
+            <div className="relative shrink-0">
+              <Avatar className="w-24 h-24 sm:w-28 sm:h-28 border-4 border-white dark:border-slate-800 shadow-xl bg-white">
+                <AvatarImage src={avatarUrl || undefined} alt={fullName} className="object-cover" />
+                <AvatarFallback className="text-3xl font-extrabold bg-slate-900 text-white">
+                  {fullName.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <span className="absolute bottom-1 right-1 w-5 h-5 bg-emerald-500 border-2 border-white dark:border-slate-800 rounded-full shadow-md" title="Active Status" />
+            </div>
+
+            {/* Name, Title, Location & Headline */}
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">{fullName}</h1>
+                <CheckCircle2 className="h-6 w-6 text-blue-600 fill-blue-600/20 shrink-0" />
+              </div>
+              
+              <p className="text-base font-bold text-muted-foreground">{title}</p>
+              
+              <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-muted-foreground pt-0.5">
+                <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5 text-primary" /> {location}</span>
+                <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5 text-primary" /> Member since 2025</span>
+              </div>
+
+              <p className="text-xs sm:text-sm font-semibold text-primary pt-1">{headline}</p>
+            </div>
           </div>
 
-          <div className="flex flex-col md:flex-row items-start gap-6">
-            <Avatar className="w-32 h-32 border-4 border-primary-foreground/20">
-              <AvatarImage src={profile.profile_picture_url || undefined} alt={profile.full_name} />
-              <AvatarFallback className="text-2xl font-bold bg-primary-foreground/20 text-primary-foreground">
-                {getInitials(profile.full_name)}
-              </AvatarFallback>
-            </Avatar>
+          {/* Right 3D TX Passport Graphic Art */}
+          <div className="hidden lg:flex shrink-0 items-center justify-center relative w-64 h-36">
+            <div className="w-28 h-32 rounded-2xl bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 shadow-2xl flex flex-col items-center justify-center text-white border-2 border-white/30 transform rotate-6 hover:rotate-0 transition-transform duration-300">
+              <div className="absolute top-2 right-2">
+                <Sparkles className="h-4 w-4 text-cyan-300 animate-pulse" />
+              </div>
+              <span className="text-3xl font-black tracking-tighter">TX</span>
+              <span className="text-[9px] font-bold tracking-widest uppercase text-blue-200 mt-1">PASSPORT</span>
+            </div>
             
-            <div className="flex-1 space-y-4">
-              <div>
-                <h2 className="text-3xl font-bold mb-2">{profile.full_name}</h2>
-                {profile.title && (
-                  <p className="text-xl text-primary-foreground/90 mb-3">{profile.title}</p>
-                )}
-                
-                <div className="flex flex-wrap gap-4 text-sm text-primary-foreground/80">
-                  {profile.location && (
-                    <div className="flex items-center gap-1">
-                      <MapPin className="h-4 w-4" />
-                      <span>{profile.location}</span>
-                    </div>
-                  )}
-                  <div className="flex items-center gap-1">
-                    <Calendar className="h-4 w-4" />
-                    <span>Member since {new Date(profile.created_at).getFullYear()}</span>
-                  </div>
-                </div>
-              </div>
+            {/* Floating Icon Badges */}
+            <div className="absolute -left-2 top-4 w-9 h-9 rounded-full bg-white dark:bg-card shadow-lg flex items-center justify-center text-blue-600 border border-slate-100">
+              <User className="h-4 w-4" />
+            </div>
+            <div className="absolute left-6 bottom-2 w-9 h-9 rounded-full bg-white dark:bg-card shadow-lg flex items-center justify-center text-indigo-600 border border-slate-100">
+              <Briefcase className="h-4 w-4" />
+            </div>
+            <div className="absolute right-0 top-2 w-9 h-9 rounded-full bg-white dark:bg-card shadow-lg flex items-center justify-center text-purple-600 border border-slate-100">
+              <GraduationCap className="h-4 w-4" />
+            </div>
+            <div className="absolute right-4 bottom-4 w-9 h-9 rounded-full bg-white dark:bg-card shadow-lg flex items-center justify-center text-emerald-600 border border-slate-100">
+              <TrendingUp className="h-4 w-4" />
+            </div>
+          </div>
 
-              {profile.headline && (
-                <p className="text-primary-foreground/90 leading-relaxed max-w-2xl">
-                  {profile.headline}
-                </p>
-              )}
+        </div>
 
-              {/* Social Links */}
-              <div className="flex gap-4">
-                {profile.linkedin_url && (
-                  <a 
-                    href={profile.linkedin_url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 bg-primary-foreground/10 hover:bg-primary-foreground/20 px-3 py-2 rounded-lg transition-colors"
-                  >
-                    <Linkedin className="h-4 w-4" />
-                    <span className="text-sm">LinkedIn</span>
-                    <ExternalLink className="h-3 w-3" />
-                  </a>
-                )}
-                {profile.github_url && (
-                  <a 
-                    href={profile.github_url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 bg-primary-foreground/10 hover:bg-primary-foreground/20 px-3 py-2 rounded-lg transition-colors"
-                  >
-                    <Github className="h-4 w-4" />
-                    <span className="text-sm">GitHub</span>
-                    <ExternalLink className="h-3 w-3" />
-                  </a>
-                )}
-                {profile.portfolio_url && (
-                  <a 
-                    href={profile.portfolio_url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 bg-primary-foreground/10 hover:bg-primary-foreground/20 px-3 py-2 rounded-lg transition-colors"
-                  >
-                    <Globe className="h-4 w-4" />
-                    <span className="text-sm">Portfolio</span>
-                    <ExternalLink className="h-3 w-3" />
-                  </a>
-                )}
-              </div>
+        {/* 5 Counter Metrics Pill Bar */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 pt-6 mt-6 border-t border-blue-200/60 dark:border-border/60">
+          <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-white/80 dark:bg-card border border-slate-200/60 dark:border-border/60 shadow-sm">
+            <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600 shrink-0">
+              <TrendingUp className="h-4 w-4" />
+            </div>
+            <div>
+              <div className="text-sm font-extrabold text-foreground">95%</div>
+              <div className="text-[10px] font-semibold text-muted-foreground">Career Ready</div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-white/80 dark:bg-card border border-slate-200/60 dark:border-border/60 shadow-sm">
+            <div className="p-2 rounded-xl bg-blue-500/10 text-blue-600 shrink-0">
+              <Target className="h-4 w-4" />
+            </div>
+            <div>
+              <div className="text-sm font-extrabold text-foreground">98%</div>
+              <div className="text-[10px] font-semibold text-muted-foreground">Competitiveness</div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-white/80 dark:bg-card border border-slate-200/60 dark:border-border/60 shadow-sm">
+            <div className="p-2 rounded-xl bg-purple-500/10 text-purple-600 shrink-0">
+              <Users className="h-4 w-4" />
+            </div>
+            <div>
+              <div className="text-sm font-extrabold text-foreground">12</div>
+              <div className="text-[10px] font-semibold text-muted-foreground">Services</div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-white/80 dark:bg-card border border-slate-200/60 dark:border-border/60 shadow-sm">
+            <div className="p-2 rounded-xl bg-amber-500/10 text-amber-600 shrink-0">
+              <Users className="h-4 w-4" />
+            </div>
+            <div>
+              <div className="text-sm font-extrabold text-foreground">250+</div>
+              <div className="text-[10px] font-semibold text-muted-foreground">Connections</div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-white/80 dark:bg-card border border-slate-200/60 dark:border-border/60 shadow-sm col-span-2 sm:col-span-1">
+            <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-600 shrink-0">
+              <Briefcase className="h-4 w-4" />
+            </div>
+            <div>
+              <div className="text-sm font-extrabold text-foreground">20+</div>
+              <div className="text-[10px] font-semibold text-muted-foreground">Projects</div>
             </div>
           </div>
         </div>
+
       </div>
 
-      {/* Content Section */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Career Metrics */}
-            {careerPassport && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-primary" />
-                    Career Analytics
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    <div className="text-center space-y-2">
-                      <div className="text-2xl font-bold text-primary">{careerPassport.career_readiness_score}</div>
-                      <p className="text-sm text-muted-foreground">Career Readiness</p>
-                    </div>
-                    <div className="text-center space-y-2">
-                      <div className="text-2xl font-bold text-amber-600">{careerPassport.market_competitiveness_score}</div>
-                      <p className="text-sm text-muted-foreground">Market Competitiveness</p>
-                    </div>
-                    <div className="text-center space-y-2">
-                      <div className="text-2xl font-bold text-green-600">{careerPassport.certifications_count}</div>
-                      <p className="text-sm text-muted-foreground">Certifications</p>
-                    </div>
-                    <div className="text-center space-y-2">
-                      <div className="text-2xl font-bold text-blue-600">{careerPassport.connections_count}</div>
-                      <p className="text-sm text-muted-foreground">Professional Network</p>
-                    </div>
+      {/* ============================================================================ */}
+      {/* 2. MAIN 2-COLUMN GRID */}
+      {/* ============================================================================ */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        {/* LEFT MAIN COLUMN */}
+        <div className="lg:col-span-2 space-y-6">
+
+          {/* A. SKILLS & EXPERTISE SECTION */}
+          <Card className="border border-border/60 shadow-sm bg-card">
+            <CardHeader className="flex flex-row items-center justify-between pb-3">
+              <CardTitle className="text-base font-bold">Skills &amp; Expertise</CardTitle>
+              <Button variant="link" size="sm" onClick={() => navigate('/skills')} className="text-xs font-bold text-primary p-0">
+                View All Skills <ChevronRight className="h-3.5 w-3.5 ml-0.5" />
+              </Button>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="flex flex-wrap gap-2">
+                {userSkills.map((skill: string, idx: number) => (
+                  <Badge 
+                    key={idx} 
+                    variant="secondary"
+                    className="rounded-full px-3.5 py-1.5 text-xs font-semibold bg-slate-100 dark:bg-muted text-slate-800 dark:text-slate-200 border border-slate-200/80 dark:border-border/60 hover:bg-primary/10 hover:text-primary transition-colors cursor-pointer"
+                  >
+                    {skill}
+                  </Badge>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* B. 3-GRID FEATURED SECTION */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            
+            {/* 1. Featured Strengths */}
+            <Card className="border border-border/60 shadow-sm bg-card p-4 space-y-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Featured Strengths</h3>
+              <div className="space-y-2.5">
+                <div>
+                  <div className="flex items-center justify-between text-xs font-bold">
+                    <span>Business Strategy</span>
+                    <span className="text-primary">95%</span>
                   </div>
-                  
-                  <Separator className="my-4" />
-                  
-                  <div className="text-center">
-                    <div className="text-lg font-semibold mb-1">
-                      Profile Completion: {careerPassport.completion_percentage}%
-                    </div>
-                    <div className="w-full bg-muted rounded-full h-2">
-                      <div 
-                        className="bg-primary h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${careerPassport.completion_percentage}%` }}
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* About */}
-            {profile.about && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>About</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                    {profile.about}
-                  </p>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Skills */}
-            {profile.skills && profile.skills.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Skills & Expertise</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2">
-                    {profile.skills.map((skill, index) => (
-                      <Badge key={index} variant="outline" className="text-sm">
-                        {skill}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Achievements */}
-            {achievements.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Award className="h-5 w-5 text-primary" />
-                    Recent Achievements
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {achievements.slice(0, 5).map((achievement) => (
-                      <div key={achievement.id} className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                          <Award className="h-4 w-4 text-primary" />
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-sm">{achievement.achievement_title}</h4>
-                          <p className="text-xs text-muted-foreground mb-2">{achievement.achievement_description}</p>
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <Star className="h-3 w-3 text-amber-500" />
-                            <span>{achievement.points_awarded} points</span>
-                            {achievement.verified && (
-                              <Badge variant="outline" className="text-xs">Verified</Badge>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Professional Card */}
-            <ProfessionalCard 
-              profile={profile} 
-              careerPassport={careerPassport}
-              className="w-full"
-            />
-
-            {/* Quick Stats */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Quick Stats</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Profile Views</span>
-                  <Badge variant="outline">Coming Soon</Badge>
+                  <Progress value={95} className="h-1.5 bg-muted mt-1" />
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Last Active</span>
-                  <span className="text-sm">{new Date(profile.updated_at).toLocaleDateString()}</span>
+
+                <div>
+                  <div className="flex items-center justify-between text-xs font-bold">
+                    <span>Operational Excellence</span>
+                    <span className="text-primary">92%</span>
+                  </div>
+                  <Progress value={92} className="h-1.5 bg-muted mt-1" />
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Member Since</span>
-                  <span className="text-sm">{new Date(profile.created_at).toLocaleDateString()}</span>
+
+                <div>
+                  <div className="flex items-center justify-between text-xs font-bold">
+                    <span>Team Leadership</span>
+                    <span className="text-primary">90%</span>
+                  </div>
+                  <Progress value={90} className="h-1.5 bg-muted mt-1" />
                 </div>
-              </CardContent>
+
+                <div>
+                  <div className="flex items-center justify-between text-xs font-bold">
+                    <span>Process Optimization</span>
+                    <span className="text-primary">88%</span>
+                  </div>
+                  <Progress value={88} className="h-1.5 bg-muted mt-1" />
+                </div>
+              </div>
             </Card>
 
-            {/* CTA */}
-            <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-              <CardContent className="p-6 text-center space-y-4">
-                <h3 className="font-semibold text-primary">Join TalentXcel</h3>
-                <p className="text-sm text-muted-foreground">
-                  Create your own professional career passport and connect with {profile.full_name}
-                </p>
-                <Button className="w-full" asChild>
-                  <a href="/auth/signup">Get Started</a>
+            {/* 2. Profile Highlights */}
+            <Card className="border border-border/60 shadow-sm bg-card p-4 space-y-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Profile Highlights</h3>
+              <div className="space-y-2 text-xs font-medium">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-600 shrink-0"><User className="h-3.5 w-3.5" /></div>
+                  <div>
+                    <div className="font-bold">5+ Years</div>
+                    <div className="text-[11px] text-muted-foreground">Professional Experience</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2.5">
+                  <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-600 shrink-0"><ShieldCheck className="h-3.5 w-3.5" /></div>
+                  <div>
+                    <div className="font-bold">Worked with</div>
+                    <div className="text-[11px] text-muted-foreground">50+ Clients</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2.5">
+                  <div className="p-1.5 rounded-lg bg-purple-500/10 text-purple-600 shrink-0"><Building2 className="h-3.5 w-3.5" /></div>
+                  <div>
+                    <div className="font-bold">Industry Focus</div>
+                    <div className="text-[11px] text-muted-foreground">Consulting, IT, SaaS</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2.5">
+                  <div className="p-1.5 rounded-lg bg-amber-500/10 text-amber-600 shrink-0"><Globe className="h-3.5 w-3.5" /></div>
+                  <div>
+                    <div className="font-bold">Global Mindset</div>
+                    <div className="text-[11px] text-muted-foreground">India &amp; International</div>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* 3. Top Services */}
+            <Card className="border border-border/60 shadow-sm bg-card p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Top Services</h3>
+                <Button variant="link" size="sm" onClick={() => navigate('/services')} className="text-[11px] font-bold text-primary p-0 h-auto">
+                  View All <ChevronRight className="h-3 w-3 ml-0.5" />
                 </Button>
-              </CardContent>
+              </div>
+              <div className="space-y-2 text-xs font-semibold">
+                <div className="flex items-center justify-between p-2 rounded-lg bg-muted/30 border border-border/40 hover:bg-muted/60 cursor-pointer">
+                  <span>Business Strategy Consulting</span>
+                  <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+                </div>
+                <div className="flex items-center justify-between p-2 rounded-lg bg-muted/30 border border-border/40 hover:bg-muted/60 cursor-pointer">
+                  <span>Operational Excellence</span>
+                  <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+                </div>
+                <div className="flex items-center justify-between p-2 rounded-lg bg-muted/30 border border-border/40 hover:bg-muted/60 cursor-pointer">
+                  <span>Process Optimization</span>
+                  <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+                </div>
+                <div className="flex items-center justify-between p-2 rounded-lg bg-muted/30 border border-border/40 hover:bg-muted/60 cursor-pointer">
+                  <span>Performance Improvement</span>
+                  <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+                </div>
+              </div>
             </Card>
+
           </div>
+
+          {/* C. MULTI-TAB NAVIGATION BAR */}
+          <div className="border-b border-border/60 flex items-center gap-1 overflow-x-auto no-scrollbar pt-2">
+            <button 
+              onClick={() => setActiveTab("about")}
+              className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-colors border-b-2 whitespace-nowrap flex items-center gap-1.5 ${
+                activeTab === "about"
+                  ? "border-primary text-primary bg-primary/5"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <User className="h-3.5 w-3.5" /> About
+            </button>
+
+            <button 
+              onClick={() => setActiveTab("experience")}
+              className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-colors border-b-2 whitespace-nowrap flex items-center gap-1.5 ${
+                activeTab === "experience"
+                  ? "border-primary text-primary bg-primary/5"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Briefcase className="h-3.5 w-3.5" /> Experience
+            </button>
+
+            <button 
+              onClick={() => setActiveTab("services")}
+              className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-colors border-b-2 whitespace-nowrap flex items-center gap-1.5 ${
+                activeTab === "services"
+                  ? "border-primary text-primary bg-primary/5"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Zap className="h-3.5 w-3.5" /> Services
+            </button>
+
+            <button 
+              onClick={() => setActiveTab("projects")}
+              className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-colors border-b-2 whitespace-nowrap flex items-center gap-1.5 ${
+                activeTab === "projects"
+                  ? "border-primary text-primary bg-primary/5"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <FolderGit2 className="h-3.5 w-3.5" /> Projects
+            </button>
+
+            <button 
+              onClick={() => setActiveTab("achievements")}
+              className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-colors border-b-2 whitespace-nowrap flex items-center gap-1.5 ${
+                activeTab === "achievements"
+                  ? "border-primary text-primary bg-primary/5"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Trophy className="h-3.5 w-3.5" /> Achievements
+            </button>
+
+            <button 
+              onClick={() => setActiveTab("credentials")}
+              className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-colors border-b-2 whitespace-nowrap flex items-center gap-1.5 ${
+                activeTab === "credentials"
+                  ? "border-primary text-primary bg-primary/5"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Award className="h-3.5 w-3.5" /> Credentials
+            </button>
+
+            <button 
+              onClick={() => setActiveTab("reviews")}
+              className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-colors border-b-2 whitespace-nowrap flex items-center gap-1.5 ${
+                activeTab === "reviews"
+                  ? "border-primary text-primary bg-primary/5"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Star className="h-3.5 w-3.5" /> Reviews
+            </button>
+          </div>
+
+          {/* D. TAB CONTENT CONTAINER */}
+          <Card className="border border-border/60 shadow-sm bg-card p-6">
+            
+            {activeTab === "about" && (
+              <div className="space-y-6">
+                {/* About Text */}
+                <div>
+                  <h3 className="text-base font-bold text-foreground mb-2">About {fullName}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed font-medium">
+                    {aboutText}
+                  </p>
+                </div>
+
+                {/* Details Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-border/60">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-xl bg-blue-500/10 text-blue-600 shrink-0"><Globe className="h-4 w-4" /></div>
+                    <div>
+                      <div className="text-[11px] font-semibold text-muted-foreground">Website</div>
+                      <a href={website} target="_blank" rel="noreferrer" className="text-xs font-bold text-primary hover:underline truncate block">
+                        {website.replace(/^https?:\/\//, '')}
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-xl bg-purple-500/10 text-purple-600 shrink-0"><Building2 className="h-4 w-4" /></div>
+                    <div>
+                      <div className="text-[11px] font-semibold text-muted-foreground">Industry</div>
+                      <div className="text-xs font-bold text-foreground">{industry}</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600 shrink-0"><MessageCircle className="h-4 w-4" /></div>
+                    <div>
+                      <div className="text-[11px] font-semibold text-muted-foreground">Languages</div>
+                      <div className="text-xs font-bold text-foreground">{languages}</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Key Achievements Cards */}
+                <div className="pt-4 border-t border-border/60 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Key Achievements</h4>
+                    <Button variant="link" size="sm" onClick={() => setActiveTab("achievements")} className="text-xs font-bold text-primary p-0 h-auto">
+                      View All <ChevronRight className="h-3 w-3 ml-0.5" />
+                    </Button>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div className="p-3 rounded-xl border border-amber-200/80 bg-amber-50/50 dark:bg-amber-950/20 text-center space-y-1">
+                      <Trophy className="h-5 w-5 text-amber-500 mx-auto" />
+                      <div className="text-[10px] font-semibold text-muted-foreground">Top Consultant</div>
+                      <div className="text-xs font-extrabold text-foreground">2025</div>
+                    </div>
+
+                    <div className="p-3 rounded-xl border border-emerald-200/80 bg-emerald-50/50 dark:bg-emerald-950/20 text-center space-y-1">
+                      <Star className="h-5 w-5 text-emerald-500 mx-auto" />
+                      <div className="text-[10px] font-semibold text-muted-foreground">Client Satisfaction</div>
+                      <div className="text-xs font-extrabold text-foreground">98%</div>
+                    </div>
+
+                    <div className="p-3 rounded-xl border border-purple-200/80 bg-purple-50/50 dark:bg-purple-950/20 text-center space-y-1">
+                      <Briefcase className="h-5 w-5 text-purple-500 mx-auto" />
+                      <div className="text-[10px] font-semibold text-muted-foreground">Successful Projects</div>
+                      <div className="text-xs font-extrabold text-foreground">20+</div>
+                    </div>
+
+                    <div className="p-3 rounded-xl border border-blue-200/80 bg-blue-50/50 dark:bg-blue-950/20 text-center space-y-1">
+                      <Award className="h-5 w-5 text-blue-500 mx-auto" />
+                      <div className="text-[10px] font-semibold text-muted-foreground">5 Star Rating</div>
+                      <div className="text-xs font-extrabold text-foreground">4.9/5</div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            )}
+
+            {activeTab !== "about" && (
+              <div className="py-8 text-center space-y-2">
+                <Sparkles className="h-8 w-8 text-primary mx-auto" />
+                <h4 className="text-sm font-bold text-foreground uppercase tracking-wider">{activeTab} Portfolio</h4>
+                <p className="text-xs text-muted-foreground font-medium">Verified credentials and items available upon contact.</p>
+              </div>
+            )}
+
+          </Card>
+
         </div>
+
+        {/* RIGHT SIDEBAR COLUMN (EXACT MOCKUP PASSPORT DIGITAL CARD) */}
+        <div className="space-y-6">
+
+          <Card className="border border-blue-200/80 dark:border-border/60 shadow-xl bg-card overflow-hidden">
+            
+            {/* Passport Header */}
+            <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-4 text-white flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-extrabold tracking-wide">TalentXcel</h3>
+                <p className="text-[10px] text-blue-100 font-semibold">Professional Career Passport</p>
+              </div>
+              <Badge className="bg-white/20 text-white border-white/30 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                <ShieldCheck className="h-3 w-3" /> TX-VERIFIED
+              </Badge>
+            </div>
+
+            <CardContent className="p-5 space-y-5">
+              
+              {/* Avatar, Info & QR Code */}
+              <div className="flex items-start justify-between gap-3">
+                <div className="space-y-1 flex-1 min-w-0">
+                  <div className="w-12 h-12 rounded-xl bg-white p-1 flex items-center justify-center shrink-0 border border-slate-200 shadow-sm">
+                    {avatarUrl ? (
+                      <img src={avatarUrl} alt={fullName} className="w-full h-full object-cover rounded-lg" />
+                    ) : (
+                      <span className="text-slate-900 font-black text-lg">TX</span>
+                    )}
+                  </div>
+                  <h4 className="text-sm font-extrabold text-foreground truncate pt-1">{fullName}</h4>
+                  <p className="text-xs text-primary font-bold line-clamp-1">{title}</p>
+                  <p className="text-[11px] text-muted-foreground font-medium flex items-center gap-1">
+                    <MapPin className="h-3 w-3 text-primary" /> {location}
+                  </p>
+                </div>
+
+                {/* QR Code Frame */}
+                <div className="p-2 rounded-xl bg-white shadow-md border border-slate-200 shrink-0">
+                  <QRCodeSVG value={publicUrl} size={85} level="M" />
+                </div>
+              </div>
+
+              {/* Professional Summary */}
+              <div className="space-y-1 pt-2 border-t border-border/60">
+                <h5 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Professional Summary</h5>
+                <p className="text-xs text-foreground font-semibold line-clamp-2">{headline}</p>
+              </div>
+
+              {/* Core Skills */}
+              <div className="space-y-1.5 pt-2 border-t border-border/60">
+                <h5 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Core Skills</h5>
+                <div className="flex flex-wrap gap-1">
+                  {userSkills.slice(0, 8).map((sk: string, sIdx: number) => (
+                    <span key={sIdx} className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-muted text-foreground border border-border/40">
+                      {sk}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Passport Buttons */}
+              <div className="space-y-2 pt-2 border-t border-border/60">
+                <Button 
+                  onClick={() => navigate('/passport')} 
+                  className="w-full rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md"
+                >
+                  <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
+                  View Full Passport
+                </Button>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <Button 
+                    onClick={handleDownloadVCard} 
+                    variant="outline" 
+                    className="rounded-xl text-[11px] font-bold border-slate-200"
+                  >
+                    <Download className="h-3 w-3 mr-1" />
+                    vCard
+                  </Button>
+
+                  <Button 
+                    onClick={handleSharePassport} 
+                    variant="outline" 
+                    className="rounded-xl text-[11px] font-bold border-slate-200"
+                  >
+                    <Share2 className="h-3 w-3 mr-1" />
+                    Save QR
+                  </Button>
+                </div>
+              </div>
+
+            </CardContent>
+
+          </Card>
+
+        </div>
+
       </div>
+
     </div>
   );
 };
