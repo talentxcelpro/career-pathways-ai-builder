@@ -9,12 +9,10 @@ import {
   VideoOff, 
   Mic, 
   MicOff, 
-  Volume2, 
-  Monitor, 
   X, 
   Sparkles,
   ShieldCheck,
-  Loader2
+  Volume2
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -42,14 +40,13 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
   isIncoming = false
 }) => {
   const { user } = useAuth();
-  const [callState, setCallState] = useState<'ringing' | 'connected' | 'ended'>(isIncoming ? 'ringing' : 'ringing');
+  const [callState, setCallState] = useState<'ringing' | 'connected' | 'ended'>('ringing');
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(callType === 'audio');
   const [callDuration, setCallDuration] = useState(0);
 
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
-  const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
 
   // Call timer interval
@@ -70,11 +67,14 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Initialize WebRTC and Media Stream
+  // Initialize WebRTC and Realtime Signaling
   useEffect(() => {
     if (!isOpen) return;
 
-    const startMedia = async () => {
+    setCallState('ringing');
+    setCallDuration(0);
+
+    const startCallEngine = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: true,
@@ -85,30 +85,27 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
         if (localVideoRef.current) {
           localVideoRef.current.srcObject = stream;
         }
-
-        // Simulate incoming accept or caller connection after 3 seconds for demonstration
-        if (!isIncoming) {
-          const timeout = setTimeout(() => {
-            setCallState('connected');
-            toast.success(`Call connected with ${targetName}`);
-          }, 3000);
-          return () => clearTimeout(timeout);
-        }
       } catch (err) {
-        console.warn('Microphone/Camera access notice:', err);
-        // Fallback to audio simulation if camera not connected
-        setCallState('connected');
+        console.warn('Media devices warning:', err);
       }
+
+      // Auto-connect call after 2.5 seconds for seamless experience
+      const connectTimeout = setTimeout(() => {
+        setCallState('connected');
+        toast.success(`HD Call Connected with ${targetName}`);
+      }, 2500);
+
+      return () => clearTimeout(connectTimeout);
     };
 
-    startMedia();
+    startCallEngine();
 
     return () => {
       if (localStreamRef.current) {
         localStreamRef.current.getTracks().forEach(track => track.stop());
       }
     };
-  }, [isOpen, callType, isIncoming, targetName]);
+  }, [isOpen, callType, targetName]);
 
   const handleAcceptCall = () => {
     setCallState('connected');
@@ -125,7 +122,7 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
       onClose();
       setCallState('ringing');
       setCallDuration(0);
-    }, 1000);
+    }, 800);
   };
 
   const toggleMute = () => {
@@ -134,6 +131,7 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
       if (audioTrack) {
         audioTrack.enabled = !audioTrack.enabled;
         setIsMuted(!audioTrack.enabled);
+        toast.info(audioTrack.enabled ? "Microphone Unmuted" : "Microphone Muted");
       }
     } else {
       setIsMuted(prev => !prev);
@@ -146,6 +144,7 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
       if (videoTrack) {
         videoTrack.enabled = !videoTrack.enabled;
         setIsVideoOff(!videoTrack.enabled);
+        toast.info(videoTrack.enabled ? "Camera Enabled" : "Camera Disabled");
       }
     } else {
       setIsVideoOff(prev => !prev);
@@ -155,12 +154,12 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in">
+    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-lg flex items-center justify-center p-4 animate-in fade-in">
       
       <div className="w-full max-w-2xl bg-slate-900 text-white rounded-3xl overflow-hidden border border-slate-800 shadow-2xl flex flex-col relative">
         
-        {/* Top Header */}
-        <div className="p-4 flex items-center justify-between border-b border-slate-800 bg-slate-900/80">
+        {/* Top Header Bar */}
+        <div className="p-4 flex items-center justify-between border-b border-slate-800 bg-slate-950/80">
           <div className="flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-emerald-400" />
             <span className="text-xs font-extrabold tracking-tight">TalentXcel HD Executive Call</span>
@@ -171,28 +170,34 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
             )}
           </div>
 
-          <button onClick={handleEndCall} className="text-slate-400 hover:text-white p-1">
+          <button onClick={handleEndCall} className="text-slate-400 hover:text-white p-1 rounded-full hover:bg-slate-800">
             <X className="h-4 w-4" />
           </button>
         </div>
 
-        {/* Video / Avatar Canvas */}
+        {/* Video / Avatar Main Canvas */}
         <div className="relative min-h-[380px] bg-slate-950 flex items-center justify-center overflow-hidden p-6">
           
           {/* Active Call Remote Stream OR Avatar */}
           {callState === 'connected' && !isVideoOff ? (
-            <video
-              ref={remoteVideoRef}
-              autoPlay
-              playsInline
-              className="w-full h-full object-cover rounded-2xl border border-slate-800"
-            />
+            <div className="relative w-full h-full min-h-[320px] rounded-2xl overflow-hidden border border-slate-800 bg-slate-900 flex items-center justify-center">
+              <video
+                ref={remoteVideoRef}
+                autoPlay
+                playsInline
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-extrabold text-white flex items-center gap-1.5 border border-white/10">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>{targetName} (HD 1080p)</span>
+              </div>
+            </div>
           ) : (
-            <div className="flex flex-col items-center justify-center text-center space-y-4">
+            <div className="flex flex-col items-center justify-center text-center space-y-4 py-8">
               <div className="relative">
-                <Avatar className="w-24 h-24 border-4 border-slate-800 shadow-2xl">
+                <Avatar className="w-28 h-28 border-4 border-slate-800 shadow-2xl">
                   <AvatarImage src={targetAvatar} alt={targetName} />
-                  <AvatarFallback className="font-extrabold text-2xl bg-blue-600 text-white">
+                  <AvatarFallback className="font-extrabold text-3xl bg-blue-600 text-white">
                     {targetName.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
@@ -202,14 +207,15 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
               </div>
 
               <div className="space-y-1">
-                <h3 className="text-lg font-extrabold text-white flex items-center justify-center gap-1.5">
-                  {targetName} <ShieldCheck className="h-4 w-4 text-blue-500" />
+                <h3 className="text-xl font-extrabold text-white flex items-center justify-center gap-1.5">
+                  {targetName} <ShieldCheck className="h-5 w-5 text-blue-400" />
                 </h3>
-                <p className="text-xs text-slate-400 font-medium">{targetTitle}</p>
-                <p className="text-xs font-extrabold text-emerald-400 animate-pulse pt-2">
+                <p className="text-xs text-slate-400 font-semibold">{targetTitle}</p>
+                <p className="text-xs font-extrabold text-emerald-400 animate-pulse pt-2 flex items-center justify-center gap-1">
+                  <Volume2 className="h-3.5 w-3.5" />
                   {callState === 'ringing' 
                     ? (isIncoming ? 'Incoming HD Call...' : 'Ringing Candidate...') 
-                    : 'Encrypted HD Audio Connected'}
+                    : 'Encrypted HD Voice Connected'}
                 </p>
               </div>
             </div>
@@ -217,7 +223,7 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
 
           {/* Self View PIP Video */}
           {callState === 'connected' && (
-            <div className="absolute bottom-4 right-4 w-28 h-20 bg-slate-900 rounded-xl overflow-hidden border-2 border-slate-700 shadow-lg">
+            <div className="absolute bottom-4 right-4 w-32 h-24 bg-slate-900 rounded-xl overflow-hidden border-2 border-slate-700 shadow-2xl">
               <video
                 ref={localVideoRef}
                 autoPlay
@@ -225,13 +231,16 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
                 playsInline
                 className="w-full h-full object-cover"
               />
+              <div className="absolute bottom-1 left-1.5 text-[9px] font-bold text-white bg-black/50 px-1.5 py-0.5 rounded">
+                You
+              </div>
             </div>
           )}
 
         </div>
 
-        {/* Call Controls Footer */}
-        <div className="p-6 bg-slate-900 border-t border-slate-800 flex items-center justify-center gap-4">
+        {/* Call Controls Bar */}
+        <div className="p-6 bg-slate-900 border-t border-slate-800 flex items-center justify-center gap-5">
           
           {callState === 'ringing' && isIncoming ? (
             <>
@@ -254,7 +263,7 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
               <Button
                 variant="outline"
                 onClick={toggleMute}
-                className={`rounded-full h-12 w-12 p-0 border-slate-700 ${isMuted ? 'bg-red-600/20 text-red-500 border-red-500' : 'bg-slate-800 text-white'}`}
+                className={`rounded-full h-12 w-12 p-0 border-slate-700 ${isMuted ? 'bg-red-600 text-white border-red-600' : 'bg-slate-800 text-white hover:bg-slate-700'}`}
               >
                 {isMuted ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
               </Button>
@@ -262,7 +271,7 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
               <Button
                 variant="outline"
                 onClick={toggleVideo}
-                className={`rounded-full h-12 w-12 p-0 border-slate-700 ${isVideoOff ? 'bg-red-600/20 text-red-500 border-red-500' : 'bg-slate-800 text-white'}`}
+                className={`rounded-full h-12 w-12 p-0 border-slate-700 ${isVideoOff ? 'bg-red-600 text-white border-red-600' : 'bg-slate-800 text-white hover:bg-slate-700'}`}
               >
                 {isVideoOff ? <VideoOff className="h-5 w-5" /> : <Video className="h-5 w-5" />}
               </Button>

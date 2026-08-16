@@ -111,18 +111,30 @@ export const ExecutiveMessenger: React.FC = () => {
     fetchUser();
   }, []);
 
-  // 2. Query Real Conversations from Supabase
+  // 2. Query Real Conversations from Supabase using contains operator
   const { data: conversations = [], isLoading: isLoadingConvs } = useQuery({
     queryKey: ['executive-conversations', currentUserId],
     queryFn: async () => {
       if (!currentUserId) return [];
+      
       const { data, error } = await supabase
         .from('conversations')
         .select('*')
-        .filter('participants', 'cs', `{${currentUserId}}`)
+        .contains('participants', [currentUserId])
         .order('last_updated', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        // Fallback query if contains filter needs array string
+        const { data: fallbackData } = await supabase
+          .from('conversations')
+          .select('*')
+          .order('last_updated', { ascending: false });
+        
+        return (fallbackData || []).filter((c: any) => 
+          Array.isArray(c.participants) && c.participants.includes(currentUserId)
+        );
+      }
+
       return data || [];
     },
     enabled: !!currentUserId
@@ -143,7 +155,7 @@ export const ExecutiveMessenger: React.FC = () => {
   ));
 
   const { data: profilesMap = {} } = useQuery({
-    queryKey: ['conversation-profiles-map-v2', allParticipantIds],
+    queryKey: ['conversation-profiles-map-v3', allParticipantIds],
     queryFn: async () => {
       if (allParticipantIds.length === 0) return {};
       
@@ -193,18 +205,18 @@ export const ExecutiveMessenger: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [allMessages.length]);
 
-  // 5. Real-Time Supabase WebSocket Listener
+  // 5. Global Real-Time Supabase WebSocket Listener for Live Delivery across users
   useEffect(() => {
-    if (!selectedConversationId) return;
+    if (!currentUserId) return;
 
     const channel = supabase
-      .channel(`room:${selectedConversationId}`)
+      .channel(`global-messenger-live-${currentUserId}`)
       .on(
         'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${selectedConversationId}` },
+        { event: 'INSERT', schema: 'public', table: 'messages' },
         (payload) => {
-          queryClient.invalidateQueries({ queryKey: ['real-messages', selectedConversationId] });
-          queryClient.invalidateQueries({ queryKey: ['executive-conversations', currentUserId] });
+          queryClient.invalidateQueries({ queryKey: ['real-messages'] });
+          queryClient.invalidateQueries({ queryKey: ['executive-conversations'] });
           setOptimisticMessages(prev => prev.filter(m => m.id !== payload.new.id));
         }
       )
@@ -213,7 +225,7 @@ export const ExecutiveMessenger: React.FC = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [selectedConversationId, queryClient, currentUserId]);
+  }, [currentUserId, queryClient]);
 
   // 6. Send Message Mutation
   const sendMessageMutation = useMutation({
@@ -246,9 +258,12 @@ export const ExecutiveMessenger: React.FC = () => {
 
       if (error) throw error;
 
+      // Update conversation last_updated
       await supabase
         .from('conversations')
-        .update({ last_updated: new Date().toISOString() })
+        .update({ 
+          last_updated: new Date().toISOString()
+        })
         .eq('id', selectedConversationId);
 
       return data;
