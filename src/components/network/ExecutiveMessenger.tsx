@@ -93,24 +93,40 @@ export const ExecutiveMessenger: React.FC = () => {
     }
   }, [conversations, selectedConversationId]);
 
-  // Selected Conversation details
-  const activeConv = conversations.find(c => c.id === selectedConversationId);
+  // 3. Fetch Real Profiles for ALL participants across all conversations
+  const allParticipantIds = Array.from(new Set(
+    conversations
+      .flatMap((c: any) => c.participants || [])
+      .filter((id: string) => typeof id === 'string' && id !== currentUserId)
+  ));
 
-  // 3. Fetch Participant Profile for Selected Conversation
-  const otherParticipantId = activeConv?.participants?.find((p: string) => p !== currentUserId);
-  const { data: partnerProfile } = useQuery({
-    queryKey: ['partner-profile', otherParticipantId],
+  const { data: profilesMap = {} } = useQuery({
+    queryKey: ['conversation-profiles-map', allParticipantIds],
     queryFn: async () => {
-      if (!otherParticipantId) return null;
-      const { data } = await supabase
+      if (allParticipantIds.length === 0) return {};
+      const { data: profiles, error } = await supabase
         .from('profiles')
-        .select('id, full_name, profile_picture_url, title, company, location, username, slug')
-        .eq('id', otherParticipantId)
-        .maybeSingle();
-      return data;
+        .select('id, full_name, profile_picture_url, title, company, location, username, slug, email')
+        .in('id', allParticipantIds);
+
+      if (error) {
+        console.warn('Error fetching participant profiles:', error);
+        return {};
+      }
+
+      const map: Record<string, any> = {};
+      (profiles || []).forEach(p => {
+        map[p.id] = p;
+      });
+      return map;
     },
-    enabled: !!otherParticipantId
+    enabled: allParticipantIds.length > 0
   });
+
+  // Active selected conversation details
+  const activeConv = conversations.find(c => c.id === selectedConversationId);
+  const activeOtherId = activeConv?.participants?.find((p: string) => p !== currentUserId);
+  const partnerProfile = profilesMap[activeOtherId || ''];
 
   // 4. Query Messages for Selected Conversation
   const { data: realMessages = [], isLoading: isLoadingMsgs } = useQuery({
@@ -137,7 +153,7 @@ export const ExecutiveMessenger: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [allMessages.length]);
 
-  // 5. ⚡ Real-Time Supabase WebSocket Subscription for Instant Zero-Latency Delivery
+  // 5. Real-Time Supabase WebSocket Listener
   useEffect(() => {
     if (!selectedConversationId) return;
 
@@ -159,7 +175,7 @@ export const ExecutiveMessenger: React.FC = () => {
     };
   }, [selectedConversationId, queryClient, currentUserId]);
 
-  // 6. Send Message Mutation with Optimistic UI
+  // 6. Send Message Mutation
   const sendMessageMutation = useMutation({
     mutationFn: async ({ text, media }: { text: string; media?: string }) => {
       if (!currentUserId || !selectedConversationId) throw new Error('Not ready');
@@ -175,7 +191,6 @@ export const ExecutiveMessenger: React.FC = () => {
         status: 'sent'
       };
 
-      // Add optimistic message immediately (0ms perceived latency!)
       setOptimisticMessages(prev => [...prev, newMsg]);
 
       const { data, error } = await supabase
@@ -191,7 +206,6 @@ export const ExecutiveMessenger: React.FC = () => {
 
       if (error) throw error;
 
-      // Update conversation last_updated timestamp
       await supabase
         .from('conversations')
         .update({ last_updated: new Date().toISOString() })
@@ -215,7 +229,7 @@ export const ExecutiveMessenger: React.FC = () => {
     sendMessageMutation.mutate({ text: messageInput, media: attachedMedia || undefined });
   };
 
-  // 7. Generate 1-Click TalentXcel Copilot AI Smart Reply
+  // 7. 1-Click TalentXcel Copilot AI Reply
   const handleGenerateAiReply = async (replyType: string) => {
     if (!selectedConversationId) return;
     setIsGeneratingAi(true);
@@ -249,16 +263,34 @@ export const ExecutiveMessenger: React.FC = () => {
     }
   };
 
+  // Active Partner Details
   const partnerName = partnerProfile?.full_name || (activeConv?.name || "Professional Member");
   const partnerAvatar = partnerProfile?.profile_picture_url;
   const partnerTitle = partnerProfile?.title || "Executive Member";
   const partnerUsername = partnerProfile?.username || partnerProfile?.slug || partnerProfile?.id;
 
+  // Filter conversations
+  const filteredConversations = conversations.filter((conv: any) => {
+    if (filterTab === 'groups' && !conv.is_group) return false;
+    if (filterTab === 'direct' && conv.is_group) return false;
+
+    const otherId = conv.participants?.find((id: string) => id !== currentUserId);
+    const profile = profilesMap[otherId || ''];
+    const displayName = conv.is_group 
+      ? (conv.name || "Group Chat")
+      : (profile?.full_name || profile?.email?.split('@')[0] || "Professional Member");
+
+    if (searchTerm) {
+      return displayName.toLowerCase().includes(searchTerm.toLowerCase());
+    }
+    return true;
+  });
+
   return (
     <div className="w-full h-[calc(100vh-140px)] min-h-[600px] max-w-7xl mx-auto rounded-3xl border border-slate-200/80 dark:border-border/60 shadow-xl bg-white dark:bg-card overflow-hidden flex flex-col md:flex-row">
       
       {/* ============================================================================ */}
-      {/* LEFT COLUMN: CONVERSATION LIST (SLACK/WHATSAPP STYLE) */}
+      {/* LEFT COLUMN: REAL USER CONVERSATION LIST */}
       {/* ============================================================================ */}
       <div className="w-full md:w-80 lg:w-96 border-r border-slate-200/80 dark:border-border/60 flex flex-col bg-slate-50/50 dark:bg-muted/20 shrink-0">
         
@@ -316,17 +348,27 @@ export const ExecutiveMessenger: React.FC = () => {
             <div className="flex justify-center p-8">
               <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
             </div>
-          ) : conversations.length === 0 ? (
+          ) : filteredConversations.length === 0 ? (
             <div className="p-8 text-center space-y-3">
               <User className="h-10 w-10 text-muted-foreground mx-auto" />
-              <p className="text-xs font-bold text-muted-foreground">No conversations yet</p>
+              <p className="text-xs font-bold text-muted-foreground">No conversations found</p>
               <Button size="sm" onClick={() => navigate('/network/messages/new')} className="rounded-xl text-xs font-bold">
-                Start Chat
+                Start New Chat
               </Button>
             </div>
           ) : (
-            conversations.map((conv) => {
+            filteredConversations.map((conv: any) => {
               const isSelected = conv.id === selectedConversationId;
+              const otherId = conv.participants?.find((id: string) => id !== currentUserId);
+              const profile = profilesMap[otherId || ''];
+              
+              const displayName = conv.is_group 
+                ? (conv.name || "Group Chat")
+                : (profile?.full_name || (profile?.email ? profile.email.split('@')[0] : null) || (otherId ? `User ${otherId.substring(0, 6)}` : "Professional Member"));
+              
+              const displayAvatar = conv.is_group ? null : profile?.profile_picture_url;
+              const displayTitle = profile?.title || "Executive Member";
+
               return (
                 <div
                   key={conv.id}
@@ -337,9 +379,9 @@ export const ExecutiveMessenger: React.FC = () => {
                 >
                   <div className="relative">
                     <Avatar className="w-10 h-10 border border-slate-200">
-                      <AvatarImage src={undefined} />
-                      <AvatarFallback className="font-bold text-xs bg-slate-900 text-white">
-                        {(conv.name || "C").charAt(0).toUpperCase()}
+                      <AvatarImage src={displayAvatar || undefined} alt={displayName} />
+                      <AvatarFallback className="font-extrabold text-xs bg-slate-900 text-white">
+                        {displayName.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-white dark:ring-card"></span>
@@ -347,14 +389,14 @@ export const ExecutiveMessenger: React.FC = () => {
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <h4 className="text-xs font-extrabold text-foreground truncate">{conv.name || "Professional Member"}</h4>
+                      <h4 className="text-xs font-extrabold text-foreground truncate">{displayName}</h4>
                       <span className="text-[10px] text-muted-foreground font-semibold">
                         {conv.last_updated ? new Date(conv.last_updated).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
                       </span>
                     </div>
 
                     <p className="text-[11px] text-muted-foreground font-medium truncate mt-0.5">
-                      {conv.last_message || "Click to start messaging..."}
+                      {displayTitle}
                     </p>
                   </div>
                 </div>
@@ -366,7 +408,7 @@ export const ExecutiveMessenger: React.FC = () => {
       </div>
 
       {/* ============================================================================ */}
-      {/* RIGHT COLUMN: REAL-TIME CHAT THREAD WORKSPACE */}
+      {/* RIGHT COLUMN: REAL CHAT THREAD WORKSPACE */}
       {/* ============================================================================ */}
       {selectedConversationId ? (
         <div className="flex-1 flex flex-col h-full bg-white dark:bg-card">
@@ -377,7 +419,7 @@ export const ExecutiveMessenger: React.FC = () => {
             <div className="flex items-center gap-3">
               <div className="relative">
                 <Avatar className="w-10 h-10 border border-slate-200">
-                  <AvatarImage src={partnerAvatar || undefined} />
+                  <AvatarImage src={partnerAvatar || undefined} alt={partnerName} />
                   <AvatarFallback className="font-extrabold text-xs bg-slate-900 text-white">
                     {partnerName.charAt(0).toUpperCase()}
                   </AvatarFallback>
@@ -427,9 +469,9 @@ export const ExecutiveMessenger: React.FC = () => {
                 <div className="p-4 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-600">
                   <Wand2 className="h-8 w-8" />
                 </div>
-                <h3 className="text-sm font-extrabold text-foreground">Start a High-Speed Conversation</h3>
+                <h3 className="text-sm font-extrabold text-foreground">Start Messaging {partnerName}</h3>
                 <p className="text-xs text-muted-foreground max-w-sm font-medium">
-                  Send a direct message or use TalentXcel Copilot AI Smart Reply below to draft a professional message instantly.
+                  Send a message or use TalentXcel Copilot AI Smart Reply below to draft a professional response.
                 </p>
               </div>
             ) : (
@@ -439,7 +481,7 @@ export const ExecutiveMessenger: React.FC = () => {
                   <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'} items-end gap-2`}>
                     {!isMe && (
                       <Avatar className="w-6 h-6 border border-slate-200 shrink-0">
-                        <AvatarImage src={partnerAvatar || undefined} />
+                        <AvatarImage src={partnerAvatar || undefined} alt={partnerName} />
                         <AvatarFallback className="text-[10px] font-bold bg-slate-900 text-white">
                           {partnerName.charAt(0)}
                         </AvatarFallback>
