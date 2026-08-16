@@ -1,13 +1,13 @@
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Link } from 'react-router-dom';
-import { CheckCircle2, Globe, Send, Share2, ThumbsUp, MessageSquare, MoreHorizontal, Bookmark, Copy } from "lucide-react";
-import { linkifyText } from "@/utils/textUtils";
+import { CheckCircle2, Globe, Send, Share2, ThumbsUp, MessageSquare, MoreHorizontal, Copy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { EnhancedCommentsSection } from "@/components/posts/EnhancedCommentsSection";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface NetworkPost {
   id: string;
@@ -40,9 +40,57 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
   openComments,
   onCommentClick
 }) => {
-  const [liked, setLiked] = React.useState(false);
-  const [likesCount, setLikesCount] = React.useState(post.likes_count || 128);
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [showComments, setShowComments] = React.useState(openComments === post.id);
+
+  // 1. Fetch REAL live engagement counts and like status from Supabase
+  const { data: engagement, refetch: refetchEngagement } = useQuery({
+    queryKey: ['post-engagement-real', post.id, user?.id],
+    queryFn: async () => {
+      // Real likes count
+      const { count: likesCount } = await supabase
+        .from('post_likes')
+        .select('*', { count: 'exact', head: true })
+        .eq('post_id', post.id);
+
+      // Check if current user liked this post
+      let isLikedByUser = false;
+      if (user?.id) {
+        const { data: userLike } = await supabase
+          .from('post_likes')
+          .select('id')
+          .eq('post_id', post.id)
+          .eq('user_id', user.id)
+          .maybeSingle();
+        isLikedByUser = !!userLike;
+      }
+
+      // Real comments count
+      const { count: commentsCount } = await supabase
+        .from('post_comments')
+        .select('*', { count: 'exact', head: true })
+        .eq('post_id', post.id);
+
+      // Real shares count
+      const { count: sharesCount } = await supabase
+        .from('post_shares')
+        .select('*', { count: 'exact', head: true })
+        .eq('post_id', post.id);
+
+      return {
+        likesCount: likesCount !== null && likesCount !== undefined ? likesCount : (post.likes_count || 0),
+        isLiked: isLikedByUser,
+        commentsCount: commentsCount !== null && commentsCount !== undefined ? commentsCount : (post.comments_count || 0),
+        sharesCount: sharesCount !== null && sharesCount !== undefined ? sharesCount : (post.shares_count || 0),
+      };
+    }
+  });
+
+  const realLikesCount = engagement?.likesCount ?? post.likes_count ?? 0;
+  const isLiked = engagement?.isLiked ?? false;
+  const realCommentsCount = engagement?.commentsCount ?? post.comments_count ?? 0;
+  const realSharesCount = engagement?.sharesCount ?? post.shares_count ?? 0;
 
   const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
@@ -55,33 +103,67 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
     return `${Math.floor(diffInSeconds / 86400)}d ago`;
   };
 
-  const fullName = post.profiles?.full_name || "Arshid Hussain Wani";
-  const title = post.profiles?.title || "Sales head APAC";
-  const avatarUrl = post.profiles?.profile_picture_url || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200";
+  const fullName = post.profiles?.full_name || "Professional User";
+  const title = post.profiles?.title || "Member";
+  const avatarUrl = post.profiles?.profile_picture_url;
 
-  const handleToggleLike = () => {
-    setLiked(prev => !prev);
-    setLikesCount(prev => (liked ? prev - 1 : prev + 1));
+  // Toggle Like with real Supabase mutation
+  const handleToggleLike = async () => {
+    if (!user?.id) {
+      toast.error("Please log in to like posts");
+      return;
+    }
+
+    try {
+      if (isLiked) {
+        await supabase
+          .from('post_likes')
+          .delete()
+          .eq('post_id', post.id)
+          .eq('user_id', user.id);
+      } else {
+        await supabase
+          .from('post_likes')
+          .insert({ post_id: post.id, user_id: user.id });
+      }
+      refetchEngagement();
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
+    } catch (err: any) {
+      console.error("Failed to update like:", err);
+      toast.error("Could not update like status");
+    }
   };
 
-  const handleCopyLink = () => {
+  // Share post with real Supabase tracking
+  const handleSharePost = async () => {
     const url = `${window.location.origin}/network/posts/${post.id}`;
-    navigator.clipboard.writeText(url);
-    toast.success("Post link copied to clipboard!");
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.success("Post link copied to clipboard!");
+
+      if (user?.id) {
+        await supabase
+          .from('post_shares')
+          .insert({ post_id: post.id, user_id: user.id });
+        refetchEngagement();
+      }
+    } catch (err) {
+      console.error("Share error:", err);
+    }
   };
 
   return (
     <Card className="border border-slate-200/80 dark:border-border/60 shadow-sm bg-white dark:bg-card rounded-3xl overflow-hidden">
       <CardContent className="p-5 space-y-4">
         
-        {/* Post Header matching mockup 1:1 */}
+        {/* Post Header */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
             <Link to={`/passport/public/${post.author_id}`}>
               <Avatar className="w-11 h-11 border-2 border-white dark:border-slate-800 shadow-md">
-                <AvatarImage src={avatarUrl} alt={fullName} className="object-cover" />
+                <AvatarImage src={avatarUrl || undefined} alt={fullName} className="object-cover" />
                 <AvatarFallback className="font-bold text-xs bg-slate-900 text-white">
-                  {fullName.charAt(0)}
+                  {fullName.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
             </Link>
@@ -102,18 +184,18 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
             </div>
           </div>
 
-          {/* Top Right Social Toolbar matching mockup 1:1 */}
+          {/* Top Right Social Toolbar */}
           <div className="flex items-center gap-1.5 text-muted-foreground">
-            <button onClick={handleCopyLink} title="Share Direct" className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-muted text-slate-500 hover:text-foreground transition-colors">
+            <button onClick={handleSharePost} title="Share Direct" className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-muted text-slate-500 hover:text-foreground transition-colors">
               <Send className="h-4 w-4" />
             </button>
-            <button onClick={handleCopyLink} title="LinkedIn Share" className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-muted text-slate-500 hover:text-foreground font-extrabold text-xs">
+            <button onClick={handleSharePost} title="LinkedIn Share" className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-muted text-slate-500 hover:text-foreground font-extrabold text-xs">
               in
             </button>
-            <button onClick={handleCopyLink} title="Twitter Share" className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-muted text-slate-500 hover:text-foreground font-black text-xs">
+            <button onClick={handleSharePost} title="Twitter Share" className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-muted text-slate-500 hover:text-foreground font-black text-xs">
               𝕏
             </button>
-            <button onClick={handleCopyLink} title="Copy Link" className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-muted text-slate-500 hover:text-foreground transition-colors">
+            <button onClick={handleSharePost} title="Copy Link" className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-muted text-slate-500 hover:text-foreground transition-colors">
               <Copy className="h-4 w-4" />
             </button>
             <button title="More Options" className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-muted text-slate-500 hover:text-foreground transition-colors">
@@ -124,51 +206,54 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
 
         {/* Post Body Content */}
         <div className="space-y-2 text-sm text-foreground leading-relaxed font-medium">
-          <p>{post.content || "The future belongs to those who believe in the beauty of their dreams. Keep learning, keep growing, keep inspiring."}</p>
+          <p>{post.content}</p>
           
-          {/* Hashtags matching mockup */}
-          <div className="flex flex-wrap gap-1.5 pt-1">
-            {(post.tags && post.tags.length > 0 ? post.tags : ["Leadership", "Growth", "Inspiration", "TalentXcel"]).map((tag, idx) => (
-              <span key={idx} className="text-xs font-bold text-blue-600 hover:underline cursor-pointer">
-                #{tag}
-              </span>
-            ))}
-          </div>
+          {/* Hashtags */}
+          {post.tags && post.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 pt-1">
+              {post.tags.map((tag, idx) => (
+                <span key={idx} className="text-xs font-bold text-blue-600 hover:underline cursor-pointer">
+                  #{tag.replace(/^#/, '')}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Media Images if any */}
+        {/* Media Images */}
         {post.media_urls && post.media_urls.length > 0 && (
           <div className="rounded-2xl overflow-hidden border border-slate-200">
             <img src={post.media_urls[0]} alt="Post media" className="w-full max-h-96 object-cover" />
           </div>
         )}
 
-        {/* Reaction Counter Row matching mockup 1:1 */}
+        {/* REAL Reaction Counter Row from Supabase */}
         <div className="flex items-center justify-between text-xs text-muted-foreground font-semibold pt-2 border-t border-slate-100 dark:border-border/60">
           <div className="flex items-center gap-1.5">
-            <div className="flex -space-x-1">
-              <span className="w-4 h-4 rounded-full bg-blue-500 text-white flex items-center justify-center text-[9px] shadow-sm">👍</span>
-              <span className="w-4 h-4 rounded-full bg-red-500 text-white flex items-center justify-center text-[9px] shadow-sm">❤️</span>
-              <span className="w-4 h-4 rounded-full bg-amber-500 text-white flex items-center justify-center text-[9px] shadow-sm">😮</span>
-            </div>
-            <span>{likesCount}</span>
+            {realLikesCount > 0 && (
+              <div className="flex -space-x-1">
+                <span className="w-4 h-4 rounded-full bg-blue-500 text-white flex items-center justify-center text-[9px] shadow-sm">👍</span>
+                <span className="w-4 h-4 rounded-full bg-red-500 text-white flex items-center justify-center text-[9px] shadow-sm">❤️</span>
+              </div>
+            )}
+            <span>{realLikesCount} {realLikesCount === 1 ? 'Like' : 'Likes'}</span>
           </div>
 
           <div className="flex items-center gap-3">
-            <span>{post.comments_count || 36} Comments</span>
-            <span>{post.shares_count || 24} Shares</span>
+            <span>{realCommentsCount} {realCommentsCount === 1 ? 'Comment' : 'Comments'}</span>
+            <span>{realSharesCount} {realSharesCount === 1 ? 'Share' : 'Shares'}</span>
           </div>
         </div>
 
-        {/* Action Buttons Row matching mockup 1:1 */}
+        {/* Action Buttons Row */}
         <div className="grid grid-cols-3 gap-2 pt-1 border-t border-slate-100 dark:border-border/60 text-xs font-bold">
           <button 
             onClick={handleToggleLike}
             className={`flex items-center justify-center gap-2 py-2 rounded-2xl transition-colors ${
-              liked ? 'bg-blue-50 text-blue-600' : 'hover:bg-slate-100 dark:hover:bg-muted text-slate-700 dark:text-slate-200'
+              isLiked ? 'bg-blue-50 text-blue-600' : 'hover:bg-slate-100 dark:hover:bg-muted text-slate-700 dark:text-slate-200'
             }`}
           >
-            <ThumbsUp className="h-4 w-4" />
+            <ThumbsUp className={`h-4 w-4 ${isLiked ? 'fill-blue-600 text-blue-600' : ''}`} />
             Like
           </button>
 
@@ -184,7 +269,7 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
           </button>
 
           <button 
-            onClick={handleCopyLink}
+            onClick={handleSharePost}
             className="flex items-center justify-center gap-2 py-2 rounded-2xl hover:bg-slate-100 dark:hover:bg-muted text-slate-700 dark:text-slate-200 transition-colors"
           >
             <Share2 className="h-4 w-4" />
@@ -192,7 +277,7 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
           </button>
         </div>
 
-        {/* Expandable Comments Section */}
+        {/* Expandable Comments Section with Real Live Supabase Comments */}
         {showComments && (
           <div className="pt-3 border-t border-slate-100 dark:border-border/60">
             <EnhancedCommentsSection postId={post.id} />
