@@ -10,29 +10,27 @@ import {
   Sparkles, 
   Target,
   Briefcase,
-  GraduationCap,
   TrendingUp,
   MapPin,
   Building,
   RefreshCw,
   Search,
-  Filter,
-  Zap,
-  Star,
-  Brain,
-  Network
+  Wand2,
+  CheckCircle2,
+  Copy
 } from 'lucide-react';
 import { useEnhancedConnectionSuggestions } from '@/hooks/useEnhancedConnectionSuggestions';
 import { Link } from 'react-router-dom';
-import { ProfileCompletionPrompt } from './ProfileCompletionPrompt';
-import { MentorMatchingCard } from './MentorMatchingCard';
-import { CollaborationCard } from './CollaborationCard';
+import { generateGeminiSmartConnect } from '@/utils/geminiAi';
+import { toast } from 'sonner';
 
 type FilterType = 'all' | 'skill_match' | 'location_match' | 'industry_match' | 'title_match';
 
 export const EnhancedSmartConnectAI: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState<FilterType>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [generatingPitchFor, setGeneratingPitchFor] = useState<string | null>(null);
+  const [pitchMessages, setPitchMessages] = useState<Record<string, string>>({});
   
   const {
     suggestions,
@@ -43,14 +41,24 @@ export const EnhancedSmartConnectAI: React.FC = () => {
     currentUserProfile
   } = useEnhancedConnectionSuggestions();
 
+  const handleGenerateGeminiPitch = async (suggestion: any) => {
+    setGeneratingPitchFor(suggestion.id);
+    try {
+      const res = await generateGeminiSmartConnect(currentUserProfile, suggestion);
+      setPitchMessages(prev => ({ ...prev, [suggestion.id]: res.message }));
+      toast.success("Gemini AI generated a personalized connection pitch!");
+    } catch (err) {
+      toast.error("Failed to generate AI pitch");
+    } finally {
+      setGeneratingPitchFor(null);
+    }
+  };
+
   const filteredSuggestions = suggestions
     .filter(suggestion => {
-      // Filter by type
       if (selectedFilter !== 'all' && suggestion.suggestionType !== selectedFilter) {
         return false;
       }
-      
-      // Filter by search term
       if (searchTerm) {
         const searchLower = searchTerm.toLowerCase();
         return (
@@ -60,7 +68,6 @@ export const EnhancedSmartConnectAI: React.FC = () => {
           suggestion.location?.toLowerCase().includes(searchLower)
         );
       }
-      
       return true;
     });
 
@@ -80,91 +87,54 @@ export const EnhancedSmartConnectAI: React.FC = () => {
       case 'location_match': return 'bg-green-100 text-green-800 border-green-200';
       case 'industry_match': return 'bg-purple-100 text-purple-800 border-purple-200';
       case 'title_match': return 'bg-orange-100 text-orange-800 border-orange-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      default: return 'bg-slate-100 text-slate-800 border-slate-200';
     }
   };
 
-  if (!currentUserProfile) {
-    return (
-      <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
-        <CardContent className="p-8 text-center">
-          <Target className="h-16 w-16 text-primary mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-foreground mb-2">Complete Your Profile</h3>
-          <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-            Add your career information, skills, and interests to get personalized AI-powered connection recommendations.
-          </p>
-          <Link to="/profile/edit">
-            <Button size="lg" className="gap-2">
-              <Target className="h-4 w-4" />
-              Complete Profile
-            </Button>
-          </Link>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
     <div className="space-y-6">
-      {/* Profile Completion Prompt */}
-      <ProfileCompletionPrompt />
-      {/* Enhanced Header */}
-      <Card className="bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 border-primary/20">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 bg-primary/10 rounded-full">
-                  <Brain className="h-6 w-6 text-primary" />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-foreground">AI Connect</h2>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
-                      <Zap className="h-3 w-3 mr-1" />
-                      Powered by AI
-                    </Badge>
-                    <Badge variant="outline" className="text-xs">
-                      <Network className="h-3 w-3 mr-1" />
-                      {suggestions.length} matches found
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-              <p className="text-muted-foreground">
-                Discover meaningful connections through AI-powered matching based on your career profile, skills, and goals.
-              </p>
-            </div>
-            <Button
-              variant="outline"
-              onClick={refreshSuggestions}
-              className="gap-2"
-              disabled={isLoading}
-            >
-              <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-              Refresh
-            </Button>
+      
+      {/* Gemini AI Header Card */}
+      <Card className="border border-purple-200 dark:border-purple-900 bg-gradient-to-r from-purple-500/10 via-indigo-500/10 to-blue-500/10 rounded-3xl p-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <h2 className="text-base font-extrabold text-foreground flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-purple-600" />
+              Gemini AI Smart Connect &amp; Matchmaker
+            </h2>
+            <p className="text-xs text-muted-foreground font-medium">
+              AI-driven connection recommendations and personalized pitch messages powered by Gemini AI.
+            </p>
           </div>
-        </CardContent>
+
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={refreshSuggestions}
+            disabled={isLoading}
+            className="rounded-2xl border-purple-300 text-purple-700 dark:text-purple-300 hover:bg-purple-50 shrink-0 font-bold text-xs"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${isLoading ? 'animate-spin' : ''}`} />
+            Refresh Recommendations
+          </Button>
+        </div>
       </Card>
 
       {/* Enhanced Search and Filters */}
-      <Card>
+      <Card className="rounded-3xl border border-slate-200/80 dark:border-border/60">
         <CardContent className="p-4">
           <div className="flex flex-col lg:flex-row gap-4">
-            {/* Search Bar */}
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search by name, title, company, or location..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                className="pl-10 h-9 text-xs rounded-2xl"
               />
             </div>
 
-            {/* Filter Buttons */}
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex gap-1.5 flex-wrap">
               {[
                 { key: 'all', label: 'All', icon: Users },
                 { key: 'skill_match', label: 'Skills', icon: Target },
@@ -177,7 +147,7 @@ export const EnhancedSmartConnectAI: React.FC = () => {
                   variant={selectedFilter === key ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setSelectedFilter(key as FilterType)}
-                  className="gap-1"
+                  className="rounded-xl h-8 text-xs font-bold gap-1"
                 >
                   <Icon className="h-3 w-3" />
                   {label}
@@ -188,167 +158,109 @@ export const EnhancedSmartConnectAI: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Connection Suggestions */}
-      <Card>
+      {/* Suggested Connections List */}
+      <Card className="rounded-3xl border border-slate-200/80 dark:border-border/60">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-sm font-extrabold">
+            <Users className="h-4 w-4 text-primary" />
             Suggested Connections
             {filteredSuggestions.length > 0 && (
-              <Badge variant="secondary">{filteredSuggestions.length}</Badge>
+              <Badge variant="secondary" className="rounded-full">{filteredSuggestions.length}</Badge>
             )}
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="space-y-4">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="flex items-start space-x-4 p-4 border rounded-lg animate-pulse">
-                  <div className="w-14 h-14 bg-muted rounded-full"></div>
-                  <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-muted rounded w-3/4"></div>
-                    <div className="h-3 bg-muted rounded w-1/2"></div>
-                    <div className="h-3 bg-muted rounded w-2/3"></div>
-                    <div className="flex gap-2">
-                      <div className="h-6 bg-muted rounded w-20"></div>
-                      <div className="h-6 bg-muted rounded w-16"></div>
-                    </div>
-                  </div>
-                  <div className="w-20 h-8 bg-muted rounded"></div>
-                </div>
-              ))}
-            </div>
-          ) : filteredSuggestions.length > 0 ? (
-            <div className="space-y-4">
-              {filteredSuggestions.map((suggestion) => (
-                <div 
-                  key={suggestion.id} 
-                  className="group p-5 border rounded-lg hover:shadow-md transition-all bg-gradient-to-r from-background to-muted/30"
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-start space-x-4">
-                      <Link to={`/user/${suggestion.id}`}>
-                        <Avatar className="w-14 h-14 cursor-pointer hover:scale-105 transition-transform ring-2 ring-primary/10">
-                          <AvatarImage src={suggestion.profile_picture_url} />
-                          <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-                            {suggestion.full_name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'U'}
-                          </AvatarFallback>
-                        </Avatar>
-                      </Link>
-                      <div className="flex-1 min-w-0">
-                        <Link 
-                          to={`/user/${suggestion.id}`}
-                          className="hover:text-primary transition-colors block"
-                        >
-                          <h4 className="font-semibold text-lg truncate">{suggestion.full_name}</h4>
-                        </Link>
-                        {suggestion.title && (
-                          <p className="text-muted-foreground mb-2 line-clamp-1">{suggestion.title}</p>
-                        )}
-                        
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
-                          {suggestion.company && (
-                            <div className="flex items-center gap-1">
-                              <Building className="h-3 w-3" />
-                              <span className="truncate max-w-32">{suggestion.company}</span>
-                            </div>
-                          )}
-                          {suggestion.location && (
-                            <div className="flex items-center gap-1">
-                              <MapPin className="h-3 w-3" />
-                              <span className="truncate max-w-24">{suggestion.location}</span>
-                            </div>
-                          )}
-                        </div>
 
-                        {/* Match Information */}
-                        <div className="flex items-center gap-2 mb-3">
-                          <Badge 
-                            variant="outline" 
-                            className={`text-xs ${getSuggestionTypeColor(suggestion.suggestionType)}`}
-                          >
-                            <Sparkles className="h-3 w-3 mr-1" />
-                            {getSuggestionTypeLabel(suggestion.suggestionType)}
-                          </Badge>
-                          <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">
-                            <TrendingUp className="h-3 w-3 mr-1" />
-                            {suggestion.matchScore}% match
-                          </Badge>
-                        </div>
-
-                        {/* Match Reasons */}
-                        {suggestion.matchReasons.length > 0 && (
-                          <div className="flex flex-wrap gap-1">
-                            {suggestion.matchReasons.slice(0, 3).map((reason, index) => (
-                              <Badge key={index} variant="outline" className="text-xs bg-accent/50">
-                                {reason}
-                              </Badge>
-                            ))}
-                            {suggestion.matchReasons.length > 3 && (
-                              <Badge variant="outline" className="text-xs">
-                                +{suggestion.matchReasons.length - 3} more
-                              </Badge>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
-                      <Button
-                        size="sm"
-                        onClick={() => sendConnection(suggestion.id)}
-                        disabled={isSendingConnection}
-                        className="gap-2"
-                      >
-                        <UserPlus className="h-3 w-3" />
-                        Connect
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <div className="p-3 bg-muted/50 rounded-full w-fit mx-auto mb-4">
-                <Users className="h-8 w-8 text-muted-foreground" />
-              </div>
-              <h3 className="text-lg font-medium text-foreground mb-2">No matches found</h3>
-              <p className="text-muted-foreground mb-4 max-w-sm mx-auto">
-                {searchTerm 
-                  ? `No results for "${searchTerm}". Try different keywords or filters.`
-                  : 'Try selecting a different filter or update your profile with more information.'
-                }
-              </p>
-              {!searchTerm && (
-                <div className="flex gap-2 justify-center">
-                  <Link to="/profile/edit">
-                    <Button variant="outline" size="sm">
-                      <Target className="h-4 w-4 mr-2" />
-                      Update Profile
-                    </Button>
+        <CardContent className="space-y-4">
+          {filteredSuggestions.map((suggestion) => (
+            <div 
+              key={suggestion.id} 
+              className="p-5 border border-slate-200/80 dark:border-border/60 rounded-3xl bg-white dark:bg-card hover:shadow-md transition-all space-y-3"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start space-x-3.5 min-w-0">
+                  <Link to={`/passport/public/${suggestion.id}`}>
+                    <Avatar className="w-12 h-12 border-2 border-white dark:border-slate-800 shadow-md">
+                      <AvatarImage src={suggestion.profile_picture_url} />
+                      <AvatarFallback className="font-extrabold text-xs bg-slate-900 text-white">
+                        {suggestion.full_name?.charAt(0) || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
                   </Link>
-                  <Button variant="outline" size="sm" onClick={refreshSuggestions}>
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                    Refresh
+
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <div className="flex items-center gap-1.5">
+                      <Link to={`/passport/public/${suggestion.id}`} className="font-extrabold text-sm text-foreground hover:text-primary transition-colors truncate">
+                        {suggestion.full_name}
+                      </Link>
+                      <CheckCircle2 className="h-4 w-4 text-blue-600 shrink-0" />
+                    </div>
+
+                    <p className="text-xs text-muted-foreground font-semibold truncate">{suggestion.title || 'Professional'}</p>
+
+                    <div className="flex items-center gap-3 text-[11px] text-muted-foreground font-medium">
+                      {suggestion.company && <span className="flex items-center gap-1"><Building className="h-3 w-3 text-primary" /> {suggestion.company}</span>}
+                      {suggestion.location && <span className="flex items-center gap-1"><MapPin className="h-3 w-3 text-primary" /> {suggestion.location}</span>}
+                    </div>
+
+                    <div className="flex items-center gap-2 pt-1">
+                      <Badge variant="outline" className={`text-[10px] font-bold ${getSuggestionTypeColor(suggestion.suggestionType)}`}>
+                        <Sparkles className="h-3 w-3 mr-1" />
+                        {getSuggestionTypeLabel(suggestion.suggestionType)}
+                      </Badge>
+                      <Badge variant="secondary" className="text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                        <TrendingUp className="h-3 w-3 mr-1" />
+                        {suggestion.matchScore}% Match
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-2 shrink-0">
+                  <Button 
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleGenerateGeminiPitch(suggestion)}
+                    disabled={generatingPitchFor === suggestion.id}
+                    className="rounded-2xl text-xs font-bold border-purple-300 text-purple-700 hover:bg-purple-50 h-8"
+                  >
+                    <Wand2 className="h-3.5 w-3.5 mr-1 text-purple-600" />
+                    AI Pitch
                   </Button>
+
+                  <Button 
+                    size="sm"
+                    onClick={() => sendConnection(suggestion.id)}
+                    disabled={isSendingConnection(suggestion.id)}
+                    className="rounded-2xl text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white h-8 shadow-sm"
+                  >
+                    <UserPlus className="h-3.5 w-3.5 mr-1" />
+                    Connect
+                  </Button>
+                </div>
+              </div>
+
+              {/* Gemini AI Generated Pitch Message Box */}
+              {pitchMessages[suggestion.id] && (
+                <div className="p-3 rounded-2xl bg-purple-50/80 dark:bg-purple-950/40 border border-purple-200/80 dark:border-purple-900/60 text-xs space-y-2">
+                  <div className="flex items-center justify-between font-extrabold text-purple-900 dark:text-purple-200">
+                    <span className="flex items-center gap-1"><Sparkles className="h-3.5 w-3.5 text-purple-600" /> Gemini AI Personalized Pitch</span>
+                    <button 
+                      onClick={() => {
+                        navigator.clipboard.writeText(pitchMessages[suggestion.id]);
+                        toast.success("Pitch message copied to clipboard!");
+                      }} 
+                      className="flex items-center gap-1 text-[10px] text-purple-700 dark:text-purple-300 font-bold hover:underline"
+                    >
+                      <Copy className="h-3 w-3" /> Copy
+                    </button>
+                  </div>
+                  <p className="text-foreground font-medium leading-relaxed">{pitchMessages[suggestion.id]}</p>
                 </div>
               )}
             </div>
-          )}
+          ))}
         </CardContent>
       </Card>
-
-      {/* Enhanced AI Features */}
-      <div className="grid md:grid-cols-2 gap-6">
-        {/* Mentor Matching */}
-        <MentorMatchingCard />
-
-        {/* Collaboration Opportunities */}
-        <CollaborationCard />
-      </div>
     </div>
   );
 };

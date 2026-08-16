@@ -11,7 +11,8 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { MoreHorizontal, Edit, Trash2, Send, Loader2 } from 'lucide-react';
+import { MoreHorizontal, Trash2, Send, Loader2, Sparkles, Wand2 } from 'lucide-react';
+import { generateGeminiSmartReply } from '@/utils/geminiAi';
 
 interface EnhancedCommentsSectionProps {
   postId: string;
@@ -20,9 +21,8 @@ interface EnhancedCommentsSectionProps {
 
 export const EnhancedCommentsSection: React.FC<EnhancedCommentsSectionProps> = ({ postId, isOpen = true }) => {
   const [newComment, setNewComment] = useState('');
-  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
-  const [editContent, setEditContent] = useState('');
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [isGeneratingReply, setIsGeneratingReply] = useState(false);
   const queryClient = useQueryClient();
 
   // Get current user
@@ -33,6 +33,16 @@ export const EnhancedCommentsSection: React.FC<EnhancedCommentsSectionProps> = (
     };
     getCurrentUser();
   }, []);
+
+  // Fetch post content for Gemini context
+  const { data: postData } = useQuery({
+    queryKey: ['post-details-for-ai', postId],
+    queryFn: async () => {
+      const { data } = await supabase.from('posts').select('content').eq('id', postId).maybeSingle();
+      return data;
+    },
+    enabled: isOpen
+  });
 
   // Query real comments from Supabase post_comments table
   const { data: comments, isLoading } = useQuery({
@@ -45,10 +55,8 @@ export const EnhancedCommentsSection: React.FC<EnhancedCommentsSectionProps> = (
         .order('created_at', { ascending: true });
 
       if (commentsError) throw commentsError;
-
       if (!commentsData || commentsData.length === 0) return [];
 
-      // Get unique author IDs
       const authorIds: string[] = Array.from(new Set(
         commentsData
           .map((c: any) => c.author_id || c.user_id)
@@ -59,7 +67,6 @@ export const EnhancedCommentsSection: React.FC<EnhancedCommentsSectionProps> = (
         return commentsData.map((c: any) => ({ ...c, profiles: null }));
       }
 
-      // Fetch profiles for comment authors
       const { data: profilesData } = await supabase
         .from('profiles')
         .select('id, full_name, profile_picture_url, title')
@@ -74,6 +81,20 @@ export const EnhancedCommentsSection: React.FC<EnhancedCommentsSectionProps> = (
     },
     enabled: isOpen
   });
+
+  // Generate 1-click Gemini AI Reply
+  const handleGenerateGeminiReply = async (replyType: string) => {
+    setIsGeneratingReply(true);
+    try {
+      const res = await generateGeminiSmartReply(postData?.content || 'Career update post', replyType);
+      setNewComment(res.reply);
+      toast.success('Gemini AI generated smart comment!');
+    } catch (err) {
+      toast.error('Could not generate AI comment');
+    } finally {
+      setIsGeneratingReply(false);
+    }
+  };
 
   // Add Comment Mutation
   const addCommentMutation = useMutation({
@@ -138,6 +159,38 @@ export const EnhancedCommentsSection: React.FC<EnhancedCommentsSectionProps> = (
   return (
     <div className="space-y-4 pt-2">
       
+      {/* 🪄 1-Click Gemini AI Smart Reply Pills */}
+      <div className="flex flex-wrap items-center gap-1.5 p-2 rounded-2xl bg-purple-500/5 border border-purple-200/60 dark:border-purple-950">
+        <span className="text-[11px] font-extrabold text-purple-700 dark:text-purple-300 flex items-center gap-1 shrink-0">
+          <Sparkles className="h-3 w-3 text-purple-600" />
+          Gemini Quick Reply:
+        </span>
+
+        <button
+          onClick={() => handleGenerateGeminiReply('Congratulate on milestone')}
+          disabled={isGeneratingReply}
+          className="text-[10px] font-bold px-2.5 py-1 rounded-xl bg-white dark:bg-card border border-purple-200 text-purple-700 hover:bg-purple-50 transition-colors shadow-2xs"
+        >
+          🎉 Milestone
+        </button>
+
+        <button
+          onClick={() => handleGenerateGeminiReply('Ask insightful strategy question')}
+          disabled={isGeneratingReply}
+          className="text-[10px] font-bold px-2.5 py-1 rounded-xl bg-white dark:bg-card border border-indigo-200 text-indigo-700 hover:bg-indigo-50 transition-colors shadow-2xs"
+        >
+          💡 Strategy Question
+        </button>
+
+        <button
+          onClick={() => handleGenerateGeminiReply('Add APAC perspective')}
+          disabled={isGeneratingReply}
+          className="text-[10px] font-bold px-2.5 py-1 rounded-xl bg-white dark:bg-card border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors shadow-2xs"
+        >
+          🌏 APAC Perspective
+        </button>
+      </div>
+
       {/* Comment Input Container */}
       <div className="flex gap-2.5 items-start">
         <Avatar className="w-8 h-8 shrink-0 mt-0.5 border border-slate-200">
@@ -166,7 +219,7 @@ export const EnhancedCommentsSection: React.FC<EnhancedCommentsSectionProps> = (
               disabled={!newComment.trim() || addCommentMutation.isPending}
               className="rounded-xl h-8 px-4 text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white flex items-center gap-1.5 shadow-sm"
             >
-              {addCommentMutation.isPending ? (
+              {addCommentMutation.isPending || isGeneratingReply ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
               ) : (
                 <Send className="h-3.5 w-3.5" />

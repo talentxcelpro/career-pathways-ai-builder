@@ -1,9 +1,8 @@
 import React, { useState, useRef } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { 
   Sparkles, 
@@ -12,15 +11,15 @@ import {
   MapPin, 
   Hash, 
   Globe, 
-  Users, 
-  Lock, 
   X,
   Loader2,
-  ChevronDown
+  ChevronDown,
+  Wand2
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { generateGeminiPost } from '@/utils/geminiAi';
 
 interface EnhancedCreatePostProps {
   onPostCreate?: (post: any) => void;
@@ -38,6 +37,12 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
   const [isPosting, setIsPosting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [mediaUrls, setMediaUrls] = useState<string[]>([]);
+
+  // Gemini AI Post Assistant states
+  const [showGeminiAssistant, setShowGeminiAssistant] = useState(false);
+  const [aiTopic, setAiTopic] = useState('');
+  const [aiTone, setAiTone] = useState('Thought Leader');
+  const [isGeneratingAi, setIsGeneratingAi] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
@@ -74,6 +79,33 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
 
   const handleRemoveTag = (tagToRemove: string) => {
     setTags(tags.filter(t => t !== tagToRemove));
+  };
+
+  // Generate Post with Gemini AI
+  const handleGeminiPostGenerate = async () => {
+    if (!aiTopic.trim()) {
+      toast.error("Please enter a topic for Gemini AI");
+      return;
+    }
+
+    setIsGeneratingAi(true);
+    try {
+      const result = await generateGeminiPost(aiTopic, aiTone);
+      const fullText = `${result.hook}\n\n${result.content}`;
+      setContent(fullText);
+      
+      if (result.hashtags && result.hashtags.length > 0) {
+        const cleanTags = result.hashtags.map(t => t.replace(/^#/, ''));
+        setTags(Array.from(new Set([...tags, ...cleanTags])));
+      }
+      
+      toast.success("Gemini AI drafted your post!");
+      setShowGeminiAssistant(false);
+    } catch (err: any) {
+      toast.error("Gemini AI generation failed");
+    } finally {
+      setIsGeneratingAi(false);
+    }
   };
 
   const handleSubmit = async () => {
@@ -126,17 +158,66 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
   return (
     <Card className="w-full border border-slate-200/80 dark:border-border/60 shadow-sm bg-white dark:bg-card rounded-3xl overflow-hidden p-5 space-y-4">
       
-      {/* Header */}
+      {/* Header with Gemini AI Copilot Trigger */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Sparkles className="h-4 w-4 text-blue-600" />
           <h2 className="text-sm font-extrabold text-foreground tracking-tight">Create Enhanced Post</h2>
         </div>
 
-        <div className="flex items-center gap-1 text-[11px] font-extrabold text-muted-foreground bg-slate-100 dark:bg-muted px-2.5 py-1 rounded-full border border-slate-200/60 dark:border-border">
-          <span>TalentXcel</span>
-        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowGeminiAssistant(prev => !prev)}
+          className="rounded-full text-xs font-extrabold border-purple-300 dark:border-purple-800 bg-gradient-to-r from-purple-500/10 to-indigo-500/10 text-purple-700 dark:text-purple-300 hover:bg-purple-500/20 px-3 h-7 gap-1.5"
+        >
+          <Wand2 className="h-3.5 w-3.5 text-purple-600" />
+          <span>Gemini AI Copilot</span>
+        </Button>
       </div>
+
+      {/* ✨ Gemini AI Post Assistant Copilot Drawer */}
+      {showGeminiAssistant && (
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-purple-500/10 via-indigo-500/10 to-blue-500/10 border border-purple-200 dark:border-purple-900/60 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-extrabold text-purple-900 dark:text-purple-200 flex items-center gap-1.5">
+              <Sparkles className="h-3.5 w-3.5 text-purple-600" />
+              Gemini AI Post Assistant
+            </span>
+            <X className="h-4 w-4 cursor-pointer text-muted-foreground" onClick={() => setShowGeminiAssistant(false)} />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <Input 
+              placeholder="Topic e.g. Q3 APAC Sales Leadership..."
+              value={aiTopic}
+              onChange={(e) => setAiTopic(e.target.value)}
+              className="sm:col-span-2 text-xs h-8 rounded-xl bg-white dark:bg-card border-purple-200"
+            />
+            <select
+              value={aiTone}
+              onChange={(e) => setAiTone(e.target.value)}
+              className="text-xs rounded-xl h-8 px-2 bg-white dark:bg-card border border-purple-200 font-bold focus:outline-none"
+            >
+              <option value="Thought Leader">Thought Leader</option>
+              <option value="Executive">Executive</option>
+              <option value="Inspiring">Inspiring</option>
+              <option value="Storytelling">Storytelling</option>
+              <option value="Concise">Concise</option>
+            </select>
+          </div>
+
+          <Button
+            size="sm"
+            onClick={handleGeminiPostGenerate}
+            disabled={!aiTopic.trim() || isGeneratingAi}
+            className="w-full h-8 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md flex items-center justify-center gap-1.5"
+          >
+            {isGeneratingAi ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Wand2 className="h-3.5 w-3.5" />}
+            Generate Draft &amp; Hashtags
+          </Button>
+        </div>
+      )}
 
       {/* Input Container matching mockup */}
       <div className="relative rounded-2xl bg-slate-50/80 dark:bg-muted/30 border border-slate-200/80 dark:border-border/60 p-4 space-y-3">
