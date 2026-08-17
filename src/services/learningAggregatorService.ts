@@ -15,6 +15,22 @@ import {
 export const learningAggregatorService = {
 
   /**
+   * Helper to build affiliate / monetization tracking URL
+   */
+  getMonetizedUrl(originalUrl: string): string {
+    try {
+      const url = new URL(originalUrl);
+      url.searchParams.set('ref', 'talentxcel');
+      url.searchParams.set('utm_source', 'talentxcel_learning');
+      url.searchParams.set('utm_medium', 'aggregator_handoff');
+      url.searchParams.set('utm_campaign', 'career_intelligence');
+      return url.toString();
+    } catch {
+      return originalUrl;
+    }
+  },
+
+  /**
    * Fetch all aggregated courses with category, level, domain, search, and free status filtering
    */
   async getCourses(filters?: {
@@ -180,7 +196,6 @@ export const learningAggregatorService = {
     const prompt = userPrompt.toLowerCase().trim();
     const allCourses = await this.getCourses();
 
-    // Default HR Analytics Transition Plan
     if (prompt.includes('hr') || prompt.includes('recruitment') || prompt.includes('people analytics')) {
       return {
         user_intent: userPrompt,
@@ -200,7 +215,6 @@ export const learningAggregatorService = {
       };
     }
 
-    // Default Data Analyst / General Plan
     return {
       user_intent: userPrompt,
       current_experience: 'General Professional Background',
@@ -219,15 +233,17 @@ export const learningAggregatorService = {
   },
 
   /**
-   * Log external course handoff event (Start Course on Provider ↗)
+   * Log external course handoff event with monetization referral tracking
    */
-  async trackHandoff(event: CourseHandoffEvent): Promise<void> {
+  async trackHandoff(event: CourseHandoffEvent): Promise<string> {
+    const monetizedUrl = this.getMonetizedUrl(event.source_url);
     try {
-      console.log("🚀 Handoff Logged:", event);
+      console.log("🚀 Monetized Handoff Logged:", { ...event, monetized_url: monetizedUrl });
       
       const { data: { user } } = await supabase.auth.getUser();
       const payload = {
         ...event,
+        monetized_url: monetizedUrl,
         user_id: user?.id || 'anonymous',
         clicked_at: new Date().toISOString()
       };
@@ -240,5 +256,6 @@ export const learningAggregatorService = {
     } catch (err) {
       console.warn("Handoff logging notice:", err);
     }
+    return monetizedUrl;
   }
 };
