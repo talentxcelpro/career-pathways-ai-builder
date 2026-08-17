@@ -49,7 +49,9 @@ import {
   Trophy,
   Check,
   Crown,
-  DollarSign
+  DollarSign,
+  Edit3,
+  RefreshCw
 } from 'lucide-react';
 
 export default function LearningHub() {
@@ -65,8 +67,8 @@ export default function LearningHub() {
   const [userInfo, setUserInfo] = useState({
     name: 'Arshid Hussain Wani',
     username: 'talentxcelpro',
-    title: 'Director Operations',
-    location: 'TalentXcel Services • India',
+    title: 'Business Strategist & Growth Specialist',
+    location: 'Noida • India',
     avatarUrl: 'https://chatr.chat/assets/img/logo.png',
     coverUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80'
   });
@@ -80,8 +82,8 @@ export default function LearningHub() {
 
         if (profile || currentUser) {
           const fullName = profile?.full_name || currentUser?.user_metadata?.full_name || currentUser?.user_metadata?.name || 'Arshid Hussain Wani';
-          const title = profile?.headline || profile?.title || currentUser?.user_metadata?.title || 'Director Operations';
-          const location = profile?.location || 'TalentXcel Services • India';
+          const title = profile?.headline || profile?.title || currentUser?.user_metadata?.title || 'Business Strategist & Growth Specialist';
+          const location = profile?.location || 'Noida • India';
           const avatar = profile?.profile_picture_url || (profile as any)?.avatar_url || currentUser?.user_metadata?.avatar_url || currentUser?.user_metadata?.picture || 'https://chatr.chat/assets/img/logo.png';
           
           setUserInfo({
@@ -131,15 +133,7 @@ export default function LearningHub() {
     e.preventDefault();
     if (!searchQuery.trim()) return;
 
-    if (searchQuery.toLowerCase().includes('hr')) {
-      triggerAiPlanner("I have 5 years of HR experience and want to move into HR analytics. I have 6 hours per week.");
-    } else if (searchQuery.toLowerCase().includes('data analyst')) {
-      navigate('/learning/careers/data-analyst');
-    } else if (searchQuery.toLowerCase().includes('ai')) {
-      navigate('/learning/careers/ai-engineer');
-    } else {
-      navigate(`/learning/courses?q=${encodeURIComponent(searchQuery.trim())}`);
-    }
+    triggerAiPlanner(searchQuery.trim());
   };
 
   const triggerAiPlanner = async (promptText: string) => {
@@ -151,7 +145,7 @@ export default function LearningHub() {
     setTimeout(() => {
       setGeneratedPlan(plan);
       setIsGeneratingPlan(false);
-    }, 800);
+    }, 600);
   };
 
   const handleCourseHandoff = async (course: AggregatedCourse, sourcePage: string) => {
@@ -195,7 +189,7 @@ export default function LearningHub() {
                   if (tab.path) {
                     navigate(tab.path);
                   } else if (tab.label === 'AI Intent Planner') {
-                    triggerAiPlanner("I want to pivot my career into AI Engineering");
+                    triggerAiPlanner("I want to become a Data Analyst");
                   }
                 }}
                 className={`px-4 py-2 rounded-full text-xs font-extrabold transition-all flex items-center gap-2 shrink-0 cursor-pointer ${
@@ -240,7 +234,6 @@ export default function LearningHub() {
                   src={userInfo.avatarUrl} 
                   alt={userInfo.name} 
                   onError={(e) => {
-                    // Fallback image if remote image fails
                     (e.target as HTMLImageElement).src = 'https://chatr.chat/assets/img/logo.png';
                   }}
                   className="w-full h-full object-cover"
@@ -351,7 +344,7 @@ export default function LearningHub() {
             </div>
 
             <textarea
-              placeholder="What do you want to learn or become? (e.g., 'I have 5 years HR experience and want to move into HR analytics')..."
+              placeholder="What do you want to learn or become? (e.g., 'I want to become a Data Analyst')..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               rows={3}
@@ -360,13 +353,13 @@ export default function LearningHub() {
 
             <div className="flex items-center justify-between pt-1">
               <div className="flex items-center gap-3 text-xs font-semibold text-slate-500">
-                <button onClick={() => setSearchQuery('Python')} className="hover:text-blue-600 flex items-center gap-1 cursor-pointer">
+                <button onClick={() => { setSearchQuery('Python'); triggerAiPlanner('Python for Data'); }} className="hover:text-blue-600 flex items-center gap-1 cursor-pointer">
                   <Code className="h-4 w-4 text-blue-600" /> Python
                 </button>
-                <button onClick={() => setSearchQuery('SQL')} className="hover:text-blue-600 flex items-center gap-1 cursor-pointer">
+                <button onClick={() => { setSearchQuery('SQL'); triggerAiPlanner('SQL Querying'); }} className="hover:text-blue-600 flex items-center gap-1 cursor-pointer">
                   <BarChart3 className="h-4 w-4 text-emerald-600" /> SQL
                 </button>
-                <button onClick={() => setSearchQuery('Power BI')} className="hover:text-blue-600 flex items-center gap-1 cursor-pointer">
+                <button onClick={() => { setSearchQuery('Power BI'); triggerAiPlanner('Power BI Analytics'); }} className="hover:text-blue-600 flex items-center gap-1 cursor-pointer">
                   <FileSpreadsheet className="h-4 w-4 text-amber-600" /> Power BI
                 </button>
               </div>
@@ -696,7 +689,9 @@ export default function LearningHub() {
         </DialogContent>
       </Dialog>
 
-      {/* AI CAREER INTENT PLANNER DIALOG */}
+      {/* ============================================================================ */}
+      {/* INTERACTIVE EDITABLE AI CAREER INTENT PLANNER DIALOG */}
+      {/* ============================================================================ */}
       <Dialog open={isAiModalOpen} onOpenChange={setIsAiModalOpen}>
         <DialogContent className="max-w-2xl rounded-3xl p-6 bg-white dark:bg-card">
           <DialogHeader>
@@ -709,52 +704,85 @@ export default function LearningHub() {
           {isGeneratingPlan ? (
             <div className="py-12 flex flex-col items-center justify-center space-y-4">
               <div className="w-10 h-10 border-4 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
-              <p className="text-xs font-bold text-muted-foreground">Synthesizing personalized 12-week learning plan from 2,650+ courses...</p>
+              <p className="text-xs font-bold text-muted-foreground">Synthesizing personalized learning plan from 2,650+ courses...</p>
             </div>
-          ) : generatedPlan && (
+          ) : (
             <div className="space-y-6 pt-2">
-              <div className="p-4 rounded-2xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 space-y-1">
-                <div className="text-xs font-bold text-purple-700 dark:text-purple-300">Your Intent</div>
-                <p className="text-xs font-medium text-slate-700 dark:text-slate-300">"{generatedPlan.user_intent}"</p>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 space-y-2">
-                  <div className="text-xs font-extrabold text-emerald-800 dark:text-emerald-300 flex items-center gap-1">
-                    <CheckCircle2 className="h-4 w-4" /> Current Strengths
+              
+              {/* EDITABLE USER PROMPT INPUT BOX */}
+              <div className="p-4 rounded-2xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="text-xs font-extrabold text-purple-700 dark:text-purple-300 flex items-center gap-1.5">
+                    <Edit3 className="h-3.5 w-3.5" /> Your Career Intent (Write/Edit below)
                   </div>
-                  <div className="flex flex-wrap gap-1">
-                    {generatedPlan.current_strengths.map((s, idx) => (
-                      <span key={idx} className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white border border-emerald-300 text-emerald-800">
-                        {s}
-                      </span>
-                    ))}
-                  </div>
+                  <span className="text-[10px] text-purple-600 font-bold">Interactive Prompt</span>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 space-y-2">
-                  <div className="text-xs font-extrabold text-blue-800 dark:text-blue-300 flex items-center gap-1">
-                    <Target className="h-4 w-4" /> Skills to Build
-                  </div>
-                  <div className="flex flex-wrap gap-1">
-                    {generatedPlan.skills_to_build.map((s, idx) => (
-                      <span key={idx} className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white border border-blue-300 text-blue-800">
-                        {s}
-                      </span>
-                    ))}
-                  </div>
+                <textarea
+                  value={aiPromptInput}
+                  onChange={(e) => setAiPromptInput(e.target.value)}
+                  placeholder="Write your custom learning intent (e.g. 'I want to become a Senior Cloud Architect in 6 months')..."
+                  rows={2}
+                  className="w-full p-2.5 rounded-xl bg-white dark:bg-card border border-purple-200 dark:border-purple-800 text-xs font-medium text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-600 resize-none"
+                />
+
+                <div className="flex justify-end">
+                  <Button
+                    size="sm"
+                    onClick={() => triggerAiPlanner(aiPromptInput || "I want to become a Data Analyst")}
+                    className="rounded-xl text-[11px] font-extrabold bg-purple-600 hover:bg-purple-500 text-white gap-1 h-8 shadow-xs cursor-pointer"
+                  >
+                    <RefreshCw className="h-3 w-3" /> Regenerate Custom Plan
+                  </Button>
                 </div>
               </div>
 
-              <Button 
-                onClick={() => {
-                  setIsAiModalOpen(false);
-                  navigate('/learning/careers/data-analyst');
-                }}
-                className="w-full h-11 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs shadow-md cursor-pointer"
-              >
-                View Selected 23 Free Courses for This Pathway
-              </Button>
+              {generatedPlan && (
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 space-y-2">
+                      <div className="text-xs font-extrabold text-emerald-800 dark:text-emerald-300 flex items-center gap-1">
+                        <CheckCircle2 className="h-4 w-4" /> Current Strengths
+                      </div>
+                      <div className="flex flex-wrap gap-1">
+                        {generatedPlan.current_strengths.map((s, idx) => (
+                          <span key={idx} className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white border border-emerald-300 text-emerald-800">
+                            {s}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 space-y-2">
+                      <div className="text-xs font-extrabold text-blue-800 dark:text-blue-300 flex items-center gap-1">
+                        <Target className="h-4 w-4" /> Skills to Build
+                      </div>
+                      <div className="flex flex-wrap gap-1">
+                        {generatedPlan.skills_to_build.map((s, idx) => (
+                          <span key={idx} className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white border border-blue-300 text-blue-800">
+                            {s}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={() => {
+                      setIsAiModalOpen(false);
+                      if (aiPromptInput.toLowerCase().includes('ai')) {
+                        navigate('/learning/careers/ai-engineer');
+                      } else {
+                        navigate('/learning/careers/data-analyst');
+                      }
+                    }}
+                    className="w-full h-11 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs shadow-md cursor-pointer"
+                  >
+                    View Selected 23 Free Courses for This Pathway
+                  </Button>
+                </>
+              )}
+
             </div>
           )}
         </DialogContent>
