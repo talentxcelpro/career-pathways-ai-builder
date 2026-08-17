@@ -1,16 +1,17 @@
 import { lazy, Suspense } from 'react';
+import { BookOpen, Layers } from "lucide-react";
 
-import { BookOpen } from "lucide-react";
-const Learning = lazy(() => import('../pages/Learning'));
 const LearningHub = lazy(() => import('../pages/LearningHub'));
+const AggregatedCourseDetail = lazy(() => import('../pages/learning/AggregatedCourseDetail').then(m => ({ default: m.AggregatedCourseDetail })));
+const CareerPathwayDetail = lazy(() => import('../pages/learning/CareerPathwayDetail').then(m => ({ default: m.CareerPathwayDetail })));
+const AdminLearningAggregator = lazy(() => import('../pages/admin/AdminLearningAggregator').then(m => ({ default: m.AdminLearningAggregator })));
+
 const CompleteLearningHub = lazy(() => import('../pages/learning/CompleteLearningHub'));
 const AllCourses = lazy(() => import('../pages/learning/AllCourses'));
-const CourseDetail = lazy(() => import('../pages/learning/CourseDetail'));
 const CoursePlayer = lazy(() => import('../pages/learning/CoursePlayer'));
 const MyCoursesPage = lazy(() => import('../pages/learning/MyCoursesPage'));
 const MyProgress = lazy(() => import('../pages/learning/MyProgress'));
 const LearningPathsPage = lazy(() => import('../pages/learning/LearningPathsPage'));
-const LearningPathDetail = lazy(() => import('../pages/learning/LearningPathDetail'));
 const Certificates = lazy(() => import('../pages/learning/Certificates'));
 const EmploymentBridgePage = lazy(() => import('../pages/learning/EmploymentBridgePage'));
 const JobFocusedCourses = lazy(() => import('../pages/learning/JobFocusedCourses'));
@@ -30,11 +31,10 @@ const BusinessesPage = lazy(() => import('../pages/learning/BusinessesPage'));
 const UniversitiesPage = lazy(() => import('../pages/learning/UniversitiesPage'));
 const GovernmentsPage = lazy(() => import('../pages/learning/GovernmentsPage'));
 const AIFeaturesPage = lazy(() => import('../pages/learning/AIFeaturesPage'));
-const AdminCourses = lazy(() => import('../pages/admin/AdminCourses'));
 
 export const learningRoutes = [
   {
-    title: "Learning Hub",
+    title: "TalentXcel Learning Hub",
     to: "/learning",
     icon: <BookOpen className="h-4 w-4" />,
     page: <Suspense fallback={null}><LearningHub /></Suspense>,
@@ -43,44 +43,56 @@ export const learningRoutes = [
     requiresAdminAccess: false,
   },
   {
+    title: "Aggregated Course Detail",
+    to: "/learning/courses/:id",
+    page: <Suspense fallback={null}><AggregatedCourseDetail /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "Aggregated Course Detail (Slug)",
+    to: "/learning/course/:slug",
+    page: <Suspense fallback={null}><AggregatedCourseDetail /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "Career Pathway Detail",
+    to: "/learning/careers/:slug",
+    page: <Suspense fallback={null}><CareerPathwayDetail /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "Learning Path Detail",
+    to: "/learning/paths/:id",
+    page: <Suspense fallback={null}><CareerPathwayDetail /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "Admin Learning Aggregator",
+    to: "/admin/learning-aggregator",
+    page: <Suspense fallback={null}><AdminLearningAggregator /></Suspense>,
+    isPublic: false,
+    requiresAuth: true,
+    requiresAdminAccess: true,
+  },
+  {
+    title: "Admin Courses",
+    to: "/admin/courses",
+    page: <Suspense fallback={null}><AdminLearningAggregator /></Suspense>,
+    isPublic: false,
+    requiresAuth: true,
+    requiresAdminAccess: true,
+  },
+  {
     title: "Complete Learning Hub",
     to: "/learning/comprehensive-courses",
     page: <Suspense fallback={null}><CompleteLearningHub /></Suspense>,
     isPublic: true,
-    requiresAuth: false,
-    requiresAdminAccess: false,
   },
   {
     title: "All Courses",
     to: "/learning/courses",
     page: <Suspense fallback={null}><AllCourses /></Suspense>,
     isPublic: true,
-  },
-  {
-    title: "Course Detail",
-    to: "/learning/courses/:id",
-    page: <Suspense fallback={null}><CourseDetail /></Suspense>,
-    isPublic: true,
-  },
-  {
-    title: "Course Detail (Direct)",
-    to: "/learning/:id",
-    page: <Suspense fallback={null}><CourseDetail /></Suspense>,
-    isPublic: true,
-  },
-  {
-    title: "Course Player",
-    to: "/learning/courses/:id/player",
-    page: <Suspense fallback={null}><CoursePlayer /></Suspense>,
-    isPublic: true,
-    requiresAuth: false,
-  },
-  {
-    title: "Course Player (Direct)",
-    to: "/learning/:id/player",
-    page: <Suspense fallback={null}><CoursePlayer /></Suspense>,
-    isPublic: true,
-    requiresAuth: false,
   },
   {
     title: "My Courses",
@@ -101,54 +113,6 @@ export const learningRoutes = [
     isPublic: true,
   },
   {
-    title: "Learning Path Detail",
-    to: "/learning/paths/:id",
-    page: <Suspense fallback={null}><LearningPathDetail /></Suspense>,
-    isPublic: true,
-  },
-  {
-    title: "Employment Bridge",
-    to: "/learning/employment-bridge",
-    page: <Suspense fallback={null}><EmploymentBridgePage /></Suspense>,
-    isPublic: true,
-  },
-  {
-    title: "Employment Bridge Overview",
-    to: "/learning/employment-bridge/overview",
-    page: <Suspense fallback={null}><EmploymentBridgePage /></Suspense>,
-    isPublic: true,
-  },
-  {
-    title: "Employment Bridge Modules",
-    to: "/learning/employment-bridge/modules",
-    page: <Suspense fallback={null}><EmploymentBridgePage /></Suspense>,
-    isPublic: true,
-  },
-  {
-    title: "Employment Bridge Certificate",
-    to: "/learning/employment-bridge/certificate",
-    page: <Suspense fallback={null}><EmploymentBridgePage /></Suspense>,
-    isPublic: true,
-  },
-  {
-    title: "Job-Focused Courses",
-    to: "/learning/job-focused-courses",
-    page: <Suspense fallback={null}><JobFocusedCourses /></Suspense>,
-    isPublic: true,
-  },
-  {
-    title: "Skill Market Trends",
-    to: "/learning/skill-market-trends",
-    page: <Suspense fallback={null}><SkillMarketTrends /></Suspense>,
-    isPublic: true,
-  },
-  {
-    title: "Career Analytics",
-    to: "/learning/career-analytics",
-    page: <Suspense fallback={null}><CareerAnalytics /></Suspense>,
-    isPublic: true,
-  },
-  {
     title: "Skill Assessment",
     to: "/learning/skill-assessment",
     page: <Suspense fallback={null}><SkillAssessment /></Suspense>,
@@ -161,27 +125,9 @@ export const learningRoutes = [
     isPublic: true,
   },
   {
-    title: "Quick Learning",
-    to: "/learning/quick-learn",
-    page: <Suspense fallback={null}><QuickLearningPage /></Suspense>,
-    isPublic: true,
-  },
-  {
-    title: "Community Learning",
-    to: "/learning/community",
-    page: <Suspense fallback={null}><CommunityLearning /></Suspense>,
-    isPublic: true,
-  },
-  {
     title: "Learning Search",
     to: "/learning/search",
     page: <Suspense fallback={null}><LearningSearch /></Suspense>,
-    isPublic: true,
-  },
-  {
-    title: "Learning Analytics",
-    to: "/learning/analytics",
-    page: <Suspense fallback={null}><LearningAnalyticsPage /></Suspense>,
     isPublic: true,
   },
   {
@@ -189,61 +135,5 @@ export const learningRoutes = [
     to: "/learning/certificates",
     page: <Suspense fallback={null}><Certificates /></Suspense>,
     isPublic: true,
-  },
-  {
-    title: "Pipeline Dashboard",
-    to: "/learning/pipeline",
-    page: <Suspense fallback={null}><LearningJobPipelineDashboard /></Suspense>,
-    isPublic: true,
-  },
-  {
-    title: "Learning System",
-    to: "/learning/system",
-    page: <Suspense fallback={null}><SmartLearningSystem /></Suspense>,
-    isPublic: true,
-  },
-  {
-    title: "Company Portal",
-    to: "/learning/company-portal",
-    page: <Suspense fallback={null}><CompanyPartnershipPortal /></Suspense>,
-    isPublic: true,
-  },
-  {
-    title: "For Individuals",
-    to: "/learning/individuals",
-    page: <Suspense fallback={null}><IndividualsPage /></Suspense>,
-    isPublic: true,
-  },
-  {
-    title: "For Businesses",
-    to: "/learning/businesses",
-    page: <Suspense fallback={null}><BusinessesPage /></Suspense>,
-    isPublic: true,
-  },
-  {
-    title: "For Universities",
-    to: "/learning/universities",
-    page: <Suspense fallback={null}><UniversitiesPage /></Suspense>,
-    isPublic: true,
-  },
-  {
-    title: "For Governments",
-    to: "/learning/governments",
-    page: <Suspense fallback={null}><GovernmentsPage /></Suspense>,
-    isPublic: true,
-  },
-  {
-    title: "AI Features",
-    to: "/learning/ai-features",
-    page: <Suspense fallback={null}><AIFeaturesPage /></Suspense>,
-    isPublic: true,
-  },
-  {
-    title: "Admin - Courses",
-    to: "/admin/courses",
-    page: <Suspense fallback={null}><AdminCourses /></Suspense>,
-    isPublic: false,
-    requiresAuth: true,
-    requiresAdminAccess: true,
-  },
+  }
 ];
