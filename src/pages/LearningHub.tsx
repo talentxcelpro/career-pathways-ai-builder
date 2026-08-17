@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useProfile } from '@/hooks/useProfile';
+import { useAuth } from '@/contexts/AuthContext';
 import { learningAggregatorService } from '@/services/learningAggregatorService';
 import { AggregatedCourse, LearningProvider, CareerPathway, PersonalizedLearningPlan } from '@/types/learningAggregator';
 import { DOMAIN_TARGETS } from '@/data/learningTaxonomy';
@@ -51,9 +54,51 @@ import {
 
 export default function LearningHub() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { profile, isLoading: isLoadingProfile } = useProfile();
+
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('Feed');
   const [activeCategory, setActiveCategory] = useState('all');
+
+  // Real user details state
+  const [userInfo, setUserInfo] = useState({
+    name: 'Arshid Hussain Wani',
+    username: 'talentxcelpro',
+    title: 'Director Operations',
+    location: 'TalentXcel Services • India',
+    avatarUrl: 'https://chatr.chat/assets/img/logo.png',
+    coverUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80'
+  });
+
+  // Fetch real profile details from Supabase auth / profiles table
+  useEffect(() => {
+    async function loadRealProfile() {
+      try {
+        const { data: authData } = await supabase.auth.getUser();
+        const currentUser = authData?.user;
+
+        if (profile || currentUser) {
+          const fullName = profile?.full_name || currentUser?.user_metadata?.full_name || currentUser?.user_metadata?.name || 'Arshid Hussain Wani';
+          const title = profile?.headline || profile?.title || currentUser?.user_metadata?.title || 'Director Operations';
+          const location = profile?.location || 'TalentXcel Services • India';
+          const avatar = profile?.profile_picture_url || (profile as any)?.avatar_url || currentUser?.user_metadata?.avatar_url || currentUser?.user_metadata?.picture || 'https://chatr.chat/assets/img/logo.png';
+          
+          setUserInfo({
+            name: fullName,
+            username: (profile as any)?.username || currentUser?.email?.split('@')[0] || 'talentxcelpro',
+            title: title,
+            location: location,
+            avatarUrl: avatar,
+            coverUrl: profile?.cover_image_url || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80'
+          });
+        }
+      } catch (err) {
+        console.warn("Profile load notice:", err);
+      }
+    }
+    loadRealProfile();
+  }, [profile, user]);
 
   // AI Career Intent Planner Dialog State
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
@@ -173,14 +218,17 @@ export default function LearningHub() {
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
         {/* ============================================================================ */}
-        {/* LEFT COLUMN: USER PROFILE & QUICK NAV (3 COLS) */}
+        {/* LEFT COLUMN: REAL USER PROFILE & QUICK NAV (3 COLS) */}
         {/* ============================================================================ */}
         <div className="lg:col-span-3 space-y-6">
           
-          {/* User Profile Card */}
+          {/* Real User Profile Card */}
           <Card className="rounded-3xl border-slate-200/80 dark:border-border bg-white dark:bg-card shadow-sm overflow-hidden text-center">
-            <div className="h-24 bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 relative">
-              <div className="absolute inset-0 bg-blue-600/10"></div>
+            <div 
+              className="h-24 bg-cover bg-center relative"
+              style={{ backgroundImage: `url(${userInfo.coverUrl})` }}
+            >
+              <div className="absolute inset-0 bg-slate-900/30"></div>
             </div>
             
             <CardContent className="px-5 pb-6 pt-0 relative space-y-4">
@@ -189,8 +237,12 @@ export default function LearningHub() {
                 className="w-20 h-20 rounded-full border-4 border-white dark:border-card bg-white mx-auto -mt-10 overflow-hidden shadow-md flex items-center justify-center cursor-pointer hover:scale-105 transition-transform"
               >
                 <img 
-                  src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png" 
-                  alt="TalentXcel Services" 
+                  src={userInfo.avatarUrl} 
+                  alt={userInfo.name} 
+                  onError={(e) => {
+                    // Fallback image if remote image fails
+                    (e.target as HTMLImageElement).src = 'https://chatr.chat/assets/img/logo.png';
+                  }}
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -200,11 +252,11 @@ export default function LearningHub() {
                   onClick={() => navigate('/profile')}
                   className="flex items-center justify-center gap-1 cursor-pointer hover:text-blue-600 transition-colors"
                 >
-                  <h3 className="text-sm font-extrabold text-foreground">TalentXcelServices</h3>
+                  <h3 className="text-sm font-extrabold text-foreground">{userInfo.name}</h3>
                   <CheckCircle2 className="h-4 w-4 fill-blue-600 text-white" />
                 </div>
-                <p className="text-xs text-muted-foreground font-semibold">Director Operations</p>
-                <p className="text-[11px] text-slate-400 font-medium">TalentXcel Services • India</p>
+                <p className="text-xs text-muted-foreground font-semibold">{userInfo.title}</p>
+                <p className="text-[11px] text-slate-400 font-medium">{userInfo.location}</p>
               </div>
 
               <div className="flex items-center gap-2 pt-1">
@@ -212,7 +264,7 @@ export default function LearningHub() {
                   variant="outline" 
                   size="sm" 
                   onClick={() => navigate('/profile')}
-                  className="flex-1 rounded-2xl text-xs font-bold border-slate-300"
+                  className="flex-1 rounded-2xl text-xs font-bold border-slate-300 cursor-pointer"
                 >
                   Edit Profile
                 </Button>
@@ -220,7 +272,7 @@ export default function LearningHub() {
                 <Button 
                   size="sm" 
                   onClick={() => setIsProModalOpen(true)}
-                  className="flex-1 rounded-2xl text-xs font-extrabold bg-blue-600 hover:bg-blue-500 text-white gap-1 shadow-sm"
+                  className="flex-1 rounded-2xl text-xs font-extrabold bg-blue-600 hover:bg-blue-500 text-white gap-1 shadow-sm cursor-pointer"
                 >
                   <Crown className="h-3 w-3 text-amber-300" /> Upgrade Now
                 </Button>
@@ -275,7 +327,7 @@ export default function LearningHub() {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-12 pr-12 h-13 rounded-2xl bg-white dark:bg-card border border-slate-200 dark:border-border text-sm font-medium text-foreground shadow-xs focus-visible:ring-2 focus-visible:ring-blue-600"
             />
-            <button type="submit" className="absolute right-4 p-1.5 text-slate-400 hover:text-blue-600">
+            <button type="submit" className="absolute right-4 p-1.5 text-slate-400 hover:text-blue-600 cursor-pointer">
               <SlidersHorizontal className="h-5 w-5" />
             </button>
           </form>
@@ -635,7 +687,7 @@ export default function LearningHub() {
                 toast.success("Thank you for upgrading to TalentXcel Pro!");
                 setIsProModalOpen(false);
               }}
-              className="w-full h-12 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm shadow-xl flex items-center justify-center gap-1.5"
+              className="w-full h-12 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm shadow-xl flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <span>Subscribe to Pro Now</span>
               <ArrowRight className="h-4 w-4" />
