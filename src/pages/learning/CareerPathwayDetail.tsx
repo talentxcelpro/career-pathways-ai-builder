@@ -18,7 +18,8 @@ import {
   Building2, 
   ChevronRight,
   Target,
-  Award
+  Award,
+  BookOpen
 } from 'lucide-react';
 
 export const CareerPathwayDetail: React.FC = () => {
@@ -203,3 +204,5 @@ export const CareerPathwayDetail: React.FC = () => {
     </div>
   );
 };
+
+export default CareerPathwayDetail;

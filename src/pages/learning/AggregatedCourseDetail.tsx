@@ -132,7 +132,7 @@ export const AggregatedCourseDetail: React.FC = () => {
               {course.title}
             </h1>
 
-            <p className="text-sm sm:text-base text-slate-300 font-medium leading-relaxed max-w-2xl">
+            <p className="text-sm sm:text-base text-slate-300 font-medium max-w-2xl leading-relaxed">
               {course.short_description}
             </p>
 
@@ -392,3 +392,5 @@ export const AggregatedCourseDetail: React.FC = () => {
     </div>
   );
 };
+
+export default AggregatedCourseDetail;

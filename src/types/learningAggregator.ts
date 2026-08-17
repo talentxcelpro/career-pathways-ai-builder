@@ -1,4 +1,4 @@
-// TalentXcel Learning Aggregator — Core Provider-Agnostic Types
+// TalentXcel Learning Aggregator — Enormous Taxonomy & Intelligence Types
 
 export type SourceType = 
   | 'OFFICIAL_API' 
@@ -32,6 +32,16 @@ export type CourseLevel =
   | 'Advanced' 
   | 'All Levels';
 
+export interface TaxonomyNode {
+  industry: string;
+  domain: string;
+  subject: string;
+  category: string;
+  skill: string;
+  sub_skills: string[];
+  career_paths: string[];
+}
+
 export interface LearningProvider {
   id: string;
   name: string;
@@ -44,6 +54,8 @@ export interface LearningProvider {
   country?: string;
   verified: boolean;
   course_count?: number;
+  api_endpoint?: string;
+  categories_offered?: string[];
 }
 
 export interface AggregatedCourse {
@@ -60,6 +72,9 @@ export interface AggregatedCourse {
   source_type: SourceType;
   short_description: string;
   long_description: string;
+  industry: string;
+  domain: string;
+  subject: string;
   category: string;
   subcategory?: string;
   level: CourseLevel;
@@ -74,6 +89,7 @@ export interface AggregatedCourse {
   course_format?: 'Video & Interactive' | 'Text & Code' | 'Guided Project' | 'Self-Paced Course' | 'Interactive Sandbox';
   thumbnail_url: string;
   skills: string[];
+  sub_skills?: string[];
   career_relevance: string[];
   recommendation_reason?: string;
   talentxcel_match?: number;
@@ -92,6 +108,18 @@ export interface CareerStep {
   recommended_course_id: string;
   duration_text: string;
   reason: string;
+  weeks?: string;
+}
+
+export interface PersonalizedLearningPlan {
+  user_intent: string;
+  current_experience: string;
+  weekly_hours: number;
+  total_weeks: number;
+  current_strengths: string[];
+  skills_to_build: string[];
+  weekly_schedule: { week_range: string; focus_skill: string; courses_count: number }[];
+  recommended_courses: AggregatedCourse[];
 }
 
 export interface CareerPathway {

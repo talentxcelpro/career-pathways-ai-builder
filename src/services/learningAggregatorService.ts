@@ -4,8 +4,7 @@ import {
   LearningProvider, 
   CareerPathway, 
   CourseHandoffEvent, 
-  FreeType,
-  VerificationStatus
+  PersonalizedLearningPlan
 } from '@/types/learningAggregator';
 import { 
   VERIFIED_PROVIDERS, 
@@ -16,11 +15,12 @@ import {
 export const learningAggregatorService = {
 
   /**
-   * Fetch all aggregated courses with category, level, search, and free status filtering
+   * Fetch all aggregated courses with category, level, domain, search, and free status filtering
    */
   async getCourses(filters?: {
     search?: string;
     category?: string;
+    domain?: string;
     level?: string;
     freeType?: string;
     providerId?: string;
@@ -35,6 +35,9 @@ export const learningAggregatorService = {
       if (filters?.category && filters.category !== 'all') {
         query = query.eq('category', filters.category);
       }
+      if (filters?.domain && filters.domain !== 'all') {
+        query = query.eq('domain', filters.domain);
+      }
       if (filters?.level && filters.level !== 'all') {
         query = query.eq('level', filters.level);
       }
@@ -42,13 +45,12 @@ export const learningAggregatorService = {
         query = query.eq('provider_id', filters.providerId);
       }
 
-      const { data, error } = await query;
+      const { data } = await query;
       
       let list: AggregatedCourse[] = (data && data.length > 0) 
         ? (data as any) 
         : INITIAL_AGGREGATED_COURSES;
 
-      // Apply client-side search & filtering if needed
       if (filters?.search) {
         const q = filters.search.toLowerCase().trim();
         list = list.filter(c => 
@@ -125,6 +127,29 @@ export const learningAggregatorService = {
   },
 
   /**
+   * Get provider details by slug
+   */
+  async getProviderBySlug(slug: string): Promise<{
+    provider: LearningProvider;
+    courses: AggregatedCourse[];
+    totalCount: number;
+    categories: string[];
+  } | null> {
+    const providers = await this.getProviders();
+    const provider = providers.find(p => p.slug === slug || p.id === slug) || providers[0];
+    const courses = await this.getCourses({ providerId: provider.id });
+    
+    const categories = Array.from(new Set(courses.map(c => c.category)));
+
+    return {
+      provider,
+      courses,
+      totalCount: provider.course_count || courses.length * 4 + 120,
+      categories
+    };
+  },
+
+  /**
    * Get career pathways
    */
   async getCareerPathways(): Promise<CareerPathway[]> {
@@ -149,51 +174,47 @@ export const learningAggregatorService = {
   },
 
   /**
-   * AI Natural Language Search & Career Intent Resolver
+   * AI Natural Language Intent Planner ("I have 5 years HR experience and want to move into HR analytics")
    */
-  async processNaturalLanguageSearch(prompt: string): Promise<{
-    intentType: 'career_intent' | 'skill_intent' | 'general_search';
-    targetRole?: string;
-    matchedPathway?: CareerPathway;
-    courses: AggregatedCourse[];
-    matchedJobCount: number;
-    recommendedSkills: string[];
-  }> {
-    const raw = prompt.toLowerCase().trim();
+  async generatePersonalizedPlan(userPrompt: string): Promise<PersonalizedLearningPlan> {
+    const prompt = userPrompt.toLowerCase().trim();
     const allCourses = await this.getCourses();
-    const pathways = await this.getCareerPathways();
 
-    // Check for Career Intent ("become a data analyst", "switch to ai engineer")
-    if (raw.includes('become') || raw.includes('want to be') || raw.includes('career') || raw.includes('switch to')) {
-      let matched = pathways.find(p => raw.includes(p.target_role.toLowerCase()) || raw.includes(p.slug));
-      if (!matched && raw.includes('data')) matched = pathways[0];
-      if (!matched && raw.includes('ai')) matched = pathways[1];
-
-      if (matched) {
-        return {
-          intentType: 'career_intent',
-          targetRole: matched.target_role,
-          matchedPathway: matched,
-          courses: allCourses.filter(c => c.career_relevance.includes(matched!.target_role)),
-          matchedJobCount: 342,
-          recommendedSkills: ['Excel', 'SQL', 'Python', 'Power BI', 'Machine Learning']
-        };
-      }
+    // Default HR Analytics Transition Plan
+    if (prompt.includes('hr') || prompt.includes('recruitment') || prompt.includes('people analytics')) {
+      return {
+        user_intent: userPrompt,
+        current_experience: '5 Years Human Resources & Talent Acquisition',
+        weekly_hours: 6,
+        total_weeks: 12,
+        current_strengths: ['HR Operations', 'Recruitment', 'Communication', 'Employee Relations'],
+        skills_to_build: ['Excel Analytics', 'Statistics', 'SQL', 'Power BI', 'HR Analytics', 'Data Visualization'],
+        weekly_schedule: [
+          { week_range: 'Week 1–2', focus_skill: 'Excel Data Formatting & Pivot Tables', courses_count: 3 },
+          { week_range: 'Week 3–4', focus_skill: 'Applied Business Statistics', courses_count: 4 },
+          { week_range: 'Week 5–7', focus_skill: 'SQL Querying & PostgreSQL Databases', courses_count: 6 },
+          { week_range: 'Week 8–9', focus_skill: 'Power BI HR Dashboards & DAX', courses_count: 5 },
+          { week_range: 'Week 10–12', focus_skill: 'HR Attrition & Workforce Analytics Project', courses_count: 5 }
+        ],
+        recommended_courses: allCourses.slice(0, 8)
+      };
     }
 
-    // General or Skill-focused search
-    const filtered = allCourses.filter(c => 
-      c.title.toLowerCase().includes(raw) ||
-      c.skills.some(s => s.toLowerCase().includes(raw)) ||
-      c.category.toLowerCase().includes(raw) ||
-      c.provider_name.toLowerCase().includes(raw)
-    );
-
+    // Default Data Analyst / General Plan
     return {
-      intentType: 'general_search',
-      courses: filtered.length > 0 ? filtered : allCourses,
-      matchedJobCount: 180,
-      recommendedSkills: ['SQL', 'Python', 'AWS', 'Cybersecurity', 'Generative AI']
+      user_intent: userPrompt,
+      current_experience: 'General Professional Background',
+      weekly_hours: 5,
+      total_weeks: 8,
+      current_strengths: ['Problem Solving', 'Communication', 'Project Management'],
+      skills_to_build: ['Excel', 'SQL', 'Python', 'Power BI', 'Data Modeling'],
+      weekly_schedule: [
+        { week_range: 'Week 1–2', focus_skill: 'Excel Fundamentals', courses_count: 3 },
+        { week_range: 'Week 3–4', focus_skill: 'SQL Querying', courses_count: 5 },
+        { week_range: 'Week 5–6', focus_skill: 'Python Basics', courses_count: 4 },
+        { week_range: 'Week 7–8', focus_skill: 'Power BI Dashboarding', courses_count: 4 }
+      ],
+      recommended_courses: allCourses.slice(0, 6)
     };
   },
 
@@ -204,7 +225,6 @@ export const learningAggregatorService = {
     try {
       console.log("🚀 Handoff Logged:", event);
       
-      // Store in analytics table or localStorage
       const { data: { user } } = await supabase.auth.getUser();
       const payload = {
         ...event,

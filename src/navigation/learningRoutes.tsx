@@ -2,9 +2,10 @@ import { lazy, Suspense } from 'react';
 import { BookOpen, Layers } from "lucide-react";
 
 const LearningHub = lazy(() => import('../pages/LearningHub'));
-const AggregatedCourseDetail = lazy(() => import('../pages/learning/AggregatedCourseDetail').then(m => ({ default: m.AggregatedCourseDetail })));
-const CareerPathwayDetail = lazy(() => import('../pages/learning/CareerPathwayDetail').then(m => ({ default: m.CareerPathwayDetail })));
-const AdminLearningAggregator = lazy(() => import('../pages/admin/AdminLearningAggregator').then(m => ({ default: m.AdminLearningAggregator })));
+const AggregatedCourseDetail = lazy(() => import('../pages/learning/AggregatedCourseDetail'));
+const CareerPathwayDetail = lazy(() => import('../pages/learning/CareerPathwayDetail'));
+const ProviderPage = lazy(() => import('../pages/learning/ProviderPage'));
+const AdminLearningAggregator = lazy(() => import('../pages/admin/AdminLearningAggregator'));
 
 const CompleteLearningHub = lazy(() => import('../pages/learning/CompleteLearningHub'));
 const AllCourses = lazy(() => import('../pages/learning/AllCourses'));
@@ -37,7 +38,7 @@ export const learningRoutes = [
     title: "TalentXcel Learning Hub",
     to: "/learning",
     icon: <BookOpen className="h-4 w-4" />,
-    page: <Suspense fallback={null}><LearningHub /></Suspense>,
+    page: <Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Learning Hub...</div>}><LearningHub /></Suspense>,
     isPublic: true,
     requiresAuth: false,
     requiresAdminAccess: false,
@@ -45,31 +46,37 @@ export const learningRoutes = [
   {
     title: "Aggregated Course Detail",
     to: "/learning/courses/:id",
-    page: <Suspense fallback={null}><AggregatedCourseDetail /></Suspense>,
+    page: <Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Course Detail...</div>}><AggregatedCourseDetail /></Suspense>,
     isPublic: true,
   },
   {
     title: "Aggregated Course Detail (Slug)",
     to: "/learning/course/:slug",
-    page: <Suspense fallback={null}><AggregatedCourseDetail /></Suspense>,
+    page: <Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Course Detail...</div>}><AggregatedCourseDetail /></Suspense>,
     isPublic: true,
   },
   {
     title: "Career Pathway Detail",
     to: "/learning/careers/:slug",
-    page: <Suspense fallback={null}><CareerPathwayDetail /></Suspense>,
+    page: <Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Career Pathway...</div>}><CareerPathwayDetail /></Suspense>,
     isPublic: true,
   },
   {
     title: "Learning Path Detail",
     to: "/learning/paths/:id",
-    page: <Suspense fallback={null}><CareerPathwayDetail /></Suspense>,
+    page: <Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Career Pathway...</div>}><CareerPathwayDetail /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "Verified Provider Showcase",
+    to: "/learning/providers/:slug",
+    page: <Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Provider Showcase...</div>}><ProviderPage /></Suspense>,
     isPublic: true,
   },
   {
     title: "Admin Learning Aggregator",
     to: "/admin/learning-aggregator",
-    page: <Suspense fallback={null}><AdminLearningAggregator /></Suspense>,
+    page: <Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Admin Aggregator...</div>}><AdminLearningAggregator /></Suspense>,
     isPublic: false,
     requiresAuth: true,
     requiresAdminAccess: true,
@@ -77,7 +84,7 @@ export const learningRoutes = [
   {
     title: "Admin Courses",
     to: "/admin/courses",
-    page: <Suspense fallback={null}><AdminLearningAggregator /></Suspense>,
+    page: <Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Admin Aggregator...</div>}><AdminLearningAggregator /></Suspense>,
     isPublic: false,
     requiresAuth: true,
     requiresAdminAccess: true,

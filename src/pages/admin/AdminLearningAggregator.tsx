@@ -289,3 +289,5 @@ export const AdminLearningAggregator: React.FC = () => {
     </div>
   );
 };
+
+export default AdminLearningAggregator;
