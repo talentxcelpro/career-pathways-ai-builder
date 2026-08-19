@@ -157,6 +157,8 @@ export default function Scholarships() {
           <div className="text-2xl sm:text-3xl font-black text-sky-600 font-mono">100%</div>
           <div className="text-xs text-slate-500 mt-1">Verified Primary Sources</div>
         </div>
+      </div>
+
       {/* Filter bar */}
       <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 mb-8 space-y-3">
         <div className="relative">

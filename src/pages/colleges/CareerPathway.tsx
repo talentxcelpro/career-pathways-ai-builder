@@ -677,70 +677,102 @@ export default function CareerPathway() {
                       <div className="w-11 h-11 rounded-xl bg-slate-900 text-white flex items-center justify-center font-black text-base font-mono shrink-0">
                         {stepNumStr}
                       </div>
-                              <div className="font-bold text-sm sm:text-base text-slate-900">
-                                {item.title}
-                              </div>
-                              {item.provider && (
-                                <div className="text-xs text-slate-500 mt-0.5 font-medium">
-                                  {item.provider}
-                                </div>
-                              )}
-                            </div>
-                            <div className="flex items-center gap-2 flex-shrink-0">
-                              {item.cost !== undefined && (
-                                <span
-                                  className={`text-xs font-bold px-3 py-1 rounded-full ${
-                                    item.is_free
-                                      ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
-                                      : "bg-slate-200 text-slate-700"
-                                  }`}
-                                >
-                                  {item.is_free ? "₹0 Tuition / Free" : item.cost}
-                                </span>
-                              )}
-                              {item.url && (
-                                <a
-                                  href={item.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-indigo-600 hover:text-indigo-800 p-1.5 bg-white rounded-xl border border-slate-200 shadow-sm"
-                                  aria-label={`Open ${item.title} in new tab`}
-                                >
-                                  <ExternalLink className="h-4 w-4" />
-                                </a>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Transparent Evidence Snippet */}
-                          {item.evidence_snippet && (
-                            <div className="text-xs text-slate-700 bg-white border border-slate-200/80 rounded-xl p-3 italic flex items-start gap-2 shadow-2xs">
-                              <span className="font-bold not-italic text-emerald-700 shrink-0">✓ Verified Source:</span>
-                              <span>"{item.evidence_snippet}"</span>
-                            </div>
-                          )}
-
-                          {item.notes && (
-                            <div className="text-xs text-slate-500 italic">
-                              {item.notes}
-                            </div>
-                          )}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <span className="text-indigo-600">{stepIcon}</span>
+                          <h3 className="text-lg font-black text-slate-900">
+                            {pathwayStep.title}
+                          </h3>
                         </div>
-                      ))}
+                        <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                          {pathwayStep.description}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Step Items */}
+                    {pathwayStep.items.length > 0 && (
+                      <div className="space-y-2.5 pt-3 border-t border-slate-100">
+                        {pathwayStep.items.map((item, itemIdx) => (
+                          <div
+                            key={itemIdx}
+                            className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/60 space-y-2"
+                          >
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex flex-wrap items-center gap-2 mb-1">
+                                  <ItemTypeBadge type={item.type} academicCredits={item.academic_credits_awarded} />
+                                  {item.access_type && (
+                                    <AccessTypeBadge type={item.access_type} />
+                                  )}
+                                  {item.course_access_type && (
+                                    <CourseAccessBadge type={item.course_access_type} />
+                                  )}
+                                </div>
+                                <div className="font-bold text-sm text-slate-900">
+                                  {item.title}
+                                </div>
+                                {item.provider && (
+                                  <div className="text-xs text-slate-500 mt-0.5 font-medium">
+                                    {item.provider}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-2 flex-shrink-0">
+                                {item.cost !== undefined && (
+                                  <span
+                                    className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${
+                                      item.is_free
+                                        ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
+                                        : "bg-slate-200 text-slate-700"
+                                    }`}
+                                  >
+                                    {item.is_free ? "₹0 Tuition / Free" : item.cost}
+                                  </span>
+                                )}
+                                {item.url && (
+                                  <a
+                                    href={item.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-indigo-600 hover:text-indigo-800 p-1.5 bg-white rounded-lg border border-slate-200 shadow-2xs"
+                                    aria-label={`Open ${item.title} in new tab`}
+                                  >
+                                    <ExternalLink className="h-3.5 w-3.5" />
+                                  </a>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Transparent Evidence Snippet */}
+                            {item.evidence_snippet && (
+                              <div className="text-xs text-slate-700 bg-white border border-slate-200/80 rounded-lg p-2.5 italic flex items-start gap-2">
+                                <span className="font-bold not-italic text-emerald-700 shrink-0">✓ Verified Source:</span>
+                                <span>"{item.evidence_snippet}"</span>
+                              </div>
+                            )}
+
+                            {item.notes && (
+                              <div className="text-xs text-slate-500 italic">
+                                {item.notes}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Vertical Connector */}
+                  {sIdx < pathway.steps.length - 1 && (
+                    <div className="flex justify-center my-2">
+                      <div className="w-0.5 h-5 bg-slate-300"></div>
                     </div>
                   )}
                 </div>
-
-                {/* Vertical Connector */}
-                {sIdx < pathway.steps.length - 1 && (
-                  <div className="flex justify-center my-2">
-                    <div className="w-0.5 h-5 bg-slate-300"></div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
 
         {/* Honest caveat */}
         {pathway.honest_caveat && (
