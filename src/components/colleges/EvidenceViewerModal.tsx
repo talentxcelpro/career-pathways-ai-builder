@@ -50,6 +50,9 @@ export const EvidenceViewerModal: React.FC<EvidenceViewerModalProps> = ({ progra
           <DialogTitle className="text-xl font-black text-slate-900 tracking-tight">
             {isZero ? 'WHY TALENTXCEL SAYS €0' : `COST & EVIDENCE VERIFICATION`}
           </DialogTitle>
+          <div className="text-xs text-indigo-700 font-semibold mt-1">
+            "Don't trust the badge. Inspect the evidence."
+          </div>
           <DialogDescription className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
             <Building2 className="w-3.5 h-3.5 text-slate-400" />
             {program.institution_name} · {program.institution_country}

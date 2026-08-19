@@ -214,20 +214,20 @@ const Colleges = () => {
             </div>
           </div>
 
-          {/* Three Major Destinations (Explore → Fund → Plan) */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto mt-10 text-left">
+          {/* Four Major Destinations (Explore → Fund → Plan → Achieve) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-6xl mx-auto mt-10 text-left">
             <Link
               to="/colleges"
               className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md transition-all group"
             >
               <div className="text-[11px] font-black uppercase tracking-wider text-indigo-600 mb-1">
-                DESTINATION 01 · EXPLORE
+                EXPLORE
               </div>
-              <div className="font-black text-slate-900 text-lg group-hover:text-indigo-600 transition-colors">
-                Indian Colleges &amp; Global Degrees
+              <div className="font-black text-slate-900 text-base group-hover:text-indigo-600 transition-colors">
+                Degrees &amp; Colleges
               </div>
               <p className="text-xs text-slate-500 mt-1">
-                Verified Indian universities and tuition-free degrees worldwide.
+                Indian universities and verified tuition-free degrees worldwide.
               </p>
             </Link>
 
@@ -236,9 +236,9 @@ const Colleges = () => {
               className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md transition-all group"
             >
               <div className="text-[11px] font-black uppercase tracking-wider text-purple-600 mb-1">
-                DESTINATION 02 · FUND
+                FUND
               </div>
-              <div className="font-black text-slate-900 text-lg group-hover:text-purple-600 transition-colors">
+              <div className="font-black text-slate-900 text-base group-hover:text-purple-600 transition-colors">
                 Scholarships &amp; Grants
               </div>
               <p className="text-xs text-slate-500 mt-1">
@@ -248,39 +248,60 @@ const Colleges = () => {
 
             <Link
               to="/colleges/pathway"
+              className="p-5 rounded-2xl bg-indigo-50 border border-indigo-200/80 shadow-sm hover:shadow-md transition-all group"
+            >
+              <div className="text-[11px] font-black uppercase tracking-wider text-indigo-700 mb-1">
+                PLAN
+              </div>
+              <div className="font-black text-slate-900 text-base group-hover:text-indigo-600 transition-colors">
+                Career Pathway
+              </div>
+              <p className="text-xs text-slate-600 mt-1">
+                Step-by-step future operating system from your baseline to career.
+              </p>
+            </Link>
+
+            <Link
+              to="/profile"
               className="p-5 rounded-2xl bg-slate-900 text-white border border-slate-800 shadow-sm hover:shadow-md transition-all group"
             >
               <div className="text-[11px] font-black uppercase tracking-wider text-emerald-400 mb-1">
-                DESTINATION 03 · PLAN
+                ACHIEVE
               </div>
-              <div className="font-black text-white text-lg group-hover:text-emerald-300 transition-colors">
-                AI Career Pathway
+              <div className="font-black text-white text-base group-hover:text-emerald-300 transition-colors">
+                Career Passport
               </div>
               <p className="text-xs text-slate-400 mt-1">
-                Step-by-step future operating system from your current level to dream career.
+                Verified skill credentials and portfolio for global employers.
               </p>
             </Link>
           </div>
         </div>
 
-        {/* Stats Strip */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-          {stats.map((stat, index) => (
-            <div key={index} className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm text-center">
-              <stat.icon className="h-6 w-6 text-indigo-600 mx-auto mb-1.5" />
-              <div className="text-xl sm:text-2xl font-black text-slate-900 font-mono">{stat.value}</div>
-              <div className="text-xs text-slate-500 font-medium">{stat.label}</div>
+        {/* Directory Section Demarcation */}
+        <div className="mb-6 pt-6 border-t border-slate-200/60">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <div>
+              <span className="text-[11px] font-black uppercase tracking-wider text-slate-400">
+                DISCOVERY DIRECTORY
+              </span>
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                Indian Universities &amp; Institutes
+              </h2>
             </div>
-          ))}
+            <span className="text-xs text-slate-500 font-medium">
+              1,200+ Institutions Indexed · Search, Filter &amp; Compare
+            </span>
+          </div>
         </div>
 
         {/* Search and Filters with glassmorphism */}
-        <Card className="mb-12 border-0 bg-white/90 backdrop-blur-apple shadow-apple-medium rounded-2xl">
-          <CardContent className="p-8">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Card className="mb-8 border border-slate-200/80 bg-white shadow-sm rounded-2xl">
+          <CardContent className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="md:col-span-2">
                 <div className="relative">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-text-tertiary h-5 w-5" />
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5" />
                   <Input
                     placeholder="Search colleges, universities, or programs..."
                     value={searchTerm}
