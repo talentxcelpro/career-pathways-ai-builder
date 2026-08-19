@@ -1,46 +1,47 @@
 import { lazy, Suspense } from 'react';
 
-const EnhancedCollegeCreation = lazy(() => import('../pages/colleges/EnhancedCollegeCreation'));
-const CollegeApply = lazy(() => import('../pages/colleges/CollegeApply'));
+// Main Education Command Center
+const Colleges = lazy(() => import('../pages/Colleges'));
+const CollegeDetail = lazy(() => import('../pages/colleges/CollegeDetail'));
 const CollegeCompare = lazy(() => import('../pages/colleges/CollegeCompare'));
 const CollegeChatAI = lazy(() => import('../pages/colleges/CollegeChatAI'));
+const CollegeApply = lazy(() => import('../pages/colleges/CollegeApply'));
 const CollegeAdminDashboard = lazy(() => import('../pages/colleges/CollegeAdminDashboard'));
 const CollegeCreationRequest = lazy(() => import('../pages/colleges/CollegeCreationRequest'));
-const CollegeDetail = lazy(() => import('../pages/colleges/CollegeDetail'));
-const EnhancedColleges = lazy(() => import('../pages/enhanced/Colleges'));
+const EnhancedCollegeCreation = lazy(() => import('../pages/colleges/EnhancedCollegeCreation'));
+
 // Global Education Intelligence Layer
 const CareerPathway = lazy(() => import('../pages/colleges/CareerPathway'));
 const GlobalPrograms = lazy(() => import('../pages/colleges/GlobalPrograms'));
 const Scholarships = lazy(() => import('../pages/colleges/Scholarships'));
 
-
 export const collegesRoutes = [
+  // ── Global Education Intelligence Layer & Sub-pages first to prevent :id param collisions ──
   {
-    title: "Colleges",
-    to: "/colleges",
-    page: <Suspense fallback={null}><EnhancedColleges /></Suspense>,
+    title: "Global Programs",
+    to: "/colleges/global-programs",
+    page: <Suspense fallback={null}><GlobalPrograms /></Suspense>,
     isPublic: true,
     requiresAuth: false,
   },
   {
-    title: "College Detail",
-    to: "/colleges/:id",
-    page: <Suspense fallback={null}><CollegeDetail /></Suspense>,
+    title: "Scholarships",
+    to: "/colleges/scholarships",
+    page: <Suspense fallback={null}><Scholarships /></Suspense>,
+    isPublic: true,
+    requiresAuth: false,
   },
   {
-    title: "College Chat AI",
-    to: "/colleges/:id/chat",
-    page: <Suspense fallback={null}><CollegeChatAI /></Suspense>,
+    title: "Career Pathway",
+    to: "/colleges/pathway",
+    page: <Suspense fallback={null}><CareerPathway /></Suspense>,
+    isPublic: true,
+    requiresAuth: false,
   },
   {
     title: "College Compare",
     to: "/colleges/compare",
     page: <Suspense fallback={null}><CollegeCompare /></Suspense>,
-  },
-  {
-    title: "College Apply",
-    to: "/colleges/:id/apply",
-    page: <Suspense fallback={null}><CollegeApply /></Suspense>,
   },
   {
     title: "Create College Request",
@@ -57,26 +58,30 @@ export const collegesRoutes = [
     to: "/colleges/admin-dashboard",
     page: <Suspense fallback={null}><CollegeAdminDashboard /></Suspense>,
   },
-  // ── Global Education Intelligence Layer ──
+
+  // ── Main Colleges Page ──
   {
-    title: "Career Pathway",
-    to: "/colleges/pathway",
-    page: <Suspense fallback={null}><CareerPathway /></Suspense>,
+    title: "Colleges",
+    to: "/colleges",
+    page: <Suspense fallback={null}><Colleges /></Suspense>,
     isPublic: true,
     requiresAuth: false,
   },
+
+  // ── Parametric Routes ──
   {
-    title: "Global Programs",
-    to: "/colleges/global-programs",
-    page: <Suspense fallback={null}><GlobalPrograms /></Suspense>,
-    isPublic: true,
-    requiresAuth: false,
+    title: "College Detail",
+    to: "/colleges/:id",
+    page: <Suspense fallback={null}><CollegeDetail /></Suspense>,
   },
   {
-    title: "Scholarships",
-    to: "/colleges/scholarships",
-    page: <Suspense fallback={null}><Scholarships /></Suspense>,
-    isPublic: true,
-    requiresAuth: false,
+    title: "College Chat AI",
+    to: "/colleges/:id/chat",
+    page: <Suspense fallback={null}><CollegeChatAI /></Suspense>,
+  },
+  {
+    title: "College Apply",
+    to: "/colleges/:id/apply",
+    page: <Suspense fallback={null}><CollegeApply /></Suspense>,
   },
 ];

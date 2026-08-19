@@ -4,6 +4,7 @@
 
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
 import {
   ShieldCheck,
   Globe,
@@ -12,6 +13,10 @@ import {
   CalendarClock,
   DollarSign,
   Award,
+  Sparkles,
+  ArrowRight,
+  Filter,
+  Check
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -81,7 +86,6 @@ const LEVEL_LABELS: Record<ProgramLevel, string> = {
   short_course: 'Short Course',
 };
 
-// ── Deadline warning helper ───────────────────────────────────────────────────
 function deadlineClass(dateStr: string): string {
   const deadline = new Date(dateStr);
   const now = new Date();
@@ -96,9 +100,6 @@ function formatDeadline(dateStr: string): string {
   return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Component
-// ─────────────────────────────────────────────────────────────────────────────
 export default function Scholarships() {
   const [search, setSearch] = useState('');
   const [coverage, setCoverage] = useState<'all' | ScholarshipCoverage>('all');
@@ -124,204 +125,308 @@ export default function Scholarships() {
   const zeroTuitionCount = allScholarships.filter((s) => s.can_make_tuition_zero).length;
 
   return (
-    <div className="min-h-screen bg-slate-50/50 p-4 sm:p-6 md:p-10 max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-900 mb-3 border border-purple-200">
-          <Award className="w-3.5 h-3.5 text-purple-700" />
-          GLOBAL FUNDING MARKETPLACE
-        </div>
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-          Don't let money decide what you can become.
-        </h1>
-        <p className="mt-2 text-slate-600 text-base sm:text-lg max-w-3xl">
-          Verified global scholarships and government funding opportunities. Sourced directly from official providers.
-        </p>
-      </div>
+    <div className="min-h-screen bg-slate-50/50">
+      {/* ───────────────────────────────────────────────────────────────────────── */}
+      {/* 1. DARK VISUAL COMMAND HERO                                               */}
+      {/* ───────────────────────────────────────────────────────────────────────── */}
+      <div className="bg-[#080B12] text-white border-b border-slate-800/80 px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-6 pb-4 border-b border-slate-800/60">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-purple-950 text-purple-400 border border-purple-500/30">
+              <Sparkles className="h-3.5 w-3.5 text-purple-400" />
+              GLOBAL FUNDING MARKETPLACE
+            </div>
+            <div className="flex items-center gap-2 text-xs font-mono text-emerald-400 bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-500/30">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              {totalCount} VERIFIED SCHOLARSHIPS · ZERO TUITION PATHWAYS
+            </div>
+          </div>
 
-      {/* Stats row */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm">
-          <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono">{totalCount}</div>
-          <div className="text-xs text-slate-500 mt-1">Verified Scholarships</div>
-        </div>
-        <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm">
-          <div className="text-2xl sm:text-3xl font-black text-emerald-600 font-mono">{fullCoverageCount}</div>
-          <div className="text-xs text-slate-500 mt-1">100% Full Coverage</div>
-        </div>
-        <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm">
-          <div className="text-2xl sm:text-3xl font-black text-purple-600 font-mono">{zeroTuitionCount}</div>
-          <div className="text-xs text-slate-500 mt-1">Can Make Tuition ₹0</div>
-        </div>
-        <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm">
-          <div className="text-2xl sm:text-3xl font-black text-sky-600 font-mono">100%</div>
-          <div className="text-xs text-slate-500 mt-1">Verified Primary Sources</div>
-        </div>
-      </div>
+          <div className="max-w-3xl mb-8">
+            <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight text-white mb-3">
+              Don't let money decide what you can become.
+            </h1>
+            <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
+              Verified global scholarships, government grants, and tuition-waiver pathways. Sourced directly from official providers with real criteria.
+            </p>
+          </div>
 
-      {/* Filter bar */}
-      <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 mb-8 space-y-3">
-        <div className="relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-          <Input
-            placeholder="Search scholarship name, provider, country, or study field..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 h-11 text-sm bg-slate-50 border-slate-200 rounded-xl"
-          />
-        </div>
-
-        <div className="flex flex-wrap gap-2.5 items-center pt-1">
-          <Select
-            value={coverage || 'all'}
-            onValueChange={(v) => setCoverage(v === 'all' ? '' : (v as ScholarshipCoverage))}
-          >
-            <SelectTrigger className="w-[170px] h-9 text-xs rounded-xl">
-              <SelectValue placeholder="Coverage Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Coverage Types</SelectItem>
-              <SelectItem value="FULL">Full Coverage (Tuition + Living)</SelectItem>
-              <SelectItem value="TUITION">Tuition Fee Only</SelectItem>
-              <SelectItem value="LIVING">Living Stipend Only</SelectItem>
-              <SelectItem value="PARTIAL">Partial Waiver</SelectItem>
-              <SelectItem value="TRAVEL">Travel Grant</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Button
-            variant={fullCoverageOnly ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setFullCoverageOnly((prev) => !prev)}
-            className={`h-9 px-3.5 rounded-xl text-xs font-semibold ${
-              fullCoverageOnly ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'border-slate-200'
-            }`}
-          >
-            100% Full Funding Only
-          </Button>
-
-          <div className="ml-auto text-xs text-slate-500 font-medium">
-            {isLoading ? 'Loading…' : `${scholarships.length} scholarships available`}
+          {/* Search Box */}
+          <div className="bg-[#101522] rounded-2xl p-4 sm:p-5 border border-slate-700/80 shadow-2xl max-w-4xl">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+              <Input
+                placeholder="Search scholarship name, country, study level, or field..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-12 h-13 text-sm sm:text-base border-slate-700 bg-slate-900/90 text-white placeholder:text-slate-500 rounded-xl focus:border-purple-500 font-medium"
+              />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Scholarship Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {scholarships.map((scholarship, idx) => {
-          const covCfg = COVERAGE_CONFIG[scholarship.coverage];
-          const isFull = scholarship.coverage === 'FULL';
+      {/* ───────────────────────────────────────────────────────────────────────── */}
+      {/* 2. TELEMETRY BAR                                                          */}
+      {/* ───────────────────────────────────────────────────────────────────────── */}
+      <div className="bg-[#0C101A] border-b border-slate-800 text-white px-4 sm:px-6 lg:px-8 py-4">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
+          <div className="flex items-center gap-6 overflow-x-auto py-1">
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="text-slate-400 uppercase">FUNDING GRAPH:</span>
+              <span className="font-black text-white text-sm">{totalCount}</span>
+              <span className="text-slate-400">SCHOLARSHIPS</span>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="text-slate-400">●</span>
+              <span className="font-black text-purple-400 text-sm">{fullCoverageCount}</span>
+              <span className="text-slate-400">FULL COVERAGE</span>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="text-slate-400">●</span>
+              <span className="font-black text-emerald-400 text-sm">{zeroTuitionCount}</span>
+              <span className="text-slate-400">CAN MAKE TUITION ₹0</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-4 text-[11px] text-slate-400 shrink-0">
+            <span className="text-emerald-400 font-semibold">ALL DEADLINES VERIFIED</span>
+          </div>
+        </div>
+      </div>
 
-          return (
-            <div
-              key={scholarship.id ?? `${scholarship.title}-${idx}`}
-              className="bg-white rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-md transition-all flex flex-col p-5 sm:p-6"
-            >
-              {/* Header: Provider + Verified Badge */}
-              <div className="flex items-start justify-between gap-2 mb-2">
-                <div>
-                  <div className="text-[11px] font-black uppercase tracking-wider text-slate-400">
-                    {scholarship.provider_country}
-                  </div>
-                  <div className="text-xs font-semibold text-slate-700 mt-0.5 line-clamp-1">
-                    {scholarship.provider}
-                  </div>
-                </div>
-                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/80 shrink-0">
-                  <ShieldCheck className="w-3 h-3 text-emerald-600" />
-                  VERIFIED
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* ───────────────────────────────────────────────────────────────────────── */}
+        {/* 3. 4-DESTINATION NAVIGATION                                               */}
+        {/* ───────────────────────────────────────────────────────────────────────── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+          <Link
+            to="/colleges"
+            className="p-3.5 rounded-xl bg-white border border-slate-200/90 shadow-2xs hover:shadow-xs transition-all flex items-center gap-3"
+          >
+            <div className="w-9 h-9 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-sm shrink-0">
+              🇮🇳
+            </div>
+            <div className="min-w-0">
+              <div className="text-[11px] font-black uppercase tracking-wider text-indigo-600">EXPLORE</div>
+              <div className="text-xs font-bold text-slate-900 truncate">Indian Institutions (1,495+)</div>
+            </div>
+          </Link>
+
+          <Link
+            to="/colleges/global-programs"
+            className="p-3.5 rounded-xl bg-white border border-slate-200/90 shadow-2xs hover:shadow-xs transition-all flex items-center gap-3"
+          >
+            <div className="w-9 h-9 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center font-bold text-sm shrink-0">
+              🌍
+            </div>
+            <div className="min-w-0">
+              <div className="text-[11px] font-black uppercase tracking-wider text-blue-600">EXPLORE</div>
+              <div className="text-xs font-bold text-slate-900 truncate">Global Degrees &amp; €0 Programs</div>
+            </div>
+          </Link>
+
+          <Link
+            to="/colleges/scholarships"
+            className="p-3.5 rounded-xl bg-purple-50/50 border border-purple-300 shadow-2xs hover:shadow-xs transition-all flex items-center gap-3"
+          >
+            <div className="w-9 h-9 rounded-lg bg-purple-600 text-white flex items-center justify-center font-bold text-sm shrink-0">
+              🎓
+            </div>
+            <div className="min-w-0">
+              <div className="text-[11px] font-black uppercase tracking-wider text-purple-700">FUND</div>
+              <div className="text-xs font-bold text-purple-950 truncate">Scholarships &amp; Grants</div>
+            </div>
+          </Link>
+
+          <Link
+            to="/colleges/pathway"
+            className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 shadow-2xs hover:shadow-xs transition-all flex items-center gap-3 text-white"
+          >
+            <div className="w-9 h-9 rounded-lg bg-emerald-950 text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-bold text-sm shrink-0">
+              ✨
+            </div>
+            <div className="min-w-0">
+              <div className="text-[11px] font-black uppercase tracking-wider text-emerald-400">PLAN</div>
+              <div className="text-xs font-bold text-white truncate">AI Career Pathway</div>
+            </div>
+          </Link>
+        </div>
+
+        {/* ───────────────────────────────────────────────────────────────────────── */}
+        {/* 4. NET COST ENGINE (What Will I Actually Pay?)                            */}
+        {/* ───────────────────────────────────────────────────────────────────────── */}
+        <div className="mb-8 rounded-2xl bg-white border border-slate-200/90 p-5 shadow-2xs">
+          <div className="flex items-center gap-2 mb-3 pb-2 border-b border-slate-100">
+            <DollarSign className="w-4 h-4 text-purple-600" />
+            <span className="text-xs font-black uppercase tracking-wider text-slate-800">
+              WHAT WILL I ACTUALLY PAY? · REAL OUT-OF-POCKET CALCULATION
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
+              <span className="text-slate-400 block text-[11px] font-bold">1. Tuition Cost</span>
+              <span className="text-slate-900 font-bold font-mono">€0 / Free to apply</span>
+            </div>
+            <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
+              <span className="text-slate-400 block text-[11px] font-bold">2. Living &amp; Housing</span>
+              <span className="text-slate-900 font-bold font-mono">Covered by DAAD/Erasmus</span>
+            </div>
+            <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
+              <span className="text-slate-400 block text-[11px] font-bold">3. Travel &amp; Visa</span>
+              <span className="text-slate-900 font-bold font-mono">Grant subsidized</span>
+            </div>
+            <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200">
+              <span className="text-emerald-700 block text-[11px] font-bold">NET STUDENT COST</span>
+              <span className="text-emerald-900 font-black text-sm font-mono">€0 / ₹0 OUT OF POCKET</span>
+            </div>
+          </div>
+        </div>
+
+        {/* ───────────────────────────────────────────────────────────────────────── */}
+        {/* 5. FILTER BAR                                                             */}
+        {/* ───────────────────────────────────────────────────────────────────────── */}
+        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-xs mb-8 space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div>
+              <label className="text-[11px] font-black uppercase tracking-wider text-slate-400 block mb-1">
+                Coverage Type
+              </label>
+              <Select value={coverage} onValueChange={(v) => setCoverage(v as 'all' | ScholarshipCoverage)}>
+                <SelectTrigger className="h-10 rounded-xl bg-slate-50 text-xs border-slate-200 font-medium">
+                  <SelectValue placeholder="All Coverage Types" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="all">All Coverage Types</SelectItem>
+                  <SelectItem value="FULL">Full Coverage (Tuition + Living + Travel)</SelectItem>
+                  <SelectItem value="TUITION">Tuition Only</SelectItem>
+                  <SelectItem value="LIVING">Living Stipend</SelectItem>
+                  <SelectItem value="PARTIAL">Partial Scholarship</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex flex-col justify-end">
+              <button
+                onClick={() => setFullCoverageOnly(!fullCoverageOnly)}
+                className={`h-10 px-3 rounded-xl border flex items-center justify-between text-xs font-bold transition-all cursor-pointer ${
+                  fullCoverageOnly
+                    ? 'bg-purple-50 text-purple-800 border-purple-300'
+                    : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                }`}
+              >
+                <span>Full Coverage Only</span>
+                <span
+                  className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${
+                    fullCoverageOnly ? 'bg-purple-600 text-white' : 'bg-slate-200 text-slate-400'
+                  }`}
+                >
+                  {fullCoverageOnly ? '✓' : ''}
                 </span>
-              </div>
+              </button>
+            </div>
+          </div>
+        </div>
 
-              {/* Scholarship Title */}
-              <h3 className="text-lg font-black text-slate-900 leading-snug mb-3">
-                {scholarship.title}
-              </h3>
+        {/* ───────────────────────────────────────────────────────────────────────── */}
+        {/* 6. DENSE 3-COLUMN SCHOLARSHIP CARDS                                       */}
+        {/* ───────────────────────────────────────────────────────────────────────── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {scholarships.map((sch) => {
+            const coverageConf = COVERAGE_CONFIG[sch.coverage];
 
-              {/* WHAT DOES IT ACTUALLY PAY? (Hero Coverage Box) */}
-              <div className="bg-slate-50 rounded-xl p-4 mb-4 border border-slate-100 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-black uppercase tracking-wider text-slate-400">
-                    Coverage Breakdown
-                  </span>
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold border ${covCfg.className}`}>
-                    {covCfg.label.toUpperCase()}
-                  </span>
-                </div>
-
-                <div className="space-y-1.5 pt-1 text-xs">
-                  <div className="flex justify-between text-slate-700">
-                    <span className="text-slate-500 font-medium">Tuition:</span>
-                    <span className="font-bold text-emerald-700">
-                      {isFull ? '100% Fully Covered' : 'Tuition Waiver'}
+            return (
+              <div
+                key={sch.id}
+                className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md transition-all flex flex-col p-5 sm:p-6"
+              >
+                {/* Header */}
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <div>
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
+                      {flagFor(sch.provider_country)} {sch.provider_country.toUpperCase()}
+                    </span>
+                    <span className="text-xs font-bold text-slate-700 line-clamp-1">
+                      {sch.provider}
                     </span>
                   </div>
-                  <div className="flex justify-between text-slate-700">
-                    <span className="text-slate-500 font-medium">Living Stipend:</span>
-                    <span className="font-semibold text-slate-900">
-                      {scholarship.amount_usd ? `Up to $${(scholarship.amount_usd / 1000).toFixed(0)}k / year` : (isFull ? '€934–€1,400 / month' : 'Self-funded')}
+
+                  {sch.can_make_tuition_zero && (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 shrink-0">
+                      <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                      MAKES TUITION ₹0
                     </span>
-                  </div>
-                  {isFull && (
-                    <div className="flex justify-between text-slate-700">
-                      <span className="text-slate-500 font-medium">Travel & Insurance:</span>
-                      <span className="font-semibold text-slate-900">Included</span>
-                    </div>
                   )}
                 </div>
 
-                {/* Potential Student Cost */}
-                <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-600">Potential Student Cost:</span>
-                  <span className="text-lg font-black font-mono text-emerald-700">€0 / ₹0</span>
-                </div>
-              </div>
+                {/* Scholarship Name */}
+                <h3 className="text-base sm:text-lg font-black text-slate-900 leading-snug mb-3 line-clamp-2">
+                  {sch.name}
+                </h3>
 
-              {/* Eligible Levels */}
-              {scholarship.eligible_levels.length > 0 && (
+                {/* Amount / Coverage Hero Block */}
+                <div className="bg-slate-50 rounded-xl p-3.5 border border-slate-100 mb-4">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <span className="text-xl sm:text-2xl font-black text-slate-900 font-mono tracking-tight">
+                      {sch.amount ? sch.amount : 'Full Funding'}
+                    </span>
+                    <span
+                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${coverageConf?.className}`}
+                    >
+                      {coverageConf?.label}
+                    </span>
+                  </div>
+
+                  <div className="text-[11px] text-slate-600 mt-1 italic line-clamp-2">
+                    {sch.coverage_detail}
+                  </div>
+                </div>
+
+                {/* Eligible Levels */}
                 <div className="flex flex-wrap gap-1.5 mb-4">
-                  {scholarship.eligible_levels.map((l) => (
-                    <Badge key={l} variant="secondary" className="text-[11px] font-semibold rounded-md bg-slate-100 text-slate-700">
-                      {LEVEL_LABELS[l].toUpperCase()}
-                    </Badge>
+                  {sch.eligible_levels.map((lvl) => (
+                    <span
+                      key={lvl}
+                      className="bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md text-[11px] font-semibold"
+                    >
+                      {LEVEL_LABELS[lvl] || lvl}
+                    </span>
                   ))}
                 </div>
-              )}
 
-              {/* Deadline Indicator */}
-              {scholarship.deadline && (
-                <div className={`flex items-center gap-1.5 text-xs mb-5 ${deadlineClass(scholarship.deadline)}`}>
-                  <CalendarClock className="h-4 w-4 shrink-0" />
-                  Application Deadline: {formatDeadline(scholarship.deadline)}
+                {/* Deadline & Status */}
+                <div className="flex items-center justify-between text-xs pt-2 border-t border-slate-100 mb-4 text-slate-600">
+                  <span className="flex items-center gap-1">
+                    <CalendarClock className="w-3.5 h-3.5 text-slate-400" />
+                    Deadline:
+                  </span>
+                  <span className={`font-bold font-mono ${deadlineClass(sch.application_deadline)}`}>
+                    {formatDeadline(sch.application_deadline)}
+                  </span>
                 </div>
-              )}
 
-              {/* CTA */}
-              <div className="mt-auto pt-3 border-t border-slate-100">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full text-xs font-bold rounded-xl border-purple-200 text-purple-900 hover:bg-purple-50 h-9"
-                  asChild
-                >
-                  <a href={scholarship.official_url} target="_blank" rel="noopener noreferrer">
-                    Check Eligibility & Apply <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
-                  </a>
-                </Button>
+                {/* Action CTA */}
+                <div className="mt-auto pt-3 border-t border-slate-100">
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="w-full text-xs font-bold rounded-xl bg-slate-900 hover:bg-slate-800 text-white h-9"
+                    asChild
+                  >
+                    <a
+                      href={sch.official_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Apply on Official Portal <ExternalLink className="ml-1 h-3 w-3" />
+                    </a>
+                  </Button>
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Empty state */}
-      {!isLoading && scholarships.length === 0 && (
-        <div className="text-center py-16 bg-white rounded-2xl border border-slate-200 mt-6">
-          <Globe className="h-12 w-12 mx-auto mb-3 text-slate-300" />
-          <p className="font-bold text-slate-800 text-lg">No scholarships match your filters.</p>
-          <p className="text-sm text-slate-500 mt-1">Try selecting a different coverage type or adjusting the search keywords.</p>
+            );
+          })}
         </div>
-      )}
+      </div>
     </div>
   );
 }
