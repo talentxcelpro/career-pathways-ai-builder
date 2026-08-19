@@ -8,6 +8,10 @@ const CollegeAdminDashboard = lazy(() => import('../pages/colleges/CollegeAdminD
 const CollegeCreationRequest = lazy(() => import('../pages/colleges/CollegeCreationRequest'));
 const CollegeDetail = lazy(() => import('../pages/colleges/CollegeDetail'));
 const EnhancedColleges = lazy(() => import('../pages/enhanced/Colleges'));
+// Global Education Intelligence Layer
+const CareerPathway = lazy(() => import('../pages/colleges/CareerPathway'));
+const GlobalPrograms = lazy(() => import('../pages/colleges/GlobalPrograms'));
+const Scholarships = lazy(() => import('../pages/colleges/Scholarships'));
 
 
 export const collegesRoutes = [
@@ -52,5 +56,27 @@ export const collegesRoutes = [
     title: "College Admin Dashboard",
     to: "/colleges/admin-dashboard",
     page: <Suspense fallback={null}><CollegeAdminDashboard /></Suspense>,
+  },
+  // ── Global Education Intelligence Layer ──
+  {
+    title: "Career Pathway",
+    to: "/colleges/pathway",
+    page: <Suspense fallback={null}><CareerPathway /></Suspense>,
+    isPublic: true,
+    requiresAuth: false,
+  },
+  {
+    title: "Global Programs",
+    to: "/colleges/global-programs",
+    page: <Suspense fallback={null}><GlobalPrograms /></Suspense>,
+    isPublic: true,
+    requiresAuth: false,
+  },
+  {
+    title: "Scholarships",
+    to: "/colleges/scholarships",
+    page: <Suspense fallback={null}><Scholarships /></Suspense>,
+    isPublic: true,
+    requiresAuth: false,
   },
 ];

@@ -174,7 +174,38 @@ const EnhancedColleges = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        
+
+      {/* Global Education Intelligence Layer — Top Navigation */}
+        <div className="mb-6">
+          <div className="flex flex-wrap gap-2 border-b border-border pb-4">
+            <button
+              className="flex items-center gap-2 px-4 py-2 rounded-t-lg bg-primary text-primary-foreground text-sm font-semibold"
+            >
+              <Building className="h-4 w-4" />
+              Indian Colleges
+            </button>
+            <button
+              onClick={() => navigate('/colleges/global-programs')}
+              className="flex items-center gap-2 px-4 py-2 rounded-t-lg hover:bg-muted text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              🌍 Global Programs
+            </button>
+            <button
+              onClick={() => navigate('/colleges/scholarships')}
+              className="flex items-center gap-2 px-4 py-2 rounded-t-lg hover:bg-muted text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              🎓 Scholarships
+            </button>
+            <button
+              onClick={() => navigate('/colleges/pathway')}
+              className="flex items-center gap-2 px-4 py-2 rounded-t-lg hover:bg-muted text-sm font-semibold text-primary hover:bg-primary/10 transition-colors border border-primary/30"
+            >
+              ✨ Career Pathway
+              <span className="ml-1 text-xs bg-primary text-primary-foreground rounded-full px-2 py-0.5">NEW</span>
+            </button>
+          </div>
+        </div>
+
       {/* Header */}
         <div className="mb-8">
           <div className="text-center mb-6">
