@@ -168,7 +168,7 @@ export const INITIAL_AGGREGATED_COURSES: AggregatedCourse[] = [
     course_format: 'Interactive Sandbox',
     thumbnail_url: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80',
     skills: ['Power BI', 'SQL', 'Data Modeling', 'DAX', 'Data Visualization', 'Excel'],
-    career_relevance: ['Data Analyst', 'Business Intelligence Analyst', 'Data Engineer'],
+    career_relevance: ['Data Analyst', 'Business Intelligence Analyst', 'Data Engineer', 'VP of Operations'],
     recommendation_reason: 'Power BI is the #1 requested enterprise BI tool across 340+ active TalentXcel job listings.',
     talentxcel_match: 96,
     last_verified_at: new Date().toISOString(),
@@ -468,6 +468,42 @@ export const INITIAL_AGGREGATED_COURSES: AggregatedCourse[] = [
 
 export const INITIAL_CAREER_PATHWAYS: CareerPathway[] = [
   {
+    id: 'path-operations-executive',
+    slug: 'operations-executive',
+    title: 'Become a Vice President of Operations / Executive Lead',
+    target_role: 'Vice President of Operations',
+    description: 'Master strategic operations leadership, business intelligence analytics, supply chain optimization, workforce management, and enterprise financial strategy.',
+    average_salary: '$140,000 - $220,000 / year (₹25 - ₹50 LPA)',
+    estimated_weeks: 12,
+    total_free_courses: 5,
+    steps: [
+      {
+        step_number: 1,
+        skill_name: 'Strategic Operations & Business Intelligence',
+        target_level: 'Advanced',
+        recommended_course_id: 'course-ms-powerbi-data-analyst',
+        duration_text: '6 Hours',
+        reason: 'Operations executives use data dashboards to drive P&L, KPI tracking, and resource allocation.'
+      },
+      {
+        step_number: 2,
+        skill_name: 'Data Analytics & Process Management',
+        target_level: 'Intermediate',
+        recommended_course_id: 'course-google-data-analytics-intro',
+        duration_text: '12 Hours',
+        reason: 'Master data-driven process optimization and cross-functional team efficiency.'
+      },
+      {
+        step_number: 3,
+        skill_name: 'Artificial Intelligence for Executive Operations',
+        target_level: 'Intermediate',
+        recommended_course_id: 'course-ibm-ai-foundations',
+        duration_text: '7 Hours',
+        reason: 'Learn how modern enterprise leaders leverage Generative AI and automated workflows.'
+      }
+    ]
+  },
+  {
     id: 'path-data-analyst',
     slug: 'data-analyst',
     title: 'Become a Data Analyst',
@@ -544,6 +580,54 @@ export const INITIAL_CAREER_PATHWAYS: CareerPathway[] = [
         recommended_course_id: 'course-aws-cloud-practitioner-essentials',
         duration_text: '6 Hours',
         reason: 'Learn how to deploy machine learning models onto cloud compute clusters.'
+      }
+    ]
+  },
+  {
+    id: 'path-software-developer',
+    slug: 'software-developer',
+    title: 'Become a Software Developer',
+    target_role: 'Software Developer',
+    description: 'Master full-stack software development, web frameworks, database design, and software architecture.',
+    average_salary: '$90,000 - $140,000 / year (₹10 - ₹24 LPA)',
+    estimated_weeks: 10,
+    total_free_courses: 4,
+    steps: [
+      {
+        step_number: 1,
+        skill_name: 'Computer Science Fundamentals',
+        target_level: 'Beginner',
+        recommended_course_id: 'course-harvard-cs50x',
+        duration_text: '40 Hours',
+        reason: 'Master computational thinking, algorithms, and core programming paradigms.'
+      },
+      {
+        step_number: 2,
+        skill_name: 'Relational Databases & SQL',
+        target_level: 'Intermediate',
+        recommended_course_id: 'course-fcc-relational-database-sql',
+        duration_text: '30 Hours',
+        reason: 'Build rock-solid backend data storage skills using PostgreSQL.'
+      }
+    ]
+  },
+  {
+    id: 'path-cybersecurity',
+    slug: 'cybersecurity',
+    title: 'Become a Cybersecurity Analyst',
+    target_role: 'Cybersecurity Analyst',
+    description: 'Protect network infrastructure, analyze malware threats, and implement enterprise security controls.',
+    average_salary: '$85,000 - $130,000 / year (₹9 - ₹20 LPA)',
+    estimated_weeks: 8,
+    total_free_courses: 4,
+    steps: [
+      {
+        step_number: 1,
+        skill_name: 'Network Defense & Threat Prevention',
+        target_level: 'Beginner',
+        recommended_course_id: 'course-cisco-intro-cybersecurity',
+        duration_text: '6 Hours',
+        reason: 'Master firewalls, cryptography, and network intrusion prevention.'
       }
     ]
   }

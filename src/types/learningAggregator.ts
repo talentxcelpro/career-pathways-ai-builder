@@ -120,6 +120,7 @@ export interface PersonalizedLearningPlan {
   skills_to_build: string[];
   weekly_schedule: { week_range: string; focus_skill: string; courses_count: number }[];
   recommended_courses: AggregatedCourse[];
+  matched_pathway_slug?: string;
 }
 
 export interface CareerPathway {

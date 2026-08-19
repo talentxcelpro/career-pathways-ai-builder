@@ -145,7 +145,7 @@ export default function LearningHub() {
     setTimeout(() => {
       setGeneratedPlan(plan);
       setIsGeneratingPlan(false);
-    }, 600);
+    }, 500);
   };
 
   const handleCourseHandoff = async (course: AggregatedCourse, sourcePage: string) => {
@@ -334,7 +334,7 @@ export default function LearningHub() {
               </div>
               
               <Button 
-                onClick={() => triggerAiPlanner("I want to become a Data Analyst")}
+                onClick={() => triggerAiPlanner("I want to become a Vice President of Operations")}
                 variant="outline" 
                 size="sm" 
                 className="rounded-full text-xs font-bold border-purple-300 text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/40 gap-1 cursor-pointer"
@@ -344,7 +344,7 @@ export default function LearningHub() {
             </div>
 
             <textarea
-              placeholder="What do you want to learn or become? (e.g., 'I want to become a Data Analyst')..."
+              placeholder="What do you want to learn or become? (e.g., 'I want to become a Vice President of Operations')..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               rows={3}
@@ -353,14 +353,14 @@ export default function LearningHub() {
 
             <div className="flex items-center justify-between pt-1">
               <div className="flex items-center gap-3 text-xs font-semibold text-slate-500">
-                <button onClick={() => { setSearchQuery('Python'); triggerAiPlanner('Python for Data'); }} className="hover:text-blue-600 flex items-center gap-1 cursor-pointer">
-                  <Code className="h-4 w-4 text-blue-600" /> Python
+                <button onClick={() => { setSearchQuery('VP Operations'); triggerAiPlanner('Vice President of Operations'); }} className="hover:text-blue-600 flex items-center gap-1 cursor-pointer">
+                  <TrendingUp className="h-4 w-4 text-blue-600" /> Operations
                 </button>
-                <button onClick={() => { setSearchQuery('SQL'); triggerAiPlanner('SQL Querying'); }} className="hover:text-blue-600 flex items-center gap-1 cursor-pointer">
-                  <BarChart3 className="h-4 w-4 text-emerald-600" /> SQL
+                <button onClick={() => { setSearchQuery('Data Analyst'); triggerAiPlanner('Data Analyst'); }} className="hover:text-blue-600 flex items-center gap-1 cursor-pointer">
+                  <BarChart3 className="h-4 w-4 text-emerald-600" /> Data Analyst
                 </button>
-                <button onClick={() => { setSearchQuery('Power BI'); triggerAiPlanner('Power BI Analytics'); }} className="hover:text-blue-600 flex items-center gap-1 cursor-pointer">
-                  <FileSpreadsheet className="h-4 w-4 text-amber-600" /> Power BI
+                <button onClick={() => { setSearchQuery('AI Engineer'); triggerAiPlanner('AI Engineer'); }} className="hover:text-blue-600 flex items-center gap-1 cursor-pointer">
+                  <Cpu className="h-4 w-4 text-amber-600" /> AI Engineer
                 </button>
               </div>
 
@@ -394,9 +394,10 @@ export default function LearningHub() {
 
                 <div className="space-y-1.5">
                   {[
+                    { name: 'VP of Operations', slug: 'operations-executive' },
                     { name: 'Data Analyst', slug: 'data-analyst' },
                     { name: 'AI Engineer', slug: 'ai-engineer' },
-                    { name: 'Cybersecurity Analyst', slug: 'cybersecurity' }
+                    { name: 'Software Developer', slug: 'software-developer' }
                   ].map((role, i) => (
                     <button
                       key={i}
@@ -419,6 +420,7 @@ export default function LearningHub() {
 
                 <div className="space-y-1.5">
                   {[
+                    { name: 'Operations & BI', count: '140 courses' },
                     { name: 'Python for Data', count: '380 courses' },
                     { name: 'SQL & PostgreSQL', count: '215 courses' },
                     { name: 'Generative AI', count: '165 courses' }
@@ -600,6 +602,7 @@ export default function LearningHub() {
 
             <div className="space-y-3">
               {[
+                { title: 'VP Operations', company: 'TechCorp International', salary: '₹25 - ₹40 LPA' },
                 { title: 'Junior Data Analyst', company: 'Savantis Solutions', salary: '₹8 - ₹12 LPA' },
                 { title: 'BI Specialist', company: 'Nexgenn Services', salary: '₹10 - ₹16 LPA' }
               ].map((job, i) => (
@@ -721,7 +724,7 @@ export default function LearningHub() {
                 <textarea
                   value={aiPromptInput}
                   onChange={(e) => setAiPromptInput(e.target.value)}
-                  placeholder="Write your custom learning intent (e.g. 'I want to become a Senior Cloud Architect in 6 months')..."
+                  placeholder="Write your custom learning intent (e.g. 'I want to become a Vice President of Operations')..."
                   rows={2}
                   className="w-full p-2.5 rounded-xl bg-white dark:bg-card border border-purple-200 dark:border-purple-800 text-xs font-medium text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-600 resize-none"
                 />
@@ -729,7 +732,7 @@ export default function LearningHub() {
                 <div className="flex justify-end">
                   <Button
                     size="sm"
-                    onClick={() => triggerAiPlanner(aiPromptInput || "I want to become a Data Analyst")}
+                    onClick={() => triggerAiPlanner(aiPromptInput || "I want to become a Vice President of Operations")}
                     className="rounded-xl text-[11px] font-extrabold bg-purple-600 hover:bg-purple-500 text-white gap-1 h-8 shadow-xs cursor-pointer"
                   >
                     <RefreshCw className="h-3 w-3" /> Regenerate Custom Plan
@@ -770,15 +773,15 @@ export default function LearningHub() {
                   <Button 
                     onClick={() => {
                       setIsAiModalOpen(false);
-                      if (aiPromptInput.toLowerCase().includes('ai')) {
-                        navigate('/learning/careers/ai-engineer');
+                      if (generatedPlan?.matched_pathway_slug) {
+                        navigate(`/learning/careers/${generatedPlan.matched_pathway_slug}`);
                       } else {
-                        navigate('/learning/careers/data-analyst');
+                        navigate(`/learning/courses?q=${encodeURIComponent(aiPromptInput.trim())}`);
                       }
                     }}
                     className="w-full h-11 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs shadow-md cursor-pointer"
                   >
-                    View Selected 23 Free Courses for This Pathway
+                    View Selected Free Courses for This Pathway
                   </Button>
                 </>
               )}

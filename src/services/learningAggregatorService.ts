@@ -20,6 +20,10 @@ export const learningAggregatorService = {
   getMonetizedUrl(originalUrl: string): string {
     try {
       const url = new URL(originalUrl);
+      // Clean query parameter assignment to avoid breaking Microsoft Learn routing
+      if (url.hostname.includes('microsoft.com')) {
+        return originalUrl;
+      }
       url.searchParams.set('ref', 'talentxcel');
       url.searchParams.set('utm_source', 'talentxcel_learning');
       url.searchParams.set('utm_medium', 'aggregator_handoff');
@@ -190,45 +194,103 @@ export const learningAggregatorService = {
   },
 
   /**
-   * AI Natural Language Intent Planner ("I have 5 years HR experience and want to move into HR analytics")
+   * AI Natural Language Intent Planner ("I want to become a Vice President of Operations")
    */
   async generatePersonalizedPlan(userPrompt: string): Promise<PersonalizedLearningPlan> {
     const prompt = userPrompt.toLowerCase().trim();
     const allCourses = await this.getCourses();
 
-    if (prompt.includes('hr') || prompt.includes('recruitment') || prompt.includes('people analytics')) {
+    // 1. VP / Operations / Executive leadership intent
+    if (prompt.includes('president') || prompt.includes('operation') || prompt.includes('executive') || prompt.includes('vp') || prompt.includes('chief') || prompt.includes('head')) {
       return {
         user_intent: userPrompt,
-        current_experience: '5 Years Human Resources & Talent Acquisition',
-        weekly_hours: 6,
+        current_experience: 'Senior Professional / Leadership Track',
+        weekly_hours: 8,
         total_weeks: 12,
-        current_strengths: ['HR Operations', 'Recruitment', 'Communication', 'Employee Relations'],
-        skills_to_build: ['Excel Analytics', 'Statistics', 'SQL', 'Power BI', 'HR Analytics', 'Data Visualization'],
+        current_strengths: ['Operations Strategy', 'Team Leadership', 'Resource Allocation', 'Project Execution'],
+        skills_to_build: ['Strategic Business Intelligence', 'Power BI Executive Dashboards', 'AI for Leaders', 'Process Optimization', 'P&L Data Analytics'],
         weekly_schedule: [
-          { week_range: 'Week 1–2', focus_skill: 'Excel Data Formatting & Pivot Tables', courses_count: 3 },
-          { week_range: 'Week 3–4', focus_skill: 'Applied Business Statistics', courses_count: 4 },
-          { week_range: 'Week 5–7', focus_skill: 'SQL Querying & PostgreSQL Databases', courses_count: 6 },
-          { week_range: 'Week 8–9', focus_skill: 'Power BI HR Dashboards & DAX', courses_count: 5 },
-          { week_range: 'Week 10–12', focus_skill: 'HR Attrition & Workforce Analytics Project', courses_count: 5 }
+          { week_range: 'Week 1–3', focus_skill: 'Enterprise Business Intelligence & Power BI', courses_count: 4 },
+          { week_range: 'Week 4–7', focus_skill: 'Data-Driven Process Optimization & Analytics', courses_count: 5 },
+          { week_range: 'Week 8–12', focus_skill: 'Executive Artificial Intelligence & Automation Strategy', courses_count: 6 }
         ],
-        recommended_courses: allCourses.slice(0, 8)
+        recommended_courses: allCourses.slice(0, 6),
+        matched_pathway_slug: 'operations-executive'
       };
     }
 
+    // 2. AI / ML intent
+    if (prompt.includes('ai') || prompt.includes('machine learning') || prompt.includes('ml') || prompt.includes('llm') || prompt.includes('prompt')) {
+      return {
+        user_intent: userPrompt,
+        current_experience: 'Technology / Engineering Background',
+        weekly_hours: 7,
+        total_weeks: 10,
+        current_strengths: ['Problem Solving', 'Python Basics', 'Analytical Mindset'],
+        skills_to_build: ['Generative AI', 'Large Language Models (LLMs)', 'Prompt Engineering', 'PyTorch', 'AWS Cloud Infrastructure'],
+        weekly_schedule: [
+          { week_range: 'Week 1–2', focus_skill: 'Python & CS Foundations', courses_count: 3 },
+          { week_range: 'Week 3–6', focus_skill: 'Generative AI & Machine Learning', courses_count: 5 },
+          { week_range: 'Week 7–10', focus_skill: 'Cloud AI Model Deployment', courses_count: 4 }
+        ],
+        recommended_courses: allCourses.filter(c => c.category.includes('AI') || c.skills.includes('Python')),
+        matched_pathway_slug: 'ai-engineer'
+      };
+    }
+
+    // 3. Software Developer intent
+    if (prompt.includes('software') || prompt.includes('developer') || prompt.includes('programmer') || prompt.includes('coder') || prompt.includes('web')) {
+      return {
+        user_intent: userPrompt,
+        current_experience: 'Tech & Development Interest',
+        weekly_hours: 10,
+        total_weeks: 10,
+        current_strengths: ['Logic', 'Problem Solving', 'Git Fundamentals'],
+        skills_to_build: ['Computer Science', 'Python', 'PostgreSQL', 'Algorithms', 'System Design'],
+        weekly_schedule: [
+          { week_range: 'Week 1–4', focus_skill: 'Computer Science & Python Foundations', courses_count: 4 },
+          { week_range: 'Week 5–8', focus_skill: 'Relational Databases & PostgreSQL', courses_count: 4 },
+          { week_range: 'Week 9–10', focus_skill: 'Full-Stack Architecture & Cloud', courses_count: 3 }
+        ],
+        recommended_courses: allCourses.filter(c => c.category.includes('Programming')),
+        matched_pathway_slug: 'software-developer'
+      };
+    }
+
+    // 4. Cybersecurity intent
+    if (prompt.includes('security') || prompt.includes('cyber') || prompt.includes('soc') || prompt.includes('hacking')) {
+      return {
+        user_intent: userPrompt,
+        current_experience: 'IT Operations & Networking Interest',
+        weekly_hours: 6,
+        total_weeks: 8,
+        current_strengths: ['Network Troubleshooting', 'Systems Administration'],
+        skills_to_build: ['Network Defense', 'Firewalls', 'Threat Mitigation', 'Security Protocols'],
+        weekly_schedule: [
+          { week_range: 'Week 1–3', focus_skill: 'Cisco Network Security Fundamentals', courses_count: 3 },
+          { week_range: 'Week 4–8', focus_skill: 'Threat Prevention & Enterprise Defense', courses_count: 4 }
+        ],
+        recommended_courses: allCourses.filter(c => c.category.includes('Cybersecurity')),
+        matched_pathway_slug: 'cybersecurity'
+      };
+    }
+
+    // 5. Default Data Analyst intent
     return {
       user_intent: userPrompt,
-      current_experience: 'General Professional Background',
-      weekly_hours: 5,
+      current_experience: 'Analytical / Business Background',
+      weekly_hours: 6,
       total_weeks: 8,
       current_strengths: ['Problem Solving', 'Communication', 'Project Management'],
-      skills_to_build: ['Excel', 'SQL', 'Python', 'Power BI', 'Data Modeling'],
+      skills_to_build: ['Excel Analytics', 'SQL', 'Python', 'Power BI', 'Data Modeling'],
       weekly_schedule: [
-        { week_range: 'Week 1–2', focus_skill: 'Excel Fundamentals', courses_count: 3 },
-        { week_range: 'Week 3–4', focus_skill: 'SQL Querying', courses_count: 5 },
-        { week_range: 'Week 5–6', focus_skill: 'Python Basics', courses_count: 4 },
+        { week_range: 'Week 1–2', focus_skill: 'Excel Fundamentals & Pivot Tables', courses_count: 3 },
+        { week_range: 'Week 3–4', focus_skill: 'SQL Queries & Relational Databases', courses_count: 5 },
+        { week_range: 'Week 5–6', focus_skill: 'Python Basics for Analytics', courses_count: 4 },
         { week_range: 'Week 7–8', focus_skill: 'Power BI Dashboarding', courses_count: 4 }
       ],
-      recommended_courses: allCourses.slice(0, 6)
+      recommended_courses: allCourses.slice(0, 6),
+      matched_pathway_slug: 'data-analyst'
     };
   },
 
