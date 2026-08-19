@@ -122,18 +122,6 @@ const FREE_COURSES_MAP: Record<string, { title: string; provider: string; url: s
     { title: 'Cybersecurity Fundamentals', provider: 'edX / IBM (Audit Free)', url: 'https://www.edx.org/learn/cybersecurity' },
     { title: 'TryHackMe — Free Learning Paths', provider: 'TryHackMe (Free Tier)', url: 'https://tryhackme.com/' },
   ],
-};tps://ocw.mit.edu/courses/6-006-introduction-to-algorithms-fall-2011/' },
-  ],
-  'financial analyst': [
-    { title: 'Introduction to Corporate Finance', provider: 'Coursera / Yale (Audit Free)', url: 'https://www.coursera.org/learn/corporate-finance' },
-    { title: 'Financial Accounting', provider: 'edX / MIT (Audit Free)', url: 'https://www.edx.org/learn/financial-accounting' },
-    { title: 'Investment Management Specialization', provider: 'Coursera / Geneva (Audit Free)', url: 'https://www.coursera.org/specializations/investment-management' },
-  ],
-  'cybersecurity specialist': [
-    { title: 'Google Cybersecurity Certificate', provider: 'Coursera (Audit Free)', url: 'https://www.coursera.org/professional-certificates/google-cybersecurity' },
-    { title: 'Cybersecurity Fundamentals', provider: 'edX / IBM (Audit Free)', url: 'https://www.edx.org/learn/cybersecurity' },
-    { title: 'TryHackMe — Free Learning Paths', provider: 'TryHackMe (Free Tier)', url: 'https://tryhackme.com/paths' },
-  ],
 };
 
 function resolveGoalKey(goal: string): string {
