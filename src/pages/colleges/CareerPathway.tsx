@@ -325,35 +325,35 @@ export default function CareerPathway() {
 
   if (step === 1) {
     return (
-      <div className="min-h-screen bg-slate-50/60 flex flex-col items-center justify-center px-4 py-12 md:py-16">
-        <div className="max-w-2xl w-full mx-auto">
+      <div className="min-h-screen bg-[#080B12] text-white flex flex-col items-center justify-center px-4 py-12 md:py-16">
+        <div className="max-w-3xl w-full mx-auto">
           <ProgressIndicator step={1} />
 
           <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 border border-indigo-200/80 rounded-full px-3.5 py-1 text-xs font-black uppercase tracking-wider mb-4">
-              <Sparkles className="h-3.5 w-3.5 text-indigo-600" />
-              TALENTXCEL CAREER INTELLIGENCE
+            <div className="inline-flex items-center gap-2 bg-indigo-950/80 text-indigo-400 border border-indigo-500/30 rounded-full px-3.5 py-1 text-xs font-black uppercase tracking-wider mb-4">
+              <Sparkles className="h-3.5 w-3.5 text-indigo-400" />
+              TALENTXCEL CAREER INTELLIGENCE · FUTURE OS
             </div>
             <div className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">
               YOUR FUTURE STARTS WITH ONE QUESTION
             </div>
-            <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-3">
+            <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight mb-3">
               What do you want to become?
             </h1>
-            <p className="text-base sm:text-lg text-slate-600 max-w-xl mx-auto">
-              Tell us where you want to go. We'll map degrees, free learning, scholarships and the exact steps between them.
+            <p className="text-base sm:text-lg text-slate-400 max-w-xl mx-auto">
+              Tell us where you want to go. We'll map Indian institutions, global tuition-free degrees, scholarships and the exact sequence between them.
             </p>
           </div>
 
           {/* Conversational Command Box */}
-          <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200/90 mb-6 space-y-6">
+          <div className="bg-[#101522] rounded-2xl p-6 sm:p-8 shadow-2xl border border-slate-700/80 mb-6 space-y-6">
             <div>
               <label className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-2">
                 What are you trying to become?
               </label>
               <div className="relative">
                 <textarea
-                  className="w-full h-28 text-base sm:text-lg p-4 rounded-xl border-2 border-slate-200 focus:border-indigo-600 focus:outline-none resize-none font-medium text-slate-900 bg-slate-50/50"
+                  className="w-full h-28 text-base sm:text-lg p-4 rounded-xl border-2 border-slate-700 focus:border-indigo-500 focus:outline-none resize-none font-medium text-white bg-slate-900/90 placeholder:text-slate-500"
                   placeholder='e.g. "I want to become an AI researcher, but I have 72% in 12th and almost no budget."'
                   value={goal}
                   onChange={(e) => setGoal(e.target.value)}
@@ -367,10 +367,19 @@ export default function CareerPathway() {
               </div>
             </div>
 
+            {/* Value Strip */}
+            <div className="flex flex-wrap items-center justify-between gap-2 py-2 px-3 rounded-lg bg-slate-900/60 border border-slate-800 text-xs font-mono text-slate-400">
+              <span>₹0 START POTENTIAL</span>
+              <span>·</span>
+              <span className="text-emerald-400 font-bold">94% CONFIDENCE MATCH</span>
+              <span>·</span>
+              <span>6 CONNECTED PHASES</span>
+            </div>
+
             {/* Popular Goals */}
             <div>
               <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-2.5">
-                Popular paths:
+                Popular career destinations:
               </span>
               <div className="flex flex-wrap gap-2">
                 {EXAMPLE_GOALS.map((eg) => (
@@ -379,8 +388,8 @@ export default function CareerPathway() {
                     onClick={() => setGoal(eg)}
                     className={`px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all cursor-pointer ${
                       goal === eg
-                        ? "bg-indigo-600 text-white border-indigo-600 shadow-sm"
-                        : "bg-slate-50 text-slate-700 border-slate-200/80 hover:border-indigo-400 hover:text-indigo-600 hover:bg-indigo-50/40"
+                        ? "bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/30"
+                        : "bg-slate-800/80 text-slate-300 border-slate-700 hover:border-indigo-400 hover:text-white hover:bg-slate-700"
                     }`}
                   >
                     {eg}
@@ -393,11 +402,11 @@ export default function CareerPathway() {
           <div className="flex justify-center">
             <Button
               size="lg"
-              className="px-10 h-13 text-sm font-bold rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-30 shadow-md shadow-indigo-100"
+              className="px-10 h-13 text-sm font-bold rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-30 shadow-lg shadow-indigo-600/30"
               disabled={!goal.trim()}
               onClick={() => setStep(2)}
             >
-              Find My Path
+              Generate My Pathway
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
