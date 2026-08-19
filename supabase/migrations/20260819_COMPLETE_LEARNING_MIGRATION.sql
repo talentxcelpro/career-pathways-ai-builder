@@ -1,5 +1,5 @@
 -- ============================================================================
--- TALENTXCEL LEARNING — COMPLETE PRODUCTION DATABASE MIGRATION
+-- TALENTXCEL LEARNING — COMPLETE PRODUCTION DATABASE MIGRATION (V2 FIXED)
 -- Copy & Paste this entire file into Supabase SQL Editor and click "Run"
 -- ============================================================================
 
@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS public.learning_providers (
   website TEXT NOT NULL,
   logo TEXT,
   description TEXT,
-  provider_type TEXT NOT NULL, -- 'Tech Company', 'University', 'Non-Profit'
+  provider_type TEXT NOT NULL,
   trust_level TEXT NOT NULL DEFAULT 'Official',
   country TEXT DEFAULT 'USA',
   verified BOOLEAN DEFAULT true,
@@ -34,67 +34,67 @@ CREATE TABLE IF NOT EXISTS public.aggregated_courses (
   long_description TEXT,
   category TEXT NOT NULL,
   domain TEXT NOT NULL,
-  level TEXT NOT NULL DEFAULT 'Beginner', -- 'Beginner', 'Intermediate', 'Advanced'
+  level TEXT NOT NULL DEFAULT 'Beginner',
   duration_text TEXT NOT NULL,
   duration_minutes INT,
-  free_type TEXT NOT NULL DEFAULT '100% Free', -- '100% Free', 'Free Audit', 'Free Trial'
+  free_type TEXT NOT NULL DEFAULT '100% Free',
   is_free BOOLEAN DEFAULT true,
-  certificate_type TEXT DEFAULT 'NO_CERTIFICATE', -- 'FREE_CERTIFICATE', 'PAID_CERTIFICATE', 'NO_CERTIFICATE'
+  certificate_type TEXT DEFAULT 'NO_CERTIFICATE',
   certificate_cost TEXT DEFAULT 'Free',
   skills TEXT[] DEFAULT '{}',
   career_relevance TEXT[] DEFAULT '{}',
   language TEXT DEFAULT 'English',
   thumbnail_url TEXT,
-  verification_status TEXT DEFAULT 'NEEDS_REVIEW', -- Default = NEEDS_REVIEW (No unverified auto-approvals)
+  verification_status TEXT DEFAULT 'NEEDS_REVIEW',
   last_verified_at TIMESTAMPTZ DEFAULT NOW(),
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 3. Normalized Skills Table
-CREATE TABLE IF NOT EXISTS public.skills (
-  id TEXT PRIMARY KEY,
+-- 3. Dedicated Learning Skills Table (UUID PK to match Supabase conventions)
+CREATE TABLE IF NOT EXISTS public.learning_skills (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT UNIQUE NOT NULL,
   slug TEXT UNIQUE NOT NULL,
-  category TEXT NOT NULL, -- 'Technical', 'Business', 'People', 'Creative', 'Industry', 'Fundamentals'
+  category TEXT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 4. Course Skills Join Table (Course -> Skill Mapping)
+-- 4. Course Skills Join Table
 CREATE TABLE IF NOT EXISTS public.course_skills (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   course_id TEXT REFERENCES public.aggregated_courses(id) ON DELETE CASCADE,
-  skill_id TEXT REFERENCES public.skills(id) ON DELETE CASCADE,
+  skill_id UUID REFERENCES public.learning_skills(id) ON DELETE CASCADE,
   proficiency_level TEXT DEFAULT 'Intermediate',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(course_id, skill_id)
 );
 
--- 5. Career Skills Join Table (Career -> Skill Requirements)
+-- 5. Career Skills Join Table
 CREATE TABLE IF NOT EXISTS public.career_skills (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   career_id TEXT NOT NULL,
-  skill_id TEXT REFERENCES public.skills(id) ON DELETE CASCADE,
+  skill_id UUID REFERENCES public.learning_skills(id) ON DELETE CASCADE,
   importance_weight DECIMAL(3,2) DEFAULT 1.00,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(career_id, skill_id)
 );
 
--- 6. Job Skills Join Table (Job -> Required Competencies)
+-- 6. Job Skills Join Table
 CREATE TABLE IF NOT EXISTS public.job_skills (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   job_id TEXT NOT NULL,
-  skill_id TEXT REFERENCES public.skills(id) ON DELETE CASCADE,
+  skill_id UUID REFERENCES public.learning_skills(id) ON DELETE CASCADE,
   required_level TEXT DEFAULT 'Intermediate',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(job_id, skill_id)
 );
 
--- 7. User Skills Inventory (Learner's Passport Skills)
+-- 7. User Skills Inventory
 CREATE TABLE IF NOT EXISTS public.user_skills (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL,
-  skill_id TEXT REFERENCES public.skills(id) ON DELETE CASCADE,
+  skill_id UUID REFERENCES public.learning_skills(id) ON DELETE CASCADE,
   proficiency_level TEXT DEFAULT 'Intermediate',
   verification_status TEXT DEFAULT 'SELF_REPORTED',
   verified_at TIMESTAMPTZ,
@@ -102,7 +102,7 @@ CREATE TABLE IF NOT EXISTS public.user_skills (
   UNIQUE(user_id, skill_id)
 );
 
--- 8. User Credentials Management (Verified Certificates)
+-- 8. User Credentials Management
 CREATE TABLE IF NOT EXISTS public.user_credentials (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL,
@@ -119,7 +119,7 @@ CREATE TABLE IF NOT EXISTS public.user_credentials (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 9. Course Handoff Events (Analytics & Monetization)
+-- 9. Course Handoff Events
 CREATE TABLE IF NOT EXISTS public.course_handoff_events (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   course_id TEXT REFERENCES public.aggregated_courses(id) ON DELETE SET NULL,
@@ -141,7 +141,7 @@ CREATE INDEX IF NOT EXISTS idx_aggregated_courses_skills ON public.aggregated_co
 -- 11. Enable Row Level Security (RLS)
 ALTER TABLE public.learning_providers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.aggregated_courses ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.skills ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.learning_skills ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.course_skills ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.career_skills ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.job_skills ENABLE ROW LEVEL SECURITY;
@@ -159,8 +159,8 @@ CREATE POLICY "Public Read Verified Courses" ON public.aggregated_courses FOR SE
 DROP POLICY IF EXISTS "Public Insert Handoff Events" ON public.course_handoff_events;
 CREATE POLICY "Public Insert Handoff Events" ON public.course_handoff_events FOR INSERT WITH CHECK (true);
 
-DROP POLICY IF EXISTS "Public Read Skills" ON public.skills;
-CREATE POLICY "Public Read Skills" ON public.skills FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public Read Learning Skills" ON public.learning_skills;
+CREATE POLICY "Public Read Learning Skills" ON public.learning_skills FOR SELECT USING (true);
 
 DROP POLICY IF EXISTS "Public Read Course Skills" ON public.course_skills;
 CREATE POLICY "Public Read Course Skills" ON public.course_skills FOR SELECT USING (true);
@@ -187,18 +187,18 @@ VALUES
 ON CONFLICT (id) DO UPDATE SET updated_at = NOW();
 
 -- 14. Seed Core Skill Taxonomy
-INSERT INTO public.skills (id, name, slug, category) VALUES
-  ('skill-sql', 'SQL & Database Queries', 'sql', 'Technical'),
-  ('skill-powerbi', 'Power BI & DAX', 'power-bi', 'Technical'),
-  ('skill-python', 'Python Programming', 'python', 'Technical'),
-  ('skill-ai-foundations', 'AI & Machine Learning Foundations', 'ai-foundations', 'Technical'),
-  ('skill-hr-analytics', 'HR Analytics & People Metrics', 'hr-analytics', 'People'),
-  ('skill-ops-management', 'Operations & Process Optimization', 'operations-management', 'Business'),
-  ('skill-financial-modeling', 'Financial Modeling & Valuation', 'financial-modeling', 'Business'),
-  ('skill-cybersecurity', 'Network & Cloud Security', 'cybersecurity', 'Technical')
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO public.learning_skills (name, slug, category) VALUES
+  ('SQL & Database Queries', 'sql', 'Technical'),
+  ('Power BI & DAX', 'power-bi', 'Technical'),
+  ('Python Programming', 'python', 'Technical'),
+  ('AI & Machine Learning Foundations', 'ai-foundations', 'Technical'),
+  ('HR Analytics & People Metrics', 'hr-analytics', 'People'),
+  ('Operations & Process Optimization', 'operations-management', 'Business'),
+  ('Financial Modeling & Valuation', 'financial-modeling', 'Business'),
+  ('Network & Cloud Security', 'cybersecurity', 'Technical')
+ON CONFLICT (name) DO NOTHING;
 
--- 15. Seed Flagship Verified Courses (Explicitly set verification_status = 'VERIFIED')
+-- 15. Seed Flagship Verified Courses
 INSERT INTO public.aggregated_courses (id, title, slug, provider_id, provider_name, provider_logo, source_url, canonical_url, short_description, category, domain, level, duration_text, free_type, is_free, certificate_type, skills, career_relevance, verification_status)
 VALUES 
   (
