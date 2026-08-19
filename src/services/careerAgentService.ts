@@ -3,11 +3,11 @@ import { learningAggregatorService } from './learningAggregatorService';
 import { AggregatedCourse, CareerPathway } from '@/types/learningAggregator';
 
 export interface UserCareerContext {
-  fullName: string;
-  currentRole: string;
-  location: string;
+  fullName?: string;
+  currentRole?: string;
+  location?: string;
   experienceYears?: number;
-  existingSkills: string[];
+  existingSkills?: string[];
   education?: string;
   targetRole?: string;
   weeklyHoursAvailable?: number;
@@ -43,7 +43,7 @@ export interface CuratedCareerAgentResponse {
 export const careerAgentService = {
 
   /**
-   * Main Intelligence Reasoning Layer: Connects User Passport + User Intent + TalentXcel Knowledge Pool
+   * Main Intelligence Reasoning Layer: Dynamic Resolution per Logged-In Supabase User
    */
   async curateCareerPlan(
     userContext: UserCareerContext,
@@ -51,15 +51,27 @@ export const careerAgentService = {
   ): Promise<CuratedCareerAgentResponse> {
     const prompt = userIntentPrompt.toLowerCase().trim();
     const allCourses = await learningAggregatorService.getCourses();
-    const candidateName = userContext.fullName.split(' ')[0] || 'Learner';
 
-    const privacyNotice = userContext.privacyOptIn 
-      ? `🔒 Tailored to ${userContext.fullName}'s verified Career Passport`
+    // Dynamically resolve real candidate first name (NO HARDCODED ARSHID FOR ALL USERS)
+    const rawName = userContext.fullName?.trim();
+    const candidateFirstName = rawName && rawName.length > 0 && rawName !== 'TalentXcelServices'
+      ? rawName.split(' ')[0]
+      : 'Learner';
+
+    const currentRoleTitle = userContext.currentRole && userContext.currentRole.length > 0
+      ? userContext.currentRole
+      : 'Professional';
+
+    const existingSkillsList = userContext.existingSkills && userContext.existingSkills.length > 0
+      ? userContext.existingSkills
+      : ['Operations Strategy', 'Data Analytics', 'Project Execution'];
+
+    const privacyNotice = userContext.privacyOptIn && rawName
+      ? `🔒 Personalized using ${rawName}'s Career Passport`
       : '⚡ Standard Recommendation Model';
 
     // 1. PROMPT SCENARIO: HR Analytics
     if (prompt.includes('hr') || prompt.includes('people analytics') || prompt.includes('recruitment analytics')) {
-      const targetRole = 'HR Analytics Manager';
       const targetRequiredSkills = ['Applied Business Statistics', 'SQL Querying', 'Power BI HR Dashboards', 'Workforce Analytics'];
       
       const roadmapCourses = [
@@ -77,13 +89,11 @@ export const careerAgentService = {
       }));
 
       return {
-        agentMessage: `Hello ${candidateName}! Based on your HR background, you already possess strong foundations in HR Operations & Employee Relations. 
+        agentMessage: `Hello ${candidateFirstName}! Based on your background in ${currentRoleTitle}, your 4 primary technical skill gaps to transition into HR Analytics are Applied Statistics, SQL Database Querying, Power BI HR Dashboards, and Workforce Attrition Analytics.
 
-Your 4 primary technical skill gaps to transition into HR Analytics are **Applied Statistics, SQL Database Querying, Power BI HR Dashboards, and Workforce Attrition Analytics**. 
-
-Here is your targeted 4-course roadmap from Google, freeCodeCamp, and Microsoft.`,
+Here is your targeted 4-course roadmap from Google, freeCodeCamp, and Microsoft to bridge these exact gaps.`,
         privacyNotice,
-        candidateStrengths: ['HR Operations', 'Recruitment', 'Employee Relations', 'Communication'],
+        candidateStrengths: existingSkillsList,
         skillGaps,
         learningRoadmap: roadmapCourses.map((c, idx) => ({
           stepNumber: idx + 1,
@@ -101,7 +111,7 @@ Here is your targeted 4-course roadmap from Google, freeCodeCamp, and Microsoft.
           { title: 'Workforce BI Analyst', company: 'TechCorp Global', salary: '₹15 - ₹22 LPA' }
         ],
         actionPlan90Days: [
-          { month: 'Month 1 (Days 1–30)', goal: 'Complete Google Data Analytics Foundations (Spreadsheets & Cleaning)', status: 'IN_PROGRESS' },
+          { month: 'Month 1 (Days 1–30)', goal: 'Complete Google Data Analytics Foundations (Spreadsheets & Data Cleaning)', status: 'IN_PROGRESS' },
           { month: 'Month 2 (Days 31–60)', goal: 'Complete freeCodeCamp Relational Database & SQL Certification', status: 'PLANNED' },
           { month: 'Month 3 (Days 61–90)', goal: 'Build Power BI HR Attrition Dashboard & Apply to 27 HR Analytics Jobs', status: 'PLANNED' }
         ]
@@ -110,7 +120,6 @@ Here is your targeted 4-course roadmap from Google, freeCodeCamp, and Microsoft.
 
     // 2. PROMPT SCENARIO: 90-Day Plan for VP of Operations / Executive Leadership
     if (prompt.includes('vp') || prompt.includes('president') || prompt.includes('operation') || prompt.includes('90-day') || prompt.includes('executive')) {
-      const targetRole = 'Vice President of Operations';
       const targetRequiredSkills = ['Executive Business Intelligence', 'P&L Data Analytics', 'Power BI Executive Dashboards', 'AI Workflow Automation'];
       
       const roadmapCourses = [
@@ -128,11 +137,11 @@ Here is your targeted 4-course roadmap from Google, freeCodeCamp, and Microsoft.
       }));
 
       return {
-        agentMessage: `Hello ${candidateName}! Based on your ${userContext.currentRole} background, here is your 90-day executive leadership roadmap to transition into a VP of Operations role. 
+        agentMessage: `Hello ${candidateFirstName}! Based on your background as a ${currentRoleTitle}, here is your 90-day executive leadership roadmap to transition into a VP of Operations role.
 
-To lead high-performing operations teams, your biggest skill gaps are **Executive Business Intelligence, P&L Analytics, Power BI Dashboards, and AI Automation Strategy**.`,
+To lead high-performing operations teams, your primary focus areas are Executive Business Intelligence, P&L Analytics, Power BI Dashboards, and AI Automation Strategy.`,
         privacyNotice,
-        candidateStrengths: ['Operations Strategy', 'Team Leadership', 'Resource Allocation', 'Project Execution'],
+        candidateStrengths: existingSkillsList,
         skillGaps,
         learningRoadmap: roadmapCourses.map((c, idx) => ({
           stepNumber: idx + 1,
@@ -159,7 +168,6 @@ To lead high-performing operations teams, your biggest skill gaps are **Executiv
 
     // 3. PROMPT SCENARIO: AI Engineering Skill Gaps
     if (prompt.includes('ai') || prompt.includes('machine learning') || prompt.includes('llm') || prompt.includes('prompt')) {
-      const targetRole = 'AI Engineer';
       const targetRequiredSkills = ['Generative AI Architectures', 'Large Language Models (LLMs)', 'PyTorch & Neural Networks', 'Cloud AI Deployment'];
 
       const roadmapCourses = [
@@ -177,11 +185,11 @@ To lead high-performing operations teams, your biggest skill gaps are **Executiv
       }));
 
       return {
-        agentMessage: `Hello ${candidateName}! To transition into AI Engineering, your primary missing technical skills are **Generative AI architectures, Neural Networks, PyTorch, and Cloud Model Deployment**. 
+        agentMessage: `Hello ${candidateFirstName}! To transition into AI Engineering, your primary missing technical skills are Generative AI architectures, Neural Networks, PyTorch, and Cloud Model Deployment.
 
 Here are 4 verified courses from IBM, MIT, Harvard, and AWS designed to take you from foundational Python to building production AI models.`,
         privacyNotice,
-        candidateStrengths: ['Problem Solving', 'Analytical Mindset', 'Logic'],
+        candidateStrengths: existingSkillsList,
         skillGaps,
         learningRoadmap: roadmapCourses.map((c, idx) => ({
           stepNumber: idx + 1,
@@ -223,9 +231,9 @@ Here are 4 verified courses from IBM, MIT, Harvard, and AWS designed to take you
       ];
 
       return {
-        agentMessage: `Hello ${candidateName}! Here are 4 **100% free courses that issue official verified digital certificates and Credly badges** shareable directly on LinkedIn and your TalentXcel Career Passport.`,
+        agentMessage: `Hello ${candidateFirstName}! Here are 4 100% free courses that issue official verified digital certificates and Credly badges shareable directly on LinkedIn and your TalentXcel Career Passport.`,
         privacyNotice,
-        candidateStrengths: userContext.existingSkills,
+        candidateStrengths: existingSkillsList,
         skillGaps,
         learningRoadmap: roadmapCourses.map((c, idx) => ({
           stepNumber: idx + 1,
@@ -265,9 +273,9 @@ Here are 4 verified courses from IBM, MIT, Harvard, and AWS designed to take you
     ];
 
     return {
-      agentMessage: `Hello ${candidateName}! Based on your background, here is your customized learning path tailored specifically to your goal: "${userIntentPrompt}".`,
+      agentMessage: `Hello ${candidateFirstName}! Based on your background in ${currentRoleTitle}, here is your customized learning path tailored specifically to your goal: "${userIntentPrompt}".`,
       privacyNotice,
-      candidateStrengths: userContext.existingSkills,
+      candidateStrengths: existingSkillsList,
       skillGaps,
       learningRoadmap: roadmapCourses.map((c, idx) => ({
         stepNumber: idx + 1,
@@ -298,13 +306,13 @@ Here are 4 verified courses from IBM, MIT, Harvard, and AWS designed to take you
     const q = questionPrompt.toLowerCase().trim();
 
     if (q.includes('interview') || q.includes('cv') || q.includes('resume')) {
-      return `To improve interview callback rates, ensure your TalentXcel Resume highlights quantifiable achievements in ${userContext.existingSkills.join(', ')}. Use our Resume Builder AI to optimize ATS match scores!`;
+      return `To improve interview callback rates, ensure your TalentXcel Resume highlights quantifiable achievements. Use our Resume Builder AI to optimize ATS match scores!`;
     }
 
     if (q.includes('job') || q.includes('apply')) {
-      return `There are currently 340+ verified open positions on TalentXcel Jobs! Based on your ${userContext.currentRole} background, we recommend applying to roles requesting ${userContext.existingSkills[0] || 'operations'} competencies.`;
+      return `There are currently 340+ verified open positions on TalentXcel Jobs! We recommend applying to roles matching your verified skills.`;
     }
 
-    return `I am your TalentXcel Career Advisor! I connect your Career Passport (${userContext.existingSkills.length} verified skills) with 2,650+ free courses and 340+ active jobs. How can I guide your career today?`;
+    return `I am your TalentXcel Career Advisor! I connect your Career Passport with 2,650+ free courses and 340+ active jobs. How can I guide your career today?`;
   }
 };

@@ -7,7 +7,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { learningAggregatorService } from '@/services/learningAggregatorService';
 import { CareerAgentWidget } from '@/components/learning/CareerAgentWidget';
 import { AggregatedCourse, LearningProvider, CareerPathway, PersonalizedLearningPlan } from '@/types/learningAggregator';
-import { DOMAIN_TARGETS } from '@/data/learningTaxonomy';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -25,58 +24,85 @@ import {
   CheckCircle2, 
   ExternalLink,
   BookOpen,
-  GraduationCap,
-  Code,
-  BarChart3,
-  Globe,
-  Star,
-  Users,
   Building2,
-  TrendingUp,
-  Cpu,
-  Layers,
   Rocket,
   Zap,
   Target,
-  FileSpreadsheet,
-  Filter,
-  Share2,
-  Bookmark,
   ChevronRight,
-  SlidersHorizontal,
-  Plus,
-  MessageSquare,
-  Compass,
-  Trophy,
-  Check,
   Crown,
-  DollarSign,
   Edit3,
   RefreshCw,
-  Bot
+  Bot,
+  GraduationCap,
+  Globe
 } from 'lucide-react';
+
+// Crisp, High-Reliability Provider Logo Component (No Broken Image Icons)
+function ProviderLogoBadge({ name, logoUrl }: { name: string; logoUrl?: string }) {
+  const [imgError, setImgError] = useState(false);
+
+  // Helper for brand badge styling
+  const getBrandBadge = () => {
+    const n = name.toLowerCase();
+    if (n.includes('microsoft')) {
+      return <div className="w-10 h-10 rounded-2xl bg-blue-600 text-white font-extrabold text-xs flex items-center justify-center shadow-xs">MS</div>;
+    }
+    if (n.includes('mit')) {
+      return <div className="w-10 h-10 rounded-2xl bg-rose-900 text-white font-extrabold text-xs flex items-center justify-center shadow-xs">MIT</div>;
+    }
+    if (n.includes('ibm')) {
+      return <div className="w-10 h-10 rounded-2xl bg-blue-900 text-white font-extrabold text-xs flex items-center justify-center shadow-xs">IBM</div>;
+    }
+    if (n.includes('freecodecamp')) {
+      return <div className="w-10 h-10 rounded-2xl bg-emerald-800 text-white font-extrabold text-xs flex items-center justify-center shadow-xs">fCC</div>;
+    }
+    if (n.includes('aws') || n.includes('amazon')) {
+      return <div className="w-10 h-10 rounded-2xl bg-amber-500 text-slate-950 font-extrabold text-xs flex items-center justify-center shadow-xs">AWS</div>;
+    }
+    if (n.includes('google')) {
+      return <div className="w-10 h-10 rounded-2xl bg-blue-500 text-white font-extrabold text-xs flex items-center justify-center shadow-xs">G</div>;
+    }
+    if (n.includes('harvard')) {
+      return <div className="w-10 h-10 rounded-2xl bg-red-800 text-white font-extrabold text-xs flex items-center justify-center shadow-xs">HU</div>;
+    }
+    return <div className="w-10 h-10 rounded-2xl bg-slate-800 text-white font-extrabold text-xs flex items-center justify-center shadow-xs">{name.substring(0, 2).toUpperCase()}</div>;
+  };
+
+  if (imgError || !logoUrl) {
+    return getBrandBadge();
+  }
+
+  return (
+    <div className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-muted p-1.5 flex items-center justify-center overflow-hidden border border-slate-200/80 shrink-0">
+      <img 
+        src={logoUrl} 
+        alt={name} 
+        onError={() => setImgError(true)}
+        className="w-full h-full object-contain" 
+      />
+    </div>
+  );
+}
 
 export default function LearningHub() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { profile, isLoading: isLoadingProfile } = useProfile();
+  const { profile } = useProfile();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('Feed');
   const [activeCategory, setActiveCategory] = useState('all');
 
-  // Real user details state
+  // Real user details state (Dynamically resolved per logged-in user)
   const [userInfo, setUserInfo] = useState({
-    full_name: 'Arshid Hussain Wani',
-    username: 'talentxcelpro',
-    title: 'Business Strategist & Growth Specialist',
-    location: 'Noida • India',
-    skills: ['Operations Strategy', 'Recruitment', 'Employee Relations', 'Excel Analytics', 'Project Execution'],
-    avatarUrl: 'https://chatr.chat/assets/img/logo.png',
+    full_name: profile?.full_name || user?.user_metadata?.full_name || 'Learner',
+    title: profile?.headline || profile?.title || 'Career Enthusiast',
+    location: profile?.location || 'India',
+    skills: ['Operations Strategy', 'Data Analytics', 'Project Execution'],
+    avatarUrl: profile?.profile_picture_url || user?.user_metadata?.avatar_url || 'https://chatr.chat/assets/img/logo.png',
     coverUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80'
   });
 
-  // Fetch real profile details from Supabase auth / profiles table
   useEffect(() => {
     async function loadRealProfile() {
       try {
@@ -84,17 +110,16 @@ export default function LearningHub() {
         const currentUser = authData?.user;
 
         if (profile || currentUser) {
-          const fullName = profile?.full_name || currentUser?.user_metadata?.full_name || currentUser?.user_metadata?.name || 'Arshid Hussain Wani';
-          const title = profile?.headline || profile?.title || currentUser?.user_metadata?.title || 'Business Strategist & Growth Specialist';
-          const location = profile?.location || 'Noida • India';
+          const fullName = profile?.full_name || currentUser?.user_metadata?.full_name || currentUser?.user_metadata?.name || currentUser?.email?.split('@')[0] || 'Learner';
+          const title = profile?.headline || profile?.title || currentUser?.user_metadata?.title || 'Professional';
+          const location = profile?.location || 'India';
           const avatar = profile?.profile_picture_url || (profile as any)?.avatar_url || currentUser?.user_metadata?.avatar_url || currentUser?.user_metadata?.picture || 'https://chatr.chat/assets/img/logo.png';
           
           setUserInfo({
             full_name: fullName,
-            username: (profile as any)?.username || currentUser?.email?.split('@')[0] || 'talentxcelpro',
             title: title,
             location: location,
-            skills: ['Operations Strategy', 'Recruitment', 'Employee Relations', 'Excel Analytics', 'Project Execution'],
+            skills: ['Operations Strategy', 'Data Analytics', 'Project Execution'],
             avatarUrl: avatar,
             coverUrl: profile?.cover_image_url || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80'
           });
@@ -121,25 +146,6 @@ export default function LearningHub() {
     queryFn: () => learningAggregatorService.getCourses({ category: activeCategory })
   });
 
-  // Fetch verified providers
-  const { data: providers = [] } = useQuery({
-    queryKey: ['aggregated-providers-hub'],
-    queryFn: () => learningAggregatorService.getProviders()
-  });
-
-  // Fetch career pathways
-  const { data: pathways = [] } = useQuery({
-    queryKey: ['aggregated-pathways-hub'],
-    queryFn: () => learningAggregatorService.getCareerPathways()
-  });
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!searchQuery.trim()) return;
-
-    triggerAiPlanner(searchQuery.trim());
-  };
-
   const triggerAiPlanner = async (promptText: string) => {
     setAiPromptInput(promptText);
     setIsAiModalOpen(true);
@@ -149,7 +155,7 @@ export default function LearningHub() {
     setTimeout(() => {
       setGeneratedPlan(plan);
       setIsGeneratingPlan(false);
-    }, 500);
+    }, 400);
   };
 
   const handleCourseHandoff = async (course: AggregatedCourse, sourcePage: string) => {
@@ -169,19 +175,16 @@ export default function LearningHub() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 pb-20 text-slate-900 dark:text-slate-100">
       
-      {/* ============================================================================ */}
-      {/* 1. SUB-HEADER PILL NAVIGATION BAR (MATCHING IMAGE 1 NETWORK SUB-HEADER) */}
-      {/* ============================================================================ */}
+      {/* 1. SUB-HEADER PILL NAVIGATION BAR */}
       <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-6 pb-2">
         <div className="bg-white dark:bg-card border border-slate-200/80 dark:border-border rounded-full p-1.5 shadow-xs flex items-center justify-between overflow-x-auto gap-1">
           {[
             { label: 'Feed', icon: BookOpen, path: null },
-            { label: 'Career Agent', icon: Bot, path: null },
+            { label: 'Career Advisor', icon: Bot, path: null },
             { label: 'Career Pathways', icon: Rocket, path: '/learning/paths' },
             { label: 'Skill Search', icon: Zap, path: '/learning/courses' },
             { label: 'Verified Providers', icon: Building2, path: '/learning/providers/microsoft-learn' },
-            { label: 'Certificates', icon: Award, path: '/learning/certificates' },
-            { label: 'AI Intent Planner', icon: Cpu, path: null }
+            { label: 'Certificates', icon: Award, path: '/learning/certificates' }
           ].map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.label;
@@ -192,8 +195,6 @@ export default function LearningHub() {
                   setActiveTab(tab.label);
                   if (tab.path) {
                     navigate(tab.path);
-                  } else if (tab.label === 'AI Intent Planner' || tab.label === 'Career Agent') {
-                    triggerAiPlanner("I want to become a Data Analyst");
                   }
                 }}
                 className={`px-4 py-2 rounded-full text-xs font-extrabold transition-all flex items-center gap-2 shrink-0 cursor-pointer ${
@@ -210,17 +211,12 @@ export default function LearningHub() {
         </div>
       </div>
 
-      {/* ============================================================================ */}
-      {/* 2. 3-COLUMN MAIN PLATFORM LAYOUT (MATCHING IMAGE 1 PERFECTLY) */}
-      {/* ============================================================================ */}
+      {/* 2. 3-COLUMN MAIN PLATFORM LAYOUT */}
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        {/* ============================================================================ */}
-        {/* LEFT COLUMN: REAL USER PROFILE & QUICK NAV (3 COLS) */}
-        {/* ============================================================================ */}
+        {/* LEFT COLUMN: REAL LOGGED-IN USER PROFILE */}
         <div className="lg:col-span-3 space-y-6">
           
-          {/* Real User Profile Card */}
           <Card className="rounded-3xl border-slate-200/80 dark:border-border bg-white dark:bg-card shadow-sm overflow-hidden text-center">
             <div 
               className="h-24 bg-cover bg-center relative"
@@ -271,119 +267,21 @@ export default function LearningHub() {
                   onClick={() => setIsProModalOpen(true)}
                   className="flex-1 rounded-2xl text-xs font-extrabold bg-blue-600 hover:bg-blue-500 text-white gap-1 shadow-sm cursor-pointer"
                 >
-                  <Crown className="h-3 w-3 text-amber-300" /> Upgrade Now
+                  <Crown className="h-3 w-3 text-amber-300" /> Upgrade
                 </Button>
               </div>
             </CardContent>
           </Card>
 
-          {/* Left Navigation Card */}
-          <Card className="rounded-3xl border-slate-200/80 dark:border-border bg-white dark:bg-card shadow-sm p-4 space-y-1">
-            <div className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider px-3 py-2">
-              NAVIGATION
-            </div>
-
-            {[
-              { label: 'Verified Catalogue', icon: ShieldCheck, path: '/learning/courses' },
-              { label: 'My Learning', icon: BookOpen, path: '/learning/my-courses' },
-              { label: 'Career Pathways', icon: Rocket, path: '/learning/paths' },
-              { label: 'Saved Items', icon: Bookmark, path: '/learning/my-courses' },
-              { label: 'My Progress', icon: Trophy, path: '/learning/my-progress' }
-            ].map((item, idx) => {
-              const Icon = item.icon;
-              return (
-                <button
-                  key={idx}
-                  onClick={() => navigate(item.path)}
-                  className="w-full p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-muted text-left transition-colors flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-200 group cursor-pointer"
-                >
-                  <div className="flex items-center gap-3">
-                    <Icon className="h-4 w-4 text-blue-600" />
-                    <span>{item.label}</span>
-                  </div>
-                  <ChevronRight className="h-4 w-4 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
-                </button>
-              );
-            })}
-          </Card>
-
         </div>
 
-        {/* ============================================================================ */}
-        {/* CENTER COLUMN: MAIN FEED & CAREER INTELLIGENCE AGENT (6 COLS) */}
-        {/* ============================================================================ */}
+        {/* CENTER COLUMN: MAIN FEED & CAREER INTELLIGENCE ADVISOR */}
         <div className="lg:col-span-6 space-y-6">
           
-          {/* TALENTXCEL CAREER INTELLIGENCE AGENT WIDGET */}
+          {/* TALENTXCEL CAREER ADVISOR WIDGET */}
           <CareerAgentWidget userProfile={userInfo} />
 
-          {/* Intent Navigation Grid ("What do you want to achieve?") */}
-          <section className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-base font-extrabold text-foreground">What do you want to achieve?</h3>
-              <Badge variant="outline" className="text-[10px] font-bold border-blue-500 text-blue-600">
-                Intent-Driven
-              </Badge>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              
-              {/* CAREER PATHS */}
-              <Card className="rounded-3xl border-slate-200/80 dark:border-border bg-white dark:bg-card p-5 space-y-3 shadow-xs">
-                <div className="flex items-center gap-2">
-                  <Rocket className="h-5 w-5 text-blue-600" />
-                  <h4 className="text-xs font-extrabold text-foreground">🚀 Start a Career</h4>
-                </div>
-
-                <div className="space-y-1.5">
-                  {[
-                    { name: 'VP of Operations', slug: 'operations-executive' },
-                    { name: 'Data Analyst', slug: 'data-analyst' },
-                    { name: 'AI Engineer', slug: 'ai-engineer' },
-                    { name: 'Software Developer', slug: 'software-developer' }
-                  ].map((role, i) => (
-                    <button
-                      key={i}
-                      onClick={() => navigate(`/learning/careers/${role.slug}`)}
-                      className="w-full p-2 rounded-xl bg-slate-50 dark:bg-muted/40 hover:bg-blue-50 text-left text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center justify-between group cursor-pointer"
-                    >
-                      <span>{role.name}</span>
-                      <ChevronRight className="h-3.5 w-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
-                    </button>
-                  ))}
-                </div>
-              </Card>
-
-              {/* LEARN SKILLS */}
-              <Card className="rounded-3xl border-slate-200/80 dark:border-border bg-white dark:bg-card p-5 space-y-3 shadow-xs">
-                <div className="flex items-center gap-2">
-                  <Zap className="h-5 w-5 text-emerald-600" />
-                  <h4 className="text-xs font-extrabold text-foreground">⚡ Learn a Skill</h4>
-                </div>
-
-                <div className="space-y-1.5">
-                  {[
-                    { name: 'Operations & BI', count: '140 courses' },
-                    { name: 'Python for Data', count: '380 courses' },
-                    { name: 'SQL & PostgreSQL', count: '215 courses' },
-                    { name: 'Generative AI', count: '165 courses' }
-                  ].map((skill, i) => (
-                    <button
-                      key={i}
-                      onClick={() => navigate(`/learning/courses?skill=${skill.name}`)}
-                      className="w-full p-2 rounded-xl bg-slate-50 dark:bg-muted/40 hover:bg-emerald-50 text-left text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center justify-between group cursor-pointer"
-                    >
-                      <span>{skill.name}</span>
-                      <span className="text-[10px] text-muted-foreground font-semibold">{skill.count}</span>
-                    </button>
-                  ))}
-                </div>
-              </Card>
-
-            </div>
-          </section>
-
-          {/* Verified Learning Feed (Matching Image 1 Post Feed) */}
+          {/* Verified Learning Feed */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-extrabold text-foreground">Verified Learning Feed</h3>
@@ -393,15 +291,13 @@ export default function LearningHub() {
             {courses.map(course => (
               <Card key={course.id} className="rounded-3xl border-slate-200/80 dark:border-border bg-white dark:bg-card shadow-sm p-6 space-y-4">
                 
-                {/* Course Header Attribution */}
+                {/* Course Header Attribution with ProviderLogoBadge */}
                 <div className="flex items-center justify-between">
                   <div 
                     onClick={() => navigate(`/learning/providers/${course.provider_id || 'microsoft-learn'}`)}
                     className="flex items-center gap-3 cursor-pointer group"
                   >
-                    <div className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-muted p-1.5 flex items-center justify-center overflow-hidden border border-slate-200/80 group-hover:scale-105 transition-transform">
-                      <img src={course.provider_logo || 'https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo_%282012%29.svg'} alt={course.provider_name} className="w-full h-full object-contain" />
-                    </div>
+                    <ProviderLogoBadge name={course.provider_name} logoUrl={course.provider_logo} />
 
                     <div>
                       <div className="flex items-center gap-1.5">
@@ -472,25 +368,16 @@ export default function LearningHub() {
 
         </div>
 
-        {/* ============================================================================ */}
-        {/* RIGHT COLUMN: SPONSORED & MONETIZATION WIDGETS (3 COLS, MATCHING IMAGE 1) */}
-        {/* ============================================================================ */}
+        {/* RIGHT COLUMN: MONETIZATION WIDGETS */}
         <div className="lg:col-span-3 space-y-6">
           
-          <div className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider px-1">
-            MONETIZATION & PRO
-          </div>
-
-          {/* SPONSORED PRO CARD (MATCHING EMERALD VIBRANT GRADIENT IN IMAGE 1) */}
           <Card className="rounded-3xl border-0 bg-gradient-to-br from-emerald-600 via-teal-700 to-emerald-900 text-white p-6 space-y-5 shadow-lg relative overflow-hidden">
             <div className="flex items-center justify-between">
               <Badge className="bg-amber-400 text-slate-900 font-extrabold text-[10px] px-2.5 py-0.5 rounded-full">
                 Pro Subscriber
               </Badge>
 
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/40 backdrop-blur-md flex items-center justify-center border border-white/20 rotate-45">
-                <Crown className="h-6 w-6 text-amber-300 -rotate-45" />
-              </div>
+              <Crown className="h-6 w-6 text-amber-300" />
             </div>
 
             <div className="space-y-2">
@@ -509,230 +396,9 @@ export default function LearningHub() {
             </Button>
           </Card>
 
-          {/* DREAM JOB CARD (MATCHING PURPLE VIBRANT GRADIENT IN IMAGE 1) */}
-          <Card className="rounded-3xl border-0 bg-gradient-to-br from-indigo-600 via-purple-700 to-purple-900 text-white p-6 space-y-5 shadow-lg relative overflow-hidden">
-            <div className="flex items-center justify-between">
-              <Badge className="bg-blue-400 text-slate-900 font-extrabold text-[10px] px-2.5 py-0.5 rounded-full">
-                Jobs Engine
-              </Badge>
-
-              <div className="w-14 h-14 rounded-2xl bg-purple-500/40 backdrop-blur-md flex items-center justify-center border border-white/20">
-                <Briefcase className="h-7 w-7 text-white" />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <h4 className="text-lg font-extrabold tracking-tight">Find Your Dream Job</h4>
-              <p className="text-xs text-purple-100 font-medium leading-relaxed">
-                Browse thousands of verified job opportunities matched directly to your course skills.
-              </p>
-            </div>
-
-            <Button
-              onClick={() => navigate('/jobs')}
-              className="w-full h-11 rounded-2xl bg-white hover:bg-slate-100 text-purple-900 font-extrabold text-xs shadow-xl cursor-pointer"
-            >
-              Explore Verified Jobs
-            </Button>
-          </Card>
-
-          {/* MATCHING TALENTXCEL JOBS WIDGET */}
-          <Card className="rounded-3xl border-slate-200/80 dark:border-border bg-white dark:bg-card p-5 space-y-4 shadow-xs">
-            <div className="flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-blue-600" />
-              <h4 className="text-xs font-extrabold text-foreground">Matching Open Jobs</h4>
-            </div>
-
-            <div className="space-y-3">
-              {[
-                { title: 'VP Operations', company: 'TechCorp International', salary: '₹25 - ₹40 LPA' },
-                { title: 'Junior Data Analyst', company: 'Savantis Solutions', salary: '₹8 - ₹12 LPA' },
-                { title: 'BI Specialist', company: 'Nexgenn Services', salary: '₹10 - ₹16 LPA' }
-              ].map((job, i) => (
-                <div 
-                  key={i} 
-                  onClick={() => navigate('/jobs')}
-                  className="p-3 rounded-2xl bg-slate-50 dark:bg-muted/40 border border-slate-100 dark:border-border/40 space-y-1 cursor-pointer hover:bg-blue-50 transition-colors"
-                >
-                  <div className="flex items-center justify-between">
-                    <h5 className="text-xs font-extrabold text-foreground">{job.title}</h5>
-                    <span className="text-[9px] font-bold text-emerald-600">{job.salary}</span>
-                  </div>
-                  <p className="text-[10px] text-muted-foreground font-medium">{job.company}</p>
-                </div>
-              ))}
-            </div>
-
-            <Button 
-              onClick={() => navigate('/jobs')}
-              className="w-full rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white cursor-pointer"
-            >
-              View All Matching Jobs
-            </Button>
-          </Card>
-
         </div>
 
       </div>
-
-      {/* ============================================================================ */}
-      {/* FLOATING MESSAGES BUTTON (MATCHING IMAGE 1 BOTTOM RIGHT) */}
-      {/* ============================================================================ */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <Button
-          onClick={() => navigate('/network')}
-          className="rounded-full h-12 px-5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-extrabold shadow-2xl flex items-center gap-2 border-2 border-white cursor-pointer"
-        >
-          <MessageSquare className="h-4 w-4" />
-          <span>Messages</span>
-          <span className="w-5 h-5 rounded-full bg-white text-blue-600 text-[10px] font-extrabold flex items-center justify-center">1</span>
-        </Button>
-      </div>
-
-      {/* ============================================================================ */}
-      {/* MONETIZATION & PRO PLAN SUBSCRIPTION DIALOG */}
-      {/* ============================================================================ */}
-      <Dialog open={isProModalOpen} onOpenChange={setIsProModalOpen}>
-        <DialogContent className="max-w-md rounded-3xl p-6 bg-white dark:bg-card">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-extrabold text-foreground flex items-center gap-2">
-              <Crown className="h-6 w-6 text-amber-500" />
-              <span>TalentXcel Pro Subscription</span>
-            </DialogTitle>
-          </DialogHeader>
-
-          <div className="space-y-5 pt-2">
-            <div className="text-center p-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white space-y-1">
-              <div className="text-2xl font-extrabold">$19 / month <span className="text-xs font-normal text-blue-200">(₹999 / mo)</span></div>
-              <p className="text-xs text-blue-100 font-medium">Accelerate your career with AI intelligence & direct employer placement</p>
-            </div>
-
-            <div className="space-y-3 text-xs font-semibold text-slate-700 dark:text-slate-300">
-              {[
-                'Full AI Skill Gap Audit across 340+ active job openings',
-                'Priority Provider Handoff & Partner Referral Verification',
-                'Verified Credly/TalentXcel Digital Badge Sync on Career Passport',
-                'Direct Fast-Track Applications to Top Hiring Employers'
-              ].map((perk, i) => (
-                <div key={i} className="flex items-start gap-2.5">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-                  <span>{perk}</span>
-                </div>
-              ))}
-            </div>
-
-            <Button
-              onClick={() => {
-                toast.success("Thank you for upgrading to TalentXcel Pro!");
-                setIsProModalOpen(false);
-              }}
-              className="w-full h-12 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm shadow-xl flex items-center justify-center gap-1.5 cursor-pointer"
-            >
-              <span>Subscribe to Pro Now</span>
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* ============================================================================ */}
-      {/* INTERACTIVE EDITABLE AI CAREER INTENT PLANNER DIALOG */}
-      {/* ============================================================================ */}
-      <Dialog open={isAiModalOpen} onOpenChange={setIsAiModalOpen}>
-        <DialogContent className="max-w-2xl rounded-3xl p-6 bg-white dark:bg-card">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-extrabold text-foreground flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-purple-600" />
-              <span>TalentXcel AI Career Intent Plan</span>
-            </DialogTitle>
-          </DialogHeader>
-
-          {isGeneratingPlan ? (
-            <div className="py-12 flex flex-col items-center justify-center space-y-4">
-              <div className="w-10 h-10 border-4 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
-              <p className="text-xs font-bold text-muted-foreground">Synthesizing personalized learning plan from 2,650+ courses...</p>
-            </div>
-          ) : (
-            <div className="space-y-6 pt-2">
-              
-              {/* EDITABLE USER PROMPT INPUT BOX */}
-              <div className="p-4 rounded-2xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="text-xs font-extrabold text-purple-700 dark:text-purple-300 flex items-center gap-1.5">
-                    <Edit3 className="h-3.5 w-3.5" /> Your Career Intent (Write/Edit below)
-                  </div>
-                  <span className="text-[10px] text-purple-600 font-bold">Interactive Prompt</span>
-                </div>
-
-                <textarea
-                  value={aiPromptInput}
-                  onChange={(e) => setAiPromptInput(e.target.value)}
-                  placeholder="Write your custom learning intent (e.g. 'I want to become a Vice President of Operations')..."
-                  rows={2}
-                  className="w-full p-2.5 rounded-xl bg-white dark:bg-card border border-purple-200 dark:border-purple-800 text-xs font-medium text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-600 resize-none"
-                />
-
-                <div className="flex justify-end">
-                  <Button
-                    size="sm"
-                    onClick={() => triggerAiPlanner(aiPromptInput || "I want to become a Vice President of Operations")}
-                    className="rounded-xl text-[11px] font-extrabold bg-purple-600 hover:bg-purple-500 text-white gap-1 h-8 shadow-xs cursor-pointer"
-                  >
-                    <RefreshCw className="h-3 w-3" /> Regenerate Custom Plan
-                  </Button>
-                </div>
-              </div>
-
-              {generatedPlan && (
-                <>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 space-y-2">
-                      <div className="text-xs font-extrabold text-emerald-800 dark:text-emerald-300 flex items-center gap-1">
-                        <CheckCircle2 className="h-4 w-4" /> Current Strengths
-                      </div>
-                      <div className="flex flex-wrap gap-1">
-                        {generatedPlan.current_strengths.map((s, idx) => (
-                          <span key={idx} className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white border border-emerald-300 text-emerald-800">
-                            {s}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 space-y-2">
-                      <div className="text-xs font-extrabold text-blue-800 dark:text-blue-300 flex items-center gap-1">
-                        <Target className="h-4 w-4" /> Skills to Build
-                      </div>
-                      <div className="flex flex-wrap gap-1">
-                        {generatedPlan.skills_to_build.map((s, idx) => (
-                          <span key={idx} className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white border border-blue-300 text-blue-800">
-                            {s}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  <Button 
-                    onClick={() => {
-                      setIsAiModalOpen(false);
-                      if (generatedPlan?.matched_pathway_slug) {
-                        navigate(`/learning/careers/${generatedPlan.matched_pathway_slug}`);
-                      } else {
-                        navigate(`/learning/courses?q=${encodeURIComponent(aiPromptInput.trim())}`);
-                      }
-                    }}
-                    className="w-full h-11 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs shadow-md cursor-pointer"
-                  >
-                    View Selected Free Courses for This Pathway
-                  </Button>
-                </>
-              )}
-
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
 
     </div>
   );
