@@ -16,10 +16,16 @@ const GlobalPrograms = lazy(() => import('../pages/colleges/GlobalPrograms'));
 const Scholarships = lazy(() => import('../pages/colleges/Scholarships'));
 
 export const collegesRoutes = [
-  // ── Global Education Intelligence Layer & Sub-pages first to prevent :id param collisions ──
   {
     title: "Global Programs",
     to: "/colleges/global-programs",
+    page: <Suspense fallback={null}><GlobalPrograms /></Suspense>,
+    isPublic: true,
+    requiresAuth: false,
+  },
+  {
+    title: "Global Program Detail",
+    to: "/colleges/global-programs/:slug",
     page: <Suspense fallback={null}><GlobalPrograms /></Suspense>,
     isPublic: true,
     requiresAuth: false,
