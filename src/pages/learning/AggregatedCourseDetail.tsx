@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
 import { 
   ExternalLink, 
@@ -23,10 +22,7 @@ import {
   Share2, 
   Bookmark, 
   CheckCircle2, 
-  AlertCircle,
-  BarChart3,
-  Building2,
-  Users
+  Building2
 } from 'lucide-react';
 
 export const AggregatedCourseDetail: React.FC = () => {
@@ -87,7 +83,7 @@ export const AggregatedCourseDetail: React.FC = () => {
     <div className="min-h-screen bg-slate-50/60 dark:bg-slate-950 pb-20">
       
       {/* Top Breadcrumb Header */}
-      <div className="bg-slate-900 text-white border-b border-slate-800 py-3 px-4 sm:px-8">
+      <div className="bg-slate-900 text-slate-100 border-b border-slate-800 py-3 px-4 sm:px-8">
         <div className="max-w-7xl mx-auto flex items-center justify-between text-xs font-semibold">
           <button 
             onClick={() => navigate('/learning')}
@@ -106,7 +102,7 @@ export const AggregatedCourseDetail: React.FC = () => {
         </div>
       </div>
 
-      {/* Hero Header Section */}
+      {/* Hero Header Section with Explicit High-Contrast White Text */}
       <div className="bg-slate-900 text-white py-12 px-4 sm:px-8 border-b border-slate-800 shadow-lg">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
           
@@ -114,7 +110,7 @@ export const AggregatedCourseDetail: React.FC = () => {
             
             {/* Provider Identification Badge */}
             <div className="flex flex-wrap items-center gap-3">
-              <Badge className="bg-blue-600/90 text-white hover:bg-blue-600 rounded-full px-3 py-1 text-xs font-extrabold flex items-center gap-1.5 shadow-sm">
+              <Badge className="bg-blue-600 text-white hover:bg-blue-500 rounded-full px-3.5 py-1 text-xs font-extrabold flex items-center gap-1.5 shadow-sm">
                 <ShieldCheck className="h-3.5 w-3.5" />
                 Course Provided by {course.provider_name}
               </Badge>
@@ -128,11 +124,17 @@ export const AggregatedCourseDetail: React.FC = () => {
               </Badge>
             </div>
 
-            <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
+            <h1 
+              style={{ color: '#ffffff' }}
+              className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight !text-white"
+            >
               {course.title}
             </h1>
 
-            <p className="text-sm sm:text-base text-slate-300 font-medium max-w-2xl leading-relaxed">
+            <p 
+              style={{ color: '#cbd5e1' }}
+              className="text-sm sm:text-base font-medium max-w-2xl leading-relaxed !text-slate-300"
+            >
               {course.short_description}
             </p>
 
@@ -140,21 +142,21 @@ export const AggregatedCourseDetail: React.FC = () => {
             <div className="flex flex-wrap items-center gap-6 text-xs text-slate-300 font-semibold pt-2">
               <div className="flex items-center gap-1.5">
                 <Clock className="h-4 w-4 text-blue-400" />
-                <span>{course.duration_text}</span>
+                <span style={{ color: '#cbd5e1' }}>{course.duration_text}</span>
               </div>
 
               <div className="flex items-center gap-1.5">
                 <Award className="h-4 w-4 text-emerald-400" />
-                <span>{course.certificate_type.replace(/_/g, ' ')}</span>
+                <span style={{ color: '#cbd5e1' }}>{course.certificate_type.replace(/_/g, ' ')}</span>
               </div>
 
               <div className="flex items-center gap-1.5">
                 <Globe className="h-4 w-4 text-purple-400" />
-                <span>{course.language}</span>
+                <span style={{ color: '#cbd5e1' }}>{course.language}</span>
               </div>
 
               {course.talentxcel_match && (
-                <div className="flex items-center gap-1.5 text-emerald-400 font-extrabold bg-emerald-950/60 border border-emerald-800/80 px-2.5 py-1 rounded-full">
+                <div className="flex items-center gap-1.5 text-emerald-400 font-extrabold bg-emerald-950/60 border border-emerald-800/80 px-3 py-1 rounded-full">
                   <Sparkles className="h-3.5 w-3.5" />
                   <span>{course.talentxcel_match}% TalentXcel Match</span>
                 </div>
@@ -165,7 +167,7 @@ export const AggregatedCourseDetail: React.FC = () => {
 
           {/* Right Action Card Container */}
           <Card className="bg-slate-950 border-slate-800 shadow-2xl text-white rounded-3xl overflow-hidden">
-            <div className="relative h-48 w-full overflow-hidden">
+            <div className="relative h-48 w-full overflow-hidden bg-slate-900 flex items-center justify-center">
               <img src={course.thumbnail_url} alt={course.title} className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent"></div>
             </div>
@@ -182,7 +184,7 @@ export const AggregatedCourseDetail: React.FC = () => {
               {/* EXPLICIT HANDOFF CTA BUTTON */}
               <Button
                 onClick={handleStartCourseHandoff}
-                className="w-full h-12 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-sm shadow-xl flex items-center justify-center gap-2 group transition-all hover:scale-[1.02]"
+                className="w-full h-12 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-sm shadow-xl flex items-center justify-center gap-2 group transition-all hover:scale-[1.02] cursor-pointer"
               >
                 <span>Start Course on {course.provider_name}</span>
                 <ExternalLink className="h-4 w-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -207,7 +209,7 @@ export const AggregatedCourseDetail: React.FC = () => {
                     setIsSaved(!isSaved);
                     toast.success(isSaved ? "Removed from saved" : "Saved to My Learning!");
                   }}
-                  className="flex-1 rounded-xl text-xs font-bold border-slate-700 hover:bg-slate-800 text-slate-300"
+                  className="flex-1 rounded-xl text-xs font-bold border-slate-700 hover:bg-slate-800 text-slate-300 cursor-pointer"
                 >
                   <Bookmark className={`h-3.5 w-3.5 mr-1.5 ${isSaved ? 'fill-blue-500 text-blue-500' : ''}`} />
                   {isSaved ? 'Saved' : 'Save Course'}
@@ -220,7 +222,7 @@ export const AggregatedCourseDetail: React.FC = () => {
                     navigator.clipboard.writeText(window.location.href);
                     toast.success("Course link copied to clipboard!");
                   }}
-                  className="rounded-xl text-xs font-bold border-slate-700 hover:bg-slate-800 text-slate-300"
+                  className="rounded-xl text-xs font-bold border-slate-700 hover:bg-slate-800 text-slate-300 cursor-pointer"
                 >
                   <Share2 className="h-3.5 w-3.5" />
                 </Button>
@@ -379,7 +381,7 @@ export const AggregatedCourseDetail: React.FC = () => {
 
             <Button 
               onClick={() => navigate('/jobs')}
-              className="w-full rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white"
+              className="w-full rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white cursor-pointer"
             >
               Explore All Jobs Requiring These Skills
             </Button>
