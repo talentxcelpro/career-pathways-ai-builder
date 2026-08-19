@@ -589,14 +589,17 @@ export default function CareerPathway() {
 
           {/* Summary bar */}
           <Card className="mb-8 border-0 shadow-lg bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-3xl overflow-hidden">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Sparkles className="h-5 w-5 text-indigo-200" />
-                <span className="text-indigo-200 text-sm font-semibold uppercase tracking-wider">
-                  Your Education Pathway
+            <CardContent className="p-6 md:p-8">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-xs font-semibold uppercase tracking-wider text-emerald-300 bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-500/30 flex items-center gap-1">
+                  <Sparkles className="h-3 w-3" />
+                  Evidence-Backed Personalized Pathway
                 </span>
               </div>
-              <h2 className="text-2xl font-extrabold mb-6 leading-tight">
+              <p className="text-xs text-indigo-200 mb-4 italic">
+                * Potential ₹0 / affordable pathway — subject to admission eligibility and scholarship/fee-waiver approval.
+              </p>
+              <h2 className="text-2xl sm:text-3xl font-bold mb-4">
                 {pathway.goal_resolved}
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
