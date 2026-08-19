@@ -113,6 +113,8 @@ const Terms                           = lazy(() => import('./pages/auth/Terms'))
 const Platform                        = lazy(() => import('./pages/Platform'));
 const DebugPage                       = lazy(() => import('./pages/DebugPage'));
 const SystemDiagnostics               = lazy(() => import('./pages/SystemDiagnostics'));
+const AllProvidersPage                = lazy(() => import('./pages/learning/AllProvidersPage'));
+const ProviderPage                    = lazy(() => import('./pages/learning/ProviderPage'));
 const CareerPassportDashboard         = lazy(() => import('./pages/passport/CareerPassportDashboard'));
 const PassportLayout                  = lazy(() => import('./pages/passport/PassportLayout'));
 const PublicPassport                  = lazy(() => import('./pages/passport/PublicPassport'));
@@ -473,6 +475,10 @@ const App = () => {
                                 <Route path="/admin/email-automation" element={<AdminLayout><EmailAutomation /></AdminLayout>} />
                                 <Route path="/admin/populate-courses" element={<AdminLayout><PopulateCoursesAdmin /></AdminLayout>} />
                                 <Route path="/admin/video-manager" element={<AdminLayout><AdminVideoManager /></AdminLayout>} />
+                                 {/* Explicit Public Learning Provider Directory Routes */}
+                                 <Route path="/learning/providers" element={<AllProvidersPage />} />
+                                 <Route path="/learning/providers/:slug" element={<ProviderPage />} />
+
                                 <Route path="/admin/course-management" element={
                                   <AdminLayout>
                                     <CourseManagementPage />
