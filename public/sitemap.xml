@@ -1,51 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-matrix-01.xml</loc>
+    <loc>https://talentxcel.in/sitemap-base.xml</loc>
     <lastmod>2026-08-19</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-matrix-02.xml</loc>
+    <loc>https://talentxcel.in/sitemap-colleges.xml</loc>
     <lastmod>2026-08-19</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-matrix-03.xml</loc>
+    <loc>https://talentxcel.in/sitemap-global-programs.xml</loc>
     <lastmod>2026-08-19</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-matrix-04.xml</loc>
+    <loc>https://talentxcel.in/sitemap-scholarships.xml</loc>
     <lastmod>2026-08-19</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-matrix-05.xml</loc>
+    <loc>https://talentxcel.in/sitemap-career-paths.xml</loc>
     <lastmod>2026-08-19</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-matrix-06.xml</loc>
+    <loc>https://talentxcel.in/sitemap-learning.xml</loc>
     <lastmod>2026-08-19</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-matrix-07.xml</loc>
+    <loc>https://talentxcel.in/sitemap-jobs.xml</loc>
     <lastmod>2026-08-19</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-matrix-08.xml</loc>
+    <loc>https://talentxcel.in/sitemap-role-locations.xml</loc>
     <lastmod>2026-08-19</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-matrix-09.xml</loc>
+    <loc>https://talentxcel.in/sitemap-roles.xml</loc>
     <lastmod>2026-08-19</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-matrix-10.xml</loc>
+    <loc>https://talentxcel.in/sitemap-skills.xml</loc>
     <lastmod>2026-08-19</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-matrix-11.xml</loc>
+    <loc>https://talentxcel.in/sitemap-services.xml</loc>
     <lastmod>2026-08-19</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-matrix-12.xml</loc>
+    <loc>https://talentxcel.in/sitemap-industries.xml</loc>
+    <lastmod>2026-08-19</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-locations.xml</loc>
+    <lastmod>2026-08-19</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-resources.xml</loc>
+    <lastmod>2026-08-19</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-passports.xml</loc>
+    <lastmod>2026-08-19</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-companies.xml</loc>
+    <lastmod>2026-08-19</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-careermap.xml</loc>
+    <lastmod>2026-08-19</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-tools.xml</loc>
+    <lastmod>2026-08-19</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-resume.xml</loc>
+    <lastmod>2026-08-19</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-employer.xml</loc>
+    <lastmod>2026-08-19</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-articles.xml</loc>
     <lastmod>2026-08-19</lastmod>
   </sitemap>
 </sitemapindex>

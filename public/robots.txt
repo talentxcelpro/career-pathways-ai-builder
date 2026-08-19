@@ -157,6 +157,7 @@ Disallow: /marketplace/private/
 Disallow: /events/private/
 Disallow: /events/settings/
 
+Disallow: /company-os/
 Disallow: /admin/
 Disallow: /diagnostics
 Disallow: /debug
@@ -166,11 +167,22 @@ Disallow: /access-control-test
 Disallow: /realtime-demo
 Disallow: /mobile-demo
 
+# Allow search engine rendering assets
+Allow: /assets/
+Allow: /*.js$
+Allow: /*.css$
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.svg$
 
 # ==========================================================
-# PARAMETER URL CONTROL
+# PARAMETER URL CONTROL (Prevent Crawl-Budget Exhaustion)
 # ==========================================================
 
+Disallow: /*?*search=
+Disallow: /*?*filter=
+Disallow: /*?*sort=
+Disallow: /*?*page=
 Disallow: /*?*utm_
 Disallow: /*?*ref=
 Disallow: /*?*gclid=
