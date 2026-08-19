@@ -12,6 +12,98 @@ import {
   INITIAL_CAREER_PATHWAYS 
 } from '@/data/learningAggregatorData';
 
+export function deriveIndustryTaxonomy(category?: string, domain?: string, title?: string): string {
+  const cat = (category || '').toLowerCase();
+  const dom = (domain || '').toLowerCase();
+  const ttl = (title || '').toLowerCase();
+
+  // 1. Finance & Accounting
+  if (
+    cat.includes('financial') || cat.includes('finance') || cat.includes('accounting') || cat.includes('valuation') ||
+    cat.includes('taxation') || cat.includes('banking') || cat.includes('law') ||
+    dom.includes('finance') || dom.includes('accounting') || ttl.includes('financial modeling') || ttl.includes('accounting')
+  ) {
+    return 'Finance & Accounting';
+  }
+
+  // 2. HR & People Analytics
+  if (
+    cat.includes('hr') || cat.includes('people') || cat.includes('recruitment') || cat.includes('talent') ||
+    dom.includes('hr') || dom.includes('people analytics')
+  ) {
+    return 'HR & People Analytics';
+  }
+
+  // 3. Marketing & Digital Growth
+  if (
+    cat.includes('marketing') || cat.includes('seo') || cat.includes('ads') || cat.includes('content strategy') ||
+    dom.includes('marketing') || ttl.includes('google ads') || ttl.includes('facebook ads')
+  ) {
+    return 'Marketing & Digital Growth';
+  }
+
+  // 4. Healthcare & Life Sciences
+  if (
+    cat.includes('health') || cat.includes('medical') || cat.includes('hospital') || cat.includes('clinical') || cat.includes('pharma') ||
+    dom.includes('health') || dom.includes('medical')
+  ) {
+    return 'Healthcare & Life Sciences';
+  }
+
+  // 5. Supply Chain & Logistics
+  if (
+    cat.includes('supply chain') || cat.includes('logistics') || cat.includes('warehouse') || cat.includes('procurement') ||
+    dom.includes('supply chain')
+  ) {
+    return 'Supply Chain & Logistics';
+  }
+
+  // 6. Design & Creative Technology
+  if (
+    cat.includes('design') || cat.includes('ui/ux') || cat.includes('ux') || cat.includes('graphic') ||
+    cat.includes('branding') || cat.includes('illustration') || cat.includes('video editing') ||
+    dom.includes('design')
+  ) {
+    return 'Design & Creative Technology';
+  }
+
+  // 7. Technology & IT
+  if (
+    cat.includes('ai') || cat.includes('data') || cat.includes('cloud') || cat.includes('devops') || cat.includes('cyber') ||
+    cat.includes('software') || cat.includes('engineering') || cat.includes('sql') || cat.includes('python') ||
+    cat.includes('react') || cat.includes('node') || cat.includes('kubernetes') || cat.includes('docker') ||
+    cat.includes('aws') || cat.includes('git') || cat.includes('javascript') || cat.includes('html') || cat.includes('css') ||
+    cat.includes('deep learning') || cat.includes('machine learning') || cat.includes('ansible') || cat.includes('terraform') ||
+    cat.includes('confluence') || cat.includes('cypher') || cat.includes('spark') || cat.includes('database') || cat.includes('computer')
+  ) {
+    return 'Technology & IT';
+  }
+
+  // 8. Business & Management
+  if (
+    cat.includes('pmp') || cat.includes('project management') || cat.includes('agile') || cat.includes('scrum') ||
+    cat.includes('product owner') || cat.includes('erp') || cat.includes('business') || cat.includes('leadership')
+  ) {
+    return 'Business & Management';
+  }
+
+  // 9. Engineering & Operations
+  if (
+    cat.includes('robotics') || cat.includes('physics') || cat.includes('electrical') || cat.includes('automation')
+  ) {
+    return 'Engineering & Operations';
+  }
+
+  // 10. Education & Languages
+  if (
+    cat.includes('french') || cat.includes('english') || cat.includes('language') || cat.includes('communication')
+  ) {
+    return 'Education & Languages';
+  }
+
+  return 'Technology & IT';
+}
+
 export const learningAggregatorService = {
 
   /**
@@ -95,6 +187,12 @@ export const learningAggregatorService = {
       let list: AggregatedCourse[] = (data && data.length > 0) 
         ? (data as any) 
         : INITIAL_AGGREGATED_COURSES;
+
+      // Guarantee 100% Industry Taxonomy Coverage
+      list = list.map(c => ({
+        ...c,
+        industry: c.industry || deriveIndustryTaxonomy(c.category, c.domain, c.title)
+      }));
 
       if (filters?.search) {
         const q = filters.search.toLowerCase().trim();
