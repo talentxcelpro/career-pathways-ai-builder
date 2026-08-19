@@ -121,7 +121,7 @@ export default function Colleges() {
               Find the right place to build your future.
             </h1>
             <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
-              Search 1,200+ verified Indian universities, colleges, professional institutes and schools. Connected directly into AI Career Pathways and verified outcome evidence.
+              Search 1,500+ verified Indian universities, undergraduate &amp; postgraduate colleges, and premier institutes of eminence. Connected directly into AI Career Pathways and verified outcome evidence.
             </p>
           </div>
 
@@ -131,7 +131,7 @@ export default function Colleges() {
               <div className="relative flex-1 w-full">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
                 <Input
-                  placeholder='e.g. "Computer Science in Delhi under ₹3 lakh", "MBA colleges accepting CAT", "Schools in Noida"'
+                  placeholder='e.g. "Computer Science in Delhi under ₹3 lakh", "MBA colleges accepting CAT", "B.Tech in Bangalore"'
                   value={searchTerm}
                   onChange={(e) => {
                     setSearchTerm(e.target.value);
@@ -234,7 +234,7 @@ export default function Colleges() {
               All Institutions
             </div>
             <div className="text-xs mt-1 opacity-90 font-mono">
-              {telemetry.totalInstitutions.toLocaleString()} Verified Records
+              {telemetry.totalInstitutions.toLocaleString()} Higher Ed Records
             </div>
           </button>
 
@@ -247,13 +247,32 @@ export default function Colleges() {
             }`}
           >
             <div className="text-[11px] font-black uppercase tracking-wider opacity-80 mb-1">
-              DISCOVERY 02 · HIGHER ED
+              DISCOVERY 02 · UNIVERSITIES
             </div>
             <div className="text-base sm:text-lg font-black leading-tight">
               Universities
             </div>
             <div className="text-xs mt-1 opacity-90 font-mono">
-              {telemetry.categoryCounts.universities} Central &amp; State
+              {telemetry.categoryCounts.universities} Central, State &amp; Deemed
+            </div>
+          </button>
+
+          <button
+            onClick={() => handleCategorySelect('college')}
+            className={`p-4 rounded-2xl border text-left transition-all cursor-pointer ${
+              selectedCategory === 'college'
+                ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-200'
+                : 'bg-white text-slate-800 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+            }`}
+          >
+            <div className="text-[11px] font-black uppercase tracking-wider opacity-80 mb-1">
+              DISCOVERY 03 · COLLEGES
+            </div>
+            <div className="text-base sm:text-lg font-black leading-tight">
+              Undergraduate &amp; PG Colleges
+            </div>
+            <div className="text-xs mt-1 opacity-90 font-mono">
+              {telemetry.categoryCounts.colleges} Eng, Arts, Sci, Comm, Law
             </div>
           </button>
 
@@ -266,32 +285,13 @@ export default function Colleges() {
             }`}
           >
             <div className="text-[11px] font-black uppercase tracking-wider opacity-80 mb-1">
-              DISCOVERY 03 · PREMIER
+              DISCOVERY 04 · PREMIER
             </div>
             <div className="text-base sm:text-lg font-black leading-tight">
-              IIT, NIT &amp; Institutes
+              IIT, NIT, IIM &amp; Institutes
             </div>
             <div className="text-xs mt-1 opacity-90 font-mono">
-              {telemetry.categoryCounts.institutes} IIT, NIT, IIM, AIIMS
-            </div>
-          </button>
-
-          <button
-            onClick={() => handleCategorySelect('school')}
-            className={`p-4 rounded-2xl border text-left transition-all cursor-pointer ${
-              selectedCategory === 'school'
-                ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-200'
-                : 'bg-white text-slate-800 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
-            }`}
-          >
-            <div className="text-[11px] font-black uppercase tracking-wider opacity-80 mb-1">
-              DISCOVERY 04 · K-12
-            </div>
-            <div className="text-base sm:text-lg font-black leading-tight">
-              Premier Schools
-            </div>
-            <div className="text-xs mt-1 opacity-90 font-mono">
-              {telemetry.categoryCounts.schools} CBSE, ICSE, IB
+              {telemetry.categoryCounts.institutes} National Institutes of Eminence
             </div>
           </button>
         </div>

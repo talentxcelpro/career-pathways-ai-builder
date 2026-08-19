@@ -1,4 +1,4 @@
-export type InstitutionCategory = 'university' | 'college' | 'institute' | 'school';
+export type InstitutionCategory = 'university' | 'college' | 'institute';
 
 export type InstitutionType =
   | 'central_govt'
@@ -8,10 +8,7 @@ export type InstitutionType =
   | 'autonomous'
   | 'international'
   | 'government'
-  | 'trust'
-  | 'cbse'
-  | 'icse'
-  | 'ib';
+  | 'trust';
 
 export type VerificationStatus =
   | 'verified'
@@ -142,6 +139,5 @@ export interface IndianGraphTelemetry {
     universities: number;
     colleges: number;
     institutes: number;
-    schools: number;
   };
 }

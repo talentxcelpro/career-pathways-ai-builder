@@ -36,8 +36,6 @@ export class IndianEducationService {
       result.category = 'college';
     } else if (raw.includes('institute') || raw.includes('institutes') || raw.includes('iit') || raw.includes('nit') || raw.includes('iim') || raw.includes('aiims')) {
       result.category = 'institute';
-    } else if (raw.includes('school') || raw.includes('schools') || raw.includes('cbse') || raw.includes('icse')) {
-      result.category = 'school';
     }
 
     // Discipline detection
@@ -201,7 +199,6 @@ export class IndianEducationService {
       universities: this.catalog.filter((i) => i.category === 'university').length,
       colleges: this.catalog.filter((i) => i.category === 'college').length,
       institutes: this.catalog.filter((i) => i.category === 'institute').length,
-      schools: this.catalog.filter((i) => i.category === 'school').length,
     };
 
     return {
