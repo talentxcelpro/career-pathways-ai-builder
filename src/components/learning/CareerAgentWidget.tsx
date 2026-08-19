@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { careerAgentService, UserCareerContext, CuratedCareerAgentResponse } from '@/services/careerAgentService';
 import { learningAggregatorService } from '@/services/learningAggregatorService';
+import { learningStateService } from '@/services/learningStateService';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 import { 
@@ -20,11 +20,11 @@ import {
   BrainCircuit, 
   Zap, 
   Calendar,
-  AlertTriangle,
   RefreshCw,
-  Sliders,
   Send,
-  Compass
+  Compass,
+  Rocket,
+  BookOpen
 } from 'lucide-react';
 
 interface CareerAgentWidgetProps {
@@ -67,7 +67,7 @@ export const CareerAgentWidget: React.FC<CareerAgentWidgetProps> = ({ userProfil
       setTimeout(() => {
         setAgentResult(result);
         setIsReasoning(false);
-      }, 400);
+      }, 300);
     } catch (err) {
       console.warn("Career agent reasoning notice:", err);
       setIsReasoning(false);
@@ -188,22 +188,26 @@ export const CareerAgentWidget: React.FC<CareerAgentWidgetProps> = ({ userProfil
                 <span>Your Personalized Career Assessment</span>
               </div>
               <p className="text-xs font-medium text-slate-700 dark:text-slate-200 leading-relaxed whitespace-pre-line">
-                {agentResult.agentMessage}
+                {agentResult.agentMessage.replace(/\*\*/g, '')}
               </p>
             </div>
 
-            {/* SKILL GAP AUDIT CARDS */}
+            {/* SKILL GAP AUDIT CARDS WITH DEEP LINKING */}
             <div className="space-y-3">
               <h4 className="text-xs font-extrabold text-foreground flex items-center gap-1.5">
                 <Target className="h-4 w-4 text-blue-600" />
-                <span>Skills to Master for Your Target Role</span>
+                <span>Skills to Master for Your Target Role (Click to search courses)</span>
               </h4>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 {agentResult.skillGaps.map((gap, idx) => (
-                  <div key={idx} className="p-3.5 rounded-2xl bg-slate-50 dark:bg-muted/40 border border-slate-200 dark:border-border/60 space-y-1">
+                  <div 
+                    key={idx} 
+                    onClick={() => navigate(`/learning/courses?q=${encodeURIComponent(gap.skillName)}`)}
+                    className="p-3.5 rounded-2xl bg-slate-50 dark:bg-muted/40 hover:bg-blue-50 hover:border-blue-300 transition-colors cursor-pointer border border-slate-200 dark:border-border/60 space-y-1 group"
+                  >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-extrabold text-foreground">{gap.skillName}</span>
+                      <span className="text-xs font-extrabold text-foreground group-hover:text-blue-600 transition-colors">{gap.skillName}</span>
                       <Badge className={gap.gapSeverity === 'HIGH' ? 'bg-amber-100 text-amber-800 text-[9px] font-extrabold' : 'bg-emerald-100 text-emerald-800 text-[9px] font-extrabold'}>
                         {gap.gapSeverity === 'HIGH' ? 'Key Focus' : 'Targeted'}
                       </Badge>
@@ -214,7 +218,7 @@ export const CareerAgentWidget: React.FC<CareerAgentWidgetProps> = ({ userProfil
               </div>
             </div>
 
-            {/* RECOMMENDED LEARNING ROADMAP */}
+            {/* RECOMMENDED LEARNING ROADMAP WITH DEEP LINKING */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <h4 className="text-xs font-extrabold text-foreground flex items-center gap-1.5">
@@ -234,37 +238,80 @@ export const CareerAgentWidget: React.FC<CareerAgentWidgetProps> = ({ userProfil
 
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <h5 className="text-xs font-extrabold text-foreground">{item.title}</h5>
+                          <h5 
+                            onClick={() => navigate(`/learning/courses/${item.course.slug || item.course.id}`)}
+                            className="text-xs font-extrabold text-foreground hover:text-blue-600 cursor-pointer transition-colors"
+                          >
+                            {item.title}
+                          </h5>
                           <Badge variant="outline" className="text-[9px] font-bold">{item.durationText}</Badge>
                         </div>
                         <p className="text-[11px] text-muted-foreground font-medium">{item.reason}</p>
                       </div>
                     </div>
 
-                    <Button
-                      size="sm"
-                      onClick={async () => {
-                        const url = await learningAggregatorService.trackHandoff({
-                          course_id: item.course.id,
-                          provider_id: item.course.provider_id,
-                          provider_name: item.course.provider_name,
-                          source_url: item.course.source_url,
-                          clicked_at: new Date().toISOString(),
-                          source_page: 'career_agent_widget'
-                        });
-                        window.open(url, '_blank', 'noopener,noreferrer');
-                      }}
-                      className="rounded-xl text-xs font-extrabold bg-blue-600 hover:bg-blue-500 text-white gap-1 shadow-sm shrink-0 cursor-pointer"
-                    >
-                      <span>Start Course on {item.course.provider_name}</span>
-                      <ExternalLink className="h-3 w-3" />
-                    </Button>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => navigate(`/learning/courses/${item.course.slug || item.course.id}`)}
+                        className="rounded-xl text-xs font-bold border-slate-300 cursor-pointer"
+                      >
+                        <BookOpen className="h-3 w-3 mr-1" /> View Details
+                      </Button>
+
+                      <Button
+                        size="sm"
+                        onClick={async () => {
+                          await learningStateService.recordHandoffStart(item.course);
+                          const url = await learningAggregatorService.trackHandoff({
+                            course_id: item.course.id,
+                            provider_id: item.course.provider_id,
+                            provider_name: item.course.provider_name,
+                            source_url: item.course.source_url,
+                            clicked_at: new Date().toISOString(),
+                            source_page: 'career_agent_widget'
+                          });
+                          toast.success(`Marked as Started & Redirecting to ${item.course.provider_name}...`);
+                          window.open(url, '_blank', 'noopener,noreferrer');
+                        }}
+                        className="rounded-xl text-xs font-extrabold bg-blue-600 hover:bg-blue-500 text-white gap-1 shadow-sm cursor-pointer"
+                      >
+                        <span>Start Course on {item.course.provider_name}</span>
+                        <ExternalLink className="h-3 w-3" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* MATCHING TALENTXCEL JOBS WIDGET */}
+            {/* 90-DAY ACTION PLAN CHECKLIST WITH DEEP LINKING */}
+            <div className="p-5 rounded-2xl bg-slate-50 dark:bg-muted/40 border border-slate-200 dark:border-border space-y-3">
+              <h4 className="text-xs font-extrabold text-foreground flex items-center gap-1.5">
+                <Calendar className="h-4 w-4 text-purple-600" />
+                <span>Your 90-Day Actionable Milestone Plan</span>
+              </h4>
+
+              <div className="space-y-2">
+                {agentResult.actionPlan90Days.map((plan, idx) => (
+                  <div key={idx} className="p-3 rounded-xl bg-white dark:bg-card border border-slate-200/80 flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5">
+                      <CheckCircle2 className={plan.status === 'IN_PROGRESS' ? 'h-4 w-4 text-blue-600 shrink-0' : 'h-4 w-4 text-slate-300 shrink-0'} />
+                      <div className="space-y-0.5">
+                        <span className="text-[11px] font-extrabold text-foreground">{plan.month}</span>
+                        <p className="text-[11px] text-muted-foreground font-medium">{plan.goal}</p>
+                      </div>
+                    </div>
+                    <Badge variant="outline" className={plan.status === 'IN_PROGRESS' ? 'border-blue-500 text-blue-600 text-[9px] font-extrabold' : 'text-[9px] font-bold'}>
+                      {plan.status === 'IN_PROGRESS' ? 'In Progress' : 'Planned'}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* MATCHING TALENTXCEL JOBS WIDGET WITH DEEP LINKING */}
             <div className="p-5 rounded-2xl bg-gradient-to-r from-slate-900 to-indigo-950 text-white space-y-4 shadow-md">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -278,10 +325,10 @@ export const CareerAgentWidget: React.FC<CareerAgentWidgetProps> = ({ userProfil
                 {agentResult.matchingJobsList.map((job, idx) => (
                   <div 
                     key={idx} 
-                    onClick={() => navigate('/jobs')}
-                    className="p-3 rounded-xl bg-white/10 hover:bg-white/20 transition-colors cursor-pointer space-y-1 border border-white/10"
+                    onClick={() => navigate(`/jobs?q=${encodeURIComponent(job.title)}`)}
+                    className="p-3 rounded-xl bg-white/10 hover:bg-white/20 transition-colors cursor-pointer space-y-1 border border-white/10 group"
                   >
-                    <div className="text-xs font-extrabold text-white">{job.title}</div>
+                    <div className="text-xs font-extrabold text-white group-hover:text-blue-300 transition-colors">{job.title}</div>
                     <div className="text-[10px] text-slate-300 font-medium">{job.company}</div>
                     <div className="text-[10px] text-emerald-400 font-extrabold">{job.salary}</div>
                   </div>
@@ -292,7 +339,7 @@ export const CareerAgentWidget: React.FC<CareerAgentWidgetProps> = ({ userProfil
                 onClick={() => navigate('/jobs')}
                 className="w-full h-10 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-extrabold shadow-sm gap-1 cursor-pointer"
               >
-                <span>Explore Verified Jobs on TalentXcel</span>
+                <span>Explore Verified Jobs on TalentXcel Jobs</span>
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </div>
