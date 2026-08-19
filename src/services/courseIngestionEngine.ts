@@ -41,7 +41,6 @@ export const courseIngestionEngine = {
   normalizeCanonicalUrl(url: string): string {
     try {
       const parsed = new URL(url.trim());
-      // Strip tracking query params
       parsed.searchParams.delete('utm_source');
       parsed.searchParams.delete('utm_medium');
       parsed.searchParams.delete('utm_campaign');
@@ -60,8 +59,9 @@ export const courseIngestionEngine = {
   },
 
   /**
-   * Strict Multi-Stage Verification Pipeline
-   * Moves raw payload through: IMPORTED -> NEEDS_REVIEW -> METADATA_VALIDATED -> SOURCE_CHECKED -> FREE_STATUS_CHECKED -> VERIFIED
+   * Strict Ingestion Pipeline:
+   * Newly ingested course payloads ALWAYS DEFAULT TO 'NEEDS_REVIEW'!
+   * Lifecycle: RAW PAYLOAD -> IMPORTED -> NEEDS_REVIEW -> METADATA_VALIDATED -> SOURCE_CHECKED
    */
   async processRawCourse(payload: RawCoursePayload): Promise<VerificationAuditResult> {
     // Stage 1: IMPORTED
@@ -114,12 +114,8 @@ export const courseIngestionEngine = {
       };
     }
 
-    // Stage 5: FREE_STATUS_CHECKED & CERTIFICATE_STATUS_CHECKED
-    const freeType = payload.claimed_free_type || '100% FREE';
-    const certType = payload.claimed_certificate_type || 'NO_CERTIFICATE';
-
-    // Stage 6: Promotion to VERIFIED
-    const verifiedCourse: Partial<AggregatedCourse> = {
+    // Stage 5: Placed in NEEDS_REVIEW (DO NOT auto-promote to VERIFIED)
+    const pendingCourse: Partial<AggregatedCourse> = {
       id: `course-${cleanSlug}`,
       title: cleanTitle,
       slug: cleanSlug,
@@ -131,55 +127,38 @@ export const courseIngestionEngine = {
       domain,
       level,
       duration_text: payload.duration_text || 'Self-Paced',
-      free_type: freeType,
-      certificate_type: certType,
+      free_type: payload.claimed_free_type || '100% FREE',
+      certificate_type: payload.claimed_certificate_type || 'NO_CERTIFICATE',
       skills: payload.skills || [cleanTitle],
       career_relevance: [category],
-      verification_status: 'VERIFIED',
+      verification_status: 'NEEDS_REVIEW', // Strict Default = NEEDS_REVIEW
       last_verified_at: new Date().toISOString()
     };
 
     return {
       passed: true,
-      stage: 'VERIFIED',
+      stage: 'NEEDS_REVIEW', // Successfully ingested into NEEDS_REVIEW queue
       canonical_url: canonicalUrl,
-      audited_course: verifiedCourse
+      audited_course: pendingCourse
     };
   },
 
   /**
-   * Batch ingest raw courses into Supabase DB with strict verification enforcement
+   * Explicit Administrative Promotion from NEEDS_REVIEW -> VERIFIED
    */
-  async batchIngestCourses(payloads: RawCoursePayload[]): Promise<{ ingestedCount: number; rejectedCount: number; auditLogs: VerificationAuditResult[] }> {
-    let ingestedCount = 0;
-    let rejectedCount = 0;
-    const auditLogs: VerificationAuditResult[] = [];
+  async promoteToVerified(courseId: string): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from('aggregated_courses' as any)
+        .update({
+          verification_status: 'VERIFIED',
+          last_verified_at: new Date().toISOString()
+        })
+        .eq('id', courseId);
 
-    for (const payload of payloads) {
-      const result = await this.processRawCourse(payload);
-      auditLogs.push(result);
-
-      if (result.passed && result.audited_course) {
-        try {
-          const { error } = await supabase
-            .from('aggregated_courses' as any)
-            .insert(result.audited_course);
-
-          if (!error) {
-            ingestedCount++;
-          } else {
-            rejectedCount++;
-            result.passed = false;
-            result.rejection_reason = error.message;
-          }
-        } catch {
-          rejectedCount++;
-        }
-      } else {
-        rejectedCount++;
-      }
+      return !error;
+    } catch {
+      return false;
     }
-
-    return { ingestedCount, rejectedCount, auditLogs };
   }
 };
