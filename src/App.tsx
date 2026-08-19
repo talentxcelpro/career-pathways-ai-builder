@@ -169,6 +169,11 @@ const JobLocationPage                 = lazy(() => import('@/pages/seo/JobLocati
 
 const CareerPlatformShowcasePage = lazy(() => import("./pages/CareerPlatformShowcase"));
 const Jobs1 = lazy(() => import("./pages/Jobs1"));
+const GlobalPrograms = lazy(() => import('./pages/colleges/GlobalPrograms'));
+const Scholarships = lazy(() => import('./pages/colleges/Scholarships'));
+const CareerPathway = lazy(() => import('./pages/colleges/CareerPathway'));
+const Colleges = lazy(() => import('./pages/Colleges'));
+const CollegeDetail = lazy(() => import('./pages/colleges/CollegeDetail'));
 
 // ── Infrastructure imports (kept static — tiny, needed on every page) ─────
 import { turboCore } from "@/utils/turboCore";
@@ -337,6 +342,15 @@ const App = () => {
                 <Route path="/jobs/:role/:salaryRange/:city" element={<Suspense fallback={<div>Loading...</div>}><JobsByRoleSalaryCity /></Suspense>} />
                 <Route path="/jobs/remote/:role/:city" element={<Suspense fallback={<div>Loading...</div>}><JobsByRemoteRoleCity /></Suspense>} />
                 <Route path="/jobs/top-companies/:company/:role/:city" element={<Suspense fallback={<div>Loading...</div>}><JobsByCompanyRoleCity /></Suspense>} />
+                
+                {/* ── Global Education & College Routes (Explicit Precedence) ── */}
+                <Route path="/colleges" element={<Suspense fallback={null}><Colleges /></Suspense>} />
+                <Route path="/colleges/global-programs" element={<Suspense fallback={null}><GlobalPrograms /></Suspense>} />
+                <Route path="/colleges/global-programs/:slug" element={<Suspense fallback={null}><GlobalPrograms /></Suspense>} />
+                <Route path="/colleges/scholarships" element={<Suspense fallback={null}><Scholarships /></Suspense>} />
+                <Route path="/colleges/pathway" element={<Suspense fallback={null}><CareerPathway /></Suspense>} />
+                <Route path="/colleges/:id" element={<Suspense fallback={null}><CollegeDetail /></Suspense>} />
+                <Route path="/colleges/:id/:subTab" element={<Suspense fallback={null}><CollegeDetail /></Suspense>} />
                                 
                                 {navItems.map((item: NavItem) => {
                                   console.log('🔍 Registering route:', item.to, 'Title:', item.title);
