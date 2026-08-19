@@ -5,6 +5,7 @@ const LearningHub = lazy(() => import('../pages/LearningHub'));
 const AggregatedCourseDetail = lazy(() => import('../pages/learning/AggregatedCourseDetail'));
 const CareerPathwayDetail = lazy(() => import('../pages/learning/CareerPathwayDetail'));
 const ProviderPage = lazy(() => import('../pages/learning/ProviderPage'));
+const AllProvidersPage = lazy(() => import('../pages/learning/AllProvidersPage'));
 const AdminLearningAggregator = lazy(() => import('../pages/admin/AdminLearningAggregator'));
 const AdminLearningCatalogueHealth = lazy(() => import('../pages/admin/AdminLearningCatalogueHealth'));
 const AdminLearningProviders = lazy(() => import('../pages/admin/AdminLearningProviders'));
@@ -67,6 +68,12 @@ export const learningRoutes = [
     title: "Learning Path Detail",
     to: "/learning/paths/:id",
     page: <Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Career Pathway...</div>}><CareerPathwayDetail /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "All Public Learning Providers Directory",
+    to: "/learning/providers",
+    page: <Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Learning Providers...</div>}><AllProvidersPage /></Suspense>,
     isPublic: true,
   },
   {
