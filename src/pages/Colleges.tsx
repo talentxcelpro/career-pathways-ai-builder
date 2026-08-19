@@ -21,7 +21,8 @@ import {
   ArrowRight,
   CheckCircle,
   Share2,
-  GitCompare
+  GitCompare,
+  Sparkles
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ImageWithFallback } from '@/components/common/ImageWithFallback';
@@ -143,41 +144,67 @@ const Colleges = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Header with TalentXcel branding */}
+    <div className="min-h-screen bg-slate-50/40">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14">
+        {/* Hero Section */}
         <div className="text-center mb-10">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <img 
-              src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
-              alt="TalentXcel" 
-              className="h-12 w-12 rounded-lg"
-            />
-            <div>
-              <h1 className="text-4xl font-bold text-[#1E2A78] mb-2 font-display">
-                TalentXcel AI College Finder
-              </h1>
-              <p className="text-lg text-text-secondary max-w-2xl">
-                Your intelligent guide to choosing the perfect college—based on real data and student feedback.
-              </p>
-            </div>
+          <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 border border-indigo-200/80 rounded-full px-4 py-1 text-xs font-bold uppercase tracking-wider mb-4">
+            <Sparkles className="h-3.5 w-3.5 text-indigo-600" />
+            TALENTXCEL EDUCATION INTELLIGENCE
           </div>
-          <div className="flex justify-center gap-4 mt-6">
-            <Button variant="outline" size="sm" className="rounded-xl border-[#28C76F] text-[#28C76F] hover:bg-[#28C76F] hover:text-white">Add Your College</Button>
-            <Button variant="outline" size="sm" className="rounded-xl border-[#28C76F] text-[#28C76F] hover:bg-[#28C76F] hover:text-white">Compare Colleges</Button>
+          <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-3">
+            Find the education path that fits your future.
+          </h1>
+          <p className="text-base sm:text-lg text-slate-600 max-w-3xl mx-auto">
+            Explore Indian colleges, global degrees, scholarships and AI-powered career pathways — backed by verified official evidence.
+          </p>
+
+          {/* Goal Search Box (What do you want to become?) */}
+          <div className="max-w-2xl mx-auto mt-8 bg-white rounded-3xl p-3 shadow-md border border-slate-200/80 flex flex-col sm:flex-row items-center gap-2">
+            <div className="relative flex-1 w-full">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+              <Input
+                placeholder='What do you want to become? "AI researcher, software engineer, doctor..."'
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-12 h-13 text-sm sm:text-base border-0 focus-visible:ring-0 shadow-none text-slate-900 font-medium"
+              />
+            </div>
+            <Button
+              className="w-full sm:w-auto h-12 px-6 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shrink-0"
+              asChild
+            >
+              <Link to="/colleges/pathway">
+                Find My Path <ArrowRight className="ml-1.5 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+
+          {/* Unified Education Navigation Tabs */}
+          <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-3 mt-8">
+            <Button variant="default" size="sm" className="rounded-xl bg-slate-900 text-white font-semibold text-xs h-9" asChild>
+              <Link to="/colleges">🇮🇳 Indian Colleges</Link>
+            </Button>
+            <Button variant="outline" size="sm" className="rounded-xl border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs h-9" asChild>
+              <Link to="/colleges/global-programs">🌍 Global Degrees & ₹0 Programs</Link>
+            </Button>
+            <Button variant="outline" size="sm" className="rounded-xl border-slate-200 bg-white hover:bg-slate-50 text-purple-700 font-semibold text-xs h-9" asChild>
+              <Link to="/colleges/scholarships">🎓 Global Scholarships</Link>
+            </Button>
+            <Button variant="outline" size="sm" className="rounded-xl border-indigo-200 bg-indigo-50/70 hover:bg-indigo-100 text-indigo-800 font-semibold text-xs h-9" asChild>
+              <Link to="/colleges/pathway">✨ AI Career Pathway</Link>
+            </Button>
           </div>
         </div>
 
-        {/* Stats with glassmorphism - more compact */}
+        {/* Stats Strip */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
           {stats.map((stat, index) => (
-            <Card key={index} className="text-center border-0 bg-white/80 backdrop-blur-apple shadow-apple-light rounded-2xl hover:shadow-apple-medium transition-all duration-300">
-              <CardContent className="p-4">
-                <stat.icon className="h-8 w-8 text-primary mx-auto mb-2" />
-                <div className="text-2xl font-bold text-text-primary font-display mb-1">{stat.value}</div>
-                <div className="text-sm text-text-secondary font-medium">{stat.label}</div>
-              </CardContent>
-            </Card>
+            <div key={index} className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm text-center">
+              <stat.icon className="h-6 w-6 text-indigo-600 mx-auto mb-1.5" />
+              <div className="text-xl sm:text-2xl font-black text-slate-900 font-mono">{stat.value}</div>
+              <div className="text-xs text-slate-500 font-medium">{stat.label}</div>
+            </div>
           ))}
         </div>
 

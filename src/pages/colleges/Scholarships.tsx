@@ -1,4 +1,4 @@
-﻿// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
 // TalentXcel — Global Scholarships & Funding Page
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -124,197 +124,202 @@ export default function Scholarships() {
   const zeroTuitionCount = allScholarships.filter((s) => s.can_make_tuition_zero).length;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
+    <div className="min-h-screen bg-slate-50/50 p-4 sm:p-6 md:p-10 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-          <Award className="h-8 w-8 text-purple-600" />
-          Global Scholarships &amp; Funding
+      <div className="mb-8">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-900 mb-3 border border-purple-200">
+          <Award className="w-3.5 h-3.5 text-purple-700" />
+          GLOBAL FUNDING MARKETPLACE
+        </div>
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+          Don't let money decide what you can become.
         </h1>
-        <p className="mt-2 text-gray-600 text-sm md:text-base max-w-3xl">
-          Verified scholarships from official providers. Deadlines and amounts are sourced directly
-          from official sources.
+        <p className="mt-2 text-slate-600 text-base sm:text-lg max-w-3xl">
+          Verified global scholarships and government funding opportunities. Sourced directly from official providers.
         </p>
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        {[
-          {
-            icon: <Award className="h-5 w-5 text-purple-500" />,
-            label: 'Total Scholarships',
-            value: totalCount,
-          },
-          {
-            icon: <ShieldCheck className="h-5 w-5 text-green-500" />,
-            label: 'Full Coverage',
-            value: fullCoverageCount,
-          },
-          {
-            icon: <DollarSign className="h-5 w-5 text-blue-500" />,
-            label: 'Can Make Tuition ₹0',
-            value: zeroTuitionCount,
-          },
-        ].map((stat) => (
-          <Card key={stat.label}>
-            <CardContent className="p-4 text-center">
-              <div className="flex justify-center mb-1">{stat.icon}</div>
-              <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
-              <div className="text-xs text-gray-500 mt-1">{stat.label}</div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm">
+          <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono">{totalCount}</div>
+          <div className="text-xs text-slate-500 mt-1">Verified Scholarships</div>
+        </div>
+        <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm">
+          <div className="text-2xl sm:text-3xl font-black text-emerald-600 font-mono">{fullCoverageCount}</div>
+          <div className="text-xs text-slate-500 mt-1">100% Full Coverage</div>
+        </div>
+        <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm">
+          <div className="text-2xl sm:text-3xl font-black text-purple-600 font-mono">{zeroTuitionCount}</div>
+          <div className="text-xs text-slate-500 mt-1">Can Make Tuition ₹0</div>
+        </div>
+        <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm">
+          <div className="text-2xl sm:text-3xl font-black text-sky-600 font-mono">100%</div>
+          <div className="text-xs text-slate-500 mt-1">Verified Primary Sources</div>
+        </div>
       {/* Filter bar */}
-      <div className="flex flex-wrap gap-3 mb-6 items-center">
-        <div className="relative flex-1 min-w-[180px] max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+      <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 mb-8 space-y-3">
+        <div className="relative">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <Input
-            placeholder="Search scholarships…"
+            placeholder="Search scholarship name, provider, country, or study field..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
+            className="pl-10 h-11 text-sm bg-slate-50 border-slate-200 rounded-xl"
           />
         </div>
 
-        <Select value={coverage} onValueChange={(v) => setCoverage(v as 'all' | ScholarshipCoverage)}>
-          <SelectTrigger className="w-[190px]">
-            <SelectValue placeholder="Coverage Type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Coverage Types</SelectItem>
-            <SelectItem value="FULL">Full Coverage</SelectItem>
-            <SelectItem value="TUITION">Tuition Only</SelectItem>
-            <SelectItem value="PARTIAL">Partial</SelectItem>
-            <SelectItem value="LIVING">Living Stipend</SelectItem>
-            <SelectItem value="TRAVEL">Travel</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex flex-wrap gap-2.5 items-center pt-1">
+          <Select
+            value={coverage || 'all'}
+            onValueChange={(v) => setCoverage(v === 'all' ? '' : (v as ScholarshipCoverage))}
+          >
+            <SelectTrigger className="w-[170px] h-9 text-xs rounded-xl">
+              <SelectValue placeholder="Coverage Type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Coverage Types</SelectItem>
+              <SelectItem value="FULL">Full Coverage (Tuition + Living)</SelectItem>
+              <SelectItem value="TUITION">Tuition Fee Only</SelectItem>
+              <SelectItem value="LIVING">Living Stipend Only</SelectItem>
+              <SelectItem value="PARTIAL">Partial Waiver</SelectItem>
+              <SelectItem value="TRAVEL">Travel Grant</SelectItem>
+            </SelectContent>
+          </Select>
 
-        <Button
-          variant={fullCoverageOnly ? 'default' : 'outline'}
-          onClick={() => setFullCoverageOnly((prev) => !prev)}
-          className={fullCoverageOnly ? 'bg-green-600 hover:bg-green-700 text-white' : ''}
-        >
-          Full Coverage Only
-        </Button>
+          <Button
+            variant={fullCoverageOnly ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setFullCoverageOnly((prev) => !prev)}
+            className={`h-9 px-3.5 rounded-xl text-xs font-semibold ${
+              fullCoverageOnly ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'border-slate-200'
+            }`}
+          >
+            100% Full Funding Only
+          </Button>
+
+          <div className="ml-auto text-xs text-slate-500 font-medium">
+            {isLoading ? 'Loading…' : `${scholarships.length} scholarships available`}
+          </div>
+        </div>
       </div>
 
-      {/* Results count */}
-      <p className="text-sm text-gray-500 mb-4">
-        {isLoading
-          ? 'Loading…'
-          : `${scholarships.length} scholarship${scholarships.length !== 1 ? 's' : ''} found`}
-      </p>
-
-      {/* Scholarship cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {/* Scholarship Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {scholarships.map((scholarship, idx) => {
           const covCfg = COVERAGE_CONFIG[scholarship.coverage];
+          const isFull = scholarship.coverage === 'FULL';
 
           return (
-            <Card
+            <div
               key={scholarship.id ?? `${scholarship.title}-${idx}`}
-              className="flex flex-col hover:shadow-md transition-shadow"
+              className="bg-white rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-lg transition-all flex flex-col p-5 sm:p-6"
             >
-              <CardHeader className="pb-2">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">
-                      {flagFor(scholarship.provider_country)} {scholarship.provider_country}
-                    </p>
-                    <p className="text-sm text-gray-700 font-semibold leading-snug mt-0.5">
-                      {scholarship.provider}
-                    </p>
-                  </div>
-                  {scholarship.verification_status === 'VERIFIED' && (
-                    <ShieldCheck
-                      className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5"
-                      title="Verified"
-                    />
-                  )}
-                </div>
-                <CardTitle className="text-base leading-tight mt-2">
-                  {scholarship.title}
-                </CardTitle>
-              </CardHeader>
+              {/* Header: Provider + Verified Badge */}
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                  <span>{flagFor(scholarship.provider_country)}</span>
+                  <span>{scholarship.provider_country}</span>
+                </span>
+                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                  VERIFIED
+                </span>
+              </div>
 
-              <CardContent className="flex flex-col gap-3 flex-1">
-                {/* Coverage badge */}
-                <div>
-                  <span
-                    className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${covCfg.className}`}
-                  >
+              {/* Provider Name */}
+              <div className="text-xs font-medium text-slate-500 line-clamp-1 mb-1">
+                {scholarship.provider}
+              </div>
+
+              {/* Scholarship Title */}
+              <h3 className="text-lg font-bold text-slate-900 leading-snug mb-3">
+                {scholarship.title}
+              </h3>
+
+              {/* WHAT DOES IT ACTUALLY PAY? (Dominant Hero Block) */}
+              <div className="bg-slate-50 rounded-2xl p-4 mb-4 border border-slate-100 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                    Coverage Breakdown
+                  </span>
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold border ${covCfg.className}`}>
                     {covCfg.label}
                   </span>
                 </div>
 
-                {/* Coverage detail */}
-                {scholarship.coverage_detail && (
-                  <p className="text-xs text-gray-500 italic">{scholarship.coverage_detail}</p>
-                )}
-
-                {/* Amount */}
-                {scholarship.amount_usd && (
-                  <div className="flex items-center gap-1.5 text-sm font-semibold text-gray-800">
-                    <DollarSign className="h-4 w-4 text-green-600" />
-                    Up to ${(scholarship.amount_usd / 1000).toFixed(0)}k / year
+                <div className="space-y-1.5 pt-1 text-xs">
+                  <div className="flex justify-between text-slate-700">
+                    <span>Tuition:</span>
+                    <span className="font-semibold text-emerald-700">
+                      {isFull ? '100% Fully Covered' : 'Tuition Waiver'}
+                    </span>
                   </div>
-                )}
-
-                {/* Eligible levels */}
-                {scholarship.eligible_levels.length > 0 && (
-                  <div className="flex flex-wrap gap-1">
-                    {scholarship.eligible_levels.map((l) => (
-                      <Badge key={l} variant="secondary" className="text-xs">
-                        {LEVEL_LABELS[l]}
-                      </Badge>
-                    ))}
+                  <div className="flex justify-between text-slate-700">
+                    <span>Living / Stipend:</span>
+                    <span className="font-medium text-slate-900">
+                      {scholarship.amount_usd ? `Up to $${(scholarship.amount_usd / 1000).toFixed(0)}k/year` : (isFull ? 'Monthly Living Stipend' : 'Self-funded')}
+                    </span>
                   </div>
-                )}
-
-                {/* Deadline */}
-                {scholarship.deadline && (
-                  <div className={`flex items-center gap-1.5 text-xs ${deadlineClass(scholarship.deadline)}`}>
-                    <CalendarClock className="h-3.5 w-3.5" />
-                    Deadline: {formatDeadline(scholarship.deadline)}
-                  </div>
-                )}
-
-                {/* Can make tuition ₹0 */}
-                {scholarship.can_make_tuition_zero && (
-                  <div className="inline-flex w-fit items-center gap-1 bg-green-50 text-green-700 border border-green-200 rounded-full px-2.5 py-0.5 text-xs font-semibold">
-                    <ShieldCheck className="h-3 w-3" />
-                    Can make tuition ₹0
-                  </div>
-                )}
-
-                {/* Globe link */}
-                <div className="mt-auto pt-1">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full border-purple-300 text-purple-700 hover:bg-purple-50"
-                    asChild
-                  >
-                    <a href={scholarship.official_url} target="_blank" rel="noopener noreferrer">
-                      Apply / Learn More <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
-                    </a>
-                  </Button>
+                  {isFull && (
+                    <div className="flex justify-between text-slate-700">
+                      <span>Travel & Insurance:</span>
+                      <span className="font-medium text-slate-900">Included</span>
+                    </div>
+                  )}
                 </div>
-              </CardContent>
-            </Card>
+
+                {scholarship.can_make_tuition_zero && (
+                  <div className="mt-2 text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1.5 rounded-xl border border-emerald-200/60 flex items-center gap-1.5">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    Potential Student Out-of-Pocket: €0 / ₹0
+                  </div>
+                )}
+              </div>
+
+              {/* Eligible Levels */}
+              {scholarship.eligible_levels.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mb-4">
+                  {scholarship.eligible_levels.map((l) => (
+                    <Badge key={l} variant="secondary" className="text-xs font-medium rounded-lg">
+                      {LEVEL_LABELS[l]}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+
+              {/* Deadline Indicator */}
+              {scholarship.deadline && (
+                <div className={`flex items-center gap-1.5 text-xs mb-5 ${deadlineClass(scholarship.deadline)}`}>
+                  <CalendarClock className="h-4 w-4" />
+                  Application Deadline: {formatDeadline(scholarship.deadline)}
+                </div>
+              )}
+
+              {/* CTA */}
+              <div className="mt-auto pt-2 border-t border-slate-100">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full text-xs font-semibold rounded-xl border-purple-200 text-purple-800 hover:bg-purple-50 h-9"
+                  asChild
+                >
+                  <a href={scholarship.official_url} target="_blank" rel="noopener noreferrer">
+                    Apply on Official Portal <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
+                  </a>
+                </Button>
+              </div>
+            </div>
           );
         })}
       </div>
 
       {/* Empty state */}
       {!isLoading && scholarships.length === 0 && (
-        <div className="text-center py-16 text-gray-500">
-          <Globe className="h-12 w-12 mx-auto mb-3 text-gray-300" />
-          <p className="font-medium">No scholarships match your filters.</p>
-          <p className="text-sm mt-1">Try adjusting your search or removing filters.</p>
+        <div className="text-center py-16 bg-white rounded-3xl border border-slate-200 mt-6">
+          <Globe className="h-12 w-12 mx-auto mb-3 text-slate-300" />
+          <p className="font-bold text-slate-800 text-lg">No scholarships match your filters.</p>
+          <p className="text-sm text-slate-500 mt-1">Try selecting a different coverage type or adjusting the search keywords.</p>
         </div>
       )}
     </div>

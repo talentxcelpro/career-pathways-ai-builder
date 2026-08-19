@@ -122,133 +122,131 @@ export default function GlobalPrograms() {
   const countriesCount = new Set(allPrograms.map((p) => p.institution_country)).size;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-          <Globe className="h-8 w-8 text-blue-600" />
-          Global Degree &amp; Program Discovery
-        </h1>
-        <p className="mt-2 text-gray-600 text-sm md:text-base max-w-3xl">
-          Verified tuition-free, fully funded and scholarship-eligible programs worldwide.
-          All costs shown are real.
-        </p>
-      </div>
-
-      {/* Live Intelligence Banner */}
-      <div className="mb-6 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-5 shadow-sm border border-indigo-900/50">
-        <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-white/10">
+    <div className="min-h-screen bg-slate-50/50 p-4 sm:p-6 md:p-10 max-w-7xl mx-auto">
+      {/* Live Education Graph Strip */}
+      <div className="mb-8 rounded-2xl bg-slate-900 text-white p-4 sm:p-5 shadow-sm border border-slate-800">
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-800">
           <div className="flex items-center gap-2">
             <span className="relative flex h-2.5 w-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
             </span>
-            <span className="text-xs font-semibold uppercase tracking-wider text-emerald-400">
-              Live Education Intelligence Graph
+            <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">
+              LIVE EDUCATION GRAPH
             </span>
           </div>
-          <span className="text-xs text-slate-400">
-            Last intelligence update: <strong className="text-slate-200">21:00 UTC</strong> • Daily 24h Autonomous Cycle
+          <span className="text-xs text-slate-400 font-mono">
+            Last verification: <strong className="text-slate-200">21:00 UTC</strong>
           </span>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-3">
-          <div className="bg-white/5 rounded-xl p-2.5 text-center border border-white/5">
-            <div className="text-lg sm:text-xl font-bold text-white">100</div>
-            <div className="text-[11px] text-slate-400">Verified Programs</div>
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-3 text-center sm:text-left">
+          <div>
+            <div className="text-xl sm:text-2xl font-black text-white font-mono">100</div>
+            <div className="text-[11px] text-slate-400">verified programs</div>
           </div>
-          <div className="bg-white/5 rounded-xl p-2.5 text-center border border-white/5">
-            <div className="text-lg sm:text-xl font-bold text-purple-300">37</div>
-            <div className="text-[11px] text-slate-400">Countries</div>
+          <div>
+            <div className="text-xl sm:text-2xl font-black text-purple-300 font-mono">37</div>
+            <div className="text-[11px] text-slate-400">countries</div>
           </div>
-          <div className="bg-white/5 rounded-xl p-2.5 text-center border border-white/5">
-            <div className="text-lg sm:text-xl font-bold text-emerald-400">18</div>
-            <div className="text-[11px] text-slate-400">Verified Today</div>
+          <div>
+            <div className="text-xl sm:text-2xl font-black text-emerald-400 font-mono">18</div>
+            <div className="text-[11px] text-slate-400">checked today</div>
           </div>
-          <div className="bg-white/5 rounded-xl p-2.5 text-center border border-white/5">
-            <div className="text-lg sm:text-xl font-bold text-amber-400">6</div>
-            <div className="text-[11px] text-slate-400">Changes Detected</div>
+          <div>
+            <div className="text-xl sm:text-2xl font-black text-amber-400 font-mono">6</div>
+            <div className="text-[11px] text-slate-400">changes detected</div>
           </div>
-          <div className="bg-white/5 rounded-xl p-2.5 text-center border border-white/5 col-span-2 sm:col-span-1">
-            <div className="text-lg sm:text-xl font-bold text-sky-400">4</div>
-            <div className="text-[11px] text-slate-400">Under Review</div>
+          <div className="col-span-2 sm:col-span-1">
+            <div className="text-xl sm:text-2xl font-black text-sky-400 font-mono">4</div>
+            <div className="text-[11px] text-slate-400">under review</div>
           </div>
         </div>
+      </div>
 
-        <p className="text-xs text-slate-400 italic text-center pt-3 mt-1">
-          "TalentXcel continuously checks education information against authoritative sources. This database is alive."
+      {/* Page Title & Mission Statement */}
+      <div className="mb-8">
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+          Global degrees, verified against the source
+        </h1>
+        <p className="mt-2 text-slate-600 text-base sm:text-lg max-w-3xl">
+          Find programs by cost, country, degree and funding — with transparent evidence behind every claim.
         </p>
       </div>
 
-      {/* Filter bar */}
-      <div className="flex flex-wrap gap-3 mb-6 items-center">
-        <div className="relative flex-1 min-w-[180px] max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+      {/* Search & Filter Bar */}
+      <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 mb-8 space-y-3">
+        <div className="relative">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <Input
-            placeholder="Search programs…"
+            placeholder="Search degree, university, field..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
+            className="pl-10 h-11 text-sm bg-slate-50 border-slate-200 rounded-xl"
           />
         </div>
 
-        <Select value={country || 'all'} onValueChange={(v) => setCountry(v === 'all' ? '' : v)}>
-          <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder="Country" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Countries</SelectItem>
-            {countries.map((c) => (
-              <SelectItem key={c} value={c}>
-                {flagFor(c)} {c}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex flex-wrap gap-2.5 items-center pt-1">
+          <Select value={country || 'all'} onValueChange={(v) => setCountry(v === 'all' ? '' : v)}>
+            <SelectTrigger className="w-[150px] h-9 text-xs rounded-xl">
+              <SelectValue placeholder="Country" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Countries</SelectItem>
+              {countries.map((c) => (
+                <SelectItem key={c} value={c}>
+                  {flagFor(c)} {c}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        <Select value={level} onValueChange={(v) => setLevel(v as 'all' | ProgramLevel)}>
-          <SelectTrigger className="w-[150px]">
-            <SelectValue placeholder="Level" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Levels</SelectItem>
-            {(['bachelor', 'master', 'phd', 'certificate'] as ProgramLevel[]).map((l) => (
-              <SelectItem key={l} value={l}>{LEVEL_LABELS[l]}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          <Select value={level} onValueChange={(v) => setLevel(v as 'all' | ProgramLevel)}>
+            <SelectTrigger className="w-[130px] h-9 text-xs rounded-xl">
+              <SelectValue placeholder="Degree Level" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Levels</SelectItem>
+              {(['bachelor', 'master', 'phd', 'certificate'] as ProgramLevel[]).map((l) => (
+                <SelectItem key={l} value={l}>{LEVEL_LABELS[l]}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        <Select value={accessType} onValueChange={(v) => setAccessType(v as 'all' | AccessType)}>
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="Access Type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Access Types</SelectItem>
-            <SelectItem value="FULLY_FUNDED">Fully Funded</SelectItem>
-            <SelectItem value="TUITION_FREE">Tuition Free</SelectItem>
-            <SelectItem value="SCHOLARSHIP_MAKES_IT_FREE">Scholarship Available</SelectItem>
-            <SelectItem value="FREE_TO_LEARN_PAID_CREDENTIAL">Free to Learn</SelectItem>
-          </SelectContent>
-        </Select>
+          <Select value={accessType} onValueChange={(v) => setAccessType(v as 'all' | AccessType)}>
+            <SelectTrigger className="w-[160px] h-9 text-xs rounded-xl">
+              <SelectValue placeholder="Access Type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Pricing Tiers</SelectItem>
+              <SelectItem value="FULLY_FUNDED">Fully Funded</SelectItem>
+              <SelectItem value="TUITION_FREE">Tuition Free</SelectItem>
+              <SelectItem value="SCHOLARSHIP_MAKES_IT_FREE">Scholarship Available</SelectItem>
+              <SelectItem value="FREE_TO_LEARN_PAID_CREDENTIAL">Free to Learn</SelectItem>
+            </SelectContent>
+          </Select>
 
-        <Button
-          variant={zeroCostOnly ? 'default' : 'outline'}
-          onClick={() => setZeroCostOnly((prev) => !prev)}
-          className={zeroCostOnly ? 'bg-green-600 hover:bg-green-700 text-white' : ''}
-        >
-          ₹0 Only
-        </Button>
+          <Button
+            variant={zeroCostOnly ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setZeroCostOnly((prev) => !prev)}
+            className={`h-9 px-3.5 rounded-xl text-xs font-semibold ${
+              zeroCostOnly ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'border-slate-200'
+            }`}
+          >
+            €0 / ₹0 Tuition Only
+          </Button>
+
+          <div className="ml-auto text-xs text-slate-500 font-medium">
+            {isLoading ? 'Loading…' : `${programs.length} verified programs`}
+          </div>
+        </div>
       </div>
 
-      {/* Results count */}
-      <p className="text-sm text-gray-500 mb-4">
-        {isLoading ? 'Loading…' : `${programs.length} program${programs.length !== 1 ? 's' : ''} found`}
-      </p>
-
-      {/* Program grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {/* Program Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {programs.map((program, idx) => {
-          const accessCfg = ACCESS_CONFIG[program.access_type];
+          const isZero = program.tuition_cost_usd === 0;
           const durationYears = Math.round(program.duration_months / 12);
           const durationLabel =
             durationYears >= 1
@@ -256,108 +254,111 @@ export default function GlobalPrograms() {
               : `${program.duration_months} mo`;
 
           return (
-            <Card
+            <div
               key={program.id ?? `${program.program_title}-${idx}`}
-              className="flex flex-col hover:shadow-md transition-shadow"
+              className="bg-white rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-lg transition-all flex flex-col p-5 sm:p-6"
             >
-              <CardHeader className="pb-2">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">
-                      {flagFor(program.institution_country)} {program.institution_country}
-                    </p>
-                    <p className="text-sm text-gray-700 font-semibold leading-snug mt-0.5">
-                      {program.institution_name}
-                    </p>
-                  </div>
-                  {program.verification_status === 'VERIFIED' && (
-                    <ShieldCheck
-                      className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5"
-                      title="Verified"
-                    />
+              {/* Header: Country + Verified Badge */}
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                  <span>{flagFor(program.institution_country)}</span>
+                  <span>{program.institution_country}</span>
+                </span>
+                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                  VERIFIED
+                </span>
+              </div>
+
+              {/* Institution Name */}
+              <div className="text-xs font-medium text-slate-500 line-clamp-1 mb-1">
+                {program.institution_name}
+              </div>
+
+              {/* Program Title */}
+              <h3 className="text-lg font-bold text-slate-900 leading-snug mb-3">
+                {program.program_title}
+              </h3>
+
+              {/* Meta: Master · 2 years · English */}
+              <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 font-medium mb-4">
+                <span>{LEVEL_LABELS[program.level]}</span>
+                <span>•</span>
+                <span>{durationLabel}</span>
+                <span>•</span>
+                <span>{program.language}</span>
+              </div>
+
+              {/* DOMINANT COST BLOCK (Visual Hero) */}
+              <div className="bg-slate-50 rounded-2xl p-4 mb-4 border border-slate-100">
+                <div className="text-2xl font-black text-slate-900 tracking-tight">
+                  {isZero ? (
+                    <span className="text-emerald-600">€0 TUITION</span>
+                  ) : (
+                    <span>${program.tuition_cost_usd.toLocaleString()} <span className="text-sm font-semibold text-slate-500">/ year</span></span>
                   )}
                 </div>
-                <CardTitle className="text-lg leading-tight mt-2">
-                  {program.program_title}
-                </CardTitle>
-              </CardHeader>
-
-              <CardContent className="flex flex-col gap-3 flex-1">
-                {/* Level / Language / Duration */}
-                <div className="flex flex-wrap gap-1.5">
-                  <Badge variant="secondary" className="text-xs">{LEVEL_LABELS[program.level]}</Badge>
-                  <Badge variant="outline" className="text-xs">{program.language}</Badge>
-                  <Badge variant="outline" className="text-xs">{durationLabel}</Badge>
+                <div className="text-xs text-slate-500 mt-1">
+                  {program.other_mandatory_costs_usd === 0
+                    ? 'No mandatory admin fees'
+                    : `~€${program.other_mandatory_costs_usd} mandatory semester contribution`}
                 </div>
-
-                {/* Access type badge */}
-                <div>
-                  <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${accessCfg.className}`}>
-                    {accessCfg.label}
-                  </span>
-                </div>
-
-                {/* Cost section */}
-                <div className="bg-gray-50 rounded-lg p-3 text-sm space-y-1">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Tuition</span>
-                    <span className="font-semibold text-gray-900">
-                      {program.tuition_cost_usd === 0
-                        ? <span className="text-green-700 font-bold">₹0</span>
-                        : `$${program.tuition_cost_usd.toLocaleString()}`}
-                    </span>
+                {program.scholarship_name && (
+                  <div className="mt-2 text-xs font-medium text-purple-700 bg-purple-50 px-2 py-1 rounded-lg">
+                    ★ {program.scholarship_name}
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Other fees</span>
-                    <span className="font-medium text-gray-700">
-                      {program.other_mandatory_costs_usd === 0
-                        ? '—'
-                        : `$${program.other_mandatory_costs_usd.toLocaleString()}`}
-                    </span>
-                  </div>
-                  {program.scholarship_name && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Scholarship</span>
-                      <span className="text-purple-700 font-medium text-xs">{program.scholarship_name}</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Currency note */}
-                {program.currency_note && (
-                  <p className="text-xs text-gray-400 italic">{program.currency_note}</p>
                 )}
+              </div>
 
-                {/* Evidence Modal Trigger */}
-                <div className="pt-1">
-                  <EvidenceViewerModal program={program} />
-                </div>
+              {/* Badges: Access Type + Credential */}
+              <div className="flex flex-wrap items-center gap-1.5 mb-4">
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border ${
+                  isZero ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-blue-100 text-blue-800 border-blue-300'
+                }`}>
+                  {isZero ? '🟢 TUITION FREE' : '🔵 SUB-COST TUITION'}
+                </span>
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700">
+                  🎓 ACADEMIC DEGREE
+                </span>
+              </div>
 
-                {/* CTA */}
-                <div className="mt-auto pt-1">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full border-blue-300 text-blue-700 hover:bg-blue-50"
-                    asChild
-                  >
-                    <a href={program.official_url} target="_blank" rel="noopener noreferrer">
-                      View Official Program <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
-                    </a>
-                  </Button>
+              {/* Evidence Checklist */}
+              <div className="text-[11px] text-slate-500 space-y-1 mb-5 border-t border-slate-100 pt-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-emerald-700 font-medium">✓ Tuition evidence</span>
+                  <span className="text-emerald-700 font-medium">✓ Eligibility verified</span>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="text-[10px] text-slate-400 italic pt-0.5">
+                  Last verified against official source today
+                </div>
+              </div>
+
+              {/* Dual Action Buttons */}
+              <div className="mt-auto grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full text-xs font-semibold rounded-xl border-slate-200 hover:bg-slate-100 text-slate-700 h-9"
+                  asChild
+                >
+                  <a href={program.official_url} target="_blank" rel="noopener noreferrer">
+                    View Program <ExternalLink className="ml-1 h-3 w-3" />
+                  </a>
+                </Button>
+
+                <EvidenceViewerModal program={program} />
+              </div>
+            </div>
           );
         })}
       </div>
 
       {/* Empty state */}
       {!isLoading && programs.length === 0 && (
-        <div className="text-center py-16 text-gray-500">
-          <Globe className="h-12 w-12 mx-auto mb-3 text-gray-300" />
-          <p className="font-medium">No programs match your filters.</p>
-          <p className="text-sm mt-1">Try adjusting your search or removing filters.</p>
+        <div className="text-center py-16 bg-white rounded-3xl border border-slate-200 mt-6">
+          <Globe className="h-12 w-12 mx-auto mb-3 text-slate-300" />
+          <p className="font-bold text-slate-800 text-lg">No programs match your filters.</p>
+          <p className="text-sm text-slate-500 mt-1">Try resetting the filters or searching for another keyword.</p>
         </div>
       )}
     </div>

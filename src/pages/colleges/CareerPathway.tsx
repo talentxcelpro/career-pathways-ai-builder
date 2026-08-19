@@ -325,60 +325,102 @@ export default function CareerPathway() {
 
   if (step === 1) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex flex-col items-center justify-center px-4 py-16">
-        <div className="max-w-3xl w-full mx-auto">
+      <div className="min-h-screen bg-slate-50/60 flex flex-col items-center justify-center px-4 py-12 md:py-16">
+        <div className="max-w-2xl w-full mx-auto">
           <ProgressIndicator step={1} />
 
-          <div className="text-center mb-10">
-            <div className="inline-flex items-center gap-2 bg-indigo-100 text-indigo-700 rounded-full px-4 py-1.5 text-sm font-semibold mb-6">
-              <Sparkles className="h-4 w-4" />
-              AI Career Pathway Generator
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 border border-indigo-200/80 rounded-full px-3.5 py-1 text-xs font-bold uppercase tracking-wider mb-4">
+              <Sparkles className="h-3.5 w-3.5 text-indigo-600" />
+              AI EDUCATION INTELLIGENCE
             </div>
-            <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight leading-tight mb-4">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-3">
               What do you want to become?
             </h1>
-            <p className="text-lg text-gray-500 max-w-xl mx-auto">
-              Tell us your dream career and we'll map out the exact education pathway to get there — including free and funded options.
+            <p className="text-base sm:text-lg text-slate-600 max-w-xl mx-auto">
+              We'll build the evidence-backed education path to get you there — including verified ₹0 and funded options.
             </p>
           </div>
 
-          <div className="mb-6">
-            <Input
-              className="h-16 text-lg px-6 rounded-2xl border-2 border-indigo-200 focus:border-indigo-500 shadow-sm"
-              placeholder="e.g. AI Researcher, Doctor, Software Engineer..."
-              value={goal}
-              onChange={(e) => setGoal(e.target.value)}
-              onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                if (e.key === "Enter" && goal.trim()) setStep(2);
-              }}
-            />
-          </div>
+          {/* Ambition Command Box */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200/90 mb-6 space-y-6">
+            <div>
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-2">
+                ✨ Tell TalentXcel your ambition
+              </label>
+              <div className="relative">
+                <Input
+                  className="h-16 text-base sm:text-lg pl-5 pr-14 rounded-2xl border-2 border-slate-200 focus:border-indigo-600 shadow-none font-medium text-slate-900 bg-slate-50/50"
+                  placeholder="e.g. AI Researcher, Software Engineer, Doctor..."
+                  value={goal}
+                  onChange={(e) => setGoal(e.target.value)}
+                  onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                    if (e.key === "Enter" && goal.trim()) setStep(2);
+                  }}
+                />
+                <Button
+                  size="sm"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 h-10 w-10 p-0 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-30"
+                  disabled={!goal.trim()}
+                  onClick={() => setStep(2)}
+                  aria-label="Proceed to next step"
+                >
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
 
-          <div className="flex flex-wrap gap-2 justify-center mb-10">
-            {EXAMPLE_GOALS.map((eg) => (
-              <button
-                key={eg}
-                onClick={() => setGoal(eg)}
-                className={`px-4 py-2 rounded-full text-sm font-medium border transition-all cursor-pointer ${
-                  goal === eg
-                    ? "bg-indigo-600 text-white border-indigo-600 shadow-md"
-                    : "bg-white text-gray-700 border-gray-200 hover:border-indigo-400 hover:text-indigo-600 hover:bg-indigo-50"
-                }`}
-              >
-                {eg}
-              </button>
-            ))}
+            {/* Popular Goals */}
+            <div>
+              <span className="text-xs font-semibold text-slate-400 block mb-2.5">Popular goals:</span>
+              <div className="flex flex-wrap gap-2">
+                {EXAMPLE_GOALS.map((eg) => (
+                  <button
+                    key={eg}
+                    onClick={() => setGoal(eg)}
+                    className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all cursor-pointer ${
+                      goal === eg
+                        ? "bg-indigo-600 text-white border-indigo-600 shadow-sm"
+                        : "bg-slate-50 text-slate-700 border-slate-200/80 hover:border-indigo-400 hover:text-indigo-600 hover:bg-indigo-50/40"
+                    }`}
+                  >
+                    {eg}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Conversational Prompt Option */}
+            <div className="pt-2 border-t border-slate-100">
+              <span className="text-xs text-slate-400 block mb-2 italic">
+                Or describe your situation in your own words:
+              </span>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setGoal("AI Researcher with no tuition budget")}
+                  className="text-xs text-slate-600 bg-slate-100/70 hover:bg-slate-200/70 rounded-lg px-2.5 py-1 text-left"
+                >
+                  "I want to work in AI but I have no money for college"
+                </button>
+                <button
+                  onClick={() => setGoal("Self-taught Software Engineer from school")}
+                  className="text-xs text-slate-600 bg-slate-100/70 hover:bg-slate-200/70 rounded-lg px-2.5 py-1 text-left"
+                >
+                  "I have 70% in 12th; what can I study?"
+                </button>
+              </div>
+            </div>
           </div>
 
           <div className="flex justify-center">
             <Button
               size="lg"
-              className="px-10 h-14 text-base font-semibold rounded-2xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-10 h-13 text-sm font-bold rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-30 shadow-md shadow-indigo-200"
               disabled={!goal.trim()}
               onClick={() => setStep(2)}
             >
-              Next
-              <ArrowRight className="ml-2 h-5 w-5" />
+              Build My Pathway
+              <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
         </div>
@@ -584,188 +626,195 @@ export default function CareerPathway() {
       pathway.total_estimated_cost === "$0";
 
     return (
-      <div className="min-h-screen bg-gray-50 px-4 py-12">
-        <div className="max-w-3xl mx-auto">
+      <div className="min-h-screen bg-slate-50/60 px-4 sm:px-6 py-12 md:py-16">
+        <div className="max-w-4xl mx-auto">
 
-          {/* Summary bar */}
-          <Card className="mb-8 border-0 shadow-lg bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-3xl overflow-hidden">
-            <CardContent className="p-6 md:p-8">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-xs font-semibold uppercase tracking-wider text-emerald-300 bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-500/30 flex items-center gap-1">
-                  <Sparkles className="h-3 w-3" />
-                  Evidence-Backed Personalized Pathway
-                </span>
+          {/* Operating System Hero Bar */}
+          <div className="mb-10 rounded-3xl bg-slate-900 text-white p-6 sm:p-8 shadow-xl border border-slate-800">
+            <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-950 text-emerald-400 border border-emerald-500/30">
+                <Sparkles className="h-3.5 w-3.5" />
+                EVIDENCE-BACKED PERSONALIZED PATHWAY
+              </span>
+              <span className="text-xs text-slate-400 font-mono">
+                Verified against global education graph
+              </span>
+            </div>
+
+            <div className="pt-6 pb-2">
+              <div className="text-xs font-bold uppercase tracking-wider text-indigo-400 mb-1">
+                Target Ambition
               </div>
-              <p className="text-xs text-indigo-200 mb-4 italic">
+              <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight leading-tight">
+                {pathway.goal_resolved}
+              </h1>
+              <p className="text-xs text-slate-400 mt-1 italic">
                 * Potential ₹0 / affordable pathway — subject to admission eligibility and scholarship/fee-waiver approval.
               </p>
-              <h2 className="text-2xl sm:text-3xl font-bold mb-4">
-                {pathway.goal_resolved}
-              </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <div className="bg-white/10 rounded-xl p-3">
-                  <div className="text-indigo-200 text-xs font-medium mb-1">Goal</div>
-                  <div className="font-semibold text-sm truncate">{pathway.input.goal}</div>
-                </div>
-                <div className="bg-white/10 rounded-xl p-3">
-                  <div className="text-indigo-200 text-xs font-medium mb-1">Current Level</div>
-                  <div className="font-semibold text-sm">{levelLabel}</div>
-                </div>
-                <div className="bg-white/10 rounded-xl p-3">
-                  <div className="text-indigo-200 text-xs font-medium mb-1">Budget</div>
-                  <div className="font-semibold text-sm">{budgetLabel}</div>
-                </div>
-                <div className="bg-white/10 rounded-xl p-3">
-                  <div className="text-indigo-200 text-xs font-medium mb-1">Est. Total Cost</div>
-                  <div
-                    className={`font-bold text-lg ${
-                      isFree ? "text-emerald-300" : "text-white"
-                    }`}
-                  >
-                    {pathway.total_estimated_cost}
-                  </div>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 border-t border-slate-800/80">
+              <div className="bg-white/5 rounded-2xl p-3.5 border border-white/5">
+                <div className="text-slate-400 text-xs font-medium">Your Goal</div>
+                <div className="font-bold text-sm text-white truncate mt-0.5">{pathway.input.goal}</div>
+              </div>
+              <div className="bg-white/5 rounded-2xl p-3.5 border border-white/5">
+                <div className="text-slate-400 text-xs font-medium">Starting Level</div>
+                <div className="font-bold text-sm text-white mt-0.5">{levelLabel}</div>
+              </div>
+              <div className="bg-white/5 rounded-2xl p-3.5 border border-white/5">
+                <div className="text-slate-400 text-xs font-medium">Budget Preference</div>
+                <div className="font-bold text-sm text-white mt-0.5">{budgetLabel}</div>
+              </div>
+              <div className="bg-white/5 rounded-2xl p-3.5 border border-white/5">
+                <div className="text-slate-400 text-xs font-medium">Est. Net Cost</div>
+                <div
+                  className={`font-black text-base mt-0.5 ${
+                    isFree ? "text-emerald-400" : "text-white"
+                  }`}
+                >
+                  {pathway.total_estimated_cost}
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          {/* Skills required */}
+          {/* Skills Required */}
           {pathway.skills_required.length > 0 && (
-            <div className="mb-8">
-              <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                Key Skills You'll Build
+            <div className="mb-10 bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
+                Core Competencies You Will Build
               </h3>
               <div className="flex flex-wrap gap-2">
                 {pathway.skills_required.map((skill) => (
-                  <Badge
+                  <span
                     key={skill}
-                    variant="secondary"
-                    className="rounded-full px-3 py-1 text-sm"
+                    className="rounded-xl px-3 py-1.5 text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200/60"
                   >
                     {skill}
-                  </Badge>
+                  </span>
                 ))}
               </div>
             </div>
           )}
 
-          {/* Step cards */}
-          <div className="space-y-4 mb-8">
+          {/* Step Cards with 2-Digit Numeric Hierarchy */}
+          <div className="space-y-6 mb-10">
             {pathway.steps.map((pathwayStep) => {
               const stepIcon =
                 STEP_ICON_MAP[pathwayStep.icon] ?? <Brain className="h-5 w-5" />;
+              const stepNumStr = String(pathwayStep.step_number).padStart(2, '0');
 
               return (
-                <Card
+                <div
                   key={pathwayStep.step_number}
-                  className="border border-gray-200 shadow-sm rounded-2xl overflow-hidden"
+                  className="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden p-6 sm:p-8"
                 >
-                  <CardHeader className="pb-3 bg-white">
-                    <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0">
-                        <div className="w-9 h-9 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">
-                          {pathwayStep.step_number}
-                        </div>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-indigo-500">{stepIcon}</span>
-                          <CardTitle className="text-lg font-bold text-gray-900">
-                            {pathwayStep.title}
-                          </CardTitle>
-                        </div>
-                        <p className="text-sm text-gray-500">{pathwayStep.description}</p>
-                        {(pathwayStep.estimated_duration || pathwayStep.cost_estimate) && (
-                          <div className="flex flex-wrap gap-3 mt-2">
-                            {pathwayStep.estimated_duration && (
-                              <span className="text-xs text-gray-400">
-                                ⏱ {pathwayStep.estimated_duration}
-                              </span>
-                            )}
-                            {pathwayStep.cost_estimate && (
-                              <span className="text-xs text-gray-400">
-                                💰 {pathwayStep.cost_estimate}
-                              </span>
-                            )}
-                          </div>
-                        )}
+                  {/* Step Header */}
+                  <div className="flex items-start gap-4 mb-6">
+                    <div className="flex-shrink-0">
+                      <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-700 border border-indigo-200/80 flex items-center justify-center font-black text-lg font-mono">
+                        {stepNumStr}
                       </div>
                     </div>
-                  </CardHeader>
-
-                  {pathwayStep.items.length > 0 && (
-                    <CardContent className="pt-0">
-                      <div className="space-y-3">
-                        {pathwayStep.items.map((item, itemIdx) => (
-                          <div
-                            key={itemIdx}
-                            className="p-3.5 rounded-xl bg-gray-50 border border-gray-100 space-y-2"
-                          >
-                            <div className="flex items-start justify-between gap-3">
-                              <div className="flex-1 min-w-0">
-                                <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                                  <ItemTypeBadge type={item.type} academicCredits={item.academic_credits_awarded} />
-                                  {item.access_type && (
-                                    <AccessTypeBadge type={item.access_type} />
-                                  )}
-                                  {item.course_access_type && (
-                                    <CourseAccessBadge type={item.course_access_type} />
-                                  )}
-                                </div>
-                                <div className="font-semibold text-sm text-gray-900">
-                                  {item.title}
-                                </div>
-                                {item.provider && (
-                                  <div className="text-xs text-gray-500 mt-0.5 font-medium">
-                                    {item.provider}
-                                  </div>
-                                )}
-                              </div>
-                              <div className="flex items-center gap-2 flex-shrink-0">
-                                {item.cost !== undefined && (
-                                  <span
-                                    className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
-                                      item.is_free
-                                        ? "bg-emerald-100 text-emerald-700"
-                                        : "bg-gray-100 text-gray-700"
-                                    }`}
-                                  >
-                                    {item.is_free ? "₹0 Tuition / Free" : item.cost}
-                                  </span>
-                                )}
-                                {item.url && (
-                                  <a
-                                    href={item.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-indigo-500 hover:text-indigo-700 transition-colors p-1"
-                                    aria-label={`Open ${item.title} in new tab`}
-                                  >
-                                    <ExternalLink className="h-4 w-4" />
-                                  </a>
-                                )}
-                              </div>
-                            </div>
-
-                            {/* Transparent Evidence Snippet */}
-                            {item.evidence_snippet && (
-                              <div className="text-[11px] text-gray-600 bg-white border border-gray-100 rounded-lg p-2 italic flex items-start gap-1.5">
-                                <span className="font-semibold not-italic text-emerald-700">Verified Evidence:</span>
-                                <span>"{item.evidence_snippet}"</span>
-                              </div>
-                            )}
-
-                            {item.notes && (
-                              <div className="text-xs text-gray-500 italic">
-                                {item.notes}
-                              </div>
-                            )}
-                          </div>
-                        ))}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-indigo-600">{stepIcon}</span>
+                        <h3 className="text-xl font-bold text-slate-900">
+                          {pathwayStep.title}
+                        </h3>
                       </div>
-                    </CardContent>
+                      <p className="text-sm text-slate-600 leading-relaxed">{pathwayStep.description}</p>
+
+                      {(pathwayStep.estimated_duration || pathwayStep.cost_estimate) && (
+                        <div className="flex flex-wrap gap-3 mt-2.5">
+                          {pathwayStep.estimated_duration && (
+                            <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-md">
+                              ⏱ {pathwayStep.estimated_duration}
+                            </span>
+                          )}
+                          {pathwayStep.cost_estimate && (
+                            <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200/50">
+                              💰 {pathwayStep.cost_estimate}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Step Items */}
+                  {pathwayStep.items.length > 0 && (
+                    <div className="space-y-3 pt-2 border-t border-slate-100">
+                      {pathwayStep.items.map((item, itemIdx) => (
+                        <div
+                          key={itemIdx}
+                          className="p-4 rounded-2xl bg-slate-50 border border-slate-200/60 space-y-2.5"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                                <ItemTypeBadge type={item.type} academicCredits={item.academic_credits_awarded} />
+                                {item.access_type && (
+                                  <AccessTypeBadge type={item.access_type} />
+                                )}
+                                {item.course_access_type && (
+                                  <CourseAccessBadge type={item.course_access_type} />
+                                )}
+                              </div>
+                              <div className="font-bold text-sm sm:text-base text-slate-900">
+                                {item.title}
+                              </div>
+                              {item.provider && (
+                                <div className="text-xs text-slate-500 mt-0.5 font-medium">
+                                  {item.provider}
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                              {item.cost !== undefined && (
+                                <span
+                                  className={`text-xs font-bold px-3 py-1 rounded-full ${
+                                    item.is_free
+                                      ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
+                                      : "bg-slate-200 text-slate-700"
+                                  }`}
+                                >
+                                  {item.is_free ? "₹0 Tuition / Free" : item.cost}
+                                </span>
+                              )}
+                              {item.url && (
+                                <a
+                                  href={item.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-indigo-600 hover:text-indigo-800 p-1.5 bg-white rounded-xl border border-slate-200 shadow-sm"
+                                  aria-label={`Open ${item.title} in new tab`}
+                                >
+                                  <ExternalLink className="h-4 w-4" />
+                                </a>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Transparent Evidence Snippet */}
+                          {item.evidence_snippet && (
+                            <div className="text-xs text-slate-700 bg-white border border-slate-200/80 rounded-xl p-3 italic flex items-start gap-2 shadow-2xs">
+                              <span className="font-bold not-italic text-emerald-700 shrink-0">✓ Verified Citation:</span>
+                              <span>"{item.evidence_snippet}"</span>
+                            </div>
+                          )}
+
+                          {item.notes && (
+                            <div className="text-xs text-slate-500 italic">
+                              {item.notes}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   )}
-                </Card>
+                </div>
               );
             })}
           </div>
