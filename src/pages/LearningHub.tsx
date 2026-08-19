@@ -183,7 +183,7 @@ export default function LearningHub() {
             { label: 'Career Advisor', icon: Bot, path: null },
             { label: 'Career Pathways', icon: Rocket, path: '/learning/paths' },
             { label: 'Skill Search', icon: Zap, path: '/learning/courses' },
-            { label: 'Verified Providers', icon: Building2, path: '/learning/providers/microsoft-learn' },
+            { label: 'Verified Providers', icon: Building2, path: '/learning/providers' },
             { label: 'Certificates', icon: Award, path: '/learning/certificates' }
           ].map(tab => {
             const Icon = tab.icon;

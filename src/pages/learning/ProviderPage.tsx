@@ -48,17 +48,17 @@ export const ProviderPage: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-3">
         <div className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-2xl p-3 flex items-center justify-between text-xs font-semibold shadow-2xs">
           <button 
-            onClick={() => navigate('/learning')}
+            onClick={() => navigate('/learning/providers')}
             className="flex items-center gap-1.5 text-slate-700 dark:text-slate-200 hover:text-blue-600 transition-colors cursor-pointer"
           >
             <ArrowLeft className="h-4 w-4 text-blue-600" /> 
-            <span className="font-extrabold">Back to Learning Hub</span>
+            <span className="font-extrabold">Back to Provider Directory</span>
           </button>
           
           <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
             <span className="hover:text-blue-600 cursor-pointer" onClick={() => navigate('/learning')}>Learning</span>
             <ChevronRight className="h-3 w-3" />
-            <span>Verified Providers</span>
+            <span className="hover:text-blue-600 cursor-pointer" onClick={() => navigate('/learning/providers')}>Providers</span>
             <ChevronRight className="h-3 w-3" />
             <span className="text-blue-600 font-extrabold">{provider.name}</span>
           </div>
