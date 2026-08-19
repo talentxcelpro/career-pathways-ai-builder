@@ -45,7 +45,7 @@ export const toolsRoutes = [
     title: "Tools",
     to: "/tools",
     icon: <Brain className="h-4 w-4" />,
-    page: <div>This should not be used - check App.tsx</div>,
+    page: <Suspense fallback={null}><ToolsDashboard /></Suspense>,
     isPublic: true,
   },
   {

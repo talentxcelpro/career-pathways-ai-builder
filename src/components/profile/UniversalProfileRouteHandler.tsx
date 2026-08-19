@@ -8,6 +8,7 @@ export const RESERVED_ROUTES = new Set([
   'dashboard', 'profile', 'user', 'settings', 'account', 'network', 'jobs',
   'job', 'companies', 'company', 'courses', 'course', 'learning', 'services',
   'marketplace', 'tools', 'resume', 'resume-builder', 'career-map', 'passport',
+  'colleges', 'college', 'scholarships', 'pathway', 'global-programs', 'employer',
   'privacy', 'terms', 'privacy-policy', 'terms-of-service', 'blog', 'news',
   'resources', 'skills', 'roles', 'locations', 'industries', 'seo-suite',
   'company-os', 'communication', 'provider', 'achievements', 'roadmap',

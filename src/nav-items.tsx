@@ -108,6 +108,14 @@ export const notificationRoutes = [
 // TalentXcel Services route
 export const servicesRoutes = [
   {
+    title: "Services",
+    to: "/services",
+    icon: "briefcase",
+    page: <S C={TalentXcelServices} />,
+    description: "Strategic Talent Solutions for the Future of Work",
+    isPublic: true
+  },
+  {
     title: "TalentXcel Services",
     to: "/talentxcelservices",
     icon: "briefcase",
