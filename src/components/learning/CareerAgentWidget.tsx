@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { weightedCareerService, WeightedCareer } from '@/data/weightedCareerGraphData';
 import { learningAggregatorService } from '@/services/learningAggregatorService';
 import { Button } from '@/components/ui/button';
