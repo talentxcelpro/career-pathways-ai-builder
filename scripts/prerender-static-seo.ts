@@ -268,6 +268,35 @@ async function prerender() {
     bodyContentHtml: '<p class="text-slate-300">2,650+ courses and certifications from global universities and tech leaders.</p>'
   });
 
+  const additionalHubs = [
+    { path: '/jobs', title: 'Jobs & Career Opportunities — Verified Tech & Business Roles | TalentXcel', desc: 'Discover verified jobs across top companies and high-growth startups.' },
+    { path: '/companies', title: 'Companies Directory — Verified Employers & Culture Insights | TalentXcel', desc: 'Browse verified hiring companies, engineering cultures, and active job openings.' },
+    { path: '/career-map', title: 'Interactive Career Maps & Roadmap Discovery | TalentXcel', desc: 'Map your career progression, identify skill gaps, and visualize role transitions.' },
+    { path: '/passport', title: 'TalentXcel Career Passport — Verified Badges & Credibility', desc: 'Showcase verified competencies, project proof, and talent credibility.' },
+    { path: '/tools', title: 'Career Tools Suite — ATS Resume, Salary & Interview Prep | TalentXcel', desc: 'AI-powered career tools to optimize resumes, evaluate role fit, and prepare for interviews.' },
+    { path: '/services', title: 'TalentXcel Strategic Services — Talent & Hiring Solutions', desc: 'Strategic workforce and recruitment solutions for modern enterprises.' },
+    { path: '/industries', title: 'Industry Career Hubs — Jobs & Trends Across Sectors | TalentXcel', desc: 'Explore career pathways and hiring trends across Technology, Finance, Healthcare, and Engineering.' },
+    { path: '/locations', title: 'Locations Directory — Jobs Across Indian Cities | TalentXcel', desc: 'Search job opportunities and salary benchmarks across major Indian employment hubs.' },
+    { path: '/resources', title: 'Career Resources & Hiring Guides | TalentXcel', desc: 'Expert guides on resume building, interview techniques, and career transition.' },
+    { path: '/about', title: 'About TalentXcel — Building the Future of Work & Learning', desc: 'Learn about TalentXcel mission to connect verified education, skills, and employment.' },
+    { path: '/contact', title: 'Contact TalentXcel — Support & Enterprise Inquiries', desc: 'Get in touch with our team for enterprise recruitment, institution partnerships, and support.' },
+    { path: '/privacy-policy', title: 'Privacy Policy | TalentXcel', desc: 'Our commitment to protecting your personal data and career information.' },
+    { path: '/terms', title: 'Terms of Service | TalentXcel', desc: 'Terms and conditions for using the TalentXcel career and education platform.' },
+    { path: '/blog', title: 'TalentXcel Insights — Career Trends & Education Intelligence', desc: 'Articles and forensic analysis on hiring trends, technology skills, and higher education.' },
+    { path: '/news', title: 'Platform News & Industry Updates | TalentXcel', desc: 'Latest announcements and industry news from the TalentXcel ecosystem.' },
+    { path: '/help', title: 'Help & Knowledge Base | TalentXcel', desc: 'Frequently asked questions and guides for job seekers, students, and employers.' }
+  ];
+
+  for (const hub of additionalHubs) {
+    writePrerenderedPage(hub.path, {
+      title: hub.title,
+      description: hub.desc,
+      canonical: `${BASE_URL}${hub.path}`,
+      h1: hub.title.split('—')[0].trim(),
+      bodyContentHtml: `<p class="text-slate-300">${escapeHtml(hub.desc)}</p>`
+    });
+  }
+
   console.log(`\n========================================`);
   console.log(`✓ Pre-rendered ${generatedCount} Class A Static HTML Documents!`);
   console.log(`========================================\n`);

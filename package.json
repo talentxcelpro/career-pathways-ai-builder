@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "predev": "npx tsx scripts/generate-sitemap.ts",
     "prebuild": "npx tsx scripts/generate-sitemap.ts",
-    "postbuild": "npx tsx scripts/prerender-static-seo.ts"
+    "postbuild": "npx tsx scripts/prerender-static-seo.ts && npx tsx scripts/seo-ci-gate.ts"
   },
   "dependencies": {
     "@capacitor/android": "^7.4.3",
