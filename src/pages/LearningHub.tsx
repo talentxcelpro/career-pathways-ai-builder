@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useProfile } from '@/hooks/useProfile';
 import { useAuth } from '@/contexts/AuthContext';
 import { learningAggregatorService } from '@/services/learningAggregatorService';
+import { CareerAgentWidget } from '@/components/learning/CareerAgentWidget';
 import { AggregatedCourse, LearningProvider, CareerPathway, PersonalizedLearningPlan } from '@/types/learningAggregator';
 import { DOMAIN_TARGETS } from '@/data/learningTaxonomy';
 import { Button } from '@/components/ui/button';
@@ -51,7 +52,8 @@ import {
   Crown,
   DollarSign,
   Edit3,
-  RefreshCw
+  RefreshCw,
+  Bot
 } from 'lucide-react';
 
 export default function LearningHub() {
@@ -65,10 +67,11 @@ export default function LearningHub() {
 
   // Real user details state
   const [userInfo, setUserInfo] = useState({
-    name: 'Arshid Hussain Wani',
+    full_name: 'Arshid Hussain Wani',
     username: 'talentxcelpro',
     title: 'Business Strategist & Growth Specialist',
     location: 'Noida • India',
+    skills: ['Operations Strategy', 'Recruitment', 'Employee Relations', 'Excel Analytics', 'Project Execution'],
     avatarUrl: 'https://chatr.chat/assets/img/logo.png',
     coverUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80'
   });
@@ -87,10 +90,11 @@ export default function LearningHub() {
           const avatar = profile?.profile_picture_url || (profile as any)?.avatar_url || currentUser?.user_metadata?.avatar_url || currentUser?.user_metadata?.picture || 'https://chatr.chat/assets/img/logo.png';
           
           setUserInfo({
-            name: fullName,
+            full_name: fullName,
             username: (profile as any)?.username || currentUser?.email?.split('@')[0] || 'talentxcelpro',
             title: title,
             location: location,
+            skills: ['Operations Strategy', 'Recruitment', 'Employee Relations', 'Excel Analytics', 'Project Execution'],
             avatarUrl: avatar,
             coverUrl: profile?.cover_image_url || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80'
           });
@@ -172,7 +176,7 @@ export default function LearningHub() {
         <div className="bg-white dark:bg-card border border-slate-200/80 dark:border-border rounded-full p-1.5 shadow-xs flex items-center justify-between overflow-x-auto gap-1">
           {[
             { label: 'Feed', icon: BookOpen, path: null },
-            { label: 'Smart Feed', icon: Sparkles, path: null },
+            { label: 'Career Agent', icon: Bot, path: null },
             { label: 'Career Pathways', icon: Rocket, path: '/learning/paths' },
             { label: 'Skill Search', icon: Zap, path: '/learning/courses' },
             { label: 'Verified Providers', icon: Building2, path: '/learning/providers/microsoft-learn' },
@@ -188,7 +192,7 @@ export default function LearningHub() {
                   setActiveTab(tab.label);
                   if (tab.path) {
                     navigate(tab.path);
-                  } else if (tab.label === 'AI Intent Planner') {
+                  } else if (tab.label === 'AI Intent Planner' || tab.label === 'Career Agent') {
                     triggerAiPlanner("I want to become a Data Analyst");
                   }
                 }}
@@ -232,7 +236,7 @@ export default function LearningHub() {
               >
                 <img 
                   src={userInfo.avatarUrl} 
-                  alt={userInfo.name} 
+                  alt={userInfo.full_name} 
                   onError={(e) => {
                     (e.target as HTMLImageElement).src = 'https://chatr.chat/assets/img/logo.png';
                   }}
@@ -245,7 +249,7 @@ export default function LearningHub() {
                   onClick={() => navigate('/profile')}
                   className="flex items-center justify-center gap-1 cursor-pointer hover:text-blue-600 transition-colors"
                 >
-                  <h3 className="text-sm font-extrabold text-foreground">{userInfo.name}</h3>
+                  <h3 className="text-sm font-extrabold text-foreground">{userInfo.full_name}</h3>
                   <CheckCircle2 className="h-4 w-4 fill-blue-600 text-white" />
                 </div>
                 <p className="text-xs text-muted-foreground font-semibold">{userInfo.title}</p>
@@ -306,73 +310,12 @@ export default function LearningHub() {
         </div>
 
         {/* ============================================================================ */}
-        {/* CENTER COLUMN: MAIN FEED & INTENT ENGINE (6 COLS) */}
+        {/* CENTER COLUMN: MAIN FEED & CAREER INTELLIGENCE AGENT (6 COLS) */}
         {/* ============================================================================ */}
         <div className="lg:col-span-6 space-y-6">
           
-          {/* Main Search Bar Input (Matching Image 1) */}
-          <form onSubmit={handleSearchSubmit} className="relative flex items-center">
-            <Search className="absolute left-4 h-5 w-5 text-slate-400 pointer-events-none" />
-            <Input
-              type="text"
-              placeholder="Search courses, skills, providers, career paths..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 pr-12 h-13 rounded-2xl bg-white dark:bg-card border border-slate-200 dark:border-border text-sm font-medium text-foreground shadow-xs focus-visible:ring-2 focus-visible:ring-blue-600"
-            />
-            <button type="submit" className="absolute right-4 p-1.5 text-slate-400 hover:text-blue-600 cursor-pointer">
-              <SlidersHorizontal className="h-5 w-5" />
-            </button>
-          </form>
-
-          {/* Create Enhanced Intent Post Card (Matching Image 1) */}
-          <Card className="rounded-3xl border-slate-200/80 dark:border-border bg-white dark:bg-card shadow-sm p-5 space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-xs font-extrabold text-blue-600">
-                <Sparkles className="h-4 w-4" />
-                <span>Search Education Intent</span>
-              </div>
-              
-              <Button 
-                onClick={() => triggerAiPlanner("I want to become a Vice President of Operations")}
-                variant="outline" 
-                size="sm" 
-                className="rounded-full text-xs font-bold border-purple-300 text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/40 gap-1 cursor-pointer"
-              >
-                <Sparkles className="h-3 w-3" /> TalentXcel Copilot
-              </Button>
-            </div>
-
-            <textarea
-              placeholder="What do you want to learn or become? (e.g., 'I want to become a Vice President of Operations')..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              rows={3}
-              className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-muted/40 border border-slate-200 dark:border-border/60 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-600 text-foreground resize-none"
-            />
-
-            <div className="flex items-center justify-between pt-1">
-              <div className="flex items-center gap-3 text-xs font-semibold text-slate-500">
-                <button onClick={() => { setSearchQuery('VP Operations'); triggerAiPlanner('Vice President of Operations'); }} className="hover:text-blue-600 flex items-center gap-1 cursor-pointer">
-                  <TrendingUp className="h-4 w-4 text-blue-600" /> Operations
-                </button>
-                <button onClick={() => { setSearchQuery('Data Analyst'); triggerAiPlanner('Data Analyst'); }} className="hover:text-blue-600 flex items-center gap-1 cursor-pointer">
-                  <BarChart3 className="h-4 w-4 text-emerald-600" /> Data Analyst
-                </button>
-                <button onClick={() => { setSearchQuery('AI Engineer'); triggerAiPlanner('AI Engineer'); }} className="hover:text-blue-600 flex items-center gap-1 cursor-pointer">
-                  <Cpu className="h-4 w-4 text-amber-600" /> AI Engineer
-                </button>
-              </div>
-
-              <Button
-                onClick={handleSearchSubmit}
-                className="rounded-xl px-5 h-9 bg-blue-600 hover:bg-blue-500 text-white text-xs font-extrabold shadow-sm gap-1 cursor-pointer"
-              >
-                <span>Find Pathway</span>
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Button>
-            </div>
-          </Card>
+          {/* TALENTXCEL CAREER INTELLIGENCE AGENT WIDGET */}
+          <CareerAgentWidget userProfile={userInfo} />
 
           {/* Intent Navigation Grid ("What do you want to achieve?") */}
           <section className="space-y-4">
