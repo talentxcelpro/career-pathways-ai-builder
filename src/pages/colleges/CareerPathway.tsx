@@ -1,4 +1,4 @@
-﻿// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
 // TalentXcel — CareerPathway.tsx
 // THE STAR feature: 3-step wizard → AI-generated education pathway
 // ─────────────────────────────────────────────────────────────────────────────
@@ -166,17 +166,54 @@ function AccessTypeBadge({ type }: { type: string }) {
   );
 }
 
+function CourseAccessBadge({ type }: { type?: string }) {
+  if (!type) return null;
+  const configs: Record<string, { label: string; className: string; icon: string }> = {
+    FREE_TO_LEARN: {
+      label: "🟢 Free to Learn (₹0)",
+      className: "bg-emerald-50 text-emerald-700 border-emerald-200",
+      icon: "🟢"
+    },
+    FREE_WITH_LIMITATIONS: {
+      label: "🔵 Free with Limitations",
+      className: "bg-blue-50 text-blue-700 border-blue-200",
+      icon: "🔵"
+    },
+    PAID_CREDENTIAL: {
+      label: "🟡 Free Audit / Paid Cert",
+      className: "bg-amber-50 text-amber-700 border-amber-200",
+      icon: "🟡"
+    },
+    PAID: {
+      label: "🔴 Paid Access",
+      className: "bg-red-50 text-red-700 border-red-200",
+      icon: "🔴"
+    }
+  };
+
+  const config = configs[type];
+  if (!config) return null;
+
+  return (
+    <span
+      className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold ${config.className}`}
+    >
+      {config.label}
+    </span>
+  );
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // ITEM TYPE BADGE
 // ─────────────────────────────────────────────────────────────────────────────
 
-function ItemTypeBadge({ type }: { type: string }) {
+function ItemTypeBadge({ type, academicCredits }: { type: string; academicCredits?: boolean }) {
   const configs: Record<string, { label: string; className: string }> = {
-    course: { label: "Course", className: "bg-sky-100 text-sky-700" },
-    program: { label: "Program", className: "bg-indigo-100 text-indigo-700" },
-    scholarship: { label: "Scholarship", className: "bg-green-100 text-green-700" },
-    exam: { label: "Exam", className: "bg-orange-100 text-orange-700" },
-    action: { label: "Action", className: "bg-gray-100 text-gray-700" },
+    course: { label: "Course (Non-Credit)", className: "bg-sky-100 text-sky-700" },
+    program: { label: academicCredits !== false ? "Degree Program (Accredited)" : "Program", className: "bg-indigo-100 text-indigo-700" },
+    scholarship: { label: "Scholarship & Grant", className: "bg-green-100 text-green-700" },
+    exam: { label: "Standardized Exam", className: "bg-orange-100 text-orange-700" },
+    action: { label: "Action Step", className: "bg-gray-100 text-gray-700" },
     resource: { label: "Resource", className: "bg-teal-100 text-teal-700" },
   };
 
@@ -659,53 +696,67 @@ export default function CareerPathway() {
                         {pathwayStep.items.map((item, itemIdx) => (
                           <div
                             key={itemIdx}
-                            className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100"
+                            className="p-3.5 rounded-xl bg-gray-50 border border-gray-100 space-y-2"
                           >
-                            <div className="flex-1 min-w-0">
-                              <div className="flex flex-wrap items-center gap-2 mb-1">
-                                <ItemTypeBadge type={item.type} />
-                                {item.access_type && (
-                                  <AccessTypeBadge type={item.access_type} />
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                                  <ItemTypeBadge type={item.type} academicCredits={item.academic_credits_awarded} />
+                                  {item.access_type && (
+                                    <AccessTypeBadge type={item.access_type} />
+                                  )}
+                                  {item.course_access_type && (
+                                    <CourseAccessBadge type={item.course_access_type} />
+                                  )}
+                                </div>
+                                <div className="font-semibold text-sm text-gray-900">
+                                  {item.title}
+                                </div>
+                                {item.provider && (
+                                  <div className="text-xs text-gray-500 mt-0.5 font-medium">
+                                    {item.provider}
+                                  </div>
                                 )}
                               </div>
-                              <div className="font-semibold text-sm text-gray-900">
-                                {item.title}
+                              <div className="flex items-center gap-2 flex-shrink-0">
+                                {item.cost !== undefined && (
+                                  <span
+                                    className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
+                                      item.is_free
+                                        ? "bg-emerald-100 text-emerald-700"
+                                        : "bg-gray-100 text-gray-700"
+                                    }`}
+                                  >
+                                    {item.is_free ? "₹0 Tuition / Free" : item.cost}
+                                  </span>
+                                )}
+                                {item.url && (
+                                  <a
+                                    href={item.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-indigo-500 hover:text-indigo-700 transition-colors p-1"
+                                    aria-label={`Open ${item.title} in new tab`}
+                                  >
+                                    <ExternalLink className="h-4 w-4" />
+                                  </a>
+                                )}
                               </div>
-                              {item.provider && (
-                                <div className="text-xs text-gray-500 mt-0.5">
-                                  {item.provider}
-                                </div>
-                              )}
-                              {item.notes && (
-                                <div className="text-xs text-gray-400 mt-1 italic">
-                                  {item.notes}
-                                </div>
-                              )}
                             </div>
-                            <div className="flex items-center gap-2 flex-shrink-0">
-                              {item.cost !== undefined && (
-                                <span
-                                  className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                                    item.is_free
-                                      ? "bg-emerald-100 text-emerald-700"
-                                      : "bg-gray-100 text-gray-600"
-                                  }`}
-                                >
-                                  {item.is_free ? "Free" : item.cost}
-                                </span>
-                              )}
-                              {item.url && (
-                                <a
-                                  href={item.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-indigo-500 hover:text-indigo-700 transition-colors"
-                                  aria-label={`Open ${item.title} in new tab`}
-                                >
-                                  <ExternalLink className="h-4 w-4" />
-                                </a>
-                              )}
-                            </div>
+
+                            {/* Transparent Evidence Snippet */}
+                            {item.evidence_snippet && (
+                              <div className="text-[11px] text-gray-600 bg-white border border-gray-100 rounded-lg p-2 italic flex items-start gap-1.5">
+                                <span className="font-semibold not-italic text-emerald-700">Verified Evidence:</span>
+                                <span>"{item.evidence_snippet}"</span>
+                              </div>
+                            )}
+
+                            {item.notes && (
+                              <div className="text-xs text-gray-500 italic">
+                                {item.notes}
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>

@@ -1,6 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // TalentXcel — Global Education Intelligence Layer Types
-// Reusable from Day 1. Future /education route can import all types from here.
+// Scalable data models for multi-evidence ledger, source registry,
+// autonomous discovery, and honest 4-tier course access pricing.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export type AccessType =
@@ -8,6 +9,19 @@ export type AccessType =
   | 'TUITION_FREE'              // ₹0 tuition; admin/semester/exam fees may apply
   | 'SCHOLARSHIP_MAKES_IT_FREE' // Normal tuition, but 100% scholarship available
   | 'FREE_TO_LEARN_PAID_CREDENTIAL'; // Content is free, degree/cert requires payment
+
+export type CourseAccessType =
+  | 'FREE_TO_LEARN'            // 🟢 Learning access genuinely costs ₹0
+  | 'FREE_WITH_LIMITATIONS'    // 🔵 Some content/free audit, but restrictions apply (e.g. labs/quizzes)
+  | 'PAID_CREDENTIAL'          // 🟡 Learning may be free, credential costs money
+  | 'PAID';                    // 🔴 Requires payment for access
+
+export type CredentialType =
+  | 'degree'
+  | 'diploma'
+  | 'professional_certificate'
+  | 'course_certificate'
+  | 'none';
 
 export type ProgramLevel =
   | 'school'
@@ -23,7 +37,8 @@ export type VerificationStatus =
   | 'VERIFIED'
   | 'PENDING'
   | 'NEEDS_REVIEW'
-  | 'UNVERIFIED';
+  | 'UNVERIFIED'
+  | 'FLAGGED';
 
 // Agent freshness tracking
 export type FreshnessStatus =
@@ -35,7 +50,6 @@ export type FreshnessStatus =
   | 'PENDING';             // Not yet verified
 
 export type CheckPriority = 'HIGH' | 'MEDIUM' | 'LOW';
-
 
 export type ScholarshipCoverage =
   | 'FULL'      // 100% — tuition + living + travel
@@ -56,6 +70,78 @@ export type CurrentLevel =
   | 'bachelor'
   | 'master'
   | 'working';
+
+export type SourceType =
+  | 'national_portal'
+  | 'ministry'
+  | 'university_domain'
+  | 'scholarship_body'
+  | 'accreditation_body'
+  | 'aggregator';
+
+export type EvidenceType =
+  | 'tuition'
+  | 'funding'
+  | 'eligibility'
+  | 'deadline'
+  | 'accreditation'
+  | 'credential';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AUTHORITATIVE SOURCE REGISTRY
+// ─────────────────────────────────────────────────────────────────────────────
+export interface EducationSourceRegistry {
+  id: string;
+  name: string;
+  country: string;
+  source_type: SourceType;
+  base_url: string;
+  official_domain: string;
+  priority: number; // 1 (highest) to 5
+  crawl_frequency_hours: number;
+  last_crawled_at?: string;
+  next_crawl_at?: string;
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MULTI-EVIDENCE LEDGER
+// ─────────────────────────────────────────────────────────────────────────────
+export interface EducationEvidence {
+  id: string;
+  entity_type: 'program' | 'scholarship' | 'institution' | 'course';
+  entity_id: string;
+  source_url: string;
+  source_domain: string;
+  source_type: SourceType;
+  evidence_type: EvidenceType;
+  evidence_text: string; // Raw quote / extracted excerpt snippet
+  content_hash?: string;
+  captured_at: string;
+  verified_at?: string;
+  verification_status: VerificationStatus;
+  confidence_score: number; // 0 - 100
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INSTITUTION
+// ─────────────────────────────────────────────────────────────────────────────
+export interface EducationInstitution {
+  id: string;
+  name: string;
+  country: string;
+  city?: string;
+  type: 'public' | 'private' | 'online' | 'government';
+  ranking_qs?: number;
+  ranking_the?: number;
+  official_website_url: string;
+  logo_url?: string;
+  is_verified: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GLOBAL PROGRAM
@@ -78,6 +164,8 @@ export interface GlobalProgram {
   discipline?: string;
   level: ProgramLevel;
   credential: string;
+  credential_type?: CredentialType;
+  academic_credits_awarded?: boolean;
   duration_months: number;
   language: string;
   mode: 'on_campus' | 'online' | 'hybrid';
@@ -107,10 +195,15 @@ export interface GlobalProgram {
   intake_months?: string[];
   application_fee_usd?: number;
 
-  // Verification
+  // Verification & Evidence
   official_url: string;
   source_evidence?: string;
+  tuition_evidence?: string;
+  funding_evidence?: string;
+  evidence_items?: EducationEvidence[];
   verification_status: VerificationStatus;
+  confidence_score?: number;
+  is_published?: boolean;
   last_verified_at?: string;
   next_verification_due?: string;
   verified_by?: string;
@@ -122,6 +215,27 @@ export interface GlobalProgram {
 
   created_at: string;
   updated_at: string;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LEARNING OPPORTUNITIES / FOUNDATION COURSES (Non-Degree)
+// ─────────────────────────────────────────────────────────────────────────────
+export interface EducationCourse {
+  id: string;
+  title: string;
+  provider: string;
+  platform?: string;
+  field: string;
+  course_access_type: CourseAccessType;
+  academic_credits_awarded: boolean; // explicitly false for non-credit courses
+  credential_type: CredentialType;
+  estimated_hours?: number;
+  url: string;
+  skills: string[];
+  verification_status: VerificationStatus;
+  evidence_text?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -153,8 +267,10 @@ export interface GlobalScholarship {
 
   official_url: string;
   verification_status: VerificationStatus;
+  confidence_score?: number;
   last_verified_at?: string;
   source_evidence?: string;
+  evidence_items?: EducationEvidence[];
 
   created_at: string;
   updated_at: string;
@@ -179,7 +295,11 @@ export interface PathwayStepItem {
   url?: string;
   cost?: string;
   access_type?: AccessType;
+  course_access_type?: CourseAccessType;
+  credential_type?: CredentialType;
+  academic_credits_awarded?: boolean;
   is_free: boolean;
+  evidence_snippet?: string;
   notes?: string;
 }
 
