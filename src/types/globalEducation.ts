@@ -25,6 +25,18 @@ export type VerificationStatus =
   | 'NEEDS_REVIEW'
   | 'UNVERIFIED';
 
+// Agent freshness tracking
+export type FreshnessStatus =
+  | 'VERIFIED_TODAY'       // 🟢 last_verified_at within 24h
+  | 'VERIFIED_7D'          // 🔵 verified within 7 days
+  | 'VERIFICATION_DUE'     // 🟡 next_check_at is past
+  | 'CHANGED_REVIEWING'    // 🔴 change detected, under review
+  | 'NEEDS_REVIEW'         // Confidence too low to auto-publish
+  | 'PENDING';             // Not yet verified
+
+export type CheckPriority = 'HIGH' | 'MEDIUM' | 'LOW';
+
+
 export type ScholarshipCoverage =
   | 'FULL'      // 100% — tuition + living + travel
   | 'TUITION'   // Covers tuition only
