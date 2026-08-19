@@ -6,6 +6,7 @@ const AggregatedCourseDetail = lazy(() => import('../pages/learning/AggregatedCo
 const CareerPathwayDetail = lazy(() => import('../pages/learning/CareerPathwayDetail'));
 const ProviderPage = lazy(() => import('../pages/learning/ProviderPage'));
 const AdminLearningAggregator = lazy(() => import('../pages/admin/AdminLearningAggregator'));
+const AdminLearningCatalogueHealth = lazy(() => import('../pages/admin/AdminLearningCatalogueHealth'));
 
 const CompleteLearningHub = lazy(() => import('../pages/learning/CompleteLearningHub'));
 const AllCourses = lazy(() => import('../pages/learning/AllCourses'));
@@ -72,6 +73,14 @@ export const learningRoutes = [
     to: "/learning/providers/:slug",
     page: <Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Provider Showcase...</div>}><ProviderPage /></Suspense>,
     isPublic: true,
+  },
+  {
+    title: "Admin Learning Health & Freshness",
+    to: "/admin/learning-health",
+    page: <Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Catalogue Health...</div>}><AdminLearningCatalogueHealth /></Suspense>,
+    isPublic: false,
+    requiresAuth: true,
+    requiresAdminAccess: true,
   },
   {
     title: "Admin Learning Aggregator",
