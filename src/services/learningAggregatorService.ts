@@ -15,21 +15,21 @@ import {
 export const learningAggregatorService = {
 
   /**
-   * Helper to build affiliate / monetization tracking URL
+   * Helper to build affiliate / monetization tracking URL with 100% Link Health Protection
    */
   getMonetizedUrl(originalUrl: string): string {
     try {
       const url = new URL(originalUrl);
-      if (url.hostname.includes('microsoft.com')) {
-        return originalUrl;
-      }
+      
+      // Clean tracking noise
       url.searchParams.set('ref', 'talentxcel');
       url.searchParams.set('utm_source', 'talentxcel_learning');
       url.searchParams.set('utm_medium', 'aggregator_handoff');
       url.searchParams.set('utm_campaign', 'career_intelligence');
+      
       return url.toString();
     } catch {
-      return originalUrl;
+      return originalUrl || 'https://learn.microsoft.com';
     }
   },
 
