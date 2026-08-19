@@ -132,8 +132,12 @@ export const CareerPathwayDetail: React.FC = () => {
                     {step.step_number}
                   </div>
                   <div>
-                    <h3 className="text-base font-extrabold text-foreground">{step.step_title}</h3>
-                    <p className="text-xs text-muted-foreground font-medium">{step.description}</p>
+                    <h3 className="text-base font-extrabold text-foreground">
+                      {step.step_title || (step as any).skill_name || `Step ${step.step_number}`}
+                    </h3>
+                    <p className="text-xs text-muted-foreground font-medium">
+                      {step.description || (step as any).reason || 'Master core competencies'}
+                    </p>
                   </div>
                 </div>
 
@@ -144,7 +148,7 @@ export const CareerPathwayDetail: React.FC = () => {
 
               {/* Step Skill Tags */}
               <div className="flex flex-wrap gap-2">
-                {step.skills_acquired.map((skill, sIdx) => (
+                {(step.skills_acquired || [(step as any).skill_name || 'Core Skill']).map((skill, sIdx) => (
                   <span key={sIdx} className="text-xs font-extrabold px-3 py-1 rounded-xl bg-slate-100 dark:bg-muted text-slate-800 dark:text-slate-200 border border-slate-200/80">
                     ✓ {skill}
                   </span>

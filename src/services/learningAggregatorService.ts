@@ -180,12 +180,42 @@ export const learningAggregatorService = {
   },
 
   /**
-   * Get single career pathway by Slug
+   * Get single career pathway by Slug with dynamic Weighted Career Graph fallback
    */
   async getCareerPathwayBySlug(slug: string): Promise<CareerPathway | null> {
-    const pathways = await this.getCareerPathways();
-    const found = pathways.find(p => p.slug === slug || p.id === slug);
-    return found || pathways[0];
+    try {
+      const pathways = await this.getCareerPathways();
+      const found = pathways.find(p => p.slug === slug || p.id === slug);
+      if (found) return found;
+    } catch {
+      // Fallback
+    }
+
+    // Dynamic resolution from Weighted Career Graph
+    const { WEIGHTED_CAREER_GRAPH } = await import('@/data/weightedCareerGraphData');
+    const matchedCareer = WEIGHTED_CAREER_GRAPH.find(c => c.slug === slug || c.id === slug) || WEIGHTED_CAREER_GRAPH[0];
+
+    return {
+      id: matchedCareer.id,
+      slug: matchedCareer.slug,
+      title: matchedCareer.title,
+      target_role: matchedCareer.title,
+      description: matchedCareer.description,
+      average_salary: '$75,000 - $140,000 / yr',
+      estimated_weeks: 12,
+      total_free_courses: matchedCareer.required_skills.length,
+      steps: matchedCareer.required_skills.map((sk, idx) => ({
+        step_number: idx + 1,
+        skill_name: sk.name,
+        step_title: `Master ${sk.name}`,
+        description: `Develop foundational to advanced competency in ${sk.name} (${sk.weight}% Career Graph Weight).`,
+        target_level: idx === 0 ? 'Beginner' : idx > 2 ? 'Advanced' : 'Intermediate',
+        recommended_course_id: `course-${sk.name.toLowerCase().replace(/\s+/g, '-')}`,
+        skills_acquired: [sk.name, `${sk.category} Mastery`],
+        duration_text: '2-3 Weeks',
+        reason: `Essential core skill requirement for ${matchedCareer.title}`
+      })) as any
+    };
   },
 
   /**
