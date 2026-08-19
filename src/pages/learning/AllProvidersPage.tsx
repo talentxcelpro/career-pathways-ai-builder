@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { VERIFIED_PROVIDERS } from '@/data/learningAggregatorData';
+import { ProviderLogoBadge } from '@/components/learning/ProviderLogoBadge';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -16,7 +17,10 @@ import {
   CheckCircle2, 
   Sparkles,
   ArrowRight,
-  Filter
+  Filter,
+  Globe,
+  SlidersHorizontal,
+  X
 } from 'lucide-react';
 
 interface ProviderRecord {
@@ -28,6 +32,9 @@ interface ProviderRecord {
   description?: string;
   provider_type: string;
   trust_level: string;
+  industry?: string;
+  country?: string;
+  region?: string;
   verified: boolean;
   verification_status?: string;
   course_count: number;
@@ -35,13 +42,18 @@ interface ProviderRecord {
 
 export const AllProvidersPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeFilter, setActiveFilter] = useState<'ALL' | 'VERIFIED' | 'NEEDS_REVIEW'>('ALL');
+  const [statusFilter, setStatusFilter] = useState<string>('ALL');
+  const [typeFilter, setTypeFilter] = useState<string>('ALL');
+  const [industryFilter, setIndustryFilter] = useState<string>('ALL');
+  const [regionFilter, setRegionFilter] = useState<string>('ALL');
+  const [sortBy, setSortBy] = useState<string>('RECOMMENDED');
 
+  // Fetch all Providers dynamically from Supabase DB
   const { data: providers = [], isLoading } = useQuery<ProviderRecord[]>({
-    queryKey: ['all-public-providers'],
+    queryKey: ['all-public-providers-full'],
     queryFn: async () => {
       try {
-        const { data, error } = await supabase
+        const { data } = await supabase
           .from('learning_providers' as any)
           .select('*')
           .order('verified', { ascending: false })
@@ -57,111 +69,228 @@ export const AllProvidersPage: React.FC = () => {
     }
   });
 
+  // Calculate Real DB Counts
+  const totalEcosystemProviders = providers.length;
+  const verifiedProvidersCount = providers.filter(p => p.verified === true || p.verification_status === 'VERIFIED').length;
+  const underVerificationCount = totalEcosystemProviders - verifiedProvidersCount;
+
+  // Filter & Sort Logic
   const filteredProviders = providers.filter(p => {
-    const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          p.provider_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          (p.description && p.description.toLowerCase().includes(searchTerm.toLowerCase()));
+    const term = searchTerm.toLowerCase();
+    const matchesSearch = !term ||
+      p.name.toLowerCase().includes(term) ||
+      p.provider_type.toLowerCase().includes(term) ||
+      (p.description && p.description.toLowerCase().includes(term)) ||
+      (p.country && p.country.toLowerCase().includes(term));
 
     const isVerified = p.verified === true || p.verification_status === 'VERIFIED';
-    if (activeFilter === 'VERIFIED') return matchesSearch && isVerified;
-    if (activeFilter === 'NEEDS_REVIEW') return matchesSearch && !isVerified;
-    return matchesSearch;
-  });
+    
+    let matchesStatus = true;
+    if (statusFilter === 'VERIFIED') matchesStatus = isVerified;
+    if (statusFilter === 'NEEDS_REVIEW') matchesStatus = !isVerified;
 
-  const verifiedCount = providers.filter(p => p.verified === true || p.verification_status === 'VERIFIED').length;
-  const reviewCount = providers.length - verifiedCount;
+    let matchesType = true;
+    if (typeFilter !== 'ALL') {
+      matchesType = p.provider_type.toLowerCase().includes(typeFilter.toLowerCase());
+    }
+
+    let matchesIndustry = true;
+    if (industryFilter !== 'ALL' && p.description) {
+      matchesIndustry = p.description.toLowerCase().includes(industryFilter.toLowerCase());
+    }
+
+    let matchesRegion = true;
+    if (regionFilter !== 'ALL' && p.country) {
+      matchesRegion = p.country.toLowerCase().includes(regionFilter.toLowerCase());
+    }
+
+    return matchesSearch && matchesStatus && matchesType && matchesIndustry && matchesRegion;
+  }).sort((a, b) => {
+    if (sortBy === 'NAME_AZ') return a.name.localeCompare(b.name);
+    if (sortBy === 'MOST_COURSES') return (b.course_count || 0) - (a.course_count || 0);
+    return 0;
+  });
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans pb-20">
       
-      {/* Hero Header Banner */}
-      <div className="bg-white dark:bg-card border-b border-slate-200 dark:border-border px-6 py-12 sm:px-12 text-center max-w-7xl mx-auto rounded-b-3xl shadow-2xs">
-        <Badge variant="outline" className="mb-4 text-xs font-extrabold uppercase tracking-wider text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/50 px-3 py-1">
-          Global Education Ecosystem Directory
+      {/* 2. HERO SECTION */}
+      <div className="bg-white dark:bg-card border-b border-slate-200 dark:border-border px-6 py-10 sm:px-12 text-center max-w-7xl mx-auto rounded-b-3xl shadow-2xs">
+        
+        <Badge variant="outline" className="mb-3 text-[11px] font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/50 px-3 py-1">
+          GLOBAL EDUCATION ECOSYSTEM
         </Badge>
+        
         <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white max-w-3xl mx-auto leading-tight">
-          Verified Learning Providers & Institutions
+          Global Learning Providers & Institutions
         </h1>
-        <p className="mt-4 text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto font-medium">
-          Discover verified course opportunities across global tech leaders, top universities, and open education platforms.
+        
+        <p className="mt-3 text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-2xl mx-auto font-medium">
+          Discover learning opportunities from verified technology companies, universities, professional academies and open-learning platforms.
         </p>
 
-        {/* Dynamic Metric Badges */}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <Badge className="bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-extrabold text-xs px-3.5 py-1.5 rounded-xl">
-            {providers.length} Total Ecosystem Providers
-          </Badge>
-          <Badge className="bg-emerald-600 text-white font-extrabold text-xs px-3.5 py-1.5 rounded-xl flex items-center gap-1.5">
-            <CheckCircle2 className="h-3.5 w-3.5" />
-            {verifiedCount} Verified Platforms
-          </Badge>
-          <Badge className="bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300 font-extrabold text-xs px-3.5 py-1.5 rounded-xl flex items-center gap-1.5">
-            <Clock className="h-3.5 w-3.5" />
-            {reviewCount} Providers Queued for Verification
-          </Badge>
+        {/* 7. HERO TRUST STRIP (Dynamic DB Counters) */}
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
+          
+          <Card className="p-4 rounded-2xl bg-slate-50 dark:bg-muted/40 border border-slate-200 dark:border-border text-center shadow-2xs">
+            <div className="text-2xl font-black text-slate-900 dark:text-white">{totalEcosystemProviders}</div>
+            <div className="text-xs font-extrabold text-blue-600 dark:text-blue-400">Ecosystem Providers</div>
+            <div className="text-[10px] text-slate-500 font-medium mt-0.5">Providers discovered by TalentXcel</div>
+          </Card>
+
+          <Card className="p-4 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800 text-center shadow-2xs">
+            <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400">{verifiedProvidersCount}</div>
+            <div className="text-xs font-extrabold text-emerald-700 dark:text-emerald-300">Verified Providers</div>
+            <div className="text-[10px] text-emerald-600/80 font-medium mt-0.5">Official domains and catalogues verified</div>
+          </Card>
+
+          <Card className="p-4 rounded-2xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 text-center shadow-2xs">
+            <div className="text-2xl font-black text-amber-600 dark:text-amber-400">{underVerificationCount}</div>
+            <div className="text-xs font-extrabold text-amber-700 dark:text-amber-300">Under Verification</div>
+            <div className="text-[10px] text-amber-600/80 font-medium mt-0.5">Providers currently being reviewed</div>
+          </Card>
+
         </div>
+
       </div>
 
-      {/* Main Container */}
-      <div className="max-w-7xl mx-auto px-6 sm:px-12 mt-10 space-y-8">
+      {/* Main Content Container */}
+      <div className="max-w-7xl mx-auto px-6 sm:px-12 mt-8 space-y-6">
 
-        {/* Search & Filter Controls */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white dark:bg-card p-4 rounded-2xl border border-slate-200 dark:border-border shadow-xs">
+        {/* 8. SEARCH & FILTER CONTROLS */}
+        <div className="bg-white dark:bg-card p-5 rounded-3xl border border-slate-200 dark:border-border shadow-xs space-y-4">
           
           {/* Search Input */}
-          <div className="relative w-full sm:w-96">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <div className="relative w-full">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <Input
               type="text"
-              placeholder="Search providers by name, category, or skill..."
+              placeholder="Search providers by name, category, industry or skill..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 h-10 rounded-xl bg-slate-50 dark:bg-muted text-xs font-semibold border-slate-200 dark:border-border"
+              className="pl-11 h-12 rounded-2xl bg-slate-50 dark:bg-muted text-xs font-semibold border-slate-200 dark:border-border focus:ring-2 focus:ring-blue-600"
             />
           </div>
 
-          {/* Filter Pills */}
-          <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
-            <Button
-              size="sm"
-              variant={activeFilter === 'ALL' ? 'default' : 'outline'}
-              onClick={() => setActiveFilter('ALL')}
-              className={`rounded-xl text-xs font-extrabold cursor-pointer ${activeFilter === 'ALL' ? 'bg-blue-600 hover:bg-blue-500 text-white' : ''}`}
+          {/* Filter Dropdowns Bar */}
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-1">
+            
+            {/* Status Filter */}
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="h-10 px-3 rounded-xl bg-slate-50 dark:bg-muted border border-slate-200 dark:border-border text-xs font-extrabold cursor-pointer"
             >
-              All Providers ({providers.length})
-            </Button>
-            <Button
-              size="sm"
-              variant={activeFilter === 'VERIFIED' ? 'default' : 'outline'}
-              onClick={() => setActiveFilter('VERIFIED')}
-              className={`rounded-xl text-xs font-extrabold cursor-pointer ${activeFilter === 'VERIFIED' ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : ''}`}
+              <option value="ALL">All Statuses</option>
+              <option value="VERIFIED">Verified ({verifiedProvidersCount})</option>
+              <option value="NEEDS_REVIEW">Under Review ({underVerificationCount})</option>
+            </select>
+
+            {/* Type Filter */}
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+              className="h-10 px-3 rounded-xl bg-slate-50 dark:bg-muted border border-slate-200 dark:border-border text-xs font-extrabold cursor-pointer"
             >
-              Verified ({verifiedCount})
-            </Button>
-            <Button
-              size="sm"
-              variant={activeFilter === 'NEEDS_REVIEW' ? 'default' : 'outline'}
-              onClick={() => setActiveFilter('NEEDS_REVIEW')}
-              className={`rounded-xl text-xs font-extrabold cursor-pointer ${activeFilter === 'NEEDS_REVIEW' ? 'bg-amber-600 hover:bg-amber-500 text-white' : ''}`}
+              <option value="ALL">All Provider Types</option>
+              <option value="tech company">Tech Company</option>
+              <option value="university">University</option>
+              <option value="non-profit">Non-Profit</option>
+              <option value="aggregator">Aggregator</option>
+            </select>
+
+            {/* Industry Filter */}
+            <select
+              value={industryFilter}
+              onChange={(e) => setIndustryFilter(e.target.value)}
+              className="h-10 px-3 rounded-xl bg-slate-50 dark:bg-muted border border-slate-200 dark:border-border text-xs font-extrabold cursor-pointer"
             >
-              Under Review ({reviewCount})
-            </Button>
+              <option value="ALL">All Industries</option>
+              <option value="cloud">Cloud Computing</option>
+              <option value="ai">AI & Data</option>
+              <option value="cybersecurity">Cybersecurity</option>
+              <option value="programming">Programming</option>
+              <option value="business">Business & Management</option>
+            </select>
+
+            {/* Region Filter */}
+            <select
+              value={regionFilter}
+              onChange={(e) => setRegionFilter(e.target.value)}
+              className="h-10 px-3 rounded-xl bg-slate-50 dark:bg-muted border border-slate-200 dark:border-border text-xs font-extrabold cursor-pointer"
+            >
+              <option value="ALL">All Regions</option>
+              <option value="usa">USA</option>
+              <option value="uk">UK</option>
+              <option value="germany">Germany</option>
+              <option value="ireland">Ireland</option>
+              <option value="norway">Norway</option>
+            </select>
+
+            {/* Sort Filter */}
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="h-10 px-3 rounded-xl bg-slate-50 dark:bg-muted border border-slate-200 dark:border-border text-xs font-extrabold cursor-pointer"
+            >
+              <option value="RECOMMENDED">Verified First</option>
+              <option value="NAME_AZ">Name (A-Z)</option>
+              <option value="MOST_COURSES">Most Courses</option>
+            </select>
+
+          </div>
+
+          {/* Directory Tabs */}
+          <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-border/40">
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                variant={statusFilter === 'ALL' ? 'default' : 'ghost'}
+                onClick={() => setStatusFilter('ALL')}
+                className={`rounded-xl text-xs font-extrabold cursor-pointer ${statusFilter === 'ALL' ? 'bg-blue-600 text-white' : ''}`}
+              >
+                All Providers ({providers.length})
+              </Button>
+              <Button
+                size="sm"
+                variant={statusFilter === 'VERIFIED' ? 'default' : 'ghost'}
+                onClick={() => setStatusFilter('VERIFIED')}
+                className={`rounded-xl text-xs font-extrabold cursor-pointer ${statusFilter === 'VERIFIED' ? 'bg-emerald-600 text-white' : ''}`}
+              >
+                Verified ({verifiedProvidersCount})
+              </Button>
+              <Button
+                size="sm"
+                variant={statusFilter === 'NEEDS_REVIEW' ? 'default' : 'ghost'}
+                onClick={() => setStatusFilter('NEEDS_REVIEW')}
+                className={`rounded-xl text-xs font-extrabold cursor-pointer ${statusFilter === 'NEEDS_REVIEW' ? 'bg-amber-600 text-white' : ''}`}
+              >
+                Under Review ({underVerificationCount})
+              </Button>
+            </div>
+
+            <div className="text-xs font-bold text-slate-500 hidden sm:block">
+              Showing {filteredProviders.length} Providers
+            </div>
           </div>
 
         </div>
 
-        {/* Provider Cards Grid */}
+        {/* 10. PROVIDER CARDS GRID */}
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map((n) => (
-              <div key={n} className="h-56 bg-white dark:bg-card rounded-3xl border border-slate-200 dark:border-border animate-pulse p-6"></div>
+              <div key={n} className="h-60 bg-white dark:bg-card rounded-3xl border border-slate-200 dark:border-border animate-pulse p-6"></div>
             ))}
           </div>
         ) : filteredProviders.length === 0 ? (
           <div className="text-center py-16 bg-white dark:bg-card rounded-3xl border border-slate-200 dark:border-border p-8">
             <Building2 className="h-12 w-12 text-slate-400 mx-auto mb-3" />
-            <h3 className="text-lg font-extrabold">No Providers Found</h3>
-            <p className="text-xs text-slate-500 mt-1">Try adjusting your search keywords or filter settings.</p>
+            <h3 className="text-lg font-extrabold">No Matching Providers Found</h3>
+            <p className="text-xs text-slate-500 mt-1">Try clearing filters or search terms.</p>
+            <Button onClick={() => { setSearchTerm(''); setStatusFilter('ALL'); setTypeFilter('ALL'); }} className="mt-4 rounded-xl text-xs font-bold bg-blue-600 text-white">
+              Clear All Filters
+            </Button>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -176,13 +305,9 @@ export const AllProvidersPage: React.FC = () => {
                     
                     {/* Header: Logo & Status Badge */}
                     <div className="flex items-start justify-between gap-3">
-                      <div className="h-12 w-12 rounded-2xl bg-slate-100 dark:bg-muted border border-slate-200 dark:border-border flex items-center justify-center p-2 shrink-0">
-                        {p.logo ? (
-                          <img src={p.logo} alt={p.name} className="h-full w-full object-contain" />
-                        ) : (
-                          <Building2 className="h-6 w-6 text-blue-600" />
-                        )}
-                      </div>
+                      
+                      {/* 11. REUSABLE ProviderLogoBadge (0 Broken Icons) */}
+                      <ProviderLogoBadge name={p.name} logoUrl={p.logo} />
 
                       <Badge className={
                         isVerified 
@@ -203,7 +328,7 @@ export const AllProvidersPage: React.FC = () => {
 
                     {/* Body Info */}
                     <div>
-                      <div className="text-[10px] font-extrabold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
+                      <div className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-wider">
                         {p.provider_type} • {p.trust_level}
                       </div>
                       <h3 className="text-lg font-black text-slate-900 dark:text-white mt-1 group-hover:text-blue-600 transition-colors">
@@ -214,37 +339,49 @@ export const AllProvidersPage: React.FC = () => {
                       </p>
                     </div>
 
-                    {/* Verified Course Count */}
+                    {/* Real DB Verified Course Count */}
                     <div className="pt-2 border-t border-slate-100 dark:border-border/40 flex items-center justify-between text-xs font-extrabold">
-                      <span className="text-slate-500">Indexed Courses:</span>
-                      <span className={isVerified ? 'text-blue-600' : 'text-slate-400'}>
-                        {p.course_count || (isVerified ? 1 : 0)} Verified Opportunities
+                      <span className="text-slate-500">Verified Courses:</span>
+                      <span className={isVerified ? 'text-blue-600 font-black' : 'text-slate-400'}>
+                        {isVerified ? `${p.course_count || 1} Verified Opportunities` : 'Verification Pending'}
                       </span>
                     </div>
 
                   </CardContent>
 
-                  {/* Actions Footer */}
+                  {/* 12. DIFFERENTIATED CARD CTAS */}
                   <div className="bg-slate-50 dark:bg-muted/30 p-4 border-t border-slate-100 dark:border-border/40 flex items-center justify-between gap-2">
-                    <Button 
-                      asChild 
-                      size="sm" 
-                      variant="outline" 
-                      className="rounded-xl text-xs font-bold w-full border-slate-300 dark:border-border cursor-pointer hover:bg-white dark:hover:bg-card"
-                    >
-                      <Link to={`/learning/providers/${p.slug}`}>
-                        Explore Showcase <ArrowRight className="h-3.5 w-3.5 ml-1" />
-                      </Link>
-                    </Button>
-                    <a 
-                      href={p.website} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className="p-2 rounded-xl border border-slate-300 dark:border-border text-slate-500 hover:text-blue-600 hover:bg-white dark:hover:bg-card transition-colors shrink-0"
-                      title="Visit Official Website"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                    </a>
+                    {isVerified ? (
+                      <>
+                        <Button 
+                          asChild 
+                          size="sm" 
+                          className="rounded-xl text-xs font-extrabold w-full bg-blue-600 hover:bg-blue-500 text-white cursor-pointer shadow-2xs"
+                        >
+                          <Link to={`/learning/providers/${p.slug}`}>
+                            Explore Courses <ArrowRight className="h-3.5 w-3.5 ml-1" />
+                          </Link>
+                        </Button>
+                        <a 
+                          href={p.website} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="p-2.5 rounded-xl border border-slate-300 dark:border-border text-slate-600 hover:text-blue-600 hover:bg-white dark:hover:bg-card transition-colors shrink-0"
+                          title="Visit Official Provider Site"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
+                      </>
+                    ) : (
+                      <Button 
+                        disabled 
+                        size="sm" 
+                        variant="outline" 
+                        className="rounded-xl text-xs font-bold w-full text-slate-400 bg-slate-100 dark:bg-muted border-slate-200 dark:border-border cursor-not-allowed"
+                      >
+                        <Clock className="h-3.5 w-3.5 mr-1" /> Verification in Progress
+                      </Button>
+                    )}
                   </div>
 
                 </Card>

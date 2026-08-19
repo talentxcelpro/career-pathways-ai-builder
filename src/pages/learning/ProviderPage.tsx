@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { learningAggregatorService } from '@/services/learningAggregatorService';
+import { ProviderLogoBadge } from '@/components/learning/ProviderLogoBadge';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -82,9 +83,12 @@ export const ProviderPage: React.FC = () => {
                 </Badge>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
-                {provider.name}
-              </h1>
+              <div className="flex items-center gap-4">
+                <ProviderLogoBadge name={provider.name} logoUrl={provider.logo} className="w-14 h-14" />
+                <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+                  {provider.name}
+                </h1>
+              </div>
 
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
                 {provider.description}
