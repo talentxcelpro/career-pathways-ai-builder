@@ -394,14 +394,19 @@ export default function Colleges() {
                     <Compass className="h-5 w-5 text-blue-400" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-black text-white">TalentXcel Education Navigation Engine</h3>
-                    <p className="text-xs text-slate-300 font-medium">Tell us what you want to study. We'll map institutions, entrance exams &amp; real costs.</p>
+                    <div className="flex items-center gap-2">
+                      <span className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full">
+                        TALENTXCEL EDUCATION COMMAND CENTER · READY
+                      </span>
+                    </div>
+                    <h3 className="text-xl font-black text-white mt-1">Find the right place to build your future.</h3>
+                    <p className="text-xs text-slate-300 font-medium mt-0.5">Search colleges, universities, institutes, programs, fees, cutoffs, placements &amp; careers...</p>
                   </div>
                 </div>
 
                 <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-600/20 border border-blue-400/30 text-blue-300 text-xs font-bold shrink-0">
                   <GraduationCap className="h-3.5 w-3.5" />
-                  <span>1,500+ Verified</span>
+                  <span>1,509 Verified</span>
                 </div>
               </div>
 
