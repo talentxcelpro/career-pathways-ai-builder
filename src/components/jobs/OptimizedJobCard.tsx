@@ -113,7 +113,12 @@ const OptimizedJobCard: React.FC<OptimizedJobCardProps> = memo(({
               )}
             </div>
             
-            <h3 className="font-semibold text-lg leading-tight truncate">
+            <h3 
+              onClick={() => {
+                window.location.href = `/jobs/${(job as any).seo_slug || job.id}`;
+              }}
+              className="font-semibold text-lg leading-tight truncate hover:text-blue-600 transition-colors cursor-pointer"
+            >
               {job.title}
             </h3>
             
