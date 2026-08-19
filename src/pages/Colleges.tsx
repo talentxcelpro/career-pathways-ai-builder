@@ -1,5 +1,8 @@
-import React, { useState, useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { useProfile } from '@/hooks/useProfile';
+import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,7 +30,13 @@ import {
   ChevronLeft,
   ChevronRight,
   TrendingUp,
-  BookOpen
+  BookOpen,
+  Crown,
+  Compass,
+  Rocket,
+  Zap,
+  Globe,
+  DollarSign
 } from 'lucide-react';
 import {
   Select,
@@ -42,9 +51,12 @@ import type { InstitutionCategory, IndianInstitution } from '@/types/indianEduca
 
 export default function Colleges() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { profile } = useProfile();
 
   // Search & Filter State
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeTab, setActiveTab] = useState<'All' | 'Universities' | 'Colleges' | 'Institutes' | 'Global' | 'Scholarships' | 'Pathway'>('All');
   const [selectedCategory, setSelectedCategory] = useState<InstitutionCategory | 'all'>('all');
   const [selectedState, setSelectedState] = useState('all');
   const [maxFee, setMaxFee] = useState<number | undefined>(undefined);
@@ -53,6 +65,31 @@ export default function Colleges() {
   const [page, setPage] = useState(1);
   const [savedIds, setSavedIds] = useState<string[]>([]);
   const [compareIds, setCompareIds] = useState<string[]>([]);
+
+  // User Profile
+  const [userInfo, setUserInfo] = useState({
+    full_name: profile?.full_name || user?.user_metadata?.full_name || 'TalentXcel Student',
+    title: profile?.headline || profile?.title || 'Higher Education Aspirant',
+    location: profile?.location || 'India',
+    avatarUrl: profile?.profile_picture_url || user?.user_metadata?.avatar_url || 'https://chatr.chat/assets/img/logo.png',
+    coverUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80'
+  });
+
+  useEffect(() => {
+    if (profile || user) {
+      const fullName = profile?.full_name || user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0] || 'TalentXcel Student';
+      const title = profile?.headline || profile?.title || 'Higher Education Aspirant';
+      const location = profile?.location || 'India';
+      const avatar = profile?.profile_picture_url || user?.user_metadata?.avatar_url || 'https://chatr.chat/assets/img/logo.png';
+      setUserInfo({
+        full_name: fullName,
+        title: title,
+        location: location,
+        avatarUrl: avatar,
+        coverUrl: profile?.cover_image_url || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80'
+      });
+    }
+  }, [profile, user]);
 
   // Telemetry stats
   const telemetry = useMemo(() => indianEducationService.getGraphTelemetry(), []);
@@ -68,21 +105,15 @@ export default function Colleges() {
       sortBy: sortBy,
       placementVerifiedOnly: placementOnly,
       page: page,
-      pageSize: 24,
+      pageSize: 15,
     });
   }, [searchTerm, selectedCategory, selectedState, maxFee, sortBy, placementOnly, page]);
 
-  const totalPages = Math.ceil(total / 24);
+  const totalPages = Math.ceil(total / 15);
 
   const toggleSave = (id: string) => {
     setSavedIds((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
-  };
-
-  const toggleCompare = (id: string) => {
-    setCompareIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id].slice(-3)
     );
   };
 
@@ -91,300 +122,148 @@ export default function Colleges() {
     setPage(1);
   };
 
-  const handleCategorySelect = (cat: InstitutionCategory | 'all') => {
-    setSelectedCategory(cat);
-    setPage(1);
+  const handlePillNav = (tab: 'All' | 'Universities' | 'Colleges' | 'Institutes' | 'Global' | 'Scholarships' | 'Pathway') => {
+    setActiveTab(tab);
+    if (tab === 'All') {
+      setSelectedCategory('all');
+      setPage(1);
+    } else if (tab === 'Universities') {
+      setSelectedCategory('university');
+      setPage(1);
+    } else if (tab === 'Colleges') {
+      setSelectedCategory('college');
+      setPage(1);
+    } else if (tab === 'Institutes') {
+      setSelectedCategory('institute');
+      setPage(1);
+    } else if (tab === 'Global') {
+      navigate('/colleges/global-programs');
+    } else if (tab === 'Scholarships') {
+      navigate('/colleges/scholarships');
+    } else if (tab === 'Pathway') {
+      navigate('/colleges/pathway');
+    }
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 pb-20 text-slate-900 dark:text-slate-100">
       {/* ───────────────────────────────────────────────────────────────────────── */}
-      {/* 1. DARK VISUAL COMMAND CENTER HERO (Inheriting /learning benchmark)       */}
+      {/* 1. SUB-HEADER PILL NAVIGATION BAR (Matching /learning benchmark)          */}
       {/* ───────────────────────────────────────────────────────────────────────── */}
-      <div className="bg-[#080B12] text-white border-b border-slate-800/80 px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-        <div className="max-w-7xl mx-auto">
-          {/* Header Badge */}
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-6 pb-4 border-b border-slate-800/60">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-indigo-950 text-indigo-400 border border-indigo-500/30">
-              <Sparkles className="h-3.5 w-3.5 text-indigo-400" />
-              TALENTXCEL EDUCATION COMMAND CENTER
-            </div>
-            <div className="flex items-center gap-2 text-xs font-mono text-emerald-400 bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-500/30">
-              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              SYSTEM READY · 1,200+ INDEXED
-            </div>
-          </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-6 pb-2">
+        <div className="bg-white dark:bg-card border border-slate-200/80 dark:border-border rounded-full p-1.5 shadow-xs flex items-center justify-between overflow-x-auto gap-1">
+          {[
+            { label: 'All Higher Ed', id: 'All', icon: BookOpen, count: telemetry.totalInstitutions },
+            { label: 'Universities', id: 'Universities', icon: GraduationCap, count: telemetry.categoryCounts.universities },
+            { label: 'Colleges', id: 'Colleges', icon: Building2, count: telemetry.categoryCounts.colleges },
+            { label: 'Premier Institutes', id: 'Institutes', icon: Zap, count: telemetry.categoryCounts.institutes },
+            { label: 'Global Degrees', id: 'Global', icon: Globe, count: null },
+            { label: 'Scholarships', id: 'Scholarships', icon: Award, count: null },
+            { label: 'Career Pathway', id: 'Pathway', icon: Rocket, count: null },
+          ].map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => handlePillNav(tab.id as any)}
+                className={`px-4 py-2 rounded-full text-xs font-extrabold transition-all flex items-center gap-2 shrink-0 cursor-pointer ${
+                  isActive
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-muted'
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                <span>{tab.label}</span>
+                {tab.count !== null && (
+                  <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
+                    isActive ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
+                  }`}>
+                    {tab.count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
-          {/* Hero Headings */}
-          <div className="max-w-3xl mb-8">
-            <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight text-white mb-3">
-              Find the right place to build your future.
-            </h1>
-            <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
-              Search 1,500+ verified Indian universities, undergraduate &amp; postgraduate colleges, and premier institutes of eminence. Connected directly into AI Career Pathways and verified outcome evidence.
-            </p>
-          </div>
+      {/* ───────────────────────────────────────────────────────────────────────── */}
+      {/* 2. 3-COLUMN MAIN PLATFORM LAYOUT (Matching /learning benchmark)           */}
+      {/* ───────────────────────────────────────────────────────────────────────── */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        {/* ── LEFT COLUMN (3 cols): USER PROFILE & QUICK FILTERS ──────────────── */}
+        <div className="lg:col-span-3 space-y-6">
+          
+          {/* User Profile Card */}
+          <Card className="rounded-3xl border-slate-200/80 dark:border-border bg-white dark:bg-card shadow-sm overflow-hidden text-center">
+            <div
+              className="h-24 bg-cover bg-center relative"
+              style={{ backgroundImage: `url(${userInfo.coverUrl})` }}
+            >
+              <div className="absolute inset-0 bg-slate-900/30"></div>
+            </div>
 
-          {/* AI-Native Search Command Box */}
-          <div className="bg-[#101522] rounded-2xl p-4 sm:p-5 border border-slate-700/80 shadow-2xl space-y-4 max-w-4xl">
-            <div className="flex flex-col sm:flex-row items-center gap-2">
-              <div className="relative flex-1 w-full">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-                <Input
-                  placeholder='e.g. "Computer Science in Delhi under ₹3 lakh", "MBA colleges accepting CAT", "B.Tech in Bangalore"'
-                  value={searchTerm}
-                  onChange={(e) => {
-                    setSearchTerm(e.target.value);
-                    setPage(1);
+            <CardContent className="px-5 pb-6 pt-0 relative space-y-4">
+              <div
+                onClick={() => navigate('/profile')}
+                className="w-20 h-20 rounded-full border-4 border-white dark:border-card bg-white mx-auto -mt-10 overflow-hidden shadow-md flex items-center justify-center cursor-pointer hover:scale-105 transition-transform"
+              >
+                <img
+                  src={userInfo.avatarUrl}
+                  alt={userInfo.full_name}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = 'https://chatr.chat/assets/img/logo.png';
                   }}
-                  className="pl-12 h-13 text-sm sm:text-base border-slate-700 bg-slate-900/90 text-white placeholder:text-slate-500 rounded-xl focus:border-indigo-500 font-medium"
+                  className="w-full h-full object-cover"
                 />
               </div>
-              <Button
-                className="w-full sm:w-auto h-13 px-8 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shrink-0 shadow-lg shadow-indigo-600/30"
-                onClick={() => setPage(1)}
-              >
-                Search Graph <ArrowRight className="ml-1.5 h-4 w-4" />
-              </Button>
-            </div>
 
-            {/* Popular Query Chips */}
-            <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-800/80 text-xs">
-              <span className="text-slate-400 font-bold uppercase tracking-wider text-[11px] mr-1">
-                Popular:
-              </span>
-              {[
-                'Engineering',
-                'Medical',
-                'MBA',
-                'AI & Data Science',
-                'Law (CLAT)',
-                'Design',
-                'Delhi',
-                'Karnataka',
-                'Under ₹3 Lakh',
-              ].map((chip) => (
-                <button
-                  key={chip}
-                  onClick={() => handleQuickSearch(chip === 'Under ₹3 Lakh' ? 'under 3 lakh' : chip)}
-                  className="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/60 font-semibold transition-all cursor-pointer"
+              <div className="space-y-1">
+                <div
+                  onClick={() => navigate('/profile')}
+                  className="flex items-center justify-center gap-1 cursor-pointer hover:text-blue-600 transition-colors"
                 >
-                  {chip}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ───────────────────────────────────────────────────────────────────────── */}
-      {/* 2. LIVE INDIA EDUCATION GRAPH TELEMETRY STRIP                             */}
-      {/* ───────────────────────────────────────────────────────────────────────── */}
-      <div className="bg-[#0C101A] border-b border-slate-800 text-white px-4 sm:px-6 lg:px-8 py-4">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
-          <div className="flex items-center gap-6 overflow-x-auto py-1">
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="text-slate-400 uppercase">INDIA GRAPH:</span>
-              <span className="font-black text-white text-sm">{telemetry.totalInstitutions.toLocaleString()}+</span>
-              <span className="text-slate-400">INSTITUTIONS</span>
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="text-slate-400">●</span>
-              <span className="font-black text-white text-sm">{telemetry.totalStatesAndUTs}</span>
-              <span className="text-slate-400">STATES &amp; UTs</span>
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="text-slate-400">●</span>
-              <span className="font-black text-white text-sm">{telemetry.totalProgramsEstimate.toLocaleString()}+</span>
-              <span className="text-slate-400">PROGRAMS</span>
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="text-slate-400">●</span>
-              <span className="font-black text-emerald-400 text-sm">{telemetry.sourceCoveragePercentage}%</span>
-              <span className="text-slate-400">SOURCE COVERAGE</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-4 text-[11px] text-slate-400 shrink-0">
-            <span className="text-emerald-400 font-semibold">{telemetry.verifiedTodayCount} CHECKED TODAY</span>
-            <span>·</span>
-            <span>{telemetry.recentChangesCount} CHANGES</span>
-            <span>·</span>
-            <span className="text-amber-400">{telemetry.underReviewCount} UNDER REVIEW</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-        {/* ───────────────────────────────────────────────────────────────────────── */}
-        {/* 3. FOUR DISCOVERY CATEGORY CARDS                                         */}
-        {/* ───────────────────────────────────────────────────────────────────────── */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
-          <button
-            onClick={() => handleCategorySelect('all')}
-            className={`p-4 rounded-2xl border text-left transition-all cursor-pointer ${
-              selectedCategory === 'all'
-                ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-200'
-                : 'bg-white text-slate-800 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
-            }`}
-          >
-            <div className="text-[11px] font-black uppercase tracking-wider opacity-80 mb-1">
-              DISCOVERY 01 · ALL
-            </div>
-            <div className="text-base sm:text-lg font-black leading-tight">
-              All Institutions
-            </div>
-            <div className="text-xs mt-1 opacity-90 font-mono">
-              {telemetry.totalInstitutions.toLocaleString()} Higher Ed Records
-            </div>
-          </button>
-
-          <button
-            onClick={() => handleCategorySelect('university')}
-            className={`p-4 rounded-2xl border text-left transition-all cursor-pointer ${
-              selectedCategory === 'university'
-                ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-200'
-                : 'bg-white text-slate-800 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
-            }`}
-          >
-            <div className="text-[11px] font-black uppercase tracking-wider opacity-80 mb-1">
-              DISCOVERY 02 · UNIVERSITIES
-            </div>
-            <div className="text-base sm:text-lg font-black leading-tight">
-              Universities
-            </div>
-            <div className="text-xs mt-1 opacity-90 font-mono">
-              {telemetry.categoryCounts.universities} Central, State &amp; Deemed
-            </div>
-          </button>
-
-          <button
-            onClick={() => handleCategorySelect('college')}
-            className={`p-4 rounded-2xl border text-left transition-all cursor-pointer ${
-              selectedCategory === 'college'
-                ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-200'
-                : 'bg-white text-slate-800 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
-            }`}
-          >
-            <div className="text-[11px] font-black uppercase tracking-wider opacity-80 mb-1">
-              DISCOVERY 03 · COLLEGES
-            </div>
-            <div className="text-base sm:text-lg font-black leading-tight">
-              Undergraduate &amp; PG Colleges
-            </div>
-            <div className="text-xs mt-1 opacity-90 font-mono">
-              {telemetry.categoryCounts.colleges} Eng, Arts, Sci, Comm, Law
-            </div>
-          </button>
-
-          <button
-            onClick={() => handleCategorySelect('institute')}
-            className={`p-4 rounded-2xl border text-left transition-all cursor-pointer ${
-              selectedCategory === 'institute'
-                ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-200'
-                : 'bg-white text-slate-800 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
-            }`}
-          >
-            <div className="text-[11px] font-black uppercase tracking-wider opacity-80 mb-1">
-              DISCOVERY 04 · PREMIER
-            </div>
-            <div className="text-base sm:text-lg font-black leading-tight">
-              IIT, NIT, IIM &amp; Institutes
-            </div>
-            <div className="text-xs mt-1 opacity-90 font-mono">
-              {telemetry.categoryCounts.institutes} National Institutes of Eminence
-            </div>
-          </button>
-        </div>
-
-        {/* ───────────────────────────────────────────────────────────────────────── */}
-        {/* 4. UNIFIED EDUCATION DESTINATION STRIP (Mental Model)                     */}
-        {/* ───────────────────────────────────────────────────────────────────────── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
-          <Link
-            to="/colleges"
-            className="p-3.5 rounded-xl bg-white border border-slate-200/90 shadow-2xs hover:shadow-xs transition-all flex items-center gap-3"
-          >
-            <div className="w-9 h-9 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-sm shrink-0">
-              🇮🇳
-            </div>
-            <div className="min-w-0">
-              <div className="text-[11px] font-black uppercase tracking-wider text-indigo-600">EXPLORE</div>
-              <div className="text-xs font-bold text-slate-900 truncate">Indian Institutions</div>
-            </div>
-          </Link>
-
-          <Link
-            to="/colleges/global-programs"
-            className="p-3.5 rounded-xl bg-white border border-slate-200/90 shadow-2xs hover:shadow-xs transition-all flex items-center gap-3"
-          >
-            <div className="w-9 h-9 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center font-bold text-sm shrink-0">
-              🌍
-            </div>
-            <div className="min-w-0">
-              <div className="text-[11px] font-black uppercase tracking-wider text-blue-600">EXPLORE</div>
-              <div className="text-xs font-bold text-slate-900 truncate">Global Degrees &amp; €0 Programs</div>
-            </div>
-          </Link>
-
-          <Link
-            to="/colleges/scholarships"
-            className="p-3.5 rounded-xl bg-white border border-slate-200/90 shadow-2xs hover:shadow-xs transition-all flex items-center gap-3"
-          >
-            <div className="w-9 h-9 rounded-lg bg-purple-50 text-purple-700 flex items-center justify-center font-bold text-sm shrink-0">
-              🎓
-            </div>
-            <div className="min-w-0">
-              <div className="text-[11px] font-black uppercase tracking-wider text-purple-600">FUND</div>
-              <div className="text-xs font-bold text-slate-900 truncate">Scholarships &amp; Grants</div>
-            </div>
-          </Link>
-
-          <Link
-            to="/colleges/pathway"
-            className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 shadow-2xs hover:shadow-xs transition-all flex items-center gap-3 text-white"
-          >
-            <div className="w-9 h-9 rounded-lg bg-emerald-950 text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-bold text-sm shrink-0">
-              ✨
-            </div>
-            <div className="min-w-0">
-              <div className="text-[11px] font-black uppercase tracking-wider text-emerald-400">PLAN</div>
-              <div className="text-xs font-bold text-white truncate">AI Career Pathway</div>
-            </div>
-          </Link>
-        </div>
-
-        {/* ───────────────────────────────────────────────────────────────────────── */}
-        {/* 5. MULTI-FACET FILTER & SORT TOOLBAR                                      */}
-        {/* ───────────────────────────────────────────────────────────────────────── */}
-        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-xs mb-8 space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
-            <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-slate-500" />
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
-                Directory Filters ({total.toLocaleString()} matching)
-              </span>
-            </div>
-
-            {/* Compare Bar if active */}
-            {compareIds.length > 0 && (
-              <div className="flex items-center gap-2 bg-indigo-50 border border-indigo-200 px-3 py-1 rounded-full text-xs text-indigo-900 font-bold">
-                <span>{compareIds.length} Selected for Compare</span>
-                <button
-                  onClick={() => setCompareIds([])}
-                  className="text-indigo-600 hover:text-indigo-900 underline ml-1 cursor-pointer"
-                >
-                  Clear
-                </button>
+                  <h3 className="text-sm font-extrabold text-foreground">{userInfo.full_name}</h3>
+                  <CheckCircle2 className="h-4 w-4 fill-blue-600 text-white" />
+                </div>
+                <p className="text-xs text-muted-foreground font-semibold">{userInfo.title}</p>
+                <p className="text-[11px] text-slate-400 font-medium">{userInfo.location}</p>
               </div>
-            )}
-          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+              <div className="flex items-center gap-2 pt-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate('/profile')}
+                  className="flex-1 rounded-2xl text-xs font-bold border-slate-300 cursor-pointer"
+                >
+                  Edit Profile
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => navigate('/colleges/pathway')}
+                  className="flex-1 rounded-2xl text-xs font-extrabold bg-blue-600 hover:bg-blue-500 text-white gap-1 shadow-sm cursor-pointer"
+                >
+                  <Sparkles className="h-3 w-3" /> AI Plan
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Quick Filter Widget */}
+          <Card className="rounded-3xl border-slate-200/80 dark:border-border bg-white dark:bg-card shadow-sm p-5 space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                <Filter className="w-3.5 h-3.5 text-blue-600" /> State &amp; Budget
+              </span>
+              <span className="text-[11px] text-slate-400 font-mono">{total} Matches</span>
+            </div>
+
             {/* State selector */}
             <div>
-              <label className="text-[11px] font-black uppercase tracking-wider text-slate-400 block mb-1">
-                State / Union Territory
-              </label>
+              <label className="text-[11px] font-bold text-slate-500 block mb-1">State / UT</label>
               <Select
                 value={selectedState}
                 onValueChange={(val) => {
@@ -392,7 +271,7 @@ export default function Colleges() {
                   setPage(1);
                 }}
               >
-                <SelectTrigger className="h-10 rounded-xl bg-slate-50 text-xs border-slate-200 font-medium">
+                <SelectTrigger className="h-9 rounded-xl bg-slate-50 text-xs border-slate-200 font-medium">
                   <SelectValue placeholder="All 36 States & UTs" />
                 </SelectTrigger>
                 <SelectContent className="max-h-60 rounded-xl">
@@ -406,11 +285,9 @@ export default function Colleges() {
               </Select>
             </div>
 
-            {/* Max Annual Fee */}
+            {/* Max Fee */}
             <div>
-              <label className="text-[11px] font-black uppercase tracking-wider text-slate-400 block mb-1">
-                Maximum Annual Fee
-              </label>
+              <label className="text-[11px] font-bold text-slate-500 block mb-1">Tuition Budget</label>
               <Select
                 value={maxFee !== undefined ? String(maxFee) : 'all'}
                 onValueChange={(val) => {
@@ -418,24 +295,22 @@ export default function Colleges() {
                   setPage(1);
                 }}
               >
-                <SelectTrigger className="h-10 rounded-xl bg-slate-50 text-xs border-slate-200 font-medium">
-                  <SelectValue placeholder="Any Tuition Budget" />
+                <SelectTrigger className="h-9 rounded-xl bg-slate-50 text-xs border-slate-200 font-medium">
+                  <SelectValue placeholder="Any Tuition" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
                   <SelectItem value="all">Any Tuition Budget</SelectItem>
-                  <SelectItem value="50000">Under ₹50,000 / year</SelectItem>
-                  <SelectItem value="100000">Under ₹1 Lakh / year</SelectItem>
-                  <SelectItem value="250000">Under ₹2.5 Lakh / year</SelectItem>
-                  <SelectItem value="500000">Under ₹5 Lakh / year</SelectItem>
+                  <SelectItem value="50000">Under ₹50,000 / yr</SelectItem>
+                  <SelectItem value="100000">Under ₹1 Lakh / yr</SelectItem>
+                  <SelectItem value="250000">Under ₹2.5 Lakh / yr</SelectItem>
+                  <SelectItem value="500000">Under ₹5 Lakh / yr</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            {/* Sorting */}
+            {/* Sort */}
             <div>
-              <label className="text-[11px] font-black uppercase tracking-wider text-slate-400 block mb-1">
-                Sort Hierarchy
-              </label>
+              <label className="text-[11px] font-bold text-slate-500 block mb-1">Sort Hierarchy</label>
               <Select
                 value={sortBy}
                 onValueChange={(val: any) => {
@@ -443,7 +318,7 @@ export default function Colleges() {
                   setPage(1);
                 }}
               >
-                <SelectTrigger className="h-10 rounded-xl bg-slate-50 text-xs border-slate-200 font-medium">
+                <SelectTrigger className="h-9 rounded-xl bg-slate-50 text-xs border-slate-200 font-medium">
                   <SelectValue placeholder="Sort By" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
@@ -456,217 +331,377 @@ export default function Colleges() {
               </Select>
             </div>
 
-            {/* Placement Verified Toggle */}
-            <div className="flex flex-col justify-end">
-              <button
-                onClick={() => {
-                  setPlacementOnly(!placementOnly);
-                  setPage(1);
-                }}
-                className={`h-10 px-3 rounded-xl border flex items-center justify-between text-xs font-bold transition-all cursor-pointer ${
-                  placementOnly
-                    ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
-                    : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-                }`}
-              >
-                <span>Audited Placements Only</span>
-                <span
-                  className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${
-                    placementOnly ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-400'
-                  }`}
-                >
-                  {placementOnly ? '✓' : ''}
-                </span>
-              </button>
-            </div>
-          </div>
+            {/* Verified Placements Toggle */}
+            <button
+              onClick={() => {
+                setPlacementOnly(!placementOnly);
+                setPage(1);
+              }}
+              className={`w-full h-9 px-3 rounded-xl border flex items-center justify-between text-xs font-bold transition-all cursor-pointer ${
+                placementOnly
+                  ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                  : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+              }`}
+            >
+              <span>Audited Placements</span>
+              <span className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] ${
+                placementOnly ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-400'
+              }`}>
+                {placementOnly ? '✓' : ''}
+              </span>
+            </button>
+          </Card>
+
+          {/* Quick 4-Destination Strip */}
+          <Card className="rounded-3xl border-slate-200/80 dark:border-border bg-white dark:bg-card shadow-sm p-4 space-y-2">
+            <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 block pb-1">
+              EDUCATION DESTINATIONS
+            </span>
+            <Link
+              to="/colleges/global-programs"
+              className="p-2 rounded-xl hover:bg-slate-50 flex items-center justify-between text-xs font-bold text-slate-700 hover:text-blue-600 transition-colors"
+            >
+              <span className="flex items-center gap-2">🌍 Global €0 Degrees</span>
+              <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
+            </Link>
+            <Link
+              to="/colleges/scholarships"
+              className="p-2 rounded-xl hover:bg-slate-50 flex items-center justify-between text-xs font-bold text-slate-700 hover:text-purple-600 transition-colors"
+            >
+              <span className="flex items-center gap-2">🎓 Scholarships &amp; Grants</span>
+              <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
+            </Link>
+            <Link
+              to="/colleges/pathway"
+              className="p-2 rounded-xl hover:bg-slate-50 flex items-center justify-between text-xs font-bold text-slate-700 hover:text-emerald-600 transition-colors"
+            >
+              <span className="flex items-center gap-2">✨ AI Career Pathway</span>
+              <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
+            </Link>
+          </Card>
         </div>
 
-        {/* ───────────────────────────────────────────────────────────────────────── */}
-        {/* 6. DENSE DECISION INTELLIGENCE INSTITUTION CARDS (3-Column Desktop Grid)   */}
-        {/* ───────────────────────────────────────────────────────────────────────── */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-          {institutions.map((inst) => {
-            const isSaved = savedIds.includes(inst.id);
-            const isComparing = compareIds.includes(inst.id);
-
-            return (
-              <div
-                key={inst.id}
-                className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md transition-all flex flex-col p-5 sm:p-6"
-              >
-                {/* Header: Verified + Save */}
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <div className="flex items-center gap-1.5">
-                    <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                      <ShieldCheck className="w-3 h-3 text-emerald-600" />
-                      VERIFIED {inst.verification.confidenceScore}%
-                    </span>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase">
-                      {inst.category.toUpperCase()} · {inst.location.stateCode}
-                    </span>
+        {/* ── CENTER COLUMN (6 cols): EDUCATION NAVIGATION ENGINE & INSTITUTION FEED ── */}
+        <div className="lg:col-span-6 space-y-6">
+          
+          {/* TALENTXCEL EDUCATION NAVIGATION ENGINE (Matching /learning CareerAgentWidget) */}
+          <Card className="rounded-3xl border border-slate-200 dark:border-border bg-white dark:bg-card shadow-md overflow-hidden space-y-0">
+            <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 sm:p-8 space-y-4 relative overflow-hidden">
+              
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-blue-600/30 backdrop-blur-md flex items-center justify-center border border-blue-400/30 shrink-0">
+                    <Compass className="h-5 w-5 text-blue-400" />
                   </div>
-
-                  <button
-                    onClick={() => toggleSave(inst.id)}
-                    className={`p-1.5 rounded-lg border transition-colors cursor-pointer ${
-                      isSaved
-                        ? 'bg-amber-50 border-amber-300 text-amber-600'
-                        : 'border-slate-200 text-slate-400 hover:text-slate-700 hover:bg-slate-50'
-                    }`}
-                    aria-label="Save institution"
-                  >
-                    <Bookmark className={`w-3.5 h-3.5 ${isSaved ? 'fill-amber-500' : ''}`} />
-                  </button>
-                </div>
-
-                {/* Institution Name */}
-                <h3 className="text-base sm:text-lg font-black text-slate-900 leading-snug mb-1 line-clamp-2">
-                  {inst.name}
-                </h3>
-
-                {/* City & State */}
-                <div className="text-xs text-slate-500 flex items-center gap-1 mb-3">
-                  <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                  <span>{inst.location.city}, {inst.location.state}</span>
-                </div>
-
-                {/* Disciplines Preview */}
-                <div className="text-xs text-slate-600 line-clamp-1 mb-4 font-medium">
-                  {inst.academics.disciplines.join(' · ')}
-                </div>
-
-                {/* 3-METRIC DECISION STRIP (NIRF · FEES · PLACEMENT) */}
-                <div className="bg-slate-50 rounded-xl p-3 border border-slate-100 mb-4 grid grid-cols-3 gap-2 text-center">
                   <div>
-                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
-                      NIRF RANK
-                    </span>
-                    <span className="font-black text-slate-900 font-mono text-sm mt-0.5 block">
-                      {inst.accreditation.nirfRank ? `#${inst.accreditation.nirfRank}` : 'Top 100'}
-                    </span>
-                  </div>
-
-                  <div>
-                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
-                      ANNUAL FEES
-                    </span>
-                    <span className="font-black text-slate-900 font-mono text-sm mt-0.5 block">
-                      {inst.costs.annualTuition
-                        ? `₹${(inst.costs.annualTuition / 100000).toFixed(1)}L`
-                        : '₹25k–₹50k'}
-                    </span>
-                  </div>
-
-                  <div>
-                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
-                      PLACEMENT
-                    </span>
-                    <span
-                      className={`font-black text-xs mt-0.5 block ${
-                        inst.outcomes.placementVerified
-                          ? 'text-emerald-700 font-mono'
-                          : 'text-amber-700'
-                      }`}
-                    >
-                      {inst.outcomes.placementVerified
-                        ? `${inst.outcomes.placementRate}% VERIFIED`
-                        : 'NOT PUBLIC'}
-                    </span>
+                    <h3 className="text-lg font-black text-white">TalentXcel Education Navigation Engine</h3>
+                    <p className="text-xs text-slate-300 font-medium">Tell us what you want to study. We'll map institutions, entrance exams &amp; real costs.</p>
                   </div>
                 </div>
 
-                {/* Flagship Academic Line */}
-                <div className="space-y-1 text-xs mb-4">
-                  <div className="text-slate-700 font-semibold line-clamp-1">
-                    {inst.academics.flagshipPrograms.slice(0, 2).join(' · ')} · {inst.academics.programsCount}+ Programs
-                  </div>
-                  {inst.academics.entranceExams && (
-                    <div className="text-indigo-700 text-[11px] font-bold">
-                      Entrance: {inst.academics.entranceExams.slice(0, 3).join(', ')}
-                    </div>
-                  )}
-                </div>
-
-                {/* Forensic Verification Checklist */}
-                <div className="grid grid-cols-2 gap-1 text-[11px] text-slate-500 pt-2 border-t border-slate-100 mb-4">
-                  <span className="flex items-center gap-1 text-emerald-700 font-semibold">
-                    <Check className="w-3 h-3 text-emerald-600" /> Fees Verified
-                  </span>
-                  <span className="flex items-center gap-1 text-emerald-700 font-semibold">
-                    <Check className="w-3 h-3 text-emerald-600" /> Programs Verified
-                  </span>
-                  <span className="flex items-center gap-1 text-emerald-700 font-semibold">
-                    <Check className="w-3 h-3 text-emerald-600" /> Location Verified
-                  </span>
-                  <span className="flex items-center gap-1">
-                    {inst.outcomes.placementVerified ? (
-                      <span className="text-emerald-700 font-semibold flex items-center gap-1">
-                        <Check className="w-3 h-3 text-emerald-600" /> Placements 92%
-                      </span>
-                    ) : (
-                      <span className="text-amber-700 flex items-center gap-1">
-                        ◐ Placements Review
-                      </span>
-                    )}
-                  </span>
-                </div>
-
-                {/* Actions: Inspect Evidence | Compare | View */}
-                <div className="mt-auto pt-3 border-t border-slate-100 grid grid-cols-2 gap-2">
-                  <IndianEvidenceDrawer institution={inst} />
-                  <Button
-                    variant="default"
-                    size="sm"
-                    className="text-xs font-bold rounded-xl bg-slate-900 hover:bg-slate-800 text-white h-9"
-                    asChild
-                  >
-                    <a
-                      href={inst.identity.officialWebsite}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      View Portal <ExternalLink className="ml-1 h-3 w-3" />
-                    </a>
-                  </Button>
+                <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-600/20 border border-blue-400/30 text-blue-300 text-xs font-bold shrink-0">
+                  <GraduationCap className="h-3.5 w-3.5" />
+                  <span>1,500+ Verified</span>
                 </div>
               </div>
-            );
-          })}
+
+              {/* Conversational Input Bar */}
+              <div className="relative">
+                <Input
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setPage(1);
+                  }}
+                  placeholder='e.g. "Computer Science in Delhi under ₹3 lakh", "MBA colleges accepting CAT", "B.Tech in Bangalore"'
+                  className="h-12 bg-white/10 border-white/20 text-white placeholder:text-slate-400 rounded-2xl pl-4 pr-32 text-sm font-medium focus:bg-white/15 focus:border-blue-400"
+                />
+
+                <Button
+                  onClick={() => setPage(1)}
+                  size="sm"
+                  className="absolute right-1.5 top-1.5 bottom-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs px-4 shadow-sm"
+                >
+                  Search Graph <ArrowRight className="h-3.5 w-3.5 ml-1" />
+                </Button>
+              </div>
+
+              {/* Quick Examples */}
+              <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
+                <span className="text-[11px] font-bold text-slate-400 uppercase">Quick Examples:</span>
+                {[
+                  'Computer Science under ₹3L',
+                  'MBA accepting CAT',
+                  'Top IITs / NITs',
+                  'Engineering in Karnataka',
+                  'Medical Colleges',
+                  'Law (CLAT)'
+                ].map((chip) => (
+                  <button
+                    key={chip}
+                    onClick={() => handleQuickSearch(chip === 'Computer Science under ₹3L' ? 'Computer Science under 3 lakh' : chip)}
+                    className="px-2.5 py-1 rounded-full bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 text-[11px] font-semibold transition-all cursor-pointer"
+                  >
+                    {chip}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </Card>
+
+          {/* Telemetry Bar */}
+          <div className="flex items-center justify-between px-2 text-xs font-mono text-slate-500">
+            <span className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <strong className="text-slate-900 dark:text-white">{telemetry.totalInstitutions.toLocaleString()} Institutions</strong> across {telemetry.totalStatesAndUTs} States/UTs
+            </span>
+            <span className="text-emerald-600 font-semibold">{telemetry.verifiedTodayCount} Checked Today · 97.4% Sourced</span>
+          </div>
+
+          {/* Feed Header */}
+          <div className="flex items-center justify-between pt-1">
+            <h3 className="text-base font-extrabold text-foreground">
+              {selectedCategory === 'all' ? 'All Verified Higher Education Feed' : `${selectedCategory.toUpperCase()} Directory`}
+            </h3>
+            <span className="text-xs text-muted-foreground font-semibold">
+              Showing {institutions.length} of {total}
+            </span>
+          </div>
+
+          {/* Institution Stream Cards */}
+          <div className="space-y-4">
+            {institutions.map((inst) => {
+              const isSaved = savedIds.includes(inst.id);
+
+              return (
+                <Card
+                  key={inst.id}
+                  className="rounded-3xl border-slate-200/80 dark:border-border bg-white dark:bg-card shadow-sm p-6 space-y-4 hover:shadow-md transition-all"
+                >
+                  {/* Card Header */}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-11 h-11 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200/60 text-indigo-700 dark:text-indigo-300 flex items-center justify-center font-black text-sm shrink-0">
+                        {inst.category === 'university' ? '🏛️' : (inst.category === 'institute' ? '⚡' : '🎓')}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-black uppercase tracking-wider text-indigo-600 bg-indigo-50 dark:bg-indigo-950 px-2 py-0.5 rounded-full border border-indigo-200">
+                            {inst.category.toUpperCase()} · {inst.location.stateCode}
+                          </span>
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                            <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                            {inst.verification.confidenceScore}% VERIFIED
+                          </span>
+                        </div>
+                        <h4 className="text-base font-black text-slate-900 dark:text-white mt-1 leading-snug">
+                          {inst.name}
+                        </h4>
+                        <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
+                          <MapPin className="w-3 h-3 text-slate-400" />
+                          {inst.location.city}, {inst.location.state}
+                        </p>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => toggleSave(inst.id)}
+                      className={`p-1.5 rounded-lg border transition-colors cursor-pointer ${
+                        isSaved
+                          ? 'bg-amber-50 border-amber-300 text-amber-600'
+                          : 'border-slate-200 text-slate-400 hover:text-slate-700 hover:bg-slate-50'
+                      }`}
+                      aria-label="Save institution"
+                    >
+                      <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-amber-500' : ''}`} />
+                    </button>
+                  </div>
+
+                  {/* 3-Metric Decision Bar */}
+                  <div className="bg-slate-50 dark:bg-slate-900/60 rounded-2xl p-3 border border-slate-100 dark:border-slate-800 grid grid-cols-3 gap-2 text-center text-xs">
+                    <div>
+                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">NIRF RANK</span>
+                      <span className="font-black text-slate-900 dark:text-white font-mono text-sm block mt-0.5">
+                        {inst.accreditation.nirfRank ? `#${inst.accreditation.nirfRank}` : 'Accredited'}
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">ANNUAL FEES</span>
+                      <span className="font-black text-slate-900 dark:text-white font-mono text-sm block mt-0.5">
+                        {inst.costs.annualTuition
+                          ? `₹${(inst.costs.annualTuition / 100000).toFixed(1)}L`
+                          : '₹25k–₹50k'}
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">PLACEMENT</span>
+                      <span className={`font-black text-xs block mt-0.5 ${
+                        inst.outcomes.placementVerified ? 'text-emerald-700 dark:text-emerald-400 font-mono' : 'text-amber-700 dark:text-amber-400'
+                      }`}>
+                        {inst.outcomes.placementVerified
+                          ? `${inst.outcomes.placementRate}% VERIFIED`
+                          : 'NOT PUBLIC'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Flagship Academic Line */}
+                  <div className="text-xs space-y-1">
+                    <div className="text-slate-700 dark:text-slate-300 font-semibold line-clamp-1">
+                      {inst.academics.flagshipPrograms.slice(0, 3).join(' · ')} · {inst.academics.programsCount}+ Programs
+                    </div>
+                    {inst.academics.entranceExams && (
+                      <div className="text-indigo-600 dark:text-indigo-400 text-[11px] font-bold">
+                        Entrance: {inst.academics.entranceExams.slice(0, 3).join(', ')}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Actions: Inspect Evidence | View Portal */}
+                  <div className="flex items-center justify-between gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+                    <div className="flex-1">
+                      <IndianEvidenceDrawer institution={inst} />
+                    </div>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      className="rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold h-9 px-4"
+                      asChild
+                    >
+                      <a
+                        href={inst.identity.officialWebsite}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Official Portal <ExternalLink className="ml-1 h-3 w-3" />
+                      </a>
+                    </Button>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between bg-white dark:bg-card rounded-2xl p-4 border border-slate-200 dark:border-border shadow-2xs">
+              <div className="text-xs text-slate-500 font-medium">
+                Page <span className="font-bold text-slate-900 dark:text-white">{page}</span> of{' '}
+                <span className="font-bold text-slate-900 dark:text-white">{totalPages}</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 rounded-xl text-xs font-bold"
+                  disabled={page <= 1}
+                  onClick={() => {
+                    setPage((p) => Math.max(1, p - 1));
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                >
+                  <ChevronLeft className="w-3.5 h-3.5 mr-1" /> Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 rounded-xl text-xs font-bold"
+                  disabled={page >= totalPages}
+                  onClick={() => {
+                    setPage((p) => Math.min(totalPages, p + 1));
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                >
+                  Next <ChevronRight className="w-3.5 h-3.5 ml-1" />
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* ───────────────────────────────────────────────────────────────────────── */}
-        {/* 7. PAGINATION TOOLBAR                                                     */}
-        {/* ───────────────────────────────────────────────────────────────────────── */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs">
-            <div className="text-xs text-slate-500 font-medium">
-              Showing page <span className="font-bold text-slate-900">{page}</span> of{' '}
-              <span className="font-bold text-slate-900">{totalPages}</span> ({total.toLocaleString()} institutions)
+        {/* ── RIGHT COLUMN (3 cols): PRO ADMISSION & ADVISOR WIDGETS ──────────── */}
+        <div className="lg:col-span-3 space-y-6">
+          
+          {/* Pro Subscriber Banner (Matching /learning Green Card) */}
+          <div className="rounded-3xl p-6 bg-gradient-to-br from-emerald-800 via-emerald-900 to-slate-950 text-white shadow-md space-y-4 relative overflow-hidden">
+            <div className="flex items-center justify-between">
+              <span className="bg-amber-400/20 text-amber-300 border border-amber-300/30 text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full">
+                Admission Intelligence
+              </span>
+              <Crown className="h-4 w-4 text-amber-400" />
             </div>
 
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-9 rounded-xl text-xs font-bold border-slate-200"
-                disabled={page <= 1}
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-              >
-                <ChevronLeft className="w-4 h-4 mr-1" /> Previous
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-9 rounded-xl text-xs font-bold border-slate-200"
-                disabled={page >= totalPages}
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              >
-                Next <ChevronRight className="w-4 h-4 ml-1" />
-              </Button>
+            <div>
+              <h4 className="text-base font-extrabold leading-snug">
+                Unlock Direct Admission &amp; Cutoff Predictions
+              </h4>
+              <p className="text-xs text-emerald-200 mt-1 leading-relaxed">
+                Get AI-powered JEE/NEET/CAT percentile cutoff predictions, fee waiver roadmaps, and Career Passport endorsement.
+              </p>
             </div>
+
+            <Button
+              size="sm"
+              onClick={() => navigate('/colleges/pathway')}
+              className="w-full rounded-2xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-black h-10 shadow-md cursor-pointer"
+            >
+              Generate AI Pathway <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+            </Button>
           </div>
-        )}
+
+          {/* Entrance Exams Widget */}
+          <Card className="rounded-3xl border-slate-200/80 dark:border-border bg-white dark:bg-card shadow-sm p-5 space-y-3">
+            <span className="text-xs font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5 pb-2 border-b border-slate-100">
+              <Award className="w-3.5 h-3.5 text-blue-600" /> National Entrance Exams
+            </span>
+            <div className="space-y-2 text-xs">
+              {[
+                { name: 'JEE Advanced', target: 'IIT Admissions', count: '23 IITs' },
+                { name: 'JEE Main', target: 'NIT & IIIT Admissions', count: '56 Institutes' },
+                { name: 'NEET UG', target: 'MBBS / AIIMS', count: '20+ AIIMS' },
+                { name: 'CAT', target: 'IIM MBA Admissions', count: '21 IIMs' },
+                { name: 'CLAT', target: 'National Law Universities', count: '26 NLUs' },
+                { name: 'CUET UG', target: 'Central Universities', count: '45+ Central Univs' },
+              ].map((exam) => (
+                <div
+                  key={exam.name}
+                  onClick={() => handleQuickSearch(exam.name)}
+                  className="p-2.5 rounded-xl bg-slate-50 hover:bg-indigo-50/50 border border-slate-100 flex items-center justify-between cursor-pointer transition-colors"
+                >
+                  <div>
+                    <span className="font-bold text-slate-900 block">{exam.name}</span>
+                    <span className="text-[11px] text-slate-500">{exam.target}</span>
+                  </div>
+                  <span className="text-[10px] font-mono font-bold text-indigo-700 bg-white px-2 py-0.5 rounded-md border border-slate-200">
+                    {exam.count}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          {/* Need ₹0 Education? */}
+          <Card className="rounded-3xl border-slate-200/80 dark:border-border bg-white dark:bg-card shadow-sm p-5 space-y-3">
+            <span className="text-xs font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5 pb-2 border-b border-slate-100">
+              <DollarSign className="w-3.5 h-3.5 text-emerald-600" /> ₹0 Tuition Pathways
+            </span>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Explore 100% tuition-free international master's in Germany/Norway and fully funded government scholarships.
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate('/colleges/global-programs')}
+              className="w-full rounded-xl text-xs font-bold border-emerald-300 text-emerald-800 hover:bg-emerald-50"
+            >
+              Explore €0 Degrees <ExternalLink className="ml-1 h-3 w-3" />
+            </Button>
+          </Card>
+        </div>
+
       </div>
     </div>
   );
