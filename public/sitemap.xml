@@ -1,111 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-base.xml</loc>
+    <loc>https://talentxcel.in/sitemap-matrix-01.xml</loc>
     <lastmod>2026-08-19</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-jobs.xml</loc>
+    <loc>https://talentxcel.in/sitemap-matrix-02.xml</loc>
     <lastmod>2026-08-19</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-passports.xml</loc>
+    <loc>https://talentxcel.in/sitemap-matrix-03.xml</loc>
     <lastmod>2026-08-19</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-services.xml</loc>
+    <loc>https://talentxcel.in/sitemap-matrix-04.xml</loc>
     <lastmod>2026-08-19</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-industries.xml</loc>
+    <loc>https://talentxcel.in/sitemap-matrix-05.xml</loc>
     <lastmod>2026-08-19</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-locations.xml</loc>
+    <loc>https://talentxcel.in/sitemap-matrix-06.xml</loc>
     <lastmod>2026-08-19</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-resources.xml</loc>
+    <loc>https://talentxcel.in/sitemap-matrix-07.xml</loc>
     <lastmod>2026-08-19</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-roles.xml</loc>
+    <loc>https://talentxcel.in/sitemap-matrix-08.xml</loc>
     <lastmod>2026-08-19</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-skills.xml</loc>
+    <loc>https://talentxcel.in/sitemap-matrix-09.xml</loc>
     <lastmod>2026-08-19</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-role-locations.xml</loc>
+    <loc>https://talentxcel.in/sitemap-matrix-10.xml</loc>
     <lastmod>2026-08-19</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-learning.xml</loc>
+    <loc>https://talentxcel.in/sitemap-matrix-11.xml</loc>
     <lastmod>2026-08-19</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-companies.xml</loc>
-    <lastmod>2026-08-19</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://talentxcel.in/sitemap-colleges.xml</loc>
-    <lastmod>2026-08-19</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://talentxcel.in/sitemap-authors.xml</loc>
-    <lastmod>2026-08-19</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://talentxcel.in/sitemap-news.xml</loc>
-    <lastmod>2026-08-19</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://talentxcel.in/sitemap-articles.xml</loc>
-    <lastmod>2026-08-19</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://talentxcel.in/sitemap-career-paths.xml</loc>
-    <lastmod>2026-08-19</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://talentxcel.in/sitemap-resume-guides.xml</loc>
-    <lastmod>2026-08-19</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://talentxcel.in/sitemap-interview-guides.xml</loc>
-    <lastmod>2026-08-19</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://talentxcel.in/sitemap-skill-guides.xml</loc>
-    <lastmod>2026-08-19</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://talentxcel.in/sitemap-employer-guides.xml</loc>
-    <lastmod>2026-08-19</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://talentxcel.in/sitemap-salary-guides.xml</loc>
-    <lastmod>2026-08-19</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://talentxcel.in/sitemap-fresher-guides.xml</loc>
-    <lastmod>2026-08-19</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://talentxcel.in/sitemap-ai-career.xml</loc>
-    <lastmod>2026-08-19</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://talentxcel.in/sitemap-passport-guides.xml</loc>
-    <lastmod>2026-08-19</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://talentxcel.in/sitemap-networking-rewards.xml</loc>
-    <lastmod>2026-08-19</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://talentxcel.in/sitemap-people.xml</loc>
+    <loc>https://talentxcel.in/sitemap-matrix-12.xml</loc>
     <lastmod>2026-08-19</lastmod>
   </sitemap>
 </sitemapindex>
