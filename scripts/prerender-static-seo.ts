@@ -203,13 +203,24 @@ async function prerender() {
     });
   }
 
+  function slugify(text: string): string {
+    return text
+      .toString()
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/[^\w\-]+/g, '')
+      .replace(/\-\-+/g, '-');
+  }
+
   // 2. Pre-render 100 Global Degree Programs
   console.log(`Pre-rendering ${SEED_PROGRAMS.length} Global Degree Programs...`);
   for (const prog of SEED_PROGRAMS) {
-    const slug = prog.slug;
+    const slug = (prog as any).slug || slugify(`${prog.institution_name}-${prog.program_title}`);
     const canonical = `${BASE_URL}/colleges/global-programs/${slug}`;
+    const tuition = (prog as any).tuition_annual_display || (prog.tuition_cost_usd === 0 ? '€0 Tuition' : `$${prog.tuition_cost_usd}`);
     const title = `${prog.program_title} — ${prog.institution_name}, ${prog.country} | TalentXcel Global Intelligence`;
-    const description = `Verified details for ${prog.program_title} at ${prog.institution_name} in ${prog.country}. Tuition: ${prog.tuition_annual_display}. Funding: ${prog.access_type}.`;
+    const description = `Verified details for ${prog.program_title} at ${prog.institution_name} in ${prog.country}. Tuition: ${tuition}. Funding: ${prog.access_type}.`;
 
     const bodyHtml = `
       <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
@@ -217,9 +228,9 @@ async function prerender() {
         <p class="text-emerald-400 font-semibold text-sm mb-4">${escapeHtml(prog.institution_name)} &bull; ${escapeHtml(prog.country)}</p>
         <p class="text-sm text-slate-300 mb-4">${escapeHtml(prog.currency_note || 'Verified tuition and funding data.')}</p>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm mb-4">
-          <div class="p-3 bg-slate-950 rounded-lg"><span class="text-xs text-slate-400 block">Tuition</span><span class="font-semibold text-white">${escapeHtml(prog.tuition_annual_display)}</span></div>
-          <div class="p-3 bg-slate-950 rounded-lg"><span class="text-xs text-slate-400 block">Level</span><span class="font-semibold text-white capitalize">${escapeHtml(prog.degree_level)}</span></div>
-          <div class="p-3 bg-slate-950 rounded-lg"><span class="text-xs text-slate-400 block">Duration</span><span class="font-semibold text-white">${escapeHtml(prog.duration_years ? prog.duration_years + ' Years' : 'Standard')}</span></div>
+          <div class="p-3 bg-slate-950 rounded-lg"><span class="text-xs text-slate-400 block">Tuition</span><span class="font-semibold text-white">${escapeHtml(tuition)}</span></div>
+          <div class="p-3 bg-slate-950 rounded-lg"><span class="text-xs text-slate-400 block">Level</span><span class="font-semibold text-white capitalize">${escapeHtml(prog.level || 'Master')}</span></div>
+          <div class="p-3 bg-slate-950 rounded-lg"><span class="text-xs text-slate-400 block">Duration</span><span class="font-semibold text-white">${escapeHtml(prog.duration_months ? prog.duration_months + ' Months' : 'Standard')}</span></div>
           <div class="p-3 bg-slate-950 rounded-lg"><span class="text-xs text-slate-400 block">Status</span><span class="font-semibold text-emerald-400">${escapeHtml(prog.access_type)}</span></div>
         </div>
       </div>
@@ -233,6 +244,22 @@ async function prerender() {
       bodyContentHtml: bodyHtml
     });
   }
+
+  writePrerenderedPage('/colleges/global-programs', {
+    title: 'Global Degree & Program Discovery — 100 Verified Programs | TalentXcel',
+    description: 'Explore 100 verified tuition-free, fully funded, and scholarship-eligible degree programs worldwide across Germany, Norway, Sweden, and Europe.',
+    canonical: `${BASE_URL}/colleges/global-programs`,
+    h1: 'Global Degree & Program Discovery',
+    bodyContentHtml: '<p class="text-slate-300">100 verified degree programs across Europe and international universities.</p>'
+  });
+
+  writePrerenderedPage('/learning/providers', {
+    title: 'Top Verified Learning Providers & Institutions | TalentXcel',
+    description: 'Explore verified professional course providers including MIT, Harvard, Google, Microsoft, IBM, Stanford, and AWS.',
+    canonical: `${BASE_URL}/learning/providers`,
+    h1: 'Top Verified Learning Providers',
+    bodyContentHtml: '<p class="text-slate-300">Browse verified learning providers and university credentials.</p>'
+  });
 
   // 3. Pre-render Core Hubs
   console.log('Pre-rendering Core Hubs (/colleges, /learning, /colleges/scholarships, /colleges/pathway)...');

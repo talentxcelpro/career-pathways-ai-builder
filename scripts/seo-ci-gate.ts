@@ -9,13 +9,23 @@ const DIST_DIR = path.resolve(__dirname, '../dist');
 import { INDIAN_INSTITUTIONS_CATALOG } from '../src/data/indianInstitutionsCatalog.js';
 import { SEED_PROGRAMS } from '../src/services/globalEducationService.js';
 
+function slugify(text: string): string {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w\-]+/g, '')
+    .replace(/\-\-+/g, '-');
+}
+
 // Permanent 100-URL Controlled Benchmark Cohort (50 Indian Colleges + 20 Global Programs + 30 Core Hubs)
 export const BENCHMARK_COHORT = [
   // 1. First 50 Verified Indian Institutions
   ...INDIAN_INSTITUTIONS_CATALOG.slice(0, 50).map(c => `colleges/${c.slug}`),
 
   // 2. First 20 Verified Global Programs
-  ...SEED_PROGRAMS.slice(0, 20).map(p => `colleges/global-programs/${p.slug}`),
+  ...SEED_PROGRAMS.slice(0, 20).map(p => `colleges/global-programs/${slugify(p.institution_name + '-' + p.program_title)}`),
 
   // 3. 30 Core Learning, Education & Platform Hubs
   'colleges',
