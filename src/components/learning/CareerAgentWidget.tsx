@@ -9,7 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 import { 
-  Bot, 
   Sparkles, 
   ShieldCheck, 
   Briefcase, 
@@ -24,7 +23,8 @@ import {
   AlertTriangle,
   RefreshCw,
   Sliders,
-  Send
+  Send,
+  Compass
 } from 'lucide-react';
 
 interface CareerAgentWidgetProps {
@@ -67,7 +67,7 @@ export const CareerAgentWidget: React.FC<CareerAgentWidgetProps> = ({ userProfil
       setTimeout(() => {
         setAgentResult(result);
         setIsReasoning(false);
-      }, 500);
+      }, 400);
     } catch (err) {
       console.warn("Career agent reasoning notice:", err);
       setIsReasoning(false);
@@ -79,30 +79,25 @@ export const CareerAgentWidget: React.FC<CareerAgentWidgetProps> = ({ userProfil
   }, []);
 
   return (
-    <Card className="rounded-3xl border border-purple-200 dark:border-purple-900/60 bg-white dark:bg-card shadow-lg overflow-hidden">
+    <Card className="rounded-3xl border border-slate-200 dark:border-border/80 bg-white dark:bg-card shadow-md overflow-hidden">
       
-      {/* AGENT TOP HEADER BANNER - Warm User Wording */}
-      <div className="bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 text-white p-6 space-y-3 relative overflow-hidden">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-purple-600/40 backdrop-blur-md flex items-center justify-center border border-purple-400/40 shadow-inner">
-              <Bot className="h-6 w-6 text-purple-300 animate-pulse" />
+      {/* AGENT TOP HEADER BANNER - Sleek, Uncluttered & Polished */}
+      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 space-y-4 relative overflow-hidden">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-blue-600/30 backdrop-blur-md flex items-center justify-center border border-blue-400/30 shadow-sm shrink-0">
+              <Compass className="h-6 w-6 text-blue-400" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-lg font-extrabold tracking-tight text-white">TalentXcel Career Advisor</h3>
-                <Badge className="bg-purple-500 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">
-                  AI Career Guide ✨
-                </Badge>
-              </div>
-              <p className="text-xs text-purple-200 font-medium">We matched 2,650+ free courses & verified jobs to your background</p>
+              <h3 className="text-xl font-extrabold tracking-tight text-white">TalentXcel Career Advisor</h3>
+              <p className="text-xs text-slate-300 font-medium pt-0.5">Matched 2,650+ free courses & verified jobs to your profile</p>
             </div>
           </div>
 
           {/* PRIVACY TRANSPARENCY TOGGLE */}
-          <div className="hidden sm:flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-2xl border border-white/10">
-            <Lock className="h-3.5 w-3.5 text-purple-300" />
-            <span className="text-[11px] text-purple-100 font-bold">Personalize with Passport</span>
+          <div className="flex items-center gap-2.5 bg-white/10 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/10 shrink-0">
+            <Lock className="h-3.5 w-3.5 text-blue-300" />
+            <span className="text-xs text-slate-200 font-bold">Personalize with Passport</span>
             <Switch
               checked={isPrivacyOptIn}
               onCheckedChange={(val) => {
@@ -114,7 +109,7 @@ export const CareerAgentWidget: React.FC<CareerAgentWidgetProps> = ({ userProfil
         </div>
 
         {/* PRIVACY TRANSPARENCY NOTICE */}
-        <div className="flex items-center gap-2 text-[11px] font-semibold text-purple-200 bg-purple-950/50 p-2.5 rounded-xl border border-purple-800/40">
+        <div className="flex items-center gap-2 text-xs font-semibold text-slate-200 bg-white/5 p-3 rounded-xl border border-white/10">
           <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0" />
           <span>{isPrivacyOptIn ? `Tailored to your verified skills & experience in your Career Passport` : 'Standard recommendation model'}</span>
         </div>
@@ -126,7 +121,7 @@ export const CareerAgentWidget: React.FC<CareerAgentWidgetProps> = ({ userProfil
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <label className="text-xs font-extrabold text-foreground flex items-center gap-1.5">
-              <BrainCircuit className="h-4 w-4 text-purple-600" />
+              <BrainCircuit className="h-4 w-4 text-blue-600" />
               <span>Ask Your Career Advisor Anything</span>
             </label>
             <span className="text-[11px] text-muted-foreground font-semibold">Instant Advice ✨</span>
@@ -138,14 +133,14 @@ export const CareerAgentWidget: React.FC<CareerAgentWidgetProps> = ({ userProfil
               onChange={(e) => setPromptInput(e.target.value)}
               placeholder="e.g. 'I am an HR professional. What should I learn to get into HR analytics?'..."
               rows={2}
-              className="w-full p-3.5 pr-32 rounded-2xl bg-slate-50 dark:bg-muted/40 border border-slate-200 dark:border-border text-xs font-medium focus:outline-none focus:ring-2 focus:ring-purple-600 text-foreground resize-none"
+              className="w-full p-3.5 pr-36 rounded-2xl bg-slate-50 dark:bg-muted/40 border border-slate-200 dark:border-border text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-600 text-foreground resize-none"
             />
             <Button
               disabled={isReasoning}
               onClick={() => handleCuratePlan()}
-              className="absolute right-3 rounded-xl h-9 px-4 bg-purple-600 hover:bg-purple-500 text-white text-xs font-extrabold shadow-sm gap-1 cursor-pointer"
+              className="absolute right-3 rounded-xl h-10 px-4 bg-blue-600 hover:bg-blue-500 text-white text-xs font-extrabold shadow-sm gap-1.5 cursor-pointer"
             >
-              {isReasoning ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
+              {isReasoning ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               <span>Find My Path 🚀</span>
             </Button>
           </div>
@@ -164,7 +159,7 @@ export const CareerAgentWidget: React.FC<CareerAgentWidgetProps> = ({ userProfil
                   setPromptInput(chip);
                   handleCuratePlan(chip);
                 }}
-                className="px-3 py-1 rounded-full bg-slate-100 dark:bg-muted hover:bg-purple-50 hover:text-purple-700 text-[11px] font-semibold text-slate-600 dark:text-slate-300 transition-colors border border-slate-200/80 dark:border-border cursor-pointer"
+                className="px-3.5 py-1.5 rounded-full bg-slate-100 dark:bg-muted hover:bg-blue-50 hover:text-blue-700 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors border border-slate-200/80 dark:border-border cursor-pointer shadow-2xs"
               >
                 💡 {chip}
               </button>
@@ -174,9 +169,9 @@ export const CareerAgentWidget: React.FC<CareerAgentWidgetProps> = ({ userProfil
 
         {/* AGENT REASONING LOADER */}
         {isReasoning && (
-          <div className="py-12 flex flex-col items-center justify-center space-y-3 bg-purple-50/50 dark:bg-purple-950/20 rounded-2xl border border-purple-200/60">
-            <div className="w-10 h-10 border-4 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-xs font-extrabold text-purple-900 dark:text-purple-300">
+          <div className="py-12 flex flex-col items-center justify-center space-y-3 bg-blue-50/50 dark:bg-blue-950/20 rounded-2xl border border-blue-200/60">
+            <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-xs font-extrabold text-blue-900 dark:text-blue-300">
               Matching your Career Passport skills with 2,650+ courses & 340+ jobs...
             </p>
           </div>
@@ -187,8 +182,8 @@ export const CareerAgentWidget: React.FC<CareerAgentWidgetProps> = ({ userProfil
           <div className="space-y-6">
             
             {/* AGENT MESSAGE SUMMARY */}
-            <div className="p-4 rounded-2xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 space-y-2">
-              <div className="flex items-center gap-2 text-xs font-extrabold text-purple-700 dark:text-purple-300">
+            <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 space-y-2">
+              <div className="flex items-center gap-2 text-xs font-extrabold text-blue-700 dark:text-blue-300">
                 <Sparkles className="h-4 w-4" />
                 <span>Your Personalized Career Assessment</span>
               </div>
@@ -204,9 +199,9 @@ export const CareerAgentWidget: React.FC<CareerAgentWidgetProps> = ({ userProfil
                 <span>Skills to Master for Your Target Role</span>
               </h4>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 {agentResult.skillGaps.map((gap, idx) => (
-                  <div key={idx} className="p-3 rounded-2xl bg-slate-50 dark:bg-muted/40 border border-slate-200 dark:border-border/60 space-y-1">
+                  <div key={idx} className="p-3.5 rounded-2xl bg-slate-50 dark:bg-muted/40 border border-slate-200 dark:border-border/60 space-y-1">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-extrabold text-foreground">{gap.skillName}</span>
                       <Badge className={gap.gapSeverity === 'HIGH' ? 'bg-amber-100 text-amber-800 text-[9px] font-extrabold' : 'bg-emerald-100 text-emerald-800 text-[9px] font-extrabold'}>
