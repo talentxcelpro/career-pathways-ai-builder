@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "predev": "npx tsx scripts/generate-sitemap.ts",
-    "prebuild": "npx tsx scripts/generate-sitemap.ts"
+    "prebuild": "npx tsx scripts/generate-sitemap.ts",
+    "postbuild": "npx tsx scripts/prerender-static-seo.ts"
   },
   "dependencies": {
     "@capacitor/android": "^7.4.3",
