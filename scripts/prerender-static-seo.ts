@@ -50,7 +50,8 @@ async function prerender() {
     const cleanPath = routePath.replace(/^\//, '').replace(/\/$/, '');
     const targetDir = path.join(DIST_DIR, cleanPath);
     fs.mkdirSync(targetDir, { recursive: true });
-    const targetFile = path.join(targetDir, 'index.html');
+    const targetIndexFile = path.join(targetDir, 'index.html');
+    const targetFlatHtmlFile = path.join(DIST_DIR, cleanPath + '.html');
 
     let pageHtml = templateHtml;
 
@@ -117,7 +118,8 @@ async function prerender() {
 
     pageHtml = pageHtml.replace(/<div id="root"><\/div>/i, semanticShell);
 
-    fs.writeFileSync(targetFile, pageHtml, 'utf8');
+    fs.writeFileSync(targetIndexFile, pageHtml, 'utf8');
+    fs.writeFileSync(targetFlatHtmlFile, pageHtml, 'utf8');
     generatedCount++;
   }
 
