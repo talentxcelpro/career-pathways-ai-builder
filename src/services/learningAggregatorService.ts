@@ -20,7 +20,6 @@ export const learningAggregatorService = {
   getMonetizedUrl(originalUrl: string): string {
     try {
       const url = new URL(originalUrl);
-      // Clean query parameter assignment to avoid breaking Microsoft Learn routing
       if (url.hostname.includes('microsoft.com')) {
         return originalUrl;
       }
@@ -32,6 +31,28 @@ export const learningAggregatorService = {
     } catch {
       return originalUrl;
     }
+  },
+
+  /**
+   * Convert prompt or designation string to clean slug
+   */
+  slugifyDesignation(input: string): string {
+    let clean = input.toLowerCase()
+      .replace(/i want to become a|i want to be a|how to become a|become a|become/gi, '')
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-');
+    return clean || 'data-analyst';
+  },
+
+  /**
+   * Convert slug back to Title Case Designation Name
+   */
+  unslugifyDesignation(slug: string): string {
+    return slug
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
   },
 
   /**
@@ -186,21 +207,84 @@ export const learningAggregatorService = {
   },
 
   /**
-   * Get single career pathway by slug
+   * Dynamic Career Pathway Lookup / Synthesizer for ANY Designation
    */
-  async getCareerPathwayBySlug(slug: string): Promise<CareerPathway | null> {
+  async getCareerPathwayBySlug(slug: string): Promise<CareerPathway> {
     const pathways = await this.getCareerPathways();
-    return pathways.find(p => p.slug === slug || p.id === slug) || pathways[0];
+    const found = pathways.find(p => p.slug === slug || p.id === slug);
+    if (found) return found;
+
+    // Dynamically synthesize a custom pathway for any designation
+    const title = this.unslugifyDesignation(slug);
+    const allCourses = await this.getCourses();
+
+    return {
+      id: `path-dynamic-${slug}`,
+      slug: slug,
+      title: `Become a ${title}`,
+      target_role: title,
+      description: `Master core operational methodologies, data analytics, process management, and strategic leadership required for ${title} roles.`,
+      average_salary: '$85,000 - $150,000 / year (₹10 - ₹28 LPA)',
+      estimated_weeks: 10,
+      total_free_courses: 4,
+      steps: [
+        {
+          step_number: 1,
+          skill_name: `${title} Fundamentals & Core Strategy`,
+          target_level: 'Beginner',
+          recommended_course_id: allCourses[0]?.id || 'course-google-data-analytics-intro',
+          duration_text: '12 Hours',
+          reason: `Build foundational competencies, industry standards, and workflows for ${title} roles.`
+        },
+        {
+          step_number: 2,
+          skill_name: 'Data Analytics & Business Intelligence',
+          target_level: 'Intermediate',
+          recommended_course_id: 'course-ms-powerbi-data-analyst',
+          duration_text: '6 Hours',
+          reason: `Learn how to measure KPIs, build interactive executive dashboards, and track operational metrics.`
+        },
+        {
+          step_number: 3,
+          skill_name: 'Artificial Intelligence & Process Automation',
+          target_level: 'Intermediate',
+          recommended_course_id: 'course-ibm-ai-foundations',
+          duration_text: '7 Hours',
+          reason: `Leverage Generative AI and automated tooling to drive productivity and team efficiency.`
+        }
+      ]
+    };
   },
 
   /**
-   * AI Natural Language Intent Planner ("I want to become a Vice President of Operations")
+   * AI Natural Language Intent Planner ("I want to become a Sales manager")
    */
   async generatePersonalizedPlan(userPrompt: string): Promise<PersonalizedLearningPlan> {
     const prompt = userPrompt.toLowerCase().trim();
+    const slug = this.slugifyDesignation(userPrompt);
+    const roleTitle = this.unslugifyDesignation(slug);
     const allCourses = await this.getCourses();
 
-    // 1. VP / Operations / Executive leadership intent
+    // 1. Sales / Business Development / Sales Manager
+    if (prompt.includes('sales') || prompt.includes('business development') || prompt.includes('account manager') || prompt.includes('crm')) {
+      return {
+        user_intent: userPrompt,
+        current_experience: 'Sales & Client Relations Background',
+        weekly_hours: 6,
+        total_weeks: 8,
+        current_strengths: ['Customer Relationship Management', 'Negotiation', 'Communication', 'Pipeline Management'],
+        skills_to_build: ['Sales Analytics', 'Salesforce CRM', 'Data-Driven Forecasting', 'Power BI Dashboards', 'Lead Generation'],
+        weekly_schedule: [
+          { week_range: 'Week 1–2', focus_skill: 'Salesforce CRM & Pipeline Management', courses_count: 3 },
+          { week_range: 'Week 3–5', focus_skill: 'Sales Analytics & Revenue Forecasting', courses_count: 4 },
+          { week_range: 'Week 6–8', focus_skill: 'Executive Leadership & Key Account Strategy', courses_count: 4 }
+        ],
+        recommended_courses: allCourses.slice(0, 6),
+        matched_pathway_slug: slug
+      };
+    }
+
+    // 2. VP / Operations / Executive leadership intent
     if (prompt.includes('president') || prompt.includes('operation') || prompt.includes('executive') || prompt.includes('vp') || prompt.includes('chief') || prompt.includes('head')) {
       return {
         user_intent: userPrompt,
@@ -215,11 +299,11 @@ export const learningAggregatorService = {
           { week_range: 'Week 8–12', focus_skill: 'Executive Artificial Intelligence & Automation Strategy', courses_count: 6 }
         ],
         recommended_courses: allCourses.slice(0, 6),
-        matched_pathway_slug: 'operations-executive'
+        matched_pathway_slug: slug
       };
     }
 
-    // 2. AI / ML intent
+    // 3. AI / ML intent
     if (prompt.includes('ai') || prompt.includes('machine learning') || prompt.includes('ml') || prompt.includes('llm') || prompt.includes('prompt')) {
       return {
         user_intent: userPrompt,
@@ -234,11 +318,11 @@ export const learningAggregatorService = {
           { week_range: 'Week 7–10', focus_skill: 'Cloud AI Model Deployment', courses_count: 4 }
         ],
         recommended_courses: allCourses.filter(c => c.category.includes('AI') || c.skills.includes('Python')),
-        matched_pathway_slug: 'ai-engineer'
+        matched_pathway_slug: slug
       };
     }
 
-    // 3. Software Developer intent
+    // 4. Software Developer intent
     if (prompt.includes('software') || prompt.includes('developer') || prompt.includes('programmer') || prompt.includes('coder') || prompt.includes('web')) {
       return {
         user_intent: userPrompt,
@@ -253,11 +337,11 @@ export const learningAggregatorService = {
           { week_range: 'Week 9–10', focus_skill: 'Full-Stack Architecture & Cloud', courses_count: 3 }
         ],
         recommended_courses: allCourses.filter(c => c.category.includes('Programming')),
-        matched_pathway_slug: 'software-developer'
+        matched_pathway_slug: slug
       };
     }
 
-    // 4. Cybersecurity intent
+    // 5. Cybersecurity intent
     if (prompt.includes('security') || prompt.includes('cyber') || prompt.includes('soc') || prompt.includes('hacking')) {
       return {
         user_intent: userPrompt,
@@ -271,26 +355,25 @@ export const learningAggregatorService = {
           { week_range: 'Week 4–8', focus_skill: 'Threat Prevention & Enterprise Defense', courses_count: 4 }
         ],
         recommended_courses: allCourses.filter(c => c.category.includes('Cybersecurity')),
-        matched_pathway_slug: 'cybersecurity'
+        matched_pathway_slug: slug
       };
     }
 
-    // 5. Default Data Analyst intent
+    // 6. Generic Dynamic Designation Fallback for ANY job title (e.g. Sales Manager, Product Designer, HR Manager, Mechanical Engineer)
     return {
       user_intent: userPrompt,
-      current_experience: 'Analytical / Business Background',
+      current_experience: `Professional Experience in ${roleTitle}`,
       weekly_hours: 6,
       total_weeks: 8,
-      current_strengths: ['Problem Solving', 'Communication', 'Project Management'],
-      skills_to_build: ['Excel Analytics', 'SQL', 'Python', 'Power BI', 'Data Modeling'],
+      current_strengths: ['Problem Solving', 'Strategic Execution', 'Team Collaboration', 'Communication'],
+      skills_to_build: [`${roleTitle} Core Strategy`, 'Data Analytics', 'Business Intelligence', 'Process Optimization'],
       weekly_schedule: [
-        { week_range: 'Week 1–2', focus_skill: 'Excel Fundamentals & Pivot Tables', courses_count: 3 },
-        { week_range: 'Week 3–4', focus_skill: 'SQL Queries & Relational Databases', courses_count: 5 },
-        { week_range: 'Week 5–6', focus_skill: 'Python Basics for Analytics', courses_count: 4 },
-        { week_range: 'Week 7–8', focus_skill: 'Power BI Dashboarding', courses_count: 4 }
+        { week_range: 'Week 1–2', focus_skill: `${roleTitle} Strategy & Industry Workflows`, courses_count: 3 },
+        { week_range: 'Week 3–5', focus_skill: 'Data Analytics & Metric Dashboards', courses_count: 4 },
+        { week_range: 'Week 6–8', focus_skill: 'AI Tooling & Automation Execution', courses_count: 4 }
       ],
       recommended_courses: allCourses.slice(0, 6),
-      matched_pathway_slug: 'data-analyst'
+      matched_pathway_slug: slug
     };
   },
 
