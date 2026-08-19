@@ -146,54 +146,120 @@ const Colleges = () => {
   return (
     <div className="min-h-screen bg-slate-50/40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14">
-        {/* Hero Section */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 border border-indigo-200/80 rounded-full px-4 py-1 text-xs font-bold uppercase tracking-wider mb-4">
+        {/* Education Command Center Hero */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 border border-indigo-200/80 rounded-full px-3.5 py-1 text-xs font-black uppercase tracking-wider mb-4">
             <Sparkles className="h-3.5 w-3.5 text-indigo-600" />
-            TALENTXCEL EDUCATION INTELLIGENCE
+            TALENTXCEL EDUCATION COMMAND CENTER
           </div>
-          <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-3">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-slate-900 tracking-tight leading-tight mb-4 max-w-4xl mx-auto">
             Find the education path that fits your future.
           </h1>
-          <p className="text-base sm:text-lg text-slate-600 max-w-3xl mx-auto">
-            Explore Indian colleges, global degrees, scholarships and AI-powered career pathways — backed by verified official evidence.
+          <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+            Tell us where you want to go. We'll map degrees, free learning, scholarships and the steps between them.
           </p>
 
-          {/* Goal Search Box (What do you want to become?) */}
-          <div className="max-w-2xl mx-auto mt-8 bg-white rounded-3xl p-3 shadow-md border border-slate-200/80 flex flex-col sm:flex-row items-center gap-2">
-            <div className="relative flex-1 w-full">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-              <Input
-                placeholder='What do you want to become? "AI researcher, software engineer, doctor..."'
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-12 h-13 text-sm sm:text-base border-0 focus-visible:ring-0 shadow-none text-slate-900 font-medium"
-              />
+          {/* Conversational Command Box */}
+          <div className="max-w-3xl mx-auto mt-8 bg-white rounded-2xl p-5 sm:p-6 shadow-md border border-slate-200/90 text-left space-y-4">
+            <div>
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-2">
+                What do you want to become?
+              </label>
+              <div className="flex flex-col sm:flex-row items-center gap-2">
+                <div className="relative flex-1 w-full">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                  <Input
+                    placeholder='"I want to become an AI engineer but I can&apos;t afford a traditional college."'
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-12 h-13 text-sm sm:text-base border-2 border-slate-200 focus:border-indigo-600 rounded-xl text-slate-900 font-medium"
+                  />
+                </div>
+                <Button
+                  className="w-full sm:w-auto h-13 px-8 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shrink-0 shadow-md shadow-indigo-100"
+                  asChild
+                >
+                  <Link to="/colleges/pathway">
+                    Find My Path <ArrowRight className="ml-1.5 h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
             </div>
-            <Button
-              className="w-full sm:w-auto h-12 px-6 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shrink-0"
-              asChild
-            >
-              <Link to="/colleges/pathway">
-                Find My Path <ArrowRight className="ml-1.5 h-4 w-4" />
-              </Link>
-            </Button>
+
+            {/* Popular Paths */}
+            <div>
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-2">
+                Popular paths:
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  'Software Engineer',
+                  'AI Researcher',
+                  'Doctor',
+                  'Data Scientist',
+                  'Cybersecurity',
+                  'Finance',
+                  'Designer',
+                  'Architect',
+                ].map((item) => (
+                  <Link
+                    key={item}
+                    to="/colleges/pathway"
+                    className="px-3 py-1 rounded-full text-xs font-bold bg-slate-50 text-slate-700 border border-slate-200/80 hover:border-indigo-400 hover:text-indigo-600 hover:bg-indigo-50/40 transition-all"
+                  >
+                    {item}
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
 
-          {/* Unified Education Navigation Tabs */}
-          <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-3 mt-8">
-            <Button variant="default" size="sm" className="rounded-xl bg-slate-900 text-white font-semibold text-xs h-9" asChild>
-              <Link to="/colleges">🇮🇳 Indian Colleges</Link>
-            </Button>
-            <Button variant="outline" size="sm" className="rounded-xl border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs h-9" asChild>
-              <Link to="/colleges/global-programs">🌍 Global Degrees & ₹0 Programs</Link>
-            </Button>
-            <Button variant="outline" size="sm" className="rounded-xl border-slate-200 bg-white hover:bg-slate-50 text-purple-700 font-semibold text-xs h-9" asChild>
-              <Link to="/colleges/scholarships">🎓 Global Scholarships</Link>
-            </Button>
-            <Button variant="outline" size="sm" className="rounded-xl border-indigo-200 bg-indigo-50/70 hover:bg-indigo-100 text-indigo-800 font-semibold text-xs h-9" asChild>
-              <Link to="/colleges/pathway">✨ AI Career Pathway</Link>
-            </Button>
+          {/* Three Major Destinations (Explore → Fund → Plan) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto mt-10 text-left">
+            <Link
+              to="/colleges"
+              className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md transition-all group"
+            >
+              <div className="text-[11px] font-black uppercase tracking-wider text-indigo-600 mb-1">
+                DESTINATION 01 · EXPLORE
+              </div>
+              <div className="font-black text-slate-900 text-lg group-hover:text-indigo-600 transition-colors">
+                Indian Colleges &amp; Global Degrees
+              </div>
+              <p className="text-xs text-slate-500 mt-1">
+                Verified Indian universities and tuition-free degrees worldwide.
+              </p>
+            </Link>
+
+            <Link
+              to="/colleges/scholarships"
+              className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md transition-all group"
+            >
+              <div className="text-[11px] font-black uppercase tracking-wider text-purple-600 mb-1">
+                DESTINATION 02 · FUND
+              </div>
+              <div className="font-black text-slate-900 text-lg group-hover:text-purple-600 transition-colors">
+                Scholarships &amp; Grants
+              </div>
+              <p className="text-xs text-slate-500 mt-1">
+                Find full-funding opportunities to reduce net student cost to ₹0.
+              </p>
+            </Link>
+
+            <Link
+              to="/colleges/pathway"
+              className="p-5 rounded-2xl bg-slate-900 text-white border border-slate-800 shadow-sm hover:shadow-md transition-all group"
+            >
+              <div className="text-[11px] font-black uppercase tracking-wider text-emerald-400 mb-1">
+                DESTINATION 03 · PLAN
+              </div>
+              <div className="font-black text-white text-lg group-hover:text-emerald-300 transition-colors">
+                AI Career Pathway
+              </div>
+              <p className="text-xs text-slate-400 mt-1">
+                Step-by-step future operating system from your current level to dream career.
+              </p>
+            </Link>
           </div>
         </div>
 
