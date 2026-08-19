@@ -67,7 +67,7 @@ export const CareerAgentWidget: React.FC<CareerAgentWidgetProps> = ({ userProfil
       setTimeout(() => {
         setAgentResult(result);
         setIsReasoning(false);
-      }, 700);
+      }, 500);
     } catch (err) {
       console.warn("Career agent reasoning notice:", err);
       setIsReasoning(false);
@@ -81,7 +81,7 @@ export const CareerAgentWidget: React.FC<CareerAgentWidgetProps> = ({ userProfil
   return (
     <Card className="rounded-3xl border border-purple-200 dark:border-purple-900/60 bg-white dark:bg-card shadow-lg overflow-hidden">
       
-      {/* AGENT TOP HEADER BANNER */}
+      {/* AGENT TOP HEADER BANNER - Warm User Wording */}
       <div className="bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 text-white p-6 space-y-3 relative overflow-hidden">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -90,19 +90,19 @@ export const CareerAgentWidget: React.FC<CareerAgentWidgetProps> = ({ userProfil
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-lg font-extrabold tracking-tight text-white">TalentXcel Career Agent</h3>
-                <Badge className="bg-purple-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">
-                  AI Intelligence
+                <h3 className="text-lg font-extrabold tracking-tight text-white">TalentXcel Career Advisor</h3>
+                <Badge className="bg-purple-500 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">
+                  AI Career Guide ✨
                 </Badge>
               </div>
-              <p className="text-xs text-purple-200 font-medium">Curating 2,650+ courses & 340+ jobs specifically for your profile</p>
+              <p className="text-xs text-purple-200 font-medium">We matched 2,650+ free courses & verified jobs to your background</p>
             </div>
           </div>
 
           {/* PRIVACY TRANSPARENCY TOGGLE */}
           <div className="hidden sm:flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-2xl border border-white/10">
             <Lock className="h-3.5 w-3.5 text-purple-300" />
-            <span className="text-[11px] text-purple-100 font-bold">Use Career Passport</span>
+            <span className="text-[11px] text-purple-100 font-bold">Personalize with Passport</span>
             <Switch
               checked={isPrivacyOptIn}
               onCheckedChange={(val) => {
@@ -116,7 +116,7 @@ export const CareerAgentWidget: React.FC<CareerAgentWidgetProps> = ({ userProfil
         {/* PRIVACY TRANSPARENCY NOTICE */}
         <div className="flex items-center gap-2 text-[11px] font-semibold text-purple-200 bg-purple-950/50 p-2.5 rounded-xl border border-purple-800/40">
           <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0" />
-          <span>{isPrivacyOptIn ? `Personalized using ${userContext.fullName}'s Career Passport (${userContext.currentRole})` : 'Standard recommendation model'}</span>
+          <span>{isPrivacyOptIn ? `Tailored to your verified skills & experience in your Career Passport` : 'Standard recommendation model'}</span>
         </div>
       </div>
 
@@ -127,9 +127,9 @@ export const CareerAgentWidget: React.FC<CareerAgentWidgetProps> = ({ userProfil
           <div className="flex items-center justify-between">
             <label className="text-xs font-extrabold text-foreground flex items-center gap-1.5">
               <BrainCircuit className="h-4 w-4 text-purple-600" />
-              <span>Ask TalentXcel Career Agent Anything</span>
+              <span>Ask Your Career Advisor Anything</span>
             </label>
-            <span className="text-[11px] text-muted-foreground font-semibold">Real-time reasoning</span>
+            <span className="text-[11px] text-muted-foreground font-semibold">Instant Advice ✨</span>
           </div>
 
           <div className="relative flex items-center">
@@ -138,7 +138,7 @@ export const CareerAgentWidget: React.FC<CareerAgentWidgetProps> = ({ userProfil
               onChange={(e) => setPromptInput(e.target.value)}
               placeholder="e.g. 'I am an HR professional. What should I learn to get into HR analytics?'..."
               rows={2}
-              className="w-full p-3.5 pr-28 rounded-2xl bg-slate-50 dark:bg-muted/40 border border-slate-200 dark:border-border text-xs font-medium focus:outline-none focus:ring-2 focus:ring-purple-600 text-foreground resize-none"
+              className="w-full p-3.5 pr-32 rounded-2xl bg-slate-50 dark:bg-muted/40 border border-slate-200 dark:border-border text-xs font-medium focus:outline-none focus:ring-2 focus:ring-purple-600 text-foreground resize-none"
             />
             <Button
               disabled={isReasoning}
@@ -146,7 +146,7 @@ export const CareerAgentWidget: React.FC<CareerAgentWidgetProps> = ({ userProfil
               className="absolute right-3 rounded-xl h-9 px-4 bg-purple-600 hover:bg-purple-500 text-white text-xs font-extrabold shadow-sm gap-1 cursor-pointer"
             >
               {isReasoning ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
-              <span>Curate</span>
+              <span>Find My Path 🚀</span>
             </Button>
           </div>
 
@@ -177,7 +177,7 @@ export const CareerAgentWidget: React.FC<CareerAgentWidgetProps> = ({ userProfil
           <div className="py-12 flex flex-col items-center justify-center space-y-3 bg-purple-50/50 dark:bg-purple-950/20 rounded-2xl border border-purple-200/60">
             <div className="w-10 h-10 border-4 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
             <p className="text-xs font-extrabold text-purple-900 dark:text-purple-300">
-              Connecting Career Passport ({userContext.existingSkills.length} skills) + 2,650+ Courses + 340+ Jobs...
+              Matching your Career Passport skills with 2,650+ courses & 340+ jobs...
             </p>
           </div>
         )}
@@ -190,7 +190,7 @@ export const CareerAgentWidget: React.FC<CareerAgentWidgetProps> = ({ userProfil
             <div className="p-4 rounded-2xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 space-y-2">
               <div className="flex items-center gap-2 text-xs font-extrabold text-purple-700 dark:text-purple-300">
                 <Sparkles className="h-4 w-4" />
-                <span>Agent Career Assessment</span>
+                <span>Your Personalized Career Assessment</span>
               </div>
               <p className="text-xs font-medium text-slate-700 dark:text-slate-200 leading-relaxed whitespace-pre-line">
                 {agentResult.agentMessage}
@@ -201,7 +201,7 @@ export const CareerAgentWidget: React.FC<CareerAgentWidgetProps> = ({ userProfil
             <div className="space-y-3">
               <h4 className="text-xs font-extrabold text-foreground flex items-center gap-1.5">
                 <Target className="h-4 w-4 text-blue-600" />
-                <span>Identified Skill Gaps to Bridge</span>
+                <span>Skills to Master for Your Target Role</span>
               </h4>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -210,7 +210,7 @@ export const CareerAgentWidget: React.FC<CareerAgentWidgetProps> = ({ userProfil
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-extrabold text-foreground">{gap.skillName}</span>
                       <Badge className={gap.gapSeverity === 'HIGH' ? 'bg-amber-100 text-amber-800 text-[9px] font-extrabold' : 'bg-emerald-100 text-emerald-800 text-[9px] font-extrabold'}>
-                        {gap.gapSeverity === 'HIGH' ? 'High Gap' : 'Targeted'}
+                        {gap.gapSeverity === 'HIGH' ? 'Key Focus' : 'Targeted'}
                       </Badge>
                     </div>
                     <p className="text-[10px] text-muted-foreground font-medium">{gap.category}</p>
@@ -224,9 +224,9 @@ export const CareerAgentWidget: React.FC<CareerAgentWidgetProps> = ({ userProfil
               <div className="flex items-center justify-between">
                 <h4 className="text-xs font-extrabold text-foreground flex items-center gap-1.5">
                   <Zap className="h-4 w-4 text-emerald-600" />
-                  <span>Curated Step-by-Step Free Courses</span>
+                  <span>Recommended Free Learning Roadmap</span>
                 </h4>
-                <span className="text-[11px] text-emerald-600 font-bold">100% Verified Free</span>
+                <span className="text-[11px] text-emerald-600 font-bold">100% Free Courses</span>
               </div>
 
               <div className="space-y-2.5">
@@ -274,9 +274,9 @@ export const CareerAgentWidget: React.FC<CareerAgentWidgetProps> = ({ userProfil
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Briefcase className="h-5 w-5 text-blue-400" />
-                  <h4 className="text-sm font-extrabold">{agentResult.matchingJobsCount} TalentXcel Jobs Currently Match This Pathway</h4>
+                  <h4 className="text-sm font-extrabold">{agentResult.matchingJobsCount} Verified Jobs Match Your New Skills</h4>
                 </div>
-                <Badge className="bg-emerald-500 text-white font-extrabold text-[10px]">Direct Match</Badge>
+                <Badge className="bg-emerald-500 text-white font-extrabold text-[10px]">Job Ready</Badge>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -297,7 +297,7 @@ export const CareerAgentWidget: React.FC<CareerAgentWidgetProps> = ({ userProfil
                 onClick={() => navigate('/jobs')}
                 className="w-full h-10 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-extrabold shadow-sm gap-1 cursor-pointer"
               >
-                <span>View All 27 Matching Jobs on TalentXcel Jobs</span>
+                <span>Explore Verified Jobs on TalentXcel</span>
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </div>
