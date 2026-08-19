@@ -10,6 +10,7 @@ const NewsManagement = lazy(() => import('../pages/admin/NewsManagement'));
 const ProductRequirementDocument = lazy(() => import('../pages/admin/ProductRequirementDocument'));
 const NewsAutomationPage = lazy(() => import('../pages/admin/NewsAutomationPage'));
 const AgentOperationsPage = lazy(() => import('../pages/admin/AgentOperations'));
+const EducationAgentControlCenter = lazy(() => import('../pages/admin/EducationAgentControlCenter'));
 const LinkBuildingDashboard = lazy(() => import('../pages/admin/LinkBuildingDashboard'));
 const JobDataManager = lazy(() => import('../components/admin/JobDataManager').then(m => ({ default: m.JobDataManager })));
 const SEODashboardNew = lazy(() => import('../components/admin/SEODashboardNew').then(m => ({ default: m.SEODashboardNew })));
@@ -565,5 +566,13 @@ export const adminRoutes = [
     icon: <Building2 className="h-4 w-4" />,
     page: <Suspense fallback={null}><EnterpriseOverview /></Suspense>,
     isPublic: true,
+  },
+  {
+    title: "Education Intelligence Agent",
+    to: "/admin/education-agent",
+    icon: <GraduationCap className="h-4 w-4" />,
+    page: <Suspense fallback={null}><EducationAgentControlCenter /></Suspense>,
+    isPublic: true,
   }
 ];
+
