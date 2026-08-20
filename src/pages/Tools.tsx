@@ -47,10 +47,16 @@ interface Tool {
   unlock_level?: number;
 }
 
+import { ADMIN_EMAILS } from '@/hooks/useToolsData';
+
 const ToolsContent = ({ tools, toolsByCategory, userStats, userName, userTXCBalance: userBalance, isLoading: loading }: any) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   
+  const isAdmin = Boolean(
+    user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase().trim())
+  );
+
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -58,26 +64,27 @@ const ToolsContent = ({ tools, toolsByCategory, userStats, userName, userTXCBala
   const [selectedTool, setSelectedTool] = useState<Tool | null>(null);
   const [showBenefitsModal, setShowBenefitsModal] = useState(false);
 
-  // Calculate unlocked tools based on progression
+  // Calculate unlocked tools based on progression (Admins have 100% unlocked)
   const unlockedToolsCount = useMemo(() => {
+    if (isAdmin) return tools.length;
     const baseUnlocked = 3;
     const completedCount = tools.filter((tool: any) => tool.isCompleted).length;
     const progressUnlocked = Math.floor(completedCount / 3) * 3;
     return Math.min(baseUnlocked + progressUnlocked, tools.length);
-  }, [tools]);
+  }, [tools, isAdmin]);
 
   // Apply gaming locks to tools
   const gameAwareTools = useMemo(() => {
     return tools.map((tool: any, index: number) => ({
       ...tool,
-      isLocked: index >= unlockedToolsCount,
-      txc_cost: index >= unlockedToolsCount ? UNLOCK_COSTS.individual : 0,
-      unlock_level: Math.floor(index / 3) + 1,
-      unlockRequirement: index >= unlockedToolsCount 
-        ? `Complete ${Math.ceil((index + 1 - 3) / 3) * 3 - tools.filter((t: any) => t.isCompleted).length} more tools`
-        : undefined
+      isLocked: isAdmin ? false : index >= unlockedToolsCount,
+      txc_cost: (isAdmin || index < unlockedToolsCount) ? 0 : UNLOCK_COSTS.individual,
+      unlock_level: isAdmin ? 1 : Math.floor(index / 3) + 1,
+      unlockRequirement: (isAdmin || index < unlockedToolsCount)
+        ? undefined
+        : `Complete ${Math.ceil((index + 1 - 3) / 3) * 3 - tools.filter((t: any) => t.isCompleted).length} more tools`
     }));
-  }, [tools, unlockedToolsCount]);
+  }, [tools, unlockedToolsCount, isAdmin]);
 
   // Filter tools based on search, category & difficulty
   const filteredTools = useMemo(() => {

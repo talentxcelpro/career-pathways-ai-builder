@@ -34,6 +34,8 @@ interface UserStats {
   nextLevelProgress: number;
 }
 
+import { DEFAULT_26_TOOLS, ADMIN_EMAILS } from '@/hooks/useToolsData';
+
 export const useRealToolsData = () => {
   console.log('🚀 useRealToolsData hook called');
   
@@ -43,8 +45,12 @@ export const useRealToolsData = () => {
   console.log('👤 User in hook:', user?.id);
   console.log('💰 Balance in hook:', balance);
 
-  // Fetch tools from database
-  const { data: tools = [], isLoading: toolsLoading, error: toolsError } = useQuery({
+  const isAdmin = Boolean(
+    user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase().trim())
+  );
+
+  // Fetch tools from database with fallback
+  const { data: tools = DEFAULT_26_TOOLS, isLoading: toolsLoading, error: toolsError } = useQuery({
     queryKey: ['tools-registry'],
     queryFn: async () => {
       console.log('🔍 Fetching tools from database...');
@@ -54,12 +60,11 @@ export const useRealToolsData = () => {
         .eq('is_active', true)
         .order('category, sort_order');
       
-      if (error) {
-        console.error('❌ Error fetching tools:', error);
-        throw error;
+      if (error || !data || data.length < 26) {
+        console.log('Using default 26 tools master catalog');
+        return DEFAULT_26_TOOLS;
       }
-      console.log('✅ Tools fetched:', data?.length, 'tools');
-      return data || [];
+      return data;
     }
   });
 
@@ -157,11 +162,13 @@ export const useRealToolsData = () => {
       const usageCount = toolUsages.length;
       const progress = isCompleted ? 100 : (usageCount > 0 ? 50 : 0);
 
-      // Determine if tool is locked
+      // Determine if tool is locked (Admins have 100% unlocked access)
       const completedToolsCount = userUsage.filter(usage => usage.completion_status === 'completed').length;
       const userLevel = Math.floor(completedToolsCount / 3) + 1;
-      const isLocked = tool.unlock_level > userLevel || 
-        (tool.required_completions > 0 && completedToolsCount < tool.required_completions);
+      const isLocked = isAdmin ? false : (
+        tool.unlock_level > userLevel || 
+        (tool.required_completions > 0 && completedToolsCount < tool.required_completions)
+      );
 
       return {
         id: tool.id,
@@ -171,7 +178,7 @@ export const useRealToolsData = () => {
         slug: tool.slug,
         icon_name: tool.icon_name,
         icon: IconComponent,
-        txc_cost: tool.txc_cost || 0,
+        txc_cost: isAdmin ? 0 : (tool.txc_cost || 0),
         difficulty: tool.difficulty || 'intermediate',
         estimated_time: tool.estimated_time || '5-10 min',
         is_premium: tool.is_premium || false,

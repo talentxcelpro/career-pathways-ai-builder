@@ -1,30 +1,41 @@
-
 import { useState } from 'react';
-import { useToolsData } from '@/hooks/useToolsData';
+import { useToolsData, ADMIN_EMAILS } from '@/hooks/useToolsData';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCurrentUserProfile } from '@/hooks/useCurrentUserProfile';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Search, 
   Sparkles, 
   TrendingUp, 
   Clock, 
-  Star,
-  ArrowRight,
-  Filter
+  Star, 
+  ArrowRight, 
+  Filter, 
+  ShieldCheck, 
+  Briefcase, 
+  MessageSquare, 
+  FileText, 
+  Brain, 
+  Users, 
+  User, 
+  BarChart3, 
+  Award,
+  Crown,
+  CheckCircle,
+  ExternalLink
 } from 'lucide-react';
 import * as Icons from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const ToolsDashboard = () => {
+export const ToolsDashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { displayName, loading: profileLoading } = useCurrentUserProfile();
+  const { displayName } = useCurrentUserProfile();
   const {
+    tools,
     filteredTools,
     toolCategories,
     usageStats,
@@ -32,7 +43,8 @@ const ToolsDashboard = () => {
     selectedCategory,
     setSelectedCategory,
     searchQuery,
-    setSearchQuery
+    setSearchQuery,
+    isAdmin
   } = useToolsData();
 
   // Extract first name from displayName or email
@@ -50,33 +62,20 @@ const ToolsDashboard = () => {
   const firstName = getFirstName();
 
   const categories = [
-    { value: 'all', label: 'All Tools', icon: Sparkles },
-    { value: 'Career', label: 'Career Tools', icon: TrendingUp },
-    { value: 'Interview', label: 'Interview Prep', icon: Icons.MessageSquare },
-    { value: 'Resume', label: 'Resume Builder', icon: Icons.FileText },
-    { value: 'JobSearch', label: 'Job Search', icon: Icons.Briefcase },
-    { value: 'Skills', label: 'Skills Development', icon: Icons.Brain },
-    { value: 'Networking', label: 'Professional Network', icon: Icons.Users },
-    { value: 'Profile', label: 'Profile Enhancement', icon: Icons.User },
-    { value: 'Analytics', label: 'Career Analytics', icon: Icons.BarChart3 }
+    { value: 'all', label: 'All Tools', count: tools.length, icon: Sparkles },
+    { value: 'Analytics', label: 'Analytics', count: toolCategories['Analytics'] || 3, icon: BarChart3 },
+    { value: 'Career', label: 'Career', count: toolCategories['Career'] || 4, icon: TrendingUp },
+    { value: 'Interview', label: 'Interview', count: toolCategories['Interview'] || 4, icon: MessageSquare },
+    { value: 'JobSearch', label: 'JobSearch', count: toolCategories['JobSearch'] || 3, icon: Briefcase },
+    { value: 'Networking', label: 'Networking', count: toolCategories['Networking'] || 3, icon: Users },
+    { value: 'Profile', label: 'Profile', count: toolCategories['Profile'] || 3, icon: User },
+    { value: 'Resume', label: 'Resume', count: toolCategories['Resume'] || 3, icon: FileText },
+    { value: 'Skills', label: 'Skills', count: toolCategories['Skills'] || 3, icon: Brain }
   ];
 
   const getIconComponent = (iconName: string) => {
     const IconComponent = (Icons as any)[iconName];
     return IconComponent && typeof IconComponent === 'function' ? IconComponent : Icons.Wrench;
-  };
-
-  const getToolTier = (toolName: string) => {
-    const premiumTools = ['ai-career-pathfinder', 'ai-job-match-gpt', 'smart-apply-tool'];
-    const featuredTools = ['resume-builder', 'interview-prep', 'career-pathfinder', 'cover-letter-generator'];
-    
-    if (premiumTools.some(tool => toolName.toLowerCase().includes(tool.replace(/-/g, ' ')))) {
-      return { tier: 'premium', color: 'from-purple-500 via-pink-500 to-red-500', badge: 'bg-gradient-to-r from-purple-600 to-pink-600 text-white' };
-    }
-    if (featuredTools.some(tool => toolName.toLowerCase().includes(tool.replace(/-/g, ' ')))) {
-      return { tier: 'featured', color: 'from-blue-500 via-cyan-500 to-teal-500', badge: 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white' };
-    }
-    return { tier: 'free', color: 'from-green-500 to-emerald-500', badge: 'bg-green-100 text-green-700' };
   };
 
   const handleToolClick = (toolSlug: string) => {
@@ -85,210 +84,170 @@ const ToolsDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background/80 to-primary/5">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-center h-96">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          </div>
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary mx-auto"></div>
+          <p className="text-slate-400 text-sm">Loading 26 Career Intelligence Tools...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Header */}
-        <div className="text-center mb-4">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <div className="p-1.5 bg-primary/10 rounded-lg">
-              <Sparkles className="h-4 w-4 text-primary" />
+    <div className="min-h-screen bg-slate-950 text-slate-100">
+      {/* Background Gradient */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900/20 via-slate-950 to-slate-950 pointer-events-none" />
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        {/* Admin Access Banner if logged in as admin */}
+        {isAdmin && (
+          <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-amber-500/10 via-emerald-500/10 to-blue-500/10 border border-amber-500/30 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-amber-500/20 text-amber-400">
+                <Crown className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-sm text-white flex items-center gap-2">
+                  Admin Full Access Active
+                  <Badge className="bg-amber-500 text-slate-950 font-bold text-[10px] uppercase">Admin</Badge>
+                </h3>
+                <p className="text-xs text-slate-300">
+                  Logged in as <span className="text-amber-300 font-mono">{user?.email}</span> — All 26 Professional Tools fully unlocked.
+                </p>
+              </div>
             </div>
-            <h1 className="text-lg font-bold text-slate-900">
-              {user && firstName ? `Welcome back, ${firstName}! 👋` : 'TalentXcel AI-Powered Career Tools'}
-            </h1>
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="border-emerald-500/50 text-emerald-400 bg-emerald-500/10 text-xs px-3 py-1">
+                <CheckCircle className="h-3 w-3 mr-1 inline" /> 26 / 26 Tools Unlocked
+              </Badge>
+            </div>
           </div>
-          <p className="text-xs text-slate-600 max-w-lg mx-auto">
-            {user && firstName 
-              ? 'Ready to accelerate your career with our AI-powered tools?' 
-              : 'Transform your career with TalentXcel intelligent tools designed to accelerate professional growth'
-            }
+        )}
+
+        {/* Page Header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium mb-3">
+            <Sparkles className="h-3.5 w-3.5" />
+            <span>TalentXcel AI Career Intelligence Suite</span>
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-2">
+            {user && firstName ? `Welcome back, ${firstName}!` : 'Professional Career Tools'}
+          </h1>
+          <p className="text-sm sm:text-base text-slate-400 max-w-2xl mx-auto">
+            26 purpose-built AI tools across Analytics, Career, Interview Prep, Job Search, Networking, Profile, Resume, and Skills.
           </p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-4 gap-2 mb-4">
-          <Card className="border-0 shadow-sm bg-white/90 backdrop-blur-sm">
-            <CardContent className="p-2 text-center">
-              <TrendingUp className="h-3 w-3 text-primary mx-auto mb-1" />
-              <div className="text-sm font-bold text-slate-900">{usageStats.totalUsage}</div>
-              <div className="text-xs text-slate-600">Used</div>
-            </CardContent>
-          </Card>
-          <Card className="border-0 shadow-sm bg-white/90 backdrop-blur-sm">
-            <CardContent className="p-2 text-center">
-              <Clock className="h-3 w-3 text-success mx-auto mb-1" />
-              <div className="text-sm font-bold text-slate-900">{usageStats.completedUsage}</div>
-              <div className="text-xs text-slate-600">Done</div>
-            </CardContent>
-          </Card>
-          <Card className="border-0 shadow-sm bg-white/90 backdrop-blur-sm">
-            <CardContent className="p-2 text-center">
-              <Star className="h-3 w-3 text-yellow-600 mx-auto mb-1" />
-              <div className="text-sm font-bold text-slate-900">{usageStats.favoriteTools}</div>
-              <div className="text-xs text-slate-600">Saved</div>
-            </CardContent>
-          </Card>
-          <Card className="border-0 shadow-sm bg-white/90 backdrop-blur-sm">
-            <CardContent className="p-2 text-center">
-              <Sparkles className="h-3 w-3 text-purple-600 mx-auto mb-1" />
-              <div className="text-sm font-bold text-slate-900">{filteredTools.length}</div>
-              <div className="text-xs text-slate-600">Available</div>
-            </CardContent>
-          </Card>
+        {/* Top 8 Category Pills */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-6 scrollbar-none">
+          {categories.map((cat) => {
+            const isSelected = selectedCategory.toLowerCase() === cat.value.toLowerCase();
+            const Icon = cat.icon;
+            return (
+              <button
+                key={cat.value}
+                onClick={() => setSelectedCategory(cat.value)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
+                  isSelected
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/25 border border-blue-400'
+                    : 'bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 hover:border-slate-700'
+                }`}
+              >
+                <Icon className={`h-3.5 w-3.5 ${isSelected ? 'text-white' : 'text-slate-400'}`} />
+                <span>{cat.label}</span>
+                <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-mono ${
+                  isSelected ? 'bg-blue-700 text-white' : 'bg-slate-800 text-slate-400'
+                }`}>
+                  {cat.count}
+                </span>
+              </button>
+            );
+          })}
         </div>
 
-        {/* Search and Filters */}
-        <Card className="mb-6 border-0 shadow-md bg-white/90 backdrop-blur-sm">
-          <CardContent className="p-4">
-            <div className="flex flex-col md:flex-row gap-3">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                <Input
-                  placeholder="Search tools by name or description..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 text-body"
-                />
-              </div>
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="w-full md:w-64">
-                  <Filter className="h-4 w-4 mr-2" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem key={category.value} value={category.value}>
-                      <div className="flex items-center gap-2">
-                        <category.icon className="h-4 w-4" />
-                        <span className="text-body">{category.label}</span>
-                        {category.value !== 'all' && (
-                          <Badge variant="secondary" className="ml-2 text-xs">
-                            {toolCategories[category.value] || 0}
-                          </Badge>
-                        )}
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Tools Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-          {filteredTools.map((tool) => {
-            const IconComponent = getIconComponent(tool.icon_name);
-            const toolTier = getToolTier(tool.name);
-            return (
-              <Card 
-                key={tool.id} 
-                className="group hover:shadow-lg transition-all duration-200 cursor-pointer border-0 shadow-sm bg-white/90 backdrop-blur-sm hover:bg-white/95 relative overflow-hidden"
-                onClick={() => handleToolClick(tool.slug)}
+        {/* Search Bar */}
+        <div className="mb-8">
+          <div className="relative max-w-xl mx-auto">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+            <Input
+              type="text"
+              placeholder="Search across all 26 tools by keyword, function, or category..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 pr-4 py-2.5 bg-slate-900/90 border-slate-800 text-slate-100 placeholder:text-slate-500 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            />
+            {searchQuery && (
+              <button 
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 hover:text-slate-300"
               >
-                {toolTier.tier !== 'free' && (
-                  <div className={`absolute top-0 right-0 w-8 h-8 bg-gradient-to-br ${toolTier.color} opacity-15 rounded-bl-full`}></div>
-                )}
-                <CardHeader className="pb-2 p-3">
-                  <div className="flex items-start justify-between mb-2">
-                    <div className={`p-1.5 bg-gradient-to-br ${toolTier.color} bg-opacity-10 rounded-md group-hover:scale-105 transition-transform`}>
-                      <IconComponent className="h-2.5 w-2.5 text-white" style={{ filter: 'drop-shadow(0 0 1px rgba(0,0,0,0.4))' }} />
+                Clear
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Tools Grid — 26 Tool Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {filteredTools.map((tool) => {
+            const Icon = getIconComponent(tool.icon_name);
+            return (
+              <Card
+                key={tool.id}
+                onClick={() => handleToolClick(tool.slug)}
+                className="group relative bg-slate-900/80 hover:bg-slate-850 border border-slate-800 hover:border-slate-700 rounded-2xl p-5 cursor-pointer transition-all duration-200 hover:shadow-xl hover:shadow-blue-500/5 flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-start justify-between gap-3 mb-3">
+                    <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 group-hover:scale-105 group-hover:bg-blue-600 group-hover:text-white transition-all duration-200">
+                      <Icon className="h-5 w-5" />
                     </div>
-                    <Badge className={`text-xs px-1.5 py-0.5 ${toolTier.badge} border-0 text-xs`}>
-                      {toolTier.tier.toUpperCase()}
-                    </Badge>
-                  </div>
-                  <div>
-                    <Badge variant="outline" className="text-xs mb-1 px-1.5 py-0">
+                    <Badge variant="outline" className="border-slate-700 text-slate-400 bg-slate-950/60 text-[10px] font-mono capitalize">
                       {tool.category}
                     </Badge>
-                    <CardTitle className="text-xs font-semibold text-slate-900 group-hover:text-primary transition-colors leading-tight">
-                      {tool.name}
-                    </CardTitle>
                   </div>
-                </CardHeader>
-                <CardContent className="pt-0 p-3">
-                  <Button 
-                    variant={toolTier.tier === 'premium' ? 'default' : 'ghost'}
-                    size="sm"
-                    className={`w-full text-xs h-7 transition-colors ${
-                      toolTier.tier === 'premium' 
-                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white' 
-                        : 'group-hover:bg-primary/10'
-                    }`}
-                  >
-                    {toolTier.tier === 'premium' ? 'Try Premium' : 'Try Tool'}
-                  </Button>
-                </CardContent>
+
+                  <h3 className="text-base font-bold text-white group-hover:text-blue-400 transition-colors mb-1.5 line-clamp-1">
+                    {tool.name}
+                  </h3>
+
+                  <p className="text-xs text-slate-400 leading-relaxed line-clamp-2 mb-4">
+                    {tool.description}
+                  </p>
+                </div>
+
+                <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+                  <span className="flex items-center gap-1 text-emerald-400 font-medium text-[11px]">
+                    <CheckCircle className="h-3 w-3" /> Unlocked
+                  </span>
+                  <span className="inline-flex items-center gap-1 text-blue-400 font-semibold group-hover:translate-x-0.5 transition-transform text-xs">
+                    Launch <ArrowRight className="h-3 w-3" />
+                  </span>
+                </div>
               </Card>
             );
           })}
         </div>
 
-        {/* Empty State */}
+        {/* Empty Search State */}
         {filteredTools.length === 0 && (
-          <Card className="text-center py-12">
-            <CardContent>
-              <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No tools found</h3>
-              <p className="text-muted-foreground mb-4">
-                Try adjusting your search terms or filters
-              </p>
-              <Button 
-                variant="outline" 
-                onClick={() => {
-                  setSearchQuery('');
-                  setSelectedCategory('all');
-                }}
-              >
-                Clear Filters
-              </Button>
-            </CardContent>
-          </Card>
+          <div className="text-center py-16 bg-slate-900/50 rounded-2xl border border-slate-800">
+            <Search className="h-10 w-10 text-slate-600 mx-auto mb-3" />
+            <h3 className="text-base font-semibold text-white mb-1">No matching tools found</h3>
+            <p className="text-xs text-slate-400 max-w-sm mx-auto mb-4">
+              Try adjusting your search query or select another category from the top bar.
+            </p>
+            <Button 
+              variant="outline" 
+              onClick={() => { setSearchQuery(''); setSelectedCategory('all'); }}
+              className="border-slate-700 text-slate-300 hover:bg-slate-800"
+            >
+              Reset Filters
+            </Button>
+          </div>
         )}
 
-        {/* Recent Activity */}
-        {usageStats.recentActivity.length > 0 && (
-          <Card className="mt-6 border-0 shadow-md bg-white/90 backdrop-blur-sm">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-heading-md text-slate-900">
-                <Clock className="h-4 w-4" />
-                Recent Activity
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {usageStats.recentActivity.map((activity) => (
-                  <div key={activity.id} className="flex items-center justify-between p-3 bg-slate-50/50 rounded-lg">
-                    <div>
-                      <div className="font-medium text-body text-slate-900">{activity.tool_name}</div>
-                      <div className="text-caption text-slate-600">
-                        {new Date(activity.created_at).toLocaleDateString()}
-                      </div>
-                    </div>
-                    <Badge 
-                      variant={activity.completion_status === 'completed' ? 'default' : 'secondary'}
-                      className="text-xs"
-                    >
-                      {activity.completion_status}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
       </div>
     </div>
   );
