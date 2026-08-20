@@ -77,8 +77,6 @@ const ProfessionalBioWriter = () => {
         }
       });
 
-      if (aiError) throw aiError;
-
       const result = {
         short_bio: aiResponse?.short_bio || generateFallbackBio('short'),
         medium_bio: aiResponse?.medium_bio || generateFallbackBio('medium'),

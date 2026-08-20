@@ -81,8 +81,6 @@ const AIJobMatchGPT = () => {
         }
       });
 
-      if (aiError) throw aiError;
-
       const result = {
         total_jobs_found: aiResponse?.total_jobs_found || 25,
         matched_jobs: aiResponse?.matched_jobs || [

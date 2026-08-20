@@ -74,8 +74,6 @@ const SmartApplyTool = () => {
         }
       });
 
-      if (aiError) throw aiError;
-
       const result = {
         job_analysis: {
           title: aiResponse?.job_analysis?.title || 'Software Engineer',

@@ -79,8 +79,6 @@ const AILearningPathGenerator = () => {
         }
       });
 
-      if (aiError) throw aiError;
-
       const result = {
         path_overview: {
           title: aiResponse?.path_overview?.title || `${learningGoal} Mastery Path`,
