@@ -861,11 +861,11 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
                   {tool.name}
                 </DialogTitle>
                 <Badge variant="outline" className="border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/50 text-[9px] font-bold uppercase tracking-wider font-mono px-1.5 py-0">
-                  {tool.category}
+                  TalentXcel • {tool.category}
                 </Badge>
               </div>
               <DialogDescription className="text-xs text-slate-500 dark:text-slate-400 leading-snug font-normal">
-                Unlock actionable AI insights designed to advance your career trajectory with {tool.name}.
+                Powered by TalentXcel AI — Unlock actionable insights designed to advance your career trajectory with {tool.name}.
               </DialogDescription>
             </div>
           </div>
@@ -1054,7 +1054,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
               Ready to launch {tool.name}?
             </div>
             <div className="text-[11px] text-slate-500 dark:text-slate-400 font-normal">
-              Get instant, personalized recommendations tailored to your career milestones.
+              TalentXcel Intelligence • Instant recommendations tailored to your career milestones.
             </div>
           </div>
           <Button 

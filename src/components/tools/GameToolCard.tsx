@@ -145,8 +145,8 @@ export const GameToolCard: React.FC<GameToolCardProps> = ({
         {/* Meta pill bar */}
         <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800/80">
           <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400">
-            <Clock className="w-3.5 h-3.5 text-slate-400" />
-            {tool.estimatedTime}
+            <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+            <span className="text-[11px] font-medium">TalentXcel • {tool.estimatedTime}</span>
           </span>
           <Badge variant="outline" className={cn("text-[11px] font-medium rounded-full px-2.5 py-0.5 border", categoryStyle.bg)}>
             {tool.category}
