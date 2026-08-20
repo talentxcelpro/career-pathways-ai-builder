@@ -25,7 +25,8 @@ import {
   ArrowRight,
   BarChart3,
   Shield,
-  Sparkles
+  Sparkles,
+  Crown
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -845,25 +846,25 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
         </Button>
       </DialogTrigger>
       
-      <DialogContent className="max-w-4xl max-h-[90vh] p-0 overflow-hidden bg-slate-950 border border-slate-800 text-slate-100 shadow-2xl rounded-3xl flex flex-col">
+      <DialogContent className="max-w-4xl max-h-[90vh] p-0 overflow-hidden bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 shadow-2xl rounded-3xl flex flex-col">
         {/* Header */}
-        <DialogHeader className="p-6 pb-4 border-b border-slate-800/80 bg-slate-900/60">
+        <DialogHeader className="p-6 pb-4 border-b border-slate-200/80 dark:border-slate-800/80 bg-slate-50/70 dark:bg-slate-900/60">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-blue-600/20 border border-blue-500/30 rounded-2xl text-blue-400 shadow-md">
+            <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60 flex items-center justify-center shadow-sm shrink-0">
               {tool.icon && React.createElement(tool.icon, { 
                 className: "h-6 w-6 stroke-[2.2]" 
               })}
             </div>
             <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <DialogTitle className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+              <div className="flex items-center gap-2.5 mb-1">
+                <DialogTitle className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
                   {tool.name}
                 </DialogTitle>
-                <Badge variant="outline" className="border-blue-500/30 text-blue-400 bg-blue-500/10 text-[10px] uppercase font-mono">
+                <Badge variant="outline" className="border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/50 text-[10px] font-bold uppercase tracking-wider font-mono">
                   {tool.category}
                 </Badge>
               </div>
-              <DialogDescription className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              <DialogDescription className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
                 Unlock actionable AI insights designed to advance your professional trajectory with {tool.name}.
               </DialogDescription>
             </div>
@@ -873,17 +874,17 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
         {/* Scrollable Tabs Body */}
         <div className="overflow-y-auto p-6 flex-1 space-y-6">
           <Tabs defaultValue="benefits" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4 bg-slate-900 border border-slate-800 rounded-xl p-1 text-xs">
-              <TabsTrigger value="benefits" className="rounded-lg font-semibold text-slate-400 data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all">
+            <TabsList className="grid w-full grid-cols-4 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-1">
+              <TabsTrigger value="benefits" className="rounded-lg font-bold text-xs text-slate-600 dark:text-slate-400 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white shadow-xs transition-all">
                 Benefits
               </TabsTrigger>
-              <TabsTrigger value="features" className="rounded-lg font-semibold text-slate-400 data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all">
+              <TabsTrigger value="features" className="rounded-lg font-bold text-xs text-slate-600 dark:text-slate-400 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white shadow-xs transition-all">
                 Features
               </TabsTrigger>
-              <TabsTrigger value="stats" className="rounded-lg font-semibold text-slate-400 data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all">
+              <TabsTrigger value="stats" className="rounded-lg font-bold text-xs text-slate-600 dark:text-slate-400 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white shadow-xs transition-all">
                 Impact Stats
               </TabsTrigger>
-              <TabsTrigger value="roadmap" className="rounded-lg font-semibold text-slate-400 data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all">
+              <TabsTrigger value="roadmap" className="rounded-lg font-bold text-xs text-slate-600 dark:text-slate-400 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white shadow-xs transition-all">
                 Action Plan
               </TabsTrigger>
             </TabsList>
@@ -892,47 +893,57 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
             <TabsContent value="benefits" className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {benefits.map((benefit, index) => (
-                  <Card 
+                  <div 
                     key={benefit.id}
                     className={cn(
-                      "bg-slate-900/90 border border-slate-800 hover:border-slate-700 rounded-2xl p-5 transition-all duration-200 hover:shadow-lg flex flex-col justify-between",
-                      benefit.impact === 'high' && "border-l-4 border-l-emerald-500",
-                      benefit.impact === 'medium' && "border-l-4 border-l-amber-500",
-                      benefit.impact === 'low' && "border-l-4 border-l-blue-500"
+                      "rounded-2xl p-5 transition-all duration-200 border flex flex-col justify-between shadow-xs hover:shadow-md",
+                      benefit.impact === 'high' && "bg-emerald-50/80 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800/80",
+                      benefit.impact === 'medium' && "bg-amber-50/80 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800/80",
+                      benefit.impact === 'low' && "bg-blue-50/80 dark:bg-blue-950/40 border-blue-200 dark:border-blue-800/80"
                     )}
                   >
                     <div>
                       <div className="flex items-center justify-between gap-2 mb-3">
                         <div className="flex items-center gap-3">
                           <div className={cn(
-                            "p-2 rounded-xl border text-sm",
-                            benefit.impact === 'high' && "bg-emerald-500/10 border-emerald-500/30 text-emerald-400",
-                            benefit.impact === 'medium' && "bg-amber-500/10 border-amber-500/30 text-amber-400",
-                            benefit.impact === 'low' && "bg-blue-500/10 border-blue-500/30 text-blue-400"
+                            "p-2.5 rounded-xl border font-bold",
+                            benefit.impact === 'high' && "bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 border-emerald-300 dark:border-emerald-700",
+                            benefit.impact === 'medium' && "bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200 border-amber-300 dark:border-amber-700",
+                            benefit.impact === 'low' && "bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-200 border-blue-300 dark:border-blue-700"
                           )}>
                             {React.createElement(benefit.icon, { className: "h-5 w-5" })}
                           </div>
-                          <h4 className="font-bold text-sm text-white">
+                          <h4 className={cn(
+                            "font-extrabold text-base tracking-tight",
+                            benefit.impact === 'high' && "text-emerald-950 dark:text-emerald-100",
+                            benefit.impact === 'medium' && "text-amber-950 dark:text-amber-100",
+                            benefit.impact === 'low' && "text-blue-950 dark:text-blue-100"
+                          )}>
                             {benefit.title}
                           </h4>
                         </div>
                         <Badge 
                           variant="outline" 
                           className={cn(
-                            "text-[10px] font-semibold uppercase tracking-wider",
-                            benefit.impact === 'high' && "border-emerald-500/40 text-emerald-400 bg-emerald-500/10",
-                            benefit.impact === 'medium' && "border-amber-500/40 text-amber-400 bg-amber-500/10",
-                            benefit.impact === 'low' && "border-blue-500/40 text-blue-400 bg-blue-500/10"
+                            "text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 border",
+                            benefit.impact === 'high' && "border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-200 bg-emerald-100/90 dark:bg-emerald-900/80",
+                            benefit.impact === 'medium' && "border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-200 bg-amber-100/90 dark:bg-amber-900/80",
+                            benefit.impact === 'low' && "border-blue-300 dark:border-blue-700 text-blue-800 dark:text-blue-200 bg-blue-100/90 dark:bg-blue-900/80"
                           )}
                         >
                           {benefit.impact} impact
                         </Badge>
                       </div>
-                      <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                      <p className={cn(
+                        "text-xs sm:text-sm font-medium leading-relaxed",
+                        benefit.impact === 'high' && "text-emerald-900/90 dark:text-emerald-200",
+                        benefit.impact === 'medium' && "text-amber-900/90 dark:text-amber-200",
+                        benefit.impact === 'low' && "text-blue-900/90 dark:text-blue-200"
+                      )}>
                         {benefit.description}
                       </p>
                     </div>
-                  </Card>
+                  </div>
                 ))}
               </div>
             </TabsContent>
@@ -941,39 +952,39 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
             <TabsContent value="features" className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-3">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                     Standard Features
                   </h4>
                   {features.filter(f => !f.isPremium).map((feature) => (
-                    <div key={feature.id} className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-start gap-3">
-                      <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 mt-0.5">
-                        <Sparkles className="h-3.5 w-3.5" />
+                    <div key={feature.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-start gap-3 shadow-xs">
+                      <div className="p-2 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 mt-0.5 shrink-0">
+                        <Sparkles className="h-4 w-4" />
                       </div>
                       <div>
-                        <h5 className="font-semibold text-xs text-white">{feature.name}</h5>
-                        <p className="text-xs text-slate-400 mt-0.5">{feature.description}</p>
+                        <h5 className="font-bold text-sm text-slate-900 dark:text-white">{feature.name}</h5>
+                        <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">{feature.description}</p>
                       </div>
                     </div>
                   ))}
                 </div>
 
                 <div className="space-y-3">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-                    <Crown className="h-4 w-4 text-amber-400" />
+                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                    <Crown className="h-4 w-4 text-amber-500" />
                     Advanced AI Capabilities
                   </h4>
                   {features.filter(f => f.isPremium).map((feature) => (
-                    <div key={feature.id} className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-start gap-3">
-                      <div className="p-1.5 rounded-lg bg-amber-500/10 text-amber-400 mt-0.5">
-                        <Brain className="h-3.5 w-3.5" />
+                    <div key={feature.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-start gap-3 shadow-xs">
+                      <div className="p-2 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 mt-0.5 shrink-0">
+                        <Brain className="h-4 w-4" />
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <h5 className="font-semibold text-xs text-white">{feature.name}</h5>
-                          <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 text-[9px] px-1 py-0 uppercase">Pro</Badge>
+                          <h5 className="font-bold text-sm text-slate-900 dark:text-white">{feature.name}</h5>
+                          <Badge className="bg-amber-500 text-white font-extrabold text-[9px] px-1.5 py-0 uppercase">Pro</Badge>
                         </div>
-                        <p className="text-xs text-slate-400 mt-0.5">{feature.description}</p>
+                        <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">{feature.description}</p>
                       </div>
                     </div>
                   ))}
@@ -983,26 +994,26 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
 
             {/* Stats Tab */}
             <TabsContent value="stats" className="space-y-6">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 text-center">
-                  <Clock className="h-5 w-5 text-blue-400 mx-auto mb-2" />
-                  <div className="text-xl font-bold text-white">{stats.avgTimeReduction}</div>
-                  <div className="text-[11px] text-slate-400">Time Saved</div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+                <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center shadow-xs">
+                  <Clock className="h-6 w-6 text-blue-600 dark:text-blue-400 mx-auto mb-2" />
+                  <div className="text-2xl font-black text-slate-900 dark:text-white">{stats.avgTimeReduction}</div>
+                  <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">Time Saved</div>
                 </div>
-                <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 text-center">
-                  <Target className="h-5 w-5 text-emerald-400 mx-auto mb-2" />
-                  <div className="text-xl font-bold text-white">{stats.accuracyImprovement}</div>
-                  <div className="text-[11px] text-slate-400">Accuracy</div>
+                <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center shadow-xs">
+                  <Target className="h-6 w-6 text-emerald-600 dark:text-emerald-400 mx-auto mb-2" />
+                  <div className="text-2xl font-black text-slate-900 dark:text-white">{stats.accuracyImprovement}</div>
+                  <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">Accuracy</div>
                 </div>
-                <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 text-center">
-                  <Star className="h-5 w-5 text-amber-400 mx-auto mb-2" />
-                  <div className="text-xl font-bold text-white">{stats.userSatisfaction}</div>
-                  <div className="text-[11px] text-slate-400">Satisfaction</div>
+                <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center shadow-xs">
+                  <Star className="h-6 w-6 text-amber-500 mx-auto mb-2" />
+                  <div className="text-2xl font-black text-slate-900 dark:text-white">{stats.userSatisfaction}</div>
+                  <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">Satisfaction</div>
                 </div>
-                <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 text-center">
-                  <TrendingUp className="h-5 w-5 text-purple-400 mx-auto mb-2" />
-                  <div className="text-xl font-bold text-white">{stats.careerAdvancement}</div>
-                  <div className="text-[11px] text-slate-400">Career Velocity</div>
+                <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center shadow-xs">
+                  <TrendingUp className="h-6 w-6 text-purple-600 dark:text-purple-400 mx-auto mb-2" />
+                  <div className="text-2xl font-black text-slate-900 dark:text-white">{stats.careerAdvancement}</div>
+                  <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">Career Growth</div>
                 </div>
               </div>
             </TabsContent>
@@ -1016,17 +1027,17 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
                   { step: 3, title: 'Actionable Roadmap Output', desc: 'Generates tailored strategy recommendations and verified steps.', time: 'Instant' },
                   { step: 4, title: 'Continuous Career Iteration', desc: 'Track progress, re-evaluate metrics, and refine your trajectory.', time: 'Ongoing' }
                 ].map((item) => (
-                  <div key={item.step} className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-lg bg-blue-600 text-white font-bold text-xs flex items-center justify-center">
+                  <div key={item.step} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-4 shadow-xs">
+                    <div className="flex items-center gap-3.5">
+                      <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white font-black text-xs flex items-center justify-center shrink-0 shadow-xs">
                         {item.step}
                       </div>
                       <div>
-                        <h5 className="font-semibold text-xs text-white">{item.title}</h5>
-                        <p className="text-xs text-slate-400">{item.desc}</p>
+                        <h5 className="font-bold text-sm text-slate-900 dark:text-white">{item.title}</h5>
+                        <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">{item.desc}</p>
                       </div>
                     </div>
-                    <Badge variant="outline" className="border-slate-700 text-slate-400 text-[10px]">
+                    <Badge variant="outline" className="border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-semibold">
                       {item.time}
                     </Badge>
                   </div>
@@ -1037,17 +1048,17 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
         </div>
 
         {/* High-Contrast Bottom Launch Footer */}
-        <div className="p-5 border-t border-slate-800/80 bg-slate-900/95 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="p-5 sm:p-6 border-t border-slate-200 dark:border-slate-800 bg-slate-900 dark:bg-slate-950 text-white flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <h4 className="font-bold text-sm text-white">
+            <h4 className="font-black text-base text-white">
               Ready to launch {tool.name}?
             </h4>
-            <p className="text-xs text-slate-300 mt-0.5">
+            <p className="text-xs text-slate-300 font-normal mt-0.5">
               Get instant, personalized recommendations tailored to your career milestones.
             </p>
           </div>
           <Button 
-            className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl px-6 py-2.5 text-xs font-bold shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 shrink-0 transition-all hover:scale-[1.02]"
+            className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl px-7 py-3 text-xs font-bold shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2 shrink-0 transition-all hover:scale-[1.02]"
             onClick={handleLaunchTool}
           >
             Launch {tool.name} Now
