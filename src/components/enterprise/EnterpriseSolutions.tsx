@@ -269,9 +269,11 @@ export const EnterpriseSolutions: React.FC = () => {
                 </div>
               </div>
               
-              <h1 className="text-5xl lg:text-7xl font-bold text-white mb-8 tracking-tight">
-                Transform Your
-                <span className="block bg-gradient-to-r from-blue-400 via-purple-400 to-emerald-400 bg-clip-text text-transparent">
+              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black text-white mb-8 tracking-tight" style={{ color: '#ffffff' }}>
+                <span className="text-white block" style={{ color: '#ffffff' }}>
+                  Transform Your
+                </span>
+                <span className="block bg-gradient-to-r from-blue-300 via-purple-300 to-emerald-300 bg-clip-text text-transparent pb-1">
                   Workforce Intelligence
                 </span>
               </h1>
@@ -435,7 +437,7 @@ export const EnterpriseSolutions: React.FC = () => {
         <section className="py-20 bg-slate-900">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
+              <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6" style={{ color: '#ffffff' }}>
                 Enterprise-Grade Platform
               </h2>
               <p className="text-xl text-slate-300 max-w-3xl mx-auto">
@@ -452,7 +454,7 @@ export const EnterpriseSolutions: React.FC = () => {
                         {capability.icon}
                       </div>
                     </div>
-                    <h3 className="text-xl font-bold text-white mb-3 text-center">
+                    <h3 className="text-xl font-bold text-white mb-3 text-center" style={{ color: '#ffffff' }}>
                       {capability.title}
                     </h3>
                     <p className="text-slate-300 text-center mb-4 leading-relaxed">
@@ -524,7 +526,7 @@ export const EnterpriseSolutions: React.FC = () => {
         {/* CTA Section */}
         <section className="py-20 bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
+            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6" style={{ color: '#ffffff' }}>
               Ready to Transform Your Enterprise?
             </h2>
             <p className="text-xl text-blue-100 mb-12 leading-relaxed">
