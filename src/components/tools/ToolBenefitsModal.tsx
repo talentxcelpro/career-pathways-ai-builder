@@ -1047,18 +1047,18 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
           </Tabs>
         </div>
 
-        {/* High-Contrast Bottom Launch Footer */}
-        <div className="p-5 sm:p-6 border-t border-slate-200 dark:border-slate-800 bg-slate-900 dark:bg-slate-950 text-white flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div>
-            <h4 className="font-black text-base text-white">
+        {/* Apple-grade High-Contrast Bottom Launch Footer */}
+        <div className="p-5 sm:p-6 border-t border-slate-200/90 dark:border-slate-800/90 bg-slate-50/90 dark:bg-slate-900/90 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="space-y-1 text-center sm:text-left">
+            <div className="font-black text-base text-slate-900 dark:text-white tracking-tight">
               Ready to launch {tool.name}?
-            </h4>
-            <p className="text-xs text-slate-300 font-normal mt-0.5">
+            </div>
+            <div className="text-xs text-slate-600 dark:text-slate-400 font-medium">
               Get instant, personalized recommendations tailored to your career milestones.
-            </p>
+            </div>
           </div>
           <Button 
-            className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl px-7 py-3 text-xs font-bold shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2 shrink-0 transition-all hover:scale-[1.02]"
+            className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl px-7 py-3 text-xs font-bold shadow-md hover:shadow-indigo-500/25 flex items-center justify-center gap-2 shrink-0 transition-all hover:scale-[1.02]"
             onClick={handleLaunchTool}
           >
             Launch {tool.name} Now
