@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo } from 'react';
+﻿import React, { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
@@ -6,20 +6,18 @@ import {
   Newspaper, 
   Calendar, 
   Clock, 
-  User, 
   ArrowLeft, 
   ArrowRight, 
   Search, 
   Share2, 
   CheckCircle2, 
   Sparkles, 
-  TrendingUp, 
   Building2, 
   GraduationCap, 
   ShieldCheck, 
   Tag, 
   ChevronRight,
-  ExternalLink,
+  Globe,
   BookOpen
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -28,7 +26,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { newsService } from '@/services/newsService';
-import { NewsCategory, NewsArticle } from '@/types/news';
+import { NewsCategory } from '@/types/news';
 
 const CATEGORIES: NewsCategory[] = [
   'All',
@@ -70,7 +68,7 @@ const NewsPage: React.FC = () => {
 
   // Share Article Functionality
   const handleShare = (platform?: 'twitter' | 'linkedin') => {
-    const url = typeof window !== 'undefined' ? window.location.href : `https://talentxcel.in/news/${slug}`;
+    const url = typeof window !== 'undefined' ? window.location.href : `https://talentxcel.in/news/${slug || ''}`;
     const text = article ? `${article.title} — via TalentXcel` : 'TalentXcel News & Insights';
 
     if (platform === 'twitter') {
@@ -116,11 +114,11 @@ const NewsPage: React.FC = () => {
     }
 
     const canonicalUrl = `https://talentxcel.in/news/${article.slug}`;
-    const formattedDate = new Date(article.publishedAt).toLocaleDateString('en-US', {
+    const formattedDate = article.publishedAt ? new Date(article.publishedAt).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
-    });
+    }) : '';
 
     const newsArticleSchema = {
       "@context": "https://schema.org",
@@ -128,14 +126,14 @@ const NewsPage: React.FC = () => {
       "headline": article.title,
       "description": article.summary,
       "image": [
-        `https://talentxcel.in${article.imageUrl}`
+        `https://talentxcel.in${article.imageUrl || '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png'}`
       ],
       "datePublished": article.publishedAt,
       "dateModified": article.updatedAt || article.publishedAt,
       "author": {
         "@type": "Person",
-        "name": article.author.name,
-        "jobTitle": article.author.role
+        "name": article.author?.name || 'TalentXcel Editorial Desk',
+        "jobTitle": article.author?.role || 'Platform Intelligence'
       },
       "publisher": {
         "@type": "Organization",
@@ -205,14 +203,18 @@ const NewsPage: React.FC = () => {
             <Badge variant="secondary" className="font-semibold bg-primary/10 text-primary hover:bg-primary/20 text-xs px-2.5 py-0.5">
               {article.category}
             </Badge>
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <Calendar className="h-3.5 w-3.5" />
-              <span>{formattedDate}</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <Clock className="h-3.5 w-3.5" />
-              <span>{article.readTime}</span>
-            </div>
+            {formattedDate && (
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Calendar className="h-3.5 w-3.5" />
+                <span>{formattedDate}</span>
+              </div>
+            )}
+            {article.readTime && (
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Clock className="h-3.5 w-3.5" />
+                <span>{article.readTime}</span>
+              </div>
+            )}
           </div>
 
           {/* Article Title */}
@@ -229,13 +231,13 @@ const NewsPage: React.FC = () => {
           <div className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/60 mb-8 shadow-sm">
             <div className="flex items-center gap-3">
               <img 
-                src={article.author.avatar || '/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png'} 
-                alt={article.author.name}
+                src={article.author?.avatar || '/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png'} 
+                alt={article.author?.name || 'Author'}
                 className="w-11 h-11 rounded-full object-cover border border-primary/20"
               />
               <div>
-                <h2 className="text-sm font-bold text-foreground leading-none">{article.author.name}</h2>
-                <span className="text-xs text-muted-foreground font-medium">{article.author.role}</span>
+                <h2 className="text-sm font-bold text-foreground leading-none">{article.author?.name || 'TalentXcel Editorial Desk'}</h2>
+                <span className="text-xs text-muted-foreground font-medium">{article.author?.role || 'Platform Intelligence'}</span>
               </div>
             </div>
 
@@ -356,8 +358,12 @@ const NewsPage: React.FC = () => {
   // ─────────────────────────────────────────────────────────────
   // NEWS HUB & AUTHORITY ARCHITECTURE VIEW (/news)
   // ─────────────────────────────────────────────────────────────
-  const featuredArticle = articles.find(a => a.isFeatured) || articles[0];
-  const gridArticles = articles.filter(a => a.id !== featuredArticle?.id);
+  const featuredArticle = (articles && articles.length > 0) 
+    ? (articles.find(a => a.isFeatured) || articles[0]) 
+    : undefined;
+  const gridArticles = (articles && articles.length > 0 && featuredArticle)
+    ? articles.filter(a => a.id !== featuredArticle.id)
+    : (articles || []);
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -505,13 +511,13 @@ const NewsPage: React.FC = () => {
                     <div className="flex items-center justify-between pt-4 border-t border-border/40">
                       <div className="flex items-center gap-2.5">
                         <img 
-                          src={featuredArticle.author.avatar || '/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png'} 
-                          alt={featuredArticle.author.name}
+                          src={featuredArticle.author?.avatar || '/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png'} 
+                          alt={featuredArticle.author?.name || 'Author'}
                           className="w-8 h-8 rounded-full border border-primary/20"
                         />
                         <div className="text-xs">
-                          <p className="font-bold text-foreground leading-none">{featuredArticle.author.name}</p>
-                          <p className="text-muted-foreground text-[10px] mt-0.5">{new Date(featuredArticle.publishedAt).toLocaleDateString()}</p>
+                          <p className="font-bold text-foreground leading-none">{featuredArticle.author?.name || 'TalentXcel'}</p>
+                          <p className="text-muted-foreground text-[10px] mt-0.5">{featuredArticle.publishedAt ? new Date(featuredArticle.publishedAt).toLocaleDateString() : ''}</p>
                         </div>
                       </div>
 
@@ -565,7 +571,7 @@ const NewsPage: React.FC = () => {
                     <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
                       <div>
                         <div className="flex items-center gap-2 text-[11px] text-muted-foreground mb-2">
-                          <span>{new Date(art.publishedAt).toLocaleDateString()}</span>
+                          <span>{art.publishedAt ? new Date(art.publishedAt).toLocaleDateString() : ''}</span>
                           <span>•</span>
                           <span>{art.readTime}</span>
                         </div>
