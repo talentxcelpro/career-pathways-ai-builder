@@ -36,7 +36,7 @@ export const FooterWrapper: React.FC = () => {
   // Show minimal copyright footer on all other pages
   return (
     <div className="w-full text-center py-4 text-sm text-muted-foreground bg-background border-t">
-      © 2026 TalentXcel Technologies Pvt Ltd. All rights reserved.
+      © 2026 TalentXcel Services Pvt Ltd. All rights reserved.
     </div>
   );
 };

@@ -29,7 +29,7 @@ export const Footer = () => {
               India's AI career platform for jobs, resumes, colleges, learning, career passports and professional networking.
             </p>
             <p className="text-background/50 text-xs">
-              © 2026 TalentXcel Technologies Pvt Ltd. All rights reserved.
+              © 2026 TalentXcel Services Pvt Ltd. All rights reserved.
             </p>
           </div>
 
@@ -168,7 +168,7 @@ export const Footer = () => {
         <div className="border-t border-background/20 mt-8 pt-8">
           <div className="flex justify-center">
             <p className="text-background/50 text-sm text-center">
-              © 2026 TalentXcel Technologies Pvt Ltd. All rights reserved.
+              © 2026 TalentXcel Services Pvt Ltd. All rights reserved.
             </p>
           </div>
         </div>

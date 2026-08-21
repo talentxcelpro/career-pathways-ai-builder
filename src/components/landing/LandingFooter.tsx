@@ -44,7 +44,7 @@ export const LandingFooter: React.FC = () => {
               India's AI career platform connecting Jobs, Resumes, Colleges, Learning, Career Passports and Professional Networking.
             </p>
             <p className="text-background/50 text-xs">
-              © 2026 TalentXcel Technologies Pvt Ltd. All rights reserved.
+              © 2026 TalentXcel Services Pvt Ltd. All rights reserved.
             </p>
           </div>
 
@@ -118,7 +118,7 @@ export const LandingFooter: React.FC = () => {
         {/* Bottom copyright */}
         <div className="border-t border-background/20 mt-8 pt-8 text-center">
           <p className="text-background/50 text-xs">
-            © 2026 TalentXcel Technologies Pvt Ltd. All rights reserved.
+            © 2026 TalentXcel Services Pvt Ltd. All rights reserved.
           </p>
         </div>
       </div>

@@ -137,10 +137,10 @@ export const ChatrServiceSection: React.FC = () => {
         {/* Footer Compliance */}
         <div className="text-center pt-8 border-t border-border/30">
           <p className="text-xs text-muted-foreground mb-1">
-            © 2026 TalentXcel Technologies Pvt Ltd
+            © 2026 TalentXcel Services Pvt Ltd
           </p>
           <p className="text-xs text-muted-foreground/70">
-            CHATR™ is a communication service developed and operated by TalentXcel
+            CHATR™ (chatr.chat / chatrchat.in) is an official brand and communication service operated by TalentXcel Services Pvt Ltd.
           </p>
         </div>
       </div>
