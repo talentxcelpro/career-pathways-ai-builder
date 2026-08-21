@@ -1,6 +1,6 @@
--- ==============================================================================
--- Migration: Network Autonomous Micro-Post Engine (Config, Logs, Atomic Lock)
--- ==============================================================================
+/* ==============================================================================
+   Migration: Network Autonomous Micro-Post Engine (Config, Logs, Atomic Lock)
+   ============================================================================== */
 
 -- 1. Create network_auto_post_config table
 CREATE TABLE IF NOT EXISTS public.network_auto_post_config (
@@ -152,7 +152,6 @@ ALTER TABLE public.network_auto_post_config ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.network_auto_posts ENABLE ROW LEVEL SECURITY;
 
 -- 5. Admin-Only RLS Policies
--- Only authenticated users matching authorized email or admin role have access
 CREATE POLICY "Admins have full access to network auto post config"
 ON public.network_auto_post_config
 FOR ALL
