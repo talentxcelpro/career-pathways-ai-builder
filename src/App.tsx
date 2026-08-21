@@ -103,6 +103,7 @@ const NewsManagement                  = lazy(() => import('@/pages/admin/NewsMan
 const EmailAutomation                 = lazy(() => import('@/pages/admin/EmailAutomation'));
 const PopulateCoursesAdmin            = lazy(() => import('@/pages/admin/PopulateCoursesAdmin'));
 const NewsPage                        = lazy(() => import('@/pages/NewsPage'));
+const AIServicesPage                  = lazy(() => import('@/pages/AIServicesPage'));
 const JobsByRole                      = lazy(() => import('@/pages/seo/JobsByRole'));
 const JobsByLocation                  = lazy(() => import('@/pages/seo/JobsByLocation'));
 const JobsBySkill                     = lazy(() => import('@/pages/seo/JobsBySkill'));

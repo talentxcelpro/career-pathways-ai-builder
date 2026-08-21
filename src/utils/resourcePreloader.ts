@@ -4,29 +4,10 @@ export class ResourcePreloader {
   
   // Preload critical CSS and fonts
   static preloadCriticalResources() {
-    // Preload system fonts
-    this.preloadFont('Inter', 'system-ui, -apple-system, sans-serif');
-    
     // Preconnect to external domains
     this.preconnectToDomain('https://dthlgsnakhoftinssokm.supabase.co');
     this.preconnectToDomain('https://vitals.vercel-insights.com');
     this.preconnectToDomain('https://vercel.live');
-  }
-
-  // Preload fonts with font-display: swap
-  static preloadFont(fontFamily: string, fallback: string) {
-    if (typeof document === 'undefined') return;
-    
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.as = 'font';
-    link.type = 'font/woff2';
-    link.crossOrigin = 'anonymous';
-    link.href = `https://fonts.googleapis.com/css2?family=${fontFamily}:wght@400;500;600;700&display=swap`;
-    
-    if (!document.head.querySelector(`link[href="${link.href}"]`)) {
-      document.head.appendChild(link);
-    }
   }
 
   // Preconnect to external domains

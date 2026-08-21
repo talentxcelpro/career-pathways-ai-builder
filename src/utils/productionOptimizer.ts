@@ -46,27 +46,7 @@ export const optimizeImageUrl = (url: string, options: {
 
 // Critical resource preloader
 export const preloadCriticalResources = () => {
-  const criticalUrls = [
-    '/assets/fonts/inter.woff2',
-    '/assets/images/hero-bg.webp',
-    '/assets/images/logo.svg'
-  ];
-
-  criticalUrls.forEach(url => {
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.href = url;
-    
-    if (url.includes('.woff2')) {
-      link.as = 'font';
-      link.type = 'font/woff2';
-      link.crossOrigin = 'anonymous';
-    } else if (url.includes('.webp')) {
-      link.as = 'image';
-    }
-    
-    document.head.appendChild(link);
-  });
+  // Preconnect and DNS prefetch are handled in criticalPerformance and HTML head
 };
 
 // Service Worker registration

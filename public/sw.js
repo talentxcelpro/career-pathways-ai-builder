@@ -1,7 +1,7 @@
 // TalentXcel Service Worker
 // IMPORTANT: bump CACHE_VERSION whenever caching behavior changes so old
 // caches (which may hold stale JS bundles) are evicted on activate.
-const CACHE_VERSION = 'v1.2.0-2026-06-06';
+const CACHE_VERSION = 'v1.2.1-2026-08-21';
 const CACHE_NAME = `talentxcel-${CACHE_VERSION}`;
 
 const CRITICAL_ASSETS = [
@@ -108,11 +108,15 @@ async function networkFirst(request) {
 async function staleWhileRevalidate(request) {
   const cache = await caches.open(CACHE_NAME);
   const cached = await cache.match(request);
-  const fetchPromise = fetch(request).then((response) => {
-    if (response.ok) cache.put(request, response.clone());
-    return response;
-  }).catch(() => cached);
-  return cached || fetchPromise;
+  try {
+    const response = await fetch(request);
+    if (response && response.ok) {
+      cache.put(request, response.clone()).catch(() => {});
+    }
+    return response || cached || new Response('Offline', { status: 503 });
+  } catch {
+    return cached || new Response('Network error', { status: 408 });
+  }
 }
 
 self.addEventListener('sync', (event) => {
