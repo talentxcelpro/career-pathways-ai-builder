@@ -406,7 +406,7 @@ export default function Colleges() {
 
                 <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-600/20 border border-blue-400/30 text-blue-300 text-xs font-bold shrink-0">
                   <GraduationCap className="h-3.5 w-3.5" />
-                  <span>1,509 Verified</span>
+                  <span>{telemetry.totalInstitutions} Verified</span>
                 </div>
               </div>
 
