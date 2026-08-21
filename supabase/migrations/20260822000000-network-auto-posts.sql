@@ -151,24 +151,18 @@ $$;
 ALTER TABLE public.network_auto_post_config ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.network_auto_posts ENABLE ROW LEVEL SECURITY;
 
--- 5. Admin-Only RLS Policies
+-- 5. Admin-Only RLS Policies using canonical project functions
 CREATE POLICY "Admins have full access to network auto post config"
 ON public.network_auto_post_config
 FOR ALL
 TO authenticated
 USING (
   auth.jwt() ->> 'email' = 'talentxcelpro@gmail.com'
-  OR EXISTS (
-    SELECT 1 FROM public.profiles 
-    WHERE id = auth.uid() AND (role = 'admin' OR is_super_admin = true)
-  )
+  OR public.is_current_user_admin()
 )
 WITH CHECK (
   auth.jwt() ->> 'email' = 'talentxcelpro@gmail.com'
-  OR EXISTS (
-    SELECT 1 FROM public.profiles 
-    WHERE id = auth.uid() AND (role = 'admin' OR is_super_admin = true)
-  )
+  OR public.is_current_user_admin()
 );
 
 CREATE POLICY "Admins have full access to network auto posts audit"
@@ -178,16 +172,10 @@ TO authenticated
 USING (
   auth.jwt() ->> 'email' = 'talentxcelpro@gmail.com'
   OR user_id = auth.uid()
-  OR EXISTS (
-    SELECT 1 FROM public.profiles 
-    WHERE id = auth.uid() AND (role = 'admin' OR is_super_admin = true)
-  )
+  OR public.is_current_user_admin()
 )
 WITH CHECK (
   auth.jwt() ->> 'email' = 'talentxcelpro@gmail.com'
   OR user_id = auth.uid()
-  OR EXISTS (
-    SELECT 1 FROM public.profiles 
-    WHERE id = auth.uid() AND (role = 'admin' OR is_super_admin = true)
-  )
+  OR public.is_current_user_admin()
 );
