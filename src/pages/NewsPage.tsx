@@ -29,6 +29,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { newsService } from '@/services/newsService';
 import { NewsCategory } from '@/types/news';
+import { NewsArticleBanner } from '@/components/news/NewsArticleBanner';
 
 const CATEGORIES: NewsCategory[] = [
   'All',
@@ -287,17 +288,14 @@ const NewsPage: React.FC = () => {
             </Card>
           )}
 
-          {/* Article Main Image */}
-          {article.imageUrl && (
-            <div className="mb-10 rounded-2xl overflow-hidden border shadow-sm">
-              <img 
-                src={article.imageUrl} 
-                alt={article.title} 
-                className="w-full h-auto max-h-[420px] object-cover"
-                loading="eager"
-              />
-            </div>
-          )}
+          {/* Article Main Visual Banner */}
+          <NewsArticleBanner 
+            slug={article.slug} 
+            category={article.category} 
+            title={article.title} 
+            size="detail" 
+            className="mb-10 shadow-lg border border-border/80" 
+          />
 
           {/* Article Body Content */}
           <div 
@@ -497,20 +495,13 @@ const NewsPage: React.FC = () => {
                   className="group lg:col-span-7 flex flex-col justify-between p-6 sm:p-8 rounded-3xl bg-card border border-border/80 hover:border-primary/40 hover:shadow-xl transition-all overflow-hidden"
                 >
                   <div className="space-y-4">
-                    <div className="relative h-64 sm:h-72 w-full rounded-2xl overflow-hidden bg-muted">
-                      <img 
-                        src={featuredArticle.imageUrl} 
-                        alt={featuredArticle.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        loading="eager"
-                      />
-                      <Badge className="absolute top-3 left-3 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 shadow-md">
-                        Featured Story
-                      </Badge>
-                      <Badge className="absolute top-3 right-3 bg-black/70 backdrop-blur-md text-white text-xs font-bold">
-                        {featuredArticle.category}
-                      </Badge>
-                    </div>
+                    <NewsArticleBanner 
+                      slug={featuredArticle.slug} 
+                      category={featuredArticle.category} 
+                      title={featuredArticle.title} 
+                      size="hero" 
+                      className="shadow-md" 
+                    />
 
                     <div className="flex items-center gap-2.5 text-xs text-muted-foreground font-medium pt-1">
                       <span>{featuredArticle.publishedAt ? new Date(featuredArticle.publishedAt).toLocaleDateString() : ''}</span>
@@ -611,17 +602,12 @@ const NewsPage: React.FC = () => {
                     to={`/news/${art.slug}`}
                     className="group flex flex-col justify-between rounded-3xl bg-card border border-border/80 hover:border-primary/40 hover:shadow-xl transition-all overflow-hidden"
                   >
-                    <div className="relative h-48 sm:h-52 w-full overflow-hidden bg-muted">
-                      <img 
-                        src={art.imageUrl} 
-                        alt={art.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        loading="lazy"
-                      />
-                      <Badge className="absolute top-3.5 left-3.5 bg-black/70 backdrop-blur-md text-white text-xs font-bold">
-                        {art.category}
-                      </Badge>
-                    </div>
+                    <NewsArticleBanner 
+                      slug={art.slug} 
+                      category={art.category} 
+                      title={art.title} 
+                      size="card" 
+                    />
 
                     <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                       <div className="space-y-2.5">
