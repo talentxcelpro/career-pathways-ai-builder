@@ -28,8 +28,8 @@ const Learning = () => {
 
   React.useEffect(() => {
     updateMetaTags({
-      title: 'Learning Platform | TalentXcel',
-      description: 'Explore courses, learning paths, and track your progress on TalentXcel\'s comprehensive learning platform.'
+      title: 'AI Career Learning Hub | TalentXcel — Courses, Paths & Skill Mastery',
+      description: 'Accelerate your career with AI-curated courses, structured learning paths and real-time skill intelligence. Thousands of verified industry programs on TalentXcel.'
     });
   }, []);
 
