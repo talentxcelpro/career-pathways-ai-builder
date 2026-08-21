@@ -103,15 +103,15 @@ export const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-14">
           
-          {/* Brand Logo matching mockup */}
+          {/* Brand Logo - High Contrast & Clearly Visible on Dark Navbar */}
           <div className="flex items-center shrink-0 mr-4 sm:mr-6">
-            <Link to="/" className="flex items-center space-x-2 shrink-0">
-              <img 
-                src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
-                alt="TalentXcel" 
-                className="h-6 w-6 rounded-sm shrink-0"
-              />
-              <span className="text-sm font-black tracking-tight text-white whitespace-nowrap">TalentXcel</span>
+            <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 p-0.5 shadow-md shadow-blue-500/20 flex items-center justify-center border border-white/20 group-hover:scale-105 transition-transform shrink-0">
+                <Sparkles className="w-4 h-4 text-white fill-white/20" />
+              </div>
+              <span className="text-base sm:text-lg font-black tracking-tight text-white whitespace-nowrap drop-shadow-sm flex items-center">
+                Talent<span className="text-blue-400 font-black">Xcel</span>
+              </span>
             </Link>
           </div>
 

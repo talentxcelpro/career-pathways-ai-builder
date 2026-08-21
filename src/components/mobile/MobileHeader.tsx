@@ -90,13 +90,13 @@ export const MobileHeader = () => {
           </Button>
 
           {/* Center - Compact TalentXcel Logo */}
-          <div className="flex-1 flex justify-center items-center space-x-2">
-            <img 
-              src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
-              alt="TalentXcel" 
-              className="h-5 w-5 rounded-sm transition-apple hover:scale-105"
-            />
-            <span className="text-apple-body font-apple-bold text-foreground">TalentXcel</span>
+          <div className="flex-1 flex justify-center items-center gap-1.5">
+            <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center border border-white/20 shadow-xs shrink-0">
+              <Sparkles className="w-3.5 h-3.5 text-white" />
+            </div>
+            <span className="text-sm font-black tracking-tight text-foreground flex items-center">
+              Talent<span className="text-blue-500 font-black">Xcel</span>
+            </span>
           </div>
 
           {/* Right - Compact Actions */}
