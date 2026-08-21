@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -63,21 +64,29 @@ const Network: React.FC = () => {
     fetchNextPage
   } = useLinkedInFeed();
 
-  // SEO meta tags and structured data
-  React.useEffect(() => {
-    updateMetaTags({
-      title: 'Universal Career Network | TalentXcel',
-      description: 'Connect with industry experts, share posts, discover career opportunities, and manage your professional identity on TalentXcel.',
-      url: `${window.location.origin}/network`,
-      type: 'website',
-      image: '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png'
-    });
-  }, []);
+  const seoHelmet = (
+    <Helmet>
+      <title>Universal Career Network | TalentXcel — Connect, Share &amp; Grow</title>
+      <meta name="description" content="Connect with industry peers, share career insights, discover job opportunities, and build your professional presence on TalentXcel." />
+      <meta name="keywords" content="professional network, career network india, tech community, professional connections, industry mentors, talentxcel network" />
+      <link rel="canonical" href="https://talentxcel.in/network" />
+      <meta property="og:title" content="Universal Career Network | TalentXcel" />
+      <meta property="og:description" content="Connect with industry peers, share career insights, and discover verified career opportunities on TalentXcel." />
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://talentxcel.in/network" />
+      <meta property="og:image" content="https://talentxcel.in/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content="Universal Career Network | TalentXcel" />
+      <meta name="twitter:description" content="Connect with industry peers, share career insights, and discover opportunities on TalentXcel." />
+      <meta name="twitter:image" content="https://talentxcel.in/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" />
+    </Helmet>
+  );
 
   // Mobile interface
   if (isMobile && user) {
     return (
       <MobileNavWrapper>
+        {seoHelmet}
         <LinkedInMobileFeed
           posts={posts}
           loading={loading}
@@ -97,6 +106,7 @@ const Network: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-background/95 pb-20">
+      {seoHelmet}
       
       {/* One Tap Sign In Status for guests */}
       {!user && (

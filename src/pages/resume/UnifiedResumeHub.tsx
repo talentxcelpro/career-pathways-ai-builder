@@ -180,9 +180,21 @@ export default function UnifiedResumeHub() {
   return (
     <>
       <Helmet>
-        <title>AI Resume Command Center | TalentXcel</title>
-        <meta name="description" content="Build, score, and ATS-optimize executive resumes with AI assistance. Access 50+ templates, instant parsing, and interview coaching." />
+        <title>AI Resume Builder & ATS Score Optimization | TalentXcel</title>
+        <meta name="description" content="Build executive, ATS-optimized resumes in minutes with TalentXcel AI. 50+ templates, instant parsing, real-time keyword scoring, and interview coaching." />
+        <meta name="keywords" content="ai resume builder, ats resume checker, resume score, cv builder india, executive resume templates, talentxcel resume" />
         <link rel="canonical" href="https://talentxcel.in/resume" />
+        
+        <meta property="og:title" content="AI Resume Builder & ATS Score Optimization | TalentXcel" />
+        <meta property="og:description" content="Build executive, ATS-optimized resumes in minutes with TalentXcel AI. 50+ templates, instant keyword parsing, and direct job matching." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://talentxcel.in/resume" />
+        <meta property="og:image" content="https://talentxcel.in/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" />
+        
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="AI Resume Builder & ATS Scanner | TalentXcel" />
+        <meta name="twitter:description" content="Build and score your ATS-optimized resume with TalentXcel AI." />
+        <meta name="twitter:image" content="https://talentxcel.in/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" />
       </Helmet>
 
       <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 pb-20 text-slate-900 dark:text-slate-100">
@@ -389,9 +401,9 @@ export default function UnifiedResumeHub() {
                           TALENTXCEL AI RESUME COMMAND CENTER · READY
                         </span>
                       </div>
-                      <h3 className="text-xl font-black !text-white mt-1" style={{ color: '#ffffff' }}>
-                        Build &amp; ATS-Optimize Your Executive Resume.
-                      </h3>
+                      <h1 className="text-xl font-black !text-white mt-1" style={{ color: '#ffffff' }}>
+                        Build &amp; ATS-Optimize Your Executive Resume
+                      </h1>
                       <p className="text-xs !text-slate-300 font-medium mt-0.5" style={{ color: '#cbd5e1' }}>
                         Inject target keywords, benchmark against 10M+ job postings, and pass ATS screening in 3 seconds.
                       </p>

@@ -363,21 +363,21 @@ const Jobs = () => {
   return (
     <>
       <Helmet>
-        <title>TalentXcel Jobs - AI-Powered Career Discovery | {totalCount.toLocaleString()} Live Opportunities</title>
-        <meta name="description" content={`Discover ${totalCount.toLocaleString()} verified job openings with TalentXcel's AI-powered matching. Instant apply, salary transparency, and TXC coin rewards. Find your dream job today!`} />
-        <meta name="keywords" content="jobs india, ai job matching, career opportunities, hiring, employment, job search, talentxcel, txc coins, instant apply" />
-        <link rel="canonical" href={`${window.location.origin}/jobs`} />
+        <title>Search Verified Jobs in India | AI-Matched Career Opportunities — TalentXcel</title>
+        <meta name="description" content="Discover thousands of verified tech, engineering, sales, and executive job openings across India with TalentXcel AI matching. Instant apply, transparent salary data, and direct recruiter connections." />
+        <meta name="keywords" content="jobs india, verified tech jobs, ai job matching, fresher jobs, remote jobs india, bangalore jobs, hyderabad jobs, talentxcel hiring" />
+        <link rel="canonical" href="https://talentxcel.in/jobs" />
         
-        <meta property="og:title" content={`TalentXcel Jobs - ${totalCount.toLocaleString()} AI-Matched Opportunities`} />
-        <meta property="og:description" content="Revolutionary job portal with AI matching, instant apply, and TXC coin rewards. Find verified jobs at top companies." />
+        <meta property="og:title" content="Search Verified Jobs in India | TalentXcel AI Career Platform" />
+        <meta property="og:description" content="Discover thousands of verified tech, engineering, and business job openings across India with AI-powered candidate matching." />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content={window.location.href} />
-        <meta property="og:image" content="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" />
+        <meta property="og:url" content="https://talentxcel.in/jobs" />
+        <meta property="og:image" content="https://talentxcel.in/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" />
         
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="TalentXcel Jobs - AI Career Discovery" />
-        <meta name="twitter:description" content={`${totalCount.toLocaleString()} jobs with AI matching and instant apply`} />
-        <meta name="twitter:image" content="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" />
+        <meta name="twitter:title" content="Search Verified Jobs in India | TalentXcel" />
+        <meta name="twitter:description" content="Discover thousands of verified job openings across India with AI matching and instant apply on TalentXcel." />
+        <meta name="twitter:image" content="https://talentxcel.in/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" />
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 mobile-optimized">
@@ -477,6 +477,14 @@ const Jobs = () => {
                 <Brain className="h-3 w-3" />
                 AI Hub
               </Button>
+            {/* Semantic Page Header for Google & Users */}
+            <div className="max-w-4xl mx-auto mb-3 text-center sm:text-left">
+              <h1 className="text-lg sm:text-2xl font-bold tracking-tight text-foreground">
+                Search Verified Jobs in India
+              </h1>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
+                Explore AI-matched career opportunities across top tech companies, startups, and enterprises.
+              </p>
             </div>
 
             {/* Mobile-First Global Search Bar */}

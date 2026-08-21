@@ -179,7 +179,11 @@ Allow: /*.svg$
 # PARAMETER URL CONTROL (Prevent Crawl-Budget Exhaustion)
 # ==========================================================
 
-Disallow: /*?*search=
+# Allow /jobs?search= explicitly (used in SearchAction schema and user-facing URL)
+Allow: /jobs?search=
+Allow: /colleges?search=
+
+# Block search/filter parameters on all other pages
 Disallow: /*?*filter=
 Disallow: /*?*sort=
 Disallow: /*?*page=

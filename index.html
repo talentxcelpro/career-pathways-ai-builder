@@ -102,6 +102,8 @@
     <!-- Google One Tap Sign-In - Loaded asynchronously by React -->
     <!-- Removed to improve initial load time - loaded via AsyncGoogleOneTap component -->
     
+    <!-- Structured Data -->
+    <!-- WebSite + SearchAction: tells Google the site has a search function at /jobs?search= -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -121,75 +123,40 @@
       }
     }
     </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "SiteLinksSearchBox",
-      "url": "https://talentxcel.in",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": {
-          "@type": "EntryPoint",
-          "urlTemplate": "https://talentxcel.in/jobs?search={search_term_string}"
-        },
-        "query-input": "required name=search_term_string"
-      }
-    }
-    </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "ItemList",
-      "name": "TalentXcel Platform Navigation",
-      "description": "Core features of TalentXcel AI Career Platform",
-      "numberOfItems": 5,
-      "itemListElement": [
-        {
-          "@type": "SiteLinksSearchBox",
-          "position": 1,
-          "url": "https://talentxcel.in/jobs",
-          "name": "Verified Jobs Search",
-          "description": "Browse 50,000+ verified tech, engineering and business job openings across India with AI matching."
-        },
-        {
-          "@type": "ListItem",
-          "position": 2,
-          "url": "https://talentxcel.in/resume",
-          "name": "AI Resume Builder",
-          "description": "Create ATS-optimized resumes with 50+ executive templates, instant scoring and AI keyword injection."
-        },
-        {
-          "@type": "ListItem",
-          "position": 3,
-          "url": "https://talentxcel.in/colleges",
-          "name": "Indian Colleges & Universities",
-          "description": "Explore 10,250+ verified Indian colleges and universities with NIRF rankings, tuition fees, placement reports and cutoff scores."
-        },
-        {
-          "@type": "ListItem",
-          "position": 4,
-          "url": "https://talentxcel.in/learning",
-          "name": "AI Career Learning Hub",
-          "description": "Master in-demand skills with AI-curated courses, learning paths and real-time career intelligence."
-        },
-        {
-          "@type": "ListItem",
-          "position": 5,
-          "url": "https://talentxcel.in/passport",
-          "name": "Career Passport & Roadmap",
-          "description": "Your verified skill passport, AI career roadmap and pathway planner — all in one place."
-        }
-      ]
-    }
-    </script>
+    <!-- Organization: core entity signal for Google and generative AI systems -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "Organization",
       "name": "TalentXcel",
+      "legalName": "TalentXcel Technologies Pvt Ltd",
       "url": "https://talentxcel.in",
-      "logo": "https://talentxcel.in/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png",
-      "description": "TalentXcel is an AI career platform for job search, skill growth and hiring.",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://talentxcel.in/talentxcel-official-logo.png",
+        "width": 200,
+        "height": 200
+      },
+      "description": "TalentXcel is an AI-powered career platform connecting job seekers, students and professionals with verified jobs, ATS-ready resume tools, Indian college data, career learning paths, skill verification and professional networking.",
+      "foundingDate": "2024",
+      "areaServed": {
+        "@type": "Country",
+        "name": "India"
+      },
+      "knowsAbout": [
+        "Job Search",
+        "Resume Building",
+        "ATS Optimization",
+        "Career Development",
+        "Higher Education in India",
+        "Professional Networking",
+        "Skill Development",
+        "Career Intelligence"
+      ],
+      "sameAs": [
+        "https://www.linkedin.com/company/talentxcel",
+        "https://twitter.com/talentxcel"
+      ],
       "contactPoint": {
         "@type": "ContactPoint",
         "contactType": "customer support",

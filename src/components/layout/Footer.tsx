@@ -14,9 +14,9 @@ export const Footer = () => {
   return (
     <footer className="bg-foreground text-background py-12 mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8">
           {/* Company Info */}
-          <div>
+          <div className="sm:col-span-2 md:col-span-1">
             <div className="flex items-center space-x-2 mb-4">
               <img 
                 src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
@@ -25,12 +25,49 @@ export const Footer = () => {
               />
               <span className="font-bold text-xl">TalentXcel</span>
             </div>
-            <p className="text-background/70 mb-4">
-              Empowering professionals with AI-powered tools for career growth, job discovery, and skill development.
+            <p className="text-background/70 mb-4 text-sm leading-relaxed">
+              India's AI career platform for jobs, resumes, colleges, learning, career passports and professional networking.
             </p>
-            <p className="text-background/50 text-sm">
+            <p className="text-background/50 text-xs">
               © 2026 TalentXcel Technologies Pvt Ltd. All rights reserved.
             </p>
+          </div>
+
+          {/* Platform Hub Links */}
+          <div>
+            <h3 className="font-semibold text-base mb-4 text-white">Platform</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/jobs" className="text-background/70 hover:text-background transition-colors text-sm">
+                  Search Verified Jobs
+                </Link>
+              </li>
+              <li>
+                <Link to="/resume" className="text-background/70 hover:text-background transition-colors text-sm">
+                  AI Resume Builder
+                </Link>
+              </li>
+              <li>
+                <Link to="/colleges" className="text-background/70 hover:text-background transition-colors text-sm">
+                  Indian Colleges &amp; Universities
+                </Link>
+              </li>
+              <li>
+                <Link to="/learning" className="text-background/70 hover:text-background transition-colors text-sm">
+                  Career Learning Hub
+                </Link>
+              </li>
+              <li>
+                <Link to="/passport" className="text-background/70 hover:text-background transition-colors text-sm">
+                  Career Passport
+                </Link>
+              </li>
+              <li>
+                <Link to="/network" className="text-background/70 hover:text-background transition-colors text-sm">
+                  Professional Network
+                </Link>
+              </li>
+            </ul>
           </div>
 
           {/* Company Links */}

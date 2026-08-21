@@ -32,14 +32,14 @@ export const AppleHeroSection = () => {
               </div>
               
               <h1 className="text-display font-heading tracking-tight text-foreground leading-[1.1]">
-                Powering Global
+                AI-Powered Platform for
                 <span className="block font-medium bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                  Career Growth
+                  Jobs, Skills & Higher Ed
                 </span>
               </h1>
               
               <p className="text-body-large text-muted-foreground font-light leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                Your all-in-one platform for networking, skill-building, and discovering career opportunities tailored to your unique journey.
+                Search verified jobs, build ATS-optimized resumes, explore 10,250+ Indian colleges, and fast-track your career with AI-guided learning and verified skill passports.
               </p>
             </div>
 
