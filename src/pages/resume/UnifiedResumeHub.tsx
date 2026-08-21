@@ -46,7 +46,16 @@ export default function UnifiedResumeHub() {
   };
 
   useEffect(() => {
+    try {
+      if ('scrollRestoration' in window.history) {
+        window.history.scrollRestoration = 'manual';
+      }
+    } catch (e) {}
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    const timer = setTimeout(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }, 80);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleTailorSubmit = () => {
