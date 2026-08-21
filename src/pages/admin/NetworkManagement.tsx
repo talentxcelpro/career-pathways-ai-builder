@@ -11,6 +11,8 @@ import { useRealtimeNetworkManagement } from '@/hooks/useRealtimeNetworkManageme
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 
+import { NetworkAutoPostControl } from '@/components/admin/NetworkAutoPostControl';
+
 const NetworkManagement = () => {
   const {
     searchTerm,
@@ -34,9 +36,12 @@ const NetworkManagement = () => {
   return (
     <UnifiedAdminLayout 
       title="Network Management" 
-      description="Real-time network monitoring and content moderation"
+      description="Real-time network monitoring, autonomous human posting engine, and content moderation"
     >
       <div className="space-y-8">
+        {/* Autonomous Micro-Post Engine Cockpit */}
+        <NetworkAutoPostControl />
+
         {/* Real-time Stats */}
         <RealtimeNetworkStats 
           networkStats={networkStats} 
