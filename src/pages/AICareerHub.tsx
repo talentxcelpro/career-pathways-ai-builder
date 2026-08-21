@@ -2,132 +2,159 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Brain, Target, TrendingUp, Calculator, MapPin, BookOpen, Zap } from 'lucide-react';
+import { Brain, Target, TrendingUp, Calculator, MapPin, Sparkles, ArrowRight, Zap, CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { SEOHead } from '@/components/seo/SEOHead';
 
 const AICareerHub = () => {
   const aiTools = [
     {
       id: 'co-pilot',
-      title: 'AI Career Co-Pilot',
-      description: 'Your personal AI assistant for career growth and opportunities',
-      icon: <Brain className="h-8 w-8" />,
-      features: ['Daily career insights', 'Job recommendations', 'Skill gap analysis', 'Career roadmaps'],
-      link: '/career-map/ai-copilot',
+      title: 'AI Career Co-Pilot & Roadmap',
+      description: 'Your personal AI assistant for career progression, skill gap diagnostics, and milestone planning.',
+      icon: <Brain className="h-7 w-7 text-indigo-600 dark:text-indigo-400" />,
+      features: ['Personalized career roadmap', 'Target role progression', 'Skill gap analysis', 'Milestone action plan'],
+      link: '/career-map/ai-roadmap-builder',
       badge: 'Popular'
     },
     {
       id: 'job-match',
-      title: 'Job Match Engine',
-      description: 'AI-powered job matching with detailed compatibility scores',
-      icon: <Target className="h-8 w-8" />,
-      features: ['97% match accuracy', 'Skills analysis', 'Salary insights', 'Company fit'],
-      link: '/career-map/job-match-engine',
-      badge: 'New'
+      title: 'AI Job Match GPT',
+      description: 'Intelligent job fit scoring and role alignment engine with salary benchmarks and ATS keyword insights.',
+      icon: <Target className="h-7 w-7 text-blue-600 dark:text-blue-400" />,
+      features: ['97% match accuracy', 'Skills compatibility', 'Salary benchmark analysis', 'Company culture fit'],
+      link: '/tools/ai-job-match-gpt',
+      badge: 'High Intent'
     },
     {
       id: 'pathfinder',
-      title: 'Career Pathfinder',
-      description: 'Create personalized roadmaps to achieve your career goals',
-      icon: <MapPin className="h-8 w-8" />,
-      features: ['Goal-based planning', 'Milestone tracking', 'Market insights', 'Timeline optimization'],
-      link: '/career-map/pathfinder'
+      title: 'Global Career & Education Pathway',
+      description: 'Interactive 3-step AI wizard mapping your exact educational journey with verified ₹0 tuition & scholarships.',
+      icon: <MapPin className="h-7 w-7 text-emerald-600 dark:text-emerald-400" />,
+      features: ['1,509 verified universities', 'Global scholarship match', 'Cost-to-earn projections', 'Step-by-step career path'],
+      link: '/colleges/career-pathway',
+      badge: 'Star Feature'
     },
     {
-      id: 'roi-engine',
-      title: 'Learning ROI Engine',
-      description: 'Calculate return on investment for courses and certifications',
-      icon: <Calculator className="h-8 w-8" />,
-      features: ['ROI analysis', 'Salary projections', 'Market data', 'Risk assessment'],
-      link: '/career-map/learning-roi'
+      id: 'skill-assessment',
+      title: 'Skill Diagnostic & Assessment Engine',
+      description: 'Timed technical assessment with weighted scoring, category breakdown, and personalized learning milestones.',
+      icon: <Calculator className="h-7 w-7 text-purple-600 dark:text-purple-400" />,
+      features: ['10-question technical diagnostic', 'Weighted category scoring', 'Instant answer review', 'Personalized learning curve'],
+      link: '/tools/skill-assessment-engine',
+      badge: 'Interactive'
     }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <div className="container mx-auto px-4 py-12">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
-            AI Career Intelligence Hub
-          </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Leverage cutting-edge AI technology to accelerate your career growth with personalized insights, 
-            intelligent job matching, and data-driven career planning.
-          </p>
-        </div>
+    <>
+      <SEOHead
+        title="AI Career Intelligence Hub | TalentXcel - Next-Gen Career & Learning Tools"
+        description="Accelerate your career trajectory with TalentXcel's AI Career Intelligence Hub. Discover roadmaps, job matching, education pathways, and skill assessments."
+        canonical="https://talentxcel.in/ai-career-hub"
+      />
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-10 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto space-y-10">
+          {/* Header */}
+          <div className="text-center space-y-3 max-w-3xl mx-auto">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-semibold">
+              <Sparkles className="w-3.5 h-3.5" />
+              TalentXcel AI Career Intelligence Suite
+            </div>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+              AI Career Intelligence Hub
+            </h1>
+            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed">
+              Leverage cutting-edge AI engines to accelerate your career trajectory with data-driven pathfinding, 
+              intelligent job matching, and real-time skill assessments.
+            </p>
+          </div>
 
-        {/* AI Tools Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-          {aiTools.map((tool) => (
-            <Card key={tool.id} className="relative hover:shadow-xl transition-all duration-300 group">
-              {tool.badge && (
-                <div className="absolute -top-3 -right-3 z-10">
-                  <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white">
-                    {tool.badge}
-                  </Badge>
-                </div>
-              )}
-              <CardHeader className="pb-4">
-                <div className="flex items-center space-x-4">
-                  <div className="p-3 bg-gradient-to-br from-blue-100 to-purple-100 rounded-xl group-hover:from-blue-200 group-hover:to-purple-200 transition-colors">
-                    {tool.icon}
+          {/* AI Tools Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {aiTools.map((tool) => (
+              <Card key={tool.id} className="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all hover:border-indigo-300 dark:hover:border-indigo-700 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-start justify-between gap-4 mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center shrink-0 shadow-2xs">
+                      {tool.icon}
+                    </div>
+                    {tool.badge && (
+                      <Badge className="bg-indigo-600 text-white font-bold text-[10px] uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-2xs">
+                        {tool.badge}
+                      </Badge>
+                    )}
                   </div>
-                  <div>
-                    <CardTitle className="text-xl">{tool.title}</CardTitle>
-                    <CardDescription className="text-base mt-1">
-                      {tool.description}
-                    </CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-2">
-                    {tool.features.map((feature, index) => (
-                      <div key={index} className="flex items-center text-sm text-gray-600">
-                        <Zap className="h-3 w-3 mr-2 text-blue-500" />
-                        {feature}
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight mb-1.5">
+                    {tool.title}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-5">
+                    {tool.description}
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-6 pt-4 border-t border-slate-100 dark:border-slate-800">
+                    {tool.features.map((feature, idx) => (
+                      <div key={idx} className="flex items-center text-xs text-slate-600 dark:text-slate-300 font-medium">
+                        <CheckCircle2 className="h-3.5 w-3.5 mr-1.5 text-indigo-500 shrink-0" />
+                        <span className="truncate">{feature}</span>
                       </div>
                     ))}
                   </div>
-                  <Link to={tool.link}>
-                    <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                      Launch {tool.title}
-                    </Button>
-                  </Link>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
 
-        {/* Stats Section */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-12">
-          <h2 className="text-2xl font-bold text-center text-gray-900 mb-8">
-            AI-Powered Career Success
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-blue-600 mb-2">96.7%</div>
-              <div className="text-sm text-gray-600">Match Accuracy</div>
+                <Link to={tool.link} className="w-full">
+                  <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm rounded-xl h-10 shadow-xs flex items-center justify-center gap-2 group transition-all">
+                    Launch {tool.title}
+                    <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+                  </Button>
+                </Link>
+              </Card>
+            ))}
+          </div>
+
+          {/* Explore All 26 Tools Banner */}
+          <div className="p-6 rounded-2xl bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-950 text-white border border-indigo-800/60 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div className="space-y-1 text-center sm:text-left">
+              <div className="font-extrabold text-lg sm:text-xl tracking-tight">
+                Looking for more specialized career tools?
+              </div>
+              <p className="text-xs sm:text-sm text-indigo-200">
+                Explore all 26 purpose-built AI tools across Analytics, Resume, Interview, Job Search, and Networking.
+              </p>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-green-600 mb-2">450%</div>
-              <div className="text-sm text-gray-600">Average ROI</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-purple-600 mb-2">89%</div>
-              <div className="text-sm text-gray-600">Career Goal Achievement</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-orange-600 mb-2">18 Days</div>
-              <div className="text-sm text-gray-600">Average Time to Hire</div>
+            <Link to="/tools" className="shrink-0 w-full sm:w-auto">
+              <Button variant="secondary" className="w-full sm:w-auto bg-white text-slate-950 hover:bg-slate-100 font-bold text-xs sm:text-sm px-6 h-10 rounded-xl shadow-xs">
+                View All 26 Tools
+              </Button>
+            </Link>
+          </div>
+
+          {/* Stats Section */}
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-xs">
+            <h2 className="text-lg sm:text-xl font-bold text-center text-slate-900 dark:text-white mb-6 tracking-tight">
+              TalentXcel AI Career Performance Metrics
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+              <div className="space-y-1">
+                <div className="text-2xl sm:text-3xl font-extrabold text-indigo-600 dark:text-indigo-400">96.7%</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">Job Match Accuracy</div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-2xl sm:text-3xl font-extrabold text-emerald-600 dark:text-emerald-400">450%</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">Average Career ROI</div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-2xl sm:text-3xl font-extrabold text-purple-600 dark:text-purple-400">89%</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">Milestone Completion</div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-2xl sm:text-3xl font-extrabold text-amber-600 dark:text-amber-400">1,509+</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">Verified Institutions</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

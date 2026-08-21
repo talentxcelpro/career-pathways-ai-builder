@@ -1,4 +1,5 @@
 import { lazy, Suspense } from 'react';
+import { Navigate } from 'react-router-dom';
 
 import { Compass, TrendingUp, Users, Shield, Target } from "lucide-react";
 
@@ -51,9 +52,27 @@ export const careerMapRoutes = [
     isPublic: true,
   },
   {
-    title: "Roadmap Detail",
-    to: "/career-map/:id",
-    page: <Suspense fallback={null}><RoadmapDetail /></Suspense>,
+    title: "AI Career Co-Pilot Redirect",
+    to: "/career-map/ai-copilot",
+    page: <Navigate to="/career-map/ai-roadmap-builder" replace />,
+    isPublic: true,
+  },
+  {
+    title: "Job Match Engine Redirect",
+    to: "/career-map/job-match-engine",
+    page: <Navigate to="/tools/ai-job-match-gpt" replace />,
+    isPublic: true,
+  },
+  {
+    title: "Career Pathfinder Redirect",
+    to: "/career-map/pathfinder",
+    page: <Navigate to="/colleges/career-pathway" replace />,
+    isPublic: true,
+  },
+  {
+    title: "Learning ROI Redirect",
+    to: "/career-map/learning-roi",
+    page: <Navigate to="/tools/skill-assessment-engine" replace />,
     isPublic: true,
   },
   {
@@ -78,6 +97,12 @@ export const careerMapRoutes = [
     title: "Career Switch Evaluator",
     to: "/career-map/switch",
     page: <Suspense fallback={null}><CareerSwitch /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "Roadmap Detail",
+    to: "/career-map/:id",
+    page: <Suspense fallback={null}><RoadmapDetail /></Suspense>,
     isPublic: true,
   },
   {
