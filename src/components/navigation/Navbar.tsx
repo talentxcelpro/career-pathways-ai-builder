@@ -105,17 +105,18 @@ export const Navbar = () => {
           
           {/* Brand Logo - Official TalentXcel Logo & High Contrast Text */}
           <div className="flex items-center shrink-0 mr-4 sm:mr-6">
-            <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
-              <div className="w-8 h-8 rounded-lg bg-white/10 p-1 flex items-center justify-center border border-white/20 group-hover:scale-105 transition-transform shrink-0 shadow-sm">
+            <Link to="/" className="flex items-center gap-3 shrink-0 group">
+              <div className="w-9 h-9 rounded-xl bg-white p-1.5 flex items-center justify-center shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform shrink-0">
                 <img 
                   src="/talentxcel-official-logo.png" 
                   alt="TalentXcel" 
-                  className="w-6 h-6 object-contain shrink-0"
+                  className="w-full h-full object-contain shrink-0"
                 />
               </div>
-              <span className="text-base sm:text-lg font-black tracking-tight whitespace-nowrap flex items-center" style={{ color: '#ffffff' }}>
-                Talent<span className="font-black" style={{ color: '#38bdf8' }}>Xcel</span>
-              </span>
+              <div className="flex items-center text-lg sm:text-xl font-black tracking-tight select-none">
+                <span className="text-white font-black" style={{ color: '#FFFFFF' }}>Talent</span>
+                <span className="text-sky-400 font-black ml-0.5" style={{ color: '#38BDF8' }}>Xcel</span>
+              </div>
             </Link>
           </div>
 
