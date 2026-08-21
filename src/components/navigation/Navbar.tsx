@@ -93,8 +93,9 @@ export const Navbar = () => {
     return null;
   }
 
-  // Hide navbar on Resume Builder — it has its own integrated header
-  if (location.pathname.startsWith('/resume')) {
+  // Hide navbar only on standalone full-screen canvas editors that have their own custom header
+  const isFullScreenEditor = location.pathname.startsWith('/resume/editor/') || location.pathname.startsWith('/resume/wizard');
+  if (isFullScreenEditor) {
     return null;
   }
 

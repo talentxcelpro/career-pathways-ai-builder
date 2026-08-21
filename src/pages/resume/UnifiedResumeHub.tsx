@@ -45,6 +45,10 @@ export default function UnifiedResumeHub() {
     coverUrl: profile?.cover_image_url || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80'
   };
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, []);
+
   const handleTailorSubmit = () => {
     if (!targetRole.trim()) {
       navigate('/resume/build');
