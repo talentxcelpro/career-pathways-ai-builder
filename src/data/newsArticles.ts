@@ -1,4 +1,4 @@
-﻿import { NewsArticle } from '@/types/news';
+import { NewsArticle } from '@/types/news';
 
 export const FOUNDATION_NEWS_ARTICLES: NewsArticle[] = [
   {
@@ -22,7 +22,7 @@ export const FOUNDATION_NEWS_ARTICLES: NewsArticle[] = [
       'TalentXcel unifies 6 core product hubs: Jobs, Resume, Colleges, Learning, Career Passport, and Network.',
       'Includes a curated catalog of 10,250+ Indian colleges and accredited global degree programs.',
       'Introduces verifiable digital Career Passports to validate candidate skills and certifications.',
-      'Operated officially by TalentXcel Services Pvt Ltd with integrated CHATR™ real-time communication.'
+      'Operated officially by TalentXcel Services Pvt Ltd with integrated CHATR real-time communication.'
     ],
     content: `
       <h2>A New Paradigm for Career Acceleration</h2>
@@ -38,7 +38,7 @@ export const FOUNDATION_NEWS_ARTICLES: NewsArticle[] = [
         <li><strong>10,250+ Indian Colleges Hub:</strong> Comprehensive database of NIRF rankings, program costs, accreditation details, and AI career pathways.</li>
         <li><strong>Free Career Learning Hub:</strong> Aggregated directory of 2,650+ verified free university courses and accredited certifications.</li>
         <li><strong>Verifiable Career Passport:</strong> Cryptographically verified digital credentials and QR-enabled portfolios.</li>
-        <li><strong>Universal Professional Network:</strong> Industry feeds, discussions, and verified peer networking powered by CHATR™.</li>
+        <li><strong>Universal Professional Network:</strong> Industry feeds, discussions, and verified peer networking powered by CHATR.</li>
       </ul>
 
       <h2>Commitment to Transparency & Data Integrity</h2>
@@ -235,8 +235,8 @@ export const FOUNDATION_NEWS_ARTICLES: NewsArticle[] = [
   {
     id: 'art-005',
     slug: 'chatr-communication-suite-integration',
-    title: 'TalentXcel Services Pvt Ltd Integrates CHATR™ Real-Time Collaboration Across Professional Network',
-    summary: 'TalentXcel announces deep integration with CHATR™ (chatr.chat / chatrchat.in) to power seamless direct messaging, group discussions, and recruiter interviews.',
+    title: 'TalentXcel Services Pvt Ltd Integrates CHATR Real-Time Collaboration Across Professional Network',
+    summary: 'TalentXcel announces deep integration with CHATR (chatr.chat / chatrchat.in) to power seamless direct messaging, group discussions, and recruiter interviews.',
     category: 'Press & Media',
     publishedAt: '2026-08-17T10:00:00.000Z',
     author: {
@@ -248,13 +248,13 @@ export const FOUNDATION_NEWS_ARTICLES: NewsArticle[] = [
     readTime: '3 min read',
     tags: ['CHATR', 'Real-Time Communication', 'Press Release', 'Partnerships'],
     keyTakeaways: [
-      'CHATR™ is an official brand and communication service under TalentXcel Services Pvt Ltd.',
+      'CHATR is an official brand and communication service under TalentXcel Services Pvt Ltd.',
       'Enables low-latency candidate-employer video consultations, webinars, and messaging.',
       'Operates seamlessly across chatr.chat and chatrchat.in domains.'
     ],
     content: `
-      <h2>Official Integration of the CHATR™ Communication Suite</h2>
-      <p><strong>TalentXcel Services Pvt Ltd</strong> is pleased to announce the full architectural integration of its real-time communications brand, <strong>CHATR™</strong> (accessible at <a href="https://chatr.chat" target="_blank" rel="noopener noreferrer">chatr.chat</a> and <a href="https://chatrchat.in" target="_blank" rel="noopener noreferrer">chatrchat.in</a>), into the TalentXcel professional ecosystem.</p>
+      <h2>Official Integration of the CHATR Communication Suite</h2>
+      <p><strong>TalentXcel Services Pvt Ltd</strong> is pleased to announce the full architectural integration of its real-time communications brand, <strong>CHATR</strong> (accessible at <a href="https://chatr.chat" target="_blank" rel="noopener noreferrer">chatr.chat</a> and <a href="https://chatrchat.in" target="_blank" rel="noopener noreferrer">chatrchat.in</a>), into the TalentXcel professional ecosystem.</p>
     `
   }
 ];

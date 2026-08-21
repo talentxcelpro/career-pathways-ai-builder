@@ -663,7 +663,7 @@ const NewsPage: React.FC = () => {
               { label: '10,250+ Colleges', sub: 'NIRF & Programs', icon: GraduationCap, href: '/colleges' },
               { label: 'Free Learning', sub: '2,650+ Courses', icon: BookOpen, href: '/learning' },
               { label: 'Career Passport', sub: 'Digital Identity', icon: ShieldCheck, href: '/passport' },
-              { label: 'Network & Feed', sub: 'Connect & CHATR™', icon: Globe, href: '/network' },
+              { label: 'Network & Feed', sub: 'Connect & CHATR', icon: Globe, href: '/network' },
             ].map((hub) => {
               const Icon = hub.icon;
               return (

@@ -140,7 +140,7 @@ export const ChatrServiceSection: React.FC = () => {
             © 2026 TalentXcel Services Pvt Ltd
           </p>
           <p className="text-xs text-muted-foreground/70">
-            CHATR™ (chatr.chat / chatrchat.in) is an official brand and communication service operated by TalentXcel Services Pvt Ltd.
+            CHATR (chatr.chat / chatrchat.in) is an official brand and communication service operated by TalentXcel Services Pvt Ltd.
           </p>
         </div>
       </div>
