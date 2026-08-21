@@ -58,9 +58,9 @@ export const ProfileSidebarNav: React.FC = () => {
       title: "GROWTH & REWARDS",
       items: [
         { label: 'Analytics & Insights', icon: TrendingUp, path: '/profile/analytics' },
-        { label: 'AI Career Coach', icon: Bot, path: '/resume/build?workspace=ai-improve' },
-        { label: 'Rewards & TXC', icon: Award, path: '/earn-txc' },
-        { label: 'Refer & Earn', icon: Share2, path: '/referrals' },
+        { label: 'AI Career Coach', icon: Bot, path: '/ai-agent' },
+        { label: 'Rewards & TXC', icon: Award, path: '/txc/mining' },
+        { label: 'Refer & Earn', icon: Share2, path: '/referral' },
       ]
     }
   ];
@@ -108,7 +108,7 @@ export const ProfileSidebarNav: React.FC = () => {
 
         <div className="pt-2">
           <Button 
-            onClick={() => navigate('/employer')} 
+            onClick={() => navigate('/jobs/post')} 
             className="w-full rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold shadow-md flex items-center justify-center gap-2 py-4 text-xs"
           >
             <Plus className="h-4 w-4" />
