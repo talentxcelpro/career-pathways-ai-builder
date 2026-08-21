@@ -36,38 +36,9 @@ export const useCriticalRenderingPath = (options: CriticalRenderingOptions = {})
     document.head.insertBefore(style, document.head.firstChild);
   }, [inlineCriticalCSS]);
 
-  // Optimize web font loading
+  // Optimize web font loading with system fonts
   const optimizeFontLoading = useCallback(() => {
-    if (!optimizeWebFonts) return;
-
-    // Preload critical fonts
-    const fontPreloads = [
-      { href: '/fonts/inter-var.woff2', type: 'font/woff2' },
-      { href: '/fonts/inter-var-latin.woff2', type: 'font/woff2' }
-    ];
-
-    fontPreloads.forEach(({ href, type }) => {
-      const link = document.createElement('link');
-      link.rel = 'preload';
-      link.href = href;
-      link.as = 'font';
-      link.type = type;
-      link.crossOrigin = 'anonymous';
-      document.head.appendChild(link);
-    });
-
-    // Use font-display: swap for non-critical fonts
-    const style = document.createElement('style');
-    style.textContent = `
-      @font-face {
-        font-family: 'Inter';
-        font-style: normal;
-        font-weight: 100 900;
-        font-display: swap;
-        src: url('/fonts/inter-var.woff2') format('woff2');
-      }
-    `;
-    document.head.appendChild(style);
+    // System font stack is used natively; no external network font download required
   }, [optimizeWebFonts]);
 
   // Defer non-critical resources
