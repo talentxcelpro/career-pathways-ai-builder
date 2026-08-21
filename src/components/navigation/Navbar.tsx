@@ -26,9 +26,9 @@ import {
   Sparkles
 } from "lucide-react";
 import { useAdminAccess } from '@/hooks/useAdminAccess';
-import { useEmployerAccess } from '@/hooks/useEmployerAccess';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { useMobileDetection } from '@/hooks/useMobileDetection';
+import { TalentXcelLogo } from '@/components/common/TalentXcelLogo';
 
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -103,20 +103,10 @@ export const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-14">
           
-          {/* Brand Logo - Official TalentXcel Logo & High Contrast Text */}
+          {/* Executive Brand Identity */}
           <div className="flex items-center shrink-0 mr-4 sm:mr-6">
-            <Link to="/" className="flex items-center gap-3 shrink-0 group">
-              <div className="w-9 h-9 rounded-xl bg-white p-1.5 flex items-center justify-center shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform shrink-0">
-                <img 
-                  src="/talentxcel-official-logo.png" 
-                  alt="TalentXcel" 
-                  className="w-full h-full object-contain shrink-0"
-                />
-              </div>
-              <div className="flex items-center text-lg sm:text-xl font-black tracking-tight select-none">
-                <span className="text-white font-black" style={{ color: '#FFFFFF' }}>Talent</span>
-                <span className="text-sky-400 font-black ml-0.5" style={{ color: '#38BDF8' }}>Xcel</span>
-              </div>
+            <Link to="/" className="flex items-center shrink-0">
+              <TalentXcelLogo iconSize={26} textSize="text-base sm:text-lg" theme="dark" />
             </Link>
           </div>
 

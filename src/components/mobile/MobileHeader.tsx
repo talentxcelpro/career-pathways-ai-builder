@@ -16,7 +16,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { MobileSidebar } from './MobileSidebar';
 import { cn } from '@/lib/utils';
-import talentxcelLogo from '@/assets/talentxcel-logo.png';
+import { TalentXcelLogo } from '@/components/common/TalentXcelLogo';
 
 export const MobileHeader = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -89,19 +89,11 @@ export const MobileHeader = () => {
             <Menu className="icon-apple-sm" />
           </Button>
 
-          {/* Center - Official TalentXcel Logo */}
-          <div className="flex-1 flex justify-center items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-white p-1 flex items-center justify-center shadow-xs shrink-0">
-              <img 
-                src="/talentxcel-official-logo.png" 
-                alt="TalentXcel" 
-                className="w-full h-full object-contain shrink-0"
-              />
-            </div>
-            <div className="flex items-center text-sm font-black tracking-tight select-none">
-              <span className="text-white font-black" style={{ color: '#FFFFFF' }}>Talent</span>
-              <span className="text-sky-400 font-black ml-0.5" style={{ color: '#38BDF8' }}>Xcel</span>
-            </div>
+          {/* Center - Executive TalentXcel Logo */}
+          <div className="flex-1 flex justify-center items-center">
+            <Link to="/" className="flex items-center">
+              <TalentXcelLogo iconSize={22} textSize="text-sm font-black" theme="auto" />
+            </Link>
           </div>
 
           {/* Right - Compact Actions */}
