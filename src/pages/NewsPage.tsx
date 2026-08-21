@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
@@ -357,16 +357,20 @@ const NewsPage: React.FC = () => {
 
   // ─────────────────────────────────────────────────────────────
   // NEWS HUB & AUTHORITY ARCHITECTURE VIEW (/news)
-  // ─────────────────────────────────────────────────────────────
-  const featuredArticle = (articles && articles.length > 0) 
-    ? (articles.find(a => a.isFeatured) || articles[0]) 
-    : undefined;
-  const gridArticles = (articles && articles.length > 0 && featuredArticle)
-    ? articles.filter(a => a.id !== featuredArticle.id)
-    : (articles || []);
+  // The 3 sidebar brief articles next to featured hero
+  const topStories = (articles && articles.length > 0 && featuredArticle)
+    ? articles.filter(a => a.id !== featuredArticle.id).slice(0, 3)
+    : [];
+
+  // Remaining articles in the bottom grid
+  const remainingArticles = (articles && articles.length > 0 && featuredArticle)
+    ? (searchQuery 
+        ? articles 
+        : articles.filter(a => a.id !== featuredArticle.id && !topStories.some(ts => ts.id === a.id)))
+    : [];
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pb-20 w-full">
       <Helmet>
         <title>News & Career Intelligence | TalentXcel</title>
         <meta 
@@ -402,47 +406,49 @@ const NewsPage: React.FC = () => {
         </script>
       </Helmet>
 
-      {/* Header Banner */}
-      <section className="border-b bg-gradient-to-b from-card to-background py-12 px-4">
-        <div className="max-w-6xl mx-auto text-center space-y-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-wider">
-            <Newspaper className="h-3.5 w-3.5" />
+      {/* Hero Header Section */}
+      <section className="border-b bg-gradient-to-b from-card via-card/80 to-background py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-[1360px] mx-auto text-center space-y-4">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-extrabold uppercase tracking-wider">
+            <Newspaper className="h-4 w-4" />
             Authority & Intelligence Layer
           </div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-foreground">
-            News & Career Intelligence
+          
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-[1.1]">
+            NEWS & CAREER INTELLIGENCE
           </h1>
-          <p className="max-w-2xl mx-auto text-muted-foreground text-sm sm:text-base leading-relaxed">
+          
+          <p className="max-w-3xl mx-auto text-muted-foreground text-sm sm:text-base md:text-lg leading-relaxed">
             First-party company announcements, empirical hiring demand trends, higher education insights, and platform milestones.
           </p>
 
-          {/* Search & Category Filter Controls */}
-          <div className="max-w-md mx-auto pt-4 relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          {/* Search Bar */}
+          <div className="max-w-xl mx-auto pt-4 relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input 
               type="search"
-              placeholder="Search news, skills, hiring trends..."
+              placeholder="Search news, skills, hiring trends, scholarships..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 h-11 rounded-xl bg-card border-border/80 text-sm shadow-sm"
+              className="pl-11 pr-10 h-12 rounded-2xl bg-card border-border/80 text-sm shadow-sm focus-visible:ring-primary"
             />
           </div>
         </div>
       </section>
 
-      {/* Category Tabs */}
-      <section className="border-b bg-card/40 sticky top-16 z-20 backdrop-blur-md">
-        <div className="max-w-6xl mx-auto px-4 flex items-center gap-2 overflow-x-auto py-3 no-scrollbar">
+      {/* Category Navigation Bar */}
+      <section className="border-b bg-card/60 sticky top-16 z-20 backdrop-blur-md">
+        <div className="w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-start sm:justify-center gap-2 overflow-x-auto py-3.5 no-scrollbar">
           {CATEGORIES.map((cat) => {
             const isSelected = selectedCategory === cat;
             return (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`whitespace-nowrap px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                className={`whitespace-nowrap px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
                   isSelected 
-                    ? 'bg-primary text-primary-foreground shadow-sm' 
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
+                    ? 'bg-primary text-primary-foreground shadow-md' 
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/70'
                 }`}
               >
                 {cat}
@@ -451,20 +457,17 @@ const NewsPage: React.FC = () => {
           })}
         </div>
       </section>
-
       {/* Main Content Area */}
-      <main className="max-w-6xl mx-auto px-4 py-10 space-y-12">
+      <main className="w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 space-y-14">
         {isListLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-pulse">
-            <div className="md:col-span-3 h-72 bg-muted rounded-2xl" />
-            <div className="h-64 bg-muted rounded-xl" />
-            <div className="h-64 bg-muted rounded-xl" />
-            <div className="h-64 bg-muted rounded-xl" />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-pulse">
+            <div className="lg:col-span-8 h-96 bg-muted rounded-3xl" />
+            <div className="lg:col-span-4 h-96 bg-muted rounded-3xl" />
           </div>
         ) : articles.length === 0 ? (
           <div className="py-20 text-center space-y-4">
             <Newspaper className="h-12 w-12 text-muted-foreground mx-auto" />
-            <h2 className="text-xl font-bold text-foreground">No articles match your search</h2>
+            <h2 className="text-2xl font-bold text-foreground">No articles match your search</h2>
             <p className="text-sm text-muted-foreground max-w-sm mx-auto">
               Try selecting another category tab or clearing the search query.
             </p>
@@ -478,114 +481,161 @@ const NewsPage: React.FC = () => {
           </div>
         ) : (
           <>
-            {/* Featured Article Hero Spotlight */}
+            {/* Top Featured Section (Left: Hero Feature | Right: Top Briefs) */}
             {featuredArticle && !searchQuery && (
-              <section>
+              <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-stretch">
+                {/* Main Featured Article (Left 7 columns) */}
                 <Link 
                   to={`/news/${featuredArticle.slug}`}
-                  className="group grid grid-cols-1 lg:grid-cols-12 gap-6 p-6 sm:p-8 rounded-2xl bg-card border border-border/80 hover:border-primary/40 hover:shadow-lg transition-all"
+                  className="group lg:col-span-7 flex flex-col justify-between p-6 sm:p-8 rounded-3xl bg-card border border-border/80 hover:border-primary/40 hover:shadow-xl transition-all overflow-hidden"
                 >
-                  <div className="lg:col-span-7 flex flex-col justify-between space-y-4">
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2">
-                        <Badge className="bg-primary text-primary-foreground text-xs font-bold px-3 py-0.5">
-                          Featured Story
-                        </Badge>
-                        <Badge variant="secondary" className="text-xs font-semibold">
-                          {featuredArticle.category}
-                        </Badge>
-                        <span className="text-xs text-muted-foreground flex items-center gap-1">
-                          <Clock className="h-3 w-3" /> {featuredArticle.readTime}
-                        </span>
-                      </div>
-
-                      <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground group-hover:text-primary transition-colors leading-tight">
-                        {featuredArticle.title}
-                      </h2>
-
-                      <p className="text-sm sm:text-base text-muted-foreground line-clamp-3 leading-relaxed">
-                        {featuredArticle.summary}
-                      </p>
+                  <div className="space-y-4">
+                    <div className="relative h-64 sm:h-72 w-full rounded-2xl overflow-hidden bg-muted">
+                      <img 
+                        src={featuredArticle.imageUrl} 
+                        alt={featuredArticle.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="eager"
+                      />
+                      <Badge className="absolute top-3 left-3 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 shadow-md">
+                        Featured Story
+                      </Badge>
+                      <Badge className="absolute top-3 right-3 bg-black/70 backdrop-blur-md text-white text-xs font-bold">
+                        {featuredArticle.category}
+                      </Badge>
                     </div>
 
-                    <div className="flex items-center justify-between pt-4 border-t border-border/40">
-                      <div className="flex items-center gap-2.5">
-                        <img 
-                          src={featuredArticle.author?.avatar || '/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png'} 
-                          alt={featuredArticle.author?.name || 'Author'}
-                          className="w-8 h-8 rounded-full border border-primary/20"
-                        />
-                        <div className="text-xs">
-                          <p className="font-bold text-foreground leading-none">{featuredArticle.author?.name || 'TalentXcel'}</p>
-                          <p className="text-muted-foreground text-[10px] mt-0.5">{featuredArticle.publishedAt ? new Date(featuredArticle.publishedAt).toLocaleDateString() : ''}</p>
-                        </div>
-                      </div>
-
-                      <span className="text-xs font-bold text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                        Read Story <ArrowRight className="h-3.5 w-3.5" />
-                      </span>
+                    <div className="flex items-center gap-2.5 text-xs text-muted-foreground font-medium pt-1">
+                      <span>{featuredArticle.publishedAt ? new Date(featuredArticle.publishedAt).toLocaleDateString() : ''}</span>
+                      <span>•</span>
+                      <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {featuredArticle.readTime}</span>
                     </div>
+
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground group-hover:text-primary transition-colors leading-tight">
+                      {featuredArticle.title}
+                    </h2>
+
+                    <p className="text-sm sm:text-base text-muted-foreground line-clamp-3 leading-relaxed">
+                      {featuredArticle.summary}
+                    </p>
                   </div>
 
-                  <div className="lg:col-span-5 rounded-xl overflow-hidden border bg-muted flex items-center">
-                    <img 
-                      src={featuredArticle.imageUrl} 
-                      alt={featuredArticle.title}
-                      className="w-full h-full min-h-[220px] max-h-[300px] object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
+                  <div className="flex items-center justify-between pt-6 mt-4 border-t border-border/60">
+                    <div className="flex items-center gap-3">
+                      <img 
+                        src={featuredArticle.author?.avatar || '/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png'} 
+                        alt={featuredArticle.author?.name || 'Author'}
+                        className="w-9 h-9 rounded-full border border-primary/20"
+                      />
+                      <div className="text-xs">
+                        <p className="font-bold text-foreground leading-none">{featuredArticle.author?.name || 'TalentXcel'}</p>
+                        <p className="text-muted-foreground text-[11px] mt-0.5">{featuredArticle.author?.role || 'Platform Intelligence'}</p>
+                      </div>
+                    </div>
+
+                    <span className="text-xs sm:text-sm font-bold text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                      Read Full Story <ArrowRight className="h-4 w-4" />
+                    </span>
                   </div>
                 </Link>
+
+                {/* Top Stories Briefs (Right 5 columns) */}
+                <div className="lg:col-span-5 flex flex-col gap-4">
+                  <div className="flex items-center justify-between px-1">
+                    <h3 className="text-lg font-extrabold text-foreground flex items-center gap-2">
+                      <TrendingUp className="h-4 w-4 text-primary" /> Top Intelligence Briefs
+                    </h3>
+                  </div>
+
+                  <div className="flex flex-col gap-3.5 flex-1 justify-between">
+                    {topStories.map((story) => (
+                      <Link 
+                        key={story.id}
+                        to={`/news/${story.slug}`}
+                        className="group p-5 rounded-2xl bg-card border border-border/80 hover:border-primary/40 hover:shadow-md transition-all flex flex-col justify-between"
+                      >
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                            <Badge variant="secondary" className="text-[10px] font-bold px-2 py-0.5 bg-primary/10 text-primary">
+                              {story.category}
+                            </Badge>
+                            <span className="flex items-center gap-1 font-medium"><Clock className="h-3 w-3" /> {story.readTime}</span>
+                          </div>
+
+                          <h4 className="text-sm sm:text-base font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug">
+                            {story.title}
+                          </h4>
+
+                          <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                            {story.summary}
+                          </p>
+                        </div>
+
+                        <div className="pt-2 text-[11px] font-bold text-primary flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                          Read Brief <ChevronRight className="h-3.5 w-3.5" />
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
               </section>
             )}
 
-            {/* Articles Grid */}
+            {/* Latest Intelligence Grid Section */}
             <section className="space-y-6">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-extrabold text-foreground">
-                  {selectedCategory === 'All' ? 'Latest Intelligence & Updates' : `${selectedCategory} Articles`}
-                </h2>
-                <span className="text-xs text-muted-foreground font-semibold">
-                  {articles.length} {articles.length === 1 ? 'article' : 'articles'}
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/80 pb-4">
+                <div>
+                  <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
+                    {selectedCategory === 'All' ? 'Latest Intelligence & Analysis' : `${selectedCategory}`}
+                  </h2>
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
+                    Empirical data, verified institutional updates, and strategic platform capabilities.
+                  </p>
+                </div>
+                <span className="text-xs font-bold text-muted-foreground bg-muted/60 px-3 py-1 rounded-full">
+                  {articles.length} {articles.length === 1 ? 'Article' : 'Articles'}
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {(searchQuery ? articles : gridArticles).map((art) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                {(searchQuery ? articles : remainingArticles).map((art) => (
                   <Link 
                     key={art.id}
                     to={`/news/${art.slug}`}
-                    className="group flex flex-col justify-between rounded-2xl bg-card border border-border/80 hover:border-primary/40 hover:shadow-md transition-all overflow-hidden"
+                    className="group flex flex-col justify-between rounded-3xl bg-card border border-border/80 hover:border-primary/40 hover:shadow-xl transition-all overflow-hidden"
                   >
-                    <div className="relative h-44 w-full overflow-hidden bg-muted">
+                    <div className="relative h-48 sm:h-52 w-full overflow-hidden bg-muted">
                       <img 
                         src={art.imageUrl} 
                         alt={art.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         loading="lazy"
                       />
-                      <Badge className="absolute top-3 left-3 bg-black/70 backdrop-blur-md text-white text-[11px] font-bold">
+                      <Badge className="absolute top-3.5 left-3.5 bg-black/70 backdrop-blur-md text-white text-xs font-bold">
                         {art.category}
                       </Badge>
                     </div>
 
-                    <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
-                      <div>
-                        <div className="flex items-center gap-2 text-[11px] text-muted-foreground mb-2">
+                    <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
+                      <div className="space-y-2.5">
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
                           <span>{art.publishedAt ? new Date(art.publishedAt).toLocaleDateString() : ''}</span>
                           <span>•</span>
                           <span>{art.readTime}</span>
                         </div>
-                        <h3 className="text-base font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug">
+                        
+                        <h3 className="text-base sm:text-lg font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug">
                           {art.title}
                         </h3>
-                        <p className="text-xs text-muted-foreground line-clamp-2 mt-2 leading-relaxed">
+                        
+                        <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 leading-relaxed">
                           {art.summary}
                         </p>
                       </div>
 
-                      <div className="pt-3 border-t border-border/40 flex items-center justify-between text-xs font-semibold text-primary">
-                        <span>Read full article</span>
-                        <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
+                      <div className="pt-4 border-t border-border/60 flex items-center justify-between text-xs sm:text-sm font-bold text-primary">
+                        <span>Read full analysis</span>
+                        <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </div>
                   </Link>
@@ -596,34 +646,35 @@ const NewsPage: React.FC = () => {
         )}
 
         {/* Cross-Hub Authority Ecosystem Navigator */}
-        <section className="rounded-2xl p-8 bg-gradient-to-br from-card via-muted/30 to-card border border-border/80 shadow-sm space-y-6">
-          <div className="text-center max-w-xl mx-auto space-y-2">
-            <h3 className="text-xl font-bold text-foreground">
+        <section className="rounded-3xl p-8 sm:p-10 bg-gradient-to-br from-card via-muted/20 to-card border border-border/80 shadow-sm space-y-8">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <h3 className="text-2xl font-extrabold text-foreground">
               Explore the TalentXcel Platform Ecosystem
             </h3>
-            <p className="text-xs text-muted-foreground">
-              Discover verified opportunities, build ATS-ready resumes, and verify skills across India.
+            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+              Discover verified opportunities, build ATS-ready executive resumes, explore 10,250+ Indian colleges, and master high-demand skills.
             </p>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
             {[
-              { label: 'Search Jobs', icon: Building2, href: '/jobs' },
-              { label: 'Resume Builder', icon: Newspaper, href: '/resume' },
-              { label: '10,250+ Colleges', icon: GraduationCap, href: '/colleges' },
-              { label: 'Free Learning', icon: BookOpen, href: '/learning' },
-              { label: 'Career Passport', icon: ShieldCheck, href: '/passport' },
-              { label: 'Network & Feed', icon: Globe, href: '/network' },
+              { label: 'Jobs Discovery', sub: 'Verified Openings', icon: Building2, href: '/jobs' },
+              { label: 'Resume Builder', sub: '98% ATS Pass', icon: Newspaper, href: '/resume' },
+              { label: '10,250+ Colleges', sub: 'NIRF & Programs', icon: GraduationCap, href: '/colleges' },
+              { label: 'Free Learning', sub: '2,650+ Courses', icon: BookOpen, href: '/learning' },
+              { label: 'Career Passport', sub: 'Digital Identity', icon: ShieldCheck, href: '/passport' },
+              { label: 'Network & Feed', sub: 'Connect & CHATR™', icon: Globe, href: '/network' },
             ].map((hub) => {
               const Icon = hub.icon;
               return (
                 <Link
                   key={hub.href}
                   to={hub.href}
-                  className="flex flex-col items-center justify-center p-3.5 rounded-xl bg-card border border-border/60 hover:border-primary/40 hover:bg-primary/5 hover:text-primary transition-all text-center group"
+                  className="flex flex-col items-center justify-center p-5 rounded-2xl bg-card border border-border/60 hover:border-primary/40 hover:bg-primary/[0.03] hover:text-primary transition-all text-center group shadow-sm"
                 >
-                  <Icon className="h-5 w-5 text-muted-foreground group-hover:text-primary mb-1.5 transition-colors" />
-                  <span className="text-xs font-bold text-foreground group-hover:text-primary">{hub.label}</span>
+                  <Icon className="h-6 w-6 text-muted-foreground group-hover:text-primary mb-2 transition-colors" />
+                  <span className="text-xs sm:text-sm font-bold text-foreground group-hover:text-primary block">{hub.label}</span>
+                  <span className="text-[10px] text-muted-foreground block mt-0.5">{hub.sub}</span>
                 </Link>
               );
             })}
