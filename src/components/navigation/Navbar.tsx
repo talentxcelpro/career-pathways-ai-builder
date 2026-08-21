@@ -103,14 +103,18 @@ export const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-14">
           
-          {/* Brand Logo - High Contrast & Clearly Visible on Dark Navbar */}
+          {/* Brand Logo - Official TalentXcel Logo & High Contrast Text */}
           <div className="flex items-center shrink-0 mr-4 sm:mr-6">
             <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 p-0.5 shadow-md shadow-blue-500/20 flex items-center justify-center border border-white/20 group-hover:scale-105 transition-transform shrink-0">
-                <Sparkles className="w-4 h-4 text-white fill-white/20" />
+              <div className="w-8 h-8 rounded-lg bg-white/10 p-1 flex items-center justify-center border border-white/20 group-hover:scale-105 transition-transform shrink-0 shadow-sm">
+                <img 
+                  src="/talentxcel-official-logo.png" 
+                  alt="TalentXcel" 
+                  className="w-6 h-6 object-contain shrink-0"
+                />
               </div>
-              <span className="text-base sm:text-lg font-black tracking-tight text-white whitespace-nowrap drop-shadow-sm flex items-center">
-                Talent<span className="text-blue-400 font-black">Xcel</span>
+              <span className="text-base sm:text-lg font-black tracking-tight whitespace-nowrap flex items-center" style={{ color: '#ffffff' }}>
+                Talent<span className="font-black" style={{ color: '#38bdf8' }}>Xcel</span>
               </span>
             </Link>
           </div>

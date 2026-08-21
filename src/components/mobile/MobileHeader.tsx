@@ -89,13 +89,17 @@ export const MobileHeader = () => {
             <Menu className="icon-apple-sm" />
           </Button>
 
-          {/* Center - Compact TalentXcel Logo */}
-          <div className="flex-1 flex justify-center items-center gap-1.5">
-            <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center border border-white/20 shadow-xs shrink-0">
-              <Sparkles className="w-3.5 h-3.5 text-white" />
+          {/* Center - Official TalentXcel Logo */}
+          <div className="flex-1 flex justify-center items-center gap-2">
+            <div className="w-7 h-7 rounded-lg bg-white/10 p-0.5 flex items-center justify-center border border-white/20 shrink-0">
+              <img 
+                src="/talentxcel-official-logo.png" 
+                alt="TalentXcel" 
+                className="w-5 h-5 object-contain shrink-0"
+              />
             </div>
-            <span className="text-sm font-black tracking-tight text-foreground flex items-center">
-              Talent<span className="text-blue-500 font-black">Xcel</span>
+            <span className="text-sm font-black tracking-tight whitespace-nowrap flex items-center" style={{ color: '#ffffff' }}>
+              Talent<span className="font-black" style={{ color: '#38bdf8' }}>Xcel</span>
             </span>
           </div>
 
