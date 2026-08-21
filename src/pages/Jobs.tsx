@@ -477,6 +477,8 @@ const Jobs = () => {
                 <Brain className="h-3 w-3" />
                 AI Hub
               </Button>
+            </div>
+
             {/* Semantic Page Header for Google & Users */}
             <div className="max-w-4xl mx-auto mb-3 text-center sm:text-left">
               <h1 className="text-lg sm:text-2xl font-bold tracking-tight text-foreground">
