@@ -96,8 +96,8 @@ export const CareerAgentWidget: React.FC<CareerAgentWidgetProps> = ({ userProfil
               <Compass className="h-5 w-5 text-blue-400" />
             </div>
             <div>
-              <h3 className="text-lg font-black text-white">TalentXcel Career Navigation Engine</h3>
-              <p className="text-xs text-slate-300 font-medium">Tell us what you want to become. We'll map your skills & learning path.</p>
+              <h3 className="text-lg font-black !text-white" style={{ color: '#ffffff' }}>TalentXcel Career Navigation Engine</h3>
+              <p className="text-xs !text-slate-300 font-medium" style={{ color: '#cbd5e1' }}>Tell us what you want to become. We'll map your skills & learning path.</p>
             </div>
           </div>
 

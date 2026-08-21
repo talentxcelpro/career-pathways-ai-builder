@@ -399,8 +399,8 @@ export default function Colleges() {
                         TALENTXCEL EDUCATION COMMAND CENTER · READY
                       </span>
                     </div>
-                    <h3 className="text-xl font-black text-white mt-1">Find the right place to build your future.</h3>
-                    <p className="text-xs text-slate-300 font-medium mt-0.5">Search colleges, universities, institutes, programs, fees, cutoffs, placements &amp; careers...</p>
+                    <h3 className="text-xl font-black !text-white mt-1" style={{ color: '#ffffff' }}>Find the right place to build your future.</h3>
+                    <p className="text-xs !text-slate-300 font-medium mt-0.5" style={{ color: '#cbd5e1' }}>Search colleges, universities, institutes, programs, fees, cutoffs, placements &amp; careers...</p>
                   </div>
                 </div>
 

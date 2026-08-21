@@ -145,15 +145,13 @@
   --text-low-contrast: 210 8% 60%;
 }
 
-/* Auto-enhance existing text elements without breaking them */
+/* Auto-enhance existing text elements with natural inheritance */
 h1, h2, h3, h4, h5, h6 {
-  color: hsl(var(--text-primary-dark)) !important;
   letter-spacing: -0.015em;
   text-rendering: optimizeLegibility;
 }
 
 p {
-  color: hsl(var(--text-secondary-dark));
   line-height: 1.6;
 }
 
@@ -165,22 +163,13 @@ button, .btn {
 
 /* Enhance existing navigation */
 nav a, .nav-link {
-  color: hsl(var(--text-medium-contrast));
   font-weight: 500;
   transition: color 0.15s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-nav a:hover, .nav-link:hover {
-  color: hsl(var(--text-primary-dark));
-}
-
 /* Enhance existing form inputs */
 input, textarea, select {
-  color: hsl(var(--text-primary-dark)) !important;
-}
-
-input::placeholder, textarea::placeholder {
-  color: hsl(var(--text-muted-dark) / var(--text-opacity-tertiary)) !important;
+  letter-spacing: 0;
 }
 
 /* Enhance existing labels */
@@ -190,15 +179,13 @@ label {
   letter-spacing: 0.01em;
 }
 
-/* Enhance existing cards */
+/* Enhance existing cards with natural inheritance */
 .card h3, .card h4 {
-  color: hsl(var(--text-primary-dark));
   font-weight: 600;
   letter-spacing: -0.01em;
 }
 
 .card p {
-  color: hsl(var(--text-secondary-dark));
   line-height: 1.5;
 }
 
