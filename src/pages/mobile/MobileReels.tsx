@@ -49,7 +49,7 @@ export const MobileReels = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="TalentXcel Reels - Career Growth Videos" />
         <meta name="twitter:description" content="Discover inspiring career stories and professional content." />
-        <link rel="canonical" href={`${window.location.origin}/mobile/reels`} />
+        <link rel="canonical" href="https://talentxcel.in/mobile/reels" />
       </Helmet>
       
       <div className="w-full h-screen overflow-hidden bg-black relative">

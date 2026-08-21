@@ -39,19 +39,21 @@ export const SEOPageGenerator: React.FC<SEOPageGeneratorProps> = ({
     id: `seo-${pageType}-structured-data`
   });
 
+  const canonicalUrl = `https://talentxcel.in${typeof window !== 'undefined' ? window.location.pathname : ''}`;
+
   return (
     <>
       <Helmet>
         <title>{page.title}</title>
         <meta name="description" content={page.description} />
         <meta name="keywords" content={page.keywords.join(', ')} />
-        <link rel="canonical" href={window.location.href} />
+        <link rel="canonical" href={canonicalUrl} />
         
         {/* Open Graph */}
         <meta property="og:title" content={page.title} />
         <meta property="og:description" content={page.description} />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content={window.location.href} />
+        <meta property="og:url" content={canonicalUrl} />
         
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />

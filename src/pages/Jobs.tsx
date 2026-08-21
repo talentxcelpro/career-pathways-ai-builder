@@ -165,7 +165,7 @@ const Jobs = () => {
         }
       } : undefined,
       "skills": job.skills_required?.join(", "),
-      "url": `${window.location.origin}/jobs/${job.seo_slug || job.id}`,
+      "url": `https://talentxcel.in/jobs/${job.seo_slug || job.id}`,
       "identifier": {
         "@type": "PropertyValue",
         "name": "TalentXcel Job ID",
@@ -179,12 +179,12 @@ const Jobs = () => {
         {
           "@type": "WebSite",
           "name": "TalentXcel Jobs",
-          "url": window.location.origin,
+          "url": "https://talentxcel.in",
           "potentialAction": {
             "@type": "SearchAction",
             "target": {
               "@type": "EntryPoint",
-              "urlTemplate": `${window.location.origin}/jobs?search={search_term_string}`
+              "urlTemplate": "https://talentxcel.in/jobs?search={search_term_string}"
             },
             "query-input": "required name=search_term_string"
           }
@@ -193,7 +193,7 @@ const Jobs = () => {
           "@type": "CollectionPage",
           "name": "TalentXcel Job Listings",
           "description": "Find your next career opportunity with AI-powered job matching",
-          "url": window.location.href,
+          "url": "https://talentxcel.in/jobs",
           "mainEntity": {
             "@type": "ItemList",
             "numberOfItems": totalCount,

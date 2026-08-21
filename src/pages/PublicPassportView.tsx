@@ -93,6 +93,8 @@ const PublicPassportView: React.FC = () => {
     );
   }
 
+  const canonicalUrl = `https://talentxcel.in/passport/public/${identifier || ''}`;
+
   // Success state
   return (
     <>
@@ -107,7 +109,7 @@ const PublicPassportView: React.FC = () => {
         <meta property="og:title" content={`${profile.full_name} - Professional Career Passport`} />
         <meta property="og:description" content={profile.headline || `${profile.full_name}'s professional profile on TalentXcel`} />
         <meta property="og:type" content="profile" />
-        <meta property="og:url" content={window.location.href} />
+        <meta property="og:url" content={canonicalUrl} />
         {profile.profile_picture_url && (
           <meta property="og:image" content={profile.profile_picture_url} />
         )}
@@ -129,7 +131,7 @@ const PublicPassportView: React.FC = () => {
             "name": profile.full_name,
             "jobTitle": profile.title,
             "description": profile.headline,
-            "url": window.location.href,
+            "url": canonicalUrl,
             "image": profile.profile_picture_url,
             "address": {
               "@type": "PostalAddress",
@@ -148,7 +150,7 @@ const PublicPassportView: React.FC = () => {
         </script>
         
         {/* Canonical URL */}
-        <link rel="canonical" href={window.location.href} />
+        <link rel="canonical" href={canonicalUrl} />
       </Helmet>
 
       <InstantProfileViewer
