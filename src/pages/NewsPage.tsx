@@ -357,6 +357,11 @@ const NewsPage: React.FC = () => {
 
   // ─────────────────────────────────────────────────────────────
   // NEWS HUB & AUTHORITY ARCHITECTURE VIEW (/news)
+  // ─────────────────────────────────────────────────────────────
+  const featuredArticle = (articles && articles.length > 0) 
+    ? (articles.find(a => a.isFeatured) || articles[0]) 
+    : undefined;
+
   // The 3 sidebar brief articles next to featured hero
   const topStories = (articles && articles.length > 0 && featuredArticle)
     ? articles.filter(a => a.id !== featuredArticle.id).slice(0, 3)
@@ -367,7 +372,7 @@ const NewsPage: React.FC = () => {
     ? (searchQuery 
         ? articles 
         : articles.filter(a => a.id !== featuredArticle.id && !topStories.some(ts => ts.id === a.id)))
-    : [];
+    : (articles || []);
 
   return (
     <div className="min-h-screen bg-background pb-20 w-full">
