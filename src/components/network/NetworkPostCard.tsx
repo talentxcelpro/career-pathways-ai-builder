@@ -44,6 +44,12 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
   const queryClient = useQueryClient();
   const [showComments, setShowComments] = React.useState(openComments === post.id);
 
+  React.useEffect(() => {
+    if (openComments !== undefined) {
+      setShowComments(openComments === post.id);
+    }
+  }, [openComments, post.id]);
+
   // 1. Fetch REAL live engagement counts and like status from Supabase
   const { data: engagement, refetch: refetchEngagement } = useQuery({
     queryKey: ['post-engagement-real', post.id, user?.id],
@@ -134,22 +140,76 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
     }
   };
 
-  // Share post with real Supabase tracking
-  const handleSharePost = async () => {
-    const url = `${window.location.origin}/network/posts/${post.id}`;
-    try {
-      await navigator.clipboard.writeText(url);
-      toast.success("Post link copied to clipboard!");
-
-      if (user?.id) {
+  const recordShare = async () => {
+    if (user?.id) {
+      try {
         await supabase
           .from('post_shares')
           .insert({ post_id: post.id, user_id: user.id });
         refetchEngagement();
+      } catch (e) {
+        console.warn('Could not record share:', e);
       }
-    } catch (err) {
-      console.error("Share error:", err);
     }
+  };
+
+  const getPostUrl = () => `${window.location.origin}/network/posts/${post.id}`;
+
+  // Copy Post Link
+  const handleCopyLink = async () => {
+    const url = getPostUrl();
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.success("Post link copied to clipboard!");
+      await recordShare();
+    } catch {
+      toast.error("Failed to copy link");
+    }
+  };
+
+  // LinkedIn Share Dialog
+  const handleLinkedInShare = async () => {
+    const url = getPostUrl();
+    const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+    window.open(linkedInUrl, '_blank', 'width=600,height=600,noopener,noreferrer');
+    await recordShare();
+  };
+
+  // Twitter / X Share Dialog
+  const handleTwitterShare = async () => {
+    const url = getPostUrl();
+    const shareText = `"${post.content.slice(0, 200)}..." via TalentXcel Network`;
+    const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(shareText)}`;
+    window.open(twitterUrl, '_blank', 'width=600,height=400,noopener,noreferrer');
+    await recordShare();
+  };
+
+  // Native Web Share or Copy Link fallback
+  const handleNativeShare = async () => {
+    const url = getPostUrl();
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Post by ${fullName} on TalentXcel`,
+          text: post.content,
+          url: url
+        });
+        toast.success("Shared successfully!");
+        await recordShare();
+        return;
+      } catch (err: any) {
+        if (err.name !== 'AbortError') {
+          console.warn('Native share failed:', err);
+        }
+      }
+    }
+    // Fallback to copy link
+    await handleCopyLink();
+  };
+
+  const handleToggleComments = () => {
+    setShowComments(prev => !prev);
+    onCommentClick?.(post.id);
   };
 
   return (
@@ -185,21 +245,34 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
           </div>
 
           {/* Top Right Social Toolbar */}
-          <div className="flex items-center gap-1.5 text-muted-foreground">
-            <button onClick={handleSharePost} title="Share Direct" className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-muted text-slate-500 hover:text-foreground transition-colors">
+          <div className="flex items-center gap-1 text-muted-foreground">
+            <button 
+              onClick={handleNativeShare} 
+              title="Share / Send Direct" 
+              className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-muted text-slate-500 hover:text-foreground transition-colors"
+            >
               <Send className="h-4 w-4" />
             </button>
-            <button onClick={handleSharePost} title="LinkedIn Share" className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-muted text-slate-500 hover:text-foreground font-extrabold text-xs">
+            <button 
+              onClick={handleLinkedInShare} 
+              title="Share on LinkedIn" 
+              className="px-2 py-1 rounded-full hover:bg-blue-50 dark:hover:bg-blue-950/40 text-blue-600 font-extrabold text-xs transition-colors"
+            >
               in
             </button>
-            <button onClick={handleSharePost} title="Twitter Share" className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-muted text-slate-500 hover:text-foreground font-black text-xs">
+            <button 
+              onClick={handleTwitterShare} 
+              title="Share on X (Twitter)" 
+              className="px-2 py-1 rounded-full hover:bg-slate-100 dark:hover:bg-muted text-slate-900 dark:text-white font-black text-xs transition-colors"
+            >
               𝕏
             </button>
-            <button onClick={handleSharePost} title="Copy Link" className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-muted text-slate-500 hover:text-foreground transition-colors">
+            <button 
+              onClick={handleCopyLink} 
+              title="Copy Post Link" 
+              className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-muted text-slate-500 hover:text-foreground transition-colors"
+            >
               <Copy className="h-4 w-4" />
-            </button>
-            <button title="More Options" className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-muted text-slate-500 hover:text-foreground transition-colors">
-              <MoreHorizontal className="h-4 w-4" />
             </button>
           </div>
         </div>
@@ -227,9 +300,9 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
           </div>
         )}
 
-        {/* REAL Reaction Counter Row from Supabase */}
-        <div className="flex items-center justify-between text-xs text-muted-foreground font-semibold pt-2 border-t border-slate-100 dark:border-border/60">
-          <div className="flex items-center gap-1.5">
+        {/* REAL Reaction & Comment Counter Row */}
+        <div className="flex items-center justify-between text-xs text-muted-foreground font-semibold pt-2 border-t border-slate-100 dark:border-border/60 select-none">
+          <div className="flex items-center gap-1.5 cursor-pointer hover:text-foreground" onClick={handleToggleLike}>
             {realLikesCount > 0 && (
               <div className="flex -space-x-1">
                 <span className="w-4 h-4 rounded-full bg-blue-500 text-white flex items-center justify-center text-[9px] shadow-sm">👍</span>
@@ -240,8 +313,18 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
           </div>
 
           <div className="flex items-center gap-3">
-            <span>{realCommentsCount} {realCommentsCount === 1 ? 'Comment' : 'Comments'}</span>
-            <span>{realSharesCount} {realSharesCount === 1 ? 'Share' : 'Shares'}</span>
+            <button 
+              onClick={handleToggleComments}
+              className="hover:underline hover:text-foreground transition-colors cursor-pointer"
+            >
+              {realCommentsCount} {realCommentsCount === 1 ? 'Comment' : 'Comments'}
+            </button>
+            <button 
+              onClick={handleNativeShare}
+              className="hover:underline hover:text-foreground transition-colors cursor-pointer"
+            >
+              {realSharesCount} {realSharesCount === 1 ? 'Share' : 'Shares'}
+            </button>
           </div>
         </div>
 
@@ -258,18 +341,17 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
           </button>
 
           <button 
-            onClick={() => {
-              setShowComments(prev => !prev);
-              onCommentClick?.(post.id);
-            }}
-            className="flex items-center justify-center gap-2 py-2 rounded-2xl hover:bg-slate-100 dark:hover:bg-muted text-slate-700 dark:text-slate-200 transition-colors"
+            onClick={handleToggleComments}
+            className={`flex items-center justify-center gap-2 py-2 rounded-2xl transition-colors ${
+              showComments ? 'bg-slate-100 dark:bg-muted text-blue-600' : 'hover:bg-slate-100 dark:hover:bg-muted text-slate-700 dark:text-slate-200'
+            }`}
           >
             <MessageSquare className="h-4 w-4" />
             Comment
           </button>
 
           <button 
-            onClick={handleSharePost}
+            onClick={handleNativeShare}
             className="flex items-center justify-center gap-2 py-2 rounded-2xl hover:bg-slate-100 dark:hover:bg-muted text-slate-700 dark:text-slate-200 transition-colors"
           >
             <Share2 className="h-4 w-4" />
