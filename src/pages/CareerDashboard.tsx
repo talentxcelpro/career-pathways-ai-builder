@@ -189,11 +189,11 @@ const CareerDashboard = () => {
           <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
-                <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm flex-shrink-0">
+                <div className="p-1.5 bg-slate-900 rounded-xl flex-shrink-0 shadow-sm">
                   <img 
-                    src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
+                    src="/talentxcel-official-logo.png" 
                     alt="TalentXcel" 
-                    className="h-6 w-6 sm:h-7 sm:w-7"
+                    className="h-6 w-6 sm:h-7 sm:w-7 object-contain"
                   />
                 </div>
                 <div className="min-w-0 flex-1">

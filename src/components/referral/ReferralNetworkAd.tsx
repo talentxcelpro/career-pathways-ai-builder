@@ -35,11 +35,13 @@ export const ReferralNetworkAd: React.FC<ReferralNetworkAdProps> = ({
         <CardContent className="p-4">
           <div className="text-center space-y-3">
             <div className="flex items-center justify-center">
-              <img 
-                src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
-                alt="TalentXcel" 
-                className="h-10 w-10 rounded-sm"
-              />
+              <div className="h-10 w-10 rounded-lg bg-slate-900 flex items-center justify-center p-1 shadow-sm">
+                <img 
+                  src="/talentxcel-official-logo.png" 
+                  alt="TalentXcel" 
+                  className="h-full w-full object-contain"
+                />
+              </div>
             </div>
             <div>
               <h3 className="font-bold text-foreground">Earn Pro Access</h3>
@@ -73,11 +75,11 @@ export const ReferralNetworkAd: React.FC<ReferralNetworkAdProps> = ({
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="p-2 bg-primary/10 rounded-full">
+              <div className="p-1 bg-slate-900 rounded-lg border border-slate-700">
                 <img 
-                  src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
+                  src="/talentxcel-official-logo.png" 
                   alt="TalentXcel" 
-                  className="h-8 w-8 rounded-sm"
+                  className="h-8 w-8 object-contain"
                 />
               </div>
               <div>

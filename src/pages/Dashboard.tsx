@@ -215,11 +215,13 @@ const Dashboard = () => {
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2 sm:py-3">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
-              <img 
-                src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
-                alt="TalentXcel" 
-                className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg flex-shrink-0"
-              />
+              <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-slate-900 flex items-center justify-center p-1 shadow-sm flex-shrink-0">
+                <img 
+                  src="/talentxcel-official-logo.png" 
+                  alt="TalentXcel" 
+                  className="h-full w-full object-contain"
+                />
+              </div>
               <div className="min-w-0 flex-1">
                 <h1 className="text-base sm:text-lg font-bold text-slate-900 truncate">
                   {getCurrentGreeting()}{userProfile?.full_name ? `, ${userProfile.full_name.split(' ')[0]}` : ''}! 👋

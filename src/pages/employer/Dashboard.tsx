@@ -113,11 +113,13 @@ function DashboardContent() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <img 
-            src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
-            alt="TalentXcel" 
-            className="h-12 w-12 rounded-lg"
-          />
+          <div className="h-12 w-12 rounded-xl bg-slate-900 flex items-center justify-center p-1.5 shadow-md">
+            <img 
+              src="/talentxcel-official-logo.png" 
+              alt="TalentXcel" 
+              className="h-full w-full object-contain"
+            />
+          </div>
           <div>
             <h1 className="text-3xl font-bold text-gray-900">TalentXcel AI Employer Dashboard</h1>
             <p className="text-gray-600 mt-1">AI-powered hiring management that finds the perfect candidates – Driven by TalentXcel AI</p>

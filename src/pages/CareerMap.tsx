@@ -6,15 +6,17 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { TrendingUp, Target, Calendar, Users, BookOpen, ArrowRight, Plus, Brain, Map, Zap, Star, BarChart, Rocket, Award, ChevronRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { VisualRoadmapShowcase } from '@/components/roadmap/VisualRoadmapShowcase';
 import { useRealCareerData } from '@/hooks/useRealCareerData';
 import { useOptimizedCareerData } from '@/hooks/useOptimizedCareerData';
 import { useSafeRealtimeContext } from '@/components/realtime/SafeRealtimeProvider';
 import { InteractiveCareerPath } from '@/components/career-map/InteractiveCareerPath';
 import { CareerInputModal } from '@/components/career-map/CareerInputModal';
+import { toast } from 'sonner';
 
 const CareerMap = () => {
+  const navigate = useNavigate();
   // Real-time career data integration (with fallback)
   const { metrics, achievementTriggers, isLoading: careerLoading, refreshMetrics } = useRealCareerData();
   const { metrics: optimizedMetrics, insights, profile, isLoading: optimizedLoading } = useOptimizedCareerData();
@@ -31,22 +33,33 @@ const CareerMap = () => {
   const isLoading = careerLoading || optimizedLoading;
 
   // Query for career goals with real-time updates
-  const { data: careerGoals = [] } = useQuery({
+  const { data: careerGoals = [], refetch: refetchGoals } = useQuery({
     queryKey: ['career_goals', lastUpdate?.table],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
 
       const { data, error } = await supabase
-        .from('career_goals')
+        .from('user_career_goals')
         .select('*')
         .eq('user_id', user.id)
-        .eq('is_active', true)
         .order('created_at', { ascending: false });
       
-      if (error) throw error;
+      if (error) {
+        // Fallback to legacy career_goals if exists
+        const { data: fallbackData } = await supabase
+          .from('career_goals' as any)
+          .select('*')
+          .eq('user_id', user.id);
+        return fallbackData?.map((goal: any) => ({
+          ...goal,
+          clickable: true,
+          link: `/career-map/goal/${goal.id}`
+        })) || [];
+      }
       return data?.map(goal => ({
         ...goal,
+        title: goal.target_role,
         clickable: true,
         link: `/career-map/goal/${goal.id}`
       })) || [];
@@ -56,7 +69,7 @@ const CareerMap = () => {
   });
 
   // Query for roadmaps with real-time updates
-  const { data: roadmaps = [] } = useQuery({
+  const { data: roadmaps = [], refetch: refetchRoadmaps } = useQuery({
     queryKey: ['roadmaps_overview', lastUpdate?.table],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -106,11 +119,13 @@ const CareerMap = () => {
           <div className="text-center max-w-2xl mx-auto">
             <div className="flex items-center justify-center gap-3 mb-4">
               <Link to="/" className="hover:opacity-80 transition-opacity">
-                <img 
-                  src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
-                  alt="TalentXcel" 
-                  className="h-12 w-12 rounded-lg"
-                />
+                <div className="h-12 w-12 rounded-xl bg-slate-900 flex items-center justify-center p-1.5 shadow-md">
+                  <img 
+                    src="/talentxcel-official-logo.png" 
+                    alt="TalentXcel" 
+                    className="h-full w-full object-contain"
+                  />
+                </div>
               </Link>
               <div className="flex items-center gap-2">
                 <Link to="/ai" className="hover:opacity-80 transition-opacity">
@@ -295,31 +310,31 @@ const CareerMap = () => {
                         // Navigate to relevant section based on achievement type
                         switch (achievement.type) {
                           case 'profile':
-                            window.location.href = '/profile/edit';
+                            navigate('/profile/edit');
                             break;
                           case 'networking':
-                            window.location.href = '/network';
+                            navigate('/network');
                             break;
                           case 'applications':
-                            window.location.href = '/jobs/applications';
+                            navigate('/jobs/applications');
                             break;
                           case 'skills':
-                            window.location.href = '/profile/skills';
+                            navigate('/profile/skills');
                             break;
                           case 'content':
-                            window.location.href = '/network/posts';
+                            navigate('/network/posts');
                             break;
                           case 'learning':
-                            window.location.href = '/learning';
+                            navigate('/learning');
                             break;
                           case 'tokens':
-                            window.location.href = '/wallet/txc';
+                            navigate('/wallet/txc');
                             break;
                           case 'streaks':
-                            window.location.href = '/dashboard/streaks';
+                            navigate('/dashboard/streaks');
                             break;
                           default:
-                            window.location.href = '/dashboard';
+                            navigate('/dashboard');
                         }
                       };
                       
@@ -350,6 +365,71 @@ const CareerMap = () => {
                       </Card>
                      );
                     })}
+                </div>
+              </div>
+            )}
+
+            {/* Active Goals & Roadmaps */}
+            {(careerGoals.length > 0 || roadmaps.length > 0) && (
+              <div className="mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {careerGoals.length > 0 && (
+                    <div>
+                      <h3 className="text-sm font-bold text-text-primary mb-3 font-display">Active Career Goals</h3>
+                      <div className="space-y-3">
+                        {careerGoals.map((goal: any) => (
+                          <Link key={goal.id} to={goal.link || `/career-map/goal/${goal.id}`}>
+                            <Card className="border-0 bg-white/90 backdrop-blur-apple rounded-xl shadow-apple-light hover:shadow-apple-medium transition-all duration-300 cursor-pointer hover:-translate-y-0.5">
+                              <CardContent className="p-3">
+                                <div className="flex items-center justify-between mb-1">
+                                  <h4 className="text-xs font-semibold text-text-primary">{goal.target_role || goal.title || 'Career Goal'}</h4>
+                                  <Badge className="bg-purple-50 text-purple-700 border-0 px-1.5 py-0.5 rounded-md text-xs">
+                                    {goal.timeline_months ? `${goal.timeline_months} mo` : 'Active'}
+                                  </Badge>
+                                </div>
+                                {goal.target_location && (
+                                  <p className="text-xs text-text-secondary">{goal.target_location}</p>
+                                )}
+                                {goal.current_readiness_score !== null && goal.current_readiness_score !== undefined && (
+                                  <div className="mt-2 flex items-center gap-2">
+                                    <Progress value={goal.current_readiness_score} className="h-1 flex-1" />
+                                    <span className="text-xs text-text-secondary">{goal.current_readiness_score}% readiness</span>
+                                  </div>
+                                )}
+                              </CardContent>
+                            </Card>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {roadmaps.length > 0 && (
+                    <div>
+                      <h3 className="text-sm font-bold text-text-primary mb-3 font-display">Active Roadmaps</h3>
+                      <div className="space-y-3">
+                        {roadmaps.map((roadmap: any) => (
+                          <Link key={roadmap.id} to={roadmap.link || `/career-map/${roadmap.id}`}>
+                            <Card className="border-0 bg-white/90 backdrop-blur-apple rounded-xl shadow-apple-light hover:shadow-apple-medium transition-all duration-300 cursor-pointer hover:-translate-y-0.5">
+                              <CardContent className="p-3">
+                                <div className="flex items-center justify-between mb-1">
+                                  <h4 className="text-xs font-semibold text-text-primary">{roadmap.title || roadmap.target_role}</h4>
+                                  <Badge className="bg-emerald-50 text-emerald-700 border-0 px-1.5 py-0.5 rounded-md text-xs">
+                                    {roadmap.status || 'Active'}
+                                  </Badge>
+                                </div>
+                                <p className="text-xs text-text-secondary mb-2">{roadmap.target_role ? `Target: ${roadmap.target_role}` : roadmap.description}</p>
+                                <div className="flex items-center gap-2">
+                                  <Progress value={roadmap.progress_percentage || 0} className="h-1 flex-1" />
+                                  <span className="text-xs text-text-secondary">{roadmap.progress_percentage || 0}%</span>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -419,9 +499,29 @@ const CareerMap = () => {
           
           {showPathBuilder && (
             <InteractiveCareerPath
-              onSave={(path) => {
-                console.log('Career path saved:', path);
-                // Here you could save to Supabase or local storage
+              onSave={async (path) => {
+                try {
+                  const { data: { user } } = await supabase.auth.getUser();
+                  if (!user) {
+                    toast.error('Please sign in to save your career path');
+                    return;
+                  }
+                  const { error } = await supabase.from('roadmaps').insert({
+                    user_id: user.id,
+                    title: (path as any)?.title || (path as any)?.targetRole || 'Career Roadmap',
+                    target_role: (path as any)?.targetRole || '',
+                    current_position: (path as any)?.currentRole || '',
+                    description: (path as any)?.description || '',
+                    roadmap_data: path as any,
+                    status: 'active'
+                  });
+                  if (error) throw error;
+                  toast.success('Career path saved successfully');
+                  refetchRoadmaps();
+                } catch (err: any) {
+                  console.error('Error saving career path:', err);
+                  toast.error('Failed to save career path');
+                }
               }}
               className="mb-6"
             />
@@ -447,11 +547,26 @@ const CareerMap = () => {
       <CareerInputModal
         open={showCareerModal}
         onOpenChange={setShowCareerModal}
-        onSubmit={(data) => {
-          console.log('Career goal submitted:', data);
+        onSubmit={async (data) => {
           setShowCareerModal(false);
           setShowPathBuilder(true);
-          // Here you could generate AI roadmap and populate the path builder
+          try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+              const { error } = await supabase.from('user_career_goals').insert({
+                user_id: user.id,
+                target_role: (data as any)?.targetRole || '',
+                timeline_months: (data as any)?.timeline ? parseInt((data as any).timeline) : 12,
+                status: 'active'
+              });
+              if (!error) {
+                toast.success('Career goal saved');
+                refetchGoals();
+              }
+            }
+          } catch (err) {
+            console.error('Error creating career goal:', err);
+          }
         }}
       />
     </div>

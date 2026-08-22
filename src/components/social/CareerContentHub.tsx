@@ -319,11 +319,11 @@ export function CareerContentHub() {
           <div className="flex items-center justify-center gap-4 mb-4">
             <div className="relative group">
               <img 
-                src={talentxcelLogo} 
+                src="/talentxcel-official-logo.png" 
                 alt="TalentXcel Logo" 
-                className="w-16 h-16 rounded-2xl shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110"
+                className="w-16 h-16 rounded-2xl shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110 object-contain bg-slate-900 p-2"
               />
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
             </div>
             <div className="text-left">
               <h1 className="text-5xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">

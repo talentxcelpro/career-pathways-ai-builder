@@ -34,8 +34,8 @@ export const CareerHub = () => {
       {/* Header */}
       <div className="text-center space-y-4 bg-gradient-to-br from-primary/5 via-background to-accent/30 p-6 rounded-xl border border-border/50">
         <div className="flex items-center justify-center gap-4">
-          <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center shadow-lg">
-            <BookOpen className="w-8 h-8 text-primary-foreground" />
+          <div className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg overflow-hidden bg-slate-900 p-2">
+            <img src="/talentxcel-official-logo.png" alt="TalentXcel Logo" className="w-full h-full object-contain" />
           </div>
           <div className="text-left">
             <h1 className="text-2xl font-bold text-foreground">TalentXcel</h1>

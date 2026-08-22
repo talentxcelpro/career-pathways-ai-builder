@@ -233,11 +233,13 @@ const EmployerLanding = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <div className="flex items-center gap-4 mb-6">
-                <img 
-                  src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
-                  alt="TalentXcel" 
-                  className="h-12 w-12 rounded-lg"
-                />
+                <div className="h-12 w-12 rounded-xl bg-slate-900 flex items-center justify-center p-1.5 shadow-md">
+                  <img 
+                    src="/talentxcel-official-logo.png" 
+                    alt="TalentXcel" 
+                    className="h-full w-full object-contain"
+                  />
+                </div>
                 <div>
                   <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
                     Become an Employer with{' '}

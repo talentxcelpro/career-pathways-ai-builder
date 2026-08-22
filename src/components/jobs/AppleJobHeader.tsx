@@ -25,11 +25,13 @@ export const AppleJobHeader: React.FC<AppleJobHeaderProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img 
-              src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
-              alt="TalentXcel" 
-              className="h-8 w-8 rounded-lg"
-            />
+            <div className="h-8 w-8 rounded-lg bg-slate-900 flex items-center justify-center p-1 shadow-sm">
+              <img 
+                src="/talentxcel-official-logo.png" 
+                alt="TalentXcel" 
+                className="h-full w-full object-contain"
+              />
+            </div>
             <div className="flex items-center gap-2">
               <Brain className="icon-apple-sm text-primary" />
               <h1 className="text-apple-body font-apple-semibold text-foreground">

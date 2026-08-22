@@ -110,11 +110,11 @@ const ReferAndEarn: React.FC = () => {
           {/* Compact Header */}
           <div className="mb-6">
             <div className="flex justify-center mb-3">
-              <div className="relative bg-white rounded-lg p-2 border border-gray-200 shadow-sm">
+              <div className="relative bg-slate-900 rounded-lg p-1.5 border border-slate-700 shadow-sm">
                 <img 
-                  src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
+                  src="/talentxcel-official-logo.png" 
                   alt="TalentXcel" 
-                  className="h-6 w-6 rounded-md"
+                  className="h-6 w-6 object-contain"
                 />
               </div>
             </div>

@@ -10,6 +10,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
+import { aiService } from '@/services/aiService';
+import { supabase } from '@/integrations/supabase/client';
 
 interface CoverLetterTemplate {
   id: string;
@@ -77,38 +79,90 @@ const CoverLetterStudio = () => {
 
     setIsGenerating(true);
     try {
-      // Simulate AI generation
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      const mockGenerated = `Dear Hiring Manager,
+      const { data: { user } } = await supabase.auth.getUser();
 
-I am writing to express my strong interest in the ${jobTitle} position at ${companyName}. With my extensive background in software development and proven track record of delivering high-quality solutions, I am confident I would be a valuable addition to your team.
+      let candidateContext = null;
+      if (user?.id) {
+        try {
+          candidateContext = await aiService.getUnifiedCandidateContext(user.id);
+        } catch (ctxErr) {
+          console.warn('Candidate context fetch note:', ctxErr);
+        }
+      }
 
-In my previous role as a Senior Software Engineer, I successfully:
-• Led the development of scalable web applications serving over 100,000 users
-• Implemented CI/CD pipelines that reduced deployment time by 60%
-• Mentored junior developers and contributed to a 25% improvement in team productivity
-• Collaborated with cross-functional teams to deliver projects on time and within budget
+      const response = await aiService.generateCoverLetterNew(
+        candidateContext || { jobTitle, companyName, tone, template: selectedTemplate },
+        { 
+          position: jobTitle, 
+          company: companyName, 
+          description: jobDescription || `${jobTitle} at ${companyName}`
+        },
+        tone
+      );
 
-I am particularly drawn to ${companyName} because of your innovative approach to technology and commitment to excellence. Your recent work on [specific project/initiative mentioned in job description] aligns perfectly with my passion for creating impactful solutions.
-
-I would welcome the opportunity to discuss how my technical expertise and leadership experience can contribute to ${companyName}'s continued success. Thank you for considering my application.
-
-Best regards,
-[Your Name]`;
-
-      setGeneratedContent(mockGenerated);
-      setEditableContent(mockGenerated);
-      toast.success('Cover letter generated successfully!');
-    } catch (error) {
-      toast.error('Failed to generate cover letter');
+      if (response && response.success && response.data) {
+        let content = '';
+        if (typeof response.data === 'string') {
+          content = response.data;
+        } else if (response.data.content) {
+          content = response.data.content;
+        } else if (response.data.cover_letter) {
+          content = response.data.cover_letter;
+        } else if (response.data.text) {
+          content = response.data.text;
+        } else if (typeof response.data === 'object') {
+          content = JSON.stringify(response.data, null, 2);
+        }
+        setGeneratedContent(content);
+        setEditableContent(content);
+        toast.success('Cover letter generated successfully!');
+      } else {
+        const errorMsg = response?.error || 'Failed to generate cover letter';
+        toast.error(errorMsg);
+      }
+    } catch (error: any) {
+      console.error('Error generating cover letter:', error);
+      toast.error(error?.message || 'Failed to generate cover letter');
     } finally {
       setIsGenerating(false);
     }
   };
 
-  const handleSave = () => {
-    toast.success('Cover letter saved to your drafts');
+  const handleSave = async () => {
+    if (!editableContent) {
+      toast.error('No cover letter content to save');
+      return;
+    }
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('Please log in to save your cover letter');
+        return;
+      }
+
+      const { error } = await supabase
+        .from('ai_cover_letters')
+        .insert({
+          user_id: user.id,
+          title: `${jobTitle || 'Cover Letter'} @ ${companyName || 'Draft'}`,
+          job_title: jobTitle || 'Target Role',
+          company_name: companyName || 'Target Company',
+          tone: tone,
+          template_id: selectedTemplate,
+          content: editableContent
+        });
+
+      if (error) {
+        console.error('Save cover letter error:', error);
+        toast.error('Failed to save cover letter');
+      } else {
+        toast.success('Cover letter saved to your drafts');
+      }
+    } catch (err: any) {
+      console.error('Error saving cover letter:', err);
+      toast.error('Failed to save cover letter');
+    }
   };
 
   const handleDownload = () => {

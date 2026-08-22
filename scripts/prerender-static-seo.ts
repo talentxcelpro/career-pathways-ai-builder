@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { INDIAN_INSTITUTIONS_CATALOG } from '../src/data/indianInstitutionsCatalog.js';
 import { SEED_PROGRAMS, SEED_SCHOLARSHIPS } from '../src/services/globalEducationService.js';
+import { FOUNDATION_NEWS_ARTICLES } from '../src/data/newsArticles.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -322,6 +323,25 @@ async function prerender() {
       h1: hub.title.split('—')[0].trim(),
       bodyContentHtml: `<p class="text-slate-300">${escapeHtml(hub.desc)}</p>`
     });
+  }
+
+  // Pre-render News Articles
+  if (FOUNDATION_NEWS_ARTICLES && FOUNDATION_NEWS_ARTICLES.length > 0) {
+    console.log(`Pre-rendering ${FOUNDATION_NEWS_ARTICLES.length} News & Insight Articles...`);
+    for (const article of FOUNDATION_NEWS_ARTICLES) {
+      writePrerenderedPage(`/news/${article.slug}`, {
+        title: `${article.title} | TalentXcel News & Insights`,
+        description: article.summary,
+        canonical: `${BASE_URL}/news/${article.slug}`,
+        h1: article.title,
+        bodyContentHtml: `
+          <div class="prose prose-invert max-w-none">
+            <p class="text-lg font-medium text-slate-200 mb-6">${escapeHtml(article.summary)}</p>
+            <div class="article-content">${article.content || ''}</div>
+          </div>
+        `
+      });
+    }
   }
 
   console.log(`\n========================================`);

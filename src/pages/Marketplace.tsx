@@ -186,11 +186,13 @@ const Marketplace = () => {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
             <div className="flex justify-center items-center gap-3 mb-4">
-              <img 
-                src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
-                alt="TalentXcel" 
-                className="h-10 w-10 rounded-lg"
-              />
+              <div className="h-10 w-10 rounded-xl bg-slate-900 flex items-center justify-center p-1 shadow-md">
+                <img 
+                  src="/talentxcel-official-logo.png" 
+                  alt="TalentXcel" 
+                  className="h-full w-full object-contain"
+                />
+              </div>
               <h1 className="text-3xl md:text-4xl font-bold text-white font-display">
                 TalentXcel <span className="bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent">Marketplace</span>
               </h1>

@@ -189,11 +189,13 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
           Back to home
         </Link>
         <div className="flex items-center gap-2">
-          <img 
-            src="/lovable-uploads/92d46ee5-0b5a-4272-905d-72a40b1c8bdc.png" 
-            alt="TalentXcel" 
-            className="h-8 w-8 rounded-sm"
-          />
+          <div className="h-8 w-8 rounded-lg bg-slate-900 flex items-center justify-center p-1 shadow-sm">
+            <img 
+              src="/talentxcel-official-logo.png" 
+              alt="TalentXcel" 
+              className="h-full w-full object-contain"
+            />
+          </div>
           <span className="text-lg font-semibold">TalentXcel</span>
         </div>
         <div className="w-20" /> {/* Spacer */}

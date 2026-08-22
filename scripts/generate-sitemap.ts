@@ -20,6 +20,7 @@ import { coursesDatabase } from '../src/data/coursesData';
 import { CONTENT_DATA } from './contentRegistryData';
 import { INDIAN_INSTITUTIONS_CATALOG } from '../src/data/indianInstitutionsCatalog';
 import { SEED_PROGRAMS, SEED_SCHOLARSHIPS } from '../src/services/globalEducationService';
+import { FOUNDATION_NEWS_ARTICLES } from '../src/data/newsArticles';
 
 interface SitemapEntry {
   path: string;
@@ -36,6 +37,7 @@ const BASE_PAGES: SitemapEntry[] = [
   { path: '/colleges/pathway', changefreq: 'daily', priority: '0.9' },
   { path: '/learning', changefreq: 'daily', priority: '0.9' },
   { path: '/jobs', changefreq: 'daily', priority: '0.9' },
+  { path: '/news', changefreq: 'daily', priority: '0.8' },
   { path: '/passport', changefreq: 'weekly', priority: '0.8' },
   { path: '/companies', changefreq: 'daily', priority: '0.8' },
   { path: '/network', changefreq: 'daily', priority: '0.8' },
@@ -307,12 +309,19 @@ function generateHighScaleSitemaps() {
     { path: '/employer/pricing', changefreq: 'weekly', priority: '0.7' },
   ]);
 
-  // 12. Editorial Registry
-  const editorialEntries = deduplicate((CONTENT_DATA || []).map((item) => ({
-    path: `/${item.type}s/${item.slug}`,
-    changefreq: 'monthly',
-    priority: '0.6',
-  })));
+  // 12. Editorial & News Registry
+  const editorialEntries = deduplicate([
+    ...(FOUNDATION_NEWS_ARTICLES || []).map((art) => ({
+      path: `/news/${art.slug}`,
+      changefreq: 'weekly' as const,
+      priority: '0.8',
+    })),
+    ...(CONTENT_DATA || []).map((item) => ({
+      path: `/${item.type}s/${item.slug}`,
+      changefreq: 'monthly' as const,
+      priority: '0.6',
+    })),
+  ]);
 
   // Write all sitemaps
   const sitemapConfig = [

@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CompanyFollowButton } from '@/components/company/CompanyFollowButton';
 import { Building2, MapPin, Users, Globe, Heart, Search, Award, Briefcase, TrendingUp } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSmartAutoRefresh, REFRESH_INTERVALS } from '@/hooks/useAutoRefresh';
 import { UniversalSearchBar } from '@/components/search/UniversalSearchBar';
 import { SearchFilters } from '@/services/aiSearchService';
@@ -18,6 +18,7 @@ import { MobileButton, MobileInput, MobileCard, MobileTypography } from '@/compo
 import { useMobileOptimizations } from '@/hooks/useMobileOptimizations';
 
 const Companies = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const { isMobile } = useMobileOptimizations();
 
@@ -29,7 +30,7 @@ const Companies = () => {
         .select('*');
       
       if (searchTerm) {
-        query = query.or(`name.ilike.%${searchTerm}%,industry.ilike.%${searchTerm}%,headquarters_location.ilike.%${searchTerm}%`);
+        query = query.or(`name.ilike.%${searchTerm}%,industry.ilike.%${searchTerm}%,location.ilike.%${searchTerm}%`);
       }
       
       const { data, error } = await query.order('created_at', { ascending: false });
@@ -99,11 +100,13 @@ const Companies = () => {
         {/* Header with TalentXcel branding */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
-            <img 
-              src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
-              alt="TalentXcel" 
-              className="h-12 w-12 rounded-lg"
-            />
+            <div className="h-12 w-12 rounded-xl bg-slate-900 flex items-center justify-center p-1.5 shadow-md">
+              <img 
+                src="/talentxcel-official-logo.png" 
+                alt="TalentXcel" 
+                className="h-full w-full object-contain"
+              />
+            </div>
             <div>
             <h1 className="text-2xl font-bold text-[#1E2A78] mb-1 font-display">
                 Discover Top Companies Hiring Now
@@ -141,7 +144,7 @@ const Companies = () => {
               size="lg" 
               variant="secondary" 
               className="bg-white text-primary hover:bg-gray-100"
-              onClick={() => window.location.href = '/enterprise/solutions'}
+              onClick={() => navigate('/enterprise/solutions')}
             >
               Explore Enterprise Solutions
             </Button>
@@ -149,7 +152,7 @@ const Companies = () => {
               size="lg" 
               variant="outline" 
               className="border-white text-white hover:bg-white hover:text-primary"
-              onClick={() => window.location.href = '/enterprise'}
+              onClick={() => navigate('/enterprise')}
             >
               Enterprise Dashboard
             </Button>
@@ -167,120 +170,131 @@ const Companies = () => {
           </div>
         ) : companies && companies.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {companies.map((company) => (
-              <Card key={company.id} className="group hover:shadow-apple-heavy transition-all duration-300 overflow-hidden border-0 bg-white/90 backdrop-blur-sm rounded-2xl">
-                {/* Company Banner */}
-                <div className="relative h-40 bg-gradient-to-r from-blue-500 to-purple-500 rounded-t-2xl">
-                  {company.cover_image_url ? (
-                    <img
-                      src={company.cover_image_url}
-                      alt={`${company.name} banner`}
-                      className="w-full h-full object-cover rounded-t-2xl"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-t-2xl" />
-                  )}
-                  <div className="absolute inset-0 bg-black/10 rounded-t-2xl" />
-                  
-                  {/* Company Logo - Overlapping the banner */}
-                  <div className="absolute -bottom-8 left-6">
-                    {company.logo_url ? (
+            {companies.map((company: any) => {
+              const companyLocation = company.location || company.headquarters_location;
+              const companySize = company.size_range || company.company_size;
+              const foundedYear = company.founded_year || company.founding_year;
+              const rawWebsite = company.website_url || company.website;
+              const websiteUrl = rawWebsite 
+                ? (rawWebsite.startsWith('http://') || rawWebsite.startsWith('https://') ? rawWebsite : `https://${rawWebsite}`) 
+                : null;
+              const profilePath = company.slug ? `/company/${company.slug}` : `/companies/${company.id}`;
+
+              return (
+                <Card key={company.id} className="group hover:shadow-apple-heavy transition-all duration-300 overflow-hidden border-0 bg-white/90 backdrop-blur-sm rounded-2xl">
+                  {/* Company Banner */}
+                  <div className="relative h-40 bg-gradient-to-r from-blue-500 to-purple-500 rounded-t-2xl">
+                    {company.cover_image_url ? (
                       <img
-                        src={company.logo_url}
-                        alt={`${company.name} logo`}
-                        className="w-20 h-20 rounded-2xl border-4 border-white shadow-apple-medium object-cover bg-white"
+                        src={company.cover_image_url}
+                        alt={`${company.name} banner`}
+                        className="w-full h-full object-cover rounded-t-2xl"
                       />
                     ) : (
-                      <div className="w-20 h-20 bg-white rounded-2xl border-4 border-white shadow-apple-medium flex items-center justify-center">
-                        <Building2 className="h-10 w-10 text-text-secondary" />
-                      </div>
+                      <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-t-2xl" />
                     )}
-                  </div>
-
-                  {/* Follow Button */}
-                  <div className="absolute top-4 right-4">
-                    <Button variant="secondary" size="icon" className="bg-white/20 backdrop-blur-sm border-white/30 hover:bg-white/40 rounded-xl transition-all duration-200">
-                      <Heart className="h-4 w-4 text-white" />
-                    </Button>
-                  </div>
-                </div>
-
-                <CardHeader className="pt-12 pb-4">
-                  <div className="space-y-3">
-                    <CardTitle className="text-2xl font-bold text-text-primary group-hover:text-primary transition-colors font-display">
-                      {company.name}
-                    </CardTitle>
-                    <div className="flex flex-wrap gap-2">
-                      {company.industry && (
-                        <Badge variant="secondary" className="text-sm px-3 py-1 bg-gray-100 text-text-secondary border-0 rounded-xl">
-                          {company.industry}
-                        </Badge>
-                      )}
-                      {company.company_size && (
-                        <Badge variant="outline" className="text-sm px-3 py-1 border-gray-200 text-text-secondary rounded-xl">
-                          {company.company_size}
-                        </Badge>
+                    <div className="absolute inset-0 bg-black/10 rounded-t-2xl" />
+                    
+                    {/* Company Logo - Overlapping the banner */}
+                    <div className="absolute -bottom-8 left-6">
+                      {company.logo_url ? (
+                        <img
+                          src={company.logo_url}
+                          alt={`${company.name} logo`}
+                          className="w-20 h-20 rounded-2xl border-4 border-white shadow-apple-medium object-cover bg-white"
+                        />
+                      ) : (
+                        <div className="w-20 h-20 bg-white rounded-2xl border-4 border-white shadow-apple-medium flex items-center justify-center">
+                          <Building2 className="h-10 w-10 text-text-secondary" />
+                        </div>
                       )}
                     </div>
-                  </div>
-                </CardHeader>
 
-                <CardContent className="space-y-6 px-6 pb-6">
-                  <CardDescription className="line-clamp-2 text-base leading-relaxed text-text-secondary">
-                    {company.description || 'Innovative company committed to excellence and growth.'}
-                  </CardDescription>
-                  
-                  <div className="space-y-3">
-                    {company.headquarters_location && (
-                      <div className="flex items-center space-x-3 text-text-secondary">
-                        <MapPin className="h-5 w-5" />
-                        <span className="text-base">{company.headquarters_location}</span>
-                      </div>
-                    )}
-                    {company.founding_year && (
-                      <div className="flex items-center space-x-3 text-text-secondary">
-                        <Building2 className="h-5 w-5" />
-                        <span className="text-base">Founded in {company.founding_year}</span>
-                      </div>
-                    )}
-                    {company.website && (
-                      <div className="flex items-center space-x-3">
-                        <Globe className="h-5 w-5 text-text-secondary" />
-                        <a 
-                          href={company.website} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-primary hover:text-primary/80 truncate text-base font-medium transition-colors"
-                        >
-                          Visit Website
-                        </a>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex items-center justify-between pt-4">
-                    <CompanyFollowButton 
-                      companyId={company.id}
-                      size="sm"
-                      variant="outline"
-                      showFollowersCount={false}
-                    />
-                     <div className="flex gap-3">
-                       <Link to={`/company/${company.slug}`}>
-                         <Button variant="outline" size="sm" className="rounded-xl border-gray-200 text-text-secondary hover:bg-gray-50">
-                           View Profile
-                         </Button>
-                       </Link>
-                      <Link to={`/jobs?company=${company.id}`}>
-                        <Button size="sm" className="rounded-xl bg-[#28C76F] hover:bg-[#28C76F]/90 text-white shadow-apple-light">
-                          View Jobs
-                        </Button>
-                      </Link>
+                    {/* Follow Button */}
+                    <div className="absolute top-4 right-4">
+                      <Button variant="secondary" size="icon" className="bg-white/20 backdrop-blur-sm border-white/30 hover:bg-white/40 rounded-xl transition-all duration-200">
+                        <Heart className="h-4 w-4 text-white" />
+                      </Button>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
+
+                  <CardHeader className="pt-12 pb-4">
+                    <div className="space-y-3">
+                      <CardTitle className="text-2xl font-bold text-text-primary group-hover:text-primary transition-colors font-display">
+                        {company.name}
+                      </CardTitle>
+                      <div className="flex flex-wrap gap-2">
+                        {company.industry && (
+                          <Badge variant="secondary" className="text-sm px-3 py-1 bg-gray-100 text-text-secondary border-0 rounded-xl">
+                            {company.industry}
+                          </Badge>
+                        )}
+                        {companySize && (
+                          <Badge variant="outline" className="text-sm px-3 py-1 border-gray-200 text-text-secondary rounded-xl">
+                            {companySize}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  </CardHeader>
+
+                  <CardContent className="space-y-6 px-6 pb-6">
+                    <CardDescription className="line-clamp-2 text-base leading-relaxed text-text-secondary">
+                      {company.description || 'Innovative company committed to excellence and growth.'}
+                    </CardDescription>
+                    
+                    <div className="space-y-3">
+                      {companyLocation && (
+                        <div className="flex items-center space-x-3 text-text-secondary">
+                          <MapPin className="h-5 w-5" />
+                          <span className="text-base">{companyLocation}</span>
+                        </div>
+                      )}
+                      {foundedYear && (
+                        <div className="flex items-center space-x-3 text-text-secondary">
+                          <Building2 className="h-5 w-5" />
+                          <span className="text-base">Founded in {foundedYear}</span>
+                        </div>
+                      )}
+                      {websiteUrl && (
+                        <div className="flex items-center space-x-3">
+                          <Globe className="h-5 w-5 text-text-secondary" />
+                          <a 
+                            href={websiteUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-primary hover:text-primary/80 truncate text-base font-medium transition-colors"
+                          >
+                            Visit Website
+                          </a>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex items-center justify-between pt-4">
+                      <CompanyFollowButton 
+                        companyId={company.id}
+                        size="sm"
+                        variant="outline"
+                        showFollowersCount={false}
+                      />
+                       <div className="flex gap-3">
+                         <Link to={profilePath}>
+                           <Button variant="outline" size="sm" className="rounded-xl border-gray-200 text-text-secondary hover:bg-gray-50">
+                             View Profile
+                           </Button>
+                         </Link>
+                        <Link to={`/jobs?company=${company.id}`}>
+                          <Button size="sm" className="rounded-xl bg-[#28C76F] hover:bg-[#28C76F]/90 text-white shadow-apple-light">
+                            View Jobs
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         ) : (
           <div className="text-center py-20">

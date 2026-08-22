@@ -41,7 +41,7 @@ export default function UnifiedResumeHub() {
     full_name: profile?.full_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'TalentXcel Candidate',
     title: profile?.headline || profile?.title || 'Software Engineer & AI Builder',
     location: profile?.location || 'Bengaluru, India',
-    avatarUrl: profile?.profile_picture_url || user?.user_metadata?.avatar_url || 'https://chatr.chat/assets/img/logo.png',
+    avatarUrl: profile?.profile_picture_url || user?.user_metadata?.avatar_url || '/assets/avatar-placeholder.png',
     coverUrl: profile?.cover_image_url || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80'
   };
 
@@ -266,7 +266,7 @@ export default function UnifiedResumeHub() {
                     src={userInfo.avatarUrl}
                     alt={userInfo.full_name}
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = 'https://chatr.chat/assets/img/logo.png';
+                      (e.target as HTMLImageElement).src = '/assets/avatar-placeholder.png';
                     }}
                     className="w-full h-full object-cover"
                   />

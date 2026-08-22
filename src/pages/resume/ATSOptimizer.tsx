@@ -44,18 +44,31 @@ interface ATSAnalysis {
 
 // Adapter: maps ATSAnalysisResult (real engine) to the ATSAnalysis display shape
 function mapRealToDisplay(result: ATSAnalysisResult): ATSAnalysis {
-  const matched = result.requirements.filter(r => r.matchType !== 'MISSING');
-  const missing = result.requirements.filter(r => r.matchType === 'MISSING');
+  const foundKeywords: string[] = [];
+  const missingKeywords: string[] = [];
+  const density: Record<string, number> = {};
 
-  const foundKeywords = matched
-    .filter(r => ['SKILL', 'MUST_HAVE', 'PREFERRED'].includes(r.requirementClass))
-    .map(r => r.requirement)
-    .slice(0, 10);
+  let totalEvidenceCount = 0;
+  const keywordEvidenceCounts: Record<string, number> = {};
 
-  const missingKeywords = missing
-    .filter(r => ['SKILL', 'MUST_HAVE', 'PREFERRED'].includes(r.requirementClass))
-    .map(r => r.requirement)
-    .slice(0, 10);
+  for (const req of result.requirements) {
+    if (req.matchType === 'EXACT' || req.matchType === 'NORMALIZED' || req.matchType === 'SEMANTIC') {
+      foundKeywords.push(req.requirement);
+      if (req.candidateEvidence && req.candidateEvidence.length > 0) {
+        keywordEvidenceCounts[req.requirement] = req.candidateEvidence.length;
+        totalEvidenceCount += req.candidateEvidence.length;
+      }
+    } else {
+      missingKeywords.push(req.requirement);
+    }
+  }
+
+  // Compute honest keyword frequency from candidate evidence tokens if available
+  if (totalEvidenceCount > 0) {
+    for (const [kw, count] of Object.entries(keywordEvidenceCounts)) {
+      density[kw] = parseFloat(((count / totalEvidenceCount) * 100).toFixed(1));
+    }
+  }
 
   const issues = [
     ...result.gaps
@@ -89,7 +102,7 @@ function mapRealToDisplay(result: ATSAnalysisResult): ATSAnalysis {
     keywords: {
       found: foundKeywords,
       missing: missingKeywords,
-      density: Object.fromEntries(foundKeywords.map(k => [k, parseFloat((Math.random() * 2 + 0.5).toFixed(1))])),
+      density,
     },
     improvements: result.gaps.slice(0, 4).map(g => ({
       title: g.requirement,
@@ -437,7 +450,7 @@ const ATSOptimizer = () => {
                         <div className="flex flex-wrap gap-2">
                           {analysis.keywords.found.map((keyword) => (
                             <Badge key={keyword} variant="default">
-                              {keyword} ({analysis.keywords.density[keyword]}%)
+                              {keyword}{analysis.keywords.density && analysis.keywords.density[keyword] !== undefined ? ` (${analysis.keywords.density[keyword]}%)` : ''}
                             </Badge>
                           ))}
                         </div>

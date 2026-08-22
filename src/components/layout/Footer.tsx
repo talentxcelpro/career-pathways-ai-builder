@@ -17,12 +17,14 @@ export const Footer = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8">
           {/* Company Info */}
           <div className="sm:col-span-2 md:col-span-1">
-            <div className="flex items-center space-x-2 mb-4">
-              <img 
-                src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
-                alt="TalentXcel Logo" 
-                className="h-8 w-8 rounded-sm"
-              />
+            <div className="flex items-center space-x-2.5 mb-4">
+              <div className="h-8 w-8 rounded-lg bg-slate-900 flex items-center justify-center p-1 border border-slate-700">
+                <img 
+                  src="/talentxcel-official-logo.png" 
+                  alt="TalentXcel Logo" 
+                  className="h-full w-full object-contain"
+                />
+              </div>
               <span className="font-bold text-xl">TalentXcel</span>
             </div>
             <p className="text-background/70 mb-4 text-sm leading-relaxed">

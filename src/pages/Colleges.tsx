@@ -72,7 +72,7 @@ export default function Colleges() {
     full_name: profile?.full_name || user?.user_metadata?.full_name || 'TalentXcel Student',
     title: profile?.headline || profile?.title || 'Higher Education Aspirant',
     location: profile?.location || 'India',
-    avatarUrl: profile?.profile_picture_url || user?.user_metadata?.avatar_url || 'https://chatr.chat/assets/img/logo.png',
+    avatarUrl: profile?.profile_picture_url || user?.user_metadata?.avatar_url || '/assets/avatar-placeholder.png',
     coverUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80'
   });
 
@@ -81,7 +81,7 @@ export default function Colleges() {
       const fullName = profile?.full_name || user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0] || 'TalentXcel Student';
       const title = profile?.headline || profile?.title || 'Higher Education Aspirant';
       const location = profile?.location || 'India';
-      const avatar = profile?.profile_picture_url || user?.user_metadata?.avatar_url || 'https://chatr.chat/assets/img/logo.png';
+      const avatar = profile?.profile_picture_url || user?.user_metadata?.avatar_url || '/assets/avatar-placeholder.png';
       setUserInfo({
         full_name: fullName,
         title: title,
@@ -230,7 +230,7 @@ export default function Colleges() {
                   src={userInfo.avatarUrl}
                   alt={userInfo.full_name}
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = 'https://chatr.chat/assets/img/logo.png';
+                    (e.target as HTMLImageElement).src = '/assets/avatar-placeholder.png';
                   }}
                   className="w-full h-full object-cover"
                 />

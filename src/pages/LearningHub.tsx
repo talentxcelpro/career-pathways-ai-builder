@@ -99,7 +99,7 @@ export default function LearningHub() {
     title: profile?.headline || profile?.title || 'Career Enthusiast',
     location: profile?.location || 'India',
     skills: ['Operations Strategy', 'Data Analytics', 'Project Execution'],
-    avatarUrl: profile?.profile_picture_url || user?.user_metadata?.avatar_url || 'https://chatr.chat/assets/img/logo.png',
+    avatarUrl: profile?.profile_picture_url || user?.user_metadata?.avatar_url || '/assets/avatar-placeholder.png',
     coverUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80'
   });
 
@@ -113,7 +113,7 @@ export default function LearningHub() {
           const fullName = profile?.full_name || currentUser?.user_metadata?.full_name || currentUser?.user_metadata?.name || currentUser?.email?.split('@')[0] || 'Learner';
           const title = profile?.headline || profile?.title || currentUser?.user_metadata?.title || 'Professional';
           const location = profile?.location || 'India';
-          const avatar = profile?.profile_picture_url || (profile as any)?.avatar_url || currentUser?.user_metadata?.avatar_url || currentUser?.user_metadata?.picture || 'https://chatr.chat/assets/img/logo.png';
+          const avatar = profile?.profile_picture_url || (profile as any)?.avatar_url || currentUser?.user_metadata?.avatar_url || currentUser?.user_metadata?.picture || '/assets/avatar-placeholder.png';
           
           setUserInfo({
             full_name: fullName,
@@ -234,7 +234,7 @@ export default function LearningHub() {
                   src={userInfo.avatarUrl} 
                   alt={userInfo.full_name} 
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = 'https://chatr.chat/assets/img/logo.png';
+                    (e.target as HTMLImageElement).src = '/assets/avatar-placeholder.png';
                   }}
                   className="w-full h-full object-cover"
                 />

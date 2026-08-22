@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
-    mcpPlugin(),
+    mode === 'development' && mcpPlugin(),
     mode === 'production' && componentTagger(),
   ].filter(Boolean),
   resolve: {
@@ -91,6 +91,7 @@ export default defineConfig(({ mode }) => ({
         drop_debugger: true,
         pure_funcs: mode === 'production' ? ['console.log', 'console.info', 'console.debug'] : [],
       },
+      maxWorkers: 1,
     },
     cssCodeSplit: true,
     assetsInlineLimit: 4096,

@@ -10,11 +10,13 @@ export const AppleFooter = () => {
           {/* Brand */}
           <div className="md:col-span-1">
             <div className="flex items-center space-x-3 mb-4">
-              <img 
-                src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
-                alt="TalentXcel" 
-                className="h-8 w-8 rounded-sm"
-              />
+              <div className="h-8 w-8 rounded-lg bg-slate-900 flex items-center justify-center p-1 shadow-sm">
+                <img 
+                  src="/talentxcel-official-logo.png" 
+                  alt="TalentXcel" 
+                  className="h-full w-full object-contain"
+                />
+              </div>
               <span className="text-xl font-semibold text-slate-900">TalentXcel</span>
             </div>
             <p className="text-slate-600 font-light leading-relaxed">
