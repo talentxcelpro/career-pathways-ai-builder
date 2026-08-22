@@ -224,31 +224,34 @@ const ATSOptimizer = () => {
         <meta property="og:description" content="Instantly check if your resume is ATS-optimized" />
       </Helmet>
 
-      <div className="min-h-screen bg-gradient-to-br from-background via-secondary/5 to-primary/5 py-8 px-4">
-        <div className="max-w-6xl mx-auto">
+      <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background py-6 px-4 sm:px-6">
+        <div className="max-w-6xl mx-auto space-y-6">
           {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary via-purple-600 to-blue-600 bg-clip-text text-transparent">
+          <div className="text-center space-y-2 max-w-3xl mx-auto">
+            <div className="inline-flex items-center gap-1.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-full text-[11px] font-extrabold border border-blue-500/20">
+              <Target className="h-3.5 w-3.5" />
+              <span>ATS Precision Diagnostic</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">
               ATS Resume Checker
             </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Free tool to check if your resume passes Applicant Tracking Systems. 
-              Get instant feedback and optimization suggestions.
+            <p className="text-xs sm:text-sm text-muted-foreground font-medium leading-relaxed">
+              Ensure your resume passes modern Applicant Tracking Systems with instant keyword parsing, structural diagnostics, and recruiter-ready scoring.
             </p>
             
-            {/* Quick Stats */}
-            <div className="flex justify-center gap-8 mt-6">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary">98%</div>
-                <div className="text-sm text-muted-foreground">ATS Compatible</div>
+            {/* Quick Stats Pills */}
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+              <div className="bg-card px-4 py-2 rounded-2xl border border-border/80 shadow-sm flex items-center gap-2">
+                <span className="text-sm font-black text-blue-600 dark:text-blue-400">98%</span>
+                <span className="text-[11px] text-muted-foreground font-semibold">ATS Compatible</span>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary">50K+</div>
-                <div className="text-sm text-muted-foreground">Resumes Checked</div>
+              <div className="bg-card px-4 py-2 rounded-2xl border border-border/80 shadow-sm flex items-center gap-2">
+                <span className="text-sm font-black text-purple-600 dark:text-purple-400">50K+</span>
+                <span className="text-[11px] text-muted-foreground font-semibold">Resumes Audited</span>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary">Free</div>
-                <div className="text-sm text-muted-foreground">Always</div>
+              <div className="bg-card px-4 py-2 rounded-2xl border border-border/80 shadow-sm flex items-center gap-2">
+                <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">Free</span>
+                <span className="text-[11px] text-muted-foreground font-semibold">Always Instant</span>
               </div>
             </div>
           </div>

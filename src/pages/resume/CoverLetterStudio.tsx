@@ -140,29 +140,32 @@ Best regards,
         <meta property="og:description" content="Create compelling cover letters in minutes" />
       </Helmet>
 
-      <div className="min-h-screen bg-gradient-to-br from-background via-secondary/5 to-primary/5">
+      <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
         {/* Header */}
-        <section className="pt-20 pb-8 px-4">
-          <div className="max-w-7xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary via-purple-600 to-blue-600 bg-clip-text text-transparent">
+        <section className="pt-8 pb-6 px-4">
+          <div className="max-w-7xl mx-auto text-center space-y-2">
+            <div className="inline-flex items-center gap-1.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-full text-[11px] font-extrabold border border-blue-500/20">
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>AI Writing Assistant</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">
               AI Cover Letter Studio
             </h1>
-            <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-              Create compelling, personalized cover letters that get you noticed. 
-              Our AI analyzes job descriptions and crafts targeted content.
+            <p className="text-xs sm:text-sm text-muted-foreground font-medium max-w-2xl mx-auto leading-relaxed">
+              Create compelling, personalized cover letters tailored to target job descriptions with instant ATS synthesis.
             </p>
             
-            <div className="flex justify-center gap-8 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-primary" />
+            <div className="flex flex-wrap justify-center gap-2 pt-2">
+              <div className="bg-card px-3 py-1 rounded-full border border-border/80 text-[11px] font-semibold text-foreground flex items-center gap-1.5 shadow-sm">
+                <Sparkles className="h-3 w-3 text-blue-500" />
                 AI-Powered
               </div>
-              <div className="flex items-center gap-2">
-                <Target className="h-4 w-4 text-primary" />
+              <div className="bg-card px-3 py-1 rounded-full border border-border/80 text-[11px] font-semibold text-foreground flex items-center gap-1.5 shadow-sm">
+                <Target className="h-3 w-3 text-purple-500" />
                 Job-Matched
               </div>
-              <div className="flex items-center gap-2">
-                <PenTool className="h-4 w-4 text-primary" />
+              <div className="bg-card px-3 py-1 rounded-full border border-border/80 text-[11px] font-semibold text-foreground flex items-center gap-1.5 shadow-sm">
+                <PenTool className="h-3 w-3 text-emerald-500" />
                 Fully Editable
               </div>
             </div>

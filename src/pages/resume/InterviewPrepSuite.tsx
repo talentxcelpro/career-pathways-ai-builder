@@ -168,28 +168,32 @@ const InterviewPrepSuite = () => {
         <link rel="canonical" href="https://talentxcel.in/interview-prep" />
       </Helmet>
 
-      <div className="min-h-screen bg-gradient-to-br from-background via-secondary/5 to-primary/5">
+      <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
         {/* Header */}
-        <section className="pt-20 pb-8 px-4">
-          <div className="max-w-7xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary via-purple-600 to-blue-600 bg-clip-text text-transparent">
+        <section className="pt-8 pb-6 px-4">
+          <div className="max-w-7xl mx-auto text-center space-y-2">
+            <div className="inline-flex items-center gap-1.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-full text-[11px] font-extrabold border border-blue-500/20">
+              <Brain className="h-3.5 w-3.5" />
+              <span>Interactive Interview Simulation</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">
               AI Interview Prep Suite
             </h1>
-            <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-              Practice interviews with AI feedback, master common questions, and negotiate salary with confidence.
+            <p className="text-xs sm:text-sm text-muted-foreground font-medium max-w-2xl mx-auto leading-relaxed">
+              Practice role-specific mock interviews with real-time AI evaluation, master behavioral questions, and negotiate compensation with confidence.
             </p>
             
-            <div className="flex justify-center gap-8 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <Video className="h-4 w-4 text-primary" />
+            <div className="flex flex-wrap justify-center gap-2 pt-2">
+              <div className="bg-card px-3 py-1 rounded-full border border-border/80 text-[11px] font-semibold text-foreground flex items-center gap-1.5 shadow-sm">
+                <Video className="h-3 w-3 text-blue-500" />
                 Video Practice
               </div>
-              <div className="flex items-center gap-2">
-                <Brain className="h-4 w-4 text-primary" />
+              <div className="bg-card px-3 py-1 rounded-full border border-border/80 text-[11px] font-semibold text-foreground flex items-center gap-1.5 shadow-sm">
+                <Brain className="h-3 w-3 text-purple-500" />
                 AI Analysis
               </div>
-              <div className="flex items-center gap-2">
-                <Target className="h-4 w-4 text-primary" />
+              <div className="bg-card px-3 py-1 rounded-full border border-border/80 text-[11px] font-semibold text-foreground flex items-center gap-1.5 shadow-sm">
+                <Target className="h-3 w-3 text-emerald-500" />
                 Role-Specific
               </div>
             </div>

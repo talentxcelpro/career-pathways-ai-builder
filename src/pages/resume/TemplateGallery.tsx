@@ -64,45 +64,45 @@ const TemplateGallery = () => {
         <meta property="og:description" content="ATS-optimized resume templates for every career stage" />
       </Helmet>
 
-      <div className="min-h-screen bg-gradient-to-br from-background via-secondary/5 to-primary/5">
+      <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
         {/* Hero Section */}
-        <section className="pt-20 pb-12 px-4">
-          <div className="max-w-7xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary via-purple-600 to-blue-600 bg-clip-text text-transparent">
+        <section className="pt-8 pb-6 px-4">
+          <div className="max-w-7xl mx-auto text-center space-y-2">
+            <div className="inline-flex items-center gap-1.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-full text-[11px] font-extrabold border border-blue-500/20">
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>ATS-Optimized Designs</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">
               Professional Resume Templates
             </h1>
-            <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-              Choose from our collection of ATS-optimized templates designed by career experts.
-              Get hired faster with templates that pass through applicant tracking systems.
+            <p className="text-xs sm:text-sm text-muted-foreground font-medium max-w-2xl mx-auto leading-relaxed">
+              Curated, recruiter-tested templates engineered to pass ATS filters and highlight your professional achievements.
             </p>
-
-            {/* Stats */}
-            {/* ... keep existing code (hero stats visuals) */}
           </div>
         </section>
 
         {/* Filters */}
-        <section className="px-4 mb-8">
+        <section className="px-4 mb-6">
           <div className="max-w-7xl mx-auto">
-            <div className="bg-card/50 backdrop-blur-sm border rounded-lg p-6">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="bg-card/70 backdrop-blur-sm border border-border/80 rounded-2xl p-4 shadow-sm">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Search templates..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
+                    className="pl-9 h-10 text-xs font-medium rounded-xl"
                   />
                 </div>
 
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger>
+                  <SelectTrigger className="h-10 text-xs font-medium rounded-xl">
                     <SelectValue placeholder="Category" />
                   </SelectTrigger>
                   <SelectContent>
                     {categories.map(category => (
-                      <SelectItem key={category.value} value={category.value}>
+                      <SelectItem key={category.value} value={category.value} className="text-xs">
                         {category.label}
                       </SelectItem>
                     ))}
@@ -110,17 +110,17 @@ const TemplateGallery = () => {
                 </Select>
 
                 <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger>
+                  <SelectTrigger className="h-10 text-xs font-medium rounded-xl">
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ats-score">ATS Score</SelectItem>
-                    <SelectItem value="name">Name (A-Z)</SelectItem>
+                    <SelectItem value="ats-score" className="text-xs">ATS Score</SelectItem>
+                    <SelectItem value="name" className="text-xs">Name (A-Z)</SelectItem>
                   </SelectContent>
                 </Select>
 
-                <Button variant="outline" className="gap-2">
-                  <Filter className="h-4 w-4" />
+                <Button variant="outline" className="gap-2 h-10 text-xs font-bold rounded-xl">
+                  <Filter className="h-3.5 w-3.5" />
                   More Filters
                 </Button>
               </div>
