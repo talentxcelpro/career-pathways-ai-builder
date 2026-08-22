@@ -282,6 +282,47 @@ class NetworkAutoPostEngine {
     return updated;
   }
 
+  private isAutoExecuting = false;
+
+  /**
+   * Checks if an automated post is due and triggers it in the background
+   */
+  public async checkAndExecuteScheduledPost(): Promise<{ executed: boolean; reason?: string }> {
+    if (this.isAutoExecuting) {
+      return { executed: false, reason: 'ALREADY_EXECUTING' };
+    }
+
+    try {
+      this.isAutoExecuting = true;
+      const config = await this.getConfig();
+
+      if (!config.enabled) {
+        return { executed: false, reason: 'AUTOMATION_DISABLED' };
+      }
+
+      if (config.posts_today_count >= config.max_daily_posts) {
+        return { executed: false, reason: 'DAILY_LIMIT_REACHED' };
+      }
+
+      const scheduledTime = new Date(config.next_post_scheduled_at).getTime();
+      const now = Date.now();
+
+      // If scheduled time is in past or due now
+      if (now < scheduledTime) {
+        return { executed: false, reason: 'NOT_DUE_YET' };
+      }
+
+      console.log('🤖 Auto-post window is Due Now. Triggering autonomous background publication...');
+      const result = await this.publishMicroPost({ isManual: false });
+      return { executed: result.success, reason: result.error || 'SUCCESS' };
+    } catch (err: any) {
+      console.error('Error in checkAndExecuteScheduledPost:', err);
+      return { executed: false, reason: err?.message || 'UNKNOWN_ERROR' };
+    } finally {
+      this.isAutoExecuting = false;
+    }
+  }
+
   /**
    * Fetches recent audit logs for deduplication and display
    */

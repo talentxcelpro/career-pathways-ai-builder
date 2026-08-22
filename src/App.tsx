@@ -234,6 +234,14 @@ const App = () => {
             console.log('🤖 AI-powered performance features initialized');
           });
 
+          // Initialize Autonomous Network Posting Background Runner
+          import('@/services/networkAutoPostEngine').then(({ networkAutoPostEngine }) => {
+            networkAutoPostEngine.checkAndExecuteScheduledPost();
+            setInterval(() => {
+              networkAutoPostEngine.checkAndExecuteScheduledPost();
+            }, 60000);
+          });
+
           advancedPerformanceMonitor.trackRouteChange('/', startTime);
         });
       } catch (error) {

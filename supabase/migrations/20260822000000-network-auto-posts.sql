@@ -1,5 +1,5 @@
 /* ==============================================================================
-   Migration: Network Autonomous Micro-Post Engine (Config, Logs, Atomic Lock)
+   Migration: Network Autonomous Micro-Post Engine (Config, Logs, Atomic Lock, Auto Runner)
    ============================================================================== */
 
 -- 1. Create network_auto_post_config table
@@ -147,11 +147,124 @@ BEGIN
 END;
 $$;
 
--- 4. Enable Row Level Security (RLS)
+-- 4. Autonomous Background Post Execution Procedure (callable by database cron or API)
+CREATE OR REPLACE FUNCTION public.execute_scheduled_auto_post()
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_admin_id UUID;
+  v_claim_res JSONB;
+  v_new_post_id UUID;
+  v_seed_text TEXT;
+  v_seed_pillar TEXT;
+  v_word_count INT;
+  v_seeds TEXT[][] := ARRAY[
+    ARRAY['Good resumes open doors for interviews. Strong skills keep them open.', 'careers'],
+    ARRAY['The best career move isn''t always a new job. Sometimes it''s learning something genuinely valuable.', 'careers'],
+    ARRAY['Don''t wait for the perfect career path. Build one step by step with consistent daily effort.', 'careers'],
+    ARRAY['Hiring is changing quickly. Practical skills are becoming far more important than formal job titles.', 'jobs'],
+    ARRAY['In technical interviews, showing how you think through ambiguity matters more than memorizing syntax.', 'jobs'],
+    ARRAY['When preparing for interviews, prepare concrete stories of lessons learned from past mistakes.', 'jobs'],
+    ARRAY['Small improvements in your core skills can create surprisingly big opportunities over time.', 'skills'],
+    ARRAY['Depth in one domain combined with broad literacy across related fields creates lasting professional versatility.', 'skills'],
+    ARRAY['A degree gets you started. What you can actually build takes you much further.', 'education'],
+    ARRAY['A clean resume layout with measurable achievements always outperforms decorative templates with complex formatting.', 'resumes'],
+    ARRAY['Consistency in learning beats intensity. Thirty minutes of focused daily study creates extraordinary compound progress.', 'learning'],
+    ARRAY['A verifiable digital career record gives employers instant confidence in your authentic skills and achievements.', 'passport'],
+    ARRAY['Networking works best when you focus on offering help and sharing insights rather than asking for favors.', 'network'],
+    ARRAY['A good career platform should help you discover opportunities, build skills, and understand where you are heading.', 'ecosystem'],
+    ARRAY['Connecting jobs, learning catalogs, and resume intelligence in one place creates clear pathways for professionals.', 'ecosystem']
+  ];
+  v_idx INT;
+BEGIN
+  -- 1. Resolve admin account user ID
+  SELECT id INTO v_admin_id 
+  FROM auth.users 
+  WHERE email = 'talentxcelpro@gmail.com' 
+  LIMIT 1;
+
+  IF v_admin_id IS NULL THEN
+    SELECT id INTO v_admin_id 
+    FROM public.profiles 
+    LIMIT 1;
+  END IF;
+
+  IF v_admin_id IS NULL THEN
+    RETURN jsonb_build_object('success', false, 'error', 'ADMIN_USER_NOT_FOUND');
+  END IF;
+
+  -- 2. Attempt slot claim
+  v_claim_res := public.claim_and_execute_auto_post_slot(v_admin_id, false);
+
+  IF (v_claim_res ->> 'success')::BOOLEAN IS NOT TRUE THEN
+    RETURN jsonb_build_object('success', false, 'status', 'SKIPPED', 'reason', v_claim_res ->> 'error');
+  END IF;
+
+  -- 3. Pick random seed
+  v_idx := floor(random() * array_length(v_seeds, 1) + 1)::INT;
+  v_seed_text := v_seeds[v_idx][1];
+  v_seed_pillar := v_seeds[v_idx][2];
+  v_word_count := array_length(regexp_split_to_array(trim(v_seed_text), '\s+'), 1);
+
+  -- 4. Publish to public.posts
+  INSERT INTO public.posts (
+    content,
+    post_type,
+    author_id,
+    user_id,
+    visibility,
+    origin,
+    media_urls,
+    tags
+  ) VALUES (
+    v_seed_text,
+    'text',
+    v_admin_id,
+    v_admin_id,
+    'public',
+    'feed',
+    ARRAY[]::TEXT[],
+    ARRAY[]::TEXT[]
+  )
+  RETURNING id INTO v_new_post_id;
+
+  -- 5. Record audit log
+  INSERT INTO public.network_auto_posts (
+    post_id,
+    user_id,
+    content,
+    pillar,
+    word_count,
+    status,
+    published_at
+  ) VALUES (
+    v_new_post_id,
+    v_admin_id,
+    v_seed_text,
+    v_seed_pillar,
+    v_word_count,
+    'published',
+    now()
+  );
+
+  RETURN jsonb_build_object(
+    'success', true,
+    'post_id', v_new_post_id,
+    'content', v_seed_text,
+    'pillar', v_seed_pillar,
+    'posts_today_count', v_claim_res -> 'posts_today_count',
+    'next_post_scheduled_at', v_claim_res -> 'next_post_scheduled_at'
+  );
+END;
+$$;
+
+-- 5. Enable Row Level Security (RLS)
 ALTER TABLE public.network_auto_post_config ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.network_auto_posts ENABLE ROW LEVEL SECURITY;
 
--- 5. Admin-Only RLS Policies using canonical project functions
+-- 6. Admin-Only RLS Policies
 CREATE POLICY "Admins have full access to network auto post config"
 ON public.network_auto_post_config
 FOR ALL

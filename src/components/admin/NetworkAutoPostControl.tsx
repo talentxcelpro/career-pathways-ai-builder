@@ -70,11 +70,27 @@ export const NetworkAutoPostControl: React.FC = () => {
 
   useEffect(() => {
     loadData();
-    const interval = setInterval(loadData, 60000); // refresh every minute
+    
+    // Auto-check and publish in background if post is due
+    networkAutoPostEngine.checkAndExecuteScheduledPost().then((res) => {
+      if (res.executed) {
+        loadData();
+      }
+    });
+
+    const interval = setInterval(() => {
+      networkAutoPostEngine.checkAndExecuteScheduledPost().then((res) => {
+        if (res.executed) {
+          loadData();
+        }
+      });
+      loadData();
+    }, 30000); // Check every 30s
+
     return () => clearInterval(interval);
   }, []);
 
-  // Update countdown timer
+  // Update countdown timer and auto-execute when due
   useEffect(() => {
     if (!config?.next_post_scheduled_at) return;
 
@@ -84,7 +100,14 @@ export const NetworkAutoPostControl: React.FC = () => {
       const diff = targetTime - now;
 
       if (diff <= 0) {
-        setTimeRemainingStr('Due now');
+        setTimeRemainingStr('Due now (Auto-publishing...)');
+        if (config.enabled && config.posts_today_count < config.max_daily_posts) {
+          networkAutoPostEngine.checkAndExecuteScheduledPost().then((res) => {
+            if (res.executed) {
+              loadData();
+            }
+          });
+        }
         return;
       }
 
@@ -94,9 +117,9 @@ export const NetworkAutoPostControl: React.FC = () => {
     };
 
     updateCountdown();
-    const timer = setInterval(updateCountdown, 30000);
+    const timer = setInterval(updateCountdown, 15000);
     return () => clearInterval(timer);
-  }, [config?.next_post_scheduled_at]);
+  }, [config?.next_post_scheduled_at, config?.enabled, config?.posts_today_count, config?.max_daily_posts]);
 
   const handleToggleAutomation = async (checked: boolean) => {
     if (!config) return;
