@@ -41,12 +41,12 @@ export const EnhancedSmartConnectAI: React.FC = () => {
     currentUserProfile
   } = useEnhancedConnectionSuggestions();
 
-  const handleGenerateGeminiPitch = async (suggestion: any) => {
+  const handleGenerateTalentXcelPitch = async (suggestion: any) => {
     setGeneratingPitchFor(suggestion.id);
     try {
       const res = await generateGeminiSmartConnect(currentUserProfile, suggestion);
       setPitchMessages(prev => ({ ...prev, [suggestion.id]: res.message }));
-      toast.success("Gemini AI generated a personalized connection pitch!");
+      toast.success("TalentXcel AI generated a personalized connection pitch!");
     } catch (err) {
       toast.error("Failed to generate AI pitch");
     } finally {
@@ -94,16 +94,16 @@ export const EnhancedSmartConnectAI: React.FC = () => {
   return (
     <div className="space-y-6">
       
-      {/* Gemini AI Header Card */}
+      {/* TalentXcel AI Header Card */}
       <Card className="border border-purple-200 dark:border-purple-900 bg-gradient-to-r from-purple-500/10 via-indigo-500/10 to-blue-500/10 rounded-3xl p-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <h2 className="text-base font-extrabold text-foreground flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-purple-600" />
-              Gemini AI Smart Connect &amp; Matchmaker
+              TalentXcel AI Smart Connect &amp; Matchmaker
             </h2>
             <p className="text-xs text-muted-foreground font-medium">
-              AI-driven connection recommendations and personalized pitch messages powered by Gemini AI.
+              AI-driven connection recommendations and personalized pitch messages powered by TalentXcel AI.
             </p>
           </div>
 
@@ -138,65 +138,57 @@ export const EnhancedSmartConnectAI: React.FC = () => {
               {[
                 { key: 'all', label: 'All', icon: Users },
                 { key: 'skill_match', label: 'Skills', icon: Target },
-                { key: 'title_match', label: 'Roles', icon: Briefcase },
+                { key: 'title_match', label: 'Role', icon: Briefcase },
                 { key: 'location_match', label: 'Location', icon: MapPin },
                 { key: 'industry_match', label: 'Industry', icon: Building }
-              ].map(({ key, label, icon: Icon }) => (
-                <Button
-                  key={key}
-                  variant={selectedFilter === key ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setSelectedFilter(key as FilterType)}
-                  className="rounded-xl h-8 text-xs font-bold gap-1"
-                >
-                  <Icon className="h-3 w-3" />
-                  {label}
-                </Button>
-              ))}
+              ].map((filter) => {
+                const Icon = filter.icon;
+                return (
+                  <Button
+                    key={filter.key}
+                    variant={selectedFilter === filter.key ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSelectedFilter(filter.key as FilterType)}
+                    className="rounded-2xl text-xs h-9 font-semibold gap-1.5"
+                  >
+                    <Icon className="h-3.5 w-3.5" />
+                    {filter.label}
+                  </Button>
+                );
+              })}
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Suggested Connections List */}
+      {/* Suggestions List */}
       <Card className="rounded-3xl border border-slate-200/80 dark:border-border/60">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-sm font-extrabold">
-            <Users className="h-4 w-4 text-primary" />
-            Suggested Connections
-            {filteredSuggestions.length > 0 && (
-              <Badge variant="secondary" className="rounded-full">{filteredSuggestions.length}</Badge>
-            )}
+        <CardHeader className="pb-3 border-b border-slate-100 dark:border-border/60">
+          <CardTitle className="text-sm font-bold flex items-center justify-between">
+            <span>Recommended Connections ({filteredSuggestions.length})</span>
           </CardTitle>
         </CardHeader>
-
-        <CardContent className="space-y-4">
+        <CardContent className="p-4 space-y-4">
           {filteredSuggestions.map((suggestion) => (
-            <div 
-              key={suggestion.id} 
-              className="p-5 border border-slate-200/80 dark:border-border/60 rounded-3xl bg-white dark:bg-card hover:shadow-md transition-all space-y-3"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-start space-x-3.5 min-w-0">
-                  <Link to={`/passport/public/${suggestion.id}`}>
-                    <Avatar className="w-12 h-12 border-2 border-white dark:border-slate-800 shadow-md">
-                      <AvatarImage src={suggestion.profile_picture_url} />
-                      <AvatarFallback className="font-extrabold text-xs bg-slate-900 text-white">
-                        {suggestion.full_name?.charAt(0) || 'U'}
-                      </AvatarFallback>
-                    </Avatar>
-                  </Link>
+            <div key={suggestion.id} className="p-4 rounded-2xl border border-slate-100 dark:border-border/60 hover:bg-slate-50/50 dark:hover:bg-muted/30 transition-all space-y-3">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <Avatar className="w-12 h-12 border-2 border-primary/20">
+                    <AvatarImage src={suggestion.profile_picture_url} alt={suggestion.full_name} />
+                    <AvatarFallback className="font-bold text-xs bg-slate-900 text-white">
+                      {suggestion.full_name?.charAt(0) || 'U'}
+                    </AvatarFallback>
+                  </Avatar>
 
-                  <div className="min-w-0 flex-1 space-y-1">
+                  <div className="space-y-0.5">
                     <div className="flex items-center gap-1.5">
-                      <Link to={`/passport/public/${suggestion.id}`} className="font-extrabold text-sm text-foreground hover:text-primary transition-colors truncate">
+                      <Link to={`/passport/public/${suggestion.id}`} className="font-bold text-sm text-foreground hover:text-primary transition-colors">
                         {suggestion.full_name}
                       </Link>
-                      <CheckCircle2 className="h-4 w-4 text-blue-600 shrink-0" />
+                      <CheckCircle2 className="h-3.5 w-3.5 text-blue-600 fill-blue-600/20" />
                     </div>
-
-                    <p className="text-xs text-muted-foreground font-semibold truncate">{suggestion.title || 'Professional'}</p>
-
+                    <p className="text-xs text-muted-foreground font-semibold">{suggestion.title || 'Professional'}</p>
+                    
                     <div className="flex items-center gap-3 text-[11px] text-muted-foreground font-medium">
                       {suggestion.company && <span className="flex items-center gap-1"><Building className="h-3 w-3 text-primary" /> {suggestion.company}</span>}
                       {suggestion.location && <span className="flex items-center gap-1"><MapPin className="h-3 w-3 text-primary" /> {suggestion.location}</span>}
@@ -219,7 +211,7 @@ export const EnhancedSmartConnectAI: React.FC = () => {
                   <Button 
                     size="sm"
                     variant="outline"
-                    onClick={() => handleGenerateGeminiPitch(suggestion)}
+                    onClick={() => handleGenerateTalentXcelPitch(suggestion)}
                     disabled={generatingPitchFor === suggestion.id}
                     className="rounded-2xl text-xs font-bold border-purple-300 text-purple-700 hover:bg-purple-50 h-8"
                   >
@@ -239,11 +231,11 @@ export const EnhancedSmartConnectAI: React.FC = () => {
                 </div>
               </div>
 
-              {/* Gemini AI Generated Pitch Message Box */}
+              {/* TalentXcel AI Generated Pitch Message Box */}
               {pitchMessages[suggestion.id] && (
                 <div className="p-3 rounded-2xl bg-purple-50/80 dark:bg-purple-950/40 border border-purple-200/80 dark:border-purple-900/60 text-xs space-y-2">
                   <div className="flex items-center justify-between font-extrabold text-purple-900 dark:text-purple-200">
-                    <span className="flex items-center gap-1"><Sparkles className="h-3.5 w-3.5 text-purple-600" /> Gemini AI Personalized Pitch</span>
+                    <span className="flex items-center gap-1"><Sparkles className="h-3.5 w-3.5 text-purple-600" /> TalentXcel AI Personalized Pitch</span>
                     <button 
                       onClick={() => {
                         navigator.clipboard.writeText(pitchMessages[suggestion.id]);

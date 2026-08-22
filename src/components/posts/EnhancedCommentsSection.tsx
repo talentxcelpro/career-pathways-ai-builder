@@ -82,13 +82,13 @@ export const EnhancedCommentsSection: React.FC<EnhancedCommentsSectionProps> = (
     enabled: isOpen
   });
 
-  // Generate 1-click Gemini AI Reply
-  const handleGenerateGeminiReply = async (replyType: string) => {
+  // Generate 1-click TalentXcel AI Reply
+  const handleGenerateTalentXcelReply = async (replyType: string) => {
     setIsGeneratingReply(true);
     try {
       const res = await generateGeminiSmartReply(postData?.content || 'Career update post', replyType);
       setNewComment(res.reply);
-      toast.success('Gemini AI generated smart comment!');
+      toast.success('TalentXcel AI generated smart comment!');
     } catch (err) {
       toast.error('Could not generate AI comment');
     } finally {
@@ -159,15 +159,15 @@ export const EnhancedCommentsSection: React.FC<EnhancedCommentsSectionProps> = (
   return (
     <div className="space-y-4 pt-2">
       
-      {/* 🪄 1-Click Gemini AI Smart Reply Pills */}
+      {/* 🪄 1-Click TalentXcel AI Smart Reply Pills */}
       <div className="flex flex-wrap items-center gap-1.5 p-2 rounded-2xl bg-purple-500/5 border border-purple-200/60 dark:border-purple-950">
         <span className="text-[11px] font-extrabold text-purple-700 dark:text-purple-300 flex items-center gap-1 shrink-0">
           <Sparkles className="h-3 w-3 text-purple-600" />
-          Gemini Quick Reply:
+          TalentXcel AI Quick Reply:
         </span>
 
         <button
-          onClick={() => handleGenerateGeminiReply('Congratulate on milestone')}
+          onClick={() => handleGenerateTalentXcelReply('Congratulate on milestone')}
           disabled={isGeneratingReply}
           className="text-[10px] font-bold px-2.5 py-1 rounded-xl bg-white dark:bg-card border border-purple-200 text-purple-700 hover:bg-purple-50 transition-colors shadow-2xs"
         >
@@ -175,7 +175,7 @@ export const EnhancedCommentsSection: React.FC<EnhancedCommentsSectionProps> = (
         </button>
 
         <button
-          onClick={() => handleGenerateGeminiReply('Ask insightful strategy question')}
+          onClick={() => handleGenerateTalentXcelReply('Ask insightful strategy question')}
           disabled={isGeneratingReply}
           className="text-[10px] font-bold px-2.5 py-1 rounded-xl bg-white dark:bg-card border border-indigo-200 text-indigo-700 hover:bg-indigo-50 transition-colors shadow-2xs"
         >
@@ -183,7 +183,7 @@ export const EnhancedCommentsSection: React.FC<EnhancedCommentsSectionProps> = (
         </button>
 
         <button
-          onClick={() => handleGenerateGeminiReply('Add APAC perspective')}
+          onClick={() => handleGenerateTalentXcelReply('Add APAC perspective')}
           disabled={isGeneratingReply}
           className="text-[10px] font-bold px-2.5 py-1 rounded-xl bg-white dark:bg-card border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors shadow-2xs"
         >
