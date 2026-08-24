@@ -79,8 +79,19 @@ export const INDEXABLE_ROUTES: IndexableRoute[] = [
   { path: '/security', changefreq: 'yearly', priority: '0.3' },
   { path: '/terms', changefreq: 'yearly', priority: '0.3' },
   { path: '/privacypolicy', changefreq: 'yearly', priority: '0.3' },
-  { path: '/return-refund-policy', changefreq: 'yearly', priority: '0.3' },
   { path: '/company-info', changefreq: 'monthly', priority: '0.5' },
+
+  // Claim #1 Rankings Leaderboards
+  { path: '/rankings', changefreq: 'daily', priority: '1.0' },
+  { path: '/rankings/ai-products', changefreq: 'daily', priority: '0.9' },
+  { path: '/rankings/ai-products/global', changefreq: 'daily', priority: '0.9' },
+  { path: '/rankings/ai-products/emerging', changefreq: 'daily', priority: '0.9' },
+  { path: '/rankings/ai-products/india', changefreq: 'daily', priority: '0.9' },
+  { path: '/rankings/ai-products/usa', changefreq: 'daily', priority: '0.9' },
+  { path: '/rankings/ai-products/uae', changefreq: 'daily', priority: '0.9' },
+  { path: '/rankings/ai-products/uk', changefreq: 'daily', priority: '0.9' },
+  { path: '/rankings/ai-products/singapore', changefreq: 'daily', priority: '0.9' },
+  { path: '/claim1/watch', changefreq: 'weekly', priority: '0.7' },
 
   // Candidate services
   { path: '/resume-builder', changefreq: 'weekly', priority: '0.9' },

@@ -346,6 +346,23 @@ function generateHighScaleSitemaps() {
     { filename: 'sitemap-resume.xml', entries: resumeEntries },
     { filename: 'sitemap-employer.xml', entries: employerEntries },
     { filename: 'sitemap-articles.xml', entries: editorialEntries },
+    {
+      filename: 'sitemap-rankings.xml',
+      entries: deduplicate([
+        { path: '/rankings', changefreq: 'daily', priority: '1.0' },
+        { path: '/rankings/ai-products', changefreq: 'daily', priority: '0.9' },
+        { path: '/rankings/ai-products/global', changefreq: 'daily', priority: '0.9' },
+        { path: '/rankings/ai-products/emerging', changefreq: 'daily', priority: '0.9' },
+        { path: '/rankings/ai-products/india', changefreq: 'daily', priority: '0.9' },
+        { path: '/rankings/ai-products/usa', changefreq: 'daily', priority: '0.9' },
+        { path: '/rankings/ai-products/uae', changefreq: 'daily', priority: '0.9' },
+        { path: '/rankings/ai-products/uk', changefreq: 'daily', priority: '0.9' },
+        { path: '/rankings/ai-products/singapore', changefreq: 'daily', priority: '0.9' },
+        { path: '/rankings/ai-products/canada', changefreq: 'daily', priority: '0.9' },
+        { path: '/rankings/ai-products/australia', changefreq: 'daily', priority: '0.9' },
+        { path: '/claim1/watch', changefreq: 'weekly', priority: '0.7' },
+      ]),
+    },
   ];
 
   const validSitemapsForIndex: { filename: string; count: number }[] = [];

@@ -63,16 +63,17 @@ export const Navbar = () => {
   };
 
   const mainNavItems = [
-    { to: "/jobs", label: "Jobs" },
-    { to: "/employer", label: "Employer" },
-    { to: "/companies", label: "Companies" },
-    { to: "/resume", label: "Resume Builder" },
-    { to: "/tools", label: "Career Tools" },
-    { to: "/services", label: "Services" },
-    { to: "/learning", label: "Learning" },
-    { to: "/colleges", label: "Colleges" },
+    { to: "/jobs",       label: "Jobs" },
+    { to: "/employer",   label: "Employer" },
+    { to: "/companies",  label: "Companies" },
+    { to: "/rankings",   label: "Rankings 🏆" },
+    { to: "/resume",     label: "Resume Builder" },
+    { to: "/tools",      label: "Career Tools" },
+    { to: "/services",   label: "Services" },
+    { to: "/learning",   label: "Learning" },
+    { to: "/colleges",   label: "Colleges" },
     { to: "/career-map", label: "Career Map" },
-    { to: "/passport", label: "Career Passport" },
+    { to: "/passport",   label: "Career Passport" },
   ];
 
   const isCurrentPath = (path: string) => {

@@ -182,6 +182,7 @@ import { ConnectionStatusIndicator } from "@/components/realtime/ConnectionStatu
 import { MobileStatusBar } from "@/components/mobile/MobileStatusBar";
 import { PhaseInitializer } from "@/components/PhaseInitializer";
 import { communicationRoutes } from "./navigation/communicationRoutes";
+import { claim1Routes } from "./navigation/claim1Routes";
 import { JobsPage } from "@/components/performance/LazyRoutes";
 
 // Create query client optimized for performance and SEO
@@ -534,6 +535,20 @@ const App = () => {
                                 <Route path="/sitemap-dynamic.xml" element={<SitemapRedirect />} />
                                 
                                 {/* Universal Public Profile Route — /{username} */}
+                                {/* Claim #1 Routes — must be before /:username catch-all */}
+                                {claim1Routes
+                                  .filter((r) => !r.requiresAuth && !r.requiresAdmin)
+                                  .map((route) => (
+                                    <Route key={route.path} path={route.path} element={route.element} />
+                                  ))}
+                                {claim1Routes
+                                  .filter((r) => r.requiresAuth)
+                                  .map((route) => (
+                                    <Route key={route.path} path={route.path} element={
+                                      <ProtectedRoute>{route.element}</ProtectedRoute>
+                                    } />
+                                  ))}
+
                                 <Route path="/:username" element={<UniversalProfileRouteHandler />} />
 
                                 {/* Catchall 404 route - must be last */}
