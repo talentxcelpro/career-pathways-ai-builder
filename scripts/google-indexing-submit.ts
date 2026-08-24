@@ -135,6 +135,8 @@ export async function runGoogleIndexingPipeline() {
     '/rankings/ai-products/australia',
     '/claim1/enter',
     '/claim1/watch',
+    '/company/talentxcel',
+    '/company/talentxcel-services-pvt-ltd',
     '/jobs',
     '/colleges',
     '/colleges/global-programs',

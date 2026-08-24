@@ -309,8 +309,11 @@ const App = () => {
                 <Route path="/tools/skill-assessment" element={<SkillAssessmentEngine />} />
                 <Route path="/resources/:slug" element={<ResourceDetail />} />
                 <Route path="/resources" element={<Blog />} />
+                <Route path="/skills/:skill/:subtopic" element={<Suspense fallback={null}><JobsBySkill /></Suspense>} />
+                <Route path="/skills/:p1/:p2/:subtopic" element={<Suspense fallback={null}><JobsBySkill /></Suspense>} />
                 <Route path="/skills/:skill" element={<JobsBySkill />} />
                 <Route path="/skills" element={<JobsBySkill />} />
+                <Route path="/roles/:role/:subtopic" element={<Suspense fallback={null}><JobsByRole /></Suspense>} />
                 <Route path="/roles/:role" element={<JobsByRole />} />
                 <Route path="/roles" element={<JobsByRole />} />
                 <Route path="/locations/:location" element={<JobsByLocation />} />
@@ -348,7 +351,8 @@ const App = () => {
                 <Route path="/jobs/chennai" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
                 <Route path="/jobs/pune" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
                 
-                {/* Jobs Sitemap Routes - These patterns will match role/city combinations */}
+                {/* Jobs Sitemap Routes - Role, City, Subtopic Combinations */}
+                <Route path="/jobs/:role/:city/:subtopic" element={<Suspense fallback={<div>Loading...</div>}><JobsByRoleCity /></Suspense>} />
                 <Route path="/jobs/:role/:city" element={<Suspense fallback={<div>Loading...</div>}><JobsByRoleCity /></Suspense>} />
                 <Route path="/jobs/:role/:industry/:city" element={<Suspense fallback={<div>Loading...</div>}><JobsByRoleIndustryCity /></Suspense>} />
                 <Route path="/jobs/:role/:skill/:city/:experienceLevel" element={<Suspense fallback={<div>Loading...</div>}><JobsByRoleSkillCityLevel /></Suspense>} />
@@ -358,12 +362,18 @@ const App = () => {
                 
                 {/* ── Global Education & College Routes (Explicit Precedence) ── */}
                 <Route path="/colleges" element={<Suspense fallback={null}><Colleges /></Suspense>} />
+                <Route path="/colleges/compare/:comparison" element={<Suspense fallback={null}><Colleges /></Suspense>} />
+                <Route path="/colleges/state/:stateSlug" element={<Suspense fallback={null}><Colleges /></Suspense>} />
+                <Route path="/colleges/exam/:examSlug" element={<Suspense fallback={null}><Colleges /></Suspense>} />
+                <Route path="/colleges/:state/:degree/:type" element={<Suspense fallback={null}><Colleges /></Suspense>} />
                 <Route path="/colleges/global-programs" element={<Suspense fallback={null}><GlobalPrograms /></Suspense>} />
+                <Route path="/colleges/global-programs/:slug/:subpage" element={<Suspense fallback={null}><GlobalPrograms /></Suspense>} />
                 <Route path="/colleges/global-programs/:slug" element={<Suspense fallback={null}><GlobalPrograms /></Suspense>} />
                 <Route path="/colleges/scholarships" element={<Suspense fallback={null}><Scholarships /></Suspense>} />
                 <Route path="/colleges/pathway" element={<Suspense fallback={null}><CareerPathway /></Suspense>} />
                 <Route path="/colleges/:id" element={<Suspense fallback={null}><CollegeDetail /></Suspense>} />
                 <Route path="/colleges/:id/:subTab" element={<Suspense fallback={null}><CollegeDetail /></Suspense>} />
+                <Route path="/colleges/:id/:subTab/:extra" element={<Suspense fallback={null}><CollegeDetail /></Suspense>} />
                 
                 {/* ── Claim #1 Public Routes (Explicit Precedence) ── */}
                 <Route path="/rankings" element={<Suspense fallback={null}><RankingsHub /></Suspense>} />
