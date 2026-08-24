@@ -786,35 +786,69 @@ export async function uploadEntityLogo(file: File, entitySlug: string): Promise<
   });
 }
 
+// ── Aliases & Backward Compatibility ───────────────────────────────────────────
+
+export const getScopesForCategory = getAvailableScopes;
+export const getAllScopes = getAvailableScopes;
+export const getScopeBySlug = (scopeSlug: string) => resolveScopeBySlug('ai-products', scopeSlug);
+export const getScopeById = async (scopeId: string) => {
+  const { data } = await supabase.from('claim1_scopes').select('*').eq('id', scopeId).maybeSingle();
+  return data;
+};
+export const getEntity = getEntityBySlug;
+export const getEntityListings = getListingsForEntity;
+export const getScopeLeaderboard = getLeaderboard;
+export const placeBid = placeRazorpayBid;
+export const getOutbidBids = getMyBids;
+export const getRecentActivity = getActivityFeed;
+export const unwatchScope = async (_scopeId: string, _email: string) => {};
+export const isWatching = async (_scopeId: string, _email: string) => false;
+export const getCategoryWatchersCount = async (_catId: string) => 0;
+export const getPlatformRevenue = async () => 0;
+export const getListingById = async (listingId: string) => {
+  const { data } = await supabase.from('claim1_listings').select('*, entity:claim1_entities(*), scope:claim1_scopes(*)').eq('id', listingId).maybeSingle();
+  return data;
+};
+
 export const claim1Service = {
   formatCurrency,
   scopePath,
   getCategories,
   getCategoryBySlug,
+  getAvailableScopes,
+  resolveScopeBySlug,
   getScopesForCategory,
   getScopeBySlug,
   getScopeById,
   getAllScopes,
+  getFounding100Count,
   getLeaderboard,
   getScopeLeaderboard,
   getEntity,
   getEntityBySlug,
+  getListingsForEntity,
   getEntityListings,
   getListingById,
-  isSlugTaken,
-  generateSlug,
-  claimProfile,
-  placeBid,
-  estimateRank,
-  getOutbidBids,
-  getRankingHistory,
-  getRecentActivity,
+  getMyEntities,
   getMyListings,
+  claimProfile,
+  placeRazorpayBid,
+  placeBid,
+  getMinimumBid,
+  estimateRank,
+  getBidHistory,
   getMyBids,
+  getOutbidBids,
+  getActivityFeed,
+  getRecentActivity,
+  getRankingHistory,
   watchScope,
   unwatchScope,
   isWatching,
   getCategoryWatchersCount,
+  generateSlug,
+  isSlugTaken,
+  getScopeStats,
   getPlatformRevenue,
   updateEntityProfile,
   uploadEntityLogo,
