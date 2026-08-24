@@ -61,6 +61,19 @@ export interface Claim1Entity {
   website_url: string | null;
   logo_url: string | null;
   description: string | null;
+  tagline?: string | null;
+  social_links?: {
+    twitter?: string;
+    linkedin?: string;
+    github?: string;
+    youtube?: string;
+    discord?: string;
+    [key: string]: string | undefined;
+  } | null;
+  company_size?: string | null;
+  founded_year?: number | null;
+  industry_tags?: string[] | null;
+  city?: string | null;
   country_code: string | null;
   country_name: string | null;
   verified: boolean;
@@ -220,7 +233,37 @@ export interface ClaimProfileInput {
   website_url?: string;
   logo_url?: string;
   description?: string;
+  tagline?: string;
+  social_links?: Record<string, string>;
+  company_size?: string;
+  founded_year?: number;
+  industry_tags?: string[];
+  city?: string;
   country_code?: string;
   country_name?: string;
   scope_ids: string[];
+}
+
+/** Input for updating an existing entity's rich profile */
+export interface UpdateEntityProfileInput {
+  entity_id: string;
+  name?: string;
+  tagline?: string;
+  description?: string;
+  website_url?: string;
+  logo_url?: string;
+  country_code?: string;
+  country_name?: string;
+  city?: string;
+  company_size?: string;
+  founded_year?: number;
+  industry_tags?: string[];
+  social_links?: {
+    twitter?: string;
+    linkedin?: string;
+    github?: string;
+    youtube?: string;
+    discord?: string;
+    [key: string]: string | undefined;
+  };
 }

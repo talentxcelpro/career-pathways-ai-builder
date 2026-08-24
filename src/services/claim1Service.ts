@@ -326,16 +326,22 @@ export async function claimProfile(
   // Try atomic stored procedure first (handles RLS bypass and category auto-creation)
   try {
     const { data: rpcData, error: rpcError } = await supabase.rpc('claim1_claim_profile', {
-      p_user_id:      userId,
-      p_name:         input.name,
-      p_slug:         input.slug,
-      p_entity_type:  input.entity_type || 'company',
-      p_website_url:  input.website_url || null,
-      p_logo_url:     input.logo_url || null,
-      p_description:  input.description || null,
-      p_country_code: input.country_code || null,
-      p_country_name: input.country_name || null,
-      p_scope_slugs:  input.scope_ids || ['global'],
+      p_user_id:       userId,
+      p_name:          input.name,
+      p_slug:          input.slug,
+      p_entity_type:   input.entity_type || 'company',
+      p_website_url:   input.website_url || null,
+      p_logo_url:      input.logo_url || null,
+      p_description:   input.description || null,
+      p_country_code:  input.country_code || null,
+      p_country_name:  input.country_name || null,
+      p_scope_slugs:   input.scope_ids || ['global'],
+      p_tagline:       input.tagline || null,
+      p_social_links:  input.social_links || {},
+      p_company_size:  input.company_size || null,
+      p_founded_year:  input.founded_year || null,
+      p_industry_tags: input.industry_tags || [],
+      p_city:          input.city || null,
     });
 
     if (!rpcError && rpcData && rpcData.success && rpcData.entity) {
@@ -365,6 +371,12 @@ export async function claimProfile(
         website_url:         input.website_url ?? null,
         logo_url:            input.logo_url    ?? null,
         description:         input.description ?? null,
+        tagline:             input.tagline     ?? null,
+        social_links:        input.social_links ?? {},
+        company_size:        input.company_size ?? null,
+        founded_year:        input.founded_year ?? null,
+        industry_tags:       input.industry_tags ?? [],
+        city:                input.city         ?? null,
         country_code:        input.country_code ?? null,
         country_name:        input.country_name ?? null,
         is_founding_100:     willGetFounding,
@@ -687,4 +699,75 @@ export async function getScopeStats(scopeId: string): Promise<{
     top_bid_amount: topBid,
     currency,
   };
+}
+
+// ── Profile Updates & File Upload ───────────────────────────────────────────────
+
+export async function updateEntityProfile(input: import('@/types/claim1').UpdateEntityProfileInput): Promise<Claim1Entity> {
+  const updatePayload: Record<string, any> = {
+    updated_at: new Date().toISOString(),
+  };
+
+  if (input.name !== undefined)          updatePayload.name = input.name;
+  if (input.tagline !== undefined)       updatePayload.tagline = input.tagline;
+  if (input.description !== undefined)   updatePayload.description = input.description;
+  if (input.website_url !== undefined)   updatePayload.website_url = input.website_url;
+  if (input.logo_url !== undefined)      updatePayload.logo_url = input.logo_url;
+  if (input.country_code !== undefined)  updatePayload.country_code = input.country_code;
+  if (input.country_name !== undefined)  updatePayload.country_name = input.country_name;
+  if (input.city !== undefined)          updatePayload.city = input.city;
+  if (input.company_size !== undefined)  updatePayload.company_size = input.company_size;
+  if (input.founded_year !== undefined)  updatePayload.founded_year = input.founded_year;
+  if (input.industry_tags !== undefined) updatePayload.industry_tags = input.industry_tags;
+  if (input.social_links !== undefined)  updatePayload.social_links = input.social_links;
+
+  const { data, error } = await supabase
+    .from('claim1_entities')
+    .update(updatePayload)
+    .eq('id', input.entity_id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data as Claim1Entity;
+}
+
+export async function uploadEntityLogo(file: File, entitySlug: string): Promise<string> {
+  const ext = file.name.split('.').pop() || 'png';
+  const fileName = `claim1-logos/${entitySlug}-${Date.now()}.${ext}`;
+
+  try {
+    const { error: uploadError } = await supabase.storage
+      .from('companies')
+      .upload(fileName, file, { upsert: true, contentType: file.type });
+
+    if (!uploadError) {
+      const { data } = supabase.storage.from('companies').getPublicUrl(fileName);
+      if (data?.publicUrl) return data.publicUrl;
+    }
+  } catch (storageErr) {
+    console.warn('Storage bucket companies upload notice, trying avatars bucket:', storageErr);
+  }
+
+  // Fallback to avatars bucket
+  try {
+    const { error: avatarError } = await supabase.storage
+      .from('avatars')
+      .upload(fileName, file, { upsert: true, contentType: file.type });
+
+    if (!avatarError) {
+      const { data } = supabase.storage.from('avatars').getPublicUrl(fileName);
+      if (data?.publicUrl) return data.publicUrl;
+    }
+  } catch (err) {
+    console.warn('Avatars upload notice:', err);
+  }
+
+  // Fallback to inline Base64 data URL so user upload ALWAYS succeeds with zero bucket configuration friction
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 }

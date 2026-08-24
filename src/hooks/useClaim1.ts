@@ -21,12 +21,14 @@ import {
   getFounding100Count,
   getAvailableScopes,
   claimProfile,
+  updateEntityProfile,
+  uploadEntityLogo,
   placeRazorpayBid,
   watchScope,
   estimateRank,
   formatCurrency,
 } from '@/services/claim1Service';
-import type { ClaimProfileInput } from '@/types/claim1';
+import type { ClaimProfileInput, UpdateEntityProfileInput } from '@/types/claim1';
 
 // ── Query key factory ──────────────────────────────────────────────────────────
 export const claim1Keys = {
@@ -240,6 +242,22 @@ export function useClaimProfile() {
     },
     onError: (error: Error) => {
       toast.error(error.message ?? 'Failed to claim profile.');
+    },
+  });
+}
+
+export function useUpdateEntityProfile() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: UpdateEntityProfileInput) => updateEntityProfile(input),
+    onSuccess: (updatedEntity) => {
+      toast.success('Company profile updated successfully! ✨');
+      queryClient.invalidateQueries({ queryKey: claim1Keys.all });
+      queryClient.invalidateQueries({ queryKey: claim1Keys.entity(updatedEntity.slug) });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message ?? 'Failed to update company profile.');
     },
   });
 }

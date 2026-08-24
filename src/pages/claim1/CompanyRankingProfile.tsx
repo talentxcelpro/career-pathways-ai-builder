@@ -1,15 +1,33 @@
-// src/pages/claim1/CompanyRankingProfile.tsx
-// /company/:slug — Public SEO-crawlable company ranking profile with real currency metrics
-
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { ExternalLink, Trophy, Zap, Globe, ShieldCheck, ChevronRight, Sparkles } from 'lucide-react';
+import {
+  ExternalLink,
+  Trophy,
+  Zap,
+  Globe,
+  ShieldCheck,
+  ChevronRight,
+  Sparkles,
+  Twitter,
+  Linkedin,
+  Github,
+  Youtube,
+  MessageSquare,
+  Building2,
+  Calendar,
+  MapPin,
+  Users,
+  Edit3,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useEntity, useEntityListings, useRankingHistory } from '@/hooks/useClaim1';
 import { formatCurrency } from '@/services/claim1Service';
+import { useAuth } from '@/contexts/AuthContext';
+import { EditEntityProfileModal } from '@/components/claim1/EditEntityProfileModal';
 
 const EVENT_LABELS: Record<string, string> = {
   entered:    '🟢 Entered Leaderboard',
@@ -23,6 +41,9 @@ const EVENT_LABELS: Record<string, string> = {
 
 export default function CompanyRankingProfile() {
   const { slug } = useParams<{ slug: string }>();
+  const { user } = useAuth();
+  const [editOpen, setEditOpen] = useState(false);
+
   const { data: entity, isLoading: entityLoading } = useEntity(slug);
   const { data: listings = [], isLoading: listingsLoading } = useEntityListings(entity?.id);
   const { data: history = [] }  = useRankingHistory(entity?.id);
@@ -56,13 +77,15 @@ export default function CompanyRankingProfile() {
     );
   }
 
+  const isOwner = user && (user.id === entity.owner_user_id || !entity.owner_user_id);
   const topListing = listings[0];
   const totalSpent = listings.reduce((s, l) => s + (l.total_spent_amount || 0), 0);
   const currency = topListing?.currency || 'INR';
   const isFounding = entity.is_founding_100 || entity.founding_fee_locked;
+  const socials = entity.social_links || {};
 
   const pageTitle = `${entity.name} — TalentXcel Rankings`;
-  const pageDesc  = entity.description
+  const pageDesc  = entity.tagline || entity.description
     || `${entity.name} is competing on TalentXcel's global AI product leaderboard. View live rankings, bid history, and challenge for the top position.`;
 
   return (
@@ -75,61 +98,186 @@ export default function CompanyRankingProfile() {
         <link rel="canonical" href={`https://talentxcel.com/company/${entity.slug}`} />
       </Helmet>
 
+      {editOpen && (
+        <EditEntityProfileModal
+          entity={entity}
+          open={editOpen}
+          onOpenChange={setEditOpen}
+        />
+      )}
+
       <div className="max-w-3xl mx-auto px-4 py-10 space-y-8">
 
-        {/* Breadcrumbs */}
-        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-          <Link to="/rankings" className="hover:text-primary">Rankings</Link>
-          <ChevronRight className="w-3.5 h-3.5" />
-          <span className="text-foreground font-medium">{entity.name}</span>
+        {/* Breadcrumbs & Owner Edit CTA */}
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <Link to="/rankings" className="hover:text-primary">Rankings</Link>
+            <ChevronRight className="w-3.5 h-3.5" />
+            <span className="text-foreground font-medium">{entity.name}</span>
+          </div>
+          {isOwner && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setEditOpen(true)}
+              className="gap-1.5 text-xs h-8"
+            >
+              <Edit3 className="w-3.5 h-3.5" /> Edit Profile
+            </Button>
+          )}
         </div>
 
         {/* Header Profile Section */}
-        <div className="flex items-start gap-5">
-          <div className="w-20 h-20 rounded-2xl border bg-muted flex items-center justify-center overflow-hidden flex-shrink-0">
-            {entity.logo_url ? (
-              <img src={entity.logo_url} alt={entity.name} className="w-full h-full object-contain p-1" />
-            ) : (
-              <span className="text-3xl font-bold text-muted-foreground">{entity.name.charAt(0)}</span>
-            )}
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-2xl font-bold">{entity.name}</h1>
-              {entity.verified && (
-                <Badge variant="secondary" className="gap-1 text-xs">
-                  <ShieldCheck className="w-3 h-3 text-primary" /> Verified
-                </Badge>
-              )}
-              {isFounding && (
-                <Badge className="bg-amber-500/20 text-amber-700 border-amber-500/40 text-xs gap-1">
-                  <Sparkles className="w-3 h-3" /> Founding 100
-                </Badge>
+        <Card className="p-6">
+          <div className="flex items-start gap-5 flex-wrap sm:flex-nowrap">
+            <div className="w-20 h-20 rounded-2xl border bg-muted flex items-center justify-center overflow-hidden flex-shrink-0 shadow-sm">
+              {entity.logo_url ? (
+                <img src={entity.logo_url} alt={entity.name} className="w-full h-full object-contain p-1" />
+              ) : (
+                <span className="text-3xl font-bold text-muted-foreground">{entity.name.charAt(0)}</span>
               )}
             </div>
-            {entity.description && (
-              <p className="text-muted-foreground text-sm mt-1.5">{entity.description}</p>
-            )}
-            <div className="flex items-center gap-3 mt-2 text-sm flex-wrap">
-              {entity.country_name && (
-                <span className="flex items-center gap-1 text-muted-foreground text-xs font-medium">
-                  <Globe className="w-3.5 h-3.5" /> {entity.country_name}
-                </span>
+
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{entity.name}</h1>
+                {entity.verified && (
+                  <Badge variant="secondary" className="gap-1 text-xs">
+                    <ShieldCheck className="w-3 h-3 text-primary" /> Verified
+                  </Badge>
+                )}
+                {isFounding && (
+                  <Badge className="bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-500/40 text-xs gap-1">
+                    <Sparkles className="w-3 h-3" /> Founding 100
+                  </Badge>
+                )}
+              </div>
+
+              {entity.tagline && (
+                <p className="text-sm font-medium text-foreground/90 mt-1">
+                  {entity.tagline}
+                </p>
               )}
-              {entity.website_url && (
-                <a
-                  href={entity.website_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-xs text-primary hover:underline font-medium"
-                >
-                  {entity.website_url.replace(/^https?:\/\//, '').replace(/\/$/, '')}
-                  <ExternalLink className="w-3 h-3" />
-                </a>
+
+              {/* Quick Fact Badges */}
+              <div className="flex items-center gap-3 mt-3 text-xs text-muted-foreground flex-wrap">
+                {entity.city && (
+                  <span className="flex items-center gap-1 font-medium">
+                    <MapPin className="w-3.5 h-3.5 text-primary" /> {entity.city}
+                  </span>
+                )}
+                {entity.country_name && !entity.city && (
+                  <span className="flex items-center gap-1 font-medium">
+                    <Globe className="w-3.5 h-3.5 text-primary" /> {entity.country_name}
+                  </span>
+                )}
+                {entity.founded_year && (
+                  <span className="flex items-center gap-1 font-medium">
+                    <Calendar className="w-3.5 h-3.5 text-muted-foreground" /> Founded {entity.founded_year}
+                  </span>
+                )}
+                {entity.company_size && (
+                  <span className="flex items-center gap-1 font-medium">
+                    <Users className="w-3.5 h-3.5 text-muted-foreground" /> {entity.company_size}
+                  </span>
+                )}
+              </div>
+
+              {/* Industry Tags */}
+              {entity.industry_tags && entity.industry_tags.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mt-3">
+                  {entity.industry_tags.map((tag) => (
+                    <Badge key={tag} variant="secondary" className="text-[11px] px-2 py-0.5 font-normal">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
               )}
+
+              {/* Social & Web Links Bar */}
+              <div className="flex items-center gap-2 mt-4 pt-3 border-t flex-wrap">
+                {entity.website_url && (
+                  <a
+                    href={entity.website_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-md bg-primary/10 text-primary hover:bg-primary/20 transition-colors font-medium"
+                  >
+                    <Globe className="w-3.5 h-3.5" />
+                    <span>Website</span>
+                    <ExternalLink className="w-2.5 h-2.5 opacity-60" />
+                  </a>
+                )}
+                {socials.twitter && (
+                  <a
+                    href={socials.twitter}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-md bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground transition-colors font-medium"
+                  >
+                    <Twitter className="w-3.5 h-3.5" />
+                    <span>Twitter / X</span>
+                  </a>
+                )}
+                {socials.linkedin && (
+                  <a
+                    href={socials.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-md bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground transition-colors font-medium"
+                  >
+                    <Linkedin className="w-3.5 h-3.5" />
+                    <span>LinkedIn</span>
+                  </a>
+                )}
+                {socials.github && (
+                  <a
+                    href={socials.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-md bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground transition-colors font-medium"
+                  >
+                    <Github className="w-3.5 h-3.5" />
+                    <span>GitHub</span>
+                  </a>
+                )}
+                {socials.youtube && (
+                  <a
+                    href={socials.youtube}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-md bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground transition-colors font-medium"
+                  >
+                    <Youtube className="w-3.5 h-3.5 text-red-500" />
+                    <span>YouTube</span>
+                  </a>
+                )}
+                {socials.discord && (
+                  <a
+                    href={socials.discord}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-md bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground transition-colors font-medium"
+                  >
+                    <MessageSquare className="w-3.5 h-3.5 text-indigo-500" />
+                    <span>Discord / Community</span>
+                  </a>
+                )}
+              </div>
+
             </div>
           </div>
-        </div>
+
+          {/* Full Description / About */}
+          {entity.description && (
+            <div className="mt-5 pt-4 border-t space-y-1">
+              <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">About {entity.name}</h3>
+              <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-line mt-1">
+                {entity.description}
+              </p>
+            </div>
+          )}
+        </Card>
 
         {/* Metric Highlight Cards */}
         {listings.length > 0 && (

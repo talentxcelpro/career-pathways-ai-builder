@@ -1,7 +1,4 @@
-// src/pages/claim1/EnterLeaderboard.tsx
-// /claim1/enter — 3-step flow to claim a company/product profile with Founding 100 disclosure
-
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useQuery } from '@tanstack/react-query';
@@ -21,12 +18,25 @@ import {
   User,
   ChevronRight,
   ChevronLeft,
+  ChevronDown,
+  ChevronUp,
   Sparkles,
   ShieldCheck,
+  Upload,
+  Twitter,
+  Linkedin,
+  Github,
+  Youtube,
+  MessageSquare,
+  Loader2,
+  MapPin,
+  Calendar,
+  Users,
 } from 'lucide-react';
 import { useClaimProfile, useFounding100Count, useAvailableScopes, useMyEntities } from '@/hooks/useClaim1';
-import { generateSlug, isSlugTaken } from '@/services/claim1Service';
+import { generateSlug, isSlugTaken, uploadEntityLogo } from '@/services/claim1Service';
 import type { Claim1EntityType, Claim1Scope } from '@/types/claim1';
+import { toast } from 'sonner';
 
 const COUNTRY_OPTIONS = [
   { code: 'IN', name: 'India' },
@@ -60,12 +70,25 @@ export default function EnterLeaderboard() {
   const [slugTaken, setSlugTaken]         = useState(false);
   const [slugChecking, setSlugChecking]   = useState(false);
   const [entityType, setEntityType]       = useState<Claim1EntityType>('company');
+  const [tagline, setTagline]             = useState('');
   const [websiteUrl, setWebsiteUrl]       = useState('');
   const [logoUrl, setLogoUrl]             = useState('');
   const [description, setDescription]     = useState('');
   const [countryCode, setCountryCode]     = useState('IN');
   const [countryName, setCountryName]     = useState('India');
+  const [city, setCity]                   = useState('');
+  const [companySize, setCompanySize]     = useState('');
+  const [foundedYear, setFoundedYear]     = useState('');
+  const [twitter, setTwitter]             = useState('');
+  const [linkedin, setLinkedin]           = useState('');
+  const [github, setGithub]               = useState('');
+  const [youtube, setYoutube]             = useState('');
+  const [discord, setDiscord]             = useState('');
+  const [showMoreDetails, setShowMoreDetails] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const [selectedScopes, setSelectedScopes] = useState<string[]>([]);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isFoundingEligible = foundingCount < 100;
   const remainingFoundingSlots = Math.max(0, 100 - foundingCount);
@@ -103,6 +126,27 @@ export default function EnterLeaderboard() {
     return () => clearTimeout(timer);
   }, [slug, checkSlug]);
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('File size must be under 5MB');
+      return;
+    }
+
+    setUploadingLogo(true);
+    try {
+      const url = await uploadEntityLogo(file, slug || 'company');
+      setLogoUrl(url);
+      toast.success('Logo uploaded successfully!');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to upload logo');
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
+
   const toggleScope = (scopeId: string) => {
     setSelectedScopes((prev) =>
       prev.includes(scopeId) ? prev.filter((id) => id !== scopeId) : [...prev, scopeId]
@@ -119,6 +163,14 @@ export default function EnterLeaderboard() {
 
   const handleSubmit = async () => {
     if (!step1Valid || !step2Valid) return;
+
+    const social_links: Record<string, string> = {};
+    if (twitter.trim())   social_links.twitter = twitter.trim();
+    if (linkedin.trim())  social_links.linkedin = linkedin.trim();
+    if (github.trim())    social_links.github = github.trim();
+    if (youtube.trim())   social_links.youtube = youtube.trim();
+    if (discord.trim())   social_links.discord = discord.trim();
+
     const result = await claimMutation.mutateAsync({
       name:         name.trim(),
       slug,
@@ -126,8 +178,13 @@ export default function EnterLeaderboard() {
       website_url:  websiteUrl || undefined,
       logo_url:     logoUrl    || undefined,
       description:  description|| undefined,
+      tagline:      tagline    || undefined,
+      city:         city       || undefined,
       country_code: countryCode|| undefined,
       country_name: countryName|| undefined,
+      company_size: companySize|| undefined,
+      founded_year: foundedYear ? parseInt(foundedYear, 10) : undefined,
+      social_links: Object.keys(social_links).length > 0 ? social_links : undefined,
       scope_ids:    selectedScopes,
     });
     if (result) navigate('/claim1/dashboard');
@@ -264,9 +321,79 @@ export default function EnterLeaderboard() {
               </div>
             )}
 
+            {/* Tagline */}
+            <div>
+              <label className="text-sm font-medium mb-1 block">Tagline / Short Pitch (optional)</label>
+              <Input
+                value={tagline}
+                onChange={(e) => setTagline(e.target.value)}
+                placeholder="e.g. Next-gen AI career operating system"
+                maxLength={120}
+              />
+            </div>
+
+            {/* Logo Upload / URL */}
+            <div>
+              <label className="text-sm font-medium mb-1.5 block">Company Logo (optional)</label>
+              <div className="flex items-center gap-3">
+                <div className="w-14 h-14 rounded-xl border bg-muted flex items-center justify-center overflow-hidden flex-shrink-0 relative">
+                  {logoUrl ? (
+                    <img src={logoUrl} alt="Logo preview" className="w-full h-full object-contain p-1" />
+                  ) : (
+                    <span className="text-xl font-bold text-muted-foreground">{name.charAt(0) || '🏢'}</span>
+                  )}
+                  {uploadingLogo && (
+                    <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
+                      <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex-1 space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleFileUpload}
+                      accept="image/png,image/jpeg,image/svg+xml,image/webp"
+                      className="hidden"
+                    />
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploadingLogo}
+                      className="gap-1.5 text-xs h-8"
+                    >
+                      <Upload className="w-3.5 h-3.5" />
+                      {uploadingLogo ? 'Uploading...' : 'Upload Logo'}
+                    </Button>
+                    {logoUrl && (
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setLogoUrl('')}
+                        className="text-xs h-8 text-muted-foreground hover:text-destructive"
+                      >
+                        Remove
+                      </Button>
+                    )}
+                  </div>
+                  <Input
+                    value={logoUrl}
+                    onChange={(e) => setLogoUrl(e.target.value)}
+                    placeholder="Or paste direct image URL (https://...)"
+                    className="text-xs h-7"
+                  />
+                </div>
+              </div>
+            </div>
+
             {/* Website */}
             <div>
-              <label className="text-sm font-medium mb-1 block">Website URL</label>
+              <label className="text-sm font-medium mb-1 block">Website URL (optional)</label>
               <Input
                 value={websiteUrl}
                 onChange={(e) => setWebsiteUrl(e.target.value)}
@@ -289,19 +416,9 @@ export default function EnterLeaderboard() {
               </select>
             </div>
 
-            {/* Logo URL */}
-            <div>
-              <label className="text-sm font-medium mb-1 block">Logo Image URL (optional)</label>
-              <Input
-                value={logoUrl}
-                onChange={(e) => setLogoUrl(e.target.value)}
-                placeholder="https://synthetix.ai/logo.png"
-              />
-            </div>
-
             {/* Description */}
             <div>
-              <label className="text-sm font-medium mb-1 block">Short Description</label>
+              <label className="text-sm font-medium mb-1 block">About / Short Description</label>
               <Textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -309,6 +426,90 @@ export default function EnterLeaderboard() {
                 rows={2}
                 maxLength={300}
               />
+            </div>
+
+            {/* Optional More Details Toggle */}
+            <div className="border-t pt-3">
+              <button
+                type="button"
+                onClick={() => setShowMoreDetails(!showMoreDetails)}
+                className="flex items-center justify-between w-full text-xs font-semibold text-muted-foreground hover:text-foreground py-1"
+              >
+                <span className="flex items-center gap-1.5">
+                  <Building2 className="w-3.5 h-3.5 text-primary" /> Social Links, Team Size & HQ (Optional)
+                </span>
+                {showMoreDetails ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              </button>
+
+              {showMoreDetails && (
+                <div className="mt-3 space-y-3 pt-2 border-t text-xs">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-muted-foreground mb-1 block">HQ City</label>
+                      <Input
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                        placeholder="e.g. Bengaluru"
+                        className="text-xs h-8"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-muted-foreground mb-1 block">Founded Year</label>
+                      <Input
+                        type="number"
+                        min="1900"
+                        max="2030"
+                        value={foundedYear}
+                        onChange={(e) => setFoundedYear(e.target.value)}
+                        placeholder="e.g. 2024"
+                        className="text-xs h-8"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-muted-foreground mb-1 block">Company Size</label>
+                      <select
+                        value={companySize}
+                        onChange={(e) => setCompanySize(e.target.value)}
+                        className="w-full border rounded-lg px-2.5 py-1.5 text-xs bg-background h-8"
+                      >
+                        <option value="">Select Team Size</option>
+                        <option value="1-10 employees">1-10 employees</option>
+                        <option value="11-50 employees">11-50 employees</option>
+                        <option value="51-200 employees">51-200 employees</option>
+                        <option value="201-500 employees">201-500 employees</option>
+                        <option value="500+ employees">500+ employees</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-muted-foreground mb-1 block">Twitter / X URL</label>
+                      <Input
+                        value={twitter}
+                        onChange={(e) => setTwitter(e.target.value)}
+                        placeholder="https://x.com/..."
+                        className="text-xs h-8"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-muted-foreground mb-1 block">LinkedIn URL</label>
+                      <Input
+                        value={linkedin}
+                        onChange={(e) => setLinkedin(e.target.value)}
+                        placeholder="https://linkedin.com/company/..."
+                        className="text-xs h-8"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-muted-foreground mb-1 block">GitHub URL</label>
+                      <Input
+                        value={github}
+                        onChange={(e) => setGithub(e.target.value)}
+                        placeholder="https://github.com/..."
+                        className="text-xs h-8"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             <Button
