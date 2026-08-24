@@ -24,6 +24,7 @@ import {
   coreExternalIntelligenceCoordinator,
   coreExternalProspectStore,
   coreOpportunityGraphDatabase,
+  coreDataIngestionWorker,
   coreZohoProductionGate,
   kernelAgentRegistry,
   kernelAgentScheduler,
@@ -175,7 +176,8 @@ export default function AutonomousBusinessControlPlane() {
   // Run full external intelligence & gated outreach cycle
   const handleRunBusinessCycle = async () => {
     setActiveCycleRunning(true);
-    toast.info('Executing autonomous operating cycle (External Ingestion -> Qualification -> Gated Zoho Outreach)...');
+    toast.info('Executing multi-dataset ingestion & gated outreach cycle...');
+    await coreDataIngestionWorker.runFullIngestionCycle();
     const result = await coreExternalIntelligenceCoordinator.runIntelligenceAndOutreachCycle();
     await coreAgentOrchestrator.executeFullBusinessCycle();
     await kernelAgentScheduler.tick();
@@ -186,7 +188,7 @@ export default function AutonomousBusinessControlPlane() {
     setEvents(kernelEventBus.getRecentEvents(35));
     setAuditLogs(kernelAuditEngine.getRecentLogs(35));
     setEscalations(kernelRiskEngine.getPendingEscalations());
-    toast.success(`Cycle completed. Dispatched ${result.outreachSentCount} verified gated outreach emails via Zoho.`);
+    toast.success(`Cycle completed. Ingested multi-source datasets & dispatched ${result.outreachSentCount} verified gated outreach emails via Zoho.`);
   };
 
   // Run Single Gated Outreach on 1 Prospect

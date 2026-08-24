@@ -10,3 +10,5 @@ export * from './OpportunityGraph';
 export * from './ExternalSignalEngine';
 export * from './ZohoProductionGate';
 export * from './ExternalIntelligenceCoordinator';
+export * from './DataIngestionWorker';
+export * from './connectors';
