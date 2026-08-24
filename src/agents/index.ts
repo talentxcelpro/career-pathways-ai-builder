@@ -1,11 +1,8 @@
 // src/agents/index.ts
-// TalentXcel Autonomous Business OS Kernel Export
+// TalentXcel Autonomous Business OS - Main Entry Point
+// Operating team for Founder / CEO Sanobar Jahan
 
-export * from './shared/types';
-export * from './shared/EventBus';
-export * from './shared/BusinessMemory';
-export * from './shared/Guardrails';
-export * from './shared/AuditLog';
+export * from './kernel';
 
 export * from './executive/ExecutiveAgent';
 export * from './marketing/MarketingAgent';
