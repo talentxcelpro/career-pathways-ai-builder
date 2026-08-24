@@ -1,6 +1,7 @@
 // src/agents/email/ZohoProvider.ts
 // Dedicated Zoho Mail Provider for Autonomous Business OS Acquisition
 // Completely ISOLATED from AWS SES (Existing-user & system email infrastructure)
+// Enforces 100% genuine provider transmission — Zero fabricated message IDs.
 
 import { supabase } from '@/integrations/supabase/client';
 import type { OutboundEmailRequest, EmailSendResult, ZohoMailboxId } from './types';
@@ -9,6 +10,7 @@ import { coreMailboxRegistry } from './MailboxRegistry';
 export class ZohoProvider {
   /**
    * Dispatches business acquisition email through the dedicated Zoho Mail service.
+   * Only returns success if Zoho SMTP/API actually transmits and returns a real provider message ID.
    */
   async send(
     mailboxId: ZohoMailboxId,
@@ -18,11 +20,10 @@ export class ZohoProvider {
     const mailbox = coreMailboxRegistry.getMailbox(mailboxId);
     const senderEmail = mailbox?.email || 'talentxcel@talentxcel.in';
     const senderName = mailbox?.displayName || 'TalentXcel Team';
-
     const timestamp = new Date().toISOString();
 
     try {
-      // 1. Invoke Dedicated Zoho Mail Edge Function (Isolated from AWS SES)
+      // 1. Invoke Dedicated Zoho Mail Edge Function
       const { data, error } = await supabase.functions.invoke('zoho-mail-service', {
         body: {
           mailboxId,
@@ -39,30 +40,39 @@ export class ZohoProvider {
         },
       });
 
-      if (error) {
-        console.warn('[ZohoProvider] Edge function dispatch note:', error);
+      // Strict Validation: If edge function returned an error or no genuine messageId from Zoho server
+      if (error || !data?.success || !data?.messageId || data?.isMock) {
+        const errorMsg = error?.message || data?.error || 'ZOHO_SERVER_AUTH_REQUIRED: Real Zoho SMTP credentials or OAuth token needed to transmit email';
+        console.error('[ZohoProvider] Real transmission failed:', errorMsg);
+
+        return {
+          success: false,
+          mailboxUsed: mailboxId,
+          recipientEmail: request.recipientEmail,
+          timestamp,
+          error: errorMsg,
+        };
       }
 
-      const messageId = data?.messageId || `zoho_${mailboxId}_${Date.now()}_${Math.random().toString(36).slice(2, 6)}@talentxcel.in`;
-
-      // 2. Increment mailbox sent counter
+      // 2. Real dispatch succeeded
       coreMailboxRegistry.incrementSentCount(mailboxId);
 
       return {
         success: true,
-        messageId,
+        messageId: data.messageId,
         mailboxUsed: mailboxId,
         recipientEmail: request.recipientEmail,
         timestamp,
-        providerResponse: data || { status: 'DISPATCHED_VIA_ZOHO' },
+        providerResponse: data,
       };
     } catch (err: any) {
+      console.error('[ZohoProvider] Network/invocation exception:', err);
       return {
         success: false,
         mailboxUsed: mailboxId,
         recipientEmail: request.recipientEmail,
         timestamp,
-        error: err?.message || 'FAILED_TO_DISPATCH_VIA_ZOHO',
+        error: err?.message || 'ZOHO_CONNECTION_ERROR',
       };
     }
   }

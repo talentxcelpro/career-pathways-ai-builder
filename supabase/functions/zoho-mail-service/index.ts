@@ -1,6 +1,7 @@
 // supabase/functions/zoho-mail-service/index.ts
 // Dedicated Zoho Mail Outbound/Inbound Service for Autonomous Business OS
 // Completely ISOLATED from AWS SES (Existing-user & system email infrastructure)
+// Transmits real emails via Zoho Mail REST API or Zoho SMTP
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.1";
@@ -41,9 +42,83 @@ serve(async (req: Request): Promise<Response> => {
 
     console.log(`📧 [ZohoMailService] Outbound request via [${body.senderEmail}] to [${body.recipientEmail}]`);
 
-    // In production, uses Zoho SMTP (smtp.zoho.com:465) or Zoho OAuth 2.0 API tokens from Supabase Vault
-    // Fallback creates an auditable record in zoho_business_outreach_log
-    const messageId = `zoho_${body.mailboxId}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}@talentxcel.in`;
+    // Check for Zoho OAuth 2.0 or SMTP credentials
+    const zohoClientId = Deno.env.get("ZOHO_MAIL_CLIENT_ID");
+    const zohoClientSecret = Deno.env.get("ZOHO_MAIL_CLIENT_SECRET");
+    const zohoRefreshToken = Deno.env.get("ZOHO_MAIL_REFRESH_TOKEN");
+    const zohoAccountId = Deno.env.get("ZOHO_MAIL_ACCOUNT_ID");
+    const zohoSmtpUser = Deno.env.get("ZOHO_SMTP_USER");
+    const zohoSmtpPass = Deno.env.get("ZOHO_SMTP_PASSWORD");
+
+    let realMessageId: string | null = null;
+    let providerPayload: any = null;
+
+    // 1. If Zoho OAuth is configured, call Zoho Mail API (India region: mail.zoho.in)
+    if (zohoClientId && zohoClientSecret && zohoRefreshToken && zohoAccountId) {
+      try {
+        // Refresh Access Token
+        const tokenRes = await fetch("https://accounts.zoho.in/oauth/v2/token", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({
+            refresh_token: zohoRefreshToken,
+            client_id: zohoClientId,
+            client_secret: zohoClientSecret,
+            grant_type: "refresh_token",
+          }),
+        });
+        const tokenData = await tokenRes.json();
+
+        if (!tokenData.access_token) {
+          throw new Error(`Zoho token refresh failed: ${JSON.stringify(tokenData)}`);
+        }
+
+        // Send email via Zoho Mail API
+        const sendRes = await fetch(`https://mail.zoho.in/api/accounts/${zohoAccountId}/messages`, {
+          method: "POST",
+          headers: {
+            "Authorization": `Zoho-oauthtoken ${tokenData.access_token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            fromAddress: body.senderEmail,
+            toAddress: body.recipientEmail,
+            subject: body.subject,
+            content: body.htmlContent || body.plainTextContent,
+            mailFormat: "html",
+          }),
+        });
+
+        const sendData = await sendRes.json();
+        if (sendData?.data?.messageId || sendData?.status?.code === 200) {
+          realMessageId = sendData?.data?.messageId || `zoho_api_${Date.now()}`;
+          providerPayload = sendData;
+        } else {
+          throw new Error(`Zoho API dispatch error: ${JSON.stringify(sendData)}`);
+        }
+      } catch (apiErr: any) {
+        console.error("Zoho API dispatch exception:", apiErr);
+        return new Response(
+          JSON.stringify({
+            success: false,
+            error: `ZOHO_API_FAILED: ${apiErr.message}`,
+            provider: "ZOHO_MAIL",
+          }),
+          { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+    } else {
+      // Credentials not yet in Supabase Secrets — Fail explicitly so UI does NOT fabricate "SENT" state!
+      console.warn("⚠️ [ZohoMailService] Zoho credentials missing in Supabase secrets.");
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "ZOHO_CREDENTIALS_MISSING: Configure Zoho OAuth (ZOHO_MAIL_CLIENT_ID, ZOHO_MAIL_CLIENT_SECRET, ZOHO_MAIL_REFRESH_TOKEN, ZOHO_MAIL_ACCOUNT_ID) or Zoho SMTP in Supabase secrets to transmit real acquisition emails.",
+          provider: "ZOHO_MAIL",
+        }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
 
     // Record immutable business outreach telemetry
     try {
@@ -51,7 +126,7 @@ serve(async (req: Request): Promise<Response> => {
         event_type: "ZOHO_EMAIL_SENT",
         channel: `zoho_${body.mailboxId}`,
         metadata: {
-          messageId,
+          messageId: realMessageId,
           senderEmail: body.senderEmail,
           senderName: body.senderName,
           recipientEmail: body.recipientEmail,
@@ -71,7 +146,7 @@ serve(async (req: Request): Promise<Response> => {
     return new Response(
       JSON.stringify({
         success: true,
-        messageId,
+        messageId: realMessageId,
         provider: "ZOHO_MAIL",
         mailbox: body.senderEmail,
         recipient: body.recipientEmail,
