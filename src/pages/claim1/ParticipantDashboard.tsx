@@ -24,6 +24,9 @@ import {
 import { useMyListings, useMyBids, useMyEntities } from '@/hooks/useClaim1';
 import { formatCurrency } from '@/services/claim1Service';
 import { EditEntityProfileModal } from '@/components/claim1/EditEntityProfileModal';
+import { ShareRankModal } from '@/components/claim1/ShareRankModal';
+import { EmbedBadgeModal } from '@/components/claim1/EmbedBadgeModal';
+import { Code, Flame } from 'lucide-react';
 import type { Claim1Listing, Claim1Entity } from '@/types/claim1';
 
 export default function ParticipantDashboard() {
@@ -34,6 +37,8 @@ export default function ParticipantDashboard() {
   const { data: myBids = [],    isLoading: bidsLoading }     = useMyBids();
 
   const [editingEntity, setEditingEntity] = useState<Claim1Entity | null>(null);
+  const [sharingEntity, setSharingEntity] = useState<Claim1Entity | null>(null);
+  const [badgingEntity, setBadgingEntity] = useState<Claim1Entity | null>(null);
 
   // Fetch unread outbid notifications
   const { data: outbidNotifs = [], refetch: refetchNotifs } = useQuery({
@@ -89,13 +94,32 @@ export default function ParticipantDashboard() {
         />
       )}
 
+      {sharingEntity && (
+        <ShareRankModal
+          entity={sharingEntity}
+          open={!!sharingEntity}
+          onOpenChange={(open) => !open && setSharingEntity(null)}
+          currentRank={myListings.find((l) => l.entity_id === sharingEntity.id)?.current_rank || 1}
+          scopeName="Global AI Products"
+        />
+      )}
+
+      {badgingEntity && (
+        <EmbedBadgeModal
+          entity={badgingEntity}
+          open={!!badgingEntity}
+          onOpenChange={(open) => !open && setBadgingEntity(null)}
+          currentRank={myListings.find((l) => l.entity_id === badgingEntity.id)?.current_rank || 1}
+        />
+      )}
+
       <div className="max-w-4xl mx-auto px-4 py-10 space-y-8">
 
         {/* Dashboard Header */}
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
             <h1 className="text-3xl font-bold">My Rankings Dashboard</h1>
-            <p className="text-muted-foreground mt-1">Track your public leaderboard positions and reclaim rank instantly.</p>
+            <p className="text-muted-foreground mt-1">Track your public leaderboard positions, flex social proof, and reclaim rank instantly.</p>
           </div>
           <Link to="/claim1/enter">
             <Button className="gap-1.5">
@@ -133,7 +157,23 @@ export default function ParticipantDashboard() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setBadgingEntity(ent)}
+                    className="gap-1 text-xs"
+                  >
+                    <Code className="w-3.5 h-3.5 text-primary" /> Embed Badge
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="default"
+                    onClick={() => setSharingEntity(ent)}
+                    className="gap-1 text-xs bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-sm"
+                  >
+                    <Flame className="w-3.5 h-3.5" /> Share & Flex
+                  </Button>
                   <Button
                     size="sm"
                     variant="outline"

@@ -28,6 +28,9 @@ import { useEntity, useEntityListings, useRankingHistory } from '@/hooks/useClai
 import { formatCurrency } from '@/services/claim1Service';
 import { useAuth } from '@/contexts/AuthContext';
 import { EditEntityProfileModal } from '@/components/claim1/EditEntityProfileModal';
+import { ShareRankModal } from '@/components/claim1/ShareRankModal';
+import { EmbedBadgeModal } from '@/components/claim1/EmbedBadgeModal';
+import { Code, Flame } from 'lucide-react';
 
 const EVENT_LABELS: Record<string, string> = {
   entered:    '🟢 Entered Leaderboard',
@@ -43,6 +46,8 @@ export default function CompanyRankingProfile() {
   const { slug } = useParams<{ slug: string }>();
   const { user } = useAuth();
   const [editOpen, setEditOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [badgeOpen, setBadgeOpen] = useState(false);
 
   const { data: entity, isLoading: entityLoading } = useEntity(slug);
   const { data: listings = [], isLoading: listingsLoading } = useEntityListings(entity?.id);
@@ -106,25 +111,65 @@ export default function CompanyRankingProfile() {
         />
       )}
 
+      {shareOpen && (
+        <ShareRankModal
+          entity={entity}
+          open={shareOpen}
+          onOpenChange={setShareOpen}
+          currentRank={topListing?.current_rank || 1}
+          scopeName={topListing?.scope?.name || 'Global AI Products'}
+        />
+      )}
+
+      {badgeOpen && (
+        <EmbedBadgeModal
+          entity={entity}
+          open={badgeOpen}
+          onOpenChange={setBadgeOpen}
+          currentRank={topListing?.current_rank || 1}
+        />
+      )}
+
       <div className="max-w-3xl mx-auto px-4 py-10 space-y-8">
 
-        {/* Breadcrumbs & Owner Edit CTA */}
+        {/* Breadcrumbs & Action CTAs */}
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
             <Link to="/rankings" className="hover:text-primary">Rankings</Link>
             <ChevronRight className="w-3.5 h-3.5" />
             <span className="text-foreground font-medium">{entity.name}</span>
           </div>
-          {isOwner && (
+
+          <div className="flex items-center gap-2">
             <Button
               size="sm"
               variant="outline"
-              onClick={() => setEditOpen(true)}
+              onClick={() => setBadgeOpen(true)}
               className="gap-1.5 text-xs h-8"
             >
-              <Edit3 className="w-3.5 h-3.5" /> Edit Profile
+              <Code className="w-3.5 h-3.5 text-primary" /> Embed Badge
             </Button>
-          )}
+
+            <Button
+              size="sm"
+              variant="default"
+              onClick={() => setShareOpen(true)}
+              className="gap-1.5 text-xs h-8 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-sm"
+            >
+              <Flame className="w-3.5 h-3.5" /> Share & Flex
+            </Button>
+
+            {isOwner && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setEditOpen(true)}
+                className="gap-1.5 text-xs h-8"
+              >
+                <Edit3 className="w-3.5 h-3.5" /> Edit Profile
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Header Profile Section */}
