@@ -3,6 +3,8 @@
 
 export * from './GreenhouseConnector';
 export * from './LeverConnector';
+export * from './AshbyConnector';
+export * from './WorkableConnector';
 export * from './AisheCollegeConnector';
 export * from './RecruiterDirectoryConnector';
 export * from './StaffingCompanyConnector';

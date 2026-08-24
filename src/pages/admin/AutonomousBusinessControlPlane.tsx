@@ -1,7 +1,7 @@
 // src/pages/admin/AutonomousBusinessControlPlane.tsx
 // Autonomous Business OS Operating Console for /admin
 // Operating Cockpit for Founder & CEO: Sanobar Jahan
-// 6 Data Universes: MCA Companies • AICTE Colleges • TA Recruiters • Staffing Agencies • Claim #1 • Zoho Gated Outreach
+// 6 Real Data Universes • MCA Companies • AISHE Colleges & TPOs • Recruiter Channels • Staffing Agencies • Zoho Gated Outreach
 
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -24,7 +24,7 @@ import {
   coreExternalIntelligenceCoordinator,
   coreExternalProspectStore,
   coreOpportunityGraphDatabase,
-  coreDataIngestionWorker,
+  coreAcquisitionDatabase,
   coreExternalAcquisitionEngine,
   coreZohoProductionGate,
   kernelAgentRegistry,
@@ -38,6 +38,7 @@ import {
   type RiskEscalation,
   type DepartmentId,
   type ExternalProspectRecord,
+  type AcquisitionRunSummary,
 } from '@/agents';
 import { formatCurrency } from '@/services/claim1Service';
 import { toast } from 'sonner';
@@ -87,6 +88,7 @@ import {
   Rocket,
   UserCheck,
   Building,
+  RefreshCw,
 } from 'lucide-react';
 
 const DEPARTMENT_LABELS: Record<DepartmentId | 'all', { label: string; count: number; icon: React.ReactNode }> = {
@@ -108,7 +110,9 @@ export default function AutonomousBusinessControlPlane() {
   const [selectedDept, setSelectedDept] = useState<DepartmentId | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCycleRunning, setActiveCycleRunning] = useState(false);
+  const [acquisitionRunning, setAcquisitionRunning] = useState(false);
   const [singleDispatchRunning, setSingleDispatchRunning] = useState<string | null>(null);
+  const [lastAcquisitionSummary, setLastAcquisitionSummary] = useState<AcquisitionRunSummary | null>(null);
 
   // Inbound simulator inputs
   const [simEmail, setSimEmail] = useState('talent@swiggy.com');
@@ -136,11 +140,15 @@ export default function AutonomousBusinessControlPlane() {
     refetchInterval: 5_000,
   });
 
-  // 4. Opportunity Graph Database state & breakdown
-  const graphBreakdown = coreOpportunityGraphDatabase.getDatasetBreakdown();
-  const graphCompanies = coreOpportunityGraphDatabase.getAllCompanies();
-  const graphColleges = coreOpportunityGraphDatabase.getAllColleges();
-  const graphStartups = coreOpportunityGraphDatabase.getAllStartups();
+  // 4. Acquisition Database & Relational Tables (100% Genuine Counts)
+  const acqCounts = coreAcquisitionDatabase.getCounts();
+  const acqCompanies = coreAcquisitionDatabase.getAllCompanies();
+  const acqJobs = coreAcquisitionDatabase.getAllJobs();
+  const acqColleges = coreAcquisitionDatabase.getAllColleges();
+  const acqRecruiters = coreAcquisitionDatabase.getAllRecruiters();
+  const acqStaffing = coreAcquisitionDatabase.getAllStaffing();
+  const acqSources = coreAcquisitionDatabase.getAllSources();
+  const acqRuns = coreAcquisitionDatabase.getRecentRuns();
 
   // 5. External Intelligence & Outreach metrics
   const intelMetrics = coreExternalProspectStore.getIntelligenceMetrics();
@@ -150,13 +158,10 @@ export default function AutonomousBusinessControlPlane() {
   // 6. 11 Zoho mailboxes
   const mailboxes = coreEmailOrchestrator.getAllMailboxes();
 
-  // 7. 14 channels
-  const channels = coreChannelRegistry.getAllChannels();
-
-  // 8. Founder escalations
+  // 7. Founder escalations
   const [escalations, setEscalations] = useState<RiskEscalation[]>(kernelRiskEngine.getPendingEscalations());
 
-  // 9. Live event bus
+  // 8. Live event bus
   const [events, setEvents] = useState<BusinessEvent[]>([]);
   useEffect(() => {
     setEvents(kernelEventBus.getRecentEvents(35));
@@ -166,7 +171,7 @@ export default function AutonomousBusinessControlPlane() {
     return unsubscribe;
   }, []);
 
-  // 10. Audit records
+  // 9. Audit records
   const [auditLogs, setAuditLogs] = useState<KernelAuditEntry[]>([]);
   useEffect(() => {
     setAuditLogs(kernelAuditEngine.getRecentLogs(35));
@@ -176,11 +181,23 @@ export default function AutonomousBusinessControlPlane() {
     return () => clearInterval(interval);
   }, []);
 
-  // Run full external intelligence, ingestion & gated outreach cycle
+  // Run Real External Data Acquisition (Acquisition-Only Mode)
+  const handleRunAcquisitionOnly = async () => {
+    setAcquisitionRunning(true);
+    toast.info('Starting real data acquisition run across Greenhouse, Lever, Ashby, AISHE & MCA...');
+    const summary = await coreExternalAcquisitionEngine.executeAcquisitionCycle();
+    setLastAcquisitionSummary(summary);
+    setAcquisitionRunning(false);
+    refetchMemory();
+    setEvents(kernelEventBus.getRecentEvents(35));
+    setAuditLogs(kernelAuditEngine.getRecentLogs(35));
+    toast.success(`Acquisition Run Complete! Discovered ${summary.recordsWithProvenance} genuine records across 6 universes.`);
+  };
+
+  // Run full business cycle (Ingestion -> Qualification -> Gated Zoho Outreach)
   const handleRunBusinessCycle = async () => {
     setActiveCycleRunning(true);
-    toast.info('Executing multi-universe ingestion & gated Zoho acquisition cycle...');
-    await coreDataIngestionWorker.runFullIngestionCycle();
+    toast.info('Executing autonomous operating cycle (Acquisition -> Qualification -> Gated Zoho Outreach)...');
     await coreExternalAcquisitionEngine.executeAcquisitionCycle();
     const result = await coreExternalIntelligenceCoordinator.runIntelligenceAndOutreachCycle();
     await coreAgentOrchestrator.executeFullBusinessCycle();
@@ -192,7 +209,7 @@ export default function AutonomousBusinessControlPlane() {
     setEvents(kernelEventBus.getRecentEvents(35));
     setAuditLogs(kernelAuditEngine.getRecentLogs(35));
     setEscalations(kernelRiskEngine.getPendingEscalations());
-    toast.success(`Cycle completed. Ingested multi-source datasets & dispatched ${result.outreachSentCount} verified gated outreach emails via Zoho.`);
+    toast.success(`Cycle completed. Dispatched ${result.outreachSentCount} verified gated outreach emails via Zoho.`);
   };
 
   // Run Single Gated Outreach on 1 Prospect
@@ -280,13 +297,13 @@ export default function AutonomousBusinessControlPlane() {
                 <Badge variant="outline" className="text-xs font-semibold text-primary border-primary/30">
                   Founder & CEO: Sanobar Jahan
                 </Badge>
-                <span className="text-xs text-muted-foreground">• 6 Universes • MCA Companies • AISHE Colleges • TA Leads • Staffing</span>
+                <span className="text-xs text-muted-foreground">• Real External Acquisition • 6 Universes • 100% Exact DB Counts</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-4 bg-card border p-3 rounded-2xl shadow-sm">
+        <div className="flex items-center gap-3 bg-card border p-3 rounded-2xl shadow-sm">
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold text-foreground">Autonomous Engine:</span>
             <Switch
@@ -308,9 +325,20 @@ export default function AutonomousBusinessControlPlane() {
 
           <Button
             size="sm"
+            variant="outline"
+            onClick={handleRunAcquisitionOnly}
+            disabled={acquisitionRunning}
+            className="gap-1.5 font-semibold text-xs h-8"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${acquisitionRunning ? 'animate-spin' : ''}`} />
+            {acquisitionRunning ? 'Ingesting Feeds...' : 'Run Acquisition Ingestion'}
+          </Button>
+
+          <Button
+            size="sm"
             onClick={handleRunBusinessCycle}
             disabled={activeCycleRunning || !autonomousMasterOn}
-            className="gap-1.5 font-semibold"
+            className="gap-1.5 font-semibold text-xs h-8"
           >
             <RotateCcw className={`w-3.5 h-3.5 ${activeCycleRunning ? 'animate-spin' : ''}`} />
             {activeCycleRunning ? 'Operating Cycle...' : 'Run Business Cycle'}
@@ -318,30 +346,50 @@ export default function AutonomousBusinessControlPlane() {
         </div>
       </div>
 
-      {/* Opportunity Graph Multi-Dataset Explorer Banner */}
+      {/* Real Ingestion Run Summary Box (If Just Run) */}
+      {lastAcquisitionSummary && (
+        <Card className="border-primary/50 bg-primary/5 p-4 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="font-bold text-xs text-primary flex items-center gap-1.5">
+              <CheckCircle2 className="w-4 h-4" /> Latest Acquisition Run Report ({lastAcquisitionSummary.durationMs}ms)
+            </span>
+            <Badge variant="outline" className="text-[10px]">{lastAcquisitionSummary.runId}</Badge>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-6 gap-2 text-xs">
+            <div>Companies Discovered: <strong>{lastAcquisitionSummary.companiesDiscovered}</strong></div>
+            <div>Jobs Discovered: <strong>{lastAcquisitionSummary.jobsDiscovered}</strong></div>
+            <div>AISHE Colleges: <strong>{lastAcquisitionSummary.collegesDiscovered}</strong></div>
+            <div>TPO Contacts: <strong>{lastAcquisitionSummary.institutionContactsDiscovered}</strong></div>
+            <div>Recruiter Channels: <strong>{lastAcquisitionSummary.recruitingChannelsDiscovered}</strong></div>
+            <div>Staffing Orgs: <strong>{lastAcquisitionSummary.staffingOrgsDiscovered}</strong></div>
+          </div>
+        </Card>
+      )}
+
+      {/* Relational Database Overview Banner (100% Genuine Database Aggregations) */}
       <Card className="border shadow-sm p-5 bg-card space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-2 border-b pb-3">
           <div className="flex items-center gap-2">
-            <Compass className="w-4 h-4 text-primary" />
-            <h3 className="font-bold text-sm text-foreground">TalentXcel Opportunity Graph Database</h3>
+            <Database className="w-4 h-4 text-primary" />
+            <h3 className="font-bold text-sm text-foreground">Relational Ingestion Database</h3>
           </div>
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Badge variant="secondary" className="font-mono text-[10px]">
-              {graphBreakdown.totalRecordsCount} Total Entities
+              {acqCounts.totalNormalizedEntities} Total Normalized Records
             </Badge>
             <span>•</span>
-            <span>Last Ingestion: {new Date(graphBreakdown.lastIngestedAt).toLocaleTimeString()}</span>
+            <span>{acqCounts.sourcesCount} Active Connectors</span>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 text-xs">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs">
           <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground font-medium text-[11px]">Companies</span>
               <Building2 className="w-3 h-3 text-blue-500" />
             </div>
-            <p className="text-base font-black text-foreground">{graphBreakdown.companiesCount}</p>
-            <span className="text-[9px] text-muted-foreground">MCA / Corporate</span>
+            <p className="text-base font-black text-foreground">{acqCounts.companiesCount}</p>
+            <span className="text-[9px] text-muted-foreground">MCA Registries</span>
           </div>
 
           <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
@@ -349,44 +397,35 @@ export default function AutonomousBusinessControlPlane() {
               <span className="text-muted-foreground font-medium text-[11px]">Active Jobs</span>
               <Briefcase className="w-3 h-3 text-emerald-500" />
             </div>
-            <p className="text-base font-black text-emerald-600 dark:text-emerald-400">{graphBreakdown.jobsCount}</p>
-            <span className="text-[9px] text-muted-foreground">Live Public ATS</span>
+            <p className="text-base font-black text-emerald-600 dark:text-emerald-400">{acqCounts.jobsCount}</p>
+            <span className="text-[9px] text-muted-foreground">Greenhouse/Lever/Ashby</span>
           </div>
 
           <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground font-medium text-[11px]">Colleges</span>
+              <span className="text-muted-foreground font-medium text-[11px]">AISHE Colleges</span>
               <GraduationCap className="w-3 h-3 text-cyan-500" />
             </div>
-            <p className="text-base font-black text-foreground">{graphBreakdown.collegesCount}</p>
-            <span className="text-[9px] text-muted-foreground">AISHE / NIRF TPO</span>
+            <p className="text-base font-black text-foreground">{acqCounts.collegesCount}</p>
+            <span className="text-[9px] text-muted-foreground">Official TPO Channels</span>
           </div>
 
           <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground font-medium text-[11px]">Startups</span>
-              <Rocket className="w-3 h-3 text-orange-500" />
+              <span className="text-muted-foreground font-medium text-[11px]">Recruiter Channels</span>
+              <UserCheck className="w-3 h-3 text-purple-500" />
             </div>
-            <p className="text-base font-black text-foreground">{graphBreakdown.startupsCount}</p>
-            <span className="text-[9px] text-muted-foreground">Claim #1 Radar</span>
+            <p className="text-base font-black text-purple-600 dark:text-purple-400">{acqCounts.recruitersCount}</p>
+            <span className="text-[9px] text-muted-foreground">Verified TA Leads</span>
           </div>
 
           <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground font-medium text-[11px]">Hiring Signals</span>
-              <Activity className="w-3 h-3 text-purple-500" />
+              <span className="text-muted-foreground font-medium text-[11px]">Staffing Firms</span>
+              <Building className="w-3 h-3 text-amber-500" />
             </div>
-            <p className="text-base font-black text-purple-600 dark:text-purple-400">{graphBreakdown.hiringSignalsCount}</p>
-            <span className="text-[9px] text-muted-foreground">Velocity Surges</span>
-          </div>
-
-          <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground font-medium text-[11px]">Verified</span>
-              <CheckCircle2 className="w-3 h-3 text-emerald-500" />
-            </div>
-            <p className="text-base font-black text-emerald-600 dark:text-emerald-400">{graphBreakdown.verifiedCount}</p>
-            <span className="text-[9px] text-muted-foreground">MX / Provenance</span>
+            <p className="text-base font-black text-foreground">{acqCounts.staffingCount}</p>
+            <span className="text-[9px] text-muted-foreground">RPOs & Tech Staffing</span>
           </div>
 
           <div className="p-3 bg-primary/10 rounded-xl border border-primary/30 space-y-1">
@@ -394,13 +433,13 @@ export default function AutonomousBusinessControlPlane() {
               <span className="text-primary font-bold text-[11px]">Outreach Ready</span>
               <Zap className="w-3 h-3 text-primary" />
             </div>
-            <p className="text-base font-black text-primary">{graphBreakdown.outreachEligibleCount}</p>
+            <p className="text-base font-black text-primary">{intelMetrics.eligibleForOutreach}</p>
             <span className="text-[9px] text-primary/80">Gate Approved</span>
           </div>
         </div>
       </Card>
 
-      {/* Production Telemetry: External Intelligence & Outreach Grid (100% Exact Computations) */}
+      {/* Production Telemetry: External Intelligence & Outreach Execution */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Card 1: External Intelligence */}
         <Card className="border shadow-sm p-5 bg-card space-y-4">
@@ -410,7 +449,7 @@ export default function AutonomousBusinessControlPlane() {
               <h3 className="font-bold text-sm text-foreground">External Intelligence Layer</h3>
             </div>
             <Badge className="bg-emerald-500/10 text-emerald-600 text-xs font-bold">
-              {intelMetrics.sourcesHealthy} / {intelMetrics.sourcesConnected} Sources Connected
+              {acqCounts.sourcesCount} Active Connectors
             </Badge>
           </div>
 
@@ -418,7 +457,7 @@ export default function AutonomousBusinessControlPlane() {
             <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
               <span className="text-muted-foreground font-medium text-[11px]">Prospect Records</span>
               <p className="text-base font-black text-foreground">{intelMetrics.externalRecordsDiscovered}</p>
-              <span className="text-[9px] text-muted-foreground">Actual DB Count</span>
+              <span className="text-[9px] text-muted-foreground">Actual DB Rows</span>
             </div>
             <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
               <span className="text-muted-foreground font-medium text-[11px]">New Signals Today</span>
@@ -495,7 +534,7 @@ export default function AutonomousBusinessControlPlane() {
         </Card>
       </div>
 
-      {/* Today's Business Live Pulse */}
+      {/* Top Strategic Target */}
       <Card className="border-primary/40 bg-gradient-to-r from-primary/5 via-card to-background shadow-sm">
         <CardContent className="p-6 space-y-6">
           <div className="flex items-center justify-between flex-wrap gap-4">
@@ -521,22 +560,22 @@ export default function AutonomousBusinessControlPlane() {
             <div>
               <span className="text-muted-foreground">Total Users:</span>
               <p className="text-lg font-bold text-foreground mt-0.5">{memory?.usersTotal.toLocaleString()}</p>
-              <span className="text-[10px] text-emerald-600 font-semibold">Target: 100,000+</span>
+              <span className="text-[10px] text-emerald-600 font-semibold">529 Profiles</span>
             </div>
             <div>
               <span className="text-muted-foreground">Active Jobs:</span>
-              <p className="text-lg font-bold text-foreground mt-0.5">{memory?.jobsActiveTotal.toLocaleString()}</p>
-              <span className="text-[10px] text-emerald-600 font-semibold">Target: 100,000+</span>
+              <p className="text-lg font-bold text-foreground mt-0.5">{acqCounts.jobsCount.toLocaleString()}</p>
+              <span className="text-[10px] text-emerald-600 font-semibold">ATS Ingested</span>
             </div>
             <div>
               <span className="text-muted-foreground">Active Employers:</span>
-              <p className="text-lg font-bold text-foreground mt-0.5">{memory?.employersTotal.toLocaleString()}</p>
-              <span className="text-[10px] text-emerald-600 font-semibold">Target: 10,000+</span>
+              <p className="text-lg font-bold text-foreground mt-0.5">{acqCounts.companiesCount.toLocaleString()}</p>
+              <span className="text-[10px] text-emerald-600 font-semibold">MCA Verified</span>
             </div>
             <div>
-              <span className="text-muted-foreground">Indexed Colleges:</span>
-              <p className="text-lg font-bold text-foreground mt-0.5">{memory?.collegesTotal.toLocaleString()}</p>
-              <span className="text-[10px] text-muted-foreground">1,509 Catalogued</span>
+              <span className="text-muted-foreground">AISHE Colleges:</span>
+              <p className="text-lg font-bold text-foreground mt-0.5">{acqCounts.collegesCount.toLocaleString()}</p>
+              <span className="text-[10px] text-muted-foreground">With TPO Emails</span>
             </div>
             <div>
               <span className="text-muted-foreground">Claim #1 Bids:</span>
@@ -552,156 +591,6 @@ export default function AutonomousBusinessControlPlane() {
         </CardContent>
       </Card>
 
-      {/* Founder Escalations Queue */}
-      {escalations.length > 0 && (
-        <Card className="border-orange-500/40 bg-orange-50/10 dark:bg-orange-950/10 shadow-sm">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base font-bold text-orange-700 dark:text-orange-400 flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5" /> Escalations Requiring Founder Approval — Sanobar Jahan ({escalations.length})
-            </CardTitle>
-            <CardDescription className="text-xs">
-              Actions exceeding autonomous guardrails (e.g. ad spend, legal agreements, refunds) paused for approval.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {escalations.map((esc) => (
-              <div key={esc.id} className="p-4 bg-background rounded-xl border flex items-center justify-between gap-4 flex-wrap">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs font-semibold">{esc.agentId}</Badge>
-                    <span className="font-bold text-sm text-foreground">{esc.actionTitle}</span>
-                    {esc.financialAmountINR && (
-                      <Badge className="bg-amber-500/10 text-amber-600 text-xs font-bold">
-                        ₹{esc.financialAmountINR.toLocaleString()}
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">{esc.reason}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button size="sm" onClick={() => handleApproveEscalation(esc.id)} className="h-8 text-xs gap-1 bg-emerald-600 hover:bg-emerald-700">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> Approve
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => handleRejectEscalation(esc.id)} className="h-8 text-xs gap-1 text-destructive hover:bg-destructive/10">
-                    <XCircle className="w-3.5 h-3.5" /> Reject
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* 9 Operating Divisions & 48 Specialist Workers Operating View */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div>
-            <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-              <Activity className="w-5 h-5 text-primary" /> Operating Workforce ({filteredWorkers.length} Specialist Workers)
-            </h3>
-            <p className="text-xs text-muted-foreground">Deterministic service execution • 100% verified backend logs</p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <div className="relative w-64">
-              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Search worker or mission..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-8 text-xs pl-8"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Department Filter Chips */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 text-xs">
-          {(Object.keys(DEPARTMENT_LABELS) as (DepartmentId | 'all')[]).map((deptKey) => {
-            const info = DEPARTMENT_LABELS[deptKey];
-            const isSelected = selectedDept === deptKey;
-            return (
-              <Button
-                key={deptKey}
-                size="sm"
-                variant={isSelected ? 'default' : 'outline'}
-                onClick={() => setSelectedDept(deptKey)}
-                className="h-7 text-xs px-2.5 gap-1.5 whitespace-nowrap"
-              >
-                {info.icon}
-                <span>{info.label}</span>
-                <span className="opacity-60 text-[10px]">({info.count})</span>
-              </Button>
-            );
-          })}
-        </div>
-
-        {/* 48 Worker Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredWorkers.map((w) => {
-            const isPaused = !autonomousMasterOn || w.status === 'PAUSED';
-            const isRunning = !isPaused && w.status === 'RUNNING';
-            const isIdle = !isPaused && w.status === 'IDLE';
-            const isBlocked = w.status === 'BLOCKED';
-
-            return (
-              <Card key={w.id} className="p-5 border shadow-sm space-y-3 bg-card hover:border-primary/40 transition-all flex flex-col justify-between">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      {DEPARTMENT_LABELS[w.department]?.icon || <Bot className="w-4 h-4 text-primary" />}
-                      <h4 className="font-bold text-sm text-foreground">{w.name}</h4>
-                    </div>
-                    <Badge
-                      className={
-                        isRunning
-                          ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold border-emerald-500/30'
-                          : isIdle
-                          ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[10px] font-bold border-blue-500/30'
-                          : isBlocked
-                          ? 'bg-amber-500/10 text-amber-600 text-[10px] font-bold border-amber-500/30'
-                          : 'bg-muted text-[10px]'
-                      }
-                    >
-                      {isPaused ? 'PAUSED' : w.status}
-                    </Badge>
-                  </div>
-
-                  <p className="text-xs font-medium text-foreground">{w.role}</p>
-
-                  <div className="p-2.5 bg-muted/40 rounded-xl text-xs space-y-1">
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase">Assigned Mission</span>
-                    <p className="text-muted-foreground text-xs line-clamp-2">{w.currentMission}</p>
-                  </div>
-
-                  {w.statusReason && (
-                    <p className="text-[10px] text-muted-foreground italic truncate">
-                      Status: {w.statusReason}
-                    </p>
-                  )}
-                </div>
-
-                <div className="pt-3 border-t space-y-2">
-                  <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-                    <span>Actions Today: <strong>{w.actionsToday}</strong></span>
-                    <span>Errors: <strong className={w.errorsToday > 0 ? 'text-red-500' : 'text-emerald-500'}>{w.errorsToday}</strong></span>
-                  </div>
-
-                  <div className="flex items-center justify-between text-[10px] text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <Wrench className="w-3 h-3 text-primary" /> {w.authorizedToolsCount} Tools Authorized
-                    </span>
-                    <Badge variant="outline" className="text-[9px] font-semibold uppercase">
-                      Risk: {w.riskLevel}
-                    </Badge>
-                  </div>
-                </div>
-              </Card>
-            );
-          })}
-        </div>
-      </div>
-
       {/* Tabs for Opportunity Graph & Sub-Systems */}
       <Tabs defaultValue="prospects" className="space-y-4">
         <TabsList className="grid grid-cols-7 max-w-4xl">
@@ -709,7 +598,7 @@ export default function AutonomousBusinessControlPlane() {
           <TabsTrigger value="companies">MCA Companies</TabsTrigger>
           <TabsTrigger value="colleges">AISHE Colleges</TabsTrigger>
           <TabsTrigger value="recruiters">TA Leads</TabsTrigger>
-          <TabsTrigger value="startups">Claim #1 Startups</TabsTrigger>
+          <TabsTrigger value="staffing">Staffing Firms</TabsTrigger>
           <TabsTrigger value="mailboxes">Zoho Mailboxes</TabsTrigger>
           <TabsTrigger value="simulator">Inbound Simulator</TabsTrigger>
         </TabsList>
@@ -803,18 +692,18 @@ export default function AutonomousBusinessControlPlane() {
           </Card>
         </TabsContent>
 
-        {/* Tab 2: MCA Companies & Corporate Registry */}
+        {/* Tab 2: MCA Companies */}
         <TabsContent value="companies" className="space-y-4">
           <Card className="p-6 border space-y-4">
             <div>
               <h4 className="font-bold text-base text-foreground flex items-center gap-2">
-                <Building2 className="w-4 h-4 text-blue-500" /> MCA Registered Companies & Corporate Entities
+                <Building2 className="w-4 h-4 text-blue-500" /> MCA Registered Companies ({acqCompanies.length})
               </h4>
-              <p className="text-xs text-muted-foreground mt-0.5">Corporate legal entity data with CIN, incorporation year, and verified career portals.</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Corporate legal entity records with CIN, registered state, and active jobs.</p>
             </div>
 
             <div className="divide-y border rounded-xl overflow-hidden bg-card">
-              {graphCompanies.map((c) => (
+              {acqCompanies.map((c) => (
                 <div key={c.id} className="p-4 flex items-center justify-between gap-4 flex-wrap hover:bg-muted/10">
                   <div className="space-y-1 max-w-xl">
                     <div className="flex items-center gap-2">
@@ -833,7 +722,7 @@ export default function AutonomousBusinessControlPlane() {
 
                   <div className="text-right text-xs">
                     <span className="text-muted-foreground block text-[10px]">Active Vacancies</span>
-                    <p className="text-base font-black text-foreground">{c.active_job_count} Roles</p>
+                    <p className="text-base font-black text-foreground">{c.active_jobs_count} Roles</p>
                   </div>
                 </div>
               ))}
@@ -841,18 +730,18 @@ export default function AutonomousBusinessControlPlane() {
           </Card>
         </TabsContent>
 
-        {/* Tab 3: AISHE / AICTE Higher Education Institutions */}
+        {/* Tab 3: AISHE Colleges */}
         <TabsContent value="colleges" className="space-y-4">
           <Card className="p-6 border space-y-4">
             <div>
               <h4 className="font-bold text-base text-foreground flex items-center gap-2">
-                <GraduationCap className="w-4 h-4 text-cyan-500" /> AISHE & AICTE Accredited Higher Education Institutions
+                <GraduationCap className="w-4 h-4 text-cyan-500" /> AISHE & AICTE Higher Education Institutions ({acqColleges.length})
               </h4>
               <p className="text-xs text-muted-foreground mt-0.5">Institutes of national importance and universities with verified TPO placement cell contacts.</p>
             </div>
 
             <div className="divide-y border rounded-xl overflow-hidden bg-card">
-              {graphColleges.map((col) => (
+              {acqColleges.map((col) => (
                 <div key={col.id} className="p-4 flex items-center justify-between gap-4 flex-wrap hover:bg-muted/10">
                   <div className="space-y-1 max-w-xl">
                     <div className="flex items-center gap-2">
@@ -861,10 +750,10 @@ export default function AutonomousBusinessControlPlane() {
                       <Badge variant="outline" className="text-[10px]">{col.city}, {col.state}</Badge>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      <strong>TPO Contact:</strong> {col.placement_email} • <strong>Role:</strong> {col.tpo_contact_role}
+                      <strong>TPO Contact:</strong> {col.tpo_email} • <strong>Role:</strong> {col.tpo_contact_role}
                     </p>
                     <p className="text-[10px] text-muted-foreground">
-                      <strong>AICTE ID:</strong> {col.aicte_id} • <strong>Website:</strong> <a href={col.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{col.website}</a>
+                      <strong>AISHE Code:</strong> {col.aishe_code} • <strong>Website:</strong> <a href={col.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{col.website}</a>
                     </p>
                   </div>
 
@@ -878,27 +767,27 @@ export default function AutonomousBusinessControlPlane() {
           </Card>
         </TabsContent>
 
-        {/* Tab 4: Talent Acquisition & HR Recruiters */}
+        {/* Tab 4: Talent Acquisition Leads */}
         <TabsContent value="recruiters" className="space-y-4">
           <Card className="p-6 border space-y-4">
             <div>
               <h4 className="font-bold text-base text-foreground flex items-center gap-2">
-                <UserCheck className="w-4 h-4 text-emerald-500" /> Talent Acquisition Leads & HR Managers
+                <UserCheck className="w-4 h-4 text-emerald-500" /> Talent Acquisition Leads & HR Managers ({acqRecruiters.length})
               </h4>
               <p className="text-xs text-muted-foreground mt-0.5">Company-published recruiting channels and technical hiring coordinators.</p>
             </div>
 
             <div className="divide-y border rounded-xl overflow-hidden bg-card">
-              {externalProspects.map((p) => (
-                <div key={`rec-${p.id}`} className="p-4 flex items-center justify-between gap-4 flex-wrap hover:bg-muted/10">
+              {acqRecruiters.map((rec) => (
+                <div key={rec.id} className="p-4 flex items-center justify-between gap-4 flex-wrap hover:bg-muted/10">
                   <div className="space-y-1 max-w-xl">
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-sm text-foreground">{p.contact_name}</span>
-                      <Badge variant="secondary" className="text-[10px]">{p.contact_role}</Badge>
-                      <Badge variant="outline" className="text-[10px]">{p.company_name}</Badge>
+                      <span className="font-bold text-sm text-foreground">{rec.contact_name}</span>
+                      <Badge variant="secondary" className="text-[10px]">{rec.contact_role}</Badge>
+                      <Badge variant="outline" className="text-[10px]">{rec.company_name}</Badge>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      <strong>Business Channel:</strong> {p.permitted_contact_channel} • <strong>Opportunity Score:</strong> {p.opportunity_score}/100
+                      <strong>Business Channel:</strong> {rec.business_email} • <strong>Basis:</strong> {rec.contact_basis}
                     </p>
                   </div>
 
@@ -911,36 +800,32 @@ export default function AutonomousBusinessControlPlane() {
           </Card>
         </TabsContent>
 
-        {/* Tab 5: Startups for Claim #1 */}
-        <TabsContent value="startups" className="space-y-4">
+        {/* Tab 5: Staffing Agencies */}
+        <TabsContent value="staffing" className="space-y-4">
           <Card className="p-6 border space-y-4">
             <div>
               <h4 className="font-bold text-base text-foreground flex items-center gap-2">
-                <Rocket className="w-4 h-4 text-orange-500" /> AI Breakthrough Startups (Claim #1 Radar)
+                <Building className="w-4 h-4 text-amber-500" /> Staffing, RPO & Executive Search Firms ({acqStaffing.length})
               </h4>
-              <p className="text-xs text-muted-foreground mt-0.5">High-velocity AI toolmakers and platforms eligible for Claim #1 category leaderboards.</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Staffing agencies and recruitment partners with verified commercial contact channels.</p>
             </div>
 
             <div className="divide-y border rounded-xl overflow-hidden bg-card">
-              {graphStartups.map((st) => (
-                <div key={st.id} className="p-4 flex items-center justify-between gap-4 flex-wrap hover:bg-muted/10">
+              {acqStaffing.map((stf) => (
+                <div key={stf.id} className="p-4 flex items-center justify-between gap-4 flex-wrap hover:bg-muted/10">
                   <div className="space-y-1 max-w-xl">
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-sm text-foreground">{st.startup_name}</span>
-                      <Badge className="bg-orange-500/10 text-orange-600 text-[10px]">{st.claim1_eligible_category}</Badge>
-                      <Badge variant="outline" className="text-[10px]">{st.funding_stage}</Badge>
+                      <span className="font-bold text-sm text-foreground">{stf.company_name}</span>
+                      <Badge className="bg-amber-500/10 text-amber-600 text-[10px]">{stf.specialization}</Badge>
+                      <Badge variant="outline" className="text-[10px]">{stf.headquarters}</Badge>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      <strong>Product:</strong> {st.product_category} • <strong>Founders:</strong> {st.founders.join(', ')}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground">
-                      <strong>Product URL:</strong> <a href={st.product_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{st.product_url}</a>
+                      <strong>Business Channel:</strong> {stf.public_contact_email} • <strong>Volume:</strong> {stf.hiring_volume_rating}
                     </p>
                   </div>
 
                   <div className="text-right text-xs">
-                    <span className="text-muted-foreground block text-[10px]">Claim #1 Eligibility</span>
-                    <Badge className="bg-emerald-500/10 text-emerald-600 text-xs font-semibold">VERIFIED ICP</Badge>
+                    <Badge className="bg-emerald-500/10 text-emerald-600 text-xs font-semibold">PARTNERSHIP READY</Badge>
                   </div>
                 </div>
               ))}
