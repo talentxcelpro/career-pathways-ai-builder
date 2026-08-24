@@ -24,8 +24,8 @@ import {
   Sparkles,
   ShieldCheck,
 } from 'lucide-react';
-import { useClaimProfile, useFounding100Count } from '@/hooks/useClaim1';
-import { generateSlug, isSlugTaken, getCategoryBySlug, getScopesForCategory } from '@/services/claim1Service';
+import { useClaimProfile, useFounding100Count, useAvailableScopes } from '@/hooks/useClaim1';
+import { generateSlug, isSlugTaken } from '@/services/claim1Service';
 import type { Claim1EntityType, Claim1Scope } from '@/types/claim1';
 
 const COUNTRY_OPTIONS = [
@@ -51,6 +51,7 @@ export default function EnterLeaderboard() {
   const navigate  = useNavigate();
   const claimMutation = useClaimProfile();
   const { data: foundingCount = 0 } = useFounding100Count();
+  const { data: scopes = [], isLoading: scopesLoading } = useAvailableScopes();
 
   const [step, setStep]                   = useState(1);
   const [name, setName]                   = useState('');
@@ -68,24 +69,10 @@ export default function EnterLeaderboard() {
   const isFoundingEligible = foundingCount < 100;
   const remainingFoundingSlots = Math.max(0, 100 - foundingCount);
 
-  // Fetch AI Products category + scopes
-  const { data: category, isLoading: catLoading } = useQuery({
-    queryKey: ['claim1-cat-ai-products'],
-    queryFn:  () => getCategoryBySlug('ai-products'),
-    staleTime: 10 * 60_000,
-  });
-
-  const { data: scopes = [], isLoading: scopesLoading } = useQuery({
-    queryKey: ['claim1-scopes', category?.id],
-    queryFn:  () => getScopesForCategory(category!.id),
-    enabled:  !!category?.id,
-    staleTime: 10 * 60_000,
-  });
-
   // Default select global scope once scopes load
   useEffect(() => {
     if (scopes.length > 0 && selectedScopes.length === 0) {
-      const globalScope = scopes.find((s) => s.scope_type === 'global');
+      const globalScope = scopes.find((s) => s.scope_type === 'global') || scopes[0];
       if (globalScope) setSelectedScopes([globalScope.id]);
     }
   }, [scopes, selectedScopes.length]);
@@ -326,7 +313,7 @@ export default function EnterLeaderboard() {
               </p>
             </div>
 
-            {scopesLoading || catLoading ? (
+            {scopesLoading ? (
               <div className="space-y-3">
                 {[1,2,3,4].map((i) => <Skeleton key={i} className="h-16 w-full rounded-lg" />)}
               </div>

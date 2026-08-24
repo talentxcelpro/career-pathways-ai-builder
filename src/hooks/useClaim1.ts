@@ -19,6 +19,7 @@ import {
   getRankingHistory,
   getScopeStats,
   getFounding100Count,
+  getAvailableScopes,
   claimProfile,
   placeRazorpayBid,
   watchScope,
@@ -64,6 +65,14 @@ export function useScopeBySlug(categorySlug: string, scopeSlug = 'global') {
     queryFn:  () => resolveScopeBySlug(categorySlug, scopeSlug),
     staleTime: 10 * 60 * 1000,
     enabled:   !!categorySlug,
+  });
+}
+
+export function useAvailableScopes() {
+  return useQuery({
+    queryKey: [...claim1Keys.all, 'available-scopes'],
+    queryFn:  getAvailableScopes,
+    staleTime: 5 * 60 * 1000,
   });
 }
 
