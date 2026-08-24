@@ -1,8 +1,7 @@
 // src/agents/core/OpportunityManager.ts
-// Real-Time Business Opportunity Pipeline Manager
-// Tracks Discovered -> Qualified -> Contacted -> Interested -> Meeting -> Converted
+// Opportunity Lifecycle Manager for Employer, College, and Claim #1 Pipelines
+// 100% genuine, uninflated state tracking
 
-import { supabase } from '@/integrations/supabase/client';
 import { kernelEventBus } from '../kernel/EventBus';
 
 export type OpportunityStage =
@@ -11,20 +10,21 @@ export type OpportunityStage =
   | 'CONTACTED'
   | 'INTERESTED'
   | 'MEETING_BOOKED'
-  | 'PROPOSAL_SENT'
   | 'CONVERTED'
-  | 'SUPPRESSED';
+  | 'SUPPRESSED'
+  | 'CLOSED_LOST';
 
 export interface BusinessOpportunity {
   id: string;
   entityName: string;
   domain?: string;
-  category: 'employer' | 'claim1' | 'college' | 'candidate';
+  category: 'employer' | 'claim1' | 'college';
   stage: OpportunityStage;
-  score: number;
-  contactEmail?: string;
+  score: number; // 0 - 100
   assignedMailbox?: string;
   assignedAgent?: string;
+  contactEmail?: string;
+  contactName?: string;
   activeVacanciesCount?: number;
   matchingCandidatesCount?: number;
   estimatedRevenueINR?: number;
@@ -38,79 +38,22 @@ export interface BusinessOpportunity {
 export class OpportunityManager {
   private opportunities = new Map<string, BusinessOpportunity>();
 
-  constructor() {
-    this.seedInitialOpportunities();
-  }
-
-  private seedInitialOpportunities() {
-    const initial: BusinessOpportunity[] = [
-      {
-        id: 'opp-1',
-        entityName: 'Cursor AI',
-        domain: 'cursor.com',
-        category: 'claim1',
-        stage: 'QUALIFIED',
-        score: 98,
-        contactEmail: 'founders@cursor.com',
-        assignedMailbox: 'zoya@talentxcel.in',
-        assignedAgent: 'claim_acquisition',
-        estimatedRevenueINR: 50000,
-        touchCount: 1,
-        createdAt: new Date(Date.now() - 3600000).toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      {
-        id: 'opp-2',
-        entityName: 'Perplexity AI',
-        domain: 'perplexity.ai',
-        category: 'claim1',
-        stage: 'QUALIFIED',
-        score: 99,
-        contactEmail: 'leadership@perplexity.ai',
-        assignedMailbox: 'talentxcel@talentxcel.in',
-        assignedAgent: 'claim_discovery',
-        estimatedRevenueINR: 100000,
-        touchCount: 1,
-        createdAt: new Date(Date.now() - 7200000).toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      {
-        id: 'opp-3',
-        entityName: 'IIT Delhi Placement Cell',
-        domain: 'iitd.ac.in',
-        category: 'college',
-        stage: 'CONTACTED',
-        score: 95,
-        contactEmail: 'placement@iitd.ac.in',
-        assignedMailbox: 'meera@talentxcel.in',
-        assignedAgent: 'college_partnership',
-        estimatedRevenueINR: 0,
-        touchCount: 1,
-        createdAt: new Date(Date.now() - 86400000).toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-    ];
-
-    for (const opp of initial) {
-      this.opportunities.set(opp.id, opp);
-    }
-  }
-
-  upsertOpportunity(opp: Partial<BusinessOpportunity> & { entityName: string; category: BusinessOpportunity['category'] }): BusinessOpportunity {
-    const key = opp.id || `opp-${opp.entityName.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
+  upsertOpportunity(opp: Partial<BusinessOpportunity> & { entityName: string }): BusinessOpportunity {
+    const key = opp.domain ? opp.domain.toLowerCase().trim() : opp.entityName.toLowerCase().trim();
     const existing = this.opportunities.get(key);
 
     const now = new Date().toISOString();
     const updated: BusinessOpportunity = {
-      id: key,
+      id: existing ? existing.id : `opp-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
       entityName: opp.entityName,
       domain: opp.domain || existing?.domain,
-      category: opp.category,
+      category: opp.category || existing?.category || 'employer',
       stage: opp.stage || existing?.stage || 'DISCOVERED',
-      score: opp.score || existing?.score || 80,
+      score: opp.score ?? existing?.score ?? 70,
+      assignedMailbox: opp.assignedMailbox || existing?.assignedMailbox || 'shelly@talentxcel.in',
+      assignedAgent: opp.assignedAgent || existing?.assignedAgent || 'employer_outreach',
       contactEmail: opp.contactEmail || existing?.contactEmail,
-      assignedMailbox: opp.assignedMailbox || existing?.assignedMailbox,
-      assignedAgent: opp.assignedAgent || existing?.assignedAgent,
+      contactName: opp.contactName || existing?.contactName,
       activeVacanciesCount: opp.activeVacanciesCount ?? existing?.activeVacanciesCount,
       matchingCandidatesCount: opp.matchingCandidatesCount ?? existing?.matchingCandidatesCount,
       estimatedRevenueINR: opp.estimatedRevenueINR ?? existing?.estimatedRevenueINR,
@@ -126,8 +69,16 @@ export class OpportunityManager {
   }
 
   transitionStage(id: string, stage: OpportunityStage, notes?: string): BusinessOpportunity | undefined {
-    const opp = this.opportunities.get(id);
-    if (!opp) return undefined;
+    let targetKey: string | undefined;
+    for (const [k, v] of this.opportunities.entries()) {
+      if (v.id === id || v.domain === id) {
+        targetKey = k;
+        break;
+      }
+    }
+
+    if (!targetKey) return undefined;
+    const opp = this.opportunities.get(targetKey)!;
 
     opp.stage = stage;
     opp.updatedAt = new Date().toISOString();
@@ -158,12 +109,12 @@ export class OpportunityManager {
   } {
     const all = Array.from(this.opportunities.values());
     return {
-      discovered: all.filter((o) => o.stage === 'DISCOVERED').length + 37, // including 37 base companies
-      qualified: all.filter((o) => o.stage === 'QUALIFIED').length + 21,
-      contacted: all.filter((o) => o.stage === 'CONTACTED').length + 14,
-      interested: all.filter((o) => o.stage === 'INTERESTED').length + 4,
-      meetings: all.filter((o) => o.stage === 'MEETING_BOOKED').length + 2,
-      converted: all.filter((o) => o.stage === 'CONVERTED').length + 1,
+      discovered: all.filter((o) => o.stage === 'DISCOVERED').length,
+      qualified: all.filter((o) => o.stage === 'QUALIFIED').length,
+      contacted: all.filter((o) => o.stage === 'CONTACTED').length,
+      interested: all.filter((o) => o.stage === 'INTERESTED').length,
+      meetings: all.filter((o) => o.stage === 'MEETING_BOOKED').length,
+      converted: all.filter((o) => o.stage === 'CONVERTED').length,
       suppressed: all.filter((o) => o.stage === 'SUPPRESSED').length,
     };
   }

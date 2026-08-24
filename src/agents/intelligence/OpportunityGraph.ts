@@ -1,8 +1,8 @@
 // src/agents/intelligence/OpportunityGraph.ts
 // Persistent Opportunity Graph linking Companies <-> Signals <-> Contacts <-> Candidate Matches <-> Deals
+// 100% genuine graph metrics with zero artificial inflation
 
 import type { ExternalSignal, ExternalCompanyEntity, OpportunityNode, OpportunityGraphStats } from './types';
-import { supabase } from '@/integrations/supabase/client';
 
 export class OpportunityGraph {
   private signals = new Map<string, ExternalSignal>(); // key: dedupHash
@@ -108,11 +108,11 @@ export class OpportunityGraph {
     const totalMatches = allCompanies.reduce((acc, c) => acc + c.candidateMatchesCount, 0);
 
     return {
-      totalExternalSignalsObserved: this.signals.size + 4812, // includes verified base inventory
-      uniqueCompaniesResolved: this.companies.size + 37,
-      highIntentEmployersCount: highIntent + 21,
-      activeOpportunityNodes: this.opportunities.size + 14,
-      candidateMatchConnections: totalMatches + 529,
+      totalExternalSignalsObserved: this.signals.size,
+      uniqueCompaniesResolved: this.companies.size,
+      highIntentEmployersCount: highIntent,
+      activeOpportunityNodes: this.opportunities.size,
+      candidateMatchConnections: totalMatches,
     };
   }
 }
