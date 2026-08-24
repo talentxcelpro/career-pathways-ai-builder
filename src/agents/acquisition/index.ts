@@ -3,6 +3,7 @@
 
 export * from './types';
 export * from './sources';
+export * from './AcquisitionDatabase';
 export * from './NormalizationEngine';
 export * from './DeduplicationEngine';
 export * from './SignalExtractionEngine';

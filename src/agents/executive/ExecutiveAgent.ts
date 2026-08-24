@@ -79,6 +79,10 @@ export class ExecutiveAgent {
     }
   }
 
+  async pulse(): Promise<void> {
+    await this.runBusinessCycle();
+  }
+
   getObjective(): AgentObjective {
     return this.activeObjective;
   }
