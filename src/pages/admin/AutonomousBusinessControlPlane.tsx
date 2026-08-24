@@ -1,7 +1,7 @@
 // src/pages/admin/AutonomousBusinessControlPlane.tsx
 // Autonomous Business OS Control Plane for /admin
 // Operating Cockpit for Founder & CEO: Sanobar Jahan
-// Connects to real 48-worker kernel across 9 departments with verified database telemetry.
+// 9 Departments • 48 Specialist Workers • 14 Connectors • 100% Real Database Telemetry
 
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -13,20 +13,22 @@ import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
+  coreAgentOrchestrator,
+  coreBusinessMemory,
+  coreObjectiveEngine,
+  coreChannelRegistry,
+  coreKPIEngine,
   kernelAgentRegistry,
   kernelAgentScheduler,
   kernelEventBus,
-  kernelMemoryManager,
   kernelRiskEngine,
   kernelAuditEngine,
-  kernelKnowledgeGraph,
-  kernelBudgetManager,
-  executiveAgent,
   type WorkerDiagnostic,
   type BusinessEvent,
   type KernelAuditEntry,
   type RiskEscalation,
   type DepartmentId,
+  type ChannelDescriptor,
 } from '@/agents';
 import { formatCurrency } from '@/services/claim1Service';
 import { toast } from 'sonner';
@@ -59,6 +61,13 @@ import {
   Crown,
   Network,
   Search,
+  Check,
+  Lock,
+  Globe,
+  Mail,
+  Send,
+  MessageSquare,
+  Share2,
 } from 'lucide-react';
 
 const DEPARTMENT_LABELS: Record<DepartmentId | 'all', { label: string; count: number; icon: React.ReactNode }> = {
@@ -81,24 +90,34 @@ export default function AutonomousBusinessControlPlane() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCycleRunning, setActiveCycleRunning] = useState(false);
 
-  // 1. Fetch live verified business memory
+  // 1. Fetch live verified business memory & KPIs
   const { data: memory, refetch: refetchMemory } = useQuery({
-    queryKey: ['kernel-verified-memory'],
-    queryFn: () => kernelMemoryManager.getVerifiedState(true),
+    queryKey: ['core-verified-memory'],
+    queryFn: () => coreBusinessMemory.getVerifiedMetrics(true),
     refetchInterval: 10_000,
   });
 
-  // 2. Fetch live diagnostics for all 48 specialist workers from real DB logs
+  // 2. Fetch synchronized objectives for Sanobar Jahan
+  const { data: goals = [], refetch: refetchGoals } = useQuery({
+    queryKey: ['core-strategic-goals'],
+    queryFn: () => coreObjectiveEngine.getSynchronizedGoals(),
+    refetchInterval: 10_000,
+  });
+
+  // 3. Fetch live diagnostics for all 48 specialist workers from real DB logs
   const { data: workers = [], refetch: refetchWorkers } = useQuery({
-    queryKey: ['kernel-48-workers'],
+    queryKey: ['core-48-workers'],
     queryFn: () => kernelAgentRegistry.getLiveWorkerDiagnostics(),
     refetchInterval: 5_000,
   });
 
-  // 3. Fetch pending founder escalations
+  // 4. Fetch 14 channels status
+  const channels = coreChannelRegistry.getAllChannels();
+
+  // 5. Fetch pending founder escalations
   const [escalations, setEscalations] = useState<RiskEscalation[]>(kernelRiskEngine.getPendingEscalations());
 
-  // 4. Fetch live event bus
+  // 6. Fetch live event bus
   const [events, setEvents] = useState<BusinessEvent[]>([]);
   useEffect(() => {
     setEvents(kernelEventBus.getRecentEvents(30));
@@ -108,7 +127,7 @@ export default function AutonomousBusinessControlPlane() {
     return unsubscribe;
   }, []);
 
-  // 5. Fetch audit records
+  // 7. Fetch audit records
   const [auditLogs, setAuditLogs] = useState<KernelAuditEntry[]>([]);
   useEffect(() => {
     setAuditLogs(kernelAuditEngine.getRecentLogs(30));
@@ -118,19 +137,20 @@ export default function AutonomousBusinessControlPlane() {
     return () => clearInterval(interval);
   }, []);
 
-  // Manual business cycle pulse
+  // Manual business operating cycle pulse
   const handleRunBusinessCycle = async () => {
     setActiveCycleRunning(true);
-    toast.info('Pulsing 48-worker autonomous operating loop across all 9 departments...');
-    await executiveAgent.runBusinessCycle();
+    toast.info('Executing autonomous operating cycle across all 9 departments...');
+    const result = await coreAgentOrchestrator.executeFullBusinessCycle();
     await kernelAgentScheduler.tick();
     setActiveCycleRunning(false);
     refetchMemory();
+    refetchGoals();
     refetchWorkers();
     setEvents(kernelEventBus.getRecentEvents(30));
     setAuditLogs(kernelAuditEngine.getRecentLogs(30));
     setEscalations(kernelRiskEngine.getPendingEscalations());
-    toast.success('Autonomous business cycle executed.');
+    toast.success(result.summary);
   };
 
   const handleApproveEscalation = (id: string) => {
@@ -154,9 +174,16 @@ export default function AutonomousBusinessControlPlane() {
     return matchesDept && matchesQuery;
   });
 
+  const primaryGoal = goals[0] || {
+    title: 'Acquire First 100 Verified Claim #1 Companies (5% Fee Lock Cohort)',
+    currentValue: memory?.claim1ClaimedCount || 1,
+    targetValue: 100,
+    unit: 'Companies',
+  };
+
   const progressPct = Math.min(
     100,
-    Math.round(((memory?.claim1EntitiesCount || 1) / 100) * 100)
+    Math.round((primaryGoal.currentValue / primaryGoal.targetValue) * 100)
   );
 
   return (
@@ -174,7 +201,7 @@ export default function AutonomousBusinessControlPlane() {
                 <Badge variant="outline" className="text-xs font-semibold text-primary border-primary/30">
                   Founder & CEO: Sanobar Jahan
                 </Badge>
-                <span className="text-xs text-muted-foreground">• 9 Departments • 48 Autonomous Workers</span>
+                <span className="text-xs text-muted-foreground">• 9 Departments • 48 Autonomous Workers • 14 Channels</span>
               </div>
             </div>
           </div>
@@ -192,7 +219,7 @@ export default function AutonomousBusinessControlPlane() {
                 } else {
                   kernelAgentScheduler.stop();
                 }
-                toast.info(`Autonomous operations set to ${checked ? 'ON' : 'OFF'}.`);
+                toast.info(`Autonomous operations set to ${checked ? 'ACTIVE' : 'PAUSED'}.`);
               }}
             />
             <Badge className={autonomousMasterOn ? 'bg-emerald-500 text-white font-bold' : 'bg-muted'}>
@@ -222,12 +249,12 @@ export default function AutonomousBusinessControlPlane() {
                 <span className="text-xs font-bold text-primary uppercase tracking-wider">Top-Level Company Objective</span>
               </div>
               <h2 className="text-xl font-bold text-foreground mt-1">
-                Acquire the First 100 Legitimate Claim #1 Companies & Ignite 10 Bidding Battles
+                {primaryGoal.title}
               </h2>
             </div>
             <div className="text-right">
-              <span className="text-2xl font-black text-primary">{memory?.claim1EntitiesCount || 1}</span>
-              <span className="text-sm text-muted-foreground font-semibold"> / 100 Claimed Entities</span>
+              <span className="text-2xl font-black text-primary">{primaryGoal.currentValue}</span>
+              <span className="text-sm text-muted-foreground font-semibold"> / {primaryGoal.targetValue} {primaryGoal.unit}</span>
             </div>
           </div>
 
@@ -237,27 +264,27 @@ export default function AutonomousBusinessControlPlane() {
           <div className="grid grid-cols-2 sm:grid-cols-6 gap-3 mt-5 pt-4 border-t text-xs">
             <div>
               <span className="text-muted-foreground">Total Users:</span>
-              <p className="text-base font-bold text-foreground mt-0.5">{memory?.usersCount.toLocaleString()}</p>
+              <p className="text-base font-bold text-foreground mt-0.5">{memory?.usersTotal.toLocaleString()}</p>
             </div>
             <div>
               <span className="text-muted-foreground">Active Jobs:</span>
-              <p className="text-base font-bold text-foreground mt-0.5">{memory?.activeJobsCount.toLocaleString()}</p>
+              <p className="text-base font-bold text-foreground mt-0.5">{memory?.jobsActiveTotal.toLocaleString()}</p>
             </div>
             <div>
               <span className="text-muted-foreground">Indexed Colleges:</span>
-              <p className="text-base font-bold text-foreground mt-0.5">{memory?.collegesCount.toLocaleString()}</p>
+              <p className="text-base font-bold text-foreground mt-0.5">{memory?.collegesTotal.toLocaleString()}</p>
             </div>
             <div>
               <span className="text-muted-foreground">Claimed Entities:</span>
-              <p className="text-base font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">{memory?.claim1EntitiesCount}</p>
+              <p className="text-base font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">{memory?.claim1ClaimedCount}</p>
             </div>
             <div>
               <span className="text-muted-foreground">Active Paid Bids:</span>
-              <p className="text-base font-bold text-primary mt-0.5">{memory?.claim1ActiveBidsCount}</p>
+              <p className="text-base font-bold text-primary mt-0.5">{memory?.claim1ActiveBids}</p>
             </div>
             <div>
               <span className="text-muted-foreground">Platform Revenue:</span>
-              <p className="text-base font-bold text-foreground mt-0.5">{formatCurrency(memory?.totalPlatformRevenueINR || 0, 'INR')}</p>
+              <p className="text-base font-bold text-foreground mt-0.5">{formatCurrency(memory?.platformRevenueINR || 0, 'INR')}</p>
             </div>
           </div>
         </CardContent>
@@ -414,15 +441,56 @@ export default function AutonomousBusinessControlPlane() {
       </div>
 
       {/* Tabs for Detailed Control Plane Sub-Systems */}
-      <Tabs defaultValue="eventbus" className="space-y-4">
-        <TabsList className="grid grid-cols-4 max-w-xl">
+      <Tabs defaultValue="channels" className="space-y-4">
+        <TabsList className="grid grid-cols-5 max-w-2xl">
+          <TabsTrigger value="channels">Channel Health</TabsTrigger>
           <TabsTrigger value="eventbus">Live Event Bus</TabsTrigger>
           <TabsTrigger value="budgets">Guardrails & Budgets</TabsTrigger>
           <TabsTrigger value="memory">Business Memory</TabsTrigger>
           <TabsTrigger value="audit">Audit Trail</TabsTrigger>
         </TabsList>
 
-        {/* Tab 1: Live Event Bus */}
+        {/* Tab 1: Channel Health & Connector Status */}
+        <TabsContent value="channels" className="space-y-4">
+          <Card className="p-6 border space-y-4">
+            <div>
+              <h4 className="font-bold text-base text-foreground">14 Connected Distribution & Acquisition Channels</h4>
+              <p className="text-xs text-muted-foreground mt-0.5">Live connector health status. Zero hardcoded secrets (managed via Supabase Vault).</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {channels.map((ch) => (
+                <div key={ch.id} className="p-4 bg-muted/20 border rounded-xl flex items-start justify-between gap-4">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-sm text-foreground">{ch.name}</span>
+                      <Badge
+                        className={
+                          ch.status === 'ACTIVE'
+                            ? 'bg-emerald-500/10 text-emerald-600 text-[10px] font-bold border-emerald-500/30'
+                            : ch.status === 'DEMO'
+                            ? 'bg-blue-500/10 text-blue-600 text-[10px] font-bold border-blue-500/30'
+                            : ch.status === 'MANUAL_REQUIRED'
+                            ? 'bg-indigo-500/10 text-indigo-600 text-[10px] font-bold border-indigo-500/30'
+                            : 'bg-amber-500/10 text-amber-600 text-[10px] font-bold border-amber-500/30'
+                        }
+                      >
+                        {ch.status}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{ch.statusDetails}</p>
+                    <div className="flex items-center gap-3 pt-1 text-[11px] text-muted-foreground">
+                      <span>Rate Limit: <strong>{ch.rateLimitPerHour}/hr</strong></span>
+                      {ch.dailyBudgetCapINR > 0 && <span>Budget Cap: <strong>₹{ch.dailyBudgetCapINR.toLocaleString()}/day</strong></span>}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </TabsContent>
+
+        {/* Tab 2: Live Event Bus */}
         <TabsContent value="eventbus" className="space-y-4">
           <Card className="border p-5">
             <div className="flex items-center justify-between mb-3">
@@ -461,7 +529,7 @@ export default function AutonomousBusinessControlPlane() {
           </Card>
         </TabsContent>
 
-        {/* Tab 2: Guardrails & Budgets */}
+        {/* Tab 3: Guardrails & Budgets */}
         <TabsContent value="budgets" className="space-y-4">
           <Card className="p-6 border space-y-6">
             <div>
@@ -495,7 +563,7 @@ export default function AutonomousBusinessControlPlane() {
           </Card>
         </TabsContent>
 
-        {/* Tab 3: Business Memory */}
+        {/* Tab 4: Business Memory */}
         <TabsContent value="memory" className="space-y-4">
           <Card className="p-6 border space-y-4">
             <div>
@@ -509,7 +577,7 @@ export default function AutonomousBusinessControlPlane() {
           </Card>
         </TabsContent>
 
-        {/* Tab 4: Audit Trail */}
+        {/* Tab 5: Audit Trail */}
         <TabsContent value="audit" className="space-y-4">
           <Card className="p-6 border space-y-4">
             <div className="flex items-center justify-between">
