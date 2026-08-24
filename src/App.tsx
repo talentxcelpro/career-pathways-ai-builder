@@ -247,6 +247,11 @@ const App = () => {
             }, 60000);
           });
 
+          // Initialize TalentXcel Autonomous Business OS Kernel
+          import('@/agents/shared/AgentRuntime').then(({ agentRuntime }) => {
+            agentRuntime.boot();
+          });
+
           advancedPerformanceMonitor.trackRouteChange('/', startTime);
         });
       } catch (error) {

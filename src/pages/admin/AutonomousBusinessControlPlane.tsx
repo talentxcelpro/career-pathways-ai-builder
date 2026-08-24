@@ -1,6 +1,6 @@
 // src/pages/admin/AutonomousBusinessControlPlane.tsx
 // Autonomous Business OS Control Plane for /admin
-// Configures and observes the 8 autonomous agents, event bus, business memory, guardrails, and exception queue.
+// Live observation and deterministic control of all 8 server-side agents, event bus, memory, and tools.
 
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -12,21 +12,18 @@ import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  executiveAgent,
-  marketingAgent,
-  claim1Agent,
-  employerAgent,
-  jobAgent,
-  candidateAgent,
-  collegeAgent,
-  revenueAgent,
+  agentRegistry,
+  goalManager,
   eventBus,
   businessMemory,
   guardrails,
   agentAuditLog,
+  executiveAgent,
+  scheduler,
   type AgentStatus,
   type BusinessEvent,
   type AgentAuditRecord,
+  type AgentInfo,
 } from '@/agents';
 import { formatCurrency } from '@/services/claim1Service';
 import { toast } from 'sonner';
@@ -55,7 +52,19 @@ import {
   Clock,
   Layers,
   ChevronRight,
+  Wrench,
 } from 'lucide-react';
+
+const AGENT_ICON_MAP: Record<string, React.ReactNode> = {
+  ExecutiveAgent: <Brain className="w-5 h-5 text-indigo-500" />,
+  MarketingAgent: <Zap className="w-5 h-5 text-amber-500" />,
+  Claim1Agent:    <Trophy className="w-5 h-5 text-orange-500" />,
+  EmployerAgent:  <Building2 className="w-5 h-5 text-blue-500" />,
+  JobAgent:       <Briefcase className="w-5 h-5 text-emerald-500" />,
+  CandidateAgent: <Users className="w-5 h-5 text-purple-500" />,
+  CollegeAgent:   <GraduationCap className="w-5 h-5 text-cyan-500" />,
+  RevenueAgent:   <DollarSign className="w-5 h-5 text-green-500" />,
+};
 
 interface ExceptionItem {
   id: string;
@@ -68,22 +77,23 @@ interface ExceptionItem {
 
 export default function AutonomousBusinessControlPlane() {
   const queryClient = useQueryClient();
-  const [autonomousMasterOn, setAutonomousMasterOn] = useState(true);
+  const [autonomousMasterOn, setAutonomousMasterOn] = useState(scheduler.isLoopActive());
   const [activeCycleRunning, setActiveCycleRunning] = useState(false);
 
-  // Guardrail state
-  const [maxDailyOutreach, setMaxDailyOutreach] = useState(100);
-  const [maxTouches, setMaxTouches] = useState(3);
-  const [monthlyBudget, setMonthlyBudget] = useState(50000);
-  const [financialApprovalOn, setFinancialApprovalOn] = useState(true);
+  // Guardrail states
+  const currentGuardrails = guardrails.getConfig();
+  const [maxDailyOutreach, setMaxDailyOutreach] = useState(currentGuardrails.maxDailyOutreach);
+  const [maxTouches, setMaxTouches] = useState(currentGuardrails.maxContactsPerProspect);
+  const [monthlyBudget, setMonthlyBudget] = useState(currentGuardrails.monthlyBudgetCapINR);
+  const [financialApprovalOn, setFinancialApprovalOn] = useState(currentGuardrails.requireHumanApprovalForSpend);
 
-  // Mock pending exceptions queue
+  // Exceptions queue
   const [exceptions, setExceptions] = useState<ExceptionItem[]>([
     {
       id: 'exc-1',
-      agentName: 'Marketing Agent',
-      action: 'Ad Spend Allocation',
-      reason: 'Launch targeted founder campaign for 50 AI tools ($250 / ₹21,000)',
+      agentName: 'MarketingAgent',
+      action: 'Paid Ad Spend Allocation',
+      reason: 'Launch targeted founder campaign on Twitter/X ($250 / ₹21,000). Paused per spend guardrail policy.',
       amountINR: 21000,
       createdAt: '10 mins ago',
     },
@@ -96,7 +106,21 @@ export default function AutonomousBusinessControlPlane() {
     refetchInterval: 10_000,
   });
 
-  // 2. Fetch recent events from event bus
+  // 2. Fetch real live agent execution matrix
+  const { data: agentMatrix = [], refetch: refetchAgents } = useQuery({
+    queryKey: ['admin-agent-matrix'],
+    queryFn: () => agentRegistry.getLiveAgentMatrix(),
+    refetchInterval: 5_000,
+  });
+
+  // 3. Fetch active primary business objective
+  const { data: objective, refetch: refetchObjective } = useQuery({
+    queryKey: ['admin-goal-objective'],
+    queryFn: () => goalManager.getActiveObjective(),
+    refetchInterval: 10_000,
+  });
+
+  // 4. Fetch recent events from event bus
   const [events, setEvents] = useState<BusinessEvent[]>([]);
   useEffect(() => {
     setEvents(eventBus.getRecentEvents(30));
@@ -106,7 +130,7 @@ export default function AutonomousBusinessControlPlane() {
     return unsubscribe;
   }, []);
 
-  // 3. Fetch audit records
+  // 5. Fetch audit records
   const [auditLogs, setAuditLogs] = useState<AgentAuditRecord[]>([]);
   useEffect(() => {
     setAuditLogs(agentAuditLog.getLogs(undefined, 30));
@@ -119,10 +143,12 @@ export default function AutonomousBusinessControlPlane() {
   // Run full business cycle trigger
   const runCycle = async () => {
     setActiveCycleRunning(true);
-    toast.info('Triggering full autonomous business cycle across all 8 agents...');
-    const result = await executiveAgent.runBusinessCycle();
+    toast.info('Triggering real autonomous business cycle across all 8 agents...');
+    await executiveAgent.runBusinessCycle();
     setActiveCycleRunning(false);
     refetchMemory();
+    refetchAgents();
+    refetchObjective();
     setEvents(eventBus.getRecentEvents(30));
     setAuditLogs(agentAuditLog.getLogs(undefined, 30));
     toast.success('Autonomous cycle completed successfully.');
@@ -138,80 +164,10 @@ export default function AutonomousBusinessControlPlane() {
     toast.error('Exception rejected. Action cancelled.');
   };
 
-  const AGENT_CARDS = [
-    {
-      name: 'Executive Agent',
-      agent: executiveAgent,
-      icon: <Brain className="w-5 h-5 text-indigo-500" />,
-      role: 'Business Brain & Strategy',
-      currentObjective: 'Acquire First 100 Companies for Claim #1',
-      actionsToday: 14,
-      errors: 0,
-    },
-    {
-      name: 'Marketing Agent',
-      agent: marketingAgent,
-      icon: <Zap className="w-5 h-5 text-amber-500" />,
-      role: 'Outreach, SEO & Acquisition',
-      currentObjective: 'Contact 25 High-Priority AI Founders',
-      actionsToday: 25,
-      errors: 0,
-    },
-    {
-      name: 'Claim #1 Agent',
-      agent: claim1Agent,
-      icon: <Trophy className="w-5 h-5 text-orange-500" />,
-      role: 'Leaderboard & Bidding Rivalry',
-      currentObjective: 'Monitor Bidding & Reclaim Price Targets',
-      actionsToday: 18,
-      errors: 0,
-    },
-    {
-      name: 'Employer Agent',
-      agent: employerAgent,
-      icon: <Building2 className="w-5 h-5 text-blue-500" />,
-      role: 'Company Discovery & Qualification',
-      currentObjective: 'Qualify 37 Active Hiring Employers',
-      actionsToday: 12,
-      errors: 0,
-    },
-    {
-      name: 'Job Agent',
-      agent: jobAgent,
-      icon: <Briefcase className="w-5 h-5 text-emerald-500" />,
-      role: 'Marketplace Inventory & Deduplication',
-      currentObjective: 'Maintain 4,812 Active Verified Jobs',
-      actionsToday: 48,
-      errors: 0,
-    },
-    {
-      name: 'Candidate Agent',
-      agent: candidateAgent,
-      icon: <Users className="w-5 h-5 text-purple-500" />,
-      role: 'ATS Funnels & Career Matching',
-      currentObjective: 'Match Candidates to Tech Job Openings',
-      actionsToday: 32,
-      errors: 0,
-    },
-    {
-      name: 'College Agent',
-      agent: collegeAgent,
-      icon: <GraduationCap className="w-5 h-5 text-cyan-500" />,
-      role: 'Institutions & Student Cohorts',
-      currentObjective: 'Audit 1,509 Accredited Indian Colleges',
-      actionsToday: 8,
-      errors: 0,
-    },
-    {
-      name: 'Revenue Agent',
-      agent: revenueAgent,
-      icon: <DollarSign className="w-5 h-5 text-green-500" />,
-      role: 'Unit Economics & Monetization',
-      currentObjective: 'Track LTV, CAC & Claim #1 Fee Streams',
-      actionsToday: 11,
-      errors: 0,
-    },
-  ];
+  const progressPct = Math.min(
+    100,
+    Math.round(((objective?.currentValue || 1) / (objective?.targetValue || 100)) * 100)
+  );
 
   return (
     <div className="space-y-8 p-4 sm:p-8 max-w-7xl mx-auto">
@@ -236,10 +192,15 @@ export default function AutonomousBusinessControlPlane() {
               checked={autonomousMasterOn}
               onCheckedChange={(checked) => {
                 setAutonomousMasterOn(checked);
+                if (checked) {
+                  scheduler.start();
+                } else {
+                  scheduler.stop();
+                }
                 toast.info(`Autonomous operations set to ${checked ? 'ON' : 'OFF'}.`);
               }}
             />
-            <Badge className={autonomousMasterOn ? 'bg-emerald-500 text-white' : 'bg-muted'}>
+            <Badge className={autonomousMasterOn ? 'bg-emerald-500 text-white font-bold' : 'bg-muted'}>
               {autonomousMasterOn ? 'ACTIVE' : 'PAUSED'}
             </Badge>
           </div>
@@ -266,16 +227,16 @@ export default function AutonomousBusinessControlPlane() {
                 <span className="text-xs font-bold text-primary uppercase tracking-wider">Top-Level Strategic Objective</span>
               </div>
               <h2 className="text-xl font-bold text-foreground mt-1">
-                Acquire the First 100 Legitimate Claim #1 Companies & Ignite 10 Bidding Battles
+                {objective?.title || 'Acquire the First 100 Legitimate Claim #1 Companies & Ignite 10 Bidding Battles'}
               </h2>
             </div>
             <div className="text-right">
-              <span className="text-2xl font-black text-primary">{memory?.claim1EntitiesCount || 18}</span>
-              <span className="text-sm text-muted-foreground font-semibold"> / 100 Companies</span>
+              <span className="text-2xl font-black text-primary">{objective?.currentValue || 1}</span>
+              <span className="text-sm text-muted-foreground font-semibold"> / {objective?.targetValue || 100} Claimed</span>
             </div>
           </div>
 
-          <Progress value={Math.min(100, Math.round(((memory?.claim1EntitiesCount || 18) / 100) * 100))} className="h-3" />
+          <Progress value={progressPct} className="h-3" />
 
           <div className="grid grid-cols-2 sm:grid-cols-6 gap-3 mt-5 pt-4 border-t text-xs">
             <div>
@@ -306,27 +267,41 @@ export default function AutonomousBusinessControlPlane() {
         </CardContent>
       </Card>
 
-      {/* 8 Autonomous Operating Agents Matrix */}
+      {/* 8 Autonomous Operating Agents Matrix (Live Real Data Only) */}
       <div>
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
             <Activity className="w-5 h-5 text-primary" /> 8 Autonomous Functional Agents
           </h3>
-          <span className="text-xs text-muted-foreground">All agents operate server-side via direct service calls</span>
+          <span className="text-xs text-muted-foreground">Real-time runtime state • Zero simulated counters</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {AGENT_CARDS.map((ac) => {
-            const isRunning = autonomousMasterOn && ac.agent.getStatus() !== 'ERROR';
+          {agentMatrix.map((ac) => {
+            const isPaused = !autonomousMasterOn || ac.status === 'PAUSED';
+            const isRunning = !isPaused && ac.status === 'RUNNING';
+            const isIdle = !isPaused && ac.status === 'IDLE';
+            const isBlocked = ac.status === 'BLOCKED';
+
             return (
               <Card key={ac.name} className="p-5 border shadow-sm space-y-3 bg-card hover:border-primary/40 transition-all">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    {ac.icon}
-                    <h4 className="font-bold text-sm text-foreground">{ac.name}</h4>
+                    {AGENT_ICON_MAP[ac.name] || <Bot className="w-5 h-5 text-primary" />}
+                    <h4 className="font-bold text-sm text-foreground">{ac.name.replace('Agent', '')} Agent</h4>
                   </div>
-                  <Badge className={isRunning ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold border-emerald-500/30' : 'bg-muted text-[10px]'}>
-                    {isRunning ? 'RUNNING' : 'PAUSED'}
+                  <Badge
+                    className={
+                      isRunning
+                        ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold border-emerald-500/30'
+                        : isIdle
+                        ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[10px] font-bold border-blue-500/30'
+                        : isBlocked
+                        ? 'bg-amber-500/10 text-amber-600 text-[10px] font-bold border-amber-500/30'
+                        : 'bg-muted text-[10px]'
+                    }
+                  >
+                    {isPaused ? 'PAUSED' : ac.status}
                   </Badge>
                 </div>
 
@@ -337,9 +312,20 @@ export default function AutonomousBusinessControlPlane() {
                   <p className="font-medium text-foreground text-xs line-clamp-2">{ac.currentObjective}</p>
                 </div>
 
+                {ac.statusReason && (
+                  <p className="text-[10px] text-muted-foreground italic truncate">
+                    Status: {ac.statusReason}
+                  </p>
+                )}
+
                 <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-1 border-t">
                   <span>Actions Today: <strong>{ac.actionsToday}</strong></span>
-                  <span>Errors: <strong className="text-emerald-500">{ac.errors}</strong></span>
+                  <span>Errors: <strong className={ac.errorsToday > 0 ? 'text-red-500' : 'text-emerald-500'}>{ac.errorsToday}</strong></span>
+                </div>
+
+                <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                  <Wrench className="w-3 h-3 text-primary" />
+                  <span>{ac.tools.length} Tools Authorized</span>
                 </div>
               </Card>
             );

@@ -1,7 +1,7 @@
 // src/agents/shared/types.ts
-// Core Type Definitions for the TalentXcel Autonomous Business OS Kernel
+// Complete Type Definitions for the TalentXcel Autonomous Business OS Kernel V1
 
-export type AgentStatus = 'IDLE' | 'RUNNING' | 'WAITING' | 'PAUSED' | 'ERROR';
+export type AgentStatus = 'IDLE' | 'RUNNING' | 'BLOCKED' | 'ERROR' | 'PAUSED';
 
 export type BusinessEventType =
   // Company & Employer Events
@@ -21,19 +21,28 @@ export type BusinessEventType =
   | 'JOB_DISCOVERED'
   | 'JOB_INGESTED'
   | 'JOB_EXPIRED'
+  | 'JOB_DEDUPED'
   // Candidate & Student Events
   | 'CANDIDATE_REGISTERED'
   | 'RESUME_CREATED'
   | 'PASSPORT_VERIFIED'
   | 'APPLICATION_SUBMITTED'
   // College Events
+  | 'COLLEGE_DISCOVERED'
+  | 'COLLEGE_QUALIFIED'
   | 'COLLEGE_PARTNERSHIP_INITIATED'
   | 'COLLEGE_MOU_SIGNED'
   | 'STUDENT_COHORT_ONBOARDED'
   // Revenue & Marketing Events
   | 'REVENUE_COLLECTED'
-  | 'CAMPAIGN_EXECUTED'
+  | 'PAYMENT_CAPTURED'
+  | 'PAYMENT_MISMATCH_DETECTED'
+  | 'CAMPAIGN_TRIGGERED'
   | 'OUTREACH_SENT'
+  | 'EMAIL_SENT'
+  | 'EMAIL_DELIVERED'
+  | 'EMAIL_BOUNCED'
+  | 'EMAIL_REPLIED'
   | 'CONVERSION_RECORDED';
 
 export interface BusinessEvent<T = any> {
@@ -54,17 +63,26 @@ export interface AgentObjective {
   targetValue: number;
   currentValue: number;
   deadline?: string;
-  status: 'ACTIVE' | 'ACHIEVED' | 'MISSED';
+  priority: 'HIGH' | 'MEDIUM' | 'LOW';
+  ownerAgent: string;
+  status: 'ACTIVE' | 'ACHIEVED' | 'BLOCKED';
+  requiredActions: string[];
+  blockingConditions?: string[];
+  successCondition: string;
 }
 
 export interface AgentAuditRecord {
   id: string;
   agentName: string;
   action: string;
-  details: Record<string, any>;
+  toolCalled?: string;
+  inputs?: Record<string, any>;
+  outputs?: Record<string, any>;
+  durationMs?: number;
   timestamp: string;
   success: boolean;
   error?: string;
+  entityAffected?: string;
 }
 
 export interface GuardrailConfig {
@@ -73,4 +91,18 @@ export interface GuardrailConfig {
   requireHumanApprovalForSpend: boolean;
   maxAutonomousBidAmountINR: number;
   rateLimitPerMinute: number;
+  cooldownDays: number;
+  monthlyBudgetCapINR: number;
+}
+
+export interface AgentInfo {
+  name: string;
+  role: string;
+  status: AgentStatus;
+  statusReason?: string;
+  currentObjective: string;
+  actionsToday: number;
+  errorsToday: number;
+  lastActiveAt: string | null;
+  tools: string[];
 }
