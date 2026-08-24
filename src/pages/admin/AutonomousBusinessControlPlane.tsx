@@ -1,7 +1,7 @@
 // src/pages/admin/AutonomousBusinessControlPlane.tsx
 // Autonomous Business OS Operating Console for /admin
-// Operating for Founder & CEO: Sanobar Jahan
-// 9 Operating Divisions • 48 Specialist Workers • 11 Zoho Mailboxes • 14 Channels • 100% Verified Telemetry
+// Operating Cockpit for Founder & CEO: Sanobar Jahan
+// 9 Operating Divisions • 48 Specialist Workers • 11 Zoho Mailboxes • Real-Time Pipeline Telemetry
 
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -18,6 +18,8 @@ import {
   coreObjectiveEngine,
   coreChannelRegistry,
   coreKPIEngine,
+  coreOpportunityManager,
+  coreBusinessSignalEngine,
   coreEmailOrchestrator,
   kernelAgentRegistry,
   kernelAgentScheduler,
@@ -29,7 +31,7 @@ import {
   type KernelAuditEntry,
   type RiskEscalation,
   type DepartmentId,
-  type MailboxDescriptor,
+  type BusinessOpportunity,
 } from '@/agents';
 import { formatCurrency } from '@/services/claim1Service';
 import { toast } from 'sonner';
@@ -70,6 +72,8 @@ import {
   MessageSquare,
   Share2,
   Inbox,
+  ArrowRight,
+  Sparkles,
 } from 'lucide-react';
 
 const DEPARTMENT_LABELS: Record<DepartmentId | 'all', { label: string; count: number; icon: React.ReactNode }> = {
@@ -92,52 +96,61 @@ export default function AutonomousBusinessControlPlane() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCycleRunning, setActiveCycleRunning] = useState(false);
 
-  // 1. Fetch live verified business memory & KPIs
+  // Inbound simulator inputs
+  const [simEmail, setSimEmail] = useState('founders@cursor.com');
+  const [simSubject, setSimSubject] = useState('Re: TalentXcel Claim #1 Verification');
+  const [simBody, setSimBody] = useState('Yes, please send me details about our ranking.');
+
+  // 1. Live verified business memory & KPIs
   const { data: memory, refetch: refetchMemory } = useQuery({
     queryKey: ['core-verified-memory'],
     queryFn: () => coreBusinessMemory.getVerifiedMetrics(true),
     refetchInterval: 10_000,
   });
 
-  // 2. Fetch strategic targets
+  // 2. Strategic targets
   const { data: goals = [], refetch: refetchGoals } = useQuery({
     queryKey: ['core-strategic-goals'],
     queryFn: () => coreObjectiveEngine.getSynchronizedGoals(),
     refetchInterval: 10_000,
   });
 
-  // 3. Fetch 48 specialist workers diagnostics from real DB logs
+  // 3. 48 specialist workers diagnostics
   const { data: workers = [], refetch: refetchWorkers } = useQuery({
     queryKey: ['core-48-workers'],
     queryFn: () => kernelAgentRegistry.getLiveWorkerDiagnostics(),
     refetchInterval: 5_000,
   });
 
-  // 4. Fetch 11 Zoho mailboxes
+  // 4. Opportunities pipeline
+  const pipeline = coreOpportunityManager.getPipelineCounts();
+  const opportunities = coreOpportunityManager.getAllOpportunities();
+
+  // 5. 11 Zoho mailboxes
   const mailboxes = coreEmailOrchestrator.getAllMailboxes();
 
-  // 5. Fetch 14 channels
+  // 6. 14 channels
   const channels = coreChannelRegistry.getAllChannels();
 
-  // 6. Fetch pending founder escalations
+  // 7. Founder escalations
   const [escalations, setEscalations] = useState<RiskEscalation[]>(kernelRiskEngine.getPendingEscalations());
 
-  // 7. Live event bus
+  // 8. Live event bus
   const [events, setEvents] = useState<BusinessEvent[]>([]);
   useEffect(() => {
-    setEvents(kernelEventBus.getRecentEvents(30));
+    setEvents(kernelEventBus.getRecentEvents(35));
     const unsubscribe = kernelEventBus.subscribe('*', (evt) => {
       setEvents((prev) => [evt, ...prev.slice(0, 49)]);
     });
     return unsubscribe;
   }, []);
 
-  // 8. Audit records
+  // 9. Audit records
   const [auditLogs, setAuditLogs] = useState<KernelAuditEntry[]>([]);
   useEffect(() => {
-    setAuditLogs(kernelAuditEngine.getRecentLogs(30));
+    setAuditLogs(kernelAuditEngine.getRecentLogs(35));
     const interval = setInterval(() => {
-      setAuditLogs(kernelAuditEngine.getRecentLogs(30));
+      setAuditLogs(kernelAuditEngine.getRecentLogs(35));
     }, 5000);
     return () => clearInterval(interval);
   }, []);
@@ -145,17 +158,36 @@ export default function AutonomousBusinessControlPlane() {
   // Run full business operating cycle
   const handleRunBusinessCycle = async () => {
     setActiveCycleRunning(true);
-    toast.info('Executing autonomous operating cycle across all 9 departments & 11 Zoho mailboxes...');
+    toast.info('Executing autonomous operating cycle (Signal -> Qualify -> Zoho Outreach -> Sync)...');
     const result = await coreAgentOrchestrator.executeFullBusinessCycle();
     await kernelAgentScheduler.tick();
     setActiveCycleRunning(false);
     refetchMemory();
     refetchGoals();
     refetchWorkers();
-    setEvents(kernelEventBus.getRecentEvents(30));
-    setAuditLogs(kernelAuditEngine.getRecentLogs(30));
+    setEvents(kernelEventBus.getRecentEvents(35));
+    setAuditLogs(kernelAuditEngine.getRecentLogs(35));
     setEscalations(kernelRiskEngine.getPendingEscalations());
     toast.success(result.summary);
+  };
+
+  // Simulate Inbound Reply Tester
+  const handleSimulateInboundReply = async () => {
+    toast.info(`Processing incoming reply from ${simEmail}...`);
+    const result = await coreEmailOrchestrator.processInboundReply({
+      id: `sim-${Date.now()}`,
+      mailboxId: 'shelly',
+      fromEmail: simEmail,
+      toEmail: 'shelly@talentxcel.in',
+      subject: simSubject,
+      bodyText: simBody,
+      receivedAt: new Date().toISOString(),
+      messageId: `sim_msg_${Date.now()}@test.com`,
+    });
+
+    setEvents(kernelEventBus.getRecentEvents(35));
+    setAuditLogs(kernelAuditEngine.getRecentLogs(35));
+    toast.success(`Classified as [${result.intent}] → Action: ${result.actionTaken}`);
   };
 
   const handleApproveEscalation = (id: string) => {
@@ -206,7 +238,7 @@ export default function AutonomousBusinessControlPlane() {
                 <Badge variant="outline" className="text-xs font-semibold text-primary border-primary/30">
                   Founder & CEO: Sanobar Jahan
                 </Badge>
-                <span className="text-xs text-muted-foreground">• 9 Divisions • 48 Workers • 11 Zoho Mailboxes • 14 Channels</span>
+                <span className="text-xs text-muted-foreground">• 9 Divisions • 48 Workers • 11 Zoho Mailboxes • Live Execution Layer</span>
               </div>
             </div>
           </div>
@@ -228,7 +260,7 @@ export default function AutonomousBusinessControlPlane() {
               }}
             />
             <Badge className={autonomousMasterOn ? 'bg-emerald-500 text-white font-bold' : 'bg-muted'}>
-              {autonomousMasterOn ? 'ACTIVE' : 'PAUSED'}
+              {autonomousMasterOn ? 'LIVE' : 'PAUSED'}
             </Badge>
           </div>
 
@@ -244,6 +276,55 @@ export default function AutonomousBusinessControlPlane() {
         </div>
       </div>
 
+      {/* Business Opportunity Pipeline Stages Bar */}
+      <Card className="border shadow-sm p-5 bg-card">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Activity className="w-4 h-4 text-primary" />
+            <h3 className="font-bold text-sm text-foreground">Live Business Opportunity Pipeline</h3>
+          </div>
+          <span className="text-xs text-muted-foreground">From 4,812 Scraped Jobs & 37 Base Companies</span>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-6 gap-3">
+          <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
+            <span className="text-[11px] text-muted-foreground font-medium">1. Discovered</span>
+            <p className="text-lg font-black text-foreground">{pipeline.discovered}</p>
+            <span className="text-[9px] text-muted-foreground">Signals Indexed</span>
+          </div>
+
+          <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
+            <span className="text-[11px] text-muted-foreground font-medium">2. Qualified</span>
+            <p className="text-lg font-black text-blue-600 dark:text-blue-400">{pipeline.qualified}</p>
+            <span className="text-[9px] text-muted-foreground">Tech Vacancies Validated</span>
+          </div>
+
+          <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
+            <span className="text-[11px] text-muted-foreground font-medium">3. Contacted</span>
+            <p className="text-lg font-black text-amber-600 dark:text-amber-400">{pipeline.contacted}</p>
+            <span className="text-[9px] text-muted-foreground">Zoho Outreach Sent</span>
+          </div>
+
+          <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
+            <span className="text-[11px] text-muted-foreground font-medium">4. Interested</span>
+            <p className="text-lg font-black text-emerald-600 dark:text-emerald-400">{pipeline.interested}</p>
+            <span className="text-[9px] text-muted-foreground">Positive Replies</span>
+          </div>
+
+          <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
+            <span className="text-[11px] text-muted-foreground font-medium">5. Meetings</span>
+            <p className="text-lg font-black text-purple-600 dark:text-purple-400">{pipeline.meetings}</p>
+            <span className="text-[9px] text-muted-foreground">Partnerships In Flight</span>
+          </div>
+
+          <div className="p-3 bg-primary/10 rounded-xl border border-primary/30 space-y-1">
+            <span className="text-[11px] text-primary font-bold">6. Converted</span>
+            <p className="text-lg font-black text-primary">{pipeline.converted}</p>
+            <span className="text-[9px] text-primary/80">Active Accounts</span>
+          </div>
+        </div>
+      </Card>
+
       {/* Today's Business Live Pulse */}
       <Card className="border-primary/40 bg-gradient-to-r from-primary/5 via-card to-background shadow-sm">
         <CardContent className="p-6 space-y-6">
@@ -251,7 +332,7 @@ export default function AutonomousBusinessControlPlane() {
             <div>
               <div className="flex items-center gap-2">
                 <Crown className="w-4 h-4 text-primary" />
-                <span className="text-xs font-bold text-primary uppercase tracking-wider">Top-Level Company Objective</span>
+                <span className="text-xs font-bold text-primary uppercase tracking-wider">Top-Level Strategic Objective</span>
               </div>
               <h2 className="text-xl font-bold text-foreground mt-1">
                 {primaryGoal.title}
@@ -453,20 +534,21 @@ export default function AutonomousBusinessControlPlane() {
 
       {/* Tabs for Detailed Control Plane Sub-Systems */}
       <Tabs defaultValue="mailboxes" className="space-y-4">
-        <TabsList className="grid grid-cols-5 max-w-2xl">
+        <TabsList className="grid grid-cols-6 max-w-3xl">
           <TabsTrigger value="mailboxes">Zoho Mailboxes</TabsTrigger>
+          <TabsTrigger value="simulator">Inbound Simulator</TabsTrigger>
           <TabsTrigger value="channels">14 Channels</TabsTrigger>
           <TabsTrigger value="eventbus">Live Event Bus</TabsTrigger>
-          <TabsTrigger value="budgets">Guardrails & Budgets</TabsTrigger>
+          <TabsTrigger value="budgets">Guardrails</TabsTrigger>
           <TabsTrigger value="audit">Audit Trail</TabsTrigger>
         </TabsList>
 
-        {/* Tab 1: Zoho Mailbox Network (11 Operational Mailboxes) */}
+        {/* Tab 1: Zoho Mailbox Network */}
         <TabsContent value="mailboxes" className="space-y-4">
           <Card className="p-6 border space-y-4">
             <div>
               <h4 className="font-bold text-base text-foreground">11 Authorised TalentXcel Zoho Mailboxes</h4>
-              <p className="text-xs text-muted-foreground mt-0.5">Organizational worker identities with thread affinity, rate limits, and anti-spam enforcement.</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Autonomous acquisition identities with thread affinity, rate limits, and anti-spam enforcement.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -495,7 +577,68 @@ export default function AutonomousBusinessControlPlane() {
           </Card>
         </TabsContent>
 
-        {/* Tab 2: 14 Channels */}
+        {/* Tab 2: Inbound Reply Simulator / Closed-Loop Tester */}
+        <TabsContent value="simulator" className="space-y-4">
+          <Card className="p-6 border space-y-4">
+            <div>
+              <h4 className="font-bold text-base text-foreground flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-primary" /> Inbound Reply & Closed-Loop Reaction Tester
+              </h4>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Simulate receiving an external email reply to test automatic intent classification, suppression, and CRM state transitions.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-foreground">Sender Email Address</label>
+                <Input value={simEmail} onChange={(e) => setSimEmail(e.target.value)} className="text-xs h-8" />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-foreground">Subject</label>
+                <Input value={simSubject} onChange={(e) => setSimSubject(e.target.value)} className="text-xs h-8" />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-foreground">Reply Message Body</label>
+              <textarea
+                value={simBody}
+                onChange={(e) => setSimBody(e.target.value)}
+                rows={3}
+                className="w-full p-2.5 bg-background border rounded-lg text-xs font-sans focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+            </div>
+
+            <div className="flex items-center gap-2 pt-2">
+              <Button size="sm" onClick={handleSimulateInboundReply} className="gap-1 text-xs font-semibold">
+                <Send className="w-3.5 h-3.5" /> Process Simulated Inbound Reply
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  setSimBody('Please stop emailing me. Remove our company from your list.');
+                }}
+                className="text-xs text-destructive hover:bg-destructive/10"
+              >
+                Test "STOP / Unsubscribe"
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  setSimBody('Yes, we are interested. Can we schedule a meeting next Tuesday?');
+                }}
+                className="text-xs text-emerald-600 hover:bg-emerald-50"
+              >
+                Test "Meeting Request"
+              </Button>
+            </div>
+          </Card>
+        </TabsContent>
+
+        {/* Tab 3: 14 Channels */}
         <TabsContent value="channels" className="space-y-4">
           <Card className="p-6 border space-y-4">
             <div>
@@ -535,7 +678,7 @@ export default function AutonomousBusinessControlPlane() {
           </Card>
         </TabsContent>
 
-        {/* Tab 3: Live Event Bus */}
+        {/* Tab 4: Live Event Bus */}
         <TabsContent value="eventbus" className="space-y-4">
           <Card className="border p-5">
             <div className="flex items-center justify-between mb-3">
@@ -574,7 +717,7 @@ export default function AutonomousBusinessControlPlane() {
           </Card>
         </TabsContent>
 
-        {/* Tab 4: Guardrails & Budgets */}
+        {/* Tab 5: Guardrails & Budgets */}
         <TabsContent value="budgets" className="space-y-4">
           <Card className="p-6 border space-y-6">
             <div>
@@ -608,7 +751,7 @@ export default function AutonomousBusinessControlPlane() {
           </Card>
         </TabsContent>
 
-        {/* Tab 5: Audit Trail */}
+        {/* Tab 6: Audit Trail */}
         <TabsContent value="audit" className="space-y-4">
           <Card className="p-6 border space-y-4">
             <div className="flex items-center justify-between">
@@ -616,7 +759,7 @@ export default function AutonomousBusinessControlPlane() {
                 <h4 className="font-bold text-base text-foreground">Immutable Operational Audit Log</h4>
                 <p className="text-xs text-muted-foreground mt-0.5">Timestamped record of every autonomous action and service invocation.</p>
               </div>
-              <Button size="sm" variant="outline" onClick={() => setAuditLogs(kernelAuditEngine.getRecentLogs(30))} className="text-xs">
+              <Button size="sm" variant="outline" onClick={() => setAuditLogs(kernelAuditEngine.getRecentLogs(35))} className="text-xs">
                 Refresh Logs
               </Button>
             </div>
