@@ -785,3 +785,40 @@ export async function uploadEntityLogo(file: File, entitySlug: string): Promise<
     reader.readAsDataURL(file);
   });
 }
+
+export const claim1Service = {
+  formatCurrency,
+  scopePath,
+  getCategories,
+  getCategoryBySlug,
+  getScopesForCategory,
+  getScopeBySlug,
+  getScopeById,
+  getAllScopes,
+  getLeaderboard,
+  getScopeLeaderboard,
+  getEntity,
+  getEntityBySlug,
+  getEntityListings,
+  getListingById,
+  isSlugTaken,
+  generateSlug,
+  claimProfile,
+  placeBid,
+  estimateRank,
+  getOutbidBids,
+  getRankingHistory,
+  getRecentActivity,
+  getMyListings,
+  getMyBids,
+  watchScope,
+  unwatchScope,
+  isWatching,
+  getCategoryWatchersCount,
+  getPlatformRevenue,
+  updateEntityProfile,
+  uploadEntityLogo,
+};
+
+export default claim1Service;
+
