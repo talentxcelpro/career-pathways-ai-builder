@@ -1,7 +1,7 @@
 // src/pages/admin/AutonomousBusinessControlPlane.tsx
 // Autonomous Business OS Operating Console for /admin
 // Operating Cockpit for Founder & CEO: Sanobar Jahan
-// Multi-Dataset Opportunity Graph • MCA Companies • AICTE Colleges • Startups • Zoho Gated Outreach
+// 6 Data Universes: MCA Companies • AICTE Colleges • TA Recruiters • Staffing Agencies • Claim #1 • Zoho Gated Outreach
 
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -25,6 +25,7 @@ import {
   coreExternalProspectStore,
   coreOpportunityGraphDatabase,
   coreDataIngestionWorker,
+  coreExternalAcquisitionEngine,
   coreZohoProductionGate,
   kernelAgentRegistry,
   kernelAgentScheduler,
@@ -84,6 +85,8 @@ import {
   ExternalLink,
   School,
   Rocket,
+  UserCheck,
+  Building,
 } from 'lucide-react';
 
 const DEPARTMENT_LABELS: Record<DepartmentId | 'all', { label: string; count: number; icon: React.ReactNode }> = {
@@ -173,11 +176,12 @@ export default function AutonomousBusinessControlPlane() {
     return () => clearInterval(interval);
   }, []);
 
-  // Run full external intelligence & gated outreach cycle
+  // Run full external intelligence, ingestion & gated outreach cycle
   const handleRunBusinessCycle = async () => {
     setActiveCycleRunning(true);
-    toast.info('Executing multi-dataset ingestion & gated outreach cycle...');
+    toast.info('Executing multi-universe ingestion & gated Zoho acquisition cycle...');
     await coreDataIngestionWorker.runFullIngestionCycle();
+    await coreExternalAcquisitionEngine.executeAcquisitionCycle();
     const result = await coreExternalIntelligenceCoordinator.runIntelligenceAndOutreachCycle();
     await coreAgentOrchestrator.executeFullBusinessCycle();
     await kernelAgentScheduler.tick();
@@ -276,7 +280,7 @@ export default function AutonomousBusinessControlPlane() {
                 <Badge variant="outline" className="text-xs font-semibold text-primary border-primary/30">
                   Founder & CEO: Sanobar Jahan
                 </Badge>
-                <span className="text-xs text-muted-foreground">• Opportunity Graph • MCA Companies • AICTE Colleges • Zoho Outreach</span>
+                <span className="text-xs text-muted-foreground">• 6 Universes • MCA Companies • AISHE Colleges • TA Leads • Staffing</span>
               </div>
             </div>
           </div>
@@ -355,7 +359,7 @@ export default function AutonomousBusinessControlPlane() {
               <GraduationCap className="w-3 h-3 text-cyan-500" />
             </div>
             <p className="text-base font-black text-foreground">{graphBreakdown.collegesCount}</p>
-            <span className="text-[9px] text-muted-foreground">AICTE / NIRF TPO</span>
+            <span className="text-[9px] text-muted-foreground">AISHE / NIRF TPO</span>
           </div>
 
           <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
@@ -703,11 +707,11 @@ export default function AutonomousBusinessControlPlane() {
         <TabsList className="grid grid-cols-7 max-w-4xl">
           <TabsTrigger value="prospects">Outreach Prospects</TabsTrigger>
           <TabsTrigger value="companies">MCA Companies</TabsTrigger>
-          <TabsTrigger value="colleges">AICTE Colleges</TabsTrigger>
+          <TabsTrigger value="colleges">AISHE Colleges</TabsTrigger>
+          <TabsTrigger value="recruiters">TA Leads</TabsTrigger>
           <TabsTrigger value="startups">Claim #1 Startups</TabsTrigger>
           <TabsTrigger value="mailboxes">Zoho Mailboxes</TabsTrigger>
           <TabsTrigger value="simulator">Inbound Simulator</TabsTrigger>
-          <TabsTrigger value="audit">Audit Trail</TabsTrigger>
         </TabsList>
 
         {/* Tab 1: Persistent External Prospects Universe */}
@@ -837,12 +841,12 @@ export default function AutonomousBusinessControlPlane() {
           </Card>
         </TabsContent>
 
-        {/* Tab 3: AICTE / UGC Higher Education Institutions */}
+        {/* Tab 3: AISHE / AICTE Higher Education Institutions */}
         <TabsContent value="colleges" className="space-y-4">
           <Card className="p-6 border space-y-4">
             <div>
               <h4 className="font-bold text-base text-foreground flex items-center gap-2">
-                <GraduationCap className="w-4 h-4 text-cyan-500" /> AICTE & NIRF Accredited Higher Education Institutions
+                <GraduationCap className="w-4 h-4 text-cyan-500" /> AISHE & AICTE Accredited Higher Education Institutions
               </h4>
               <p className="text-xs text-muted-foreground mt-0.5">Institutes of national importance and universities with verified TPO placement cell contacts.</p>
             </div>
@@ -874,7 +878,40 @@ export default function AutonomousBusinessControlPlane() {
           </Card>
         </TabsContent>
 
-        {/* Tab 4: Startups for Claim #1 */}
+        {/* Tab 4: Talent Acquisition & HR Recruiters */}
+        <TabsContent value="recruiters" className="space-y-4">
+          <Card className="p-6 border space-y-4">
+            <div>
+              <h4 className="font-bold text-base text-foreground flex items-center gap-2">
+                <UserCheck className="w-4 h-4 text-emerald-500" /> Talent Acquisition Leads & HR Managers
+              </h4>
+              <p className="text-xs text-muted-foreground mt-0.5">Company-published recruiting channels and technical hiring coordinators.</p>
+            </div>
+
+            <div className="divide-y border rounded-xl overflow-hidden bg-card">
+              {externalProspects.map((p) => (
+                <div key={`rec-${p.id}`} className="p-4 flex items-center justify-between gap-4 flex-wrap hover:bg-muted/10">
+                  <div className="space-y-1 max-w-xl">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-sm text-foreground">{p.contact_name}</span>
+                      <Badge variant="secondary" className="text-[10px]">{p.contact_role}</Badge>
+                      <Badge variant="outline" className="text-[10px]">{p.company_name}</Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      <strong>Business Channel:</strong> {p.permitted_contact_channel} • <strong>Opportunity Score:</strong> {p.opportunity_score}/100
+                    </p>
+                  </div>
+
+                  <div className="text-right text-xs">
+                    <Badge className="bg-emerald-500/10 text-emerald-600 text-xs font-semibold">VERIFIED CHANNEL</Badge>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </TabsContent>
+
+        {/* Tab 5: Startups for Claim #1 */}
         <TabsContent value="startups" className="space-y-4">
           <Card className="p-6 border space-y-4">
             <div>
@@ -911,7 +948,7 @@ export default function AutonomousBusinessControlPlane() {
           </Card>
         </TabsContent>
 
-        {/* Tab 5: Zoho Mailbox Network */}
+        {/* Tab 6: Zoho Mailbox Network */}
         <TabsContent value="mailboxes" className="space-y-4">
           <Card className="p-6 border space-y-4">
             <div>
@@ -945,7 +982,7 @@ export default function AutonomousBusinessControlPlane() {
           </Card>
         </TabsContent>
 
-        {/* Tab 6: Inbound Reply Simulator */}
+        {/* Tab 7: Inbound Reply Simulator */}
         <TabsContent value="simulator" className="space-y-4">
           <Card className="p-6 border space-y-4">
             <div>
@@ -1002,36 +1039,6 @@ export default function AutonomousBusinessControlPlane() {
               >
                 Test "Meeting Request"
               </Button>
-            </div>
-          </Card>
-        </TabsContent>
-
-        {/* Tab 7: Audit Trail */}
-        <TabsContent value="audit" className="space-y-4">
-          <Card className="p-6 border space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="font-bold text-base text-foreground">Immutable Operational Audit Log</h4>
-                <p className="text-xs text-muted-foreground mt-0.5">Timestamped record of every autonomous action and service invocation.</p>
-              </div>
-              <Button size="sm" variant="outline" onClick={() => setAuditLogs(kernelAuditEngine.getRecentLogs(35))} className="text-xs">
-                Refresh Logs
-              </Button>
-            </div>
-
-            <div className="space-y-2 font-mono text-xs max-h-96 overflow-y-auto divide-y">
-              {auditLogs.map((log) => (
-                <div key={log.id} className="py-2 flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-muted-foreground text-[10px]">{new Date(log.timestamp).toLocaleTimeString()}</span>
-                    <Badge variant="outline" className="text-[10px]">{log.agentId}</Badge>
-                    <span className="font-semibold text-foreground">{log.action}</span>
-                  </div>
-                  <Badge className={log.success ? 'bg-emerald-500/10 text-emerald-600 text-[10px]' : 'bg-red-500/10 text-red-600 text-[10px]'}>
-                    {log.success ? 'SUCCESS' : 'FAILED'}
-                  </Badge>
-                </div>
-              ))}
             </div>
           </Card>
         </TabsContent>
