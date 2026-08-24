@@ -24,7 +24,7 @@ import {
   Sparkles,
   ShieldCheck,
 } from 'lucide-react';
-import { useClaimProfile, useFounding100Count, useAvailableScopes } from '@/hooks/useClaim1';
+import { useClaimProfile, useFounding100Count, useAvailableScopes, useMyEntities } from '@/hooks/useClaim1';
 import { generateSlug, isSlugTaken } from '@/services/claim1Service';
 import type { Claim1EntityType, Claim1Scope } from '@/types/claim1';
 
@@ -52,6 +52,7 @@ export default function EnterLeaderboard() {
   const claimMutation = useClaimProfile();
   const { data: foundingCount = 0 } = useFounding100Count();
   const { data: scopes = [], isLoading: scopesLoading } = useAvailableScopes();
+  const { data: myEntities = [] } = useMyEntities();
 
   const [step, setStep]                   = useState(1);
   const [name, setName]                   = useState('');
@@ -89,12 +90,12 @@ export default function EnterLeaderboard() {
     if (!s) return;
     setSlugChecking(true);
     try {
-      const taken = await isSlugTaken(s);
+      const taken = await isSlugTaken(s, user?.id);
       setSlugTaken(taken);
     } finally {
       setSlugChecking(false);
     }
-  }, []);
+  }, [user?.id]);
 
   useEffect(() => {
     if (!slug) return;
@@ -187,6 +188,23 @@ export default function EnterLeaderboard() {
             {step === 1 ? '1. Company Profile' : step === 2 ? '2. Select Boards' : '3. Review & Claim'}
           </span>
         </div>
+
+        {/* Existing Owned Profile Banner */}
+        {myEntities.length > 0 && step === 1 && (
+          <Card className="p-4 bg-muted/40 border-primary/20 flex items-center justify-between gap-4 flex-wrap">
+            <div>
+              <p className="font-semibold text-sm">
+                You already own <span className="text-primary font-bold">"{myEntities[0].name}"</span>
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Manage your ranking positions, place bids, and track competitors from your dashboard.
+              </p>
+            </div>
+            <Button size="sm" onClick={() => navigate('/claim1/dashboard')} className="gap-1">
+              Go to Dashboard <ChevronRight className="w-3.5 h-3.5" />
+            </Button>
+          </Card>
+        )}
 
         {/* ── Step 1 ───────────────────────────────────────────────────── */}
         {step === 1 && (

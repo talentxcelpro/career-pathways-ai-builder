@@ -157,18 +157,34 @@ export async function getLeaderboard(
   const from = (page - 1) * LEADERBOARD_PAGE_SIZE;
   const to   = from + LEADERBOARD_PAGE_SIZE - 1;
 
+  let targetScopeId = scopeId;
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(scopeId);
+  if (!isUuid) {
+    const { data: dbScope } = await supabase
+      .from('claim1_scopes')
+      .select('id')
+      .eq('slug', scopeId)
+      .maybeSingle();
+    if (dbScope?.id) {
+      targetScopeId = dbScope.id;
+    }
+  }
+
   const { data, error, count } = await supabase
     .from('claim1_listings')
     .select(
       `*, entity:claim1_entities(*)`,
       { count: 'exact' }
     )
-    .eq('scope_id', scopeId)
+    .eq('scope_id', targetScopeId)
     .eq('status', 'active')
     .order('current_rank', { ascending: true })
     .range(from, to);
 
-  if (error) throw error;
+  if (error) {
+    console.error('Error fetching leaderboard:', error);
+    return { listings: [], total: 0 };
+  }
   return { listings: (data ?? []) as Claim1Listing[], total: count ?? 0 };
 }
 
@@ -231,6 +247,31 @@ export async function claimProfile(
   input: ClaimProfileInput,
   userId: string
 ): Promise<{ entity: Claim1Entity; listing_ids: string[] }> {
+  // Try atomic stored procedure first (handles RLS bypass and category auto-creation)
+  try {
+    const { data: rpcData, error: rpcError } = await supabase.rpc('claim1_claim_profile', {
+      p_user_id:      userId,
+      p_name:         input.name,
+      p_slug:         input.slug,
+      p_entity_type:  input.entity_type || 'company',
+      p_website_url:  input.website_url || null,
+      p_logo_url:     input.logo_url || null,
+      p_description:  input.description || null,
+      p_country_code: input.country_code || null,
+      p_country_name: input.country_name || null,
+      p_scope_slugs:  input.scope_ids || ['global'],
+    });
+
+    if (!rpcError && rpcData && rpcData.success && rpcData.entity) {
+      return {
+        entity: rpcData.entity as Claim1Entity,
+        listing_ids: (rpcData.listing_ids ?? []) as string[],
+      };
+    }
+  } catch (err) {
+    console.warn('RPC claim1_claim_profile fallback to direct upsert:', err);
+  }
+
   // Check Founding 100 availability
   const currentFoundingCount = await getFounding100Count();
   const willGetFounding = currentFoundingCount < 100;
@@ -524,12 +565,17 @@ export function generateSlug(name: string): string {
     .slice(0, 60);
 }
 
-export async function isSlugTaken(slug: string): Promise<boolean> {
-  const { count } = await supabase
+export async function isSlugTaken(slug: string, currentUserId?: string): Promise<boolean> {
+  const { data, error } = await supabase
     .from('claim1_entities')
-    .select('id', { count: 'exact', head: true })
-    .eq('slug', slug);
-  return (count ?? 0) > 0;
+    .select('id, owner_user_id')
+    .eq('slug', slug)
+    .maybeSingle();
+
+  if (error || !data) return false;
+  // If the currently logged in user owns this entity, it is NOT taken (they can manage it)
+  if (currentUserId && data.owner_user_id === currentUserId) return false;
+  return true;
 }
 
 export async function getScopeStats(scopeId: string): Promise<{
