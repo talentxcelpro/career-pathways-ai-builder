@@ -49,6 +49,7 @@ const AdminManagement = lazy(() => import('../pages/admin/AdminManagement'));
 const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard'));
 const EmployerRequestsAdmin = lazy(() => import('../pages/admin/EmployerRequestsAdmin'));
 const Claim1Admin = lazy(() => import('../pages/admin/Claim1Admin'));
+const AutonomousBusinessControlPlane = lazy(() => import('../pages/admin/AutonomousBusinessControlPlane'));
 const VerificationManagement = lazy(() => import('../components/admin/VerificationManagement').then(m => ({ default: m.VerificationManagement })));
 const TestimonialsManagement = lazy(() => import('../components/admin/TestimonialsManagement').then(m => ({ default: m.TestimonialsManagement })));
 const BotIdentityManager = lazy(() => import('../components/admin/BotIdentityManager').then(m => ({ default: m.BotIdentityManager })));
@@ -580,6 +581,13 @@ export const adminRoutes = [
     to: "/admin/education-agent",
     icon: <GraduationCap className="h-4 w-4" />,
     page: <Suspense fallback={null}><EducationAgentControlCenter /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "Autonomous Business OS",
+    to: "/admin/autonomous-os",
+    icon: <Bot className="h-4 w-4 text-primary" />,
+    page: <Suspense fallback={null}><AutonomousBusinessControlPlane /></Suspense>,
     isPublic: true,
   }
 ];
