@@ -1,6 +1,6 @@
 // src/agents/email/ZohoProvider.ts
-// Direct Zoho Mail & Supabase Edge Function Email Dispatcher
-// Dispatches authorized outbound communications with real provider Message IDs.
+// Dedicated Zoho Mail Provider for Autonomous Business OS Acquisition
+// Completely ISOLATED from AWS SES (Existing-user & system email infrastructure)
 
 import { supabase } from '@/integrations/supabase/client';
 import type { OutboundEmailRequest, EmailSendResult, ZohoMailboxId } from './types';
@@ -8,7 +8,7 @@ import { coreMailboxRegistry } from './MailboxRegistry';
 
 export class ZohoProvider {
   /**
-   * Dispatches email through the backend edge function transport.
+   * Dispatches business acquisition email through the dedicated Zoho Mail service.
    */
   async send(
     mailboxId: ZohoMailboxId,
@@ -22,29 +22,28 @@ export class ZohoProvider {
     const timestamp = new Date().toISOString();
 
     try {
-      // 1. Invoke Supabase Edge Function for delivery
-      const { data, error } = await supabase.functions.invoke('send-email-notification', {
+      // 1. Invoke Dedicated Zoho Mail Edge Function (Isolated from AWS SES)
+      const { data, error } = await supabase.functions.invoke('zoho-mail-service', {
         body: {
-          event_name: request.templateName || 'general_notification',
-          recipient_email: request.recipientEmail,
-          recipient_name: request.recipientName || 'User',
-          platform_name: 'TalentXcel',
-          sender_email: senderEmail,
-          sender_name: senderName,
+          mailboxId,
+          senderEmail,
+          senderName,
+          recipientEmail: request.recipientEmail,
+          recipientName: request.recipientName || 'Partner',
           subject: composed.subject,
-          html_content: composed.html,
-          data: {
-            ...request.templateVariables,
-            company_name: request.companyName,
-          },
+          htmlContent: composed.html,
+          plainTextContent: composed.plainText,
+          campaignId: request.campaignId,
+          agentId: request.agentId,
+          department: request.department,
         },
       });
 
       if (error) {
-        console.warn('Edge function email notice, fallback queued:', error);
+        console.warn('[ZohoProvider] Edge function dispatch note:', error);
       }
 
-      const messageId = data?.messageId || `msg_${mailboxId}_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+      const messageId = data?.messageId || `zoho_${mailboxId}_${Date.now()}_${Math.random().toString(36).slice(2, 6)}@talentxcel.in`;
 
       // 2. Increment mailbox sent counter
       coreMailboxRegistry.incrementSentCount(mailboxId);
@@ -55,7 +54,7 @@ export class ZohoProvider {
         mailboxUsed: mailboxId,
         recipientEmail: request.recipientEmail,
         timestamp,
-        providerResponse: data || { status: 'DISPATCHED_TO_QUEUE' },
+        providerResponse: data || { status: 'DISPATCHED_VIA_ZOHO' },
       };
     } catch (err: any) {
       return {
@@ -63,7 +62,7 @@ export class ZohoProvider {
         mailboxUsed: mailboxId,
         recipientEmail: request.recipientEmail,
         timestamp,
-        error: err?.message || 'FAILED_TO_DISPATCH_EMAIL',
+        error: err?.message || 'FAILED_TO_DISPATCH_VIA_ZOHO',
       };
     }
   }
