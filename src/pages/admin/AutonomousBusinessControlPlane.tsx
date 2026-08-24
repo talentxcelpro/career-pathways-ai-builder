@@ -1,7 +1,7 @@
 // src/pages/admin/AutonomousBusinessControlPlane.tsx
 // Autonomous Business OS Operating Console for /admin
 // Operating Cockpit for Founder & CEO: Sanobar Jahan
-// External Intelligence • Opportunity Graph • 9 Operating Divisions • 48 Specialist Workers • 11 Zoho Mailboxes
+// External Intelligence • Persistent Prospect Store • Zoho Production Gate • 9 Operating Divisions • 48 Specialist Workers
 
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -22,6 +22,7 @@ import {
   coreBusinessSignalEngine,
   coreEmailOrchestrator,
   coreExternalIntelligenceCoordinator,
+  coreExternalProspectStore,
   kernelAgentRegistry,
   kernelAgentScheduler,
   kernelEventBus,
@@ -32,8 +33,7 @@ import {
   type KernelAuditEntry,
   type RiskEscalation,
   type DepartmentId,
-  type BusinessOpportunity,
-  type OpportunityNode,
+  type ExternalProspectRecord,
 } from '@/agents';
 import { formatCurrency } from '@/services/claim1Service';
 import { toast } from 'sonner';
@@ -77,6 +77,7 @@ import {
   ArrowRight,
   Sparkles,
   Compass,
+  Database,
 } from 'lucide-react';
 
 const DEPARTMENT_LABELS: Record<DepartmentId | 'all', { label: string; count: number; icon: React.ReactNode }> = {
@@ -100,9 +101,9 @@ export default function AutonomousBusinessControlPlane() {
   const [activeCycleRunning, setActiveCycleRunning] = useState(false);
 
   // Inbound simulator inputs
-  const [simEmail, setSimEmail] = useState('founders@cursor.com');
-  const [simSubject, setSimSubject] = useState('Re: TalentXcel Claim #1 Verification');
-  const [simBody, setSimBody] = useState('Yes, please send me details about our ranking.');
+  const [simEmail, setSimEmail] = useState('talent@swiggy.com');
+  const [simSubject, setSimSubject] = useState('Re: TalentXcel Candidate Shortlist');
+  const [simBody, setSimBody] = useState('Yes, we are hiring Java and Go engineers. Please share the candidate shortlist.');
 
   // 1. Live verified business memory & KPIs
   const { data: memory, refetch: refetchMemory } = useQuery({
@@ -125,10 +126,10 @@ export default function AutonomousBusinessControlPlane() {
     refetchInterval: 5_000,
   });
 
-  // 4. Opportunities pipeline & External Graph
-  const pipeline = coreOpportunityManager.getPipelineCounts();
-  const graphStats = coreExternalIntelligenceCoordinator.getGraphStats();
-  const topGraphOpportunities = coreExternalIntelligenceCoordinator.getTopOpportunities(8);
+  // 4. External Intelligence & Outreach metrics
+  const intelMetrics = coreExternalIntelligenceCoordinator.getIntelMetrics();
+  const outreachMetrics = coreExternalIntelligenceCoordinator.getOutreachMetrics();
+  const externalProspects = coreExternalIntelligenceCoordinator.getAllProspects();
 
   // 5. 11 Zoho mailboxes
   const mailboxes = coreEmailOrchestrator.getAllMailboxes();
@@ -159,12 +160,12 @@ export default function AutonomousBusinessControlPlane() {
     return () => clearInterval(interval);
   }, []);
 
-  // Run full business operating cycle
+  // Run full external intelligence & gated outreach cycle
   const handleRunBusinessCycle = async () => {
     setActiveCycleRunning(true);
-    toast.info('Executing autonomous operating cycle (External Signals -> Graph -> Qualify -> Zoho Outreach)...');
-    await coreExternalIntelligenceCoordinator.runIntelligencePulse();
-    const result = await coreAgentOrchestrator.executeFullBusinessCycle();
+    toast.info('Executing autonomous operating cycle (External Ingestion -> Qualification -> Gated Zoho Outreach)...');
+    const result = await coreExternalIntelligenceCoordinator.runIntelligenceAndOutreachCycle();
+    await coreAgentOrchestrator.executeFullBusinessCycle();
     await kernelAgentScheduler.tick();
     setActiveCycleRunning(false);
     refetchMemory();
@@ -173,7 +174,7 @@ export default function AutonomousBusinessControlPlane() {
     setEvents(kernelEventBus.getRecentEvents(35));
     setAuditLogs(kernelAuditEngine.getRecentLogs(35));
     setEscalations(kernelRiskEngine.getPendingEscalations());
-    toast.success(result.summary);
+    toast.success(`Dispatched ${result.outreachSentCount} verified gated outreach emails via Zoho.`);
   };
 
   // Simulate Inbound Reply Tester
@@ -187,7 +188,7 @@ export default function AutonomousBusinessControlPlane() {
       subject: simSubject,
       bodyText: simBody,
       receivedAt: new Date().toISOString(),
-      messageId: `sim_msg_${Date.now()}@test.com`,
+      messageId: `sim_msg_${Date.now()}@domain.com`,
     });
 
     setEvents(kernelEventBus.getRecentEvents(35));
@@ -243,7 +244,7 @@ export default function AutonomousBusinessControlPlane() {
                 <Badge variant="outline" className="text-xs font-semibold text-primary border-primary/30">
                   Founder & CEO: Sanobar Jahan
                 </Badge>
-                <span className="text-xs text-muted-foreground">• Intelligence Graph • 9 Divisions • 48 Workers • 11 Zoho Mailboxes</span>
+                <span className="text-xs text-muted-foreground">• External Intelligence Store • Zoho Gated Outreach • 48 Workers</span>
               </div>
             </div>
           </div>
@@ -281,48 +282,88 @@ export default function AutonomousBusinessControlPlane() {
         </div>
       </div>
 
-      {/* External Intelligence & Opportunity Graph Stat Bar */}
-      <Card className="border shadow-sm p-5 bg-card">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <Compass className="w-4 h-4 text-primary" />
-            <h3 className="font-bold text-sm text-foreground">External Intelligence & Opportunity Graph</h3>
-          </div>
-          <span className="text-xs text-muted-foreground">Multi-Source Feeds • Compliant Normalization • Intent Scoring</span>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-          <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
-            <span className="text-[11px] text-muted-foreground font-medium">External Signals</span>
-            <p className="text-lg font-black text-foreground">{graphStats.totalExternalSignalsObserved.toLocaleString()}</p>
-            <span className="text-[9px] text-muted-foreground">Hiring & Funding Feeds</span>
+      {/* Production Telemetry: External Intelligence & Outreach Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Card 1: External Intelligence */}
+        <Card className="border shadow-sm p-5 bg-card space-y-4">
+          <div className="flex items-center justify-between border-b pb-3">
+            <div className="flex items-center gap-2">
+              <Compass className="w-4 h-4 text-primary" />
+              <h3 className="font-bold text-sm text-foreground">External Intelligence</h3>
+            </div>
+            <Badge className="bg-emerald-500/10 text-emerald-600 text-xs font-bold">
+              {intelMetrics.sourcesHealthy} / {intelMetrics.sourcesConnected} Sources Healthy
+            </Badge>
           </div>
 
-          <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
-            <span className="text-[11px] text-muted-foreground font-medium">Companies Resolved</span>
-            <p className="text-lg font-black text-blue-600 dark:text-blue-400">{graphStats.uniqueCompaniesResolved}</p>
-            <span className="text-[9px] text-muted-foreground">Domain Deduped</span>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+            <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
+              <span className="text-muted-foreground font-medium text-[11px]">External Records</span>
+              <p className="text-base font-black text-foreground">{intelMetrics.externalRecordsDiscovered.toLocaleString()}</p>
+            </div>
+            <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
+              <span className="text-muted-foreground font-medium text-[11px]">New Signals Today</span>
+              <p className="text-base font-black text-blue-600 dark:text-blue-400">{intelMetrics.newSignalsToday.toLocaleString()}</p>
+            </div>
+            <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
+              <span className="text-muted-foreground font-medium text-[11px]">Companies Discovered</span>
+              <p className="text-base font-black text-foreground">{intelMetrics.companiesDiscovered.toLocaleString()}</p>
+            </div>
+            <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
+              <span className="text-muted-foreground font-medium text-[11px]">Companies Verified</span>
+              <p className="text-base font-black text-emerald-600 dark:text-emerald-400">{intelMetrics.companiesVerified}</p>
+            </div>
+            <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
+              <span className="text-muted-foreground font-medium text-[11px]">Contacts Discovered</span>
+              <p className="text-base font-black text-foreground">{intelMetrics.contactsDiscovered}</p>
+            </div>
+            <div className="p-3 bg-primary/10 rounded-xl border border-primary/30 space-y-1">
+              <span className="text-primary font-bold text-[11px]">Eligible for Outreach</span>
+              <p className="text-base font-black text-primary">{intelMetrics.eligibleForOutreach}</p>
+            </div>
+          </div>
+        </Card>
+
+        {/* Card 2: Outreach Execution (Zoho Verified) */}
+        <Card className="border shadow-sm p-5 bg-card space-y-4">
+          <div className="flex items-center justify-between border-b pb-3">
+            <div className="flex items-center gap-2">
+              <Mail className="w-4 h-4 text-primary" />
+              <h3 className="font-bold text-sm text-foreground">Outreach Execution (Zoho Verified)</h3>
+            </div>
+            <Badge variant="outline" className="text-xs font-semibold text-primary">
+              AWS SES 100% Isolated
+            </Badge>
           </div>
 
-          <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
-            <span className="text-[11px] text-muted-foreground font-medium">High-Intent Employers</span>
-            <p className="text-lg font-black text-emerald-600 dark:text-emerald-400">{graphStats.highIntentEmployersCount}</p>
-            <span className="text-[9px] text-muted-foreground">Score $\ge 80/100$</span>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+            <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
+              <span className="text-muted-foreground font-medium text-[11px]">Queued</span>
+              <p className="text-base font-black text-foreground">{outreachMetrics.queued}</p>
+            </div>
+            <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
+              <span className="text-muted-foreground font-medium text-[11px]">Sent (Zoho Msg IDs)</span>
+              <p className="text-base font-black text-emerald-600 dark:text-emerald-400">{outreachMetrics.sent}</p>
+            </div>
+            <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
+              <span className="text-muted-foreground font-medium text-[11px]">Replies</span>
+              <p className="text-base font-black text-foreground">{outreachMetrics.replies}</p>
+            </div>
+            <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
+              <span className="text-muted-foreground font-medium text-[11px]">Interested</span>
+              <p className="text-base font-black text-blue-600 dark:text-blue-400">{outreachMetrics.interested}</p>
+            </div>
+            <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
+              <span className="text-muted-foreground font-medium text-[11px]">Meetings</span>
+              <p className="text-base font-black text-purple-600 dark:text-purple-400">{outreachMetrics.meetings}</p>
+            </div>
+            <div className="p-3 bg-primary/10 rounded-xl border border-primary/30 space-y-1">
+              <span className="text-primary font-bold text-[11px]">Converted</span>
+              <p className="text-base font-black text-primary">{outreachMetrics.converted}</p>
+            </div>
           </div>
-
-          <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
-            <span className="text-[11px] text-muted-foreground font-medium">Active Graph Nodes</span>
-            <p className="text-lg font-black text-purple-600 dark:text-purple-400">{graphStats.activeOpportunityNodes}</p>
-            <span className="text-[9px] text-muted-foreground">Deals in Flight</span>
-          </div>
-
-          <div className="p-3 bg-primary/10 rounded-xl border border-primary/30 space-y-1">
-            <span className="text-[11px] text-primary font-bold">Candidate Matches</span>
-            <p className="text-lg font-black text-primary">{graphStats.candidateMatchConnections}</p>
-            <span className="text-[9px] text-primary/80">From 529 Profiles</span>
-          </div>
-        </div>
-      </Card>
+        </Card>
+      </div>
 
       {/* Today's Business Live Pulse */}
       <Card className="border-primary/40 bg-gradient-to-r from-primary/5 via-card to-background shadow-sm">
@@ -331,7 +372,7 @@ export default function AutonomousBusinessControlPlane() {
             <div>
               <div className="flex items-center gap-2">
                 <Crown className="w-4 h-4 text-primary" />
-                <span className="text-xs font-bold text-primary uppercase tracking-wider">Top-Level Strategic Objective</span>
+                <span className="text-xs font-bold text-primary uppercase tracking-wider">Top-Level Strategic Target</span>
               </div>
               <h2 className="text-xl font-bold text-foreground mt-1">
                 {primaryGoal.title}
@@ -532,9 +573,9 @@ export default function AutonomousBusinessControlPlane() {
       </div>
 
       {/* Tabs for Detailed Control Plane Sub-Systems */}
-      <Tabs defaultValue="graph" className="space-y-4">
+      <Tabs defaultValue="prospects" className="space-y-4">
         <TabsList className="grid grid-cols-6 max-w-3xl">
-          <TabsTrigger value="graph">Opportunity Graph</TabsTrigger>
+          <TabsTrigger value="prospects">External Prospects</TabsTrigger>
           <TabsTrigger value="mailboxes">Zoho Mailboxes</TabsTrigger>
           <TabsTrigger value="simulator">Inbound Simulator</TabsTrigger>
           <TabsTrigger value="channels">14 Channels</TabsTrigger>
@@ -542,40 +583,62 @@ export default function AutonomousBusinessControlPlane() {
           <TabsTrigger value="audit">Audit Trail</TabsTrigger>
         </TabsList>
 
-        {/* Tab 1: Opportunity Graph Active Nodes */}
-        <TabsContent value="graph" className="space-y-4">
+        {/* Tab 1: Persistent External Prospects Universe */}
+        <TabsContent value="prospects" className="space-y-4">
           <Card className="p-6 border space-y-4">
-            <div>
-              <h4 className="font-bold text-base text-foreground">Top Opportunities in Graph</h4>
-              <p className="text-xs text-muted-foreground mt-0.5">Resolved from external hiring signals and matched against 529 TalentXcel profiles.</p>
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div>
+                <h4 className="font-bold text-base text-foreground flex items-center gap-2">
+                  <Database className="w-4 h-4 text-primary" /> External Prospect Universe ({externalProspects.length} Active Records)
+                </h4>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Discovered from external feeds, verified talent channels, and passed through Zoho Production Gate.
+                </p>
+              </div>
             </div>
 
             <div className="divide-y border rounded-xl overflow-hidden bg-card">
-              {topGraphOpportunities.map((node) => (
-                <div key={node.id} className="p-4 flex items-center justify-between gap-4 flex-wrap hover:bg-muted/10 transition-colors">
-                  <div className="space-y-1">
+              {externalProspects.map((p) => (
+                <div key={p.id} className="p-4 flex items-center justify-between gap-4 flex-wrap hover:bg-muted/10 transition-colors">
+                  <div className="space-y-1 max-w-lg">
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-sm text-foreground">{node.companyName}</span>
-                      <Badge variant="outline" className="text-[10px]">{node.companyDomain}</Badge>
+                      <span className="font-bold text-sm text-foreground">{p.company_name}</span>
+                      <Badge variant="outline" className="text-[10px]">{p.company_domain}</Badge>
                       <Badge className="bg-emerald-500/10 text-emerald-600 text-[10px] font-bold">
-                        Score: {node.intentScore}/100
+                        Score: {p.opportunity_score}/100
+                      </Badge>
+                      <Badge variant="secondary" className="text-[10px] uppercase">
+                        {p.signal_type}
                       </Badge>
                     </div>
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                      <span>Target: <strong className="capitalize">{node.targetDepartment}</strong></span>
-                      <span>Signals: <strong>{node.signalsCount}</strong></span>
-                      <span>Candidate Matches: <strong className="text-primary">{node.matchableCandidatesCount}</strong></span>
-                      <span>Estimated Value: <strong>₹{node.estimatedDealValueINR.toLocaleString()}</strong></span>
-                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      <strong>Roles ({p.job_count}):</strong> {p.relevant_roles.join(', ')} • <strong>Contact:</strong> {p.permitted_contact_channel}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground">
+                      <strong>Source:</strong> {p.source} • <a href={p.source_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{p.source_url}</a>
+                    </p>
                   </div>
 
                   <div className="flex items-center gap-3">
                     <div className="text-right text-xs">
                       <span className="text-muted-foreground block text-[10px]">Assigned Mailbox</span>
-                      <strong className="text-foreground">{node.assignedMailbox}</strong>
+                      <strong className="text-foreground">{p.assigned_mailbox}</strong>
+                      {p.provider_message_id && (
+                        <span className="text-[9px] text-emerald-600 block font-mono">
+                          ID: {p.provider_message_id.slice(0, 18)}...
+                        </span>
+                      )}
                     </div>
-                    <Badge className="bg-primary/10 text-primary text-xs font-semibold">
-                      {node.stage}
+                    <Badge
+                      className={
+                        p.outreach_status === 'SENT'
+                          ? 'bg-emerald-500/10 text-emerald-600 text-xs font-semibold'
+                          : p.outreach_status === 'ELIGIBLE_FOR_OUTREACH'
+                          ? 'bg-blue-500/10 text-blue-600 text-xs font-semibold'
+                          : 'bg-muted text-xs'
+                      }
+                    >
+                      {p.outreach_status}
                     </Badge>
                   </div>
                 </div>

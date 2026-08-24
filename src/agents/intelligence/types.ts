@@ -1,16 +1,16 @@
 // src/agents/intelligence/types.ts
-// Production Type Definitions for TalentXcel External Intelligence Layer & Opportunity Graph
+// Production Type Definitions for TalentXcel External Intelligence & Prospect Store
 
-export type ExternalSourceType =
+export type ExternalSourceCategory =
   | 'public_career_page'
-  | 'licensed_job_feed'
-  | 'public_business_registry'
-  | 'funding_announcement'
-  | 'ai_startup_directory'
+  | 'permitted_job_registry'
+  | 'company_announcements'
+  | 'funding_expansion_signal'
+  | 'startup_ecosystem'
   | 'university_placement_bulletin'
-  | 'internal_scraped_inventory';
+  | 'public_business_directory';
 
-export type ExternalSignalType =
+export type SignalType =
   | 'NEW_VACANCY'
   | 'HIRING_ACCELERATION'
   | 'NEW_AI_STARTUP'
@@ -19,62 +19,69 @@ export type ExternalSignalType =
   | 'COLLEGE_PLACEMENT_SIGNAL'
   | 'RECRUITER_ACTIVITY';
 
-export interface ExternalSignal {
+export type OutreachStatus =
+  | 'DISCOVERED'
+  | 'VERIFIED'
+  | 'QUALIFIED'
+  | 'ELIGIBLE_FOR_OUTREACH'
+  | 'QUEUED'
+  | 'SENT'
+  | 'DELIVERED'
+  | 'REPLIED'
+  | 'INTERESTED'
+  | 'MEETING_PENDING'
+  | 'CONVERTED'
+  | 'SUPPRESSED'
+  | 'FAILED';
+
+export interface ExternalProspectRecord {
   id: string;
-  source: ExternalSourceType;
-  sourceUrl?: string;
-  signalType: ExternalSignalType;
-  companyName: string;
-  companyDomain: string;
-  location?: string;
-  roleTitles: string[];
-  techSkills: string[];
-  vacanciesCount: number;
-  fundingAmountUSD?: number;
-  confidenceScore: number; // 0.0 - 1.0
-  intentScore: number; // 0 - 100
-  dedupHash: string;
-  observedAt: string;
-  status: 'DISCOVERED' | 'NORMALIZED' | 'PROMOTED_TO_OPPORTUNITY' | 'SUPPRESSED';
+  source: ExternalSourceCategory;
+  source_url: string;
+  discovered_at: string;
+  company_name: string;
+  company_domain: string;
+  company_location: string;
+  signal_type: SignalType;
+  signal_strength: number; // 0 - 100
+  signal_timestamp: string;
+  job_count: number;
+  relevant_roles: string[];
+  contact_name: string;
+  contact_role: string;
+  permitted_contact_channel: string; // e.g. "talent@domain.com"
+  contact_source: string;
+  opportunity_score: number; // 0 - 100
+  assigned_agent: string;
+  assigned_mailbox: string;
+  outreach_status: OutreachStatus;
+  suppression_status: 'CLEAN' | 'SUPPRESSED';
+  provider_message_id?: string;
+  sent_at?: string;
+  inbound_reply_intent?: string;
+  conversion_notes?: string;
 }
 
-export interface ExternalCompanyEntity {
-  id: string;
-  name: string;
-  domain: string;
-  industry: string;
-  locations: string[];
-  totalActiveVacancies: number;
-  techStack: string[];
-  fundingStage?: string;
-  hiringIntentScore: number; // 0 - 100
-  candidateMatchesCount: number;
-  verifiedContactEmail?: string;
-  lastObservedAt: string;
-  firstDiscoveredAt: string;
+export interface ExternalIntelligenceMetrics {
+  sourcesConnected: number;
+  sourcesHealthy: number;
+  externalRecordsDiscovered: number;
+  newSignalsToday: number;
+  companiesDiscovered: number;
+  companiesVerified: number;
+  contactsDiscovered: number;
+  highIntentOpportunities: number;
+  eligibleForOutreach: number;
 }
 
-export interface OpportunityNode {
-  id: string;
-  companyDomain: string;
-  companyName: string;
-  targetDepartment: 'employer' | 'claim1' | 'colleges' | 'candidates';
-  signalsCount: number;
-  topSignalType: ExternalSignalType;
-  intentScore: number;
-  matchableCandidatesCount: number;
-  estimatedDealValueINR: number;
-  assignedMailbox: string;
-  assignedAgent: string;
-  stage: 'OPPORTUNITY_IDENTIFIED' | 'QUALIFIED' | 'OUTREACH_APPROVED' | 'CONTACTED' | 'INTERESTED' | 'CONVERTED';
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface OpportunityGraphStats {
-  totalExternalSignalsObserved: number;
-  uniqueCompaniesResolved: number;
-  highIntentEmployersCount: number;
-  activeOpportunityNodes: number;
-  candidateMatchConnections: number;
+export interface OutreachExecutionMetrics {
+  queued: number;
+  sent: number; // Verified Zoho Provider Message IDs
+  delivered: number;
+  bounced: number;
+  replies: number;
+  interested: number;
+  meetings: number;
+  converted: number;
+  revenueUSD: number;
 }
