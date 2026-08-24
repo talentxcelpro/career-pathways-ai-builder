@@ -174,6 +174,10 @@ const Scholarships = lazy(() => import('./pages/colleges/Scholarships'));
 const CareerPathway = lazy(() => import('./pages/colleges/CareerPathway'));
 const Colleges = lazy(() => import('./pages/Colleges'));
 const CollegeDetail = lazy(() => import('./pages/colleges/CollegeDetail'));
+const RankingsHub = lazy(() => import('./pages/claim1/RankingsHub'));
+const LeaderboardPage = lazy(() => import('./pages/claim1/LeaderboardPage'));
+const CompanyRankingProfile = lazy(() => import('./pages/claim1/CompanyRankingProfile'));
+const WatchPage = lazy(() => import('./pages/claim1/WatchPage'));
 
 // ── Infrastructure imports (kept static — tiny, needed on every page) ─────
 import { turboCore } from "@/utils/turboCore";
@@ -360,6 +364,13 @@ const App = () => {
                 <Route path="/colleges/pathway" element={<Suspense fallback={null}><CareerPathway /></Suspense>} />
                 <Route path="/colleges/:id" element={<Suspense fallback={null}><CollegeDetail /></Suspense>} />
                 <Route path="/colleges/:id/:subTab" element={<Suspense fallback={null}><CollegeDetail /></Suspense>} />
+                
+                {/* ── Claim #1 Public Routes (Explicit Precedence) ── */}
+                <Route path="/rankings" element={<Suspense fallback={null}><RankingsHub /></Suspense>} />
+                <Route path="/rankings/:categorySlug" element={<Suspense fallback={null}><LeaderboardPage /></Suspense>} />
+                <Route path="/rankings/:categorySlug/:scopeSlug" element={<Suspense fallback={null}><LeaderboardPage /></Suspense>} />
+                <Route path="/company/:slug" element={<Suspense fallback={null}><CompanyRankingProfile /></Suspense>} />
+                <Route path="/claim1/watch" element={<Suspense fallback={null}><WatchPage /></Suspense>} />
                                 
                                 {navItems.map((item: NavItem) => {
                                   console.log('🔍 Registering route:', item.to, 'Title:', item.title);

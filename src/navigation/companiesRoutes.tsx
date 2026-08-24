@@ -1,8 +1,8 @@
 import { lazy, Suspense } from 'react';
 
+const CompanyRankingProfile = lazy(() => import('../pages/claim1/CompanyRankingProfile'));
 const CompanyDetailPage = lazy(() => import('../components/performance/LazyRoutes').then(m => ({ default: m.CompanyDetailPage })));
 const Companies = lazy(() => import('../pages/Companies'));
-
 
 export const companiesRoutes = [
   {
@@ -13,9 +13,9 @@ export const companiesRoutes = [
     requiresAdminAccess: false,
   },
   {
-    title: "Company Detail by Slug",
+    title: "Company Ranking Profile",
     to: "/company/:slug",
-    page: <Suspense fallback={null}><CompanyDetailPage /></Suspense>,
+    page: <Suspense fallback={null}><CompanyRankingProfile /></Suspense>,
     isPublic: true,
     requiresAdminAccess: false,
   },

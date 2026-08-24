@@ -191,13 +191,47 @@ export async function getLeaderboard(
 // ── Entities ───────────────────────────────────────────────────────────────────
 
 export async function getEntityBySlug(slug: string): Promise<Claim1Entity | null> {
-  const { data, error } = await supabase
-    .from('claim1_entities')
-    .select('*')
-    .eq('slug', slug)
-    .maybeSingle();
-  if (error) throw error;
-  return data as Claim1Entity | null;
+  try {
+    // 1. Primary: search in claim1_entities
+    const { data, error } = await supabase
+      .from('claim1_entities')
+      .select('*')
+      .eq('slug', slug)
+      .maybeSingle();
+
+    if (!error && data) return data as Claim1Entity;
+
+    // 2. Secondary fallback: check legacy companies table and map to entity shape
+    const { data: legacyComp } = await supabase
+      .from('companies')
+      .select('*')
+      .or(`slug.eq.${slug},id.eq.${slug}`)
+      .maybeSingle();
+
+    if (legacyComp) {
+      return {
+        id: legacyComp.id,
+        name: legacyComp.name,
+        slug: legacyComp.slug || slug,
+        entity_type: 'company',
+        owner_user_id: legacyComp.user_id || null,
+        website_url: legacyComp.website || null,
+        logo_url: legacyComp.logo || null,
+        description: legacyComp.description || legacyComp.about || null,
+        country_code: legacyComp.country_code || null,
+        country_name: legacyComp.location || null,
+        is_founding_100: false,
+        founding_fee_locked: false,
+        founding_100_slot: null,
+        verified: legacyComp.verified || false,
+        created_at: legacyComp.created_at || new Date().toISOString(),
+        updated_at: legacyComp.updated_at || new Date().toISOString(),
+      } as unknown as Claim1Entity;
+    }
+  } catch (err) {
+    console.warn('Error fetching entity by slug:', err);
+  }
+  return null;
 }
 
 export async function getListingsForEntity(entityId: string): Promise<Claim1Listing[]> {
