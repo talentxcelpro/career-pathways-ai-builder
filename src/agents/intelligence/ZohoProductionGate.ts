@@ -7,6 +7,7 @@ import { coreEmailOrchestrator } from '../email/EmailOrchestrator';
 import { coreSuppressionManager } from '../email/SuppressionManager';
 import { coreEmailRateLimiter } from '../email/EmailRateLimiter';
 import { coreExternalProspectStore } from './ExternalProspectStore';
+import { coreOpportunityGraphDatabase } from './OpportunityGraphDatabase';
 import { kernelAuditEngine } from '../kernel/AuditEngine';
 import { kernelEventBus } from '../kernel/EventBus';
 
@@ -106,10 +107,15 @@ export class ZohoProductionGate {
     });
 
     if (emailResult.success && emailResult.messageId) {
-      // Update persistent prospect store with real provider Message ID
+      // Update persistent prospect store and graph database with real provider Message ID
       coreExternalProspectStore.updateOutreachStatus(
         prospect.company_domain,
         'SENT',
+        emailResult.messageId
+      );
+
+      coreOpportunityGraphDatabase.updateOutreachSuccess(
+        prospect.company_domain,
         emailResult.messageId
       );
 

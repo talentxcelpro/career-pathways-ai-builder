@@ -1,7 +1,7 @@
 // src/pages/admin/AutonomousBusinessControlPlane.tsx
 // Autonomous Business OS Operating Console for /admin
 // Operating Cockpit for Founder & CEO: Sanobar Jahan
-// External Intelligence • Persistent Prospect Store • Zoho Production Gate • 9 Operating Divisions • 48 Specialist Workers
+// Multi-Dataset Opportunity Graph • MCA Companies • AICTE Colleges • Startups • Zoho Gated Outreach
 
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -23,6 +23,7 @@ import {
   coreEmailOrchestrator,
   coreExternalIntelligenceCoordinator,
   coreExternalProspectStore,
+  coreOpportunityGraphDatabase,
   coreZohoProductionGate,
   kernelAgentRegistry,
   kernelAgentScheduler,
@@ -80,6 +81,8 @@ import {
   Compass,
   Database,
   ExternalLink,
+  School,
+  Rocket,
 } from 'lucide-react';
 
 const DEPARTMENT_LABELS: Record<DepartmentId | 'all', { label: string; count: number; icon: React.ReactNode }> = {
@@ -129,21 +132,27 @@ export default function AutonomousBusinessControlPlane() {
     refetchInterval: 5_000,
   });
 
-  // 4. External Intelligence & Outreach metrics (100% computed from actual records)
+  // 4. Opportunity Graph Database state & breakdown
+  const graphBreakdown = coreOpportunityGraphDatabase.getDatasetBreakdown();
+  const graphCompanies = coreOpportunityGraphDatabase.getAllCompanies();
+  const graphColleges = coreOpportunityGraphDatabase.getAllColleges();
+  const graphStartups = coreOpportunityGraphDatabase.getAllStartups();
+
+  // 5. External Intelligence & Outreach metrics
   const intelMetrics = coreExternalProspectStore.getIntelligenceMetrics();
   const outreachMetrics = coreExternalProspectStore.getOutreachMetrics();
   const externalProspects = coreExternalProspectStore.getAllProspects();
 
-  // 5. 11 Zoho mailboxes
+  // 6. 11 Zoho mailboxes
   const mailboxes = coreEmailOrchestrator.getAllMailboxes();
 
-  // 6. 14 channels
+  // 7. 14 channels
   const channels = coreChannelRegistry.getAllChannels();
 
-  // 7. Founder escalations
+  // 8. Founder escalations
   const [escalations, setEscalations] = useState<RiskEscalation[]>(kernelRiskEngine.getPendingEscalations());
 
-  // 8. Live event bus
+  // 9. Live event bus
   const [events, setEvents] = useState<BusinessEvent[]>([]);
   useEffect(() => {
     setEvents(kernelEventBus.getRecentEvents(35));
@@ -153,7 +162,7 @@ export default function AutonomousBusinessControlPlane() {
     return unsubscribe;
   }, []);
 
-  // 9. Audit records
+  // 10. Audit records
   const [auditLogs, setAuditLogs] = useState<KernelAuditEntry[]>([]);
   useEffect(() => {
     setAuditLogs(kernelAuditEngine.getRecentLogs(35));
@@ -265,7 +274,7 @@ export default function AutonomousBusinessControlPlane() {
                 <Badge variant="outline" className="text-xs font-semibold text-primary border-primary/30">
                   Founder & CEO: Sanobar Jahan
                 </Badge>
-                <span className="text-xs text-muted-foreground">• External Intelligence Store • Zoho Gated Outreach • 48 Workers</span>
+                <span className="text-xs text-muted-foreground">• Opportunity Graph • MCA Companies • AICTE Colleges • Zoho Outreach</span>
               </div>
             </div>
           </div>
@@ -303,6 +312,88 @@ export default function AutonomousBusinessControlPlane() {
         </div>
       </div>
 
+      {/* Opportunity Graph Multi-Dataset Explorer Banner */}
+      <Card className="border shadow-sm p-5 bg-card space-y-4">
+        <div className="flex items-center justify-between flex-wrap gap-2 border-b pb-3">
+          <div className="flex items-center gap-2">
+            <Compass className="w-4 h-4 text-primary" />
+            <h3 className="font-bold text-sm text-foreground">TalentXcel Opportunity Graph Database</h3>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Badge variant="secondary" className="font-mono text-[10px]">
+              {graphBreakdown.totalRecordsCount} Total Entities
+            </Badge>
+            <span>•</span>
+            <span>Last Ingestion: {new Date(graphBreakdown.lastIngestedAt).toLocaleTimeString()}</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 text-xs">
+          <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground font-medium text-[11px]">Companies</span>
+              <Building2 className="w-3 h-3 text-blue-500" />
+            </div>
+            <p className="text-base font-black text-foreground">{graphBreakdown.companiesCount}</p>
+            <span className="text-[9px] text-muted-foreground">MCA / Corporate</span>
+          </div>
+
+          <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground font-medium text-[11px]">Active Jobs</span>
+              <Briefcase className="w-3 h-3 text-emerald-500" />
+            </div>
+            <p className="text-base font-black text-emerald-600 dark:text-emerald-400">{graphBreakdown.jobsCount}</p>
+            <span className="text-[9px] text-muted-foreground">Live Public ATS</span>
+          </div>
+
+          <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground font-medium text-[11px]">Colleges</span>
+              <GraduationCap className="w-3 h-3 text-cyan-500" />
+            </div>
+            <p className="text-base font-black text-foreground">{graphBreakdown.collegesCount}</p>
+            <span className="text-[9px] text-muted-foreground">AICTE / NIRF TPO</span>
+          </div>
+
+          <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground font-medium text-[11px]">Startups</span>
+              <Rocket className="w-3 h-3 text-orange-500" />
+            </div>
+            <p className="text-base font-black text-foreground">{graphBreakdown.startupsCount}</p>
+            <span className="text-[9px] text-muted-foreground">Claim #1 Radar</span>
+          </div>
+
+          <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground font-medium text-[11px]">Hiring Signals</span>
+              <Activity className="w-3 h-3 text-purple-500" />
+            </div>
+            <p className="text-base font-black text-purple-600 dark:text-purple-400">{graphBreakdown.hiringSignalsCount}</p>
+            <span className="text-[9px] text-muted-foreground">Velocity Surges</span>
+          </div>
+
+          <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground font-medium text-[11px]">Verified</span>
+              <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+            </div>
+            <p className="text-base font-black text-emerald-600 dark:text-emerald-400">{graphBreakdown.verifiedCount}</p>
+            <span className="text-[9px] text-muted-foreground">MX / Provenance</span>
+          </div>
+
+          <div className="p-3 bg-primary/10 rounded-xl border border-primary/30 space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-primary font-bold text-[11px]">Outreach Ready</span>
+              <Zap className="w-3 h-3 text-primary" />
+            </div>
+            <p className="text-base font-black text-primary">{graphBreakdown.outreachEligibleCount}</p>
+            <span className="text-[9px] text-primary/80">Gate Approved</span>
+          </div>
+        </div>
+      </Card>
+
       {/* Production Telemetry: External Intelligence & Outreach Grid (100% Exact Computations) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Card 1: External Intelligence */}
@@ -310,7 +401,7 @@ export default function AutonomousBusinessControlPlane() {
           <div className="flex items-center justify-between border-b pb-3">
             <div className="flex items-center gap-2">
               <Compass className="w-4 h-4 text-primary" />
-              <h3 className="font-bold text-sm text-foreground">External Intelligence</h3>
+              <h3 className="font-bold text-sm text-foreground">External Intelligence Layer</h3>
             </div>
             <Badge className="bg-emerald-500/10 text-emerald-600 text-xs font-bold">
               {intelMetrics.sourcesHealthy} / {intelMetrics.sourcesConnected} Sources Connected
@@ -319,7 +410,7 @@ export default function AutonomousBusinessControlPlane() {
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
             <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
-              <span className="text-muted-foreground font-medium text-[11px]">External Records</span>
+              <span className="text-muted-foreground font-medium text-[11px]">Prospect Records</span>
               <p className="text-base font-black text-foreground">{intelMetrics.externalRecordsDiscovered}</p>
               <span className="text-[9px] text-muted-foreground">Actual DB Count</span>
             </div>
@@ -605,14 +696,15 @@ export default function AutonomousBusinessControlPlane() {
         </div>
       </div>
 
-      {/* Tabs for Detailed Control Plane Sub-Systems */}
+      {/* Tabs for Opportunity Graph & Sub-Systems */}
       <Tabs defaultValue="prospects" className="space-y-4">
-        <TabsList className="grid grid-cols-6 max-w-3xl">
-          <TabsTrigger value="prospects">External Prospects</TabsTrigger>
+        <TabsList className="grid grid-cols-7 max-w-4xl">
+          <TabsTrigger value="prospects">Outreach Prospects</TabsTrigger>
+          <TabsTrigger value="companies">MCA Companies</TabsTrigger>
+          <TabsTrigger value="colleges">AICTE Colleges</TabsTrigger>
+          <TabsTrigger value="startups">Claim #1 Startups</TabsTrigger>
           <TabsTrigger value="mailboxes">Zoho Mailboxes</TabsTrigger>
           <TabsTrigger value="simulator">Inbound Simulator</TabsTrigger>
-          <TabsTrigger value="channels">14 Channels</TabsTrigger>
-          <TabsTrigger value="eventbus">Event Bus</TabsTrigger>
           <TabsTrigger value="audit">Audit Trail</TabsTrigger>
         </TabsList>
 
@@ -705,7 +797,119 @@ export default function AutonomousBusinessControlPlane() {
           </Card>
         </TabsContent>
 
-        {/* Tab 2: Zoho Mailbox Network */}
+        {/* Tab 2: MCA Companies & Corporate Registry */}
+        <TabsContent value="companies" className="space-y-4">
+          <Card className="p-6 border space-y-4">
+            <div>
+              <h4 className="font-bold text-base text-foreground flex items-center gap-2">
+                <Building2 className="w-4 h-4 text-blue-500" /> MCA Registered Companies & Corporate Entities
+              </h4>
+              <p className="text-xs text-muted-foreground mt-0.5">Corporate legal entity data with CIN, incorporation year, and verified career portals.</p>
+            </div>
+
+            <div className="divide-y border rounded-xl overflow-hidden bg-card">
+              {graphCompanies.map((c) => (
+                <div key={c.id} className="p-4 flex items-center justify-between gap-4 flex-wrap hover:bg-muted/10">
+                  <div className="space-y-1 max-w-xl">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-sm text-foreground">{c.brand_name}</span>
+                      <span className="text-xs text-muted-foreground">({c.legal_name})</span>
+                      <Badge variant="outline" className="text-[10px]">{c.industry}</Badge>
+                      <Badge className="bg-blue-500/10 text-blue-600 text-[10px]">{c.company_size}</Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      <strong>CIN:</strong> {c.cin_llpin || 'Registered'} • <strong>HQ:</strong> {c.headquarters} • <strong>Hiring Velocity:</strong> +{c.hiring_velocity_pct}%
+                    </p>
+                    <p className="text-[10px] text-muted-foreground">
+                      <strong>Careers:</strong> <a href={c.careers_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{c.careers_url}</a>
+                    </p>
+                  </div>
+
+                  <div className="text-right text-xs">
+                    <span className="text-muted-foreground block text-[10px]">Active Vacancies</span>
+                    <p className="text-base font-black text-foreground">{c.active_job_count} Roles</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </TabsContent>
+
+        {/* Tab 3: AICTE / UGC Higher Education Institutions */}
+        <TabsContent value="colleges" className="space-y-4">
+          <Card className="p-6 border space-y-4">
+            <div>
+              <h4 className="font-bold text-base text-foreground flex items-center gap-2">
+                <GraduationCap className="w-4 h-4 text-cyan-500" /> AICTE & NIRF Accredited Higher Education Institutions
+              </h4>
+              <p className="text-xs text-muted-foreground mt-0.5">Institutes of national importance and universities with verified TPO placement cell contacts.</p>
+            </div>
+
+            <div className="divide-y border rounded-xl overflow-hidden bg-card">
+              {graphColleges.map((col) => (
+                <div key={col.id} className="p-4 flex items-center justify-between gap-4 flex-wrap hover:bg-muted/10">
+                  <div className="space-y-1 max-w-xl">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-sm text-foreground">{col.institution_name}</span>
+                      {col.nirf_rank && <Badge className="bg-cyan-500/10 text-cyan-600 text-[10px]">NIRF #{col.nirf_rank}</Badge>}
+                      <Badge variant="outline" className="text-[10px]">{col.city}, {col.state}</Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      <strong>TPO Contact:</strong> {col.placement_email} • <strong>Role:</strong> {col.tpo_contact_role}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground">
+                      <strong>AICTE ID:</strong> {col.aicte_id} • <strong>Website:</strong> <a href={col.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{col.website}</a>
+                    </p>
+                  </div>
+
+                  <div className="text-right text-xs">
+                    <span className="text-muted-foreground block text-[10px]">Student Volume</span>
+                    <p className="text-base font-black text-foreground">~{col.student_volume_approx.toLocaleString()}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </TabsContent>
+
+        {/* Tab 4: Startups for Claim #1 */}
+        <TabsContent value="startups" className="space-y-4">
+          <Card className="p-6 border space-y-4">
+            <div>
+              <h4 className="font-bold text-base text-foreground flex items-center gap-2">
+                <Rocket className="w-4 h-4 text-orange-500" /> AI Breakthrough Startups (Claim #1 Radar)
+              </h4>
+              <p className="text-xs text-muted-foreground mt-0.5">High-velocity AI toolmakers and platforms eligible for Claim #1 category leaderboards.</p>
+            </div>
+
+            <div className="divide-y border rounded-xl overflow-hidden bg-card">
+              {graphStartups.map((st) => (
+                <div key={st.id} className="p-4 flex items-center justify-between gap-4 flex-wrap hover:bg-muted/10">
+                  <div className="space-y-1 max-w-xl">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-sm text-foreground">{st.startup_name}</span>
+                      <Badge className="bg-orange-500/10 text-orange-600 text-[10px]">{st.claim1_eligible_category}</Badge>
+                      <Badge variant="outline" className="text-[10px]">{st.funding_stage}</Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      <strong>Product:</strong> {st.product_category} • <strong>Founders:</strong> {st.founders.join(', ')}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground">
+                      <strong>Product URL:</strong> <a href={st.product_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{st.product_url}</a>
+                    </p>
+                  </div>
+
+                  <div className="text-right text-xs">
+                    <span className="text-muted-foreground block text-[10px]">Claim #1 Eligibility</span>
+                    <Badge className="bg-emerald-500/10 text-emerald-600 text-xs font-semibold">VERIFIED ICP</Badge>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </TabsContent>
+
+        {/* Tab 5: Zoho Mailbox Network */}
         <TabsContent value="mailboxes" className="space-y-4">
           <Card className="p-6 border space-y-4">
             <div>
@@ -739,7 +943,7 @@ export default function AutonomousBusinessControlPlane() {
           </Card>
         </TabsContent>
 
-        {/* Tab 3: Inbound Reply Simulator */}
+        {/* Tab 6: Inbound Reply Simulator */}
         <TabsContent value="simulator" className="space-y-4">
           <Card className="p-6 border space-y-4">
             <div>
@@ -800,86 +1004,7 @@ export default function AutonomousBusinessControlPlane() {
           </Card>
         </TabsContent>
 
-        {/* Tab 4: 14 Channels */}
-        <TabsContent value="channels" className="space-y-4">
-          <Card className="p-6 border space-y-4">
-            <div>
-              <h4 className="font-bold text-base text-foreground">14 Connected Distribution & Acquisition Channels</h4>
-              <p className="text-xs text-muted-foreground mt-0.5">Live connector health status. Zero hardcoded secrets.</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {channels.map((ch) => (
-                <div key={ch.id} className="p-4 bg-muted/20 border rounded-xl flex items-start justify-between gap-4">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-sm text-foreground">{ch.name}</span>
-                      <Badge
-                        className={
-                          ch.status === 'ACTIVE'
-                            ? 'bg-emerald-500/10 text-emerald-600 text-[10px] font-bold border-emerald-500/30'
-                            : ch.status === 'DEMO'
-                            ? 'bg-blue-500/10 text-blue-600 text-[10px] font-bold border-blue-500/30'
-                            : ch.status === 'MANUAL_REQUIRED'
-                            ? 'bg-indigo-500/10 text-indigo-600 text-[10px] font-bold border-indigo-500/30'
-                            : 'bg-amber-500/10 text-amber-600 text-[10px] font-bold border-amber-500/30'
-                        }
-                      >
-                        {ch.status}
-                      </Badge>
-                    </div>
-                    <p className="text-xs text-muted-foreground">{ch.statusDetails}</p>
-                    <div className="flex items-center gap-3 pt-1 text-[11px] text-muted-foreground">
-                      <span>Rate Limit: <strong>{ch.rateLimitPerHour}/hr</strong></span>
-                      {ch.dailyBudgetCapINR > 0 && <span>Budget Cap: <strong>₹{ch.dailyBudgetCapINR.toLocaleString()}/day</strong></span>}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </TabsContent>
-
-        {/* Tab 5: Event Bus */}
-        <TabsContent value="eventbus" className="space-y-4">
-          <Card className="border p-5">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <Radio className="w-4 h-4 text-emerald-500 animate-pulse" />
-                <h4 className="font-bold text-sm text-foreground">Real-Time Event Stream (9 Departments)</h4>
-              </div>
-              <span className="text-xs text-muted-foreground">{events.length} Events Captured</span>
-            </div>
-
-            <div className="space-y-2 font-mono text-xs max-h-96 overflow-y-auto divide-y">
-              {events.length === 0 ? (
-                <p className="text-muted-foreground p-4 text-center">No recent events on bus.</p>
-              ) : (
-                events.map((evt) => (
-                  <div key={evt.id} className="py-2.5 flex items-center justify-between gap-4 flex-wrap">
-                    <div className="flex items-center gap-2.5">
-                      <span className="text-muted-foreground text-[10px]">
-                        {new Date(evt.timestamp).toLocaleTimeString()}
-                      </span>
-                      <Badge variant="secondary" className="text-[10px] font-bold">
-                        {evt.sourceAgent}
-                      </Badge>
-                      <Badge variant="outline" className="text-[9px]">
-                        {evt.department}
-                      </Badge>
-                      <span className="font-semibold text-foreground">{evt.type}</span>
-                    </div>
-                    <span className="text-[11px] text-muted-foreground truncate max-w-xs">
-                      {JSON.stringify(evt.payload)}
-                    </span>
-                  </div>
-                ))
-              )}
-            </div>
-          </Card>
-        </TabsContent>
-
-        {/* Tab 6: Audit Trail */}
+        {/* Tab 7: Audit Trail */}
         <TabsContent value="audit" className="space-y-4">
           <Card className="p-6 border space-y-4">
             <div className="flex items-center justify-between">
