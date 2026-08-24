@@ -1,6 +1,4 @@
-// src/pages/claim1/ParticipantDashboard.tsx
-// /claim1/dashboard — Participant dashboard with exact-price outbid alerts and direct reclaim loop
-
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useQuery } from '@tanstack/react-query';
@@ -19,16 +17,23 @@ import {
   ExternalLink,
   ChevronRight,
   ShieldAlert,
+  Edit3,
+  Globe,
+  Building2,
 } from 'lucide-react';
-import { useMyListings, useMyBids } from '@/hooks/useClaim1';
+import { useMyListings, useMyBids, useMyEntities } from '@/hooks/useClaim1';
 import { formatCurrency } from '@/services/claim1Service';
-import type { Claim1Listing } from '@/types/claim1';
+import { EditEntityProfileModal } from '@/components/claim1/EditEntityProfileModal';
+import type { Claim1Listing, Claim1Entity } from '@/types/claim1';
 
 export default function ParticipantDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { data: myEntities = [], isLoading: entitiesLoading } = useMyEntities();
   const { data: myListings = [], isLoading: listingsLoading } = useMyListings();
   const { data: myBids = [],    isLoading: bidsLoading }     = useMyBids();
+
+  const [editingEntity, setEditingEntity] = useState<Claim1Entity | null>(null);
 
   // Fetch unread outbid notifications
   const { data: outbidNotifs = [], refetch: refetchNotifs } = useQuery({
@@ -76,6 +81,14 @@ export default function ParticipantDashboard() {
         <title>My Rankings Dashboard — TalentXcel</title>
       </Helmet>
 
+      {editingEntity && (
+        <EditEntityProfileModal
+          entity={editingEntity}
+          open={!!editingEntity}
+          onOpenChange={(open) => !open && setEditingEntity(null)}
+        />
+      )}
+
       <div className="max-w-4xl mx-auto px-4 py-10 space-y-8">
 
         {/* Dashboard Header */}
@@ -90,6 +103,55 @@ export default function ParticipantDashboard() {
             </Button>
           </Link>
         </div>
+
+        {/* Claimed Company Overview Cards */}
+        {myEntities.length > 0 && (
+          <div className="space-y-3">
+            <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Your Claimed Profile</h2>
+            {myEntities.map((ent) => (
+              <Card key={ent.id} className="p-5 flex items-center justify-between gap-4 flex-wrap bg-card border shadow-sm">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-xl border bg-muted flex items-center justify-center overflow-hidden flex-shrink-0">
+                    {ent.logo_url ? (
+                      <img src={ent.logo_url} alt={ent.name} className="w-full h-full object-contain p-1" />
+                    ) : (
+                      <span className="text-xl font-bold text-muted-foreground">{ent.name.charAt(0)}</span>
+                    )}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="font-bold text-base text-foreground">{ent.name}</h3>
+                      {ent.is_founding_100 && (
+                        <Badge className="bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-500/40 text-[10px] gap-1">
+                          <Sparkles className="w-2.5 h-2.5" /> Founding 100
+                        </Badge>
+                      )}
+                    </div>
+                    {ent.tagline && (
+                      <p className="text-xs text-muted-foreground mt-0.5">{ent.tagline}</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setEditingEntity(ent)}
+                    className="gap-1 text-xs"
+                  >
+                    <Edit3 className="w-3.5 h-3.5" /> Edit Profile
+                  </Button>
+                  <Link to={`/company/${ent.slug}`}>
+                    <Button size="sm" variant="secondary" className="gap-1 text-xs">
+                      <Globe className="w-3.5 h-3.5" /> View Public Page
+                    </Button>
+                  </Link>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
 
         {/* High-Priority Outbid Alerts Banner with Exact Reclaim Price */}
         {outbidNotifs.length > 0 && (
@@ -153,19 +215,25 @@ export default function ParticipantDashboard() {
             My Active Positions
           </h2>
 
-          {listingsLoading ? (
+          {listingsLoading || entitiesLoading ? (
             <div className="space-y-3">
               {[1, 2, 3].map((i) => <Skeleton key={i} className="h-24 w-full rounded-xl" />)}
             </div>
           ) : myListings.length === 0 ? (
             <Card className="py-12 text-center space-y-3">
               <Trophy className="w-10 h-10 mx-auto text-muted-foreground opacity-40" />
-              <p className="font-semibold text-lg">You haven't claimed any positions yet</p>
+              <p className="font-semibold text-lg">
+                {myEntities.length > 0 ? 'No active board listings yet' : "You haven't claimed any positions yet"}
+              </p>
               <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                Initial entry is completely free. Claim your profile to start tracking your ranking.
+                {myEntities.length > 0
+                  ? `Select which category boards ${myEntities[0].name} should compete in. Entry is 100% free.`
+                  : 'Initial entry is completely free. Claim your profile to start tracking your ranking.'}
               </p>
               <Link to="/claim1/enter">
-                <Button className="mt-2">Claim Your Position</Button>
+                <Button className="mt-2">
+                  {myEntities.length > 0 ? 'Enter Category Boards' : 'Claim Your Position'}
+                </Button>
               </Link>
             </Card>
           ) : (

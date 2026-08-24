@@ -298,23 +298,37 @@ export async function getMyEntities(userId: string): Promise<Claim1Entity[]> {
 }
 
 export async function getMyListings(userId: string): Promise<Claim1Listing[]> {
-  const { data: entities } = await supabase
-    .from('claim1_entities')
-    .select('id')
-    .eq('owner_user_id', userId);
+  try {
+    const { data: entities } = await supabase
+      .from('claim1_entities')
+      .select('id')
+      .eq('owner_user_id', userId);
 
-  if (!entities?.length) return [];
-  const entityIds = entities.map((e) => e.id);
+    if (!entities?.length) return [];
+    const entityIds = entities.map((e) => e.id);
 
-  const { data, error } = await supabase
-    .from('claim1_listings')
-    .select('*, entity:claim1_entities(*), scope:claim1_scopes(*, category:claim1_categories(*))')
-    .in('entity_id', entityIds)
-    .eq('status', 'active')
-    .order('current_rank', { ascending: true });
+    const { data, error } = await supabase
+      .from('claim1_listings')
+      .select('*, entity:claim1_entities(*), scope:claim1_scopes(*, category:claim1_categories(*))')
+      .in('entity_id', entityIds)
+      .eq('status', 'active')
+      .order('current_rank', { ascending: true });
 
-  if (error) throw error;
-  return (data ?? []) as Claim1Listing[];
+    if (!error && data && data.length > 0) {
+      return data as Claim1Listing[];
+    }
+
+    // Auto-provision listings for each owned entity if currently 0
+    const results: Claim1Listing[] = [];
+    for (const ent of entities) {
+      const list = await getListingsForEntity(ent.id);
+      results.push(...list);
+    }
+    return results;
+  } catch (err) {
+    console.warn('Error in getMyListings:', err);
+    return [];
+  }
 }
 
 // ── Claim Profile Flow ────────────────────────────────────────────────────────
