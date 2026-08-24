@@ -235,14 +235,56 @@ export async function getEntityBySlug(slug: string): Promise<Claim1Entity | null
 }
 
 export async function getListingsForEntity(entityId: string): Promise<Claim1Listing[]> {
-  const { data, error } = await supabase
-    .from('claim1_listings')
-    .select('*, scope:claim1_scopes(*, category:claim1_categories(*))')
-    .eq('entity_id', entityId)
-    .eq('status', 'active')
-    .order('current_rank', { ascending: true });
-  if (error) throw error;
-  return (data ?? []) as Claim1Listing[];
+  try {
+    const { data, error } = await supabase
+      .from('claim1_listings')
+      .select('*, scope:claim1_scopes(*, category:claim1_categories(*))')
+      .eq('entity_id', entityId)
+      .eq('status', 'active')
+      .order('current_rank', { ascending: true });
+
+    if (!error && data && data.length > 0) {
+      return data as Claim1Listing[];
+    }
+
+    // Auto-provision default Global & India listings if missing
+    const scopes = await getAvailableScopes();
+    if (scopes.length > 0) {
+      for (const sc of scopes.slice(0, 2)) {
+        let scId = sc.id;
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sc.id);
+        if (!isUuid) {
+          const { data: dbSc } = await supabase.from('claim1_scopes').select('id').eq('slug', sc.slug).maybeSingle();
+          if (dbSc) scId = dbSc.id;
+        }
+
+        if (scId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(scId)) {
+          await supabase.from('claim1_listings').upsert({
+            entity_id: entityId,
+            scope_id: scId,
+            status: 'active',
+            current_bid_amount: 0,
+            currency: 'INR',
+            current_rank: 1,
+          }, { onConflict: 'entity_id,scope_id' });
+        }
+      }
+
+      const { data: refreshed } = await supabase
+        .from('claim1_listings')
+        .select('*, scope:claim1_scopes(*, category:claim1_categories(*))')
+        .eq('entity_id', entityId)
+        .eq('status', 'active')
+        .order('current_rank', { ascending: true });
+
+      if (refreshed && refreshed.length > 0) {
+        return refreshed as Claim1Listing[];
+      }
+    }
+  } catch (err) {
+    console.warn('Error in getListingsForEntity:', err);
+  }
+  return [];
 }
 
 export async function getMyEntities(userId: string): Promise<Claim1Entity[]> {

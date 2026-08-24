@@ -157,8 +157,13 @@ export default function CompanyRankingProfile() {
               {[1, 2].map((i) => <Skeleton key={i} className="h-12 w-full rounded" />)}
             </div>
           ) : listings.length === 0 ? (
-            <div className="py-10 text-center text-muted-foreground text-sm">
+            <div className="py-10 text-center text-muted-foreground text-sm space-y-3">
               <p>Not competing on any active boards yet.</p>
+              <Link to="/claim1/enter">
+                <Button size="sm" className="gap-1">
+                  <Sparkles className="w-3.5 h-3.5" /> Enter Leaderboards Now
+                </Button>
+              </Link>
             </div>
           ) : (
             <div className="divide-y">
