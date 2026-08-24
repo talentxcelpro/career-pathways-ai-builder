@@ -77,14 +77,29 @@ class KernelToolRegistry {
       return await claim1MarketingService.updateProspectState(inputs.prospectId, 'QUALIFIED');
     });
 
-    this.registerTool('marketing.sendEmail', 'growth_marketing', 'Dispatches real email via unified email queue service', async (inputs) => {
-      const { to, subject, htmlContent, prospectId } = inputs;
+    this.registerTool('marketing.sendEmail', 'growth_marketing', 'Dispatches real email via authorized Zoho Mailbox Network', async (inputs) => {
+      const { to, subject, htmlContent, plainTextContent, templateName, department, agentId, preferredMailbox } = inputs;
       if (!to) return { success: false, status: 'BLOCKED', reason: 'Missing email address' };
 
-      const { data, error } = await supabase.functions.invoke('unified-email-service', {
-        body: { to, subject, template: htmlContent, data: { prospectId } },
+      const { coreEmailOrchestrator } = await import('../email/EmailOrchestrator');
+      const result = await coreEmailOrchestrator.sendEmail({
+        recipientEmail: to,
+        subject: subject || 'TalentXcel Notification',
+        htmlContent,
+        plainTextContent,
+        templateName: templateName || 'general',
+        department: department || 'growth_marketing',
+        agentId: agentId || 'email_growth',
+        preferredMailbox,
       });
-      return { success: !error, status: error ? 'FAILED' : 'SENT', error: error?.message, data };
+
+      return {
+        success: result.success,
+        status: result.success ? 'SENT' : 'FAILED',
+        messageId: result.messageId,
+        mailboxUsed: result.mailboxUsed,
+        error: result.error,
+      };
     });
 
     this.registerTool('seo.auditIndexCoverage', 'growth_marketing', 'Audits active sitemaps and indexed URL inventory', async () => {

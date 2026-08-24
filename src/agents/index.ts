@@ -2,6 +2,7 @@
 // TalentXcel Autonomous Business OS - Main Entry Point
 // Operating team for Founder / CEO Sanobar Jahan
 
+export * from './email';
 export * from './core';
 export * from './kernel';
 

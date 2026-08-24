@@ -1,7 +1,7 @@
 // src/pages/admin/AutonomousBusinessControlPlane.tsx
-// Autonomous Business OS Control Plane for /admin
-// Operating Cockpit for Founder & CEO: Sanobar Jahan
-// 9 Departments • 48 Specialist Workers • 14 Connectors • 100% Real Database Telemetry
+// Autonomous Business OS Operating Console for /admin
+// Operating for Founder & CEO: Sanobar Jahan
+// 9 Operating Divisions • 48 Specialist Workers • 11 Zoho Mailboxes • 14 Channels • 100% Verified Telemetry
 
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -18,6 +18,7 @@ import {
   coreObjectiveEngine,
   coreChannelRegistry,
   coreKPIEngine,
+  coreEmailOrchestrator,
   kernelAgentRegistry,
   kernelAgentScheduler,
   kernelEventBus,
@@ -28,7 +29,7 @@ import {
   type KernelAuditEntry,
   type RiskEscalation,
   type DepartmentId,
-  type ChannelDescriptor,
+  type MailboxDescriptor,
 } from '@/agents';
 import { formatCurrency } from '@/services/claim1Service';
 import { toast } from 'sonner';
@@ -68,6 +69,7 @@ import {
   Send,
   MessageSquare,
   Share2,
+  Inbox,
 } from 'lucide-react';
 
 const DEPARTMENT_LABELS: Record<DepartmentId | 'all', { label: string; count: number; icon: React.ReactNode }> = {
@@ -97,27 +99,30 @@ export default function AutonomousBusinessControlPlane() {
     refetchInterval: 10_000,
   });
 
-  // 2. Fetch synchronized objectives for Sanobar Jahan
+  // 2. Fetch strategic targets
   const { data: goals = [], refetch: refetchGoals } = useQuery({
     queryKey: ['core-strategic-goals'],
     queryFn: () => coreObjectiveEngine.getSynchronizedGoals(),
     refetchInterval: 10_000,
   });
 
-  // 3. Fetch live diagnostics for all 48 specialist workers from real DB logs
+  // 3. Fetch 48 specialist workers diagnostics from real DB logs
   const { data: workers = [], refetch: refetchWorkers } = useQuery({
     queryKey: ['core-48-workers'],
     queryFn: () => kernelAgentRegistry.getLiveWorkerDiagnostics(),
     refetchInterval: 5_000,
   });
 
-  // 4. Fetch 14 channels status
+  // 4. Fetch 11 Zoho mailboxes
+  const mailboxes = coreEmailOrchestrator.getAllMailboxes();
+
+  // 5. Fetch 14 channels
   const channels = coreChannelRegistry.getAllChannels();
 
-  // 5. Fetch pending founder escalations
+  // 6. Fetch pending founder escalations
   const [escalations, setEscalations] = useState<RiskEscalation[]>(kernelRiskEngine.getPendingEscalations());
 
-  // 6. Fetch live event bus
+  // 7. Live event bus
   const [events, setEvents] = useState<BusinessEvent[]>([]);
   useEffect(() => {
     setEvents(kernelEventBus.getRecentEvents(30));
@@ -127,7 +132,7 @@ export default function AutonomousBusinessControlPlane() {
     return unsubscribe;
   }, []);
 
-  // 7. Fetch audit records
+  // 8. Audit records
   const [auditLogs, setAuditLogs] = useState<KernelAuditEntry[]>([]);
   useEffect(() => {
     setAuditLogs(kernelAuditEngine.getRecentLogs(30));
@@ -137,10 +142,10 @@ export default function AutonomousBusinessControlPlane() {
     return () => clearInterval(interval);
   }, []);
 
-  // Manual business operating cycle pulse
+  // Run full business operating cycle
   const handleRunBusinessCycle = async () => {
     setActiveCycleRunning(true);
-    toast.info('Executing autonomous operating cycle across all 9 departments...');
+    toast.info('Executing autonomous operating cycle across all 9 departments & 11 Zoho mailboxes...');
     const result = await coreAgentOrchestrator.executeFullBusinessCycle();
     await kernelAgentScheduler.tick();
     setActiveCycleRunning(false);
@@ -201,7 +206,7 @@ export default function AutonomousBusinessControlPlane() {
                 <Badge variant="outline" className="text-xs font-semibold text-primary border-primary/30">
                   Founder & CEO: Sanobar Jahan
                 </Badge>
-                <span className="text-xs text-muted-foreground">• 9 Departments • 48 Autonomous Workers • 14 Channels</span>
+                <span className="text-xs text-muted-foreground">• 9 Divisions • 48 Workers • 11 Zoho Mailboxes • 14 Channels</span>
               </div>
             </div>
           </div>
@@ -234,15 +239,15 @@ export default function AutonomousBusinessControlPlane() {
             className="gap-1.5 font-semibold"
           >
             <RotateCcw className={`w-3.5 h-3.5 ${activeCycleRunning ? 'animate-spin' : ''}`} />
-            {activeCycleRunning ? 'Executing Cycle...' : 'Run Business Cycle'}
+            {activeCycleRunning ? 'Operating Cycle...' : 'Run Business Cycle'}
           </Button>
         </div>
       </div>
 
-      {/* Primary Strategic Objective Hero Bar */}
+      {/* Today's Business Live Pulse */}
       <Card className="border-primary/40 bg-gradient-to-r from-primary/5 via-card to-background shadow-sm">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between flex-wrap gap-4 mb-4">
+        <CardContent className="p-6 space-y-6">
+          <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
               <div className="flex items-center gap-2">
                 <Crown className="w-4 h-4 text-primary" />
@@ -261,30 +266,36 @@ export default function AutonomousBusinessControlPlane() {
           <Progress value={progressPct} className="h-3" />
 
           {/* Real-time Verified Business State */}
-          <div className="grid grid-cols-2 sm:grid-cols-6 gap-3 mt-5 pt-4 border-t text-xs">
+          <div className="grid grid-cols-2 sm:grid-cols-6 gap-4 pt-4 border-t text-xs">
             <div>
               <span className="text-muted-foreground">Total Users:</span>
-              <p className="text-base font-bold text-foreground mt-0.5">{memory?.usersTotal.toLocaleString()}</p>
+              <p className="text-lg font-bold text-foreground mt-0.5">{memory?.usersTotal.toLocaleString()}</p>
+              <span className="text-[10px] text-emerald-600 font-semibold">Target: 100,000+</span>
             </div>
             <div>
               <span className="text-muted-foreground">Active Jobs:</span>
-              <p className="text-base font-bold text-foreground mt-0.5">{memory?.jobsActiveTotal.toLocaleString()}</p>
+              <p className="text-lg font-bold text-foreground mt-0.5">{memory?.jobsActiveTotal.toLocaleString()}</p>
+              <span className="text-[10px] text-emerald-600 font-semibold">Target: 100,000+</span>
+            </div>
+            <div>
+              <span className="text-muted-foreground">Active Employers:</span>
+              <p className="text-lg font-bold text-foreground mt-0.5">{memory?.employersTotal.toLocaleString()}</p>
+              <span className="text-[10px] text-emerald-600 font-semibold">Target: 10,000+</span>
             </div>
             <div>
               <span className="text-muted-foreground">Indexed Colleges:</span>
-              <p className="text-base font-bold text-foreground mt-0.5">{memory?.collegesTotal.toLocaleString()}</p>
+              <p className="text-lg font-bold text-foreground mt-0.5">{memory?.collegesTotal.toLocaleString()}</p>
+              <span className="text-[10px] text-muted-foreground">1,509 Catalogued</span>
             </div>
             <div>
-              <span className="text-muted-foreground">Claimed Entities:</span>
-              <p className="text-base font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">{memory?.claim1ClaimedCount}</p>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Active Paid Bids:</span>
-              <p className="text-base font-bold text-primary mt-0.5">{memory?.claim1ActiveBids}</p>
+              <span className="text-muted-foreground">Claim #1 Bids:</span>
+              <p className="text-lg font-bold text-primary mt-0.5">{memory?.claim1ActiveBids}</p>
+              <span className="text-[10px] text-muted-foreground">48h Reclaim: {memory?.claim1ReclaimRate48hPct}%</span>
             </div>
             <div>
               <span className="text-muted-foreground">Platform Revenue:</span>
-              <p className="text-base font-bold text-foreground mt-0.5">{formatCurrency(memory?.platformRevenueINR || 0, 'INR')}</p>
+              <p className="text-lg font-bold text-foreground mt-0.5">{formatCurrency(memory?.platformRevenueINR || 0, 'INR')}</p>
+              <span className="text-[10px] text-emerald-600 font-semibold">Target: ₹8,00,000</span>
             </div>
           </div>
         </CardContent>
@@ -330,12 +341,12 @@ export default function AutonomousBusinessControlPlane() {
         </Card>
       )}
 
-      {/* 9 Departments & 48 Specialist Workers Operating View */}
+      {/* 9 Operating Divisions & 48 Specialist Workers Operating View */}
       <div className="space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
             <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-              <Activity className="w-5 h-5 text-primary" /> Autonomous Operating Workers ({filteredWorkers.length})
+              <Activity className="w-5 h-5 text-primary" /> Operating Workforce ({filteredWorkers.length} Specialist Workers)
             </h3>
             <p className="text-xs text-muted-foreground">Deterministic service execution • 100% verified backend logs</p>
           </div>
@@ -441,21 +452,55 @@ export default function AutonomousBusinessControlPlane() {
       </div>
 
       {/* Tabs for Detailed Control Plane Sub-Systems */}
-      <Tabs defaultValue="channels" className="space-y-4">
+      <Tabs defaultValue="mailboxes" className="space-y-4">
         <TabsList className="grid grid-cols-5 max-w-2xl">
-          <TabsTrigger value="channels">Channel Health</TabsTrigger>
+          <TabsTrigger value="mailboxes">Zoho Mailboxes</TabsTrigger>
+          <TabsTrigger value="channels">14 Channels</TabsTrigger>
           <TabsTrigger value="eventbus">Live Event Bus</TabsTrigger>
           <TabsTrigger value="budgets">Guardrails & Budgets</TabsTrigger>
-          <TabsTrigger value="memory">Business Memory</TabsTrigger>
           <TabsTrigger value="audit">Audit Trail</TabsTrigger>
         </TabsList>
 
-        {/* Tab 1: Channel Health & Connector Status */}
+        {/* Tab 1: Zoho Mailbox Network (11 Operational Mailboxes) */}
+        <TabsContent value="mailboxes" className="space-y-4">
+          <Card className="p-6 border space-y-4">
+            <div>
+              <h4 className="font-bold text-base text-foreground">11 Authorised TalentXcel Zoho Mailboxes</h4>
+              <p className="text-xs text-muted-foreground mt-0.5">Organizational worker identities with thread affinity, rate limits, and anti-spam enforcement.</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {mailboxes.map((mb) => (
+                <div key={mb.id} className="p-4 bg-muted/20 border rounded-xl space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Mail className="w-4 h-4 text-primary" />
+                      <span className="font-bold text-sm text-foreground">{mb.email}</span>
+                    </div>
+                    <Badge className="bg-emerald-500/10 text-emerald-600 text-[10px] font-bold border-emerald-500/30">
+                      {mb.healthStatus}
+                    </Badge>
+                  </div>
+
+                  <p className="text-xs font-semibold text-foreground">{mb.displayName}</p>
+                  <p className="text-xs text-muted-foreground">{mb.autonomousRole}</p>
+
+                  <div className="pt-2 border-t flex items-center justify-between text-[11px] text-muted-foreground">
+                    <span>Sent Today: <strong>{mb.sentTodayCount}</strong> / {mb.dailyLimit}</span>
+                    <span>Bounce: <strong>{mb.bounceRatePct}%</strong></span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </TabsContent>
+
+        {/* Tab 2: 14 Channels */}
         <TabsContent value="channels" className="space-y-4">
           <Card className="p-6 border space-y-4">
             <div>
               <h4 className="font-bold text-base text-foreground">14 Connected Distribution & Acquisition Channels</h4>
-              <p className="text-xs text-muted-foreground mt-0.5">Live connector health status. Zero hardcoded secrets (managed via Supabase Vault).</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Live connector health status. Zero hardcoded secrets.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -490,7 +535,7 @@ export default function AutonomousBusinessControlPlane() {
           </Card>
         </TabsContent>
 
-        {/* Tab 2: Live Event Bus */}
+        {/* Tab 3: Live Event Bus */}
         <TabsContent value="eventbus" className="space-y-4">
           <Card className="border p-5">
             <div className="flex items-center justify-between mb-3">
@@ -529,7 +574,7 @@ export default function AutonomousBusinessControlPlane() {
           </Card>
         </TabsContent>
 
-        {/* Tab 3: Guardrails & Budgets */}
+        {/* Tab 4: Guardrails & Budgets */}
         <TabsContent value="budgets" className="space-y-4">
           <Card className="p-6 border space-y-6">
             <div>
@@ -560,20 +605,6 @@ export default function AutonomousBusinessControlPlane() {
             <Button onClick={() => toast.success('Departmental budget policy synchronized.')} className="font-semibold">
               Save Policy
             </Button>
-          </Card>
-        </TabsContent>
-
-        {/* Tab 4: Business Memory */}
-        <TabsContent value="memory" className="space-y-4">
-          <Card className="p-6 border space-y-4">
-            <div>
-              <h4 className="font-bold text-base text-foreground">Shared Verified Business Memory</h4>
-              <p className="text-xs text-muted-foreground mt-0.5">All 48 workers synchronize with this verified live state.</p>
-            </div>
-
-            <pre className="p-4 bg-muted/60 rounded-xl text-xs font-mono border overflow-x-auto text-foreground">
-              {JSON.stringify(memory, null, 2)}
-            </pre>
           </Card>
         </TabsContent>
 
