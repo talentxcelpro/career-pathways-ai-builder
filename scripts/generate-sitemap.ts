@@ -277,6 +277,8 @@ function generateHighScaleSitemaps() {
   // 10. Passports & Companies
   const passportEntries = deduplicate([{ path: '/passport', changefreq: 'weekly', priority: '0.8' }]);
   const companyEntries = deduplicate([
+    { path: '/company/talentxcel', changefreq: 'daily', priority: '1.0' },
+    { path: '/company/talentxcel-services-pvt-ltd', changefreq: 'daily', priority: '1.0' },
     { path: '/companies/talentxcel', changefreq: 'weekly', priority: '0.8' },
     { path: '/companies/tech-corp', changefreq: 'monthly', priority: '0.6' },
   ]);

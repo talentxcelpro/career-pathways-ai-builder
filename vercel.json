@@ -102,6 +102,61 @@
       ],
       "destination": "https://talentxcel.in/auth/login?redirect=%2Fcolleges",
       "permanent": false
+    },
+    {
+      "source": "/job/:path*",
+      "destination": "https://talentxcel.in/jobs",
+      "permanent": true
+    },
+    {
+      "source": "/jobs/undefined",
+      "destination": "https://talentxcel.in/jobs",
+      "permanent": true
+    },
+    {
+      "source": "/jobs/null",
+      "destination": "https://talentxcel.in/jobs",
+      "permanent": true
+    },
+    {
+      "source": "/college/:path*",
+      "destination": "https://talentxcel.in/colleges",
+      "permanent": true
+    },
+    {
+      "source": "/universities/:path*",
+      "destination": "https://talentxcel.in/colleges",
+      "permanent": true
+    },
+    {
+      "source": "/category/:path*",
+      "destination": "https://talentxcel.in/learning",
+      "permanent": true
+    },
+    {
+      "source": "/courses/:path*",
+      "destination": "https://talentxcel.in/learning",
+      "permanent": true
+    },
+    {
+      "source": "/course/:path*",
+      "destination": "https://talentxcel.in/learning",
+      "permanent": true
+    },
+    {
+      "source": "/sitemap_index.xml",
+      "destination": "https://talentxcel.in/sitemap.xml",
+      "permanent": true
+    },
+    {
+      "source": "/sitemap-1.xml",
+      "destination": "https://talentxcel.in/sitemap.xml",
+      "permanent": true
+    },
+    {
+      "source": "/sitemap-2.xml",
+      "destination": "https://talentxcel.in/sitemap.xml",
+      "permanent": true
     }
   ],
   "rewrites": [

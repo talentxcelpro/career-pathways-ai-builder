@@ -297,6 +297,19 @@ async function prerender() {
   });
 
   const additionalHubs = [
+    { path: '/rankings', title: 'Global AI Products & Software Leaderboards | TalentXcel Rankings', desc: 'Real-time competitive rankings and market intelligence for global AI products, platforms, and startups.' },
+    { path: '/rankings/ai-products', title: 'AI Products Leaderboard — Live Rankings & Rankings Marketplace | TalentXcel', desc: 'Browse the top-ranked AI products worldwide. Real-time competitive leaderboard with transparent market positions.' },
+    { path: '/rankings/ai-products/global', title: 'Global AI Products Leaderboard | TalentXcel Rankings', desc: 'The authoritative global ranking of top artificial intelligence products, agents, and software platforms.' },
+    { path: '/rankings/ai-products/emerging', title: 'Emerging AI Products Leaderboard | TalentXcel Rankings', desc: 'Discover breakthrough and high-growth emerging AI products and tools.' },
+    { path: '/rankings/ai-products/india', title: 'India AI Products & Startups Leaderboard | TalentXcel Rankings', desc: 'The leading leaderboard for artificial intelligence companies, products, and builders across India.' },
+    { path: '/rankings/ai-products/usa', title: 'United States AI Products Leaderboard | TalentXcel Rankings', desc: 'Top AI products, silicon valley innovations, and software platforms in the United States.' },
+    { path: '/rankings/ai-products/uae', title: 'UAE & Middle East AI Products Leaderboard | TalentXcel Rankings', desc: 'Explore top artificial intelligence platforms and emerging tech across UAE and the GCC.' },
+    { path: '/rankings/ai-products/uk', title: 'United Kingdom AI Products Leaderboard | TalentXcel Rankings', desc: 'Leading artificial intelligence startups and platforms in the United Kingdom.' },
+    { path: '/rankings/ai-products/singapore', title: 'Singapore & APAC AI Products Leaderboard | TalentXcel Rankings', desc: 'Top-ranked artificial intelligence platforms and innovations across Singapore and Asia-Pacific.' },
+    { path: '/rankings/ai-products/canada', title: 'Canada AI Products Leaderboard | TalentXcel Rankings', desc: 'Top artificial intelligence software and startups across Canada.' },
+    { path: '/rankings/ai-products/australia', title: 'Australia AI Products Leaderboard | TalentXcel Rankings', desc: 'Top AI innovations and tech platforms across Australia and Oceania.' },
+    { path: '/company/talentxcel', title: 'TalentXcel Services — AI Career Navigation Ecosystem | TalentXcel Rankings', desc: 'Authoritative ranking profile for TalentXcel on the Global AI Product Leaderboard.' },
+    { path: '/claim1/watch', title: 'Watch AI Leaderboard Movements | TalentXcel', desc: 'Get notified immediately when the #1 position changes across global AI product leaderboards.' },
     { path: '/jobs', title: 'Jobs & Career Opportunities — Verified Tech & Business Roles | TalentXcel', desc: 'Discover verified jobs across top companies and high-growth startups.' },
     { path: '/companies', title: 'Companies Directory — Verified Employers & Culture Insights | TalentXcel', desc: 'Browse verified hiring companies, engineering cultures, and active job openings.' },
     { path: '/career-map', title: 'Interactive Career Maps & Roadmap Discovery | TalentXcel', desc: 'Map your career progression, identify skill gaps, and visualize role transitions.' },
