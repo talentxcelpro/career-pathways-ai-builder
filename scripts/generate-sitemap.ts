@@ -321,7 +321,7 @@ async function generateProductionSitemaps() {
       priority: '0.8',
     })),
     ...(CONTENT_DATA || []).map((item) => ({
-      path: `/${item.type}s/${item.slug}`,
+      path: `/resources/${item.slug}`,
       changefreq: 'monthly' as const,
       priority: '0.6',
     })),
@@ -381,7 +381,7 @@ async function generateProductionSitemaps() {
   const masterXml = buildSitemapIndexXml(validSitemapsForIndex);
   writeFileSync(resolve(publicDir, 'sitemap.xml'), masterXml, 'utf-8');
   console.log(`\n✓ Master sitemap.xml generated with ${validSitemapsForIndex.length} segmented sitemaps!`);
-  console.log(`Total URLs indexed in sitemaps: ${seenUrls.size.toLocaleString()}`);
+  console.log(`Total URLs Published/Discovered in Sitemaps: ${seenUrls.size.toLocaleString()}`);
 }
 
 generateProductionSitemaps().catch(console.error);
