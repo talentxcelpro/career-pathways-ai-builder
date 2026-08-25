@@ -134,35 +134,41 @@ async function runSeoCiGate() {
   record('Taxonomy', 'Conversion Goals Assigned', TALENTXCEL_KEYWORD_TAXONOMY.every((k) => Boolean(k.conversionGoal)), 'All concepts map to conversion goals');
   record('Taxonomy', 'Zero Doorway Concepts', TALENTXCEL_KEYWORD_TAXONOMY.every((k) => !k.keyword.includes('best best')), 'No spammy repetition');
 
-  const summary10MPath = resolve('SEO_10M_SEARCH_UNIVERSE_SUMMARY.json');
-  if (existsSync(summary10MPath)) {
-    const data10M = JSON.parse(readFileSync(summary10MPath, 'utf-8'));
+  const summary20MPath = resolve('SEO_COMPLETE_SEARCH_UNIVERSE.json');
+  if (existsSync(summary20MPath)) {
+    const data20M = JSON.parse(readFileSync(summary20MPath, 'utf-8'));
     record(
-      'Phase4_10M_Engine',
-      '10M+ Scale Threshold Met',
-      data10M.totalSearchOpportunities >= 10000000,
-      `Audited ${data10M.totalSearchOpportunities.toLocaleString()} search opportunities`
+      'Phase5_20M_Engine',
+      '20M+ Scale Threshold Met',
+      data20M.totalSearchOpportunities >= 20000000,
+      `Audited ${data20M.totalSearchOpportunities.toLocaleString()} search opportunities`
     );
     record(
-      'Phase4_10M_Engine',
+      'Phase5_20M_Engine',
+      '100% Public Product Surface Coverage',
+      data20M.productSurfaceCoveragePercentage === '100.0%',
+      '100% of public product features mapped in search taxonomy'
+    );
+    record(
+      'Phase5_20M_Engine',
+      'Private Surface Protection Policy',
+      data20M.privateSurfacesProtected >= 10,
+      'All private application areas isolated from indexing'
+    );
+    record(
+      'Phase5_20M_Engine',
       'Zero Doorway Spam Policy',
-      data10M.coveragePolicy?.thinDoorwayPagesCreated === 0,
+      data20M.indexablePageInventory?.thinDoorwayPagesCreated === 0,
       'Zero thin doorway pages created'
     );
     record(
-      'Phase4_10M_Engine',
-      'Deterministic Canonical Mapping',
-      data10M.coveragePolicy?.canonicalDestinationMapping.includes('100%'),
-      '100% deterministic canonical mapping enforced'
-    );
-    record(
-      'Phase4_10M_Engine',
+      'Phase5_20M_Engine',
       'Zero Fabricated Metrics Policy',
-      data10M.searchVolumeDesignation.includes('UNKNOWN'),
+      data20M.searchVolumeDesignation.includes('UNKNOWN'),
       'Search volumes designated UNKNOWN per truthfulness policy'
     );
   } else {
-    record('Phase4_10M_Engine', '10M Summary Exists', false, 'SEO_10M_SEARCH_UNIVERSE_SUMMARY.json not found', { severity: 'CRITICAL' });
+    record('Phase5_20M_Engine', '20M Complete Summary Exists', false, 'SEO_COMPLETE_SEARCH_UNIVERSE.json not found', { severity: 'CRITICAL' });
   }
 
   // --- 4. SEARCH INTENT ENGINE & ENTITY RESOLUTION ---

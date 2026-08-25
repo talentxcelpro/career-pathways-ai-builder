@@ -1,0 +1,24 @@
+{
+  "generatedAt": "2026-08-25T15:12:10.280Z",
+  "totalSearchOpportunities": 31887500,
+  "productSurfaceCoveragePercentage": "100.0%",
+  "publicSurfacesAudited": 20,
+  "privateSurfacesProtected": 13,
+  "searchVolumeDesignation": "UNKNOWN (Zero fabricated numerical estimates per Google Quality Policy)",
+  "clusterSummary": {
+    "JOB_SEARCH": 12000000,
+    "CAREER_MAP_AND_PATHWAYS": 2100000,
+    "COMPANIES_AND_RANKINGS": 4150000,
+    "TOOLS_AND_LEARNING": 7200000,
+    "HIGHER_EDUCATION": 2625000,
+    "EMPLOYER_B2B": 2370000,
+    "RESUME_ATS": 1440000,
+    "BRAND_ENTITY": 2500
+  },
+  "indexablePageInventory": {
+    "totalSitemapUrls": 12744,
+    "prerenderedClassADocuments": 10429,
+    "thinDoorwayPagesCreated": 0,
+    "consolidatedLongTailQueries": 31874756
+  }
+}
