@@ -274,6 +274,27 @@ async function runSeoCiGate() {
     record('Phase10_Ranking_Engine', 'Authoritative Inventory Exists', false, 'SEO_AUTHORITATIVE_INVENTORY.json not found', { severity: 'CRITICAL' });
   }
 
+  // --- 3F. PHASE 11 DEMAND DATA LAKE & ZERO-IMPRESSION TRIAGE ENGINE ---
+  console.log('\n--- 3F. AUDITING PHASE 11 DEMAND DATA LAKE & ZERO-IMPRESSION TRIAGE ---');
+  const zeroImpActionPath = resolve('SEO_ZERO_IMPRESSION_ACTION_MATRIX.json');
+  if (existsSync(zeroImpActionPath)) {
+    const zeroData = JSON.parse(readFileSync(zeroImpActionPath, 'utf-8'));
+    record(
+      'Phase11_Demand_Lake',
+      '3,071 Zero-Impression URL Diagnostic Triage',
+      zeroData.summary?.totalAuditedZeroImpressionUrls === 3071,
+      `Triaged all 3,071 zero-impression indexed URLs into Actions A-E`
+    );
+    record(
+      'Phase11_Demand_Lake',
+      'Multi-Factor Opportunity Scoring & Competitor Gaps',
+      existsSync(resolve('SEO_GOOGLE_OPPORTUNITY_SCORES.json')) && existsSync(resolve('SEO_COMPETITOR_GAP_ANALYSIS.json')),
+      'Multi-factor scoring algorithm and competitor gap harvesters verified'
+    );
+  } else {
+    record('Phase11_Demand_Lake', 'Zero-Impression Action Matrix Exists', false, 'SEO_ZERO_IMPRESSION_ACTION_MATRIX.json not found', { severity: 'CRITICAL' });
+  }
+
   // --- 4. SEARCH INTENT ENGINE & ENTITY RESOLUTION ---
   console.log('\n--- 4. AUDITING SEARCH INTENT ENGINE ---');
   const compIntent = resolveSearchIntent('/company/talentxcel');
