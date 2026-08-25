@@ -42,7 +42,23 @@ async function prerender() {
     fs.mkdirSync(DIST_DIR, { recursive: true });
   }
 
-  const cleanBaseTemplate = fs.readFileSync(path.resolve(__dirname, '../index.html'), 'utf8');
+  const distIndexHtmlPath = path.resolve(DIST_DIR, 'index.html');
+  const sourceIndexHtmlPath = path.resolve(__dirname, '../index.html');
+  const cleanBaseTemplate = fs.existsSync(distIndexHtmlPath)
+    ? fs.readFileSync(distIndexHtmlPath, 'utf8')
+    : fs.readFileSync(sourceIndexHtmlPath, 'utf8');
+
+  // Discover compiled Vite assets in dist/assets
+  let mainJsAsset = '';
+  let mainCssAsset = '';
+  if (fs.existsSync(path.join(DIST_DIR, 'assets'))) {
+    const assetFiles = fs.readdirSync(path.join(DIST_DIR, 'assets'));
+    const jsMatch = assetFiles.find((f) => f.startsWith('index-') && f.endsWith('.js'));
+    const cssMatch = assetFiles.find((f) => f.startsWith('index-') && f.endsWith('.css'));
+    if (jsMatch) mainJsAsset = `/assets/${jsMatch}`;
+    if (cssMatch) mainCssAsset = `/assets/${cssMatch}`;
+  }
+
   let generatedCount = 0;
 
   function writePrerenderedPage(
@@ -63,6 +79,20 @@ async function prerender() {
     const targetFlatHtmlFile = cleanPath === '' ? path.join(DIST_DIR, 'home.html') : path.join(DIST_DIR, cleanPath + '.html');
 
     let pageHtml = cleanBaseTemplate;
+
+    // Ensure production script and css tags are used instead of dev /src/main.tsx
+    if (mainJsAsset) {
+      pageHtml = pageHtml.replace(
+        /<script\s+type=["']module["']\s+src=["']\/src\/main\.tsx["']><\/script>/i,
+        `<script type="module" crossorigin src="${mainJsAsset}"></script>`
+      );
+    }
+    if (mainCssAsset && !pageHtml.includes(mainCssAsset)) {
+      pageHtml = pageHtml.replace(
+        '</head>',
+        `<link rel="stylesheet" crossorigin href="${mainCssAsset}">\n</head>`
+      );
+    }
 
     // 1. Title
     pageHtml = pageHtml.replace(
