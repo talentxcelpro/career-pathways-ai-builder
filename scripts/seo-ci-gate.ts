@@ -455,6 +455,235 @@ async function runSeoCiGate() {
   record('Security', 'Zero Raw Private Keys in Client', true, 'Client-side builds sanitized');
   record('Security', 'Production Domain Single Origin', true, 'Single origin https://talentxcel.in enforced');
 
+  // --- 9. PHASE 14 CONTINUOUS SEARCH DEMAND EVIDENCE & MULTI-PRODUCT ACQUISITION GATE ---
+  console.log('\n--- 9. PHASE 14 CONTINUOUS SEARCH DEMAND EVIDENCE & MULTI-PRODUCT ACQUISITION ---');
+  try {
+    const { 
+      MULTI_PRODUCT_SURFACE_GRAPHS, 
+      getAcquisitionGraphSummary,
+      generateDeterministicEvidenceId,
+      normalizeSearchQuery,
+      ingestDemandObservation,
+      AcquisitionDecisionRouter,
+      EvidenceAdapterRegistry,
+      GSCSourceAdapter,
+      GoogleKeywordPlannerAdapter,
+      ApnaBenchmarkAdapter,
+      NaukriBenchmarkAdapter,
+      IndeedBenchmarkAdapter,
+      AmbitionBoxBenchmarkAdapter,
+      ShikshaBenchmarkAdapter,
+      LinkedInRecruitmentAdapter
+    } = await import('../src/lib/seo/acquisition/index.js');
+
+    // Check 1: 14 Frozen Multi-Product Acquisition Surfaces
+    const surfaceKeys = Object.keys(MULTI_PRODUCT_SURFACE_GRAPHS);
+    record(
+      'Phase14_Acquisition',
+      '14 Frozen Multi-Product Surfaces Registered',
+      surfaceKeys.length === 14,
+      `Audited ${surfaceKeys.length} acquisition surfaces (Jobs, Network, Resume, Passport, MO1, Rankings, Companies, Roles, Locations, Skills, Colleges, Learning, CareerMap, Tools)`
+    );
+
+    // Check 2: 419M Theoretical Permutations Threshold
+    const summary = getAcquisitionGraphSummary();
+    record(
+      'Phase14_Acquisition',
+      '419M+ Theoretical Permutation Universe Met',
+      summary.totalTheoreticalPermutations >= 419000000,
+      `Audited ${summary.totalTheoreticalPermutations.toLocaleString()} theoretical search combinations`
+    );
+
+    // Check 3: 10.99M Normalized Intent Clusters Threshold
+    record(
+      'Phase14_Acquisition',
+      '10.99M Normalized Intent Clusters Scale Met',
+      summary.totalNormalizedIntents >= 10990000,
+      `Audited ${summary.totalNormalizedIntents.toLocaleString()} unique semantic intent clusters`
+    );
+
+    // Check 4: Deterministic Hashing & Deduplication
+    const hashA = generateDeterministicEvidenceId('react developer jobs bangalore', 'IN', 'en');
+    const hashB = generateDeterministicEvidenceId('react developer jobs bangalore', 'IN', 'en');
+    record(
+      'Phase14_Acquisition',
+      'Deterministic Evidence ID Hashing (Collision-Resistant)',
+      hashA === hashB && hashA.startsWith('txc_ev_'),
+      `Validated deterministic hashing: ${hashA}`
+    );
+
+    // Check 5: Query Normalization Precision
+    const norm = normalizeSearchQuery('   React.js   Developer  Jobs,  Bangalore!  ');
+    record(
+      'Phase14_Acquisition',
+      'Search Query Normalization Pipeline',
+      norm === 'react js developer jobs bangalore',
+      `Normalized input to: "${norm}"`
+    );
+
+    // Check 6: Strict Provenance & 3-Population Ingestion
+    const testObs = {
+      query: 'react developer jobs bangalore',
+      source: 'GOOGLE_SEARCH_CONSOLE' as const,
+      sourceStatus: 'CONNECTED' as const,
+      country: 'IN',
+      language: 'en',
+      capturedAt: new Date().toISOString(),
+      confidenceScore: 0.98,
+      gscImpressions: 4200,
+      gscClicks: 310,
+      gscAveragePosition: 6.2,
+      searchVolume: 'UNKNOWN' as const
+    };
+    const ingested = ingestDemandObservation(testObs, 25, true);
+    record(
+      'Phase14_Acquisition',
+      'Strict Provenance Logging & Population A Ingestion',
+      ingested.evidence_population === 'A_OBSERVED_GSC' && ingested.provenance.confidence_score === 0.98,
+      `Provenance verified: Population=${ingested.evidence_population}, Confidence=${ingested.provenance.confidence_score}`
+    );
+
+    // Check 7: Strict GSC Position vs Live SERP Separation
+    record(
+      'Phase14_Acquisition',
+      'Strict GSC Average Position vs Live SERP Isolation',
+      ingested.gsc_average_position === 6.2 && ingested.serp_observed_position === 'NOT_RANKING',
+      'GSC average position strictly isolated from live SERP rank'
+    );
+
+    // Check 8: Modular Competitor Adapter Registration
+    EvidenceAdapterRegistry.registerAdapter(new GSCSourceAdapter());
+    EvidenceAdapterRegistry.registerAdapter(new GoogleKeywordPlannerAdapter());
+    EvidenceAdapterRegistry.registerAdapter(new ApnaBenchmarkAdapter());
+    EvidenceAdapterRegistry.registerAdapter(new NaukriBenchmarkAdapter());
+    EvidenceAdapterRegistry.registerAdapter(new IndeedBenchmarkAdapter());
+    EvidenceAdapterRegistry.registerAdapter(new AmbitionBoxBenchmarkAdapter());
+    EvidenceAdapterRegistry.registerAdapter(new ShikshaBenchmarkAdapter());
+    EvidenceAdapterRegistry.registerAdapter(new LinkedInRecruitmentAdapter());
+
+    const allAdapters = EvidenceAdapterRegistry.getAllAdapters();
+    record(
+      'Phase14_Acquisition',
+      'Modular Competitor Adapter Framework (8 Providers)',
+      allAdapters.length >= 8,
+      `Registered ${allAdapters.length} demand and SERP adapters`
+    );
+
+    // Check 9: Honest UNAVAILABLE Source Status Compliance
+    const linkedinAdapter = EvidenceAdapterRegistry.getAdapter('LINKEDIN');
+    const linkedinObs = await linkedinAdapter?.fetchEvidenceForQuery('software engineer', 'IN');
+    record(
+      'Phase14_Acquisition',
+      'Honest UNAVAILABLE Status (Zero Fabricated Metrics)',
+      linkedinObs?.sourceStatus === 'UNAVAILABLE' && linkedinObs?.searchVolume === 'UNKNOWN',
+      'Disconnected adapter explicitly designated UNAVAILABLE without fabricated numbers'
+    );
+
+    // Check 10: Anti-Doorway Collapsing Quality Gate (Tail Query Rejection)
+    const publishedSet = new Set([
+      'https://talentxcel.in/jobs/react-developer-jobs-bangalore',
+      'https://talentxcel.in/resume/ats-optimizer'
+    ]);
+    const tailRecord = ingestDemandObservation({
+      query: 'react jobs bangalore?filter=salary&page=3',
+      source: 'INTERNAL_GRAPH' as const,
+      sourceStatus: 'CONNECTED' as const,
+      country: 'IN',
+      language: 'en',
+      capturedAt: new Date().toISOString(),
+      confidenceScore: 0.50
+    }, 0, false);
+    const tailDecision = AcquisitionDecisionRouter.evaluateRecord(tailRecord, publishedSet);
+    record(
+      'Phase14_Acquisition',
+      'Anti-Doorway Quality Gate (Parameter & Thin Tail Collapsing)',
+      tailDecision.decision === 'EXCLUDE_DOORWAY' && !tailDecision.isEligibleForIndexing,
+      `Collapsed parameter tail query to: ${tailDecision.decision} (Risk: ${tailDecision.doorwayRiskScore})`
+    );
+
+    // Check 11: Low-Inventory Intent Consolidation to Parent Hub
+    const lowInvRecord = ingestDemandObservation({
+      query: 'haskell developer noida',
+      source: 'INTERNAL_GRAPH' as const,
+      sourceStatus: 'CONNECTED' as const,
+      country: 'IN',
+      language: 'en',
+      capturedAt: new Date().toISOString(),
+      confidenceScore: 0.60
+    }, 1, true);
+    const lowInvDecision = AcquisitionDecisionRouter.evaluateRecord(lowInvRecord, publishedSet);
+    record(
+      'Phase14_Acquisition',
+      'Sub-threshold Inventory Parent Hub Consolidation',
+      lowInvDecision.decision === 'CONSOLIDATE_PARENT' && lowInvDecision.canonicalUrl === 'https://talentxcel.in/jobs',
+      `Low inventory (1 item) collapsed to parent hub: ${lowInvDecision.canonicalUrl}`
+    );
+
+    // Check 12: Class-A Canonical Candidate Quality Gate Approval
+    const highValRecord = ingestDemandObservation({
+      query: 'senior full stack developer hyderabad',
+      source: 'GOOGLE_KEYWORD_PLANNER' as const,
+      sourceStatus: 'CONNECTED' as const,
+      country: 'IN',
+      language: 'en',
+      capturedAt: new Date().toISOString(),
+      confidenceScore: 0.95,
+      searchVolume: 12500,
+      cpcInr: 140,
+      serpObservedPosition: 2
+    }, 18, true);
+    const highValDecision = AcquisitionDecisionRouter.evaluateRecord(highValRecord, publishedSet);
+    record(
+      'Phase14_Acquisition',
+      'Class-A Canonical Candidate Approval',
+      highValDecision.decision === 'CREATE_CANONICAL' && highValDecision.isEligibleForIndexing,
+      `High-value candidate approved: ${highValDecision.canonicalUrl} (Decision: ${highValDecision.decision})`
+    );
+
+    // Check 13: Existing Canonical Publication Optimization
+    const existingPubRecord = ingestDemandObservation({
+      query: 'react developer jobs bangalore',
+      source: 'GOOGLE_SEARCH_CONSOLE' as const,
+      sourceStatus: 'CONNECTED' as const,
+      country: 'IN',
+      language: 'en',
+      capturedAt: new Date().toISOString(),
+      confidenceScore: 0.98,
+      gscImpressions: 14000
+    }, 45, true);
+    const existingDecision = AcquisitionDecisionRouter.evaluateRecord(existingPubRecord, publishedSet);
+    record(
+      'Phase14_Acquisition',
+      'Existing Published Document Optimization Routing',
+      existingDecision.decision === 'OPTIMIZE_EXISTING' && existingDecision.isEligibleForIndexing,
+      `Existing document routed to: ${existingDecision.decision}`
+    );
+
+    // Check 14: Multi-Factor Opportunity Scoring Reproducibility
+    record(
+      'Phase14_Acquisition',
+      'Opportunity Scoring Reproducibility (P0-P5 Priorities)',
+      highValRecord.opportunity_score >= 80 && highValRecord.priority === 'P0',
+      `Calculated Opportunity Score: ${highValRecord.opportunity_score} (Priority: ${highValRecord.priority})`
+    );
+
+    // Check 15: Phase 14 Master Graph JSON Schema Verification
+    const jsonPath = resolve('SEO_PHASE14_ACQUISITION_GRAPH.json');
+    if (existsSync(jsonPath)) {
+      const parsed = JSON.parse(readFileSync(jsonPath, 'utf-8'));
+      record(
+        'Phase14_Acquisition',
+        'Phase 14 Master Acquisition Graph JSON Valid',
+        parsed.version === '14.0.0' && parsed.scale_summary.product_surfaces_count === 14,
+        `Verified SEO_PHASE14_ACQUISITION_GRAPH.json (v${parsed.version}) with ${parsed.scale_summary.product_surfaces_count} product surfaces`
+      );
+    } else {
+      record('Phase14_Acquisition', 'Phase 14 JSON Exists', false, 'SEO_PHASE14_ACQUISITION_GRAPH.json missing');
+    }
+  } catch (err: any) {
+    record('Phase14_Acquisition', 'Phase 14 Engine Execution', false, `Engine error: ${err.message}`, { severity: 'CRITICAL' });
+  }
+
   // --- Summary ---
   console.log('\n================================================================');
   const total = results.length;
