@@ -1,0 +1,23 @@
+{
+  "generatedAt": "2026-08-25T15:06:16.648Z",
+  "highPriorityEnrichmentQueue": [
+    {
+      "topic": "AI Recruitment Trends 2026",
+      "currentHub": "/services/ai-recruitment",
+      "priority": "HIGH",
+      "impact": "Employer Demos"
+    },
+    {
+      "topic": "ATS Resume Parsing Algorithms",
+      "currentHub": "/services/resume-building",
+      "priority": "HIGH",
+      "impact": "Candidate Registrations"
+    },
+    {
+      "topic": "NIRF Ranking vs Placement CTC Benchmarks",
+      "currentHub": "/colleges",
+      "priority": "HIGH",
+      "impact": "Student Discovery"
+    }
+  ]
+}

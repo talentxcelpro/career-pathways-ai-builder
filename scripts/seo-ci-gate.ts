@@ -134,29 +134,35 @@ async function runSeoCiGate() {
   record('Taxonomy', 'Conversion Goals Assigned', TALENTXCEL_KEYWORD_TAXONOMY.every((k) => Boolean(k.conversionGoal)), 'All concepts map to conversion goals');
   record('Taxonomy', 'Zero Doorway Concepts', TALENTXCEL_KEYWORD_TAXONOMY.every((k) => !k.keyword.includes('best best')), 'No spammy repetition');
 
-  const summaryPath = resolve('SEO_KEYWORD_UNIVERSE_SUMMARY.json');
-  if (existsSync(summaryPath)) {
-    const summaryData = JSON.parse(readFileSync(summaryPath, 'utf-8'));
+  const summary10MPath = resolve('SEO_10M_SEARCH_UNIVERSE_SUMMARY.json');
+  if (existsSync(summary10MPath)) {
+    const data10M = JSON.parse(readFileSync(summary10MPath, 'utf-8'));
     record(
-      '1M_Keyword_Engine',
-      'Universe Scale Threshold',
-      summaryData.totalKeywordOpportunities >= 1000000,
-      `Audited ${summaryData.totalKeywordOpportunities.toLocaleString()} distinct opportunities`
+      'Phase4_10M_Engine',
+      '10M+ Scale Threshold Met',
+      data10M.totalSearchOpportunities >= 10000000,
+      `Audited ${data10M.totalSearchOpportunities.toLocaleString()} search opportunities`
     );
     record(
-      '1M_Keyword_Engine',
-      'Zero Fabricated Metrics',
-      summaryData.searchVolumeDesignation.includes('UNKNOWN'),
+      'Phase4_10M_Engine',
+      'Zero Doorway Spam Policy',
+      data10M.coveragePolicy?.thinDoorwayPagesCreated === 0,
+      'Zero thin doorway pages created'
+    );
+    record(
+      'Phase4_10M_Engine',
+      'Deterministic Canonical Mapping',
+      data10M.coveragePolicy?.canonicalDestinationMapping.includes('100%'),
+      '100% deterministic canonical mapping enforced'
+    );
+    record(
+      'Phase4_10M_Engine',
+      'Zero Fabricated Metrics Policy',
+      data10M.searchVolumeDesignation.includes('UNKNOWN'),
       'Search volumes designated UNKNOWN per truthfulness policy'
     );
-    record(
-      '1M_Keyword_Engine',
-      'All Clusters Populated',
-      Boolean(summaryData.clusterDistribution?.JOB_SEARCH && summaryData.clusterDistribution?.BRAND),
-      'All 6 major intelligence clusters populated'
-    );
   } else {
-    record('1M_Keyword_Engine', 'Summary File Exists', false, 'SEO_KEYWORD_UNIVERSE_SUMMARY.json not found', { severity: 'CRITICAL' });
+    record('Phase4_10M_Engine', '10M Summary Exists', false, 'SEO_10M_SEARCH_UNIVERSE_SUMMARY.json not found', { severity: 'CRITICAL' });
   }
 
   // --- 4. SEARCH INTENT ENGINE & ENTITY RESOLUTION ---

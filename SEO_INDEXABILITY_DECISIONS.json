@@ -1,0 +1,11 @@
+{
+  "generatedAt": "2026-08-25T15:06:16.647Z",
+  "totalOpportunitiesEvaluated": 15127048,
+  "decisions": {
+    "INDEX_QUALIFIED": 12744,
+    "CONSOLIDATE_TO_HUB": 15114304,
+    "REVIEW": 0,
+    "NOINDEX_PROTECTED": 45
+  },
+  "doorwaySpamPrevented": 15114304
+}

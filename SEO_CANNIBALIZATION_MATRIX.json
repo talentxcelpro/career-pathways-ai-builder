@@ -1,0 +1,13 @@
+{
+  "generatedAt": "2026-08-25T15:06:16.647Z",
+  "totalOpportunitiesChecked": 15127048,
+  "unresolvedHighRiskCollisions": 0,
+  "enforcedOwnership": {
+    "brand": "/company/talentxcel",
+    "commercialServices": "/services/*",
+    "jobSearch": "/jobs/*",
+    "education": "/colleges/*",
+    "resumeTools": "/services/resume-building and /resume"
+  },
+  "status": "PASS"
+}
