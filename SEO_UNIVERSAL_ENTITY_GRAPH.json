@@ -1,0 +1,324 @@
+{
+  "generatedAt": "2026-08-25T16:02:23.006Z",
+  "totalTheoreticalQueryPermutations": 430000000,
+  "totalNormalizedIntentClusters": 10910000,
+  "totalFrozenProductSurfaces": 21,
+  "surfaces": [
+    {
+      "surfaceId": "SURFACE_01_JOBS",
+      "surfaceName": "Job Portals & Job Search Layer",
+      "baseRoutePattern": "/jobs/*",
+      "accessTier": "PUBLIC_INDEXABLE",
+      "canonicalHubUrl": "https://talentxcel.in/jobs",
+      "totalTheoreticalPermutations": 85000000,
+      "normalizedIntentClusters": 2400000,
+      "actualIndexablePagesScale": "480 Role x Location Hubs + Active Postings",
+      "sampleIntentQueries": [
+        "software engineer jobs in bangalore",
+        "content writer jobs noida",
+        "fresher remote jobs india"
+      ]
+    },
+    {
+      "surfaceId": "SURFACE_02_NETWORKING",
+      "surfaceName": "Professional Networking & Profiles",
+      "baseRoutePattern": "/network/*",
+      "accessTier": "PUBLIC_INDEXABLE",
+      "canonicalHubUrl": "https://talentxcel.in/network",
+      "totalTheoreticalPermutations": 22000000,
+      "normalizedIntentClusters": 650000,
+      "actualIndexablePagesScale": "Public Verified Profiles + Community Hub",
+      "sampleIntentQueries": [
+        "software engineers in bangalore",
+        "how to network with tech recruiters in india",
+        "ai talent network"
+      ]
+    },
+    {
+      "surfaceId": "SURFACE_03_RESUME_ATS",
+      "surfaceName": "Resume Builder & ATS Intelligence",
+      "baseRoutePattern": "/resume/*",
+      "accessTier": "PUBLIC_INDEXABLE",
+      "canonicalHubUrl": "https://talentxcel.in/resume",
+      "totalTheoreticalPermutations": 18000000,
+      "normalizedIntentClusters": 420000,
+      "actualIndexablePagesScale": "Unified Resume Hub + Template Gallery + ATS Guide",
+      "sampleIntentQueries": [
+        "free ats resume builder for software engineers",
+        "ats resume score checker online",
+        "resume format 2026"
+      ]
+    },
+    {
+      "surfaceId": "SURFACE_04_CAREER_PASSPORT",
+      "surfaceName": "Career Passport & Credential Verification",
+      "baseRoutePattern": "/passport/*",
+      "accessTier": "PUBLIC_INDEXABLE",
+      "canonicalHubUrl": "https://talentxcel.in/passport",
+      "totalTheoreticalPermutations": 8000000,
+      "normalizedIntentClusters": 180000,
+      "actualIndexablePagesScale": "Public Verified Passport Previews + Skill Verification",
+      "sampleIntentQueries": [
+        "verified digital career passport",
+        "cryptographic skill verification india",
+        "talentxcel verified credentials"
+      ]
+    },
+    {
+      "surfaceId": "SURFACE_05_BIDDER_CLAIM1",
+      "surfaceName": "Claim #1 Rankings & Leaderboards",
+      "baseRoutePattern": "/rankings/*",
+      "accessTier": "PUBLIC_INDEXABLE",
+      "canonicalHubUrl": "https://talentxcel.in/rankings",
+      "totalTheoreticalPermutations": 12000000,
+      "normalizedIntentClusters": 350000,
+      "actualIndexablePagesScale": "25 Category & Regional Leaderboards",
+      "sampleIntentQueries": [
+        "top ai products in india leaderboard",
+        "best recruitment software rankings",
+        "top staffing companies india"
+      ]
+    },
+    {
+      "surfaceId": "SURFACE_06_COMPANIES",
+      "surfaceName": "Companies Directory & Entity Profiles",
+      "baseRoutePattern": "/company/*",
+      "accessTier": "PUBLIC_INDEXABLE",
+      "canonicalHubUrl": "https://talentxcel.in/companies",
+      "totalTheoreticalPermutations": 35000000,
+      "normalizedIntentClusters": 850000,
+      "actualIndexablePagesScale": "Authoritative 18-Section Company Landing Pages",
+      "sampleIntentQueries": [
+        "talentxcel services careers",
+        "talentxcel noida office",
+        "tech company hiring in india"
+      ]
+    },
+    {
+      "surfaceId": "SURFACE_07_ROLES",
+      "surfaceName": "Career & Role Intelligence Guides",
+      "baseRoutePattern": "/roles/*",
+      "accessTier": "PUBLIC_INDEXABLE",
+      "canonicalHubUrl": "https://talentxcel.in/roles",
+      "totalTheoreticalPermutations": 28000000,
+      "normalizedIntentClusters": 720000,
+      "actualIndexablePagesScale": "180 Canonical Role Guides",
+      "sampleIntentQueries": [
+        "how to become curriculum developer in india",
+        "ai prompt engineer salary and roadmap",
+        "full stack developer career path"
+      ]
+    },
+    {
+      "surfaceId": "SURFACE_08_LOCATIONS",
+      "surfaceName": "National & Regional Tech Hubs",
+      "baseRoutePattern": "/locations/*",
+      "accessTier": "PUBLIC_INDEXABLE",
+      "canonicalHubUrl": "https://talentxcel.in/locations",
+      "totalTheoreticalPermutations": 15000000,
+      "normalizedIntentClusters": 380000,
+      "actualIndexablePagesScale": "32 Canonical Location Hubs",
+      "sampleIntentQueries": [
+        "tech hiring trends bangalore 2026",
+        "jobs in srinagar",
+        "jobs in jammu",
+        "tech startups in noida"
+      ]
+    },
+    {
+      "surfaceId": "SURFACE_09_SKILLS",
+      "surfaceName": "Technical Skills Taxonomy",
+      "baseRoutePattern": "/skills/*",
+      "accessTier": "PUBLIC_INDEXABLE",
+      "canonicalHubUrl": "https://talentxcel.in/skills",
+      "totalTheoreticalPermutations": 25000000,
+      "normalizedIntentClusters": 600000,
+      "actualIndexablePagesScale": "120 Canonical Skill Hubs",
+      "sampleIntentQueries": [
+        "python skills for data science jobs",
+        "react developer technical interview skills",
+        "aws certification roadmaps"
+      ]
+    },
+    {
+      "surfaceId": "SURFACE_10_COLLEGES",
+      "surfaceName": "10,250+ Higher Education Institutions",
+      "baseRoutePattern": "/colleges/*",
+      "accessTier": "PUBLIC_INDEXABLE",
+      "canonicalHubUrl": "https://talentxcel.in/colleges",
+      "totalTheoreticalPermutations": 65000000,
+      "normalizedIntentClusters": 1500000,
+      "actualIndexablePagesScale": "10,250 Pre-rendered Forensic College Pages",
+      "sampleIntentQueries": [
+        "iit madras placement ctc 2026",
+        "iit bombay average package cs",
+        "top engineering colleges in bangalore fees"
+      ]
+    },
+    {
+      "surfaceId": "SURFACE_11_GLOBAL_EDUCATION",
+      "surfaceName": "Global Tuition-Free Degrees & Scholarships",
+      "baseRoutePattern": "/colleges/global-programs",
+      "accessTier": "PUBLIC_INDEXABLE",
+      "canonicalHubUrl": "https://talentxcel.in/colleges/global-programs",
+      "totalTheoreticalPermutations": 14000000,
+      "normalizedIntentClusters": 340000,
+      "actualIndexablePagesScale": "100 Global Degree Programs + Scholarships Hub + 6-Step Pathway",
+      "sampleIntentQueries": [
+        "tuition free masters degrees in germany for indian students",
+        "fully funded daad scholarships",
+        "6 step ai education pathway"
+      ]
+    },
+    {
+      "surfaceId": "SURFACE_12_RESOURCES",
+      "surfaceName": "Resource Guides & Editorial Knowledge",
+      "baseRoutePattern": "/resources/*",
+      "accessTier": "PUBLIC_INDEXABLE",
+      "canonicalHubUrl": "https://talentxcel.in/resources",
+      "totalTheoreticalPermutations": 16000000,
+      "normalizedIntentClusters": 410000,
+      "actualIndexablePagesScale": "1,711 Substantive Canonical Resource Guides",
+      "sampleIntentQueries": [
+        "ats resume guide 2026 pdf",
+        "how to build talent acquisition strategy india",
+        "recruiter interview prep guide"
+      ]
+    },
+    {
+      "surfaceId": "SURFACE_13_STRATEGIC_SERVICES",
+      "surfaceName": "Strategic B2B Human Capital Services",
+      "baseRoutePattern": "/services/*",
+      "accessTier": "PUBLIC_INDEXABLE",
+      "canonicalHubUrl": "https://talentxcel.in/services",
+      "totalTheoreticalPermutations": 10000000,
+      "normalizedIntentClusters": 250000,
+      "actualIndexablePagesScale": "10 Strategic Service Landing Pages",
+      "sampleIntentQueries": [
+        "ai recruitment platform india",
+        "rpo services india",
+        "corporate staffing outsourcing noida"
+      ]
+    },
+    {
+      "surfaceId": "SURFACE_14_TOPIC_HUBS",
+      "surfaceName": "Topic Knowledge Hubs",
+      "baseRoutePattern": "/topics/*",
+      "accessTier": "PUBLIC_INDEXABLE",
+      "canonicalHubUrl": "https://talentxcel.in/topics",
+      "totalTheoreticalPermutations": 9000000,
+      "normalizedIntentClusters": 220000,
+      "actualIndexablePagesScale": "11 Authoritative Pillar Topic Hubs",
+      "sampleIntentQueries": [
+        "artificial intelligence in hiring guide",
+        "career progression models in tech",
+        "salary insights india 2026"
+      ]
+    },
+    {
+      "surfaceId": "SURFACE_15_PUBLIC_POSTS",
+      "surfaceName": "Public Member & Expert Posts",
+      "baseRoutePattern": "/post/*",
+      "accessTier": "PUBLIC_INDEXABLE",
+      "canonicalHubUrl": "https://talentxcel.in/posts",
+      "totalTheoreticalPermutations": 8000000,
+      "normalizedIntentClusters": 190000,
+      "actualIndexablePagesScale": "490 Pre-rendered Social & Knowledge Posts",
+      "sampleIntentQueries": [
+        "tech interview experiences india",
+        "startup recruitment case studies",
+        "career growth insights"
+      ]
+    },
+    {
+      "surfaceId": "SURFACE_16_LEARNING",
+      "surfaceName": "Learning, Courses & Provider Directories",
+      "baseRoutePattern": "/learning/*",
+      "accessTier": "PUBLIC_INDEXABLE",
+      "canonicalHubUrl": "https://talentxcel.in/learning",
+      "totalTheoreticalPermutations": 20000000,
+      "normalizedIntentClusters": 480000,
+      "actualIndexablePagesScale": "Learning Hub + Verified Provider Directory",
+      "sampleIntentQueries": [
+        "free online tech certifications india",
+        "python for data analytics course",
+        "machine learning bootcamps"
+      ]
+    },
+    {
+      "surfaceId": "SURFACE_17_CAREER_MAP",
+      "surfaceName": "Interactive Career Map & Skills Gap",
+      "baseRoutePattern": "/careermap",
+      "accessTier": "PUBLIC_INDEXABLE",
+      "canonicalHubUrl": "https://talentxcel.in/careermap",
+      "totalTheoreticalPermutations": 12000000,
+      "normalizedIntentClusters": 290000,
+      "actualIndexablePagesScale": "Interactive Career Map & Progression Systems",
+      "sampleIntentQueries": [
+        "software engineer to tech lead roadmap",
+        "data analyst to data scientist transition roadmap",
+        "tech skills gap analyzer"
+      ]
+    },
+    {
+      "surfaceId": "SURFACE_18_CAREER_TOOLS",
+      "surfaceName": "Interactive Career Tools Suite",
+      "baseRoutePattern": "/tools/*",
+      "accessTier": "PUBLIC_INDEXABLE",
+      "canonicalHubUrl": "https://talentxcel.in/tools",
+      "totalTheoreticalPermutations": 15000000,
+      "normalizedIntentClusters": 360000,
+      "actualIndexablePagesScale": "Tools Command Center + 15 Interactive Tools",
+      "sampleIntentQueries": [
+        "role fit evaluator tool online",
+        "mock interview simulator online free",
+        "tech salary benchmark analyzer"
+      ]
+    },
+    {
+      "surfaceId": "SURFACE_19_EMPLOYER_PORTAL",
+      "surfaceName": "Employer Sourcing & Recruitment Portal",
+      "baseRoutePattern": "/employer/*",
+      "accessTier": "PUBLIC_GUEST_PREVIEW",
+      "canonicalHubUrl": "https://talentxcel.in/employer",
+      "totalTheoreticalPermutations": 6000000,
+      "normalizedIntentClusters": 150000,
+      "actualIndexablePagesScale": "Employer Sourcing Hub & CV Database Landing",
+      "sampleIntentQueries": [
+        "hire software engineers india verified",
+        "b2b candidate sourcing platform",
+        "cv database search india"
+      ]
+    },
+    {
+      "surfaceId": "SURFACE_20_MO1_BUSINESS_OS",
+      "surfaceName": "Autonomous Business OS Concepts (Public Explanations)",
+      "baseRoutePattern": "/platform",
+      "accessTier": "SUPERUSER_PRIVATE",
+      "canonicalHubUrl": "https://talentxcel.in/platform",
+      "totalTheoreticalPermutations": 5000000,
+      "normalizedIntentClusters": 120000,
+      "actualIndexablePagesScale": "Platform Architectural Hub (Core /company-os stays private)",
+      "sampleIntentQueries": [
+        "autonomous ai business operating system",
+        "ai agent runtime for enterprises",
+        "autonomous decision queue"
+      ]
+    },
+    {
+      "surfaceId": "SURFACE_21_PLATFORM_CORE",
+      "surfaceName": "Authentication, Privacy & Core Platform",
+      "baseRoutePattern": "/*",
+      "accessTier": "PUBLIC_INDEXABLE",
+      "canonicalHubUrl": "https://talentxcel.in/",
+      "totalTheoreticalPermutations": 2000000,
+      "normalizedIntentClusters": 50000,
+      "actualIndexablePagesScale": "Homepage, Terms, Privacy Policy",
+      "sampleIntentQueries": [
+        "talentxcel",
+        "talentxcel login",
+        "talentxcel terms of service"
+      ]
+    }
+  ]
+}

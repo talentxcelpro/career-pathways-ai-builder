@@ -1,0 +1,186 @@
+{
+  "schemaVersion": "2.0.0",
+  "provenanceRequirementsEnforced": true,
+  "requiredFields": [
+    "query_id",
+    "raw_query",
+    "normalized_query",
+    "population_type",
+    "primary_surface",
+    "intent",
+    "journey_stage",
+    "volume_provenance",
+    "canonical_url",
+    "index_decision"
+  ],
+  "sampleRecords": [
+    {
+      "query_id": "q_c29mdHdhcmUgZW5naW5lZXIgam9icyBpbiBiYW5nYWxvcmU",
+      "raw_query": "software engineer jobs in bangalore",
+      "normalized_query": "software engineer jobs in bangalore",
+      "population_type": "POPULATION_A_OBSERVED",
+      "primary_surface": "SURFACE_01_JOBS",
+      "intent": "JOB_SEARCH",
+      "journey_stage": "APPLICATION",
+      "entity_role": "software-engineer",
+      "entity_location": "bangalore",
+      "volume": 18000,
+      "volume_provenance": {
+        "source": "GOOGLE_KEYWORD_PLANNER",
+        "country": "IN",
+        "language": "en-IN",
+        "timestamp": "2026-08-25T16:02:23.011Z",
+        "confidenceScore": 0.95
+      },
+      "cpc_inr": 85,
+      "gsc_impressions": 120,
+      "gsc_clicks": 8,
+      "gsc_ctr": 6.67,
+      "gsc_position": 47,
+      "competitor_positions": [
+        {
+          "domain": "apna.co",
+          "observedPosition": 2,
+          "landingUrl": "https://apna.co/jobs/title_software_engineer-jobs-in-bengaluru"
+        },
+        {
+          "domain": "naukri.com",
+          "observedPosition": 1,
+          "landingUrl": "https://www.naukri.com/software-engineer-jobs-in-bangalore"
+        },
+        {
+          "domain": "indeed.co.in",
+          "observedPosition": 3
+        }
+      ],
+      "candidate_url": "https://talentxcel.in/jobs/software-engineer/bangalore",
+      "canonical_url": "https://talentxcel.in/jobs/software-engineer/bangalore",
+      "has_live_inventory": true,
+      "content_quality_score": 95,
+      "business_value_score": 96,
+      "opportunity_score": 92,
+      "priority": "P0_IMMEDIATE",
+      "index_decision": "INDEX",
+      "decision_reason": "High-intent evergreen role x city combination with active tech job openings"
+    },
+    {
+      "query_id": "q_Y29udGVudCB3cml0ZXIgam9icyBub2lkYQ",
+      "raw_query": "content writer jobs noida",
+      "normalized_query": "content writer jobs noida",
+      "population_type": "POPULATION_A_OBSERVED",
+      "primary_surface": "SURFACE_01_JOBS",
+      "intent": "JOB_SEARCH",
+      "journey_stage": "APPLICATION",
+      "entity_role": "content-writer",
+      "entity_location": "noida",
+      "volume": 3200,
+      "volume_provenance": {
+        "source": "GOOGLE_SEARCH_CONSOLE_API",
+        "country": "IN",
+        "language": "en-IN",
+        "timestamp": "2026-08-25T16:02:23.012Z",
+        "confidenceScore": 1
+      },
+      "cpc_inr": 45,
+      "gsc_impressions": 180,
+      "gsc_clicks": 14,
+      "gsc_ctr": 7.78,
+      "gsc_position": 6.4,
+      "competitor_positions": [
+        {
+          "domain": "naukri.com",
+          "observedPosition": 2
+        },
+        {
+          "domain": "apna.co",
+          "observedPosition": 4
+        }
+      ],
+      "candidate_url": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+      "canonical_url": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+      "has_live_inventory": true,
+      "content_quality_score": 96,
+      "business_value_score": 94,
+      "opportunity_score": 95,
+      "priority": "P0_IMMEDIATE",
+      "index_decision": "INDEX",
+      "decision_reason": "Live verified active vacancy with high Page 1 CTR momentum"
+    },
+    {
+      "query_id": "q_YXRzIHJlc3VtZSBzY29yZSBjaGVja2VyIG9ubGluZQ",
+      "raw_query": "ats resume score checker online",
+      "normalized_query": "ats resume score checker online",
+      "population_type": "POPULATION_B_MEASURED",
+      "primary_surface": "SURFACE_03_RESUME_ATS",
+      "intent": "TRANSACTIONAL_TOOL",
+      "journey_stage": "DECISION",
+      "entity_role": "general-tech",
+      "volume": 14000,
+      "volume_provenance": {
+        "source": "GOOGLE_KEYWORD_PLANNER",
+        "country": "IN",
+        "language": "en-IN",
+        "timestamp": "2026-08-25T16:02:23.012Z",
+        "confidenceScore": 0.92
+      },
+      "cpc_inr": 95,
+      "gsc_impressions": 95,
+      "gsc_clicks": 8,
+      "gsc_ctr": 8.42,
+      "gsc_position": 11.2,
+      "competitor_positions": [
+        {
+          "domain": "resumeworded.com",
+          "observedPosition": 1
+        },
+        {
+          "domain": "naukri.com",
+          "observedPosition": 8
+        }
+      ],
+      "candidate_url": "https://talentxcel.in/resources/ats-resume-guide-2026",
+      "canonical_url": "https://talentxcel.in/resources/ats-resume-guide-2026",
+      "has_live_inventory": true,
+      "content_quality_score": 98,
+      "business_value_score": 98,
+      "opportunity_score": 90,
+      "priority": "P1_PAGE1",
+      "index_decision": "INDEX",
+      "decision_reason": "Substantive 5-section guide with Schema Article and direct link to ATS Studio"
+    },
+    {
+      "query_id": "q_c29mdHdhcmUgZW5naW5lZXIgZnJlc2hlciByZW1vdGUgNSB5ZWFycyBweXRob24gMjAyNg",
+      "raw_query": "software engineer fresher remote 5 years python 2026",
+      "normalized_query": "software engineer fresher remote 5 years python 2026",
+      "population_type": "POPULATION_C_CANDIDATE",
+      "primary_surface": "SURFACE_01_JOBS",
+      "intent": "JOB_SEARCH",
+      "journey_stage": "DISCOVERY",
+      "entity_role": "software-engineer",
+      "entity_skill": "python",
+      "volume": null,
+      "volume_provenance": {
+        "source": "ESTIMATED_INTENT_GRAPH",
+        "country": "IN",
+        "language": "en-IN",
+        "timestamp": "2026-08-25T16:02:23.012Z",
+        "confidenceScore": 0.5
+      },
+      "cpc_inr": null,
+      "gsc_impressions": 0,
+      "gsc_clicks": 0,
+      "gsc_ctr": 0,
+      "gsc_position": null,
+      "competitor_positions": [],
+      "candidate_url": "https://talentxcel.in/jobs/software-engineer/india",
+      "canonical_url": "https://talentxcel.in/jobs/software-engineer/india",
+      "has_live_inventory": false,
+      "content_quality_score": 60,
+      "business_value_score": 50,
+      "opportunity_score": 45,
+      "priority": "P5_CONSOLIDATE_NOINDEX",
+      "index_decision": "CONSOLIDATE",
+      "decision_reason": "Ephemeral multi-parameter query consolidated into parent Role landing hub to avoid doorway spam"
+    }
+  ]
+}
