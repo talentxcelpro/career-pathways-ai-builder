@@ -290,7 +290,17 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
     }
   };
 
-  // Upload pending media to Supabase
+  // Helper to convert file to persistent Base64 Data URL as reliable fallback
+  const readFileAsDataUrl = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+      reader.readAsDataURL(file);
+    });
+  };
+
+  // Upload pending media to Supabase Storage with graceful Base64 fallback
   const uploadAllMedia = async (): Promise<string[]> => {
     if (mediaItems.length === 0) return [];
     setIsUploading(true);
@@ -300,7 +310,7 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
 
     for (let i = 0; i < mediaItems.length; i++) {
       const item = mediaItems[i];
-      if (item.uploadedUrl) {
+      if (item.uploadedUrl && !item.uploadedUrl.startsWith('blob:')) {
         uploadedUrls.push(item.uploadedUrl);
         continue;
       }
@@ -318,16 +328,18 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
             contentType: item.file.type
           });
 
-        if (error) {
-          console.warn('Storage upload fallback engaged:', error);
-          uploadedUrls.push(item.previewUrl);
+        if (error || !data?.path) {
+          console.warn('Storage bucket upload issue, utilizing base64 data stream fallback:', error);
+          const dataUrl = await readFileAsDataUrl(item.file);
+          uploadedUrls.push(dataUrl);
         } else {
           const { data: urlData } = supabase.storage.from(targetBucket).getPublicUrl(data.path);
           uploadedUrls.push(urlData.publicUrl);
         }
       } catch (err) {
-        console.warn('Upload error, using preview URL:', err);
-        uploadedUrls.push(item.previewUrl);
+        console.warn('Storage upload catch block, utilizing base64 fallback:', err);
+        const dataUrl = await readFileAsDataUrl(item.file);
+        uploadedUrls.push(dataUrl);
       }
     }
 
@@ -342,8 +354,15 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
       return;
     }
 
-    if (!user?.id) {
-      toast.error('Please log in to share your post on TalentXcel');
+    // Resolve current authenticated user
+    let activeUserId = user?.id;
+    if (!activeUserId) {
+      const { data: authData } = await supabase.auth.getUser();
+      activeUserId = authData?.user?.id;
+    }
+
+    if (!activeUserId) {
+      toast.error('Please sign in to publish your post on TalentXcel');
       return;
     }
 
@@ -351,27 +370,43 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
     try {
       const finalMediaUrls = await uploadAllMedia();
 
+      const postPayload: any = {
+        content: content.trim(),
+        post_type: finalMediaUrls.length > 0 ? (mediaItems.some(m => m.type === 'video') ? 'video' : 'media') : 'text',
+        author_id: activeUserId,
+        user_id: activeUserId,
+        media_urls: finalMediaUrls.length > 0 ? finalMediaUrls : null,
+        location: location || null,
+        tags: tags.length > 0 ? tags : null,
+        hashtags: tags.length > 0 ? tags : null,
+        is_public: privacy === 'public',
+        origin: 'feed',
+        likes_count: 0,
+        comments_count: 0,
+        shares_count: 0
+      };
+
       const { data: postData, error } = await supabase
         .from('posts')
-        .insert({
-          content: content.trim(),
-          post_type: finalMediaUrls.length > 0 ? (mediaItems.some(m => m.type === 'video') ? 'video' : 'media') : 'text',
-          author_id: user.id,
-          user_id: user.id,
-          media_urls: finalMediaUrls,
-          location: location || null,
-          visibility: privacy,
-          origin: 'feed',
-          tags: tags
-        })
+        .insert(postPayload)
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Post insertion error:', error);
+        throw error;
+      }
 
       onPostCreate?.(postData);
 
-      // Reset Form
+      // Clean up object URLs
+      mediaItems.forEach(item => {
+        if (item.previewUrl && item.previewUrl.startsWith('blob:')) {
+          URL.revokeObjectURL(item.previewUrl);
+        }
+      });
+
+      // Reset Form State
       setContent('');
       setMediaItems([]);
       setLocation('');
@@ -380,9 +415,10 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
       setPrivacy('public');
       setShowAiDrawer(false);
 
-      toast.success('Post published to TalentXcel Network!');
+      toast.success('Post published successfully to TalentXcel Network!');
     } catch (error: any) {
-      toast.error(`Failed to publish: ${error.message || 'Error'}`);
+      console.error('Failed to post:', error);
+      toast.error(`Failed to publish post: ${error.message || error.details || 'Database error'}`);
     } finally {
       setIsPosting(false);
     }
