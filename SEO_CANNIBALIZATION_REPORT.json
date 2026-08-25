@@ -1,0 +1,15 @@
+{
+  "generatedAt": "2026-08-25T14:17:17.431Z",
+  "totalKeywordsCataloged": 21,
+  "distinctTargetRoutes": 21,
+  "conflictsDetected": 0,
+  "findings": [],
+  "intentDistribution": {
+    "COMMERCIAL_INVESTIGATION": 7,
+    "TRANSACTIONAL": 3,
+    "JOB_SEARCH": 5,
+    "EDUCATIONAL": 3,
+    "INFORMATIONAL": 2,
+    "NAVIGATIONAL": 1
+  }
+}

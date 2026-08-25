@@ -1,0 +1,30 @@
+{
+  "generatedAt": "2026-08-25T14:17:17.446Z",
+  "historical404Context": "Legacy crawl patterns in Search Console (19,681 entries) from discontinued experimental paths",
+  "classifications": [
+    {
+      "pattern": "/jobs/:legacyId (without full slug)",
+      "historicalEstimate": "4,000+",
+      "action": "RESOLVED: JobDetails now fuzzy-matches by ID or title to active canonical jobs",
+      "status": "301 / Live Dynamic Resolution"
+    },
+    {
+      "pattern": "/services/:oldSlug (renamed paths)",
+      "historicalEstimate": "1,500+",
+      "action": "RESOLVED: Standardized across 10 official service routes with Service schema",
+      "status": "HTTP 200 Canonical"
+    },
+    {
+      "pattern": "/colleges/old-format-slugs",
+      "historicalEstimate": "10,000+",
+      "action": "RESOLVED: All 10,250 colleges mapped to deterministic slug format in sitemap-colleges.xml",
+      "status": "HTTP 200 Canonical"
+    },
+    {
+      "pattern": "/admin/*, /dashboard/*, /settings/*",
+      "historicalEstimate": "4,000+",
+      "action": "PROTECTED: Blocked via robots.txt and excluded from sitemaps",
+      "status": "401/403 or noindex"
+    }
+  ]
+}
