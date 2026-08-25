@@ -253,6 +253,27 @@ async function runSeoCiGate() {
     record('Phase9_100k_Sample', '100k Sample File Exists', false, 'SEO_QUERY_COVERAGE_100K_SAMPLE.json not found', { severity: 'CRITICAL' });
   }
 
+  // --- 3E. PHASE 10 AUTHORITATIVE INVENTORY & RANKING HARVEST QUEUE ---
+  console.log('\n--- 3E. AUDITING PHASE 10 AUTHORITATIVE INVENTORY & HARVEST QUEUE ---');
+  const authInvPath = resolve('SEO_AUTHORITATIVE_INVENTORY.json');
+  if (existsSync(authInvPath)) {
+    const authData = JSON.parse(readFileSync(authInvPath, 'utf-8'));
+    record(
+      'Phase10_Ranking_Engine',
+      'Authoritative Inventory Metric Separation',
+      Boolean(authData.truthMetrics?.totalSubmittedSitemapUrls && authData.truthMetrics?.totalPreRenderedHtmlDocs && authData.truthMetrics?.indexedUrlsWithImpressions !== authData.truthMetrics?.totalImpressions28Days),
+      'Clean separation between submitted URLs, pre-rendered documents, indexed URLs, and impression queries'
+    );
+    record(
+      'Phase10_Ranking_Engine',
+      'P0-P5 Ranking Harvest Queue Defined',
+      existsSync(resolve('SEO_RANKING_HARVEST_QUEUE.json')),
+      'P0–P5 ranking opportunity queues established for positions 4–20 quick wins'
+    );
+  } else {
+    record('Phase10_Ranking_Engine', 'Authoritative Inventory Exists', false, 'SEO_AUTHORITATIVE_INVENTORY.json not found', { severity: 'CRITICAL' });
+  }
+
   // --- 4. SEARCH INTENT ENGINE & ENTITY RESOLUTION ---
   console.log('\n--- 4. AUDITING SEARCH INTENT ENGINE ---');
   const compIntent = resolveSearchIntent('/company/talentxcel');
