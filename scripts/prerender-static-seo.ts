@@ -42,11 +42,8 @@ async function prerender() {
     fs.mkdirSync(DIST_DIR, { recursive: true });
   }
 
-  const distIndexHtmlPath = path.resolve(DIST_DIR, 'index.html');
   const sourceIndexHtmlPath = path.resolve(__dirname, '../index.html');
-  const cleanBaseTemplate = fs.existsSync(distIndexHtmlPath)
-    ? fs.readFileSync(distIndexHtmlPath, 'utf8')
-    : fs.readFileSync(sourceIndexHtmlPath, 'utf8');
+  let cleanBaseTemplate = fs.readFileSync(sourceIndexHtmlPath, 'utf8');
 
   // Discover compiled Vite assets in dist/assets
   let mainJsAsset = '';
@@ -57,6 +54,20 @@ async function prerender() {
     const cssMatch = assetFiles.find((f) => f.startsWith('index-') && f.endsWith('.css'));
     if (jsMatch) mainJsAsset = `/assets/${jsMatch}`;
     if (cssMatch) mainCssAsset = `/assets/${cssMatch}`;
+  }
+
+  // Pre-patch base template with production JS and CSS bundles
+  if (mainJsAsset) {
+    cleanBaseTemplate = cleanBaseTemplate.replace(
+      /<script\s+type=["']module["']\s+src=["']\/src\/main\.tsx["']><\/script>/i,
+      `<script type="module" crossorigin src="${mainJsAsset}"></script>`
+    );
+  }
+  if (mainCssAsset && !cleanBaseTemplate.includes(mainCssAsset)) {
+    cleanBaseTemplate = cleanBaseTemplate.replace(
+      '</head>',
+      `<link rel="stylesheet" crossorigin href="${mainCssAsset}">\n</head>`
+    );
   }
 
   let generatedCount = 0;
@@ -79,20 +90,6 @@ async function prerender() {
     const targetFlatHtmlFile = cleanPath === '' ? path.join(DIST_DIR, 'home.html') : path.join(DIST_DIR, cleanPath + '.html');
 
     let pageHtml = cleanBaseTemplate;
-
-    // Ensure production script and css tags are used instead of dev /src/main.tsx
-    if (mainJsAsset) {
-      pageHtml = pageHtml.replace(
-        /<script\s+type=["']module["']\s+src=["']\/src\/main\.tsx["']><\/script>/i,
-        `<script type="module" crossorigin src="${mainJsAsset}"></script>`
-      );
-    }
-    if (mainCssAsset && !pageHtml.includes(mainCssAsset)) {
-      pageHtml = pageHtml.replace(
-        '</head>',
-        `<link rel="stylesheet" crossorigin href="${mainCssAsset}">\n</head>`
-      );
-    }
 
     // 1. Title
     pageHtml = pageHtml.replace(
@@ -130,114 +127,15 @@ async function prerender() {
         .join('\n');
     }
 
-    const inlineStyles = `
-    <style id="prerender-fallback-styles">
-      body { margin: 0; background-color: #020617; color: #f8fafc; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
-      a { color: #3b82f6; text-decoration: none; }
-      a:hover { text-decoration: underline; }
-      .max-w-6xl { max-width: 72rem; margin-left: auto; margin-right: auto; }
-      .bg-slate-900 { background-color: #0f172a; }
-      .bg-slate-950 { background-color: #020617; }
-      .border-slate-800 { border-color: #1e293b; }
-      .rounded-2xl { border-radius: 1rem; }
-      .rounded-xl { border-radius: 0.75rem; }
-      .rounded-lg { border-radius: 0.5rem; }
-      .p-6 { padding: 1.5rem; }
-      .p-4 { padding: 1rem; }
-      .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
-      .py-6 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
-      .grid { display: grid; }
-      .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-      @media (min-width: 640px) { .sm\\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-      @media (min-width: 768px) { .md\\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } .md\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-      .gap-6 { gap: 1.5rem; }
-      .gap-4 { gap: 1rem; }
-      .gap-3 { gap: 0.75rem; }
-      .space-y-8 > * + * { margin-top: 2rem; }
-      .space-y-6 > * + * { margin-top: 1.5rem; }
-      .space-y-4 > * + * { margin-top: 1rem; }
-      .space-y-3 > * + * { margin-top: 0.75rem; }
-      .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
-      .text-2xl { font-size: 1.5rem; line-height: 2rem; }
-      .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
-      .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
-      .text-base { font-size: 1rem; line-height: 1.5rem; }
-      .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
-      .text-xs { font-size: 0.75rem; line-height: 1rem; }
-      .font-bold { font-weight: 700; }
-      .font-semibold { font-weight: 600; }
-      .font-medium { font-weight: 500; }
-      .text-white { color: #ffffff; }
-      .text-slate-100 { color: #f1f5f9; }
-      .text-slate-200 { color: #e2e8f0; }
-      .text-slate-300 { color: #cbd5e1; }
-      .text-slate-400 { color: #94a3b8; }
-      .text-blue-400 { color: #60a5fa; }
-      .text-emerald-400 { color: #34d399; }
-      .text-purple-400 { color: #c084fc; }
-      .bg-blue-600 { background-color: #2563eb; }
-      .bg-slate-800 { background-color: #1e293b; }
-      .border { border-width: 1px; border-style: solid; }
-      .border-t { border-top-width: 1px; border-top-style: solid; }
-      .flex { display: flex; }
-      .flex-wrap { flex-wrap: wrap; }
-      .items-center { align-items: center; }
-      .items-start { align-items: flex-start; }
-      .justify-between { justify-content: space-between; }
-      .inline-block { display: inline-block; }
-      .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
-      .py-2\\.5 { padding-top: 0.625rem; padding-bottom: 0.625rem; }
-      .px-4 { padding-left: 1rem; padding-right: 1rem; }
-      .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
-      .px-2\\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
-      .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
-      .mt-1 { margin-top: 0.25rem; }
-      .mt-2 { margin-top: 0.5rem; }
-      .mt-3 { margin-top: 0.75rem; }
-      .mt-4 { margin-top: 1rem; }
-      .mt-6 { margin-top: 1.5rem; }
-      .mb-1 { margin-bottom: 0.25rem; }
-      .mb-2 { margin-bottom: 0.5rem; }
-      .mb-3 { margin-bottom: 0.75rem; }
-      .mb-4 { margin-bottom: 1rem; }
-      .leading-relaxed { line-height: 1.625; }
-      .capitalize { text-transform: capitalize; }
-      .block { display: block; }
-    </style>
-    `;
-
     const ogInjections = `
     <meta property="og:title" content="${escapeHtml(meta.title)}" />
     <meta property="og:description" content="${escapeHtml(meta.description)}" />
     <meta property="og:url" content="${meta.canonical}" />
     <meta property="og:type" content="website" />
-    ${inlineStyles}
     ${schemaScripts}
     `;
 
     pageHtml = pageHtml.replace('</head>', `${ogInjections}\n</head>`);
-
-    // 5. Inject Semantic Markup into <div id="root"> ONLY for subpages (leave root clean for SPA on homepage)
-    if (cleanPath !== '') {
-      const semanticShell = `
-      <div id="root">
-        <main class="min-h-screen bg-slate-950 text-slate-100 p-6">
-          <header class="max-w-6xl mx-auto py-8">
-            <nav aria-label="Breadcrumb" class="text-xs text-slate-400 mb-4">
-              <a href="/" class="hover:underline">Home</a> &gt; 
-              <span class="text-blue-400">${escapeHtml(meta.h1)}</span>
-            </nav>
-            <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-white mb-3">${escapeHtml(meta.h1)}</h1>
-            <p class="text-base text-slate-300 max-w-3xl leading-relaxed">${escapeHtml(meta.description)}</p>
-          </header>
-          <section class="max-w-6xl mx-auto py-6">
-            ${meta.bodyContentHtml}
-          </section>
-        </main>
-      </div>
-      `;
-      pageHtml = pageHtml.replace(/<div id="root"><\/div>/i, semanticShell);
-    }
 
     fs.writeFileSync(targetIndexFile, pageHtml, 'utf8');
     if (cleanPath !== '') {
