@@ -1,0 +1,392 @@
+{
+  "auditedAt": "2026-08-25T15:16:52.507Z",
+  "totalAudited": 24,
+  "passed": 24,
+  "failed": 0,
+  "results": [
+    {
+      "route": "/",
+      "name": "Homepage",
+      "renderStatus": "SUCCESSFUL_HTML_PRERENDER",
+      "titleFound": true,
+      "descriptionFound": true,
+      "canonicalFound": true,
+      "h1Found": true,
+      "substantiveTextBytes": 13981,
+      "jsonLdPresent": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/jobs",
+      "name": "Jobs Hub",
+      "renderStatus": "SUCCESSFUL_HTML_PRERENDER",
+      "titleFound": true,
+      "descriptionFound": true,
+      "canonicalFound": true,
+      "h1Found": true,
+      "substantiveTextBytes": 13594,
+      "jsonLdPresent": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/companies",
+      "name": "Companies Directory",
+      "renderStatus": "SUCCESSFUL_HTML_PRERENDER",
+      "titleFound": true,
+      "descriptionFound": true,
+      "canonicalFound": true,
+      "h1Found": true,
+      "substantiveTextBytes": 13073,
+      "jsonLdPresent": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/rankings",
+      "name": "Rankings Hub",
+      "renderStatus": "SUCCESSFUL_HTML_PRERENDER",
+      "titleFound": true,
+      "descriptionFound": true,
+      "canonicalFound": true,
+      "h1Found": true,
+      "substantiveTextBytes": 13032,
+      "jsonLdPresent": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/rankings/ai-products",
+      "name": "AI Product Leaderboard",
+      "renderStatus": "SUCCESSFUL_HTML_PRERENDER",
+      "titleFound": true,
+      "descriptionFound": true,
+      "canonicalFound": true,
+      "h1Found": true,
+      "substantiveTextBytes": 12843,
+      "jsonLdPresent": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/resume",
+      "name": "ATS Resume Builder Studio",
+      "renderStatus": "SUCCESSFUL_HTML_PRERENDER",
+      "titleFound": true,
+      "descriptionFound": true,
+      "canonicalFound": true,
+      "h1Found": true,
+      "substantiveTextBytes": 13009,
+      "jsonLdPresent": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/tools",
+      "name": "Career Tools & Assessment Suite",
+      "renderStatus": "SUCCESSFUL_HTML_PRERENDER",
+      "titleFound": true,
+      "descriptionFound": true,
+      "canonicalFound": true,
+      "h1Found": true,
+      "substantiveTextBytes": 13812,
+      "jsonLdPresent": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/services",
+      "name": "Strategic Services Hub",
+      "renderStatus": "SUCCESSFUL_HTML_PRERENDER",
+      "titleFound": true,
+      "descriptionFound": true,
+      "canonicalFound": true,
+      "h1Found": true,
+      "substantiveTextBytes": 13482,
+      "jsonLdPresent": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/services/ai-recruitment",
+      "name": "AI Recruitment Platform",
+      "renderStatus": "SUCCESSFUL_HTML_PRERENDER",
+      "titleFound": true,
+      "descriptionFound": true,
+      "canonicalFound": true,
+      "h1Found": true,
+      "substantiveTextBytes": 12795,
+      "jsonLdPresent": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/services/staffing-recruitment",
+      "name": "Corporate Staffing",
+      "renderStatus": "SUCCESSFUL_HTML_PRERENDER",
+      "titleFound": true,
+      "descriptionFound": true,
+      "canonicalFound": true,
+      "h1Found": true,
+      "substantiveTextBytes": 12827,
+      "jsonLdPresent": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/services/rpo",
+      "name": "RPO Outsourcing",
+      "renderStatus": "SUCCESSFUL_HTML_PRERENDER",
+      "titleFound": true,
+      "descriptionFound": true,
+      "canonicalFound": true,
+      "h1Found": true,
+      "substantiveTextBytes": 12689,
+      "jsonLdPresent": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/services/it-services",
+      "name": "IT Systems Consulting",
+      "renderStatus": "SUCCESSFUL_HTML_PRERENDER",
+      "titleFound": true,
+      "descriptionFound": true,
+      "canonicalFound": true,
+      "h1Found": true,
+      "substantiveTextBytes": 12717,
+      "jsonLdPresent": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/services/corporate-training",
+      "name": "Corporate Training",
+      "renderStatus": "SUCCESSFUL_HTML_PRERENDER",
+      "titleFound": true,
+      "descriptionFound": true,
+      "canonicalFound": true,
+      "h1Found": true,
+      "substantiveTextBytes": 12769,
+      "jsonLdPresent": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/services/resume-building",
+      "name": "ATS Resume Building",
+      "renderStatus": "SUCCESSFUL_HTML_PRERENDER",
+      "titleFound": true,
+      "descriptionFound": true,
+      "canonicalFound": true,
+      "h1Found": true,
+      "substantiveTextBytes": 12801,
+      "jsonLdPresent": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/learning",
+      "name": "Learning & Skill Hub",
+      "renderStatus": "SUCCESSFUL_HTML_PRERENDER",
+      "titleFound": true,
+      "descriptionFound": true,
+      "canonicalFound": true,
+      "h1Found": true,
+      "substantiveTextBytes": 12906,
+      "jsonLdPresent": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/colleges",
+      "name": "Colleges Hub",
+      "renderStatus": "SUCCESSFUL_HTML_PRERENDER",
+      "titleFound": true,
+      "descriptionFound": true,
+      "canonicalFound": true,
+      "h1Found": true,
+      "substantiveTextBytes": 13373,
+      "jsonLdPresent": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/colleges/pathway",
+      "name": "6-Step AI Career Pathway Tool",
+      "renderStatus": "SUCCESSFUL_HTML_PRERENDER",
+      "titleFound": true,
+      "descriptionFound": true,
+      "canonicalFound": true,
+      "h1Found": true,
+      "substantiveTextBytes": 12961,
+      "jsonLdPresent": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/colleges/global-programs",
+      "name": "Global Degree Discovery",
+      "renderStatus": "SUCCESSFUL_HTML_PRERENDER",
+      "titleFound": true,
+      "descriptionFound": true,
+      "canonicalFound": true,
+      "h1Found": true,
+      "substantiveTextBytes": 12888,
+      "jsonLdPresent": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/colleges/scholarships",
+      "name": "Scholarships Directory",
+      "renderStatus": "SUCCESSFUL_HTML_PRERENDER",
+      "titleFound": true,
+      "descriptionFound": true,
+      "canonicalFound": true,
+      "h1Found": true,
+      "substantiveTextBytes": 12848,
+      "jsonLdPresent": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/careermap",
+      "name": "Career Map & Progression Graph",
+      "renderStatus": "SUCCESSFUL_HTML_PRERENDER",
+      "titleFound": true,
+      "descriptionFound": true,
+      "canonicalFound": true,
+      "h1Found": true,
+      "substantiveTextBytes": 12897,
+      "jsonLdPresent": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/careerpassport",
+      "name": "Career Passport Public Framework",
+      "renderStatus": "SUCCESSFUL_HTML_PRERENDER",
+      "titleFound": true,
+      "descriptionFound": true,
+      "canonicalFound": true,
+      "h1Found": true,
+      "substantiveTextBytes": 12933,
+      "jsonLdPresent": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/network",
+      "name": "Professional Community & Network Feed",
+      "renderStatus": "SUCCESSFUL_HTML_PRERENDER",
+      "titleFound": true,
+      "descriptionFound": true,
+      "canonicalFound": true,
+      "h1Found": true,
+      "substantiveTextBytes": 12738,
+      "jsonLdPresent": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/company/talentxcel",
+      "name": "TalentXcel Company Entity Hub",
+      "renderStatus": "SUCCESSFUL_HTML_PRERENDER",
+      "titleFound": true,
+      "descriptionFound": true,
+      "canonicalFound": true,
+      "h1Found": true,
+      "substantiveTextBytes": 19978,
+      "jsonLdPresent": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/employer",
+      "name": "Employer Sourcing Hub",
+      "renderStatus": "SUCCESSFUL_HTML_PRERENDER",
+      "titleFound": true,
+      "descriptionFound": true,
+      "canonicalFound": true,
+      "h1Found": true,
+      "substantiveTextBytes": 13037,
+      "jsonLdPresent": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    }
+  ]
+}

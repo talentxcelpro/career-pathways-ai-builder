@@ -1,0 +1,151 @@
+{
+  "auditedAt": "2026-08-25T15:16:52.503Z",
+  "totalPublicRoutes": 24,
+  "totalClassADocuments": 10446,
+  "routes": [
+    {
+      "route": "/",
+      "name": "Homepage",
+      "type": "CORE",
+      "priority": 1
+    },
+    {
+      "route": "/jobs",
+      "name": "Jobs Hub",
+      "type": "HUB",
+      "priority": 0.9
+    },
+    {
+      "route": "/companies",
+      "name": "Companies Directory",
+      "type": "HUB",
+      "priority": 0.9
+    },
+    {
+      "route": "/rankings",
+      "name": "Rankings Hub",
+      "type": "HUB",
+      "priority": 0.9
+    },
+    {
+      "route": "/rankings/ai-products",
+      "name": "AI Product Leaderboard",
+      "type": "HUB",
+      "priority": 0.9
+    },
+    {
+      "route": "/resume",
+      "name": "ATS Resume Builder Studio",
+      "type": "TOOL",
+      "priority": 0.9
+    },
+    {
+      "route": "/tools",
+      "name": "Career Tools & Assessment Suite",
+      "type": "TOOL",
+      "priority": 0.9
+    },
+    {
+      "route": "/services",
+      "name": "Strategic Services Hub",
+      "type": "SERVICES",
+      "priority": 0.9
+    },
+    {
+      "route": "/services/ai-recruitment",
+      "name": "AI Recruitment Platform",
+      "type": "SERVICE_DETAIL",
+      "priority": 0.8
+    },
+    {
+      "route": "/services/staffing-recruitment",
+      "name": "Corporate Staffing",
+      "type": "SERVICE_DETAIL",
+      "priority": 0.8
+    },
+    {
+      "route": "/services/rpo",
+      "name": "RPO Outsourcing",
+      "type": "SERVICE_DETAIL",
+      "priority": 0.8
+    },
+    {
+      "route": "/services/it-services",
+      "name": "IT Systems Consulting",
+      "type": "SERVICE_DETAIL",
+      "priority": 0.8
+    },
+    {
+      "route": "/services/corporate-training",
+      "name": "Corporate Training",
+      "type": "SERVICE_DETAIL",
+      "priority": 0.8
+    },
+    {
+      "route": "/services/resume-building",
+      "name": "ATS Resume Building",
+      "type": "SERVICE_DETAIL",
+      "priority": 0.8
+    },
+    {
+      "route": "/learning",
+      "name": "Learning & Skill Hub",
+      "type": "HUB",
+      "priority": 0.8
+    },
+    {
+      "route": "/colleges",
+      "name": "Colleges Hub",
+      "type": "EDUCATION",
+      "priority": 0.9
+    },
+    {
+      "route": "/colleges/pathway",
+      "name": "6-Step AI Career Pathway Tool",
+      "type": "TOOL",
+      "priority": 0.9
+    },
+    {
+      "route": "/colleges/global-programs",
+      "name": "Global Degree Discovery",
+      "type": "EDUCATION",
+      "priority": 0.8
+    },
+    {
+      "route": "/colleges/scholarships",
+      "name": "Scholarships Directory",
+      "type": "EDUCATION",
+      "priority": 0.8
+    },
+    {
+      "route": "/careermap",
+      "name": "Career Map & Progression Graph",
+      "type": "HUB",
+      "priority": 0.8
+    },
+    {
+      "route": "/careerpassport",
+      "name": "Career Passport Public Framework",
+      "type": "HUB",
+      "priority": 0.8
+    },
+    {
+      "route": "/network",
+      "name": "Professional Community & Network Feed",
+      "type": "COMMUNITY",
+      "priority": 0.8
+    },
+    {
+      "route": "/company/talentxcel",
+      "name": "TalentXcel Company Entity Hub",
+      "type": "COMPANY_ENTITY",
+      "priority": 1
+    },
+    {
+      "route": "/employer",
+      "name": "Employer Sourcing Hub",
+      "type": "EMPLOYER",
+      "priority": 0.9
+    }
+  ]
+}

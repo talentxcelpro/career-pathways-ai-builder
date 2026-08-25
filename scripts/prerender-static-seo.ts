@@ -140,6 +140,288 @@ async function prerender() {
     generatedCount++;
   }
 
+  // 0. Pre-render All Core Public Product Surface Hubs
+  console.log('Pre-rendering Core Public Product Surface Hubs...');
+  const coreHubs = [
+    {
+      route: '/',
+      title: 'TalentXcel — AI Career Operating System & Corporate Recruitment',
+      desc: 'TalentXcel is an AI-powered career operating system and recruitment ecosystem connecting job seekers, verified employers, higher education institutions, and professional networks.',
+      h1: 'AI-Powered Career & Recruitment Ecosystem',
+      bodyHtml: `
+        <div class="space-y-8">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+              <h2 class="text-xl font-bold text-white mb-2">Jobs & Hiring</h2>
+              <p class="text-slate-300 text-sm leading-relaxed mb-4">Discover verified job openings with transparent compensation, ATS compatibility, and direct employer introductions.</p>
+              <a href="/jobs" class="text-blue-400 text-xs font-semibold hover:underline">Explore Jobs &rarr;</a>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+              <h2 class="text-xl font-bold text-white mb-2">ATS Resume Builder</h2>
+              <p class="text-slate-300 text-sm leading-relaxed mb-4">Create recruiter-ready, ATS-optimized resumes with real-time scoring, formatting validation, and keyword matching.</p>
+              <a href="/resume" class="text-blue-400 text-xs font-semibold hover:underline">Build ATS Resume &rarr;</a>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+              <h2 class="text-xl font-bold text-white mb-2">Higher Education Pathways</h2>
+              <p class="text-slate-300 text-sm leading-relaxed mb-4">Forensic data across 10,250 Indian colleges, global tuition-free degree programs, and 6-step AI pathways.</p>
+              <a href="/colleges" class="text-blue-400 text-xs font-semibold hover:underline">Explore Colleges &rarr;</a>
+            </div>
+          </div>
+        </div>
+      `,
+    },
+    {
+      route: '/jobs',
+      title: 'Jobs in India — Software, Tech, Management & AI Vacancies | TalentXcel',
+      desc: 'Explore active job vacancies across software engineering, data science, AI, marketing, sales, and management in Noida, Bangalore, Hyderabad, Pune, and Remote.',
+      h1: 'Verified Job Vacancies & Tech Openings',
+      bodyHtml: `
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-white mb-3">Explore Active Employment Opportunities</h2>
+          <p class="text-slate-300 text-sm leading-relaxed mb-4">Search thousands of verified jobs across top Indian tech hubs with salary transparency and direct application paths.</p>
+          <div class="flex flex-wrap gap-2 text-xs">
+            <a href="/jobs?role=software-engineer" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">Software Engineer Jobs</a>
+            <a href="/jobs?role=data-scientist" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">Data Scientist Jobs</a>
+            <a href="/jobs?role=ai-engineer" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">AI Engineer Jobs</a>
+            <a href="/jobs?location=noida" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">Jobs in Noida</a>
+            <a href="/jobs?location=bangalore" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">Jobs in Bangalore</a>
+          </div>
+        </div>
+      `,
+    },
+    {
+      route: '/companies',
+      title: 'Verified Companies & Top Tech Employers | TalentXcel Directory',
+      desc: 'Browse verified companies, tech startups, and enterprise employers hiring across India. Research company culture, tech stacks, active job openings, and salaries.',
+      h1: 'Verified Companies Directory & Employer Intelligence',
+      bodyHtml: `
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-white mb-3">Top Employers & Hiring Organizations</h2>
+          <p class="text-slate-300 text-sm leading-relaxed mb-4">Discover verified companies across FinTech, HealthTech, AI/ML, SaaS, and Enterprise IT hiring on TalentXcel.</p>
+          <a href="/company/talentxcel" class="text-blue-400 text-xs font-semibold hover:underline">TalentXcel Services Entity Profile &rarr;</a>
+        </div>
+      `,
+    },
+    {
+      route: '/rankings',
+      title: 'Rankings & Leaderboards — Companies, AI Products & Careers | TalentXcel',
+      desc: 'Authoritative ranking leaderboards for AI products, emerging startups, tech employers, and career tools evaluated on verified capability benchmarks.',
+      h1: 'Rankings & Industry Leaderboards',
+      bodyHtml: `
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-white mb-3">AI Product & Company Rankings</h2>
+          <p class="text-slate-300 text-sm leading-relaxed mb-4">Transparent ranking methodologies evaluating product performance, user adoption, and technological capabilities.</p>
+          <a href="/rankings/ai-products" class="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg">AI Product Rankings Leaderboard &rarr;</a>
+        </div>
+      `,
+    },
+    {
+      route: '/rankings/ai-products',
+      title: 'AI Product Rankings & Industry Benchmark Leaderboard | TalentXcel',
+      desc: 'Top artificial intelligence software, developer tools, and machine learning platforms ranked by performance, capability, and user feedback.',
+      h1: 'AI Product & Software Rankings Leaderboard',
+      bodyHtml: `
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-white mb-3">Top Rated AI Tools & Platforms</h2>
+          <p class="text-slate-300 text-sm leading-relaxed mb-4">Verified rankings of generative AI models, autonomous agents, and developer tooling.</p>
+        </div>
+      `,
+    },
+    {
+      route: '/resume',
+      title: 'ATS Resume Builder & Studio — Create Free Recruiter-Ready CVs | TalentXcel',
+      desc: 'Build recruiter-approved ATS resumes online. Real-time ATS keyword optimization, formatting check, and tailored resume bullet generation.',
+      h1: 'ATS Resume Builder & Career Optimization Studio',
+      bodyHtml: `
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-white mb-3">Build an ATS-Friendly Resume in Minutes</h2>
+          <p class="text-slate-300 text-sm leading-relaxed mb-4">Pass applicant tracking systems with pre-structured resume layouts, keyword density optimization, and instant PDF download.</p>
+          <a href="/services/resume-building" class="text-blue-400 text-xs font-semibold hover:underline">Professional Resume Writing Services &rarr;</a>
+        </div>
+      `,
+    },
+    {
+      route: '/tools',
+      title: 'Career Tools, ATS Checkers & Salary Calculators | TalentXcel',
+      desc: 'Explore free career intelligence tools including ATS resume score checkers, career transition roadmaps, interview simulators, and salary benchmarks.',
+      h1: 'Career Tools & Assessment Suite',
+      bodyHtml: `
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+            <h3 class="text-lg font-bold text-white mb-2">ATS Resume Checker</h3>
+            <p class="text-slate-300 text-xs leading-relaxed mb-3">Test your resume formatting and keyword density against target job descriptions.</p>
+            <a href="/resume" class="text-blue-400 text-xs font-semibold">Open Resume Tool &rarr;</a>
+          </div>
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+            <h3 class="text-lg font-bold text-white mb-2">6-Step Career Pathway</h3>
+            <p class="text-slate-300 text-xs leading-relaxed mb-3">Generate customized education and skill roadmap from your current level to dream role.</p>
+            <a href="/colleges/pathway" class="text-blue-400 text-xs font-semibold">Generate Pathway &rarr;</a>
+          </div>
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+            <h3 class="text-lg font-bold text-white mb-2">Career Map Explorer</h3>
+            <p class="text-slate-300 text-xs leading-relaxed mb-3">Interactive skill graph and progression milestones across 150+ professional roles.</p>
+            <a href="/careermap" class="text-blue-400 text-xs font-semibold">Explore Career Map &rarr;</a>
+          </div>
+        </div>
+      `,
+    },
+    {
+      route: '/services',
+      title: 'TalentXcel Strategic Services — Recruitment, RPO & AI Solutions',
+      desc: 'Explore TalentXcel corporate staffing, Recruitment Process Outsourcing (RPO), executive search, AI talent matching, and corporate upskilling solutions.',
+      h1: 'Strategic Human Capital & Recruitment Solutions',
+      bodyHtml: `
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-white mb-3">Enterprise Workforce & Sourcing Solutions</h2>
+          <p class="text-slate-300 text-sm leading-relaxed mb-4">TalentXcel delivers scalable talent acquisition, contract-to-hire staffing, and technology systems consulting for high-growth organizations.</p>
+          <div class="flex flex-wrap gap-2 text-xs">
+            <a href="/services/ai-recruitment" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">AI Recruitment Platform</a>
+            <a href="/services/staffing-recruitment" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">Staffing Solutions</a>
+            <a href="/services/rpo" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">RPO Outsourcing</a>
+            <a href="/services/it-services" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">IT Consulting</a>
+          </div>
+        </div>
+      `,
+    },
+    {
+      route: '/learning',
+      title: 'Learning & Skill Certifications — Tech, AI & Management Courses | TalentXcel',
+      desc: 'Discover verified courses, industry certifications, and skill bootcamps across Python, Machine Learning, AWS, Cyber Security, and Project Management.',
+      h1: 'Learning, Courses & Skill Certification Hub',
+      bodyHtml: `
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-white mb-3">Master High-Demand Career Skills</h2>
+          <p class="text-slate-300 text-sm leading-relaxed mb-4">Curated learning pathways, free coding certifications, and executive training programs aligned with market hiring demand.</p>
+        </div>
+      `,
+    },
+    {
+      route: '/colleges',
+      title: 'Colleges in India — 10,250+ Universities, Fees, Placements & Cutoffs | TalentXcel',
+      desc: 'Search 10,250 accredited colleges and universities in India. Compare annual fees, NIRF rankings, highest CTC, cutoff marks, and top recruiters.',
+      h1: '10,250+ Indian Colleges & Higher Education Intelligence',
+      bodyHtml: `
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-white mb-3">Forensic Higher Education Intelligence</h2>
+          <p class="text-slate-300 text-sm leading-relaxed mb-4">Comprehensive admission data across engineering, management, medical, and arts colleges in India.</p>
+          <div class="flex flex-wrap gap-2 text-xs">
+            <a href="/colleges/global-programs" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">Global Tuition-Free Programs</a>
+            <a href="/colleges/scholarships" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">Global Scholarships</a>
+            <a href="/colleges/pathway" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">6-Step AI Career Pathway</a>
+          </div>
+        </div>
+      `,
+    },
+    {
+      route: '/colleges/pathway',
+      title: '6-Step AI Career Pathway Generator — Personalized Education Roadmap | TalentXcel',
+      desc: 'Generate a personalized 6-step education and skill roadmap from your current grade/level to your target career with transparent verified costs.',
+      h1: '6-Step AI Career & Education Pathway Generator',
+      bodyHtml: `
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-white mb-3">Interactive Career Pathway Wizard</h2>
+          <p class="text-slate-300 text-sm leading-relaxed mb-4">Select your target career goal, current academic background, and budget to generate a step-by-step roadmap with verified degree programs and scholarships.</p>
+        </div>
+      `,
+    },
+    {
+      route: '/colleges/global-programs',
+      title: 'Global Tuition-Free Degrees & Study Abroad Programs | TalentXcel',
+      desc: 'Discover verified tuition-free, fully funded, and low-cost international degree programs across Germany, Norway, France, USA, and UK.',
+      h1: 'Global Tuition-Free & Funded Degree Programs',
+      bodyHtml: `
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-white mb-3">Verified International Degree Discovery</h2>
+          <p class="text-slate-300 text-sm leading-relaxed mb-4">Explore accredited international bachelor, master, and PhD programs with real fee breakdowns and scholarship eligibility.</p>
+        </div>
+      `,
+    },
+    {
+      route: '/colleges/scholarships',
+      title: 'Global Scholarships & Student Funding Directory | TalentXcel',
+      desc: 'Browse verified international scholarships, government grants, and research fellowships for undergraduate and postgraduate students.',
+      h1: 'Global Scholarships & Student Funding Directory',
+      bodyHtml: `
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-white mb-3">Verified Scholarship & Fellowship Opportunities</h2>
+          <p class="text-slate-300 text-sm leading-relaxed mb-4">Discover fully funded scholarships with deadlines, eligibility criteria, and application links.</p>
+        </div>
+      `,
+    },
+    {
+      route: '/careermap',
+      title: 'Career Map — Interactive Skill Graph & Role Progression | TalentXcel',
+      desc: 'Explore interactive career progression roadmaps, salary bands, required skills, and transition pathways across software, AI, product, and business roles.',
+      h1: 'Career Map & Role Progression Graph',
+      bodyHtml: `
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-white mb-3">Interactive Career Progression & Skill Milestones</h2>
+          <p class="text-slate-300 text-sm leading-relaxed mb-4">Navigate from entry-level positions to executive roles with clear skill requirements, certifications, and compensation benchmarks.</p>
+        </div>
+      `,
+    },
+    {
+      route: '/careerpassport',
+      title: 'Career Passport — Verified Competency Credentialing Framework | TalentXcel',
+      desc: 'Learn about TalentXcel Career Passport, a tamper-proof competency verification framework connecting candidate skills with employer hiring requirements.',
+      h1: 'Career Passport Competency Framework',
+      bodyHtml: `
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-white mb-3">Verified Candidate Skill Credentials</h2>
+          <p class="text-slate-300 text-sm leading-relaxed mb-4">Career Passport benchmarks candidate technical skills, soft skills, and professional experience into a verified competency score recognized by top employers.</p>
+        </div>
+      `,
+    },
+    {
+      route: '/network',
+      title: 'Professional Network & Community Feed | TalentXcel',
+      desc: 'Connect with verified engineers, recruiters, and founders. Share industry insights, technical discussions, and hiring opportunities.',
+      h1: 'Professional Community & Network Feed',
+      bodyHtml: `
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-white mb-3">Connect with Industry Peers & Hiring Managers</h2>
+          <p class="text-slate-300 text-sm leading-relaxed mb-4">Engage in professional discourse, discover unlisted job opportunities, and build verified professional relationships.</p>
+        </div>
+      `,
+    },
+    {
+      route: '/employer',
+      title: 'Employer Hiring Solutions & Talent Acquisition Platform | TalentXcel',
+      desc: 'Hire pre-vetted tech, sales, and management talent with AI-assisted candidate matching, automated screening, and flexible RPO staffing pods.',
+      h1: 'Employer Talent Acquisition & Staffing Solutions',
+      bodyHtml: `
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-white mb-3">Accelerate Your Engineering & Executive Hiring</h2>
+          <p class="text-slate-300 text-sm leading-relaxed mb-4">Source high-performing candidates with algorithmic matching and dedicated recruitment specialists.</p>
+          <a href="/services/staffing-recruitment" class="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg">Explore Staffing Services &rarr;</a>
+        </div>
+      `,
+    },
+  ];
+
+  for (const hub of coreHubs) {
+    const canonical = `${BASE_URL}${hub.route === '/' ? '' : hub.route}`;
+    const webPageSchema = buildWebPageSchema({
+      name: hub.title,
+      description: hub.desc,
+      url: canonical,
+      aboutOrgId: `${BASE_URL}/#organization`,
+    });
+    const breadcrumbSchema = buildBreadcrumbSchema([
+      { name: 'Home', url: BASE_URL },
+      ...(hub.route !== '/' ? [{ name: hub.h1, url: canonical }] : []),
+    ]);
+
+    writePrerenderedPage(hub.route, {
+      title: hub.title,
+      description: hub.desc,
+      canonical,
+      h1: hub.h1,
+      bodyContentHtml: hub.bodyHtml,
+      jsonLd: [webPageSchema, breadcrumbSchema],
+    });
+  }
+
   // 1. Pre-render 18-Section Authoritative Company Page (/company/talentxcel)
   console.log('Pre-rendering Authoritative 18-Section Company Landing Pages...');
   const companyPages = [

@@ -171,6 +171,27 @@ async function runSeoCiGate() {
     record('Phase5_20M_Engine', '20M Complete Summary Exists', false, 'SEO_COMPLETE_SEARCH_UNIVERSE.json not found', { severity: 'CRITICAL' });
   }
 
+  // --- 3B. PHASE 6 CRAWLER RENDERING & DISCOVERY AUDIT ---
+  console.log('\n--- 3B. AUDITING PHASE 6 CRAWLER RENDERING & DISCOVERY ---');
+  const crawlAuditPath = resolve('SEO_CRAWL_RENDER_AUDIT.json');
+  if (existsSync(crawlAuditPath)) {
+    const crawlData = JSON.parse(readFileSync(crawlAuditPath, 'utf-8'));
+    record(
+      'Phase6_Crawler_Audit',
+      'Zero Crawl Render Failures',
+      crawlData.failed === 0,
+      `Audited ${crawlData.passed} core public hubs without empty shells`
+    );
+    record(
+      'Phase6_Crawler_Audit',
+      'Googlebot Smartphone Compatibility',
+      crawlData.results.every((r: any) => r.botCompatibility?.googlebotSmartphone === 'PASS'),
+      'All audited hubs compatible with Googlebot Smartphone rendering'
+    );
+  } else {
+    record('Phase6_Crawler_Audit', 'Crawl Render Audit Exists', false, 'SEO_CRAWL_RENDER_AUDIT.json not found', { severity: 'CRITICAL' });
+  }
+
   // --- 4. SEARCH INTENT ENGINE & ENTITY RESOLUTION ---
   console.log('\n--- 4. AUDITING SEARCH INTENT ENGINE ---');
   const compIntent = resolveSearchIntent('/company/talentxcel');
