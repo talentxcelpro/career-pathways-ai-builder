@@ -1,0 +1,7 @@
+{
+  "auditedAt": "2026-08-25T15:20:37.382Z",
+  "totalIndexedHubsAudited": 24,
+  "activeImpressionHubs": 8,
+  "zeroImpressionHubsAwaitingRollout": 16,
+  "remediationPlan": "Progressive internal linking rotation and contextual anchor enrichment in progress."
+}

@@ -171,8 +171,8 @@ async function runSeoCiGate() {
     record('Phase5_20M_Engine', '20M Complete Summary Exists', false, 'SEO_COMPLETE_SEARCH_UNIVERSE.json not found', { severity: 'CRITICAL' });
   }
 
-  // --- 3B. PHASE 6 CRAWLER RENDERING & DISCOVERY AUDIT ---
-  console.log('\n--- 3B. AUDITING PHASE 6 CRAWLER RENDERING & DISCOVERY ---');
+  // --- 3B. PHASE 6 & 7 CRAWLER RENDERING & LIVE GSC RECONCILIATION ---
+  console.log('\n--- 3B. AUDITING PHASE 6 & 7 CRAWLER RENDERING & GSC RECONCILIATION ---');
   const crawlAuditPath = resolve('SEO_CRAWL_RENDER_AUDIT.json');
   if (existsSync(crawlAuditPath)) {
     const crawlData = JSON.parse(readFileSync(crawlAuditPath, 'utf-8'));
@@ -190,6 +190,25 @@ async function runSeoCiGate() {
     );
   } else {
     record('Phase6_Crawler_Audit', 'Crawl Render Audit Exists', false, 'SEO_CRAWL_RENDER_AUDIT.json not found', { severity: 'CRITICAL' });
+  }
+
+  const phase7Path = resolve('SEO_INDEXATION_GAP.json');
+  if (existsSync(phase7Path)) {
+    const phase7Data = JSON.parse(readFileSync(phase7Path, 'utf-8'));
+    record(
+      'Phase7_GSC_Audit',
+      'Truth Table Metric Separation',
+      Boolean(phase7Data.truthTable?.searchOpportunitiesUniverse && phase7Data.truthTable?.totalPublishedSitemapUrls),
+      'Search opportunities strictly separated from submitted sitemap URLs'
+    );
+    record(
+      'Phase7_GSC_Audit',
+      'Harvest Queue Categorization',
+      phase7Data.gapCategories?.length >= 3,
+      'Indexation gap categorized with explicit remediation actions'
+    );
+  } else {
+    record('Phase7_GSC_Audit', 'Phase 7 Indexation Gap File Exists', false, 'SEO_INDEXATION_GAP.json not found', { severity: 'CRITICAL' });
   }
 
   // --- 4. SEARCH INTENT ENGINE & ENTITY RESOLUTION ---
