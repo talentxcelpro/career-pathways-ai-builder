@@ -7,7 +7,6 @@ import {
   Brain,
   Briefcase,
   GraduationCap,
-  Sparkles,
   TrendingUp,
   ChevronRight,
   Layers,
@@ -15,10 +14,15 @@ import {
   MapPin,
   MessageSquare,
   ShieldCheck,
+  Search,
+  Users,
+  Target,
+  Sparkles,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { getPublicTopicUrl, getPublicJobUrl } from '@/lib/seo/canonicalUrls';
+import { buildBreadcrumbSchema, buildWebPageSchema } from '@/lib/seo/structuredDataSchemas';
 
 interface TopicDefinition {
   title: string;
@@ -53,7 +57,7 @@ const TOPIC_REGISTRY: Record<string, TopicDefinition> = {
   'education': {
     title: 'Higher Education & Degree Intelligence',
     tagline: '10,250 Verified Institutions, Global Scholarships & Degree Pathways',
-    description: 'Forensic data on 10,250 accredited Indian universities and colleges, €0 tuition European programs, government scholarships, and structured 6-step education pathways.',
+    description: 'Forensic data on 10,250 accredited Indian universities and colleges, tuition-free global programs, government scholarships, and structured 6-step education pathways.',
     keywords: ['Indian colleges data', 'AISHE colleges', 'global degree programs', 'tuition free scholarships', 'education pathway'],
     icon: GraduationCap,
   },
@@ -77,6 +81,34 @@ const TOPIC_REGISTRY: Record<string, TopicDefinition> = {
     description: 'Explore business operations roles, strategic consulting, commercial talent pipelines, and enterprise scaling solutions on TalentXcel.',
     keywords: ['business strategy', 'staffing solutions', 'B2B sales jobs', 'enterprise recruitment'],
     icon: FileText,
+  },
+  'resume-writing': {
+    title: 'Resume Writing & ATS Optimization',
+    tagline: 'ATS Parser Compatibility, Keyword Targeting & Professional Formatting',
+    description: 'Master resume optimization strategies to pass applicant tracking systems, eliminate formatting rejections, and target role-specific technical skills.',
+    keywords: ['ATS resume tips', 'resume formatting', 'ATS parser compatibility', 'CV optimization'],
+    icon: FileText,
+  },
+  'job-search': {
+    title: 'Job Search & Application Strategies',
+    tagline: 'Targeted Applications, Hidden Job Markets & Direct Recruiter Outreach',
+    description: 'Actionable job search playbooks, compensation benchmarking, company research frameworks, and recruiter outreach strategies.',
+    keywords: ['job search strategy', 'finding tech jobs', 'job application tips', 'salary negotiation'],
+    icon: Search,
+  },
+  'interview-preparation': {
+    title: 'Interview Preparation & Practice',
+    tagline: 'Technical Screening, Behavioral Frameworks & Executive Simulation',
+    description: 'Comprehensive interview preparation guides covering system design, coding assessments, STAR behavioral responses, and compensation negotiation.',
+    keywords: ['interview preparation', 'technical interview questions', 'mock interviews', 'behavioral interview'],
+    icon: Target,
+  },
+  'future-of-work': {
+    title: 'Future of Work & Autonomous Workflows',
+    tagline: 'AI Agent Collaboration, Remote Workforce Dynamics & Skill Evolution',
+    description: 'Insights on the evolving landscape of work, human-AI hybrid teams, autonomous agent workflows, and emerging high-demand skill categories.',
+    keywords: ['future of work', 'remote work trends', 'AI agents in business', 'workforce automation'],
+    icon: Sparkles,
   },
 };
 
@@ -129,6 +161,12 @@ export default function TopicHubPage() {
     },
   };
 
+  const breadcrumbsSchema = buildBreadcrumbSchema([
+    { name: 'Home', url: 'https://talentxcel.in' },
+    { name: 'Topics', url: 'https://talentxcel.in/topics/artificial-intelligence' },
+    { name: topic.title, url: canonicalUrl },
+  ]);
+
   return (
     <>
       <Helmet>
@@ -140,14 +178,13 @@ export default function TopicHubPage() {
         <meta property="og:type" content="website" />
         <meta property="og:url" content={canonicalUrl} />
 
-        <script type="application/ld+json">
-          {JSON.stringify(topicSchema)}
-        </script>
+        <script type="application/ld+json">{JSON.stringify(topicSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(breadcrumbsSchema)}</script>
       </Helmet>
 
       <div className="min-h-screen bg-slate-950 text-slate-100 py-8 px-4 pb-20">
         <div className="max-w-6xl mx-auto space-y-8">
-          {/* Breadcrumb Navigation */}
+          {/* Breadcrumbs */}
           <nav aria-label="Breadcrumb" className="text-xs text-slate-400 flex items-center gap-1.5">
             <Link to="/" className="hover:text-white transition-colors">Home</Link>
             <ChevronRight className="w-3.5 h-3.5" />
@@ -156,17 +193,17 @@ export default function TopicHubPage() {
             <span className="text-blue-400 font-medium">{topic.title}</span>
           </nav>
 
-          {/* Topic Hero Header */}
-          <header className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 md:p-8 backdrop-blur-sm shadow-xl">
-            <div className="flex items-start gap-4">
-              <div className="p-3.5 bg-blue-600/10 border border-blue-500/30 rounded-2xl text-blue-400">
+          {/* Topic Hero */}
+          <header className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-sm shadow-xl">
+            <div className="flex items-start gap-5">
+              <div className="p-4 bg-blue-600/10 border border-blue-500/30 rounded-2xl text-blue-400 shrink-0">
                 <TopicIcon className="w-8 h-8" />
               </div>
               <div className="space-y-2">
                 <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
                   {topic.title}
                 </h1>
-                <p className="text-blue-400 text-sm font-medium">
+                <p className="text-blue-400 text-sm font-semibold">
                   {topic.tagline}
                 </p>
                 <p className="text-slate-300 text-sm max-w-3xl leading-relaxed">
@@ -175,14 +212,14 @@ export default function TopicHubPage() {
               </div>
             </div>
 
-            {/* Other Topics Pills */}
+            {/* Topic Navigation Pills */}
             <div className="mt-6 pt-6 border-t border-slate-800/80 flex items-center gap-2 flex-wrap">
-              <span className="text-xs text-slate-400 font-medium mr-1">Explore Topics:</span>
+              <span className="text-xs text-slate-400 font-medium mr-1">All Topics:</span>
               {Object.entries(TOPIC_REGISTRY).map(([key, item]) => (
                 <Link key={key} to={`/topics/${key}`}>
                   <Badge
                     variant={key === normalizedSlug ? 'default' : 'outline'}
-                    className={key === normalizedSlug ? 'bg-blue-600 text-white' : 'border-slate-800 text-slate-400 hover:text-white'}
+                    className={key === normalizedSlug ? 'bg-blue-600 text-white' : 'border-slate-800 text-slate-400 hover:text-white text-xs'}
                   >
                     {item.title.split('&')[0].trim()}
                   </Badge>

@@ -8,33 +8,63 @@ import {
   MessageCircle,
   ThumbsUp,
   Share2,
-  Calendar,
-  Sparkles,
   ChevronRight,
   ShieldCheck,
-  User,
   Copy,
   Check,
+  Tag,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { getPublicPostUrl, getPublicProfileUrl } from '@/lib/seo/canonicalUrls';
+import { buildPostSchema, buildBreadcrumbSchema } from '@/lib/seo/structuredDataSchemas';
+
+function generateDeterministicTitle(content: string, authorName: string): string {
+  if (!content) return `${authorName} on TalentXcel`;
+  const clean = content.replace(/[#*`_~]/g, '').trim();
+  const firstSentence = clean.split(/[.!?\n]/)[0]?.trim();
+  if (firstSentence && firstSentence.length >= 10 && firstSentence.length <= 90) {
+    return firstSentence;
+  }
+  return clean.slice(0, 75).trim() + (clean.length > 75 ? '...' : '');
+}
+
+function extractTopics(content: string): { slug: string; label: string }[] {
+  const text = (content || '').toLowerCase();
+  const topics: { slug: string; label: string }[] = [];
+
+  if (text.includes('ai') || text.includes('artificial intelligence') || text.includes('machine learning')) {
+    topics.push({ slug: 'artificial-intelligence', label: 'Artificial Intelligence' });
+  }
+  if (text.includes('education') || text.includes('college') || text.includes('degree') || text.includes('learning')) {
+    topics.push({ slug: 'education', label: 'Higher Education' });
+  }
+  if (text.includes('hiring') || text.includes('recruit') || text.includes('talent') || text.includes('interview')) {
+    topics.push({ slug: 'recruitment', label: 'Recruitment & Hiring' });
+  }
+  if (text.includes('career') || text.includes('resume') || text.includes('growth') || text.includes('job')) {
+    topics.push({ slug: 'careers', label: 'Careers & Growth' });
+  }
+  if (text.includes('leadership') || text.includes('management') || text.includes('director') || text.includes('lead')) {
+    topics.push({ slug: 'leadership', label: 'Leadership' });
+  }
+
+  return topics.length > 0 ? topics : [{ slug: 'careers', label: 'Careers & Insights' }];
+}
 
 export default function PublicPostPage() {
   const { slugOrId, id } = useParams<{ slugOrId?: string; id?: string }>();
   const postId = slugOrId || id;
   const [copied, setCopied] = useState(false);
 
-  const { data: post, isLoading, error } = useQuery({
+  const { data: post, isLoading } = useQuery({
     queryKey: ['public-post', postId],
     queryFn: async () => {
       if (!postId) throw new Error('Post identifier is required');
 
-      // 1. Query by ID
       const { data: postData, error: postErr } = await supabase
         .from('posts')
         .select('*')
@@ -44,7 +74,6 @@ export default function PublicPostPage() {
       if (postErr) throw postErr;
       if (!postData) return null;
 
-      // 2. Fetch Author Profile
       const { data: authorData } = await supabase
         .from('profiles')
         .select('id, full_name, username, title, profile_picture_url')
@@ -104,9 +133,10 @@ export default function PublicPostPage() {
   const authorProfileUrl = getPublicProfileUrl(authorUsername);
 
   const cleanContent = (post.content || '').trim();
-  const headline = cleanContent.slice(0, 100).replace(/\n/g, ' ') || 'TalentXcel Professional Update';
+  const headline = generateDeterministicTitle(cleanContent, authorName);
   const metaDescription = cleanContent.slice(0, 160).replace(/\n/g, ' ');
-  const pageTitle = `${authorName}: "${headline}" | TalentXcel`;
+  const pageTitle = `${headline} | ${authorName} on TalentXcel`;
+  const topics = extractTopics(cleanContent);
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(canonicalUrl);
@@ -115,57 +145,21 @@ export default function PublicPostPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const structuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'SocialMediaPosting',
+  const structuredData = buildPostSchema({
     headline,
-    articleBody: cleanContent,
+    content: cleanContent,
     datePublished: post.created_at,
-    dateModified: post.created_at,
-    author: {
-      '@type': 'Person',
-      name: authorName,
-      url: authorProfileUrl,
-    },
-    publisher: {
-      '@type': 'Organization',
-      name: 'TalentXcel',
-      url: 'https://talentxcel.in',
-      logo: {
-        '@type': 'ImageObject',
-        url: 'https://talentxcel.in/talentxcel-official-logo.png',
-      },
-    },
-    mainEntityOfPage: {
-      '@type': 'WebPage',
-      '@id': canonicalUrl,
-    },
-  };
+    authorName,
+    authorUrl: authorProfileUrl,
+    postUrl: canonicalUrl,
+    mediaUrls: Array.isArray(post.media_urls) ? post.media_urls : undefined,
+  });
 
-  const breadcrumbsSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: 'Home',
-        item: 'https://talentxcel.in',
-      },
-      {
-        '@type': 'ListItem',
-        position: 2,
-        name: 'Network Feed',
-        item: 'https://talentxcel.in/network',
-      },
-      {
-        '@type': 'ListItem',
-        position: 3,
-        name: authorName,
-        item: canonicalUrl,
-      },
-    ],
-  };
+  const breadcrumbsSchema = buildBreadcrumbSchema([
+    { name: 'Home', url: 'https://talentxcel.in' },
+    { name: 'Network', url: 'https://talentxcel.in/network' },
+    { name: headline, url: canonicalUrl },
+  ]);
 
   return (
     <>
@@ -183,33 +177,26 @@ export default function PublicPostPage() {
         <meta name="twitter:title" content={pageTitle} />
         <meta name="twitter:description" content={metaDescription} />
 
-        <script type="application/ld+json">
-          {JSON.stringify(structuredData)}
-        </script>
-        <script type="application/ld+json">
-          {JSON.stringify(breadcrumbsSchema)}
-        </script>
+        <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
+        <script type="application/ld+json">{JSON.stringify(breadcrumbsSchema)}</script>
       </Helmet>
 
       <div className="min-h-screen bg-slate-950 text-slate-100 py-8 px-4">
         <div className="max-w-3xl mx-auto space-y-6">
-          {/* Breadcrumb Navigation */}
+          {/* Breadcrumbs */}
           <nav aria-label="Breadcrumb" className="text-xs text-slate-400 flex items-center gap-1.5">
             <Link to="/" className="hover:text-white transition-colors">Home</Link>
             <ChevronRight className="w-3.5 h-3.5" />
             <Link to="/network" className="hover:text-white transition-colors">Network</Link>
             <ChevronRight className="w-3.5 h-3.5" />
-            <span className="text-purple-400 font-medium">Post</span>
+            <span className="text-purple-400 font-medium truncate max-w-[200px]">{headline}</span>
           </nav>
 
-          {/* Main Post Card */}
-          <article className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 md:p-8 backdrop-blur-sm shadow-xl space-y-6">
-            {/* Header: Author Info */}
+          {/* Main Post Article Card */}
+          <article className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-sm shadow-xl space-y-6">
+            {/* Header: Author & Date */}
             <div className="flex items-start justify-between gap-4">
-              <Link
-                to={`/@${authorUsername}`}
-                className="flex items-center gap-3.5 group"
-              >
+              <Link to={`/@${authorUsername}`} className="flex items-center gap-3.5 group">
                 <Avatar className="w-12 h-12 border-2 border-purple-500/30 group-hover:border-purple-400 transition-colors">
                   <AvatarImage src={post.author?.profile_picture_url || undefined} alt={authorName} />
                   <AvatarFallback className="bg-purple-950 text-purple-200 font-bold">
@@ -221,9 +208,7 @@ export default function PublicPostPage() {
                     {authorName}
                     <ShieldCheck className="w-4 h-4 text-emerald-400" />
                   </div>
-                  <div className="text-xs text-slate-400">
-                    {authorTitle}
-                  </div>
+                  <div className="text-xs text-slate-400">{authorTitle}</div>
                   <div className="text-[11px] text-slate-500 mt-0.5">
                     Published on {new Date(post.created_at).toLocaleDateString(undefined, {
                       year: 'numeric',
@@ -245,12 +230,17 @@ export default function PublicPostPage() {
               </Button>
             </div>
 
+            {/* Post Title Heading */}
+            <h1 className="text-2xl font-bold text-white tracking-tight leading-snug">
+              {headline}
+            </h1>
+
             {/* Post Content Body */}
             <div className="text-slate-200 text-base leading-relaxed whitespace-pre-line break-words">
-              {post.content}
+              {cleanContent}
             </div>
 
-            {/* Post Media Attachments (if any) */}
+            {/* Post Media (if any) */}
             {Array.isArray(post.media_urls) && post.media_urls.length > 0 && (
               <div className="grid grid-cols-1 gap-4 pt-2">
                 {post.media_urls.map((url: string, idx: number) => {
@@ -260,21 +250,35 @@ export default function PublicPostPage() {
                       key={idx}
                       src={url}
                       controls
-                      className="rounded-xl border border-slate-800 max-h-[500px] w-full bg-black"
+                      className="rounded-2xl border border-slate-800 max-h-[500px] w-full bg-black"
                     />
                   ) : (
                     <img
                       key={idx}
                       src={url}
-                      alt="Post visual"
-                      className="rounded-xl border border-slate-800 max-h-[500px] object-cover w-full"
+                      alt="Post attachment"
+                      className="rounded-2xl border border-slate-800 max-h-[500px] object-cover w-full"
                     />
                   );
                 })}
               </div>
             )}
 
-            {/* Footer Stats & Actions */}
+            {/* Topic Badges */}
+            <div className="pt-4 border-t border-slate-800 flex items-center gap-2 flex-wrap">
+              <span className="text-xs text-slate-400 flex items-center gap-1">
+                <Tag className="w-3.5 h-3.5 text-slate-500" /> Topics:
+              </span>
+              {topics.map((t) => (
+                <Link key={t.slug} to={`/topics/${t.slug}`}>
+                  <Badge variant="outline" className="border-slate-800 text-slate-300 hover:text-white hover:border-slate-700 text-xs">
+                    {t.label}
+                  </Badge>
+                </Link>
+              ))}
+            </div>
+
+            {/* Footer Stats & Feed Link */}
             <div className="pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
               <div className="flex items-center gap-4">
                 <span className="flex items-center gap-1.5">

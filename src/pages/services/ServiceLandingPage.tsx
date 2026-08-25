@@ -4,7 +4,6 @@ import { Helmet } from 'react-helmet-async';
 import {
   Briefcase,
   Sparkles,
-  Users,
   ShieldCheck,
   ArrowRight,
   CheckCircle2,
@@ -14,11 +13,13 @@ import {
   Cpu,
   GraduationCap,
   Target,
+  Users,
+  Award,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { getPublicServiceUrl } from '@/lib/seo/canonicalUrls';
+import { buildServiceSchema, buildBreadcrumbSchema } from '@/lib/seo/structuredDataSchemas';
 
 interface ServiceDefinition {
   title: string;
@@ -73,7 +74,27 @@ const SERVICE_REGISTRY: Record<string, ServiceDefinition> = {
     ctaLink: '/contact',
     icon: Briefcase,
   },
-  'it-consulting': {
+  'rpo': {
+    title: 'Recruitment Process Outsourcing (RPO)',
+    tagline: 'End-to-End Hiring Delegation, Embedded Recruiter Pods & ATS Operations',
+    description: 'Outsource partial or complete recruitment workflows with dedicated TalentXcel recruiter teams managing job postings, candidate pipelines, interview coordination, and offer management.',
+    targetAudience: 'Mid-market and enterprise organizations scaling rapidly without expanding internal recruiting headcount.',
+    deliverables: [
+      'Dedicated embedded talent acquisition specialists',
+      'Full ATS pipeline configuration and candidate tracking',
+      'Employer brand optimization and job ad distribution',
+      'Weekly analytics on cost-per-hire and pipeline velocity',
+    ],
+    benefits: [
+      '40% reduction in overall talent acquisition costs',
+      'Guaranteed time-to-fill SLAs across key departments',
+      'Seamless extension of internal HR teams',
+    ],
+    ctaText: 'Explore RPO Solutions',
+    ctaLink: '/contact',
+    icon: Users,
+  },
+  'it-services': {
     title: 'IT & Technology Systems Consulting',
     tagline: 'Enterprise Software Architecture, Cloud Modernization & Tech Staff Augmentation',
     description: 'End-to-end technology advisory, digital transformation architecture, and senior engineering team augmentation for modern enterprise technology stacks.',
@@ -193,6 +214,26 @@ const SERVICE_REGISTRY: Record<string, ServiceDefinition> = {
     ctaLink: '/passport',
     icon: ShieldCheck,
   },
+  'job-placement': {
+    title: 'Direct Job Placement & Candidate Sourcing',
+    tagline: 'Fast-Track Introductions to Verified Employers and Hiring Teams',
+    description: 'Direct placement services connecting qualified candidates directly to hiring managers at verified enterprises, eliminating cold application black holes.',
+    targetAudience: 'Active job seekers and professionals seeking direct introductions to hiring companies.',
+    deliverables: [
+      'Direct resume submission to verified hiring managers',
+      'Application tracking and interview scheduling support',
+      'Pre-interview briefing and salary expectation alignment',
+      'Feedback loops on interview performance',
+    ],
+    benefits: [
+      'Priority consideration over general applicant pools',
+      'Transparent status updates throughout the hiring cycle',
+      'Zero fee to job candidates',
+    ],
+    ctaText: 'Explore Verified Jobs',
+    ctaLink: '/jobs',
+    icon: Award,
+  },
 };
 
 export default function ServiceLandingPage() {
@@ -205,24 +246,18 @@ export default function ServiceLandingPage() {
   const pageTitle = `${service.title} | TalentXcel Strategic Services`;
   const pageDescription = service.description;
 
-  const serviceSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'Service',
+  const serviceSchema = buildServiceSchema({
     name: service.title,
     description: service.description,
-    provider: {
-      '@type': 'Organization',
-      name: 'TalentXcel Services Pvt Ltd',
-      url: 'https://talentxcel.in',
-      logo: 'https://talentxcel.in/talentxcel-official-logo.png',
-    },
     serviceType: service.title,
-    areaServed: {
-      '@type': 'Country',
-      name: 'India',
-    },
     url: canonicalUrl,
-  };
+  });
+
+  const breadcrumbsSchema = buildBreadcrumbSchema([
+    { name: 'Home', url: 'https://talentxcel.in' },
+    { name: 'Services', url: 'https://talentxcel.in/services' },
+    { name: service.title, url: canonicalUrl },
+  ]);
 
   return (
     <>
@@ -235,14 +270,13 @@ export default function ServiceLandingPage() {
         <meta property="og:type" content="website" />
         <meta property="og:url" content={canonicalUrl} />
 
-        <script type="application/ld+json">
-          {JSON.stringify(serviceSchema)}
-        </script>
+        <script type="application/ld+json">{JSON.stringify(serviceSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(breadcrumbsSchema)}</script>
       </Helmet>
 
       <div className="min-h-screen bg-slate-950 text-slate-100 py-8 px-4 pb-20">
         <div className="max-w-5xl mx-auto space-y-10">
-          {/* Breadcrumb Navigation */}
+          {/* Breadcrumbs */}
           <nav aria-label="Breadcrumb" className="text-xs text-slate-400 flex items-center gap-1.5">
             <Link to="/" className="hover:text-white transition-colors">Home</Link>
             <ChevronRight className="w-3.5 h-3.5" />
@@ -251,7 +285,7 @@ export default function ServiceLandingPage() {
             <span className="text-blue-400 font-medium">{service.title}</span>
           </nav>
 
-          {/* Hero Section */}
+          {/* Hero */}
           <header className="bg-slate-900/90 border border-slate-800 rounded-3xl p-8 md:p-12 backdrop-blur-sm shadow-2xl space-y-6">
             <div className="flex items-start gap-5">
               <div className="p-4 bg-blue-600/10 border border-blue-500/30 rounded-2xl text-blue-400 shrink-0">
@@ -261,7 +295,7 @@ export default function ServiceLandingPage() {
                 <h1 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight leading-tight">
                   {service.title}
                 </h1>
-                <p className="text-blue-400 text-base md:text-lg font-medium">
+                <p className="text-blue-400 text-base md:text-lg font-semibold">
                   {service.tagline}
                 </p>
                 <p className="text-slate-300 text-base leading-relaxed max-w-3xl">
@@ -282,9 +316,8 @@ export default function ServiceLandingPage() {
             </div>
           </header>
 
-          {/* Deliverables & Benefits Grid */}
+          {/* Deliverables & Benefits */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Core Deliverables */}
             <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-8 space-y-4">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
                 <Layers className="w-5 h-5 text-indigo-400" /> What We Deliver
@@ -299,7 +332,6 @@ export default function ServiceLandingPage() {
               </ul>
             </div>
 
-            {/* Strategic Benefits */}
             <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-8 space-y-4">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
                 <ShieldCheck className="w-5 h-5 text-emerald-400" /> Key Strategic Benefits
@@ -315,7 +347,7 @@ export default function ServiceLandingPage() {
             </div>
           </div>
 
-          {/* Other Services Matrix */}
+          {/* Service Matrix */}
           <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-6">
             <h3 className="text-base font-semibold text-white mb-3">All TalentXcel Strategic Services</h3>
             <div className="flex items-center gap-2 flex-wrap">
@@ -323,7 +355,7 @@ export default function ServiceLandingPage() {
                 <Link key={key} to={`/services/${key}`}>
                   <Badge
                     variant={key === normalizedSlug ? 'default' : 'outline'}
-                    className={key === normalizedSlug ? 'bg-blue-600 text-white' : 'border-slate-800 text-slate-400 hover:text-white'}
+                    className={key === normalizedSlug ? 'bg-blue-600 text-white' : 'border-slate-800 text-slate-400 hover:text-white text-xs'}
                   >
                     {s.title.split('&')[0].trim()}
                   </Badge>

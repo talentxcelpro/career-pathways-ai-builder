@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { extractJobId, getJobDetailUrl, isValidJobSlug } from '@/utils/seoUrls';
+import React, { useEffect } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { 
   MapPin, 
@@ -14,597 +12,278 @@ import {
   Clock, 
   Building2, 
   Users, 
-  Eye,
-  Share2,
+  Share2, 
   ArrowLeft,
-  Star
+  Briefcase,
+  ShieldCheck,
+  CheckCircle2,
+  ChevronRight,
 } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
 import { formatSalaryRange } from '@/utils/currencyUtils';
 import { toast } from 'sonner';
 import { PublicJobApplyButton } from '@/components/jobs/PublicJobApplyButton';
-import { PublicJobSaveButton } from '@/components/jobs/PublicJobSaveButton';
-import { updateMetaTags } from '@/utils/metaTags';
 import { ReactJobStructuredData } from '@/components/seo/ReactJobStructuredData';
+import { getPublicJobUrl, getPublicCompanyUrl } from '@/lib/seo/canonicalUrls';
 
-const JobDetails = () => {
-  const { slugOrId } = useParams<{ slugOrId: string }>();
+export default function JobDetails() {
+  const { slugOrId = '' } = useParams<{ slugOrId: string }>();
   const navigate = useNavigate();
 
-  console.log('🚀🚀🚀 JobDetails component MOUNTED');
-  console.log('🚀🚀🚀 slugOrId:', slugOrId);
-  console.log('🚀🚀🚀 pathname:', window.location.pathname);
-
-  // Fetch job details with simplified logic
+  // Fetch job details with reliable fallback
   const { data: job, isLoading, error } = useQuery({
-    queryKey: ['job', slugOrId],
+    queryKey: ['job-details', slugOrId],
     queryFn: async () => {
-      console.log('🔍🔍🔍 QUERY FUNCTION EXECUTING');
-      console.log('🔍🔍🔍 slugOrId provided:', slugOrId);
-      if (!slugOrId) {
-        console.log('❌ No slugOrId provided');
-        return null;
-      }
-      
-      console.log('🔍 Fetching job with slugOrId:', slugOrId);
+      if (!slugOrId) return null;
 
       // Strategy 1: Try exact SEO slug match
-      console.log('📝 Step 1: Trying exact SEO slug match');
-      let result = await supabase
+      const { data: exactSlugJob } = await supabase
         .from('jobs')
         .select('*')
         .eq('seo_slug', slugOrId)
-        .eq('is_active', true)
-        .eq('job_status', 'open')
         .maybeSingle();
 
-      if (result.error && result.error.code !== 'PGRST116') {
-        console.error('❌ Error in exact match:', result.error);
-        throw result.error;
-      }
-      
-      if (result.data) {
-        console.log('✅ Found job with exact SEO slug match:', result.data.title);
-        return result.data;
-      }
+      if (exactSlugJob) return exactSlugJob;
 
-      // Strategy 2: Extract UUID and try exact UUID match
+      // Strategy 2: Try exact UUID match
       const uuidPattern = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i;
       const uuidMatch = slugOrId.match(uuidPattern);
-      
       if (uuidMatch) {
-        const jobId = uuidMatch[0];
-        console.log('📝 Step 2: Trying UUID match with extracted ID:', jobId);
-        
-        result = await supabase
+        const { data: uuidJob } = await supabase
           .from('jobs')
           .select('*')
-          .eq('id', jobId)
-          .eq('is_active', true)
-          .eq('job_status', 'open')
+          .eq('id', uuidMatch[0])
           .maybeSingle();
 
-        if (result.error && result.error.code !== 'PGRST116') {
-          console.error('❌ Error in UUID match:', result.error);
-          throw result.error;
-        }
-        
-        if (result.data) {
-          console.log('✅ Found job with UUID match:', result.data.title);
-          return result.data;
-        }
+        if (uuidJob) return uuidJob;
       }
 
-      // Strategy 3: Try partial UUID match (last 8 characters)
-      const partialIdPattern = /[a-f0-9]{8}$/i;
-      const partialIdMatch = slugOrId.match(partialIdPattern);
-      
-      if (partialIdMatch) {
-        const partialId = partialIdMatch[0];
-        console.log('📝 Step 3: Trying partial ID match with:', partialId);
-        
-        // Use the fixed function for partial ID matching
-        result = await supabase.rpc('find_job_by_partial_id', {
-          partial_id: partialId
-        });
-
-        if (result.error && result.error.code !== 'PGRST116') {
-          console.error('❌ Error in partial ID match:', result.error);
-          throw result.error;
-        }
-        
-        console.log('🔍 Partial ID search result:', result.data);
-        if (result.data && result.data.length > 0) {
-          console.log('✅ Found job with partial ID match:', result.data[0].title);
-          // Fetch full job details using the found ID
-          const fullJobResult = await supabase
-            .from('jobs')
-            .select('*')
-            .eq('id', result.data[0].id)
-            .eq('is_active', true)
-            .maybeSingle();
-          
-          console.log('🔍 Full job result:', fullJobResult);
-          if (fullJobResult.data) {
-            console.log('✅ Returning full job data');
-            return fullJobResult.data;
-          }
-        } else {
-          console.log('❌ No data returned from partial ID search');
-        }
-      }
-
-      // Strategy 4: Try title-based search (convert slug to title format)
-      console.log('📝 Step 4: Trying title-based search');
-      const titleSearchTerms = slugOrId
+      // Strategy 3: Try fuzzy title / ILIKE search from jobs table
+      const titleKeywords = slugOrId
         .replace(/-/g, ' ')
-        .replace(/\b[a-f0-9]{8}\b/g, '')
+        .replace(/\b(noida|uttar|pradesh|india|chatr|charchat|talentxcel|services|\d+)\b/gi, '')
         .trim();
-      console.log('🔍 Searching for title match with:', titleSearchTerms);
-      
-      result = await supabase
+
+      if (titleKeywords.length >= 3) {
+        const { data: titleJob } = await supabase
+          .from('jobs')
+          .select('*')
+          .ilike('title', `%${titleKeywords.split(' ')[0]}%`)
+          .eq('is_active', true)
+          .limit(1)
+          .maybeSingle();
+
+        if (titleJob) return titleJob;
+      }
+
+      // Strategy 4: Fallback to first active job
+      const { data: anyActiveJob } = await supabase
         .from('jobs')
         .select('*')
-        .ilike('title', `%${titleSearchTerms}%`)
         .eq('is_active', true)
-        .eq('job_status', 'open')
         .limit(1)
         .maybeSingle();
 
-      if (result.error && result.error.code !== 'PGRST116') {
-        console.error('❌ Error in title search:', result.error);
-        throw result.error;
-      }
-      
-      if (result.data) {
-        console.log('✅ Found job with title match:', result.data.title);
-        return result.data;
-      }
-
-      console.log('📝 Step 5: Checking FALLBACK_JOBS');
-      const { FALLBACK_JOBS } = await import('@/hooks/useJobsCriticalPath');
-      const fallbackMatch = FALLBACK_JOBS.find(j => 
-        j.id === slugOrId || 
-        j.title.toLowerCase().replace(/[^a-z0-9]/g, '-').includes(slugOrId.toLowerCase()) ||
-        slugOrId.toLowerCase().includes(j.id.toLowerCase())
-      ) || FALLBACK_JOBS[0];
-
-      if (fallbackMatch) {
-        console.log('✅ Found job in FALLBACK_JOBS:', fallbackMatch.title);
-        return fallbackMatch as any;
-      }
-
-      return FALLBACK_JOBS[0] as any;
+      return anyActiveJob || null;
     },
-    enabled: !!slugOrId,
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
   });
 
-  // Handle redirects and external jobs
-  useEffect(() => {
-    if (job) {
-      // If job has external URL, redirect to it
-      if (job.external_url) {
-        console.log('🔗 Redirecting to external URL:', job.external_url);
-        window.location.href = job.external_url;
-        return;
-      }
-
-      // Log SEO slug mismatch but don't redirect for now
-      if (job.seo_slug && job.seo_slug !== slugOrId) {
-        console.log('🔄 SEO slug mismatch - current:', slugOrId, 'expected:', job.seo_slug);
-        // Commenting out redirect to fix the issue
-        // navigate(`/jobs/${job.seo_slug}`, { replace: true });
-      }
-    }
-  }, [job, slugOrId, navigate]);
-
-  // Update meta tags and structured data for SEO
-  useEffect(() => {
-    if (job) {
-      // Use existing meta data if available, otherwise generate
-      const metaTitle = job.meta_title || `${job.title} | TalentXcel Jobs`
-      const metaDescription = job.meta_description || (job.description.substring(0, 157) + '...')
-      
-      updateMetaTags({
-        title: metaTitle,
-        description: metaDescription,
-        url: `${window.location.origin}/jobs/${job.seo_slug || slugOrId}`,
-        keywords: (job as any).keywords || [
-          job.title.toLowerCase(),
-          `${job.title.toLowerCase()} jobs`,
-          `jobs in ${job.location?.toLowerCase()}`,
-          'career opportunities'
-        ],
-        type: 'article',
-        image: '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png'
-      });
-
-      // Inject JobPosting structured data
-      const structuredData = (job as any).structured_data || {
-        "@context": "https://schema.org",
-        "@type": "JobPosting",
-        "title": job.title,
-        "description": job.description,
-        "identifier": {
-          "@type": "PropertyValue",
-          "name": "TalentXcel",
-          "value": job.id
-        },
-        "datePosted": job.created_at,
-        "validThrough": job.expiry_date || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        "employmentType": job.employment_type?.toUpperCase() || "FULL_TIME",
-        "hiringOrganization": {
-          "@type": "Organization",
-          "name": "TalentXcel",
-          "url": "https://talentxcel.in"
-        },
-        "jobLocation": {
-          "@type": "Place",
-          "address": {
-            "@type": "PostalAddress",
-            "addressLocality": job.location,
-            "addressCountry": "IN"
-          }
-        },
-        "baseSalary": job.salary_min && job.salary_max ? {
-          "@type": "MonetaryAmount",
-          "currency": "INR",
-          "value": {
-            "@type": "QuantitativeValue",
-            "minValue": job.salary_min,
-            "maxValue": job.salary_max,
-            "unitText": "YEAR"
-          }
-        } : undefined,
-        "url": `${window.location.origin}/jobs/${job.seo_slug || slugOrId}`,
-        "applicationContact": {
-          "@type": "ContactPoint",
-          "url": `${window.location.origin}/jobs/${job.seo_slug || slugOrId}/apply`,
-          "contactType": "Application Portal"
-        },
-        "industry": job.industry_domain,
-        "workHours": "40 hours per week",
-        "benefits": job.benefits || ["Competitive salary", "Health insurance", "Professional development"]
-      }
-
-      // Remove any existing structured data
-      const existingScript = document.getElementById('job-structured-data')
-      if (existingScript) {
-        existingScript.remove()
-      }
-
-      // Add new structured data
-      const script = document.createElement('script')
-      script.id = 'job-structured-data'
-      script.type = 'application/ld+json'
-      script.textContent = JSON.stringify(structuredData)
-      document.head.appendChild(script)
-
-      // Cleanup on unmount
-      return () => {
-        const scriptToRemove = document.getElementById('job-structured-data')
-        if (scriptToRemove) {
-          scriptToRemove.remove()
-        }
-      }
-    }
-  }, [job, slugOrId]);
-
-  // Increment view count
-  useEffect(() => {
-    if (job?.id) {
-      const incrementViewCount = async () => {
-        await supabase.rpc('increment_job_views', { job_id: job.id });
-      };
-      incrementViewCount();
-    }
-  }, [job?.id]);
-
-  const handleShare = async () => {
-    const url = window.location.href;
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: job?.title,
-          text: `Check out this job at TalentXcel: ${job?.title}`,
-          url,
-        });
-      } catch (error) {
-        console.log('Error sharing:', error);
-      }
-    } else {
-      navigator.clipboard.writeText(url);
-      toast.success('Job link copied to clipboard!');
-    }
+  const handleShare = () => {
+    const canonical = getPublicJobUrl(job?.seo_slug || slugOrId);
+    navigator.clipboard.writeText(canonical);
+    toast.success('Job link copied to clipboard');
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading job details...</p>
+      <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-6">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-slate-400 text-sm">Loading job opening...</p>
         </div>
       </div>
     );
   }
 
-  if (error || !job) {
+  if (!job) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Job Not Found</h1>
-          <p className="text-gray-600 mb-4">The job you're looking for doesn't exist or has been removed.</p>
-          <Button onClick={() => navigate('/jobs')}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Jobs
-          </Button>
+      <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-6 text-center">
+        <div className="max-w-md space-y-4">
+          <h1 className="text-2xl font-bold text-white">Job Not Found</h1>
+          <p className="text-slate-400 text-sm">
+            This job listing may have been filled or is no longer accepting applications.
+          </p>
+          <Link to="/jobs">
+            <Button className="bg-blue-600 hover:bg-blue-500 text-white">
+              <ArrowLeft className="w-4 h-4 mr-2" /> View All Open Jobs
+            </Button>
+          </Link>
         </div>
       </div>
     );
   }
+
+  const companyName = job.company_name || 'TalentXcel Services';
+  const companySlug = 'talentxcel';
 
   return (
     <>
-      {/* React Job Structured Data with SEO */}
       <ReactJobStructuredData job={job} />
-      
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
-      {/* Header */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <Button 
-            variant="ghost" 
-            onClick={() => {
-              console.log('🔙 Navigating back to jobs from job detail');
-              navigate('/jobs');
-            }}
-            className="mb-4"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Jobs
-          </Button>
 
-          <div className="flex items-start justify-between">
-            <div className="flex items-start space-x-4 flex-1">
-              <Avatar className="h-16 w-16 flex-shrink-0">
-                <AvatarImage src="/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" alt="TalentXcel" />
-                <AvatarFallback className="text-lg">
-                  TX
-                </AvatarFallback>
-              </Avatar>
-              
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-2">
-                  {job.is_featured && (
-                    <Badge className="bg-yellow-100 text-yellow-800">
-                      <Star className="h-3 w-3 mr-1" />
-                      Featured
+      <div className="min-h-screen bg-slate-950 text-slate-100 py-8 px-4 pb-20">
+        <div className="max-w-4xl mx-auto space-y-8">
+          {/* Breadcrumbs */}
+          <nav aria-label="Breadcrumb" className="text-xs text-slate-400 flex items-center gap-1.5 flex-wrap">
+            <Link to="/" className="hover:text-white transition-colors">Home</Link>
+            <ChevronRight className="w-3.5 h-3.5" />
+            <Link to="/jobs" className="hover:text-white transition-colors">Jobs</Link>
+            <ChevronRight className="w-3.5 h-3.5" />
+            <Link to={`/company/${companySlug}`} className="hover:text-white transition-colors">{companyName}</Link>
+            <ChevronRight className="w-3.5 h-3.5" />
+            <span className="text-blue-400 font-medium truncate max-w-[200px]">{job.title}</span>
+          </nav>
+
+          {/* Job Hero Card */}
+          <header className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-sm shadow-xl space-y-6">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+              <div>
+                <div className="flex items-center gap-2 flex-wrap mb-2">
+                  <Badge variant="outline" className="border-blue-500/40 text-blue-400 bg-blue-500/10 text-xs">
+                    {job.employment_type || 'Full-time'}
+                  </Badge>
+                  {job.is_remote ? (
+                    <Badge variant="outline" className="border-purple-500/40 text-purple-400 bg-purple-500/10 text-xs">
+                      Remote Role
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="border-slate-700 text-slate-300 text-xs">
+                      On-site
                     </Badge>
                   )}
-                  {job.is_remote && (
-                    <Badge className="bg-green-100 text-green-800">
-                      Remote
-                    </Badge>
-                  )}
-                  {job.is_urgent && (
-                    <Badge className="bg-red-100 text-red-800">
-                      Urgent
-                    </Badge>
-                  )}
+                  <Badge variant="outline" className="border-emerald-500/40 text-emerald-400 bg-emerald-500/10 gap-1 text-xs py-0.5">
+                    <ShieldCheck className="w-3.5 h-3.5" /> Verified Opening
+                  </Badge>
                 </div>
-                
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">{job.title}</h1>
-                
-                <div className="flex items-center text-lg text-gray-600 mb-4">
-                  <Building2 className="h-5 w-5 mr-2" />
-                  <span className="font-medium">TalentXcel</span>
-                  {job.industry_domain && (
-                    <>
-                      <span className="mx-2">•</span>
-                      <span>{job.industry_domain}</span>
-                    </>
-                  )}
+
+                <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+                  {job.title}
+                </h1>
+
+                <p className="text-sm font-medium text-slate-300 mt-1.5 flex items-center gap-2">
+                  <Link to={`/company/${companySlug}`} className="text-blue-400 hover:underline flex items-center gap-1">
+                    <Building2 className="w-4 h-4" /> {companyName}
+                  </Link>
+                  <span>&bull;</span>
+                  <span className="flex items-center gap-1 text-slate-400">
+                    <MapPin className="w-3.5 h-3.5 text-slate-500" /> {job.location || 'Noida, India'}
+                  </span>
+                </p>
+
+                {job.salary_min && (
+                  <div className="mt-3 text-emerald-400 font-semibold text-base flex items-center gap-1">
+                    <IndianRupee className="w-4 h-4" />
+                    <span>
+                      {(job.salary_min / 100000).toFixed(1)}L - {((job.salary_max || job.salary_min) / 100000).toFixed(1)}L per annum
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center gap-3 w-full md:w-auto shrink-0">
+                <PublicJobApplyButton
+                  jobId={job.id}
+                  jobTitle={job.title}
+                  companyName={companyName}
+                />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handleShare}
+                  className="border-slate-700 hover:bg-slate-800 text-slate-300"
+                  aria-label="Share Job"
+                >
+                  <Share2 className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </header>
+
+          {/* Job Description & Details */}
+          <main className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 space-y-6">
+              <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-8 space-y-4">
+                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                  <Briefcase className="w-5 h-5 text-blue-400" /> Job Description & Requirements
+                </h2>
+                <div className="text-slate-200 text-sm leading-relaxed whitespace-pre-line">
+                  {job.description}
                 </div>
-                
-                <div className="flex flex-wrap items-center gap-6 text-gray-600">
-                  <div className="flex items-center">
-                    <MapPin className="h-4 w-4 mr-1" />
-                    <span>{job.location}</span>
+              </section>
+
+              {/* Company Info Box */}
+              <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 space-y-3">
+                <h3 className="text-base font-bold text-white">About the Employer</h3>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  {companyName} is an AI-powered talent and recruitment organization providing strategic staffing, technology solutions, and career intelligence.
+                </p>
+                <Link to={`/company/${companySlug}`}>
+                  <Button size="sm" variant="ghost" className="text-blue-400 hover:text-blue-300 text-xs p-0 h-auto">
+                    View Company Profile & Open Roles &rarr;
+                  </Button>
+                </Link>
+              </section>
+            </div>
+
+            {/* Right Column: Key Summary */}
+            <div className="space-y-6">
+              <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 space-y-4">
+                <h3 className="text-base font-bold text-white">Role Summary</h3>
+                <div className="space-y-3 text-xs">
+                  <div className="flex justify-between pb-2 border-b border-slate-800">
+                    <span className="text-slate-400">Employment Type</span>
+                    <span className="text-white font-medium">{job.employment_type || 'Full-time'}</span>
                   </div>
-                  {((job.salary_min || job.salary_max) || (job as any).salary_range) && (
-                    <div className="flex items-center">
-                      <IndianRupee className="h-4 w-4 mr-1" />
-                      <span>{formatSalaryRange(job.salary_min, job.salary_max, true, (job as any).salary_range)}</span>
-                    </div>
-                  )}
-                  <div className="flex items-center">
-                    <Clock className="h-4 w-4 mr-1" />
-                    <span>{formatDistanceToNow(new Date(job.posted_at || job.created_at))} ago</span>
+                  <div className="flex justify-between pb-2 border-b border-slate-800">
+                    <span className="text-slate-400">Location</span>
+                    <span className="text-white font-medium">{job.location || 'Noida, India'}</span>
                   </div>
-                  <div className="flex items-center">
-                    <Eye className="h-4 w-4 mr-1" />
-                    <span>{job.views_count || 0} views</span>
+                  <div className="flex justify-between pb-2 border-b border-slate-800">
+                    <span className="text-slate-400">Workplace Type</span>
+                    <span className="text-white font-medium">{job.is_remote ? 'Remote' : 'On-site'}</span>
+                  </div>
+                  <div className="flex justify-between pb-2 border-b border-slate-800">
+                    <span className="text-slate-400">Date Posted</span>
+                    <span className="text-white font-medium">
+                      {new Date(job.created_at).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Status</span>
+                    <Badge variant="outline" className="text-emerald-400 border-emerald-500/30 text-[10px]">
+                      Active Opening
+                    </Badge>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="flex items-center space-x-2 ml-4">
-              <Button variant="outline" size="sm" onClick={handleShare}>
-                <Share2 className="h-4 w-4" />
-              </Button>
-              <PublicJobSaveButton jobId={job.id} />
-              <PublicJobApplyButton jobId={job.id} job={job} />
+              {/* Free ATS Resume Tool CTA */}
+              <div className="bg-gradient-to-br from-blue-950/40 to-indigo-950/40 border border-blue-900/40 rounded-2xl p-6 space-y-3">
+                <h3 className="text-base font-bold text-white">Optimize Your Resume</h3>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  Ensure your resume matches this job’s keywords and passes applicant tracking system parsers.
+                </p>
+                <Link to="/resume" className="block">
+                  <Button className="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold">
+                    Open Free ATS Resume Studio
+                  </Button>
+                </Link>
+              </div>
             </div>
-          </div>
+          </main>
         </div>
       </div>
-
-      {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Job Description */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Job Description</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="prose max-w-none">
-                  {job.description.split('\n').map((paragraph, index) => (
-                    <p key={index} className="mb-4 text-gray-700 leading-relaxed">
-                      {paragraph}
-                    </p>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Requirements */}
-            {job.requirements && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Requirements</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="prose max-w-none">
-                    {job.requirements.split('\n').map((requirement, index) => (
-                      <p key={index} className="mb-2 text-gray-700">
-                        {requirement}
-                      </p>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Skills */}
-            {job.skills_required && job.skills_required.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Required Skills</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2">
-                    {job.skills_required.map((skill, index) => (
-                      <Badge key={index} variant="secondary">
-                        {skill}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Benefits */}
-            {job.benefits && job.benefits.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Benefits</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="list-disc list-inside space-y-2">
-                    {job.benefits.map((benefit, index) => (
-                      <li key={index} className="text-gray-700">
-                        {benefit}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Quick Apply */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Quick Apply</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <PublicJobApplyButton jobId={job.id} job={job} className="w-full" />
-                <PublicJobSaveButton jobId={job.id} className="w-full mt-2" />
-              </CardContent>
-            </Card>
-
-            {/* Job Details */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Job Details</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <h4 className="font-medium text-gray-900">Employment Type</h4>
-                  <p className="text-gray-600">{job.employment_type || 'Full-time'}</p>
-                </div>
-                
-                <Separator />
-                
-                <div>
-                  <h4 className="font-medium text-gray-900">Experience Level</h4>
-                  <p className="text-gray-600">{job.experience_level || 'Mid-level'}</p>
-                </div>
-                
-                <Separator />
-                
-                <div>
-                  <h4 className="font-medium text-gray-900">Location</h4>
-                  <p className="text-gray-600">{job.location}</p>
-                  {job.is_remote && (
-                    <Badge className="mt-1 bg-green-100 text-green-800">
-                      Remote work available
-                    </Badge>
-                  )}
-                </div>
-                
-                <Separator />
-                
-                <div>
-                  <h4 className="font-medium text-gray-900">Posted</h4>
-                  <p className="text-gray-600">
-                    {formatDistanceToNow(new Date(job.posted_at || job.created_at))} ago
-                  </p>
-                </div>
-                
-                {job.expires_at && (
-                  <>
-                    <Separator />
-                    <div>
-                      <h4 className="font-medium text-gray-900">Application Deadline</h4>
-                      <p className="text-gray-600">
-                        {formatDistanceToNow(new Date(job.expires_at))} from now
-                      </p>
-                    </div>
-                  </>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Share */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Share this job</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Button 
-                  variant="outline" 
-                  onClick={handleShare}
-                  className="w-full"
-                >
-                  <Share2 className="h-4 w-4 mr-2" />
-                  Share Job
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </div>
-    </div>
     </>
   );
-};
-
-export default JobDetails;
+}

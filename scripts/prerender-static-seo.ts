@@ -6,6 +6,14 @@ import { INDIAN_INSTITUTIONS_CATALOG } from '../src/data/indianInstitutionsCatal
 import { SEED_PROGRAMS, SEED_SCHOLARSHIPS } from '../src/services/globalEducationService.js';
 import { FOUNDATION_NEWS_ARTICLES } from '../src/data/newsArticles.js';
 import { buildJobPostingSchema } from '../src/lib/seo/jobPostingSchema.js';
+import {
+  buildTalentXcelOrganizationSchema,
+  buildBreadcrumbSchema,
+  buildWebPageSchema,
+  buildServiceSchema,
+  buildFAQSchema,
+  buildPostSchema,
+} from '../src/lib/seo/structuredDataSchemas.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -49,7 +57,7 @@ async function prerender() {
       canonical: string;
       h1: string;
       bodyContentHtml: string;
-      jsonLd?: object;
+      jsonLd?: object | object[];
     }
   ) {
     const cleanPath = routePath.replace(/^\//, '').replace(/\/$/, '');
@@ -87,16 +95,21 @@ async function prerender() {
     }
 
     // 4. OpenGraph & Schema
+    let schemaScripts = '';
+    if (meta.jsonLd) {
+      const schemas = Array.isArray(meta.jsonLd) ? meta.jsonLd : [meta.jsonLd];
+      schemaScripts = schemas
+        .filter(Boolean)
+        .map((s) => `<script type="application/ld+json">\n${JSON.stringify(s, null, 2)}\n</script>`)
+        .join('\n');
+    }
+
     const ogInjections = `
     <meta property="og:title" content="${escapeHtml(meta.title)}" />
     <meta property="og:description" content="${escapeHtml(meta.description)}" />
     <meta property="og:url" content="${meta.canonical}" />
     <meta property="og:type" content="website" />
-    ${
-      meta.jsonLd
-        ? `<script type="application/ld+json">\n${JSON.stringify(meta.jsonLd, null, 2)}\n</script>`
-        : ''
-    }
+    ${schemaScripts}
     `;
 
     pageHtml = pageHtml.replace('</head>', `${ogInjections}\n</head>`);
@@ -127,8 +140,184 @@ async function prerender() {
     generatedCount++;
   }
 
-  // 1. Pre-render Verified Active Jobs with GSC Compliant JobPosting JSON-LD
-  console.log('Pre-rendering Database Jobs with Valid JobPosting Schema...');
+  // 1. Pre-render 18-Section Authoritative Company Page (/company/talentxcel)
+  console.log('Pre-rendering Authoritative 18-Section Company Landing Pages...');
+  const companyPages = [
+    { slug: 'talentxcel', name: 'TalentXcel Services' },
+    { slug: 'talentxcel-services', name: 'TalentXcel Services' },
+  ];
+
+  const companyFaqs = [
+    {
+      question: 'What is TalentXcel?',
+      answer: 'TalentXcel is an AI-powered career operating system and recruitment platform that integrates intelligent job matching, ATS resume optimization, verified credentials, and corporate staffing solutions.',
+    },
+    {
+      question: 'How does TalentXcel help job seekers?',
+      answer: 'Job seekers can build recruiter-ready ATS resumes, benchmark their skills with Career Passports, explore higher education degree pathways across 10,250 Indian institutions, and apply directly to verified employer jobs.',
+    },
+    {
+      question: 'What corporate recruitment services does TalentXcel provide?',
+      answer: 'TalentXcel provides end-to-end talent acquisition, contract-to-hire staffing, Recruitment Process Outsourcing (RPO), executive search, and pre-screened technical candidate pipelines.',
+    },
+    {
+      question: 'Where is TalentXcel located?',
+      answer: 'TalentXcel Services Pvt Ltd is headquartered in Noida, Uttar Pradesh, India, serving clients and job seekers globally.',
+    },
+  ];
+
+  for (const comp of companyPages) {
+    const canonical = `${BASE_URL}/company/${comp.slug}`;
+    const title = 'TalentXcel Services | AI Career & Recruitment Platform';
+    const description = 'TalentXcel is an AI-powered career, recruitment and professional growth platform connecting job seekers, employers, educators and professionals.';
+
+    const orgSchema = buildTalentXcelOrganizationSchema(canonical);
+    const breadcrumbSchema = buildBreadcrumbSchema([
+      { name: 'Home', url: BASE_URL },
+      { name: 'Companies', url: `${BASE_URL}/companies` },
+      { name: comp.name, url: canonical },
+    ]);
+    const webPageSchema = buildWebPageSchema({
+      name: title,
+      description,
+      url: canonical,
+      aboutOrgId: `${BASE_URL}/#organization`,
+    });
+    const faqSchema = buildFAQSchema(companyFaqs);
+
+    const bodyHtml = `
+      <div class="space-y-8">
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-white mb-2">1. About TalentXcel</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">TalentXcel Services Pvt Ltd is a modern technology and human capital organization headquartered in Noida, Uttar Pradesh, India.</p>
+        </section>
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-white mb-2">2. What TalentXcel Does</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">TalentXcel operates an integrated career operating system connecting job seekers, employers, and higher education institutions with AI skill matching and verified recruitment.</p>
+        </section>
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-white mb-2">3. AI-Powered Career Platform</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Algorithmic vector matching between candidate competencies and live marketplace vacancies.</p>
+        </section>
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-white mb-2">4. Jobs & Hiring</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Transparent job listings with real salaries, verified employers, and direct application pathways.</p>
+          <a href="/jobs" class="inline-block mt-3 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg">View Open Jobs &rarr;</a>
+        </section>
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-white mb-2">5. Recruitment & Staffing</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Full-lifecycle talent sourcing, contract-to-hire staffing, and Recruitment Process Outsourcing (RPO).</p>
+          <a href="/services/staffing-recruitment" class="inline-block mt-3 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg">Staffing Solutions &rarr;</a>
+        </section>
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-white mb-2">6. Resume Builder & ATS Intelligence</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Real-time ATS parsing feedback, keyword match analysis, and recruiter-ready PDF formatting.</p>
+          <a href="/resume" class="inline-block mt-3 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg">ATS Resume Builder &rarr;</a>
+        </section>
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-white mb-2">7. Frequently Asked Questions</h2>
+          <div class="space-y-3 pt-2">
+            ${companyFaqs.map((f) => `<div class="p-3 bg-slate-950 rounded-lg"><h3 class="font-semibold text-white text-xs">${escapeHtml(f.question)}</h3><p class="text-slate-400 text-xs mt-1">${escapeHtml(f.answer)}</p></div>`).join('')}
+          </div>
+        </section>
+      </div>
+    `;
+
+    writePrerenderedPage(`/company/${comp.slug}`, {
+      title,
+      description,
+      canonical,
+      h1: comp.name,
+      bodyContentHtml: bodyHtml,
+      jsonLd: [orgSchema, breadcrumbSchema, webPageSchema, faqSchema],
+    });
+  }
+
+  // 2. Pre-render All 10 Strategic Services
+  console.log('Pre-rendering 10 Strategic Service Pages...');
+  const services = [
+    { slug: 'ai-recruitment', title: 'AI Recruitment & Talent Matching Platform', desc: 'Algorithmic candidate matching, automated screening, and verified capability scoring.' },
+    { slug: 'staffing-recruitment', title: 'Corporate Staffing & Recruitment Solutions', desc: 'Full-lifecycle sourcing, contract-to-hire, and recruitment process outsourcing (RPO).' },
+    { slug: 'rpo', title: 'Recruitment Process Outsourcing (RPO)', desc: 'End-to-end hiring delegation, embedded recruiter pods, and ATS pipeline operations.' },
+    { slug: 'it-services', title: 'IT & Technology Systems Consulting', desc: 'Enterprise software architecture, cloud modernization, and tech staff augmentation.' },
+    { slug: 'ai-solutions', title: 'AI Solutions & Autonomous Workflows', desc: 'Custom AI agent systems, machine learning integration, and workplace automation.' },
+    { slug: 'corporate-training', title: 'Corporate Training & Executive Development', desc: 'Custom upskilling, behavioral leadership programs, and technical bootcamps.' },
+    { slug: 'career-services', title: 'Professional Career Services & Executive Coaching', desc: '1-on-1 career strategy, executive bio refinement, and interview simulation.' },
+    { slug: 'resume-building', title: 'ATS Resume Builder & Cover Letter Studio', desc: 'Real-time ATS parsing, intelligent bullet suggestions, and role-tailored customization.' },
+    { slug: 'talent-management', title: 'Talent Management & Skill Verification', desc: 'Career Passport credentialing, workforce skill graphs, and internal mobility.' },
+    { slug: 'job-placement', title: 'Direct Job Placement & Candidate Sourcing', desc: 'Fast-track introductions to verified employers and hiring teams.' },
+  ];
+
+  for (const serv of services) {
+    const canonical = `${BASE_URL}/services/${serv.slug}`;
+    const title = `${serv.title} | TalentXcel Strategic Services`;
+    const servSchema = buildServiceSchema({
+      name: serv.title,
+      description: serv.desc,
+      serviceType: serv.title,
+      url: canonical,
+    });
+    const breadcrumbSchema = buildBreadcrumbSchema([
+      { name: 'Home', url: BASE_URL },
+      { name: 'Services', url: `${BASE_URL}/services` },
+      { name: serv.title, url: canonical },
+    ]);
+
+    writePrerenderedPage(`/services/${serv.slug}`, {
+      title,
+      description: serv.desc,
+      canonical,
+      h1: serv.title,
+      bodyContentHtml: `<div class="bg-slate-900 border border-slate-800 rounded-2xl p-6"><h2 class="text-xl font-bold text-white mb-2">${escapeHtml(serv.title)}</h2><p class="text-slate-300 text-sm leading-relaxed">${escapeHtml(serv.desc)}</p><a href="/contact" class="inline-block mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg">Get Started &rarr;</a></div>`,
+      jsonLd: [servSchema, breadcrumbSchema],
+    });
+  }
+
+  // 3. Pre-render All 11 Topic Hubs
+  console.log('Pre-rendering 11 Topic Hubs...');
+  const topics = [
+    { slug: 'artificial-intelligence', title: 'Artificial Intelligence & Machine Learning', desc: 'Explore AI career pathways, machine learning job opportunities, and real-time product leaderboards.' },
+    { slug: 'recruitment', title: 'Recruitment & Talent Acquisition', desc: 'Discover modern talent acquisition strategies, recruitment process outsourcing (RPO), and verified candidate benchmarking.' },
+    { slug: 'careers', title: 'Career Roadmaps & Professional Growth', desc: 'Navigate modern career transitions with ATS resume optimization, psychometric matching, and verifiable credentials.' },
+    { slug: 'education', title: 'Higher Education & Degree Intelligence', desc: 'Forensic data on 10,250 accredited Indian universities and colleges, tuition-free global programs, and education pathways.' },
+    { slug: 'technology', title: 'Technology & Software Engineering', desc: 'Discover software engineering vacancies, systems design guides, technical assessment frameworks, and developer intelligence.' },
+    { slug: 'leadership', title: 'Leadership & Executive Management', desc: 'Strategic intelligence on leadership development, C-level executive hiring, and corporate talent mobility.' },
+    { slug: 'business', title: 'Business Strategy & Workforce Operations', desc: 'Explore business operations roles, strategic consulting, commercial talent pipelines, and enterprise scaling.' },
+    { slug: 'resume-writing', title: 'Resume Writing & ATS Optimization', desc: 'Master resume optimization strategies to pass applicant tracking systems and eliminate formatting rejections.' },
+    { slug: 'job-search', title: 'Job Search & Application Strategies', desc: 'Actionable job search playbooks, compensation benchmarking, company research, and recruiter outreach.' },
+    { slug: 'interview-preparation', title: 'Interview Preparation & Practice', desc: 'Comprehensive interview preparation guides covering system design, coding assessments, and STAR behavioral questions.' },
+    { slug: 'future-of-work', title: 'Future of Work & Autonomous Workflows', desc: 'Insights on the evolving landscape of work, human-AI hybrid teams, and autonomous agent workflows.' },
+  ];
+
+  for (const top of topics) {
+    const canonical = `${BASE_URL}/topics/${top.slug}`;
+    const title = `${top.title} — Career Insights, Jobs & Guides | TalentXcel`;
+    const topSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: top.title,
+      description: top.desc,
+      url: canonical,
+      publisher: { '@id': `${BASE_URL}/#organization` },
+    };
+    const breadcrumbSchema = buildBreadcrumbSchema([
+      { name: 'Home', url: BASE_URL },
+      { name: 'Topics', url: `${BASE_URL}/topics/artificial-intelligence` },
+      { name: top.title, url: canonical },
+    ]);
+
+    writePrerenderedPage(`/topics/${top.slug}`, {
+      title,
+      description: top.desc,
+      canonical,
+      h1: top.title,
+      bodyContentHtml: `<div class="bg-slate-900 border border-slate-800 rounded-2xl p-6"><h2 class="text-xl font-bold text-white mb-2">${escapeHtml(top.title)}</h2><p class="text-slate-300 text-sm leading-relaxed">${escapeHtml(top.desc)}</p></div>`,
+      jsonLd: [topSchema, breadcrumbSchema],
+    });
+  }
+
+  // 4. Pre-render Database Jobs with GSC Valid JobPosting Schema
+  console.log('Pre-rendering Database Jobs...');
   try {
     const { data: dbJobs } = await supabase
       .from('jobs')
@@ -171,87 +360,14 @@ async function prerender() {
           bodyContentHtml: bodyHtml,
           jsonLd: schema || undefined,
         });
-
-        // Also write fallback /jobs/:id path
-        if (job.seo_slug && job.id !== job.seo_slug) {
-          writePrerenderedPage(`/jobs/${job.id}`, {
-            title,
-            description,
-            canonical,
-            h1: job.title,
-            bodyContentHtml: bodyHtml,
-            jsonLd: schema || undefined,
-          });
-        }
       }
     }
   } catch (err) {
     console.warn('Jobs prerender warning:', err);
   }
 
-  // 2. Pre-render Authoritative Company Pages
-  console.log('Pre-rendering Authoritative Company Landing Pages...');
-  const companyPages = [
-    { slug: 'talentxcel', name: 'TalentXcel Services' },
-    { slug: 'talentxcel-services', name: 'TalentXcel Services' },
-    { slug: 'talentxcel-services-pvt-ltd', name: 'TalentXcel Services Pvt Ltd' },
-  ];
-
-  for (const comp of companyPages) {
-    const canonical = `${BASE_URL}/company/${comp.slug}`;
-    const title = `${comp.name} — AI Talent Platform, Jobs & Strategic Solutions | TalentXcel`;
-    const description = 'TalentXcel Services is an AI-powered talent operating system connecting verified job seekers, students, and employers with intelligent job matching, ATS resume intelligence, higher education pathways, and corporate staffing solutions.';
-
-    const orgSchema = {
-      '@context': 'https://schema.org',
-      '@type': 'Organization',
-      name: comp.name,
-      url: canonical,
-      logo: 'https://talentxcel.in/talentxcel-official-logo.png',
-      description,
-      address: {
-        '@type': 'PostalAddress',
-        addressLocality: 'Noida',
-        addressRegion: 'Uttar Pradesh',
-        addressCountry: 'IN',
-      },
-      sameAs: ['https://talentxcel.in'],
-    };
-
-    const bodyHtml = `
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 space-y-6">
-        <h2 class="text-2xl font-bold text-white">${escapeHtml(comp.name)}</h2>
-        <p class="text-sm text-blue-400 font-medium">AI-Powered Career OS & Strategic Talent Solutions &bull; Noida, India</p>
-        <p class="text-slate-300 text-sm leading-relaxed">${escapeHtml(description)}</p>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
-          <div class="p-4 bg-slate-950 rounded-xl border border-slate-800">
-            <h3 class="font-bold text-white text-sm">AI Recruitment Platform</h3>
-            <p class="text-xs text-slate-400 mt-1">Algorithmic skill matching & verified screening.</p>
-          </div>
-          <div class="p-4 bg-slate-950 rounded-xl border border-slate-800">
-            <h3 class="font-bold text-white text-sm">Strategic Staffing & RPO</h3>
-            <p class="text-xs text-slate-400 mt-1">Full-lifecycle recruitment & technical talent pods.</p>
-          </div>
-          <div class="p-4 bg-slate-950 rounded-xl border border-slate-800">
-            <h3 class="font-bold text-white text-sm">Career OS & Intelligence</h3>
-            <p class="text-xs text-slate-400 mt-1">ATS resume scoring & verified credentials.</p>
-          </div>
-        </div>
-      </div>
-    `;
-
-    writePrerenderedPage(`/company/${comp.slug}`, {
-      title,
-      description,
-      canonical,
-      h1: comp.name,
-      bodyContentHtml: bodyHtml,
-      jsonLd: orgSchema,
-    });
-  }
-
-  // 3. Pre-render Public Feed Posts
-  console.log('Pre-rendering Top Public Posts...');
+  // 5. Pre-render Public Feed Posts
+  console.log('Pre-rendering Top Public Feed Posts...');
   try {
     const { data: dbPosts } = await supabase
       .from('posts')
@@ -262,29 +378,21 @@ async function prerender() {
     if (dbPosts) {
       for (const post of dbPosts) {
         const canonical = `${BASE_URL}/post/${post.id}`;
-        const authorName = post.author?.full_name || 'TalentXcel Professional';
+        const authorName = post.author?.full_name || 'TalentXcel Member';
         const cleanContent = (post.content || '').trim();
-        const headline = cleanContent.slice(0, 100).replace(/\n/g, ' ') || 'TalentXcel Update';
+        const headline = cleanContent.split(/[.!?\n]/)[0]?.slice(0, 80).trim() || 'TalentXcel Update';
         const description = cleanContent.slice(0, 160).replace(/\n/g, ' ');
-        const title = `${authorName}: "${headline}" | TalentXcel`;
+        const title = `${headline} | ${authorName} on TalentXcel`;
 
-        const postSchema = {
-          '@context': 'https://schema.org',
-          '@type': 'SocialMediaPosting',
+        const postSchema = buildPostSchema({
           headline,
-          articleBody: cleanContent,
+          content: cleanContent,
           datePublished: post.created_at,
-          author: {
-            '@type': 'Person',
-            name: authorName,
-            url: `${BASE_URL}/@${post.author?.username || post.author?.id || 'member'}`,
-          },
-          publisher: {
-            '@type': 'Organization',
-            name: 'TalentXcel',
-            url: 'https://talentxcel.in',
-          },
-        };
+          authorName,
+          authorUrl: `${BASE_URL}/@${post.author?.username || post.author?.id || 'member'}`,
+          postUrl: canonical,
+          mediaUrls: Array.isArray(post.media_urls) ? post.media_urls : undefined,
+        });
 
         const bodyHtml = `
           <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-4">
@@ -294,7 +402,7 @@ async function prerender() {
               </div>
               <div>
                 <h2 class="text-base font-bold text-white">${escapeHtml(authorName)}</h2>
-                <p class="text-xs text-slate-400">${escapeHtml(post.author?.title || 'Professional')}</p>
+                <p class="text-xs text-slate-400">${escapeHtml(post.author?.title || 'Verified Professional')}</p>
               </div>
             </div>
             <p class="text-slate-200 text-sm leading-relaxed whitespace-pre-line">${escapeHtml(cleanContent)}</p>
@@ -315,57 +423,8 @@ async function prerender() {
     console.warn('Posts prerender warning:', err);
   }
 
-  // 4. Pre-render Topic Hubs
-  console.log('Pre-rendering Topic Hubs...');
-  const topicRegistry = [
-    { slug: 'artificial-intelligence', title: 'Artificial Intelligence & Machine Learning', desc: 'Explore AI career pathways, machine learning job opportunities, and real-time product leaderboards shaping the AI workforce.' },
-    { slug: 'recruitment', title: 'Recruitment & Talent Acquisition', desc: 'Discover modern talent acquisition strategies, recruitment process outsourcing (RPO), and verified candidate benchmarking.' },
-    { slug: 'careers', title: 'Career Roadmaps & Professional Growth', desc: 'Navigate modern career transitions with ATS resume optimization, psychometric matching, and verifiable skill credentials.' },
-    { slug: 'education', title: 'Higher Education & Degree Intelligence', desc: 'Forensic data on 10,250 accredited Indian universities and colleges, €0 tuition European programs, and education pathways.' },
-    { slug: 'technology', title: 'Technology & Software Engineering', desc: 'Discover software engineering vacancies, systems design guides, technical assessment frameworks, and developer career intelligence.' },
-    { slug: 'leadership', title: 'Leadership & Executive Management', desc: 'Strategic intelligence on leadership development, C-level executive hiring, corporate talent mobility, and executive career opportunities.' },
-    { slug: 'business', title: 'Business Strategy & Workforce Operations', desc: 'Explore business operations roles, strategic consulting, commercial talent pipelines, and enterprise scaling solutions.' },
-  ];
-
-  for (const topic of topicRegistry) {
-    const canonical = `${BASE_URL}/topics/${topic.slug}`;
-    const title = `${topic.title} — Career Insights, Jobs & Guides | TalentXcel`;
-    writePrerenderedPage(`/topics/${topic.slug}`, {
-      title,
-      description: topic.desc,
-      canonical,
-      h1: topic.title,
-      bodyContentHtml: `<div class="bg-slate-900 border border-slate-800 rounded-2xl p-6"><h2 class="text-xl font-bold text-white mb-2">${escapeHtml(topic.title)}</h2><p class="text-slate-300 text-sm">${escapeHtml(topic.desc)}</p></div>`,
-    });
-  }
-
-  // 5. Pre-render Strategic Service Landing Pages
-  console.log('Pre-rendering Strategic Service Pages...');
-  const serviceRegistry = [
-    { slug: 'ai-recruitment', title: 'AI Recruitment & Talent Matching Platform', desc: 'Algorithmic candidate matching, automated screening, and verified capability scoring.' },
-    { slug: 'staffing-recruitment', title: 'Corporate Staffing & Recruitment Solutions', desc: 'Full-lifecycle sourcing, contract-to-hire, and recruitment process outsourcing (RPO).' },
-    { slug: 'it-consulting', title: 'IT & Technology Systems Consulting', desc: 'Enterprise software architecture, cloud modernization, and tech staff augmentation.' },
-    { slug: 'ai-solutions', title: 'AI Solutions & Autonomous Workflows', desc: 'Custom AI agent systems, machine learning integration, and workplace automation.' },
-    { slug: 'corporate-training', title: 'Corporate Training & Executive Development', desc: 'Custom upskilling, behavioral leadership programs, and technical bootcamps.' },
-    { slug: 'career-services', title: 'Professional Career Services & Executive Coaching', desc: '1-on-1 career strategy, executive bio refinement, and interview simulation.' },
-    { slug: 'resume-building', title: 'ATS Resume Builder & Cover Letter Studio', desc: 'Real-time ATS parsing, intelligent bullet suggestions, and role-tailored customization.' },
-    { slug: 'talent-management', title: 'Talent Management & Skill Verification', desc: 'Career Passport credentialing, workforce skill graphs, and internal mobility.' },
-  ];
-
-  for (const serv of serviceRegistry) {
-    const canonical = `${BASE_URL}/services/${serv.slug}`;
-    const title = `${serv.title} | TalentXcel Strategic Services`;
-    writePrerenderedPage(`/services/${serv.slug}`, {
-      title,
-      description: serv.desc,
-      canonical,
-      h1: serv.title,
-      bodyContentHtml: `<div class="bg-slate-900 border border-slate-800 rounded-2xl p-6"><h2 class="text-xl font-bold text-white mb-2">${escapeHtml(serv.title)}</h2><p class="text-slate-300 text-sm">${escapeHtml(serv.desc)}</p></div>`,
-    });
-  }
-
-  // 6. Pre-render 1,509 Indian Higher Education Institutions
-  console.log(`Pre-rendering ${INDIAN_INSTITUTIONS_CATALOG.length} Indian Higher Ed Institutions...`);
+  // 6. Pre-render 1,509 Higher Ed Institutions
+  console.log(`Pre-rendering ${INDIAN_INSTITUTIONS_CATALOG.length} Higher Ed Institutions...`);
   for (const inst of INDIAN_INSTITUTIONS_CATALOG) {
     const slug = inst.slug;
     const canonical = `${BASE_URL}/colleges/${slug}`;
