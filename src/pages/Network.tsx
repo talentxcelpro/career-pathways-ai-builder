@@ -196,15 +196,15 @@ const Network: React.FC = () => {
           {/* TAB CONTENT: FEED (MAIN 3-COLUMN LAYOUT MATCHING MOCKUP 1:1) */}
           {/* ============================================================================ */}
           <TabsContent value="feed" className="mt-0">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-6">
 
               {/* LEFT COLUMN: PROFILE CARD + NAVIGATION MENU */}
-              <div className="lg:col-span-3 space-y-6">
+              <div className="md:col-span-4 lg:col-span-3 space-y-6">
                 <LinkedInStyleBanner profile={user?.user_metadata} isOwnProfile={true} />
               </div>
 
               {/* MIDDLE COLUMN: GLOBAL SEARCH, ENHANCED CREATE POST & FEED */}
-              <div className="lg:col-span-6 space-y-6">
+              <div className="md:col-span-8 lg:col-span-6 space-y-6">
                 
                 {/* 1. Global Search Bar matching mockup */}
                 <div className="relative bg-white dark:bg-card border border-slate-200/80 dark:border-border/60 rounded-3xl p-2.5 shadow-sm flex items-center gap-3">
@@ -259,7 +259,7 @@ const Network: React.FC = () => {
               </div>
 
               {/* RIGHT COLUMN: PRO SPONSORED CARDS & PEOPLE YOU MAY KNOW */}
-              <div className="lg:col-span-3 space-y-6">
+              <div className="md:col-span-12 lg:col-span-3 space-y-6">
                 <AdvertisingSidebar />
               </div>
 
@@ -268,14 +268,14 @@ const Network: React.FC = () => {
 
           {/* TAB CONTENT: SMART FEED */}
           <TabsContent value="smart-feed" className="mt-0">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              <div className="lg:col-span-3">
+            <div className="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-6">
+              <div className="md:col-span-4 lg:col-span-3">
                 <LinkedInStyleBanner profile={user?.user_metadata} isOwnProfile={true} />
               </div>
-              <div className="lg:col-span-6 space-y-6">
+              <div className="md:col-span-8 lg:col-span-6 space-y-6">
                 <Posts feedType="connections" />
               </div>
-              <div className="lg:col-span-3">
+              <div className="md:col-span-12 lg:col-span-3">
                 <AdvertisingSidebar />
               </div>
             </div>
