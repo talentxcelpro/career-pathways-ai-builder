@@ -1,0 +1,42 @@
+{
+  "generatedAt": "2026-08-25T14:57:22.509Z",
+  "totalProgrammaticTemplates": 12,
+  "activeCandidates": [
+    {
+      "pattern": "/jobs/:role/:location",
+      "sampleUrl": "/jobs/software-engineer/noida",
+      "targetQueries": "4,800+",
+      "indexStatus": "INDEX"
+    },
+    {
+      "pattern": "/jobs/:skill/:location",
+      "sampleUrl": "/jobs/python/bangalore",
+      "targetQueries": "2,400+",
+      "indexStatus": "INDEX"
+    },
+    {
+      "pattern": "/services/:service/:industry",
+      "sampleUrl": "/services/rpo/fintech",
+      "targetQueries": "240+",
+      "indexStatus": "INDEX"
+    },
+    {
+      "pattern": "/colleges/:collegeSlug",
+      "sampleUrl": "/colleges/indian-institute-of-technology-madras",
+      "targetQueries": "10,250+",
+      "indexStatus": "INDEX"
+    },
+    {
+      "pattern": "/colleges/pathway",
+      "sampleUrl": "/colleges/pathway",
+      "targetQueries": "15,000+",
+      "indexStatus": "INDEX"
+    },
+    {
+      "pattern": "/services/resume-building",
+      "sampleUrl": "/services/resume-building",
+      "targetQueries": "50,000+",
+      "indexStatus": "INDEX"
+    }
+  ]
+}

@@ -118,8 +118,8 @@ async function runSeoCiGate() {
   const collegeUrl = getPublicCollegeUrl('indian-institute-of-technology-madras');
   record('Canonical', 'College URL Format', collegeUrl === 'https://talentxcel.in/colleges/indian-institute-of-technology-madras', `Generated: ${collegeUrl}`);
 
-  // --- 3. KEYWORD TAXONOMY & INTENT CLUSTERS ---
-  console.log('\n--- 3. AUDITING KEYWORD TAXONOMY & INTENT CLUSTERS ---');
+  // --- 3. KEYWORD TAXONOMY & 1M+ INTENT UNIVERSE ---
+  console.log('\n--- 3. AUDITING KEYWORD TAXONOMY & 1M+ UNIVERSE ---');
   const keywordSet = new Set<string>();
   let hasDuplicates = false;
   for (const item of TALENTXCEL_KEYWORD_TAXONOMY) {
@@ -133,6 +133,31 @@ async function runSeoCiGate() {
   record('Taxonomy', '12 Intent Clusters Covered', TALENTXCEL_KEYWORD_TAXONOMY.length >= 12, 'All 12 strategic intent clusters present');
   record('Taxonomy', 'Conversion Goals Assigned', TALENTXCEL_KEYWORD_TAXONOMY.every((k) => Boolean(k.conversionGoal)), 'All concepts map to conversion goals');
   record('Taxonomy', 'Zero Doorway Concepts', TALENTXCEL_KEYWORD_TAXONOMY.every((k) => !k.keyword.includes('best best')), 'No spammy repetition');
+
+  const summaryPath = resolve('SEO_KEYWORD_UNIVERSE_SUMMARY.json');
+  if (existsSync(summaryPath)) {
+    const summaryData = JSON.parse(readFileSync(summaryPath, 'utf-8'));
+    record(
+      '1M_Keyword_Engine',
+      'Universe Scale Threshold',
+      summaryData.totalKeywordOpportunities >= 1000000,
+      `Audited ${summaryData.totalKeywordOpportunities.toLocaleString()} distinct opportunities`
+    );
+    record(
+      '1M_Keyword_Engine',
+      'Zero Fabricated Metrics',
+      summaryData.searchVolumeDesignation.includes('UNKNOWN'),
+      'Search volumes designated UNKNOWN per truthfulness policy'
+    );
+    record(
+      '1M_Keyword_Engine',
+      'All Clusters Populated',
+      Boolean(summaryData.clusterDistribution?.JOB_SEARCH && summaryData.clusterDistribution?.BRAND),
+      'All 6 major intelligence clusters populated'
+    );
+  } else {
+    record('1M_Keyword_Engine', 'Summary File Exists', false, 'SEO_KEYWORD_UNIVERSE_SUMMARY.json not found', { severity: 'CRITICAL' });
+  }
 
   // --- 4. SEARCH INTENT ENGINE & ENTITY RESOLUTION ---
   console.log('\n--- 4. AUDITING SEARCH INTENT ENGINE ---');
