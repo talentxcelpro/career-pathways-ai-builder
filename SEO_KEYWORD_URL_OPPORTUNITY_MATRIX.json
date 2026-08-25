@@ -1,0 +1,79 @@
+[
+  {
+    "query": "software engineer jobs in bangalore",
+    "targetUrl": "https://talentxcel.in/jobs/software-engineer/bangalore",
+    "cluster": "jobs",
+    "intent": "transactional",
+    "talentxcelPosition": 47,
+    "topCompetitor": "Apna",
+    "action": "OPTIMIZE",
+    "priority": "P0",
+    "leverageScore": 95
+  },
+  {
+    "query": "content writer jobs in noida",
+    "targetUrl": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "cluster": "jobs",
+    "intent": "transactional",
+    "talentxcelPosition": 6,
+    "topCompetitor": "Apna",
+    "action": "OPTIMIZE",
+    "priority": "P0",
+    "leverageScore": 92
+  },
+  {
+    "query": "marketing executive jobs in noida",
+    "targetUrl": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "cluster": "jobs",
+    "intent": "transactional",
+    "talentxcelPosition": 7,
+    "topCompetitor": "Apna",
+    "action": "OPTIMIZE",
+    "priority": "P0",
+    "leverageScore": 90
+  },
+  {
+    "query": "jobs in srinagar",
+    "targetUrl": "https://talentxcel.in/locations/srinagar",
+    "cluster": "locations",
+    "intent": "transactional",
+    "talentxcelPosition": 22,
+    "topCompetitor": "Apna",
+    "action": "OPTIMIZE",
+    "priority": "P1",
+    "leverageScore": 88
+  },
+  {
+    "query": "jobs in jammu",
+    "targetUrl": "https://talentxcel.in/locations/jammu",
+    "cluster": "locations",
+    "intent": "transactional",
+    "talentxcelPosition": 26,
+    "topCompetitor": "Apna",
+    "action": "OPTIMIZE",
+    "priority": "P1",
+    "leverageScore": 88
+  },
+  {
+    "query": "ats resume score checker online",
+    "targetUrl": "https://talentxcel.in/resources/ats-resume-guide-2026",
+    "cluster": "tools",
+    "intent": "transactional",
+    "talentxcelPosition": 11,
+    "topCompetitor": "Naukri",
+    "action": "OPTIMIZE",
+    "priority": "P0",
+    "leverageScore": 98
+  },
+  {
+    "query": "ai recruitment software india",
+    "targetUrl": "https://talentxcel.in/services/ai-recruitment",
+    "cluster": "services",
+    "intent": "commercial",
+    "talentxcelPosition": 8,
+    "topCompetitor": "Naukri",
+    "action": "OPTIMIZE",
+    "priority": "P0",
+    "leverageScore": 99
+  }
+]

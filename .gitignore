@@ -25,4 +25,8 @@ dist-ssr
 scratch/
 gcp-key.json
 *service-account*.json
-*key*.json
+*-key.json
+*_key.json
+*secret*.json
+*credentials*.json
+!SEO_*.json
