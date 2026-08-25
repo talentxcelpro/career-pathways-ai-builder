@@ -97,14 +97,94 @@ export async function generateTalentXcelSmartConnect(profile: any, targetProfile
       body: { action: 'smart_connect', profile, targetProfile }
     });
 
+// 5. ✍️ TalentXcel AI Post Rewriter & Optimizer
+export async function rewriteTalentXcelPost(
+  currentText: string, 
+  mode: 'polish' | 'professional' | 'career' | 'engaging' | 'concise' | 'job_seeker' | 'hiring' | 'hindi',
+  profile?: any
+): Promise<{ text: string; skills: string[]; hashtags: string[] }> {
+  try {
+    const { data, error } = await supabase.functions.invoke('gemini-ai', {
+      body: { action: 'rewrite_post', currentText, mode, profile }
+    });
     if (error || !data?.data) throw error || new Error('No response');
     return data.data;
   } catch (err) {
-    console.warn('TalentXcel smart connect fallback engaged:', err);
-    const targetName = targetProfile?.full_name?.split(' ')[0] || 'there';
-    return {
-      message: `Hi ${targetName}, I noticed your impressive background in ${targetProfile?.title || 'the industry'} on TalentXcel. I would love to connect and share perspectives on leadership and growth!`
-    };
+    console.warn('TalentXcel rewrite fallback engaged:', err);
+    const cleaned = currentText.trim();
+    const role = profile?.title || profile?.headline || 'Professional';
+    const skills = extractSkillsFromPost(cleaned);
+
+    switch (mode) {
+      case 'professional':
+        return {
+          text: `In today’s fast-evolving landscape, strategic execution and continuous upskilling are paramount.\n\n${cleaned}\n\nKey takeaways:\n• Focus on measurable outcomes\n• Emphasize team collaboration\n• Drive continuous value creation\n\nHow is your organization approaching this transition?`,
+          skills: skills.length > 0 ? skills : ['Strategic Thinking', 'Execution'],
+          hashtags: ['#ProfessionalGrowth', '#Leadership', '#TalentXcel', '#CareerMilestone']
+        };
+      case 'career':
+        return {
+          text: `Excited to share a major career update & learning milestone! 🚀\n\n${cleaned}\n\nThis experience has strengthened my expertise in ${skills.join(', ') || 'modern industry practices'} and sharpened my technical problem-solving capabilities.\n\nAlways open to connecting with peers and mentors working on similar challenges!`,
+          skills: skills.length > 0 ? skills : ['Skill Development', 'Career Growth'],
+          hashtags: ['#CareerJourney', '#ContinuousLearning', '#SkillsFirst', '#TalentXcel']
+        };
+      case 'engaging':
+        return {
+          text: `💡 Quick insight that changed how I approach my work:\n\n${cleaned}\n\nThree things I’ve learned along the way:\n1️⃣ Consistency beats intensity\n2️⃣ Real-world projects build real competence\n3️⃣ Knowledge sharing multiplies impact\n\nDrop your thoughts below — I’d love to hear your perspective! 👇`,
+          skills: skills.length > 0 ? skills : ['Innovation', 'Productivity'],
+          hashtags: ['#CareerInsights', '#TechCommunity', '#LearningInPublic', '#TalentXcel']
+        };
+      case 'concise':
+        return {
+          text: `${cleaned.split('\n')[0]}\n\nFocus: Driving measurable impact, learning systematically, and building resilient solutions.`,
+          skills: skills,
+          hashtags: ['#Impact', '#Execution']
+        };
+      case 'job_seeker':
+        return {
+          text: `👋 I am actively exploring new career opportunities in ${role}!\n\n${cleaned}\n\nCore Strengths & Technical Toolkit:\n• ${skills.join(' • ') || 'Full-Stack Problem Solving'}\n• High-velocity execution and cross-functional leadership\n\nIf your team is hiring or if you know of open roles, let’s connect! DMs are open.`,
+          skills: skills.length > 0 ? skills : ['OpenToWork', 'Problem Solving'],
+          hashtags: ['#OpenToWork', '#Hiring', '#JobSearch', '#TalentXcel']
+        };
+      case 'hiring':
+        return {
+          text: `📢 We are hiring! Join our team as we build the next generation of solutions.\n\n${cleaned}\n\nWhat we are looking for:\n• Passion for high quality & craftsmanship\n• Proficiency in ${skills.join(', ') || 'modern technologies'}\n• Collaborative mindset\n\n📩 Apply directly via TalentXcel or reach out in my DMs!`,
+          skills: skills.length > 0 ? skills : ['Hiring', 'TechRecruitment'],
+          hashtags: ['#WeAreHiring', '#TechJobs', '#Recruitment', '#Careers']
+        };
+      case 'hindi':
+        return {
+          text: `आज के समय में निरंतर सीखना और सही दिशा में आगे बढ़ना सबसे महत्वपूर्ण है। ✨\n\n${cleaned}\n\nसफलता का असली राज़ है: निरंतर प्रयास, सही कौशल और सकारात्मक दृष्टिकोण।\n\nआपकी क्या राय है? कमेंट में ज़रूर बताएं!`,
+          skills: skills,
+          hashtags: ['#करियर', '#सफलता', '#प्रेरणा', '#TalentXcel']
+        };
+      case 'polish':
+      default:
+        return {
+          text: `${cleaned}\n\nContinuous learning and systematic problem solving remain the foundation of lasting career success. Looking forward to your insights!`,
+          skills: skills,
+          hashtags: ['#CareerGrowth', '#TalentXcel', '#Learning']
+        };
+    }
   }
 }
-export const generateGeminiSmartConnect = generateTalentXcelSmartConnect;
+
+// 6. 🧠 Skill Extraction Engine from Text
+export function extractSkillsFromPost(text: string): string[] {
+  const commonSkills = [
+    'Python', 'JavaScript', 'TypeScript', 'React', 'Node.js', 'Next.js', 'Vue.js', 'Angular',
+    'Java', 'Spring Boot', 'C++', 'Golang', 'Rust', 'PHP', 'Laravel', 'Django', 'Flask',
+    'AWS', 'Azure', 'GCP', 'Docker', 'Kubernetes', 'DevOps', 'CI/CD', 'Terraform',
+    'SQL', 'PostgreSQL', 'MongoDB', 'Redis', 'GraphQL', 'REST API', 'System Design',
+    'Machine Learning', 'AI', 'Deep Learning', 'NLP', 'Data Science', 'Data Analytics',
+    'UI/UX', 'Figma', 'Product Management', 'Agile', 'Scrum', 'Leadership', 'Sales',
+    'Digital Marketing', 'SEO', 'Content Strategy', 'Cybersecurity', 'Cloud Computing'
+  ];
+
+  const matched = commonSkills.filter(skill => {
+    const regex = new RegExp(`\\b${skill.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+    return regex.test(text);
+  });
+
+  return matched.slice(0, 6);
+}
