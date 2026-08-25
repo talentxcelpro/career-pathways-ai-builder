@@ -1,18 +1,23 @@
 /**
- * TalentXcel Public Discovery & High-Scale Programmatic Sitemap Generator
- *
- * Generates segmented XML sitemaps for:
- * 1. 1,509 Indian Higher Education Institutions across all 36 States & UTs
- * 2. 100 Verified Global Degree Programs across 37 Countries
- * 3. Global Scholarships & Grants Directory
- * 4. AI Career Pathways & Blueprints
- * 5. 2,650+ Learning Courses & Provider Hubs
- * 6. High-Intent Job, Role, Skill, and Location Matrices (150,000+ programmatic discovery URLs)
- * 7. Master sitemap index (/sitemap.xml) for Google Search Console.
+ * TalentXcel Public Discovery & Programmatic Sitemap Generator
+ * Sitemaps architecture:
+ * 1. Base pages (Home, Network, Colleges, Jobs, Learning, Companies, Services, etc.)
+ * 2. 1,509 Indian Higher Education Institutions across all 36 States & UTs
+ * 3. 100 Verified Global Degree Programs & Country Hubs
+ * 4. Global Scholarships Directory
+ * 5. AI Career Pathways & Blueprints
+ * 6. Learning & Courses Registry
+ * 7. Verified Active Jobs (Database-First)
+ * 8. Public Posts & Articles (Database-First)
+ * 9. Topics Hubs (AI, Recruitment, Careers, Education, Tech, Leadership, Business)
+ * 10. Strategic Services (AI Recruitment, Staffing, Consulting, etc.)
+ * 11. Companies Directory
+ * 12. Master sitemap index (/sitemap.xml) for Google Search Console.
  */
 
 import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { resolve } from 'path';
+import { createClient } from '@supabase/supabase-js';
 import { PRODUCTION_ORIGIN } from '../src/config/seo';
 import { CANDIDATE_SERVICES, EMPLOYER_SERVICES, INDUSTRY_HUBS, LOCATION_HUBS, RESOURCE_HUBS } from '../src/config/publicIA';
 import { JOB_CATEGORIES } from '../src/utils/jobCategories';
@@ -21,6 +26,11 @@ import { CONTENT_DATA } from './contentRegistryData';
 import { INDIAN_INSTITUTIONS_CATALOG } from '../src/data/indianInstitutionsCatalog';
 import { SEED_PROGRAMS, SEED_SCHOLARSHIPS } from '../src/services/globalEducationService';
 import { FOUNDATION_NEWS_ARTICLES } from '../src/data/newsArticles';
+import { isIndexablePublicEntity } from '../src/lib/seo/indexabilityEngine';
+
+const SUPABASE_URL = 'https://dthlgsnakhoftinssokm.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 interface SitemapEntry {
   path: string;
@@ -41,6 +51,7 @@ const BASE_PAGES: SitemapEntry[] = [
   { path: '/passport', changefreq: 'weekly', priority: '0.8' },
   { path: '/companies', changefreq: 'daily', priority: '0.8' },
   { path: '/network', changefreq: 'daily', priority: '0.8' },
+  { path: '/services', changefreq: 'weekly', priority: '0.8' },
   { path: '/employer', changefreq: 'weekly', priority: '0.8' },
   { path: '/about', changefreq: 'monthly', priority: '0.6' },
   { path: '/contact', changefreq: 'monthly', priority: '0.5' },
@@ -106,7 +117,9 @@ function buildSitemapIndexXml(sitemapFiles: { filename: string; count: number }[
   ].join('\n');
 }
 
-function generateHighScaleSitemaps() {
+async function generateProductionSitemaps() {
+  console.log('🚀 Starting TalentXcel Production Dynamic Sitemap Generation...\n');
+
   const publicDir = resolve('public');
   if (!existsSync(publicDir)) {
     mkdirSync(publicDir, { recursive: true });
@@ -128,7 +141,7 @@ function generateHighScaleSitemaps() {
   // 1. Base Pages
   const baseEntries = deduplicate(BASE_PAGES);
 
-  // 2. Indian Higher Education Institutions (1,509 institutions + State / Category Hubs)
+  // 2. Colleges & Institutions
   const collegeList: SitemapEntry[] = [];
   INDIAN_INSTITUTIONS_CATALOG.forEach((inst) => {
     collegeList.push({
@@ -136,14 +149,7 @@ function generateHighScaleSitemaps() {
       changefreq: 'weekly',
       priority: '0.8',
     });
-    collegeList.push({
-      path: `/colleges/${inst.id}`,
-      changefreq: 'monthly',
-      priority: '0.6',
-    });
   });
-
-  // 36 State & UT landing hubs
   const statesSet = new Set(INDIAN_INSTITUTIONS_CATALOG.map((i) => i.location.state));
   statesSet.forEach((st) => {
     const slug = encodeURIComponent(st.toLowerCase().replace(/\s+/g, '-'));
@@ -153,8 +159,6 @@ function generateHighScaleSitemaps() {
       priority: '0.8',
     });
   });
-
-  // Entrance Exam Hubs
   const exams = ['jee-advanced', 'jee-main', 'neet-ug', 'cat', 'clat', 'cuet-ug', 'gate', 'jam', 'nid-dat', 'nift'];
   exams.forEach((exam) => {
     collegeList.push({
@@ -163,12 +167,11 @@ function generateHighScaleSitemaps() {
       priority: '0.8',
     });
   });
-
   const collegeEntries = deduplicate(collegeList);
 
-  // 3. Global Degree Programs (100 Programs + Country Hubs)
+  // 3. Global Degree Programs
   const globalList: SitemapEntry[] = [];
-  SEED_PROGRAMS.forEach((prog, idx) => {
+  SEED_PROGRAMS.forEach((prog) => {
     const slug = encodeURIComponent(prog.program_title.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
     globalList.push({
       path: `/colleges/global-programs/${slug}`,
@@ -176,34 +179,19 @@ function generateHighScaleSitemaps() {
       priority: '0.8',
     });
   });
-  const globalCountries = new Set(SEED_PROGRAMS.map((p) => p.institution_country));
-  globalCountries.forEach((c) => {
-    const cSlug = encodeURIComponent(c.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
-    globalList.push({
-      path: `/colleges/global-programs/country/${cSlug}`,
-      changefreq: 'weekly',
-      priority: '0.8',
-    });
-  });
   const globalEntries = deduplicate(globalList);
 
-  // 4. Scholarships & Grants Directory
-  const scholarshipList: SitemapEntry[] = [];
-  SEED_SCHOLARSHIPS.forEach((sch) => {
-    const slug = encodeURIComponent(sch.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
-    scholarshipList.push({
-      path: `/colleges/scholarships/${slug}`,
-      changefreq: 'weekly',
-      priority: '0.8',
-    });
-  });
-  const scholarshipEntries = deduplicate(scholarshipList);
+  // 4. Scholarships
+  const scholarshipEntries = deduplicate(SEED_SCHOLARSHIPS.map((sch) => ({
+    path: `/colleges/scholarships/${encodeURIComponent(sch.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'))}`,
+    changefreq: 'weekly' as const,
+    priority: '0.8',
+  })));
 
-  // 5. AI Career Pathways & Blueprints
+  // 5. Pathways
   const pathwayGoals = [
     'ai-researcher', 'software-engineer', 'data-scientist', 'doctor', 'financial-analyst',
     'cybersecurity-specialist', 'ui-ux-designer', 'management-consultant', 'cloud-architect',
-    'robotics-engineer', 'bioinformatician', 'product-manager', 'operations-lead'
   ];
   const pathwayEntries = deduplicate(pathwayGoals.map((g) => ({
     path: `/colleges/pathway/${g}`,
@@ -230,88 +218,102 @@ function generateHighScaleSitemaps() {
   });
   const learningEntries = deduplicate(learningList);
 
-  // 7. Services & Industry Hubs
+  // 7. Verified Database Jobs (Database-First)
+  const jobEntriesList: SitemapEntry[] = [{ path: '/jobs', changefreq: 'daily', priority: '0.9' }];
+  try {
+    const { data: dbJobs } = await supabase
+      .from('jobs')
+      .select('*')
+      .eq('is_active', true)
+      .eq('job_status', 'open');
+
+    if (dbJobs) {
+      dbJobs.forEach((job) => {
+        const check = isIndexablePublicEntity('job', job);
+        if (check.isIndexable) {
+          const path = `/jobs/${job.seo_slug || job.id}`;
+          jobEntriesList.push({
+            path,
+            changefreq: 'daily',
+            priority: '0.9',
+            lastmod: job.created_at ? job.created_at.split('T')[0] : undefined,
+          });
+        }
+      });
+    }
+  } catch (err) {
+    console.warn('Jobs query warning during sitemap generation:', err);
+  }
+  const jobEntries = deduplicate(jobEntriesList);
+
+  // 8. Verified Public Posts (Database-First)
+  const postEntriesList: SitemapEntry[] = [{ path: '/network', changefreq: 'daily', priority: '0.8' }];
+  try {
+    const { data: dbPosts } = await supabase
+      .from('posts')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(500);
+
+    if (dbPosts) {
+      dbPosts.forEach((post) => {
+        const check = isIndexablePublicEntity('post', post);
+        if (check.isIndexable) {
+          postEntriesList.push({
+            path: `/post/${post.id}`,
+            changefreq: 'weekly',
+            priority: '0.7',
+            lastmod: post.created_at ? post.created_at.split('T')[0] : undefined,
+          });
+        }
+      });
+    }
+  } catch (err) {
+    console.warn('Posts query warning during sitemap generation:', err);
+  }
+  const postEntries = deduplicate(postEntriesList);
+
+  // 9. Topic Hubs
+  const topicSlugs = [
+    'artificial-intelligence',
+    'recruitment',
+    'careers',
+    'education',
+    'technology',
+    'leadership',
+    'business',
+  ];
+  const topicEntries = deduplicate(topicSlugs.map((t) => ({
+    path: `/topics/${t}`,
+    changefreq: 'weekly' as const,
+    priority: '0.8',
+  })));
+
+  // 10. Strategic Services
+  const serviceSlugs = [
+    'ai-recruitment',
+    'staffing-recruitment',
+    'it-consulting',
+    'ai-solutions',
+    'corporate-training',
+    'career-services',
+    'resume-building',
+    'talent-management',
+  ];
   const serviceEntries = deduplicate([
+    ...serviceSlugs.map((s) => ({ path: `/services/${s}`, changefreq: 'weekly' as const, priority: '0.8' })),
     ...CANDIDATE_SERVICES.map((s) => ({ path: `/${s.slug}`, changefreq: 'weekly' as const, priority: '0.8' })),
     ...EMPLOYER_SERVICES.map((s) => ({ path: `/${s.slug}`, changefreq: 'weekly' as const, priority: '0.8' })),
   ]);
-  const industryEntries = deduplicate(INDUSTRY_HUBS.map((hub) => ({ path: `/industries/${hub.slug}`, changefreq: 'weekly', priority: '0.7' })));
-  const locationEntries = deduplicate(LOCATION_HUBS.map((hub) => ({ path: `/locations/${hub.slug}`, changefreq: 'weekly', priority: '0.7' })));
-  const resourceEntries = deduplicate(RESOURCE_HUBS.map((hub) => ({ path: `/resources/${hub.slug}`, changefreq: 'weekly', priority: '0.7' })));
 
-  // 8. Programmatic Roles & Skills Matrix
-  const roleSet = new Set<string>();
-  const skillSet = new Set<string>();
-  Object.values(JOB_CATEGORIES).forEach((cat) => {
-    cat.roles.forEach((r) => roleSet.add(r));
-    cat.skills.forEach((s) => skillSet.add(s));
-  });
-
-  const roleEntries = deduplicate(Array.from(roleSet).map((role) => ({
-    path: `/roles/${encodeURIComponent(role.toLowerCase().replace(/\s+/g, '-'))}`,
-    changefreq: 'weekly',
-    priority: '0.7',
-  })));
-
-  const skillEntries = deduplicate(Array.from(skillSet).map((skill) => ({
-    path: `/skills/${encodeURIComponent(skill.toLowerCase().replace(/\s+/g, '-'))}`,
-    changefreq: 'weekly',
-    priority: '0.7',
-  })));
-
-  // 9. Programmatic High-Intent Role + Location Matrix (Jobs)
-  const roleLocationList: SitemapEntry[] = [];
-  const rolesList = Array.from(roleSet);
-  LOCATION_HUBS.forEach((locHub) => {
-    rolesList.forEach((role) => {
-      const roleSlug = encodeURIComponent(role.toLowerCase().replace(/\s+/g, '-'));
-      roleLocationList.push({
-        path: `/jobs/${roleSlug}/${locHub.slug}`,
-        changefreq: 'weekly',
-        priority: '0.7',
-      });
-    });
-  });
-  const roleLocationEntries = deduplicate(roleLocationList);
-
-  // 10. Passports & Companies
-  const passportEntries = deduplicate([{ path: '/passport', changefreq: 'weekly', priority: '0.8' }]);
+  // 11. Companies
   const companyEntries = deduplicate([
     { path: '/company/talentxcel', changefreq: 'daily', priority: '1.0' },
-    { path: '/company/talentxcel-services-pvt-ltd', changefreq: 'daily', priority: '1.0' },
+    { path: '/company/talentxcel-services', changefreq: 'daily', priority: '1.0' },
     { path: '/companies/talentxcel', changefreq: 'weekly', priority: '0.8' },
-    { path: '/companies/tech-corp', changefreq: 'monthly', priority: '0.6' },
   ]);
 
-  // 11. Repair Previously Broken Sitemaps in GSC
-  const careermapEntries = deduplicate([
-    { path: '/career-map', changefreq: 'weekly', priority: '0.8' },
-    { path: '/career-map/technology', changefreq: 'weekly', priority: '0.7' },
-    { path: '/career-map/healthcare', changefreq: 'weekly', priority: '0.7' },
-    { path: '/career-map/finance', changefreq: 'weekly', priority: '0.7' },
-    { path: '/career-map/management', changefreq: 'weekly', priority: '0.7' },
-  ]);
-
-  const toolsEntries = deduplicate([
-    { path: '/resume-builder', changefreq: 'weekly', priority: '0.8' },
-    { path: '/career-tools', changefreq: 'weekly', priority: '0.8' },
-    { path: '/salary-calculator', changefreq: 'weekly', priority: '0.7' },
-    { path: '/skill-assessment', changefreq: 'weekly', priority: '0.7' },
-  ]);
-
-  const resumeEntries = deduplicate([
-    { path: '/resume-builder', changefreq: 'weekly', priority: '0.8' },
-    { path: '/resume-templates', changefreq: 'weekly', priority: '0.7' },
-    { path: '/resume-review', changefreq: 'weekly', priority: '0.7' },
-  ]);
-
-  const employerEntries = deduplicate([
-    { path: '/employer', changefreq: 'weekly', priority: '0.8' },
-    { path: '/employer/post-job', changefreq: 'weekly', priority: '0.7' },
-    { path: '/employer/pricing', changefreq: 'weekly', priority: '0.7' },
-  ]);
-
-  // 12. Editorial & News Registry
+  // 12. News & Editorial
   const editorialEntries = deduplicate([
     ...(FOUNDATION_NEWS_ARTICLES || []).map((art) => ({
       path: `/news/${art.slug}`,
@@ -325,7 +327,17 @@ function generateHighScaleSitemaps() {
     })),
   ]);
 
-  // Write all sitemaps
+  const industryEntries = deduplicate(INDUSTRY_HUBS.map((hub) => ({ path: `/industries/${hub.slug}`, changefreq: 'weekly', priority: '0.7' })));
+  const locationEntries = deduplicate(LOCATION_HUBS.map((hub) => ({ path: `/locations/${hub.slug}`, changefreq: 'weekly', priority: '0.7' })));
+  const resourceEntries = deduplicate(RESOURCE_HUBS.map((hub) => ({ path: `/resources/${hub.slug}`, changefreq: 'weekly', priority: '0.7' })));
+
+  const toolsEntries = deduplicate([
+    { path: '/resume-builder', changefreq: 'weekly', priority: '0.8' },
+    { path: '/career-tools', changefreq: 'weekly', priority: '0.8' },
+    { path: '/salary-calculator', changefreq: 'weekly', priority: '0.7' },
+    { path: '/skill-assessment', changefreq: 'weekly', priority: '0.7' },
+  ]);
+
   const sitemapConfig = [
     { filename: 'sitemap-base.xml', entries: baseEntries },
     { filename: 'sitemap-colleges.xml', entries: collegeEntries },
@@ -333,20 +345,15 @@ function generateHighScaleSitemaps() {
     { filename: 'sitemap-scholarships.xml', entries: scholarshipEntries },
     { filename: 'sitemap-career-paths.xml', entries: pathwayEntries },
     { filename: 'sitemap-learning.xml', entries: learningEntries },
-    { filename: 'sitemap-jobs.xml', entries: [{ path: '/jobs', changefreq: 'daily', priority: '0.9' }] },
-    { filename: 'sitemap-role-locations.xml', entries: roleLocationEntries },
-    { filename: 'sitemap-roles.xml', entries: roleEntries },
-    { filename: 'sitemap-skills.xml', entries: skillEntries },
+    { filename: 'sitemap-jobs.xml', entries: jobEntries },
+    { filename: 'sitemap-posts.xml', entries: postEntries },
+    { filename: 'sitemap-topics.xml', entries: topicEntries },
     { filename: 'sitemap-services.xml', entries: serviceEntries },
+    { filename: 'sitemap-companies.xml', entries: companyEntries },
     { filename: 'sitemap-industries.xml', entries: industryEntries },
     { filename: 'sitemap-locations.xml', entries: locationEntries },
     { filename: 'sitemap-resources.xml', entries: resourceEntries },
-    { filename: 'sitemap-passports.xml', entries: passportEntries },
-    { filename: 'sitemap-companies.xml', entries: companyEntries },
-    { filename: 'sitemap-careermap.xml', entries: careermapEntries },
     { filename: 'sitemap-tools.xml', entries: toolsEntries },
-    { filename: 'sitemap-resume.xml', entries: resumeEntries },
-    { filename: 'sitemap-employer.xml', entries: employerEntries },
     { filename: 'sitemap-articles.xml', entries: editorialEntries },
     {
       filename: 'sitemap-rankings.xml',
@@ -356,12 +363,6 @@ function generateHighScaleSitemaps() {
         { path: '/rankings/ai-products/global', changefreq: 'daily', priority: '0.9' },
         { path: '/rankings/ai-products/emerging', changefreq: 'daily', priority: '0.9' },
         { path: '/rankings/ai-products/india', changefreq: 'daily', priority: '0.9' },
-        { path: '/rankings/ai-products/usa', changefreq: 'daily', priority: '0.9' },
-        { path: '/rankings/ai-products/uae', changefreq: 'daily', priority: '0.9' },
-        { path: '/rankings/ai-products/uk', changefreq: 'daily', priority: '0.9' },
-        { path: '/rankings/ai-products/singapore', changefreq: 'daily', priority: '0.9' },
-        { path: '/rankings/ai-products/canada', changefreq: 'daily', priority: '0.9' },
-        { path: '/rankings/ai-products/australia', changefreq: 'daily', priority: '0.9' },
         { path: '/claim1/watch', changefreq: 'weekly', priority: '0.7' },
       ]),
     },
@@ -383,4 +384,4 @@ function generateHighScaleSitemaps() {
   console.log(`Total URLs indexed in sitemaps: ${seenUrls.size.toLocaleString()}`);
 }
 
-generateHighScaleSitemaps();
+generateProductionSitemaps().catch(console.error);

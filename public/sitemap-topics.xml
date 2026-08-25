@@ -1,55 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://talentxcel.in/colleges/pathway/ai-researcher</loc>
+    <loc>https://talentxcel.in/topics/artificial-intelligence</loc>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://talentxcel.in/colleges/pathway/software-engineer</loc>
+    <loc>https://talentxcel.in/topics/recruitment</loc>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://talentxcel.in/colleges/pathway/data-scientist</loc>
+    <loc>https://talentxcel.in/topics/careers</loc>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://talentxcel.in/colleges/pathway/doctor</loc>
+    <loc>https://talentxcel.in/topics/education</loc>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://talentxcel.in/colleges/pathway/financial-analyst</loc>
+    <loc>https://talentxcel.in/topics/technology</loc>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://talentxcel.in/colleges/pathway/cybersecurity-specialist</loc>
+    <loc>https://talentxcel.in/topics/leadership</loc>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://talentxcel.in/colleges/pathway/ui-ux-designer</loc>
-    <lastmod>2026-08-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://talentxcel.in/colleges/pathway/management-consultant</loc>
-    <lastmod>2026-08-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://talentxcel.in/colleges/pathway/cloud-architect</loc>
+    <loc>https://talentxcel.in/topics/business</loc>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

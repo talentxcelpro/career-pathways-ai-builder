@@ -1,14 +1,20 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { createClient } from '@supabase/supabase-js';
 import { INDIAN_INSTITUTIONS_CATALOG } from '../src/data/indianInstitutionsCatalog.js';
 import { SEED_PROGRAMS, SEED_SCHOLARSHIPS } from '../src/services/globalEducationService.js';
 import { FOUNDATION_NEWS_ARTICLES } from '../src/data/newsArticles.js';
+import { buildJobPostingSchema } from '../src/lib/seo/jobPostingSchema.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const DIST_DIR = path.resolve(__dirname, '../dist');
 const BASE_URL = 'https://talentxcel.in';
+
+const SUPABASE_URL = 'https://dthlgsnakhoftinssokm.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 function escapeHtml(str: string): string {
   if (!str) return '';
@@ -33,10 +39,8 @@ async function prerender() {
     : path.resolve(__dirname, '../index.html');
 
   let templateHtml = fs.readFileSync(templatePath, 'utf8');
-
   let generatedCount = 0;
 
-  // Helper to write an HTML page with injected metadata and semantic pre-rendered body
   function writePrerenderedPage(
     routePath: string,
     meta: {
@@ -56,13 +60,13 @@ async function prerender() {
 
     let pageHtml = templateHtml;
 
-    // 1. Replace Title
+    // 1. Title
     pageHtml = pageHtml.replace(
       /<title>.*?<\/title>/i,
       `<title>${escapeHtml(meta.title)}</title>`
     );
 
-    // 2. Replace or Inject Meta Description
+    // 2. Meta Description
     if (/<meta\s+name=["']description["'][^>]*>/i.test(pageHtml)) {
       pageHtml = pageHtml.replace(
         /<meta\s+name=["']description["'][^>]*>/i,
@@ -72,7 +76,7 @@ async function prerender() {
       pageHtml = pageHtml.replace('</head>', `<meta name="description" content="${escapeHtml(meta.description)}" />\n</head>`);
     }
 
-    // 3. Replace or Inject Canonical Tag
+    // 3. Canonical
     if (/<link\s+rel=["']canonical["'][^>]*>/i.test(pageHtml)) {
       pageHtml = pageHtml.replace(
         /<link\s+rel=["']canonical["'][^>]*>/i,
@@ -82,7 +86,7 @@ async function prerender() {
       pageHtml = pageHtml.replace('</head>', `<link rel="canonical" href="${meta.canonical}" />\n</head>`);
     }
 
-    // 4. Inject OpenGraph & Schema
+    // 4. OpenGraph & Schema
     const ogInjections = `
     <meta property="og:title" content="${escapeHtml(meta.title)}" />
     <meta property="og:description" content="${escapeHtml(meta.description)}" />
@@ -97,15 +101,14 @@ async function prerender() {
 
     pageHtml = pageHtml.replace('</head>', `${ogInjections}\n</head>`);
 
-    // 3. Inject Initial Semantic Markup into <div id="root">
+    // 5. Inject Semantic Markup into <div id="root">
     const semanticShell = `
     <div id="root">
       <main class="min-h-screen bg-slate-950 text-slate-100 p-6">
         <header class="max-w-6xl mx-auto py-8">
           <nav aria-label="Breadcrumb" class="text-xs text-slate-400 mb-4">
             <a href="/" class="hover:underline">Home</a> &gt; 
-            <a href="/colleges" class="hover:underline">Colleges</a> &gt; 
-            <span class="text-indigo-400">${escapeHtml(meta.h1)}</span>
+            <span class="text-blue-400">${escapeHtml(meta.h1)}</span>
           </nav>
           <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-white mb-3">${escapeHtml(meta.h1)}</h1>
           <p class="text-base text-slate-300 max-w-3xl leading-relaxed">${escapeHtml(meta.description)}</p>
@@ -124,7 +127,244 @@ async function prerender() {
     generatedCount++;
   }
 
-  // 1. Pre-render 1,509 Indian Higher Education Institutions
+  // 1. Pre-render Verified Active Jobs with GSC Compliant JobPosting JSON-LD
+  console.log('Pre-rendering Database Jobs with Valid JobPosting Schema...');
+  try {
+    const { data: dbJobs } = await supabase
+      .from('jobs')
+      .select('*')
+      .eq('is_active', true)
+      .eq('job_status', 'open');
+
+    if (dbJobs) {
+      for (const job of dbJobs) {
+        const schema = buildJobPostingSchema(job);
+        const slug = job.seo_slug || job.id;
+        const canonical = `${BASE_URL}/jobs/${slug}`;
+        const title = `${job.title} at ${job.company_name} | TalentXcel`;
+        const description = (job.description || '').slice(0, 160);
+
+        const bodyHtml = `
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <h2 class="text-2xl font-bold text-white">${escapeHtml(job.title)}</h2>
+                <p class="text-sm text-blue-400 font-medium mt-1">${escapeHtml(job.company_name)} &bull; ${escapeHtml(job.location || 'Noida, India')}</p>
+                <div class="flex items-center gap-3 mt-3 text-xs text-slate-400">
+                  <span class="px-2.5 py-1 bg-slate-800 rounded-md text-slate-300">${escapeHtml(job.employment_type || 'Full-time')}</span>
+                  ${job.salary_min ? `<span class="text-emerald-400 font-semibold">₹${(job.salary_min / 100000).toFixed(1)}L - ₹${((job.salary_max || job.salary_min) / 100000).toFixed(1)}L PA</span>` : ''}
+                </div>
+              </div>
+              <a href="${canonical}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm rounded-xl">Apply for Role</a>
+            </div>
+            <div class="pt-6 border-t border-slate-800 text-slate-200 text-sm leading-relaxed whitespace-pre-line">
+              ${escapeHtml(job.description || '')}
+            </div>
+          </div>
+        `;
+
+        writePrerenderedPage(`/jobs/${slug}`, {
+          title,
+          description,
+          canonical,
+          h1: job.title,
+          bodyContentHtml: bodyHtml,
+          jsonLd: schema || undefined,
+        });
+
+        // Also write fallback /jobs/:id path
+        if (job.seo_slug && job.id !== job.seo_slug) {
+          writePrerenderedPage(`/jobs/${job.id}`, {
+            title,
+            description,
+            canonical,
+            h1: job.title,
+            bodyContentHtml: bodyHtml,
+            jsonLd: schema || undefined,
+          });
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('Jobs prerender warning:', err);
+  }
+
+  // 2. Pre-render Authoritative Company Pages
+  console.log('Pre-rendering Authoritative Company Landing Pages...');
+  const companyPages = [
+    { slug: 'talentxcel', name: 'TalentXcel Services' },
+    { slug: 'talentxcel-services', name: 'TalentXcel Services' },
+    { slug: 'talentxcel-services-pvt-ltd', name: 'TalentXcel Services Pvt Ltd' },
+  ];
+
+  for (const comp of companyPages) {
+    const canonical = `${BASE_URL}/company/${comp.slug}`;
+    const title = `${comp.name} — AI Talent Platform, Jobs & Strategic Solutions | TalentXcel`;
+    const description = 'TalentXcel Services is an AI-powered talent operating system connecting verified job seekers, students, and employers with intelligent job matching, ATS resume intelligence, higher education pathways, and corporate staffing solutions.';
+
+    const orgSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: comp.name,
+      url: canonical,
+      logo: 'https://talentxcel.in/talentxcel-official-logo.png',
+      description,
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'Noida',
+        addressRegion: 'Uttar Pradesh',
+        addressCountry: 'IN',
+      },
+      sameAs: ['https://talentxcel.in'],
+    };
+
+    const bodyHtml = `
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 space-y-6">
+        <h2 class="text-2xl font-bold text-white">${escapeHtml(comp.name)}</h2>
+        <p class="text-sm text-blue-400 font-medium">AI-Powered Career OS & Strategic Talent Solutions &bull; Noida, India</p>
+        <p class="text-slate-300 text-sm leading-relaxed">${escapeHtml(description)}</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
+          <div class="p-4 bg-slate-950 rounded-xl border border-slate-800">
+            <h3 class="font-bold text-white text-sm">AI Recruitment Platform</h3>
+            <p class="text-xs text-slate-400 mt-1">Algorithmic skill matching & verified screening.</p>
+          </div>
+          <div class="p-4 bg-slate-950 rounded-xl border border-slate-800">
+            <h3 class="font-bold text-white text-sm">Strategic Staffing & RPO</h3>
+            <p class="text-xs text-slate-400 mt-1">Full-lifecycle recruitment & technical talent pods.</p>
+          </div>
+          <div class="p-4 bg-slate-950 rounded-xl border border-slate-800">
+            <h3 class="font-bold text-white text-sm">Career OS & Intelligence</h3>
+            <p class="text-xs text-slate-400 mt-1">ATS resume scoring & verified credentials.</p>
+          </div>
+        </div>
+      </div>
+    `;
+
+    writePrerenderedPage(`/company/${comp.slug}`, {
+      title,
+      description,
+      canonical,
+      h1: comp.name,
+      bodyContentHtml: bodyHtml,
+      jsonLd: orgSchema,
+    });
+  }
+
+  // 3. Pre-render Public Feed Posts
+  console.log('Pre-rendering Top Public Posts...');
+  try {
+    const { data: dbPosts } = await supabase
+      .from('posts')
+      .select('*, author:profiles(id, full_name, username, title)')
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    if (dbPosts) {
+      for (const post of dbPosts) {
+        const canonical = `${BASE_URL}/post/${post.id}`;
+        const authorName = post.author?.full_name || 'TalentXcel Professional';
+        const cleanContent = (post.content || '').trim();
+        const headline = cleanContent.slice(0, 100).replace(/\n/g, ' ') || 'TalentXcel Update';
+        const description = cleanContent.slice(0, 160).replace(/\n/g, ' ');
+        const title = `${authorName}: "${headline}" | TalentXcel`;
+
+        const postSchema = {
+          '@context': 'https://schema.org',
+          '@type': 'SocialMediaPosting',
+          headline,
+          articleBody: cleanContent,
+          datePublished: post.created_at,
+          author: {
+            '@type': 'Person',
+            name: authorName,
+            url: `${BASE_URL}/@${post.author?.username || post.author?.id || 'member'}`,
+          },
+          publisher: {
+            '@type': 'Organization',
+            name: 'TalentXcel',
+            url: 'https://talentxcel.in',
+          },
+        };
+
+        const bodyHtml = `
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-purple-600/30 flex items-center justify-center font-bold text-white">
+                ${escapeHtml(authorName.charAt(0))}
+              </div>
+              <div>
+                <h2 class="text-base font-bold text-white">${escapeHtml(authorName)}</h2>
+                <p class="text-xs text-slate-400">${escapeHtml(post.author?.title || 'Professional')}</p>
+              </div>
+            </div>
+            <p class="text-slate-200 text-sm leading-relaxed whitespace-pre-line">${escapeHtml(cleanContent)}</p>
+          </div>
+        `;
+
+        writePrerenderedPage(`/post/${post.id}`, {
+          title,
+          description,
+          canonical,
+          h1: headline,
+          bodyContentHtml: bodyHtml,
+          jsonLd: postSchema,
+        });
+      }
+    }
+  } catch (err) {
+    console.warn('Posts prerender warning:', err);
+  }
+
+  // 4. Pre-render Topic Hubs
+  console.log('Pre-rendering Topic Hubs...');
+  const topicRegistry = [
+    { slug: 'artificial-intelligence', title: 'Artificial Intelligence & Machine Learning', desc: 'Explore AI career pathways, machine learning job opportunities, and real-time product leaderboards shaping the AI workforce.' },
+    { slug: 'recruitment', title: 'Recruitment & Talent Acquisition', desc: 'Discover modern talent acquisition strategies, recruitment process outsourcing (RPO), and verified candidate benchmarking.' },
+    { slug: 'careers', title: 'Career Roadmaps & Professional Growth', desc: 'Navigate modern career transitions with ATS resume optimization, psychometric matching, and verifiable skill credentials.' },
+    { slug: 'education', title: 'Higher Education & Degree Intelligence', desc: 'Forensic data on 10,250 accredited Indian universities and colleges, €0 tuition European programs, and education pathways.' },
+    { slug: 'technology', title: 'Technology & Software Engineering', desc: 'Discover software engineering vacancies, systems design guides, technical assessment frameworks, and developer career intelligence.' },
+    { slug: 'leadership', title: 'Leadership & Executive Management', desc: 'Strategic intelligence on leadership development, C-level executive hiring, corporate talent mobility, and executive career opportunities.' },
+    { slug: 'business', title: 'Business Strategy & Workforce Operations', desc: 'Explore business operations roles, strategic consulting, commercial talent pipelines, and enterprise scaling solutions.' },
+  ];
+
+  for (const topic of topicRegistry) {
+    const canonical = `${BASE_URL}/topics/${topic.slug}`;
+    const title = `${topic.title} — Career Insights, Jobs & Guides | TalentXcel`;
+    writePrerenderedPage(`/topics/${topic.slug}`, {
+      title,
+      description: topic.desc,
+      canonical,
+      h1: topic.title,
+      bodyContentHtml: `<div class="bg-slate-900 border border-slate-800 rounded-2xl p-6"><h2 class="text-xl font-bold text-white mb-2">${escapeHtml(topic.title)}</h2><p class="text-slate-300 text-sm">${escapeHtml(topic.desc)}</p></div>`,
+    });
+  }
+
+  // 5. Pre-render Strategic Service Landing Pages
+  console.log('Pre-rendering Strategic Service Pages...');
+  const serviceRegistry = [
+    { slug: 'ai-recruitment', title: 'AI Recruitment & Talent Matching Platform', desc: 'Algorithmic candidate matching, automated screening, and verified capability scoring.' },
+    { slug: 'staffing-recruitment', title: 'Corporate Staffing & Recruitment Solutions', desc: 'Full-lifecycle sourcing, contract-to-hire, and recruitment process outsourcing (RPO).' },
+    { slug: 'it-consulting', title: 'IT & Technology Systems Consulting', desc: 'Enterprise software architecture, cloud modernization, and tech staff augmentation.' },
+    { slug: 'ai-solutions', title: 'AI Solutions & Autonomous Workflows', desc: 'Custom AI agent systems, machine learning integration, and workplace automation.' },
+    { slug: 'corporate-training', title: 'Corporate Training & Executive Development', desc: 'Custom upskilling, behavioral leadership programs, and technical bootcamps.' },
+    { slug: 'career-services', title: 'Professional Career Services & Executive Coaching', desc: '1-on-1 career strategy, executive bio refinement, and interview simulation.' },
+    { slug: 'resume-building', title: 'ATS Resume Builder & Cover Letter Studio', desc: 'Real-time ATS parsing, intelligent bullet suggestions, and role-tailored customization.' },
+    { slug: 'talent-management', title: 'Talent Management & Skill Verification', desc: 'Career Passport credentialing, workforce skill graphs, and internal mobility.' },
+  ];
+
+  for (const serv of serviceRegistry) {
+    const canonical = `${BASE_URL}/services/${serv.slug}`;
+    const title = `${serv.title} | TalentXcel Strategic Services`;
+    writePrerenderedPage(`/services/${serv.slug}`, {
+      title,
+      description: serv.desc,
+      canonical,
+      h1: serv.title,
+      bodyContentHtml: `<div class="bg-slate-900 border border-slate-800 rounded-2xl p-6"><h2 class="text-xl font-bold text-white mb-2">${escapeHtml(serv.title)}</h2><p class="text-slate-300 text-sm">${escapeHtml(serv.desc)}</p></div>`,
+    });
+  }
+
+  // 6. Pre-render 1,509 Indian Higher Education Institutions
   console.log(`Pre-rendering ${INDIAN_INSTITUTIONS_CATALOG.length} Indian Higher Ed Institutions...`);
   for (const inst of INDIAN_INSTITUTIONS_CATALOG) {
     const slug = inst.slug;
@@ -133,7 +373,7 @@ async function prerender() {
     const feeMax = inst.annual_fee_max || 250000;
     const title = `${inst.name} — Fees, Courses, Cutoffs & Placement Intelligence | TalentXcel`;
     const description = `Explore comprehensive admission intelligence for ${inst.name}, ${inst.city || 'India'}, ${inst.state || 'India'}. Average fee ₹${feeMin.toLocaleString()} - ₹${feeMax.toLocaleString()}, cutoff criteria, top recruiters, and placement benchmarks.`;
-    
+
     const bodyHtml = `
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="md:col-span-2 space-y-6">
@@ -159,40 +399,16 @@ async function prerender() {
             </div>
             <p class="mt-4 text-sm text-slate-300 leading-relaxed">${escapeHtml(inst.description || inst.name + ' is an accredited higher education institution in ' + (inst.state || 'India'))}</p>
           </div>
-
-          <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
-            <h2 class="text-xl font-bold text-white mb-4">Admissions & Key Disciplines</h2>
-            <div class="flex flex-wrap gap-2 mb-4">
-              ${(inst.disciplines || ['Engineering', 'Management', 'Sciences']).map(d => `<span class="px-2.5 py-1 bg-slate-800 text-xs rounded-md text-slate-200">${escapeHtml(d)}</span>`).join('')}
-            </div>
-            <p class="text-xs text-slate-400">Entrance Exams: ${escapeHtml((inst.entrance_exams || ['JEE Main', 'CAT', 'State CET']).join(', '))}</p>
-          </div>
         </div>
-
         <div class="space-y-6">
           <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
             <h3 class="text-lg font-bold text-white mb-3">Annual Fee Range</h3>
             <p class="text-2xl font-bold text-emerald-400 mb-2">₹${(feeMin / 100000).toFixed(1)}L - ₹${(feeMax / 100000).toFixed(1)}L</p>
-            <p class="text-xs text-slate-400 mb-4">Tuition, lab, and institutional charges per academic year.</p>
-            <a href="${canonical}/pathway" class="inline-block w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-center text-white text-sm font-semibold rounded-lg">Generate Career Pathway &rarr;</a>
+            <a href="${canonical}/pathway" class="inline-block w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-500 text-center text-white text-sm font-semibold rounded-lg">Generate Career Pathway &rarr;</a>
           </div>
         </div>
       </div>
     `;
-
-    const jsonLd = {
-      "@context": "https://schema.org",
-      "@type": "CollegeOrUniversity",
-      "name": inst.name,
-      "url": canonical,
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": inst.city || "India",
-        "addressRegion": inst.state || "India",
-        "addressCountry": "IN"
-      },
-      "description": description
-    };
 
     writePrerenderedPage(`/colleges/${slug}`, {
       title,
@@ -200,161 +416,25 @@ async function prerender() {
       canonical,
       h1: inst.name,
       bodyContentHtml: bodyHtml,
-      jsonLd
     });
   }
 
-  function slugify(text: string): string {
-    return text
-      .toString()
-      .toLowerCase()
-      .trim()
-      .replace(/\s+/g, '-')
-      .replace(/[^\w\-]+/g, '')
-      .replace(/\-\-+/g, '-');
-  }
-
-  // 2. Pre-render 100 Global Degree Programs
+  // 7. Pre-render 100 Global Degree Programs
   console.log(`Pre-rendering ${SEED_PROGRAMS.length} Global Degree Programs...`);
   for (const prog of SEED_PROGRAMS) {
-    const slug = (prog as any).slug || slugify(`${prog.institution_name}-${prog.program_title}`);
+    const slug = (prog as any).slug || prog.program_title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
     const canonical = `${BASE_URL}/colleges/global-programs/${slug}`;
     const tuition = (prog as any).tuition_annual_display || (prog.tuition_cost_usd === 0 ? '€0 Tuition' : `$${prog.tuition_cost_usd}`);
     const title = `${prog.program_title} — ${prog.institution_name}, ${prog.country} | TalentXcel Global Intelligence`;
     const description = `Verified details for ${prog.program_title} at ${prog.institution_name} in ${prog.country}. Tuition: ${tuition}. Funding: ${prog.access_type}.`;
-
-    const bodyHtml = `
-      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
-        <h2 class="text-xl font-bold text-white mb-2">${escapeHtml(prog.program_title)}</h2>
-        <p class="text-emerald-400 font-semibold text-sm mb-4">${escapeHtml(prog.institution_name)} &bull; ${escapeHtml(prog.country)}</p>
-        <p class="text-sm text-slate-300 mb-4">${escapeHtml(prog.currency_note || 'Verified tuition and funding data.')}</p>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm mb-4">
-          <div class="p-3 bg-slate-950 rounded-lg"><span class="text-xs text-slate-400 block">Tuition</span><span class="font-semibold text-white">${escapeHtml(tuition)}</span></div>
-          <div class="p-3 bg-slate-950 rounded-lg"><span class="text-xs text-slate-400 block">Level</span><span class="font-semibold text-white capitalize">${escapeHtml(prog.level || 'Master')}</span></div>
-          <div class="p-3 bg-slate-950 rounded-lg"><span class="text-xs text-slate-400 block">Duration</span><span class="font-semibold text-white">${escapeHtml(prog.duration_months ? prog.duration_months + ' Months' : 'Standard')}</span></div>
-          <div class="p-3 bg-slate-950 rounded-lg"><span class="text-xs text-slate-400 block">Status</span><span class="font-semibold text-emerald-400">${escapeHtml(prog.access_type)}</span></div>
-        </div>
-      </div>
-    `;
 
     writePrerenderedPage(`/colleges/global-programs/${slug}`, {
       title,
       description,
       canonical,
       h1: prog.program_title,
-      bodyContentHtml: bodyHtml
+      bodyContentHtml: `<div class="bg-slate-900 border border-slate-800 rounded-xl p-6"><h2 class="text-xl font-bold text-white mb-2">${escapeHtml(prog.program_title)}</h2><p class="text-emerald-400 font-semibold text-sm">${escapeHtml(prog.institution_name)} &bull; ${escapeHtml(prog.country)}</p></div>`,
     });
-  }
-
-  writePrerenderedPage('/colleges/global-programs', {
-    title: 'Global Degree & Program Discovery — 100 Verified Programs | TalentXcel',
-    description: 'Explore 100 verified tuition-free, fully funded, and scholarship-eligible degree programs worldwide across Germany, Norway, Sweden, and Europe.',
-    canonical: `${BASE_URL}/colleges/global-programs`,
-    h1: 'Global Degree & Program Discovery',
-    bodyContentHtml: '<p class="text-slate-300">100 verified degree programs across Europe and international universities.</p>'
-  });
-
-  writePrerenderedPage('/learning/providers', {
-    title: 'Top Verified Learning Providers & Institutions | TalentXcel',
-    description: 'Explore verified professional course providers including MIT, Harvard, Google, Microsoft, IBM, Stanford, and AWS.',
-    canonical: `${BASE_URL}/learning/providers`,
-    h1: 'Top Verified Learning Providers',
-    bodyContentHtml: '<p class="text-slate-300">Browse verified learning providers and university credentials.</p>'
-  });
-
-  // 3. Pre-render Core Hubs
-  console.log('Pre-rendering Core Hubs (/colleges, /learning, /colleges/scholarships, /colleges/pathway)...');
-  writePrerenderedPage('/colleges', {
-    title: 'Education Intelligence Command Center — 1,509 Indian Institutions | TalentXcel',
-    description: 'Explore 1,509 verified universities, colleges, and professional institutes across 36 Indian States and UTs. Forensic data on fees, admissions, cutoffs, placements, and global pathways.',
-    canonical: `${BASE_URL}/colleges`,
-    h1: 'Education Intelligence Command Center',
-    bodyContentHtml: '<p class="text-slate-300">Browse verified higher education institutions across 36 Indian states.</p>'
-  });
-
-  writePrerenderedPage('/colleges/scholarships', {
-    title: 'Global Scholarships & ₹0 Funding Directory | TalentXcel',
-    description: 'Verified scholarships and grants from international governments and universities. Explore funding options that make degree tuition ₹0.',
-    canonical: `${BASE_URL}/colleges/scholarships`,
-    h1: 'Global Scholarships & Funding Directory',
-    bodyContentHtml: '<p class="text-slate-300">Verified international funding and scholarship opportunities.</p>'
-  });
-
-  writePrerenderedPage('/colleges/pathway', {
-    title: 'AI Career Pathway Future OS — 6-Step Education Matrix | TalentXcel',
-    description: 'Plan your complete education journey from 10th/12th grade to dream career. Connect Indian degrees, €0 global programs, scholarships, and verified skill milestones.',
-    canonical: `${BASE_URL}/colleges/pathway`,
-    h1: 'AI Career Pathway Future OS',
-    bodyContentHtml: '<p class="text-slate-300">Intelligent 6-step education and career pathway roadmap.</p>'
-  });
-
-  writePrerenderedPage('/learning', {
-    title: 'Learning Hub — 2,650+ Verified Courses & Certifications | TalentXcel',
-    description: 'Search 2,650+ verified courses and professional certifications from top global providers including MIT, Harvard, Google, Microsoft, and IBM.',
-    canonical: `${BASE_URL}/learning`,
-    h1: 'Learning & Certification Hub',
-    bodyContentHtml: '<p class="text-slate-300">2,650+ courses and certifications from global universities and tech leaders.</p>'
-  });
-
-  const additionalHubs = [
-    { path: '/rankings', title: 'Global AI Products & Software Leaderboards | TalentXcel Rankings', desc: 'Real-time competitive rankings and market intelligence for global AI products, platforms, and startups.' },
-    { path: '/rankings/ai-products', title: 'AI Products Leaderboard — Live Rankings & Rankings Marketplace | TalentXcel', desc: 'Browse the top-ranked AI products worldwide. Real-time competitive leaderboard with transparent market positions.' },
-    { path: '/rankings/ai-products/global', title: 'Global AI Products Leaderboard | TalentXcel Rankings', desc: 'The authoritative global ranking of top artificial intelligence products, agents, and software platforms.' },
-    { path: '/rankings/ai-products/emerging', title: 'Emerging AI Products Leaderboard | TalentXcel Rankings', desc: 'Discover breakthrough and high-growth emerging AI products and tools.' },
-    { path: '/rankings/ai-products/india', title: 'India AI Products & Startups Leaderboard | TalentXcel Rankings', desc: 'The leading leaderboard for artificial intelligence companies, products, and builders across India.' },
-    { path: '/rankings/ai-products/usa', title: 'United States AI Products Leaderboard | TalentXcel Rankings', desc: 'Top AI products, silicon valley innovations, and software platforms in the United States.' },
-    { path: '/rankings/ai-products/uae', title: 'UAE & Middle East AI Products Leaderboard | TalentXcel Rankings', desc: 'Explore top artificial intelligence platforms and emerging tech across UAE and the GCC.' },
-    { path: '/rankings/ai-products/uk', title: 'United Kingdom AI Products Leaderboard | TalentXcel Rankings', desc: 'Leading artificial intelligence startups and platforms in the United Kingdom.' },
-    { path: '/rankings/ai-products/singapore', title: 'Singapore & APAC AI Products Leaderboard | TalentXcel Rankings', desc: 'Top-ranked artificial intelligence platforms and innovations across Singapore and Asia-Pacific.' },
-    { path: '/rankings/ai-products/canada', title: 'Canada AI Products Leaderboard | TalentXcel Rankings', desc: 'Top artificial intelligence software and startups across Canada.' },
-    { path: '/rankings/ai-products/australia', title: 'Australia AI Products Leaderboard | TalentXcel Rankings', desc: 'Top AI innovations and tech platforms across Australia and Oceania.' },
-    { path: '/company/talentxcel', title: 'TalentXcel Services — AI Career Navigation Ecosystem | TalentXcel Rankings', desc: 'Authoritative ranking profile for TalentXcel on the Global AI Product Leaderboard.' },
-    { path: '/claim1/watch', title: 'Watch AI Leaderboard Movements | TalentXcel', desc: 'Get notified immediately when the #1 position changes across global AI product leaderboards.' },
-    { path: '/jobs', title: 'Jobs & Career Opportunities — Verified Tech & Business Roles | TalentXcel', desc: 'Discover verified jobs across top companies and high-growth startups.' },
-    { path: '/companies', title: 'Companies Directory — Verified Employers & Culture Insights | TalentXcel', desc: 'Browse verified hiring companies, engineering cultures, and active job openings.' },
-    { path: '/career-map', title: 'Interactive Career Maps & Roadmap Discovery | TalentXcel', desc: 'Map your career progression, identify skill gaps, and visualize role transitions.' },
-    { path: '/passport', title: 'TalentXcel Career Passport — Verified Badges & Credibility', desc: 'Showcase verified competencies, project proof, and talent credibility.' },
-    { path: '/tools', title: 'Career Tools Suite — ATS Resume, Salary & Interview Prep | TalentXcel', desc: 'AI-powered career tools to optimize resumes, evaluate role fit, and prepare for interviews.' },
-    { path: '/services', title: 'TalentXcel Strategic Services — Talent & Hiring Solutions', desc: 'Strategic workforce and recruitment solutions for modern enterprises.' },
-    { path: '/industries', title: 'Industry Career Hubs — Jobs & Trends Across Sectors | TalentXcel', desc: 'Explore career pathways and hiring trends across Technology, Finance, Healthcare, and Engineering.' },
-    { path: '/locations', title: 'Locations Directory — Jobs Across Indian Cities | TalentXcel', desc: 'Search job opportunities and salary benchmarks across major Indian employment hubs.' },
-    { path: '/resources', title: 'Career Resources & Hiring Guides | TalentXcel', desc: 'Expert guides on resume building, interview techniques, and career transition.' },
-    { path: '/about', title: 'About TalentXcel — Building the Future of Work & Learning', desc: 'Learn about TalentXcel mission to connect verified education, skills, and employment.' },
-    { path: '/contact', title: 'Contact TalentXcel — Support & Enterprise Inquiries', desc: 'Get in touch with our team for enterprise recruitment, institution partnerships, and support.' },
-    { path: '/privacy-policy', title: 'Privacy Policy | TalentXcel', desc: 'Our commitment to protecting your personal data and career information.' },
-    { path: '/terms', title: 'Terms of Service | TalentXcel', desc: 'Terms and conditions for using the TalentXcel career and education platform.' },
-    { path: '/blog', title: 'TalentXcel Insights — Career Trends & Education Intelligence', desc: 'Articles and forensic analysis on hiring trends, technology skills, and higher education.' },
-    { path: '/news', title: 'Platform News & Industry Updates | TalentXcel', desc: 'Latest announcements and industry news from the TalentXcel ecosystem.' },
-    { path: '/help', title: 'Help & Knowledge Base | TalentXcel', desc: 'Frequently asked questions and guides for job seekers, students, and employers.' }
-  ];
-
-  for (const hub of additionalHubs) {
-    writePrerenderedPage(hub.path, {
-      title: hub.title,
-      description: hub.desc,
-      canonical: `${BASE_URL}${hub.path}`,
-      h1: hub.title.split('—')[0].trim(),
-      bodyContentHtml: `<p class="text-slate-300">${escapeHtml(hub.desc)}</p>`
-    });
-  }
-
-  // Pre-render News Articles
-  if (FOUNDATION_NEWS_ARTICLES && FOUNDATION_NEWS_ARTICLES.length > 0) {
-    console.log(`Pre-rendering ${FOUNDATION_NEWS_ARTICLES.length} News & Insight Articles...`);
-    for (const article of FOUNDATION_NEWS_ARTICLES) {
-      writePrerenderedPage(`/news/${article.slug}`, {
-        title: `${article.title} | TalentXcel News & Insights`,
-        description: article.summary,
-        canonical: `${BASE_URL}/news/${article.slug}`,
-        h1: article.title,
-        bodyContentHtml: `
-          <div class="prose prose-invert max-w-none">
-            <p class="text-lg font-medium text-slate-200 mb-6">${escapeHtml(article.summary)}</p>
-            <div class="article-content">${article.content || ''}</div>
-          </div>
-        `
-      });
-    }
   }
 
   console.log(`\n========================================`);

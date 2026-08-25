@@ -1,124 +1,159 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+// scripts/seo-ci-gate.ts
+// TalentXcel Production SEO & Google Search Console CI Quality Gate
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const DIST_DIR = path.resolve(__dirname, '../dist');
+import { readFileSync, existsSync } from 'fs';
+import { resolve } from 'path';
+import { createClient } from '@supabase/supabase-js';
+import { buildJobPostingSchema } from '../src/lib/seo/jobPostingSchema';
+import { isIndexablePublicEntity } from '../src/lib/seo/indexabilityEngine';
+import {
+  getPublicJobUrl,
+  getPublicCompanyUrl,
+  getPublicPostUrl,
+  getPublicProfileUrl,
+  getPublicTopicUrl,
+  getPublicServiceUrl,
+} from '../src/lib/seo/canonicalUrls';
 
-import { INDIAN_INSTITUTIONS_CATALOG } from '../src/data/indianInstitutionsCatalog.js';
-import { SEED_PROGRAMS } from '../src/services/globalEducationService.js';
+const SUPABASE_URL = 'https://dthlgsnakhoftinssokm.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-function slugify(text: string): string {
-  return text
-    .toString()
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/[^\w\-]+/g, '')
-    .replace(/\-\-+/g, '-');
+interface CheckResult {
+  category: string;
+  name: string;
+  passed: boolean;
+  message: string;
 }
 
-// Permanent 100-URL Controlled Benchmark Cohort (50 Indian Colleges + 20 Global Programs + 30 Core Hubs)
-export const BENCHMARK_COHORT = [
-  // 1. First 50 Verified Indian Institutions
-  ...INDIAN_INSTITUTIONS_CATALOG.slice(0, 50).map(c => `colleges/${c.slug}`),
+const results: CheckResult[] = [];
 
-  // 2. First 20 Verified Global Programs
-  ...SEED_PROGRAMS.slice(0, 20).map(p => `colleges/global-programs/${slugify(p.institution_name + '-' + p.program_title)}`),
+function record(category: string, name: string, passed: boolean, message: string) {
+  results.push({ category, name, passed, message });
+  const icon = passed ? '✅' : '❌';
+  console.log(`${icon} [${category}] ${name}: ${message}`);
+}
 
-  // 3. 30 Core Learning, Education & Platform Hubs
-  'colleges',
-  'colleges/scholarships',
-  'colleges/pathway',
-  'learning',
-  'jobs',
-  'companies',
-  'career-map',
-  'passport',
-  'tools',
-  'services',
-  'industries',
-  'locations',
-  'resources',
-  'about',
-  'contact',
-  'privacy-policy',
-  'terms',
-  'blog',
-  'news',
-  'help'
-];
+async function runSeoCiGate() {
+  console.log('================================================================');
+  console.log('🛡️ TALENTXCEL PRODUCTION SEO & GOOGLE SEARCH CONSOLE CI GATE');
+  console.log('================================================================\n');
 
-export function runSeoCiGate(): boolean {
-  console.log('🛡️  Running SEO CI/CD Quality Gate on 100-URL Benchmark Cohort...\n');
+  // 1. Audit JobPosting Schema & GSC compliance
+  console.log('--- 1. AUDITING DATABASE JOBS & SCHEMA COMPLIANCE ---');
+  try {
+    const { data: dbJobs, error: jobsErr } = await supabase
+      .from('jobs')
+      .select('*')
+      .eq('is_active', true);
 
-  if (!fs.existsSync(DIST_DIR)) {
-    console.error('❌ FAIL: dist directory does not exist. Build required first.');
-    return false;
-  }
-
-  let passed = 0;
-  let failed = 0;
-  const errors: string[] = [];
-
-  for (const relativePath of BENCHMARK_COHORT) {
-    const flatFile = path.join(DIST_DIR, `${relativePath}.html`);
-    const dirFile = path.join(DIST_DIR, relativePath, 'index.html');
-
-    const targetFile = fs.existsSync(flatFile) ? flatFile : fs.existsSync(dirFile) ? dirFile : null;
-
-    if (!targetFile) {
-      failed++;
-      errors.push(`Missing pre-rendered static HTML for: ${relativePath}`);
-      continue;
-    }
-
-    const content = fs.readFileSync(targetFile, 'utf8');
-
-    // Quality Invariants
-    const hasUniqueTitle = /<title>(?!TalentXcel — AI Career Platform).*?<\/title>/i.test(content) || relativePath === '';
-    const hasCanonical = /<link\s+rel=["']canonical["']\s+href=["']https:\/\/talentxcel\.in.*?["']/i.test(content);
-    const hasDescription = /<meta\s+name=["']description["']/i.test(content);
-    const hasNoIndex = /<meta\s+name=["']robots["']\s+content=["'].*?noindex.*?["']/i.test(content);
-    const hasH1 = /<h1[^>]*>.*?<\/h1>/i.test(content);
-    const hasJsonLd = /<script\s+type=["']application\/ld\+json["']/i.test(content);
-    const isAdequateSize = content.length > 2500;
-
-    const isHealthy = hasCanonical && hasDescription && !hasNoIndex && hasH1 && isAdequateSize;
-
-    if (isHealthy) {
-      passed++;
+    if (jobsErr) {
+      record('JobPosting', 'Database Query', false, `Supabase error: ${jobsErr.message}`);
     } else {
-      failed++;
-      const reasons = [];
-      if (!hasCanonical) reasons.push('missing canonical');
-      if (!hasDescription) reasons.push('missing description');
-      if (hasNoIndex) reasons.push('accidental noindex');
-      if (!hasH1) reasons.push('missing H1');
-      if (!isAdequateSize) reasons.push('empty/thin HTML payload');
-      errors.push(`${relativePath}: ${reasons.join(', ')}`);
+      record('JobPosting', 'Database Query', true, `Fetched ${dbJobs?.length || 0} active jobs`);
+
+      for (const job of dbJobs || []) {
+        const schema = buildJobPostingSchema(job);
+        const hasTitle = Boolean(schema && schema.title && schema.title.trim().length > 0);
+        const hasDate = Boolean(schema && schema.datePosted && /^\d{4}-\d{2}-\d{2}$/.test(schema.datePosted));
+        const hasOrg = Boolean(schema && schema.hiringOrganization?.name);
+        const hasLocation = Boolean(schema && (schema.jobLocation || schema.jobLocationType === 'TELECOMMUTE'));
+
+        // Check for empty string errors
+        const hasEmptyAddressStrings = schema?.jobLocation?.address &&
+          Object.values(schema.jobLocation.address).some(v => v === '');
+
+        record(
+          'JobPosting',
+          `Job #${job.id.slice(0, 8)} Title Check`,
+          hasTitle,
+          hasTitle ? `Title "${schema?.title}"` : 'Missing title in JobPosting schema'
+        );
+
+        record(
+          'JobPosting',
+          `Job #${job.id.slice(0, 8)} Date Format`,
+          hasDate,
+          hasDate ? `Date: ${schema?.datePosted}` : 'Invalid date format'
+        );
+
+        record(
+          'JobPosting',
+          `Job #${job.id.slice(0, 8)} Organization`,
+          hasOrg,
+          hasOrg ? `Hiring Org: "${schema?.hiringOrganization.name}"` : 'Missing hiringOrganization'
+        );
+
+        record(
+          'JobPosting',
+          `Job #${job.id.slice(0, 8)} Location Structure`,
+          hasLocation && !hasEmptyAddressStrings,
+          hasLocation && !hasEmptyAddressStrings
+            ? (schema?.jobLocationType === 'TELECOMMUTE' ? 'Remote (TELECOMMUTE)' : `Physical (${schema?.jobLocation.address.addressLocality})`)
+            : 'Invalid location or empty address strings'
+        );
+      }
     }
+  } catch (err: any) {
+    record('JobPosting', 'Exception Check', false, err.message);
   }
 
-  console.log(`========================================`);
-  console.log(`SEO CI Gate Results: ${passed} PASSED / ${failed} FAILED`);
-  console.log(`Cohort Pass Rate: ${((passed / BENCHMARK_COHORT.length) * 100).toFixed(1)}%`);
-  console.log(`========================================\n`);
+  // 2. Audit Canonical URL System
+  console.log('\n--- 2. AUDITING CANONICAL URL GENERATION ---');
+  const testJobUrl = getPublicJobUrl('software-engineer-noida-1');
+  record('Canonical', 'Job URL Format', testJobUrl === 'https://talentxcel.in/jobs/software-engineer-noida-1', `Generated: ${testJobUrl}`);
 
-  if (failed > 0) {
-    console.error('❌ SEO CI GATE FAILED. Blocking deployment due to quality invariant regressions:');
-    errors.slice(0, 10).forEach(e => console.error(`  - ${e}`));
-    return false;
+  const testCompanyUrl = getPublicCompanyUrl('talentxcel-services');
+  record('Canonical', 'Company URL Format', testCompanyUrl === 'https://talentxcel.in/company/talentxcel-services', `Generated: ${testCompanyUrl}`);
+
+  const testPostUrl = getPublicPostUrl('post-1234');
+  record('Canonical', 'Post URL Format', testPostUrl === 'https://talentxcel.in/post/post-1234', `Generated: ${testPostUrl}`);
+
+  const testTopicUrl = getPublicTopicUrl('artificial-intelligence');
+  record('Canonical', 'Topic URL Format', testTopicUrl === 'https://talentxcel.in/topics/artificial-intelligence', `Generated: ${testTopicUrl}`);
+
+  const testServiceUrl = getPublicServiceUrl('ai-recruitment');
+  record('Canonical', 'Service URL Format', testServiceUrl === 'https://talentxcel.in/services/ai-recruitment', `Generated: ${testServiceUrl}`);
+
+  // 3. Audit Robots.txt & Sitemap Files
+  console.log('\n--- 3. AUDITING ROBOTS.TXT & SITEMAPS ---');
+  const robotsPath = resolve('public/robots.txt');
+  if (existsSync(robotsPath)) {
+    const robotsContent = readFileSync(robotsPath, 'utf-8');
+    const hasSitemapDeclared = robotsContent.includes('Sitemap: https://talentxcel.in/sitemap.xml');
+    const hasAdminBlocked = robotsContent.includes('Disallow: /admin/');
+    const hasDashboardBlocked = robotsContent.includes('Disallow: /dashboard');
+
+    record('Robots', 'Sitemap Declaration', hasSitemapDeclared, 'robots.txt declares sitemap.xml');
+    record('Robots', 'Admin Route Protection', hasAdminBlocked, 'robots.txt blocks /admin/');
+    record('Robots', 'Dashboard Protection', hasDashboardBlocked, 'robots.txt blocks /dashboard');
+  } else {
+    record('Robots', 'File Exists', false, 'public/robots.txt is missing');
   }
 
-  console.log('✅ SEO CI GATE PASSED: All 100 benchmark assets satisfy production quality invariants!\n');
-  return true;
-}
+  const sitemapIndexPath = resolve('public/sitemap.xml');
+  if (existsSync(sitemapIndexPath)) {
+    const sitemapContent = readFileSync(sitemapIndexPath, 'utf-8');
+    const hasSitemapTag = sitemapContent.includes('<sitemapindex');
+    record('Sitemap', 'Master Index Exists', hasSitemapTag, 'public/sitemap.xml is a valid sitemapindex');
+  } else {
+    record('Sitemap', 'Master Index Exists', false, 'public/sitemap.xml missing');
+  }
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const success = runSeoCiGate();
-  if (!success) {
+  // 4. Summary & Verification Gate
+  console.log('\n================================================================');
+  const failed = results.filter(r => !r.passed);
+  if (failed.length > 0) {
+    console.error(`❌ SEO CI GATE FAILED with ${failed.length} errors:`);
+    failed.forEach(f => console.error(`  - [${f.category}] ${f.name}: ${f.message}`));
     process.exit(1);
+  } else {
+    console.log(`✅ SEO CI GATE PASSED: All ${results.length} checks succeeded cleanly!`);
+    console.log('================================================================\n');
   }
 }
+
+runSeoCiGate().catch((err) => {
+  console.error('Fatal CI Gate error:', err);
+  process.exit(1);
+});

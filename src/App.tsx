@@ -148,6 +148,10 @@ const AdminVideoManager               = lazy(() => import('./pages/AdminVideoMan
 const CourseManagementPage            = lazy(() => import('./pages/admin/CourseManagementPage'));
 const CompanyOSLayout                 = lazy(() => import('./pages/company-os/CompanyOSLayout'));
 const CEODashboard                    = lazy(() => import('./pages/company-os/CEODashboard'));
+const CompanyPublicProfile            = lazy(() => import('./pages/companies/CompanyPublicProfile'));
+const PublicPostPage                  = lazy(() => import('./pages/posts/PublicPostPage'));
+const TopicHubPage                    = lazy(() => import('./pages/topics/TopicHubPage'));
+const ServiceLandingPage              = lazy(() => import('./pages/services/ServiceLandingPage'));
 const DecisionQueue                   = lazy(() => import('./pages/company-os/DecisionQueue'));
 const CompanyOSEngineering            = lazy(() => import('./pages/company-os/Engineering'));
 const CompanyOSSales                  = lazy(() => import('./pages/company-os/Sales'));
@@ -380,11 +384,16 @@ const App = () => {
                 <Route path="/colleges/:id/:subTab" element={<Suspense fallback={null}><CollegeDetail /></Suspense>} />
                 <Route path="/colleges/:id/:subTab/:extra" element={<Suspense fallback={null}><CollegeDetail /></Suspense>} />
                 
-                {/* ── Claim #1 Public Routes (Explicit Precedence) ── */}
+                {/* ── Canonical Public SEO & Entity Routes (Explicit Precedence) ── */}
                 <Route path="/rankings" element={<Suspense fallback={null}><RankingsHub /></Suspense>} />
                 <Route path="/rankings/:categorySlug" element={<Suspense fallback={null}><LeaderboardPage /></Suspense>} />
                 <Route path="/rankings/:categorySlug/:scopeSlug" element={<Suspense fallback={null}><LeaderboardPage /></Suspense>} />
-                <Route path="/company/:slug" element={<Suspense fallback={null}><CompanyRankingProfile /></Suspense>} />
+                <Route path="/company/:slug" element={<Suspense fallback={null}><CompanyPublicProfile /></Suspense>} />
+                <Route path="/post/:slugOrId" element={<Suspense fallback={null}><PublicPostPage /></Suspense>} />
+                <Route path="/posts/:slugOrId" element={<Suspense fallback={null}><PublicPostPage /></Suspense>} />
+                <Route path="/topics/:slug" element={<Suspense fallback={null}><TopicHubPage /></Suspense>} />
+                <Route path="/topic/:slug" element={<Suspense fallback={null}><TopicHubPage /></Suspense>} />
+                <Route path="/services/:slug" element={<Suspense fallback={null}><ServiceLandingPage /></Suspense>} />
                 <Route path="/claim1/watch" element={<Suspense fallback={null}><WatchPage /></Suspense>} />
                                 
                                 {navItems.map((item: NavItem) => {
