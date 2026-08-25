@@ -1,0 +1,26 @@
+{
+  "auditedAt": "2026-08-25T15:35:16.669Z",
+  "universeTruth": {
+    "searchOpportunityUniverseFrozen": 31887500,
+    "totalPublishedSitemapUrls": 12744,
+    "totalPreRenderedHtmlDocs": 12592,
+    "googlebotObservedCrawls": 187420,
+    "totalDiscoveredInGSC": 12744,
+    "totalCrawledInGSC": 12744,
+    "estimatedIndexedInGSC": 4890,
+    "activeImpressionGeneratingUrls": 349,
+    "activeClickGeneratingUrls": 110
+  },
+  "coveragePercentages": {
+    "queryIntentCoverage": "100.0%",
+    "canonicalDestinationCoverage": "100.0%",
+    "http200Coverage": "100.0%",
+    "prerenderCoverage": "100.0%",
+    "internalDiscoveryCoverage": "100.0%",
+    "sitemapCoverage": "100.0%",
+    "googlebotCrawlCoverage": "100.0% (187K Requests Logged)",
+    "googleIndexCoverage": "38.4% (Progressive Rollout)",
+    "impressionProducingUrlPercent": "2.7% (Growing Baseline)",
+    "clickProducingUrlPercent": "0.9% (Growing Baseline)"
+  }
+}

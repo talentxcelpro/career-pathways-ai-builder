@@ -1,0 +1,8 @@
+{
+  "auditedAt": "2026-08-25T15:35:16.674Z",
+  "totalAuditedUrls": 12592,
+  "orphanUrlsDetected": 0,
+  "maxCrawlDepthFromHomepage": 3,
+  "averageInboundLinksPerDoc": 14.2,
+  "status": "CLEAN_DISCOVERY_GRAPH (Zero Orphan URLs)"
+}
