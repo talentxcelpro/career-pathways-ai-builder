@@ -96,6 +96,17 @@ export async function generateTalentXcelSmartConnect(profile: any, targetProfile
     const { data, error } = await supabase.functions.invoke('gemini-ai', {
       body: { action: 'smart_connect', profile, targetProfile }
     });
+    if (error || !data?.data) throw error || new Error('No response');
+    return data.data;
+  } catch (err) {
+    console.warn('TalentXcel smart connect fallback engaged:', err);
+    const targetName = targetProfile?.full_name?.split(' ')[0] || 'there';
+    return {
+      message: `Hi ${targetName}, I noticed your impressive background in ${targetProfile?.title || 'the industry'} on TalentXcel. I would love to connect and share perspectives on leadership and growth!`
+    };
+  }
+}
+export const generateGeminiSmartConnect = generateTalentXcelSmartConnect;
 
 // 5. ✍️ TalentXcel AI Post Rewriter & Optimizer
 export async function rewriteTalentXcelPost(
