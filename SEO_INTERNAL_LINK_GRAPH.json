@@ -1,0 +1,1738 @@
+[
+  {
+    "source": "https://talentxcel.in",
+    "target": "https://talentxcel.in/topics/careers",
+    "anchor": "Career Growth & Roadmaps",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "TalentXcel Services",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "AI Recruitment Platform",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Corporate Staffing & Recruitment",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Recruitment Process Outsourcing (RPO)",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "ATS Resume Builder",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/company/talentxcel",
+    "target": "https://talentxcel.in/topics/careers",
+    "anchor": "Professional Career Guidance",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/company/talentxcel",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "TalentXcel Company Overview",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/company/talentxcel",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "AI-Powered Candidate Matching",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/company/talentxcel",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Contract & Permanent Staffing Solutions",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/company/talentxcel",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Enterprise RPO Hiring Solutions",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/company/talentxcel",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "Resume Optimization Studio",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/company/talentxcel",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/company/talentxcel",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/services/ai-recruitment",
+    "target": "https://talentxcel.in/topics/artificial-intelligence",
+    "anchor": "AI Workforce Insights",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/ai-recruitment",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "About TalentXcel",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/services/ai-recruitment",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "Automated Talent Sourcing Solutions",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/ai-recruitment",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Technical Recruitment Agency",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/ai-recruitment",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Outsourced Talent Acquisition",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/ai-recruitment",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "Recruiter-Ready Resume Generator",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/ai-recruitment",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/services/ai-recruitment",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/services/staffing-recruitment",
+    "target": "https://talentxcel.in/topics/recruitment",
+    "anchor": "Recruitment & Hiring Knowledge Hub",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/staffing-recruitment",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "TalentXcel Platform Entity",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/services/staffing-recruitment",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "AI Hiring Software",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/staffing-recruitment",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Workforce Staffing Services",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/staffing-recruitment",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Managed Recruitment Services",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/staffing-recruitment",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "ATS Format Checker",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/staffing-recruitment",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/services/staffing-recruitment",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/services/rpo",
+    "target": "https://talentxcel.in/topics/recruitment",
+    "anchor": "Modern Talent Acquisition Strategies",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/rpo",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "TalentXcel Services",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/services/rpo",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "AI Recruitment Platform",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/rpo",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Corporate Staffing & Recruitment",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/rpo",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Recruitment Process Outsourcing (RPO)",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/rpo",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "ATS Resume Builder",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/rpo",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/services/rpo",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/services/it-services",
+    "target": "https://talentxcel.in/topics/technology",
+    "anchor": "TalentXcel Career Solutions",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/it-services",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "TalentXcel Company Overview",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/services/it-services",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "AI-Powered Candidate Matching",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/it-services",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Contract & Permanent Staffing Solutions",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/it-services",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Enterprise RPO Hiring Solutions",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/it-services",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "Resume Optimization Studio",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/it-services",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/services/it-services",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/services/ai-solutions",
+    "target": "https://talentxcel.in/topics/artificial-intelligence",
+    "anchor": "Artificial Intelligence Topic Hub",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/ai-solutions",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "About TalentXcel",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/services/ai-solutions",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "Automated Talent Sourcing Solutions",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/ai-solutions",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Technical Recruitment Agency",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/ai-solutions",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Outsourced Talent Acquisition",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/ai-solutions",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "Recruiter-Ready Resume Generator",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/ai-solutions",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/services/ai-solutions",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/services/corporate-training",
+    "target": "https://talentxcel.in/topics/artificial-intelligence",
+    "anchor": "AI Industry Trends & Careers",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/corporate-training",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "TalentXcel Platform Entity",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/services/corporate-training",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "AI Hiring Software",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/corporate-training",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Workforce Staffing Services",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/corporate-training",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Managed Recruitment Services",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/corporate-training",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "ATS Format Checker",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/corporate-training",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/services/corporate-training",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/services/career-services",
+    "target": "https://talentxcel.in/topics/careers",
+    "anchor": "Career Progression Insights",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/career-services",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "TalentXcel Services",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/services/career-services",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "AI Recruitment Platform",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/career-services",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Corporate Staffing & Recruitment",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/career-services",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Recruitment Process Outsourcing (RPO)",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/career-services",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "ATS Resume Builder",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/career-services",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/services/career-services",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/services/resume-building",
+    "target": "https://talentxcel.in/topics/resume-writing",
+    "anchor": "TalentXcel Career Solutions",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/resume-building",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "TalentXcel Company Overview",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/services/resume-building",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "AI-Powered Candidate Matching",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/resume-building",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Contract & Permanent Staffing Solutions",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/resume-building",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Enterprise RPO Hiring Solutions",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/resume-building",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "Resume Optimization Studio",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/resume-building",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/services/resume-building",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/services/talent-management",
+    "target": "https://talentxcel.in/topics/careers",
+    "anchor": "Professional Career Guidance",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/talent-management",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "About TalentXcel",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/services/talent-management",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "Automated Talent Sourcing Solutions",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/talent-management",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Technical Recruitment Agency",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/talent-management",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Outsourced Talent Acquisition",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/talent-management",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "Recruiter-Ready Resume Generator",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/talent-management",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/services/talent-management",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/services/job-placement",
+    "target": "https://talentxcel.in/topics/careers",
+    "anchor": "Career Progression Insights",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/job-placement",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "TalentXcel Platform Entity",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/services/job-placement",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "AI Hiring Software",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/job-placement",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Workforce Staffing Services",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/job-placement",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Managed Recruitment Services",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/job-placement",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "ATS Format Checker",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/services/job-placement",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/services/job-placement",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/topics/artificial-intelligence",
+    "target": "https://talentxcel.in/topics/artificial-intelligence",
+    "anchor": "Artificial Intelligence Topic Hub",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "informational"
+  },
+  {
+    "source": "https://talentxcel.in/topics/artificial-intelligence",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "TalentXcel Services",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/topics/artificial-intelligence",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "AI Recruitment Platform",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/artificial-intelligence",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Corporate Staffing & Recruitment",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/artificial-intelligence",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Recruitment Process Outsourcing (RPO)",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/artificial-intelligence",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "ATS Resume Builder",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/artificial-intelligence",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/topics/artificial-intelligence",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/topics/recruitment",
+    "target": "https://talentxcel.in/topics/recruitment",
+    "anchor": "Modern Talent Acquisition Strategies",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "informational"
+  },
+  {
+    "source": "https://talentxcel.in/topics/recruitment",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "TalentXcel Company Overview",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/topics/recruitment",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "AI-Powered Candidate Matching",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/recruitment",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Contract & Permanent Staffing Solutions",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/recruitment",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Enterprise RPO Hiring Solutions",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/recruitment",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "Resume Optimization Studio",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/recruitment",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/topics/recruitment",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/topics/careers",
+    "target": "https://talentxcel.in/topics/careers",
+    "anchor": "Career Progression Insights",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "informational"
+  },
+  {
+    "source": "https://talentxcel.in/topics/careers",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "About TalentXcel",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/topics/careers",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "Automated Talent Sourcing Solutions",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/careers",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Technical Recruitment Agency",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/careers",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Outsourced Talent Acquisition",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/careers",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "Recruiter-Ready Resume Generator",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/careers",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/topics/careers",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/topics/education",
+    "target": "https://talentxcel.in/topics/education",
+    "anchor": "Higher Education Directory",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "informational"
+  },
+  {
+    "source": "https://talentxcel.in/topics/education",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "TalentXcel Platform Entity",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/topics/education",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "AI Hiring Software",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/education",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Workforce Staffing Services",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/education",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Managed Recruitment Services",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/education",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "ATS Format Checker",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/education",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/topics/education",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/topics/technology",
+    "target": "https://talentxcel.in/topics/technology",
+    "anchor": "TalentXcel Career Solutions",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "informational"
+  },
+  {
+    "source": "https://talentxcel.in/topics/technology",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "TalentXcel Services",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/topics/technology",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "AI Recruitment Platform",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/technology",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Corporate Staffing & Recruitment",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/technology",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Recruitment Process Outsourcing (RPO)",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/technology",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "ATS Resume Builder",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/technology",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/topics/technology",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/topics/leadership",
+    "target": "https://talentxcel.in/topics/careers",
+    "anchor": "Career Progression Insights",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "informational"
+  },
+  {
+    "source": "https://talentxcel.in/topics/leadership",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "TalentXcel Company Overview",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/topics/leadership",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "AI-Powered Candidate Matching",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/leadership",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Contract & Permanent Staffing Solutions",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/leadership",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Enterprise RPO Hiring Solutions",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/leadership",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "Resume Optimization Studio",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/leadership",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/topics/leadership",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/topics/business",
+    "target": "https://talentxcel.in/topics/careers",
+    "anchor": "Career Growth & Roadmaps",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "informational"
+  },
+  {
+    "source": "https://talentxcel.in/topics/business",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "About TalentXcel",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/topics/business",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "Automated Talent Sourcing Solutions",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/business",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Technical Recruitment Agency",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/business",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Outsourced Talent Acquisition",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/business",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "Recruiter-Ready Resume Generator",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/business",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/topics/business",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/topics/resume-writing",
+    "target": "https://talentxcel.in/topics/resume-writing",
+    "anchor": "TalentXcel Career Solutions",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "informational"
+  },
+  {
+    "source": "https://talentxcel.in/topics/resume-writing",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "TalentXcel Platform Entity",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/topics/resume-writing",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "AI Hiring Software",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/resume-writing",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Workforce Staffing Services",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/resume-writing",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Managed Recruitment Services",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/resume-writing",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "ATS Format Checker",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/resume-writing",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/topics/resume-writing",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/topics/job-search",
+    "target": "https://talentxcel.in/topics/careers",
+    "anchor": "Career Progression Insights",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "informational"
+  },
+  {
+    "source": "https://talentxcel.in/topics/job-search",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "TalentXcel Services",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/topics/job-search",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "AI Recruitment Platform",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/job-search",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Corporate Staffing & Recruitment",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/job-search",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Recruitment Process Outsourcing (RPO)",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/job-search",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "ATS Resume Builder",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/job-search",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/topics/job-search",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/topics/interview-preparation",
+    "target": "https://talentxcel.in/topics/careers",
+    "anchor": "Career Growth & Roadmaps",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "informational"
+  },
+  {
+    "source": "https://talentxcel.in/topics/interview-preparation",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "TalentXcel Company Overview",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/topics/interview-preparation",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "AI-Powered Candidate Matching",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/interview-preparation",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Contract & Permanent Staffing Solutions",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/interview-preparation",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Enterprise RPO Hiring Solutions",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/interview-preparation",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "Resume Optimization Studio",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/interview-preparation",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/topics/interview-preparation",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/topics/future-of-work",
+    "target": "https://talentxcel.in/topics/careers",
+    "anchor": "Professional Career Guidance",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "informational"
+  },
+  {
+    "source": "https://talentxcel.in/topics/future-of-work",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "About TalentXcel",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/topics/future-of-work",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "Automated Talent Sourcing Solutions",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/future-of-work",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Technical Recruitment Agency",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/future-of-work",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Outsourced Talent Acquisition",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/future-of-work",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "Recruiter-Ready Resume Generator",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/topics/future-of-work",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/topics/future-of-work",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/jobs",
+    "target": "https://talentxcel.in/topics/careers",
+    "anchor": "Career Progression Insights",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/jobs",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "TalentXcel Platform Entity",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/jobs",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "AI Hiring Software",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/jobs",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Workforce Staffing Services",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/jobs",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Managed Recruitment Services",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/jobs",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "ATS Format Checker",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/jobs",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/jobs",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/colleges",
+    "target": "https://talentxcel.in/topics/education",
+    "anchor": "Higher Education Directory",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "education"
+  },
+  {
+    "source": "https://talentxcel.in/colleges",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "TalentXcel Services",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/colleges",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "AI Recruitment Platform",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/colleges",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Corporate Staffing & Recruitment",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/colleges",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Recruitment Process Outsourcing (RPO)",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/colleges",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "ATS Resume Builder",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/colleges",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/colleges",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/colleges/pathway",
+    "target": "https://talentxcel.in/topics/education",
+    "anchor": "College Admissions & Pathways",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "education"
+  },
+  {
+    "source": "https://talentxcel.in/colleges/pathway",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "TalentXcel Company Overview",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/colleges/pathway",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "AI-Powered Candidate Matching",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/colleges/pathway",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Contract & Permanent Staffing Solutions",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/colleges/pathway",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Enterprise RPO Hiring Solutions",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/colleges/pathway",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "Resume Optimization Studio",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/colleges/pathway",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/colleges/pathway",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/colleges/global-programs",
+    "target": "https://talentxcel.in/topics/education",
+    "anchor": "Indian Institution Rankings",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "education"
+  },
+  {
+    "source": "https://talentxcel.in/colleges/global-programs",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "About TalentXcel",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/colleges/global-programs",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "Automated Talent Sourcing Solutions",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/colleges/global-programs",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Technical Recruitment Agency",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/colleges/global-programs",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Outsourced Talent Acquisition",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/colleges/global-programs",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "Recruiter-Ready Resume Generator",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/colleges/global-programs",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/colleges/global-programs",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/colleges/scholarships",
+    "target": "https://talentxcel.in/topics/education",
+    "anchor": "Higher Education Directory",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "education"
+  },
+  {
+    "source": "https://talentxcel.in/colleges/scholarships",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "TalentXcel Platform Entity",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/colleges/scholarships",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "AI Hiring Software",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/colleges/scholarships",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Workforce Staffing Services",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/colleges/scholarships",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Managed Recruitment Services",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/colleges/scholarships",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "ATS Format Checker",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/colleges/scholarships",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/colleges/scholarships",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/network",
+    "target": "https://talentxcel.in/topics/careers",
+    "anchor": "Professional Career Guidance",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "informational"
+  },
+  {
+    "source": "https://talentxcel.in/network",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "TalentXcel Services",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/network",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "AI Recruitment Platform",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/network",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Corporate Staffing & Recruitment",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/network",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Recruitment Process Outsourcing (RPO)",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/network",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "ATS Resume Builder",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/network",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/network",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/resume",
+    "target": "https://talentxcel.in/topics/resume-writing",
+    "anchor": "TalentXcel Career Solutions",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "informational"
+  },
+  {
+    "source": "https://talentxcel.in/resume",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "TalentXcel Company Overview",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/resume",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "AI-Powered Candidate Matching",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/resume",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Contract & Permanent Staffing Solutions",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/resume",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Enterprise RPO Hiring Solutions",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/resume",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "Resume Optimization Studio",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/resume",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/resume",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/employer",
+    "target": "https://talentxcel.in/topics/careers",
+    "anchor": "Career Growth & Roadmaps",
+    "relationship": "CHILD_TO_PARENT",
+    "intent": "informational"
+  },
+  {
+    "source": "https://talentxcel.in/employer",
+    "target": "https://talentxcel.in/company/talentxcel",
+    "anchor": "About TalentXcel",
+    "relationship": "ENTITY_AUTHORITY",
+    "intent": "brand"
+  },
+  {
+    "source": "https://talentxcel.in/employer",
+    "target": "https://talentxcel.in/services/ai-recruitment",
+    "anchor": "Automated Talent Sourcing Solutions",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/employer",
+    "target": "https://talentxcel.in/services/staffing-recruitment",
+    "anchor": "Technical Recruitment Agency",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/employer",
+    "target": "https://talentxcel.in/services/rpo",
+    "anchor": "Outsourced Talent Acquisition",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/employer",
+    "target": "https://talentxcel.in/services/resume-building",
+    "anchor": "Recruiter-Ready Resume Generator",
+    "relationship": "CONTENT_TO_SERVICE",
+    "intent": "commercial"
+  },
+  {
+    "source": "https://talentxcel.in/employer",
+    "target": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Content Writer - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  },
+  {
+    "source": "https://talentxcel.in/employer",
+    "target": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "anchor": "Marketing Executive - Chatr (char.chat)",
+    "relationship": "CONTENT_TO_JOB",
+    "intent": "job-search"
+  }
+]

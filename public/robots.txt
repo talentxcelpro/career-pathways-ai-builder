@@ -127,6 +127,7 @@ Disallow: /api/private/
 
 Disallow: /onboarding
 Disallow: /dashboard
+Disallow: /settings
 Disallow: /my-applications
 
 Disallow: /jobs/apply/
