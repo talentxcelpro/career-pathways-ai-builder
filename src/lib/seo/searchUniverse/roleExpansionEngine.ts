@@ -47,9 +47,18 @@ export const CANONICAL_JOB_ROLES: JobRoleDefinition[] = [
   { id: 'content_wr', title: 'content writer', category: 'SALES_MARKETING', primarySkills: ['Copywriting', 'SEO Content', 'Editing'], canonicalSlug: 'content-writer' },
   { id: 'growth_mkt', title: 'growth marketer', category: 'SALES_MARKETING', primarySkills: ['PPC', 'Analytics', 'Conversion Funnels'], canonicalSlug: 'growth-marketer' },
 
-  // --- Support & Operations ---
-  { id: 'cust_sup', title: 'customer service executive', category: 'SUPPORT', primarySkills: ['CRM', 'Client Communication', 'Troubleshooting'], canonicalSlug: 'customer-service-executive' },
-  { id: 'ops_mgr', title: 'operations manager', category: 'OPERATIONS', primarySkills: ['Process Optimization', 'Logistics', 'Team Management'], canonicalSlug: 'operations-manager' },
+  // --- Extended Canonical Professional Roles ---
+  { id: 'recruiter', title: 'recruiter', category: 'HR_RECRUITMENT', primarySkills: ['Talent Sourcing', 'Interviewing', 'Candidate Screening'], canonicalSlug: 'recruiter' },
+  { id: 'curr_dev', title: 'curriculum developer', category: 'SUPPORT', primarySkills: ['Instructional Design', 'LMS', 'Pedagogy'], canonicalSlug: 'curriculum-developer' },
+  { id: 'cx_mgr', title: 'customer experience manager', category: 'SUPPORT', primarySkills: ['NPS', 'Customer Journey', 'Support Ops'], canonicalSlug: 'customer-experience-manager' },
+  { id: 'buyer', title: 'buyer', category: 'OPERATIONS', primarySkills: ['Procurement', 'Vendor Management', 'Supply Chain'], canonicalSlug: 'buyer' },
+  { id: 'port_mgr', title: 'portfolio manager', category: 'FINANCE', primarySkills: ['Asset Allocation', 'Financial Modeling', 'Risk Analysis'], canonicalSlug: 'portfolio-manager' },
+  { id: 'fin_analyst', title: 'financial analyst', category: 'FINANCE', primarySkills: ['Excel', 'DCF', 'Financial Reporting'], canonicalSlug: 'financial-analyst' },
+  { id: 'python_dev', title: 'Python developer', category: 'ENGINEERING', primarySkills: ['Python', 'Django', 'FastAPI'], canonicalSlug: 'python-developer' },
+  { id: 'java_dev', title: 'Java developer', category: 'ENGINEERING', primarySkills: ['Java', 'Spring Boot', 'Microservices'], canonicalSlug: 'java-developer' },
+  { id: 'react_dev', title: 'React developer', category: 'ENGINEERING', primarySkills: ['React', 'TypeScript', 'Redux'], canonicalSlug: 'react-developer' },
+  { id: 'node_dev', title: 'Node.js developer', category: 'ENGINEERING', primarySkills: ['Node.js', 'Express', 'MongoDB'], canonicalSlug: 'node-js-developer' },
 ];
 
 export const ALL_ROLES_TITLES = CANONICAL_JOB_ROLES.map((r) => r.title);
+

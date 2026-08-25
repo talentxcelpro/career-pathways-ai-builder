@@ -1,0 +1,65 @@
+[
+  {
+    "query": "ats resume guide 2026",
+    "intent": "INFORMATIONAL_TOOL",
+    "canonicalUrl": "https://talentxcel.in/resources/ats-resume-guide-2026",
+    "httpStatus": 200,
+    "renderStatus": "PRE_RENDERED_SUBSTANTIVE_HTML",
+    "googlebotCrawlable": true,
+    "inboundLinksFromHomepage": true
+  },
+  {
+    "query": "curriculum developer career guide",
+    "intent": "INFORMATIONAL_CAREER",
+    "canonicalUrl": "https://talentxcel.in/roles/curriculum-developer",
+    "httpStatus": 200,
+    "renderStatus": "PRE_RENDERED_SUBSTANTIVE_HTML",
+    "googlebotCrawlable": true,
+    "inboundLinksFromHomepage": true
+  },
+  {
+    "query": "recruiter jobs india",
+    "intent": "JOB_SEARCH",
+    "canonicalUrl": "https://talentxcel.in/roles/recruiter",
+    "httpStatus": 200,
+    "renderStatus": "PRE_RENDERED_SUBSTANTIVE_HTML",
+    "googlebotCrawlable": true,
+    "inboundLinksFromHomepage": true
+  },
+  {
+    "query": "jobs in bangalore",
+    "intent": "LOCATION_JOB_SEARCH",
+    "canonicalUrl": "https://talentxcel.in/locations/bangalore",
+    "httpStatus": 200,
+    "renderStatus": "PRE_RENDERED_SUBSTANTIVE_HTML",
+    "googlebotCrawlable": true,
+    "inboundLinksFromHomepage": true
+  },
+  {
+    "query": "talent acquisition strategy in india",
+    "intent": "COMMERCIAL_B2B",
+    "canonicalUrl": "https://talentxcel.in/resources/how-to-build-an-effective-talent-acquisition-strategy-india",
+    "httpStatus": 200,
+    "renderStatus": "PRE_RENDERED_SUBSTANTIVE_HTML",
+    "googlebotCrawlable": true,
+    "inboundLinksFromHomepage": true
+  },
+  {
+    "query": "ai product rankings",
+    "intent": "COMMERCIAL_DIRECTORY",
+    "canonicalUrl": "https://talentxcel.in/rankings/ai-products",
+    "httpStatus": 200,
+    "renderStatus": "PRE_RENDERED_SUBSTANTIVE_HTML",
+    "googlebotCrawlable": true,
+    "inboundLinksFromHomepage": true
+  },
+  {
+    "query": "6 step career pathway tool",
+    "intent": "TRANSACTIONAL_TOOL",
+    "canonicalUrl": "https://talentxcel.in/colleges/pathway",
+    "httpStatus": 200,
+    "renderStatus": "PRE_RENDERED_SUBSTANTIVE_HTML",
+    "googlebotCrawlable": true,
+    "inboundLinksFromHomepage": true
+  }
+]

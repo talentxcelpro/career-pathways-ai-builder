@@ -42,11 +42,7 @@ async function prerender() {
     fs.mkdirSync(DIST_DIR, { recursive: true });
   }
 
-  const templatePath = fs.existsSync(path.join(DIST_DIR, 'index.html'))
-    ? path.join(DIST_DIR, 'index.html')
-    : path.resolve(__dirname, '../index.html');
-
-  let templateHtml = fs.readFileSync(templatePath, 'utf8');
+  const cleanBaseTemplate = fs.readFileSync(path.resolve(__dirname, '../index.html'), 'utf8');
   let generatedCount = 0;
 
   function writePrerenderedPage(
@@ -61,12 +57,12 @@ async function prerender() {
     }
   ) {
     const cleanPath = routePath.replace(/^\//, '').replace(/\/$/, '');
-    const targetDir = path.join(DIST_DIR, cleanPath);
+    const targetDir = cleanPath === '' ? DIST_DIR : path.join(DIST_DIR, cleanPath);
     fs.mkdirSync(targetDir, { recursive: true });
     const targetIndexFile = path.join(targetDir, 'index.html');
-    const targetFlatHtmlFile = path.join(DIST_DIR, cleanPath + '.html');
+    const targetFlatHtmlFile = cleanPath === '' ? path.join(DIST_DIR, 'home.html') : path.join(DIST_DIR, cleanPath + '.html');
 
-    let pageHtml = templateHtml;
+    let pageHtml = cleanBaseTemplate;
 
     // 1. Title
     pageHtml = pageHtml.replace(
@@ -776,6 +772,239 @@ async function prerender() {
       h1: prog.program_title,
       bodyContentHtml: `<div class="bg-slate-900 border border-slate-800 rounded-xl p-6"><h2 class="text-xl font-bold text-white mb-2">${escapeHtml(prog.program_title)}</h2><p class="text-emerald-400 font-semibold text-sm">${escapeHtml(prog.institution_name)} &bull; ${escapeHtml(prog.country)}</p></div>`,
     });
+  }
+
+  // 8. Pre-render All 1,711 Substantive Resource Guides (/resources/:slug)
+  console.log('Pre-rendering Substantive Resource Guides...');
+  try {
+    const { CONTENT_DATA } = await import('./contentRegistryData.js');
+    if (CONTENT_DATA) {
+      for (const guide of CONTENT_DATA) {
+        if (!guide.indexable || !guide.slug) continue;
+        const canonical = `${BASE_URL}/resources/${guide.slug}`;
+        const title = `${guide.title} | TalentXcel Resources`;
+        const description = guide.description || guide.intro?.slice(0, 160) || '';
+
+        const sectionsHtml = (guide.bodySections || [])
+          .map(
+            (sec: any) => `
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-3">
+              <h2 class="text-xl font-bold text-white">${escapeHtml(sec.heading)}</h2>
+              <p class="text-slate-300 text-sm leading-relaxed">${escapeHtml(sec.content)}</p>
+              ${
+                sec.bulletPoints && sec.bulletPoints.length > 0
+                  ? `<ul class="list-disc list-inside space-y-1.5 text-xs text-slate-300 pt-2">${sec.bulletPoints.map((b: string) => `<li>${escapeHtml(b)}</li>`).join('')}</ul>`
+                  : ''
+              }
+            </div>
+          `
+          )
+          .join('\n');
+
+        const bodyHtml = `
+          <div class="space-y-6">
+            <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6">
+              <p class="text-base text-slate-200 leading-relaxed">${escapeHtml(guide.intro || '')}</p>
+            </div>
+            ${sectionsHtml}
+          </div>
+        `;
+
+        writePrerenderedPage(`/resources/${guide.slug}`, {
+          title,
+          description,
+          canonical,
+          h1: guide.title,
+          bodyContentHtml: bodyHtml,
+        });
+      }
+    }
+  } catch (err) {
+    console.warn('Resource guides prerender warning:', err);
+  }
+
+  // 9. Pre-render All Canonical Roles (/roles/:role and /jobs/:role)
+  console.log('Pre-rendering Canonical Job Roles...');
+  try {
+    const { CANONICAL_JOB_ROLES } = await import('../src/lib/seo/searchUniverse/roleExpansionEngine.js');
+  // 9. Pre-render All Canonical Roles (/roles/:role and /jobs/:role) and Top Role x City (/jobs/:role/:city)
+  console.log('Pre-rendering Canonical Job Roles & Role x City...');
+  const ALL_CANONICAL_ROLES = [
+    { title: 'software engineer', slug: 'software-engineer', domain: 'Engineering', skills: ['Java', 'Python', 'C++'] },
+    { title: 'frontend developer', slug: 'frontend-developer', domain: 'Engineering', skills: ['React', 'TypeScript', 'Next.js'] },
+    { title: 'backend developer', slug: 'backend-developer', domain: 'Engineering', skills: ['Node.js', 'Go', 'Python'] },
+    { title: 'full stack developer', slug: 'full-stack-developer', domain: 'Engineering', skills: ['React', 'Node.js', 'PostgreSQL'] },
+    { title: 'devops engineer', slug: 'devops-engineer', domain: 'Engineering', skills: ['Docker', 'Kubernetes', 'AWS'] },
+    { title: 'cloud architect', slug: 'cloud-architect', domain: 'Engineering', skills: ['AWS', 'Azure', 'GCP'] },
+    { title: 'qa automation engineer', slug: 'qa-automation-engineer', domain: 'Engineering', skills: ['Selenium', 'Cypress', 'Playwright'] },
+    { title: 'sdet', slug: 'sdet', domain: 'Engineering', skills: ['Java', 'TestNG', 'CI CD'] },
+    { title: 'cybersecurity engineer', slug: 'cybersecurity-engineer', domain: 'Engineering', skills: ['SIEM', 'Ethical Hacking', 'SOC'] },
+    { title: 'mobile app developer', slug: 'mobile-app-developer', domain: 'Engineering', skills: ['Flutter', 'React Native', 'Swift'] },
+    { title: 'ai engineer', slug: 'ai-engineer', domain: 'Data & AI', skills: ['PyTorch', 'LLM', 'Python'] },
+    { title: 'machine learning engineer', slug: 'machine-learning-engineer', domain: 'Data & AI', skills: ['Scikit-Learn', 'TensorFlow', 'Python'] },
+    { title: 'data scientist', slug: 'data-scientist', domain: 'Data & AI', skills: ['Python', 'SQL', 'Machine Learning'] },
+    { title: 'data analyst', slug: 'data-analyst', domain: 'Data & AI', skills: ['SQL', 'PowerBI', 'Excel'] },
+    { title: 'data engineer', slug: 'data-engineer', domain: 'Data & AI', skills: ['Spark', 'Kafka', 'SQL'] },
+    { title: 'ai prompt engineer', slug: 'ai-prompt-engineer', domain: 'Data & AI', skills: ['Prompt Engineering', 'LangChain', 'LLM'] },
+    { title: 'product manager', slug: 'product-manager', domain: 'Product', skills: ['Agile', 'Roadmapping', 'Jira'] },
+    { title: 'technical product manager', slug: 'technical-product-manager', domain: 'Product', skills: ['API', 'System Design', 'Agile'] },
+    { title: 'ui ux designer', slug: 'ui-ux-designer', domain: 'Design', skills: ['Figma', 'Wireframing', 'Prototyping'] },
+    { title: 'product designer', slug: 'product-designer', domain: 'Design', skills: ['Figma', 'Design Systems', 'User Research'] },
+    { title: 'technical recruiter', slug: 'technical-recruiter', domain: 'HR & Recruitment', skills: ['Talent Sourcing', 'ATS', 'Screening'] },
+    { title: 'recruiter', slug: 'recruiter', domain: 'HR & Recruitment', skills: ['Talent Sourcing', 'Interviewing', 'Candidate Screening'] },
+    { title: 'curriculum developer', slug: 'curriculum-developer', domain: 'Support & Education', skills: ['Instructional Design', 'LMS', 'Pedagogy'] },
+    { title: 'customer experience manager', slug: 'customer-experience-manager', domain: 'Support', skills: ['NPS', 'Customer Journey', 'Support Ops'] },
+    { title: 'buyer', slug: 'buyer', domain: 'Operations', skills: ['Procurement', 'Vendor Management', 'Supply Chain'] },
+    { title: 'portfolio manager', slug: 'portfolio-manager', domain: 'Finance', skills: ['Asset Allocation', 'Financial Modeling', 'Risk Analysis'] },
+    { title: 'financial analyst', slug: 'financial-analyst', domain: 'Finance', skills: ['Excel', 'DCF', 'Financial Reporting'] },
+    { title: 'python developer', slug: 'python-developer', domain: 'Engineering', skills: ['Python', 'Django', 'FastAPI'] },
+    { title: 'java developer', slug: 'java-developer', domain: 'Engineering', skills: ['Java', 'Spring Boot', 'Microservices'] },
+    { title: 'react developer', slug: 'react-developer', domain: 'Engineering', skills: ['React', 'TypeScript', 'Redux'] },
+    { title: 'node js developer', slug: 'node-js-developer', domain: 'Engineering', skills: ['Node.js', 'Express', 'MongoDB'] },
+    { title: 'b2b sales executive', slug: 'b2b-sales-executive', domain: 'Sales & Marketing', skills: ['Lead Generation', 'Cold Calling', 'Salesforce'] },
+    { title: 'marketing executive', slug: 'marketing-executive', domain: 'Sales & Marketing', skills: ['Digital Marketing', 'Social Media', 'SEO'] },
+    { title: 'content writer', slug: 'content-writer', domain: 'Sales & Marketing', skills: ['Copywriting', 'SEO Content', 'Editing'] },
+    { title: 'growth marketer', slug: 'growth-marketer', domain: 'Sales & Marketing', skills: ['PPC', 'Analytics', 'Conversion Funnels'] },
+    { title: 'customer service executive', slug: 'customer-service-executive', domain: 'Support', skills: ['CRM', 'Client Communication', 'Troubleshooting'] },
+    { title: 'operations manager', slug: 'operations-manager', domain: 'Operations', skills: ['Process Optimization', 'Logistics', 'Team Management'] },
+  ];
+
+  const TOP_CITIES = [
+    { name: 'Bangalore', slug: 'bangalore' },
+    { name: 'Noida', slug: 'noida' },
+    { name: 'Delhi', slug: 'delhi' },
+    { name: 'Mumbai', slug: 'mumbai' },
+    { name: 'Hyderabad', slug: 'hyderabad' },
+    { name: 'Pune', slug: 'pune' },
+    { name: 'Chennai', slug: 'chennai' },
+    { name: 'Gurgaon', slug: 'gurgaon' },
+    { name: 'Kolkata', slug: 'kolkata' },
+  ];
+
+  for (const role of ALL_CANONICAL_ROLES) {
+    const slug = role.slug;
+    const title = `${role.title.replace(/\b\w/g, (c) => c.toUpperCase())} Jobs & Career Guide 2026 | TalentXcel`;
+    const description = `Discover verified ${role.title} job opportunities, required skills, ATS resume templates, salary benchmarks, and hiring companies across India.`;
+    const canonical = `${BASE_URL}/roles/${slug}`;
+
+    const bodyHtml = `
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+        <div>
+          <h2 class="text-2xl font-bold text-white mb-2">${escapeHtml(role.title.replace(/\b\w/g, (c) => c.toUpperCase()))} Career Intelligence</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Comprehensive role overview, required technical competencies, market salary ranges, and active vacancies for ${escapeHtml(role.title)} professionals.</p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
+          <div class="p-4 bg-slate-950 rounded-xl">
+            <span class="text-slate-400 block mb-1">Primary Domain</span>
+            <span class="font-semibold text-white capitalize">${escapeHtml(role.domain)}</span>
+          </div>
+          <div class="p-4 bg-slate-950 rounded-xl">
+            <span class="text-slate-400 block mb-1">Essential Skills</span>
+            <span class="font-semibold text-blue-400">${escapeHtml(role.skills.join(', '))}</span>
+          </div>
+          <div class="p-4 bg-slate-950 rounded-xl">
+            <span class="text-slate-400 block mb-1">Market Demand</span>
+            <span class="font-semibold text-emerald-400">High Active Hiring</span>
+          </div>
+        </div>
+        <div class="pt-4 flex flex-wrap gap-3">
+          <a href="/jobs?role=${slug}" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg">View Open ${escapeHtml(role.title)} Jobs &rarr;</a>
+          <a href="/resume" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg">Build ${escapeHtml(role.title)} Resume &rarr;</a>
+          <a href="/careermap" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg">Career Progression Map &rarr;</a>
+        </div>
+      </div>
+    `;
+
+    writePrerenderedPage(`/roles/${slug}`, {
+      title,
+      description,
+      canonical,
+      h1: `${role.title.replace(/\b\w/g, (c) => c.toUpperCase())} Careers & Jobs`,
+      bodyContentHtml: bodyHtml,
+    });
+
+    writePrerenderedPage(`/jobs/${slug}`, {
+      title,
+      description,
+      canonical: `${BASE_URL}/jobs/${slug}`,
+      h1: `${role.title.replace(/\b\w/g, (c) => c.toUpperCase())} Jobs`,
+      bodyContentHtml: bodyHtml,
+    });
+
+    // Also write /jobs/:role/:city combinations
+    for (const city of TOP_CITIES) {
+      const cityCanonical = `${BASE_URL}/jobs/${slug}/${city.slug}`;
+      const cityTitle = `${role.title.replace(/\b\w/g, (c) => c.toUpperCase())} Jobs in ${city.name} 2026 | TalentXcel`;
+      const cityDesc = `Find verified ${role.title} vacancies in ${city.name}. Apply directly to top tech employers with transparent compensation and ATS resume scoring.`;
+
+      const cityBodyHtml = `
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <div>
+            <h2 class="text-2xl font-bold text-white mb-2">${escapeHtml(role.title.replace(/\b\w/g, (c) => c.toUpperCase()))} Jobs in ${escapeHtml(city.name)}</h2>
+            <p class="text-slate-300 text-sm leading-relaxed">Verified hiring companies, active vacancies, required skills, and compensation packages for ${escapeHtml(role.title)} positions in ${escapeHtml(city.name)}.</p>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Location</span><span class="font-semibold text-white">${escapeHtml(city.name)}</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Key Tech Skills</span><span class="font-semibold text-blue-400">${escapeHtml(role.skills.join(', '))}</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Hiring Status</span><span class="font-semibold text-emerald-400">Actively Interviewing</span></div>
+          </div>
+          <div class="pt-4 flex flex-wrap gap-3">
+            <a href="/jobs?role=${slug}&location=${city.slug}" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg">Apply to ${escapeHtml(role.title)} Jobs in ${escapeHtml(city.name)} &rarr;</a>
+            <a href="/resume" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg">Optimize Resume for ${escapeHtml(city.name)} Employers &rarr;</a>
+          </div>
+        </div>
+      `;
+
+      writePrerenderedPage(`/jobs/${slug}/${city.slug}`, {
+        title: cityTitle,
+        description: cityDesc,
+        canonical: cityCanonical,
+        h1: `${role.title.replace(/\b\w/g, (c) => c.toUpperCase())} Jobs in ${city.name}`,
+        bodyContentHtml: cityBodyHtml,
+      });
+    }
+  }
+  } catch (err) {
+    console.warn('Roles prerender warning:', err);
+  }
+
+  // 10. Pre-render Canonical Locations (/locations/:location)
+  console.log('Pre-rendering Canonical Locations...');
+  try {
+    const { CANONICAL_LOCATIONS } = await import('../src/lib/seo/searchUniverse/locationExpansionEngine.js');
+    if (CANONICAL_LOCATIONS) {
+      for (const loc of CANONICAL_LOCATIONS) {
+        const slug = loc.slug;
+        const canonical = `${BASE_URL}/locations/${slug}`;
+        const title = `Jobs & Tech Hiring in ${loc.name} 2026 | TalentXcel`;
+        const description = `Explore active tech vacancies, top hiring companies, average salary benchmarks, and career opportunities in ${loc.name}.`;
+
+        const bodyHtml = `
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+            <h2 class="text-2xl font-bold text-white mb-2">Employment & Tech Hiring Market in ${escapeHtml(loc.name)}</h2>
+            <p class="text-slate-300 text-sm leading-relaxed">${escapeHtml(loc.name)} is a key employment center in India. TalentXcel connects professionals with verified tech companies, startups, and enterprise organizations in ${escapeHtml(loc.name)}.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
+              <div class="p-4 bg-slate-950 rounded-lg"><span class="text-slate-400 block mb-1">Region</span><span class="font-semibold text-white">${loc.region}</span></div>
+              <div class="p-4 bg-slate-950 rounded-lg"><span class="text-slate-400 block mb-1">Market Tier</span><span class="font-semibold text-emerald-400">Tier ${loc.tier} Hub</span></div>
+              <div class="p-4 bg-slate-950 rounded-lg"><span class="text-slate-400 block mb-1">Hiring Status</span><span class="font-semibold text-blue-400">Active Opportunities</span></div>
+            </div>
+            <div class="pt-2">
+              <a href="/jobs?location=${slug}" class="inline-block px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Browse Jobs in ${escapeHtml(loc.name)} &rarr;</a>
+            </div>
+          </div>
+        `;
+
+        writePrerenderedPage(`/locations/${slug}`, {
+          title,
+          description,
+          canonical,
+          h1: `Jobs & Tech Hiring in ${loc.name}`,
+          bodyContentHtml: bodyHtml,
+        });
+      }
+    }
+  } catch (err) {
+    console.warn('Locations prerender warning:', err);
   }
 
   console.log(`\n========================================`);
