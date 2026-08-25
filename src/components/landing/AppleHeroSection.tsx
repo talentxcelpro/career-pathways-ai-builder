@@ -14,11 +14,11 @@ export const AppleHeroSection = () => {
         <div className="absolute bottom-1/4 right-1/4 w-40 h-40 bg-gradient-to-br from-secondary/20 to-accent/20 rounded-full blur-xl animate-pulse delay-2000"></div>
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-6 py-20">
-        <div className="grid lg:grid-cols-2 gap-16 items-center min-h-[80vh]">
+      <div className="relative max-w-7xl mx-auto px-6 py-8 sm:py-12 md:py-16">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           {/* Left Side - Text Content */}
-          <div className="space-y-8 text-center lg:text-left">
-            <div className="space-y-6">
+          <div className="space-y-6 text-center lg:text-left">
+            <div className="space-y-4">
               {/* Globe Icon with semantic colors */}
               <div className="flex justify-center lg:justify-start mb-4">
                 <div className="w-[clamp(3rem,4vw,4rem)] h-[clamp(3rem,4vw,4rem)] bg-gradient-to-br from-primary via-primary to-accent rounded-full flex items-center justify-center shadow-lg relative overflow-hidden">

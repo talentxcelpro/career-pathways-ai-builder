@@ -268,17 +268,18 @@ const EmployerLanding = () => {
                 ))}
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
                 <Button 
                   size="lg" 
-                  className="bg-blue-600 hover:bg-blue-700"
+                  className="bg-blue-600 hover:bg-blue-700 font-semibold px-6 shadow-md hover:shadow-lg transition-all"
                   onClick={() => navigate('/employer/request-access')}
                 >
-                  🔵 Request Employer Access
+                  <Building2 className="h-4 w-4 mr-2" />
+                  Request Employer Access
                 </Button>
-                <div className="flex items-center text-sm text-gray-600">
-                  <Clock className="h-4 w-4 mr-2" />
-                  🕓 Approval within 24 hours
+                <div className="flex items-center text-sm font-medium text-gray-600">
+                  <Clock className="h-4 w-4 mr-2 text-slate-500" />
+                  Approval within 24 hours
                 </div>
               </div>
             </div>
