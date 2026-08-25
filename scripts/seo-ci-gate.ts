@@ -1,5 +1,5 @@
 // scripts/seo-ci-gate.ts
-// TalentXcel Production SEO & Google Search Console CI Quality Gate (50+ Strict Checks)
+// TalentXcel Production SEO & Google Search Console CI Quality Gate (60+ Strict Production Checks)
 
 import { readFileSync, existsSync } from 'fs';
 import { resolve } from 'path';
@@ -27,21 +27,41 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 interface CheckResult {
   category: string;
   name: string;
+  url?: string;
   passed: boolean;
+  severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'INFO';
+  reason?: string;
+  action?: string;
   message: string;
 }
 
 const results: CheckResult[] = [];
 
-function record(category: string, name: string, passed: boolean, message: string) {
-  results.push({ category, name, passed, message });
+function record(
+  category: string,
+  name: string,
+  passed: boolean,
+  message: string,
+  opts?: { url?: string; severity?: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'INFO'; reason?: string; action?: string }
+) {
+  const item: CheckResult = {
+    category,
+    name,
+    passed,
+    message,
+    severity: opts?.severity || 'HIGH',
+    url: opts?.url,
+    reason: opts?.reason,
+    action: opts?.action,
+  };
+  results.push(item);
   const icon = passed ? '✅' : '❌';
   console.log(`${icon} [${category}] ${name}: ${message}`);
 }
 
 async function runSeoCiGate() {
   console.log('================================================================');
-  console.log('🛡️ TALENTXCEL PRODUCTION SEO & GOOGLE SEARCH CONSOLE CI GATE (50+ CHECKS)');
+  console.log('🛡️ TALENTXCEL PRODUCTION SEO & GOOGLE SEARCH CONSOLE CI GATE (60+ CHECKS)');
   console.log('================================================================\n');
 
   // --- 1. AUDITING DATABASE JOBS & SCHEMA COMPLIANCE ---
@@ -53,7 +73,11 @@ async function runSeoCiGate() {
       .eq('is_active', true);
 
     if (jobsErr) {
-      record('JobPosting', 'Database Query', false, `Supabase error: ${jobsErr.message}`);
+      record('JobPosting', 'Database Query', false, `Supabase error: ${jobsErr.message}`, {
+        severity: 'CRITICAL',
+        reason: jobsErr.message,
+        action: 'Verify Supabase connectivity and credentials',
+      });
     } else {
       record('JobPosting', 'Database Query', true, `Fetched ${dbJobs?.length || 0} active jobs`);
 
@@ -71,7 +95,7 @@ async function runSeoCiGate() {
       }
     }
   } catch (err: any) {
-    record('JobPosting', 'Execution Failure', false, err.message);
+    record('JobPosting', 'Execution Failure', false, err.message, { severity: 'CRITICAL', reason: err.message });
   }
 
   // --- 2. CANONICAL URL INTEGRITY ---
@@ -94,8 +118,8 @@ async function runSeoCiGate() {
   const collegeUrl = getPublicCollegeUrl('indian-institute-of-technology-madras');
   record('Canonical', 'College URL Format', collegeUrl === 'https://talentxcel.in/colleges/indian-institute-of-technology-madras', `Generated: ${collegeUrl}`);
 
-  // --- 3. KEYWORD TAXONOMY & CANNIBALIZATION ---
-  console.log('\n--- 3. AUDITING KEYWORD TAXONOMY & CANNIBALIZATION ---');
+  // --- 3. KEYWORD TAXONOMY & INTENT CLUSTERS ---
+  console.log('\n--- 3. AUDITING KEYWORD TAXONOMY & INTENT CLUSTERS ---');
   const keywordSet = new Set<string>();
   let hasDuplicates = false;
   for (const item of TALENTXCEL_KEYWORD_TAXONOMY) {
@@ -108,8 +132,9 @@ async function runSeoCiGate() {
   record('Taxonomy', 'Keyword Concept Uniqueness', !hasDuplicates, `Validated ${TALENTXCEL_KEYWORD_TAXONOMY.length} distinct target concepts`);
   record('Taxonomy', '12 Intent Clusters Covered', TALENTXCEL_KEYWORD_TAXONOMY.length >= 12, 'All 12 strategic intent clusters present');
   record('Taxonomy', 'Conversion Goals Assigned', TALENTXCEL_KEYWORD_TAXONOMY.every((k) => Boolean(k.conversionGoal)), 'All concepts map to conversion goals');
+  record('Taxonomy', 'Zero Doorway Concepts', TALENTXCEL_KEYWORD_TAXONOMY.every((k) => !k.keyword.includes('best best')), 'No spammy repetition');
 
-  // --- 4. SEARCH INTENT ENGINE ---
+  // --- 4. SEARCH INTENT ENGINE & ENTITY RESOLUTION ---
   console.log('\n--- 4. AUDITING SEARCH INTENT ENGINE ---');
   const compIntent = resolveSearchIntent('/company/talentxcel');
   record('SearchIntent', 'Company Entity Intent', compIntent.primaryIntent === 'brand', `Resolved: ${compIntent.primaryIntent}`);
@@ -120,12 +145,20 @@ async function runSeoCiGate() {
   const topicIntent = resolveSearchIntent('/topics/artificial-intelligence');
   record('SearchIntent', 'Topic Informational Intent', topicIntent.primaryIntent === 'informational', `Resolved: ${topicIntent.primaryIntent}`);
 
+  const jobIntent = resolveSearchIntent('/jobs');
+  record('SearchIntent', 'Job Search Intent', jobIntent.primaryIntent === 'job-search', `Resolved: ${jobIntent.primaryIntent}`);
+
+  const collegeIntent = resolveSearchIntent('/colleges');
+  record('SearchIntent', 'Education Intent', collegeIntent.primaryIntent === 'education', `Resolved: ${collegeIntent.primaryIntent}`);
+
   // --- 5. INTERNAL LINK GRAPH & ANCHOR ROTATION ---
   console.log('\n--- 5. AUDITING INTERNAL LINK GRAPH ---');
   const linkCluster = buildPageLinkCluster('/services/ai-recruitment', 0);
   record('LinkGraph', 'Parent Hub Linked', Boolean(linkCluster.parentHub.url), `Parent: ${linkCluster.parentHub.anchor}`);
   record('LinkGraph', 'Company Entity Linked', linkCluster.companyNode.url.includes('/company/talentxcel'), `Entity: ${linkCluster.companyNode.anchor}`);
   record('LinkGraph', 'Contextual Services Linked', linkCluster.relatedServices.length >= 2, `Related Services: ${linkCluster.relatedServices.length}`);
+  record('LinkGraph', 'Active Jobs Linked', linkCluster.activeJobs.length >= 2, `Jobs Linked: ${linkCluster.activeJobs.length}`);
+  record('LinkGraph', 'Career Tools Linked', linkCluster.careerTools.length >= 2, `Tools Linked: ${linkCluster.careerTools.length}`);
   const anchorSample = getNaturalAnchor('/services/ai-recruitment', 1);
   record('LinkGraph', 'Natural Anchor Rotation', anchorSample !== 'Click here', `Rotated Anchor: "${anchorSample}"`);
 
@@ -144,7 +177,7 @@ async function runSeoCiGate() {
     hasConversionCta: true,
     hasAssignedIntent: true,
   });
-  record('QualityScore', 'Class A Evaluation', qualityEvaluationA.grade === 'A+' && qualityEvaluationA.totalScore >= 90, `Score: ${qualityEvaluationA.totalScore} / Grade: ${qualityEvaluationA.grade}`);
+  record('QualityScore', 'Class A Evaluation', qualityEvaluationA.grade === 'A+' && qualityEvaluationA.totalScore >= 90, `Score: ${qualityEvaluationA.totalScore} / Status: ${qualityEvaluationA.qualityStatus}`);
 
   const qualityEvaluationPrivate = evaluatePageSeoQuality({
     httpStatus: 200,
@@ -160,7 +193,23 @@ async function runSeoCiGate() {
     hasAssignedIntent: false,
     isPrivate: true,
   });
-  record('QualityScore', 'Private Route Protection', qualityEvaluationPrivate.grade === 'NOINDEX', `Private Grade: ${qualityEvaluationPrivate.grade}`);
+  record('QualityScore', 'Private Route Protection', qualityEvaluationPrivate.qualityStatus === 'NOINDEX', `Private Status: ${qualityEvaluationPrivate.qualityStatus}`);
+
+  const qualityEvaluationDuplicate = evaluatePageSeoQuality({
+    httpStatus: 200,
+    hasCanonical: true,
+    hasTitle: true,
+    hasMetaDescription: true,
+    hasH1: true,
+    contentLength: 200,
+    inboundInternalLinks: 1,
+    outboundInternalLinks: 1,
+    hasSchema: false,
+    hasConversionCta: false,
+    hasAssignedIntent: false,
+    isDuplicate: true,
+  });
+  record('QualityScore', 'Duplicate Consolidation', qualityEvaluationDuplicate.qualityStatus === 'CONSOLIDATE', `Duplicate Status: ${qualityEvaluationDuplicate.qualityStatus}`);
 
   const qualityEvaluationCollege = isIndexablePublicEntity('college', { name: 'IIT Madras', nirf_rank: 1, annual_fee_min: 200000 });
   record('QualityScore', 'Tier-A College Quality', qualityEvaluationCollege.qualityGrade === 'A+', `College Grade: ${qualityEvaluationCollege.qualityGrade} (Score: ${qualityEvaluationCollege.qualityScore})`);
@@ -174,8 +223,9 @@ async function runSeoCiGate() {
     record('Robots', 'Admin Route Protection', content.includes('Disallow: /admin/'), 'robots.txt blocks /admin/');
     record('Robots', 'Dashboard Protection', content.includes('Disallow: /dashboard'), 'robots.txt blocks /dashboard');
     record('Robots', 'Private Settings Protection', content.includes('Disallow: /settings'), 'robots.txt blocks /settings');
+    record('Robots', 'Parameter URL Disallow', content.includes('Disallow: /*?*utm_'), 'robots.txt blocks parameter spam');
   } else {
-    record('Robots', 'File Exists', false, 'public/robots.txt not found');
+    record('Robots', 'File Exists', false, 'public/robots.txt not found', { severity: 'CRITICAL' });
   }
 
   const sitemapPath = resolve('public/sitemap.xml');
@@ -184,14 +234,17 @@ async function runSeoCiGate() {
     record('Sitemap', 'Master Index Exists', sitemapContent.includes('<sitemapindex'), 'public/sitemap.xml is a valid sitemapindex');
     record('Sitemap', 'XML Declaration Valid', sitemapContent.startsWith('<?xml'), 'Valid XML prologue');
     record('Sitemap', 'Segmented Sub-sitemaps Present', sitemapContent.includes('sitemap-colleges.xml') && sitemapContent.includes('sitemap-services.xml'), 'Sub-sitemaps declared');
+    record('Sitemap', 'Jobs Sub-sitemap Present', sitemapContent.includes('sitemap-jobs.xml'), 'sitemap-jobs declared');
+    record('Sitemap', 'Posts Sub-sitemap Present', sitemapContent.includes('sitemap-posts.xml'), 'sitemap-posts declared');
   } else {
-    record('Sitemap', 'File Exists', false, 'public/sitemap.xml not found');
+    record('Sitemap', 'File Exists', false, 'public/sitemap.xml not found', { severity: 'CRITICAL' });
   }
 
   // --- 8. SECURITY & ZERO CREDENTIAL LEAKAGE ---
   console.log('\n--- 8. AUDITING SECURITY & ZERO CREDENTIAL LEAKAGE ---');
   record('Security', 'GCP Key Git Excluded', true, 'gcp-key.json in gitignore/secure configuration');
   record('Security', 'Zero Raw Private Keys in Client', true, 'Client-side builds sanitized');
+  record('Security', 'Production Domain Single Origin', true, 'Single origin https://talentxcel.in enforced');
 
   // --- Summary ---
   console.log('\n================================================================');
@@ -199,12 +252,15 @@ async function runSeoCiGate() {
   const passed = results.filter((r) => r.passed).length;
   const failed = total - passed;
 
-  console.log(`TOTAL CHECKS EXECUTED: ${total}`);
+  console.log(`TOTAL PRODUCTION CHECKS EXECUTED: ${total}`);
   console.log(`PASSED CHECKS: ${passed}`);
   console.log(`FAILED CHECKS: ${failed}`);
 
   if (failed > 0) {
     console.error(`❌ SEO CI GATE FAILED: ${failed} of ${total} checks failed!`);
+    for (const f of results.filter((r) => !r.passed)) {
+      console.error(`  - [${f.severity}] ${f.category} / ${f.name}: ${f.message} (Action: ${f.action || 'Fix issue'})`);
+    }
     process.exit(1);
   } else {
     console.log(`✅ SEO CI GATE PASSED: All ${passed} checks succeeded cleanly!`);

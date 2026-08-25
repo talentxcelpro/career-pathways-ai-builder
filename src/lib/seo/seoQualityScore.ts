@@ -1,5 +1,8 @@
 // src/lib/seo/seoQualityScore.ts
-// Comprehensive 0-100 SEO Content Quality & Search Intent Scoring Engine for TalentXcel
+// TALENTXCEL INTERNAL SEO QUALITY SCORE (0-100 Engineering Quality & Intent Evaluation Engine)
+// NOTE: This score is an internal engineering quality metric and does NOT simulate Google's proprietary ranking algorithm.
+
+export type InternalQualityStatus = 'INDEX' | 'REVIEW' | 'NOINDEX' | 'CONSOLIDATE';
 
 export interface SeoScoreBreakdown {
   technicalSeo: number; // Max 20
@@ -12,7 +15,8 @@ export interface SeoScoreBreakdown {
   conversionRelevance: number; // Max 5
   totalScore: number; // Max 100
   grade: 'A+' | 'A' | 'B' | 'C' | 'NOINDEX';
-  actionRecommendation: 'KEEP_INDEXED' | 'IMPROVE' | 'REVIEW' | 'NOINDEX';
+  qualityStatus: InternalQualityStatus;
+  actionRecommendation: 'KEEP_INDEXED' | 'IMPROVE' | 'REVIEW' | 'NOINDEX' | 'CONSOLIDATE';
 }
 
 export interface SeoEvaluationInput {
@@ -30,6 +34,7 @@ export interface SeoEvaluationInput {
   hasConversionCta: boolean;
   hasAssignedIntent: boolean;
   isPrivate?: boolean;
+  isDuplicate?: boolean;
 }
 
 export function evaluatePageSeoQuality(input: SeoEvaluationInput): SeoScoreBreakdown {
@@ -45,7 +50,25 @@ export function evaluatePageSeoQuality(input: SeoEvaluationInput): SeoScoreBreak
       conversionRelevance: 0,
       totalScore: 0,
       grade: 'NOINDEX',
+      qualityStatus: 'NOINDEX',
       actionRecommendation: 'NOINDEX',
+    };
+  }
+
+  if (input.isDuplicate) {
+    return {
+      technicalSeo: 10,
+      contentQuality: 5,
+      searchIntentMatch: 5,
+      internalLinking: 5,
+      metadataCompleteness: 5,
+      entityRelevance: 5,
+      structuredData: 0,
+      conversionRelevance: 0,
+      totalScore: 35,
+      grade: 'NOINDEX',
+      qualityStatus: 'CONSOLIDATE',
+      actionRecommendation: 'CONSOLIDATE',
     };
   }
 
@@ -95,22 +118,28 @@ export function evaluatePageSeoQuality(input: SeoEvaluationInput): SeoScoreBreak
     conversionRelevance;
 
   let grade: 'A+' | 'A' | 'B' | 'C' | 'NOINDEX' = 'NOINDEX';
-  let action: 'KEEP_INDEXED' | 'IMPROVE' | 'REVIEW' | 'NOINDEX' = 'NOINDEX';
+  let qualityStatus: InternalQualityStatus = 'NOINDEX';
+  let action: 'KEEP_INDEXED' | 'IMPROVE' | 'REVIEW' | 'NOINDEX' | 'CONSOLIDATE' = 'NOINDEX';
 
   if (totalScore >= 90) {
     grade = 'A+';
+    qualityStatus = 'INDEX';
     action = 'KEEP_INDEXED';
   } else if (totalScore >= 80) {
     grade = 'A';
+    qualityStatus = 'INDEX';
     action = 'KEEP_INDEXED';
   } else if (totalScore >= 70) {
     grade = 'B';
+    qualityStatus = 'INDEX';
     action = 'KEEP_INDEXED';
   } else if (totalScore >= 60) {
     grade = 'C';
+    qualityStatus = 'REVIEW';
     action = 'REVIEW';
   } else {
     grade = 'NOINDEX';
+    qualityStatus = 'NOINDEX';
     action = 'NOINDEX';
   }
 
@@ -125,6 +154,7 @@ export function evaluatePageSeoQuality(input: SeoEvaluationInput): SeoScoreBreak
     conversionRelevance,
     totalScore,
     grade,
+    qualityStatus,
     actionRecommendation: action,
   };
 }
