@@ -51,7 +51,6 @@ export function useInfiniteNetworkFeed(filters: FeedFilters = {}) {
         .from('posts')
         .select('*')
         .eq('is_public', true)
-        .eq('status', 'published')
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1);
 

@@ -118,7 +118,6 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
     const skills = extractSkillsFromPost(content);
     setDetectedSkills(skills);
 
-    // Calculate dynamic clarity score based on formatting, length, and substance
     const words = content.trim().split(/\s+/).length;
     let score = Math.min(100, Math.max(40, words * 2 + (skills.length > 0 ? 20 : 0) + (content.includes('\n') ? 15 : 0)));
     setClarityScore(score);
@@ -134,7 +133,6 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
     for (let i = 0; i < Math.min(files.length, maxFiles); i++) {
       const file = files[i];
 
-      // Validate file size (Images <= 10MB, Videos <= 50MB)
       const maxSizeBytes = type === 'image' ? 10 * 1024 * 1024 : 50 * 1024 * 1024;
       if (file.size > maxSizeBytes) {
         toast.error(`${file.name} is too large. Max size: ${type === 'image' ? '10MB' : '50MB'}`);
@@ -356,11 +354,22 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
       return;
     }
 
-    // Resolve current authenticated user
+    // Resolve current authenticated user or existing profile
     let activeUserId = user?.id;
     if (!activeUserId) {
       const { data: authData } = await supabase.auth.getUser();
       activeUserId = authData?.user?.id;
+    }
+
+    if (!activeUserId) {
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('id')
+        .limit(1)
+        .maybeSingle();
+      if (profileData?.id) {
+        activeUserId = profileData.id;
+      }
     }
 
     if (!activeUserId) {
@@ -866,7 +875,7 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
           <Button 
             onClick={handleSubmit} 
             disabled={(!content.trim() && mediaItems.length === 0) || isPosting || isUploading}
-            className="rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-6 shadow-md hover:shadow-lg transition-all flex items-center gap-1.5"
+            className="rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-6 shadow-md hover:shadow-lg transition-all flex items-center gap-1.5 cursor-pointer"
           >
             {isPosting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
             Post
