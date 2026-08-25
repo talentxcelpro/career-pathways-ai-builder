@@ -1,6 +1,6 @@
 // scripts/google-indexing-submit.ts
 // Production Google Indexing API Execution Script for TalentXcel
-// Service Account: antigravity-search@talentxcel-login.iam.gserviceaccount.com
+// Service Account: indexing-api-publisher@talentxcel-indexing.iam.gserviceaccount.com (Owner in GSC)
 
 import { readFileSync, existsSync } from 'fs';
 import { resolve } from 'path';
@@ -118,82 +118,110 @@ export async function runGoogleIndexingPipeline() {
   const accessToken = await getGoogleAccessToken(serviceAccount);
   console.log('✅ Google OAuth2 Bearer Access Token Acquired!\n');
 
-  const domains = ['https://talentxcel.in', 'https://talentxcel.com'];
+  const domain = 'https://talentxcel.in';
 
   const relativePaths = [
+    // 1. Core Platform & Entity
     '/',
-    '/rankings',
-    '/rankings/ai-products',
-    '/rankings/ai-products/global',
-    '/rankings/ai-products/emerging',
-    '/rankings/ai-products/india',
-    '/rankings/ai-products/usa',
-    '/rankings/ai-products/uae',
-    '/rankings/ai-products/uk',
-    '/rankings/ai-products/singapore',
-    '/rankings/ai-products/canada',
-    '/rankings/ai-products/australia',
-    '/claim1/enter',
-    '/claim1/watch',
     '/company/talentxcel',
-    '/company/talentxcel-services-pvt-ltd',
+    '/company/talentxcel-services',
     '/jobs',
+    '/network',
     '/colleges',
     '/colleges/global-programs',
     '/colleges/scholarships',
     '/colleges/pathway',
-    '/colleges/state/maharashtra',
-    '/colleges/state/delhi',
-    '/colleges/state/karnataka',
-    '/colleges/state/tamil-nadu',
-    '/colleges/state/telangana',
-    '/colleges/exam/jee-advanced',
-    '/colleges/exam/jee-main',
-    '/colleges/exam/neet-ug',
-    '/colleges/exam/cat',
-    '/colleges/exam/gate',
     '/learning',
-    '/passport',
-    '/companies',
-    '/news',
-    '/roles/ai-engineer',
-    '/roles/software-engineer',
-    '/roles/data-scientist',
-    '/roles/product-manager',
-    '/skills/python',
-    '/skills/machine-learning',
-    '/skills/react',
+    '/resume',
+    '/resume-builder',
+    '/tools',
+    '/employer',
+    '/rankings',
+    '/rankings/ai-products',
+    '/claim1/enter',
+    '/claim1/watch',
+
+    // 2. All 10 Strategic Services
+    '/services/ai-recruitment',
+    '/services/staffing-recruitment',
+    '/services/rpo',
+    '/services/it-services',
+    '/services/ai-solutions',
+    '/services/corporate-training',
+    '/services/career-services',
+    '/services/resume-building',
+    '/services/talent-management',
+    '/services/job-placement',
+
+    // 3. All 11 Topic Hubs
+    '/topics/artificial-intelligence',
+    '/topics/recruitment',
+    '/topics/careers',
+    '/topics/education',
+    '/topics/technology',
+    '/topics/leadership',
+    '/topics/business',
+    '/topics/resume-writing',
+    '/topics/job-search',
+    '/topics/interview-preparation',
+    '/topics/future-of-work',
+
+    // 4. Active Job Postings (Schema.org JobPosting)
+    '/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1',
+    '/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1',
+    '/jobs/marketing-manager-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1',
+    '/jobs/sales-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1',
+    '/jobs/b2b-sales-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1',
+    '/jobs/customer-service-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1',
+
+    // 5. Priority Tier-A Institutions
+    '/colleges/indian-institute-of-technology-madras',
+    '/colleges/indian-institute-of-technology-delhi',
+    '/colleges/indian-institute-of-technology-bombay',
+    '/colleges/indian-institute-of-technology-kanpur',
+    '/colleges/indian-institute-of-technology-kharagpur',
+    '/colleges/indian-institute-of-science-bangalore',
+    '/colleges/indian-institute-of-management-ahmedabad',
+
+    // 6. Public Network Posts
+    '/post/718e7888-97cc-41ba-8a1a-88a6c063615d',
+    '/post/f815fc92-e678-4785-98fe-e3c1d2030411',
+    '/post/fda6e304-6f44-4458-9145-ed061ad04ecf',
+    '/post/cc30c261-4d86-43ba-b7d7-b14e46a5facb',
+    '/post/2a14422a-c698-465f-9a9f-ec265e393f82',
+
+    // 7. Editorial News & Guides
+    '/news/talentxcel-launches-ai-career-ecosystem-2026',
+    '/news/talentxcel-unveils-resume-command-center-ats-intelligence',
+    '/news/global-degrees-scholarships-and-career-pathway-feed',
+    '/news/verified-providers-and-free-learning-certificates',
+    '/news/india-tech-hiring-trends-2026-skills-over-pedigree',
   ];
 
   let successCount = 0;
   let errorCount = 0;
 
-  for (const domain of domains) {
-    console.log(`\n📡 Submitting priority URLs for domain: ${domain}...`);
-    for (const p of relativePaths) {
-      const fullUrl = `${domain}${p === '/' ? '/' : p}`;
-      try {
-        const res = await publishUrlToGoogle(fullUrl, accessToken, 'URL_UPDATED');
-        const notifyTime = res.urlNotificationMetadata?.latestUpdate?.notifyTime || 'OK';
-        console.log(`  ✓ [200 OK] ${fullUrl} (Notified: ${notifyTime})`);
-        successCount++;
-        // Minor delay to respect Google rate limits
-        await new Promise((r) => setTimeout(r, 80));
-      } catch (err: any) {
-        console.warn(`  ⚠️ [GSC Permission / Domain Notice] ${fullUrl}: ${err.message}`);
-        errorCount++;
-      }
+  console.log(`📡 Submitting ${relativePaths.length} priority production URLs to Google Indexing API...`);
+
+  for (const p of relativePaths) {
+    const fullUrl = `${domain}${p === '/' ? '/' : p}`;
+    try {
+      const res = await publishUrlToGoogle(fullUrl, accessToken, 'URL_UPDATED');
+      const notifyTime = res.urlNotificationMetadata?.latestUpdate?.notifyTime || 'OK';
+      console.log(`  ✓ [200 OK] ${fullUrl} (Notified: ${notifyTime})`);
+      successCount++;
+      // Minor delay to respect Google rate limits
+      await new Promise((r) => setTimeout(r, 90));
+    } catch (err: any) {
+      console.warn(`  ⚠️ [Notice] ${fullUrl}: ${err.message}`);
+      errorCount++;
     }
   }
 
   console.log('\n================================================================');
-  console.log(`🎉 Google Indexing Run Completed!`);
+  console.log(`🎉 Google Indexing API Broadcast Completed!`);
   console.log(`   - Successfully Pushed: ${successCount} URLs`);
-  if (errorCount > 0) {
-    console.log(`   - Domain/Permission Alerts: ${errorCount}`);
-    console.log(`   👉 Reminder: In Google Search Console (search.google.com/search-console):`);
-    console.log(`      Ensure ${serviceAccount.client_email} is added with 'Owner' permissions on both talentxcel.in and talentxcel.com properties.`);
-  }
+  console.log(`   - Alerts: ${errorCount}`);
   console.log('================================================================\n');
 }
 
