@@ -1,42 +1,532 @@
 {
-  "generatedAt": "2026-08-25T14:57:22.509Z",
-  "totalProgrammaticTemplates": 12,
-  "activeCandidates": [
+  "auditedAt": "2026-08-25T15:48:38.193Z",
+  "summary": {
+    "totalCandidatesEvaluated": 337,
+    "indexGenuinePages": 181,
+    "consolidateToParentHubs": 156,
+    "zeroDoorwaySpamRate": "0.0%",
+    "consolidationPolicy": "Multi-parameter queries (e.g. fresher + remote + 5 years) map to primary Role x City landing pages with rich filtering rather than creating thin doorway URLs."
+  },
+  "sampleCandidates": [
     {
-      "pattern": "/jobs/:role/:location",
-      "sampleUrl": "/jobs/software-engineer/noida",
-      "targetQueries": "4,800+",
-      "indexStatus": "INDEX"
+      "targetUrl": "https://talentxcel.in/roles/software-engineer",
+      "layer": "LAYER_B_CAREERS",
+      "roleSlug": "software-engineer",
+      "hasRealInventory": true,
+      "pageQualityScore": 98,
+      "action": "INDEX_GENUINE_PAGE"
     },
     {
-      "pattern": "/jobs/:skill/:location",
-      "sampleUrl": "/jobs/python/bangalore",
-      "targetQueries": "2,400+",
-      "indexStatus": "INDEX"
+      "targetUrl": "https://talentxcel.in/jobs/software-engineer/india",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "software-engineer",
+      "locationSlug": "india",
+      "hasRealInventory": true,
+      "pageQualityScore": 95,
+      "action": "INDEX_GENUINE_PAGE"
     },
     {
-      "pattern": "/services/:service/:industry",
-      "sampleUrl": "/services/rpo/fintech",
-      "targetQueries": "240+",
-      "indexStatus": "INDEX"
+      "targetUrl": "https://talentxcel.in/jobs/software-engineer/india",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "software-engineer",
+      "locationSlug": "india",
+      "workModeSlug": "remote",
+      "experienceSlug": "fresher",
+      "hasRealInventory": false,
+      "pageQualityScore": 70,
+      "consolidationTarget": "https://talentxcel.in/jobs/software-engineer/india",
+      "action": "CONSOLIDATE_TO_PARENT"
     },
     {
-      "pattern": "/colleges/:collegeSlug",
-      "sampleUrl": "/colleges/indian-institute-of-technology-madras",
-      "targetQueries": "10,250+",
-      "indexStatus": "INDEX"
+      "targetUrl": "https://talentxcel.in/jobs/software-engineer/bangalore",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "software-engineer",
+      "locationSlug": "bangalore",
+      "hasRealInventory": true,
+      "pageQualityScore": 95,
+      "action": "INDEX_GENUINE_PAGE"
     },
     {
-      "pattern": "/colleges/pathway",
-      "sampleUrl": "/colleges/pathway",
-      "targetQueries": "15,000+",
-      "indexStatus": "INDEX"
+      "targetUrl": "https://talentxcel.in/jobs/software-engineer/bangalore",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "software-engineer",
+      "locationSlug": "bangalore",
+      "workModeSlug": "remote",
+      "experienceSlug": "fresher",
+      "hasRealInventory": false,
+      "pageQualityScore": 70,
+      "consolidationTarget": "https://talentxcel.in/jobs/software-engineer/bangalore",
+      "action": "CONSOLIDATE_TO_PARENT"
     },
     {
-      "pattern": "/services/resume-building",
-      "sampleUrl": "/services/resume-building",
-      "targetQueries": "50,000+",
-      "indexStatus": "INDEX"
+      "targetUrl": "https://talentxcel.in/jobs/software-engineer/noida",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "software-engineer",
+      "locationSlug": "noida",
+      "hasRealInventory": true,
+      "pageQualityScore": 95,
+      "action": "INDEX_GENUINE_PAGE"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/software-engineer/noida",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "software-engineer",
+      "locationSlug": "noida",
+      "workModeSlug": "remote",
+      "experienceSlug": "fresher",
+      "hasRealInventory": false,
+      "pageQualityScore": 70,
+      "consolidationTarget": "https://talentxcel.in/jobs/software-engineer/noida",
+      "action": "CONSOLIDATE_TO_PARENT"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/software-engineer/gurgaon",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "software-engineer",
+      "locationSlug": "gurgaon",
+      "hasRealInventory": true,
+      "pageQualityScore": 95,
+      "action": "INDEX_GENUINE_PAGE"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/software-engineer/gurgaon",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "software-engineer",
+      "locationSlug": "gurgaon",
+      "workModeSlug": "remote",
+      "experienceSlug": "fresher",
+      "hasRealInventory": false,
+      "pageQualityScore": 70,
+      "consolidationTarget": "https://talentxcel.in/jobs/software-engineer/gurgaon",
+      "action": "CONSOLIDATE_TO_PARENT"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/software-engineer/delhi",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "software-engineer",
+      "locationSlug": "delhi",
+      "hasRealInventory": true,
+      "pageQualityScore": 95,
+      "action": "INDEX_GENUINE_PAGE"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/software-engineer/delhi",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "software-engineer",
+      "locationSlug": "delhi",
+      "workModeSlug": "remote",
+      "experienceSlug": "fresher",
+      "hasRealInventory": false,
+      "pageQualityScore": 70,
+      "consolidationTarget": "https://talentxcel.in/jobs/software-engineer/delhi",
+      "action": "CONSOLIDATE_TO_PARENT"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/software-engineer/mumbai",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "software-engineer",
+      "locationSlug": "mumbai",
+      "hasRealInventory": true,
+      "pageQualityScore": 95,
+      "action": "INDEX_GENUINE_PAGE"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/software-engineer/mumbai",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "software-engineer",
+      "locationSlug": "mumbai",
+      "workModeSlug": "remote",
+      "experienceSlug": "fresher",
+      "hasRealInventory": false,
+      "pageQualityScore": 70,
+      "consolidationTarget": "https://talentxcel.in/jobs/software-engineer/mumbai",
+      "action": "CONSOLIDATE_TO_PARENT"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/software-engineer/hyderabad",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "software-engineer",
+      "locationSlug": "hyderabad",
+      "hasRealInventory": true,
+      "pageQualityScore": 95,
+      "action": "INDEX_GENUINE_PAGE"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/software-engineer/hyderabad",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "software-engineer",
+      "locationSlug": "hyderabad",
+      "workModeSlug": "remote",
+      "experienceSlug": "fresher",
+      "hasRealInventory": false,
+      "pageQualityScore": 70,
+      "consolidationTarget": "https://talentxcel.in/jobs/software-engineer/hyderabad",
+      "action": "CONSOLIDATE_TO_PARENT"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/software-engineer/pune",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "software-engineer",
+      "locationSlug": "pune",
+      "hasRealInventory": true,
+      "pageQualityScore": 95,
+      "action": "INDEX_GENUINE_PAGE"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/software-engineer/pune",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "software-engineer",
+      "locationSlug": "pune",
+      "workModeSlug": "remote",
+      "experienceSlug": "fresher",
+      "hasRealInventory": false,
+      "pageQualityScore": 70,
+      "consolidationTarget": "https://talentxcel.in/jobs/software-engineer/pune",
+      "action": "CONSOLIDATE_TO_PARENT"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/software-engineer/chennai",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "software-engineer",
+      "locationSlug": "chennai",
+      "hasRealInventory": true,
+      "pageQualityScore": 95,
+      "action": "INDEX_GENUINE_PAGE"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/software-engineer/chennai",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "software-engineer",
+      "locationSlug": "chennai",
+      "workModeSlug": "remote",
+      "experienceSlug": "fresher",
+      "hasRealInventory": false,
+      "pageQualityScore": 70,
+      "consolidationTarget": "https://talentxcel.in/jobs/software-engineer/chennai",
+      "action": "CONSOLIDATE_TO_PARENT"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/software-engineer/srinagar",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "software-engineer",
+      "locationSlug": "srinagar",
+      "hasRealInventory": true,
+      "pageQualityScore": 95,
+      "action": "INDEX_GENUINE_PAGE"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/software-engineer/srinagar",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "software-engineer",
+      "locationSlug": "srinagar",
+      "workModeSlug": "remote",
+      "experienceSlug": "fresher",
+      "hasRealInventory": false,
+      "pageQualityScore": 70,
+      "consolidationTarget": "https://talentxcel.in/jobs/software-engineer/srinagar",
+      "action": "CONSOLIDATE_TO_PARENT"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/software-engineer/jammu",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "software-engineer",
+      "locationSlug": "jammu",
+      "hasRealInventory": true,
+      "pageQualityScore": 95,
+      "action": "INDEX_GENUINE_PAGE"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/software-engineer/jammu",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "software-engineer",
+      "locationSlug": "jammu",
+      "workModeSlug": "remote",
+      "experienceSlug": "fresher",
+      "hasRealInventory": false,
+      "pageQualityScore": 70,
+      "consolidationTarget": "https://talentxcel.in/jobs/software-engineer/jammu",
+      "action": "CONSOLIDATE_TO_PARENT"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/software-engineer/kolkata",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "software-engineer",
+      "locationSlug": "kolkata",
+      "hasRealInventory": true,
+      "pageQualityScore": 95,
+      "action": "INDEX_GENUINE_PAGE"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/software-engineer/kolkata",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "software-engineer",
+      "locationSlug": "kolkata",
+      "workModeSlug": "remote",
+      "experienceSlug": "fresher",
+      "hasRealInventory": false,
+      "pageQualityScore": 70,
+      "consolidationTarget": "https://talentxcel.in/jobs/software-engineer/kolkata",
+      "action": "CONSOLIDATE_TO_PARENT"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/roles/content-writer",
+      "layer": "LAYER_B_CAREERS",
+      "roleSlug": "content-writer",
+      "hasRealInventory": true,
+      "pageQualityScore": 98,
+      "action": "INDEX_GENUINE_PAGE"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/content-writer/india",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "content-writer",
+      "locationSlug": "india",
+      "hasRealInventory": true,
+      "pageQualityScore": 95,
+      "action": "INDEX_GENUINE_PAGE"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/content-writer/india",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "content-writer",
+      "locationSlug": "india",
+      "workModeSlug": "remote",
+      "experienceSlug": "fresher",
+      "hasRealInventory": false,
+      "pageQualityScore": 70,
+      "consolidationTarget": "https://talentxcel.in/jobs/content-writer/india",
+      "action": "CONSOLIDATE_TO_PARENT"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/content-writer/bangalore",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "content-writer",
+      "locationSlug": "bangalore",
+      "hasRealInventory": true,
+      "pageQualityScore": 95,
+      "action": "INDEX_GENUINE_PAGE"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/content-writer/bangalore",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "content-writer",
+      "locationSlug": "bangalore",
+      "workModeSlug": "remote",
+      "experienceSlug": "fresher",
+      "hasRealInventory": false,
+      "pageQualityScore": 70,
+      "consolidationTarget": "https://talentxcel.in/jobs/content-writer/bangalore",
+      "action": "CONSOLIDATE_TO_PARENT"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/content-writer/noida",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "content-writer",
+      "locationSlug": "noida",
+      "hasRealInventory": true,
+      "pageQualityScore": 95,
+      "action": "INDEX_GENUINE_PAGE"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/content-writer/noida",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "content-writer",
+      "locationSlug": "noida",
+      "workModeSlug": "remote",
+      "experienceSlug": "fresher",
+      "hasRealInventory": false,
+      "pageQualityScore": 70,
+      "consolidationTarget": "https://talentxcel.in/jobs/content-writer/noida",
+      "action": "CONSOLIDATE_TO_PARENT"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/content-writer/gurgaon",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "content-writer",
+      "locationSlug": "gurgaon",
+      "hasRealInventory": true,
+      "pageQualityScore": 95,
+      "action": "INDEX_GENUINE_PAGE"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/content-writer/gurgaon",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "content-writer",
+      "locationSlug": "gurgaon",
+      "workModeSlug": "remote",
+      "experienceSlug": "fresher",
+      "hasRealInventory": false,
+      "pageQualityScore": 70,
+      "consolidationTarget": "https://talentxcel.in/jobs/content-writer/gurgaon",
+      "action": "CONSOLIDATE_TO_PARENT"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/content-writer/delhi",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "content-writer",
+      "locationSlug": "delhi",
+      "hasRealInventory": true,
+      "pageQualityScore": 95,
+      "action": "INDEX_GENUINE_PAGE"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/content-writer/delhi",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "content-writer",
+      "locationSlug": "delhi",
+      "workModeSlug": "remote",
+      "experienceSlug": "fresher",
+      "hasRealInventory": false,
+      "pageQualityScore": 70,
+      "consolidationTarget": "https://talentxcel.in/jobs/content-writer/delhi",
+      "action": "CONSOLIDATE_TO_PARENT"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/content-writer/mumbai",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "content-writer",
+      "locationSlug": "mumbai",
+      "hasRealInventory": true,
+      "pageQualityScore": 95,
+      "action": "INDEX_GENUINE_PAGE"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/content-writer/mumbai",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "content-writer",
+      "locationSlug": "mumbai",
+      "workModeSlug": "remote",
+      "experienceSlug": "fresher",
+      "hasRealInventory": false,
+      "pageQualityScore": 70,
+      "consolidationTarget": "https://talentxcel.in/jobs/content-writer/mumbai",
+      "action": "CONSOLIDATE_TO_PARENT"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/content-writer/hyderabad",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "content-writer",
+      "locationSlug": "hyderabad",
+      "hasRealInventory": true,
+      "pageQualityScore": 95,
+      "action": "INDEX_GENUINE_PAGE"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/content-writer/hyderabad",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "content-writer",
+      "locationSlug": "hyderabad",
+      "workModeSlug": "remote",
+      "experienceSlug": "fresher",
+      "hasRealInventory": false,
+      "pageQualityScore": 70,
+      "consolidationTarget": "https://talentxcel.in/jobs/content-writer/hyderabad",
+      "action": "CONSOLIDATE_TO_PARENT"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/content-writer/pune",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "content-writer",
+      "locationSlug": "pune",
+      "hasRealInventory": true,
+      "pageQualityScore": 95,
+      "action": "INDEX_GENUINE_PAGE"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/content-writer/pune",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "content-writer",
+      "locationSlug": "pune",
+      "workModeSlug": "remote",
+      "experienceSlug": "fresher",
+      "hasRealInventory": false,
+      "pageQualityScore": 70,
+      "consolidationTarget": "https://talentxcel.in/jobs/content-writer/pune",
+      "action": "CONSOLIDATE_TO_PARENT"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/content-writer/chennai",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "content-writer",
+      "locationSlug": "chennai",
+      "hasRealInventory": true,
+      "pageQualityScore": 95,
+      "action": "INDEX_GENUINE_PAGE"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/content-writer/chennai",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "content-writer",
+      "locationSlug": "chennai",
+      "workModeSlug": "remote",
+      "experienceSlug": "fresher",
+      "hasRealInventory": false,
+      "pageQualityScore": 70,
+      "consolidationTarget": "https://talentxcel.in/jobs/content-writer/chennai",
+      "action": "CONSOLIDATE_TO_PARENT"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/content-writer/srinagar",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "content-writer",
+      "locationSlug": "srinagar",
+      "hasRealInventory": true,
+      "pageQualityScore": 95,
+      "action": "INDEX_GENUINE_PAGE"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/content-writer/srinagar",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "content-writer",
+      "locationSlug": "srinagar",
+      "workModeSlug": "remote",
+      "experienceSlug": "fresher",
+      "hasRealInventory": false,
+      "pageQualityScore": 70,
+      "consolidationTarget": "https://talentxcel.in/jobs/content-writer/srinagar",
+      "action": "CONSOLIDATE_TO_PARENT"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/content-writer/jammu",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "content-writer",
+      "locationSlug": "jammu",
+      "hasRealInventory": true,
+      "pageQualityScore": 95,
+      "action": "INDEX_GENUINE_PAGE"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/content-writer/jammu",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "content-writer",
+      "locationSlug": "jammu",
+      "workModeSlug": "remote",
+      "experienceSlug": "fresher",
+      "hasRealInventory": false,
+      "pageQualityScore": 70,
+      "consolidationTarget": "https://talentxcel.in/jobs/content-writer/jammu",
+      "action": "CONSOLIDATE_TO_PARENT"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/content-writer/kolkata",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "content-writer",
+      "locationSlug": "kolkata",
+      "hasRealInventory": true,
+      "pageQualityScore": 95,
+      "action": "INDEX_GENUINE_PAGE"
+    },
+    {
+      "targetUrl": "https://talentxcel.in/jobs/content-writer/kolkata",
+      "layer": "LAYER_A_JOBS",
+      "roleSlug": "content-writer",
+      "locationSlug": "kolkata",
+      "workModeSlug": "remote",
+      "experienceSlug": "fresher",
+      "hasRealInventory": false,
+      "pageQualityScore": 70,
+      "consolidationTarget": "https://talentxcel.in/jobs/content-writer/kolkata",
+      "action": "CONSOLIDATE_TO_PARENT"
     }
   ]
 }
