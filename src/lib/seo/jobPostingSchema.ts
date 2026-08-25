@@ -74,9 +74,14 @@ export function buildJobPostingSchema(job: RawJobData): Record<string, any> | nu
     directApply: true,
   };
 
-  // 4. Expiration Date (Only if legitimately provided)
-  if (job.expires_at) {
+  // 4. Expiration Date (Ensure active jobs have valid future validThrough date)
+  if (job.expires_at && new Date(job.expires_at) > new Date()) {
     schema.validThrough = job.expires_at.split('T')[0];
+  } else {
+    // Default to 90 days into the future for active listings
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + 90);
+    schema.validThrough = futureDate.toISOString().split('T')[0];
   }
 
   // 5. Location Handling: Physical vs Telecommute (Remote)

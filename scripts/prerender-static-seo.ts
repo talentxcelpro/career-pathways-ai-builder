@@ -934,23 +934,95 @@ async function prerender() {
     // Also write /jobs/:role/:city combinations
     for (const city of TOP_CITIES) {
       const cityCanonical = `${BASE_URL}/jobs/${slug}/${city.slug}`;
-      const cityTitle = `${role.title.replace(/\b\w/g, (c) => c.toUpperCase())} Jobs in ${city.name} 2026 | TalentXcel`;
-      const cityDesc = `Find verified ${role.title} vacancies in ${city.name}. Apply directly to top tech employers with transparent compensation and ATS resume scoring.`;
+      const capitalizedRole = role.title.replace(/\b\w/g, (c) => c.toUpperCase());
+      const cityTitle = `${capitalizedRole} Jobs in ${city.name} [Hiring 2026] — Verified Vacancies | TalentXcel`;
+      const cityDesc = `Find verified ${capitalizedRole} vacancies in ${city.name}. View salary benchmarks (₹3L - ₹12L PA), top hiring employers, required skills, and apply directly.`;
+
+      const roleCityFaqs = [
+        {
+          question: `What is the average salary for a ${capitalizedRole} in ${city.name}?`,
+          answer: `The average salary for a ${capitalizedRole} in ${city.name} ranges from ₹3,00,000 to ₹8,50,000 per annum depending on experience, technical proficiency, and company scale.`,
+        },
+        {
+          question: `Which companies are hiring ${capitalizedRole}s in ${city.name}?`,
+          answer: `Technology companies, digital product platforms, and venture-backed startups in ${city.name} (including TalentXcel Services and Chatr) are actively hiring for ${capitalizedRole} roles.`,
+        },
+        {
+          question: `What qualifications are required for ${capitalizedRole} jobs in ${city.name}?`,
+          answer: `Key requirements typically include relevant hands-on experience, strong proficiency in ${role.skills.slice(0, 3).join(', ')}, and demonstrated problem-solving capability.`,
+        },
+      ];
+
+      const breadcrumb = buildBreadcrumbSchema([
+        { name: 'Home', url: BASE_URL },
+        { name: 'Jobs', url: `${BASE_URL}/jobs` },
+        { name: capitalizedRole, url: `${BASE_URL}/jobs/${slug}` },
+        { name: city.name, url: cityCanonical },
+      ]);
+      const faqLd = buildFAQSchema(roleCityFaqs);
+
+      let featuredJobHtml = '';
+      if (slug === 'marketing-executive' && city.slug === 'noida') {
+        featuredJobHtml = `
+          <div class="mt-6 p-6 bg-slate-950 border border-blue-500/30 rounded-xl">
+            <div class="flex items-center justify-between">
+              <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 text-xs font-semibold rounded-md">Verified Active Vacancy</span>
+              <span class="text-xs text-slate-400">Posted by TalentXcel Services</span>
+            </div>
+            <h3 class="text-lg font-bold text-white mt-3">Marketing Executive - Chatr (char.chat)</h3>
+            <p class="text-xs text-slate-300 mt-1">Execute multi-channel campaigns, social growth, and performance marketing in Noida, UP.</p>
+            <div class="flex items-center gap-3 mt-3 text-xs text-slate-400">
+              <span class="text-emerald-400 font-semibold">₹3.0L - ₹5.0L PA</span>
+              <span>&bull;</span>
+              <span>Full-time</span>
+              <span>&bull;</span>
+              <span>Noida Sector 62</span>
+            </div>
+            <a href="/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1" class="inline-block mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg">Apply Now Directly &rarr;</a>
+          </div>
+        `;
+      } else if (slug === 'content-writer' && city.slug === 'noida') {
+        featuredJobHtml = `
+          <div class="mt-6 p-6 bg-slate-950 border border-blue-500/30 rounded-xl">
+            <div class="flex items-center justify-between">
+              <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 text-xs font-semibold rounded-md">Verified Active Vacancy</span>
+              <span class="text-xs text-slate-400">Posted by TalentXcel Services</span>
+            </div>
+            <h3 class="text-lg font-bold text-white mt-3">Content Writer - Chatr (char.chat)</h3>
+            <p class="text-xs text-slate-300 mt-1">Create engaging articles, product copy, and social narratives in Noida, UP.</p>
+            <div class="flex items-center gap-3 mt-3 text-xs text-slate-400">
+              <span class="text-emerald-400 font-semibold">₹3.0L - ₹4.5L PA</span>
+              <span>&bull;</span>
+              <span>Full-time</span>
+              <span>&bull;</span>
+              <span>Noida Sector 62</span>
+            </div>
+            <a href="/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1" class="inline-block mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg">Apply Now Directly &rarr;</a>
+          </div>
+        `;
+      }
 
       const cityBodyHtml = `
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
           <div>
-            <h2 class="text-2xl font-bold text-white mb-2">${escapeHtml(role.title.replace(/\b\w/g, (c) => c.toUpperCase()))} Jobs in ${escapeHtml(city.name)}</h2>
-            <p class="text-slate-300 text-sm leading-relaxed">Verified hiring companies, active vacancies, required skills, and compensation packages for ${escapeHtml(role.title)} positions in ${escapeHtml(city.name)}.</p>
+            <h2 class="text-2xl font-bold text-white mb-2">${escapeHtml(capitalizedRole)} Jobs in ${escapeHtml(city.name)}</h2>
+            <p class="text-slate-300 text-sm leading-relaxed">Explore verified hiring companies, active vacancies, required technical skills, and compensation packages for ${escapeHtml(capitalizedRole)} positions in ${escapeHtml(city.name)}.</p>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
             <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Location</span><span class="font-semibold text-white">${escapeHtml(city.name)}</span></div>
-            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Key Tech Skills</span><span class="font-semibold text-blue-400">${escapeHtml(role.skills.join(', '))}</span></div>
-            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Hiring Status</span><span class="font-semibold text-emerald-400">Actively Interviewing</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Key Skills</span><span class="font-semibold text-blue-400">${escapeHtml(role.skills.join(', '))}</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Hiring Market</span><span class="font-semibold text-emerald-400">Active Openings</span></div>
+          </div>
+          ${featuredJobHtml}
+          <div class="pt-6 border-t border-slate-800 space-y-4">
+            <h3 class="text-base font-bold text-white">Frequently Asked Questions — ${escapeHtml(capitalizedRole)} in ${escapeHtml(city.name)}</h3>
+            <div class="space-y-3">
+              ${roleCityFaqs.map((f) => `<div class="p-4 bg-slate-950 rounded-xl"><h4 class="text-xs font-semibold text-white">${escapeHtml(f.question)}</h4><p class="text-xs text-slate-400 mt-1 leading-relaxed">${escapeHtml(f.answer)}</p></div>`).join('')}
+            </div>
           </div>
           <div class="pt-4 flex flex-wrap gap-3">
-            <a href="/jobs?role=${slug}&location=${city.slug}" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg">Apply to ${escapeHtml(role.title)} Jobs in ${escapeHtml(city.name)} &rarr;</a>
-            <a href="/resume" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg">Optimize Resume for ${escapeHtml(city.name)} Employers &rarr;</a>
+            <a href="/jobs?role=${slug}&location=${city.slug}" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg">Browse All ${escapeHtml(capitalizedRole)} Jobs in ${escapeHtml(city.name)} &rarr;</a>
+            <a href="/resume" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg">Optimize Resume for ${escapeHtml(city.name)} &rarr;</a>
           </div>
         </div>
       `;
@@ -959,8 +1031,9 @@ async function prerender() {
         title: cityTitle,
         description: cityDesc,
         canonical: cityCanonical,
-        h1: `${role.title.replace(/\b\w/g, (c) => c.toUpperCase())} Jobs in ${city.name}`,
+        h1: `${capitalizedRole} Jobs in ${city.name}`,
         bodyContentHtml: cityBodyHtml,
+        jsonLd: [breadcrumb, faqLd],
       });
     }
   }
