@@ -380,16 +380,20 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
     setIsPosting(true);
     try {
       const finalMediaUrls = await uploadAllMedia();
+      const isVideo = mediaItems.some(m => m.type === 'video');
+      const isImage = mediaItems.some(m => m.type === 'image') || finalMediaUrls.length > 0;
+      const resolvedPostType: 'text' | 'image' | 'video' = isVideo ? 'video' : (isImage ? 'image' : 'text');
 
       const postPayload: any = {
         content: content.trim(),
-        post_type: finalMediaUrls.length > 0 ? (mediaItems.some(m => m.type === 'video') ? 'video' : 'media') : 'text',
+        post_type: resolvedPostType,
         author_id: activeUserId,
         user_id: activeUserId,
         media_urls: finalMediaUrls.length > 0 ? finalMediaUrls : null,
         location: location || null,
         tags: tags.length > 0 ? tags : null,
         hashtags: tags.length > 0 ? tags : null,
+        visibility: privacy,
         is_public: privacy === 'public',
         status: 'published',
         origin: 'feed',
