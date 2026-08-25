@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { 
   generateTalentXcelPost, 
@@ -61,6 +62,7 @@ const COMMON_TECH_HUBS = [
 
 export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCreate }) => {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [content, setContent] = useState('');
   const [location, setLocation] = useState('');
   const [showLocationInput, setShowLocationInput] = useState(false);
@@ -380,6 +382,7 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
         tags: tags.length > 0 ? tags : null,
         hashtags: tags.length > 0 ? tags : null,
         is_public: privacy === 'public',
+        status: 'published',
         origin: 'feed',
         likes_count: 0,
         comments_count: 0,
@@ -396,6 +399,10 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
         console.error('Post insertion error:', error);
         throw error;
       }
+
+      // Invalidate feed cache to show the new post instantly
+      await queryClient.invalidateQueries({ queryKey: ['network-feed'] });
+      await queryClient.invalidateQueries({ queryKey: ['posts'] });
 
       onPostCreate?.(postData);
 
