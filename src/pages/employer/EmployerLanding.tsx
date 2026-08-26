@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -20,9 +20,12 @@ import {
   MessageSquare,
   Plus,
   BarChart3,
-  Building2
+  Building2,
+  Sparkles,
+  ArrowRight
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { Helmet } from 'react-helmet-async';
 import employerHero from '@/assets/employer-hero.jpg';
 import teamCollaboration from '@/assets/team-collaboration.jpg';
 import aiMatching from '@/assets/ai-matching.jpg';
@@ -36,22 +39,22 @@ const EmployerLanding = () => {
     {
       icon: FileText,
       title: 'Post Unlimited Jobs',
-      description: 'Create and manage multiple job postings with no limits'
+      description: 'Create and publish job postings with instant reach and AI matching'
     },
     {
       icon: BarChart3,
       title: 'Manage Applications in Real Time',
-      description: 'Track and manage all applications from one dashboard'
+      description: 'Track candidate submissions, ATS scores, and interviews from one dashboard'
     },
     {
       icon: Bot,
       title: 'AI-Matched Candidate Shortlisting',
-      description: 'Get automatically matched with the best candidates'
+      description: 'Get automatically matched with verified professionals across India'
     },
     {
       icon: UserPlus,
       title: 'Add Up to 5 Hiring Team Members',
-      description: 'Collaborate with your team on hiring decisions'
+      description: 'Collaborate with your recruitment team with role-based access'
     }
   ];
 
@@ -59,25 +62,25 @@ const EmployerLanding = () => {
     {
       icon: Target,
       title: 'Fast, Targeted Reach',
-      description: 'Connect with verified professionals across industries.',
+      description: 'Connect with verified professionals across industries with zero noise.',
       image: teamCollaboration
     },
     {
       icon: Bot,
       title: 'AI-Powered Job Post Creation',
-      description: 'Just enter the role title — we\'ll generate the perfect JD.',
+      description: 'Just enter the role title — our engine generates recruiter-grade structured JDs.',
       image: aiMatching
     },
     {
       icon: Zap,
       title: 'Smart Matching, Less Filtering',
-      description: 'You see only relevant profiles based on skills and experience.',
+      description: 'See only relevant profiles based on real verified skills and capability.',
       image: aiMatching
     },
     {
       icon: Users,
       title: 'Team Collaboration',
-      description: 'Invite up to 5 colleagues to manage postings and applicants.',
+      description: 'Invite team members to manage postings, review candidates, and schedule interviews.',
       image: teamCollaboration
     }
   ];
@@ -85,16 +88,16 @@ const EmployerLanding = () => {
   const renderAccessStatus = () => {
     if (!user) {
       return (
-        <Card className="bg-blue-50 border-blue-200">
+        <Card className="bg-blue-50/80 dark:bg-slate-900 border-blue-200 dark:border-blue-800">
           <CardContent className="p-6 text-center">
-            <Building2 className="h-12 w-12 text-blue-600 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-blue-900 mb-2">Ready to Start Hiring?</h3>
-            <p className="text-blue-700 mb-4">Sign up or log in to request employer access</p>
-            <div className="space-x-4">
-              <Button onClick={() => navigate('/auth/register')} className="bg-blue-600 hover:bg-blue-700">
+            <Building2 className="h-10 w-10 text-blue-600 mx-auto mb-3" />
+            <h3 className="text-base font-bold text-blue-950 dark:text-blue-200 mb-1">Ready to Start Hiring?</h3>
+            <p className="text-xs text-blue-700 dark:text-blue-300 mb-4">Sign in with your employer account or request hiring access.</p>
+            <div className="flex gap-3 justify-center">
+              <Button onClick={() => navigate('/auth/register')} size="sm" className="bg-blue-600 hover:bg-blue-700 text-xs">
                 Get Started
               </Button>
-              <Button variant="outline" onClick={() => navigate('/auth/login')}>
+              <Button variant="outline" size="sm" onClick={() => navigate('/auth/login')} className="text-xs">
                 Sign In
               </Button>
             </div>
@@ -105,10 +108,10 @@ const EmployerLanding = () => {
 
     if (isLoading) {
       return (
-        <Card className="bg-gray-50 border-gray-200">
+        <Card className="bg-muted/30 border">
           <CardContent className="p-6 text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Checking access status...</p>
+            <div className="animate-spin rounded-full h-7 w-7 border-b-2 border-blue-600 mx-auto mb-3"></div>
+            <p className="text-xs text-muted-foreground">Checking employer access status...</p>
           </CardContent>
         </Card>
       );
@@ -116,46 +119,36 @@ const EmployerLanding = () => {
 
     if (hasEmployerAccess) {
       return (
-        <Card className="bg-green-50 border-green-200">
+        <Card className="bg-emerald-50/90 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800">
           <CardContent className="p-6 text-center">
-            <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-green-900 mb-2">✅ Access Granted</h3>
-            <p className="text-green-700 mb-4">You're all set to start hiring!</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-              <Button 
-                onClick={() => {
-                  navigate('/employer/dashboard');
-                  toast.success('Navigating to Employer Dashboard');
-                }} 
-                className="bg-green-600 hover:bg-green-700 transition-all duration-200 shadow-md hover:shadow-lg"
-                size="lg"
-              >
-                <CheckCircle className="h-4 w-4 mr-2" />
-                Employer Dashboard
-              </Button>
+            <CheckCircle className="h-10 w-10 text-emerald-600 mx-auto mb-2" />
+            <h3 className="text-base font-bold text-emerald-950 dark:text-emerald-200 mb-1">
+              ✅ Verified Employer Access Active
+            </h3>
+            <p className="text-xs text-emerald-700 dark:text-emerald-300 mb-5">
+              You are authorized to publish jobs, access candidate pipelines, and manage your hiring team.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
               <Button 
                 onClick={() => {
                   navigate('/jobs/post');
                   toast.success('Opening Job Posting Form');
                 }} 
-                variant="outline" 
-                className="border-green-600 text-green-700 hover:bg-green-50 transition-all duration-200 shadow-sm hover:shadow-md"
-                size="lg"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs h-9 shadow-sm"
               >
-                <Plus className="h-4 w-4 mr-2" />
-                Post a Job
+                <Plus className="h-4 w-4 mr-1.5" />
+                Post a Job Now
               </Button>
               <Button 
                 onClick={() => {
-                  navigate('/employer/team');
-                  toast.success('Opening Team Management');
-                }}
-                variant="outline"
-                className="border-green-600 text-green-700 hover:bg-green-50 transition-all duration-200 shadow-sm hover:shadow-md"
-                size="lg"
+                  navigate('/employer/dashboard');
+                  toast.success('Navigating to Employer Dashboard');
+                }} 
+                variant="outline" 
+                className="border-emerald-600 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100/50 text-xs h-9"
               >
-                <Users className="h-4 w-4 mr-2" />
-                Invite Team
+                <BarChart3 className="h-4 w-4 mr-1.5" />
+                Employer Dashboard
               </Button>
               <Button 
                 onClick={() => {
@@ -163,24 +156,21 @@ const EmployerLanding = () => {
                   toast.success('Loading Job Applications');
                 }}
                 variant="outline"
-                className="border-green-600 text-green-700 hover:bg-green-50 transition-all duration-200 shadow-sm hover:shadow-md"
-                size="lg"
+                className="border-slate-300 text-slate-700 dark:text-slate-200 hover:bg-slate-100 text-xs h-9"
               >
-                <FileText className="h-4 w-4 mr-2" />
+                <FileText className="h-4 w-4 mr-1.5" />
                 View Applications
               </Button>
-            </div>
-            <div className="flex justify-center">
               <Button 
                 onClick={() => {
-                  navigate('/employer/request-access');
-                  toast.success('🔵 Become an Employer - Access Request');
+                  navigate('/employer/team');
+                  toast.success('Opening Team Management');
                 }}
-                className="bg-blue-600 hover:bg-blue-700 text-white transition-all duration-200 shadow-md hover:shadow-lg"
-                size="lg"
+                variant="outline"
+                className="border-slate-300 text-slate-700 dark:text-slate-200 hover:bg-slate-100 text-xs h-9"
               >
-                <Building2 className="h-4 w-4 mr-2" />
-                🔵 Become an Employer
+                <Users className="h-4 w-4 mr-1.5" />
+                Manage Team
               </Button>
             </div>
           </CardContent>
@@ -190,18 +180,22 @@ const EmployerLanding = () => {
 
     if (employerStatus === 'pending') {
       return (
-        <Card className="bg-yellow-50 border-yellow-200">
+        <Card className="bg-amber-50/90 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800">
           <CardContent className="p-6 text-center">
-            <Clock className="h-12 w-12 text-yellow-600 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-yellow-900 mb-2">⏳ Your Employer Access request is under review.</h3>
-            <p className="text-yellow-700 mb-4">We'll notify you once approved (usually within 24 hours)</p>
-            <div className="space-x-4">
-              <Button variant="outline" onClick={() => window.location.reload()}>
-                <RefreshCw className="h-4 w-4 mr-2" />
+            <Clock className="h-10 w-10 text-amber-600 mx-auto mb-2" />
+            <h3 className="text-base font-bold text-amber-950 dark:text-amber-200 mb-1">
+              ⏳ Employer Access Request Under Review
+            </h3>
+            <p className="text-xs text-amber-700 dark:text-amber-300 mb-4">
+              Your request is queued for verification. Approvals typically complete within 24 hours.
+            </p>
+            <div className="flex gap-3 justify-center">
+              <Button variant="outline" size="sm" onClick={() => window.location.reload()} className="text-xs">
+                <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
                 Refresh Status
               </Button>
-              <Button variant="outline" onClick={() => navigate('/contact')}>
-                <MessageSquare className="h-4 w-4 mr-2" />
+              <Button variant="outline" size="sm" onClick={() => navigate('/contact')} className="text-xs">
+                <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
                 Contact Support
               </Button>
             </div>
@@ -211,13 +205,13 @@ const EmployerLanding = () => {
     }
 
     return (
-      <Card className="bg-blue-50 border-blue-200">
+      <Card className="bg-blue-50/80 dark:bg-slate-900 border-blue-200 dark:border-blue-800">
         <CardContent className="p-6 text-center">
-          <Building2 className="h-12 w-12 text-blue-600 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-blue-900 mb-2">👔 Request Employer Access</h3>
-          <p className="text-blue-700 mb-4">Get started with posting jobs and finding talent</p>
-          <Button onClick={() => navigate('/employer/request-access')} className="bg-blue-600 hover:bg-blue-700">
-            Request Access
+          <Building2 className="h-10 w-10 text-blue-600 mx-auto mb-2" />
+          <h3 className="text-base font-bold text-blue-950 dark:text-blue-200 mb-1">Request Employer Access</h3>
+          <p className="text-xs text-blue-700 dark:text-blue-300 mb-4">Get verified to post jobs and search pre-screened technical talent.</p>
+          <Button onClick={() => navigate('/employer/request-access')} size="sm" className="bg-blue-600 hover:bg-blue-700 text-xs">
+            Request Access Now
           </Button>
         </CardContent>
       </Card>
@@ -225,213 +219,153 @@ const EmployerLanding = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-blue-50 to-indigo-100 py-20">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <div className="flex items-center gap-4 mb-6">
-                <div className="h-12 w-12 rounded-xl bg-slate-900 flex items-center justify-center p-1.5 shadow-md">
-                  <img 
-                    src="/talentxcel-official-logo.png" 
-                    alt="TalentXcel" 
-                    className="h-full w-full object-contain"
-                  />
+    <>
+      <Helmet>
+        <title>Employer Recruitment Portal | Post Jobs & Hire Talent | TalentXcel</title>
+        <meta 
+          name="description" 
+          content="Post jobs, screen ATS-optimized candidates, and build high-velocity engineering teams with TalentXcel AI employer intelligence." 
+        />
+        <link rel="canonical" href="https://talentxcel.in/employer" />
+      </Helmet>
+
+      <div className="min-h-screen bg-white dark:bg-slate-950">
+        {/* Hero Section */}
+        <section className="relative bg-gradient-to-br from-blue-50 via-indigo-50/40 to-slate-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 py-12 md:py-16 border-b">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+              <div>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-10 w-10 rounded-xl bg-slate-900 flex items-center justify-center p-1.5 shadow-md">
+                    <img 
+                      src="/talentxcel-official-logo.png" 
+                      alt="TalentXcel" 
+                      className="h-full w-full object-contain"
+                    />
+                  </div>
+                  <div>
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-foreground tracking-tight">
+                      Employer Recruitment Portal
+                    </h1>
+                  </div>
                 </div>
-                <div>
-                  <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
-                    Become an Employer with{' '}
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-                      TalentXcel AI
-                    </span>
-                  </h1>
+
+                <p className="text-sm sm:text-base text-muted-foreground mb-6 leading-relaxed">
+                  AI-powered hiring that connects you with verified candidates instantly. Publish roles, review ATS scorecards, and hire faster.
+                </p>
+                
+                {/* Features Grid */}
+                <div className="grid grid-cols-2 gap-3 mb-8">
+                  {features.map((feature, index) => (
+                    <div key={index} className="flex items-start space-x-2.5 p-2.5 rounded-lg bg-white/70 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800 shadow-2xs">
+                      <div className="bg-blue-100 dark:bg-blue-950/80 p-1.5 rounded-md shrink-0">
+                        <feature.icon className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-foreground text-xs">{feature.title}</h3>
+                        <p className="text-[11px] text-muted-foreground line-clamp-1">{feature.description}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
+
+                {/* Dynamic Hero Action Buttons Based on Real Status */}
+                {hasEmployerAccess ? (
+                  <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+                    <Button 
+                      size="default" 
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 shadow-md hover:shadow-lg transition-all text-xs h-10 gap-1.5"
+                      onClick={() => navigate('/jobs/post')}
+                    >
+                      <Plus className="h-4 w-4" />
+                      ⚡ Post a Job Now
+                    </Button>
+                    <Button 
+                      size="default" 
+                      variant="outline"
+                      className="border-slate-300 dark:border-slate-700 font-semibold px-5 text-xs h-10 gap-1.5"
+                      onClick={() => navigate('/employer/dashboard')}
+                    >
+                      <BarChart3 className="h-4 w-4 text-blue-600" />
+                      Employer Dashboard
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+                    <Button 
+                      size="default" 
+                      className="bg-blue-600 hover:bg-blue-700 font-bold px-6 shadow-md hover:shadow-lg transition-all text-xs h-10"
+                      onClick={() => navigate('/employer/request-access')}
+                    >
+                      <Building2 className="h-4 w-4 mr-2" />
+                      Request Employer Access
+                    </Button>
+                    <div className="flex items-center text-xs font-medium text-muted-foreground">
+                      <Clock className="h-3.5 w-3.5 mr-1.5 text-slate-400" />
+                      Instant verification for partner accounts
+                    </div>
+                  </div>
+                )}
               </div>
-              <p className="text-xl text-gray-600 mb-8">
-                AI-powered hiring that connects you with top talent instantly — Driven by TalentXcel AI intelligence
-              </p>
               
-              {/* Features Grid */}
-              <div className="grid grid-cols-2 gap-4 mb-8">
-                {features.map((feature, index) => (
-                  <div key={index} className="flex items-start space-x-3">
-                    <div className="bg-blue-100 p-2 rounded-lg">
-                      <feature.icon className="h-5 w-5 text-blue-600" />
+              <div className="relative">
+                <img 
+                  src={employerHero} 
+                  alt="Professional employer dashboard" 
+                  className="rounded-2xl shadow-xl border border-border/80 object-cover max-h-[360px] w-full"
+                />
+                <div className="absolute -bottom-4 -left-4 bg-white dark:bg-slate-900 p-3 rounded-xl shadow-lg border border-border/80">
+                  <div className="flex items-center space-x-3">
+                    <div className="bg-emerald-100 dark:bg-emerald-950 p-2 rounded-full">
+                      <TrendingUp className="h-4 w-4 text-emerald-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900 text-sm">{feature.title}</h3>
-                      <p className="text-xs text-gray-600">{feature.description}</p>
+                      <p className="font-bold text-foreground text-xs">Active Candidate Stream</p>
+                      <p className="text-[11px] text-muted-foreground">Direct applications within hours</p>
                     </div>
                   </div>
-                ))}
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                <Button 
-                  size="lg" 
-                  className="bg-blue-600 hover:bg-blue-700 font-semibold px-6 shadow-md hover:shadow-lg transition-all"
-                  onClick={() => navigate('/employer/request-access')}
-                >
-                  <Building2 className="h-4 w-4 mr-2" />
-                  Request Employer Access
-                </Button>
-                <div className="flex items-center text-sm font-medium text-gray-600">
-                  <Clock className="h-4 w-4 mr-2 text-slate-500" />
-                  Approval within 24 hours
-                </div>
-              </div>
-            </div>
-            
-            <div className="relative">
-              <img 
-                src={employerHero} 
-                alt="Professional employer dashboard" 
-                className="rounded-2xl shadow-2xl"
-              />
-              <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-lg">
-                <div className="flex items-center space-x-3">
-                  <div className="bg-green-100 p-2 rounded-full">
-                    <TrendingUp className="h-5 w-5 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">5-12 hours</p>
-                    <p className="text-sm text-gray-600">Avg. first application</p>
-                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Access Status Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          {renderAccessStatus()}
-        </div>
-      </section>
-
-      {/* Why Use TalentXcel Section */}
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              🔸 Why Use TalentXcel to Hire?
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Everything you need to find, connect with, and hire the best talent
-            </p>
+        {/* Access Status / Quick Action Section */}
+        <section className="py-8 bg-slate-50 dark:bg-slate-900/50 border-b">
+          <div className="max-w-4xl mx-auto px-4">
+            {renderAccessStatus()}
           </div>
+        </section>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            {whyTalentXcel.map((item, index) => (
-              <div key={index} className="flex flex-col">
-                <div className="flex items-start space-x-4 mb-6">
-                  <div className="bg-gradient-to-r from-blue-100 to-purple-100 p-3 rounded-xl">
-                    <item.icon className="h-6 w-6 text-blue-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">{item.title}</h3>
-                    <p className="text-gray-600">{item.description}</p>
-                  </div>
-                </div>
-                <div className="relative overflow-hidden rounded-xl">
-                  <img 
-                    src={item.image} 
-                    alt={item.title}
-                    className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FOMO Section */}
-      <section className="py-20 bg-gradient-to-r from-orange-50 to-red-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
-              🔺 Don't Miss Out
-            </h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-              <Card className="bg-white border-orange-200">
-                <CardContent className="p-8 text-center">
-                  <div className="bg-orange-100 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                    <Target className="h-8 w-8 text-orange-600" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    📢 Most job posts get their first 5 applications within 6–12 hours.
-                  </h3>
-                  <p className="text-gray-600">
-                    Our active professional network means faster results for your hiring needs.
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-white border-red-200">
-                <CardContent className="p-8 text-center">
-                  <div className="bg-red-100 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                    <AlertTriangle className="h-8 w-8 text-red-600" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    ⚠️ Employer access is manually verified to ensure platform quality.
-                  </h3>
-                  <p className="text-gray-600">
-                    Don't delay if you're hiring soon. Request access today!
-                  </p>
-                </CardContent>
-              </Card>
+        {/* Why Use TalentXcel Section */}
+        <section className="py-14">
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="text-center mb-10">
+              <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-2">
+                Why Top Companies Hire with TalentXcel
+              </h2>
+              <p className="text-xs sm:text-sm text-muted-foreground max-w-xl mx-auto">
+                Streamline recruitment from job description generation to technical candidate evaluation.
+              </p>
             </div>
 
-            <div className="mt-12">
-              <Button 
-                size="lg" 
-                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
-                onClick={() => navigate('/employer/request-access')}
-              >
-                🔵 Become an Employer
-              </Button>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+              {whyTalentXcel.map((item, index) => (
+                <Card key={index} className="border shadow-xs hover:shadow-md transition-all">
+                  <CardContent className="p-5 space-y-3">
+                    <div className="h-9 w-9 rounded-lg bg-blue-50 dark:bg-blue-950/80 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                      <item.icon className="h-4 w-4" />
+                    </div>
+                    <h3 className="font-bold text-foreground text-sm">{item.title}</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">{item.description}</p>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-8">
-            Ready to Find Your Next Great Hire?
-          </h2>
-          <p className="text-xl text-blue-100 mb-8">
-            Join thousands of employers who trust TalentXcel to find the best talent in India.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              size="lg" 
-              variant="secondary"
-              className="bg-white text-blue-600 hover:bg-gray-100"
-              onClick={() => navigate('/employer/request-access')}
-            >
-              Get Started Now
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline"
-              className="border-white text-white hover:bg-white hover:text-blue-600"
-              onClick={() => navigate('/companies')}
-            >
-              View Success Stories
-            </Button>
-          </div>
-        </div>
-      </section>
-    </div>
+        </section>
+      </div>
+    </>
   );
 };
 
