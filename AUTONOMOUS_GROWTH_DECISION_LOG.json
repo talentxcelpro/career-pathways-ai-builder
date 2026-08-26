@@ -1,0 +1,47 @@
+﻿[
+  {
+    "decision_id": "TX-000182",
+    "timestamp": "2026-08-26T13:35:00.000Z",
+    "trigger_event": "ATS Resume Scan traffic surge (+140% WoW)",
+    "opportunity_name": "Amplify ATS Resume Roast & Shareable Scorecard Loop",
+    "evidence": "2,842 organic visitors converted at 23.8% signup rate with 0.33 viral K-factor.",
+    "activation_rate": "72.4%",
+    "measured_k_factor": 0.33,
+    "decision": "INCREASE_DISTRIBUTION_PRIORITY_TO_P0",
+    "reasoning": "Highest activation + referral combination across all 14 product surfaces.",
+    "action_generated": "Attach 1-Click WhatsApp Scorecard Share Trigger and 3-invite HR unlock queue.",
+    "expected_impact": "+15,000 monthly registered users",
+    "confidence": 0.96,
+    "policy_status": "PASSED_SAFE"
+  },
+  {
+    "decision_id": "TX-000183",
+    "timestamp": "2026-08-26T12:35:00.000Z",
+    "trigger_event": "Live GSC position 1.33 for 'safety officer fresher jobs'",
+    "opportunity_name": "Optimize Page 1 Live Winner: Safety Officer Fresher Jobs",
+    "evidence": "Observed 112 clicks with 0.95 confidence score on verified GSC data.",
+    "activation_rate": "64.2%",
+    "measured_k_factor": 0.18,
+    "decision": "TRIGGER_AUTONOMOUS_SCHEMA_INJECTION",
+    "reasoning": "Protect and expand #1 Google search ranking with zero doorway risk.",
+    "action_generated": "Inject JobPosting schema and refresh salary benchmark data.",
+    "expected_impact": "+4,500 monthly search clicks",
+    "confidence": 0.94,
+    "policy_status": "PASSED_SAFE"
+  },
+  {
+    "decision_id": "TX-000184",
+    "timestamp": "2026-08-26T11:35:00.000Z",
+    "trigger_event": "College TPO Placement Outreach Pitch Prepared",
+    "opportunity_name": "National College Placement Readiness Index",
+    "evidence": "Aggregator multiplier opportunity across 200 Indian engineering colleges.",
+    "activation_rate": "82.0%",
+    "measured_k_factor": 0.45,
+    "decision": "HOLD_FOR_ADMIN_REVIEW_SAFE_MODE",
+    "reasoning": "External institutional communications require manual review and authorization under anti-spam invariants.",
+    "action_generated": "Drafted 300 TPO outreach kits into admin review queue.",
+    "expected_impact": "+500,000 students onboarded",
+    "confidence": 0.88,
+    "policy_status": "REQUIRES_APPROVAL"
+  }
+]

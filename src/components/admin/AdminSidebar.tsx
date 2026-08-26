@@ -355,6 +355,12 @@ const platformFeaturesItems = [
 
 const marketingGrowthItems = [
   {
+    title: 'Autonomous Growth OS',
+    url: '/admin/autonomous-os',
+    icon: Rocket,
+    description: 'Autonomous distribution & growth operating system'
+  },
+  {
     title: 'SEO Enhancement',
     url: '/admin/seo-enhancement',
     icon: Search,

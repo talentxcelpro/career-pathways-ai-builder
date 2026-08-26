@@ -49,6 +49,7 @@ const AdminManagement = lazy(() => import('../pages/admin/AdminManagement'));
 const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard'));
 const EmployerRequestsAdmin = lazy(() => import('../pages/admin/EmployerRequestsAdmin'));
 const Claim1Admin = lazy(() => import('../pages/admin/Claim1Admin'));
+const AutonomousGrowthOS = lazy(() => import('../pages/admin/AutonomousGrowthOS'));
 const AutonomousBusinessControlPlane = lazy(() => import('../pages/admin/AutonomousBusinessControlPlane'));
 const VerificationManagement = lazy(() => import('../components/admin/VerificationManagement').then(m => ({ default: m.VerificationManagement })));
 const TestimonialsManagement = lazy(() => import('../components/admin/TestimonialsManagement').then(m => ({ default: m.TestimonialsManagement })));
@@ -81,6 +82,13 @@ export const adminRoutes = [
     to: "/admin",
     icon: <Shield className="h-4 w-4" />,
     page: <Suspense fallback={null}><AdminDashboard /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "Autonomous Growth OS",
+    to: "/admin/autonomous-os",
+    icon: <Rocket className="h-4 w-4" />,
+    page: <Suspense fallback={null}><AutonomousGrowthOS /></Suspense>,
     isPublic: true,
   },
   {
