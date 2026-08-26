@@ -9,32 +9,44 @@
       {
         "gate": "SEED",
         "target_records": 30,
-        "current_records": 503,
-        "status": "COMPLETED"
+        "current_records": 30,
+        "status": "COMPLETED",
+        "objective": "Schema & Engine Verification"
       },
       {
-        "gate": "M1_100K",
+        "gate": "GATE_1_1K",
+        "target_records": 1000,
+        "current_records": 503,
+        "status": "IN_PROGRESS",
+        "objective": "Validate Continuous Ingestion & Dedup Loop"
+      },
+      {
+        "gate": "GATE_2_10K",
+        "target_records": 10000,
+        "current_records": 0,
+        "status": "PLANNED",
+        "objective": "Validate Intent Clustering & Multi-Factor Scoring"
+      },
+      {
+        "gate": "GATE_3_100K",
         "target_records": 100000,
-        "current_records": 503,
-        "status": "IN_PROGRESS"
+        "current_records": 0,
+        "status": "PLANNED",
+        "objective": "Substantial Ranking Opportunities & First Attribution Loop"
       },
       {
-        "gate": "M2_1M",
+        "gate": "GATE_4_1M",
         "target_records": 1000000,
         "current_records": 0,
-        "status": "PLANNED"
+        "status": "PLANNED",
+        "objective": "Scale Search Acquisition Machine Across 14 Surfaces"
       },
       {
-        "gate": "M3_10M",
-        "target_records": 10000000,
-        "current_records": 0,
-        "status": "PLANNED"
-      },
-      {
-        "gate": "M4_100M",
+        "gate": "GATE_5_100M",
         "target_records": 100000000,
         "current_records": 0,
-        "status": "PLANNED"
+        "status": "PLANNED",
+        "objective": "Universal Search Intelligence Universe (Not 100M URLs)"
       }
     ]
   },
@@ -107,5 +119,30 @@
       "target_pos": 25,
       "status": "QUEUED_LINK_AUTHORITY_BOOST"
     }
-  ]
+  ],
+  "dimensional_breakdown": {
+    "1_raw_evidence_records": 503,
+    "2_unique_normalized_queries": 476,
+    "3_unique_canonical_landing_pages": 246,
+    "4_actionable_ranking_opportunities": 30,
+    "5_pages_requiring_immediate_optimization": 22
+  },
+  "surface_attribution_hypothesis": {
+    "JOBS": {
+      "expected_behavior": "High direct user registration upon job apply click",
+      "primary_milestone": "job_application_submitted"
+    },
+    "RESUME_ATS": {
+      "expected_behavior": "High immediate product activation and utility engagement",
+      "primary_milestone": "ats_resume_scan_completed"
+    },
+    "CAREER_TOOLS": {
+      "expected_behavior": "High organic search volume with lower immediate activation",
+      "primary_milestone": "salary_calculation_saved"
+    },
+    "CAREER_MAP": {
+      "expected_behavior": "Moderate top-of-funnel traffic with significantly higher 30-day user retention",
+      "primary_milestone": "career_roadmap_saved"
+    }
+  }
 }
