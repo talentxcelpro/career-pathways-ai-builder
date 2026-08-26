@@ -3,7 +3,7 @@
 // Enables tracing of registered TalentXcel users back to the specific query cluster and landing page
 // that drove acquisition. No attribution claimed where data is absent.
 
-import { createHash } from 'crypto';
+import { sha256Truncated } from '@/lib/crypto/deterministicSha256';
 
 export type AttributionFunnelStage =
   | 'IMPRESSION'
@@ -50,10 +50,7 @@ export function generateAttributionEventId(
   stage: AttributionFunnelStage,
   timestamp: string
 ): string {
-  const hash = createHash('sha256')
-    .update(`${sessionId}|${stage}|${timestamp}`)
-    .digest('hex')
-    .slice(0, 8);
+  const hash = sha256Truncated(`${sessionId}|${stage}|${timestamp}`, 8);
   return `attr_${hash}`;
 }
 

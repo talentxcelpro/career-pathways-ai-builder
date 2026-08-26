@@ -2,7 +2,7 @@
 // Immutable Black Box Recorder for Privileged Admin Operations
 // Deterministic hash-chained event auditing.
 
-import { createHash } from 'crypto';
+import { sha256 } from '@/lib/crypto/deterministicSha256';
 
 export type AdminActionType =
   | 'ADMIN_GRANTED'
@@ -49,7 +49,7 @@ const IN_MEMORY_AUDIT_LOGS: AdminActionLogEntry[] = [];
  */
 export function computeEntryHash(entry: Omit<AdminActionLogEntry, 'hash'>): string {
   const payload = `${entry.id}|${entry.created_at}|${entry.actor_user_id}|${entry.action}|${entry.resource_id}|${entry.prev_hash}`;
-  return createHash('sha256').update(payload).digest('hex');
+  return sha256(payload);
 }
 
 /**

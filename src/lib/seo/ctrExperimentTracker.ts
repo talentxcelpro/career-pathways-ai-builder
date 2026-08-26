@@ -2,7 +2,7 @@
 // CTR Experiment Tracker: Controlled SEO experiment schema for title, meta, content tests
 // No UI modifications — this defines the data contract for experiment measurement only
 
-import { createHash } from 'crypto';
+import { sha256Truncated } from '@/lib/crypto/deterministicSha256';
 
 export interface SeoExperiment {
   experiment_id: string;
@@ -32,10 +32,7 @@ export function createExperiment(
   data: Omit<SeoExperiment, 'experiment_id' | 'created_at' | 'status' | 'conclusion' | 'post_impressions' | 'post_clicks' | 'post_ctr' | 'post_position' | 'causal_confidence'>
 ): SeoExperiment {
   const created_at = new Date().toISOString();
-  const hash = createHash('sha256')
-    .update(`${data.canonical_url}|${data.change_type}|${created_at}`)
-    .digest('hex')
-    .slice(0, 8);
+  const hash = sha256Truncated(`${data.canonical_url}|${data.change_type}|${created_at}`, 8);
   return {
     ...data,
     experiment_id: `exp_${hash}`,

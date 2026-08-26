@@ -1,7 +1,7 @@
-﻿// src/lib/seo/distribution/distributionNodeRegistry.ts
+// src/lib/seo/distribution/distributionNodeRegistry.ts
 // Distribution Node Registry: Turns every user, job, company, skill, calculation, resume, and credential into an active distribution node
 
-import { createHash } from 'crypto';
+import { sha256Truncated } from '@/lib/crypto/deterministicSha256';
 
 export type DistributionNodeType =
   | 'UGC_PASSPORT_NODE'
@@ -45,7 +45,7 @@ export interface DistributionNode {
 }
 
 export function generateNodeId(nodeType: DistributionNodeType, entityKey: string): string {
-  const hash = createHash('sha256').update(`${nodeType}|${entityKey}`).digest('hex').slice(0, 10);
+  const hash = sha256Truncated(`${nodeType}|${entityKey}`, 10);
   return `node_${hash}`;
 }
 
