@@ -8,3 +8,4 @@ export * from './aiDiscoveryEngine.js';
 export * from './distributionNodeRegistry.js';
 export * from './tieredIndexingRouter.js';
 export * from './viralFlywheelEngine.js';
+export * from './distributionProofEngine.js';
