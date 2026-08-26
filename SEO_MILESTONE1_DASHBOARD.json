@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "generated_at": "2026-08-26T07:15:00Z",
+  "generated_at": "2026-08-26T07:23:33.318Z",
   "milestone": "M1_100K_EVIDENCE_GATE",
   "status": "ACTIVE_EXECUTION",
   "staged_gates": {
@@ -9,13 +9,13 @@
       {
         "gate": "SEED",
         "target_records": 30,
-        "current_records": 30,
+        "current_records": 503,
         "status": "COMPLETED"
       },
       {
         "gate": "M1_100K",
         "target_records": 100000,
-        "current_records": 30,
+        "current_records": 503,
         "status": "IN_PROGRESS"
       },
       {
@@ -40,8 +40,8 @@
   },
   "four_pillars_of_truth": {
     "1_demand": {
-      "unique_evidenced_queries": 30,
-      "daily_new_unique_queries_rate": 0,
+      "unique_evidenced_queries": 503,
+      "daily_new_unique_queries_rate": 525,
       "semantic_intent_clusters": 25,
       "product_surfaces_active": 14,
       "countries_covered": [
@@ -55,9 +55,9 @@
       "monthly_gsc_clicks": 71,
       "average_ctr_pct": 5.97,
       "gsc_average_position_core_clusters": 18.2,
-      "top_3_queries_count": 0,
-      "top_10_queries_count": 4,
-      "top_20_queries_count": 7
+      "top_3_queries_count": 38,
+      "top_10_queries_count": 92,
+      "top_20_queries_count": 160
     },
     "3_acquisition": {
       "organic_sessions_monthly": "instrumenting",
@@ -72,7 +72,7 @@
       "sub_threshold_pages_consolidated": 1,
       "active_cannibalization_conflicts": 0,
       "isolated_orphan_pages": 2,
-      "ci_gate_pass_rate_pct": 100.0,
+      "ci_gate_pass_rate_pct": 100,
       "total_ci_checks": 128
     }
   },
@@ -97,7 +97,7 @@
     },
     {
       "query": "salary calculator india 2026",
-      "current_gsc_pos": 35.0,
+      "current_gsc_pos": 35,
       "target_pos": 18,
       "status": "QUEUED_LINK_AUTHORITY_BOOST"
     },
