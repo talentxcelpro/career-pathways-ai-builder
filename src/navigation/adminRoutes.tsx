@@ -69,10 +69,11 @@ const TXCStore = lazy(() => import('../pages/admin/TXCStore'));
 const TXCBackfill = lazy(() => import('../pages/admin/TXCBackfill'));
 const TXCAnalytics = lazy(() => import('../pages/admin/TXCAnalytics'));
 const TXCAwardsAndBonuses = lazy(() => import('../pages/admin/TXCAwardsAndBonuses'));
-const TXCTokenManagement = lazy(() => import('../pages/admin/TXCTokenManagement'));
 const BotPostManager = lazy(() => import('../components/admin/BotPostManager').then(m => ({ default: m.BotPostManager })));
 const TokenWallet = lazy(() => import('../components/blockchain/TokenWallet').then(m => ({ default: m.TokenWallet })));
+const TXCTokenManagement = lazy(() => import('../pages/admin/TXCTokenManagement'));
 const TXCPricing = lazy(() => import('../pages/TXCPricing'));
+const LinkedInImportManager = lazy(() => import('../components/admin/LinkedInImportManager').then(m => ({ default: m.LinkedInImportManager })));
 // Using TXC Token Economy for Pricing
 
 export const adminRoutes = [
