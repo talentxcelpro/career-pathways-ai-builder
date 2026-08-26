@@ -182,11 +182,15 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
         url: urlData.url
       }));
 
+      const postType = attachments.some(a => a.type === 'video') 
+        ? 'video' 
+        : (attachments.length > 0 ? 'image' : 'text');
+
       const { data: postData, error } = await supabase
         .from('posts')
         .insert({
           content,
-          post_type: 'text',
+          post_type: postType,
           author_id: user.id,
           user_id: user.id,
           media_urls: attachments.map(att => att.url),

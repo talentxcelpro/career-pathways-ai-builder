@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link } from 'react-router-dom';
-import { CheckCircle2, Globe, Send, Share2, ThumbsUp, MessageSquare, MoreHorizontal, Copy } from "lucide-react";
+import { CheckCircle2, Globe, Send, Share2, ThumbsUp, MessageSquare, MoreHorizontal, Copy, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { EnhancedCommentsSection } from "@/components/posts/EnhancedCommentsSection";
@@ -16,6 +16,7 @@ interface NetworkPost {
   author_id: string;
   headline?: string;
   media_urls?: string[];
+  post_type?: string;
   tags?: string[];
   likes_count?: number;
   comments_count?: number;
@@ -43,6 +44,24 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [showComments, setShowComments] = React.useState(openComments === post.id);
+  const [selectedMediaUrl, setSelectedMediaUrl] = React.useState<string | null>(null);
+
+  const isVideoUrl = (url?: string): boolean => {
+    if (!url) return false;
+    const cleanUrl = url.split('?')[0].toLowerCase();
+    return (
+      cleanUrl.endsWith('.mp4') ||
+      cleanUrl.endsWith('.webm') ||
+      cleanUrl.endsWith('.mov') ||
+      cleanUrl.endsWith('.m4v') ||
+      cleanUrl.endsWith('.ogg') ||
+      cleanUrl.endsWith('.mkv') ||
+      url.includes('/videos/') ||
+      url.includes('/video/') ||
+      url.includes('post-videos') ||
+      url.includes('content-type=video')
+    );
+  };
 
   React.useEffect(() => {
     if (openComments !== undefined) {
@@ -293,10 +312,25 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
           )}
         </div>
 
-        {/* Media Images */}
-        {post.media_urls && post.media_urls.length > 0 && (
-          <div className="rounded-2xl overflow-hidden border border-slate-200">
-            <img src={post.media_urls[0]} alt="Post media" className="w-full max-h-96 object-cover" />
+        {/* Media Images & Videos */}
+        {post.media_urls && post.media_urls.length > 0 && post.media_urls[0] && (
+          <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-border/60 bg-slate-950/5 dark:bg-muted/30">
+            {isVideoUrl(post.media_urls[0]) || post.post_type === 'video' ? (
+              <video 
+                src={post.media_urls[0]} 
+                controls 
+                playsInline
+                preload="metadata"
+                className="w-full max-h-[480px] object-contain mx-auto bg-black rounded-2xl shadow-sm" 
+              />
+            ) : (
+              <img 
+                src={post.media_urls[0]} 
+                alt="Post media" 
+                className="w-full max-h-[500px] object-cover cursor-pointer hover:opacity-95 transition-opacity rounded-2xl"
+                onClick={() => setSelectedMediaUrl(post.media_urls[0])}
+              />
+            )}
           </div>
         )}
 
@@ -363,6 +397,41 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
         {showComments && (
           <div className="pt-3 border-t border-slate-100 dark:border-border/60">
             <EnhancedCommentsSection postId={post.id} />
+          </div>
+        )}
+
+        {/* In-App Media Lightbox Modal (Keeps user on talentxcel.in) */}
+        {selectedMediaUrl && (
+          <div 
+            className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={() => setSelectedMediaUrl(null)}
+          >
+            <div 
+              className="relative max-w-4xl max-h-[90vh] bg-slate-900 rounded-3xl overflow-hidden p-2 shadow-2xl border border-slate-700" 
+              onClick={e => e.stopPropagation()}
+            >
+              <button 
+                onClick={() => setSelectedMediaUrl(null)}
+                className="absolute top-4 right-4 z-10 p-2.5 rounded-full bg-black/70 text-white hover:bg-black/90 transition-colors shadow-md"
+                title="Close"
+              >
+                <X className="h-5 w-5" />
+              </button>
+              {isVideoUrl(selectedMediaUrl) ? (
+                <video 
+                  src={selectedMediaUrl} 
+                  controls 
+                  autoPlay
+                  className="max-w-full max-h-[85vh] object-contain rounded-2xl mx-auto" 
+                />
+              ) : (
+                <img 
+                  src={selectedMediaUrl} 
+                  alt="Full preview" 
+                  className="max-w-full max-h-[85vh] object-contain rounded-2xl mx-auto" 
+                />
+              )}
+            </div>
           </div>
         )}
 
