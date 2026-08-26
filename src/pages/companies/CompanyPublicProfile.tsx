@@ -95,9 +95,8 @@ export default function CompanyPublicProfile() {
     : (entity?.name || normalizedSlug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()));
   const canonicalUrl = getPublicCompanyUrl(normalizedSlug);
 
-  const pageTitle = 'TalentXcel Services | AI Career & Recruitment Platform';
-  const pageDescription =
-    'TalentXcel is an AI-powered career, recruitment and professional growth platform connecting job seekers, employers, educators and professionals.';
+  const pageTitle = `${companyName} | Career Profile, Culture & Jobs | TalentXcel`;
+  const pageDescription = `Explore ${companyName} career opportunities, company culture, verified employee benchmarks, and active job openings on TalentXcel.`;
 
   const faqs = [
     {
