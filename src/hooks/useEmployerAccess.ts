@@ -1,4 +1,4 @@
-﻿import { useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -8,7 +8,6 @@ const ROOT_ADMIN_EMAILS = [
   'chatr4661@gmail.com',
   'arsh.wani@gmail.com',
   'arshid.wani@icloud.com',
-  'vishwajeetnayak18@gmail.com',
   'sanobar.jahan1980@gmail.com'
 ];
 
