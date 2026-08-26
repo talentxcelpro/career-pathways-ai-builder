@@ -1,26 +1,8 @@
-/**
- * TalentXcel Public Discovery & Programmatic Sitemap Generator
- * Sitemaps architecture:
- * 1. Base pages (Home, Network, Colleges, Jobs, Learning, Companies, Services, etc.)
- * 2. 1,509 Indian Higher Education Institutions across all 36 States & UTs
- * 3. 100 Verified Global Degree Programs & Country Hubs
- * 4. Global Scholarships Directory
- * 5. AI Career Pathways & Blueprints
- * 6. Learning & Courses Registry
- * 7. Verified Active Jobs (Database-First)
- * 8. Public Posts & Articles (Database-First)
- * 9. Topics Hubs (AI, Recruitment, Careers, Education, Tech, Leadership, Business)
- * 10. Strategic Services (AI Recruitment, Staffing, Consulting, etc.)
- * 11. Companies Directory
- * 12. Master sitemap index (/sitemap.xml) for Google Search Console.
- */
-
 import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { resolve } from 'path';
 import { createClient } from '@supabase/supabase-js';
 import { PRODUCTION_ORIGIN } from '../src/config/seo';
 import { CANDIDATE_SERVICES, EMPLOYER_SERVICES, INDUSTRY_HUBS, LOCATION_HUBS, RESOURCE_HUBS } from '../src/config/publicIA';
-import { JOB_CATEGORIES } from '../src/utils/jobCategories';
 import { coursesDatabase } from '../src/data/coursesData';
 import { CONTENT_DATA } from './contentRegistryData';
 import { INDIAN_INSTITUTIONS_CATALOG } from '../src/data/indianInstitutionsCatalog';
@@ -58,6 +40,46 @@ const BASE_PAGES: SitemapEntry[] = [
   { path: '/faq', changefreq: 'monthly', priority: '0.5' },
   { path: '/terms', changefreq: 'monthly', priority: '0.3' },
   { path: '/privacypolicy', changefreq: 'monthly', priority: '0.3' },
+];
+
+const CANONICAL_ROLES = [
+  'software-engineer', 'full-stack-developer', 'frontend-developer', 'backend-developer',
+  'react-developer', 'node-js-developer', 'python-developer', 'java-developer',
+  'golang-developer', 'ios-developer', 'android-developer', 'flutter-developer',
+  'react-native-developer', 'devops-engineer', 'cloud-architect', 'aws-solutions-architect',
+  'site-reliability-engineer', 'database-administrator', 'security-engineer',
+  'cybersecurity-analyst', 'qa-automation-engineer', 'blockchain-developer',
+  'ai-engineer', 'machine-learning-engineer', 'data-scientist', 'data-engineer',
+  'data-analyst', 'prompt-engineer', 'llm-engineer', 'computer-vision-engineer',
+  'nlp-engineer', 'business-intelligence-analyst', 'deep-learning-researcher',
+  'product-manager', 'technical-product-manager', 'ui-ux-designer', 'product-designer',
+  'graphic-designer', 'interaction-designer', 'ux-researcher',
+  'marketing-manager', 'digital-marketing-specialist', 'seo-specialist', 'growth-marketer',
+  'content-writer', 'copywriter', 'social-media-manager', 'performance-marketing-manager',
+  'business-analyst', 'management-consultant', 'sales-manager', 'account-executive',
+  'business-development-executive', 'customer-success-manager',
+  'hr-manager', 'talent-acquisition-specialist', 'technical-recruiter', 'hr-business-partner',
+  'financial-analyst', 'chartered-accountant', 'investment-banker', 'finance-manager',
+  'operations-manager', 'scrum-master', 'agile-coach'
+];
+
+const CANONICAL_LOCATIONS = [
+  'bangalore', 'hyderabad', 'pune', 'noida', 'gurgaon', 'mumbai', 'delhi-ncr',
+  'chennai', 'kolkata', 'ahmedabad', 'chandigarh', 'jaipur', 'kochi', 'indore',
+  'lucknow', 'coimbatore', 'bhopal', 'nagpur', 'bhubaneswar', 'visakhapatnam',
+  'trivandrum', 'vadodara', 'surat', 'patna', 'dehradun',
+  'remote', 'dubai', 'singapore', 'london', 'new-york', 'san-francisco', 'toronto',
+  'berlin', 'amsterdam', 'sydney', 'tokyo', 'dublin', 'austin', 'seattle'
+];
+
+const CANONICAL_SKILLS = [
+  'react', 'python', 'java', 'node-js', 'aws', 'docker', 'kubernetes', 'typescript',
+  'javascript', 'next-js', 'sql', 'postgresql', 'mongodb', 'c-plus-plus', 'golang',
+  'machine-learning', 'artificial-intelligence', 'deep-learning', 'pytorch', 'tensorflow',
+  'langchain', 'graphql', 'html-css', 'tailwind-css', 'git', 'linux', 'devops',
+  'microservices', 'rest-apis', 'ci-cd', 'solidity', 'web3', 'flutter', 'react-native',
+  'product-management', 'ui-ux-design', 'figma', 'seo', 'digital-marketing', 'data-analytics',
+  'power-bi', 'tableau', 'excel', 'financial-modeling', 'agile', 'scrum'
 ];
 
 function escapeXml(unsafe: string): string {
@@ -98,15 +120,12 @@ function buildUrlSetXml(entries: SitemapEntry[]): string {
 
 function buildSitemapIndexXml(sitemapFiles: { filename: string; count: number }[]): string {
   const today = new Date().toISOString().split('T')[0];
-  const sitemapNodes = sitemapFiles.map(({ filename }) => {
-    const loc = `${PRODUCTION_ORIGIN}/${filename}`;
-    return [
-      '  <sitemap>',
-      `    <loc>${escapeXml(loc)}</loc>`,
-      `    <lastmod>${today}</lastmod>`,
-      '  </sitemap>',
-    ].join('\n');
-  });
+  const sitemapNodes = sitemapFiles.map(({ filename }) => [
+    '  <sitemap>',
+    `    <loc>${PRODUCTION_ORIGIN}/${filename}</loc>`,
+    `    <lastmod>${today}</lastmod>`,
+    '  </sitemap>',
+  ].join('\n'));
 
   return [
     '<?xml version="1.0" encoding="UTF-8"?>',
@@ -117,64 +136,49 @@ function buildSitemapIndexXml(sitemapFiles: { filename: string; count: number }[
   ].join('\n');
 }
 
-async function generateProductionSitemaps() {
-  console.log('🚀 Starting TalentXcel Production Dynamic Sitemap Generation...\n');
-
-  const publicDir = resolve('public');
-  if (!existsSync(publicDir)) {
-    mkdirSync(publicDir, { recursive: true });
-  }
+export async function generateProductionSitemaps() {
+  console.log('🚀 Starting TalentXcel Comprehensive Programmatic Sitemap Generation (Scale Model)...');
+  const publicDir = resolve(process.cwd(), 'public');
+  if (!existsSync(publicDir)) mkdirSync(publicDir, { recursive: true });
 
   const seenUrls = new Set<string>();
-
   const deduplicate = (entries: SitemapEntry[]): SitemapEntry[] => {
-    return entries.filter((e) => {
-      const fullUrl = `${PRODUCTION_ORIGIN}${e.path === '/' ? '/' : e.path.replace(/\/+$/, '')}`;
-      if (seenUrls.has(fullUrl)) {
-        return false;
+    const filtered: SitemapEntry[] = [];
+    entries.forEach((e) => {
+      const normalized = e.path.toLowerCase().replace(/\/+$/, '') || '/';
+      if (!seenUrls.has(normalized)) {
+        seenUrls.add(normalized);
+        filtered.push({ ...e, path: normalized });
       }
-      seenUrls.add(fullUrl);
-      return true;
     });
+    return filtered;
   };
 
   // 1. Base Pages
   const baseEntries = deduplicate(BASE_PAGES);
 
-  // 2. Colleges & Institutions
-  const collegeList: SitemapEntry[] = [];
-  INDIAN_INSTITUTIONS_CATALOG.forEach((inst) => {
-    collegeList.push({
+  // 2. Colleges & Higher Ed
+  const collegeEntries = deduplicate(
+    INDIAN_INSTITUTIONS_CATALOG.map((inst) => ({
       path: `/colleges/${inst.slug}`,
-      changefreq: 'weekly',
+      changefreq: 'weekly' as const,
       priority: '0.8',
-    });
-  });
-  const statesSet = new Set(INDIAN_INSTITUTIONS_CATALOG.map((i) => i.location.state));
-  statesSet.forEach((st) => {
-    const slug = encodeURIComponent(st.toLowerCase().replace(/\s+/g, '-'));
-    collegeList.push({
-      path: `/colleges/state/${slug}`,
-      changefreq: 'weekly',
-      priority: '0.8',
-    });
-  });
-  const exams = ['jee-advanced', 'jee-main', 'neet-ug', 'cat', 'clat', 'cuet-ug', 'gate', 'jam', 'nid-dat', 'nift'];
-  exams.forEach((exam) => {
-    collegeList.push({
-      path: `/colleges/exam/${exam}`,
-      changefreq: 'weekly',
-      priority: '0.8',
-    });
-  });
-  const collegeEntries = deduplicate(collegeList);
+    }))
+  );
 
   // 3. Global Degree Programs
   const globalList: SitemapEntry[] = [];
-  SEED_PROGRAMS.forEach((prog) => {
-    const slug = encodeURIComponent(prog.program_title.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+  (SEED_PROGRAMS || []).forEach((prog) => {
     globalList.push({
-      path: `/colleges/global-programs/${slug}`,
+      path: `/colleges/global-programs/${prog.id}`,
+      changefreq: 'weekly',
+      priority: '0.8',
+    });
+  });
+  const countries = ['germany', 'norway', 'usa', 'uk', 'singapore', 'australia', 'canada', 'netherlands', 'sweden', 'france'];
+  countries.forEach((c) => {
+    globalList.push({
+      path: `/colleges/global-programs/country/${c}`,
       changefreq: 'weekly',
       priority: '0.8',
     });
@@ -192,6 +196,7 @@ async function generateProductionSitemaps() {
   const pathwayGoals = [
     'ai-researcher', 'software-engineer', 'data-scientist', 'doctor', 'financial-analyst',
     'cybersecurity-specialist', 'ui-ux-designer', 'management-consultant', 'cloud-architect',
+    'devops-engineer', 'product-manager', 'machine-learning-engineer', 'investment-banker'
   ];
   const pathwayEntries = deduplicate(pathwayGoals.map((g) => ({
     path: `/colleges/pathway/${g}`,
@@ -218,7 +223,7 @@ async function generateProductionSitemaps() {
   });
   const learningEntries = deduplicate(learningList);
 
-  // 7. Verified Database Jobs (Database-First)
+  // 7. Verified Database Jobs
   const jobEntriesList: SitemapEntry[] = [{ path: '/jobs', changefreq: 'daily', priority: '0.9' }];
   try {
     const { data: dbJobs } = await supabase
@@ -242,11 +247,72 @@ async function generateProductionSitemaps() {
       });
     }
   } catch (err) {
-    console.warn('Jobs query warning during sitemap generation:', err);
+    console.warn('Jobs query warning:', err);
   }
   const jobEntries = deduplicate(jobEntriesList);
 
-  // 8. Verified Public Posts (Database-First)
+  // 8. Programmatic Role x Location Job Hubs
+  const programmaticJobsList: SitemapEntry[] = [];
+  CANONICAL_ROLES.forEach((r) => {
+    programmaticJobsList.push({
+      path: `/jobs/role/${r}`,
+      changefreq: 'daily',
+      priority: '0.85',
+    });
+    CANONICAL_LOCATIONS.slice(0, 25).forEach((loc) => {
+      programmaticJobsList.push({
+        path: `/jobs/${r}/in/${loc}`,
+        changefreq: 'daily',
+        priority: '0.8',
+      });
+    });
+  });
+  CANONICAL_LOCATIONS.forEach((loc) => {
+    programmaticJobsList.push({
+      path: `/jobs/location/${loc}`,
+      changefreq: 'daily',
+      priority: '0.85',
+    });
+  });
+  const programmaticJobEntries = deduplicate(programmaticJobsList);
+
+  // 9. Programmatic Salary & Tax Intelligence Matrix (Wise-Model)
+  const salaryList: SitemapEntry[] = [];
+  CANONICAL_ROLES.forEach((r) => {
+    salaryList.push({
+      path: `/salary/${r}`,
+      changefreq: 'weekly',
+      priority: '0.85',
+    });
+    CANONICAL_LOCATIONS.slice(0, 20).forEach((loc) => {
+      salaryList.push({
+        path: `/salary/${r}/${loc}`,
+        changefreq: 'weekly',
+        priority: '0.8',
+      });
+    });
+  });
+  const salaryEntries = deduplicate(salaryList);
+
+  // 10. Skills Job Matrix
+  const skillsList: SitemapEntry[] = [];
+  CANONICAL_SKILLS.forEach((sk) => {
+    skillsList.push({
+      path: `/jobs/skill/${sk}`,
+      changefreq: 'weekly',
+      priority: '0.8',
+    });
+    CANONICAL_LOCATIONS.slice(0, 15).forEach((loc) => {
+      skillsList.push({
+        path: `/jobs/${sk}/jobs/in/${loc}`,
+        changefreq: 'weekly',
+        priority: '0.75',
+      });
+    });
+  });
+  const skillEntries = deduplicate(skillsList);
+
+  // 11. Posts & Social Feed
   const postEntriesList: SitemapEntry[] = [{ path: '/network', changefreq: 'daily', priority: '0.8' }];
   try {
     const { data: dbPosts } = await supabase
@@ -269,62 +335,30 @@ async function generateProductionSitemaps() {
       });
     }
   } catch (err) {
-    console.warn('Posts query warning during sitemap generation:', err);
+    console.warn('Posts query warning:', err);
   }
   const postEntries = deduplicate(postEntriesList);
 
-  // 9. Topic Hubs
-  const topicSlugs = [
-    'artificial-intelligence',
-    'recruitment',
-    'careers',
-    'education',
-    'technology',
-    'leadership',
-    'business',
-  ];
-  const topicEntries = deduplicate(topicSlugs.map((t) => ({
-    path: `/topics/${t}`,
-    changefreq: 'weekly' as const,
-    priority: '0.8',
-  })));
+  // 12. Topics & Services
+  const topicSlugs = ['artificial-intelligence', 'recruitment', 'careers', 'education', 'technology', 'leadership', 'business'];
+  const topicEntries = deduplicate(topicSlugs.map((t) => ({ path: `/topics/${t}`, changefreq: 'weekly' as const, priority: '0.8' })));
 
-  // 10. Strategic Services
-  const serviceSlugs = [
-    'ai-recruitment',
-    'staffing-recruitment',
-    'it-consulting',
-    'ai-solutions',
-    'corporate-training',
-    'career-services',
-    'resume-building',
-    'talent-management',
-  ];
+  const serviceSlugs = ['ai-recruitment', 'staffing-recruitment', 'it-consulting', 'ai-solutions', 'corporate-training', 'career-services', 'resume-building', 'talent-management'];
   const serviceEntries = deduplicate([
     ...serviceSlugs.map((s) => ({ path: `/services/${s}`, changefreq: 'weekly' as const, priority: '0.8' })),
     ...CANDIDATE_SERVICES.map((s) => ({ path: `/${s.slug}`, changefreq: 'weekly' as const, priority: '0.8' })),
     ...EMPLOYER_SERVICES.map((s) => ({ path: `/${s.slug}`, changefreq: 'weekly' as const, priority: '0.8' })),
   ]);
 
-  // 11. Companies
   const companyEntries = deduplicate([
     { path: '/company/talentxcel', changefreq: 'daily', priority: '1.0' },
     { path: '/company/talentxcel-services', changefreq: 'daily', priority: '1.0' },
     { path: '/companies/talentxcel', changefreq: 'weekly', priority: '0.8' },
   ]);
 
-  // 12. News & Editorial
   const editorialEntries = deduplicate([
-    ...(FOUNDATION_NEWS_ARTICLES || []).map((art) => ({
-      path: `/news/${art.slug}`,
-      changefreq: 'weekly' as const,
-      priority: '0.8',
-    })),
-    ...(CONTENT_DATA || []).map((item) => ({
-      path: `/resources/${item.slug}`,
-      changefreq: 'monthly' as const,
-      priority: '0.6',
-    })),
+    ...(FOUNDATION_NEWS_ARTICLES || []).map((art) => ({ path: `/news/${art.slug}`, changefreq: 'weekly' as const, priority: '0.8' })),
+    ...(CONTENT_DATA || []).map((item) => ({ path: `/resources/${item.slug}`, changefreq: 'monthly' as const, priority: '0.6' })),
   ]);
 
   const industryEntries = deduplicate(INDUSTRY_HUBS.map((hub) => ({ path: `/industries/${hub.slug}`, changefreq: 'weekly', priority: '0.7' })));
@@ -336,6 +370,7 @@ async function generateProductionSitemaps() {
     { path: '/career-tools', changefreq: 'weekly', priority: '0.8' },
     { path: '/salary-calculator', changefreq: 'weekly', priority: '0.7' },
     { path: '/skill-assessment', changefreq: 'weekly', priority: '0.7' },
+    { path: '/claim1/watch', changefreq: 'weekly', priority: '0.7' },
   ]);
 
   const sitemapConfig = [
@@ -346,6 +381,9 @@ async function generateProductionSitemaps() {
     { filename: 'sitemap-career-paths.xml', entries: pathwayEntries },
     { filename: 'sitemap-learning.xml', entries: learningEntries },
     { filename: 'sitemap-jobs.xml', entries: jobEntries },
+    { filename: 'sitemap-job-roles.xml', entries: programmaticJobEntries },
+    { filename: 'sitemap-salaries.xml', entries: salaryEntries },
+    { filename: 'sitemap-skills.xml', entries: skillEntries },
     { filename: 'sitemap-posts.xml', entries: postEntries },
     { filename: 'sitemap-topics.xml', entries: topicEntries },
     { filename: 'sitemap-services.xml', entries: serviceEntries },
@@ -363,7 +401,6 @@ async function generateProductionSitemaps() {
         { path: '/rankings/ai-products/global', changefreq: 'daily', priority: '0.9' },
         { path: '/rankings/ai-products/emerging', changefreq: 'daily', priority: '0.9' },
         { path: '/rankings/ai-products/india', changefreq: 'daily', priority: '0.9' },
-        { path: '/claim1/watch', changefreq: 'weekly', priority: '0.7' },
       ]),
     },
   ];
