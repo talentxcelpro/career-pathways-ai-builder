@@ -1,14 +1,15 @@
 ﻿import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Building2, MapPin, Users, Globe, Heart, Search, Award, Briefcase, TrendingUp, CheckCircle, Sparkles, ArrowRight, ExternalLink } from 'lucide-react';
+import { Building2, MapPin, Globe, Heart, Search, Briefcase, CheckCircle, ExternalLink } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Helmet } from 'react-helmet-async';
+import { getCompanyLogoWithFallback } from '@/services/companyLogoService';
 
 interface CompanyEntity {
   id: string;
@@ -33,10 +34,11 @@ const VERIFIED_EMPLOYER_CATALOG: CompanyEntity[] = [
     slug: 'chatr-chat',
     description: 'Next-generation AI communications and messaging intelligence ecosystem connecting users worldwide with real-time agentic workflows.',
     industry: 'Artificial Intelligence & Telecom',
-    location: 'Srinagar, Jammu & Kashmir, India',
+    location: 'New Delhi, Delhi NCR, India',
     size_range: '50-200 employees',
     founded_year: 2024,
     website_url: 'https://chatrchat.com',
+    logo_url: 'https://www.google.com/s2/favicons?domain=chatrchat.com&sz=128',
     is_verified: true,
     open_jobs_count: 8
   },
@@ -50,6 +52,7 @@ const VERIFIED_EMPLOYER_CATALOG: CompanyEntity[] = [
     size_range: '500-1000 employees',
     founded_year: 2012,
     website_url: 'https://savantis.com',
+    logo_url: 'https://www.google.com/s2/favicons?domain=savantis.com&sz=128',
     is_verified: true,
     open_jobs_count: 14
   },
@@ -63,6 +66,7 @@ const VERIFIED_EMPLOYER_CATALOG: CompanyEntity[] = [
     size_range: '50-200 employees',
     founded_year: 2023,
     website_url: 'https://talentxcel.in/services',
+    logo_url: 'https://www.google.com/s2/favicons?domain=talentxcel.in&sz=128',
     is_verified: true,
     open_jobs_count: 12
   },
@@ -76,6 +80,7 @@ const VERIFIED_EMPLOYER_CATALOG: CompanyEntity[] = [
     size_range: '100-500 employees',
     founded_year: 2023,
     website_url: 'https://talentxcel.in',
+    logo_url: 'https://www.google.com/s2/favicons?domain=talentxcel.in&sz=128',
     is_verified: true,
     open_jobs_count: 6
   },
@@ -89,6 +94,7 @@ const VERIFIED_EMPLOYER_CATALOG: CompanyEntity[] = [
     size_range: '10,000+ employees',
     founded_year: 1998,
     website_url: 'https://google.com',
+    logo_url: 'https://www.google.com/s2/favicons?domain=google.com&sz=128',
     is_verified: true,
     open_jobs_count: 45
   },
@@ -102,6 +108,7 @@ const VERIFIED_EMPLOYER_CATALOG: CompanyEntity[] = [
     size_range: '10,000+ employees',
     founded_year: 1975,
     website_url: 'https://microsoft.com',
+    logo_url: 'https://www.google.com/s2/favicons?domain=microsoft.com&sz=128',
     is_verified: true,
     open_jobs_count: 38
   }
@@ -144,7 +151,7 @@ export const Companies: React.FC = () => {
           slug: db.slug || existing?.slug || db.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
           description: db.description || existing?.description || 'Leading innovative organization committed to technology and growth.',
           industry: db.industry || existing?.industry || 'Technology & Services',
-          location: db.location || existing?.location || 'India',
+          location: db.location || existing?.location || 'New Delhi, India',
           size_range: db.size_range || existing?.size_range || '50-200 employees',
           founded_year: db.founded_year || existing?.founded_year,
           website_url: db.website_url || existing?.website_url,
@@ -240,7 +247,7 @@ export const Companies: React.FC = () => {
             <div className="relative flex-1 w-full">
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search by company name, industry, or location (e.g. AI, Noida, Srinagar, Bangalore)..."
+                placeholder="Search by company name, industry, or location (e.g. AI, Delhi, Noida, Bangalore)..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-9 h-9 text-xs"
@@ -288,14 +295,22 @@ export const Companies: React.FC = () => {
                 const isFollowed = followedCompanies.has(company.name);
                 const profileUrl = `/company/${company.slug}`;
                 const jobsUrl = `/jobs?search=${encodeURIComponent(company.name)}`;
+                const logoSrc = getCompanyLogoWithFallback(company.name, company.logo_url, company.website_url);
 
                 return (
                   <Card key={company.id} className="border rounded-xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between overflow-hidden bg-white dark:bg-slate-900 group">
                     <div>
                       {/* Gradient Header with Logo badge */}
                       <div className="h-20 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-3 flex items-start justify-between">
-                        <div className="w-11 h-11 rounded-lg bg-white dark:bg-slate-900 border-2 border-white shadow-sm flex items-center justify-center font-bold text-sm text-blue-700">
-                          {company.name.slice(0, 2).toUpperCase()}
+                        <div className="w-12 h-12 rounded-xl bg-white dark:bg-slate-900 border-2 border-white shadow-md p-1.5 flex items-center justify-center">
+                          <img 
+                            src={logoSrc} 
+                            alt={company.name} 
+                            className="w-full h-full object-contain"
+                            onError={(e) => {
+                              (e.target as HTMLElement).style.display = 'none';
+                            }}
+                          />
                         </div>
 
                         <Button 
