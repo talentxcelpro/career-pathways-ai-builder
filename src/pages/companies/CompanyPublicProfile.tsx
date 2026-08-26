@@ -16,26 +16,17 @@ import {
   CheckCircle2,
   ChevronRight,
   ExternalLink,
-  MessageSquare,
-  FileText,
   Layers,
-  GraduationCap,
   HelpCircle,
-  Mail,
-  Award,
   Cpu,
-  TrendingUp,
   Target,
-  Compass,
-  Network,
-  BookOpen,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useEntity, useEntityListings } from '@/hooks/useClaim1';
-import { getPublicCompanyUrl, getPublicJobUrl } from '@/lib/seo/canonicalUrls';
+import { getPublicCompanyUrl } from '@/lib/seo/canonicalUrls';
 import { getGoogleCompanyLogo } from '@/services/companyLogoService';
 import {
   buildTalentXcelOrganizationSchema,
@@ -254,24 +245,24 @@ export default function CompanyPublicProfile() {
         {faqSchema && <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>}
       </Helmet>
 
-      <div className="min-h-screen bg-slate-950 text-slate-100 pb-20">
+      <div className="min-h-screen bg-slate-50/60 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-20">
         {/* Breadcrumbs */}
         <div className="max-w-6xl mx-auto px-4 pt-6 pb-2">
-          <nav aria-label="Breadcrumb" className="text-xs text-slate-400 flex items-center gap-1.5">
-            <Link to="/" className="hover:text-white transition-colors">Home</Link>
+          <nav aria-label="Breadcrumb" className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 font-medium">
+            <Link to="/" className="hover:text-blue-600 transition-colors">Home</Link>
             <ChevronRight className="w-3.5 h-3.5" />
-            <Link to="/companies" className="hover:text-white transition-colors">Companies</Link>
+            <Link to="/companies" className="hover:text-blue-600 transition-colors">Companies</Link>
             <ChevronRight className="w-3.5 h-3.5" />
-            <span className="text-blue-400 font-medium">{companyName}</span>
+            <span className="text-blue-600 font-semibold">{companyName}</span>
           </nav>
         </div>
 
-        {/* Hero Header */}
-        <header className="max-w-6xl mx-auto px-4 py-8">
-          <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 md:p-10 backdrop-blur-sm shadow-xl">
+        {/* Hero Header Card - Clean High Contrast Light Mode */}
+        <header className="max-w-6xl mx-auto px-4 py-6">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-sm">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-              <div className="flex items-start gap-5">
-                <div className="w-20 h-20 rounded-2xl bg-white p-2 flex items-center justify-center shadow-lg border border-slate-700 shrink-0">
+              <div className="flex items-start gap-4 sm:gap-5">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white dark:bg-slate-800 p-2 flex items-center justify-center shadow-sm border border-slate-200 dark:border-slate-700 shrink-0">
                   <img 
                     src={logoUrl} 
                     alt={companyName} 
@@ -283,48 +274,48 @@ export default function CompanyPublicProfile() {
                 </div>
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+                    <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                       {companyName}
                     </h1>
-                    <Badge variant="outline" className="border-emerald-500/40 text-emerald-400 bg-emerald-500/10 gap-1 text-xs py-0.5">
-                      <ShieldCheck className="w-3.5 h-3.5" /> Verified Platform Entity
+                    <Badge variant="outline" className="border-emerald-300 text-emerald-700 bg-emerald-50 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800 gap-1 text-[11px] font-semibold py-0.5">
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Verified Platform Entity
                     </Badge>
                   </div>
-                  <p className="text-blue-400 mt-1 text-sm font-semibold">
+                  <p className="text-blue-600 dark:text-blue-400 mt-1 text-xs sm:text-sm font-semibold">
                     {companyTagline}
                   </p>
-                  <p className="text-slate-300 mt-2 text-xs md:text-sm leading-relaxed max-w-3xl">
+                  <p className="text-slate-600 dark:text-slate-300 mt-2 text-xs sm:text-sm leading-relaxed max-w-3xl">
                     {companyDescription}
                   </p>
-                  <div className="flex items-center gap-4 mt-3 text-xs text-slate-400 flex-wrap">
+                  <div className="flex items-center gap-3 sm:gap-4 mt-3 text-xs text-slate-600 dark:text-slate-400 flex-wrap font-medium">
                     <span className="flex items-center gap-1">
-                      <MapPin className="w-3.5 h-3.5 text-slate-500" /> {companyLocation}
+                      <MapPin className="w-3.5 h-3.5 text-slate-400" /> {companyLocation}
                     </span>
                     <a
                       href={companyWebsite}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1 text-blue-400 hover:underline"
+                      className="flex items-center gap-1 text-blue-600 dark:text-blue-400 font-semibold hover:underline"
                     >
                       <Globe className="w-3.5 h-3.5" /> {companyWebsite.replace(/^https?:\/\//, '')}
                       <ExternalLink className="w-3 h-3" />
                     </a>
                     <span className="flex items-center gap-1">
-                      <Users className="w-3.5 h-3.5 text-slate-500" /> {companyIndustry}
+                      <Users className="w-3.5 h-3.5 text-slate-400" /> {companyIndustry}
                     </span>
                   </div>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center gap-3 flex-wrap w-full md:w-auto shrink-0">
+              <div className="flex items-center gap-2.5 flex-wrap w-full md:w-auto shrink-0">
                 <Link to={`/jobs?search=${encodeURIComponent(searchKeyword)}`} className="flex-1 md:flex-initial">
-                  <Button className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold gap-2 shadow-md">
+                  <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold gap-2 shadow-sm text-xs h-9">
                     <Briefcase className="w-4 h-4" /> View Open Jobs ({publicJobs.length})
                   </Button>
                 </Link>
                 <Link to="/employer" className="flex-1 md:flex-initial">
-                  <Button variant="outline" className="w-full border-slate-700 hover:bg-slate-800 text-slate-200 text-xs">
+                  <Button variant="outline" className="w-full border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-xs h-9">
                     Hire Talent
                   </Button>
                 </Link>
@@ -333,20 +324,20 @@ export default function CompanyPublicProfile() {
 
             {/* Claim #1 Board Rank (if present) */}
             {listings.length > 0 && (
-              <div className="mt-6 pt-6 border-t border-slate-800/80 flex items-center justify-between gap-4 flex-wrap bg-blue-950/20 p-4 rounded-xl border border-blue-900/30">
+              <div className="mt-5 pt-5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-4 flex-wrap bg-blue-50/60 dark:bg-blue-950/30 p-3.5 rounded-xl border border-blue-100 dark:border-blue-900/40">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-amber-500/10 rounded-lg border border-amber-500/20">
-                    <Trophy className="w-5 h-5 text-amber-400" />
+                  <div className="p-1.5 bg-amber-100 dark:bg-amber-950 rounded-lg">
+                    <Trophy className="w-4 h-4 text-amber-600" />
                   </div>
                   <div>
-                    <div className="text-xs text-slate-400">Global AI Products Leaderboard</div>
-                    <div className="text-sm font-semibold text-white">
+                    <div className="text-[11px] text-slate-500">Global AI Products Leaderboard</div>
+                    <div className="text-xs font-bold text-slate-900 dark:text-white">
                       Rank #{listings[0].current_rank} • {listings[0].scope?.name || 'Global Board'}
                     </div>
                   </div>
                 </div>
                 <Link to="/rankings/ai-products">
-                  <Button size="sm" variant="ghost" className="text-blue-400 hover:text-blue-300 gap-1 text-xs">
+                  <Button size="sm" variant="ghost" className="text-blue-600 hover:text-blue-700 font-semibold gap-1 text-xs h-7">
                     View Live Board <ChevronRight className="w-3.5 h-3.5" />
                   </Button>
                 </Link>
@@ -355,53 +346,53 @@ export default function CompanyPublicProfile() {
           </div>
         </header>
 
-        {/* Dynamic Factual Sections */}
-        <main className="max-w-6xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Dynamic Factual Sections - High Contrast Clean Cards */}
+        <main className="max-w-6xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main 2 Columns */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-5">
             {/* 1. About Company */}
-            <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 space-y-3">
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                <Building2 className="w-4 h-4 text-blue-400" /> 1. About {companyName}
+            <section className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-2xs space-y-2.5">
+              <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Building2 className="w-4 h-4 text-blue-600" /> 1. About {companyName}
               </h2>
-              <p className="text-slate-300 text-xs md:text-sm leading-relaxed">
+              <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed">
                 {companyDescription} Headquartered in {companyLocation}, {companyName} delivers reliable, scalable capabilities to its clients and partners across the industry.
               </p>
             </section>
 
             {/* 2. What Company Does */}
-            <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 space-y-3">
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                <Layers className="w-4 h-4 text-indigo-400" /> 2. What {companyName} Does
+            <section className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-2xs space-y-2.5">
+              <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Layers className="w-4 h-4 text-indigo-600" /> 2. What {companyName} Does
               </h2>
-              <p className="text-slate-300 text-xs md:text-sm leading-relaxed">
+              <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed">
                 {whatItDoes}
               </p>
             </section>
 
             {/* 3. Core Capabilities & Offerings */}
-            <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 space-y-3">
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                <Target className="w-4 h-4 text-emerald-400" /> 3. Core Offerings & Services
+            <section className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-2xs space-y-3">
+              <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Target className="w-4 h-4 text-emerald-600" /> 3. Core Offerings & Services
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-0.5">
                 {coreServices.map((service, idx) => (
-                  <div key={idx} className="bg-slate-950/60 border border-slate-800 p-3 rounded-xl flex items-start gap-2.5">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                    <span className="text-xs text-slate-200 font-medium">{service}</span>
+                  <div key={idx} className="bg-slate-50 dark:bg-slate-950/60 border border-slate-200/70 dark:border-slate-800 p-3 rounded-xl flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                    <span className="text-xs text-slate-800 dark:text-slate-200 font-semibold">{service}</span>
                   </div>
                 ))}
               </div>
             </section>
 
             {/* 4. Technology Stack & Frameworks */}
-            <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 space-y-3">
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                <Cpu className="w-4 h-4 text-purple-400" /> 4. Technology & Tooling Stack
+            <section className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-2xs space-y-3">
+              <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Cpu className="w-4 h-4 text-purple-600" /> 4. Technology & Tooling Stack
               </h2>
-              <div className="flex flex-wrap gap-2 pt-1">
+              <div className="flex flex-wrap gap-2 pt-0.5">
                 {techStack.map((tech, idx) => (
-                  <Badge key={idx} variant="secondary" className="bg-purple-950/40 text-purple-300 border border-purple-800/40 text-xs px-3 py-1">
+                  <Badge key={idx} variant="secondary" className="bg-slate-100 dark:bg-purple-950/40 text-slate-800 dark:text-purple-300 border border-slate-200 dark:border-purple-800/40 text-xs font-semibold px-3 py-1 rounded-lg">
                     {tech}
                   </Badge>
                 ))}
@@ -409,40 +400,40 @@ export default function CompanyPublicProfile() {
             </section>
 
             {/* 5. Active Job Openings from Database */}
-            <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 space-y-4">
+            <section className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-2xs space-y-3.5">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <Briefcase className="w-4 h-4 text-emerald-400" /> 5. Active Job Openings ({publicJobs.length})
+                <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <Briefcase className="w-4 h-4 text-emerald-600" /> 5. Active Job Openings ({publicJobs.length})
                 </h2>
                 <Link to={`/jobs?search=${encodeURIComponent(searchKeyword)}`}>
-                  <Button size="sm" variant="ghost" className="text-xs text-emerald-400 hover:text-emerald-300 gap-1">
+                  <Button size="sm" variant="ghost" className="text-xs text-emerald-700 hover:text-emerald-800 font-semibold gap-1 h-7">
                     View All in Jobs Hub <ArrowRight className="w-3.5 h-3.5" />
                   </Button>
                 </Link>
               </div>
 
               {publicJobs.length > 0 ? (
-                <div className="space-y-3">
+                <div className="space-y-2.5">
                   {publicJobs.slice(0, 5).map((job: any) => (
-                    <div key={job.id} className="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-center justify-between gap-4">
+                    <div key={job.id} className="p-3.5 bg-slate-50 dark:bg-slate-950/60 border border-slate-200/80 dark:border-slate-800 rounded-xl flex items-center justify-between gap-4 hover:border-blue-300 transition-colors">
                       <div>
-                        <div className="text-sm font-semibold text-white hover:text-blue-400 transition-colors">
+                        <div className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white hover:text-blue-600 transition-colors">
                           {job.title}
                         </div>
-                        <div className="flex items-center gap-2 text-xs text-slate-400 mt-1">
+                        <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-1 font-medium">
                           <span>{job.location || companyLocation}</span>
                           <span>•</span>
                           <span>{job.employment_type || 'Full-time'}</span>
                           {job.salary_min && (
                             <>
                               <span>•</span>
-                              <span className="text-emerald-400">₹{(job.salary_min / 100000).toFixed(1)} - {(job.salary_max / 100000).toFixed(1)} LPA</span>
+                              <span className="text-emerald-700 font-semibold">₹{(job.salary_min / 100000).toFixed(1)} - {(job.salary_max / 100000).toFixed(1)} LPA</span>
                             </>
                           )}
                         </div>
                       </div>
                       <Link to={`/jobs/${job.seo_slug || job.id}`}>
-                        <Button size="sm" className="bg-blue-600 hover:bg-blue-500 text-white text-xs h-7 px-3">
+                        <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white text-xs h-7 px-3 font-semibold shadow-2xs">
                           Apply Now
                         </Button>
                       </Link>
@@ -450,25 +441,25 @@ export default function CompanyPublicProfile() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8 text-xs text-slate-400">
+                <div className="text-center py-6 text-xs text-slate-500">
                   <p>No active openings currently published for {companyName}.</p>
-                  <p className="mt-1">Check back soon or follow to receive new job alerts.</p>
+                  <p className="mt-0.5">Check back soon or follow to receive new job alerts.</p>
                 </div>
               )}
             </section>
 
             {/* 6. Frequently Asked Questions */}
-            <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 space-y-3">
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                <HelpCircle className="w-4 h-4 text-amber-400" /> 6. Frequently Asked Questions
+            <section className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-2xs space-y-2">
+              <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <HelpCircle className="w-4 h-4 text-amber-600" /> 6. Frequently Asked Questions
               </h2>
               <Accordion type="single" collapsible className="w-full">
                 {faqs.map((faq, idx) => (
-                  <AccordionItem key={idx} value={`item-${idx}`} className="border-slate-800">
-                    <AccordionTrigger className="text-xs md:text-sm font-semibold text-slate-200 hover:text-blue-400">
+                  <AccordionItem key={idx} value={`item-${idx}`} className="border-slate-100 dark:border-slate-800">
+                    <AccordionTrigger className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 hover:text-blue-600 py-3">
                       {faq.question}
                     </AccordionTrigger>
-                    <AccordionContent className="text-xs text-slate-400 leading-relaxed">
+                    <AccordionContent className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed pb-3">
                       {faq.answer}
                     </AccordionContent>
                   </AccordionItem>
@@ -478,26 +469,26 @@ export default function CompanyPublicProfile() {
           </div>
 
           {/* Right Sidebar: Entity Overview */}
-          <div className="space-y-6">
-            <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 space-y-4">
-              <h3 className="text-sm font-bold text-slate-200 border-b border-slate-800 pb-2">
+          <div className="space-y-5">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-2xs space-y-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 border-b pb-2">
                 Entity Overview
               </h3>
               
               <div className="space-y-3 text-xs">
                 <div>
-                  <span className="text-slate-400">Legal Entity</span>
-                  <div className="text-white font-medium mt-0.5">{legalEntity}</div>
+                  <span className="text-slate-500 font-medium">Legal Entity</span>
+                  <div className="text-slate-900 dark:text-white font-bold mt-0.5">{legalEntity}</div>
                 </div>
 
                 <div>
-                  <span className="text-slate-400">Headquarters</span>
-                  <div className="text-white font-medium mt-0.5">{companyLocation}</div>
+                  <span className="text-slate-500 font-medium">Headquarters</span>
+                  <div className="text-slate-900 dark:text-white font-bold mt-0.5">{companyLocation}</div>
                 </div>
 
                 <div>
-                  <span className="text-slate-400">Primary Domain</span>
-                  <div className="text-blue-400 font-medium mt-0.5 truncate">
+                  <span className="text-slate-500 font-medium">Primary Domain</span>
+                  <div className="text-blue-600 font-bold mt-0.5 truncate">
                     <a href={companyWebsite} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
                       {companyWebsite} <ExternalLink className="w-3 h-3" />
                     </a>
@@ -505,24 +496,24 @@ export default function CompanyPublicProfile() {
                 </div>
 
                 <div>
-                  <span className="text-slate-400">Industry</span>
-                  <div className="text-white font-medium mt-0.5">{companyIndustry}</div>
+                  <span className="text-slate-500 font-medium">Industry</span>
+                  <div className="text-slate-900 dark:text-white font-bold mt-0.5">{companyIndustry}</div>
                 </div>
 
                 <div>
-                  <span className="text-slate-400">Company Size</span>
-                  <div className="text-white font-medium mt-0.5">{sizeRange}</div>
+                  <span className="text-slate-500 font-medium">Company Size</span>
+                  <div className="text-slate-900 dark:text-white font-bold mt-0.5">{sizeRange}</div>
                 </div>
 
                 <div>
-                  <span className="text-slate-400">Founded</span>
-                  <div className="text-white font-medium mt-0.5">{foundedYear}</div>
+                  <span className="text-slate-500 font-medium">Founded</span>
+                  <div className="text-slate-900 dark:text-white font-bold mt-0.5">{foundedYear}</div>
                 </div>
 
                 <div>
-                  <span className="text-slate-400">Verification Status</span>
+                  <span className="text-slate-500 font-medium">Verification Status</span>
                   <div className="mt-1">
-                    <Badge variant="outline" className="border-emerald-500/40 text-emerald-400 bg-emerald-500/10 text-[10px]">
+                    <Badge variant="outline" className="border-emerald-300 text-emerald-700 bg-emerald-50 dark:bg-emerald-950/50 dark:text-emerald-300 text-[10px] font-semibold">
                       Verified Platform Entity
                     </Badge>
                   </div>
@@ -531,14 +522,14 @@ export default function CompanyPublicProfile() {
             </div>
 
             {/* Quick Apply CTA */}
-            <div className="bg-gradient-to-br from-blue-950/60 to-indigo-950/60 border border-blue-900/40 rounded-2xl p-6 text-center space-y-3">
-              <Sparkles className="w-8 h-8 text-blue-400 mx-auto" />
-              <h4 className="text-sm font-bold text-white">Looking for Opportunities?</h4>
-              <p className="text-xs text-slate-300">
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/40 dark:to-indigo-950/40 border border-blue-200/80 dark:border-blue-900/40 rounded-2xl p-6 text-center space-y-3">
+              <Sparkles className="w-7 h-7 text-blue-600 mx-auto" />
+              <h4 className="text-sm font-bold text-slate-900 dark:text-white">Looking for Opportunities?</h4>
+              <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                 Optimize your resume with our AI ATS Scanner to maximize your chances of getting hired at {companyName}.
               </p>
               <Link to="/resume/ats-check" className="block pt-1">
-                <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs">
+                <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs h-8">
                   Scan My Resume Free
                 </Button>
               </Link>
