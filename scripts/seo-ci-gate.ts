@@ -24,6 +24,17 @@ import { computeAuthorityScore, detectOrphanRisk, classifyHubType, SAMPLE_PAGE_A
 import { scoreOpportunityV2, CTR_BENCHMARK, computeCtrGapScore, computeFreshnessScore, computeConversionIntentBonus, SAMPLE_OPPORTUNITY_QUEUE } from '../src/lib/seo/rankingOpportunityEngineV2.js';
 import { ATTRIBUTION_POLICY, computeAttributionConfidence, generateAttributionEventId, SAMPLE_FUNNEL_RECORDS } from '../src/lib/seo/acquisitionAttributionEngine.js';
 import { createExperiment, evaluateExperiment, SAMPLE_EXPERIMENTS } from '../src/lib/seo/ctrExperimentTracker.js';
+import {
+  computeViralKFactor,
+  projectCompoundingGrowth,
+  generatePassportViralObject,
+  generateAtsScorecardViralObject,
+  computeCalculatedSalaryIntelligence,
+  generateZapierEntityIntersection,
+  generateAiDiscoveryCitation,
+  SAMPLE_VIRAL_COHORTS,
+  SAMPLE_AI_CITATIONS
+} from '../src/lib/seo/distribution/index.js';
 
 const SUPABASE_URL = 'https://dthlgsnakhoftinssokm.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
@@ -995,6 +1006,109 @@ async function runSeoCiGate() {
       'Strategic Acquisition & Scale Architecture Docs',
       doc1Exists && doc2Exists && doc3Exists,
       'Validated SEO_1M_USER_ACQUISITION_MODEL.md, SEO_100M_QUERY_SCALE_ARCHITECTURE.md, and SEO_PHASE14_PRODUCTION_REPORT.md'
+    );
+    // --- 11. AUDITING GLOBAL DISTRIBUTION ENGINE & MULTI-CHANNEL ACQUISITION ---
+    console.log('\n--- 11. AUDITING GLOBAL DISTRIBUTION ENGINE & MULTI-CHANNEL ACQUISITION ---');
+
+    // 11.1 Viral K-Factor Calculation
+    const kFactorTest = computeViralKFactor(1.2, 35.0);
+    record(
+      'Distribution_Viral',
+      'Viral K-Factor Calculation Accuracy ($K = i \\times c$)',
+      kFactorTest === 0.42,
+      `Calculated K-factor: ${kFactorTest} (Threshold: K > 0.35)`
+    );
+
+    // 11.2 Compounding Growth Engine
+    const compoundingTest = projectCompoundingGrowth(1000, 0.10, 0.35, 3);
+    record(
+      'Distribution_Viral',
+      'Compounding Growth Projection Engine',
+      compoundingTest.length === 4 && compoundingTest[3] > 2000,
+      `Compounding user growth: [${compoundingTest.join(', ')}] across 3 cycles`
+    );
+
+    // 11.3 Career Passport Viral Living Object Schema
+    const passportViral = generatePassportViralObject({
+      slug: 'sanobar-jahan',
+      fullName: 'Sanobar Jahan',
+      primaryRole: 'AI Research Engineer',
+      topSkills: ['PyTorch', 'Large Language Models', 'Distributed Systems'],
+      verifiedCredentialCount: 4
+    });
+    record(
+      'Distribution_Viral',
+      'Career Passport Living Viral Object Schema',
+      passportViral.objectType === 'CAREER_PASSPORT' && passportViral.shareTriggers.linkedinText.includes('talentxcel.in/passport/sanobar-jahan'),
+      `Generated viral object: ${passportViral.title} with multi-channel share triggers`
+    );
+
+    // 11.4 Shareable ATS Scorecard Metadata
+    const atsScorecard = generateAtsScorecardViralObject({
+      scanId: 'scan_a1b2c3d4e5f6',
+      targetRole: 'Software Engineer',
+      atsScore: 78,
+      matchedKeywordsCount: 14,
+      missingKeywordsCount: 3
+    });
+    record(
+      'Distribution_Viral',
+      'Shareable ATS Scorecard Metadata & Deep Links',
+      atsScorecard.objectType === 'ATS_SCORECARD' && atsScorecard.title.includes('78/100'),
+      `Generated ATS scorecard: ${atsScorecard.title} (Score: 78/100)`
+    );
+
+    // 11.5 Wise Programmatic Salary Intelligence Engine
+    const salaryIntel = computeCalculatedSalaryIntelligence({
+      role: 'Software Engineer',
+      location: 'Bangalore',
+      experienceYears: 3
+    });
+    record(
+      'Distribution_Utility',
+      'Wise Programmatic Salary Intelligence Engine',
+      Boolean(salaryIntel.calculatedData.medianSalaryInr && salaryIntel.calculatedData.inHandMonthlyInr && salaryIntel.schemaGraph['@type'] === 'Occupation'),
+      `Computed salary intelligence: Median ₹${salaryIntel.calculatedData.medianSalaryInr?.toLocaleString('en-IN')}, In-Hand ₹${salaryIntel.calculatedData.inHandMonthlyInr?.toLocaleString('en-IN')}/mo`
+    );
+
+    // 11.6 Zapier Multi-Dimensional Entity Intersections
+    const zapierMatrix = generateZapierEntityIntersection({
+      role: 'Full Stack Developer',
+      skill: 'React',
+      location: 'Hyderabad',
+      company: 'TalentXcel Verified'
+    });
+    record(
+      'Distribution_Utility',
+      'Zapier Multi-Dimensional Entity Intersections',
+      zapierMatrix.entityType === 'INTEGRATION_MATRIX' && zapierMatrix.schemaGraph['@type'] === 'JobPosting',
+      `Generated entity matrix: ${zapierMatrix.role} × ${zapierMatrix.skill} × ${zapierMatrix.location}`
+    );
+
+    // 11.7 Generative Engine Optimization (GEO) Citations
+    const geoCitation = generateAiDiscoveryCitation({
+      topic: 'Software Engineer Salary in Bangalore 2026',
+      category: 'SALARY',
+      canonicalUrl: 'https://talentxcel.in/tools/salary-calculator?role=software-engineer&city=bangalore',
+      directAnswer: 'Median salary is ₹11,87,500 per year.',
+      facts: ['1.25x Bangalore multiplier', '₹84,500 take-home']
+    });
+    record(
+      'Distribution_AI',
+      'Generative Engine Optimization (GEO) Citations',
+      geoCitation.factualExtracts.length >= 2 && geoCitation.primarySources.length >= 3,
+      `Generated GEO citation graph for AI search engines with ${geoCitation.factualExtracts.length} verified facts`
+    );
+
+    // 11.8 Global Distribution Graph & Master Spec Docs
+    const distGraphExists = existsSync(resolve('SEO_GLOBAL_DISTRIBUTION_GRAPH.json'));
+    const distSpecExists = existsSync(resolve('SEO_PROGRAMMATIC_UTILITY_SPEC.json'));
+    const distDocExists = existsSync(resolve('TALENTXCEL_GLOBAL_DISTRIBUTION_ENGINE.md'));
+    record(
+      'Distribution_Master',
+      'Global Distribution Graph & Master Blueprint Document Valid',
+      distGraphExists && distSpecExists && distDocExists,
+      'Validated SEO_GLOBAL_DISTRIBUTION_GRAPH.json, SEO_PROGRAMMATIC_UTILITY_SPEC.json, and TALENTXCEL_GLOBAL_DISTRIBUTION_ENGINE.md'
     );
   } catch (err: any) {
     record('Phase15_Acquisition', 'Phase 15 Engine Execution', false, `Engine error: ${err.message}`, { severity: 'CRITICAL' });

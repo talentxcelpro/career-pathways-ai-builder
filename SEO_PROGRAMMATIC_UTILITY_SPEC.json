@@ -1,0 +1,40 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2026-08-26T07:55:00Z",
+  "proven_distribution_archetypes": {
+    "zapier_model": {
+      "name": "Multi-Dimensional Entity Graph Intersections",
+      "formula": "PERSON \u00d7 ROLE \u00d7 SKILL \u00d7 LOCATION \u00d7 EXPERIENCE \u00d7 SALARY \u00d7 COMPANY \u00d7 CAREER PATH \u00d7 RESUME \u00d7 JOB",
+      "rule": "Only expose URLs where real inventory, calculated intelligence, or substantive entity data exists (Zero empty combinations).",
+      "examples": [
+        "/jobs/software-engineer/bangalore/python",
+        "/roles/data-scientist/salary-ladder",
+        "/companies/infosys/interview-questions/sde-2"
+      ]
+    },
+    "wise_model": {
+      "name": "Live Calculated Intelligence Engines",
+      "principle": "The page is valuable because of underlying computation, not 500 words of generic prose.",
+      "implementation": "Real-time salary percentiles (P25, P50, P75, P90), Indian New Tax Regime in-hand take-home calculator, city purchasing power multipliers.",
+      "examples": [
+        "/tools/salary-calculator?role=software-engineer&city=bangalore",
+        "/tools/salary-calculator?role=marketing-executive&city=noida"
+      ]
+    },
+    "canva_model": {
+      "name": "Interactive Template & Tool Entrances",
+      "principle": "Users search for a tool to solve an immediate problem. Deliver the tool immediately without a login barrier.",
+      "implementation": "Free ATS Resume Score Checker, Role-specific Resume Templates, One-Click Career Roadmap generator.",
+      "examples": [
+        "/resume (Instant ATS Scanner)",
+        "/career-map (Interactive Career Transition Path)"
+      ]
+    },
+    "ugc_viral_model": {
+      "name": "Living Public Career Passport & Shareable Objects",
+      "principle": "1M users create 1M living professional entities that they share to LinkedIn, WhatsApp, and recruiters.",
+      "implementation": "/passport/:slug public verifiable profile with OpenGraph cards, schema markup, and credential verification badges.",
+      "viral_k_factor_target": "K = 0.35 - 0.45"
+    }
+  }
+}

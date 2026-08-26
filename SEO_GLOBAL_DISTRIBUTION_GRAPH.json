@@ -1,0 +1,114 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2026-08-26T07:55:00Z",
+  "name": "TalentXcel Global Distribution Engine Graph",
+  "operating_principle": "Distribution through Product Utility, AI Discovery, UGC Living Entities, and Viral Sharing Loops \u2014 not thin SEO articles.",
+  "six_acquisition_engines": [
+    {
+      "engine_id": "ENGINE_1_SEARCH",
+      "name": "Search Engine Acquisition",
+      "platforms": [
+        "Google",
+        "Bing",
+        "DuckDuckGo"
+      ],
+      "mechanism": "Intent-matched canonical pages -> fast server-rendered HTML -> schema rich snippets -> organic clicks",
+      "archetype": "Programmatic SEO Engine",
+      "primary_surfaces": [
+        "JOBS",
+        "LOCATIONS",
+        "COMPANIES",
+        "COLLEGES",
+        "ROLE_GUIDES"
+      ]
+    },
+    {
+      "engine_id": "ENGINE_2_AI_DISCOVERY",
+      "name": "Generative AI Discovery & GEO",
+      "platforms": [
+        "ChatGPT",
+        "Gemini",
+        "Perplexity",
+        "Google AI Overviews"
+      ],
+      "mechanism": "Factual entity extraction -> structured comparison tables -> authoritative citation schema -> AI answer inclusion",
+      "archetype": "Generative Engine Optimization (GEO)",
+      "primary_surfaces": [
+        "CAREER_TOOLS",
+        "ROLE_GUIDES",
+        "COLLEGES",
+        "SKILLS"
+      ]
+    },
+    {
+      "engine_id": "ENGINE_3_PRODUCT_LED",
+      "name": "Product-Led Utility & Tool Entrance",
+      "platforms": [
+        "Web App Free Tools"
+      ],
+      "mechanism": "Zero-login first value moment -> calculated output -> optional unlock / save to account -> high activation",
+      "archetype": "Canva / Wise Model",
+      "primary_surfaces": [
+        "RESUME_ATS",
+        "CAREER_TOOLS",
+        "CAREER_MAP",
+        "BIDDER_RANKINGS"
+      ]
+    },
+    {
+      "engine_id": "ENGINE_4_UGC_ENTITIES",
+      "name": "User-Generated Growth Entities",
+      "platforms": [
+        "Public Profiles & Credentials"
+      ],
+      "mechanism": "Every user creates a living, indexable, sharable public credential object -> organic backlink generation",
+      "archetype": "LinkedIn / Behance Model",
+      "primary_surfaces": [
+        "CAREER_PASSPORT",
+        "PROFESSIONAL_NETWORK",
+        "COMPANIES"
+      ]
+    },
+    {
+      "engine_id": "ENGINE_5_VIRAL_REFERRALS",
+      "name": "Viral & Peer Distribution Loops",
+      "platforms": [
+        "WhatsApp",
+        "LinkedIn Share",
+        "Twitter/X",
+        "Email"
+      ],
+      "mechanism": "Shareable scorecards + credential verification badges + candidate referrals -> K-factor compounding",
+      "archetype": "Viral Loop Model (K > 0.35)",
+      "primary_surfaces": [
+        "CAREER_PASSPORT",
+        "RESUME_ATS",
+        "BIDDER_RANKINGS"
+      ]
+    },
+    {
+      "engine_id": "ENGINE_6_EXTERNAL_ECOSYSTEM",
+      "name": "External Distribution & Partnerships",
+      "platforms": [
+        "Colleges & Universities",
+        "Tech Communities",
+        "HR Tech Integrations"
+      ],
+      "mechanism": "Direct institutional placement data feeds + campus ambassador onboarding + bulk employer ingestion",
+      "archetype": "Ecosystem Distribution",
+      "primary_surfaces": [
+        "COLLEGES",
+        "MO1_BUSINESS_OS",
+        "JOBS"
+      ]
+    }
+  ],
+  "compounding_loop_spec": {
+    "step_1_entry": "Search / AI / Social / Referral Visitor arrives on specific utility",
+    "step_2_value": "Zero-friction first value moment (ATS score, salary calculation, job apply)",
+    "step_3_signup": "One-click consented registration to save / apply / export",
+    "step_4_action": "User completes core product activation action",
+    "step_5_distribution": "User shares Career Passport / ATS Score / invites peer to network",
+    "step_6_regeneration": "Shared object becomes a new public indexable / discoverable entity"
+  }
+}
