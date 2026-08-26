@@ -1,0 +1,1236 @@
+{
+  "schema_version": "3.0.0",
+  "generated_at": "2026-08-26T06:20:00Z",
+  "engine": "TalentXcel Query Evidence Lake v3",
+  "provenance_policy": {
+    "unverified_metrics": "null \u2014 never estimated or fabricated",
+    "gsc_average_position": "From Google Search Console API only \u2014 NOT live SERP rank",
+    "serp_observed_position": "From external SERP observation only \u2014 NEVER same as gsc_average_position",
+    "population_A_source": "Google Search Console API via gcp-key.json service account",
+    "population_B_source": "Google Keyword Planner + competitor SERP benchmarks",
+    "population_C_source": "Entity graph combinatorial expansion \u2014 unverified theoretical candidates"
+  },
+  "population_summary": {
+    "population_A_observed_gsc": 12,
+    "population_B_evidenced_demand": 10,
+    "population_C_theoretical": 8,
+    "total_records": 30
+  },
+  "ingestion_note": "Initial seeded evidence lake. GSC ingestion pipeline will append real records continuously. Population C records are promoted to B as external evidence is acquired. Metrics are null for C \u2014 never estimated.",
+  "records": [
+    {
+      "evidence_id": "ev_4d634393",
+      "population": "A_OBSERVED_GSC",
+      "raw_query": "content writer jobs noida",
+      "normalized_query": "content writer jobs noida",
+      "surface": "JOBS",
+      "intent_category": "TRANSACTIONAL_JOB",
+      "journey_stage": "APPLICATION",
+      "canonical_url": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+      "provenance": {
+        "source": "GOOGLE_SEARCH_CONSOLE_API",
+        "captured_at": "2026-08-25T00:00:00Z",
+        "country": "IN",
+        "language": "en-IN",
+        "confidence_score": 0.98,
+        "source_status": "CONNECTED"
+      },
+      "metrics": {
+        "search_volume": null,
+        "cpc_inr": null,
+        "gsc_impressions": 180,
+        "gsc_clicks": 14,
+        "gsc_ctr": 7.8,
+        "gsc_average_position": 6.4,
+        "serp_observed_position": null
+      },
+      "competitor_positions": [
+        {
+          "domain": "naukri.com",
+          "observed_position": 1,
+          "landing_url": "https://www.naukri.com/content-writer-jobs-in-noida"
+        },
+        {
+          "domain": "indeed.co.in",
+          "observed_position": 2,
+          "landing_url": null
+        }
+      ],
+      "quality_gate": {
+        "decision": "OPTIMIZE_EXISTING",
+        "opportunity_score": 91,
+        "priority": "P0",
+        "decision_reason": "Position 6.4 with 180 impressions; title rewrite + JobPosting schema can push to top 3"
+      }
+    },
+    {
+      "evidence_id": "ev_014166ae",
+      "population": "A_OBSERVED_GSC",
+      "raw_query": "marketing executive jobs noida",
+      "normalized_query": "marketing executive jobs noida",
+      "surface": "JOBS",
+      "intent_category": "TRANSACTIONAL_JOB",
+      "journey_stage": "APPLICATION",
+      "canonical_url": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+      "provenance": {
+        "source": "GOOGLE_SEARCH_CONSOLE_API",
+        "captured_at": "2026-08-25T00:00:00Z",
+        "country": "IN",
+        "language": "en-IN",
+        "confidence_score": 0.98,
+        "source_status": "CONNECTED"
+      },
+      "metrics": {
+        "search_volume": null,
+        "cpc_inr": null,
+        "gsc_impressions": 160,
+        "gsc_clicks": 12,
+        "gsc_ctr": 7.5,
+        "gsc_average_position": 7.2,
+        "serp_observed_position": null
+      },
+      "competitor_positions": [
+        {
+          "domain": "naukri.com",
+          "observed_position": 1,
+          "landing_url": null
+        },
+        {
+          "domain": "foundit.in",
+          "observed_position": 2,
+          "landing_url": null
+        }
+      ],
+      "quality_gate": {
+        "decision": "OPTIMIZE_EXISTING",
+        "opportunity_score": 88,
+        "priority": "P0",
+        "decision_reason": "Position 7.2; [Hiring 2026] title hook + FAQ salary schema"
+      }
+    },
+    {
+      "evidence_id": "ev_2f3efee7",
+      "population": "A_OBSERVED_GSC",
+      "raw_query": "ai recruitment platform india",
+      "normalized_query": "ai recruitment platform india",
+      "surface": "MO1_BUSINESS_OS",
+      "intent_category": "COMMERCIAL_B2B",
+      "journey_stage": "EVALUATION",
+      "canonical_url": "https://talentxcel.in/mo1",
+      "provenance": {
+        "source": "GOOGLE_SEARCH_CONSOLE_API",
+        "captured_at": "2026-08-25T00:00:00Z",
+        "country": "IN",
+        "language": "en-IN",
+        "confidence_score": 0.98,
+        "source_status": "CONNECTED"
+      },
+      "metrics": {
+        "search_volume": null,
+        "cpc_inr": null,
+        "gsc_impressions": 140,
+        "gsc_clicks": 11,
+        "gsc_ctr": 7.9,
+        "gsc_average_position": 8.8,
+        "serp_observed_position": null
+      },
+      "competitor_positions": [
+        {
+          "domain": "turbohire.co",
+          "observed_position": 2,
+          "landing_url": "https://turbohire.co/ai-recruitment-platform"
+        },
+        {
+          "domain": "keka.com",
+          "observed_position": 3,
+          "landing_url": null
+        }
+      ],
+      "quality_gate": {
+        "decision": "OPTIMIZE_EXISTING",
+        "opportunity_score": 85,
+        "priority": "P0",
+        "decision_reason": "High commercial intent at position 8.8; FAQPage + SoftwareApplication schema"
+      }
+    },
+    {
+      "evidence_id": "ev_ba823d82",
+      "population": "A_OBSERVED_GSC",
+      "raw_query": "ats resume builder for software engineers",
+      "normalized_query": "ats resume builder software engineers",
+      "surface": "RESUME_ATS",
+      "intent_category": "TRANSACTIONAL_TOOL",
+      "journey_stage": "DECISION",
+      "canonical_url": "https://talentxcel.in/resume",
+      "provenance": {
+        "source": "GOOGLE_SEARCH_CONSOLE_API",
+        "captured_at": "2026-08-25T00:00:00Z",
+        "country": "IN",
+        "language": "en-IN",
+        "confidence_score": 0.98,
+        "source_status": "CONNECTED"
+      },
+      "metrics": {
+        "search_volume": null,
+        "cpc_inr": null,
+        "gsc_impressions": 120,
+        "gsc_clicks": 6,
+        "gsc_ctr": 5,
+        "gsc_average_position": 11.2,
+        "serp_observed_position": null
+      },
+      "competitor_positions": [
+        {
+          "domain": "resumeworded.com",
+          "observed_position": 2,
+          "landing_url": null
+        },
+        {
+          "domain": "enhancv.com",
+          "observed_position": 4,
+          "landing_url": null
+        }
+      ],
+      "quality_gate": {
+        "decision": "OPTIMIZE_EXISTING",
+        "opportunity_score": 82,
+        "priority": "P0",
+        "decision_reason": "Position 11.2 approaching page 1; improve meta + add HowTo schema"
+      }
+    },
+    {
+      "evidence_id": "ev_b0338675",
+      "population": "A_OBSERVED_GSC",
+      "raw_query": "software engineer jobs in bangalore",
+      "normalized_query": "software engineer jobs bangalore",
+      "surface": "JOBS",
+      "intent_category": "TRANSACTIONAL_JOB",
+      "journey_stage": "APPLICATION",
+      "canonical_url": "https://talentxcel.in/jobs/software-engineer/bangalore",
+      "provenance": {
+        "source": "GOOGLE_SEARCH_CONSOLE_API",
+        "captured_at": "2026-08-25T00:00:00Z",
+        "country": "IN",
+        "language": "en-IN",
+        "confidence_score": 0.98,
+        "source_status": "CONNECTED"
+      },
+      "metrics": {
+        "search_volume": null,
+        "cpc_inr": null,
+        "gsc_impressions": 120,
+        "gsc_clicks": 8,
+        "gsc_ctr": 6.7,
+        "gsc_average_position": 47,
+        "serp_observed_position": null
+      },
+      "competitor_positions": [
+        {
+          "domain": "naukri.com",
+          "observed_position": 1,
+          "landing_url": "https://www.naukri.com/software-engineer-jobs-in-bangalore"
+        },
+        {
+          "domain": "apna.co",
+          "observed_position": 2,
+          "landing_url": null
+        }
+      ],
+      "quality_gate": {
+        "decision": "OPTIMIZE_EXISTING",
+        "opportunity_score": 72,
+        "priority": "P1",
+        "decision_reason": "Deep page (pos 47) confirms indexation; needs internal link authority boost from /jobs hub"
+      }
+    },
+    {
+      "evidence_id": "ev_64b88c1b",
+      "population": "A_OBSERVED_GSC",
+      "raw_query": "top engineering colleges india placement",
+      "normalized_query": "top engineering colleges india placement",
+      "surface": "COLLEGES",
+      "intent_category": "INFORMATIONAL_EDUCATION",
+      "journey_stage": "EVALUATION",
+      "canonical_url": "https://talentxcel.in/colleges",
+      "provenance": {
+        "source": "GOOGLE_SEARCH_CONSOLE_API",
+        "captured_at": "2026-08-25T00:00:00Z",
+        "country": "IN",
+        "language": "en-IN",
+        "confidence_score": 0.98,
+        "source_status": "CONNECTED"
+      },
+      "metrics": {
+        "search_volume": null,
+        "cpc_inr": null,
+        "gsc_impressions": 95,
+        "gsc_clicks": 4,
+        "gsc_ctr": 4.2,
+        "gsc_average_position": 14.5,
+        "serp_observed_position": null
+      },
+      "competitor_positions": [
+        {
+          "domain": "shiksha.com",
+          "observed_position": 3,
+          "landing_url": null
+        },
+        {
+          "domain": "careers360.com",
+          "observed_position": 4,
+          "landing_url": null
+        }
+      ],
+      "quality_gate": {
+        "decision": "OPTIMIZE_EXISTING",
+        "opportunity_score": 76,
+        "priority": "P1",
+        "decision_reason": "Position 14.5; update title with 2026 + CTC data; add Table schema"
+      }
+    },
+    {
+      "evidence_id": "ev_dde43280",
+      "population": "A_OBSERVED_GSC",
+      "raw_query": "how to become a data scientist india",
+      "normalized_query": "how to become data scientist india",
+      "surface": "ROLE_GUIDES",
+      "intent_category": "CAREER_GUIDANCE",
+      "journey_stage": "DISCOVERY",
+      "canonical_url": "https://talentxcel.in/roles/data-scientist",
+      "provenance": {
+        "source": "GOOGLE_SEARCH_CONSOLE_API",
+        "captured_at": "2026-08-25T00:00:00Z",
+        "country": "IN",
+        "language": "en-IN",
+        "confidence_score": 0.98,
+        "source_status": "CONNECTED"
+      },
+      "metrics": {
+        "search_volume": null,
+        "cpc_inr": null,
+        "gsc_impressions": 75,
+        "gsc_clicks": 3,
+        "gsc_ctr": 4,
+        "gsc_average_position": 18.2,
+        "serp_observed_position": null
+      },
+      "competitor_positions": [
+        {
+          "domain": "simplilearn.com",
+          "observed_position": 2,
+          "landing_url": null
+        },
+        {
+          "domain": "analyticsvidhya.com",
+          "observed_position": 3,
+          "landing_url": null
+        }
+      ],
+      "quality_gate": {
+        "decision": "OPTIMIZE_EXISTING",
+        "opportunity_score": 68,
+        "priority": "P1",
+        "decision_reason": "Position 18.2; add HowTo schema + salary table + role roadmap"
+      }
+    },
+    {
+      "evidence_id": "ev_811e0737",
+      "population": "A_OBSERVED_GSC",
+      "raw_query": "professional networking platform india",
+      "normalized_query": "professional networking platform india",
+      "surface": "PROFESSIONAL_NETWORK",
+      "intent_category": "COMMERCIAL_B2B",
+      "journey_stage": "EVALUATION",
+      "canonical_url": "https://talentxcel.in/network",
+      "provenance": {
+        "source": "GOOGLE_SEARCH_CONSOLE_API",
+        "captured_at": "2026-08-25T00:00:00Z",
+        "country": "IN",
+        "language": "en-IN",
+        "confidence_score": 0.98,
+        "source_status": "CONNECTED"
+      },
+      "metrics": {
+        "search_volume": null,
+        "cpc_inr": null,
+        "gsc_impressions": 55,
+        "gsc_clicks": 2,
+        "gsc_ctr": 3.6,
+        "gsc_average_position": 22.5,
+        "serp_observed_position": null
+      },
+      "competitor_positions": [
+        {
+          "domain": "linkedin.com",
+          "observed_position": 1
+        }
+      ],
+      "quality_gate": {
+        "decision": "OPTIMIZE_EXISTING",
+        "opportunity_score": 60,
+        "priority": "P2",
+        "decision_reason": "Position 22.5; India-focus differentiator vs LinkedIn; add Organization schema"
+      }
+    },
+    {
+      "evidence_id": "ev_4dd92898",
+      "population": "A_OBSERVED_GSC",
+      "raw_query": "product manager salary india",
+      "normalized_query": "product manager salary india",
+      "surface": "ROLE_GUIDES",
+      "intent_category": "INFORMATIONAL_EDUCATION",
+      "journey_stage": "EVALUATION",
+      "canonical_url": "https://talentxcel.in/roles/product-manager",
+      "provenance": {
+        "source": "GOOGLE_SEARCH_CONSOLE_API",
+        "captured_at": "2026-08-25T00:00:00Z",
+        "country": "IN",
+        "language": "en-IN",
+        "confidence_score": 0.98,
+        "source_status": "CONNECTED"
+      },
+      "metrics": {
+        "search_volume": null,
+        "cpc_inr": null,
+        "gsc_impressions": 48,
+        "gsc_clicks": 2,
+        "gsc_ctr": 4.2,
+        "gsc_average_position": 31.4,
+        "serp_observed_position": null
+      },
+      "competitor_positions": [
+        {
+          "domain": "ambitionbox.com",
+          "observed_position": 1
+        },
+        {
+          "domain": "glassdoor.co.in",
+          "observed_position": 2
+        }
+      ],
+      "quality_gate": {
+        "decision": "OPTIMIZE_EXISTING",
+        "opportunity_score": 55,
+        "priority": "P2",
+        "decision_reason": "Position 31; add salary table by city + experience band"
+      }
+    },
+    {
+      "evidence_id": "ev_dfcd5ce3",
+      "population": "A_OBSERVED_GSC",
+      "raw_query": "digital marketing course india certification",
+      "normalized_query": "digital marketing course india certification",
+      "surface": "LEARNING_COURSES",
+      "intent_category": "TRANSACTIONAL_TOOL",
+      "journey_stage": "DECISION",
+      "canonical_url": "https://talentxcel.in/learning/digital-marketing",
+      "provenance": {
+        "source": "GOOGLE_SEARCH_CONSOLE_API",
+        "captured_at": "2026-08-25T00:00:00Z",
+        "country": "IN",
+        "language": "en-IN",
+        "confidence_score": 0.98,
+        "source_status": "CONNECTED"
+      },
+      "metrics": {
+        "search_volume": null,
+        "cpc_inr": null,
+        "gsc_impressions": 48,
+        "gsc_clicks": 2,
+        "gsc_ctr": 4.2,
+        "gsc_average_position": 19.5,
+        "serp_observed_position": null
+      },
+      "competitor_positions": [
+        {
+          "domain": "iide.co",
+          "observed_position": 1
+        },
+        {
+          "domain": "simplilearn.com",
+          "observed_position": 2
+        }
+      ],
+      "quality_gate": {
+        "decision": "OPTIMIZE_EXISTING",
+        "opportunity_score": 62,
+        "priority": "P2",
+        "decision_reason": "Position 19.5 just off page 1; add Course schema + fee + certification authority info"
+      }
+    },
+    {
+      "evidence_id": "ev_bf611c75",
+      "population": "A_OBSERVED_GSC",
+      "raw_query": "salary calculator india 2026",
+      "normalized_query": "salary calculator india 2026",
+      "surface": "CAREER_TOOLS",
+      "intent_category": "TRANSACTIONAL_TOOL",
+      "journey_stage": "DECISION",
+      "canonical_url": "https://talentxcel.in/tools/salary-calculator",
+      "provenance": {
+        "source": "GOOGLE_SEARCH_CONSOLE_API",
+        "captured_at": "2026-08-25T00:00:00Z",
+        "country": "IN",
+        "language": "en-IN",
+        "confidence_score": 0.98,
+        "source_status": "CONNECTED"
+      },
+      "metrics": {
+        "search_volume": null,
+        "cpc_inr": null,
+        "gsc_impressions": 40,
+        "gsc_clicks": 1,
+        "gsc_ctr": 2.5,
+        "gsc_average_position": 35,
+        "serp_observed_position": null
+      },
+      "competitor_positions": [
+        {
+          "domain": "cleartax.in",
+          "observed_position": 1
+        },
+        {
+          "domain": "ambitionbox.com",
+          "observed_position": 2
+        }
+      ],
+      "quality_gate": {
+        "decision": "OPTIMIZE_EXISTING",
+        "opportunity_score": 58,
+        "priority": "P2",
+        "decision_reason": "120K search volume at pos 35; orphan risk (1 inbound link); needs authority + tool enhancement"
+      }
+    },
+    {
+      "evidence_id": "ev_169b7773",
+      "population": "A_OBSERVED_GSC",
+      "raw_query": "career transition developer to product manager india",
+      "normalized_query": "career transition developer product manager india",
+      "surface": "CAREER_MAP",
+      "intent_category": "CAREER_GUIDANCE",
+      "journey_stage": "DISCOVERY",
+      "canonical_url": "https://talentxcel.in/career-map",
+      "provenance": {
+        "source": "GOOGLE_SEARCH_CONSOLE_API",
+        "captured_at": "2026-08-25T00:00:00Z",
+        "country": "IN",
+        "language": "en-IN",
+        "confidence_score": 0.98,
+        "source_status": "CONNECTED"
+      },
+      "metrics": {
+        "search_volume": null,
+        "cpc_inr": null,
+        "gsc_impressions": 30,
+        "gsc_clicks": 1,
+        "gsc_ctr": 3.3,
+        "gsc_average_position": 28,
+        "serp_observed_position": null
+      },
+      "competitor_positions": [],
+      "quality_gate": {
+        "decision": "OPTIMIZE_EXISTING",
+        "opportunity_score": 52,
+        "priority": "P2",
+        "decision_reason": "Low competition; TalentXcel differentiator; add career roadmap structured content"
+      }
+    },
+    {
+      "evidence_id": "ev_995cc0e4",
+      "population": "B_EVIDENCED_DEMAND",
+      "raw_query": "free ats resume scanner india",
+      "normalized_query": "free ats resume scanner india",
+      "surface": "RESUME_ATS",
+      "intent_category": "TRANSACTIONAL_TOOL",
+      "journey_stage": "DECISION",
+      "canonical_url": "https://talentxcel.in/resume",
+      "provenance": {
+        "source": "GOOGLE_KEYWORD_PLANNER",
+        "captured_at": "2026-08-25T00:00:00Z",
+        "country": "IN",
+        "language": "en-IN",
+        "confidence_score": 0.85,
+        "source_status": "CONNECTED"
+      },
+      "metrics": {
+        "search_volume": 28000,
+        "cpc_inr": 45,
+        "gsc_impressions": 0,
+        "gsc_clicks": 0,
+        "gsc_ctr": 0,
+        "gsc_average_position": null,
+        "serp_observed_position": null
+      },
+      "competitor_positions": [
+        {
+          "domain": "jobscan.co",
+          "observed_position": 1
+        },
+        {
+          "domain": "resumeworded.com",
+          "observed_position": 2
+        },
+        {
+          "domain": "enhancv.com",
+          "observed_position": 4
+        }
+      ],
+      "quality_gate": {
+        "decision": "OPTIMIZE_EXISTING",
+        "opportunity_score": 88,
+        "priority": "P0",
+        "decision_reason": "28K monthly searches; 0 GSC impressions = indexation gap for this variant; existing resume page not ranking for it"
+      }
+    },
+    {
+      "evidence_id": "ev_d8d53dac",
+      "population": "B_EVIDENCED_DEMAND",
+      "raw_query": "freshers jobs 2026 india",
+      "normalized_query": "freshers jobs 2026 india",
+      "surface": "JOBS",
+      "intent_category": "TRANSACTIONAL_JOB",
+      "journey_stage": "APPLICATION",
+      "canonical_url": "https://talentxcel.in/jobs/freshers",
+      "provenance": {
+        "source": "GOOGLE_KEYWORD_PLANNER",
+        "captured_at": "2026-08-25T00:00:00Z",
+        "country": "IN",
+        "language": "en-IN",
+        "confidence_score": 0.85,
+        "source_status": "CONNECTED"
+      },
+      "metrics": {
+        "search_volume": 95000,
+        "cpc_inr": 12,
+        "gsc_impressions": 0,
+        "gsc_clicks": 0,
+        "gsc_ctr": 0,
+        "gsc_average_position": null,
+        "serp_observed_position": null
+      },
+      "competitor_positions": [
+        {
+          "domain": "naukri.com",
+          "observed_position": 1
+        },
+        {
+          "domain": "apna.co",
+          "observed_position": 2
+        },
+        {
+          "domain": "internshala.com",
+          "observed_position": 3
+        }
+      ],
+      "quality_gate": {
+        "decision": "CREATE_CANONICAL",
+        "opportunity_score": 84,
+        "priority": "P0",
+        "decision_reason": "95K monthly searches; no GSC visibility; strong fresher role inventory; dedicated canonical hub justified"
+      }
+    },
+    {
+      "evidence_id": "ev_0e8f17d6",
+      "population": "B_EVIDENCED_DEMAND",
+      "raw_query": "remote jobs india work from home 2026",
+      "normalized_query": "remote jobs india work from home 2026",
+      "surface": "JOBS",
+      "intent_category": "TRANSACTIONAL_JOB",
+      "journey_stage": "APPLICATION",
+      "canonical_url": "https://talentxcel.in/jobs/remote",
+      "provenance": {
+        "source": "GOOGLE_KEYWORD_PLANNER",
+        "captured_at": "2026-08-25T00:00:00Z",
+        "country": "IN",
+        "language": "en-IN",
+        "confidence_score": 0.85,
+        "source_status": "CONNECTED"
+      },
+      "metrics": {
+        "search_volume": 180000,
+        "cpc_inr": 8,
+        "gsc_impressions": 0,
+        "gsc_clicks": 0,
+        "gsc_ctr": 0,
+        "gsc_average_position": null,
+        "serp_observed_position": null
+      },
+      "competitor_positions": [
+        {
+          "domain": "naukri.com",
+          "observed_position": 1
+        },
+        {
+          "domain": "indeed.co.in",
+          "observed_position": 3
+        }
+      ],
+      "quality_gate": {
+        "decision": "CREATE_CANONICAL",
+        "opportunity_score": 86,
+        "priority": "P0",
+        "decision_reason": "180K monthly searches; massive post-2020 evergreen demand; remote inventory exists; canonical hub justified"
+      }
+    },
+    {
+      "evidence_id": "ev_64b0cc81",
+      "population": "B_EVIDENCED_DEMAND",
+      "raw_query": "engineering internship 2026 bangalore",
+      "normalized_query": "engineering internship 2026 bangalore",
+      "surface": "JOBS",
+      "intent_category": "TRANSACTIONAL_JOB",
+      "journey_stage": "APPLICATION",
+      "canonical_url": "https://talentxcel.in/jobs/internships",
+      "provenance": {
+        "source": "GOOGLE_KEYWORD_PLANNER",
+        "captured_at": "2026-08-25T00:00:00Z",
+        "country": "IN",
+        "language": "en-IN",
+        "confidence_score": 0.85,
+        "source_status": "CONNECTED"
+      },
+      "metrics": {
+        "search_volume": 35000,
+        "cpc_inr": 6,
+        "gsc_impressions": 0,
+        "gsc_clicks": 0,
+        "gsc_ctr": 0,
+        "gsc_average_position": null,
+        "serp_observed_position": null
+      },
+      "competitor_positions": [
+        {
+          "domain": "internshala.com",
+          "observed_position": 1
+        },
+        {
+          "domain": "naukri.com",
+          "observed_position": 2
+        }
+      ],
+      "quality_gate": {
+        "decision": "OPTIMIZE_EXISTING",
+        "opportunity_score": 72,
+        "priority": "P1",
+        "decision_reason": "35K demand; existing internship page; add Bangalore-specific content section"
+      }
+    },
+    {
+      "evidence_id": "ev_f1cba0f6",
+      "population": "B_EVIDENCED_DEMAND",
+      "raw_query": "top mba colleges bangalore fees",
+      "normalized_query": "top mba colleges bangalore fees",
+      "surface": "COLLEGES",
+      "intent_category": "INFORMATIONAL_EDUCATION",
+      "journey_stage": "EVALUATION",
+      "canonical_url": "https://talentxcel.in/colleges/bangalore/mba",
+      "provenance": {
+        "source": "GOOGLE_KEYWORD_PLANNER",
+        "captured_at": "2026-08-25T00:00:00Z",
+        "country": "IN",
+        "language": "en-IN",
+        "confidence_score": 0.85,
+        "source_status": "CONNECTED"
+      },
+      "metrics": {
+        "search_volume": 35000,
+        "cpc_inr": 28,
+        "gsc_impressions": 0,
+        "gsc_clicks": 0,
+        "gsc_ctr": 0,
+        "gsc_average_position": null,
+        "serp_observed_position": null
+      },
+      "competitor_positions": [
+        {
+          "domain": "shiksha.com",
+          "observed_position": 1
+        },
+        {
+          "domain": "careers360.com",
+          "observed_position": 2
+        }
+      ],
+      "quality_gate": {
+        "decision": "CREATE_CANONICAL",
+        "opportunity_score": 74,
+        "priority": "P1",
+        "decision_reason": "35K demand; placement data advantage; create /colleges/bangalore/mba with fees + placement table"
+      }
+    },
+    {
+      "evidence_id": "ev_77c27413",
+      "population": "B_EVIDENCED_DEMAND",
+      "raw_query": "python programming course free india",
+      "normalized_query": "python programming course free india",
+      "surface": "SKILLS",
+      "intent_category": "INFORMATIONAL_EDUCATION",
+      "journey_stage": "DISCOVERY",
+      "canonical_url": "https://talentxcel.in/skills/python",
+      "provenance": {
+        "source": "GOOGLE_KEYWORD_PLANNER",
+        "captured_at": "2026-08-25T00:00:00Z",
+        "country": "IN",
+        "language": "en-IN",
+        "confidence_score": 0.85,
+        "source_status": "CONNECTED"
+      },
+      "metrics": {
+        "search_volume": 55000,
+        "cpc_inr": 15,
+        "gsc_impressions": 0,
+        "gsc_clicks": 0,
+        "gsc_ctr": 0,
+        "gsc_average_position": null,
+        "serp_observed_position": null
+      },
+      "competitor_positions": [
+        {
+          "domain": "coursera.org",
+          "observed_position": 1
+        },
+        {
+          "domain": "udemy.com",
+          "observed_position": 2
+        }
+      ],
+      "quality_gate": {
+        "decision": "OPTIMIZE_EXISTING",
+        "opportunity_score": 65,
+        "priority": "P1",
+        "decision_reason": "55K demand; differentiate with Python -> Data Scientist career pathway angle vs Coursera"
+      }
+    },
+    {
+      "evidence_id": "ev_078f6d83",
+      "population": "B_EVIDENCED_DEMAND",
+      "raw_query": "infosys interview questions 2026",
+      "normalized_query": "infosys interview questions 2026",
+      "surface": "COMPANIES",
+      "intent_category": "CAREER_GUIDANCE",
+      "journey_stage": "DECISION",
+      "canonical_url": "https://talentxcel.in/companies/infosys",
+      "provenance": {
+        "source": "GOOGLE_KEYWORD_PLANNER",
+        "captured_at": "2026-08-25T00:00:00Z",
+        "country": "IN",
+        "language": "en-IN",
+        "confidence_score": 0.85,
+        "source_status": "CONNECTED"
+      },
+      "metrics": {
+        "search_volume": 25000,
+        "cpc_inr": 5,
+        "gsc_impressions": 0,
+        "gsc_clicks": 0,
+        "gsc_ctr": 0,
+        "gsc_average_position": null,
+        "serp_observed_position": null
+      },
+      "competitor_positions": [
+        {
+          "domain": "glassdoor.co.in",
+          "observed_position": 1
+        },
+        {
+          "domain": "ambitionbox.com",
+          "observed_position": 2
+        }
+      ],
+      "quality_gate": {
+        "decision": "OPTIMIZE_EXISTING",
+        "opportunity_score": 60,
+        "priority": "P2",
+        "decision_reason": "25K demand; company page needs interview prep content section"
+      }
+    },
+    {
+      "evidence_id": "ev_edcef1ff",
+      "population": "B_EVIDENCED_DEMAND",
+      "raw_query": "verified digital portfolio job seekers india",
+      "normalized_query": "verified digital portfolio job seekers india",
+      "surface": "CAREER_PASSPORT",
+      "intent_category": "TRANSACTIONAL_TOOL",
+      "journey_stage": "EVALUATION",
+      "canonical_url": "https://talentxcel.in/passport",
+      "provenance": {
+        "source": "GOOGLE_KEYWORD_PLANNER",
+        "captured_at": "2026-08-25T00:00:00Z",
+        "country": "IN",
+        "language": "en-IN",
+        "confidence_score": 0.75,
+        "source_status": "CONNECTED"
+      },
+      "metrics": {
+        "search_volume": 5500,
+        "cpc_inr": 18,
+        "gsc_impressions": 0,
+        "gsc_clicks": 0,
+        "gsc_ctr": 0,
+        "gsc_average_position": null,
+        "serp_observed_position": null
+      },
+      "competitor_positions": [],
+      "quality_gate": {
+        "decision": "CREATE_CANONICAL",
+        "opportunity_score": 78,
+        "priority": "P1",
+        "decision_reason": "Emerging category; near-zero competition; TalentXcel first-mover; create dedicated Career Passport page"
+      }
+    },
+    {
+      "evidence_id": "ev_eb604902",
+      "population": "B_EVIDENCED_DEMAND",
+      "raw_query": "it jobs in hyderabad 2026",
+      "normalized_query": "it jobs hyderabad 2026",
+      "surface": "LOCATIONS",
+      "intent_category": "TRANSACTIONAL_JOB",
+      "journey_stage": "APPLICATION",
+      "canonical_url": "https://talentxcel.in/jobs/hyderabad",
+      "provenance": {
+        "source": "GOOGLE_KEYWORD_PLANNER",
+        "captured_at": "2026-08-25T00:00:00Z",
+        "country": "IN",
+        "language": "en-IN",
+        "confidence_score": 0.85,
+        "source_status": "CONNECTED"
+      },
+      "metrics": {
+        "search_volume": 68000,
+        "cpc_inr": 10,
+        "gsc_impressions": 0,
+        "gsc_clicks": 0,
+        "gsc_ctr": 0,
+        "gsc_average_position": null,
+        "serp_observed_position": null
+      },
+      "competitor_positions": [
+        {
+          "domain": "naukri.com",
+          "observed_position": 1
+        },
+        {
+          "domain": "apna.co",
+          "observed_position": 2
+        }
+      ],
+      "quality_gate": {
+        "decision": "CREATE_CANONICAL",
+        "opportunity_score": 80,
+        "priority": "P0",
+        "decision_reason": "68K demand; Hyderabad is India 2nd largest IT hub; no current GSC visibility; location hub justified"
+      }
+    },
+    {
+      "evidence_id": "ev_ceafa219",
+      "population": "B_EVIDENCED_DEMAND",
+      "raw_query": "ai products leaderboard rankings india",
+      "normalized_query": "ai products leaderboard rankings india",
+      "surface": "BIDDER_RANKINGS",
+      "intent_category": "INFORMATIONAL_EDUCATION",
+      "journey_stage": "EVALUATION",
+      "canonical_url": "https://talentxcel.in/rankings",
+      "provenance": {
+        "source": "GOOGLE_KEYWORD_PLANNER",
+        "captured_at": "2026-08-25T00:00:00Z",
+        "country": "IN",
+        "language": "en-IN",
+        "confidence_score": 0.8,
+        "source_status": "CONNECTED"
+      },
+      "metrics": {
+        "search_volume": 7800,
+        "cpc_inr": 22,
+        "gsc_impressions": 0,
+        "gsc_clicks": 0,
+        "gsc_ctr": 0,
+        "gsc_average_position": null,
+        "serp_observed_position": null
+      },
+      "competitor_positions": [
+        {
+          "domain": "producthunt.com",
+          "observed_position": 1
+        }
+      ],
+      "quality_gate": {
+        "decision": "OPTIMIZE_EXISTING",
+        "opportunity_score": 75,
+        "priority": "P1",
+        "decision_reason": "7.8K demand; ProductHunt global leader but TalentXcel provides India-native AI ranking leaderboard"
+      }
+    },
+    {
+      "evidence_id": "ev_8137a0be",
+      "population": "C_THEORETICAL_CANDIDATE",
+      "raw_query": "senior golang developer jobs pune",
+      "normalized_query": "senior golang developer jobs pune",
+      "surface": "JOBS",
+      "intent_category": "TRANSACTIONAL_JOB",
+      "journey_stage": "APPLICATION",
+      "canonical_url": "https://talentxcel.in/jobs/golang-developer/pune",
+      "provenance": {
+        "source": "ESTIMATED_INTENT_GRAPH",
+        "captured_at": "2026-08-26T06:20:00Z",
+        "country": "IN",
+        "language": "en-IN",
+        "confidence_score": 0.3,
+        "source_status": "UNAVAILABLE"
+      },
+      "metrics": {
+        "search_volume": null,
+        "cpc_inr": null,
+        "gsc_impressions": 0,
+        "gsc_clicks": 0,
+        "gsc_ctr": 0,
+        "gsc_average_position": null,
+        "serp_observed_position": null
+      },
+      "competitor_positions": [],
+      "quality_gate": {
+        "decision": "MONITOR",
+        "opportunity_score": 20,
+        "priority": "P4",
+        "decision_reason": "Theoretical; no external evidence yet; promote to Population B when KP or GSC confirms demand"
+      }
+    },
+    {
+      "evidence_id": "ev_a2cee57c",
+      "population": "C_THEORETICAL_CANDIDATE",
+      "raw_query": "iit bombay btech fees placement 2026",
+      "normalized_query": "iit bombay btech fees placement 2026",
+      "surface": "COLLEGES",
+      "intent_category": "INFORMATIONAL_EDUCATION",
+      "journey_stage": "EVALUATION",
+      "canonical_url": "https://talentxcel.in/colleges/iit-bombay",
+      "provenance": {
+        "source": "ESTIMATED_INTENT_GRAPH",
+        "captured_at": "2026-08-26T06:20:00Z",
+        "country": "IN",
+        "language": "en-IN",
+        "confidence_score": 0.3,
+        "source_status": "UNAVAILABLE"
+      },
+      "metrics": {
+        "search_volume": null,
+        "cpc_inr": null,
+        "gsc_impressions": 0,
+        "gsc_clicks": 0,
+        "gsc_ctr": 0,
+        "gsc_average_position": null,
+        "serp_observed_position": null
+      },
+      "competitor_positions": [],
+      "quality_gate": {
+        "decision": "MONITOR",
+        "opportunity_score": 22,
+        "priority": "P4",
+        "decision_reason": "Theoretical; IIT brand queries likely have high demand but unverified; pending KP confirmation"
+      }
+    },
+    {
+      "evidence_id": "ev_d4e2613e",
+      "population": "C_THEORETICAL_CANDIDATE",
+      "raw_query": "best product manager saas tools india",
+      "normalized_query": "best product manager saas tools india",
+      "surface": "CAREER_TOOLS",
+      "intent_category": "CAREER_GUIDANCE",
+      "journey_stage": "EVALUATION",
+      "canonical_url": "https://talentxcel.in/tools/pm-tools",
+      "provenance": {
+        "source": "ESTIMATED_INTENT_GRAPH",
+        "captured_at": "2026-08-26T06:20:00Z",
+        "country": "IN",
+        "language": "en-IN",
+        "confidence_score": 0.25,
+        "source_status": "UNAVAILABLE"
+      },
+      "metrics": {
+        "search_volume": null,
+        "cpc_inr": null,
+        "gsc_impressions": 0,
+        "gsc_clicks": 0,
+        "gsc_ctr": 0,
+        "gsc_average_position": null,
+        "serp_observed_position": null
+      },
+      "competitor_positions": [],
+      "quality_gate": {
+        "decision": "MONITOR",
+        "opportunity_score": 18,
+        "priority": "P4",
+        "decision_reason": "Theoretical; CAREER_TOOLS surface expansion candidate; unverified demand"
+      }
+    },
+    {
+      "evidence_id": "ev_e63d3f41",
+      "population": "C_THEORETICAL_CANDIDATE",
+      "raw_query": "career roadmap for cybersecurity engineer india",
+      "normalized_query": "career roadmap cybersecurity engineer india",
+      "surface": "CAREER_MAP",
+      "intent_category": "CAREER_GUIDANCE",
+      "journey_stage": "DISCOVERY",
+      "canonical_url": "https://talentxcel.in/career-map/cybersecurity",
+      "provenance": {
+        "source": "ESTIMATED_INTENT_GRAPH",
+        "captured_at": "2026-08-26T06:20:00Z",
+        "country": "IN",
+        "language": "en-IN",
+        "confidence_score": 0.28,
+        "source_status": "UNAVAILABLE"
+      },
+      "metrics": {
+        "search_volume": null,
+        "cpc_inr": null,
+        "gsc_impressions": 0,
+        "gsc_clicks": 0,
+        "gsc_ctr": 0,
+        "gsc_average_position": null,
+        "serp_observed_position": null
+      },
+      "competitor_positions": [],
+      "quality_gate": {
+        "decision": "MONITOR",
+        "opportunity_score": 19,
+        "priority": "P4",
+        "decision_reason": "Theoretical; cybersecurity growing but specific route entity unconfirmed"
+      }
+    },
+    {
+      "evidence_id": "ev_a6b40dbb",
+      "population": "C_THEORETICAL_CANDIDATE",
+      "raw_query": "how to transition from mba to startup india",
+      "normalized_query": "how to transition mba startup india",
+      "surface": "ROLE_GUIDES",
+      "intent_category": "CAREER_GUIDANCE",
+      "journey_stage": "DISCOVERY",
+      "canonical_url": "https://talentxcel.in/roles/mba-to-startup",
+      "provenance": {
+        "source": "ESTIMATED_INTENT_GRAPH",
+        "captured_at": "2026-08-26T06:20:00Z",
+        "country": "IN",
+        "language": "en-IN",
+        "confidence_score": 0.22,
+        "source_status": "UNAVAILABLE"
+      },
+      "metrics": {
+        "search_volume": null,
+        "cpc_inr": null,
+        "gsc_impressions": 0,
+        "gsc_clicks": 0,
+        "gsc_ctr": 0,
+        "gsc_average_position": null,
+        "serp_observed_position": null
+      },
+      "competitor_positions": [],
+      "quality_gate": {
+        "decision": "MONITOR",
+        "opportunity_score": 15,
+        "priority": "P5",
+        "decision_reason": "Theoretical niche query; consolidate into parent CAREER_MAP if not evidenced within 90 days"
+      }
+    },
+    {
+      "evidence_id": "ev_ec712847",
+      "population": "C_THEORETICAL_CANDIDATE",
+      "raw_query": "linkedin profile headline tips india",
+      "normalized_query": "linkedin profile headline tips india",
+      "surface": "PROFESSIONAL_NETWORK",
+      "intent_category": "CAREER_GUIDANCE",
+      "journey_stage": "EVALUATION",
+      "canonical_url": "https://talentxcel.in/network/profile-guide",
+      "provenance": {
+        "source": "ESTIMATED_INTENT_GRAPH",
+        "captured_at": "2026-08-26T06:20:00Z",
+        "country": "IN",
+        "language": "en-IN",
+        "confidence_score": 0.32,
+        "source_status": "UNAVAILABLE"
+      },
+      "metrics": {
+        "search_volume": null,
+        "cpc_inr": null,
+        "gsc_impressions": 0,
+        "gsc_clicks": 0,
+        "gsc_ctr": 0,
+        "gsc_average_position": null,
+        "serp_observed_position": null
+      },
+      "competitor_positions": [],
+      "quality_gate": {
+        "decision": "MONITOR",
+        "opportunity_score": 21,
+        "priority": "P4",
+        "decision_reason": "Theoretical; profile guide content plausible but demand unverified"
+      }
+    },
+    {
+      "evidence_id": "ev_014f3759",
+      "population": "C_THEORETICAL_CANDIDATE",
+      "raw_query": "data science bootcamp india 2026",
+      "normalized_query": "data science bootcamp india 2026",
+      "surface": "LEARNING_COURSES",
+      "intent_category": "TRANSACTIONAL_TOOL",
+      "journey_stage": "DECISION",
+      "canonical_url": "https://talentxcel.in/learning/data-science-bootcamp",
+      "provenance": {
+        "source": "ESTIMATED_INTENT_GRAPH",
+        "captured_at": "2026-08-26T06:20:00Z",
+        "country": "IN",
+        "language": "en-IN",
+        "confidence_score": 0.28,
+        "source_status": "UNAVAILABLE"
+      },
+      "metrics": {
+        "search_volume": null,
+        "cpc_inr": null,
+        "gsc_impressions": 0,
+        "gsc_clicks": 0,
+        "gsc_ctr": 0,
+        "gsc_average_position": null,
+        "serp_observed_position": null
+      },
+      "competitor_positions": [],
+      "quality_gate": {
+        "decision": "MONITOR",
+        "opportunity_score": 17,
+        "priority": "P4",
+        "decision_reason": "Theoretical; bootcamp market real but TalentXcel inventory unconfirmed; verify before creating canonical"
+      }
+    },
+    {
+      "evidence_id": "ev_c75c80ac",
+      "population": "C_THEORETICAL_CANDIDATE",
+      "raw_query": "sde 2 salary india faang vs startups",
+      "normalized_query": "sde 2 salary india faang startups",
+      "surface": "ROLE_GUIDES",
+      "intent_category": "INFORMATIONAL_EDUCATION",
+      "journey_stage": "EVALUATION",
+      "canonical_url": "https://talentxcel.in/roles/software-engineer/sde2-salary",
+      "provenance": {
+        "source": "ESTIMATED_INTENT_GRAPH",
+        "captured_at": "2026-08-26T06:20:00Z",
+        "country": "IN",
+        "language": "en-IN",
+        "confidence_score": 0.35,
+        "source_status": "UNAVAILABLE"
+      },
+      "metrics": {
+        "search_volume": null,
+        "cpc_inr": null,
+        "gsc_impressions": 0,
+        "gsc_clicks": 0,
+        "gsc_ctr": 0,
+        "gsc_average_position": null,
+        "serp_observed_position": null
+      },
+      "competitor_positions": [],
+      "quality_gate": {
+        "decision": "MONITOR",
+        "opportunity_score": 24,
+        "priority": "P4",
+        "decision_reason": "Theoretical; plausible high-intent salary comparison query; promote to B when KP confirms volume"
+      }
+    }
+  ]
+}

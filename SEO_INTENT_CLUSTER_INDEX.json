@@ -1,0 +1,440 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2026-08-26T06:20:00Z",
+  "total_clusters": 25,
+  "principle": "One canonical page satisfies hundreds of semantically equivalent queries. This index prevents duplicate-intent page creation across TalentXcel's 14 product surfaces.",
+  "deduplication_policy": "Queries within semantic equivalence are collapsed into a single intent cluster. A new URL is created ONLY when no cluster exists for a given surface+intent+entity combination.",
+  "clusters": [
+    {
+      "cluster_id": "cls_soft_eng_blr",
+      "primary_intent": "software engineer jobs in bangalore",
+      "surface": "JOBS",
+      "canonical_url": "https://talentxcel.in/jobs/software-engineer/bangalore",
+      "representative_queries": [
+        "software engineer jobs in bangalore",
+        "software developer jobs bangalore",
+        "software engineering jobs bengaluru",
+        "SE jobs bangalore",
+        "software developer openings bangalore"
+      ],
+      "intent_category": "TRANSACTIONAL_JOB",
+      "journey_stage": "APPLICATION",
+      "estimated_cluster_volume": 45000,
+      "volume_note": "Aggregated from Keyword Planner; source: B_EVIDENCED_DEMAND",
+      "dedup_status": "UNIQUE"
+    },
+    {
+      "cluster_id": "cls_data_analyst_delhi",
+      "primary_intent": "data analyst jobs in delhi",
+      "surface": "JOBS",
+      "canonical_url": "https://talentxcel.in/jobs/data-analyst/delhi",
+      "representative_queries": [
+        "data analyst jobs delhi",
+        "data analyst vacancy delhi",
+        "data analyst openings delhi ncr",
+        "data analyst hiring delhi"
+      ],
+      "intent_category": "TRANSACTIONAL_JOB",
+      "journey_stage": "APPLICATION",
+      "estimated_cluster_volume": 22000,
+      "volume_note": "Aggregated from Keyword Planner and GSC impressions",
+      "dedup_status": "UNIQUE"
+    },
+    {
+      "cluster_id": "cls_content_writer_noida",
+      "primary_intent": "content writer jobs noida",
+      "surface": "JOBS",
+      "canonical_url": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+      "representative_queries": [
+        "content writer jobs noida",
+        "content writer vacancy noida",
+        "copywriter jobs noida",
+        "content writing jobs noida up"
+      ],
+      "intent_category": "TRANSACTIONAL_JOB",
+      "journey_stage": "APPLICATION",
+      "estimated_cluster_volume": 8500,
+      "volume_note": "GSC observed: 180 impressions/month at position 6.4",
+      "dedup_status": "UNIQUE"
+    },
+    {
+      "cluster_id": "cls_marketing_exec_noida",
+      "primary_intent": "marketing executive jobs noida",
+      "surface": "JOBS",
+      "canonical_url": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+      "representative_queries": [
+        "marketing executive jobs noida",
+        "marketing manager jobs noida",
+        "digital marketing jobs noida",
+        "marketing jobs noida up"
+      ],
+      "intent_category": "TRANSACTIONAL_JOB",
+      "journey_stage": "APPLICATION",
+      "estimated_cluster_volume": 12000,
+      "volume_note": "GSC observed: 160 impressions/month at position 7.2",
+      "dedup_status": "UNIQUE"
+    },
+    {
+      "cluster_id": "cls_ats_resume_scanner",
+      "primary_intent": "free ats resume scanner india",
+      "surface": "RESUME_ATS",
+      "canonical_url": "https://talentxcel.in/resume",
+      "representative_queries": [
+        "free ats resume scanner india",
+        "ats resume checker free",
+        "ats friendly resume builder india",
+        "resume ats score checker",
+        "ats resume test free online india"
+      ],
+      "intent_category": "TRANSACTIONAL_TOOL",
+      "journey_stage": "DECISION",
+      "estimated_cluster_volume": 28000,
+      "volume_note": "High commercial intent; competitor resumeworded.com ranks P2",
+      "dedup_status": "UNIQUE"
+    },
+    {
+      "cluster_id": "cls_ats_resume_builder_se",
+      "primary_intent": "ats resume builder for software engineers",
+      "surface": "RESUME_ATS",
+      "canonical_url": "https://talentxcel.in/resume",
+      "representative_queries": [
+        "ats resume builder for software engineers",
+        "resume builder for tech professionals",
+        "software engineer resume template ats",
+        "ats resume template developer"
+      ],
+      "intent_category": "TRANSACTIONAL_TOOL",
+      "journey_stage": "DECISION",
+      "estimated_cluster_volume": 15000,
+      "volume_note": "GSC observed at position 11.2; approaching page 1",
+      "dedup_status": "UNIQUE"
+    },
+    {
+      "cluster_id": "cls_eng_colleges_placement",
+      "primary_intent": "top engineering colleges in india with placement",
+      "surface": "COLLEGES",
+      "canonical_url": "https://talentxcel.in/colleges",
+      "representative_queries": [
+        "top engineering colleges india placement",
+        "best engineering colleges india ctc",
+        "top iit nit colleges india salary",
+        "engineering college rankings india placements 2026"
+      ],
+      "intent_category": "INFORMATIONAL_EDUCATION",
+      "journey_stage": "EVALUATION",
+      "estimated_cluster_volume": 85000,
+      "volume_note": "Very high demand; Shiksha.com dominant at P3",
+      "dedup_status": "UNIQUE"
+    },
+    {
+      "cluster_id": "cls_mba_colleges_bangalore",
+      "primary_intent": "top mba colleges bangalore fees",
+      "surface": "COLLEGES",
+      "canonical_url": "https://talentxcel.in/colleges/bangalore/mba",
+      "representative_queries": [
+        "top mba colleges bangalore fees",
+        "best mba colleges bangalore 2026",
+        "mba admission bangalore colleges",
+        "pgdm colleges bangalore fees placement"
+      ],
+      "intent_category": "INFORMATIONAL_EDUCATION",
+      "journey_stage": "EVALUATION",
+      "estimated_cluster_volume": 35000,
+      "volume_note": "Evidenced from Shiksha and Careers360 benchmarks",
+      "dedup_status": "UNIQUE"
+    },
+    {
+      "cluster_id": "cls_prof_network_india",
+      "primary_intent": "professional networking platform india",
+      "surface": "PROFESSIONAL_NETWORK",
+      "canonical_url": "https://talentxcel.in/network",
+      "representative_queries": [
+        "professional networking platform india",
+        "linkedin alternative india",
+        "career networking site india",
+        "professional network india free"
+      ],
+      "intent_category": "COMMERCIAL_B2B",
+      "journey_stage": "EVALUATION",
+      "estimated_cluster_volume": 18000,
+      "volume_note": "Competitor gap: LinkedIn dominant but TalentXcel uniquely India-focused",
+      "dedup_status": "UNIQUE"
+    },
+    {
+      "cluster_id": "cls_become_data_scientist",
+      "primary_intent": "how to become a data scientist in india",
+      "surface": "ROLE_GUIDES",
+      "canonical_url": "https://talentxcel.in/roles/data-scientist",
+      "representative_queries": [
+        "how to become a data scientist india",
+        "data scientist career path india",
+        "data scientist roadmap india",
+        "become data scientist 2026 india",
+        "data science career guide india"
+      ],
+      "intent_category": "CAREER_GUIDANCE",
+      "journey_stage": "DISCOVERY",
+      "estimated_cluster_volume": 32000,
+      "volume_note": "High discovery intent; Google ranks career blogs at P1-3",
+      "dedup_status": "UNIQUE"
+    },
+    {
+      "cluster_id": "cls_pm_salary_india",
+      "primary_intent": "product manager salary india",
+      "surface": "ROLE_GUIDES",
+      "canonical_url": "https://talentxcel.in/roles/product-manager",
+      "representative_queries": [
+        "product manager salary india",
+        "pm salary india 2026",
+        "product manager ctc india",
+        "product manager salary bangalore mumbai"
+      ],
+      "intent_category": "INFORMATIONAL_EDUCATION",
+      "journey_stage": "EVALUATION",
+      "estimated_cluster_volume": 42000,
+      "volume_note": "Very high demand; AmbitionBox dominant at P1",
+      "dedup_status": "UNIQUE"
+    },
+    {
+      "cluster_id": "cls_python_course_india",
+      "primary_intent": "python programming course free india",
+      "surface": "SKILLS",
+      "canonical_url": "https://talentxcel.in/skills/python",
+      "representative_queries": [
+        "python programming course free india",
+        "learn python online free india",
+        "python tutorial hindi",
+        "best python course india 2026"
+      ],
+      "intent_category": "INFORMATIONAL_EDUCATION",
+      "journey_stage": "DISCOVERY",
+      "estimated_cluster_volume": 55000,
+      "volume_note": "High volume; Coursera/Udemy/NPTEL dominate P1-3",
+      "dedup_status": "UNIQUE"
+    },
+    {
+      "cluster_id": "cls_it_jobs_hyderabad",
+      "primary_intent": "it jobs in hyderabad 2026",
+      "surface": "LOCATIONS",
+      "canonical_url": "https://talentxcel.in/jobs/hyderabad",
+      "representative_queries": [
+        "it jobs hyderabad 2026",
+        "tech jobs hyderabad",
+        "software jobs hyderabad",
+        "it company jobs hyderabad"
+      ],
+      "intent_category": "TRANSACTIONAL_JOB",
+      "journey_stage": "APPLICATION",
+      "estimated_cluster_volume": 68000,
+      "volume_note": "Hyderabad is 2nd largest IT hub after Bangalore",
+      "dedup_status": "UNIQUE"
+    },
+    {
+      "cluster_id": "cls_infosys_interview",
+      "primary_intent": "infosys interview questions 2026",
+      "surface": "COMPANIES",
+      "canonical_url": "https://talentxcel.in/companies/infosys",
+      "representative_queries": [
+        "infosys interview questions 2026",
+        "infosys technical interview prep",
+        "infosys hiring process",
+        "infosys interview experience"
+      ],
+      "intent_category": "CAREER_GUIDANCE",
+      "journey_stage": "DECISION",
+      "estimated_cluster_volume": 25000,
+      "volume_note": "High intent pre-application; glassdoor/ambitionbox rank P1-2",
+      "dedup_status": "UNIQUE"
+    },
+    {
+      "cluster_id": "cls_dig_marketing_course",
+      "primary_intent": "digital marketing course india with certification",
+      "surface": "LEARNING_COURSES",
+      "canonical_url": "https://talentxcel.in/learning/digital-marketing",
+      "representative_queries": [
+        "digital marketing course india certification",
+        "digital marketing certification india 2026",
+        "best digital marketing course india",
+        "online digital marketing certification india"
+      ],
+      "intent_category": "TRANSACTIONAL_TOOL",
+      "journey_stage": "DECISION",
+      "estimated_cluster_volume": 48000,
+      "volume_note": "Very high demand; IIDE/Simplilearn dominate P1-4",
+      "dedup_status": "UNIQUE"
+    },
+    {
+      "cluster_id": "cls_dev_to_pm_switch",
+      "primary_intent": "career transition developer to product manager india",
+      "surface": "CAREER_MAP",
+      "canonical_url": "https://talentxcel.in/career-map",
+      "representative_queries": [
+        "career transition developer to product manager india",
+        "how to move from engineering to product management",
+        "developer become product manager path",
+        "tech to pm career switch india"
+      ],
+      "intent_category": "CAREER_GUIDANCE",
+      "journey_stage": "DISCOVERY",
+      "estimated_cluster_volume": 12000,
+      "volume_note": "Growing segment; low competition from incumbents",
+      "dedup_status": "UNIQUE"
+    },
+    {
+      "cluster_id": "cls_digital_portfolio_india",
+      "primary_intent": "verified digital portfolio for job seekers india",
+      "surface": "CAREER_PASSPORT",
+      "canonical_url": "https://talentxcel.in/passport",
+      "representative_queries": [
+        "verified digital portfolio job seekers india",
+        "digital credential portfolio india",
+        "professional portfolio verification india",
+        "career passport india jobs"
+      ],
+      "intent_category": "TRANSACTIONAL_TOOL",
+      "journey_stage": "EVALUATION",
+      "estimated_cluster_volume": 5500,
+      "volume_note": "Emerging category with very low competition; TalentXcel has first-mover advantage",
+      "dedup_status": "UNIQUE"
+    },
+    {
+      "cluster_id": "cls_ai_recruitment_b2b",
+      "primary_intent": "ai recruitment software for enterprise india",
+      "surface": "MO1_BUSINESS_OS",
+      "canonical_url": "https://talentxcel.in/mo1",
+      "representative_queries": [
+        "ai recruitment software enterprise india",
+        "ai hiring platform india b2b",
+        "enterprise recruitment automation india",
+        "ai talent acquisition software india"
+      ],
+      "intent_category": "COMMERCIAL_B2B",
+      "journey_stage": "EVALUATION",
+      "estimated_cluster_volume": 9200,
+      "volume_note": "High CPC intent; TurboHire/Keka compete at P2-4",
+      "dedup_status": "UNIQUE"
+    },
+    {
+      "cluster_id": "cls_ai_products_leaderboard",
+      "primary_intent": "ai products leaderboard rankings india",
+      "surface": "BIDDER_RANKINGS",
+      "canonical_url": "https://talentxcel.in/rankings",
+      "representative_queries": [
+        "ai products leaderboard india",
+        "top ai tools india ranking 2026",
+        "ai product rankings india",
+        "best ai products list india"
+      ],
+      "intent_category": "INFORMATIONAL_EDUCATION",
+      "journey_stage": "EVALUATION",
+      "estimated_cluster_volume": 7800,
+      "volume_note": "Unique content type; ProductHunt global but no India-specific equivalent",
+      "dedup_status": "UNIQUE"
+    },
+    {
+      "cluster_id": "cls_salary_calculator_india",
+      "primary_intent": "salary calculator india 2026",
+      "surface": "CAREER_TOOLS",
+      "canonical_url": "https://talentxcel.in/tools/salary-calculator",
+      "representative_queries": [
+        "salary calculator india 2026",
+        "in hand salary calculator india",
+        "monthly salary take home calculator india",
+        "salary calculator india with tax"
+      ],
+      "intent_category": "TRANSACTIONAL_TOOL",
+      "journey_stage": "DECISION",
+      "estimated_cluster_volume": 120000,
+      "volume_note": "Very high volume; ClearTax/AmbitionBox rank P1-3 but tool quality varies",
+      "dedup_status": "UNIQUE"
+    },
+    {
+      "cluster_id": "cls_freshers_jobs_2026",
+      "primary_intent": "freshers jobs 2026 india",
+      "surface": "JOBS",
+      "canonical_url": "https://talentxcel.in/jobs/freshers",
+      "representative_queries": [
+        "freshers jobs 2026 india",
+        "entry level jobs india 2026",
+        "campus hiring india 2026",
+        "graduate jobs india 2026",
+        "first job india graduates"
+      ],
+      "intent_category": "TRANSACTIONAL_JOB",
+      "journey_stage": "APPLICATION",
+      "estimated_cluster_volume": 95000,
+      "volume_note": "Massive segment; Naukri/Apna dominant but highly competitive",
+      "dedup_status": "UNIQUE"
+    },
+    {
+      "cluster_id": "cls_remote_wfh_jobs",
+      "primary_intent": "remote jobs india work from home 2026",
+      "surface": "JOBS",
+      "canonical_url": "https://talentxcel.in/jobs/remote",
+      "representative_queries": [
+        "remote jobs india work from home 2026",
+        "wfh jobs india 2026",
+        "work from home jobs india",
+        "remote it jobs india",
+        "online jobs india work from home"
+      ],
+      "intent_category": "TRANSACTIONAL_JOB",
+      "journey_stage": "APPLICATION",
+      "estimated_cluster_volume": 180000,
+      "volume_note": "Post-2020 mega-trend; extremely high demand segment",
+      "dedup_status": "UNIQUE"
+    },
+    {
+      "cluster_id": "cls_internships_bangalore",
+      "primary_intent": "engineering internship 2026 india",
+      "surface": "JOBS",
+      "canonical_url": "https://talentxcel.in/jobs/internships",
+      "representative_queries": [
+        "engineering internship 2026 india",
+        "summer internship india engineering students",
+        "paid internship india 2026",
+        "internship bangalore 2026",
+        "internship for btech students india"
+      ],
+      "intent_category": "TRANSACTIONAL_JOB",
+      "journey_stage": "APPLICATION",
+      "estimated_cluster_volume": 75000,
+      "volume_note": "Strong seasonal spikes Feb-May and Nov-Jan",
+      "dedup_status": "UNIQUE"
+    },
+    {
+      "cluster_id": "cls_interview_prep_common",
+      "primary_intent": "most common interview questions india 2026",
+      "surface": "ROLE_GUIDES",
+      "canonical_url": "https://talentxcel.in/roles/interview-prep",
+      "representative_queries": [
+        "most common interview questions india 2026",
+        "hr interview questions answers india",
+        "technical interview questions india",
+        "job interview preparation india"
+      ],
+      "intent_category": "CAREER_GUIDANCE",
+      "journey_stage": "DECISION",
+      "estimated_cluster_volume": 210000,
+      "volume_note": "Extremely high volume; AmbitionBox/Glassdoor dominate; quality differentiation possible",
+      "dedup_status": "UNIQUE"
+    },
+    {
+      "cluster_id": "cls_linkedin_profile_opt",
+      "primary_intent": "how to optimize linkedin profile india",
+      "surface": "PROFESSIONAL_NETWORK",
+      "canonical_url": "https://talentxcel.in/network/profile-guide",
+      "representative_queries": [
+        "how to optimize linkedin profile india",
+        "linkedin profile tips india 2026",
+        "professional profile linkedin india",
+        "make linkedin profile stand out india"
+      ],
+      "intent_category": "CAREER_GUIDANCE",
+      "journey_stage": "EVALUATION",
+      "estimated_cluster_volume": 38000,
+      "volume_note": "High crossover opportunity — drives Network surface signups",
+      "dedup_status": "UNIQUE"
+    }
+  ]
+}

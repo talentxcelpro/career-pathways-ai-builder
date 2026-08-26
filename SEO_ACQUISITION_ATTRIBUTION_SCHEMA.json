@@ -1,0 +1,203 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2026-08-26T06:20:00Z",
+  "purpose": "Data contract for organic search -> user acquisition attribution. Enables TalentXcel to trace registered users back to the specific query cluster, landing page, and product surface that drove their acquisition.",
+  "policy": {
+    "no_attribution_without_traceable_event": true,
+    "gsc_average_position_is_not_live_serp_rank": true,
+    "user_id_only_after_consent": true,
+    "null_for_unverified_metrics": true,
+    "no_guaranteed_ranking_claims": true,
+    "attribution_lookback_window_days": 30
+  },
+  "funnel_stages": [
+    {
+      "stage": "IMPRESSION",
+      "data_source": "Google Search Console API",
+      "currently_available": true,
+      "implementation_note": "GSC Search Analytics query reports"
+    },
+    {
+      "stage": "CLICK",
+      "data_source": "Google Search Console API",
+      "currently_available": true,
+      "implementation_note": "GSC Search Analytics click reports"
+    },
+    {
+      "stage": "LANDING",
+      "data_source": "Analytics / Server Access Log",
+      "currently_available": true,
+      "implementation_note": "Page view logged on canonical landing page"
+    },
+    {
+      "stage": "SIGNUP",
+      "data_source": "Server-side event",
+      "currently_available": false,
+      "implementation_note": "Requires Supabase auth hook instrumentation"
+    },
+    {
+      "stage": "ACTIVATION",
+      "data_source": "Product analytics",
+      "currently_available": false,
+      "implementation_note": "First meaningful product action (e.g. ATS scan, job application)"
+    },
+    {
+      "stage": "RETENTION",
+      "data_source": "Product analytics",
+      "currently_available": false,
+      "implementation_note": "Return visit within 7 days"
+    },
+    {
+      "stage": "FEATURE_USE",
+      "data_source": "Product analytics",
+      "currently_available": false,
+      "implementation_note": "Specific feature engagement"
+    }
+  ],
+  "acquisition_funnel_math": {
+    "note": "All conversion rates are ASSUMPTIONS until replaced by real production data from instrumented events",
+    "scenarios": [
+      {
+        "label": "CONSERVATIVE",
+        "assumption_basis": "Industry baseline for early-stage career platforms; source: similar-stage Indian HR-tech comparable",
+        "monthly_organic_visitors": 50000,
+        "signup_rate_pct": 2.0,
+        "activation_rate_pct": 60.0,
+        "monthly_signups": 1000,
+        "monthly_activated_users": 600,
+        "months_to_1m_users": 1667,
+        "note": "Conservative requires significant traffic growth before 1M is achievable from SEO alone"
+      },
+      {
+        "label": "BASE",
+        "assumption_basis": "Comparable Indian HR-tech platform at 18-24 months post-launch; source: public growth reports Apna/Unstop",
+        "monthly_organic_visitors": 250000,
+        "signup_rate_pct": 3.5,
+        "activation_rate_pct": 65.0,
+        "monthly_signups": 8750,
+        "monthly_activated_users": 5688,
+        "months_to_1m_users": 176,
+        "note": "~15 years at base. SEO alone is insufficient - product acquisition channels must run in parallel"
+      },
+      {
+        "label": "AGGRESSIVE",
+        "assumption_basis": "Naukri/LinkedIn India growth trajectory at scale; requires P0-P1 rankings for top 50 high-volume queries",
+        "monthly_organic_visitors": 1200000,
+        "signup_rate_pct": 5.0,
+        "activation_rate_pct": 70.0,
+        "monthly_signups": 60000,
+        "monthly_activated_users": 42000,
+        "months_to_1m_users": 24,
+        "note": "Requires: 1.2M organic visitors/month, P1-3 rankings for freshers/software/resume queries, plus product channels in parallel"
+      }
+    ],
+    "key_insight": "SEO builds the acquisition FLOOR not the ceiling. Product distribution (Jobs apply flow, Resume tool, Network invites, Referrals) must operate independently and in parallel. The 1M user target is achievable only through both layers."
+  },
+  "sample_attribution_records": [
+    {
+      "event_id": "attr_imp_01",
+      "session_id": "sess_101",
+      "stage": "IMPRESSION",
+      "timestamp": "2026-08-25T08:12:00Z",
+      "query": null,
+      "normalized_query": null,
+      "intent_cluster_id": null,
+      "surface": "JOBS",
+      "canonical_url": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+      "gsc_average_position": 6.4,
+      "serp_observed_position": null,
+      "country": "IN",
+      "device": "MOBILE",
+      "user_id": null,
+      "signup_completed": false,
+      "activation_completed": false,
+      "feature_id": null,
+      "attribution_confidence": "LOW",
+      "attribution_note": "GSC impression record"
+    },
+    {
+      "event_id": "attr_clk_01",
+      "session_id": "sess_102",
+      "stage": "CLICK",
+      "timestamp": "2026-08-25T10:05:00Z",
+      "query": "content writer jobs noida",
+      "normalized_query": "content writer noida",
+      "intent_cluster_id": "cls_content_writer_noida",
+      "surface": "JOBS",
+      "canonical_url": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+      "gsc_average_position": 6.4,
+      "serp_observed_position": null,
+      "country": "IN",
+      "device": "MOBILE",
+      "user_id": null,
+      "signup_completed": false,
+      "activation_completed": false,
+      "feature_id": null,
+      "attribution_confidence": "MEDIUM",
+      "attribution_note": "Click from organic SERP"
+    },
+    {
+      "event_id": "attr_lnd_01",
+      "session_id": "sess_103",
+      "stage": "LANDING",
+      "timestamp": "2026-08-25T12:00:00Z",
+      "query": "free ats resume scanner india",
+      "normalized_query": "ats resume scanner india",
+      "intent_cluster_id": "cls_ats_resume_scanner",
+      "surface": "RESUME_ATS",
+      "canonical_url": "https://talentxcel.in/resume",
+      "gsc_average_position": null,
+      "serp_observed_position": null,
+      "country": "IN",
+      "device": "DESKTOP",
+      "user_id": null,
+      "signup_completed": false,
+      "activation_completed": false,
+      "feature_id": null,
+      "attribution_confidence": "MEDIUM",
+      "attribution_note": "Landing from organic click"
+    },
+    {
+      "event_id": "attr_sgn_01",
+      "session_id": "sess_103",
+      "stage": "SIGNUP",
+      "timestamp": "2026-08-25T12:04:22Z",
+      "query": "free ats resume scanner india",
+      "normalized_query": "ats resume scanner india",
+      "intent_cluster_id": "cls_ats_resume_scanner",
+      "surface": "RESUME_ATS",
+      "canonical_url": "https://talentxcel.in/resume",
+      "gsc_average_position": null,
+      "serp_observed_position": null,
+      "country": "IN",
+      "device": "DESKTOP",
+      "user_id": "usr_consented_abc123",
+      "signup_completed": true,
+      "activation_completed": false,
+      "feature_id": null,
+      "attribution_confidence": "HIGH",
+      "attribution_note": "Organic SERP -> resume page -> signup within 4 min; HIGH confidence"
+    },
+    {
+      "event_id": "attr_act_01",
+      "session_id": "sess_103",
+      "stage": "ACTIVATION",
+      "timestamp": "2026-08-25T12:07:10Z",
+      "query": "free ats resume scanner india",
+      "normalized_query": "ats resume scanner india",
+      "intent_cluster_id": "cls_ats_resume_scanner",
+      "surface": "RESUME_ATS",
+      "canonical_url": "https://talentxcel.in/resume",
+      "gsc_average_position": null,
+      "serp_observed_position": null,
+      "country": "IN",
+      "device": "DESKTOP",
+      "user_id": "usr_consented_abc123",
+      "signup_completed": true,
+      "activation_completed": true,
+      "feature_id": "ats_resume_scan",
+      "attribution_confidence": "HIGH",
+      "attribution_note": "First ATS resume scan completed within 3 min of signup"
+    }
+  ]
+}

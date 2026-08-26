@@ -1,0 +1,422 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2026-08-26T06:20:00Z",
+  "methodology": "authority_score = (inbound_links * 3) + ((10 - crawl_depth) * 5) - (orphan_risk ? 30 : 0), capped 0-100",
+  "orphan_threshold": 2,
+  "total_pages_analyzed": 20,
+  "root_hubs": 7,
+  "category_hubs": 6,
+  "leaf_entities": 5,
+  "isolated_orphan_risk": 2,
+  "pages": [
+    {
+      "canonical_url": "https://talentxcel.in/jobs",
+      "surface": "JOBS",
+      "inbound_internal_links": 52,
+      "outbound_internal_links": 148,
+      "crawl_depth": 1,
+      "orphan_risk": false,
+      "hub_type": "ROOT_HUB",
+      "topical_cluster": "career-opportunities",
+      "link_gap_opportunities": [],
+      "authority_score": 96,
+      "recommended_linking_sources": []
+    },
+    {
+      "canonical_url": "https://talentxcel.in/resume",
+      "surface": "RESUME_ATS",
+      "inbound_internal_links": 38,
+      "outbound_internal_links": 24,
+      "crawl_depth": 1,
+      "orphan_risk": false,
+      "hub_type": "ROOT_HUB",
+      "topical_cluster": "resume-ats",
+      "link_gap_opportunities": [],
+      "authority_score": 92,
+      "recommended_linking_sources": []
+    },
+    {
+      "canonical_url": "https://talentxcel.in/network",
+      "surface": "PROFESSIONAL_NETWORK",
+      "inbound_internal_links": 29,
+      "outbound_internal_links": 56,
+      "crawl_depth": 1,
+      "orphan_risk": false,
+      "hub_type": "ROOT_HUB",
+      "topical_cluster": "professional-networking",
+      "link_gap_opportunities": [],
+      "authority_score": 87,
+      "recommended_linking_sources": []
+    },
+    {
+      "canonical_url": "https://talentxcel.in/colleges",
+      "surface": "COLLEGES",
+      "inbound_internal_links": 24,
+      "outbound_internal_links": 82,
+      "crawl_depth": 1,
+      "orphan_risk": false,
+      "hub_type": "ROOT_HUB",
+      "topical_cluster": "higher-education",
+      "link_gap_opportunities": [],
+      "authority_score": 82,
+      "recommended_linking_sources": []
+    },
+    {
+      "canonical_url": "https://talentxcel.in/rankings",
+      "surface": "BIDDER_RANKINGS",
+      "inbound_internal_links": 18,
+      "outbound_internal_links": 34,
+      "crawl_depth": 1,
+      "orphan_risk": false,
+      "hub_type": "ROOT_HUB",
+      "topical_cluster": "product-rankings",
+      "link_gap_opportunities": [],
+      "authority_score": 76,
+      "recommended_linking_sources": []
+    },
+    {
+      "canonical_url": "https://talentxcel.in/career-map",
+      "surface": "CAREER_MAP",
+      "inbound_internal_links": 14,
+      "outbound_internal_links": 28,
+      "crawl_depth": 1,
+      "orphan_risk": false,
+      "hub_type": "ROOT_HUB",
+      "topical_cluster": "career-planning",
+      "link_gap_opportunities": [],
+      "authority_score": 72,
+      "recommended_linking_sources": []
+    },
+    {
+      "canonical_url": "https://talentxcel.in/tools",
+      "surface": "CAREER_TOOLS",
+      "inbound_internal_links": 11,
+      "outbound_internal_links": 18,
+      "crawl_depth": 1,
+      "orphan_risk": false,
+      "hub_type": "ROOT_HUB",
+      "topical_cluster": "career-tools",
+      "link_gap_opportunities": [],
+      "authority_score": 68,
+      "recommended_linking_sources": []
+    },
+    {
+      "canonical_url": "https://talentxcel.in/jobs/software-engineer",
+      "surface": "JOBS",
+      "inbound_internal_links": 12,
+      "outbound_internal_links": 38,
+      "crawl_depth": 2,
+      "orphan_risk": false,
+      "hub_type": "CATEGORY_HUB",
+      "topical_cluster": "software-engineering-jobs",
+      "link_gap_opportunities": [],
+      "authority_score": 76,
+      "recommended_linking_sources": [
+        "https://talentxcel.in/jobs",
+        "https://talentxcel.in/skills/python"
+      ]
+    },
+    {
+      "canonical_url": "https://talentxcel.in/jobs/data-analyst",
+      "surface": "JOBS",
+      "inbound_internal_links": 8,
+      "outbound_internal_links": 24,
+      "crawl_depth": 2,
+      "orphan_risk": false,
+      "hub_type": "CATEGORY_HUB",
+      "topical_cluster": "data-jobs",
+      "link_gap_opportunities": [],
+      "authority_score": 64,
+      "recommended_linking_sources": [
+        "https://talentxcel.in/jobs",
+        "https://talentxcel.in/roles/data-analyst"
+      ]
+    },
+    {
+      "canonical_url": "https://talentxcel.in/colleges/bangalore",
+      "surface": "COLLEGES",
+      "inbound_internal_links": 6,
+      "outbound_internal_links": 42,
+      "crawl_depth": 2,
+      "orphan_risk": false,
+      "hub_type": "CATEGORY_HUB",
+      "topical_cluster": "bangalore-education",
+      "link_gap_opportunities": [],
+      "authority_score": 58,
+      "recommended_linking_sources": [
+        "https://talentxcel.in/colleges",
+        "https://talentxcel.in/jobs/bangalore"
+      ]
+    },
+    {
+      "canonical_url": "https://talentxcel.in/jobs/software-engineer/bangalore",
+      "surface": "JOBS",
+      "inbound_internal_links": 4,
+      "outbound_internal_links": 12,
+      "crawl_depth": 3,
+      "orphan_risk": false,
+      "hub_type": "LEAF_ENTITY",
+      "topical_cluster": "software-engineering-bangalore",
+      "link_gap_opportunities": [
+        "https://talentxcel.in/skills/python",
+        "https://talentxcel.in/roles/software-engineer"
+      ],
+      "authority_score": 47,
+      "recommended_linking_sources": [
+        "https://talentxcel.in/jobs/software-engineer",
+        "https://talentxcel.in/jobs/bangalore"
+      ]
+    },
+    {
+      "canonical_url": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+      "surface": "JOBS",
+      "inbound_internal_links": 3,
+      "outbound_internal_links": 8,
+      "crawl_depth": 3,
+      "orphan_risk": false,
+      "hub_type": "LEAF_ENTITY",
+      "topical_cluster": "content-writer-jobs",
+      "link_gap_opportunities": [
+        "https://talentxcel.in/jobs",
+        "https://talentxcel.in/jobs/content-writer"
+      ],
+      "authority_score": 44,
+      "recommended_linking_sources": [
+        "https://talentxcel.in/jobs/content-writer",
+        "https://talentxcel.in/jobs/noida"
+      ]
+    },
+    {
+      "canonical_url": "https://talentxcel.in/roles/software-engineer",
+      "surface": "ROLE_GUIDES",
+      "inbound_internal_links": 7,
+      "outbound_internal_links": 18,
+      "crawl_depth": 2,
+      "orphan_risk": false,
+      "hub_type": "CATEGORY_HUB",
+      "topical_cluster": "software-engineering-careers",
+      "link_gap_opportunities": [],
+      "authority_score": 61,
+      "recommended_linking_sources": [
+        "https://talentxcel.in/jobs/software-engineer",
+        "https://talentxcel.in/skills/python"
+      ]
+    },
+    {
+      "canonical_url": "https://talentxcel.in/roles/data-scientist",
+      "surface": "ROLE_GUIDES",
+      "inbound_internal_links": 5,
+      "outbound_internal_links": 14,
+      "crawl_depth": 2,
+      "orphan_risk": false,
+      "hub_type": "CATEGORY_HUB",
+      "topical_cluster": "data-science-careers",
+      "link_gap_opportunities": [
+        "https://talentxcel.in/learning/data-science"
+      ],
+      "authority_score": 55,
+      "recommended_linking_sources": [
+        "https://talentxcel.in/jobs/data-scientist",
+        "https://talentxcel.in/skills/python"
+      ]
+    },
+    {
+      "canonical_url": "https://talentxcel.in/skills/python",
+      "surface": "SKILLS",
+      "inbound_internal_links": 9,
+      "outbound_internal_links": 16,
+      "crawl_depth": 2,
+      "orphan_risk": false,
+      "hub_type": "CATEGORY_HUB",
+      "topical_cluster": "programming-skills",
+      "link_gap_opportunities": [],
+      "authority_score": 67,
+      "recommended_linking_sources": [
+        "https://talentxcel.in/roles/data-scientist",
+        "https://talentxcel.in/learning/python"
+      ]
+    },
+    {
+      "canonical_url": "https://talentxcel.in/passport",
+      "surface": "CAREER_PASSPORT",
+      "inbound_internal_links": 8,
+      "outbound_internal_links": 12,
+      "crawl_depth": 1,
+      "orphan_risk": false,
+      "hub_type": "ROOT_HUB",
+      "topical_cluster": "career-credentials",
+      "link_gap_opportunities": [],
+      "authority_score": 69,
+      "recommended_linking_sources": []
+    },
+    {
+      "canonical_url": "https://talentxcel.in/mo1",
+      "surface": "MO1_BUSINESS_OS",
+      "inbound_internal_links": 6,
+      "outbound_internal_links": 14,
+      "crawl_depth": 1,
+      "orphan_risk": false,
+      "hub_type": "ROOT_HUB",
+      "topical_cluster": "ai-recruitment-b2b",
+      "link_gap_opportunities": [],
+      "authority_score": 63,
+      "recommended_linking_sources": []
+    },
+    {
+      "canonical_url": "https://talentxcel.in/tools/salary-calculator",
+      "surface": "CAREER_TOOLS",
+      "inbound_internal_links": 1,
+      "outbound_internal_links": 4,
+      "crawl_depth": 2,
+      "orphan_risk": true,
+      "hub_type": "ISOLATED",
+      "topical_cluster": "career-tools",
+      "link_gap_opportunities": [
+        "https://talentxcel.in/tools",
+        "https://talentxcel.in/roles/software-engineer",
+        "https://talentxcel.in/jobs"
+      ],
+      "authority_score": 13,
+      "recommended_linking_sources": [
+        "https://talentxcel.in/tools",
+        "https://talentxcel.in/jobs/software-engineer"
+      ]
+    },
+    {
+      "canonical_url": "https://talentxcel.in/learning/digital-marketing",
+      "surface": "LEARNING_COURSES",
+      "inbound_internal_links": 2,
+      "outbound_internal_links": 8,
+      "crawl_depth": 2,
+      "orphan_risk": false,
+      "hub_type": "LEAF_ENTITY",
+      "topical_cluster": "marketing-education",
+      "link_gap_opportunities": [
+        "https://talentxcel.in/jobs/digital-marketing-executive"
+      ],
+      "authority_score": 46,
+      "recommended_linking_sources": [
+        "https://talentxcel.in/colleges",
+        "https://talentxcel.in/roles/digital-marketing-manager"
+      ]
+    },
+    {
+      "canonical_url": "https://talentxcel.in/companies/infosys",
+      "surface": "COMPANIES",
+      "inbound_internal_links": 1,
+      "outbound_internal_links": 6,
+      "crawl_depth": 2,
+      "orphan_risk": true,
+      "hub_type": "ISOLATED",
+      "topical_cluster": "it-companies-india",
+      "link_gap_opportunities": [
+        "https://talentxcel.in/jobs",
+        "https://talentxcel.in/roles/software-engineer"
+      ],
+      "authority_score": 13,
+      "recommended_linking_sources": [
+        "https://talentxcel.in/jobs/infosys",
+        "https://talentxcel.in/colleges/nit"
+      ]
+    }
+  ],
+  "p0_link_gap_opportunities": [
+    {
+      "target_page": "https://talentxcel.in/tools/salary-calculator",
+      "opportunity_reason": "High-volume query (120K/mo) with P0 opportunity but only 1 inbound link; orphan risk",
+      "current_inbound_links": 1,
+      "recommended_sources": [
+        "https://talentxcel.in/tools",
+        "https://talentxcel.in/jobs/software-engineer",
+        "https://talentxcel.in/roles/software-engineer"
+      ],
+      "recommended_anchor_text": "salary calculator india 2026",
+      "estimated_authority_gain": 24,
+      "priority": "P0"
+    },
+    {
+      "target_page": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+      "opportunity_reason": "P0 ranking query at position 6.4 needs internal link boost to push into top 3",
+      "current_inbound_links": 3,
+      "recommended_sources": [
+        "https://talentxcel.in/jobs",
+        "https://talentxcel.in/jobs/content-writer"
+      ],
+      "recommended_anchor_text": "content writer jobs noida",
+      "estimated_authority_gain": 15,
+      "priority": "P0"
+    },
+    {
+      "target_page": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+      "opportunity_reason": "P0 ranking query at position 7.2 needs contextual links from marketing topic hub",
+      "current_inbound_links": 2,
+      "recommended_sources": [
+        "https://talentxcel.in/jobs",
+        "https://talentxcel.in/learning/digital-marketing"
+      ],
+      "recommended_anchor_text": "marketing executive jobs noida",
+      "estimated_authority_gain": 18,
+      "priority": "P0"
+    },
+    {
+      "target_page": "https://talentxcel.in/mo1",
+      "opportunity_reason": "High-value B2B commercial landing page at position 8.8; link from company entity",
+      "current_inbound_links": 6,
+      "recommended_sources": [
+        "https://talentxcel.in/company/talentxcel",
+        "https://talentxcel.in/jobs"
+      ],
+      "recommended_anchor_text": "AI recruitment platform India",
+      "estimated_authority_gain": 12,
+      "priority": "P0"
+    },
+    {
+      "target_page": "https://talentxcel.in/resume",
+      "opportunity_reason": "Position 11.2 approaching page 1; link from all role guides with resume anchor",
+      "current_inbound_links": 38,
+      "recommended_sources": [
+        "https://talentxcel.in/roles/software-engineer",
+        "https://talentxcel.in/roles/data-scientist"
+      ],
+      "recommended_anchor_text": "free ATS resume scanner India",
+      "estimated_authority_gain": 10,
+      "priority": "P0"
+    },
+    {
+      "target_page": "https://talentxcel.in/jobs/software-engineer/bangalore",
+      "opportunity_reason": "Deep page (pos 47) with 120 impressions confirms intent match; link from python skill hub",
+      "current_inbound_links": 4,
+      "recommended_sources": [
+        "https://talentxcel.in/skills/python",
+        "https://talentxcel.in/roles/software-engineer"
+      ],
+      "recommended_anchor_text": "software engineer jobs bangalore",
+      "estimated_authority_gain": 20,
+      "priority": "P1"
+    },
+    {
+      "target_page": "https://talentxcel.in/colleges",
+      "opportunity_reason": "Position 14.5; link from all college category hubs to consolidate root authority",
+      "current_inbound_links": 24,
+      "recommended_sources": [
+        "https://talentxcel.in/jobs/freshers",
+        "https://talentxcel.in/jobs/internships"
+      ],
+      "recommended_anchor_text": "top engineering colleges in India with placement",
+      "estimated_authority_gain": 14,
+      "priority": "P1"
+    },
+    {
+      "target_page": "https://talentxcel.in/companies/infosys",
+      "opportunity_reason": "Orphan risk with 1 link; 25K search volume query; link from software engineer jobs",
+      "current_inbound_links": 1,
+      "recommended_sources": [
+        "https://talentxcel.in/jobs/software-engineer",
+        "https://talentxcel.in/roles/software-engineer"
+      ],
+      "recommended_anchor_text": "Infosys interview questions 2026",
+      "estimated_authority_gain": 25,
+      "priority": "P1"
+    }
+  ]
+}
