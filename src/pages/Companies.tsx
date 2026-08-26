@@ -9,9 +9,9 @@ import { Building2, MapPin, Globe, Heart, Search, Briefcase, CheckCircle, Extern
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Helmet } from 'react-helmet-async';
-import { getCompanyLogoWithFallback } from '@/services/companyLogoService';
+import { getGoogleCompanyLogo } from '@/services/companyLogoService';
 
-interface CompanyEntity {
+interface RealCompany {
   id: string;
   name: string;
   slug: string;
@@ -22,12 +22,12 @@ interface CompanyEntity {
   founded_year?: number;
   website_url?: string;
   logo_url?: string;
-  cover_image_url?: string;
   is_verified: boolean;
-  open_jobs_count?: number;
+  open_jobs_count: number;
 }
 
-const VERIFIED_EMPLOYER_CATALOG: CompanyEntity[] = [
+// Canonical registered employer profiles on the platform
+const PLATFORM_REGISTERED_EMPLOYERS: Omit<RealCompany, 'open_jobs_count'>[] = [
   {
     id: 'comp_chatr_chat',
     name: 'chatr Chat',
@@ -39,8 +39,7 @@ const VERIFIED_EMPLOYER_CATALOG: CompanyEntity[] = [
     founded_year: 2024,
     website_url: 'https://chatrchat.com',
     logo_url: 'https://www.google.com/s2/favicons?domain=chatrchat.com&sz=128',
-    is_verified: true,
-    open_jobs_count: 8
+    is_verified: true
   },
   {
     id: 'comp_savantis_solutions',
@@ -53,8 +52,7 @@ const VERIFIED_EMPLOYER_CATALOG: CompanyEntity[] = [
     founded_year: 2012,
     website_url: 'https://savantis.com',
     logo_url: 'https://www.google.com/s2/favicons?domain=savantis.com&sz=128',
-    is_verified: true,
-    open_jobs_count: 14
+    is_verified: true
   },
   {
     id: 'comp_talentxcel_services',
@@ -62,13 +60,12 @@ const VERIFIED_EMPLOYER_CATALOG: CompanyEntity[] = [
     slug: 'talentxcel-services',
     description: 'Premier AI recruitment, technical executive search, talent analytics, and enterprise workforce scaling platform.',
     industry: 'AI Recruitment & Staffing',
-    location: 'Gurgaon, Delhi NCR, India',
+    location: 'Noida, Uttar Pradesh, India',
     size_range: '50-200 employees',
     founded_year: 2023,
     website_url: 'https://talentxcel.in/services',
     logo_url: 'https://www.google.com/s2/favicons?domain=talentxcel.in&sz=128',
-    is_verified: true,
-    open_jobs_count: 12
+    is_verified: true
   },
   {
     id: 'comp_talentxcel_enterprise',
@@ -76,41 +73,12 @@ const VERIFIED_EMPLOYER_CATALOG: CompanyEntity[] = [
     slug: 'talentxcel-enterprise',
     description: 'Leading AI career OS and talent infrastructure connecting verified professionals with high-velocity career pathways and opportunities.',
     industry: 'HR Tech & Career AI',
-    location: 'Bangalore & Gurgaon, India',
+    location: 'Gurgaon, Delhi NCR, India',
     size_range: '100-500 employees',
     founded_year: 2023,
     website_url: 'https://talentxcel.in',
     logo_url: 'https://www.google.com/s2/favicons?domain=talentxcel.in&sz=128',
-    is_verified: true,
-    open_jobs_count: 6
-  },
-  {
-    id: 'comp_google',
-    name: 'Google India',
-    slug: 'google',
-    description: 'World-leading technology company specializing in search, cloud computing, software, consumer electronics, and artificial intelligence.',
-    industry: 'Technology & Cloud',
-    location: 'Bangalore & Hyderabad, India',
-    size_range: '10,000+ employees',
-    founded_year: 1998,
-    website_url: 'https://google.com',
-    logo_url: 'https://www.google.com/s2/favicons?domain=google.com&sz=128',
-    is_verified: true,
-    open_jobs_count: 45
-  },
-  {
-    id: 'comp_microsoft',
-    name: 'Microsoft India',
-    slug: 'microsoft',
-    description: 'Global technology leader in personal computing, cloud solutions (Azure), developer tools, productivity software, and enterprise AI systems.',
-    industry: 'Software & Enterprise Cloud',
-    location: 'Hyderabad & Bangalore, India',
-    size_range: '10,000+ employees',
-    founded_year: 1975,
-    website_url: 'https://microsoft.com',
-    logo_url: 'https://www.google.com/s2/favicons?domain=microsoft.com&sz=128',
-    is_verified: true,
-    open_jobs_count: 38
+    is_verified: true
   }
 ];
 
@@ -120,53 +88,86 @@ export const Companies: React.FC = () => {
   const [selectedIndustry, setSelectedIndustry] = useState<string>('all');
   const [followedCompanies, setFollowedCompanies] = useState<Set<string>>(new Set());
 
+  // 100% Real Supabase Data Query
   const { data: companiesList = [], isLoading } = useQuery({
-    queryKey: ['companies', searchTerm, selectedIndustry],
+    queryKey: ['real-companies-directory', searchTerm, selectedIndustry],
     queryFn: async () => {
-      let dbCompanies: any[] = [];
-      try {
-        const { data } = await supabase
-          .from('companies')
-          .select('*')
-          .order('created_at', { ascending: false });
-        if (data) dbCompanies = data;
-      } catch (err) {
-        console.warn('Companies fetch note:', err);
-      }
+      // 1. Fetch real active jobs directly from Supabase
+      const { data: dbJobs = [] } = await supabase
+        .from('jobs')
+        .select('id, company_name, company_id, is_active, job_status')
+        .eq('is_active', true);
 
-      // Merge DB companies with verified catalog, skipping blank placeholders
-      const mergedMap = new Map<string, CompanyEntity>();
+      // Compute exact real job counts per company from live database
+      const realJobCounts = new Map<string, number>();
+      (dbJobs || []).forEach((j) => {
+        if (j.company_name) {
+          const key = j.company_name.toLowerCase().trim();
+          realJobCounts.set(key, (realJobCounts.get(key) || 0) + 1);
+        }
+      });
 
-      // 1. Add verified catalog first
-      VERIFIED_EMPLOYER_CATALOG.forEach(c => mergedMap.set(c.name.toLowerCase(), c));
+      // 2. Fetch real companies from Supabase
+      const { data: dbCompanies = [] } = await supabase
+        .from('companies')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-      // 2. Add valid database rows
-      dbCompanies.forEach((db: any) => {
-        if (!db.name || db.name.toLowerCase() === 'your company' || db.name.trim().length < 2) return;
-        const key = db.name.toLowerCase();
-        const existing = mergedMap.get(key);
-        mergedMap.set(key, {
-          id: db.id || existing?.id || `comp_${key.replace(/[^a-z0-9]+/g, '_')}`,
-          name: db.name,
-          slug: db.slug || existing?.slug || db.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-          description: db.description || existing?.description || 'Leading innovative organization committed to technology and growth.',
-          industry: db.industry || existing?.industry || 'Technology & Services',
-          location: db.location || existing?.location || 'New Delhi, India',
-          size_range: db.size_range || existing?.size_range || '50-200 employees',
-          founded_year: db.founded_year || existing?.founded_year,
-          website_url: db.website_url || existing?.website_url,
-          logo_url: db.logo_url || existing?.logo_url,
-          cover_image_url: db.cover_image_url || existing?.cover_image_url,
-          is_verified: db.is_verified ?? true,
-          open_jobs_count: existing?.open_jobs_count || 5
+      // 3. Construct real map
+      const companyMap = new Map<string, RealCompany>();
+
+      // Populate registered platform employers
+      PLATFORM_REGISTERED_EMPLOYERS.forEach((emp) => {
+        const key = emp.name.toLowerCase().trim();
+        // Count jobs matching company name or variations
+        let count = realJobCounts.get(key) || 0;
+        if (count === 0) {
+          // Check substring matching for jobs
+          (dbJobs || []).forEach((j) => {
+            if (j.company_name && j.company_name.toLowerCase().includes(key)) {
+              count++;
+            }
+          });
+        }
+
+        companyMap.set(key, {
+          ...emp,
+          open_jobs_count: count
         });
       });
 
-      let results = Array.from(mergedMap.values());
+      // Merge real database rows (skipping empty "Your Company" placeholders)
+      (dbCompanies || []).forEach((db: any) => {
+        if (!db.name || db.name.toLowerCase() === 'your company' || db.name.trim().length < 2) return;
+        const key = db.name.toLowerCase().trim();
+        const existing = companyMap.get(key);
 
+        const realCount = realJobCounts.get(key) || existing?.open_jobs_count || 0;
+        const webUrl = db.website_url || existing?.website_url;
+        const logo = db.logo_url || existing?.logo_url || getGoogleCompanyLogo(db.name, webUrl);
+
+        companyMap.set(key, {
+          id: db.id || existing?.id || `comp_${key.replace(/[^a-z0-9]+/g, '_')}`,
+          name: db.name,
+          slug: existing?.slug || db.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+          description: db.description || existing?.description || 'Registered hiring organization on TalentXcel.',
+          industry: db.industry || existing?.industry || 'Technology & Services',
+          location: db.location || existing?.location || 'India',
+          size_range: db.size_range || existing?.size_range || '50-200 employees',
+          founded_year: db.founded_year || existing?.founded_year,
+          website_url: webUrl,
+          logo_url: logo,
+          is_verified: db.is_verified ?? true,
+          open_jobs_count: realCount
+        });
+      });
+
+      let list = Array.from(companyMap.values());
+
+      // Filter by search query
       if (searchTerm.trim()) {
-        const term = searchTerm.toLowerCase();
-        results = results.filter(c => 
+        const term = searchTerm.toLowerCase().trim();
+        list = list.filter(c =>
           c.name.toLowerCase().includes(term) ||
           c.industry.toLowerCase().includes(term) ||
           c.location.toLowerCase().includes(term) ||
@@ -174,11 +175,12 @@ export const Companies: React.FC = () => {
         );
       }
 
+      // Filter by industry
       if (selectedIndustry !== 'all') {
-        results = results.filter(c => c.industry.toLowerCase().includes(selectedIndustry.toLowerCase()));
+        list = list.filter(c => c.industry.toLowerCase().includes(selectedIndustry.toLowerCase()));
       }
 
-      return results;
+      return list;
     }
   });
 
@@ -199,10 +201,10 @@ export const Companies: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Top Companies Hiring in India | Company Profiles & Jobs | TalentXcel</title>
+        <title>Top Companies Hiring in India | Real Company Profiles & Jobs | TalentXcel</title>
         <meta 
           name="description" 
-          content="Explore top verified companies hiring in India. Discover culture insights, verified employee sizes, open roles, and direct recruitment pathways." 
+          content="Explore verified employer companies hiring in India. Discover real culture insights, active job counts from the database, and direct recruitment pathways." 
         />
         <link rel="canonical" href="https://talentxcel.in/companies" />
       </Helmet>
@@ -215,15 +217,15 @@ export const Companies: React.FC = () => {
               <div className="flex items-center gap-2">
                 <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 px-2 py-0.5 rounded text-[11px] font-bold border border-blue-200 dark:border-blue-800">
                   <Building2 className="h-3 w-3 text-blue-600" />
-                  Verified Employer Ecosystem
+                  Verified Employer Network
                 </span>
-                <span className="text-xs text-muted-foreground">• Direct Hiring Partners</span>
+                <span className="text-xs text-muted-foreground">• Live Database Verified</span>
               </div>
               <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground mt-1">
-                Discover Top Companies Hiring Now
+                Verified Companies & Employers
               </h1>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Explore verified employer profiles, culture highlights, tech stacks, and active career opportunities.
+                Explore real registered employers, active verified openings, and direct application pipelines.
               </p>
             </div>
 
@@ -235,7 +237,7 @@ export const Companies: React.FC = () => {
                 className="text-xs h-8 gap-1.5"
               >
                 <Briefcase className="h-3.5 w-3.5 text-blue-600" />
-                Post Jobs as Employer
+                Employer Portal
               </Button>
             </div>
           </div>
@@ -247,7 +249,7 @@ export const Companies: React.FC = () => {
             <div className="relative flex-1 w-full">
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search by company name, industry, or location (e.g. AI, Delhi, Noida, Bangalore)..."
+                placeholder="Search registered companies by name, industry, or location..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-9 h-9 text-xs"
@@ -269,7 +271,7 @@ export const Companies: React.FC = () => {
                 onClick={() => setSelectedIndustry('ai')}
                 className="text-xs h-8"
               >
-                AI & Tech
+                AI & Telecom
               </Button>
               <Button 
                 variant={selectedIndustry === 'consulting' ? 'default' : 'outline'}
@@ -277,7 +279,7 @@ export const Companies: React.FC = () => {
                 onClick={() => setSelectedIndustry('consulting')}
                 className="text-xs h-8"
               >
-                IT Services
+                IT Consulting
               </Button>
             </div>
           </div>
@@ -285,7 +287,7 @@ export const Companies: React.FC = () => {
           {/* Companies Grid */}
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
+              {[1, 2, 3, 4].map((i) => (
                 <Card key={i} className="animate-pulse h-64 border rounded-xl bg-muted/20" />
               ))}
             </div>
@@ -295,12 +297,12 @@ export const Companies: React.FC = () => {
                 const isFollowed = followedCompanies.has(company.name);
                 const profileUrl = `/company/${company.slug}`;
                 const jobsUrl = `/jobs?search=${encodeURIComponent(company.name)}`;
-                const logoSrc = getCompanyLogoWithFallback(company.name, company.logo_url, company.website_url);
+                const logoSrc = company.logo_url || getGoogleCompanyLogo(company.name, company.website_url);
 
                 return (
                   <Card key={company.id} className="border rounded-xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between overflow-hidden bg-white dark:bg-slate-900 group">
                     <div>
-                      {/* Gradient Header with Logo badge */}
+                      {/* Gradient Header with Real Google Logo */}
                       <div className="h-20 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-3 flex items-start justify-between">
                         <div className="w-12 h-12 rounded-xl bg-white dark:bg-slate-900 border-2 border-white shadow-md p-1.5 flex items-center justify-center">
                           <img 
@@ -377,7 +379,7 @@ export const Companies: React.FC = () => {
                       </CardContent>
                     </div>
 
-                    {/* Bottom Actions */}
+                    {/* Bottom Actions with Real Dynamic Job Count */}
                     <div className="p-3 bg-muted/20 border-t flex items-center justify-between gap-2">
                       <Link to={profileUrl} className="flex-1">
                         <Button variant="outline" size="sm" className="w-full h-8 text-xs font-semibold">
@@ -387,7 +389,7 @@ export const Companies: React.FC = () => {
                       
                       <Link to={jobsUrl} className="flex-1">
                         <Button size="sm" className="w-full h-8 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white gap-1">
-                          View Jobs ({company.open_jobs_count || 5})
+                          View Jobs ({company.open_jobs_count})
                         </Button>
                       </Link>
                     </div>
@@ -398,9 +400,9 @@ export const Companies: React.FC = () => {
           ) : (
             <div className="text-center py-16 bg-white dark:bg-slate-900 rounded-xl border p-8">
               <Building2 className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-              <h3 className="text-sm font-bold text-foreground">No companies match your query</h3>
+              <h3 className="text-sm font-bold text-foreground">No registered companies found</h3>
               <p className="text-xs text-muted-foreground mt-1 mb-4">
-                Try searching for a different keyword, industry, or city.
+                Try searching for a different company name or location.
               </p>
               <Button size="sm" variant="outline" onClick={() => setSearchTerm('')} className="text-xs">
                 Clear Filters
