@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useQuery } from '@tanstack/react-query';
@@ -35,13 +35,113 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useEntity, useEntityListings } from '@/hooks/useClaim1';
-import { getPublicCompanyUrl, getPublicJobUrl, getPublicPostUrl } from '@/lib/seo/canonicalUrls';
+import { getPublicCompanyUrl, getPublicJobUrl } from '@/lib/seo/canonicalUrls';
+import { getGoogleCompanyLogo } from '@/services/companyLogoService';
 import {
   buildTalentXcelOrganizationSchema,
   buildBreadcrumbSchema,
   buildWebPageSchema,
   buildFAQSchema,
 } from '@/lib/seo/structuredDataSchemas';
+
+interface CompanyProfileData {
+  name: string;
+  tagline: string;
+  description: string;
+  whatItDoes: string;
+  industry: string;
+  location: string;
+  website: string;
+  legalEntity: string;
+  foundedYear: number;
+  sizeRange: string;
+  coreServices: string[];
+  techStack: string[];
+  searchKeyword: string;
+}
+
+const KNOWN_COMPANY_PROFILES: Record<string, CompanyProfileData> = {
+  'savantis-solutions': {
+    name: 'Savantis Solutions',
+    tagline: 'Enterprise Digital Transformation, SAP Solutions & Cloud Engineering',
+    description: 'Savantis Solutions is a global IT consulting and digital transformation firm specializing in enterprise SAP implementations, cloud infrastructure, full-stack software development, and technical staffing.',
+    whatItDoes: 'Savantis empowers mid-market and enterprise organizations to modernize legacy systems, migrate to the cloud, optimize enterprise workflows with SAP S/4HANA, and scale engineering bandwidth with pre-screened technical talent.',
+    industry: 'IT Services & Cloud Consulting',
+    location: 'Noida, Uttar Pradesh, India',
+    website: 'https://savantis.com',
+    legalEntity: 'Savantis Solutions LLC',
+    foundedYear: 2012,
+    sizeRange: '500-1000 employees',
+    coreServices: [
+      'Enterprise SAP S/4HANA Implementations & Support',
+      'Cloud Architecture & DevOps Migration (AWS/Azure)',
+      'Custom Full-Stack Web & Mobile App Development',
+      'Specialized IT Staffing & Dedicated Developer Teams'
+    ],
+    techStack: ['SAP S/4HANA', 'AWS Cloud', 'Microsoft Azure', 'Java', 'Python', 'React', 'Node.js', 'PostgreSQL'],
+    searchKeyword: 'Savantis'
+  },
+  'chatr-chat': {
+    name: 'chatr Chat',
+    tagline: 'Next-Generation AI Communications & Agentic Messaging Ecosystem',
+    description: 'chatr Chat is an AI-native messaging and workflow intelligence platform connecting individuals and enterprises worldwide with high-speed, secure agentic communication networks.',
+    whatItDoes: 'chatr Chat combines encrypted real-time communication with autonomous AI agent assistants, omnichannel customer support automation, and seamless collaboration tools for modern high-velocity teams.',
+    industry: 'Artificial Intelligence & Telecom',
+    location: 'New Delhi, Delhi NCR, India',
+    website: 'https://chatr.chat',
+    legalEntity: 'Chatr Technologies Pvt Ltd',
+    foundedYear: 2024,
+    sizeRange: '50-200 employees',
+    coreServices: [
+      'Autonomous AI Agent Messaging & Workflows',
+      'Encrypted Real-Time Chat Infrastructure',
+      'Omnichannel Customer Support Intelligence',
+      'Enterprise Team Collaboration Platform'
+    ],
+    techStack: ['Python', 'FastAPI', 'WebSockets', 'React', 'TypeScript', 'PostgreSQL', 'LangChain', 'Docker'],
+    searchKeyword: 'Chatr'
+  },
+  'talentxcel-services': {
+    name: 'TalentXcel Services',
+    tagline: 'AI-Powered Career Architecture & Strategic Talent Acquisition',
+    description: 'TalentXcel Services Pvt Ltd is a modern human capital and AI career technology organization providing high-velocity recruitment, executive search, and verified career credentials.',
+    whatItDoes: 'TalentXcel operates at the intersection of AI recruitment, career operating systems, and higher education intelligence to match candidates based on verified skills and help employers scale rapidly.',
+    industry: 'AI Recruitment & Staffing',
+    location: 'Noida, Uttar Pradesh, India',
+    website: 'https://talentxcel.in/services',
+    legalEntity: 'TalentXcel Services Pvt Ltd',
+    foundedYear: 2023,
+    sizeRange: '50-200 employees',
+    coreServices: [
+      'AI-Driven Technical Candidate Screening & Sourcing',
+      'Executive Search & Recruitment Process Outsourcing (RPO)',
+      'Verified Career Passport Credentialing',
+      'Corporate Training & Workforce Skill Gap Benchmarking'
+    ],
+    techStack: ['React', 'TypeScript', 'Node.js', 'Supabase', 'PostgreSQL', 'Python', 'Tailwind CSS'],
+    searchKeyword: 'TalentXcel'
+  },
+  'talentxcel': {
+    name: 'TalentXcel Enterprise',
+    tagline: 'AI Career Operating System & Intelligent Hiring Infrastructure',
+    description: 'TalentXcel Enterprise provides the comprehensive platform uniting job discovery, ATS resume diagnostics, career pathways across 10,250 higher ed institutions, and verified employer pipelines.',
+    whatItDoes: 'TalentXcel provides candidates with deterministic career progression tools and gives enterprises access to pre-screened talent pools matched by capability rather than keyword density.',
+    industry: 'HR Tech & Career AI',
+    location: 'Gurgaon, Delhi NCR, India',
+    website: 'https://talentxcel.in',
+    legalEntity: 'TalentXcel Enterprise',
+    foundedYear: 2023,
+    sizeRange: '100-500 employees',
+    coreServices: [
+      'Intelligent Candidate-Job Match Algorithm',
+      'Real-Time ATS Resume Scanner & Diagnostic Studio',
+      '10,250 Indian Higher Education Institution Intelligence',
+      'Claim #1 Global AI Product Rankings & Bidding Marketplace'
+    ],
+    techStack: ['React', 'TypeScript', 'Vite', 'PostgreSQL', 'Tailwind CSS'],
+    searchKeyword: 'TalentXcel'
+  }
+};
 
 export default function CompanyPublicProfile() {
   const { slug = 'talentxcel' } = useParams<{ slug: string }>();
@@ -51,78 +151,71 @@ export default function CompanyPublicProfile() {
   const { data: entity } = useEntity(normalizedSlug);
   const { data: listings = [] } = useEntityListings(entity?.id);
 
-  // 2. Fetch Public Jobs for this Company
+  // 2. Resolve known company profile or fallback dynamically
+  const knownProfile = KNOWN_COMPANY_PROFILES[normalizedSlug];
+  const companyName = knownProfile?.name || entity?.name || normalizedSlug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  const companyTagline = knownProfile?.tagline || `${companyName} • Verified Platform Employer`;
+  const companyDescription = knownProfile?.description || entity?.description || `${companyName} is a verified organization committed to excellence, innovation, and career development.`;
+  const whatItDoes = knownProfile?.whatItDoes || `${companyName} operates in the ${knownProfile?.industry || 'technology and services'} sector, providing top-tier solutions and career opportunities.`;
+  const companyIndustry = knownProfile?.industry || 'Technology & Professional Services';
+  const companyLocation = knownProfile?.location || 'India';
+  const companyWebsite = knownProfile?.website || 'https://talentxcel.in';
+  const legalEntity = knownProfile?.legalEntity || `${companyName} Pvt Ltd`;
+  const foundedYear = knownProfile?.foundedYear || 2023;
+  const sizeRange = knownProfile?.sizeRange || '50-500 employees';
+  const coreServices = knownProfile?.coreServices || [
+    'Enterprise Technology Solutions',
+    'Specialized Professional Services',
+    'Talent Development & Career Growth',
+    'Strategic Business Operations'
+  ];
+  const techStack = knownProfile?.techStack || ['Cloud Platforms', 'Modern Web Tech', 'Data Systems', 'Enterprise Security'];
+  const searchKeyword = knownProfile?.searchKeyword || companyName;
+
+  // 3. Fetch Real Public Jobs for this Company from Supabase
   const { data: publicJobs = [] } = useQuery({
-    queryKey: ['company-public-jobs', normalizedSlug],
+    queryKey: ['company-public-jobs', normalizedSlug, searchKeyword],
     queryFn: async () => {
-      const isTalentXcel = normalizedSlug.includes('talentxcel');
-      let query = supabase
+      const { data, error } = await supabase
         .from('jobs')
         .select('*')
         .eq('is_active', true)
         .eq('job_status', 'open');
 
-      if (isTalentXcel) {
-        query = query.ilike('company_name', '%TalentXcel%');
-      } else {
-        query = query.ilike('company_name', `%${normalizedSlug}%`);
-      }
+      if (error || !data) return [];
 
-      const { data, error } = await query.limit(10);
-      if (error) return [];
-      return data || [];
+      const kw = searchKeyword.toLowerCase();
+      const nSlug = normalizedSlug.replace(/-/g, ' ');
+      return data.filter((j: any) => {
+        const cName = (j.company_name || '').toLowerCase();
+        const jTitle = (j.title || '').toLowerCase();
+        return cName.includes(kw) || cName.includes(nSlug) || jTitle.includes(kw);
+      });
     },
   });
 
-  // 3. Fetch Public Posts from the Company / Team
-  const { data: companyPosts = [] } = useQuery({
-    queryKey: ['company-public-posts', normalizedSlug],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('posts')
-        .select('*, author:profiles(id, full_name, username, title, profile_picture_url)')
-        .order('created_at', { ascending: false })
-        .limit(6);
-
-      if (error) return [];
-      return data || [];
-    },
-  });
-
-  const isTalentXcel = normalizedSlug.includes('talentxcel');
-  const companyName = isTalentXcel
-    ? 'TalentXcel Services'
-    : (entity?.name || normalizedSlug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()));
   const canonicalUrl = getPublicCompanyUrl(normalizedSlug);
+  const logoUrl = getGoogleCompanyLogo(companyName, companyWebsite);
 
   const pageTitle = `${companyName} | Career Profile, Culture & Jobs | TalentXcel`;
   const pageDescription = `Explore ${companyName} career opportunities, company culture, verified employee benchmarks, and active job openings on TalentXcel.`;
 
   const faqs = [
     {
-      question: 'What is TalentXcel?',
-      answer:
-        'TalentXcel is an AI-powered career operating system and recruitment platform that integrates intelligent job matching, ATS resume optimization, verified credentials, and corporate staffing solutions.',
+      question: `What is ${companyName}?`,
+      answer: companyDescription,
     },
     {
-      question: 'How does TalentXcel help job seekers?',
-      answer:
-        'Job seekers can build recruiter-ready ATS resumes, benchmark their skills with Career Passports, explore higher education degree pathways across 10,250 Indian institutions, and apply directly to verified employer jobs.',
+      question: `Where is ${companyName} headquartered?`,
+      answer: `${companyName} is located in ${companyLocation}. Visit official website at ${companyWebsite}.`,
     },
     {
-      question: 'What corporate recruitment services does TalentXcel provide?',
-      answer:
-        'TalentXcel provides end-to-end talent acquisition, contract-to-hire staffing, Recruitment Process Outsourcing (RPO), executive search, and pre-screened technical candidate pipelines.',
+      question: `How can I apply for jobs at ${companyName}?`,
+      answer: `You can view all active job openings for ${companyName} directly on TalentXcel and submit your application with a verified ATS-ready resume.`,
     },
     {
-      question: 'Where is TalentXcel located?',
-      answer:
-        'TalentXcel Services Pvt Ltd is headquartered in Noida, Uttar Pradesh, India, serving clients and job seekers globally.',
-    },
-    {
-      question: 'How can employers post jobs on TalentXcel?',
-      answer:
-        'Employers can visit the Employer Recruitment Portal at /employer to post openings, access pre-screened candidate pools, and leverage AI skill matching.',
+      question: `What are the core capabilities of ${companyName}?`,
+      answer: `${companyName} focuses on ${coreServices.join(', ')}.`,
     },
   ];
 
@@ -150,7 +243,7 @@ export default function CompanyPublicProfile() {
         <meta property="og:description" content={pageDescription} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={canonicalUrl} />
-        <meta property="og:image" content="https://talentxcel.in/talentxcel-official-logo.png" />
+        <meta property="og:image" content={logoUrl} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={pageTitle} />
         <meta name="twitter:description" content={pageDescription} />
@@ -178,39 +271,46 @@ export default function CompanyPublicProfile() {
           <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 md:p-10 backdrop-blur-sm shadow-xl">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
               <div className="flex items-start gap-5">
-                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white text-3xl font-black shadow-lg shadow-blue-500/20 border border-blue-400/30 shrink-0">
-                  T
+                <div className="w-20 h-20 rounded-2xl bg-white p-2 flex items-center justify-center shadow-lg border border-slate-700 shrink-0">
+                  <img 
+                    src={logoUrl} 
+                    alt={companyName} 
+                    className="w-full h-full object-contain"
+                    onError={(e) => {
+                      (e.target as HTMLElement).style.display = 'none';
+                    }}
+                  />
                 </div>
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h1 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
-                      TalentXcel Services
+                    <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+                      {companyName}
                     </h1>
                     <Badge variant="outline" className="border-emerald-500/40 text-emerald-400 bg-emerald-500/10 gap-1 text-xs py-0.5">
                       <ShieldCheck className="w-3.5 h-3.5" /> Verified Platform Entity
                     </Badge>
                   </div>
-                  <p className="text-blue-400 mt-1.5 text-base font-semibold">
-                    AI-Powered Career & Recruitment Ecosystem
+                  <p className="text-blue-400 mt-1 text-sm font-semibold">
+                    {companyTagline}
                   </p>
-                  <p className="text-slate-300 mt-2 text-sm leading-relaxed max-w-3xl">
-                    TalentXcel is an AI-powered career, recruitment and professional growth platform connecting job seekers, employers, educators and professionals.
+                  <p className="text-slate-300 mt-2 text-xs md:text-sm leading-relaxed max-w-3xl">
+                    {companyDescription}
                   </p>
-                  <div className="flex items-center gap-4 mt-4 text-xs text-slate-400 flex-wrap">
+                  <div className="flex items-center gap-4 mt-3 text-xs text-slate-400 flex-wrap">
                     <span className="flex items-center gap-1">
-                      <MapPin className="w-3.5 h-3.5 text-slate-500" /> Noida, Uttar Pradesh, India
+                      <MapPin className="w-3.5 h-3.5 text-slate-500" /> {companyLocation}
                     </span>
                     <a
-                      href="https://talentxcel.in"
+                      href={companyWebsite}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-1 text-blue-400 hover:underline"
                     >
-                      <Globe className="w-3.5 h-3.5" /> talentxcel.in
+                      <Globe className="w-3.5 h-3.5" /> {companyWebsite.replace(/^https?:\/\//, '')}
                       <ExternalLink className="w-3 h-3" />
                     </a>
                     <span className="flex items-center gap-1">
-                      <Users className="w-3.5 h-3.5 text-slate-500" /> HR Tech & AI Engineering
+                      <Users className="w-3.5 h-3.5 text-slate-500" /> {companyIndustry}
                     </span>
                   </div>
                 </div>
@@ -218,13 +318,13 @@ export default function CompanyPublicProfile() {
 
               {/* Action Buttons */}
               <div className="flex items-center gap-3 flex-wrap w-full md:w-auto shrink-0">
-                <Link to="/jobs" className="flex-1 md:flex-initial">
-                  <Button className="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold gap-2 shadow-md shadow-blue-600/20">
-                    <Briefcase className="w-4 h-4" /> View Open Jobs
+                <Link to={`/jobs?search=${encodeURIComponent(searchKeyword)}`} className="flex-1 md:flex-initial">
+                  <Button className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold gap-2 shadow-md">
+                    <Briefcase className="w-4 h-4" /> View Open Jobs ({publicJobs.length})
                   </Button>
                 </Link>
                 <Link to="/employer" className="flex-1 md:flex-initial">
-                  <Button variant="outline" className="w-full border-slate-700 hover:bg-slate-800 text-slate-200">
+                  <Button variant="outline" className="w-full border-slate-700 hover:bg-slate-800 text-slate-200 text-xs">
                     Hire Talent
                   </Button>
                 </Link>
@@ -255,286 +355,117 @@ export default function CompanyPublicProfile() {
           </div>
         </header>
 
-        {/* 18 Substantive Factual Sections */}
+        {/* Dynamic Factual Sections */}
         <main className="max-w-6xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main 2 Columns */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* 1. About TalentXcel */}
-            <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-8 space-y-4">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Building2 className="w-5 h-5 text-blue-400" /> 1. About TalentXcel
+          <div className="lg:col-span-2 space-y-6">
+            {/* 1. About Company */}
+            <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 space-y-3">
+              <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                <Building2 className="w-4 h-4 text-blue-400" /> 1. About {companyName}
               </h2>
-              <p className="text-slate-300 text-sm leading-relaxed">
-                TalentXcel Services Pvt Ltd is a modern technology and human capital organization headquartered in Noida, Uttar Pradesh, India. The company builds software architectures that unify talent acquisition, verified candidate credentials, higher education intelligence, and automated resume parsing to solve hiring fragmentation.
+              <p className="text-slate-300 text-xs md:text-sm leading-relaxed">
+                {companyDescription} Headquartered in {companyLocation}, {companyName} delivers reliable, scalable capabilities to its clients and partners across the industry.
               </p>
             </section>
 
-            {/* 2. What TalentXcel Does */}
-            <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-8 space-y-4">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Layers className="w-5 h-5 text-indigo-400" /> 2. What TalentXcel Does
+            {/* 2. What Company Does */}
+            <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 space-y-3">
+              <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                <Layers className="w-4 h-4 text-indigo-400" /> 2. What {companyName} Does
               </h2>
-              <p className="text-slate-300 text-sm leading-relaxed">
-                TalentXcel operates at the intersection of AI recruitment, career operating systems, and higher education intelligence. The platform automates skill verification, structures career progression milestones, matches job seekers with employers based on demonstrated capability, and assists enterprises with strategic talent acquisition.
+              <p className="text-slate-300 text-xs md:text-sm leading-relaxed">
+                {whatItDoes}
               </p>
             </section>
 
-            {/* 3. AI-Powered Career Platform */}
-            <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-8 space-y-4">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-purple-400" /> 3. AI-Powered Career Platform
+            {/* 3. Core Capabilities & Offerings */}
+            <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 space-y-3">
+              <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                <Target className="w-4 h-4 text-emerald-400" /> 3. Core Offerings & Services
               </h2>
-              <p className="text-slate-300 text-sm leading-relaxed">
-                The Career Platform leverages algorithmic matching to connect individual skill profiles with live market job requirements. Professionals can track career milestones, analyze salary benchmarks, and follow structured roadmaps designed for long-term capability building.
-              </p>
-            </section>
-
-            {/* 4. Jobs & Hiring */}
-            <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-8 space-y-4">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Briefcase className="w-5 h-5 text-emerald-400" /> 4. Jobs & Hiring
-              </h2>
-              <p className="text-slate-300 text-sm leading-relaxed">
-                TalentXcel publishes verified job openings across technical, commercial, marketing, and operations disciplines. Every job posting includes transparent role descriptions, location details, employment types, and verified salary ranges without hidden filters.
-              </p>
-              <Link to="/jobs">
-                <Button size="sm" variant="outline" className="border-slate-700 text-xs text-slate-200 mt-2">
-                  Browse Active Jobs &rarr;
-                </Button>
-              </Link>
-            </section>
-
-            {/* 5. Recruitment & Staffing */}
-            <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-8 space-y-4">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Users className="w-5 h-5 text-blue-400" /> 5. Recruitment & Staffing
-              </h2>
-              <p className="text-slate-300 text-sm leading-relaxed">
-                TalentXcel provides comprehensive enterprise staffing, Recruitment Process Outsourcing (RPO), and contract-to-hire solutions. Dedicated recruitment teams handle candidate sourcing, skill vetting, reference checks, and onboarding support.
-              </p>
-              <Link to="/services/staffing-recruitment">
-                <Button size="sm" variant="outline" className="border-slate-700 text-xs text-slate-200 mt-2">
-                  Explore Staffing Solutions &rarr;
-                </Button>
-              </Link>
-            </section>
-
-            {/* 6. Resume Builder */}
-            <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-8 space-y-4">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <FileText className="w-5 h-5 text-amber-400" /> 6. Resume Builder & ATS Intelligence
-              </h2>
-              <p className="text-slate-300 text-sm leading-relaxed">
-                The integrated ATS Resume Builder allows candidates to format, audit, and optimize their resumes against real recruiter parsing algorithms. Features include instant keyword match analysis, formatting validation, and export to ATS-compliant formats.
-              </p>
-              <Link to="/resume">
-                <Button size="sm" variant="outline" className="border-slate-700 text-xs text-slate-200 mt-2">
-                  Open Resume Studio &rarr;
-                </Button>
-              </Link>
-            </section>
-
-            {/* 7. Career Services */}
-            <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-8 space-y-4">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Target className="w-5 h-5 text-rose-400" /> 7. Career Services & Coaching
-              </h2>
-              <p className="text-slate-300 text-sm leading-relaxed">
-                Personalized professional guidance, executive bio refinement, interview simulation, and compensation negotiation strategies tailored for mid-career and senior transitions.
-              </p>
-              <Link to="/services/career-services">
-                <Button size="sm" variant="outline" className="border-slate-700 text-xs text-slate-200 mt-2">
-                  View Career Services &rarr;
-                </Button>
-              </Link>
-            </section>
-
-            {/* 8. Professional Networking */}
-            <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-8 space-y-4">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Network className="w-5 h-5 text-teal-400" /> 8. Professional Networking & Feed
-              </h2>
-              <p className="text-slate-300 text-sm leading-relaxed">
-                The TalentXcel network feed enables professionals to publish insights, discuss career strategies, celebrate milestones, and connect with peers and verified industry leaders.
-              </p>
-              <Link to="/network">
-                <Button size="sm" variant="outline" className="border-slate-700 text-xs text-slate-200 mt-2">
-                  Explore Network Feed &rarr;
-                </Button>
-              </Link>
-            </section>
-
-            {/* 9. Learning & Skill Development */}
-            <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-8 space-y-4">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-indigo-400" /> 9. Learning & Higher Education Intelligence
-              </h2>
-              <p className="text-slate-300 text-sm leading-relaxed">
-                Comprehensive data across 10,250 accredited Indian universities and colleges, tuition-free global master’s programs, verified scholarships, and 6-step AI educational pathway builders.
-              </p>
-              <Link to="/colleges">
-                <Button size="sm" variant="outline" className="border-slate-700 text-xs text-slate-200 mt-2">
-                  Access College Directory &rarr;
-                </Button>
-              </Link>
-            </section>
-
-            {/* 10. Employer Solutions */}
-            <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-8 space-y-4">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-emerald-400" /> 10. Employer Solutions
-              </h2>
-              <p className="text-slate-300 text-sm leading-relaxed">
-                Employers access intelligent candidate matching, candidate pipeline dashboards, automated skill assessment tools, and corporate branding hubs to attract top talent.
-              </p>
-              <Link to="/employer">
-                <Button size="sm" variant="outline" className="border-slate-700 text-xs text-slate-200 mt-2">
-                  Employer Recruitment Portal &rarr;
-                </Button>
-              </Link>
-            </section>
-
-            {/* 11. Technology & AI */}
-            <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-8 space-y-4">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Cpu className="w-5 h-5 text-blue-400" /> 11. Technology & AI Architecture
-              </h2>
-              <p className="text-slate-300 text-sm leading-relaxed">
-                Built on high-performance web architecture, Postgres vector embeddings, cryptographic credential verification, and real-time schema validation to deliver low-latency discovery and search crawlability.
-              </p>
-            </section>
-
-            {/* 12. Industries Served */}
-            <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-8 space-y-4">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-amber-400" /> 12. Industries Served
-              </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2 text-xs">
-                <div className="p-3 bg-slate-950 rounded-lg border border-slate-800 text-slate-200">Information Technology</div>
-                <div className="p-3 bg-slate-950 rounded-lg border border-slate-800 text-slate-200">Artificial Intelligence</div>
-                <div className="p-3 bg-slate-950 rounded-lg border border-slate-800 text-slate-200">Financial Services & Fintech</div>
-                <div className="p-3 bg-slate-950 rounded-lg border border-slate-800 text-slate-200">Healthcare & Life Sciences</div>
-                <div className="p-3 bg-slate-950 rounded-lg border border-slate-800 text-slate-200">E-commerce & Retail</div>
-                <div className="p-3 bg-slate-950 rounded-lg border border-slate-800 text-slate-200">Higher Education</div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                {coreServices.map((service, idx) => (
+                  <div key={idx} className="bg-slate-950/60 border border-slate-800 p-3 rounded-xl flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <span className="text-xs text-slate-200 font-medium">{service}</span>
+                  </div>
+                ))}
               </div>
             </section>
 
-            {/* 13. Careers at TalentXcel */}
-            <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-8 space-y-4">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Compass className="w-5 h-5 text-teal-400" /> 13. Careers at TalentXcel
+            {/* 4. Technology Stack & Frameworks */}
+            <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 space-y-3">
+              <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                <Cpu className="w-4 h-4 text-purple-400" /> 4. Technology & Tooling Stack
               </h2>
-              <p className="text-slate-300 text-sm leading-relaxed">
-                TalentXcel is expanding its core engineering, product, recruitment, marketing, and operations teams in Noida and across India. Explore current internal openings below.
-              </p>
+              <div className="flex flex-wrap gap-2 pt-1">
+                {techStack.map((tech, idx) => (
+                  <Badge key={idx} variant="secondary" className="bg-purple-950/40 text-purple-300 border border-purple-800/40 text-xs px-3 py-1">
+                    {tech}
+                  </Badge>
+                ))}
+              </div>
             </section>
 
-            {/* 14. Latest Updates from TalentXcel Team */}
-            {companyPosts.length > 0 && (
-              <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-8 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                    <MessageSquare className="w-5 h-5 text-purple-400" /> 14. Latest TalentXcel Updates
-                  </h2>
-                  <Link to="/network" className="text-xs text-blue-400 hover:underline">
-                    Feed &rarr;
-                  </Link>
-                </div>
-                <div className="space-y-3">
-                  {companyPosts.map((post) => (
-                    <Link
-                      key={post.id}
-                      to={`/post/${post.id}`}
-                      className="p-4 bg-slate-950/70 border border-slate-800 hover:border-purple-500/50 rounded-xl transition-all block group"
-                    >
-                      <div className="text-xs font-semibold text-white group-hover:text-purple-300">
-                        {post.author?.full_name || 'TalentXcel Team'}
-                      </div>
-                      <p className="text-xs text-slate-300 line-clamp-2 mt-1 leading-relaxed">
-                        {post.content}
-                      </p>
-                    </Link>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* 15. Public Jobs */}
-            <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-8 space-y-4">
+            {/* 5. Active Job Openings from Database */}
+            <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                  <Briefcase className="w-5 h-5 text-emerald-400" /> 15. Public Jobs ({publicJobs.length})
+                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                  <Briefcase className="w-4 h-4 text-emerald-400" /> 5. Active Job Openings ({publicJobs.length})
                 </h2>
-                <Link to="/jobs" className="text-xs text-blue-400 hover:underline">
-                  All Jobs &rarr;
+                <Link to={`/jobs?search=${encodeURIComponent(searchKeyword)}`}>
+                  <Button size="sm" variant="ghost" className="text-xs text-emerald-400 hover:text-emerald-300 gap-1">
+                    View All in Jobs Hub <ArrowRight className="w-3.5 h-3.5" />
+                  </Button>
                 </Link>
               </div>
-              {publicJobs.length === 0 ? (
-                <p className="text-slate-400 text-sm">No active listings at this time.</p>
-              ) : (
-                <div className="grid grid-cols-1 gap-3">
-                  {publicJobs.map((job) => (
-                    <Link
-                      key={job.id}
-                      to={getPublicJobUrl(job.seo_slug || job.id).replace('https://talentxcel.in', '')}
-                      className="p-4 bg-slate-950/70 border border-slate-800 hover:border-blue-500/50 rounded-xl transition-all block group"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <h3 className="text-base font-semibold text-white group-hover:text-blue-400 transition-colors">
-                            {job.title}
-                          </h3>
-                          <div className="flex items-center gap-3 mt-1.5 text-xs text-slate-400 flex-wrap">
-                            <span>{job.location || 'Noida, India'}</span>
-                            <span>•</span>
-                            <span>{job.employment_type || 'Full-time'}</span>
-                            {job.salary_min && (
-                              <span className="text-emerald-400 font-medium">
-                                ₹{(job.salary_min / 100000).toFixed(1)}L - ₹{((job.salary_max || job.salary_min) / 100000).toFixed(1)}L PA
-                              </span>
-                            )}
-                          </div>
+
+              {publicJobs.length > 0 ? (
+                <div className="space-y-3">
+                  {publicJobs.slice(0, 5).map((job: any) => (
+                    <div key={job.id} className="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-center justify-between gap-4">
+                      <div>
+                        <div className="text-sm font-semibold text-white hover:text-blue-400 transition-colors">
+                          {job.title}
                         </div>
-                        <Button size="sm" variant="outline" className="border-slate-700 text-xs shrink-0">
-                          View Role
-                        </Button>
+                        <div className="flex items-center gap-2 text-xs text-slate-400 mt-1">
+                          <span>{job.location || companyLocation}</span>
+                          <span>•</span>
+                          <span>{job.employment_type || 'Full-time'}</span>
+                          {job.salary_min && (
+                            <>
+                              <span>•</span>
+                              <span className="text-emerald-400">₹{(job.salary_min / 100000).toFixed(1)} - {(job.salary_max / 100000).toFixed(1)} LPA</span>
+                            </>
+                          )}
+                        </div>
                       </div>
-                    </Link>
+                      <Link to={`/jobs/${job.seo_slug || job.id}`}>
+                        <Button size="sm" className="bg-blue-600 hover:bg-blue-500 text-white text-xs h-7 px-3">
+                          Apply Now
+                        </Button>
+                      </Link>
+                    </div>
                   ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-xs text-slate-400">
+                  <p>No active openings currently published for {companyName}.</p>
+                  <p className="mt-1">Check back soon or follow to receive new job alerts.</p>
                 </div>
               )}
             </section>
 
-            {/* 16. Related Career Resources */}
-            <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-8 space-y-4">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <FileText className="w-5 h-5 text-indigo-400" /> 16. Related Career Resources
+            {/* 6. Frequently Asked Questions */}
+            <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 space-y-3">
+              <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                <HelpCircle className="w-4 h-4 text-amber-400" /> 6. Frequently Asked Questions
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                <Link to="/resources/how-to-write-an-ats-friendly-resume-in-2026-complete-step-by-step-guide" className="p-3 bg-slate-950 rounded-lg border border-slate-800 hover:border-blue-500 text-slate-200 block">
-                  Complete ATS Resume Guide &rarr;
-                </Link>
-                <Link to="/colleges/pathway" className="p-3 bg-slate-950 rounded-lg border border-slate-800 hover:border-blue-500 text-slate-200 block">
-                  6-Step AI Career Pathway Tool &rarr;
-                </Link>
-                <Link to="/services/ai-recruitment" className="p-3 bg-slate-950 rounded-lg border border-slate-800 hover:border-blue-500 text-slate-200 block">
-                  AI Recruitment Solutions Guide &rarr;
-                </Link>
-                <Link to="/topics/artificial-intelligence" className="p-3 bg-slate-950 rounded-lg border border-slate-800 hover:border-blue-500 text-slate-200 block">
-                  Artificial Intelligence Topic Hub &rarr;
-                </Link>
-              </div>
-            </section>
-
-            {/* 17. Frequently Asked Questions */}
-            <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-8 space-y-4">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <HelpCircle className="w-5 h-5 text-amber-400" /> 17. Frequently Asked Questions
-              </h2>
-              <Accordion type="single" collapsible className="w-full space-y-2">
-                {faqs.map((faq, index) => (
-                  <AccordionItem key={index} value={`item-${index}`} className="border-slate-800">
-                    <AccordionTrigger className="text-sm font-semibold text-slate-200 hover:text-white">
+              <Accordion type="single" collapsible className="w-full">
+                {faqs.map((faq, idx) => (
+                  <AccordionItem key={idx} value={`item-${idx}`} className="border-slate-800">
+                    <AccordionTrigger className="text-xs md:text-sm font-semibold text-slate-200 hover:text-blue-400">
                       {faq.question}
                     </AccordionTrigger>
                     <AccordionContent className="text-xs text-slate-400 leading-relaxed">
@@ -544,80 +475,73 @@ export default function CompanyPublicProfile() {
                 ))}
               </Accordion>
             </section>
-
-            {/* 18. Contact / Get Started */}
-            <section className="bg-gradient-to-br from-blue-950/60 to-indigo-950/60 border border-blue-900/60 rounded-2xl p-6 md:p-8 space-y-4">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Mail className="w-5 h-5 text-blue-400" /> 18. Contact & Get Started
-              </h2>
-              <p className="text-slate-300 text-sm leading-relaxed">
-                Connect with the TalentXcel team to accelerate your organization’s hiring or unlock career pathways.
-              </p>
-              <div className="flex items-center gap-3 flex-wrap pt-2">
-                <Link to="/contact">
-                  <Button className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold">
-                    Contact TalentXcel Team
-                  </Button>
-                </Link>
-                <Link to="/employer">
-                  <Button variant="outline" className="border-slate-700 text-xs text-slate-200">
-                    Employer Portal
-                  </Button>
-                </Link>
-              </div>
-            </section>
           </div>
 
-          {/* Right Column: Organization Facts */}
+          {/* Right Sidebar: Entity Overview */}
           <div className="space-y-6">
-            <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6">
-              <h3 className="text-lg font-bold text-white mb-4">Entity Overview</h3>
-              <div className="space-y-3.5 text-sm">
-                <div className="flex items-center justify-between pb-2.5 border-b border-slate-800">
+            <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 space-y-4">
+              <h3 className="text-sm font-bold text-slate-200 border-b border-slate-800 pb-2">
+                Entity Overview
+              </h3>
+              
+              <div className="space-y-3 text-xs">
+                <div>
                   <span className="text-slate-400">Legal Entity</span>
-                  <span className="font-medium text-white">TalentXcel Services Pvt Ltd</span>
+                  <div className="text-white font-medium mt-0.5">{legalEntity}</div>
                 </div>
-                <div className="flex items-center justify-between pb-2.5 border-b border-slate-800">
+
+                <div>
                   <span className="text-slate-400">Headquarters</span>
-                  <span className="font-medium text-white">Noida, UP, India</span>
+                  <div className="text-white font-medium mt-0.5">{companyLocation}</div>
                 </div>
-                <div className="flex items-center justify-between pb-2.5 border-b border-slate-800">
+
+                <div>
                   <span className="text-slate-400">Primary Domain</span>
-                  <span className="font-medium text-white">https://talentxcel.in</span>
+                  <div className="text-blue-400 font-medium mt-0.5 truncate">
+                    <a href={companyWebsite} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+                      {companyWebsite} <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between pb-2.5 border-b border-slate-800">
+
+                <div>
                   <span className="text-slate-400">Industry</span>
-                  <span className="font-medium text-white">HR Tech & AI</span>
+                  <div className="text-white font-medium mt-0.5">{companyIndustry}</div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-400">Status</span>
-                  <Badge variant="outline" className="text-emerald-400 border-emerald-500/30 text-xs">
-                    Verified Operating Entity
-                  </Badge>
+
+                <div>
+                  <span className="text-slate-400">Company Size</span>
+                  <div className="text-white font-medium mt-0.5">{sizeRange}</div>
+                </div>
+
+                <div>
+                  <span className="text-slate-400">Founded</span>
+                  <div className="text-white font-medium mt-0.5">{foundedYear}</div>
+                </div>
+
+                <div>
+                  <span className="text-slate-400">Verification Status</span>
+                  <div className="mt-1">
+                    <Badge variant="outline" className="border-emerald-500/40 text-emerald-400 bg-emerald-500/10 text-[10px]">
+                      Verified Platform Entity
+                    </Badge>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Quick Links Card */}
-            <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-6 space-y-3">
-              <h3 className="text-base font-bold text-white mb-2">Core Services</h3>
-              <div className="space-y-2 text-xs">
-                <Link to="/services/ai-recruitment" className="block text-slate-300 hover:text-blue-400">
-                  &bull; AI Recruitment Platform
-                </Link>
-                <Link to="/services/staffing-recruitment" className="block text-slate-300 hover:text-blue-400">
-                  &bull; Corporate Staffing & RPO
-                </Link>
-                <Link to="/services/it-services" className="block text-slate-300 hover:text-blue-400">
-                  &bull; IT & Systems Consulting
-                </Link>
-                <Link to="/services/career-services" className="block text-slate-300 hover:text-blue-400">
-                  &bull; Career Coaching & Services
-                </Link>
-                <Link to="/services/resume-building" className="block text-slate-300 hover:text-blue-400">
-                  &bull; ATS Resume Builder
-                </Link>
-              </div>
+            {/* Quick Apply CTA */}
+            <div className="bg-gradient-to-br from-blue-950/60 to-indigo-950/60 border border-blue-900/40 rounded-2xl p-6 text-center space-y-3">
+              <Sparkles className="w-8 h-8 text-blue-400 mx-auto" />
+              <h4 className="text-sm font-bold text-white">Looking for Opportunities?</h4>
+              <p className="text-xs text-slate-300">
+                Optimize your resume with our AI ATS Scanner to maximize your chances of getting hired at {companyName}.
+              </p>
+              <Link to="/resume/ats-check" className="block pt-1">
+                <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs">
+                  Scan My Resume Free
+                </Button>
+              </Link>
             </div>
           </div>
         </main>

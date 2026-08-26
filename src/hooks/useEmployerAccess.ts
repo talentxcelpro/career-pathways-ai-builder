@@ -1,7 +1,16 @@
-
-import { useQuery } from '@tanstack/react-query';
+﻿import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+
+const ROOT_ADMIN_EMAILS = [
+  'talentxcelpro@gmail.com',
+  'talentxcelservices@gmail.com',
+  'chatr4661@gmail.com',
+  'arsh.wani@gmail.com',
+  'arshid.wani@icloud.com',
+  'vishwajeetnayak18@gmail.com',
+  'sanobar.jahan1980@gmail.com'
+];
 
 export const useEmployerAccess = () => {
   const { user } = useAuth();
@@ -10,50 +19,68 @@ export const useEmployerAccess = () => {
     queryKey: ['employer-access', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
+
+      // 1. Root super admin bypass
+      const userEmail = (user.email || '').toLowerCase().trim();
+      const userPhone = (user.phone || '').trim();
+      const isRootAdmin = ROOT_ADMIN_EMAILS.includes(userEmail) || userPhone.includes('9910678611') || userPhone.includes('9717845477');
+
+      if (isRootAdmin) {
+        return {
+          isEmployer: true,
+          isApproved: true,
+          hasEmployerAccess: true,
+          employerStatus: 'approved',
+          hasTeamMembership: true
+        };
+      }
       
-      // Check profile status first
-      const { data: profile, error: profileError } = await supabase
+      // 2. Check profile status
+      const { data: profile } = await supabase
         .from('profiles')
-        .select('is_employer, employer_status')
+        .select('is_employer, employer_status, user_type')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
       
-      if (profileError) throw profileError;
-      
-      // Also check if user has active team membership (alternative path to employer access)
+      // 3. Check team membership
       const { data: teamMembership } = await supabase
         .from('company_team_members')
         .select('role, is_active, company_id')
         .eq('user_id', user.id)
         .eq('is_active', true)
         .limit(1);
+
+      // 4. Check if they have an approved employer application/request
+      const { data: approvedReq } = await supabase
+        .from('employer_requests')
+        .select('id, status')
+        .eq('user_id', user.id)
+        .eq('status', 'approved')
+        .maybeSingle();
       
+      const isEmployer = profile?.is_employer === true || profile?.user_type === 'employer' || !!approvedReq;
+      const isApproved = profile?.employer_status === 'approved' || !!approvedReq || isEmployer;
+      const hasTeam = teamMembership && teamMembership.length > 0;
+      const hasAccess = isApproved || hasTeam || isEmployer;
+
       return {
         profile,
-        hasTeamMembership: teamMembership && teamMembership.length > 0
+        isEmployer,
+        isApproved,
+        hasEmployerAccess: hasAccess,
+        employerStatus: isApproved ? 'approved' : (profile?.employer_status || 'pending'),
+        hasTeamMembership: hasTeam
       };
     },
     enabled: !!user?.id,
-    staleTime: 0, // Always refetch to get latest status
-    gcTime: 0, // Don't cache
+    staleTime: 60000,
   });
 
-  const profile = accessData?.profile;
-  const hasTeamMembership = accessData?.hasTeamMembership || false;
-  
-  const isEmployer = profile?.is_employer === true;
-  const isApproved = profile?.employer_status === 'approved';
-  
-  // User has employer access if they're approved OR have active team membership
-  const hasEmployerAccess = (isEmployer && isApproved) || hasTeamMembership;
-
-  console.log('useEmployerAccess debug:', { isEmployer, isApproved, hasTeamMembership, hasEmployerAccess });
-
   return {
-    isEmployer,
-    isApproved,
-    hasEmployerAccess,
-    employerStatus: profile?.employer_status,
+    isEmployer: accessData?.isEmployer ?? false,
+    isApproved: accessData?.isApproved ?? false,
+    hasEmployerAccess: accessData?.hasEmployerAccess ?? (user ? ROOT_ADMIN_EMAILS.includes((user.email || '').toLowerCase()) : false),
+    employerStatus: accessData?.employerStatus || 'approved',
     isLoading,
     refetch
   };
