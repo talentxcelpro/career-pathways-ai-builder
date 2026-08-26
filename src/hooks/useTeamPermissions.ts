@@ -47,27 +47,66 @@ export const useTeamPermissions = (companyId?: string) => {
 
   // Check specific permission
   const hasPermission = (permissionType: string): boolean => {
-    if (!permissions || !roleData) return false;
-    
-    // Check direct permission
-    const permission = permissions.find(p => p.permission_type === permissionType);
-    if (permission?.is_allowed) return true;
-    
-    // Check permission hierarchies - higher level permissions include lower level ones
-    const permissionHierarchies: Record<string, string[]> = {
-      'access_crm_basic': ['access_crm_full'],
-      'manage_jobs_basic': ['manage_jobs', 'manage_jobs_full'],
-      'view_analytics_basic': ['view_analytics', 'view_analytics_full'],
-    };
-    
-    const higherPermissions = permissionHierarchies[permissionType];
-    if (higherPermissions) {
-      return higherPermissions.some(higherPerm => 
-        permissions.find(p => p.permission_type === higherPerm)?.is_allowed
-      );
+    const userRole = (roleData?.role || 'member').toLowerCase();
+
+    // 1. Owners and Admins have full access to all employer features
+    if (userRole === 'owner' || userRole === 'admin' || userRole === 'superadmin') {
+      return true;
     }
-    
-    return false;
+
+    // 2. Check direct custom permissions in company_team_members
+    if (Array.isArray((roleData as any)?.permissions) && (roleData as any).permissions.includes(permissionType)) {
+      return true;
+    }
+
+    // 3. Check role_permissions table if available
+    if (permissions && permissions.length > 0) {
+      const permission = permissions.find(p => p.permission_type === permissionType);
+      if (permission?.is_allowed) return true;
+      
+      const permissionHierarchies: Record<string, string[]> = {
+        'access_crm_basic': ['access_crm_full'],
+        'manage_jobs_basic': ['manage_jobs', 'manage_jobs_full'],
+        'view_analytics_basic': ['view_analytics', 'view_analytics_full'],
+      };
+      
+      const higherPermissions = permissionHierarchies[permissionType];
+      if (higherPermissions) {
+        const hasHigher = higherPermissions.some(higherPerm => 
+          permissions.find(p => p.permission_type === higherPerm)?.is_allowed
+        );
+        if (hasHigher) return true;
+      }
+    }
+
+    // 4. Default fallback permissions by role (when role_permissions table is unseeded)
+    const DEFAULT_ROLE_PERMISSIONS: Record<string, string[]> = {
+      owner: [
+        'manage_jobs', 'manage_jobs_full', 'manage_jobs_basic',
+        'access_crm_basic', 'access_crm_full',
+        'manage_company', 'view_analytics', 'view_analytics_full', 'view_analytics_basic',
+        'approve_permissions', 'manage_team'
+      ],
+      admin: [
+        'manage_jobs', 'manage_jobs_full', 'manage_jobs_basic',
+        'access_crm_basic', 'access_crm_full',
+        'manage_company', 'view_analytics', 'view_analytics_full', 'view_analytics_basic',
+        'approve_permissions', 'manage_team'
+      ],
+      recruiter: [
+        'manage_jobs', 'manage_jobs_basic',
+        'access_crm_basic', 'access_crm_full',
+        'view_analytics', 'view_analytics_basic'
+      ],
+      member: [
+        'manage_jobs', 'manage_jobs_basic',
+        'access_crm_basic', 'access_crm_full',
+        'manage_company', 'view_analytics', 'view_analytics_basic'
+      ]
+    };
+
+    const allowedDefaults = DEFAULT_ROLE_PERMISSIONS[userRole] || DEFAULT_ROLE_PERMISSIONS.member;
+    return allowedDefaults.includes(permissionType);
   };
 
   // Check if permission requires approval
