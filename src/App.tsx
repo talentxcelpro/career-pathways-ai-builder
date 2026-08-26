@@ -70,6 +70,8 @@ const UnifiedResumeBuilder            = lazy(() => import('./pages/resume/Unifie
 const UnifiedUploadPage               = lazy(() => import('./pages/resume/UnifiedUploadPage'));
 const MyResumes                       = lazy(() => import('./pages/resume/MyResumes'));
 const ATSChecker                      = lazy(() => import('./pages/resume/ATSChecker'));
+const CoverLetterStudio               = lazy(() => import('./pages/resume/CoverLetterStudio'));
+const InterviewPrepSuite              = lazy(() => import('./pages/resume/InterviewPrepSuite'));
 const ResumeAnalytics                 = lazy(() => import('./pages/resume/ResumeAnalytics'));
 const LegacyRouteRedirect             = lazy(() => import('./components/resume/LegacyRouteRedirect').then(m => ({ default: m.LegacyRouteRedirect })));
 const Tools                           = lazy(() => import('./pages/Tools'));
@@ -484,8 +486,8 @@ const App = () => {
                                   <Route path="/resume/dashboard" element={<MyResumes />} />
                                   <Route path="/resume/ats-check" element={<ATSChecker />} />
                                   <Route path="/resume/analytics" element={<ResumeAnalytics />} />
-                                  <Route path="/resume/cover-letter" element={<UnifiedResumeBuilder />} />
-                                  <Route path="/resume/interview-prep" element={<UnifiedResumeBuilder />} />
+                                  <Route path="/resume/cover-letter" element={<CoverLetterStudio />} />
+                                  <Route path="/resume/interview-prep" element={<InterviewPrepSuite />} />
                                   <Route path="/resume/portfolio" element={<UnifiedResumeBuilder />} />
                                   
                                   {/* Legacy Resume Routes - Redirects to Unified Builder */}
