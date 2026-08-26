@@ -72,9 +72,8 @@ const TXCAwardsAndBonuses = lazy(() => import('../pages/admin/TXCAwardsAndBonuse
 const TXCTokenManagement = lazy(() => import('../pages/admin/TXCTokenManagement'));
 const BotPostManager = lazy(() => import('../components/admin/BotPostManager').then(m => ({ default: m.BotPostManager })));
 const TokenWallet = lazy(() => import('../components/blockchain/TokenWallet').then(m => ({ default: m.TokenWallet })));
-const LinkedInImportManager = lazy(() => import('../components/admin/LinkedInImportManager').then(m => ({ default: m.LinkedInImportManager })));
-// Removed traditional pricing - using TXC only
-// Removed traditional pricing plans - using TXC only
+const TXCPricing = lazy(() => import('../pages/TXCPricing'));
+// Using TXC Token Economy for Pricing
 
 export const adminRoutes = [
   {
@@ -302,7 +301,13 @@ export const adminRoutes = [
     page: <Suspense fallback={null}><CreateCourse /></Suspense>,
     isPublic: true,
   },
-  // Removed traditional pricing plan creation - using TXC only
+  {
+    title: "TXC Pricing Plans",
+    to: "/admin/pricing/create",
+    icon: <CreditCard className="h-4 w-4" />,
+    page: <Suspense fallback={null}><TXCPricing /></Suspense>,
+    isPublic: true,
+  },
   {
     title: "SEO Management",
     to: "/admin/seo",

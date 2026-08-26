@@ -406,10 +406,10 @@ const analyticsReportsItems = [
     description: 'Pricing & billing'
   },
   {
-    title: 'Create Pricing Plan',
-    url: '/admin/pricing/create',
+    title: 'TXC Pricing Plans',
+    url: '/txc/pricing',
     icon: CreditCard,
-    description: 'Create new subscription plans'
+    description: 'Manage TXC token packages & subscription tiers'
   }
 ];
 
