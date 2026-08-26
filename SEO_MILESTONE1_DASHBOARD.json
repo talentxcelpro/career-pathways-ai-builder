@@ -1,0 +1,111 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-08-26T07:15:00Z",
+  "milestone": "M1_100K_EVIDENCE_GATE",
+  "status": "ACTIVE_EXECUTION",
+  "staged_gates": {
+    "current_stage": "M1",
+    "stages": [
+      {
+        "gate": "SEED",
+        "target_records": 30,
+        "current_records": 30,
+        "status": "COMPLETED"
+      },
+      {
+        "gate": "M1_100K",
+        "target_records": 100000,
+        "current_records": 30,
+        "status": "IN_PROGRESS"
+      },
+      {
+        "gate": "M2_1M",
+        "target_records": 1000000,
+        "current_records": 0,
+        "status": "PLANNED"
+      },
+      {
+        "gate": "M3_10M",
+        "target_records": 10000000,
+        "current_records": 0,
+        "status": "PLANNED"
+      },
+      {
+        "gate": "M4_100M",
+        "target_records": 100000000,
+        "current_records": 0,
+        "status": "PLANNED"
+      }
+    ]
+  },
+  "four_pillars_of_truth": {
+    "1_demand": {
+      "unique_evidenced_queries": 30,
+      "daily_new_unique_queries_rate": 0,
+      "semantic_intent_clusters": 25,
+      "product_surfaces_active": 14,
+      "countries_covered": [
+        "IN"
+      ],
+      "competitor_gaps_identified": 5
+    },
+    "2_seo": {
+      "indexed_canonical_pages": 12592,
+      "monthly_gsc_impressions": 1188,
+      "monthly_gsc_clicks": 71,
+      "average_ctr_pct": 5.97,
+      "gsc_average_position_core_clusters": 18.2,
+      "top_3_queries_count": 0,
+      "top_10_queries_count": 4,
+      "top_20_queries_count": 7
+    },
+    "3_acquisition": {
+      "organic_sessions_monthly": "instrumenting",
+      "registered_users_from_search": "instrumenting",
+      "search_to_signup_conversion_rate_pct": "instrumenting",
+      "signup_to_activation_rate_pct": "instrumenting",
+      "first_product_actions_completed": "instrumenting",
+      "retained_organic_users_30d": "instrumenting"
+    },
+    "4_quality": {
+      "doorway_candidates_rejected": 1,
+      "sub_threshold_pages_consolidated": 1,
+      "active_cannibalization_conflicts": 0,
+      "isolated_orphan_pages": 2,
+      "ci_gate_pass_rate_pct": 100.0,
+      "total_ci_checks": 128
+    }
+  },
+  "p0_quick_wins_queue": [
+    {
+      "query": "content writer jobs noida",
+      "current_gsc_pos": 6.4,
+      "target_pos": 3,
+      "status": "QUEUED_OPTIMIZATION"
+    },
+    {
+      "query": "marketing executive jobs noida",
+      "current_gsc_pos": 7.2,
+      "target_pos": 3,
+      "status": "QUEUED_OPTIMIZATION"
+    },
+    {
+      "query": "ats resume builder for software engineers",
+      "current_gsc_pos": 11.2,
+      "target_pos": 8,
+      "status": "QUEUED_OPTIMIZATION"
+    },
+    {
+      "query": "salary calculator india 2026",
+      "current_gsc_pos": 35.0,
+      "target_pos": 18,
+      "status": "QUEUED_LINK_AUTHORITY_BOOST"
+    },
+    {
+      "query": "infosys interview questions 2026",
+      "current_gsc_pos": null,
+      "target_pos": 25,
+      "status": "QUEUED_LINK_AUTHORITY_BOOST"
+    }
+  ]
+}
