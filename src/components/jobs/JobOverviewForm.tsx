@@ -46,7 +46,20 @@ const experienceLevelOptions = [
   { value: 'executive', label: '10+ Years' }
 ];
 
+const defaultJobCategories = [
+  { id: 'tech-dev', name: 'Software Development & IT' },
+  { id: 'ai-data', name: 'AI & Data Science' },
+  { id: 'sales-mktg', name: 'Sales & Marketing' },
+  { id: 'design-ui', name: 'UI/UX & Product Design' },
+  { id: 'finance-acc', name: 'Finance & Accounting' },
+  { id: 'operations-hr', name: 'Human Resources & Operations' },
+  { id: 'engineering-core', name: 'Core Engineering & Safety' },
+  { id: 'product-mgmt', name: 'Product Management' }
+];
+
 export default function JobOverviewForm({ formData, onInputChange, categories }: JobOverviewFormProps) {
+  const availableCategories = (categories && categories.length > 0) ? categories : defaultJobCategories;
+
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
       onInputChange('application_deadline', date.toISOString().split('T')[0]);
@@ -223,7 +236,7 @@ export default function JobOverviewForm({ formData, onInputChange, categories }:
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
             <SelectContent>
-              {categories.map((category) => (
+              {availableCategories.map((category) => (
                 <SelectItem key={category.id} value={category.id}>
                   {category.name}
                 </SelectItem>
