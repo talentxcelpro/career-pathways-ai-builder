@@ -24,6 +24,7 @@ interface RealCompany {
   logo_url?: string;
   is_verified: boolean;
   open_jobs_count: number;
+  search_keyword: string;
 }
 
 // Canonical registered employer profiles on the platform
@@ -37,9 +38,10 @@ const PLATFORM_REGISTERED_EMPLOYERS: Omit<RealCompany, 'open_jobs_count'>[] = [
     location: 'New Delhi, Delhi NCR, India',
     size_range: '50-200 employees',
     founded_year: 2024,
-    website_url: 'https://chatrchat.com',
-    logo_url: 'https://www.google.com/s2/favicons?domain=chatrchat.com&sz=128',
-    is_verified: true
+    website_url: 'https://chatr.chat',
+    logo_url: 'https://www.google.com/s2/favicons?domain=chatr.chat&sz=128',
+    is_verified: true,
+    search_keyword: 'Chatr'
   },
   {
     id: 'comp_savantis_solutions',
@@ -52,7 +54,8 @@ const PLATFORM_REGISTERED_EMPLOYERS: Omit<RealCompany, 'open_jobs_count'>[] = [
     founded_year: 2012,
     website_url: 'https://savantis.com',
     logo_url: 'https://www.google.com/s2/favicons?domain=savantis.com&sz=128',
-    is_verified: true
+    is_verified: true,
+    search_keyword: 'Savantis'
   },
   {
     id: 'comp_talentxcel_services',
@@ -65,7 +68,8 @@ const PLATFORM_REGISTERED_EMPLOYERS: Omit<RealCompany, 'open_jobs_count'>[] = [
     founded_year: 2023,
     website_url: 'https://talentxcel.in/services',
     logo_url: 'https://www.google.com/s2/favicons?domain=talentxcel.in&sz=128',
-    is_verified: true
+    is_verified: true,
+    search_keyword: 'TalentXcel'
   },
   {
     id: 'comp_talentxcel_enterprise',
@@ -78,7 +82,8 @@ const PLATFORM_REGISTERED_EMPLOYERS: Omit<RealCompany, 'open_jobs_count'>[] = [
     founded_year: 2023,
     website_url: 'https://talentxcel.in',
     logo_url: 'https://www.google.com/s2/favicons?domain=talentxcel.in&sz=128',
-    is_verified: true
+    is_verified: true,
+    search_keyword: 'TalentXcel'
   }
 ];
 
@@ -95,7 +100,7 @@ export const Companies: React.FC = () => {
       // 1. Fetch real active jobs directly from Supabase
       const { data: dbJobs = [] } = await supabase
         .from('jobs')
-        .select('id, company_name, company_id, is_active, job_status')
+        .select('id, title, company_name, company_id, is_active, job_status')
         .eq('is_active', true);
 
       // Compute exact real job counts per company from live database
@@ -119,16 +124,17 @@ export const Companies: React.FC = () => {
       // Populate registered platform employers
       PLATFORM_REGISTERED_EMPLOYERS.forEach((emp) => {
         const key = emp.name.toLowerCase().trim();
-        // Count jobs matching company name or variations
-        let count = realJobCounts.get(key) || 0;
-        if (count === 0) {
-          // Check substring matching for jobs
-          (dbJobs || []).forEach((j) => {
-            if (j.company_name && j.company_name.toLowerCase().includes(key)) {
-              count++;
-            }
-          });
-        }
+        const kw = emp.search_keyword.toLowerCase();
+
+        // Count jobs matching company name or title search keyword
+        let count = 0;
+        (dbJobs || []).forEach((j) => {
+          const cName = (j.company_name || '').toLowerCase();
+          const jTitle = (j.title || '').toLowerCase();
+          if (cName.includes(key) || cName.includes(kw) || jTitle.includes(kw)) {
+            count++;
+          }
+        });
 
         companyMap.set(key, {
           ...emp,
@@ -158,7 +164,8 @@ export const Companies: React.FC = () => {
           website_url: webUrl,
           logo_url: logo,
           is_verified: db.is_verified ?? true,
-          open_jobs_count: realCount
+          open_jobs_count: realCount,
+          search_keyword: existing?.search_keyword || db.name
         });
       });
 
@@ -296,13 +303,13 @@ export const Companies: React.FC = () => {
               {companiesList.map((company) => {
                 const isFollowed = followedCompanies.has(company.name);
                 const profileUrl = `/company/${company.slug}`;
-                const jobsUrl = `/jobs?search=${encodeURIComponent(company.name)}`;
+                const jobsUrl = `/jobs?search=${encodeURIComponent(company.search_keyword)}`;
                 const logoSrc = company.logo_url || getGoogleCompanyLogo(company.name, company.website_url);
 
                 return (
                   <Card key={company.id} className="border rounded-xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between overflow-hidden bg-white dark:bg-slate-900 group">
                     <div>
-                      {/* Gradient Header with Real Google Logo */}
+                      {/* Gradient Header with Real Google Favicon Logo */}
                       <div className="h-20 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-3 flex items-start justify-between">
                         <div className="w-12 h-12 rounded-xl bg-white dark:bg-slate-900 border-2 border-white shadow-md p-1.5 flex items-center justify-center">
                           <img 
@@ -379,7 +386,7 @@ export const Companies: React.FC = () => {
                       </CardContent>
                     </div>
 
-                    {/* Bottom Actions with Real Dynamic Job Count */}
+                    {/* Bottom Actions with Real Job Filter */}
                     <div className="p-3 bg-muted/20 border-t flex items-center justify-between gap-2">
                       <Link to={profileUrl} className="flex-1">
                         <Button variant="outline" size="sm" className="w-full h-8 text-xs font-semibold">
