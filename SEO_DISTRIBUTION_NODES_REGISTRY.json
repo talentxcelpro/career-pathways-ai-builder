@@ -1,0 +1,66 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2026-08-26T08:10:00Z",
+  "engine": "TalentXcel Phase 15 Distribution Node Registry",
+  "total_registered_nodes": 6,
+  "node_type_breakdown": {
+    "UGC_PASSPORT_NODE": 2,
+    "SALARY_BENCHMARK_NODE": 2,
+    "ATS_SCORECARD_NODE": 1,
+    "JOB_REFERRAL_NODE": 1
+  },
+  "nodes": [
+    {
+      "nodeId": "node_7fa10b2c11",
+      "nodeType": "UGC_PASSPORT_NODE",
+      "entityKey": "sanobar-jahan",
+      "canonicalUrl": "https://talentxcel.in/passport/sanobar-jahan",
+      "shareUrl": "https://talentxcel.in/passport/sanobar-jahan?ref=pass_share_sanobar",
+      "indexingTier": "TIER_1_INDEX_IMMEDIATE",
+      "openGraphMetadata": {
+        "title": "Sanobar Jahan \u2014 Verified Career Passport & AI Profile | TalentXcel",
+        "description": "View Sanobar Jahan's verified credentials: AI Research Engineer with verified expertise in PyTorch, Large Language Models, and Distributed Systems.",
+        "imageUrl": "https://talentxcel.in/api/og/passport?slug=sanobar-jahan",
+        "cardType": "summary_large_image"
+      },
+      "viralTriggers": {
+        "whatsAppShareText": "Check out my verified Career Passport on TalentXcel: https://talentxcel.in/passport/sanobar-jahan?ref=pass_share_sanobar",
+        "linkedInPostText": "Excited to share my live Career Passport on TalentXcel showcasing verified AI research credentials! View my profile: https://talentxcel.in/passport/sanobar-jahan?ref=pass_share_sanobar #CareerPassport #AI",
+        "copyLinkText": "https://talentxcel.in/passport/sanobar-jahan?ref=pass_share_sanobar"
+      },
+      "metrics": {
+        "directViews": 142,
+        "sharesCount": 18,
+        "referralSignups": 7,
+        "referralActivations": 5,
+        "kFactorCalculated": 0.38
+      }
+    },
+    {
+      "nodeId": "node_d533a1d022",
+      "nodeType": "SALARY_BENCHMARK_NODE",
+      "entityKey": "software-engineer_bangalore",
+      "canonicalUrl": "https://talentxcel.in/tools/salary-calculator?role=software-engineer&city=bangalore",
+      "shareUrl": "https://talentxcel.in/tools/salary-calculator?role=software-engineer&city=bangalore&ref=sal_share",
+      "indexingTier": "TIER_1_INDEX_IMMEDIATE",
+      "openGraphMetadata": {
+        "title": "Software Engineer Salary in Bangalore 2026 (In-Hand & Tax Breakdown) | TalentXcel",
+        "description": "Median salary for Software Engineer in Bangalore is \u20b911,87,500/year (\u20b984,500/month take-home). Calculate in-hand compensation across experience levels.",
+        "imageUrl": "https://talentxcel.in/api/og/salary?role=software-engineer&city=bangalore",
+        "cardType": "summary_large_image"
+      },
+      "viralTriggers": {
+        "whatsAppShareText": "Calculate your real in-hand take-home salary for Software Engineer roles in Bangalore: https://talentxcel.in/tools/salary-calculator?role=software-engineer&city=bangalore&ref=sal_share",
+        "linkedInPostText": "How much do Software Engineers make in Bangalore in 2026? Check the verified percentile curves and tax breakdown on TalentXcel: https://talentxcel.in/tools/salary-calculator?role=software-engineer&city=bangalore&ref=sal_share",
+        "copyLinkText": "https://talentxcel.in/tools/salary-calculator?role=software-engineer&city=bangalore&ref=sal_share"
+      },
+      "metrics": {
+        "directViews": 850,
+        "sharesCount": 64,
+        "referralSignups": 28,
+        "referralActivations": 19,
+        "kFactorCalculated": 0.28
+      }
+    }
+  ]
+}

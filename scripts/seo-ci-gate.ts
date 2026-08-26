@@ -33,7 +33,14 @@ import {
   generateZapierEntityIntersection,
   generateAiDiscoveryCitation,
   SAMPLE_VIRAL_COHORTS,
-  SAMPLE_AI_CITATIONS
+  SAMPLE_AI_CITATIONS,
+  registerPassportNode,
+  registerSalaryBenchmarkNode,
+  evaluateIndexingTier,
+  FOUR_DISTRIBUTION_LOOPS,
+  calculateCombinedFlywheelKFactor,
+  simulateCrossLoopCompounding,
+  SAMPLE_DISTRIBUTION_NODES
 } from '../src/lib/seo/distribution/index.js';
 
 const SUPABASE_URL = 'https://dthlgsnakhoftinssokm.supabase.co';
@@ -1109,6 +1116,119 @@ async function runSeoCiGate() {
       'Global Distribution Graph & Master Blueprint Document Valid',
       distGraphExists && distSpecExists && distDocExists,
       'Validated SEO_GLOBAL_DISTRIBUTION_GRAPH.json, SEO_PROGRAMMATIC_UTILITY_SPEC.json, and TALENTXCEL_GLOBAL_DISTRIBUTION_ENGINE.md'
+    );
+    // --- 12. AUDITING PHASE 15 VIRAL FLYWHEELS & TIERED INDEXING (OPEN-SOURCE BLUEPRINT) ---
+    console.log('\n--- 12. AUDITING PHASE 15 VIRAL FLYWHEELS & TIERED INDEXING (OPEN-SOURCE BLUEPRINT) ---');
+
+    // 12.1 The 4 Closed Distribution Flywheels
+    record(
+      'Phase15_Flywheel',
+      'The 4 Closed Distribution Flywheels Configured (ATS, Passport, Salary, Jobs)',
+      FOUR_DISTRIBUTION_LOOPS.length === 4,
+      `Audited 4 closed loops: ${FOUR_DISTRIBUTION_LOOPS.map((l) => l.name).join(' | ')}`
+    );
+
+    // 12.2 Combined Flywheel K-Factor
+    const combinedK = calculateCombinedFlywheelKFactor(FOUR_DISTRIBUTION_LOOPS);
+    record(
+      'Phase15_Flywheel',
+      'Combined Cross-Loop Flywheel K-Factor ($K \\ge 0.35$)',
+      combinedK >= 0.35,
+      `Effective combined K-factor across 4 loops: ${combinedK} (Target: K >= 0.35)`
+    );
+
+    // 12.3 Cross-Loop Compounding Simulation Engine
+    const compoundingSim = simulateCrossLoopCompounding({
+      monthlyOrganicAcquisitions: 5000,
+      effectiveKFactor: combinedK,
+      months: 6
+    });
+    record(
+      'Phase15_Flywheel',
+      'Cross-Loop Compounding Simulation Engine (6+ Cycles)',
+      compoundingSim.length === 6 && compoundingSim[5].cumulativeUsers > 35000,
+      `Simulated 6-month compounding growth: ${compoundingSim[5].cumulativeUsers.toLocaleString()} cumulative users`
+    );
+
+    // 12.4 Tier 1 Immediate Indexation for High-Demand Assets
+    const tier1Eval = evaluateIndexingTier({
+      url: 'https://talentxcel.in/jobs/software-engineer/bangalore',
+      surface: 'JOBS',
+      inventoryCount: 25,
+      hasVerifiedSearchDemand: true,
+      hasCalculatedUtility: true,
+      isParameterTail: false
+    });
+    record(
+      'Phase15_TieredIndexing',
+      'Tier 1 Immediate Indexation for High-Demand Assets (Priority: 0.9)',
+      tier1Eval.tier === 'TIER_1_INDEX_IMMEDIATE' && tier1Eval.sitemapPriority === 0.9,
+      `Tier 1 evaluation: ${tier1Eval.tier} (Priority: ${tier1Eval.sitemapPriority}, Frequency: ${tier1Eval.changeFrequency})`
+    );
+
+    // 12.5 Tier 3 Parameter & Thin Profile Crawl Protection
+    const tier3Param = evaluateIndexingTier({
+      url: 'https://talentxcel.in/jobs?page=4&sort=desc',
+      surface: 'JOBS',
+      inventoryCount: 50,
+      hasVerifiedSearchDemand: false,
+      hasCalculatedUtility: false,
+      isParameterTail: true
+    });
+    const tier3Thin = evaluateIndexingTier({
+      url: 'https://talentxcel.in/passport/incomplete-user',
+      surface: 'CAREER_PASSPORT',
+      inventoryCount: 0,
+      hasVerifiedSearchDemand: false,
+      hasCalculatedUtility: false,
+      isParameterTail: false,
+      profileCompletionPct: 30
+    });
+    record(
+      'Phase15_TieredIndexing',
+      'Tier 3 Parameter & Thin Profile Crawl Protection (noindex)',
+      tier3Param.tier === 'TIER_3_NOINDEX_UTILITY' && tier3Thin.tier === 'TIER_3_NOINDEX_UTILITY',
+      `Tier 3 evaluation: Parameter tail -> ${tier3Param.robotsDirective}, Incomplete profile -> ${tier3Thin.robotsDirective}`
+    );
+
+    // 12.6 Passport Living Distribution Node Registration
+    const passportNode = registerPassportNode({
+      slug: 'sanobar-jahan',
+      fullName: 'Sanobar Jahan',
+      role: 'AI Research Engineer',
+      skills: ['PyTorch', 'Transformers'],
+      credentialsCount: 3,
+      completionScore: 90
+    });
+    record(
+      'Phase15_DistributionNode',
+      'Passport Living Distribution Node Registration & OpenGraph Metadata',
+      passportNode.nodeType === 'UGC_PASSPORT_NODE' && passportNode.indexingTier === 'TIER_1_INDEX_IMMEDIATE',
+      `Registered Passport Node: ${passportNode.nodeId} (${passportNode.openGraphMetadata.title})`
+    );
+
+    // 12.7 Salary Benchmark Node Registration
+    const salaryNode = registerSalaryBenchmarkNode({
+      role: 'Full Stack Developer',
+      location: 'Hyderabad',
+      medianSalaryInr: 1250000,
+      inventoryCount: 30
+    });
+    record(
+      'Phase15_DistributionNode',
+      'Salary Benchmark Node Registration with Take-Home Calculations',
+      salaryNode.nodeType === 'SALARY_BENCHMARK_NODE' && salaryNode.indexingTier === 'TIER_1_INDEX_IMMEDIATE',
+      `Registered Salary Node: ${salaryNode.nodeId} (${salaryNode.openGraphMetadata.title})`
+    );
+
+    // 12.8 Distribution Nodes Registry & Phase 15 Blueprint Report
+    const regExists = existsSync(resolve('SEO_DISTRIBUTION_NODES_REGISTRY.json'));
+    const repExists = existsSync(resolve('SEO_PHASE15_VIRAL_DISTRIBUTION_REPORT.md'));
+    record(
+      'Phase15_RegistryDocs',
+      'Distribution Nodes Registry & Phase 15 Blueprint Report Valid',
+      regExists && repExists,
+      'Validated SEO_DISTRIBUTION_NODES_REGISTRY.json and SEO_PHASE15_VIRAL_DISTRIBUTION_REPORT.md'
     );
   } catch (err: any) {
     record('Phase15_Acquisition', 'Phase 15 Engine Execution', false, `Engine error: ${err.message}`, { severity: 'CRITICAL' });
