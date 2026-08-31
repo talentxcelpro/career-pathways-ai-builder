@@ -1,0 +1,43 @@
+﻿name: 90-Day Adaptive Autonomous Publishing Cycle & Health Sentinel
+
+on:
+  schedule:
+    # Runs daily at 05:00 UTC (10:30 AM IST)
+    - cron: '0 5 * * *'
+  workflow_dispatch:
+
+jobs:
+  adaptive-publishing-cycle:
+    name: Execute Daily Publishing Cycle & Quality Invariant Gates
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci --prefer-offline
+
+      - name: Run Type Safety Verification
+        run: npx tsc --noEmit
+
+      - name: Execute SEO CI & Security Invariant Gates (173 Checks)
+        run: npx tsx scripts/seo-ci-gate.ts
+
+      - name: Execute Daily Adaptive Publishing Cycle
+        run: npx tsx scripts/automation/run-adaptive-publishing-cycle.ts
+
+      - name: Rebuild & Verify Partitioned Sitemaps
+        run: npx tsx scripts/generate-sitemap.ts
+
+      - name: Commit & Push Daily Ingestion Updates
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(automated-cycle): execute 24h adaptive publishing cycle [skip ci]"
+          file_pattern: "public/sitemap*.xml"
