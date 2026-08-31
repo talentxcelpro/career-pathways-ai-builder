@@ -31,7 +31,8 @@ import {
   FileText,
   Rocket,
   Compass,
-  AlertCircle
+  AlertCircle,
+  ChevronRight
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -100,20 +101,26 @@ export default function CollegeDetail() {
     }
   }, [profile, user]);
 
-  const instName = catalogInstitution?.name || dbCollege?.name || 'Institution Dossier';
-  const instCity = catalogInstitution?.location.city || dbCollege?.city || 'India';
-  const instState = catalogInstitution?.location.state || dbCollege?.state || 'India';
-  const instCategory = catalogInstitution?.category || dbCollege?.type || 'Institute';
+  const rawIdName = id ? id.replace(/-/g, ' ').toUpperCase() : 'Institution';
+  const subTabLocation = subTabFromUrl && subTabFromUrl.startsWith('in-') ? subTabFromUrl.replace('in-', '').replace(/-/g, ' ') : '';
+  const fallbackTitle = subTabLocation 
+    ? `${rawIdName} Programs in ${subTabLocation.charAt(0).toUpperCase() + subTabLocation.slice(1)}`
+    : `${rawIdName} Programs`;
+
+  const instName = catalogInstitution?.name || dbCollege?.name || fallbackTitle;
+  const instCity = catalogInstitution?.location?.city || dbCollege?.city || (subTabLocation ? subTabLocation.charAt(0).toUpperCase() + subTabLocation.slice(1) : 'Global Hub');
+  const instState = catalogInstitution?.location?.state || dbCollege?.state || 'International / Regional';
+  const instCategory = catalogInstitution?.category || dbCollege?.type || 'Undergraduate & Graduate';
   const nirf = catalogInstitution?.nirfRank2024 || dbCollege?.nirf_rank;
   const fees = catalogInstitution?.annualFeeInr
     ? `₹${catalogInstitution.annualFeeInr.toLocaleString('en-IN')}/yr`
-    : dbCollege?.tuition_fee_range || 'Contact Institution';
+    : dbCollege?.tuition_fee_range || 'Free / Subsidized Option Available';
   const placement = catalogInstitution?.placementStats
     ? `₹${catalogInstitution.placementStats.averagePackageLpa} LPA Avg (${catalogInstitution.placementStats.placementPercentage}% Placed)`
     : 'Audited Upon Request';
-  const officialUrl = catalogInstitution?.officialWebsite || dbCollege?.website_url || '#';
-  const entranceExams = catalogInstitution?.admissionRequirements.entranceExams || ['Merit / Standard Entrance'];
-  const disciplines = catalogInstitution?.disciplines || ['Engineering', 'Technology', 'Sciences', 'Management'];
+  const officialUrl = catalogInstitution?.officialWebsite || dbCollege?.website_url || 'https://talentxcel.in/colleges/global-programs';
+  const entranceExams = catalogInstitution?.admissionRequirements?.entranceExams || ['Standard Merit / International Eligibility'];
+  const disciplines = catalogInstitution?.disciplines || ['Commerce & Business', 'Engineering & Technology', 'Applied Sciences', 'Global Management'];
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 pb-20 text-slate-900 dark:text-slate-100">
