@@ -5,7 +5,7 @@
     <lastmod>2026-08-31</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-colleges.xml</loc>
+    <loc>https://talentxcel.in/sitemap-colleges-overview.xml</loc>
     <lastmod>2026-08-31</lastmod>
   </sitemap>
   <sitemap>
@@ -29,7 +29,23 @@
     <lastmod>2026-08-31</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-colleges-states.xml</loc>
+    <loc>https://talentxcel.in/sitemap-colleges-admissions.xml</loc>
+    <lastmod>2026-08-31</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-colleges-rankings.xml</loc>
+    <lastmod>2026-08-31</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-colleges-reviews.xml</loc>
+    <lastmod>2026-08-31</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-colleges-campus.xml</loc>
+    <lastmod>2026-08-31</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-colleges-degrees-states.xml</loc>
     <lastmod>2026-08-31</lastmod>
   </sitemap>
   <sitemap>
@@ -37,19 +53,31 @@
     <lastmod>2026-08-31</lastmod>
   </sitemap>
   <sitemap>
+    <loc>https://talentxcel.in/sitemap-job-roles-2.xml</loc>
+    <lastmod>2026-08-31</lastmod>
+  </sitemap>
+  <sitemap>
     <loc>https://talentxcel.in/sitemap-job-experience-1.xml</loc>
     <lastmod>2026-08-31</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-salaries.xml</loc>
+    <loc>https://talentxcel.in/sitemap-job-experience-2.xml</loc>
     <lastmod>2026-08-31</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-skills.xml</loc>
+    <loc>https://talentxcel.in/sitemap-job-experience-3.xml</loc>
     <lastmod>2026-08-31</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-companies-matrix.xml</loc>
+    <loc>https://talentxcel.in/sitemap-job-experience-4.xml</loc>
+    <lastmod>2026-08-31</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-skills-1.xml</loc>
+    <lastmod>2026-08-31</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-companies-hiring.xml</loc>
     <lastmod>2026-08-31</lastmod>
   </sitemap>
   <sitemap>
@@ -66,10 +94,6 @@
   </sitemap>
   <sitemap>
     <loc>https://talentxcel.in/sitemap-learning.xml</loc>
-    <lastmod>2026-08-31</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://talentxcel.in/sitemap-jobs.xml</loc>
     <lastmod>2026-08-31</lastmod>
   </sitemap>
   <sitemap>
