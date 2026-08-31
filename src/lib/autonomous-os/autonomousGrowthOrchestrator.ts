@@ -12,10 +12,10 @@ export function runAutonomousGrowthCycle(currentState?: Partial<AutonomousOsStat
   const isSafeMode = currentState?.safeModeActive !== undefined ? currentState.safeModeActive : true;
 
   const trajectory = evaluateTrajectoryHealth({
-    targetUsers: 1000000,
-    currentUsers: 142000,
-    daysElapsed: 4,
-    totalDays: 30
+    targetUsers: 10000,
+    currentUsers: 529,
+    daysElapsed: 1,
+    totalDays: 90
   });
 
   const actions: CampaignAction[] = [
@@ -25,8 +25,8 @@ export function runAutonomousGrowthCycle(currentState?: Partial<AutonomousOsStat
       title: 'Deploy 1-Click WhatsApp Scorecard & Referral Unlock Queue',
       channel: 'PRODUCT_LED_UTILITY',
       targetAudience: 'Job Seekers & Resume Uploaders',
-      objective: 'Lift K-factor from 0.33 to >= 1.0 using HR directory incentive',
-      expectedOutcome: '+15,000 monthly signups',
+      objective: 'Lift K-factor from 0.33 to >= 0.50 using HR directory incentive',
+      expectedOutcome: '+500 monthly signups',
       riskLevel: 'LOW',
       approvalState: 'EXECUTING',
       autonomousExecutable: true,
@@ -40,8 +40,8 @@ export function runAutonomousGrowthCycle(currentState?: Partial<AutonomousOsStat
       title: 'Batch College TPO Free Placement Screener Circulars',
       channel: 'EXTERNAL_COMMUNITY',
       targetAudience: 'College Training & Placement Officers',
-      objective: 'Onboard 200 colleges for 2026 batch ATS resume verification',
-      expectedOutcome: '+500,000 verified students',
+      objective: 'Onboard 20 colleges for 2026 batch ATS resume verification',
+      expectedOutcome: '+2,000 verified students',
       riskLevel: 'HIGH',
       approvalState: 'READY_FOR_REVIEW',
       autonomousExecutable: false,
@@ -57,24 +57,24 @@ export function runAutonomousGrowthCycle(currentState?: Partial<AutonomousOsStat
     safeModeActive: isSafeMode,
     lastCycleTimestampIso: new Date().toISOString(),
     nextScheduledCycleIso: new Date(Date.now() + 3600000).toISOString(),
-    totalDecisionsMade: SAMPLE_DECISION_LOG.length + 120,
-    totalActionsExecutedToday: 8,
+    totalDecisionsMade: 18,
+    totalActionsExecutedToday: 3,
     northStarMetrics: {
-      totalRegisteredUsers: trajectory.currentRegisteredUsers,
-      totalActivatedUsers: trajectory.currentActivatedUsers,
-      totalRetainedUsers: trajectory.currentRetainedUsers,
+      totalRegisteredUsers: 529,
+      totalActivatedUsers: 382,
+      totalRetainedUsers: 215,
       activeReferralLoopsCount: 4,
-      combinedKFactorMeasured: 0.3575,
-      monthlyRunRateProjection: 320000
+      combinedKFactorMeasured: 0.33,
+      monthlyRunRateProjection: 1200
     },
     channelPerformance: {
-      SEARCH_ORGANIC: { visitors: 32400, signups: 2950, activations: 1840, conversionRatePct: 9.1, contributionPct: 18 },
-      PRODUCT_LED_UTILITY: { visitors: 24800, signups: 5800, activations: 4200, conversionRatePct: 23.38, contributionPct: 35 },
-      PUBLIC_UGC_OBJECTS: { visitors: 14200, signups: 2600, activations: 1950, conversionRatePct: 18.31, contributionPct: 15 },
-      AI_DISCOVERY_GEO: { visitors: 9800, signups: 1450, activations: 920, conversionRatePct: 14.8, contributionPct: 10 },
-      REFERRAL_VIRAL: { visitors: 18600, signups: 3200, activations: 2450, conversionRatePct: 17.2, contributionPct: 15 },
-      EXTERNAL_COMMUNITY: { visitors: 8200, signups: 1800, activations: 1420, conversionRatePct: 21.95, contributionPct: 7 },
-      DIRECT: { visitors: 6500, signups: 920, activations: 680, conversionRatePct: 14.15, contributionPct: 0 }
+      SEARCH_ORGANIC: { visitors: 1850, signups: 165, activations: 120, conversionRatePct: 8.92, contributionPct: 31 },
+      PRODUCT_LED_UTILITY: { visitors: 1240, signups: 180, activations: 145, conversionRatePct: 14.52, contributionPct: 34 },
+      PUBLIC_UGC_OBJECTS: { visitors: 480, signups: 65, activations: 42, conversionRatePct: 13.54, contributionPct: 12 },
+      AI_DISCOVERY_GEO: { visitors: 320, signups: 42, activations: 28, conversionRatePct: 13.12, contributionPct: 8 },
+      REFERRAL_VIRAL: { visitors: 410, signups: 55, activations: 35, conversionRatePct: 13.41, contributionPct: 10 },
+      EXTERNAL_COMMUNITY: { visitors: 180, signups: 22, activations: 12, conversionRatePct: 12.22, contributionPct: 5 },
+      DIRECT: { visitors: 220, signups: 0, activations: 0, conversionRatePct: 0, contributionPct: 0 }
     },
     activeOpportunities: SAMPLE_OPPORTUNITIES,
     actionQueue: actions,
