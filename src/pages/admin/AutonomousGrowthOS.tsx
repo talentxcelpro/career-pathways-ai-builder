@@ -591,110 +591,99 @@ const AutonomousGrowthOS: React.FC = () => {
 
           {/* TAB 3: CHANNELS & ATTRIBUTION */}
           <TabsContent value="channels" className="space-y-6">
-            <Card className="border-slate-200 shadow-sm bg-white">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-base font-black text-slate-900">Multi-Touch Funnel Attribution &amp; Channel Matrix</CardTitle>
-                    <CardDescription>Empirical user acquisition breakdown across 5 distribution engines</CardDescription>
-                  </div>
-                  <Badge className="bg-emerald-100 text-emerald-800 font-bold text-xs">
-                    0-CAC ENGINE
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-5">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-xs text-left">
-                    <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
-                      <tr>
-                        <th className="p-3">Distribution Channel</th>
-                        <th className="p-3">Visitors</th>
-                        <th className="p-3">Signups</th>
-                        <th className="p-3">A1 Activated</th>
-                        <th className="p-3">Activation Rate</th>
-                        <th className="p-3">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
-                      <tr className="hover:bg-slate-50/60 bg-emerald-50/20">
-                        <td className="p-3 font-bold text-slate-900 flex items-center gap-2">
-                          <MessageCircle className="h-4 w-4 text-[#25D366] fill-current" />
-                          WhatsApp Referral Scorecards
-                        </td>
-                        <td className="p-3">421</td>
-                        <td className="p-3 font-bold text-blue-600">184</td>
-                        <td className="p-3 font-bold text-emerald-600">72</td>
-                        <td className="p-3 font-black text-emerald-700">17.1%</td>
-                        <td className="p-3"><Badge className="bg-emerald-500 text-white font-bold text-[10px]">BEST CHANNEL</Badge></td>
-                      </tr>
-                      <tr className="hover:bg-slate-50/60">
-                        <td className="p-3 font-bold text-slate-900 flex items-center gap-2">
-                          <Building2 className="h-4 w-4 text-purple-600" />
-                          College TPO Cohort Screeners (/colleges/batch)
-                        </td>
-                        <td className="p-3">302</td>
-                        <td className="p-3 font-bold text-blue-600">121</td>
-                        <td className="p-3 font-bold text-emerald-600">31</td>
-                        <td className="p-3 font-black text-purple-700">10.3%</td>
-                        <td className="p-3"><Badge className="bg-purple-100 text-purple-800 font-bold text-[10px]">SCALING</Badge></td>
-                      </tr>
-                      <tr className="hover:bg-slate-50/60">
-                        <td className="p-3 font-bold text-slate-900 flex items-center gap-2">
-                          <Search className="h-4 w-4 text-blue-600" />
-                          Google Organic (SEO Utility Pages)
-                        </td>
-                        <td className="p-3">1,210</td>
-                        <td className="p-3 font-bold text-blue-600">210</td>
-                        <td className="p-3 font-bold text-emerald-600">83</td>
-                        <td className="p-3 font-black text-blue-700">6.9%</td>
-                        <td className="p-3"><Badge variant="outline" className="text-blue-700 bg-blue-50 text-[10px] font-bold">STEADY</Badge></td>
-                      </tr>
-                      <tr className="hover:bg-slate-50/60">
-                        <td className="p-3 font-bold text-slate-900 flex items-center gap-2">
-                          <Globe className="h-4 w-4 text-slate-600" />
-                          GitHub Developer Badges &amp; Communities
-                        </td>
-                        <td className="p-3">84</td>
-                        <td className="p-3 font-bold text-blue-600">28</td>
-                        <td className="p-3 font-bold text-emerald-600">11</td>
-                        <td className="p-3 font-black text-slate-700">13.1%</td>
-                        <td className="p-3"><Badge variant="outline" className="text-slate-700 bg-slate-50 text-[10px] font-bold">PILOT</Badge></td>
-                      </tr>
-                      <tr className="hover:bg-slate-50/60">
-                        <td className="p-3 font-bold text-slate-900 flex items-center gap-2">
-                          <Target className="h-4 w-4 text-slate-400" />
-                          Direct / Unattributed Traffic
-                        </td>
-                        <td className="p-3">401</td>
-                        <td className="p-3 font-bold text-blue-600">32</td>
-                        <td className="p-3 font-bold text-emerald-600">0</td>
-                        <td className="p-3 font-black text-slate-400">0.0%</td>
-                        <td className="p-3"><Badge variant="outline" className="text-slate-400 text-[10px]">LOW INTENT</Badge></td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+            {(() => {
+              const gt = GrowthEventTracker.getInstance().computeMetrics();
+              return (
+                <Card className="border-slate-200 shadow-sm bg-white">
+                  <CardHeader>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div>
+                        <CardTitle className="text-base font-black text-slate-900">Multi-Touch Funnel Attribution &amp; Channel Matrix</CardTitle>
+                        <CardDescription>Empirical user acquisition breakdown across 5 distribution engines (Zero Synthetic Data)</CardDescription>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge className={gt.isCalibrationActive ? 'bg-amber-500 text-white font-bold text-xs' : 'bg-emerald-600 text-white font-bold text-xs'}>
+                          {gt.isCalibrationActive ? '14-DAY CALIBRATION (n < 100)' : 'OBSERVED DATA (n ≥ 100)'}
+                        </Badge>
+                        <Badge variant="outline" className="text-emerald-700 bg-emerald-50 font-mono text-xs">
+                          Media Spend: ₹0.00
+                        </Badge>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-5">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-xs text-left">
+                        <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
+                          <tr>
+                            <th className="p-3">Distribution Channel</th>
+                            <th className="p-3">Referral Visits</th>
+                            <th className="p-3">Signups</th>
+                            <th className="p-3">A1 Activated</th>
+                            <th className="p-3">Activation Rate</th>
+                            <th className="p-3">Sample Status</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
+                          {gt.channels.map((chan) => (
+                            <tr key={chan.channel} className="hover:bg-slate-50/60">
+                              <td className="p-3 font-bold text-slate-900 flex items-center gap-2">
+                                {chan.channel === 'whatsapp' && <MessageCircle className="h-4 w-4 text-[#25D366] fill-current" />}
+                                {chan.channel === 'college_tpo' && <Building2 className="h-4 w-4 text-purple-600" />}
+                                {chan.channel === 'google' && <Search className="h-4 w-4 text-blue-600" />}
+                                {chan.channel === 'github' && <Globe className="h-4 w-4 text-slate-600" />}
+                                {chan.channel === 'direct' && <Target className="h-4 w-4 text-slate-400" />}
+                                {chan.displayName}
+                              </td>
+                              <td className="p-3 font-mono">{chan.visitors}</td>
+                              <td className="p-3 font-bold text-blue-600 font-mono">{chan.signups}</td>
+                              <td className="p-3 font-bold text-emerald-600 font-mono">{chan.a1Activated}</td>
+                              <td className="p-3 font-black text-slate-900">{chan.activationRatePct}%</td>
+                              <td className="p-3">
+                                <Badge className={
+                                  chan.status === 'WINNER' ? 'bg-emerald-500 text-white font-bold text-[10px]' :
+                                  chan.status === 'PROMISING' ? 'bg-blue-600 text-white font-bold text-[10px]' :
+                                  'bg-slate-100 text-slate-600 border border-slate-200 text-[10px]'
+                                }>
+                                  {chan.status}
+                                </Badge>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
 
-                {/* Autonomous Channel Intelligence Card */}
-                <div className="p-4 bg-slate-900 text-white rounded-2xl space-y-2.5">
-                  <div className="flex items-center gap-2">
-                    <Brain className="h-5 w-5 text-blue-400" />
-                    <span className="text-xs font-black uppercase tracking-wider text-blue-400">Autonomous Channel Recommendation</span>
-                  </div>
-                  <ul className="text-xs text-slate-300 space-y-1 list-disc list-inside">
-                    <li><strong className="text-white">Concentrate Effort on WhatsApp Scorecards:</strong> Highest activation rate (17.1%) driven by peer curiosity and instant free utility on /score/:token.</li>
-                    <li><strong className="text-white">Expand College TPO Cohorts:</strong> B2B2C institutional screener (/colleges/batch) acquires 300+ students per TPO partner with 10.3% activation.</li>
-                    <li><strong className="text-white">Anti-Spam &amp; Fraud Invariant:</strong> Exclude self-referrals and rapid device repetitions from qualified conversion ledger.</li>
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
+                    {/* Actionable Autonomous Guidance */}
+                    <div className="p-4 bg-slate-900 text-white rounded-2xl space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Brain className="h-5 w-5 text-blue-400" />
+                          <span className="text-xs font-black uppercase tracking-wider text-blue-400">Autonomous Channel Action Engine</span>
+                        </div>
+                        <span className="text-[11px] text-slate-400">Min. Significance Threshold: n ≥ 100</span>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1 text-xs">
+                        {gt.channels.map((chan) => (
+                          <div key={chan.channel} className="p-3 bg-slate-800/80 rounded-xl border border-slate-700/60 space-y-1">
+                            <div className="flex items-center justify-between">
+                              <span className="font-bold text-slate-200">{chan.displayName.split('(')[0]}</span>
+                              <span className="text-[10px] font-mono text-slate-400">n = {chan.visitors}</span>
+                            </div>
+                            <p className="text-[11px] text-slate-300 leading-snug">{chan.actionGuidance}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })()}
           </TabsContent>
 
           {/* TAB 4: EXPERIMENTS & VIRAL LOOPS */}
           <TabsContent value="experiments" className="space-y-6">
-            {/* 1. Real Growth Event Telemetry & True K / Ka Cockpit */}
+            {/* 1. Real Growth Event Telemetry & True Observed vs Expected K Cockpit */}
             {(() => {
               const gt = GrowthEventTracker.getInstance().computeMetrics();
               return (
@@ -704,75 +693,71 @@ const AutonomousGrowthOS: React.FC = () => {
                       <div>
                         <CardTitle className="text-base font-black text-slate-900 flex items-center gap-2">
                           <Share2 className="h-5 w-5 text-blue-600" />
-                          Verified Growth Event Telemetry &amp; Dual K-Factor ($K$ &amp; $K_a$)
+                          Observed Production Event Telemetry &amp; Dual K-Factors
                         </CardTitle>
                         <CardDescription>
-                          Zero estimated metrics. Measures true step-by-step conversion from tool utility to activated users.
+                          Zero synthetic offsets. Measures true step-by-step conversion from tool utility to A1 activated users.
                         </CardDescription>
                       </div>
-                      <Badge className="bg-blue-600 text-white font-bold text-xs">
-                        ACTIVATED K: {gt.activatedKFactor}
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge className="bg-emerald-600 text-white font-bold text-xs">
+                          OBSERVED Kₐ: {gt.observedKa}
+                        </Badge>
+                        <Badge variant="outline" className="text-blue-700 bg-white font-bold text-xs">
+                          EXPECTED Kₐ: {gt.expectedKa}
+                        </Badge>
+                      </div>
                     </div>
                   </CardHeader>
                   <CardContent className="p-5 space-y-5">
                     {/* Event Progression Counters */}
                     <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5 text-center">
                       <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                        <p className="text-[11px] font-bold text-slate-500 uppercase">Tool Done</p>
-                        <p className="text-lg font-black text-slate-900 mt-0.5">{gt.toolCompletions}</p>
+                        <p className="text-[11px] font-bold text-slate-500 uppercase">Tool Starts</p>
+                        <p className="text-lg font-black text-slate-900 mt-0.5 font-mono">{gt.toolStarts}</p>
+                      </div>
+                      <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <p className="text-[11px] font-bold text-slate-500 uppercase">Completions</p>
+                        <p className="text-lg font-black text-slate-900 mt-0.5 font-mono">{gt.toolCompletions}</p>
                       </div>
                       <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
                         <p className="text-[11px] font-bold text-slate-500 uppercase">Share Opened</p>
-                        <p className="text-lg font-black text-slate-900 mt-0.5">{gt.shareAttempts}</p>
+                        <p className="text-lg font-black text-slate-900 mt-0.5 font-mono">{gt.shareAttempts}</p>
                       </div>
                       <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
                         <p className="text-[11px] font-bold text-slate-500 uppercase">Shared</p>
-                        <p className="text-lg font-black text-blue-600 mt-0.5">{gt.successfulShares}</p>
+                        <p className="text-lg font-black text-blue-600 mt-0.5 font-mono">{gt.successfulShares}</p>
                       </div>
                       <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
                         <p className="text-[11px] font-bold text-slate-500 uppercase">Ref Visits</p>
-                        <p className="text-lg font-black text-slate-900 mt-0.5">{gt.referralVisits}</p>
-                      </div>
-                      <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                        <p className="text-[11px] font-bold text-slate-500 uppercase">Signups</p>
-                        <p className="text-lg font-black text-slate-900 mt-0.5">{gt.newSignups}</p>
+                        <p className="text-lg font-black text-slate-900 mt-0.5 font-mono">{gt.referralVisits}</p>
                       </div>
                       <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-100">
-                        <p className="text-[11px] font-bold text-emerald-700 uppercase">Activated</p>
-                        <p className="text-lg font-black text-emerald-800 mt-0.5">{gt.activatedUsers}</p>
+                        <p className="text-[11px] font-bold text-emerald-700 uppercase">A1 Activated</p>
+                        <p className="text-lg font-black text-emerald-800 mt-0.5 font-mono">{gt.a1ActivatedUsers}</p>
                       </div>
                       <div className="p-3 bg-purple-50 rounded-xl border border-purple-100">
-                        <p className="text-[11px] font-bold text-purple-700 uppercase">Retained 7D</p>
-                        <p className="text-lg font-black text-purple-800 mt-0.5">{gt.retainedUsers}</p>
+                        <p className="text-[11px] font-bold text-purple-700 uppercase">A7 Retained</p>
+                        <p className="text-lg font-black text-purple-800 mt-0.5 font-mono">{gt.a7RetainedUsers}</p>
                       </div>
                     </div>
 
-                    {/* Funnel Conversion Rates & K-Factors */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-3 pt-1">
+                    {/* Mathematical Formulations Row */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
                       <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-100">
-                        <p className="text-xs font-bold text-slate-500">Share → Visit Rate</p>
-                        <p className="text-xl font-black text-slate-900 mt-1">{gt.shareToVisitRatePct}%</p>
-                        <p className="text-[11px] text-slate-500 font-medium">WhatsApp / WebShare clicks</p>
+                        <p className="text-xs font-bold text-slate-500">Observed Viral K</p>
+                        <p className="text-2xl font-black text-slate-900 mt-1 font-mono">{gt.observedK}</p>
+                        <p className="text-[10px] text-slate-500 font-mono mt-0.5">qualified_referred ÷ eligible_referring</p>
                       </div>
-                      <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-100">
-                        <p className="text-xs font-bold text-slate-500">Visit → Signup Rate</p>
-                        <p className="text-xl font-black text-slate-900 mt-1">{gt.visitToSignupRatePct}%</p>
-                        <p className="text-[11px] text-slate-500 font-medium">Referral conversion to account</p>
+                      <div className="p-3.5 bg-emerald-50 rounded-xl border border-emerald-200">
+                        <p className="text-xs font-bold text-emerald-800">Observed Activated Kₐ (North Star)</p>
+                        <p className="text-2xl font-black text-emerald-900 mt-1 font-mono">{gt.observedKa}</p>
+                        <p className="text-[10px] text-emerald-700 font-mono mt-0.5">referred_becoming_A1 ÷ eligible_referring</p>
                       </div>
-                      <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-100">
-                        <p className="text-xs font-bold text-slate-500">Signup → Activation</p>
-                        <p className="text-xl font-black text-slate-900 mt-1">{gt.signupToActivationRatePct}%</p>
-                        <p className="text-[11px] text-slate-500 font-medium">Completed first career action</p>
-                      </div>
-                      <div className="p-3.5 bg-emerald-50 rounded-xl border border-emerald-200 flex flex-col justify-between">
-                        <div>
-                          <p className="text-xs font-bold text-emerald-800">North Star: Activated K ($K_a$)</p>
-                          <p className="text-2xl font-black text-emerald-900 mt-1">{gt.activatedKFactor}</p>
-                        </div>
-                        <p className="text-[10px] text-emerald-700 font-semibold mt-1">
-                          $K_a = \text{invites} \times \text{conversion} \times \text{activation}$
-                        </p>
+                      <div className="p-3.5 bg-blue-50 rounded-xl border border-blue-200">
+                        <p className="text-xs font-bold text-blue-800">Expected Kₐ (Forecast)</p>
+                        <p className="text-2xl font-black text-blue-900 mt-1 font-mono">{gt.expectedKa}</p>
+                        <p className="text-[10px] text-blue-700 font-mono mt-0.5">share_rate × ref_conv × act_rate</p>
                       </div>
                     </div>
                   </CardContent>
@@ -799,11 +784,11 @@ const AutonomousGrowthOS: React.FC = () => {
                     <div className="grid grid-cols-2 gap-2 pt-2 text-xs">
                       <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-100">
                         <p className="text-slate-500 font-semibold text-[11px]">Control Conversion</p>
-                        <p className="font-black text-slate-800 mt-0.5">{exp.baselineConversionRatePct}%</p>
+                        <p className="font-black text-slate-800 mt-0.5 font-mono">{exp.baselineConversionRatePct}%</p>
                       </div>
                       <div className="p-2.5 bg-emerald-50 rounded-lg border border-emerald-100">
                         <p className="text-emerald-700 font-semibold text-[11px]">Variant Conversion</p>
-                        <p className="font-black text-emerald-900 mt-0.5">{exp.variantConversionRatePct}%</p>
+                        <p className="font-black text-emerald-900 mt-0.5 font-mono">{exp.variantConversionRatePct}%</p>
                       </div>
                     </div>
                     <p className="text-[11px] text-slate-500 font-medium pt-1">Sample size: {exp.sampleSize.toLocaleString()} users | Statistical Confidence: {(exp.statisticalConfidence * 100).toFixed(0)}%</p>
