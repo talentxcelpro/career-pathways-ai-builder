@@ -46,6 +46,7 @@ import {
 import { evaluateAdaptivePublishingQuota, GSCFeedbackMetrics } from '@/lib/autonomous-os/adaptiveGovernor';
 import { PublishingCycleLedger } from '@/lib/autonomous-os/publishingCycleEngine';
 import { GrowthEventTracker } from '@/lib/autonomous-os/growthEventTracker';
+import { GrowthSnapshotEngine } from '@/lib/autonomous-os/growthSnapshotEngine';
 
 const AutonomousGrowthOS: React.FC = () => {
   const [osState, setOsState] = useState<AutonomousOsState>(() => runAutonomousGrowthCycle());
@@ -205,6 +206,65 @@ const AutonomousGrowthOS: React.FC = () => {
       description="Real-time autonomous distribution, opportunity scoring & growth control room"
     >
       <div className="space-y-6">
+
+        {/* 0. OBSERVED ACTIVATED K (Ka) — NORTH STAR CALIBRATION HERO BOX */}
+        {(() => {
+          const gt = GrowthEventTracker.getInstance().computeMetrics();
+          const snapshotEngine = GrowthSnapshotEngine.getInstance();
+          snapshotEngine.generateDailySnapshot(gt);
+
+          const sampleSize = gt.totalVisitors;
+          const isCalibrated = sampleSize >= 100;
+          const ratePer100 = (gt.observedKa * 100).toFixed(1);
+
+          return (
+            <Card className="bg-gradient-to-r from-slate-950 via-slate-900 to-blue-950 text-white border-blue-900/60 shadow-xl overflow-hidden">
+              <CardContent className="p-6">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                  
+                  {/* Left: Big Ka Metric */}
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Badge className="bg-blue-500/20 text-blue-300 border border-blue-400/30 text-xs font-bold uppercase tracking-wider">
+                        North Star Acquisition Metric
+                      </Badge>
+                      <Badge className={isCalibrated ? "bg-emerald-500 text-white font-bold text-xs" : "bg-amber-500 text-slate-950 font-black text-xs"}>
+                        {isCalibrated ? "STATUS: CALIBRATED" : "CALIBRATION — INSUFFICIENT SAMPLE"}
+                      </Badge>
+                    </div>
+                    <div className="text-4xl sm:text-5xl font-black tracking-tight text-white flex items-baseline gap-3 pt-2 font-mono">
+                      <span>{gt.observedKa.toFixed(3)}</span>
+                      <span className="text-sm font-sans font-semibold text-slate-300">Observed Activated K (Kₐ)</span>
+                    </div>
+                    <p className="text-xs text-slate-300">
+                      <strong>{ratePer100}</strong> activated referrals / 100 eligible referring users (n = {sampleSize} visitors, {gt.toolCompletions} referrers)
+                    </p>
+                  </div>
+
+                  {/* Right: Operational Economics & Guardrails */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 w-full md:w-auto">
+                    <div className="p-3 bg-slate-800/80 rounded-xl border border-slate-700/60 text-center">
+                      <p className="text-[10px] text-slate-400 uppercase font-bold">Media Spend</p>
+                      <p className="text-lg font-black text-emerald-400 mt-0.5">₹0.00</p>
+                      <p className="text-[9px] text-slate-400">Zero-CAC Invariant</p>
+                    </div>
+                    <div className="p-3 bg-slate-800/80 rounded-xl border border-slate-700/60 text-center">
+                      <p className="text-[10px] text-slate-400 uppercase font-bold">Expected Kₐ</p>
+                      <p className="text-lg font-black text-blue-400 mt-0.5 font-mono">{gt.expectedKa.toFixed(3)}</p>
+                      <p className="text-[9px] text-slate-400">Forecast Value</p>
+                    </div>
+                    <div className="p-3 bg-slate-800/80 rounded-xl border border-slate-700/60 text-center col-span-2 sm:col-span-1">
+                      <p className="text-[10px] text-slate-400 uppercase font-bold">14-Day Freeze</p>
+                      <p className="text-lg font-black text-amber-300 mt-0.5">ACTIVE</p>
+                      <p className="text-[9px] text-slate-400">Calibration Lock</p>
+                    </div>
+                  </div>
+
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })()}
 
         {/* 1. NORTH STAR HEADER - 100% REAL TELEMETRY & LIVE SUPABASE DATA */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
@@ -809,6 +869,75 @@ const AutonomousGrowthOS: React.FC = () => {
                 ))}
               </div>
             </div>
+
+            {/* 3. Immutable Daily Snapshot Ledger (growth-proof/) */}
+            {(() => {
+              const snapshots = GrowthSnapshotEngine.getInstance().getHistoricalSnapshots();
+              return (
+                <Card className="border-slate-200 shadow-sm bg-white overflow-hidden">
+                  <CardHeader className="bg-slate-50/70 border-b border-slate-200/80">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="text-base font-black text-slate-900 flex items-center gap-2">
+                          <Clock className="h-5 w-5 text-indigo-600" />
+                          Immutable Daily Snapshot Ledger (growth-proof/)
+                        </CardTitle>
+                        <CardDescription>
+                          Sealed daily production records. Prevents retroactive alteration of historical calibration metrics.
+                        </CardDescription>
+                      </div>
+                      <Badge variant="outline" className="text-indigo-700 bg-indigo-50 font-mono text-xs">
+                        Schema v2.0.0
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-0">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-xs text-left">
+                        <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
+                          <tr>
+                            <th className="p-3">Snapshot Date</th>
+                            <th className="p-3">Eligible Referrers</th>
+                            <th className="p-3">Shares</th>
+                            <th className="p-3">Ref Visits</th>
+                            <th className="p-3">A1 Activated</th>
+                            <th className="p-3">Observed Kₐ</th>
+                            <th className="p-3">Media Spend</th>
+                            <th className="p-3">Calibration Status</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
+                          {snapshots.length === 0 ? (
+                            <tr>
+                              <td colSpan={8} className="p-4 text-center text-slate-500 font-normal">
+                                First daily snapshot sealing today at 23:59 UTC. Calibration active.
+                              </td>
+                            </tr>
+                          ) : (
+                            snapshots.map((snap) => (
+                              <tr key={snap.date} className="hover:bg-slate-50/60 font-mono">
+                                <td className="p-3 font-bold text-slate-900 font-sans">{snap.date}</td>
+                                <td className="p-3">{snap.eligibleReferrers}</td>
+                                <td className="p-3">{snap.qualifiedShares}</td>
+                                <td className="p-3">{snap.referralVisits}</td>
+                                <td className="p-3 font-bold text-emerald-600">{snap.referralA1Activated}</td>
+                                <td className="p-3 font-black text-slate-900">{snap.observedKa.toFixed(3)}</td>
+                                <td className="p-3 font-bold text-emerald-700 font-sans">₹0.00</td>
+                                <td className="p-3 font-sans">
+                                  <Badge className={snap.calibrationStatus === 'CALIBRATED' ? 'bg-emerald-500 text-white text-[10px]' : 'bg-amber-500 text-slate-950 font-bold text-[10px]'}>
+                                    {snap.calibrationStatus}
+                                  </Badge>
+                                </td>
+                              </tr>
+                            ))
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })()}
           </TabsContent>
 
           {/* TAB 5: GROWTH COMMAND CENTER */}
