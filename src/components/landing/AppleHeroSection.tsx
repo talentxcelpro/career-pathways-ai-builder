@@ -43,17 +43,29 @@ export const AppleHeroSection = () => {
               </p>
             </div>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <AuthDialog>
-                <Button 
-                  size="lg" 
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground apple-rounded-xl apple-padding-lg text-body font-semibold shadow-lg hover:shadow-xl transition-all duration-300 group"
-                >
-                  Get Started Free
-                  <ChevronRight className="ml-2 icon-sm group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </AuthDialog>
+            {/* CTA Buttons - Direct Zero-Barrier Free Utility */}
+            <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+              <a 
+                href="/resume"
+                className="inline-flex items-center justify-center px-6 py-3.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-black rounded-2xl shadow-lg hover:shadow-xl transition-all group"
+              >
+                Check My Resume — Free ATS Scan
+                <ChevronRight className="ml-1.5 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              </a>
+
+              <a 
+                href="/tools/salary-analyzer"
+                className="inline-flex items-center justify-center px-5 py-3.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:bg-slate-50 text-sm font-bold rounded-2xl shadow-sm transition-all"
+              >
+                Salary Calculator
+              </a>
+
+              <a 
+                href="/colleges"
+                className="inline-flex items-center justify-center px-5 py-3.5 bg-slate-100 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 hover:bg-slate-200 text-sm font-bold rounded-2xl transition-all"
+              >
+                10,250+ Colleges
+              </a>
             </div>
 
             {/* Social Proof */}
