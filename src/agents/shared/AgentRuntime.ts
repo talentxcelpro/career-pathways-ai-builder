@@ -101,7 +101,16 @@ class MasterAgentRuntime {
     // Start background scheduler
     scheduler.start();
 
-    console.log('✅ [AgentRuntime] All 8 Agents and Scheduler Active.');
+    // Boot autonomous TPO outreach & snapshot runner
+    import('@/lib/autonomous-os/autonomousTpoOutreachEngine').then(({ AutonomousTpoOutreachEngine }) => {
+      const engine = AutonomousTpoOutreachEngine.getInstance();
+      engine.executeAutonomousOutreachCycle();
+      setInterval(() => {
+        engine.executeAutonomousOutreachCycle();
+      }, 300000); // Pulse every 5 minutes
+    });
+
+    console.log('✅ [AgentRuntime] All 8 Agents, TPO Outreach Engine and Scheduler Active.');
   }
 
   isReady(): boolean {
