@@ -141,17 +141,17 @@ export const claim1MarketingService = {
 
     // Direct table query fallback
     try {
-      const [entitiesRes, listingsRes, prospectsRes, revRes] = await Promise.all([
+      const [entitiesRes, listingsRes, prospectsRes, revRes] = await Promise.allSettled([
         supabase.from('claim1_entities').select('id', { count: 'exact', head: true }).not('owner_user_id', 'is', null),
         supabase.from('claim1_listings').select('id, total_bids_count, scope_id'),
         supabase.from('claim1_prospects' as any).select('id, state, contact_count'),
-        supabase.from('claim1_platform_revenue').select('fee_amount_inr'),
+        supabase.from('claim1_platform_revenue' as any).select('fee_amount_inr'),
       ]);
 
-      const claimedCount = entitiesRes.count || 0;
-      const listings = (listingsRes.data as any[]) || [];
-      const prospects = (prospectsRes.data as any[]) || [];
-      const revenues = (revRes.data as any[]) || [];
+      const claimedCount = (entitiesRes.status === 'fulfilled' && entitiesRes.value.count) ? entitiesRes.value.count : 0;
+      const listings = (listingsRes.status === 'fulfilled' && listingsRes.value.data as any[]) || [];
+      const prospects = (prospectsRes.status === 'fulfilled' && prospectsRes.value.data as any[]) || [];
+      const revenues = (revRes.status === 'fulfilled' && revRes.value.data as any[]) || [];
 
       const totalContacted = prospects.filter((p) => p.contact_count > 0 || p.state !== 'DISCOVERED').length || 12;
       const firstBids = listings.filter((l) => (l.total_bids_count || 0) > 0).length;

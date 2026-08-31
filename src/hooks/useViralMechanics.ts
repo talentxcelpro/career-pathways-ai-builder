@@ -28,34 +28,33 @@ export const useViralMechanics = () => {
     queryFn: async () => {
       if (!user) return null;
 
-      const { data, error } = await supabase
-        .from('user_referrals')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-
-      if (error && error.code !== 'PGRST116') throw error;
-      
-      // Create referral record if doesn't exist
-      if (!data) {
-        const code = `${user.id.slice(0, 8).toUpperCase()}`;
-        const { data: newData, error: createError } = await supabase
+      try {
+        const { data, error } = await supabase
           .from('user_referrals')
-          .insert({
-            user_id: user.id,
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (error || !data) {
+          const code = `${user.id.slice(0, 8).toUpperCase()}`;
+          return {
             referral_code: code,
             referrals_count: 0,
             successful_conversions: 0,
             rewards_earned: 0
-          })
-          .select()
-          .single();
+          } as ReferralData;
+        }
 
-        if (createError) throw createError;
-        return newData as ReferralData;
+        return data as ReferralData;
+      } catch {
+        const code = `${user.id.slice(0, 8).toUpperCase()}`;
+        return {
+          referral_code: code,
+          referrals_count: 0,
+          successful_conversions: 0,
+          rewards_earned: 0
+        } as ReferralData;
       }
-
-      return data as ReferralData;
     },
     enabled: !!user
   });

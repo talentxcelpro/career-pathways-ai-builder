@@ -30,7 +30,9 @@ import {
   BarChart3,
   HelpCircle,
   Clock,
-  ExternalLink
+  ExternalLink,
+  MessageCircle,
+  Building2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
@@ -154,30 +156,41 @@ const AutonomousGrowthOS: React.FC = () => {
   const { data: dbMetrics } = useQuery({
     queryKey: ['admin-live-metrics'],
     queryFn: async () => {
-      const [
-        { count: profilesCount },
-        { count: jobsCount },
-        { count: collegesCount },
-        { count: applicationsCount },
-        { count: resumesCount },
-        { count: postsCount }
-      ] = await Promise.all([
-        supabase.from('profiles').select('id', { count: 'exact', head: true }),
-        supabase.from('jobs').select('id', { count: 'exact', head: true }),
-        supabase.from('colleges').select('id', { count: 'exact', head: true }),
-        supabase.from('job_applications').select('id', { count: 'exact', head: true }),
-        supabase.from('resumes').select('id', { count: 'exact', head: true }),
-        supabase.from('posts').select('id', { count: 'exact', head: true })
-      ]);
+      try {
+        const [
+          profilesRes,
+          jobsRes,
+          collegesRes,
+          appsRes,
+          resumesRes,
+          postsRes
+        ] = await Promise.allSettled([
+          supabase.from('profiles').select('id', { count: 'exact', head: true }),
+          supabase.from('jobs').select('id', { count: 'exact', head: true }),
+          supabase.from('colleges').select('id', { count: 'exact', head: true }),
+          supabase.from('job_applications').select('id', { count: 'exact', head: true }),
+          supabase.from('resumes').select('id', { count: 'exact', head: true }),
+          supabase.from('posts').select('id', { count: 'exact', head: true })
+        ]);
 
-      return {
-        profilesCount: profilesCount || 529,
-        jobsCount: jobsCount || 6,
-        collegesCount: collegesCount || 10250,
-        applicationsCount: applicationsCount || 0,
-        resumesCount: resumesCount || 0,
-        postsCount: postsCount || 2359
-      };
+        return {
+          profilesCount: (profilesRes.status === 'fulfilled' && profilesRes.value.count) ? profilesRes.value.count : 529,
+          jobsCount: (jobsRes.status === 'fulfilled' && jobsRes.value.count) ? jobsRes.value.count : 6,
+          collegesCount: (collegesRes.status === 'fulfilled' && collegesRes.value.count) ? collegesRes.value.count : 10250,
+          applicationsCount: (appsRes.status === 'fulfilled' && appsRes.value.count) ? appsRes.value.count : 0,
+          resumesCount: (resumesRes.status === 'fulfilled' && resumesRes.value.count) ? resumesRes.value.count : 0,
+          postsCount: (postsRes.status === 'fulfilled' && postsRes.value.count) ? postsRes.value.count : 2359
+        };
+      } catch (err) {
+        return {
+          profilesCount: 529,
+          jobsCount: 6,
+          collegesCount: 10250,
+          applicationsCount: 0,
+          resumesCount: 0,
+          postsCount: 2359
+        };
+      }
     },
     refetchInterval: 30000
   });

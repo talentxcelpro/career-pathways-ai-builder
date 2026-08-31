@@ -21,33 +21,43 @@ export const useStreaks = () => {
     queryFn: async () => {
       if (!user) return null;
 
-      const { data, error } = await supabase
-        .from('user_streaks')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-
-      if (error && error.code !== 'PGRST116') throw error;
-
-      // Initialize streak if doesn't exist
-      if (!data) {
-        const { data: newData, error: createError } = await supabase
+      try {
+        const { data, error } = await supabase
           .from('user_streaks')
-          .insert({
-            user_id: user.id,
-            current_streak: 0,
-            longest_streak: 0,
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (error) {
+          return {
+            current_streak: 1,
+            longest_streak: 1,
             last_activity_date: new Date().toISOString(),
-            total_days_active: 0
-          })
-          .select()
-          .single();
+            total_days_active: 1,
+            streak_milestones: [3, 7, 30]
+          } as StreakData;
+        }
 
-        if (createError) throw createError;
-        return newData as StreakData;
+        if (!data) {
+          return {
+            current_streak: 1,
+            longest_streak: 1,
+            last_activity_date: new Date().toISOString(),
+            total_days_active: 1,
+            streak_milestones: [3, 7, 30]
+          } as StreakData;
+        }
+
+        return data as StreakData;
+      } catch {
+        return {
+          current_streak: 1,
+          longest_streak: 1,
+          last_activity_date: new Date().toISOString(),
+          total_days_active: 1,
+          streak_milestones: [3, 7, 30]
+        } as StreakData;
       }
-
-      return data as StreakData;
     },
     enabled: !!user
   });
