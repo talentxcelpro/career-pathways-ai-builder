@@ -68,6 +68,8 @@ const ResumeNew                       = lazy(() => import('./pages/resume/Resume
 const UnifiedResumeHub                = lazy(() => import('./pages/resume/UnifiedResumeHub'));
 const UnifiedResumeBuilder            = lazy(() => import('./pages/resume/UnifiedResumeBuilder'));
 const UnifiedUploadPage               = lazy(() => import('./pages/resume/UnifiedUploadPage'));
+const SharedScoreView                 = lazy(() => import('./pages/resume/SharedScoreView'));
+const BatchScreening                  = lazy(() => import('./pages/colleges/BatchScreening'));
 const MyResumes                       = lazy(() => import('./pages/resume/MyResumes'));
 const ATSChecker                      = lazy(() => import('./pages/resume/ATSChecker'));
 const CoverLetterStudio               = lazy(() => import('./pages/resume/CoverLetterStudio'));
@@ -315,6 +317,9 @@ const App = () => {
                 <Route path="/privacypolicy" element={<PrivacyPolicy />} />
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/terms-of-service" element={<Terms />} />
+                <Route path="/score/:token" element={<Suspense fallback={<div>Loading...</div>}><SharedScoreView /></Suspense>} />
+                <Route path="/colleges/batch" element={<Suspense fallback={<div>Loading...</div>}><BatchScreening /></Suspense>} />
+                <Route path="/b/:cohortCode" element={<Suspense fallback={<div>Loading...</div>}><BatchScreening /></Suspense>} />
                 <Route path="/tools" element={<Tools />} />
                 <Route path="/tools/skill-assessment-engine" element={<SkillAssessmentEngine />} />
                 <Route path="/tools/skill-assessment" element={<SkillAssessmentEngine />} />
