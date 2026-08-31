@@ -580,6 +580,12 @@ const AutonomousGrowthOS: React.FC = () => {
                         <p className="text-xs text-slate-700"><strong>Reasoning:</strong> {dec.reasoning}</p>
                         <p className="text-xs text-emerald-700 font-bold"><strong>Action:</strong> {dec.actionGenerated} ({dec.expectedImpact})</p>
                       </div>
+                      <Badge className={dec.policyStatus === 'PASSED_SAFE' ? 'bg-emerald-500 text-white text-[10px]' : 'bg-amber-500 text-white text-[10px]'}>
+                        {dec.policyStatus}
+                      </Badge>
+                    </div>
+                  </Card>
+                ))}
               </div>
             </div>
           </TabsContent>
