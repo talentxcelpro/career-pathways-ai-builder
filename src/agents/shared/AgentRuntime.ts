@@ -110,7 +110,16 @@ class MasterAgentRuntime {
       }, 300000); // Pulse every 5 minutes
     });
 
-    console.log('✅ [AgentRuntime] All 8 Agents, TPO Outreach Engine and Scheduler Active.');
+    // Boot 20M Keyword Universe Opportunity Graph (Refreshes every 3.5 hours)
+    import('@/lib/seo/keywordUniverseEngine').then(({ KeywordUniverseEngine }) => {
+      const kwEngine = KeywordUniverseEngine.getInstance();
+      kwEngine.runPeriodicEvaluationCycle();
+      setInterval(() => {
+        kwEngine.runPeriodicEvaluationCycle();
+      }, 3.5 * 60 * 60 * 1000);
+    });
+
+    console.log('✅ [AgentRuntime] All 8 Agents, TPO Outreach, 20M Keyword Universe and Scheduler Active.');
   }
 
   isReady(): boolean {

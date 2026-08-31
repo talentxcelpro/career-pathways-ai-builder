@@ -47,6 +47,7 @@ import { evaluateAdaptivePublishingQuota, GSCFeedbackMetrics } from '@/lib/auton
 import { PublishingCycleLedger } from '@/lib/autonomous-os/publishingCycleEngine';
 import { GrowthEventTracker } from '@/lib/autonomous-os/growthEventTracker';
 import { GrowthSnapshotEngine } from '@/lib/autonomous-os/growthSnapshotEngine';
+import { KeywordUniverseEngine } from '@/lib/seo/keywordUniverseEngine';
 
 const AutonomousGrowthOS: React.FC = () => {
   const [osState, setOsState] = useState<AutonomousOsState>(() => runAutonomousGrowthCycle());
@@ -528,6 +529,187 @@ const AutonomousGrowthOS: React.FC = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {/* 20M KEYWORD UNIVERSE OPPORTUNITY GRAPH (5-TIER GATED ENGINE) */}
+            {(() => {
+              const kwEngine = KeywordUniverseEngine.getInstance();
+              const kwStats = kwEngine.getStats();
+              const clusters = kwEngine.getClusters();
+              const sampleOpps = kwEngine.getSampleOpportunities();
+
+              return (
+                <Card className="border-slate-200 shadow-sm bg-white overflow-hidden">
+                  <CardHeader className="bg-slate-900 text-white p-5 border-b border-slate-800">
+                    <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <Badge className="bg-indigo-500/20 text-indigo-300 border border-indigo-400/40 text-[10px] font-bold uppercase">
+                            20M Keyword Opportunity Graph
+                          </Badge>
+                          <Badge className="bg-emerald-500 text-white text-[10px] font-bold">
+                            3.5h Adaptive Pulse Active
+                          </Badge>
+                        </div>
+                        <CardTitle className="text-lg font-black text-white mt-1.5 flex items-center gap-2">
+                          <Brain className="h-5 w-5 text-indigo-400" />
+                          20.4M Keyword Opportunity Universe &amp; 5-Tier Ingestion Matrix
+                        </CardTitle>
+                        <CardDescription className="text-slate-300 text-xs mt-0.5">
+                          20M Keywords ≠ 20M URLs. Combinatorial search graph evaluated against GSC absorption, content-worthiness, and zero-CAC product utility.
+                        </CardDescription>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Button 
+                          size="sm"
+                          onClick={() => {
+                            kwEngine.runPeriodicEvaluationCycle();
+                            toast.success("Keyword Universe Opportunity Graph Evaluated & Synchronized with GSC Governor!");
+                          }}
+                          className="h-8 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold"
+                        >
+                          <RefreshCw className="h-3 w-3 mr-1.5" />
+                          Refresh Graph Now
+                        </Button>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-5 space-y-5">
+                    
+                    {/* 5-Tier Strategy Breakdown Grid */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                      
+                      <div className="p-3 bg-emerald-50/80 border border-emerald-200 rounded-xl">
+                        <div className="flex items-center justify-between">
+                          <Badge className="bg-emerald-600 text-white font-bold text-[9px]">TIER S</Badge>
+                          <span className="text-[10px] font-bold text-emerald-800">Priority Utility</span>
+                        </div>
+                        <p className="text-xl font-black text-emerald-950 font-mono mt-1.5">{kwStats.tierSCount.toLocaleString()}</p>
+                        <p className="text-[10px] text-emerald-700 font-medium mt-0.5">Direct ATS / Salary Tools</p>
+                      </div>
+
+                      <div className="p-3 bg-blue-50/80 border border-blue-200 rounded-xl">
+                        <div className="flex items-center justify-between">
+                          <Badge className="bg-blue-600 text-white font-bold text-[9px]">TIER A</Badge>
+                          <span className="text-[10px] font-bold text-blue-800">Adaptive Publish</span>
+                        </div>
+                        <p className="text-xl font-black text-blue-950 font-mono mt-1.5">{kwStats.tierACount.toLocaleString()}</p>
+                        <p className="text-[10px] text-blue-700 font-medium mt-0.5">GSC Governor Controlled</p>
+                      </div>
+
+                      <div className="p-3 bg-purple-50/80 border border-purple-200 rounded-xl">
+                        <div className="flex items-center justify-between">
+                          <Badge className="bg-purple-600 text-white font-bold text-[9px]">TIER B</Badge>
+                          <span className="text-[10px] font-bold text-purple-800">Consolidate</span>
+                        </div>
+                        <p className="text-xl font-black text-purple-950 font-mono mt-1.5">{kwStats.tierBCount.toLocaleString()}</p>
+                        <p className="text-[10px] text-purple-700 font-medium mt-0.5">Pillar Page Sections</p>
+                      </div>
+
+                      <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                        <div className="flex items-center justify-between">
+                          <Badge variant="outline" className="text-[9px] font-bold text-slate-600">TIER C</Badge>
+                          <span className="text-[10px] font-bold text-slate-500">Data-Only</span>
+                        </div>
+                        <p className="text-xl font-black text-slate-900 font-mono mt-1.5">{kwStats.tierCCount.toLocaleString()}</p>
+                        <p className="text-[10px] text-slate-500 font-medium mt-0.5">Market Lake (NOINDEX)</p>
+                      </div>
+
+                      <div className="p-3 bg-rose-50/80 border border-rose-200 rounded-xl col-span-2 sm:col-span-1">
+                        <div className="flex items-center justify-between">
+                          <Badge className="bg-rose-600 text-white font-bold text-[9px]">TIER D</Badge>
+                          <span className="text-[10px] font-bold text-rose-800">Spam / Thin</span>
+                        </div>
+                        <p className="text-xl font-black text-rose-950 font-mono mt-1.5">{kwStats.tierDCount.toLocaleString()}</p>
+                        <p className="text-[10px] text-rose-700 font-medium mt-0.5">Hard Blocked</p>
+                      </div>
+
+                    </div>
+
+                    {/* Top High-Intent Utility Clusters */}
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-xs font-black uppercase tracking-wider text-slate-700">
+                          Active High-Intent Utility Clusters (Direct Zero-CAC Conversion)
+                        </h4>
+                        <span className="text-xs font-semibold text-slate-500">4,200 Clusters Mapped</span>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {clusters.map((c) => (
+                          <div key={c.clusterId} className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                            <div className="flex items-center justify-between">
+                              <Badge className="bg-indigo-600 text-white font-bold text-[9px]">{c.priorityTier}</Badge>
+                              <span className="text-[11px] font-mono font-bold text-emerald-700">
+                                {c.totalClusterVolume.toLocaleString()} searches/mo
+                              </span>
+                            </div>
+                            <div>
+                              <p className="text-xs font-bold text-slate-900 leading-snug">{c.primaryKeyword}</p>
+                              <p className="text-[10px] text-indigo-600 font-mono mt-0.5 truncate">{c.canonicalUrl}</p>
+                            </div>
+                            <div className="flex flex-wrap gap-1 pt-1">
+                              {c.secondaryKeywords.map((sk, idx) => (
+                                <span key={idx} className="text-[9px] bg-white border border-slate-200 px-1.5 py-0.5 rounded text-slate-600">
+                                  {sk}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Opportunity Ingestion Queue Table */}
+                    <div className="space-y-2">
+                      <h4 className="text-xs font-black uppercase tracking-wider text-slate-700">
+                        Evaluated Keyword Ingestion Queue (Sampled from 20M Universe)
+                      </h4>
+                      <div className="overflow-x-auto border border-slate-200 rounded-xl">
+                        <table className="w-full text-xs text-left">
+                          <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
+                            <tr>
+                              <th className="p-3">Keyword Query</th>
+                              <th className="p-3">Role / Skill</th>
+                              <th className="p-3">Monthly Demand</th>
+                              <th className="p-3">Business Value</th>
+                              <th className="p-3">Tier</th>
+                              <th className="p-3">Action Routing</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
+                            {sampleOpps.map((opp, idx) => (
+                              <tr key={idx} className="hover:bg-slate-50/60">
+                                <td className="p-3 font-bold text-slate-900">{opp.keyword}</td>
+                                <td className="p-3 text-slate-600">{opp.role} {opp.skill ? `• ${opp.skill}` : ''}</td>
+                                <td className="p-3 font-mono font-bold text-slate-900">{opp.estimatedMonthlyDemand.toLocaleString()}</td>
+                                <td className="p-3 font-bold text-indigo-600">{opp.businessValueScore}/100</td>
+                                <td className="p-3">
+                                  <Badge className={
+                                    opp.tier === 'TIER_S' ? 'bg-emerald-600 text-white text-[9px]' :
+                                    opp.tier === 'TIER_A' ? 'bg-blue-600 text-white text-[9px]' :
+                                    opp.tier === 'TIER_B' ? 'bg-purple-600 text-white text-[9px]' :
+                                    opp.tier === 'TIER_C' ? 'bg-slate-500 text-white text-[9px]' : 'bg-rose-600 text-white text-[9px]'
+                                  }>
+                                    {opp.tier}
+                                  </Badge>
+                                </td>
+                                <td className="p-3">
+                                  <span className="font-mono text-[10px] font-bold text-slate-700">
+                                    {opp.recommendedAction}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                  </CardContent>
+                </Card>
+              );
+            })()}
 
             {/* Opportunities List */}
             <div className="space-y-4">
