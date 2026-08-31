@@ -422,10 +422,31 @@ export async function generateProductionSitemaps() {
     { path: '/rankings/ai-products/uk', changefreq: 'daily', priority: '0.9' },
   ]);
 
+  // Fetch active Supabase jobs
+  let activeJobEntriesList: SitemapEntry[] = [
+    { path: '/jobs', changefreq: 'daily', priority: '1.0' },
+  ];
+  try {
+    const { data: dbJobs } = await supabase.from('jobs').select('id, seo_slug, created_at, posted_at').limit(1000);
+    if (dbJobs) {
+      dbJobs.forEach(j => {
+        const slug = j.seo_slug || j.id;
+        activeJobEntriesList.push({
+          path: `/jobs/${slug}`,
+          changefreq: 'daily',
+          priority: '0.9',
+          lastmod: (j.posted_at || j.created_at || '').split('T')[0] || undefined
+        });
+      });
+    }
+  } catch (e) {}
+  const activeJobEntries = deduplicate(activeJobEntriesList);
+
   // Master segmented configuration array
   const sitemapConfig = [
     { filename: 'sitemap-base.xml', entries: baseEntries },
-    { filename: 'sitemap-colleges-overview.xml', entries: collegeOverviewEntries },
+    { filename: 'sitemap-colleges.xml', entries: collegeOverviewEntries },
+    { filename: 'sitemap-jobs.xml', entries: activeJobEntries },
     { filename: 'sitemap-colleges-courses.xml', entries: collegeCoursesEntries },
     { filename: 'sitemap-colleges-placements.xml', entries: collegePlacementsEntries },
     { filename: 'sitemap-colleges-cutoffs.xml', entries: collegeCutoffsEntries },

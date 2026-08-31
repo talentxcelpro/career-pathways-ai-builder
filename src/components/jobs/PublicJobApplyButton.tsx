@@ -41,7 +41,8 @@ export const PublicJobApplyButton: React.FC<PublicJobApplyButtonProps> = ({
 
     if (!currentUser) {
       // Store the return URL and redirect to login
-      const returnUrl = `/jobs/${jobId}`;
+      const targetSlug = job?.seo_slug || jobId;
+      const returnUrl = `/jobs/${targetSlug}`;
       navigate(`/auth/login?returnUrl=${encodeURIComponent(returnUrl)}`);
       return;
     }
