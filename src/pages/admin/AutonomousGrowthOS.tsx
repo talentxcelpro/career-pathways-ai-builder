@@ -291,8 +291,6 @@ const AutonomousGrowthOS: React.FC = () => {
         </Card>
 
         {/* 3. TABS COCKPIT */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        {/* 3. TABS COCKPIT */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-1 w-full shadow-inner">
             <TabsTrigger value="overview" className="rounded-xl data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm font-bold text-xs py-2.5">
