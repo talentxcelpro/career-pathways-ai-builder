@@ -31,28 +31,30 @@ export const useTXCLeaderboard = () => {
   const { data: leaderboard, isLoading: leaderboardLoading, error: leaderboardError } = useQuery({
     queryKey: ['txc-leaderboard'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('txc_leaderboard')
-        .select('*')
-        .order('rank', { ascending: true })
-        .limit(100);
+      try {
+        const { data, error } = await supabase
+          .from('txc_leaderboard')
+          .select('*')
+          .limit(100);
 
-      if (error) throw error;
-
-      return data?.map((entry): LeaderboardEntry => ({
-        rank: Number(entry.rank),
-        user_id: entry.user_id || '',
-        full_name: entry.full_name || 'Anonymous',
-        current_txc: Number(entry.current_txc || 0),
-        lifetime_txc: Number(entry.lifetime_txc || 0),
-        job_title: entry.job_title,
-        location: entry.location,
-        profile_picture_url: entry.profile_picture_url,
-        isCurrentUser: entry.user_id === user?.id,
-        change: 'same' // We'd need historical data to calculate this
-      })) || [];
+        if (error || !data) return [];
+        return data.map((entry): LeaderboardEntry => ({
+          rank: Number(entry.rank || 1),
+          user_id: entry.user_id || '',
+          full_name: entry.full_name || 'Anonymous',
+          current_txc: Number(entry.current_txc || 0),
+          lifetime_txc: Number(entry.lifetime_txc || 0),
+          job_title: entry.job_title,
+          location: entry.location,
+          profile_picture_url: entry.profile_picture_url,
+          isCurrentUser: entry.user_id === user?.id,
+          change: 'same'
+        }));
+      } catch {
+        return [];
+      }
     },
-    refetchInterval: 60000, // Refetch every minute
+    refetchInterval: 60000,
   });
 
   // Fetch current user's rank info

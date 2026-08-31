@@ -34,23 +34,16 @@ class KernelMemoryManager {
         jobsRes,
         claim1EntitiesRes,
         claim1ListingsRes,
-        revenueRes,
       ] = await Promise.all([
         supabase.from('profiles').select('id', { count: 'exact', head: true }),
         supabase.from('companies').select('id', { count: 'exact', head: true }),
         supabase.from('scraped_jobs' as any).select('id', { count: 'exact', head: true }),
         supabase.from('claim1_entities').select('id', { count: 'exact', head: true }).not('owner_user_id', 'is', null),
-        supabase.from('claim1_listings').select('id, total_bids_count'),
-        supabase.from('claim1_platform_revenue').select('fee_amount_inr'),
+        supabase.from('claim1_listings').select('id, bid_count, current_bid_amount'),
       ]);
 
-      const totalRev = (revenueRes.data as any[] || []).reduce(
-        (sum, row) => sum + (Number(row.fee_amount_inr) || 0),
-        0
-      );
-
       const activeBids = (claim1ListingsRes.data as any[] || []).filter(
-        (l) => (l.total_bids_count || 0) > 0
+        (l) => (l.bid_count || 0) > 0 || (l.current_bid_amount || 0) > 0
       ).length;
 
       this.cache = {

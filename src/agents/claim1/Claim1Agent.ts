@@ -37,7 +37,7 @@ export class Claim1Agent {
       // 1. Audit active leaderboards and check for stale or un-reclaimed positions
       const { data: listings } = await supabase
         .from('claim1_listings')
-        .select('id, entity_id, scope_id, current_bid_txc, current_rank, total_bids_count')
+        .select('id, entity_id, scope_id, current_bid_amount, current_rank, bid_count')
         .order('current_rank', { ascending: true })
         .limit(20);
 

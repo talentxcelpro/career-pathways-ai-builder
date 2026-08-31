@@ -36,22 +36,15 @@ export class BusinessMemory {
         supabase.from('scraped_jobs' as any).select('id', { count: 'exact', head: true }),
         supabase.from('scraped_jobs' as any).select('id', { count: 'exact', head: true }).gte('created_at', `${todayIso}T00:00:00Z`),
         supabase.from('claim1_entities').select('id', { count: 'exact', head: true }).not('owner_user_id', 'is', null),
-        supabase.from('claim1_listings').select('id, current_bid_amount, total_bids_count'),
-        supabase.from('claim1_platform_revenue').select('fee_amount_inr, created_at'),
+        supabase.from('claim1_listings').select('id, current_bid_amount, bid_count'),
         supabase.from('claim1_growth_events' as any).select('id, event_type, metadata').gte('created_at', `${todayIso}T00:00:00Z`),
       ]);
 
-      const revRows = (revenueRes.data as any[]) || [];
-      const totalRev = revRows.reduce((sum, r) => sum + (Number(r.fee_amount_inr) || 0), 0);
-      const revToday = revRows
-        .filter((r) => r.created_at && r.created_at.startsWith(todayIso))
-        .reduce((sum, r) => sum + (Number(r.fee_amount_inr) || 0), 0);
-
       const activeBids = (claim1ListingsRes.data as any[] || []).filter(
-        (l) => (l.total_bids_count || 0) > 0
+        (l) => (l.bid_count || 0) > 0 || (l.current_bid_amount || 0) > 0
       ).length;
 
-      const events = (todayEventsRes.data as any[]) || [];
+      const events = (todayEventsRes?.data as any[]) || [];
       const successfulActions = events.filter((e) => e.metadata?.success !== false).length;
       const failedActions = events.filter((e) => e.metadata?.success === false).length;
 
