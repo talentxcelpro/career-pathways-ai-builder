@@ -544,18 +544,21 @@ const AutonomousGrowthOS: React.FC = () => {
                       <div>
                         <div className="flex items-center gap-2">
                           <Badge className="bg-indigo-500/20 text-indigo-300 border border-indigo-400/40 text-[10px] font-bold uppercase">
-                            20M Keyword Opportunity Graph
+                            100M Keyword Universe Graph
                           </Badge>
                           <Badge className="bg-emerald-500 text-white text-[10px] font-bold">
+                            100:1 Semantic Compression (1M Hubs)
+                          </Badge>
+                          <Badge variant="outline" className="text-slate-300 border-slate-700 text-[10px]">
                             3.5h Adaptive Pulse Active
                           </Badge>
                         </div>
                         <CardTitle className="text-lg font-black text-white mt-1.5 flex items-center gap-2">
                           <Brain className="h-5 w-5 text-indigo-400" />
-                          20.4M Keyword Opportunity Universe &amp; 5-Tier Ingestion Matrix
+                          100,000,000 Keyword Universe &amp; 1,000,000 Authoritative Hub Matrix
                         </CardTitle>
                         <CardDescription className="text-slate-300 text-xs mt-0.5">
-                          20M Keywords ≠ 20M URLs. Combinatorial search graph evaluated against GSC absorption, content-worthiness, and zero-CAC product utility.
+                          100M Keywords compressed into 1M high-density entity hubs. Gated strictly by GSC crawl absorption, content-worthiness, and zero-CAC product utility.
                         </CardDescription>
                       </div>
 
