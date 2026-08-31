@@ -24,10 +24,17 @@ interface JobData {
 export const generateJobStructuredData = (job: JobData) => {
   const company = job.company || job.companies;
   
-  // Ensure required fields are present
+  // Ensure required fields are present with strict ISO 8601 formatting
   const currentDate = new Date().toISOString();
   const postedDate = job.posted_at || job.created_at || currentDate;
-  const expiryDate = job.expires_at || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(); // 30 days from now
+  const expiryDate = (() => {
+    try {
+      const d = job.expires_at ? new Date(job.expires_at) : new Date(Date.now() + 60 * 24 * 60 * 60 * 1000);
+      return isNaN(d.getTime()) ? new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString() : d.toISOString();
+    } catch {
+      return new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString();
+    }
+  })();
   
   // Parse location for better address structure
   const locationParts = job.location?.split(',') || ['Remote'];
