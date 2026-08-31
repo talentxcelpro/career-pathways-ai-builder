@@ -30,8 +30,8 @@ import { formatDistanceToNow } from 'date-fns';
 import { formatSalaryRange } from '@/utils/currencyUtils';
 import { toast } from 'sonner';
 import { BrandedFooter } from '@/components/branded/BrandedFooter';
-import { updateMetaTags } from '@/utils/metaTags';
 import { ReactJobStructuredData } from '@/components/seo/ReactJobStructuredData';
+import { buildJobPostingSchema } from '@/lib/seo/jobPostingSchema';
 import ComprehensiveJobApplicationForm from '@/components/jobs/ComprehensiveJobApplicationForm';
 
 const JobDetail = () => {
@@ -249,55 +249,18 @@ const JobDetail = () => {
       });
 
       // Add JobPosting structured data
-      const jobPostingSchema = {
-        "@context": "https://schema.org/",
-        "@type": "JobPosting",
-        "title": job.title,
-        "description": job.description,
-        "datePosted": job.posted_at || job.created_at,
-        "validThrough": job.expires_at,
-        "employmentType": job.employment_type?.toUpperCase(),
-        "hiringOrganization": {
-          "@type": "Organization",
-          "name": job.companies?.name || job.company_name,
-          "url": job.companies?.website_url || "#",
-          "logo": job.companies?.logo_url
-        },
-        "jobLocation": {
-          "@type": "Place",
-          "address": {
-            "@type": "PostalAddress",
-            "addressLocality": job.location,
-            "addressCountry": "IN"
-          }
-        },
-        "baseSalary": job.salary_min || job.salary_max ? {
-          "@type": "MonetaryAmount",
-          "currency": "INR",
-          "value": {
-            "@type": "QuantitativeValue",
-            "minValue": job.salary_min,
-            "maxValue": job.salary_max,
-            "unitText": "YEAR"
-          }
-        } : undefined,
-        "url": `${window.location.origin}/jobs/${job.seo_slug}`,
-        "applicationContact": {
-          "@type": "ContactPoint",
-          "url": `${window.location.origin}/jobs/${job.seo_slug}`,
-          "contactType": "Application"
-        }
-      };
-
-      const script = document.createElement('script');
-      script.type = 'application/ld+json';
-      script.textContent = JSON.stringify(jobPostingSchema);
-      script.id = 'job-schema';
-      
-      const existing = document.getElementById('job-schema');
-      if (existing) existing.remove();
-      
-      document.head.appendChild(script);
+      const jobPostingSchema = buildJobPostingSchema(job);
+      if (jobPostingSchema) {
+        const script = document.createElement('script');
+        script.type = 'application/ld+json';
+        script.textContent = JSON.stringify(jobPostingSchema);
+        script.id = 'job-schema';
+        
+        const existing = document.getElementById('job-schema');
+        if (existing) existing.remove();
+        
+        document.head.appendChild(script);
+      }
 
       return () => {
         const schemaScript = document.getElementById('job-schema');

@@ -24,6 +24,7 @@ import { useTXCIntegration } from '@/hooks/useTXCIntegration';
 import { useTXCBalance } from '@/hooks/useTXCBalance';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { buildJobPostingSchema } from '@/lib/seo/jobPostingSchema';
 
 // Industry Data
 import { COMPREHENSIVE_INDUSTRIES, INDUSTRY_CATEGORIES, TRENDING_INDUSTRIES, HIGH_GROWTH_INDUSTRIES } from '@/data/industries';
@@ -134,44 +135,10 @@ const Jobs = () => {
   const jobsSchema = useMemo(() => {
     if (!allJobs || allJobs.length === 0) return null;
 
-    const jobPostings = allJobs.slice(0, 10).map(job => ({
-      "@type": "JobPosting",
-      "title": job.title,
-      "description": job.description?.slice(0, 200) + "...",
-      "datePosted": job.posted_at || job.created_at,
-      "validThrough": job.expires_at || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-      "employmentType": job.employment_type?.toUpperCase() || "FULL_TIME",
-      "hiringOrganization": {
-        "@type": "Organization",
-        "name": job.companies?.name || job.company_name || "Company",
-        "logo": job.companies?.logo_url
-      },
-      "jobLocation": {
-        "@type": "Place",
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": job.location || "Multiple Cities",
-          "addressCountry": "IN"
-        }
-      },
-      "baseSalary": job.salary_min && job.salary_max ? {
-        "@type": "MonetaryAmount",
-        "currency": "INR",
-        "value": {
-          "@type": "QuantitativeValue",
-          "minValue": job.salary_min,
-          "maxValue": job.salary_max,
-          "unitText": "YEAR"
-        }
-      } : undefined,
-      "skills": job.skills_required?.join(", "),
-      "url": `https://talentxcel.in/jobs/${job.seo_slug || job.id}`,
-      "identifier": {
-        "@type": "PropertyValue",
-        "name": "TalentXcel Job ID",
-        "value": job.id
-      }
-    }));
+    const jobPostings = allJobs
+      .slice(0, 10)
+      .map(job => buildJobPostingSchema(job))
+      .filter(Boolean);
 
     return {
       "@context": "https://schema.org/",
