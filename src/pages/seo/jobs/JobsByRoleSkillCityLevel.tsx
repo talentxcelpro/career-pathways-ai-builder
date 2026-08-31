@@ -96,30 +96,23 @@ export const JobsByRoleSkillCityLevel: React.FC = () => {
   const pageDescription = `Find ${levelDisplay} ${roleDisplay} jobs requiring ${skillDisplay} skills in ${cityDisplay}. ${totalCount}+ specialized opportunities for ${skillDisplay} professionals.`;
   const canonicalUrl = `https://talentxcel.in/jobs/${role}/${skill}/${city}/${experienceLevel}`;
 
-  // Structured Data
+  // Structured Data (CollectionPage / ItemList compliant with Google Rich Result guidelines)
   const structuredData = {
     "@context": "https://schema.org",
-    "@type": "JobPosting",
-    "name": `${levelDisplay} ${roleDisplay} with ${skillDisplay} - ${cityDisplay}`,
+    "@type": "CollectionPage",
+    "name": `${levelDisplay} ${roleDisplay} Jobs with ${skillDisplay} in ${cityDisplay}`,
     "description": pageDescription,
-    "datePosted": new Date().toISOString(),
-    "employmentType": "FULL_TIME",
-    "experienceRequirements": levelDisplay,
-    "skills": skillDisplay,
-    "jobLocation": {
-      "@type": "Place",
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": cityDisplay,
-        "addressCountry": "IN"
-      }
-    },
-    "hiringOrganization": {
-      "@type": "Organization",
-      "name": "TalentXcel",
-      "sameAs": "https://talentxcel.in"
-    },
-    "occupationalCategory": roleDisplay
+    "url": canonicalUrl,
+    "mainEntity": {
+      "@type": "ItemList",
+      "numberOfItems": totalCount,
+      "itemListElement": jobs.map((job, idx) => ({
+        "@type": "ListItem",
+        "position": idx + 1,
+        "name": job.title,
+        "url": `https://talentxcel.in/jobs/${job.id}`
+      }))
+    }
   };
 
   if (loading) {

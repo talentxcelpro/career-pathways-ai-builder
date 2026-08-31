@@ -105,29 +105,23 @@ export const JobsByRoleIndustryCity: React.FC = () => {
   const pageDescription = `Find ${roleDisplay} jobs in ${industryDisplay} companies in ${cityDisplay}. ${totalCount}+ specialized opportunities from leading ${industryDisplay} employers.`;
   const canonicalUrl = `https://talentxcel.in/jobs/${role}/${industry}/${city}`;
 
-  // Structured Data
+  // Structured Data (CollectionPage / ItemList compliant with Google Rich Result guidelines)
   const structuredData = {
     "@context": "https://schema.org",
-    "@type": "JobPosting",
+    "@type": "CollectionPage",
     "name": `${roleDisplay} Jobs in ${industryDisplay} - ${cityDisplay}`,
     "description": pageDescription,
-    "datePosted": new Date().toISOString(),
-    "employmentType": "FULL_TIME",
-    "industry": industryDisplay,
-    "jobLocation": {
-      "@type": "Place",
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": cityDisplay,
-        "addressCountry": "IN"
-      }
-    },
-    "hiringOrganization": {
-      "@type": "Organization",
-      "name": "TalentXcel",
-      "sameAs": "https://talentxcel.in"
-    },
-    "occupationalCategory": roleDisplay
+    "url": canonicalUrl,
+    "mainEntity": {
+      "@type": "ItemList",
+      "numberOfItems": totalCount,
+      "itemListElement": jobs.map((job, idx) => ({
+        "@type": "ListItem",
+        "position": idx + 1,
+        "name": job.title,
+        "url": `https://talentxcel.in/jobs/${job.id}`
+      }))
+    }
   };
 
   if (loading) {
