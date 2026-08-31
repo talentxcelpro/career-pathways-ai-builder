@@ -1,4 +1,4 @@
-﻿// src/pages/colleges/BatchScreening.tsx
+// src/pages/colleges/BatchScreening.tsx
 // Institutional College TPO & Student Cohort Gateway
 // Zero-friction batch screening creation and live TPO placement intelligence dashboard.
 
@@ -22,7 +22,8 @@ import {
   ArrowRight,
   TrendingUp,
   Sparkles,
-  FileText
+  FileText,
+  Send
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { GrowthEventTracker } from '@/lib/autonomous-os/growthEventTracker';
@@ -165,11 +166,14 @@ export const BatchScreening: React.FC = () => {
                   <div className="grid grid-cols-2 gap-2 pt-1">
                     <Button 
                       size="sm" 
-                      onClick={handleWhatsAppBroadcast}
-                      className="h-8 text-xs bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold"
+                      onClick={() => {
+                        const encoded = encodeURIComponent(studentWhatsAppMessage);
+                        window.open(`https://t.me/share/url?url=${encodeURIComponent(cohortUrl)}&text=${encoded}`, '_blank');
+                      }}
+                      className="h-8 text-xs bg-[#229ED9] hover:bg-[#1e8bc0] text-white font-bold"
                     >
-                      <MessageCircle className="h-3.5 w-3.5 mr-1 fill-current" />
-                      WhatsApp
+                      <Send className="h-3.5 w-3.5 mr-1" />
+                      Telegram
                     </Button>
                     <Button 
                       size="sm" 
@@ -188,7 +192,7 @@ export const BatchScreening: React.FC = () => {
                     onClick={handleCopyCircular}
                     className="w-full h-7 text-[11px] text-blue-700 dark:text-blue-300 font-semibold"
                   >
-                    Copy Official Placement Circular Template →
+                    Copy Official Email Circular Template →
                   </Button>
                 </Card>
               )}

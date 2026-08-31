@@ -1,6 +1,6 @@
 ﻿// src/components/viral/ViralShareModal.tsx
-// High-Converting Personalized Result Artifact & 1-Click Share Kit
-// Supports: WhatsApp Contextual Share, Native WebShare API, LinkedIn Artifact Copy & Direct Referral Links
+// Universal Multi-Platform Result Artifact & Share Kit
+// Supports: Telegram, LinkedIn, Twitter/X, Native Device Share (Slack/Discord/iMessage), and 1-Click Direct Referral Link
 
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -13,11 +13,11 @@ import {
   ShieldCheck, 
   Sparkles, 
   Linkedin, 
-  ExternalLink,
-  MessageCircle,
+  MessageSquare,
+  Send,
   AlertTriangle,
-  CheckCircle2,
-  TrendingUp
+  MessageCircle,
+  Twitter
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { GrowthEventTracker } from '@/lib/autonomous-os/growthEventTracker';
@@ -46,28 +46,36 @@ export const ViralShareModal: React.FC<ViralShareModalProps> = ({
   const [postCopied, setPostCopied] = useState(false);
   const tracker = GrowthEventTracker.getInstance();
 
-  const shareUrl = `https://talentxcel.in/resume?ref=${data.referralToken}`;
+  const shareUrl = `https://talentxcel.in/score/${data.referralToken}`;
 
-  const whatsappMessage = `I just tested my resume on TalentXcel and scored ${data.score}/100 for ${data.roleTarget} roles. It caught 3 keyword & formatting gaps I didn't notice.\n\nCheck yours for free here:\n${shareUrl}`;
+  const shareText = `I just tested my resume compatibility on TalentXcel and scored ${data.score}/100 for ${data.roleTarget} roles. It caught 3 keyword & formatting gaps I didn't notice.\n\nCheck yours for free here:\n${shareUrl}`;
 
-  const linkedInPostText = `I just audited my resume against enterprise ATS filters using TalentXcel and scored ${data.score}/100 (${data.grade} Grade) for ${data.roleTarget} roles! 🎯\n\nKey Insights:\n${data.topGaps.map(g => `• ${g}`).join('\n')}\n\nYou can run a free diagnostic on your resume here: ${shareUrl}\n\n#career #resumetips #techjobs #talentxcel #jobsearch`;
+  const linkedInPostText = `I just audited my resume against enterprise ATS filters using TalentXcel and scored ${data.score}/100 (${data.grade} Grade) for ${data.roleTarget} roles! 🎯\n\nKey Diagnostic Insights:\n${data.topGaps.map(g => `• ${g}`).join('\n')}\n\nYou can run a free diagnostic on your resume here: ${shareUrl}\n\n#career #resumetips #techjobs #talentxcel #jobsearch`;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(shareUrl);
     setCopied(true);
-    tracker.trackEvent('SHARE_COMPLETED_COPY', 'ATS_SCANNER', data.referralToken);
-    toast.success('Referral link copied to clipboard!');
+    tracker.trackEvent('SHARE_COMPLETED_COPY', 'ATS_SCANNER', data.referralToken, { source: 'direct' });
+    toast.success('Referral scorecard link copied!');
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleWhatsAppShare = () => {
-    tracker.trackEvent('SHARE_COMPLETED_WHATSAPP', 'ATS_SCANNER', data.referralToken);
-    const encoded = encodeURIComponent(whatsappMessage);
-    window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank');
+  const handleTelegramShare = () => {
+    tracker.trackEvent('SHARE_COMPLETED_NATIVE', 'ATS_SCANNER', data.referralToken, { source: 'direct' });
+    const encodedUrl = encodeURIComponent(shareUrl);
+    const encodedText = encodeURIComponent(`I scored ${data.score}/100 on the TalentXcel ATS diagnostic for ${data.roleTarget}. Test yours free:`);
+    window.open(`https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`, '_blank');
+  };
+
+  const handleTwitterShare = () => {
+    tracker.trackEvent('SHARE_COMPLETED_NATIVE', 'ATS_SCANNER', data.referralToken, { source: 'direct' });
+    const encodedUrl = encodeURIComponent(shareUrl);
+    const encodedText = encodeURIComponent(`Audited my resume on @TalentXcel and scored ${data.score}/100 for ${data.roleTarget}. Check your resume score for free:`);
+    window.open(`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedText}`, '_blank');
   };
 
   const handleLinkedInShare = () => {
-    tracker.trackEvent('SHARE_COMPLETED_LINKEDIN', 'ATS_SCANNER', data.referralToken);
+    tracker.trackEvent('SHARE_COMPLETED_LINKEDIN', 'ATS_SCANNER', data.referralToken, { source: 'direct' });
     navigator.clipboard.writeText(linkedInPostText);
     setPostCopied(true);
     toast.success('Post text copied! Opening LinkedIn...');
@@ -77,15 +85,21 @@ export const ViralShareModal: React.FC<ViralShareModalProps> = ({
     }, 700);
   };
 
+  const handleWhatsAppShare = () => {
+    tracker.trackEvent('SHARE_COMPLETED_WHATSAPP', 'ATS_SCANNER', data.referralToken, { source: 'whatsapp' });
+    const encoded = encodeURIComponent(shareText);
+    window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank');
+  };
+
   const handleNativeShare = async () => {
-    if (navigator.share) {
+    if (typeof navigator !== 'undefined' && navigator.share) {
       try {
         await navigator.share({
           title: `TalentXcel ATS Scorecard: ${data.score}/100`,
           text: `I scored ${data.score}/100 on the TalentXcel ATS diagnostic for ${data.roleTarget}. Test yours free:`,
           url: shareUrl
         });
-        tracker.trackEvent('SHARE_COMPLETED_NATIVE', 'ATS_SCANNER', data.referralToken);
+        tracker.trackEvent('SHARE_COMPLETED_NATIVE', 'ATS_SCANNER', data.referralToken, { source: 'direct' });
         toast.success('Scorecard shared successfully!');
       } catch (err) {
         // User canceled or dismissed share sheet
@@ -121,7 +135,7 @@ export const ViralShareModal: React.FC<ViralShareModalProps> = ({
               <h4 className="text-sm font-bold text-white mt-0.5">{data.roleTarget}</h4>
             </div>
             <div className="text-right">
-              <div className="text-2xl font-black text-emerald-400 leading-none">{data.score}<span className="text-xs text-slate-400 font-normal">/100</span></div>
+              <div className="text-2xl font-black text-emerald-400 leading-none font-mono">{data.score}<span className="text-xs text-slate-400 font-normal">/100</span></div>
               <span className="text-[10px] text-emerald-300 font-semibold uppercase tracking-wider">Grade {data.grade}</span>
             </div>
           </div>
@@ -142,22 +156,14 @@ export const ViralShareModal: React.FC<ViralShareModalProps> = ({
             <span className="flex items-center gap-1 text-slate-300 font-medium">
               <ShieldCheck className="h-3 w-3 text-blue-400" /> Verified Algorithmic Score
             </span>
-            <span className="font-mono text-blue-400">talentxcel.in</span>
+            <span className="font-mono text-blue-400">talentxcel.in/score</span>
           </div>
         </div>
 
-        {/* 2. INSTANT SHARE CHANNELS */}
+        {/* 2. MULTI-PLATFORM SHARE CHANNELS */}
         <div className="space-y-2.5 pt-2">
-          {/* WhatsApp Primary */}
-          <Button 
-            onClick={handleWhatsAppShare}
-            className="w-full h-10 bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs shadow-sm flex items-center justify-center gap-2 rounded-xl"
-          >
-            <MessageCircle className="h-4 w-4 fill-current" />
-            Share on WhatsApp
-          </Button>
-
-          {/* LinkedIn Post Copy */}
+          
+          {/* LinkedIn Primary for Professionals */}
           <Button 
             variant="outline"
             onClick={handleLinkedInShare}
@@ -167,27 +173,55 @@ export const ViralShareModal: React.FC<ViralShareModalProps> = ({
             {postCopied ? 'Copied! Opening LinkedIn...' : 'Share on LinkedIn'}
           </Button>
 
-          {/* Native Web Share & Copy Row */}
+          {/* Telegram + Twitter/X Row */}
           <div className="grid grid-cols-2 gap-2">
-            {typeof navigator !== 'undefined' && 'share' in navigator && (
-              <Button 
-                variant="secondary"
-                onClick={handleNativeShare}
-                className="h-9 text-xs font-bold gap-1.5 rounded-xl"
-              >
-                <Share2 className="h-3.5 w-3.5 text-blue-600" />
-                Native Share
-              </Button>
-            )}
+            <Button 
+              variant="outline"
+              onClick={handleTelegramShare}
+              className="h-10 text-xs font-bold gap-1.5 rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50"
+            >
+              <Send className="h-3.5 w-3.5 text-[#229ED9]" />
+              Telegram
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={handleTwitterShare}
+              className="h-10 text-xs font-bold gap-1.5 rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50"
+            >
+              <Twitter className="h-3.5 w-3.5 text-slate-900" />
+              Twitter / X
+            </Button>
+          </div>
+
+          {/* Native Web Share & Copy Link */}
+          <div className="grid grid-cols-2 gap-2">
+            <Button 
+              onClick={handleNativeShare}
+              className="h-9 text-xs font-bold gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white"
+            >
+              <Share2 className="h-3.5 w-3.5" />
+              Device Share
+            </Button>
             <Button 
               variant="secondary"
               onClick={handleCopyLink}
-              className={`h-9 text-xs font-bold gap-1.5 rounded-xl ${!('share' in (typeof navigator !== 'undefined' ? navigator : {})) ? 'col-span-2' : ''}`}
+              className="h-9 text-xs font-bold gap-1.5 rounded-xl"
             >
               {copied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
               {copied ? 'Copied Link!' : 'Copy Link'}
             </Button>
           </div>
+
+          {/* WhatsApp option as subtle secondary */}
+          <div className="pt-1 text-center">
+            <button 
+              onClick={handleWhatsAppShare}
+              className="text-[11px] text-slate-500 hover:text-[#25D366] inline-flex items-center gap-1 font-medium"
+            >
+              <MessageCircle className="h-3 w-3" /> or share via WhatsApp
+            </button>
+          </div>
+
         </div>
       </DialogContent>
     </Dialog>
