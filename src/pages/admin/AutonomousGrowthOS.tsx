@@ -770,11 +770,11 @@ const AutonomousGrowthOS: React.FC = () => {
                           </div>
                           <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-100 flex flex-col justify-between">
                             <div>
-                              <p className="font-bold text-slate-500 uppercase text-[10px] tracking-wider">Expected Impact</p>
-                              <p className="text-emerald-700 font-black text-sm mt-1">
-                                +{opp.expectedUserGain.toLocaleString()} Users
+                              <p className="font-bold text-slate-500 uppercase text-[10px] tracking-wider">Calibration Telemetry</p>
+                              <p className="text-slate-900 font-bold text-xs mt-1">
+                                Measuring Real A1 Activations
                               </p>
-                              <p className="text-[11px] text-slate-500 font-medium">Confidence: {(opp.confidence * 100).toFixed(0)}%</p>
+                              <p className="text-[10px] text-amber-700 font-medium">Sample n &lt; 100 • Media Spend ₹0.00</p>
                             </div>
                             
                             <div className="pt-3 flex justify-end">
