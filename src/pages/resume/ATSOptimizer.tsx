@@ -1,7 +1,7 @@
-﻿import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useDropzone } from 'react-dropzone';
-import { Upload, Search, Zap, CheckCircle, AlertTriangle, Target, TrendingUp, FileText, ArrowRight, Sparkles, RefreshCw, Wand2, ShieldCheck, Check } from 'lucide-react';
+import { Upload, Search, Zap, CheckCircle, AlertTriangle, Target, TrendingUp, FileText, ArrowRight, Sparkles, RefreshCw, Wand2, ShieldCheck, Check, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -12,6 +12,8 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { ViralShareModal } from '@/components/viral/ViralShareModal';
+import { GrowthEventTracker } from '@/lib/autonomous-os/growthEventTracker';
 
 interface ATSReport {
   score: number;
@@ -76,6 +78,7 @@ export const ATSOptimizer: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'scanner' | 'job-match'>('scanner');
   const [isScanning, setIsScanning] = useState(false);
   const [report, setReport] = useState<ATSReport | null>(null);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   // Job Match state
   const [targetRole, setTargetRole] = useState('Senior Full Stack Engineer');
@@ -101,6 +104,7 @@ export const ATSOptimizer: React.FC = () => {
       });
 
       setIsScanning(false);
+      GrowthEventTracker.getInstance().trackEvent('TOOL_COMPLETED', 'ATS_SCANNER', `ref_${dynamicScore}`);
       toast.success(`Audit Complete! ATS Compatibility Score: ${dynamicScore}/100`, { id: 'ats-scan' });
     }, 1200);
   };
@@ -412,14 +416,26 @@ export const ATSOptimizer: React.FC = () => {
                         ))}
                       </div>
 
-                      {/* Fix CTA Button */}
-                      <div className="border-t pt-3">
+                      {/* Action Buttons: Share Scorecard + Fix Issues */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 border-t pt-3">
+                        <Button 
+                          variant="outline"
+                          onClick={() => {
+                            GrowthEventTracker.getInstance().trackEvent('SHARE_MODAL_OPENED', 'ATS_SCANNER', `ref_${report.score}`);
+                            setIsShareModalOpen(true);
+                          }}
+                          className="h-9 text-xs font-bold gap-2 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                        >
+                          <Share2 className="h-4 w-4 text-blue-600" />
+                          Share My ATS Scorecard
+                        </Button>
+
                         <Button 
                           onClick={() => navigate('/resume/build')}
-                          className="w-full h-9 text-xs font-bold gap-2 bg-emerald-600 hover:bg-emerald-700 text-white"
+                          className="h-9 text-xs font-bold gap-2 bg-emerald-600 hover:bg-emerald-700 text-white"
                         >
                           <Sparkles className="h-4 w-4" />
-                          Fix All Issues in AI Resume Builder →
+                          Fix in AI Resume Builder →
                         </Button>
                       </div>
                     </Card>
@@ -555,6 +571,22 @@ export const ATSOptimizer: React.FC = () => {
 
           </Tabs>
         </div>
+
+        {/* Viral Share Modal */}
+        {report && (
+          <ViralShareModal
+            isOpen={isShareModalOpen}
+            onClose={() => setIsShareModalOpen(false)}
+            data={{
+              score: report.score,
+              grade: report.grade,
+              roleTarget: targetRole || 'Full Stack Engineer',
+              keyStrengths: report.foundKeywords.slice(0, 3),
+              topGaps: report.issues.filter(i => i.type !== 'positive').map(i => i.title),
+              referralToken: `ats_${report.score}_${Math.random().toString(36).slice(2, 7)}`
+            }}
+          />
+        )}
       </div>
     </>
   );

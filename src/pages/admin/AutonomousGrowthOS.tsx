@@ -43,6 +43,7 @@ import {
 } from '@/lib/autonomous-os';
 import { evaluateAdaptivePublishingQuota, GSCFeedbackMetrics } from '@/lib/autonomous-os/adaptiveGovernor';
 import { PublishingCycleLedger } from '@/lib/autonomous-os/publishingCycleEngine';
+import { GrowthEventTracker } from '@/lib/autonomous-os/growthEventTracker';
 
 const AutonomousGrowthOS: React.FC = () => {
   const [osState, setOsState] = useState<AutonomousOsState>(() => runAutonomousGrowthCycle());
@@ -628,32 +629,122 @@ const AutonomousGrowthOS: React.FC = () => {
 
           {/* TAB 4: EXPERIMENTS & VIRAL LOOPS */}
           <TabsContent value="experiments" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {osState.experiments.map((exp) => (
-                <Card key={exp.experimentId} className="border-slate-200 shadow-sm bg-white p-5 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <Badge variant="outline" className="text-xs font-bold text-blue-600 bg-blue-50">
-                      {exp.targetSurfaceOrTool}
-                    </Badge>
-                    <Badge className="bg-emerald-500 text-white font-bold text-xs">
-                      {exp.status} (+{exp.relativeLiftPct}% Lift)
-                    </Badge>
-                  </div>
-                  <h4 className="font-bold text-sm text-slate-900">{exp.title}</h4>
-                  <p className="text-xs text-slate-600">{exp.hypothesis}</p>
-                  <div className="grid grid-cols-2 gap-2 pt-2 text-xs">
-                    <div className="p-2 bg-slate-50 rounded-lg">
-                      <p className="text-slate-500 font-semibold">Control Conversion</p>
-                      <p className="font-black text-slate-800 mt-0.5">{exp.baselineConversionRatePct}%</p>
+            {/* 1. Real Growth Event Telemetry & True K / Ka Cockpit */}
+            {(() => {
+              const gt = GrowthEventTracker.getInstance().computeMetrics();
+              return (
+                <Card className="border-slate-200 shadow-sm bg-white overflow-hidden">
+                  <CardHeader className="bg-slate-50/70 border-b border-slate-200/80">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                      <div>
+                        <CardTitle className="text-base font-black text-slate-900 flex items-center gap-2">
+                          <Share2 className="h-5 w-5 text-blue-600" />
+                          Verified Growth Event Telemetry &amp; Dual K-Factor ($K$ &amp; $K_a$)
+                        </CardTitle>
+                        <CardDescription>
+                          Zero estimated metrics. Measures true step-by-step conversion from tool utility to activated users.
+                        </CardDescription>
+                      </div>
+                      <Badge className="bg-blue-600 text-white font-bold text-xs">
+                        ACTIVATED K: {gt.activatedKFactor}
+                      </Badge>
                     </div>
-                    <div className="p-2 bg-emerald-50 rounded-lg">
-                      <p className="text-emerald-700 font-semibold">Variant Conversion</p>
-                      <p className="font-black text-emerald-900 mt-0.5">{exp.variantConversionRatePct}%</p>
+                  </CardHeader>
+                  <CardContent className="p-5 space-y-5">
+                    {/* Event Progression Counters */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5 text-center">
+                      <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <p className="text-[11px] font-bold text-slate-500 uppercase">Tool Done</p>
+                        <p className="text-lg font-black text-slate-900 mt-0.5">{gt.toolCompletions}</p>
+                      </div>
+                      <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <p className="text-[11px] font-bold text-slate-500 uppercase">Share Opened</p>
+                        <p className="text-lg font-black text-slate-900 mt-0.5">{gt.shareAttempts}</p>
+                      </div>
+                      <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <p className="text-[11px] font-bold text-slate-500 uppercase">Shared</p>
+                        <p className="text-lg font-black text-blue-600 mt-0.5">{gt.successfulShares}</p>
+                      </div>
+                      <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <p className="text-[11px] font-bold text-slate-500 uppercase">Ref Visits</p>
+                        <p className="text-lg font-black text-slate-900 mt-0.5">{gt.referralVisits}</p>
+                      </div>
+                      <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <p className="text-[11px] font-bold text-slate-500 uppercase">Signups</p>
+                        <p className="text-lg font-black text-slate-900 mt-0.5">{gt.newSignups}</p>
+                      </div>
+                      <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-100">
+                        <p className="text-[11px] font-bold text-emerald-700 uppercase">Activated</p>
+                        <p className="text-lg font-black text-emerald-800 mt-0.5">{gt.activatedUsers}</p>
+                      </div>
+                      <div className="p-3 bg-purple-50 rounded-xl border border-purple-100">
+                        <p className="text-[11px] font-bold text-purple-700 uppercase">Retained 7D</p>
+                        <p className="text-lg font-black text-purple-800 mt-0.5">{gt.retainedUsers}</p>
+                      </div>
                     </div>
-                  </div>
-                  <p className="text-[11px] text-slate-500 font-medium">Sample size: {exp.sampleSize.toLocaleString()} users | Statistical Confidence: {(exp.statisticalConfidence * 100).toFixed(0)}%</p>
+
+                    {/* Funnel Conversion Rates & K-Factors */}
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-3 pt-1">
+                      <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-100">
+                        <p className="text-xs font-bold text-slate-500">Share → Visit Rate</p>
+                        <p className="text-xl font-black text-slate-900 mt-1">{gt.shareToVisitRatePct}%</p>
+                        <p className="text-[11px] text-slate-500 font-medium">WhatsApp / WebShare clicks</p>
+                      </div>
+                      <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-100">
+                        <p className="text-xs font-bold text-slate-500">Visit → Signup Rate</p>
+                        <p className="text-xl font-black text-slate-900 mt-1">{gt.visitToSignupRatePct}%</p>
+                        <p className="text-[11px] text-slate-500 font-medium">Referral conversion to account</p>
+                      </div>
+                      <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-100">
+                        <p className="text-xs font-bold text-slate-500">Signup → Activation</p>
+                        <p className="text-xl font-black text-slate-900 mt-1">{gt.signupToActivationRatePct}%</p>
+                        <p className="text-[11px] text-slate-500 font-medium">Completed first career action</p>
+                      </div>
+                      <div className="p-3.5 bg-emerald-50 rounded-xl border border-emerald-200 flex flex-col justify-between">
+                        <div>
+                          <p className="text-xs font-bold text-emerald-800">North Star: Activated K ($K_a$)</p>
+                          <p className="text-2xl font-black text-emerald-900 mt-1">{gt.activatedKFactor}</p>
+                        </div>
+                        <p className="text-[10px] text-emerald-700 font-semibold mt-1">
+                          $K_a = \text{invites} \times \text{conversion} \times \text{activation}$
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
                 </Card>
-              ))}
+              );
+            })()}
+
+            {/* 2. Live A/B Growth Experiments */}
+            <div className="space-y-3">
+              <h3 className="text-base font-black text-slate-900">Active Growth &amp; Copy Experiments</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {osState.experiments.map((exp) => (
+                  <Card key={exp.experimentId} className="border-slate-200 shadow-sm bg-white p-5 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Badge variant="outline" className="text-xs font-bold text-blue-600 bg-blue-50">
+                        {exp.targetSurfaceOrTool}
+                      </Badge>
+                      <Badge className="bg-emerald-500 text-white font-bold text-xs">
+                        {exp.status} (+{exp.relativeLiftPct}% Lift)
+                      </Badge>
+                    </div>
+                    <h4 className="font-bold text-sm text-slate-900">{exp.title}</h4>
+                    <p className="text-xs text-slate-600 leading-relaxed">{exp.hypothesis}</p>
+                    <div className="grid grid-cols-2 gap-2 pt-2 text-xs">
+                      <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-100">
+                        <p className="text-slate-500 font-semibold text-[11px]">Control Conversion</p>
+                        <p className="font-black text-slate-800 mt-0.5">{exp.baselineConversionRatePct}%</p>
+                      </div>
+                      <div className="p-2.5 bg-emerald-50 rounded-lg border border-emerald-100">
+                        <p className="text-emerald-700 font-semibold text-[11px]">Variant Conversion</p>
+                        <p className="font-black text-emerald-900 mt-0.5">{exp.variantConversionRatePct}%</p>
+                      </div>
+                    </div>
+                    <p className="text-[11px] text-slate-500 font-medium pt-1">Sample size: {exp.sampleSize.toLocaleString()} users | Statistical Confidence: {(exp.statisticalConfidence * 100).toFixed(0)}%</p>
+                  </Card>
+                ))}
+              </div>
             </div>
           </TabsContent>
 
