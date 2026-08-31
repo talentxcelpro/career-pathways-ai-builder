@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import {
@@ -98,105 +98,65 @@ const SERVICE_REGISTRY: Record<string, ServiceDefinition> = {
     title: 'IT & Technology Systems Consulting',
     tagline: 'Enterprise Software Architecture, Cloud Modernization & Tech Staff Augmentation',
     description: 'End-to-end technology advisory, digital transformation architecture, and senior engineering team augmentation for modern enterprise technology stacks.',
-    targetAudience: 'CTOs, Engineering Leaders, and Product Teams building scalable digital products.',
+    targetAudience: 'CTOs, Engineering Directors, and IT Leaders looking to accelerate product velocity.',
     deliverables: [
-      'Systems architecture review and technical audits',
-      'Dedicated engineering pods (React, Node, Python, Cloud)',
-      'DevOps, CI/CD pipeline, and cloud migration',
-      'AI and machine learning workflow integration',
+      'Cloud modernization and microservices architecture',
+      'Full-stack engineering pod deployments',
+      'DevOps, CI/CD, and infrastructure automation',
+      'Security audit and compliance alignment',
     ],
     benefits: [
-      'Rapid ramp-up with vetted senior developers',
-      'High code standards and modern architecture best practices',
-      'Flexible time-and-materials or fixed-scope delivery',
+      'Pre-vetted senior software engineers and architects',
+      'Agile delivery models with bi-weekly sprint deliverables',
+      'Flexible time-and-materials or fixed-milestone pricing',
     ],
-    ctaText: 'Discuss Technical Project',
+    ctaText: 'Consult with Engineering Team',
     ctaLink: '/contact',
     icon: Cpu,
   },
-  'ai-solutions': {
-    title: 'AI Solutions & Autonomous Workflows',
-    tagline: 'Custom AI Agent Systems, Machine Learning Integration & Workplace Automation',
-    description: 'Transform internal business workflows with customized AI agents, automated resume processing pipelines, LLM fine-tuning, and operational intelligence dashboards.',
-    targetAudience: 'Enterprises looking to embed generative AI and predictive intelligence into their products and internal operations.',
+  'career-counseling': {
+    title: 'Executive Career Counseling & Pathway Advisory',
+    tagline: 'Personalized Career Milestones, Market Benchmarking & Transition Strategy',
+    description: 'One-on-one executive guidance combining algorithmic market intelligence with industry mentor evaluations to map high-velocity career progressions.',
+    targetAudience: 'Professionals seeking career acceleration, mid-career transitions, or executive leadership roles.',
     deliverables: [
-      'Custom LLM agent architecture and prompt orchestration',
-      'Automated candidate ranking and workflow automation',
-      'Private vector embeddings and document parsing systems',
-      'Compliance and data privacy governance',
+      'Comprehensive 360° career audit and compensation benchmarking',
+      'Tailored 12-month skill acquisition and transition roadmap',
+      'Executive resume reconstruction and LinkedIn positioning',
+      'Mock interview drills with industry directors',
     ],
     benefits: [
-      'Immediate operational efficiency and workflow automation',
-      'Proprietary data security without model leakage',
-      'Production-tested agent architecture',
+      'Deterministic promotion and career transition milestones',
+      'Direct introductions to verified executive recruiters',
+      'Confidence in compensation negotiation and offer valuation',
     ],
-    ctaText: 'Explore AI Solutions',
-    ctaLink: '/contact',
-    icon: Layers,
-  },
-  'corporate-training': {
-    title: 'Corporate Training & Executive Development',
-    tagline: 'Custom Upskilling, Behavioral Leadership Programs & Technical Bootcamps',
-    description: 'Customized talent development and human capital training designed to enhance organizational performance, team communication, and leadership effectiveness.',
-    targetAudience: 'HR Leaders and Corporate L&D Departments developing next-generation leaders and upskilling technical workforces.',
-    deliverables: [
-      'Tailored executive coaching and leadership workshops',
-      'Technical bootcamps across modern tech stacks and AI tools',
-      'Pre-and-post training competency assessments',
-      'Gamified learning tracks with verifiable badges',
-    ],
-    benefits: [
-      'Measurable increase in employee engagement and retention',
-      'Direct alignment between training curriculum and business KPIs',
-      'Interactive cohort-based sessions with expert practitioners',
-    ],
-    ctaText: 'Explore Training Programs',
-    ctaLink: '/contact',
-    icon: GraduationCap,
-  },
-  'career-services': {
-    title: 'Professional Career Services & Executive Coaching',
-    tagline: '1-on-1 Career Strategy, Executive Bio Refinement & Interview Simulation',
-    description: 'Personalized career acceleration services for ambitious professionals, including strategic job search targeting, compensation negotiation coaching, and career roadmap building.',
-    targetAudience: 'Working professionals, mid-career switchers, and executives navigating career transitions.',
-    deliverables: [
-      'Comprehensive profile and career asset audit',
-      'Mock interview sessions with industry feedback',
-      'Targeted salary benchmarking and negotiation playbook',
-      'Personalized 12-month career growth roadmap',
-    ],
-    benefits: [
-      'Clear differentiation in competitive executive hiring processes',
-      'Higher compensation outcomes through structured negotiation',
-      'Confidence and clarity in career transitions',
-    ],
-    ctaText: 'Start Career Coaching',
-    ctaLink: '/tools',
+    ctaText: 'Book Advisory Session',
+    ctaLink: '/colleges/career-pathway',
     icon: Target,
   },
-  'resume-building': {
-    title: 'ATS Resume Builder & Cover Letter Studio',
-    tagline: 'Real-Time ATS Parsing, Intelligent Bullet Suggestions & Role-Tailored Customization',
-    description: 'Build recruiter-ready, ATS-compliant resumes with instant parser feedback, formatting compliance checks, and role-specific keyword optimization.',
-    targetAudience: 'Job seekers, graduates, and professionals preparing applications for top tech and corporate employers.',
+  'resume-optimization': {
+    title: 'ATS Resume Optimization & Diagnostic Studio',
+    tagline: 'Algorithmic Parser Scoring, Keyword Gap Detection & Format Compliance',
+    description: 'Instant multi-dimensional resume audits evaluating formatting compliance, ATS compatibility scores, quantified impact metrics, and role-specific keyword density.',
+    targetAudience: 'Job seekers applying to Tier-1 companies and competitive technology roles.',
     deliverables: [
-      'ATS score audit against real recruiter parsing standards',
-      'Instant keyword matching with target job descriptions',
-      'Export to clean, machine-readable PDF and DOCX formats',
-      'Tailored cover letter generator with matching typography',
+      '4-factor ATS compatibility score breakdown',
+      'Missing keyword and skill extraction against target job descriptions',
+      'Action verb enhancement and impact bullet rewriting',
+      'Export to ATS-compliant PDF and Word formats',
     ],
     benefits: [
-      '3x higher recruiter interview callback rates',
-      'Zero formatting rejections by Taleo, Workday, or Greenhouse',
-      'Instant tailoring for multiple job applications',
+      '3x increase in recruiter interview callback rates',
+      'Elimination of ATS parsing errors and invisible tables/graphics',
+      'Immediate instant actionable feedback without human wait times',
     ],
-    ctaText: 'Build Free ATS Resume',
-    ctaLink: '/resume',
+    ctaText: 'Scan My Resume Now',
+    ctaLink: '/resume/ats-check',
     icon: FileText,
   },
   'talent-management': {
-    title: 'Talent Management & Skill Verification',
-    tagline: 'Career Passport Credentialing, Workforce Skill Graphs & Internal Mobility',
+    title: 'Enterprise Talent Management & Skills Architecture',
+    tagline: 'Internal Mobility, Competency Mapping & Verified Credential Registers',
     description: 'Enable transparent, verifiable skill verification across talent pools with cryptographically auditable Career Passports, peer endorsements, and competency testing.',
     targetAudience: 'Enterprises and educational institutions managing employee skill registries and alumni career outcomes.',
     deliverables: [
@@ -274,90 +234,100 @@ export default function ServiceLandingPage() {
         <script type="application/ld+json">{JSON.stringify(breadcrumbsSchema)}</script>
       </Helmet>
 
-      <div className="min-h-screen bg-slate-950 text-slate-100 py-8 px-4 pb-20">
-        <div className="max-w-5xl mx-auto space-y-10">
+      <div className="min-h-screen bg-slate-50/60 dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-8 px-4 pb-20">
+        <div className="max-w-5xl mx-auto space-y-8">
           {/* Breadcrumbs */}
-          <nav aria-label="Breadcrumb" className="text-xs text-slate-400 flex items-center gap-1.5">
-            <Link to="/" className="hover:text-white transition-colors">Home</Link>
+          <nav aria-label="Breadcrumb" className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 font-medium">
+            <Link to="/" className="hover:text-blue-600 transition-colors">Home</Link>
             <ChevronRight className="w-3.5 h-3.5" />
-            <Link to="/services" className="hover:text-white transition-colors">Services</Link>
+            <Link to="/services" className="hover:text-blue-600 transition-colors">Services</Link>
             <ChevronRight className="w-3.5 h-3.5" />
-            <span className="text-blue-400 font-medium">{service.title}</span>
+            <span className="text-blue-600 font-semibold">{service.title}</span>
           </nav>
 
-          {/* Hero */}
-          <header className="bg-slate-900/90 border border-slate-800 rounded-3xl p-8 md:p-12 backdrop-blur-sm shadow-2xl space-y-6">
-            <div className="flex items-start gap-5">
-              <div className="p-4 bg-blue-600/10 border border-blue-500/30 rounded-2xl text-blue-400 shrink-0">
-                <ServiceIcon className="w-10 h-10" />
-              </div>
+          {/* Service Hero Card - High Contrast Light Mode */}
+          <header className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 md:p-10 shadow-sm">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
               <div className="space-y-3">
-                <h1 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight leading-tight">
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 px-2.5 py-0.5 rounded-lg text-xs font-bold border border-blue-200 dark:border-blue-800">
+                    <ServiceIcon className="w-3.5 h-3.5 text-blue-600" /> TalentXcel Strategic Service
+                  </span>
+                  <Badge variant="outline" className="border-emerald-300 text-emerald-700 bg-emerald-50 text-[10px] font-semibold">
+                    Verified Solution
+                  </Badge>
+                </div>
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                   {service.title}
                 </h1>
-                <p className="text-blue-400 text-base md:text-lg font-semibold">
+                <p className="text-blue-600 dark:text-blue-400 text-sm sm:text-base font-semibold">
                   {service.tagline}
                 </p>
-                <p className="text-slate-300 text-base leading-relaxed max-w-3xl">
+                <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed max-w-3xl">
                   {service.description}
                 </p>
               </div>
-            </div>
 
-            <div className="pt-6 border-t border-slate-800 flex items-center justify-between gap-4 flex-wrap">
-              <div className="text-xs text-slate-400">
-                <span className="font-semibold text-slate-300">Who it's for:</span> {service.targetAudience}
+              <div className="shrink-0 w-full md:w-auto">
+                <Link to={service.ctaLink}>
+                  <Button className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs h-10 px-6 shadow-sm gap-2">
+                    {service.ctaText} <ArrowRight className="w-4 h-4" />
+                  </Button>
+                </Link>
               </div>
-              <Link to={service.ctaLink}>
-                <Button className="bg-blue-600 hover:bg-blue-500 text-white font-semibold gap-2 shadow-lg shadow-blue-600/25">
-                  {service.ctaText} <ArrowRight className="w-4 h-4" />
-                </Button>
-              </Link>
             </div>
           </header>
 
-          {/* Deliverables & Benefits */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-8 space-y-4">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Layers className="w-5 h-5 text-indigo-400" /> What We Deliver
+          {/* Deliverables & Benefits Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Core Deliverables */}
+            <section className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-2xs space-y-4">
+              <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 border-b pb-3">
+                <CheckCircle2 className="w-4 h-4 text-blue-600" /> Key Deliverables & Scope
               </h2>
-              <ul className="space-y-3 pt-2">
+              <div className="space-y-2.5">
                 {service.deliverables.map((item, idx) => (
-                  <li key={idx} className="flex items-start gap-3 text-sm text-slate-200">
-                    <CheckCircle2 className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
-                    <span>{item}</span>
-                  </li>
+                  <div key={idx} className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 dark:bg-slate-950/60 border border-slate-100 dark:border-slate-800">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                    <span className="text-xs text-slate-700 dark:text-slate-200 font-medium">{item}</span>
+                  </div>
                 ))}
-              </ul>
-            </div>
+              </div>
+            </section>
 
-            <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-8 space-y-4">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-emerald-400" /> Key Strategic Benefits
+            {/* Strategic Benefits */}
+            <section className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-2xs space-y-4">
+              <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 border-b pb-3">
+                <Sparkles className="w-4 h-4 text-purple-600" /> Measurable Strategic Outcomes
               </h2>
-              <ul className="space-y-3 pt-2">
-                {service.benefits.map((item, idx) => (
-                  <li key={idx} className="flex items-start gap-3 text-sm text-slate-200">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                    <span>{item}</span>
-                  </li>
+              <div className="space-y-2.5">
+                {service.benefits.map((benefit, idx) => (
+                  <div key={idx} className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 dark:bg-slate-950/60 border border-slate-100 dark:border-slate-800">
+                    <Sparkles className="w-4 h-4 text-purple-600 shrink-0 mt-0.5" />
+                    <span className="text-xs text-slate-700 dark:text-slate-200 font-medium">{benefit}</span>
+                  </div>
                 ))}
-              </ul>
-            </div>
+              </div>
+            </section>
           </div>
 
-          {/* Service Matrix */}
-          <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-6">
-            <h3 className="text-base font-semibold text-white mb-3">All TalentXcel Strategic Services</h3>
-            <div className="flex items-center gap-2 flex-wrap">
-              {Object.entries(SERVICE_REGISTRY).map(([key, s]) => (
+          {/* All Services Navigation Row */}
+          <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-2xs space-y-3">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+              Explore All Strategic Services
+            </h3>
+            <div className="flex flex-wrap gap-2 pt-1">
+              {Object.entries(SERVICE_REGISTRY).map(([key, item]) => (
                 <Link key={key} to={`/services/${key}`}>
                   <Badge
-                    variant={key === normalizedSlug ? 'default' : 'outline'}
-                    className={key === normalizedSlug ? 'bg-blue-600 text-white' : 'border-slate-800 text-slate-400 hover:text-white text-xs'}
+                    variant={key === normalizedSlug ? 'default' : 'secondary'}
+                    className={`text-xs px-3 py-1 rounded-lg font-medium transition-all ${
+                      key === normalizedSlug
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-blue-600 border border-slate-200'
+                    }`}
                   >
-                    {s.title.split('&')[0].trim()}
+                    {item.title.split('&')[0].trim()}
                   </Badge>
                 </Link>
               ))}
