@@ -55,12 +55,12 @@ const AutonomousGrowthOS: React.FC = () => {
   const ledger = PublishingCycleLedger.getInstance();
 
   const gscBaseline: GSCFeedbackMetrics = {
-    indexedPages: 2200,
-    crawledNotIndexed: 14000,
-    discoveredNotIndexed: 22000,
-    organicImpressions: 12500,
-    organicClicks: 480,
-    averageCtr: 3.84,
+    indexedPages: 12700,
+    crawledNotIndexed: 68000,
+    discoveredNotIndexed: 60000,
+    organicImpressions: 48500,
+    organicClicks: 1820,
+    averageCtr: 3.75,
     jobPostingValidCount: 14,
     jobPostingInvalidCount: 0
   };
