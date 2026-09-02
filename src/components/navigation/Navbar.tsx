@@ -215,6 +215,14 @@ export const Navbar = () => {
             </>
           ) : (
             <div className="flex items-center space-x-3">
+              <a 
+                href="https://chatrchat.in" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-semibold text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 transition-all"
+              >
+                Chatr for Business ↗
+              </a>
               <Button 
                 onClick={() => navigate('/auth/login')}
                 variant="ghost" 

@@ -88,8 +88,28 @@ export const Footer = () => {
               </li>
               <li>
                 <Link to="/news" className="text-background/70 hover:text-background transition-colors">
-                  News & Press
+                  News &amp; Press
                 </Link>
+              </li>
+              <li>
+                <a 
+                  href="https://chatrchat.in" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-background/70 hover:text-background transition-colors inline-flex items-center gap-1 text-sm font-medium text-emerald-400"
+                >
+                  ChatrChat for Business ↗
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="https://talentxcel.co.in" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-background/70 hover:text-background transition-colors inline-flex items-center gap-1 text-sm"
+                >
+                  TalentXcel Corporate ↗
+                </a>
               </li>
               <li>
                 <Link to="/contact" className="text-background/70 hover:text-background transition-colors">
@@ -120,7 +140,7 @@ export const Footer = () => {
               </li>
               <li>
                 <Link to="/return-refund-policy" className="text-background/70 hover:text-background transition-colors">
-                  Return & Refund Policy
+                  Return &amp; Refund Policy
                 </Link>
               </li>
             </ul>
@@ -166,13 +186,20 @@ export const Footer = () => {
           ))}
         </nav>
 
-        {/* Divider and bottom section */}
-        <div className="border-t border-background/20 mt-8 pt-8">
-          <div className="flex justify-center">
-            <p className="text-background/50 text-sm text-center">
-              © 2026 TalentXcel Services Pvt Ltd. All rights reserved.
-            </p>
-          </div>
+        {/* Divider and bottom corporate address section */}
+        <div className="border-t border-background/20 mt-8 pt-8 text-center space-y-2">
+          <p className="text-background/70 text-sm font-medium">
+            TalentXcel Services Private Limited
+          </p>
+          <p className="text-background/50 text-xs max-w-xl mx-auto">
+            19th Floor, E-Square Building, Corp. Office 1917, Noida Expressway Service Rd, Sector 96, Noida, Uttar Pradesh, India
+          </p>
+          <p className="text-background/40 text-xs pt-2">
+            Ecosystem: <a href="https://chatrchat.in" target="_blank" rel="noopener noreferrer" className="hover:underline text-background/70 font-semibold">ChatrChat for Business</a> • <a href="https://talentxcel.co.in" target="_blank" rel="noopener noreferrer" className="hover:underline text-background/70">TalentXcel Corporate</a> • <a href="https://chatr.chat" target="_blank" rel="noopener noreferrer" className="hover:underline text-background/70">Chatr Messenger</a>
+          </p>
+          <p className="text-background/40 text-xs">
+            © 2026 TalentXcel Services Pvt Ltd. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>
