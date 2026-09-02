@@ -194,10 +194,50 @@ export const JobsByRoleCity: React.FC = () => {
           .order('created_at', { ascending: false })
           .limit(20);
 
-        if (fetchErr) throw fetchErr;
+        let combinedJobs = data ? [...data] : [];
 
-        setJobs(data || []);
-        setTotalCount(count || 0);
+        // If manual jobs are fewer than 10, query scraped_jobs matching role & city in SQL
+        if (combinedJobs.length < 10) {
+          try {
+            const { data: scrapedMatches } = await supabase
+              .from('scraped_jobs')
+              .select('id, job_title, company, location, salary, job_description, created_at')
+              .ilike('location', `%${searchCity}%`)
+              .ilike('job_title', `%${searchRole.split(' ')[0]}%`)
+              .order('created_at', { ascending: false })
+              .limit(20);
+
+            if (scrapedMatches && scrapedMatches.length > 0) {
+              const formattedScraped = scrapedMatches.map((s: any) => ({
+                id: String(s.id),
+                title: s.job_title || `${roleDisplay} Opening`,
+                company_name: s.company || 'Verified Employer',
+                location: s.location || cityDisplay,
+                salary_min: undefined,
+                salary_max: undefined,
+                employment_type: 'Full-time',
+                experience_level: 'Mid-Senior',
+                skills_required: catInfo.skills.slice(0, 4),
+                description: s.job_description || `${roleDisplay} position in ${cityDisplay}.`,
+                posted_at: s.created_at || new Date().toISOString(),
+                seo_slug: `${roleSlug}-${citySlug}`,
+              }));
+
+              const existingIds = new Set(combinedJobs.map((j) => j.id));
+              for (const sj of formattedScraped) {
+                if (!existingIds.has(sj.id)) {
+                  combinedJobs.push(sj as any);
+                  existingIds.add(sj.id);
+                }
+              }
+            }
+          } catch {
+            // Non-blocking fallback
+          }
+        }
+
+        setJobs(combinedJobs);
+        setTotalCount(combinedJobs.length);
 
         trackDiscoveryPageView({
           page_type: 'RoleLocationDiscovery',

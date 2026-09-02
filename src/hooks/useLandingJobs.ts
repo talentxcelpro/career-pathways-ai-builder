@@ -40,96 +40,101 @@ export function useLandingJobs({ keywords = [], locationAliases = [], remoteOnly
 
     const run = async () => {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('jobs')
-        .select(
-          'id, title, job_title, company_name, location, location_city, location_state, description, job_description, salary_min, salary_max, employment_type, is_remote, created_at',
-        )
-        .eq('is_active', true)
-        .order('created_at', { ascending: false })
-        .limit(300);
-
-      if (cancelled) return;
-
-      if (error || !data) {
-        setJobs([]);
-        setTotal(0);
-        setLoading(false);
-        return;
-      }
 
       const keys = keyList ? keyList.split('|').filter(Boolean) : [];
       const locs = locList ? locList.split('|').filter(Boolean) : [];
+      const isNationalIndia = locs.some((l) => l.toLowerCase() === 'india' || l.toLowerCase() === 'national') && locs.length === 1;
 
-      let matched = (data || []).filter((row: Record<string, unknown>) => {
-        const title = `${norm(row.title)} ${norm(row.job_title)}`;
-        const body = `${title} ${norm(row.description)} ${norm(row.job_description)}`;
-        const place = `${norm(row.location)} ${norm(row.location_city)} ${norm(row.location_state)}`;
+      try {
+        // 1. Query manual jobs table
+        let jobsQuery = supabase
+          .from('jobs')
+          .select('id, title, job_title, company_name, location, location_city, location_state, description, job_description, salary_min, salary_max, employment_type, is_remote, created_at')
+          .eq('is_active', true)
+          .order('created_at', { ascending: false });
 
-        if (remoteOnly && !row.is_remote && !place.includes('remote')) return false;
-        if (keys.length && !keys.some((k) => body.includes(k))) return false;
-        if (locs.length && !locs.some((l) => place.includes(l))) return false;
-        return true;
-      });
-
-      // If matched is low, supplement with live scraped_jobs
-      if (matched.length < limit) {
-        try {
-          const { data: scrapedData } = await supabase
-            .from('scraped_jobs')
-            .select('id, job_title, company, location, salary, job_description, created_at')
-            .order('created_at', { ascending: false })
-            .limit(100);
-
-          if (scrapedData && scrapedData.length > 0) {
-            const scrapedMatched = scrapedData.filter((row: Record<string, unknown>) => {
-              const title = norm(row.job_title);
-              const body = `${title} ${norm(row.job_description)}`;
-              const place = norm(row.location);
-
-              if (remoteOnly && !place.includes('remote')) return false;
-              if (keys.length && !keys.some((k) => body.includes(k))) return false;
-              if (locs.length && !locs.some((l) => place.includes(l) || l === 'india')) return false;
-              return true;
-            }).map((row) => ({
-              id: String(row.id),
-              title: row.job_title || 'Open role',
-              company_name: row.company || 'Verified Employer',
-              location: row.location || 'India',
-              salary_min: null,
-              salary_max: null,
-              employment_type: 'Full-time',
-              is_remote: norm(row.location).includes('remote'),
-            }));
-
-            // Deduplicate and combine
-            const existingIds = new Set(matched.map((m: any) => String(m.id)));
-            for (const s of scrapedMatched) {
-              if (!existingIds.has(s.id)) {
-                matched.push(s as any);
-                existingIds.add(s.id);
-              }
-            }
-          }
-        } catch {
-          // Graceful fallback if scraped_jobs query is unavailable
+        if (remoteOnly) {
+          jobsQuery = jobsQuery.or('is_remote.eq.true,location.ilike.%remote%');
         }
-      }
 
-      setTotal(matched.length);
-      setJobs(
-        matched.slice(0, limit).map((row: Record<string, any>) => ({
+        const { data: manualData } = await jobsQuery.limit(100);
+
+        if (cancelled) return;
+
+        let matched: any[] = (manualData || []).filter((row: Record<string, unknown>) => {
+          const title = `${norm(row.title)} ${norm(row.job_title)}`;
+          const body = `${title} ${norm(row.description)} ${norm(row.job_description)}`;
+          const place = `${norm(row.location)} ${norm(row.location_city)} ${norm(row.location_state)}`;
+
+          if (remoteOnly && !row.is_remote && !place.includes('remote')) return false;
+          if (keys.length && !keys.some((k) => body.includes(norm(k)))) return false;
+          if (!isNationalIndia && locs.length && !locs.some((l) => place.includes(norm(l)))) return false;
+          return true;
+        }).map((row: any) => ({
           id: String(row.id),
           title: row.title || row.job_title || 'Open role',
-          company_name: row.company_name || row.company || 'TalentXcel Hiring Partner',
+          company_name: row.company_name || 'TalentXcel Hiring Partner',
           location: row.location || row.location_city || 'India',
           salary_min: row.salary_min ?? null,
           salary_max: row.salary_max ?? null,
           employment_type: row.employment_type || 'Full-time',
           is_remote: row.is_remote ?? null,
-        })),
-      );
-      setLoading(false);
+        }));
+
+        // 2. Query scraped_jobs table with direct SQL database-level filters
+        let scrapedQuery = supabase
+          .from('scraped_jobs')
+          .select('id, job_title, company, location, salary, job_description, created_at')
+          .order('created_at', { ascending: false });
+
+        if (remoteOnly) {
+          scrapedQuery = scrapedQuery.ilike('location', '%remote%');
+        } else if (!isNationalIndia && locs.length > 0) {
+          // Push city filters into SQL PostgREST .or()
+          const locFilter = locs.map((loc) => `location.ilike.%${loc.trim()}%`).join(',');
+          scrapedQuery = scrapedQuery.or(locFilter);
+        }
+
+        if (keys.length > 0) {
+          // Push keyword filters into SQL PostgREST .or()
+          const keyFilter = keys.map((k) => `job_title.ilike.%${k.trim()}%,job_description.ilike.%${k.trim()}%`).join(',');
+          scrapedQuery = scrapedQuery.or(keyFilter);
+        }
+
+        const { data: scrapedData } = await scrapedQuery.limit(limit * 2);
+
+        if (cancelled) return;
+
+        if (scrapedData && scrapedData.length > 0) {
+          const scrapedMatched = scrapedData.map((row: any) => ({
+            id: String(row.id),
+            title: row.job_title || 'Open role',
+            company_name: row.company || 'Verified Employer',
+            location: row.location || 'India',
+            salary_min: null,
+            salary_max: null,
+            employment_type: 'Full-time',
+            is_remote: norm(row.location).includes('remote'),
+          }));
+
+          const existingIds = new Set(matched.map((m: any) => String(m.id)));
+          for (const s of scrapedMatched) {
+            if (!existingIds.has(s.id)) {
+              matched.push(s);
+              existingIds.add(s.id);
+            }
+          }
+        }
+
+        setTotal(matched.length);
+        setJobs(matched.slice(0, limit));
+      } catch (err) {
+        console.error('Error fetching landing jobs:', err);
+        setJobs([]);
+        setTotal(0);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
     };
 
     run();
