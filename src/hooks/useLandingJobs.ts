@@ -61,7 +61,7 @@ export function useLandingJobs({ keywords = [], locationAliases = [], remoteOnly
       const keys = keyList ? keyList.split('|').filter(Boolean) : [];
       const locs = locList ? locList.split('|').filter(Boolean) : [];
 
-      const matched = data.filter((row: Record<string, unknown>) => {
+      let matched = (data || []).filter((row: Record<string, unknown>) => {
         const title = `${norm(row.title)} ${norm(row.job_title)}`;
         const body = `${title} ${norm(row.description)} ${norm(row.job_description)}`;
         const place = `${norm(row.location)} ${norm(row.location_city)} ${norm(row.location_state)}`;
@@ -72,16 +72,60 @@ export function useLandingJobs({ keywords = [], locationAliases = [], remoteOnly
         return true;
       });
 
+      // If matched is low, supplement with live scraped_jobs
+      if (matched.length < limit) {
+        try {
+          const { data: scrapedData } = await supabase
+            .from('scraped_jobs')
+            .select('id, job_title, company, location, salary, job_description, created_at')
+            .order('created_at', { ascending: false })
+            .limit(100);
+
+          if (scrapedData && scrapedData.length > 0) {
+            const scrapedMatched = scrapedData.filter((row: Record<string, unknown>) => {
+              const title = norm(row.job_title);
+              const body = `${title} ${norm(row.job_description)}`;
+              const place = norm(row.location);
+
+              if (remoteOnly && !place.includes('remote')) return false;
+              if (keys.length && !keys.some((k) => body.includes(k))) return false;
+              if (locs.length && !locs.some((l) => place.includes(l) || l === 'india')) return false;
+              return true;
+            }).map((row) => ({
+              id: String(row.id),
+              title: row.job_title || 'Open role',
+              company_name: row.company || 'Verified Employer',
+              location: row.location || 'India',
+              salary_min: null,
+              salary_max: null,
+              employment_type: 'Full-time',
+              is_remote: norm(row.location).includes('remote'),
+            }));
+
+            // Deduplicate and combine
+            const existingIds = new Set(matched.map((m: any) => String(m.id)));
+            for (const s of scrapedMatched) {
+              if (!existingIds.has(s.id)) {
+                matched.push(s as any);
+                existingIds.add(s.id);
+              }
+            }
+          }
+        } catch {
+          // Graceful fallback if scraped_jobs query is unavailable
+        }
+      }
+
       setTotal(matched.length);
       setJobs(
         matched.slice(0, limit).map((row: Record<string, any>) => ({
           id: String(row.id),
           title: row.title || row.job_title || 'Open role',
-          company_name: row.company_name ?? null,
-          location: row.location || row.location_city || null,
+          company_name: row.company_name || row.company || 'TalentXcel Hiring Partner',
+          location: row.location || row.location_city || 'India',
           salary_min: row.salary_min ?? null,
           salary_max: row.salary_max ?? null,
-          employment_type: row.employment_type ?? null,
+          employment_type: row.employment_type || 'Full-time',
           is_remote: row.is_remote ?? null,
         })),
       );

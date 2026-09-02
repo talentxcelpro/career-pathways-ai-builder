@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { Helmet } from 'react-helmet-async';
 import { 
   MapPin, 
   IndianRupee, 
@@ -13,11 +14,15 @@ import {
   Building2, 
   Users, 
   Share2, 
-  ArrowLeft,
-  Briefcase,
-  ShieldCheck,
-  CheckCircle2,
+  ArrowLeft, 
+  Briefcase, 
+  ShieldCheck, 
+  CheckCircle2, 
   ChevronRight,
+  Search,
+  Sparkles,
+  TrendingUp,
+  FileCheck2
 } from 'lucide-react';
 import { formatSalaryRange } from '@/utils/currencyUtils';
 import { toast } from 'sonner';
@@ -75,15 +80,7 @@ export default function JobDetails() {
         if (titleJob) return titleJob;
       }
 
-      // Strategy 4: Fallback to first active job
-      const { data: anyActiveJob } = await supabase
-        .from('jobs')
-        .select('*')
-        .eq('is_active', true)
-        .limit(1)
-        .maybeSingle();
-
-      return anyActiveJob || null;
+      return null;
     },
     staleTime: 5 * 60 * 1000,
     retry: 1,
@@ -107,20 +104,104 @@ export default function JobDetails() {
   }
 
   if (!job) {
+    const rawRole = slugOrId ? slugOrId.replace(/[-_]+/g, ' ') : 'Career';
+    const roleCapitalized = rawRole.replace(/\b\w/g, (c) => c.toUpperCase());
+
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-6 text-center">
-        <div className="max-w-md space-y-4">
-          <h1 className="text-2xl font-bold text-white">Job Not Found</h1>
-          <p className="text-slate-400 text-sm">
-            This job listing may have been filled or is no longer accepting applications.
-          </p>
-          <Link to="/jobs">
-            <Button className="bg-blue-600 hover:bg-blue-500 text-white">
-              <ArrowLeft className="w-4 h-4 mr-2" /> View All Open Jobs
-            </Button>
-          </Link>
+      <>
+        <Helmet>
+          <title>{roleCapitalized} Opportunities &amp; Verified Openings | TalentXcel</title>
+          <meta name="description" content={`Explore live ${roleCapitalized} openings, in-hand salary calculations, and free ATS resume diagnostics on TalentXcel.`} />
+          <meta name="robots" content="noindex, follow" />
+        </Helmet>
+
+        <div className="min-h-screen bg-slate-950 text-slate-100 py-16 px-4">
+          <div className="max-w-3xl mx-auto space-y-8 text-center">
+            
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-semibold">
+                <Clock className="w-3.5 h-3.5" />
+                <span>Listing Closed / Filled</span>
+              </div>
+
+              <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white">
+                {roleCapitalized} Opportunities on TalentXcel
+              </h1>
+
+              <p className="text-slate-400 text-sm max-w-xl mx-auto leading-relaxed">
+                This specific job posting has concluded applications. Discover active verified {rawRole} openings across India, optimize your resume, and benchmark your 2026 salary expectations below.
+              </p>
+            </div>
+
+            {/* Quick Action Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+              <Card className="bg-slate-900/80 border-slate-800 text-left p-5 space-y-3">
+                <Briefcase className="w-6 h-6 text-blue-400" />
+                <h3 className="text-sm font-bold text-white">Browse Live Jobs</h3>
+                <p className="text-xs text-slate-400">Search 4,800+ active tech &amp; corporate openings in India.</p>
+                <Button 
+                  onClick={() => navigate(`/jobs?search=${encodeURIComponent(rawRole)}`)} 
+                  className="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold"
+                >
+                  <Search className="w-3.5 h-3.5 mr-1.5" /> Search {roleCapitalized} Jobs
+                </Button>
+              </Card>
+
+              <Card className="bg-slate-900/80 border-slate-800 text-left p-5 space-y-3">
+                <FileCheck2 className="w-6 h-6 text-emerald-400" />
+                <h3 className="text-sm font-bold text-white">Free ATS Resume Check</h3>
+                <p className="text-xs text-slate-400">Get a 10-second parseability audit for top Indian recruiters.</p>
+                <Button 
+                  variant="outline" 
+                  onClick={() => navigate('/resume')} 
+                  className="w-full border-slate-700 text-white hover:bg-slate-800 text-xs font-bold"
+                >
+                  <Sparkles className="w-3.5 h-3.5 mr-1.5" /> Check Resume (100% Free)
+                </Button>
+              </Card>
+
+              <Card className="bg-slate-900/80 border-slate-800 text-left p-5 space-y-3">
+                <TrendingUp className="w-6 h-6 text-indigo-400" />
+                <h3 className="text-sm font-bold text-white">2026 Salary Calculator</h3>
+                <p className="text-xs text-slate-400">Calculate take-home in-hand pay across Bangalore, Pune &amp; NCR.</p>
+                <Button 
+                  variant="outline" 
+                  onClick={() => navigate(`/tools/salary-analyzer?role=${encodeURIComponent(rawRole)}`)} 
+                  className="w-full border-slate-700 text-white hover:bg-slate-800 text-xs font-bold"
+                >
+                  <IndianRupee className="w-3.5 h-3.5 mr-1.5" /> Benchmark Salary
+                </Button>
+              </Card>
+            </div>
+
+            {/* Popular City Links */}
+            <div className="pt-6 border-t border-slate-900">
+              <span className="text-xs font-mono uppercase tracking-wider text-slate-500 block mb-3">
+                Explore Jobs by Top Hubs
+              </span>
+              <div className="flex flex-wrap justify-center gap-2">
+                {[
+                  { name: 'Bangalore', path: '/jobs/software-engineer/bangalore' },
+                  { name: 'Delhi NCR', path: '/jobs/delhi' },
+                  { name: 'Hyderabad', path: '/jobs/hyderabad' },
+                  { name: 'Pune', path: '/jobs/pune' },
+                  { name: 'Mumbai', path: '/jobs/mumbai' },
+                  { name: 'Remote India', path: '/jobs/remote/software-engineer/india' },
+                ].map((hub) => (
+                  <Link 
+                    key={hub.name} 
+                    to={hub.path} 
+                    className="px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs text-slate-300 transition-colors"
+                  >
+                    {hub.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
