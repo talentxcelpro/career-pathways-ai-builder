@@ -21,11 +21,45 @@ interface Options {
   limit?: number;
 }
 
-const norm = (v: unknown) => (typeof v === 'string' ? v.toLowerCase() : '');
+const LOCATION_ALIAS_MAP: Record<string, string[]> = {
+  'bangalore': ['bangalore', 'bengaluru', 'karnataka'],
+  'bengaluru': ['bangalore', 'bengaluru', 'karnataka'],
+  'delhi': ['delhi', 'new delhi', 'noida', 'gurgaon', 'gurugram', 'ghaziabad', 'faridabad', 'ncr'],
+  'delhi-ncr': ['delhi', 'new delhi', 'noida', 'gurgaon', 'gurugram', 'ghaziabad', 'faridabad', 'ncr'],
+  'ncr': ['delhi', 'new delhi', 'noida', 'gurgaon', 'gurugram', 'ghaziabad', 'faridabad', 'ncr'],
+  'noida': ['noida', 'delhi', 'ncr', 'greater noida'],
+  'gurgaon': ['gurgaon', 'gurugram', 'delhi', 'ncr', 'haryana'],
+  'gurugram': ['gurgaon', 'gurugram', 'delhi', 'ncr', 'haryana'],
+  'mumbai': ['mumbai', 'navi mumbai', 'thane', 'maharashtra'],
+  'pune': ['pune', 'maharashtra', 'pcmc'],
+  'hyderabad': ['hyderabad', 'secunderabad', 'telangana', 'cyberabad'],
+  'chennai': ['chennai', 'tamil nadu'],
+  'kolkata': ['kolkata', 'west bengal'],
+  'ahmedabad': ['ahmedabad', 'gujarat'],
+  'chandigarh': ['chandigarh', 'mohali', 'panchkula', 'punjab'],
+  'jaipur': ['jaipur', 'rajasthan'],
+};
 
 /**
- * Live openings for a landing page. Filtering happens client-side because job
- * rows carry several legacy title/location columns.
+ * Expands a location into its comprehensive geographic aliases.
+ */
+function expandLocationAliases(locations: string[]): string[] {
+  const result = new Set<string>();
+  for (const loc of locations) {
+    const clean = loc.toLowerCase().trim();
+    if (!clean) continue;
+    result.add(clean);
+    if (LOCATION_ALIAS_MAP[clean]) {
+      for (const alias of LOCATION_ALIAS_MAP[clean]) {
+        result.add(alias);
+      }
+    }
+  }
+  return Array.from(result);
+}
+
+/**
+ * Live openings for a landing page with database-level SQL filtering across jobs and scraped_jobs.
  */
 export function useLandingJobs({ keywords = [], locationAliases = [], remoteOnly = false, limit = 12 }: Options) {
   const [jobs, setJobs] = useState<LandingJob[]>([]);
@@ -42,11 +76,12 @@ export function useLandingJobs({ keywords = [], locationAliases = [], remoteOnly
       setLoading(true);
 
       const keys = keyList ? keyList.split('|').filter(Boolean) : [];
-      const locs = locList ? locList.split('|').filter(Boolean) : [];
-      const isNationalIndia = locs.some((l) => l.toLowerCase() === 'india' || l.toLowerCase() === 'national') && locs.length === 1;
+      const rawLocs = locList ? locList.split('|').filter(Boolean) : [];
+      const locs = expandLocationAliases(rawLocs);
+      const isNationalIndia = (rawLocs.length === 0 || (rawLocs.length === 1 && (rawLocs[0].toLowerCase() === 'india' || rawLocs[0].toLowerCase() === 'national')));
 
       try {
-        // 1. Query manual jobs table
+        // 1. Query manual jobs table with SQL filters
         let jobsQuery = supabase
           .from('jobs')
           .select('id, title, job_title, company_name, location, location_city, location_state, description, job_description, salary_min, salary_max, employment_type, is_remote, created_at')
@@ -55,22 +90,21 @@ export function useLandingJobs({ keywords = [], locationAliases = [], remoteOnly
 
         if (remoteOnly) {
           jobsQuery = jobsQuery.or('is_remote.eq.true,location.ilike.%remote%');
+        } else if (!isNationalIndia && locs.length > 0) {
+          const locFilter = locs.map((loc) => `location.ilike.%${loc.trim()}%,location_city.ilike.%${loc.trim()}%`).join(',');
+          jobsQuery = jobsQuery.or(locFilter);
         }
 
-        const { data: manualData } = await jobsQuery.limit(100);
+        if (keys.length > 0) {
+          const keyFilter = keys.map((k) => `title.ilike.%${k.trim()}%,job_title.ilike.%${k.trim()}%,description.ilike.%${k.trim()}%`).join(',');
+          jobsQuery = jobsQuery.or(keyFilter);
+        }
+
+        const { data: manualData } = await jobsQuery.limit(limit);
 
         if (cancelled) return;
 
-        let matched: any[] = (manualData || []).filter((row: Record<string, unknown>) => {
-          const title = `${norm(row.title)} ${norm(row.job_title)}`;
-          const body = `${title} ${norm(row.description)} ${norm(row.job_description)}`;
-          const place = `${norm(row.location)} ${norm(row.location_city)} ${norm(row.location_state)}`;
-
-          if (remoteOnly && !row.is_remote && !place.includes('remote')) return false;
-          if (keys.length && !keys.some((k) => body.includes(norm(k)))) return false;
-          if (!isNationalIndia && locs.length && !locs.some((l) => place.includes(norm(l)))) return false;
-          return true;
-        }).map((row: any) => ({
+        let matched: any[] = (manualData || []).map((row: any) => ({
           id: String(row.id),
           title: row.title || row.job_title || 'Open role',
           company_name: row.company_name || 'TalentXcel Hiring Partner',
@@ -90,13 +124,11 @@ export function useLandingJobs({ keywords = [], locationAliases = [], remoteOnly
         if (remoteOnly) {
           scrapedQuery = scrapedQuery.ilike('location', '%remote%');
         } else if (!isNationalIndia && locs.length > 0) {
-          // Push city filters into SQL PostgREST .or()
           const locFilter = locs.map((loc) => `location.ilike.%${loc.trim()}%`).join(',');
           scrapedQuery = scrapedQuery.or(locFilter);
         }
 
         if (keys.length > 0) {
-          // Push keyword filters into SQL PostgREST .or()
           const keyFilter = keys.map((k) => `job_title.ilike.%${k.trim()}%,job_description.ilike.%${k.trim()}%`).join(',');
           scrapedQuery = scrapedQuery.or(keyFilter);
         }

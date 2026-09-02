@@ -180,14 +180,48 @@ export const JobsByRoleCity: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        const searchRole = role.replace(/-/g, ' ');
-        const searchCity = city.replace(/-/g, ' ');
+        const roleClean = role.toLowerCase().replace(/[-_]+/g, ' ').trim();
+        const cityClean = city.toLowerCase().replace(/[-_]+/g, ' ').trim();
+
+        const roleSynonymList: Record<string, string[]> = {
+          'software-engineer': ['software engineer', 'software developer', 'sde', 'full stack', 'backend', 'frontend'],
+          'software-developer': ['software developer', 'software engineer', 'developer', 'sde', 'full stack'],
+          'senior-software-engineer': ['senior software engineer', 'sr software engineer', 'lead engineer', 'tech lead'],
+          'data-scientist': ['data scientist', 'machine learning', 'ai engineer', 'data science'],
+          'data-analyst': ['data analyst', 'business analyst', 'bi analyst', 'analytics'],
+          'product-manager': ['product manager', 'technical product manager', 'apm'],
+          'recruiter': ['recruiter', 'talent acquisition', 'hr recruiter', 'technical recruiter'],
+          'hr-manager': ['hr manager', 'human resources manager', 'hr executive', 'people operations'],
+          'marketing-executive': ['marketing executive', 'digital marketer', 'growth marketer', 'marketing manager'],
+          'sales-executive': ['sales executive', 'b2b sales', 'business development'],
+          'content-writer': ['content writer', 'copywriter', 'technical writer'],
+        };
+
+        const cityAliasMap: Record<string, string[]> = {
+          'bangalore': ['bangalore', 'bengaluru', 'karnataka'],
+          'bengaluru': ['bangalore', 'bengaluru', 'karnataka'],
+          'delhi': ['delhi', 'new delhi', 'noida', 'gurgaon', 'gurugram', 'ghaziabad', 'ncr'],
+          'delhi-ncr': ['delhi', 'new delhi', 'noida', 'gurgaon', 'gurugram', 'ghaziabad', 'ncr'],
+          'mumbai': ['mumbai', 'navi mumbai', 'thane'],
+          'pune': ['pune', 'maharashtra', 'pcmc'],
+          'hyderabad': ['hyderabad', 'secunderabad', 'telangana'],
+          'chennai': ['chennai', 'tamil nadu'],
+          'kolkata': ['kolkata', 'west bengal'],
+          'noida': ['noida', 'delhi', 'ncr'],
+          'gurgaon': ['gurgaon', 'gurugram', 'delhi', 'ncr'],
+        };
+
+        const roleTokens = roleSynonymList[role.toLowerCase()] || [roleClean, ...(catInfo.roles || [])];
+        const cityAliases = cityAliasMap[city.toLowerCase()] || [cityClean];
+
+        const manualRoleFilter = roleTokens.map(r => `title.ilike.%${r}%,role_category.ilike.%${r}%`).join(',');
+        const manualCityFilter = cityAliases.map(c => `location.ilike.%${c}%`).join(',');
 
         const { data, error: fetchErr, count } = await supabase
           .from('jobs')
           .select('*', { count: 'exact' })
-          .or(`title.ilike.%${searchRole}%,role_category.ilike.%${searchRole}%`)
-          .ilike('location', `%${searchCity}%`)
+          .or(manualRoleFilter)
+          .or(manualCityFilter)
           .eq('is_active', true)
           .eq('job_status', 'open')
           .gt('expires_at', new Date().toISOString())
@@ -199,11 +233,14 @@ export const JobsByRoleCity: React.FC = () => {
         // If manual jobs are fewer than 10, query scraped_jobs matching role & city in SQL
         if (combinedJobs.length < 10) {
           try {
+            const scrapedRoleFilter = roleTokens.map(r => `job_title.ilike.%${r}%`).join(',');
+            const scrapedCityFilter = cityAliases.map(c => `location.ilike.%${c}%`).join(',');
+
             const { data: scrapedMatches } = await supabase
               .from('scraped_jobs')
               .select('id, job_title, company, location, salary, job_description, created_at')
-              .ilike('location', `%${searchCity}%`)
-              .ilike('job_title', `%${searchRole.split(' ')[0]}%`)
+              .or(scrapedCityFilter)
+              .or(scrapedRoleFilter)
               .order('created_at', { ascending: false })
               .limit(20);
 
