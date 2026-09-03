@@ -82,7 +82,7 @@ function calculateCompleteness(p: any): number {
 export const Discover: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { sendConnectionRequest, isSending } = useConnectionRequests();
+  const { sendConnectionRequest } = useConnectionRequests();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'recent' | 'complete' | 'others'>('all');
 
@@ -249,10 +249,9 @@ export const Discover: React.FC = () => {
       return;
     }
     try {
-      await sendConnectionRequest({ recipientId: personId });
-      toast.success(`Connection request sent to ${personName}!`);
+      await sendConnectionRequest.mutateAsync(personId);
     } catch (e: any) {
-      toast.error(e?.message || 'Failed to send request');
+      // Handled by hook error toast
     }
   };
 
@@ -461,7 +460,7 @@ export const Discover: React.FC = () => {
                               size="sm"
                               className="text-xs h-8 px-3 rounded-lg font-bold bg-blue-600 hover:bg-blue-500 text-white shrink-0"
                               onClick={() => handleConnect(person.id, person.full_name)}
-                              disabled={isSending}
+                              disabled={sendConnectionRequest.isPending}
                               title={`Connect with ${person.full_name}`}
                             >
                               <UserPlus className="h-3.5 w-3.5" />

@@ -47,7 +47,7 @@ interface RealVerifiedProfile {
 export const Verified: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { sendConnectionRequest, isSending } = useConnectionRequests();
+  const { sendConnectionRequest } = useConnectionRequests();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIndustry, setSelectedIndustry] = useState('all');
   const [verificationLevel, setVerificationLevel] = useState('all');
@@ -175,10 +175,9 @@ export const Verified: React.FC = () => {
       return;
     }
     try {
-      await sendConnectionRequest({ recipientId: personId });
-      toast.success(`Connection request sent to ${personName}!`);
+      await sendConnectionRequest.mutateAsync(personId);
     } catch (e: any) {
-      toast.error(e?.message || 'Failed to send request');
+      // Handled by hook error toast
     }
   };
 
@@ -429,7 +428,7 @@ export const Verified: React.FC = () => {
                         size="sm" 
                         className="flex-1 text-xs h-8 rounded-xl font-bold bg-emerald-600 hover:bg-emerald-500 text-white"
                         onClick={() => handleConnect(profile.id, profile.full_name)}
-                        disabled={isSending}
+                        disabled={sendConnectionRequest.isPending}
                       >
                         Connect
                       </Button>
