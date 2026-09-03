@@ -20867,3 +20867,13 @@ export function getRelatedCities(current: JobLocationConfig, limit: number = 6):
     .filter(l => l.slug !== current.slug && l.countryCode === current.countryCode && (l.stateName === current.stateName || l.tier <= 2))
     .slice(0, limit);
 }
+
+export type CityConfig = JobLocationConfig & { name: string; country: string; state: string };
+export const INDIAN_CITIES: CityConfig[] = JOB_LOCATIONS
+  .filter(l => l.countryCode === 'IN')
+  .map(l => ({ ...l, name: l.cityName, country: l.countryCode, state: l.stateName || 'India' }));
+
+export const GLOBAL_HUBS: CityConfig[] = JOB_LOCATIONS
+  .filter(l => l.countryCode !== 'IN')
+  .map(l => ({ ...l, name: l.cityName, country: l.countryCode, state: l.stateName || l.countryName }));
+

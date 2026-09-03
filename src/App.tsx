@@ -175,6 +175,8 @@ const JobsByRemoteRoleCity            = lazy(() => import('@/pages/seo/jobs/Jobs
 const JobsByCompanyRoleCity           = lazy(() => import('@/pages/seo/jobs/JobsByCompanyRoleCity').then(m => ({ default: m.JobsByCompanyRoleCity })));
 const JobCategoryPage                 = lazy(() => import('@/pages/seo/JobCategoryPage'));
 const JobLocationPage                 = lazy(() => import('@/pages/seo/JobLocationPage'));
+const GlobalEmployerAcquisition       = lazy(() => import('./pages/employers/GlobalEmployerAcquisition'));
+const MultiLocationJobComposer        = lazy(() => import('./components/jobs/MultiLocationJobComposer'));
 
 const CareerPlatformShowcasePage = lazy(() => import("./pages/CareerPlatformShowcase"));
 const Jobs1 = lazy(() => import("./pages/Jobs1"));
@@ -360,6 +362,11 @@ const App = () => {
                 <Route path="/jobs/engineering-jobs" element={<Suspense fallback={<div>Loading...</div>}><JobCategoryPage /></Suspense>} />
                 <Route path="/jobs/marketing-jobs" element={<Suspense fallback={<div>Loading...</div>}><JobCategoryPage /></Suspense>} />
                 
+                {/* Global Employer Acquisition & Multi-Location Ingestion */}
+                <Route path="/hire" element={<Suspense fallback={<div>Loading...</div>}><GlobalEmployerAcquisition /></Suspense>} />
+                <Route path="/employers/post-job" element={<Suspense fallback={<div>Loading...</div>}><GlobalEmployerAcquisition /></Suspense>} />
+                <Route path="/jobs/post/multi-location" element={<Suspense fallback={<div>Loading...</div>}><MultiLocationJobComposer /></Suspense>} />
+
                 {/* Location Pages */}
                 <Route path="/jobs/bangalore" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
                 <Route path="/jobs/mumbai" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />

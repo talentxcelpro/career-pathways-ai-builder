@@ -59,6 +59,7 @@ const TalentDatabase = lazy(() => import('../pages/admin/TalentDatabase'));
 const SEOSuite = lazy(() => import('../pages/admin/SEOSuite'));
 const EnterpriseBilling = lazy(() => import('../pages/admin/EnterpriseBilling'));
 const GoogleJobPostingHealth = lazy(() => import('../pages/admin/GoogleJobPostingHealth'));
+const GoogleSearchHealthCenter = lazy(() => import('../pages/admin/GoogleSearchHealthCenter'));
 const EnterpriseClients = lazy(() => import('../pages/admin/EnterpriseClients'));
 const EnterpriseAnalytics = lazy(() => import('../pages/admin/EnterpriseAnalytics'));
 const EnterpriseSolutions = lazy(() => import('../pages/admin/EnterpriseSolutions'));
@@ -539,6 +540,13 @@ export const adminRoutes = [
     to: "/admin/seo-suite",
     icon: <Search className="h-4 w-4" />,
     page: <Suspense fallback={null}><SEOSuite /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "Google Search Health Center",
+    to: "/admin/seo/google",
+    icon: <Search className="h-4 w-4 text-sky-400" />,
+    page: <Suspense fallback={null}><GoogleSearchHealthCenter /></Suspense>,
     isPublic: true,
   },
   {
