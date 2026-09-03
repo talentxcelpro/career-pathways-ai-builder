@@ -41,7 +41,7 @@ export default function GlobalEmployerAcquisition() {
   const estimatedReach = Math.round(selectedLocationsCount * 1420);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-blue-600 selection:text-white">
+    <div className="dark min-h-screen bg-slate-950 text-slate-100 selection:bg-blue-600 selection:text-white">
       <Helmet>
         <title>Hire Top Global Talent Across 100,000+ Locations | TalentXcel</title>
         <meta 
@@ -82,7 +82,7 @@ export default function GlobalEmployerAcquisition() {
           </h1>
 
           <p className="mt-4 text-base sm:text-lg text-slate-200 font-normal max-w-2xl mx-auto leading-relaxed">
-            Reach qualified professionals in 195+ countries. Post your job opening once to get featured across TalentXcel's international talent network and Google Jobs search.
+            Reach qualified professionals across 195+ countries. Post your job opening once to distribute it across TalentXcel's global talent network and eligible Google Jobs discovery.
           </p>
 
           {/* Action CTAs */}
@@ -97,8 +97,9 @@ export default function GlobalEmployerAcquisition() {
             </Button>
             <Button
               size="lg"
+              variant="outline"
               onClick={() => navigate('/jobs/post')}
-              className="w-full sm:w-auto px-8 py-6 text-base font-medium border border-slate-700 bg-slate-800/90 hover:bg-slate-700 text-white shadow-md transition-all cursor-pointer"
+              className="w-full sm:w-auto px-8 py-6 text-base font-semibold border-2 border-slate-600 hover:border-slate-400 bg-slate-900/90 hover:bg-slate-800 text-white hover:text-white shadow-sm transition-all cursor-pointer"
             >
               Post a Single Job
             </Button>
@@ -108,19 +109,19 @@ export default function GlobalEmployerAcquisition() {
           <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto text-left">
             <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
               <div className="text-2xl font-bold text-white">100,000+</div>
-              <div className="text-xs text-slate-300 mt-1">Target Cities &amp; Hubs</div>
+              <div className="text-xs text-slate-300 font-medium mt-1">Target Cities &amp; Hubs</div>
             </div>
             <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
               <div className="text-2xl font-bold text-blue-400">195+</div>
-              <div className="text-xs text-slate-300 mt-1">Countries Covered</div>
+              <div className="text-xs text-slate-300 font-medium mt-1">Countries Covered</div>
             </div>
             <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
               <div className="text-2xl font-bold text-emerald-400">Google Jobs</div>
-              <div className="text-xs text-slate-300 mt-1">Search Result Featured</div>
+              <div className="text-xs text-slate-300 font-medium mt-1">Eligible Job Discovery</div>
             </div>
             <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
               <div className="text-2xl font-bold text-purple-400">Direct Connect</div>
-              <div className="text-xs text-slate-300 mt-1">Verified Candidate Applications</div>
+              <div className="text-xs text-slate-300 font-medium mt-1">Verified Candidate Applications</div>
             </div>
           </div>
         </div>

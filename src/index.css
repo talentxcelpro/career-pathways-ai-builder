@@ -1199,30 +1199,23 @@ img.loaded {
     box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   }
 
-  /* Global text size - Bigger and Darker */
+  /* Global text size */
   body {
-    font-size: 1rem !important; /* 16px base */
-    color: hsl(210 11% 10%) !important; /* Darker text */
-    font-weight: 500 !important; /* Medium weight for better readability */
+    font-size: 1rem; /* 16px base */
+    font-weight: 500;
   }
 
-  /* Typography overrides for better readability */
+  /* Typography overrides for better readability - sizing only, never force dark colors */
   .text-sm {
-    font-size: 0.9375rem !important; /* 15px instead of 14px */
-    font-weight: 500 !important;
-    color: hsl(210 11% 15%) !important;
+    font-size: 0.9375rem; /* 15px instead of 14px */
   }
 
   .text-base {
-    font-size: 1.0625rem !important; /* 17px instead of 16px */
-    font-weight: 500 !important;
-    color: hsl(210 11% 10%) !important;
+    font-size: 1.0625rem; /* 17px instead of 16px */
   }
 
   .text-lg {
-    font-size: 1.1875rem !important; /* 19px instead of 18px */
-    font-weight: 500 !important;
-    color: hsl(210 11% 10%) !important;
+    font-size: 1.1875rem; /* 19px instead of 18px */
   }
 
   /* Global icon size overrides - Compact but readable */
