@@ -24,7 +24,6 @@ import { useTXCIntegration } from '@/hooks/useTXCIntegration';
 import { useTXCBalance } from '@/hooks/useTXCBalance';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { buildJobPostingSchema } from '@/lib/seo/jobPostingSchema';
 
 // Industry Data
 import { COMPREHENSIVE_INDUSTRIES, INDUSTRY_CATEGORIES, TRENDING_INDUSTRIES, HIGH_GROWTH_INDUSTRIES } from '@/data/industries';
@@ -131,14 +130,9 @@ const Jobs = () => {
   // Real-time job statistics
   const { stats: jobStats } = useRealtimeJobStats();
 
-  // Google Jobs Schema
+  // Google Compliant Listing Schema — WebSite & CollectionPage (No individual JobPosting on listing page)
   const jobsSchema = useMemo(() => {
     if (!allJobs || allJobs.length === 0) return null;
-
-    const jobPostings = allJobs
-      .slice(0, 10)
-      .map(job => buildJobPostingSchema(job))
-      .filter(Boolean);
 
     return {
       "@context": "https://schema.org/",
@@ -164,14 +158,14 @@ const Jobs = () => {
           "mainEntity": {
             "@type": "ItemList",
             "numberOfItems": totalCount,
-            "itemListElement": jobPostings.map((job, index) => ({
+            "itemListElement": allJobs.slice(0, 10).map((job, index) => ({
               "@type": "ListItem",
               "position": index + 1,
-              "item": job
+              "url": `https://talentxcel.in/jobs/${job.id}`,
+              "name": job.title || 'Career Opportunity'
             }))
           }
-        },
-        ...jobPostings
+        }
       ]
     };
   }, [allJobs, totalCount]);

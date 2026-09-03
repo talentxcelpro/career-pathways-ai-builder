@@ -6,6 +6,28 @@ import nodemailer from 'nodemailer';
 import fs from 'fs';
 import path from 'path';
 
+// Load .env or .env.local if present
+function loadEnv() {
+  const envPaths = ['.env.local', '.env'];
+  for (const envFile of envPaths) {
+    const fullPath = path.join(process.cwd(), envFile);
+    if (fs.existsSync(fullPath)) {
+      const content = fs.readFileSync(fullPath, 'utf-8');
+      content.split('\n').forEach(line => {
+        const trimmed = line.trim();
+        if (trimmed && !trimmed.startsWith('#')) {
+          const [key, ...rest] = trimmed.split('=');
+          if (key && rest.length > 0 && !process.env[key.trim()]) {
+            process.env[key.trim()] = rest.join('=').replace(/^["'](.*)["']$/, '$1').trim();
+          }
+        }
+      });
+    }
+  }
+}
+
+loadEnv();
+
 interface StudentRecord {
   name: string;
   email: string;
@@ -116,15 +138,21 @@ async function runCampaign() {
   const studentsRaw = fs.readFileSync(cohortFilePath, 'utf-8');
   const students: StudentRecord[] = JSON.parse(studentsRaw);
 
+  const host = process.env.SES_HOST || process.env.SMTP_HOST || 'email-smtp.ap-south-1.amazonaws.com';
+  const port = parseInt(process.env.SES_PORT || process.env.SMTP_PORT || '587', 10);
+  const user = process.env.SES_USER || process.env.SMTP_USER;
+  const pass = process.env.SES_PASS || process.env.SMTP_PASS;
+  const fromEmail = process.env.SES_FROM || process.env.SMTP_FROM || 'TalentXcel Placements <admissions@talentxcel.in>';
+
   console.log(`================================================================`);
   console.log(`🚀 TALENTXCEL AMAZON SES DISPATCH ENGINE`);
   console.log(`================================================================`);
   console.log(`📋 Total Candidates in Savantis Cohort: ${students.length}`);
   console.log(`⚙️  Mode: ${isDryRun ? 'DRY-RUN / PREVIEW (Zero emails sent)' : 'LIVE DISPATCH VIA AMAZON SES'}`);
 
-  if (isDryRun) {
-    console.log(`\n💡 To dispatch live via Amazon SES, provide your SES SMTP credentials:`);
-    console.log(`   $env:SES_HOST="email-smtp.ap-south-1.amazonaws.com"`);
+  if (isDryRun || !user || !pass) {
+    console.log(`\n💡 To dispatch live via Amazon SES, set your credentials:`);
+    console.log(`   $env:SES_HOST="email-smtp.ap-south-1.amazonaws.com"  # (or us-east-1)`);
     console.log(`   $env:SES_PORT="587"`);
     console.log(`   $env:SES_USER="<YOUR_SES_SMTP_USER>"`);
     console.log(`   $env:SES_PASS="<YOUR_SES_SMTP_PASSWORD>"`);
@@ -143,18 +171,16 @@ async function runCampaign() {
 
   // Live SMTP Transport
   const transporter = nodemailer.createTransport({
-    host: process.env.SES_HOST || 'email-smtp.ap-south-1.amazonaws.com',
-    port: parseInt(process.env.SES_PORT || '587', 10),
+    host,
+    port,
     secure: false,
     auth: {
-      user: process.env.SES_USER,
-      pass: process.env.SES_PASS,
+      user,
+      pass,
     },
   });
 
-  const fromEmail = process.env.SES_FROM || 'TalentXcel Placements <placements@talentxcel.in>';
-
-  console.log(`\n📡 Connected to Amazon SES (${process.env.SES_HOST}). Beginning rate-limited dispatch...`);
+  console.log(`\n📡 Connected to Amazon SES (${host}). Beginning rate-limited dispatch...`);
 
   let sentCount = 0;
   let failCount = 0;
@@ -162,7 +188,7 @@ async function runCampaign() {
   for (let i = 0; i < students.length; i++) {
     const student = students[i];
     const htmlContent = buildEmailHtml(student);
-    const subject = `${student.name.title ? student.name : student.name}, check your ATS Resume Score for ${student.college} campus placements (${student.branch})`;
+    const subject = `${student.name}, check your ATS Resume Score for ${student.college} campus placements (${student.branch})`;
 
     try {
       await transporter.sendMail({

@@ -1,4 +1,4 @@
-﻿// src/lib/autonomous-os/growthEventTracker.ts
+// src/lib/autonomous-os/growthEventTracker.ts
 // Real Production Growth Telemetry & Dual K-Factor Engine (Zero Synthetic Fallbacks)
 // Strictly counts verified lifecycle events: tool_completed -> share_opened -> share_completed -> referral_visit -> A1_activated -> A7_retained
 
@@ -94,13 +94,27 @@ export class GrowthEventTracker {
   }
 
   private initSession(): void {
-    if (typeof window === 'undefined') return;
-    let sId = sessionStorage.getItem(SESSION_ID_KEY);
-    if (!sId) {
-      sId = `sess_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
-      sessionStorage.setItem(SESSION_ID_KEY, sId);
+    try {
+      if (typeof window === 'undefined') {
+        this.currentSessionId = `sess_${Date.now()}`;
+        return;
+      }
+      let sId: string | null = null;
+      try {
+        sId = sessionStorage.getItem(SESSION_ID_KEY);
+      } catch {
+        sId = null;
+      }
+      if (!sId) {
+        sId = `sess_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+        try {
+          sessionStorage.setItem(SESSION_ID_KEY, sId);
+        } catch {}
+      }
+      this.currentSessionId = sId;
+    } catch {
+      this.currentSessionId = `sess_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
     }
-    this.currentSessionId = sId;
   }
 
   private loadPersistedEvents(): void {

@@ -58,6 +58,7 @@ const CareerPlatform = lazy(() => import('../pages/admin/CareerPlatform'));
 const TalentDatabase = lazy(() => import('../pages/admin/TalentDatabase'));
 const SEOSuite = lazy(() => import('../pages/admin/SEOSuite'));
 const EnterpriseBilling = lazy(() => import('../pages/admin/EnterpriseBilling'));
+const GoogleJobPostingHealth = lazy(() => import('../pages/admin/GoogleJobPostingHealth'));
 const EnterpriseClients = lazy(() => import('../pages/admin/EnterpriseClients'));
 const EnterpriseAnalytics = lazy(() => import('../pages/admin/EnterpriseAnalytics'));
 const EnterpriseSolutions = lazy(() => import('../pages/admin/EnterpriseSolutions'));
@@ -538,6 +539,13 @@ export const adminRoutes = [
     to: "/admin/seo-suite",
     icon: <Search className="h-4 w-4" />,
     page: <Suspense fallback={null}><SEOSuite /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "Google Job Postings Sync",
+    to: "/admin/seo/google-jobs",
+    icon: <Briefcase className="h-4 w-4" />,
+    page: <Suspense fallback={null}><GoogleJobPostingHealth /></Suspense>,
     isPublic: true,
   },
   {

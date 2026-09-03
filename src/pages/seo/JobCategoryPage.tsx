@@ -271,22 +271,15 @@ function getCategoryData(category: string) {
       ],
       structuredData: {
         "@context": "https://schema.org",
-        "@type": "JobPosting",
-        "title": "IT Fresher Jobs",
+        "@type": "CollectionPage",
+        "name": "IT Fresher Jobs & Career Opportunities",
         "description": "Find the best IT fresher jobs in India. Software developer, programmer, tech support roles with top companies.",
-        "hiringOrganization": {
+        "url": "https://talentxcel.in/jobs/category/it-jobs",
+        "publisher": {
           "@type": "Organization",
           "name": "TalentXcel Services",
           "sameAs": "https://talentxcel.in"
-        },
-        "jobLocation": {
-          "@type": "Place",
-          "address": {
-            "@type": "PostalAddress",
-            "addressCountry": "IN"
-          }
-        },
-        "employmentType": "FULL_TIME"
+        }
       }
     },
     'engineering-jobs': {
@@ -329,22 +322,15 @@ function getCategoryData(category: string) {
       ],
       structuredData: {
         "@context": "https://schema.org",
-        "@type": "JobPosting",
-        "title": "Engineering Fresher Jobs",
+        "@type": "CollectionPage",
+        "name": "Engineering Fresher Jobs & Career Opportunities",
         "description": "Explore engineering fresher jobs across mechanical, civil, electrical, and other core branches.",
-        "hiringOrganization": {
+        "url": "https://talentxcel.in/jobs/category/engineering-jobs",
+        "publisher": {
           "@type": "Organization",
           "name": "TalentXcel Services",
           "sameAs": "https://talentxcel.in"
-        },
-        "jobLocation": {
-          "@type": "Place",
-          "address": {
-            "@type": "PostalAddress",
-            "addressCountry": "IN"
-          }
-        },
-        "employmentType": "FULL_TIME"
+        }
       }
     },
     'marketing-jobs': {
@@ -389,22 +375,15 @@ function getCategoryData(category: string) {
       ],
       structuredData: {
         "@context": "https://schema.org",
-        "@type": "JobPosting",
-        "title": "Marketing Fresher Jobs",
+        "@type": "CollectionPage",
+        "name": "Marketing Fresher Jobs & Career Opportunities",
         "description": "Discover marketing fresher jobs in digital marketing, sales, brand management, and communications.",
-        "hiringOrganization": {
+        "url": "https://talentxcel.in/jobs/category/marketing-jobs",
+        "publisher": {
           "@type": "Organization",
           "name": "TalentXcel Services",
           "sameAs": "https://talentxcel.in"
-        },
-        "jobLocation": {
-          "@type": "Place",
-          "address": {
-            "@type": "PostalAddress",
-            "addressCountry": "IN"
-          }
-        },
-        "employmentType": "FULL_TIME"
+        }
       }
     }
   };

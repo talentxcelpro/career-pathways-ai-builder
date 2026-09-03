@@ -167,6 +167,7 @@ const CoursePlayer                    = lazy(() => import('./pages/learning/Cour
 const Communication                   = lazy(() => import('./pages/Communication'));
 const JobsLandingPage                 = lazy(() => import('@/pages/seo/jobs/JobsLandingPage').then(m => ({ default: m.JobsLandingPage })));
 const JobsByRoleCity                  = lazy(() => import('@/pages/seo/jobs/JobsByRoleCity').then(m => ({ default: m.JobsByRoleCity })));
+const JobsByRoleExperienceCity        = lazy(() => import('@/pages/seo/jobs/JobsByRoleExperienceCity').then(m => ({ default: m.JobsByRoleExperienceCity })));
 const JobsByRoleIndustryCity          = lazy(() => import('@/pages/seo/jobs/JobsByRoleIndustryCity').then(m => ({ default: m.JobsByRoleIndustryCity })));
 const JobsByRoleSkillCityLevel        = lazy(() => import('@/pages/seo/jobs/JobsByRoleSkillCityLevel').then(m => ({ default: m.JobsByRoleSkillCityLevel })));
 const JobsByRoleSalaryCity            = lazy(() => import('@/pages/seo/jobs/JobsByRoleSalaryCity').then(m => ({ default: m.JobsByRoleSalaryCity })));
@@ -367,6 +368,10 @@ const App = () => {
                 <Route path="/jobs/chennai" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
                 <Route path="/jobs/pune" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
                 
+                {/* Global & India Jobs Matrix Engine (Role x Experience x City) */}
+                <Route path="/jobs/:role/:experience/:country/:city" element={<Suspense fallback={<div>Loading...</div>}><JobsByRoleExperienceCity /></Suspense>} />
+                <Route path="/jobs/:role/:experience/:city" element={<Suspense fallback={<div>Loading...</div>}><JobsByRoleExperienceCity /></Suspense>} />
+
                 {/* Jobs Sitemap Routes - Role, City, Subtopic Combinations */}
                 <Route path="/jobs/:role/:city/:subtopic" element={<Suspense fallback={<div>Loading...</div>}><JobsByRoleCity /></Suspense>} />
                 <Route path="/jobs/:role/:city" element={<Suspense fallback={<div>Loading...</div>}><JobsByRoleCity /></Suspense>} />
