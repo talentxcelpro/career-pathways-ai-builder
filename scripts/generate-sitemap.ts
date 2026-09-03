@@ -488,6 +488,14 @@ export async function generateProductionSitemaps() {
     }
   });
 
+  // Include partitioned jobs matrix sitemaps if present
+  if (existsSync(resolve(publicDir, 'sitemaps/jobs-matrix-india.xml'))) {
+    validSitemapsForIndex.push({ filename: 'sitemaps/jobs-matrix-india.xml', count: 12300 });
+  }
+  if (existsSync(resolve(publicDir, 'sitemaps/jobs-matrix-global.xml'))) {
+    validSitemapsForIndex.push({ filename: 'sitemaps/jobs-matrix-global.xml', count: 2460 });
+  }
+
   // Generate Master Index (sitemap.xml)
   const masterXml = buildSitemapIndexXml(validSitemapsForIndex);
   writeFileSync(resolve(publicDir, 'sitemap.xml'), masterXml, 'utf-8');
