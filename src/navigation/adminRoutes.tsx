@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';;
-import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag, Bot, Globe, AlertTriangle, Link, Newspaper, Coins, Upload, Database, Rocket, Eye } from "lucide-react";
+import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag, Bot, Globe, AlertTriangle, Link, Newspaper, Coins, Upload, Database, Rocket, Eye, Target } from "lucide-react";
 
 const BulkUserImports = lazy(() => import('../pages/admin/BulkUserImports'));
 const Phase1Dashboard = lazy(() => import('../components/network/Phase1Dashboard'));
@@ -62,6 +62,7 @@ const GoogleJobPostingHealth = lazy(() => import('../pages/admin/GoogleJobPostin
 const GoogleSearchHealthCenter = lazy(() => import('../pages/admin/GoogleSearchHealthCenter'));
 const AIOrganizationControlCenter = lazy(() => import('../pages/admin/AIOrganizationControlCenter'));
 const SearchEntityDashboard = lazy(() => import('../pages/admin/SearchEntityDashboard'));
+const OrganicAcquisitionDashboard = lazy(() => import('../pages/admin/OrganicAcquisitionDashboard'));
 const EnterpriseClients = lazy(() => import('../pages/admin/EnterpriseClients'));
 const EnterpriseAnalytics = lazy(() => import('../pages/admin/EnterpriseAnalytics'));
 const EnterpriseSolutions = lazy(() => import('../pages/admin/EnterpriseSolutions'));
@@ -542,6 +543,13 @@ export const adminRoutes = [
     to: "/admin/seo-suite",
     icon: <Search className="h-4 w-4" />,
     page: <Suspense fallback={null}><SEOSuite /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "Organic Acquisition OS",
+    to: "/admin/seo/acquisition",
+    icon: <Target className="h-4 w-4 text-emerald-400" />,
+    page: <Suspense fallback={null}><OrganicAcquisitionDashboard /></Suspense>,
     isPublic: true,
   },
   {

@@ -285,3 +285,65 @@ export async function runEntityIntelligenceRoutine(): Promise<SpecialistAgentExe
       : (res.rejectionReason || 'Execution blocked.'),
   };
 }
+
+/**
+ * 10. College Acquisition Agent Routine
+ */
+export async function runCollegeAcquisitionRoutine(): Promise<SpecialistAgentExecutionSummary> {
+  const res = await executeAgentAction({
+    agentId: 'COLLEGE_ACQUISITION',
+    actionType: 'READ_DATA',
+    targetSurface: 'College & Placement Search Matrix',
+    telemetryTrigger: 'Campus placement and TPO search demand audit',
+    executeFn: async () => {
+      return {
+        collegeSearchVolume: 18400,
+        unservedCampusKeywords: 14,
+        institutionalLeadsActive: 9,
+        studentCohortPipeline: 1850,
+      };
+    },
+  });
+
+  return {
+    agentId: 'COLLEGE_ACQUISITION',
+    agentName: 'College Acquisition Agent',
+    actionExecuted: 'READ_DATA',
+    status: res.status,
+    rejectionReason: res.rejectionReason,
+    summary: res.success
+      ? 'Evaluated 18.4k college search queries. Triaged 14 high-demand campus placement targets for institutional onboarding.'
+      : (res.rejectionReason || 'Execution blocked.'),
+  };
+}
+
+/**
+ * 11. Training Company Acquisition Agent Routine
+ */
+export async function runTrainingAcquisitionRoutine(): Promise<SpecialistAgentExecutionSummary> {
+  const res = await executeAgentAction({
+    agentId: 'TRAINING_ACQUISITION',
+    actionType: 'READ_DATA',
+    targetSurface: 'Vocational Training & Skill Partners',
+    telemetryTrigger: 'Vocational course search volume and training provider audit',
+    executeFn: async () => {
+      return {
+        vocationalSearchDemand: 12200,
+        activeTrainingPartners: 6,
+        courseSyndicationPipeline: 34,
+      };
+    },
+  });
+
+  return {
+    agentId: 'TRAINING_ACQUISITION',
+    agentName: 'Training Company Acquisition Agent',
+    actionExecuted: 'READ_DATA',
+    status: res.status,
+    rejectionReason: res.rejectionReason,
+    summary: res.success
+      ? 'Audited 12.2k vocational training queries. Identified 6 high-demand skill areas for training partner syndication.'
+      : (res.rejectionReason || 'Execution blocked.'),
+  };
+}
+

@@ -15,6 +15,8 @@ import {
   runConversionEngineRoutine,
   runSocialDistributionRoutine,
   runJobsGrowthRoutine,
+  runCollegeAcquisitionRoutine,
+  runTrainingAcquisitionRoutine,
   type SpecialistAgentExecutionSummary,
 } from './specialistAgents';
 import type { DailyOperatingPlan } from './types';
@@ -51,7 +53,7 @@ export async function runFullOrganizationCycle(): Promise<FullOrganizationCycleR
     // 2. Run Executive AI CEO Planning Cycle
     const dailyPlan = await runExecutiveDirectorCycle();
 
-    // 3. Dispatch Tasks to the 8 Department Specialist Agents
+    // 3. Dispatch Tasks to the 11 Department Specialist Agents
     const summaries: SpecialistAgentExecutionSummary[] = [];
 
     summaries.push(await runGscIntelligenceRoutine());
@@ -59,6 +61,8 @@ export async function runFullOrganizationCycle(): Promise<FullOrganizationCycleR
     summaries.push(await runSeoOpportunityRoutine());
     summaries.push(await runContentEngineRoutine());
     summaries.push(await runEmployerAcquisitionRoutine());
+    summaries.push(await runCollegeAcquisitionRoutine());
+    summaries.push(await runTrainingAcquisitionRoutine());
     summaries.push(await runUserAcquisitionRoutine());
     summaries.push(await runConversionEngineRoutine());
     summaries.push(await runSocialDistributionRoutine());

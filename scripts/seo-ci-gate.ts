@@ -109,6 +109,24 @@ import { computeProfileQualityScore, evaluateProfileIndexability } from '../src/
 import { resolveSearchQueryToEntity } from '../src/lib/graph/searchEntityResolver.js';
 import { getEntityNode, getEntityOutgoingEdges } from '../src/lib/graph/professionalEntityGraph.js';
 import { resolveProfileContextualLinks } from '../src/lib/graph/contextualInternalLinker.js';
+import { 
+  ALL_SEARCH_INTENTS, 
+  ALL_AUDIENCE_SEGMENTS, 
+  ALL_BUSINESS_SEGMENTS, 
+  ALL_ACQUISITION_EVENTS, 
+  PRODUCT_CONVERSION_REGISTRY 
+} from '../src/lib/seo/acquisitionTaxonomy.js';
+import { 
+  mapQueryToProduct, 
+  classifySearchIntentCategory, 
+  classifyQueryAudience 
+} from '../src/lib/seo/queryAudienceMapper.js';
+import { 
+  calculateOpportunityScore, 
+  createOpportunityFromSearchTelemetry, 
+  INITIAL_ACQUISITION_OPPORTUNITIES 
+} from '../src/lib/seo/acquisitionOpportunity.js';
+import { INITIAL_EXPERIMENTS } from '../src/lib/seo/acquisitionExperimentEngine.js';
 
 const SUPABASE_URL = 'https://dthlgsnakhoftinssokm.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
@@ -1975,12 +1993,12 @@ async function runSeoCiGate() {
     // --- 18. TALENTXCEL AI GROWTH ORGANIZATION & GLOBAL ACQUISITION OS ---
     console.log('\n--- 18. AUDITING TALENTXCEL AI GROWTH ORGANIZATION & GLOBAL ACQUISITION OS ---');
 
-    // 18.1 Invariant: 1 Executive AI CEO + 9 Department Specialist Agents (10 Total Agents)
+    // 18.1 Invariant: 1 Executive AI CEO + 11 Department Specialist Agents (12 Total Agents)
     record(
       'AI_Growth_Organization',
-      'Agent Roster Terminology Invariant (1 CEO + 9 Specialists = 10 Total)',
-      TOTAL_AGENTS_COUNT === 10 && ALL_AGENT_IDS.length === 10 && ALL_AGENT_IDS.includes('EXECUTIVE_CEO') && ALL_AGENT_IDS.includes('ENTITY_INTELLIGENCE'),
-      `Verified exact agent taxonomy: 1 Executive AI CEO + 9 Specialist Agents = ${TOTAL_AGENTS_COUNT} Total Agents`
+      'Agent Roster Terminology Invariant (1 CEO + 11 Specialists = 12 Total)',
+      TOTAL_AGENTS_COUNT === 12 && ALL_AGENT_IDS.length === 12 && ALL_AGENT_IDS.includes('EXECUTIVE_CEO') && ALL_AGENT_IDS.includes('COLLEGE_ACQUISITION') && ALL_AGENT_IDS.includes('TRAINING_ACQUISITION'),
+      `Verified exact agent taxonomy: 1 Executive AI CEO + 11 Specialist Agents = ${TOTAL_AGENTS_COUNT} Total Agents`
     );
 
     // 18.2 Invariant: Server-Authoritative 5-State Organization Lifecycle
@@ -2052,8 +2070,8 @@ async function runSeoCiGate() {
     record(
       'AI_Growth_Organization',
       'Executive AI CEO Daily Operating Plan Generation',
-      generatedPlan.priorities.length === 5 && generatedPlan.priorities.every(p => p.delegatedAgentId && p.impactScore > 0),
-      `AI CEO synthesized cross-system telemetry and formulated 5 prioritized strategic mandates (Top: ${generatedPlan.priorities[0].title})`
+      generatedPlan.priorities.length >= 5 && generatedPlan.priorities.every(p => p.delegatedAgentId && p.impactScore > 0),
+      `AI CEO synthesized cross-system telemetry and formulated ${generatedPlan.priorities.length} prioritized strategic mandates (Top: ${generatedPlan.priorities[0].title})`
     );
 
     // 18.7 Invariant: Global Acquisition OS: 12 Product Surfaces Registry
@@ -2256,6 +2274,110 @@ async function runSeoCiGate() {
       'Admin Route Mounting for Search Entity Graph (/admin/seo/entities)',
       hasEntityGraphRoute,
       'Validated /admin/seo/entities is mounted and registered in src/navigation/adminRoutes.tsx'
+    );
+
+    // --- 20. AUDITING TALENTXCEL ORGANIC ACQUISITION OPERATING SYSTEM (O-AOS) ---
+    console.log('\n--- 20. AUDITING TALENTXCEL ORGANIC ACQUISITION OPERATING SYSTEM (O-AOS) ---');
+
+    // 20.1 Invariant: 20-Class Search Intent & 18-Class Audience Taxonomy
+    record(
+      'Organic_Acquisition_OS',
+      '20-Class Search Intent & 18-Class Audience Taxonomy',
+      ALL_SEARCH_INTENTS.length === 20 && ALL_AUDIENCE_SEGMENTS.length === 18 && ALL_BUSINESS_SEGMENTS.length === 9,
+      `Verified master taxonomy: 20 Search Intents, 18 Audience Segments, 9 Business Segments`
+    );
+
+    // 20.2 Invariant: Query -> Audience -> Product Acquisition Mapping Engine
+    const mappedJob = mapQueryToProduct('fresher react developer jobs bangalore');
+    const mappedResume = mapQueryToProduct('ats resume checker for freshers india');
+    const mappedCollege = mapQueryToProduct('college placement management software');
+    const mappedEmployer = mapQueryToProduct('hire software engineers bangalore');
+    record(
+      'Organic_Acquisition_OS',
+      'Query -> Audience -> Product Acquisition Mapping Engine',
+      mappedJob.productSurface === 'JOBS' &&
+      mappedResume.productSurface === 'RESUME_BUILDER' &&
+      mappedCollege.productSurface === 'COLLEGES' &&
+      mappedEmployer.productSurface === 'EMPLOYER' &&
+      mappedEmployer.businessSegment === 'B2B_EMPLOYER',
+      `Validated high-precision semantic query mapping across Job, Resume, College, and Employer surfaces`
+    );
+
+    // 20.3 Invariant: Multi-Factor Acquisition Opportunity Scoring (0-100)
+    const testOppScore = calculateOpportunityScore({
+      searchDemand: 80,
+      businessValue: 90,
+      productFit: 95,
+      conversionPotential: 85,
+      contentGap: 90,
+      trendGrowth: 70,
+      strategicValue: 80,
+    });
+    record(
+      'Organic_Acquisition_OS',
+      'Multi-Factor Acquisition Opportunity Scoring (0-100)',
+      testOppScore.score >= 80 && (testOppScore.priority === 'P0' || testOppScore.priority === 'P1'),
+      `Computed weighted opportunity score: ${testOppScore.score}/100 with priority ${testOppScore.priority}`
+    );
+
+    // 20.4 Invariant: First-Class Acquisition Opportunity Seed Pool
+    record(
+      'Organic_Acquisition_OS',
+      'First-Class Acquisition Opportunity Model & Seed Pool',
+      INITIAL_ACQUISITION_OPPORTUNITIES.length >= 6 &&
+      INITIAL_ACQUISITION_OPPORTUNITIES.every(o => o.id && o.opportunity_score > 0 && o.business_segment),
+      `Verified initial acquisition opportunity pool with ${INITIAL_ACQUISITION_OPPORTUNITIES.length} scored opportunities across all business segments`
+    );
+
+    // 20.5 Invariant: Product Conversion Registry Completeness (12 Surfaces)
+    const registryKeys = Object.keys(PRODUCT_CONVERSION_REGISTRY);
+    record(
+      'Organic_Acquisition_OS',
+      'Product Conversion Registry Completeness (12 Surfaces)',
+      registryKeys.length === 12 && registryKeys.includes('EMPLOYER') && registryKeys.includes('COLLEGES'),
+      `Verified complete product conversion definitions for all 12 platform surfaces`
+    );
+
+    // 20.6 Invariant: AI CEO Section 61 Structured Growth Report & KPI Hierarchy
+    const report = generatedPlan.growthReport;
+    record(
+      'Organic_Acquisition_OS',
+      'AI CEO Section 61 Structured Growth Report & KPI Hierarchy',
+      report !== undefined &&
+      report.search.impressions > 0 &&
+      report.audiences.jobSeekers > 0 &&
+      report.b2b.colleges.leads > 0 &&
+      report.kpiHierarchyAlert.includes('REVENUE'),
+      `Validated AI CEO Section 61 report format: Search, Audiences, Products, and B2B pipeline`
+    );
+
+    // 20.7 Invariant: Funnel Event Tracking Taxonomy (21 Events Registered)
+    record(
+      'Organic_Acquisition_OS',
+      'Funnel Event Tracking Taxonomy (21 Events Registered)',
+      ALL_ACQUISITION_EVENTS.length === 21 &&
+      ALL_ACQUISITION_EVENTS.includes('ORGANIC_LANDING') &&
+      ALL_ACQUISITION_EVENTS.includes('COLLEGE_LEAD') &&
+      ALL_ACQUISITION_EVENTS.includes('EMPLOYER_SIGNUP'),
+      `Verified complete 21-event acquisition lifecycle event taxonomy from ORGANIC_LANDING to REVENUE`
+    );
+
+    // 20.8 Invariant: Controlled Experimentation Framework with Before/After Deltas
+    record(
+      'Organic_Acquisition_OS',
+      'Controlled Experimentation Framework with Before/After Deltas',
+      INITIAL_EXPERIMENTS.length >= 2 &&
+      INITIAL_EXPERIMENTS.some(e => e.status === 'RUNNING' && e.ctr_after > 0),
+      `Verified active CRO experiments tracking impressions, clicks, CTR delta, and signups lift`
+    );
+
+    // 20.9 Invariant: Admin Route Mounting for Organic Acquisition OS (/admin/seo/acquisition)
+    const hasAcqRoute = adminRoutesCode.includes('/admin/seo/acquisition');
+    record(
+      'Organic_Acquisition_OS',
+      'Admin Route Mounting for Organic Acquisition OS (/admin/seo/acquisition)',
+      hasAcqRoute,
+      'Validated /admin/seo/acquisition is mounted and registered in src/navigation/adminRoutes.tsx'
     );
   } catch (err: any) {
     record('Admin_Security', 'Admin Security Engine Execution', false, `Security test error: ${err.message}`, { severity: 'CRITICAL' });

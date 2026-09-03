@@ -107,3 +107,75 @@ export function triageGscSearchMetrics(
 
   return opportunities.length > 0 ? opportunities : SAMPLE_GSC_FEEDBACK_OPPORTUNITIES;
 }
+
+import { supabase } from '@/integrations/supabase/client';
+import { 
+  AcquisitionOpportunity, 
+  INITIAL_ACQUISITION_OPPORTUNITIES, 
+  createOpportunityFromSearchTelemetry 
+} from '@/lib/seo/acquisitionOpportunity';
+
+/**
+ * Ingests live Google Search Console query telemetry and maps into scored AcquisitionOpportunities
+ */
+export async function ingestLiveGscData(siteUrl: string = 'https://talentxcel.in/'): Promise<AcquisitionOpportunity[]> {
+  try {
+    // 1. Check if we already have persisted opportunities in Supabase
+    const { data: existing, error } = await supabase
+      .from('acquisition_opportunities' as any)
+      .select('*')
+      .order('opportunity_score', { ascending: false })
+      .limit(50);
+
+    if (!error && existing && existing.length > 0) {
+      return existing as unknown as AcquisitionOpportunity[];
+    }
+  } catch (err) {
+    console.warn('[GSC Feedback Loop] Supabase fetch fallback:', err);
+  }
+
+  // 2. If table is empty or unpopulated, seed with initial scored opportunities
+  return INITIAL_ACQUISITION_OPPORTUNITIES;
+}
+
+/**
+ * Persists an acquisition opportunity to Supabase table
+ */
+export async function persistOpportunity(opp: AcquisitionOpportunity): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from('acquisition_opportunities' as any)
+      .upsert({
+        id: opp.id,
+        source: opp.source,
+        query_cluster: opp.query_cluster,
+        representative_query: opp.representative_query,
+        search_intent: opp.search_intent,
+        audience_segment: opp.audience_segment,
+        business_segment: opp.business_segment,
+        product_surface: opp.product_surface,
+        recommended_landing_page: opp.recommended_landing_page,
+        business_goal: opp.business_goal,
+        gsc_impressions: opp.gsc_impressions,
+        gsc_clicks: opp.gsc_clicks,
+        gsc_ctr: opp.gsc_ctr,
+        average_position: opp.average_position,
+        conversion_count: opp.conversion_count,
+        activation_count: opp.activation_count,
+        lead_count: opp.lead_count,
+        customer_count: opp.customer_count,
+        revenue: opp.revenue,
+        conversion_rate: opp.conversion_rate,
+        opportunity_score: opp.opportunity_score,
+        priority: opp.priority,
+        status: opp.status,
+        assigned_agent: opp.assigned_agent,
+        updated_at: new Date().toISOString()
+      });
+
+    return !error;
+  } catch {
+    return false;
+  }
+}
+

@@ -16,10 +16,12 @@ export type AgentId =
   | 'SEO_OPPORTUNITY'       // 3. Programmatic SEO Opportunity Agent
   | 'CONTENT_ENGINE'        // 4. Educational & Career Content Agent
   | 'EMPLOYER_ACQUISITION'  // 5. Employer Multi-Location Acquisition Agent
-  | 'USER_ACQUISITION'      // 6. Visitor-to-Signup User Acquisition Agent
-  | 'CONVERSION_ENGINE'     // 7. Cross-Module Conversion & Activation Agent
-  | 'SOCIAL_DISTRIBUTION'   // 8. External Marketing & Social Distribution Agent
-  | 'JOBS_GROWTH';          // 9. 100K Location Job Inventory & GSC Health Agent
+  | 'COLLEGE_ACQUISITION'   // 6. College Placement & Campus Institutional Agent
+  | 'TRAINING_ACQUISITION'  // 7. Training Company & Vocational Partner Agent
+  | 'USER_ACQUISITION'      // 8. Visitor-to-Signup User Acquisition Agent
+  | 'CONVERSION_ENGINE'     // 9. Cross-Module Conversion & Activation Agent
+  | 'SOCIAL_DISTRIBUTION'   // 10. External Marketing & Social Distribution Agent
+  | 'JOBS_GROWTH';          // 11. 100K Location Job Inventory & GSC Health Agent
 
 export const ALL_AGENT_IDS: AgentId[] = [
   'EXECUTIVE_CEO',
@@ -28,13 +30,15 @@ export const ALL_AGENT_IDS: AgentId[] = [
   'SEO_OPPORTUNITY',
   'CONTENT_ENGINE',
   'EMPLOYER_ACQUISITION',
+  'COLLEGE_ACQUISITION',
+  'TRAINING_ACQUISITION',
   'USER_ACQUISITION',
   'CONVERSION_ENGINE',
   'SOCIAL_DISTRIBUTION',
   'JOBS_GROWTH',
 ];
 
-export const TOTAL_AGENTS_COUNT = ALL_AGENT_IDS.length; // Exactly 10 (1 CEO + 9 Specialists)
+export const TOTAL_AGENTS_COUNT = ALL_AGENT_IDS.length; // Exactly 12 (1 CEO + 11 Specialists)
 
 export type ActionType =
   | 'READ_DATA'                 // Read search, inventory, or analytics data
@@ -94,6 +98,40 @@ export interface AiRecommendation {
   createdAt: string;
 }
 
+export interface AiCeoGrowthReport {
+  search: {
+    impressions: number;
+    clicks: number;
+    ctr: number;
+    averagePosition: number;
+    emergingDemand: string[];
+  };
+  audiences: {
+    jobSeekers: number;
+    students: number;
+    professionals: number;
+    employers: number;
+    companies: number;
+    colleges: number;
+    trainingPartners: number;
+  };
+  acquisition: {
+    signups: number;
+    verification: number;
+    activation: number;
+    leads: number;
+    customers: number;
+  };
+  products: Record<string, { visitors: number; conversions: number; rate: number }>;
+  b2b: {
+    employers: { leads: number; signups: number; jobsPosted: number };
+    companies: { claimed: number; active: number };
+    colleges: { leads: number; onboarded: number; studentsReached: number };
+    training: { leads: number; activePartners: number };
+  };
+  kpiHierarchyAlert: string;
+}
+
 export interface DailyOperatingPlan {
   planId: string;
   generatedAt: string;
@@ -106,6 +144,7 @@ export interface DailyOperatingPlan {
     impactScore: number;
   }>;
   overallTargetNotes: string;
+  growthReport?: AiCeoGrowthReport;
 }
 
 export interface AiOperationAuditEntry {
