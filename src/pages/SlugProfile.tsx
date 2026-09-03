@@ -228,7 +228,36 @@ const SlugProfile = () => {
   }
 
   if (error || !profile) {
-    return <Navigate to="/404" replace />;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50/50 dark:bg-slate-950/40 p-4">
+        <Card className="max-w-md w-full p-8 text-center rounded-2xl border shadow-xs bg-white dark:bg-slate-900 space-y-4">
+          <div className="mx-auto p-4 bg-blue-50 dark:bg-blue-950/60 rounded-full w-fit text-blue-600">
+            <Users className="h-8 w-8" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-foreground">Profile Under Synchronization</h2>
+            <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+              We couldn't locate active credentials for <span className="font-semibold text-foreground">@{username}</span>. Explore our verified talent directory or discover active professionals below.
+            </p>
+          </div>
+          <div className="pt-2 flex flex-col gap-2">
+            <Button 
+              onClick={() => navigate('/network/verified')}
+              className="w-full h-9 text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white rounded-xl"
+            >
+              Browse Verified Directory
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={() => navigate('/network/discover')}
+              className="w-full h-9 text-xs font-semibold rounded-xl"
+            >
+              Discover Professionals
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
   }
 
   const fullTitle = `${profile.full_name} | ${profile.title ?? 'TalentXcel'}`;

@@ -20,6 +20,7 @@ const TXCPricing = lazy(() => import('../pages/TXCPricing'));
 const TXCMining = lazy(() => import('../pages/TXCMining'));
 const SlugProfile = lazy(() => import('../pages/SlugProfile'));
 const ProfileViewersList = lazy(() => import('../pages/profile/ProfileViewersList'));
+import UniversalProfileRouteHandler from '../components/profile/UniversalProfileRouteHandler';
 
 export const profileRoutes = [
   {
@@ -58,7 +59,7 @@ export const profileRoutes = [
   {
     title: "Public Profile by Username",
     to: "/profile/:username",
-    page: <Suspense fallback={null}><UsernameProfile /></Suspense>,
+    page: <UniversalProfileRouteHandler />,
     isPublic: true,
   },
   {
