@@ -60,6 +60,7 @@ const SEOSuite = lazy(() => import('../pages/admin/SEOSuite'));
 const EnterpriseBilling = lazy(() => import('../pages/admin/EnterpriseBilling'));
 const GoogleJobPostingHealth = lazy(() => import('../pages/admin/GoogleJobPostingHealth'));
 const GoogleSearchHealthCenter = lazy(() => import('../pages/admin/GoogleSearchHealthCenter'));
+const AIOrganizationControlCenter = lazy(() => import('../pages/admin/AIOrganizationControlCenter'));
 const EnterpriseClients = lazy(() => import('../pages/admin/EnterpriseClients'));
 const EnterpriseAnalytics = lazy(() => import('../pages/admin/EnterpriseAnalytics'));
 const EnterpriseSolutions = lazy(() => import('../pages/admin/EnterpriseSolutions'));
@@ -618,6 +619,13 @@ export const adminRoutes = [
     to: "/admin/autonomous-os",
     icon: <Bot className="h-4 w-4 text-primary" />,
     page: <Suspense fallback={null}><AutonomousBusinessControlPlane /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "AI Growth Organization",
+    to: "/admin/ai-organization",
+    icon: <Bot className="h-4 w-4 text-purple-400" />,
+    page: <Suspense fallback={null}><AIOrganizationControlCenter /></Suspense>,
     isPublic: true,
   }
 ];

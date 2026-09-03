@@ -99,6 +99,12 @@ import { isIndividualJobUrl } from '../src/services/seo/googleIndexingApi.js';
 import { MAX_URLS_PER_SITEMAP_SHARD } from '../src/services/seo/sitemapShardingService.js';
 import { normalizeAtsLocation } from '../src/services/jobs/atsFeedIngestionService.js';
 import { evaluateMatrixIndexability } from '../src/config/jobs/indexability.js';
+import { TOTAL_AGENTS_COUNT, ALL_AGENT_IDS } from '../src/lib/ai-org/types.js';
+import { getAuthoritativeLifecycleState, setAuthoritativeLifecycleState, AGENT_REGISTRY_DESCRIPTORS } from '../src/lib/ai-org/aiOrganizationState.js';
+import { executeAgentAction } from '../src/lib/ai-org/executionGateway.js';
+import { runExecutiveDirectorCycle } from '../src/lib/ai-org/executiveDirectorAgent.js';
+import { ALL_12_ACQUISITION_SURFACES, resolveCrossModuleFunnel } from '../src/lib/acquisition-os/crossModuleFunnelEngine.js';
+import { SAMPLE_GSC_FEEDBACK_OPPORTUNITIES, triageGscSearchMetrics } from '../src/lib/acquisition-os/gscFeedbackLoop.js';
 
 const SUPABASE_URL = 'https://dthlgsnakhoftinssokm.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
@@ -1960,6 +1966,129 @@ async function runSeoCiGate() {
       'Location Universe Resolver Integrity',
       resolvedIndiaCity?.countryCode === 'in' && resolvedGlobalCity?.countryCode === 'gb',
       `Validated location resolver correctly resolves Indian cities and global international hubs`
+    );
+
+    // --- 18. TALENTXCEL AI GROWTH ORGANIZATION & GLOBAL ACQUISITION OS ---
+    console.log('\n--- 18. AUDITING TALENTXCEL AI GROWTH ORGANIZATION & GLOBAL ACQUISITION OS ---');
+
+    // 18.1 Invariant: 1 Executive AI CEO + 8 Department Specialist Agents (9 Total Agents)
+    record(
+      'AI_Growth_Organization',
+      'Agent Roster Terminology Invariant (1 CEO + 8 Specialists = 9 Total)',
+      TOTAL_AGENTS_COUNT === 9 && ALL_AGENT_IDS.length === 9 && ALL_AGENT_IDS.includes('EXECUTIVE_CEO'),
+      `Verified exact agent taxonomy: 1 Executive AI CEO + 8 Specialist Agents = ${TOTAL_AGENTS_COUNT} Total Agents`
+    );
+
+    // 18.2 Invariant: Server-Authoritative 5-State Organization Lifecycle
+    const validStates = ['OFFLINE', 'STARTING', 'ONLINE', 'PAUSED', 'EMERGENCY_STOP'];
+    const currentOrgState = await getAuthoritativeLifecycleState();
+    record(
+      'AI_Growth_Organization',
+      'Server-Authoritative 5-State Organization Lifecycle',
+      validStates.includes(currentOrgState),
+      `Verified 5-state lifecycle model. Current server-authoritative state: ${currentOrgState}`
+    );
+
+    // 18.3 Invariant: Hard Server-Enforced Master Kill Switch (Offline Blocks Mutations)
+    await setAuthoritativeLifecycleState('OFFLINE', 'CI_Test');
+    const blockedExecution = await executeAgentAction({
+      agentId: 'SEO_OPPORTUNITY',
+      actionType: 'CREATE_SEO_PAGE',
+      targetSurface: 'Jobs Matrix',
+      telemetryTrigger: 'CI Kill Switch Test',
+      executeFn: async () => ({ published: true }),
+    });
+    await setAuthoritativeLifecycleState('ONLINE', 'CI_Test'); // Restore to ONLINE
+    record(
+      'AI_Growth_Organization',
+      'Hard Server-Enforced Master Kill Switch',
+      blockedExecution.status === 'BLOCKED_OFF' && blockedExecution.success === false,
+      'Confirmed Execution Gateway unconditionally halts mutations and returns BLOCKED_OFF when organization is OFFLINE'
+    );
+
+    // 18.4 Invariant: Separation of Recommendations from Mutations (5-Stage Pipeline)
+    const reviewExecution = await executeAgentAction({
+      agentId: 'SOCIAL_DISTRIBUTION',
+      actionType: 'PUBLISH_SOCIAL_POST',
+      targetSurface: 'LinkedIn Channel',
+      telemetryTrigger: 'Salary Milestone Post',
+      executeFn: async () => ({ published: true }),
+    });
+    record(
+      'AI_Growth_Organization',
+      'Separation of Recommendations from Mutations (5-Stage Pipeline)',
+      reviewExecution.status === 'PENDING_REVIEW' && reviewExecution.success === true,
+      'Confirmed actions with policy REVIEW are queued for human approval rather than mutated autonomously'
+    );
+
+    // 18.5 Invariant: Forbidden Actions Hard-Lock (Prohibit Page Deletion & Financial Spend)
+    const deletePageAttempt = await executeAgentAction({
+      agentId: 'CONTENT_ENGINE',
+      actionType: 'DELETE_PAGE',
+      targetSurface: 'Canonical Article',
+      telemetryTrigger: 'CI Forbidden Test',
+      executeFn: async () => ({ deleted: true }),
+    });
+    const spendMoneyAttempt = await executeAgentAction({
+      agentId: 'EMPLOYER_ACQUISITION',
+      actionType: 'SPEND_MONEY',
+      targetSurface: 'Paid Ads',
+      telemetryTrigger: 'CI Forbidden Test',
+      executeFn: async () => ({ spent: 100 }),
+    });
+    record(
+      'AI_Growth_Organization',
+      'Forbidden Actions Hard-Lock (DELETE_PAGE & SPEND_MONEY)',
+      deletePageAttempt.status === 'BLOCKED_PERMISSION' && spendMoneyAttempt.status === 'BLOCKED_PERMISSION',
+      'Confirmed DELETE_PAGE and SPEND_MONEY are permanently hard-locked against AI agents'
+    );
+
+    // 18.6 Invariant: Executive AI CEO Daily Operating Plan Generation
+    const generatedPlan = await runExecutiveDirectorCycle();
+    record(
+      'AI_Growth_Organization',
+      'Executive AI CEO Daily Operating Plan Generation',
+      generatedPlan.priorities.length === 5 && generatedPlan.priorities.every(p => p.delegatedAgentId && p.impactScore > 0),
+      `AI CEO synthesized cross-system telemetry and formulated 5 prioritized strategic mandates (Top: ${generatedPlan.priorities[0].title})`
+    );
+
+    // 18.7 Invariant: Global Acquisition OS: 12 Product Surfaces Registry
+    record(
+      'Global_Acquisition_OS',
+      '12 Product Surfaces Acquisition Registry',
+      ALL_12_ACQUISITION_SURFACES.length === 12 && ALL_12_ACQUISITION_SURFACES.includes('NETWORK') && ALL_12_ACQUISITION_SURFACES.includes('JOBS'),
+      `Verified all 12 major TalentXcel product surfaces are registered in the Global Acquisition OS`
+    );
+
+    // 18.8 Invariant: Cross-Module User Journey Funnel Engine
+    const journeySteps = resolveCrossModuleFunnel('CAREER_TOOLS', { role: 'software-engineer', city: 'bangalore' });
+    record(
+      'Global_Acquisition_OS',
+      'Cross-Module User Journey Funnel Engine',
+      journeySteps.length >= 3 && journeySteps.some(s => s.surfaceId === 'RESUME_BUILDER') && journeySteps.some(s => s.surfaceId === 'JOBS'),
+      `Resolved cross-module progression path: ${journeySteps.map(s => s.surfaceId).join(' -> ')}`
+    );
+
+    // 18.9 Invariant: Closed GSC Demand Feedback Loop Triage
+    const triagedOpportunities = triageGscSearchMetrics([
+      { query: 'react developer jobs bangalore', impressions: 4500, clicks: 80, position: 2.1 },
+      { query: 'fresher data scientist jobs srinagar', impressions: 1200, clicks: 12, position: 14.5 }
+    ]);
+    record(
+      'Global_Acquisition_OS',
+      'Closed GSC Demand Feedback Loop Triage',
+      triagedOpportunities.length >= 2 && triagedOpportunities.some(o => o.feedbackCategory === 'LOW_CTR_HIGH_IMPRESSION'),
+      `Triaged search metrics into prioritized feedback queues: Identified CTR gaps and high-demand zero-page targets`
+    );
+
+    // 18.10 Invariant: Admin Route Mounting for AI Organization (/admin/ai-organization)
+    const adminRoutesCode = readFileSync(resolve('src/navigation/adminRoutes.tsx'), 'utf8');
+    const hasAiOrgRoute = adminRoutesCode.includes('/admin/ai-organization');
+    record(
+      'AI_Growth_Organization',
+      'Admin Route Mounting for AI Organization (/admin/ai-organization)',
+      hasAiOrgRoute,
+      'Validated /admin/ai-organization is mounted and registered in src/navigation/adminRoutes.tsx'
     );
   } catch (err: any) {
     record('Admin_Security', 'Admin Security Engine Execution', false, `Security test error: ${err.message}`, { severity: 'CRITICAL' });
