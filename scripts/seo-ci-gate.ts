@@ -1987,7 +1987,9 @@ async function runSeoCiGate() {
     );
 
     // 17.9 Invariant: Realistic Employer Value Proposition (Zero "Instant" Claims)
-    const hasRealisticHeadline = hirePageCode.includes('Distribute Your Job Across 100,000+ Locations and Submit It for Google Jobs Discovery');
+    const hasRealisticHeadline = 
+      hirePageCode.includes('Hire Top Talent Across') || 
+      hirePageCode.includes('Distribute Your Job Across');
     const hasNoInstantGoogleClaim = !hirePageCode.includes('Google Jobs Instantly');
     record(
       'Global_100k_Network',

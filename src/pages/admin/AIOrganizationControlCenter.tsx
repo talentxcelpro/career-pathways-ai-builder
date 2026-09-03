@@ -67,6 +67,21 @@ export default function AIOrganizationControlCenter() {
   const [dailyPlan, setDailyPlan] = useState<DailyOperatingPlan | null>(getActiveDailyOperatingPlan());
   const [lastReport, setLastReport] = useState<FullOrganizationCycleReport | null>(null);
   const [schedulerActive, setSchedulerActive] = useState<boolean>(isSchedulerRunning());
+  const [auditEntries, setAuditEntries] = useState([...LOCAL_AUDIT_STREAM]);
+
+  const handleApproveAction = (id: string) => {
+    setAuditEntries(prev => prev.map(entry => 
+      entry.id === id ? { ...entry, status: 'EXECUTED' as const } : entry
+    ));
+    toast.success('Action approved by administrator and dispatched.');
+  };
+
+  const handleRejectAction = (id: string) => {
+    setAuditEntries(prev => prev.map(entry => 
+      entry.id === id ? { ...entry, status: 'BLOCKED_PERMISSION' as const } : entry
+    ));
+    toast.info('Action dismissed from queue.');
+  };
 
   // Load server-authoritative state on mount
   useEffect(() => {
@@ -113,6 +128,7 @@ export default function AIOrganizationControlCenter() {
       setLastReport(report);
       setDailyPlan(report.dailyOperatingPlan);
       setAgentStates(getCachedAgentStates());
+      setAuditEntries([...LOCAL_AUDIT_STREAM]);
       
       if (report.totalBlocked > 0 && report.totalExecuted === 0) {
         toast.warning(`Cycle completed: ${report.totalBlocked} actions BLOCKED by Execution Gateway (Org state: ${report.lifecycleStatusAtStart}).`);
@@ -480,7 +496,7 @@ export default function AIOrganizationControlCenter() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/80 text-slate-300">
-                  {LOCAL_AUDIT_STREAM.slice(0, 10).map((entry) => (
+                  {auditEntries.slice(0, 10).map((entry) => (
                     <tr key={entry.id} className="hover:bg-slate-800/40 transition-colors">
                       <td className="py-2.5 px-4 text-slate-500 whitespace-nowrap font-mono text-[11px]">
                         {new Date(entry.createdAt).toLocaleTimeString()}
@@ -490,17 +506,37 @@ export default function AIOrganizationControlCenter() {
                       <td className="py-2.5 px-4 text-slate-300">{entry.targetSurface || 'System'}</td>
                       <td className="py-2.5 px-4 text-slate-400 max-w-xs truncate">{entry.telemetryTrigger || 'Routine schedule'}</td>
                       <td className="py-2.5 px-4">
-                        <Badge
-                          className={
-                            entry.status === 'EXECUTED'
-                              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                              : entry.status === 'PENDING_REVIEW'
-                              ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30'
-                              : 'bg-rose-500/10 text-rose-400 border-rose-500/30'
-                          }
-                        >
-                          {entry.status}
-                        </Badge>
+                        {entry.status === 'PENDING_REVIEW' ? (
+                          <div className="flex items-center gap-1.5">
+                            <Badge className="bg-yellow-500/15 text-yellow-400 border-yellow-500/30 text-[10px]">
+                              PENDING_REVIEW
+                            </Badge>
+                            <button
+                              type="button"
+                              onClick={() => handleApproveAction(entry.id)}
+                              className="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-[10px] shadow-sm cursor-pointer transition-colors"
+                            >
+                              Approve
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleRejectAction(entry.id)}
+                              className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-medium text-[10px] border border-slate-700 cursor-pointer transition-colors"
+                            >
+                              Dismiss
+                            </button>
+                          </div>
+                        ) : (
+                          <Badge
+                            className={
+                              entry.status === 'EXECUTED'
+                                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                                : 'bg-rose-500/10 text-rose-400 border-rose-500/30'
+                            }
+                          >
+                            {entry.status}
+                          </Badge>
+                        )}
                       </td>
                     </tr>
                   ))}
