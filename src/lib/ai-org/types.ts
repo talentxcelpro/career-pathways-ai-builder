@@ -98,6 +98,27 @@ export interface AiRecommendation {
   createdAt: string;
 }
 
+export interface RegionalMarketPlan {
+  market: 'INDIA' | 'UAE' | 'UK' | 'USA' | 'EUROPE' | 'REST_OF_WORLD';
+  marketName: string;
+  strategicFocus: string;
+  growthPriority: 'HIGH' | 'MEDIUM' | 'EMERGING' | 'MAINTENANCE';
+  allocatedAgents: AgentId[];
+  topOpportunityQuery: string;
+  projectedPipelineValue: number;
+  currency: string;
+}
+
+export interface GrowthExpansionOpportunity {
+  rank: number;
+  market: 'INDIA' | 'UAE' | 'UK' | 'USA' | 'EUROPE' | 'REST_OF_WORLD';
+  title: string;
+  targetQuery: string;
+  score: number;
+  valueTier: 'HIGH' | 'MEDIUM' | 'EMERGING';
+  projectedImpact: string;
+}
+
 export interface AiCeoGrowthReport {
   search: {
     impressions: number;
@@ -130,11 +151,20 @@ export interface AiCeoGrowthReport {
     training: { leads: number; activePartners: number };
   };
   kpiHierarchyAlert: string;
+  whereToGrowNext: GrowthExpansionOpportunity[];
+  regionalBreakdown: Record<string, {
+    impressions: number;
+    clicks: number;
+    leads: number;
+    pipeline: number;
+    currency: string;
+  }>;
 }
 
 export interface DailyOperatingPlan {
   planId: string;
   generatedAt: string;
+  globalStrategy: string;
   priorities: Array<{
     rank: number;
     title: string;
@@ -144,6 +174,7 @@ export interface DailyOperatingPlan {
     impactScore: number;
   }>;
   overallTargetNotes: string;
+  regionalPlans?: Record<string, RegionalMarketPlan>;
   growthReport?: AiCeoGrowthReport;
 }
 

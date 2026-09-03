@@ -127,6 +127,22 @@ import {
   INITIAL_ACQUISITION_OPPORTUNITIES 
 } from '../src/lib/seo/acquisitionOpportunity.js';
 import { INITIAL_EXPERIMENTS } from '../src/lib/seo/acquisitionExperimentEngine.js';
+import { 
+  ALL_REGIONAL_MARKETS, 
+  REGIONAL_MARKETS, 
+  RESERVED_ROOT_SLUGS, 
+  isReservedRootSlug 
+} from '../src/lib/seo/regionalTaxonomy.js';
+import { 
+  INDEXABILITY_POLICIES, 
+  evaluateSurfaceIndexability 
+} from '../src/lib/seo/indexabilityPolicy.js';
+import { 
+  resolveGeoEntityFromQuery 
+} from '../src/lib/seo/geoEntityResolver.js';
+import { 
+  mapQueryToRegionalProduct 
+} from '../src/lib/seo/queryAudienceMapper.js';
 
 const SUPABASE_URL = 'https://dthlgsnakhoftinssokm.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
@@ -2378,6 +2394,147 @@ async function runSeoCiGate() {
       'Admin Route Mounting for Organic Acquisition OS (/admin/seo/acquisition)',
       hasAcqRoute,
       'Validated /admin/seo/acquisition is mounted and registered in src/navigation/adminRoutes.tsx'
+    );
+
+    // =========================================================================
+    // SECTION 21: AUDITING TALENTXCEL GLOBAL + REGIONAL ACQUISITION OS (GO-AOS)
+    // =========================================================================
+    console.log('\n--- Auditing Section 21: Global + Regional Acquisition OS (GO-AOS) ---');
+
+    // 21.1 Invariant: 6 Authoritative Regional Markets & Currencies
+    const hasAll6Markets = 
+      ALL_REGIONAL_MARKETS.length === 6 &&
+      REGIONAL_MARKETS.INDIA.defaultCurrency === 'INR' &&
+      REGIONAL_MARKETS.UAE.defaultCurrency === 'AED' &&
+      REGIONAL_MARKETS.UK.defaultCurrency === 'GBP' &&
+      REGIONAL_MARKETS.USA.defaultCurrency === 'USD' &&
+      REGIONAL_MARKETS.EUROPE.defaultCurrency === 'EUR' &&
+      REGIONAL_MARKETS.REST_OF_WORLD.defaultCurrency === 'USD';
+    record(
+      'GO_AOS_Regional',
+      '6 Authoritative Regional Markets & Native Currency Mapping',
+      hasAll6Markets,
+      `Verified 6 strategic markets (INDIA, UAE, UK, USA, EUROPE, REST_OF_WORLD) with native currency bindings`
+    );
+
+    // 21.2 Invariant: Reserved Root Slugs Registry (Collision Defense)
+    const hasReservedSlugs = 
+      isReservedRootSlug('uae') && 
+      isReservedRootSlug('uk') && 
+      isReservedRootSlug('usa') && 
+      isReservedRootSlug('europe') && 
+      isReservedRootSlug('world') && 
+      isReservedRootSlug('jobs') &&
+      !isReservedRootSlug('arshidhussain') &&
+      !isReservedRootSlug('john-doe');
+    record(
+      'GO_AOS_Regional',
+      'Reserved Root Slugs Registry (Collision Defense)',
+      hasReservedSlugs,
+      'Validated that regional prefixes and core surface slugs are reserved and prevent profile handle collisions'
+    );
+
+    // 21.3 Invariant: Configurable Indexability Policy per Surface
+    const jobsPol = INDEXABILITY_POLICIES['JOBS'];
+    const resumePol = INDEXABILITY_POLICIES['RESUME_BUILDER'];
+    const compPol = INDEXABILITY_POLICIES['COMPANIES'];
+    const evalLowJobs = evaluateSurfaceIndexability({
+      surface: 'JOBS',
+      activeInventoryCount: 1, // Below 3
+      wordCount: 500,
+      hasVerifiedEntity: true,
+      monthlyImpressions: 200,
+      qualityScore: 80,
+    });
+    const evalValidResume = evaluateSurfaceIndexability({
+      surface: 'RESUME_BUILDER',
+      activeInventoryCount: 0, // Utility tool requires 0 listings
+      wordCount: 950,
+      hasVerifiedEntity: false,
+      monthlyImpressions: 300,
+      qualityScore: 85,
+    });
+    record(
+      'GO_AOS_Regional',
+      'Configurable Indexability Policy per Surface (Zero Rigid Rules)',
+      jobsPol.inventoryThreshold === 3 &&
+      resumePol.inventoryThreshold === 0 &&
+      compPol.inventoryThreshold === 1 &&
+      !evalLowJobs.isIndexable &&
+      evalValidResume.isIndexable,
+      'Verified surface-specific indexability policies (Jobs: 3, Resume: 0, Companies: 1)'
+    );
+
+    // 21.4 Invariant: Dynamic Canonical Geo Entity Resolver (Zero Hardcoded Cities)
+    const dubaiGeo = resolveGeoEntityFromQuery('hire software engineers in dubai');
+    const londonGeo = resolveGeoEntityFromQuery('top tech colleges in london');
+    const nycGeo = resolveGeoEntityFromQuery('senior devops engineer new york');
+    const bangaloreGeo = resolveGeoEntityFromQuery('ats resume scanner bangalore');
+    const validGeoResolver = 
+      dubaiGeo.market === 'UAE' && dubaiGeo.cityName?.toLowerCase() === 'dubai' && dubaiGeo.currency === 'AED' &&
+      londonGeo.market === 'UK' && londonGeo.cityName?.toLowerCase() === 'london' && londonGeo.currency === 'GBP' &&
+      nycGeo.market === 'USA' && nycGeo.cityName?.toLowerCase() === 'new york' &&
+      bangaloreGeo.market === 'INDIA' && bangaloreGeo.cityName?.toLowerCase() === 'bangalore';
+    record(
+      'GO_AOS_Regional',
+      'Dynamic Canonical Geo Entity Resolver (Zero Hardcoded Cities)',
+      validGeoResolver,
+      `Resolved Dubai (${dubaiGeo.currency}) -> UAE, London (${londonGeo.currency}) -> UK, NYC -> USA, Bangalore -> INDIA`
+    );
+
+    // 21.5 Invariant: Multi-Dimensional Acquisition Mapping & Content Gap Check
+    const uaeMapping = mapQueryToRegionalProduct('hire software engineers in dubai');
+    const inMapping = mapQueryToRegionalProduct('ats resume checker for freshers india');
+    const validMapping = 
+      uaeMapping.productSurface === 'EMPLOYER' &&
+      uaeMapping.acquisitionType === 'ORGANIC_B2B' &&
+      uaeMapping.recommendedLandingPage === '/uae/employers' &&
+      inMapping.productSurface === 'RESUME_BUILDER' &&
+      inMapping.acquisitionType === 'ORGANIC_B2C' &&
+      inMapping.recommendedLandingPage === '/resume/ats-scanner' &&
+      uaeMapping.inferences.geo.provenance.length > 0;
+    record(
+      'GO_AOS_Regional',
+      'Multi-Dimensional Acquisition Mapping & Content Gap Check',
+      validMapping,
+      'Validated end-to-end mapping from raw query to geo, audience, acquisition type, and regional destination'
+    );
+
+    // 21.6 Invariant: AI CEO Two-Level Planning Model & Growth Rankings
+    const twoLevelPlan = await runExecutiveDirectorCycle();
+    const hasTwoLevelPlan = 
+      Boolean(twoLevelPlan.globalStrategy) &&
+      twoLevelPlan.regionalPlans?.UAE?.growthPriority === 'HIGH' &&
+      twoLevelPlan.regionalPlans?.INDIA?.growthPriority === 'HIGH' &&
+      (twoLevelPlan.growthReport?.whereToGrowNext?.length ?? 0) >= 5 &&
+      twoLevelPlan.growthReport?.whereToGrowNext?.[0]?.market === 'UAE';
+    record(
+      'GO_AOS_Regional',
+      'AI CEO Two-Level Planning Model & Growth Rankings',
+      hasTwoLevelPlan,
+      'Validated AI CEO two-level planning model: Global Strategy + Regional Market Allocations + Top Growth Rankings'
+    );
+
+    // 21.7 Invariant: Regional Route Precedence over /:username in App.tsx
+    const appTsxSrc = readFileSync(resolve('src/App.tsx'), 'utf8');
+    const uaeIdx = appTsxSrc.indexOf('path="/uae"');
+    const usernameIdx = appTsxSrc.indexOf('path="/:username"');
+    record(
+      'GO_AOS_Regional',
+      'Regional Route Precedence over /:username in App.tsx',
+      uaeIdx > 0 && usernameIdx > 0 && uaeIdx < usernameIdx,
+      'Confirmed regional market paths (/uae, /uk, etc.) are declared strictly before the /:username catchall'
+    );
+
+    // 21.8 Invariant: Strict SEO Schema Compliance on Regional Hubs (Zero JobPosting)
+    const regionalHubSrc = readFileSync(resolve('src/pages/RegionalMarketHub.tsx'), 'utf8');
+    const hasCollectionPage = regionalHubSrc.includes('"@type": "CollectionPage"');
+    const hasNoJobPostingOnHub = !regionalHubSrc.includes('"@type": "JobPosting"');
+    record(
+      'GO_AOS_Regional',
+      'Strict SEO Schema Compliance on Regional Hubs (Zero JobPosting)',
+      hasCollectionPage && hasNoJobPostingOnHub,
+      'Confirmed RegionalMarketHub emits CollectionPage and strictly omits JobPosting schema'
     );
   } catch (err: any) {
     record('Admin_Security', 'Admin Security Engine Execution', false, `Security test error: ${err.message}`, { severity: 'CRITICAL' });

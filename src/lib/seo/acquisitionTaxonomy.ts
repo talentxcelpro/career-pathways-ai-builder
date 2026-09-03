@@ -3,6 +3,7 @@
 // Master Taxonomy: Search Intent, Audience Segments, Business Segments & Product Conversion Mappings
 
 import { AcquisitionSurfaceId } from '@/lib/acquisition-os/types';
+export * from './regionalTaxonomy';
 
 // ==========================================
 // 1. SEARCH INTENT TAXONOMY (Configurable 20 Classes)

@@ -98,6 +98,7 @@ const UnifiedDashboard                = lazy(() => import('./pages/UnifiedDashbo
 const MobileReelsPage                 = lazy(() => import('./pages/MobileReelsPage'));
 const MobilePassport                  = lazy(() => import('./pages/mobile/MobilePassport').then(m => ({ default: m.MobilePassport })));
 const MobileJobs                      = lazy(() => import('./pages/mobile/MobileJobs'));
+const RegionalMarketHub               = lazy(() => import('./pages/RegionalMarketHub'));
 const UserManagement                  = lazy(() => import('@/pages/admin/UserManagement'));
 const TalentDatabase                  = lazy(() => import('@/pages/admin/TalentDatabase'));
 const SecurityCenter                  = lazy(() => import('@/pages/admin/SecurityCenter'));
@@ -606,6 +607,18 @@ const App = () => {
                                       <ProtectedRoute>{route.element}</ProtectedRoute>
                                     } />
                                   ))}
+
+                                 {/* ── Regional Market Acquisition Hubs (/uae, /uk, /usa, /europe, /world) ── */}
+                                 <Route path="/uae" element={<Suspense fallback={<div>Loading...</div>}><RegionalMarketHub /></Suspense>} />
+                                 <Route path="/uae/:subSurface" element={<Suspense fallback={<div>Loading...</div>}><RegionalMarketHub /></Suspense>} />
+                                 <Route path="/uk" element={<Suspense fallback={<div>Loading...</div>}><RegionalMarketHub /></Suspense>} />
+                                 <Route path="/uk/:subSurface" element={<Suspense fallback={<div>Loading...</div>}><RegionalMarketHub /></Suspense>} />
+                                 <Route path="/usa" element={<Suspense fallback={<div>Loading...</div>}><RegionalMarketHub /></Suspense>} />
+                                 <Route path="/usa/:subSurface" element={<Suspense fallback={<div>Loading...</div>}><RegionalMarketHub /></Suspense>} />
+                                 <Route path="/europe" element={<Suspense fallback={<div>Loading...</div>}><RegionalMarketHub /></Suspense>} />
+                                 <Route path="/europe/:subSurface" element={<Suspense fallback={<div>Loading...</div>}><RegionalMarketHub /></Suspense>} />
+                                 <Route path="/world" element={<Suspense fallback={<div>Loading...</div>}><RegionalMarketHub /></Suspense>} />
+                                 <Route path="/world/:subSurface" element={<Suspense fallback={<div>Loading...</div>}><RegionalMarketHub /></Suspense>} />
 
                                 <Route path="/:username" element={<UniversalProfileRouteHandler />} />
 
