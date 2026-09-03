@@ -32,11 +32,21 @@ export function getStandardAvatarUrl(profile: ProfileLike | null | undefined): s
                  profile.profile_photo_url || 
                  null;
 
-  if (rawUrl && rawUrl.includes('chatr.chat')) {
+  if (!rawUrl || typeof rawUrl !== 'string' || !rawUrl.trim()) {
+    return null;
+  }
+
+  // Reject query-string only corruptions (e.g. "?v=1780633599") or non-image URLs
+  const trimmed = rawUrl.trim();
+  if (trimmed.startsWith('?') || (!trimmed.startsWith('http') && !trimmed.startsWith('/') && !trimmed.startsWith('data:'))) {
+    return null;
+  }
+
+  if (trimmed.includes('chatr.chat')) {
     return '/assets/avatar-placeholder.png';
   }
 
-  return rawUrl;
+  return trimmed;
 }
 
 /**

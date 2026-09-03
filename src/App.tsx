@@ -26,6 +26,7 @@ import { initializeProductionOptimizations } from '@/utils/productionOptimizer';
 import { initializePerformanceOptimizations } from '@/utils/performanceOptimizations';
 import { initializeJobsOptimizations } from '@/utils/jobsPerformanceOptimizer';
 import { ReactErrorBoundary } from './components/error/ReactErrorBoundary';
+import { PlatformGlobalAutoRefresher } from "@/components/common/PlatformGlobalAutoRefresher";
 import { AsyncGoogleOneTap } from '@/components/performance/AsyncGoogleOneTap';
 import { InstallPrompt, InstallButton } from '@/components/pwa/InstallPrompt';
 import { IOSInstallPrompt } from '@/components/pwa/IOSInstallPrompt';
@@ -200,15 +201,17 @@ import { communicationRoutes } from "./navigation/communicationRoutes";
 import { claim1Routes } from "./navigation/claim1Routes";
 import { JobsPage } from "@/components/performance/LazyRoutes";
 
-// Create query client optimized for performance and SEO
+// Create query client configured with 3-second platform-wide auto-refresh
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes for regular queries
-      retry: 1, // Reduced retries for better performance
-      refetchOnWindowFocus: false,
-      gcTime: 15 * 60 * 1000, // Reduced to 15 minutes for memory efficiency
-      networkMode: 'online', // Only fetch when online
+      staleTime: 2500, // 2.5 seconds - keeps cache fresh
+      refetchInterval: 3000, // 3-second auto refresher across the entire platform
+      refetchIntervalInBackground: false,
+      refetchOnWindowFocus: true,
+      retry: 1,
+      gcTime: 15 * 60 * 1000,
+      networkMode: 'online',
     },
     mutations: {
       retry: 1,
@@ -295,9 +298,10 @@ const App = () => {
               <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>}>
                   <SafeRealtimeProvider showToasts={false}>
                      <CopilotProvider>
-                       <TooltipProvider>
-                         <PhaseInitializer />
-                         <AsyncGoogleOneTap />
+                        <TooltipProvider>
+                          <PlatformGlobalAutoRefresher />
+                          <PhaseInitializer />
+                          <AsyncGoogleOneTap />
                          <div className="min-h-screen flex flex-col">
                         <Navbar />
                         <main className="flex-1">

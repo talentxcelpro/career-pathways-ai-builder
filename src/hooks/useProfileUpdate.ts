@@ -101,12 +101,29 @@ export function useProfileUpdate() {
         throw error;
       }
 
-      // If no result, profile doesn't exist - this shouldn't happen for banner updates
-      if (!result) {
-        throw new Error('Profile not found - please refresh and try again');
+      if (result) {
+        return result;
       }
 
-      return result;
+      // If no existing profile, create one for new users
+      const fallbackUsername = (data.full_name?.toLowerCase().replace(/[^a-z0-9]/g, '') || 'user') + '_' + user.id.slice(0, 6);
+      const { data: inserted, error: insertError } = await supabase
+        .from('profiles')
+        .insert({
+          id: user.id,
+          username: fallbackUsername,
+          email: user.email || data.email || null,
+          ...updateData
+        })
+        .select()
+        .maybeSingle();
+
+      if (insertError) {
+        console.error('Profile insert fallback error:', insertError);
+        throw insertError;
+      }
+
+      return inserted;
     },
     onSuccess: async (data, variables) => {
       // Invalidate all profile-related queries
@@ -157,8 +174,25 @@ export function useProfileUpdate() {
       );
 
       if (error) throw error;
-      if (!data) throw new Error('Profile not found - please refresh and try again');
-      return data;
+      if (data) return data;
+
+      // If no row existed, insert for new users
+      const { data: inserted, error: insertError } = await supabase
+        .from('profiles')
+        .insert({
+          id: user.id,
+          username: `user_${user.id.slice(0, 8)}`,
+          email: user.email || null,
+          full_name: user.user_metadata?.full_name || null,
+          profile_picture_url: profilePictureUrl,
+          profile_photo_url: profilePictureUrl,
+          updated_at: new Date().toISOString()
+        })
+        .select()
+        .maybeSingle();
+
+      if (insertError) throw insertError;
+      return inserted;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });

@@ -41,16 +41,29 @@ export const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
     setPreviewUrl(localPreviewUrl);
 
     try {
-      // Upload file to storage with timestamped name to bypass CDN/browser cache
+      // Upload file to storage
       const url = await uploadFile(file);
-      if (url) {
-        // Cache-bust the public URL so the new image renders immediately
-        const bustedUrl = `${url}${url.includes('?') ? '&' : '?'}v=${Date.now()}`;
-        // Update profile picture in database
-        await updateProfilePicture.mutateAsync(bustedUrl);
-        setPreviewUrl(bustedUrl);
-        // Call the callback for local state update
-        onImageChange(bustedUrl);
+      if (url && (url.startsWith('http') || url.startsWith('/'))) {
+        // Cache-bust the public URL cleanly so the fresh image displays immediately
+        const sep = url.includes('?') ? '&' : '?';
+        const finalUrl = `${url}${sep}t=${Date.now()}`;
+
+        // 1. Immediately update preview
+        setPreviewUrl(finalUrl);
+
+        // 2. Immediately notify parent form with the valid permanent storage URL
+        onImageChange(finalUrl);
+
+        // 3. Persist to database in background
+        try {
+          await updateProfilePicture.mutateAsync(finalUrl);
+        } catch (dbErr) {
+          console.warn('Background profile picture DB sync notice:', dbErr);
+        }
+
+        toast.success('Profile picture uploaded successfully');
+      } else {
+        throw new Error('Could not obtain valid image URL from storage');
       }
     } catch (error: any) {
       console.error('Upload failed:', error);

@@ -104,6 +104,11 @@ const ProfileEdit = () => {
   // Update form when profile data loads
   useEffect(() => {
     if (profile) {
+      let rawPic = profile.profile_picture_url || profile.profile_photo_url || '';
+      if (rawPic.startsWith('?') || (!rawPic.startsWith('http') && !rawPic.startsWith('/') && !rawPic.startsWith('data:'))) {
+        rawPic = '';
+      }
+
       setFormData({
         full_name: profile.full_name || '',
         title: profile.title || '',
@@ -117,7 +122,7 @@ const ProfileEdit = () => {
         industry: profile.industry || '',
         current_company: profile.current_company || '',
         experience_years: profile.experience_years || 0,
-        profile_picture_url: profile.profile_picture_url || profile.profile_photo_url || '',
+        profile_picture_url: rawPic,
         social_links: (profile.social_links && typeof profile.social_links === 'object' && !Array.isArray(profile.social_links)) 
           ? profile.social_links as Record<string, string> 
           : {},
@@ -138,8 +143,33 @@ const ProfileEdit = () => {
           location: exp.location || ''
         }))
       });
+
+      // Auto-heal missing or corrupted avatar from storage if user uploaded one previously
+      if (!rawPic && currentUser?.id) {
+        supabase.storage.from('avatars').list(currentUser.id).then(({ data: files }) => {
+          if (files && files.length > 0) {
+            const sorted = files.sort((a, b) => new Date(b.created_at || b.updated_at || 0).getTime() - new Date(a.created_at || a.updated_at || 0).getTime());
+            const newest = sorted[0];
+            if (newest) {
+              const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(`${currentUser.id}/${newest.name}`);
+              if (publicUrl) {
+                setFormData(prev => ({
+                  ...prev,
+                  profile_picture_url: publicUrl
+                }));
+                // Heal in database silently
+                supabase.from('profiles').update({
+                  profile_picture_url: publicUrl,
+                  profile_photo_url: publicUrl,
+                  updated_at: new Date().toISOString()
+                }).eq('id', currentUser.id);
+              }
+            }
+          }
+        }).catch(err => console.warn('Avatar auto-heal check notice:', err));
+      }
     }
-  }, [profile, currentUser?.email]);
+  }, [profile, currentUser?.id, currentUser?.email]);
 
   // Save profile mutation
   const saveProfileMutation = useMutation({
@@ -158,6 +188,25 @@ const ProfileEdit = () => {
         location: exp.location || ''
       }));
 
+      // Validate and clean picture URL
+      let cleanPictureUrl = (data.profile_picture_url && (data.profile_picture_url.startsWith('http') || data.profile_picture_url.startsWith('/') || data.profile_picture_url.startsWith('data:')))
+        ? data.profile_picture_url.trim()
+        : null;
+
+      // If still missing, check storage for any existing uploaded avatar
+      if (!cleanPictureUrl && activeUser.id) {
+        try {
+          const { data: files } = await supabase.storage.from('avatars').list(activeUser.id);
+          if (files && files.length > 0) {
+            const sorted = files.sort((a, b) => new Date(b.created_at || b.updated_at || 0).getTime() - new Date(a.created_at || a.updated_at || 0).getTime());
+            if (sorted[0]) {
+              const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(`${activeUser.id}/${sorted[0].name}`);
+              if (publicUrl) cleanPictureUrl = publicUrl;
+            }
+          }
+        } catch (_) { /* ignore */ }
+      }
+
       // Build safe update payload - NEVER include 'id' in update body to avoid FK validation errors
       const updatePayload: Record<string, any> = {
         full_name: data.full_name?.trim() || null,
@@ -171,8 +220,8 @@ const ProfileEdit = () => {
         industry: data.industry?.trim() || null,
         current_company: data.current_company?.trim() || null,
         experience_years: typeof data.experience_years === 'number' ? data.experience_years : Number(data.experience_years) || 0,
-        profile_picture_url: data.profile_picture_url?.trim() || null,
-        profile_photo_url: data.profile_picture_url?.trim() || null,
+        profile_picture_url: cleanPictureUrl,
+        profile_photo_url: cleanPictureUrl,
         social_links: data.social_links && typeof data.social_links === 'object' ? data.social_links : {},
         profile_visibility: data.profile_visibility || 'public',
         allow_profile_sharing: data.allow_profile_sharing ?? true,
@@ -198,6 +247,18 @@ const ProfileEdit = () => {
         .maybeSingle();
 
       if (updateError) {
+        // If unique constraint violation on custom_profile_url, retry without custom_profile_url
+        if (updateError.code === '23505' && updatePayload.custom_profile_url) {
+          delete updatePayload.custom_profile_url;
+          const { data: retryUpdated, error: retryError } = await supabase
+            .from('profiles')
+            .update(updatePayload)
+            .eq('id', activeUser.id)
+            .select()
+            .maybeSingle();
+          if (retryError) throw retryError;
+          return retryUpdated;
+        }
         console.error('Profile update failed:', updateError);
         throw updateError;
       }
@@ -206,17 +267,22 @@ const ProfileEdit = () => {
         return updated;
       }
 
-      // If no existing profile, create one with required fields
+      // If no existing profile, create one with required fields (for new users)
+      const fallbackUsername = (data.full_name?.toLowerCase().replace(/[^a-z0-9]/g, '') || 'user') + '_' + activeUser.id.slice(0, 6);
       let finalUsername = profile?.username as string | undefined;
       if (!finalUsername) {
-        const sourceName = data.full_name || activeUser.user_metadata?.full_name || activeUser.email?.split('@')[0] || 'user';
-        const { data: genUsername } = await supabase.rpc('generate_username_from_name', { full_name: sourceName });
-        finalUsername = (genUsername as unknown as string) || `user${activeUser.id.slice(0, 8)}`;
+        try {
+          const sourceName = data.full_name || activeUser.user_metadata?.full_name || activeUser.email?.split('@')[0] || 'user';
+          const { data: genUsername } = await supabase.rpc('generate_username_from_name', { full_name: sourceName });
+          finalUsername = (genUsername as unknown as string) || fallbackUsername;
+        } catch (_) {
+          finalUsername = fallbackUsername;
+        }
       }
 
       const insertData = {
         id: activeUser.id,
-        username: finalUsername,
+        username: finalUsername || fallbackUsername,
         ...updatePayload
       };
 
@@ -227,6 +293,18 @@ const ProfileEdit = () => {
         .single();
 
       if (insertError) {
+        // If username or custom_profile_url collided, append random suffix and retry
+        if (insertError.code === '23505') {
+          insertData.username = `${fallbackUsername}_${Math.floor(Math.random() * 1000)}`;
+          delete insertData.custom_profile_url;
+          const { data: retryInserted, error: retryInsertErr } = await supabase
+            .from('profiles')
+            .insert(insertData)
+            .select()
+            .single();
+          if (retryInsertErr) throw retryInsertErr;
+          return retryInserted;
+        }
         console.error('Profile insert failed:', insertError);
         throw insertError;
       }
