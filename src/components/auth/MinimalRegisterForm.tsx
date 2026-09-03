@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Eye, EyeOff, Mail, Lock, User, Loader2, Check, Shield, Zap, Users, Target } from 'lucide-react';
 import { SocialLogin } from './SocialLogin';
+import { generatePersonProfileSlug, ensureUserProfileSlug } from '@/utils/userProfileSlug';
 
 // Restored full register form functionality
 export const MinimalRegisterForm = () => {
@@ -44,12 +45,17 @@ export const MinimalRegisterForm = () => {
     setLoading(true);
 
     try {
+      const profileSlug = generatePersonProfileSlug(fullName, email);
+
       const { data, error } = await supabase.auth.signUp({
         email: email.trim(),
         password,
         options: {
           data: {
             full_name: fullName.trim(),
+            slug: profileSlug,
+            custom_profile_url: profileSlug,
+            username: profileSlug.replace(/-/g, '')
           },
           emailRedirectTo: `${window.location.origin}/`
         }
@@ -61,6 +67,8 @@ export const MinimalRegisterForm = () => {
       }
 
       if (data.user) {
+        // Ensure profile row has the clean first-middle-last / first-last slug immediately
+        await ensureUserProfileSlug(data.user.id, fullName.trim(), email.trim());
         toast.success('Account created successfully! 🎉');
         navigate('/network');
       }

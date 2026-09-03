@@ -53,11 +53,16 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
 
       toast.success('Welcome to TalentXcel!');
 
-      // Immediate blazing fast redirect
-      const searchParams = new URLSearchParams(window.location.search);
-      const redirectParam = searchParams.get('redirect') || searchParams.get('returnUrl');
-      const targetUrl = redirectParam || localStorage.getItem('subdomain_redirect') || '/network';
-      localStorage.removeItem('subdomain_redirect');
+      // Ensure user profile slug is properly set to first-middle-last or first-last
+      if (data.user) {
+        try {
+          const { ensureUserProfileSlug } = await import('@/utils/userProfileSlug');
+          const metaName = data.user.user_metadata?.full_name || data.user.user_metadata?.name;
+          await ensureUserProfileSlug(data.user.id, metaName, data.user.email);
+        } catch (e) {
+          console.warn('Silent slug ensure error:', e);
+        }
+      }
 
       window.location.replace(targetUrl);
     } catch (error: any) {

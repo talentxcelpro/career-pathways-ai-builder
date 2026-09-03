@@ -37,11 +37,33 @@ export function useSlugProfile(slug?: string) {
       const cleanSlug = slug.startsWith('@') ? slug.slice(1).trim() : slug.trim();
       if (!cleanSlug) return null;
       
-      // Perform case-insensitive query matching on slug OR username
+      // Perform multi-format query matching:
+      // 1. Direct slug (e.g. arshid-hussain-wani, priyanka-dhangar)
+      // 2. Custom profile URL
+      // 3. Username
+      // 4. Username without hyphens (e.g. priyankadhangar)
+      // 5. Full name with spaces (e.g. Priyanka Dhangar)
+      // 6. UUID ID match
+      const nameQuery = cleanSlug.replace(/-/g, ' ');
+      const compactUsername = cleanSlug.replace(/-/g, '');
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(cleanSlug);
+
+      const conditions = [
+        `slug.ilike.${cleanSlug}`,
+        `custom_profile_url.ilike.${cleanSlug}`,
+        `username.ilike.${cleanSlug}`,
+        `username.ilike.${compactUsername}`,
+        `full_name.ilike.${nameQuery}`
+      ];
+
+      if (isUUID) {
+        conditions.push(`id.eq.${cleanSlug}`);
+      }
+
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .or(`slug.ilike.${cleanSlug},username.ilike.${cleanSlug}`)
+        .or(conditions.join(','))
         .limit(1)
         .maybeSingle();
 

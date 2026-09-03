@@ -96,7 +96,17 @@ const SlugProfile = () => {
     }
   }, [trackElementRef, profile?.id]);
 
-  const profileSlug = (profile as any)?.username || (profile as any)?.slug || username;
+  const profileSlug = (profile as any)?.slug || (profile as any)?.custom_profile_url || (profile as any)?.username || username;
+  
+  // Auto-heal own profile slug if missing
+  React.useEffect(() => {
+    if (isOwnProfile && profile?.id && !(profile as any)?.slug) {
+      import('@/utils/userProfileSlug').then(({ ensureUserProfileSlug }) => {
+        ensureUserProfileSlug(profile.id, profile.full_name, profile.email);
+      });
+    }
+  }, [isOwnProfile, profile?.id, (profile as any)?.slug]);
+
   const indexabilityDecision = evaluateProfileIndexability({
     id: profile?.id || '',
     fullName: profile?.full_name,
@@ -111,7 +121,7 @@ const SlugProfile = () => {
   });
   const isIndexable = indexabilityDecision.isIndexable;
 
-  const canonicalUrl = `https://talentxcel.in/${profileSlug}`;
+  const canonicalUrl = `https://talentxcel.in/profile/${profileSlug}`;
 
   // Set up SEO
   useSEO({

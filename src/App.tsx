@@ -430,8 +430,8 @@ const App = () => {
                                   );
                                 })}
 
-                                {/* Legacy profile route -> redirects to canonical /:username */}
-                                <Route path="/profile/:username" element={<LegacyProfileRedirect />} />
+                                 {/* First-class Public Profile route (e.g. /profile/first-middle-last or /profile/first-last) */}
+                                 <Route path="/profile/:username" element={<UniversalProfileRouteHandler />} />
 
                                 {/* Legacy UUID-based profile redirects */}
                                 <Route path="/network/people/:id" element={<ProfileUrlRedirect />} />
