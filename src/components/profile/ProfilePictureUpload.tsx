@@ -24,8 +24,8 @@ export const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
   const [previewUrl, setPreviewUrl] = useState(currentImageUrl || '');
   const { uploadFile, uploading } = useFileUpload({
     bucket: 'avatars',
-    maxSize: 5 * 1024 * 1024,
-    allowedTypes: ['image/jpeg', 'image/png', 'image/webp']
+    maxSize: 10 * 1024 * 1024, // 10MB
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml', 'image/*']
   });
   const { updateProfilePicture } = useProfileUpdate();
 
@@ -52,10 +52,10 @@ export const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
         // Call the callback for local state update
         onImageChange(bustedUrl);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Upload failed:', error);
       setPreviewUrl(currentImageUrl || '');
-      toast.error('Failed to upload profile picture');
+      toast.error(error?.message || 'Failed to upload profile picture. Please try again.');
     } finally {
       URL.revokeObjectURL(localPreviewUrl);
 

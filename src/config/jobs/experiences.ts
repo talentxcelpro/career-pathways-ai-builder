@@ -41,6 +41,7 @@ export const JOB_EXPERIENCES: JobExperienceConfig[] = [
     careerAdvice: 'Emphasize distributed system design, cross-functional collaboration, performance optimization, and mentorship of junior engineers.'
   }
 ];
+export const EXPERIENCE_LEVELS = JOB_EXPERIENCES;
 
 const EXPERIENCE_MAP = new Map<string, JobExperienceConfig>();
 

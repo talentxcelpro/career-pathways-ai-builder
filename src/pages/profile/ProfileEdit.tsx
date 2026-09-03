@@ -43,19 +43,18 @@ const ProfileEdit = () => {
     allowedTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
   });
   const resolveAuthenticatedUser = async () => {
-    const tryGet = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      return session?.user ?? null;
-    };
-    let user = await tryGet();
+    if (currentUser?.id) return currentUser;
+    const { data: { user } } = await supabase.auth.getUser();
     if (user) return user;
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) return session.user;
     try { await refreshSession(); } catch (_) { /* noop */ }
-    for (let i = 0; i < 10; i++) {
-      user = await tryGet();
-      if (user) return user;
-      await new Promise(r => setTimeout(r, 500));
+    for (let i = 0; i < 5; i++) {
+      const { data: { session: s } } = await supabase.auth.getSession();
+      if (s?.user) return s.user;
+      await new Promise(r => setTimeout(r, 400));
     }
-    throw new Error('Your session could not be restored. Please sign in again.');
+    throw new Error('Your session could not be verified. Please sign in again.');
   };
 
   // Get profile data
@@ -110,7 +109,7 @@ const ProfileEdit = () => {
         title: profile.title || '',
         headline: profile.headline || '',
         location: profile.location || '',
-        email: profile.email || '',
+        email: profile.email || currentUser?.email || '',
         phone: profile.phone || '',
         website: profile.website || '',
         about: profile.about || '',
@@ -118,7 +117,7 @@ const ProfileEdit = () => {
         industry: profile.industry || '',
         current_company: profile.current_company || '',
         experience_years: profile.experience_years || 0,
-        profile_picture_url: profile.profile_picture_url || '',
+        profile_picture_url: profile.profile_picture_url || profile.profile_photo_url || '',
         social_links: (profile.social_links && typeof profile.social_links === 'object' && !Array.isArray(profile.social_links)) 
           ? profile.social_links as Record<string, string> 
           : {},
@@ -126,34 +125,82 @@ const ProfileEdit = () => {
           ? profile.profile_visibility 
           : 'public',
         allow_profile_sharing: profile.allow_profile_sharing ?? true,
-        custom_profile_url: profile.custom_profile_url || generateCustomProfileUrl(profile.full_name || ''),
+        custom_profile_url: profile.custom_profile_url || '',
         resume_url: profile.resume_url || '',
-        work_experiences: (profile.work_experiences as WorkExperience[]) || []
+        work_experiences: ((profile.work_experiences as any[]) || []).map(exp => ({
+          id: exp.id || Date.now().toString(),
+          company: exp.company || '',
+          position: exp.position || '',
+          startDate: exp.startDate || '',
+          endDate: (exp.isCurrent || exp.is_current) ? '' : (exp.endDate || ''),
+          isCurrent: Boolean(exp.isCurrent ?? exp.is_current ?? false),
+          description: exp.description || '',
+          location: exp.location || ''
+        }))
       });
     }
-  }, [profile]);
+  }, [profile, currentUser?.email]);
 
   // Save profile mutation
   const saveProfileMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
       const activeUser = await resolveAuthenticatedUser();
 
-      const updateData = {
-        id: activeUser.id,
-        ...data,
-        username: profile?.username || `user${activeUser.id.slice(0, 8)}`,
+      // Normalize work experiences
+      const normalizedWorkExperiences = (data.work_experiences || []).map(exp => ({
+        id: exp.id || Date.now().toString(),
+        company: exp.company || '',
+        position: exp.position || '',
+        startDate: exp.startDate || '',
+        endDate: exp.isCurrent ? '' : (exp.endDate || ''),
+        isCurrent: Boolean(exp.isCurrent),
+        description: exp.description || '',
+        location: exp.location || ''
+      }));
+
+      // Build safe update payload - NEVER include 'id' in update body to avoid FK validation errors
+      const updatePayload: Record<string, any> = {
+        full_name: data.full_name?.trim() || null,
+        title: data.title?.trim() || null,
+        headline: data.headline?.trim() || null,
+        location: data.location?.trim() || null,
+        phone: data.phone?.trim() || null,
+        website: data.website?.trim() || null,
+        about: data.about?.trim() || null,
+        skills: Array.isArray(data.skills) ? data.skills : [],
+        industry: data.industry?.trim() || null,
+        current_company: data.current_company?.trim() || null,
+        experience_years: typeof data.experience_years === 'number' ? data.experience_years : Number(data.experience_years) || 0,
+        profile_picture_url: data.profile_picture_url?.trim() || null,
+        profile_photo_url: data.profile_picture_url?.trim() || null,
+        social_links: data.social_links && typeof data.social_links === 'object' ? data.social_links : {},
+        profile_visibility: data.profile_visibility || 'public',
+        allow_profile_sharing: data.allow_profile_sharing ?? true,
+        resume_url: data.resume_url?.trim() || null,
+        work_experiences: normalizedWorkExperiences,
         updated_at: new Date().toISOString()
       };
+
+      if (data.email && data.email.trim()) {
+        updatePayload.email = data.email.trim();
+      }
+
+      if (data.custom_profile_url && data.custom_profile_url.trim()) {
+        updatePayload.custom_profile_url = data.custom_profile_url.trim();
+      }
 
       // Try to update existing profile first
       const { data: updated, error: updateError } = await supabase
         .from('profiles')
-        .update(updateData)
+        .update(updatePayload)
         .eq('id', activeUser.id)
         .select()
         .maybeSingle();
 
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error('Profile update failed:', updateError);
+        throw updateError;
+      }
 
       if (updated) {
         return updated;
@@ -170,8 +217,7 @@ const ProfileEdit = () => {
       const insertData = {
         id: activeUser.id,
         username: finalUsername,
-        ...data,
-        updated_at: new Date().toISOString()
+        ...updatePayload
       };
 
       const { data: inserted, error: insertError } = await supabase
@@ -180,12 +226,15 @@ const ProfileEdit = () => {
         .select()
         .single();
 
-      if (insertError) throw insertError;
+      if (insertError) {
+        console.error('Profile insert failed:', insertError);
+        throw insertError;
+      }
       return inserted;
-
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profile', currentUser?.id] });
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: ['currentUser'] });
       toast({
         title: "Profile Updated",
         description: "Your profile has been successfully updated.",

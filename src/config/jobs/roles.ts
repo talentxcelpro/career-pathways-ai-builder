@@ -486,6 +486,7 @@ export const JOB_ROLES: JobRoleConfig[] = [
 ];
 
 export const TOTAL_ROLES_COUNT = JOB_ROLES.length;
+export const HIGH_DEMAND_ROLES = JOB_ROLES;
 
 const ROLE_SLUG_MAP = new Map<string, JobRoleConfig>();
 const ROLE_SYNONYM_MAP = new Map<string, JobRoleConfig>();
