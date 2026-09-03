@@ -90,6 +90,15 @@ export function computeProfileQualityScore(
     activityScore + 
     identityVerifiedScore;
 
+  // Minimum mandatory identity fields safeguard:
+  // Must have: non-empty full name (>= 3 chars) AND at least a headline (>= 4 chars) OR about (>= 10 chars)
+  const hasMinimumIdentityFields = 
+    Boolean(profile.fullName && profile.fullName.trim().length >= 3) &&
+    Boolean(
+      (profile.headline && profile.headline.trim().length >= 4) ||
+      (profile.about && profile.about.trim().length >= 10)
+    );
+
   return {
     nameScore,
     headlineScore,
@@ -101,7 +110,8 @@ export function computeProfileQualityScore(
     identityVerifiedScore,
     totalScore,
     thresholdRequired: threshold,
-    isQualityPass: totalScore >= threshold,
+    hasMinimumIdentityFields,
+    isQualityPass: totalScore >= threshold && hasMinimumIdentityFields,
   };
 }
 
@@ -153,8 +163,12 @@ export function evaluateProfileIndexability(
     };
   }
 
-  // 3. Public but below quality threshold: NOINDEX, FOLLOW (protects domain reputation)
+  // 3. Public but below quality threshold or missing mandatory identity fields: NOINDEX, FOLLOW
   if (!quality.isQualityPass) {
+    const reasonText = !quality.hasMinimumIdentityFields
+      ? `Profile lacks mandatory minimum identity fields (requires full name and headline/about) despite score (${quality.totalScore}/100). Excluded from XML sitemaps.`
+      : `Profile completeness score (${quality.totalScore}/100) is below threshold (${threshold}). Excluded from XML sitemaps to prevent thin profile penalties.`;
+
     return {
       isIndexable: false,
       entityStatus: 'ACTIVE',
@@ -162,7 +176,7 @@ export function evaluateProfileIndexability(
       robotsDirective: 'noindex, follow',
       eligibleForSitemap: false,
       qualityScoreBreakdown: quality,
-      reason: `Profile completeness score (${quality.totalScore}/100) is below threshold (${threshold}). Excluded from XML sitemaps to prevent thin profile penalties.`,
+      reason: reasonText,
     };
   }
 

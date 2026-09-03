@@ -9,26 +9,57 @@ import type { IndexingQueueItem, IndexingApiAction, GoogleIndexingBatchResult } 
 const DAILY_QUOTA_LIMIT = 200; // Standard GCP quota for urlNotifications
 const JOB_DETAIL_URL_PATTERN = /^https?:\/\/[^\/]+\/jobs\/[a-zA-Z0-9_-]{3,}$/;
 
+export const INDEXING_API_RESTRICTION_POLICY = {
+  allowedUrlType: 'JOB_POSTING_ONLY',
+  disallowedUrlTypes: [
+    'PROFILES',
+    'COMPANIES',
+    'COLLEGES',
+    'NETWORK',
+    'REGIONAL_HUBS',
+    'TOOLS',
+    'RESUME',
+    'RANKINGS',
+    'CLAIM1'
+  ],
+  http200Meaning: 'PUBLISH_NOTIFICATION_RECEIVED_NOT_GUARANTEED_INDEXED',
+  officialDiscoveryMethodForOtherEntities: 'XML_SITEMAP_AND_ORGANIC_CRAWL',
+} as const;
+
 /**
- * Asserts that a URL is an individual canonical job page
- * Rejects discovery hubs, category pages, /hire, /jobs listing, etc.
+ * Asserts that a URL is an individual canonical job page with JobPosting schema
+ * Strictly rejects profiles, company pages, colleges, network, regional hubs, and tools
  */
 export function isIndividualJobUrl(url: string): boolean {
   if (!url) return false;
   
   // Clean URL
-  const cleanUrl = url.split('?')[0].split('#')[0].trim();
+  const cleanUrl = url.split('?')[0].split('#')[0].trim().toLowerCase();
   
-  // Explicit rejections
+  // Explicit rejections of all non-job surfaces
   if (
+    cleanUrl.includes('/profile/') ||
+    cleanUrl.includes('/@') ||
+    cleanUrl.includes('/companies') ||
+    cleanUrl.includes('/company/') ||
+    cleanUrl.includes('/network') ||
+    cleanUrl.includes('/colleges') ||
+    cleanUrl.includes('/learning') ||
+    cleanUrl.includes('/rankings') ||
+    cleanUrl.includes('/claim1') ||
+    cleanUrl.includes('/tools') ||
+    cleanUrl.includes('/resume') ||
+    cleanUrl.includes('/hire') ||
+    cleanUrl.includes('/uae') ||
+    cleanUrl.includes('/uk') ||
+    cleanUrl.includes('/usa') ||
+    cleanUrl.includes('/europe') ||
+    cleanUrl.includes('/world') ||
     cleanUrl.endsWith('/jobs') ||
     cleanUrl.endsWith('/jobs/') ||
     cleanUrl.includes('/jobs/category/') ||
     cleanUrl.includes('/jobs/software-engineer/') ||
-    cleanUrl.includes('/jobs/freshers/') ||
-    cleanUrl.includes('/hire') ||
-    cleanUrl.includes('/colleges') ||
-    cleanUrl.includes('/learning')
+    cleanUrl.includes('/jobs/freshers/')
   ) {
     return false;
   }

@@ -31,6 +31,14 @@ export type IndexabilityStatus =
   | 'DISCOVERY_OBSERVED' // Verified appearing in Google Search or AI Overview
   | 'REMOVAL_PENDING';   // Queued for de-indexing due to private/closed status
 
+export type GoogleDiscoveryStatus =
+  | 'UNKNOWN'
+  | 'SITEMAP_SUBMITTED'
+  | 'CRAWLED'
+  | 'INDEXED'
+  | 'NOT_INDEXED'
+  | 'REMOVED';
+
 export type GraphRelationshipType =
   | 'WORKS_AT'           // Person works at Company
   | 'AUTHORED'           // Person authored Post
@@ -48,6 +56,10 @@ export type RelationshipProvenance =
   | 'USER_AUTHORED'      // Created directly in public user post
   | 'SYSTEM_DERIVED';    // Computed via deterministic matching
 
+export type SearchPresenceStatus =
+  | 'UNKNOWN'
+  | 'OBSERVED_IN_SEARCH';
+
 export interface ProfessionalEntityNode {
   id: string;
   sourceTable: string;
@@ -57,6 +69,8 @@ export interface ProfessionalEntityNode {
   title: string;
   entityStatus: EntityLifecycleStatus;
   indexabilityStatus: IndexabilityStatus;
+  discoveryStatus?: GoogleDiscoveryStatus;
+  searchPresence?: SearchPresenceStatus;
   qualityScore: number; // 0 - 100
   gscImpressions: number;
   gscClicks: number;
@@ -92,6 +106,7 @@ export interface ProfileQualityScoreBreakdown {
   identityVerifiedScore: number; // max 5
   totalScore: number;          // max 100
   thresholdRequired: number;   // default 50
+  hasMinimumIdentityFields: boolean;
   isQualityPass: boolean;
 }
 

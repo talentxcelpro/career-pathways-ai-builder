@@ -95,7 +95,7 @@ import { JOB_EXPERIENCES } from '../src/config/jobs/experiences.js';
 import { resolveMatrixParams } from '../src/config/jobs/matrixResolver.js';
 import { GLOBAL_COUNTRIES } from '../src/config/jobs/countriesData.js';
 import { resolveGlobalLocation } from '../src/config/jobs/locationResolver.js';
-import { isIndividualJobUrl } from '../src/services/seo/googleIndexingApi.js';
+import { isIndividualJobUrl, INDEXING_API_RESTRICTION_POLICY } from '../src/services/seo/googleIndexingApi.js';
 import { MAX_URLS_PER_SITEMAP_SHARD } from '../src/services/seo/sitemapShardingService.js';
 import { normalizeAtsLocation } from '../src/services/jobs/atsFeedIngestionService.js';
 import { evaluateMatrixIndexability } from '../src/config/jobs/indexability.js';
@@ -2535,6 +2535,39 @@ async function runSeoCiGate() {
       'Strict SEO Schema Compliance on Regional Hubs (Zero JobPosting)',
       hasCollectionPage && hasNoJobPostingOnHub,
       'Confirmed RegionalMarketHub emits CollectionPage and strictly omits JobPosting schema'
+    );
+
+    // 21.9 Invariant: Strict Google Indexing API Boundary (JobPosting Only, Zero Non-Job Submissions)
+    const isJobPostingOnly = INDEXING_API_RESTRICTION_POLICY.allowedUrlType === 'JOB_POSTING_ONLY';
+    const rejectsCompanies = !isIndividualJobUrl('https://talentxcel.in/companies');
+    const rejectsNetwork = !isIndividualJobUrl('https://talentxcel.in/network');
+    const rejectsColleges = !isIndividualJobUrl('https://talentxcel.in/colleges');
+    const rejectsProfiles = !isIndividualJobUrl('https://talentxcel.in/profile/arshid-hussain-wani');
+    const rejectsRegional = !isIndividualJobUrl('https://talentxcel.in/uae');
+    const acceptsValidJob = isIndividualJobUrl('https://talentxcel.in/jobs/senior-react-engineer-101');
+    record(
+      'GO_AOS_Regional',
+      'Strict Google Indexing API Boundary (JobPosting Only, Zero Non-Job Submissions)',
+      isJobPostingOnly && rejectsCompanies && rejectsNetwork && rejectsColleges && rejectsProfiles && rejectsRegional && acceptsValidJob,
+      'Validated Google Indexing API strictly accepts individual canonical job URLs and rejects all non-job entities'
+    );
+
+    // 21.10 Invariant: Mandatory Identity Safeguard on Profile Quality Scoring
+    const anonymousProfile = evaluateProfileIndexability({
+      id: 'anon_test_user',
+      fullName: '', // Lacks mandatory minimum name
+      skills: ['TypeScript', 'React', 'NodeJS'],
+      experiences: [{ company: 'TechCorp' }, { company: 'StartupLab' }],
+      postsCount: 15,
+      isVerified: true,
+      isPrivate: false,
+    });
+    record(
+      'GO_AOS_Regional',
+      'Mandatory Identity Safeguard on Profile Quality Scoring',
+      anonymousProfile.isIndexable === false &&
+      anonymousProfile.qualityScoreBreakdown.hasMinimumIdentityFields === false,
+      'Verified that a profile lacking mandatory identity fields cannot achieve indexability despite numeric score'
     );
   } catch (err: any) {
     record('Admin_Security', 'Admin Security Engine Execution', false, `Security test error: ${err.message}`, { severity: 'CRITICAL' });
