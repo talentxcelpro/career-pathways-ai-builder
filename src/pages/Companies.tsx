@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,6 +10,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Helmet } from 'react-helmet-async';
 import { getGoogleCompanyLogo } from '@/services/companyLogoService';
+import { CompanyLogoSlot } from '@/components/companies/CompanyLogoSlot';
 
 interface RealCompany {
   id: string;
@@ -39,7 +40,7 @@ const PLATFORM_REGISTERED_EMPLOYERS: Omit<RealCompany, 'open_jobs_count'>[] = [
     size_range: '50-200 employees',
     founded_year: 2024,
     website_url: 'https://chatr.chat',
-    logo_url: 'https://www.google.com/s2/favicons?domain=chatr.chat&sz=128',
+    logo_url: 'https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chatr.chat&size=128',
     is_verified: true,
     search_keyword: 'Chatr'
   },
@@ -53,7 +54,7 @@ const PLATFORM_REGISTERED_EMPLOYERS: Omit<RealCompany, 'open_jobs_count'>[] = [
     size_range: '500-1000 employees',
     founded_year: 2012,
     website_url: 'https://savantis.com',
-    logo_url: 'https://www.google.com/s2/favicons?domain=savantis.com&sz=128',
+    logo_url: 'https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://savantis.com&size=128',
     is_verified: true,
     search_keyword: 'Savantis'
   },
@@ -67,7 +68,7 @@ const PLATFORM_REGISTERED_EMPLOYERS: Omit<RealCompany, 'open_jobs_count'>[] = [
     size_range: '50-200 employees',
     founded_year: 2023,
     website_url: 'https://talentxcel.in/services',
-    logo_url: 'https://www.google.com/s2/favicons?domain=talentxcel.in&sz=128',
+    logo_url: 'https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://talentxcel.in&size=128',
     is_verified: true,
     search_keyword: 'TalentXcel'
   },
@@ -81,7 +82,7 @@ const PLATFORM_REGISTERED_EMPLOYERS: Omit<RealCompany, 'open_jobs_count'>[] = [
     size_range: '100-500 employees',
     founded_year: 2023,
     website_url: 'https://talentxcel.in',
-    logo_url: 'https://www.google.com/s2/favicons?domain=talentxcel.in&sz=128',
+    logo_url: 'https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://talentxcel.in&size=128',
     is_verified: true,
     search_keyword: 'TalentXcel'
   }
@@ -311,16 +312,12 @@ export const Companies: React.FC = () => {
                     <div>
                       {/* Gradient Header with Real Google Favicon Logo */}
                       <div className="h-20 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-3 flex items-start justify-between">
-                        <div className="w-12 h-12 rounded-xl bg-white dark:bg-slate-900 border-2 border-white shadow-md p-1.5 flex items-center justify-center">
-                          <img 
-                            src={logoSrc} 
-                            alt={company.name} 
-                            className="w-full h-full object-contain"
-                            onError={(e) => {
-                              (e.target as HTMLElement).style.display = 'none';
-                            }}
-                          />
-                        </div>
+                        <CompanyLogoSlot
+                          companyId={company.id}
+                          companyName={company.name}
+                          websiteUrl={company.website_url}
+                          logoUrl={company.logo_url}
+                        />
 
                         <Button 
                           variant="ghost" 
