@@ -83,6 +83,7 @@ export const ExecutiveMessenger: React.FC = () => {
   const [isCallOpen, setIsCallOpen] = useState(false);
   const [activeCallType, setActiveCallType] = useState<'audio' | 'video'>('video');
   const [incomingCallData, setIncomingCallData] = useState<any>(null);
+  const [activeCallId, setActiveCallId] = useState<string | null>(null);
 
   // 1. Fetch Current Logged In User
   useEffect(() => {
@@ -245,10 +246,12 @@ export const ExecutiveMessenger: React.FC = () => {
       .on('broadcast', { event: 'CLIENT_CALL_INVITE' }, (payload: any) => {
         const callData = payload.payload;
         if (callData && callData.targetUserId === currentUserId) {
+          const cId = callData.callId || `call_${Date.now()}`;
+          setActiveCallId(cId);
           setIncomingCallData(callData);
           setActiveCallType(callData.callType || 'video');
           setIsCallOpen(true);
-          toast.info(`Incoming ${callData.callType || 'HD'} call from ${callData.callerName}`);
+          toast.info(`Incoming ${callData.callType === 'audio' ? 'Voice' : 'HD Video'} call from ${callData.callerName}`);
         }
       })
       .subscribe();
@@ -334,7 +337,11 @@ export const ExecutiveMessenger: React.FC = () => {
       const lastMsg = allMessages[allMessages.length - 1]?.content || 'Let us connect regarding career opportunities.';
       const res = await generateGeminiSmartReply(lastMsg, replyType);
       setMessageInput(res.reply);
-      toast.success("TalentXcel Copilot drafted your message!");
+      toast.success(`Copilot drafted: ${replyType}`);
+      setTimeout(() => {
+        const textarea = document.querySelector('textarea[placeholder="Type your message..."]') as HTMLTextAreaElement;
+        textarea?.focus();
+      }, 50);
     } catch (err) {
       toast.error("Failed to generate AI response");
     } finally {
@@ -364,6 +371,8 @@ export const ExecutiveMessenger: React.FC = () => {
   const startCall = (type: 'audio' | 'video') => {
     if (!activeOtherId) return;
     
+    const callId = `call_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+    setActiveCallId(callId);
     setActiveCallType(type);
     setIncomingCallData(null);
     setIsCallOpen(true);
@@ -373,6 +382,7 @@ export const ExecutiveMessenger: React.FC = () => {
       type: 'broadcast',
       event: 'CLIENT_CALL_INVITE',
       payload: {
+        callId,
         callerId: currentUserId,
         callerName: myDisplayName,
         callerAvatar: myAvatar,
@@ -409,7 +419,10 @@ export const ExecutiveMessenger: React.FC = () => {
         onClose={() => {
           setIsCallOpen(false);
           setIncomingCallData(null);
+          setActiveCallId(null);
         }}
+        callId={incomingCallData?.callId || activeCallId || undefined}
+        currentUserId={currentUserId}
         targetUserId={incomingCallData ? incomingCallData.callerId : activeOtherId}
         targetName={incomingCallData ? incomingCallData.callerName : partnerName}
         targetAvatar={incomingCallData ? incomingCallData.callerAvatar : partnerAvatar}
@@ -661,7 +674,7 @@ export const ExecutiveMessenger: React.FC = () => {
             </span>
 
             <button
-              onClick={() => handleGenerateAiReply('Schedule Interview')}
+              onClick={() => handleGenerateAiReply('Schedule Meeting')}
               disabled={isGeneratingAi}
               className="text-[10px] font-bold px-2.5 py-1 rounded-xl bg-white dark:bg-card border border-purple-200 text-purple-700 hover:bg-purple-50 transition-colors shadow-2xs"
             >
@@ -677,7 +690,7 @@ export const ExecutiveMessenger: React.FC = () => {
             </button>
 
             <button
-              onClick={() => handleGenerateAiReply('Follow-up Inquiry')}
+              onClick={() => handleGenerateAiReply('Follow-Up Inquiry')}
               disabled={isGeneratingAi}
               className="text-[10px] font-bold px-2.5 py-1 rounded-xl bg-white dark:bg-card border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors shadow-2xs"
             >

@@ -48,20 +48,89 @@ export async function generateTalentXcelPost(topic: string, tone: string = 'Thou
 export const generateGeminiPost = generateTalentXcelPost;
 
 // 2. 🪄 TalentXcel AI Smart Reply & Comment Generator
+export function getSmartCopilotReply(postContent: string, replyType: string): string {
+  const normType = (replyType || '').toLowerCase();
+  const trimmed = (postContent || '').trim().toLowerCase();
+
+  if (normType.includes('schedule') || normType.includes('meeting') || normType.includes('interview')) {
+    const schedulingOptions = [
+      "Hi! I'd like to schedule a quick 15–20 minute sync to connect and discuss next steps. What time works best for you this week?",
+      "Hello! Would you have 15 minutes available later this week for a brief call? Let me know what days/times suit your schedule.",
+      "Hi, thanks for connecting! I'd love to set up a quick meeting to explore opportunities and synergies. When would you be free to chat?"
+    ];
+    return schedulingOptions[Math.floor(Math.random() * schedulingOptions.length)];
+  }
+
+  if (normType.includes('proposal') || normType.includes('accept')) {
+    const proposalOptions = [
+      "Thank you for sharing the proposal! I have reviewed the details and I'm delighted to accept and move forward. Let's align on kickoff timing.",
+      "Everything looks great and aligns with our goals. I'm pleased to accept the proposal—looking forward to collaborating with you!",
+      "Thanks for sending over the proposal details. We are happy to proceed! Let me know the immediate next steps to get started."
+    ];
+    return proposalOptions[Math.floor(Math.random() * proposalOptions.length)];
+  }
+
+  if (normType.includes('follow') || normType.includes('inquiry')) {
+    const followUpOptions = [
+      "Hi, just following up on our previous conversation to see if you've had a chance to review the details. Looking forward to your thoughts!",
+      "Hello! Checking in to see if you have any questions or feedback on what we discussed. Happy to provide any additional info whenever convenient.",
+      "Hi there, wanted to quickly follow up and see how things are progressing on your end. Let me know if you'd like to reconnect soon!"
+    ];
+    return followUpOptions[Math.floor(Math.random() * followUpOptions.length)];
+  }
+
+  if (normType.includes('congratulat')) {
+    return "Congratulations on this incredible achievement! Wishing you continued success and impact ahead. 🎉";
+  }
+
+  if (trimmed.includes('how are you') || trimmed.includes('how r u')) {
+    return "I'm doing well, thank you! How are things going on your end?";
+  }
+
+  if (trimmed.includes('hi') || trimmed.includes('hello') || trimmed.includes('hey')) {
+    return "Hello! Great to connect with you. How can I help you today?";
+  }
+
+  if (trimmed.includes('thank')) {
+    return "You're very welcome! Looking forward to staying in touch.";
+  }
+
+  return "Thank you for getting in touch! I appreciate your message and would love to explore how we can collaborate.";
+}
+
 export async function generateTalentXcelSmartReply(postContent: string, replyType: string): Promise<TalentXcelReplyResult> {
+  const localSmart = getSmartCopilotReply(postContent, replyType);
+
+  // If it's a specific messenger action, deliver instant high-context reply
+  const normType = (replyType || '').toLowerCase();
+  if (
+    normType.includes('schedule') || 
+    normType.includes('meeting') || 
+    normType.includes('interview') || 
+    normType.includes('proposal') || 
+    normType.includes('accept') || 
+    normType.includes('follow') || 
+    normType.includes('inquiry')
+  ) {
+    return { reply: localSmart };
+  }
+
   try {
     const { data, error } = await supabase.functions.invoke('gemini-ai', {
       body: { action: 'smart_reply', postContent, replyType }
     });
 
-    if (error || !data?.data) throw error || new Error('No response');
+    if (error || !data?.data?.reply) throw error || new Error('No response');
+    
+    // Discard canned static placeholder if edge function returned it
+    if (data.data.reply.includes('Great perspective! Appreciate you sharing these valuable leadership insights')) {
+      return { reply: localSmart };
+    }
+
     return data.data;
   } catch (err) {
     console.warn('TalentXcel smart reply fallback engaged:', err);
-    if (replyType.toLowerCase().includes('congratulat')) {
-      return { reply: 'Congratulations on this outstanding achievement! Wishing you continued success ahead. 🎉' };
-    }
-    return { reply: 'Great perspective! Appreciate you sharing these valuable leadership insights.' };
+    return { reply: localSmart };
   }
 }
 export const generateGeminiSmartReply = generateTalentXcelSmartReply;

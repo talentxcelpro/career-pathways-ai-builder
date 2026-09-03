@@ -144,12 +144,19 @@ function getFallbackResponse(action: string, topic?: string, tone?: string, post
       hashtags: ["#Leadership", "#CareerGrowth", "#Innovation", "#TalentXcel"]
     };
   } else if (action === "smart_reply") {
-    if (replyType?.includes("Congratulate")) {
+    const norm = (replyType || "").toLowerCase();
+    if (norm.includes("schedule") || norm.includes("meeting") || norm.includes("interview")) {
+      return { reply: "Hi! I'd like to schedule a quick 15-20 minute sync to connect and discuss next steps. What time works best for you this week?" };
+    } else if (norm.includes("proposal") || norm.includes("accept")) {
+      return { reply: "Thank you for sharing the proposal! I have reviewed the details and I'm delighted to accept and move forward. Let's align on kickoff timing." };
+    } else if (norm.includes("follow") || norm.includes("inquiry")) {
+      return { reply: "Hi, just following up on our previous conversation to see if you've had a chance to review the details. Looking forward to your thoughts!" };
+    } else if (norm.includes("congratulat")) {
       return { reply: "Congratulations on this incredible milestone! Wishing you continued success and impact ahead. 🎉" };
-    } else if (replyType?.includes("strategy")) {
+    } else if (norm.includes("strategy")) {
       return { reply: "Great insight! How are you seeing this strategy scale across international teams in APAC?" };
     }
-    return { reply: "Fantastic perspective! Appreciate you sharing these valuable takeaways with the community." };
+    return { reply: "Thank you for getting in touch! I appreciate your message and would love to explore how we can collaborate." };
   } else if (action === "passport_assistant") {
     return {
       summary: "Results-driven executive with proven expertise in business transformation, cross-functional leadership, and market expansion.",
