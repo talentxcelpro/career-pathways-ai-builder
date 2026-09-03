@@ -22,10 +22,12 @@ import {
   ExternalLink,
   ShieldCheck,
   Wand2,
-  X
+  X,
+  Calendar as CalendarIcon
 } from 'lucide-react';
 import { generateGeminiSmartReply } from '@/utils/geminiAi';
 import { ExecutiveCallModal } from '@/components/network/ExecutiveCallModal';
+import { ScheduleMeetingModal, ScheduledMeetingData } from '@/components/network/ScheduleMeetingModal';
 
 interface Message {
   id: string;
@@ -84,6 +86,7 @@ export const ExecutiveMessenger: React.FC = () => {
   const [activeCallType, setActiveCallType] = useState<'audio' | 'video'>('video');
   const [incomingCallData, setIncomingCallData] = useState<any>(null);
   const [activeCallId, setActiveCallId] = useState<string | null>(null);
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
 
   // 1. Fetch Current Logged In User
   useEffect(() => {
@@ -349,6 +352,50 @@ export const ExecutiveMessenger: React.FC = () => {
     }
   };
 
+  // 7b. Schedule Meeting and Download Calendar Invite Handlers
+  const handleScheduleMeeting = (meeting: ScheduledMeetingData) => {
+    if (!selectedConversationId) return;
+
+    const formattedDate = new Date(meeting.date).toLocaleDateString(undefined, {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+
+    const inviteText = `📅 MEETING INVITATION: ${meeting.title}\n🗓️ Date: ${formattedDate}\n🕒 Time: ${meeting.time} (${meeting.duration})\n📹 Format: ${meeting.type === 'video' ? 'TalentXcel HD Video Call' : 'HD Voice Call'}\n💬 Agenda: ${meeting.note || 'Career & Opportunity Discussion'}`;
+
+    sendMessageMutation.mutate({ text: inviteText });
+    toast.success(`Meeting invitation sent to ${partnerName}!`);
+  };
+
+  const handleDownloadIcs = (content: string) => {
+    const lines = content.split('\n');
+    const title = lines[0]?.replace('📅 MEETING INVITATION:', '').trim() || 'TalentXcel Executive Meeting';
+    
+    const icsContent = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//TalentXcel//Executive Meeting//EN',
+      'BEGIN:VEVENT',
+      `SUMMARY:${title}`,
+      `DESCRIPTION:${content.replace(/\n/g, '\\n')}`,
+      `STATUS:CONFIRMED`,
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ].join('\r\n');
+
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'talentxcel-meeting.ics');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success('Calendar invitation (.ics) downloaded');
+  };
+
   // 8. File Upload Handler
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -429,6 +476,16 @@ export const ExecutiveMessenger: React.FC = () => {
         targetTitle={incomingCallData ? incomingCallData.callerTitle : partnerTitle}
         callType={activeCallType}
         isIncoming={!!incomingCallData}
+      />
+
+      {/* Schedule Meeting Modal Component */}
+      <ScheduleMeetingModal
+        isOpen={isScheduleModalOpen}
+        onClose={() => setIsScheduleModalOpen(false)}
+        partnerName={partnerName}
+        partnerAvatar={partnerAvatar}
+        partnerTitle={partnerTitle}
+        onSchedule={handleScheduleMeeting}
       />
 
       {/* ============================================================================ */}
@@ -652,7 +709,40 @@ export const ExecutiveMessenger: React.FC = () => {
                         </div>
                       )}
 
-                      <p className="leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                      {msg.content?.includes('MEETING INVITATION') ? (
+                        <div className={`p-3 rounded-2xl border space-y-2.5 my-1 ${
+                          isMe 
+                            ? 'bg-blue-700/60 border-blue-400/40 text-white' 
+                            : 'bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/40 dark:to-indigo-950/40 border-blue-200 dark:border-blue-800 text-foreground'
+                        }`}>
+                          <div className="flex items-center gap-1.5 text-xs font-extrabold text-blue-600 dark:text-blue-300">
+                            <CalendarIcon className="h-4 w-4 text-blue-500" />
+                            <span>Scheduled Executive Meeting</span>
+                          </div>
+                          <p className="leading-relaxed whitespace-pre-wrap text-xs font-semibold">{msg.content}</p>
+                          <div className="pt-2 flex flex-wrap gap-2 border-t border-slate-200/40 dark:border-white/10">
+                            <Button
+                              size="sm"
+                              onClick={() => startCall(msg.content.includes('Voice') ? 'audio' : 'video')}
+                              className="h-7 px-3 text-[11px] font-extrabold bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl flex items-center gap-1 shadow-sm"
+                            >
+                              <Video className="h-3.5 w-3.5" />
+                              Join Meeting Room
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleDownloadIcs(msg.content)}
+                              className="h-7 px-3 text-[11px] font-bold rounded-xl flex items-center gap-1 bg-white/60 dark:bg-card/60"
+                            >
+                              <CalendarIcon className="h-3.5 w-3.5" />
+                              Add to Calendar
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                      )}
 
                       <div className={`flex items-center justify-end gap-1 text-[9px] ${isMe ? 'text-blue-100' : 'text-muted-foreground'}`}>
                         <span>{new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
@@ -674,8 +764,7 @@ export const ExecutiveMessenger: React.FC = () => {
             </span>
 
             <button
-              onClick={() => handleGenerateAiReply('Schedule Meeting')}
-              disabled={isGeneratingAi}
+              onClick={() => setIsScheduleModalOpen(true)}
               className="text-[10px] font-bold px-2.5 py-1 rounded-xl bg-white dark:bg-card border border-purple-200 text-purple-700 hover:bg-purple-50 transition-colors shadow-2xs"
             >
               📅 Schedule Meeting
@@ -715,8 +804,12 @@ export const ExecutiveMessenger: React.FC = () => {
             
             <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*,application/pdf" className="hidden" />
 
-            <Button variant="ghost" size="sm" onClick={() => fileInputRef.current?.click()} className="rounded-xl h-9 w-9 p-0 text-muted-foreground">
+            <Button variant="ghost" size="sm" onClick={() => fileInputRef.current?.click()} className="rounded-xl h-9 w-9 p-0 text-muted-foreground hover:text-foreground" title="Attach file or photo">
               <Paperclip className="h-4 w-4" />
+            </Button>
+
+            <Button variant="ghost" size="sm" onClick={() => setIsScheduleModalOpen(true)} className="rounded-xl h-9 w-9 p-0 text-muted-foreground hover:text-blue-600" title="Schedule Meeting">
+              <CalendarIcon className="h-4 w-4" />
             </Button>
 
             <Textarea

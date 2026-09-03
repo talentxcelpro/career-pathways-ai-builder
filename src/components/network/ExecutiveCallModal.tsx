@@ -38,7 +38,8 @@ const RTC_CONFIG: RTCConfiguration = {
     { urls: 'stun:stun1.l.google.com:19302' },
     { urls: 'stun:stun2.l.google.com:19302' },
     { urls: 'stun:stun3.l.google.com:19302' }
-  ]
+  ],
+  iceCandidatePoolSize: 10
 };
 
 export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
@@ -62,17 +63,22 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(callType === 'audio');
   const [callDuration, setCallDuration] = useState(0);
-  const [hasRemoteStream, setHasRemoteStream] = useState(false);
+  const [hasRemoteVideo, setHasRemoteVideo] = useState(false);
+  const [hasRemoteAudio, setHasRemoteAudio] = useState(false);
 
+  // Video and Stream Refs (Single persistent instances)
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
+  const remoteStreamRef = useRef<MediaStream | null>(null);
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
+
+  // Audio Context & Ringtone Refs
   const audioCtxRef = useRef<AudioContext | null>(null);
   const ringtoneIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const pendingIceCandidates = useRef<RTCIceCandidateInit[]>([]);
 
-  // 1. Call timer (only increments when call is actually connected)
+  // 1. Call Timer
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (callState === 'connected') {
@@ -89,7 +95,7 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // 2. Play ringtone during ringing state
+  // 2. Audible Ringtone Engine (Guaranteed browser playback with auto-resume)
   const stopRingtone = useCallback(() => {
     if (ringtoneIntervalRef.current) {
       clearInterval(ringtoneIntervalRef.current);
@@ -101,27 +107,61 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
     }
   }, []);
 
-  const playChime = useCallback(() => {
+  const playRingToneBurst = useCallback(async () => {
     try {
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
       if (!AudioContextClass) return;
-      
-      const audioCtx = new AudioContextClass();
-      audioCtxRef.current = audioCtx;
-      
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(isIncoming ? 523.25 : 440, audioCtx.currentTime); // C5 incoming, A4 outgoing
-      gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
 
-      setTimeout(() => {
-        try { osc.stop(); } catch (_) {}
-      }, 900);
-    } catch (_) {}
+      if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
+        audioCtxRef.current = new AudioContextClass();
+      }
+      const ctx = audioCtxRef.current;
+
+      // Resume suspended context (required by Chrome autoplay policy)
+      if (ctx.state === 'suspended') {
+        await ctx.resume().catch(() => {});
+      }
+
+      const now = ctx.currentTime;
+      const gainNode = ctx.createGain();
+      gainNode.gain.setValueAtTime(0.18, now); // Clearly audible volume
+      gainNode.connect(ctx.destination);
+
+      if (isIncoming) {
+        // High-low cheerful chime for incoming call (D5 + A5)
+        const osc1 = ctx.createOscillator();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(587.33, now);
+        osc1.connect(gainNode);
+        osc1.start(now);
+        osc1.stop(now + 0.35);
+
+        const osc2 = ctx.createOscillator();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(880.0, now + 0.38);
+        osc2.connect(gainNode);
+        osc2.start(now + 0.38);
+        osc2.stop(now + 0.85);
+      } else {
+        // Dual-tone US/UK standard PBX ringing cadence (440Hz + 480Hz)
+        const osc1 = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        osc1.type = 'sine';
+        osc2.type = 'sine';
+        osc1.frequency.setValueAtTime(440, now);
+        osc2.frequency.setValueAtTime(480, now);
+
+        osc1.connect(gainNode);
+        osc2.connect(gainNode);
+
+        osc1.start(now);
+        osc2.start(now);
+        osc1.stop(now + 1.2);
+        osc2.stop(now + 1.2);
+      }
+    } catch (e) {
+      console.warn('Audio ringtone note:', e);
+    }
   }, [isIncoming]);
 
   useEffect(() => {
@@ -130,11 +170,31 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
       return;
     }
 
-    playChime();
-    ringtoneIntervalRef.current = setInterval(playChime, 3000);
+    // Play immediately and loop every 2.8 seconds
+    playRingToneBurst();
+    ringtoneIntervalRef.current = setInterval(playRingToneBurst, 2800);
 
     return () => stopRingtone();
-  }, [isOpen, callState, playChime, stopRingtone]);
+  }, [isOpen, callState, playRingToneBurst, stopRingtone]);
+
+  // 3. Persistent Video Sync Effect: ALWAYS binds streams to video elements
+  useEffect(() => {
+    if (localVideoRef.current && localStreamRef.current) {
+      if (localVideoRef.current.srcObject !== localStreamRef.current) {
+        localVideoRef.current.srcObject = localStreamRef.current;
+        localVideoRef.current.play().catch(() => {});
+      }
+    }
+  });
+
+  useEffect(() => {
+    if (remoteVideoRef.current && remoteStreamRef.current) {
+      if (remoteVideoRef.current.srcObject !== remoteStreamRef.current) {
+        remoteVideoRef.current.srcObject = remoteStreamRef.current;
+        remoteVideoRef.current.play().catch(() => {});
+      }
+    }
+  });
 
   // Helper to send WebRTC signaling over Supabase Broadcast
   const sendSignalingEvent = useCallback((event: string, payload: Record<string, any>) => {
@@ -173,11 +233,13 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
     if (localVideoRef.current) localVideoRef.current.srcObject = null;
     if (remoteVideoRef.current) remoteVideoRef.current.srcObject = null;
 
+    remoteStreamRef.current = null;
     pendingIceCandidates.current = [];
-    setHasRemoteStream(false);
+    setHasRemoteVideo(false);
+    setHasRemoteAudio(false);
   }, [stopRingtone]);
 
-  // 3. Acquire Local Media Stream
+  // 4. Acquire Local Media Stream
   const acquireLocalMedia = useCallback(async () => {
     if (localStreamRef.current) return localStreamRef.current;
 
@@ -188,24 +250,29 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
       });
       localStreamRef.current = stream;
 
-      // Bind to local PIP preview
+      // Immediately bind to local preview
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
+        localVideoRef.current.play().catch(() => {});
       }
       return stream;
     } catch (err) {
       console.warn('Media devices capture warning:', err);
-      toast.error('Microphone or Camera access is needed for the call.');
+      toast.error('Microphone or Camera access is required for the call.');
       return null;
     }
   }, [callType]);
 
-  // 4. Create and configure RTCPeerConnection
+  // 5. Create and configure RTCPeerConnection
   const createPeerConnection = useCallback((stream: MediaStream) => {
+    if (peerConnectionRef.current) {
+      try { peerConnectionRef.current.close(); } catch (_) {}
+    }
+
     const pc = new RTCPeerConnection(RTC_CONFIG);
     peerConnectionRef.current = pc;
 
-    // Add local audio and video tracks to the peer connection
+    // Attach all local tracks
     stream.getTracks().forEach(track => {
       pc.addTrack(track, stream);
     });
@@ -213,9 +280,17 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
     // Handle remote track arrival
     pc.ontrack = (event) => {
       if (event.streams && event.streams[0]) {
-        setHasRemoteStream(true);
+        const remoteStream = event.streams[0];
+        remoteStreamRef.current = remoteStream;
+
+        const videoTracks = remoteStream.getVideoTracks();
+        const audioTracks = remoteStream.getAudioTracks();
+
+        setHasRemoteVideo(videoTracks.length > 0);
+        setHasRemoteAudio(audioTracks.length > 0);
+
         if (remoteVideoRef.current) {
-          remoteVideoRef.current.srcObject = event.streams[0];
+          remoteVideoRef.current.srcObject = remoteStream;
           remoteVideoRef.current.play().catch(e => console.warn('Remote video playback note:', e));
         }
       }
@@ -229,27 +304,30 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
     };
 
     pc.onconnectionstatechange = () => {
-      if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
-        toast.info('Call connection interrupted');
+      if (pc.connectionState === 'connected') {
+        toast.success(`HD Media Connected with ${targetName}`);
+      } else if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
+        toast.info('Connection interrupted. Reconnecting...');
       }
     };
 
     return pc;
-  }, [sendSignalingEvent]);
+  }, [sendSignalingEvent, targetName]);
 
-  // 5. Handle Caller flow (outgoing call initialization)
+  // 6. Outgoing Call Initialization (Caller)
   useEffect(() => {
     if (!isOpen) return;
 
     setCallState('ringing');
     setCallDuration(0);
-    setHasRemoteStream(false);
+    setHasRemoteVideo(false);
+    setHasRemoteAudio(false);
 
-    // If caller (outgoing), acquire local media immediately so preview is ready
+    // If caller, acquire local media right away so self-preview is active
     if (!isIncoming) {
       acquireLocalMedia();
 
-      // Ringing timeout: if callee doesn't answer in 45 seconds, cancel call
+      // Ringing timeout (45 seconds)
       const ringTimeout = setTimeout(() => {
         if (callState === 'ringing') {
           toast.info(`${targetName} is unavailable right now.`);
@@ -261,7 +339,7 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
     }
   }, [isOpen, isIncoming]);
 
-  // 6. Listen for WebRTC Signaling Events
+  // 7. Signaling Bus Listener
   useEffect(() => {
     if (!isOpen || !currentUserId) return;
 
@@ -272,13 +350,11 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
     channel
       .on('broadcast', { event: 'CLIENT_CALL_ACCEPTED' }, async (payload: any) => {
         const data = payload.payload;
-        // Verify signal is meant for this user and this call session
         if (data.targetUserId === currentUserId || (data.callerId === currentUserId && data.callId === activeCallId)) {
           stopRingtone();
           setCallState('connected');
-          toast.success(`Connected with ${targetName}`);
 
-          // Caller initiates WebRTC handshake by sending SDP offer
+          // Caller creates WebRTC Offer
           const stream = await acquireLocalMedia();
           if (stream) {
             const pc = createPeerConnection(stream);
@@ -307,7 +383,7 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
             try {
               await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
 
-              // Drain any early ICE candidates
+              // Drain queued ICE candidates
               while (pendingIceCandidates.current.length > 0) {
                 const cand = pendingIceCandidates.current.shift();
                 if (cand) await pc.addIceCandidate(new RTCIceCandidate(cand));
@@ -379,7 +455,7 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
     };
   }, [isOpen, currentUserId, activeCallId, targetName, callType, acquireLocalMedia, createPeerConnection, sendSignalingEvent, cleanupMediaAndPeer, stopRingtone, onClose]);
 
-  // 7. Callee explicitly clicks "Accept Call"
+  // 8. Callee explicitly clicks "Accept Call"
   const handleAcceptCall = async () => {
     stopRingtone();
     setCallState('connected');
@@ -387,7 +463,6 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
 
     const stream = await acquireLocalMedia();
     if (stream) {
-      // Notify caller that call was accepted
       sendSignalingEvent('CLIENT_CALL_ACCEPTED', {
         callerId: targetUserId,
         calleeId: currentUserId
@@ -396,7 +471,7 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
     }
   };
 
-  // 8. Callee or Caller declines/ends call
+  // 9. Decline or End Call
   const handleEndCall = () => {
     stopRingtone();
     
@@ -416,10 +491,10 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
       onClose();
       setCallState('ringing');
       setCallDuration(0);
-    }, 600);
+    }, 500);
   };
 
-  // 9. Audio Mute Toggle
+  // 10. Mute Toggle
   const toggleMute = () => {
     if (localStreamRef.current) {
       const audioTrack = localStreamRef.current.getAudioTracks()[0];
@@ -433,7 +508,7 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
     }
   };
 
-  // 10. Video Camera Toggle
+  // 11. Video Toggle
   const toggleVideo = () => {
     if (localStreamRef.current) {
       const videoTrack = localStreamRef.current.getVideoTracks()[0];
@@ -474,23 +549,21 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
         </div>
 
         {/* Main Display Canvas */}
-        <div className="relative min-h-[400px] bg-slate-950 flex items-center justify-center overflow-hidden p-6">
+        <div className="relative min-h-[420px] bg-slate-950 flex items-center justify-center overflow-hidden p-4">
           
-          {/* Active Call Remote Video Stream */}
-          {callState === 'connected' && callType === 'video' && hasRemoteStream ? (
-            <div className="relative w-full h-full min-h-[340px] rounded-2xl overflow-hidden border border-slate-800 bg-slate-900 flex items-center justify-center">
-              <video
-                ref={remoteVideoRef}
-                autoPlay
-                playsInline
-                className="w-full h-full object-cover rounded-2xl"
-              />
-              <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full text-[11px] font-extrabold text-white flex items-center gap-2 border border-white/10 shadow-lg">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>{targetName} (Live HD)</span>
-              </div>
-            </div>
-          ) : (
+          {/* 1. PERSISTENT REMOTE VIDEO ELEMENT (ALWAYS MOUNTED IN DOM) */}
+          <video
+            ref={remoteVideoRef}
+            autoPlay
+            playsInline
+            muted={false}
+            className={`w-full h-full min-h-[380px] object-cover rounded-2xl ${
+              callState === 'connected' && hasRemoteVideo && !isVideoOff ? 'block' : 'hidden'
+            }`}
+          />
+
+          {/* 2. OVERLAY: SHOWN WHEN IN RINGING, VOICE CALL, OR BEFORE REMOTE VIDEO STARTS */}
+          {!(callState === 'connected' && hasRemoteVideo && !isVideoOff) && (
             <div className="flex flex-col items-center justify-center text-center space-y-4 py-8">
               <div className="relative">
                 <Avatar className="w-32 h-32 border-4 border-slate-700 shadow-2xl">
@@ -513,29 +586,21 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
                   <Volume2 className="h-4 w-4" />
                   {callState === 'ringing' 
                     ? (isIncoming ? 'Incoming HD Call...' : `Ringing ${targetName}...`) 
-                    : (callType === 'audio' ? 'Encrypted HD Voice Connected' : 'HD Video Connected')}
+                    : (callType === 'audio' ? 'Encrypted HD Voice Connected' : 'Connecting HD Video Feed...')}
                 </p>
               </div>
-
-              {/* Hidden audio element to ensure remote sound plays even when video avatar is displayed */}
-              <video
-                ref={remoteVideoRef}
-                autoPlay
-                playsInline
-                className={callState === 'connected' && hasRemoteStream && callType === 'video' ? 'hidden' : 'hidden'}
-              />
             </div>
           )}
 
-          {/* Self View PIP Video (Only when connected or video is active) */}
-          {callState === 'connected' && callType === 'video' && (
+          {/* 3. PERSISTENT SELF-VIEW PIP VIDEO (ALWAYS MOUNTED IN DOM) */}
+          {callType === 'video' && (
             <div className="absolute bottom-4 right-4 w-36 h-28 bg-slate-900 rounded-2xl overflow-hidden border-2 border-slate-700 shadow-2xl">
               <video
                 ref={localVideoRef}
                 autoPlay
                 muted
                 playsInline
-                className={`w-full h-full object-cover ${isVideoOff ? 'hidden' : ''}`}
+                className={`w-full h-full object-cover ${isVideoOff ? 'hidden' : 'block'}`}
               />
               {isVideoOff && (
                 <div className="w-full h-full flex items-center justify-center bg-slate-800 text-xs text-slate-400 font-bold">
@@ -548,10 +613,18 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
             </div>
           )}
 
+          {/* Live indicator badge when remote video is streaming */}
+          {callState === 'connected' && hasRemoteVideo && (
+            <div className="absolute top-6 left-6 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full text-[11px] font-extrabold text-white flex items-center gap-2 border border-white/10 shadow-lg">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span>{targetName} (Live HD)</span>
+            </div>
+          )}
+
         </div>
 
         {/* Call Controls Bar */}
-        <div className="p-6 bg-slate-900 border-t border-slate-800 flex items-center justify-center gap-6">
+        <div className="p-5 bg-slate-900 border-t border-slate-800 flex items-center justify-center gap-5">
           
           {callState === 'ringing' && isIncoming ? (
             <>
@@ -618,4 +691,3 @@ export const ExecutiveCallModal: React.FC<ExecutiveCallModalProps> = ({
     </div>
   );
 };
-
