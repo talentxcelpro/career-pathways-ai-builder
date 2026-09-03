@@ -3,6 +3,7 @@ import { useParams, Navigate, Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useSlugProfile } from '@/hooks/useSlugProfile';
 import { useSEO } from '@/hooks/useSEO';
+import { evaluateProfileIndexability } from '@/lib/graph/profileIndexabilityGate';
 import { useViewportProfileTracking } from '@/hooks/useViewportProfileTracking';
 import { useAccurateProfileStats } from '@/hooks/useAccurateProfileStats';
 import { useOptimizedAuth } from '@/contexts/OptimizedAuthContext';
@@ -96,11 +97,19 @@ const SlugProfile = () => {
   }, [trackElementRef, profile?.id]);
 
   const profileSlug = (profile as any)?.username || (profile as any)?.slug || username;
-  const hasPublicFlag = (profile as any)?.is_public === true;
-  const hasMeaningfulContent =
-    profile?.full_name &&
-    (profile?.title || ((profile as any)?.skills?.length ?? 0) > 0);
-  const isIndexable = hasPublicFlag && hasMeaningfulContent;
+  const indexabilityDecision = evaluateProfileIndexability({
+    id: profile?.id || '',
+    fullName: profile?.full_name,
+    headline: profile?.title,
+    about: profile?.about,
+    skills: (profile as any)?.skills || [],
+    experiences: (profile as any)?.experiences || [],
+    isPrivate: (profile as any)?.is_public === false,
+    isSuspended: false,
+    isDeleted: false,
+    username: profileSlug,
+  });
+  const isIndexable = indexabilityDecision.isIndexable;
 
   const canonicalUrl = `https://talentxcel.in/${profileSlug}`;
 
@@ -236,27 +245,30 @@ const SlugProfile = () => {
 
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'Person',
-    name: profile.full_name,
-    jobTitle: profile.title,
-    url: `https://talentxcel.in/${(profile as any).username || profile.slug}`,
-    sameAs: [profile.website, profile.linkedin_url, profile.github_url].filter(Boolean),
-    email: profile.email,
-    telephone: profile.phone,
-    image: profile.profile_picture_url,
-    description: profile.about,
-    worksFor: {
-      '@type': 'Organization',
-      name: 'TalentXcel',
-      url: 'https://talentxcel.in',
+    '@type': 'ProfilePage',
+    mainEntity: {
+      '@type': 'Person',
+      name: profile.full_name,
+      jobTitle: profile.title,
+      url: `https://talentxcel.in/${(profile as any).username || profile.slug}`,
+      sameAs: [profile.website, profile.linkedin_url, profile.github_url].filter(Boolean),
+      email: profile.email,
+      telephone: profile.phone,
+      image: profile.profile_picture_url,
+      description: profile.about,
+      worksFor: {
+        '@type': 'Organization',
+        name: 'TalentXcel',
+        url: 'https://talentxcel.in',
+      },
+      ...(profile.location ? { address: { '@type': 'PostalAddress', addressLocality: profile.location } } : {}),
     },
-    ...(profile.location ? { address: { '@type': 'PostalAddress', addressLocality: profile.location } } : {}),
   };
 
   return (
     <>
       <Helmet>
-        <meta name="robots" content={isIndexable ? 'index,follow' : 'noindex,nofollow'} />
+        <meta name="robots" content={indexabilityDecision.robotsDirective} />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content={fullTitle} />
         <meta property="og:description" content={profile.about ? profile.about.substring(0, 160) : `${profile.full_name}'s professional profile on TalentXcel.`} />

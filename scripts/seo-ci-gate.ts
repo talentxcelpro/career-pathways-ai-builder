@@ -105,6 +105,10 @@ import { executeAgentAction } from '../src/lib/ai-org/executionGateway.js';
 import { runExecutiveDirectorCycle } from '../src/lib/ai-org/executiveDirectorAgent.js';
 import { ALL_12_ACQUISITION_SURFACES, resolveCrossModuleFunnel } from '../src/lib/acquisition-os/crossModuleFunnelEngine.js';
 import { SAMPLE_GSC_FEEDBACK_OPPORTUNITIES, triageGscSearchMetrics } from '../src/lib/acquisition-os/gscFeedbackLoop.js';
+import { computeProfileQualityScore, evaluateProfileIndexability } from '../src/lib/graph/profileIndexabilityGate.js';
+import { resolveSearchQueryToEntity } from '../src/lib/graph/searchEntityResolver.js';
+import { getEntityNode, getEntityOutgoingEdges } from '../src/lib/graph/professionalEntityGraph.js';
+import { resolveProfileContextualLinks } from '../src/lib/graph/contextualInternalLinker.js';
 
 const SUPABASE_URL = 'https://dthlgsnakhoftinssokm.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
@@ -1971,12 +1975,12 @@ async function runSeoCiGate() {
     // --- 18. TALENTXCEL AI GROWTH ORGANIZATION & GLOBAL ACQUISITION OS ---
     console.log('\n--- 18. AUDITING TALENTXCEL AI GROWTH ORGANIZATION & GLOBAL ACQUISITION OS ---');
 
-    // 18.1 Invariant: 1 Executive AI CEO + 8 Department Specialist Agents (9 Total Agents)
+    // 18.1 Invariant: 1 Executive AI CEO + 9 Department Specialist Agents (10 Total Agents)
     record(
       'AI_Growth_Organization',
-      'Agent Roster Terminology Invariant (1 CEO + 8 Specialists = 9 Total)',
-      TOTAL_AGENTS_COUNT === 9 && ALL_AGENT_IDS.length === 9 && ALL_AGENT_IDS.includes('EXECUTIVE_CEO'),
-      `Verified exact agent taxonomy: 1 Executive AI CEO + 8 Specialist Agents = ${TOTAL_AGENTS_COUNT} Total Agents`
+      'Agent Roster Terminology Invariant (1 CEO + 9 Specialists = 10 Total)',
+      TOTAL_AGENTS_COUNT === 10 && ALL_AGENT_IDS.length === 10 && ALL_AGENT_IDS.includes('EXECUTIVE_CEO') && ALL_AGENT_IDS.includes('ENTITY_INTELLIGENCE'),
+      `Verified exact agent taxonomy: 1 Executive AI CEO + 9 Specialist Agents = ${TOTAL_AGENTS_COUNT} Total Agents`
     );
 
     // 18.2 Invariant: Server-Authoritative 5-State Organization Lifecycle
@@ -2090,19 +2094,195 @@ async function runSeoCiGate() {
       hasAiOrgRoute,
       'Validated /admin/ai-organization is mounted and registered in src/navigation/adminRoutes.tsx'
     );
+
+    // --- 19. AUDITING TALENTXCEL PROFESSIONAL SEARCH GRAPH & ENTITY DISCOVERY ---
+    console.log('\n--- 19. AUDITING TALENTXCEL PROFESSIONAL SEARCH GRAPH & ENTITY DISCOVERY ---');
+
+    // 19.1 Invariant: 8-State Entity Lifecycle & 5-State Indexability Model
+    const validEntityStates = ['ACTIVE', 'DRAFT', 'HIDDEN', 'PRIVATE', 'SUSPENDED', 'DELETED', 'MERGED', 'REDIRECTED'];
+    const validIndexabilityStates = ['NOT_ELIGIBLE', 'ELIGIBLE', 'SUBMITTED', 'DISCOVERY_OBSERVED', 'REMOVAL_PENDING'];
+    const samplePersonNode = getEntityNode('node_person_vishwajeet_nayak');
+    record(
+      'Professional_Search_Graph',
+      '8-State Entity Lifecycle & 5-State Indexability Model',
+      samplePersonNode !== undefined &&
+      validEntityStates.includes(samplePersonNode.entityStatus) &&
+      validIndexabilityStates.includes(samplePersonNode.indexabilityStatus),
+      `Verified 8 entity lifecycle states and 5 indexability states on node ${samplePersonNode?.id}`
+    );
+
+    // 19.2 Invariant: Configurable 0-100 Profile Quality Scoring (No 2-Skill Mandate)
+    const testScore = computeProfileQualityScore({
+      id: 'test_user_01',
+      fullName: 'Ahmad Reshi',
+      headline: 'Software Engineer',
+      about: 'Experienced developer building enterprise web systems and cloud infrastructure.',
+      skills: ['TypeScript'], // Single skill provided
+      experiences: [{ company: 'TalentXcel' }],
+    });
+    record(
+      'Professional_Search_Graph',
+      'Configurable 0-100 Profile Quality Scoring (No 2-Skill Mandate)',
+      testScore.totalScore >= 50 && testScore.isQualityPass && testScore.skillsScore === 10,
+      `Calculated weighted quality score (${testScore.totalScore}/100 >= 50 threshold); passed without rigid 2-skill mandate`
+    );
+
+    // 19.3 Invariant: Privacy Gate Invariant (Privacy Strictly Overrides SEO)
+    const privateProfileDecision = evaluateProfileIndexability({
+      id: 'private_user_02',
+      fullName: 'Private Professional',
+      headline: 'Confidential Lead',
+      isPrivate: true,
+    });
+    record(
+      'Professional_Search_Graph',
+      'Privacy Gate Invariant (Privacy Strictly Overrides SEO)',
+      privateProfileDecision.isIndexable === false &&
+      privateProfileDecision.indexabilityStatus === 'NOT_ELIGIBLE' &&
+      privateProfileDecision.robotsDirective === 'noindex, nofollow',
+      'Confirmed private profile strictly emits noindex, nofollow and is excluded from sitemap discovery'
+    );
+
+    // 19.4 Invariant: Separation of Profile Quality from GSC Search Demand
+    const zeroDemandProfile = evaluateProfileIndexability({
+      id: 'zero_demand_03',
+      fullName: 'Sarah Johnson',
+      headline: 'Product Designer',
+      about: 'User experience designer focused on accessible interfaces and human-centered design.',
+      skills: ['Figma', 'UI Design'],
+      experiences: [{ company: 'DesignCo' }],
+      isPrivate: false,
+    });
+    record(
+      'Professional_Search_Graph',
+      'Separation of Profile Quality from GSC Search Demand',
+      zeroDemandProfile.isIndexable === true &&
+      zeroDemandProfile.robotsDirective === 'index, follow',
+      'Confirmed complete public profile is indexable regardless of whether it currently has GSC search impressions'
+    );
+
+    // 19.5 Invariant: Graph as Derived Projection Lake (Canonical DB Tables Authoritative)
+    const isDerivedProjection = samplePersonNode?.sourceTable === 'profiles' && samplePersonNode?.sourceId !== undefined;
+    record(
+      'Professional_Search_Graph',
+      'Graph as Derived Projection Lake (Canonical DB Tables Authoritative)',
+      isDerivedProjection,
+      `Verified entity node maintains provenance link to primary source table (${samplePersonNode?.sourceTable})`
+    );
+
+    // 19.6 Invariant: Edge Provenance & Evidence Verification
+    const edges = getEntityOutgoingEdges('node_person_vishwajeet_nayak');
+    const hasValidProvenance = edges.length > 0 && edges.every(e => e.provenance && e.confidence >= 0.8 && e.evidenceType);
+    record(
+      'Professional_Search_Graph',
+      'Edge Provenance & Evidence Verification',
+      hasValidProvenance,
+      `Verified outgoing edges contain explicit provenance and evidence (Found: ${edges[0]?.relationshipType} with ${edges[0]?.provenance})`
+    );
+
+    // 19.7 Invariant: Dynamic Search Query Entity Resolver (Zero Hardcoding)
+    const resolvedVishwajeet = await resolveSearchQueryToEntity('talentxcel vishwajeet');
+    const resolvedGaurav = await resolveSearchQueryToEntity('talentxcel gaurav');
+    const resolvedPriyanka = await resolveSearchQueryToEntity('talentxcel priyanka');
+    record(
+      'Professional_Search_Graph',
+      'Dynamic Search Query Entity Resolver (Zero Hardcoding)',
+      resolvedVishwajeet?.entityId === 'node_person_vishwajeet_nayak' &&
+      resolvedGaurav?.entityId === 'node_person_gaurav_bhatia' &&
+      resolvedPriyanka?.entityId === 'node_person_priyanka_dhangar',
+      `Dynamically resolved branded search queries via candidate scoring against database fixtures`
+    );
+
+    // 19.8 Invariant: Valid Schema.org ProfilePage + Person Structure
+    const slugProfileCode = readFileSync(resolve('src/pages/SlugProfile.tsx'), 'utf8');
+    const hasProfilePageSchema = slugProfileCode.includes("'@type': 'ProfilePage'") && slugProfileCode.includes("'@type': 'Person'");
+    record(
+      'Professional_Search_Graph',
+      'Valid Schema.org ProfilePage + Person Structure',
+      hasProfilePageSchema,
+      'Validated that src/pages/SlugProfile.tsx emits Schema.org ProfilePage containing embedded Person entity'
+    );
+
+    // 19.9 Invariant: Zero JobPosting Schema on Profiles
+    const hasZeroJobPostingOnProfile = !slugProfileCode.includes("'JobPosting'");
+    record(
+      'Professional_Search_Graph',
+      'Zero JobPosting Schema on Profiles',
+      hasZeroJobPostingOnProfile,
+      'Confirmed JobPosting structured data is strictly excluded from user profile pages'
+    );
+
+    // 19.10 Invariant: Graph Mutation Execution Gateway Policy Enforcement
+    const unverifiedGraphMutation = await executeAgentAction({
+      agentId: 'ENTITY_INTELLIGENCE',
+      actionType: 'MUTATE_GRAPH_RELATIONSHIP',
+      targetSurface: 'Professional Graph Edges',
+      telemetryTrigger: 'AI-inferred employment candidate',
+      payload: { provenance: 'SYSTEM_DERIVED', confidence: 0.65 },
+      executeFn: async () => ({ created: true }),
+    });
+    const fabricatedEntityAttempt = await executeAgentAction({
+      agentId: 'ENTITY_INTELLIGENCE',
+      actionType: 'MUTATE_GRAPH_RELATIONSHIP',
+      targetSurface: 'Professional Graph Nodes',
+      telemetryTrigger: 'Fabricated node attempt',
+      payload: { isFabricated: true },
+      executeFn: async () => ({ created: true }),
+    });
+    record(
+      'Professional_Search_Graph',
+      'Graph Mutation Execution Gateway Policy Enforcement',
+      unverifiedGraphMutation.status === 'PENDING_REVIEW' && fabricatedEntityAttempt.status === 'BLOCKED_PERMISSION',
+      'Confirmed SYSTEM_DERIVED graph mutations require human REVIEW and entity fabrication is FORBIDDEN'
+    );
+
+    // 19.11 Invariant: Contextual Internal Linking Engine
+    const contextualLinks = resolveProfileContextualLinks({
+      fullName: 'Vishwajeet Nayak',
+      headline: 'RMG Recruiter',
+      locationCity: 'Noida',
+    });
+    record(
+      'Professional_Search_Graph',
+      'Contextual Internal Linking Engine',
+      contextualLinks.length >= 3 && contextualLinks.some(l => l.category === 'TOOL'),
+      `Generated non-doorway contextual links: ${contextualLinks.map(l => l.category).join(', ')}`
+    );
+
+    // 19.12 Invariant: Admin Route Mounting for Search Entity Graph (/admin/seo/entities)
+    const hasEntityGraphRoute = adminRoutesCode.includes('/admin/seo/entities');
+    record(
+      'Professional_Search_Graph',
+      'Admin Route Mounting for Search Entity Graph (/admin/seo/entities)',
+      hasEntityGraphRoute,
+      'Validated /admin/seo/entities is mounted and registered in src/navigation/adminRoutes.tsx'
+    );
   } catch (err: any) {
     record('Admin_Security', 'Admin Security Engine Execution', false, `Security test error: ${err.message}`, { severity: 'CRITICAL' });
   }
 
-  // --- Summary ---
+  // --- Dynamic Summary & Invariant Report ---
   console.log('\n================================================================');
+  console.log('📊 TALENTXCEL CI GATE DYNAMIC INVARIANT AUDIT REPORT');
+  console.log('================================================================');
+  
+  const categories = Array.from(new Set(results.map(r => r.category)));
+  for (const cat of categories) {
+    const catResults = results.filter(r => r.category === cat);
+    const catPassed = catResults.filter(r => r.passed).length;
+    const catFailed = catResults.length - catPassed;
+    const statusIcon = catFailed === 0 ? '✅' : '❌';
+    console.log(`  ${statusIcon} ${cat.padEnd(28)} : ${catPassed}/${catResults.length} PASSED`);
+  }
+
   const total = results.length;
   const passed = results.filter((r) => r.passed).length;
   const failed = total - passed;
 
-  console.log(`TOTAL PRODUCTION CHECKS EXECUTED: ${total}`);
-  console.log(`PASSED CHECKS: ${passed}`);
-  console.log(`FAILED CHECKS: ${failed}`);
+  console.log('----------------------------------------------------------------');
+  console.log(`TOTAL PRODUCTION INVARIANTS EXECUTED: ${total}`);
+  console.log(`PASSED INVARIANTS: ${passed}`);
+  console.log(`FAILED INVARIANTS: ${failed}`);
 
   if (failed > 0) {
     console.error(`❌ SEO CI GATE FAILED: ${failed} of ${total} checks failed!`);

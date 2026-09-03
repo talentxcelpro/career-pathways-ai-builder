@@ -7,6 +7,7 @@ import { getAuthoritativeLifecycleState } from './aiOrganizationState';
 import { runExecutiveDirectorCycle } from './executiveDirectorAgent';
 import {
   runGscIntelligenceRoutine,
+  runEntityIntelligenceRoutine,
   runSeoOpportunityRoutine,
   runContentEngineRoutine,
   runEmployerAcquisitionRoutine,
@@ -54,6 +55,7 @@ export async function runFullOrganizationCycle(): Promise<FullOrganizationCycleR
     const summaries: SpecialistAgentExecutionSummary[] = [];
 
     summaries.push(await runGscIntelligenceRoutine());
+    summaries.push(await runEntityIntelligenceRoutine());
     summaries.push(await runSeoOpportunityRoutine());
     summaries.push(await runContentEngineRoutine());
     summaries.push(await runEmployerAcquisitionRoutine());

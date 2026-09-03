@@ -160,7 +160,17 @@ export async function executeAgentAction<T = any>(
   // 3. Level 3: Action Permissions Matrix Check
   const agentPermissions = DEFAULT_ACTION_PERMISSIONS[agentId] || [];
   const permissionItem = agentPermissions.find((p) => p.actionType === actionType);
-  const policy: ExecutionPolicy = permissionItem?.policy || (actionType === 'DELETE_PAGE' || actionType === 'SPEND_MONEY' ? 'FORBIDDEN' : 'REVIEW');
+  let policy: ExecutionPolicy = permissionItem?.policy || (actionType === 'DELETE_PAGE' || actionType === 'SPEND_MONEY' ? 'FORBIDDEN' : 'REVIEW');
+
+  // Invariant 9: Graph Mutation Safety Policy
+  // System-derived inferences, merges, or low confidence edges require human REVIEW; fabrication is FORBIDDEN
+  if (actionType === 'MUTATE_GRAPH_RELATIONSHIP') {
+    if (payload?.isFabricated) {
+      policy = 'FORBIDDEN';
+    } else if (payload?.provenance === 'SYSTEM_DERIVED' || (payload?.confidence !== undefined && payload.confidence < 0.8) || payload?.isMerge) {
+      policy = 'REVIEW';
+    }
+  }
 
   // Hard Forbidden Actions
   if (policy === 'FORBIDDEN' || actionType === 'DELETE_PAGE' || actionType === 'SPEND_MONEY') {

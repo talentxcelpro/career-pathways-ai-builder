@@ -12,17 +12,19 @@ export type OrganizationLifecycleState =
 export type AgentId =
   | 'EXECUTIVE_CEO'         // AI CEO & Growth Director
   | 'GSC_INTELLIGENCE'      // 1. Google Search Console Intelligence Agent
-  | 'SEO_OPPORTUNITY'       // 2. Programmatic SEO Opportunity Agent
-  | 'CONTENT_ENGINE'        // 3. Educational & Career Content Agent
-  | 'EMPLOYER_ACQUISITION'  // 4. Employer Multi-Location Acquisition Agent
-  | 'USER_ACQUISITION'      // 5. Visitor-to-Signup User Acquisition Agent
-  | 'CONVERSION_ENGINE'     // 6. Cross-Module Conversion & Activation Agent
-  | 'SOCIAL_DISTRIBUTION'   // 7. External Marketing & Social Distribution Agent
-  | 'JOBS_GROWTH';          // 8. 100K Location Job Inventory & GSC Health Agent
+  | 'ENTITY_INTELLIGENCE'   // 2. Professional Search Graph & Entity Intelligence Agent
+  | 'SEO_OPPORTUNITY'       // 3. Programmatic SEO Opportunity Agent
+  | 'CONTENT_ENGINE'        // 4. Educational & Career Content Agent
+  | 'EMPLOYER_ACQUISITION'  // 5. Employer Multi-Location Acquisition Agent
+  | 'USER_ACQUISITION'      // 6. Visitor-to-Signup User Acquisition Agent
+  | 'CONVERSION_ENGINE'     // 7. Cross-Module Conversion & Activation Agent
+  | 'SOCIAL_DISTRIBUTION'   // 8. External Marketing & Social Distribution Agent
+  | 'JOBS_GROWTH';          // 9. 100K Location Job Inventory & GSC Health Agent
 
 export const ALL_AGENT_IDS: AgentId[] = [
   'EXECUTIVE_CEO',
   'GSC_INTELLIGENCE',
+  'ENTITY_INTELLIGENCE',
   'SEO_OPPORTUNITY',
   'CONTENT_ENGINE',
   'EMPLOYER_ACQUISITION',
@@ -32,19 +34,21 @@ export const ALL_AGENT_IDS: AgentId[] = [
   'JOBS_GROWTH',
 ];
 
-export const TOTAL_AGENTS_COUNT = ALL_AGENT_IDS.length; // Exactly 9
+export const TOTAL_AGENTS_COUNT = ALL_AGENT_IDS.length; // Exactly 10 (1 CEO + 9 Specialists)
 
 export type ActionType =
-  | 'READ_DATA'             // Read search, inventory, or analytics data
-  | 'ANALYZE'               // Compute opportunities, gaps, K-factors
-  | 'CREATE_DRAFT'          // Generate uncommitted page or post drafts
-  | 'CREATE_SEO_PAGE'       // Build indexable programmatic landing page
-  | 'PUBLISH_PAGE'          // Deploy page to live site & XML sitemap
-  | 'PUBLISH_SOCIAL_POST'   // Distribute content to external social channel
-  | 'SEND_EMAIL'            // Dispatch email outreach to employers/users
-  | 'CHANGE_SEO_METADATA'   // Optimize titles, meta descriptions, JSON-LD
-  | 'DELETE_PAGE'           // STRICTLY FORBIDDEN to AI agents
-  | 'SPEND_MONEY';          // STRICTLY FORBIDDEN without human multi-sig
+  | 'READ_DATA'                 // Read search, inventory, or analytics data
+  | 'ANALYZE'                   // Compute opportunities, gaps, K-factors
+  | 'CREATE_DRAFT'              // Generate uncommitted page or post drafts
+  | 'CREATE_SEO_PAGE'           // Build indexable programmatic landing page
+  | 'PUBLISH_PAGE'              // Deploy page to live site & XML sitemap
+  | 'PUBLISH_SOCIAL_POST'       // Distribute content to external social channel
+  | 'SEND_EMAIL'                // Dispatch email outreach to employers/users
+  | 'CHANGE_SEO_METADATA'       // Optimize titles, meta descriptions, JSON-LD
+  | 'MUTATE_GRAPH_RELATIONSHIP' // Add or refresh derived entity edge
+  | 'AUDIT_ENTITY_QUALITY'      // Compute profile quality score & indexability
+  | 'DELETE_PAGE'               // STRICTLY FORBIDDEN to AI agents
+  | 'SPEND_MONEY';              // STRICTLY FORBIDDEN without human multi-sig
 
 export type ExecutionPolicy = 'AUTO' | 'REVIEW' | 'FORBIDDEN';
 

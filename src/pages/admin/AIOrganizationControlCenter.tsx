@@ -163,7 +163,7 @@ export default function AIOrganizationControlCenter() {
               TalentXcel AI Growth Organization
             </h1>
             <p className="text-slate-400 text-xs sm:text-sm mt-1">
-              1 Executive AI CEO + 8 Department Specialist Agents ({TOTAL_AGENTS_COUNT} Total) · Server-Authoritative Kill Switch · Closed GSC Feedback Loop
+              1 Executive AI CEO + 9 Department Specialist Agents ({TOTAL_AGENTS_COUNT} Total) · Server-Authoritative Kill Switch · Closed GSC Feedback Loop
             </p>
           </div>
 
@@ -329,7 +329,7 @@ export default function AIOrganizationControlCenter() {
             <div>
               <h3 className="text-xl font-bold text-white flex items-center gap-2">
                 <Users className="w-5 h-5 text-purple-400" />
-                Active Agent Roster (1 AI CEO + 8 Department Specialists = {TOTAL_AGENTS_COUNT} Total)
+                Active Agent Roster (1 AI CEO + 9 Department Specialists = {TOTAL_AGENTS_COUNT} Total)
               </h3>
               <p className="text-xs sm:text-sm text-slate-400">
                 Granular enable/disable controls per agent. Disabled agents are blocked from execution even when the organization is online.
