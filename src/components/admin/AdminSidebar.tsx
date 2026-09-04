@@ -1,4 +1,4 @@
-﻿// src/components/admin/AdminSidebar.tsx
+// src/components/admin/AdminSidebar.tsx
 // Consolidated High-Productivity Admin OS Command Navigation
 // 8 Functional Hubs: Command & Growth, Security, Jobs & Talent, Colleges, Claim #1 B2B, TXC Treasury, Content, and AI Agents.
 
@@ -54,6 +54,20 @@ import { useAdminStats } from '@/hooks/useAdminStats';
 
 // 1. COMMAND & GROWTH ENGINE
 const growthCommandItems = [
+  {
+    title: 'AI Growth Organization',
+    url: '/admin/ai-organization',
+    icon: Bot,
+    description: 'AI CEO & Specialist Agents Control',
+    badge: 'AI CEO'
+  },
+  {
+    title: 'Growth Operations Center',
+    url: '/admin/growth-operations',
+    icon: TrendingUp,
+    description: 'Empirical revenue & leak detection',
+    badge: 'NEW'
+  },
   {
     title: 'Autonomous Growth OS',
     url: '/admin/autonomous-os',
@@ -236,6 +250,13 @@ const contentItems = [
 
 // 8. AI AGENTS & INFRASTRUCTURE
 const aiItems = [
+  {
+    title: 'AI Growth Organization',
+    url: '/admin/ai-organization',
+    icon: Bot,
+    description: 'Master control plane & kill switch',
+    badge: 'ONLINE'
+  },
   {
     title: 'AI Agent Fleet Operations',
     url: '/admin/agent-operations',
