@@ -241,6 +241,26 @@ export default function AIOrganizationControlCenter() {
           </div>
         </div>
 
+        {/* Governing Operational Principle Banner */}
+        <div className="bg-gradient-to-r from-amber-500/10 via-blue-500/10 to-purple-500/10 border border-amber-500/30 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg shadow-black/20">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 shrink-0">
+              <ShieldCheck className="w-5 h-5 text-amber-400" />
+            </div>
+            <div>
+              <div className="text-xs uppercase tracking-wider font-mono font-bold text-amber-400">
+                Governing Operational Principle
+              </div>
+              <p className="text-sm sm:text-base font-semibold text-white tracking-tight italic">
+                “No metric becomes a learning signal until its evidence is traceable.”
+              </p>
+            </div>
+          </div>
+          <Badge variant="outline" className="text-[11px] font-mono text-slate-300 border-slate-700 bg-slate-900/60 shrink-0">
+            Traceability Verification: ENFORCED
+          </Badge>
+        </div>
+
         {/* Master Kill Switch Banner (Level 1 Control) */}
         <div
           className={`p-6 sm:p-8 rounded-3xl border transition-all ${

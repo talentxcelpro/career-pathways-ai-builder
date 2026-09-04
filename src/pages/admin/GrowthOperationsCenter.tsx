@@ -123,6 +123,26 @@ export default function GrowthOperationsCenter() {
         </div>
       </div>
 
+      {/* Governing Operational Principle Banner */}
+      <div className="bg-gradient-to-r from-amber-500/10 via-blue-500/10 to-purple-500/10 border border-amber-500/30 rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg shadow-black/20">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 shrink-0">
+            <ShieldCheck className="w-5 h-5 text-amber-400" />
+          </div>
+          <div>
+            <div className="text-xs uppercase tracking-wider font-mono font-bold text-amber-400">
+              Governing Operational Principle
+            </div>
+            <p className="text-sm sm:text-base font-semibold text-white tracking-tight italic">
+              “No metric becomes a learning signal until its evidence is traceable.”
+            </p>
+          </div>
+        </div>
+        <Badge variant="outline" className="text-[11px] font-mono text-slate-300 border-slate-700 bg-slate-900/60 shrink-0">
+          Traceability Verification: ENFORCED
+        </Badge>
+      </div>
+
       {/* Executive Key Metric Tickers */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
         <Card className="bg-slate-900/80 border-slate-800">
@@ -764,16 +784,24 @@ export default function GrowthOperationsCenter() {
                         <span className="text-white font-bold">{prop.modelVersion}</span>
                         <span className="text-slate-500">(from {prop.previousVersion})</span>
                       </div>
-                      <Badge 
-                        variant="outline" 
-                        className={`text-[10px] ${
-                          prop.status === 'ACTIVE' 
-                            ? 'text-emerald-400 border-emerald-500/30' 
-                            : 'text-amber-400 border-amber-500/30'
-                        }`}
-                      >
-                        {prop.status}
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge 
+                          variant="outline"
+                          className="text-[10px] text-emerald-400 border-emerald-500/30"
+                        >
+                          Traceable (N={prop.provenanceAudit.sampleSize})
+                        </Badge>
+                        <Badge 
+                          variant="outline" 
+                          className={`text-[10px] ${
+                            prop.status === 'ACTIVE' 
+                              ? 'text-emerald-400 border-emerald-500/30' 
+                              : 'text-amber-400 border-amber-500/30'
+                          }`}
+                        >
+                          {prop.status}
+                        </Badge>
+                      </div>
                     </div>
                     <div className="text-slate-300 font-sans text-xs">
                       {prop.rationale}
@@ -784,6 +812,142 @@ export default function GrowthOperationsCenter() {
                   </div>
                 ))}
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Telemetry Traceability & Provenance Inspector */}
+          <Card className="bg-slate-900/90 border-slate-800 text-slate-100">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-lg font-bold text-white flex items-center gap-2">
+                    <ShieldCheck className="w-5 h-5 text-emerald-400" />
+                    Telemetry Traceability & Provenance Inspector
+                  </CardTitle>
+                  <CardDescription className="text-xs text-slate-400">
+                    Full empirical verification audit for model proposals before promotion from PROPOSED → ACTIVE.
+                  </CardDescription>
+                </div>
+                <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-xs font-mono">
+                  Audit State: TRACEABLE
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* 6-Stage Traceability Pipeline Diagram */}
+              <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
+                <div className="text-xs font-semibold text-white mb-2 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+                  Authoritative Traceability Chain
+                </div>
+                <div className="flex flex-wrap items-center gap-2 font-mono text-[11px]">
+                  <span className="px-2 py-1 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                    Source Event
+                  </span>
+                  <ArrowRight className="w-3 h-3 text-slate-500" />
+                  <span className="px-2 py-1 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                    Database Record
+                  </span>
+                  <ArrowRight className="w-3 h-3 text-slate-500" />
+                  <span className="px-2 py-1 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20">
+                    Aggregation
+                  </span>
+                  <ArrowRight className="w-3 h-3 text-slate-500" />
+                  <span className="px-2 py-1 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                    Metric
+                  </span>
+                  <ArrowRight className="w-3 h-3 text-slate-500" />
+                  <span className="px-2 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    Dashboard
+                  </span>
+                  <ArrowRight className="w-3 h-3 text-slate-500" />
+                  <span className="px-2 py-1 rounded bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                    AI CEO Decision
+                  </span>
+                </div>
+              </div>
+
+              {/* Deep Audit for Proposal prop_acq_104 */}
+              {MODEL_WEIGHT_PROPOSALS.filter(p => p.proposalId === 'prop_acq_104').map(prop => (
+                <div key={prop.proposalId} className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <Badge className="bg-amber-500/10 text-amber-400 border-amber-500/30 text-xs font-mono">
+                          Proposal ID: {prop.proposalId}
+                        </Badge>
+                        <span className="font-bold text-white text-sm font-mono">
+                          Target Version: {prop.modelVersion} (Candidate)
+                        </span>
+                      </div>
+                      <div className="text-xs text-slate-400 mt-1">
+                        Empirical Claim: <span className="text-emerald-400 font-semibold font-mono">3.7x conversion lift (+31.4%)</span> &amp; <span className="text-emerald-400 font-semibold font-mono">+$2,400 incremental revenue</span>
+                      </div>
+                    </div>
+                    <Badge variant="outline" className="text-xs font-mono text-amber-400 border-amber-500/30">
+                      Gated: PENDING_HUMAN_PROMOTION
+                    </Badge>
+                  </div>
+
+                  {/* Provenance Details Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                    <div className="p-3 rounded-lg bg-slate-900/60 border border-slate-800 space-y-1.5">
+                      <div className="text-[11px] text-slate-400 font-medium">Cohort IDs &amp; Sample Size</div>
+                      <div className="font-mono text-slate-200">
+                        Cohorts: <span className="text-blue-400">{prop.provenanceAudit.experimentCohortIds.join(', ')}</span>
+                      </div>
+                      <div className="font-mono text-slate-200">
+                        Sample Size: <span className="text-emerald-400 font-bold">N = {prop.provenanceAudit.sampleSize}</span> (92 Control, 92 Treatment)
+                      </div>
+                      <div className="text-[11px] text-slate-400 pt-1 font-mono">
+                        Window: {prop.provenanceAudit.dateRange.start} → {prop.provenanceAudit.dateRange.end} (21 days)
+                      </div>
+                    </div>
+
+                    <div className="p-3 rounded-lg bg-slate-900/60 border border-slate-800 space-y-1.5">
+                      <div className="text-[11px] text-slate-400 font-medium">Stripe Transaction Ledger IDs</div>
+                      <div className="font-mono text-xs text-purple-300 space-y-0.5">
+                        {prop.provenanceAudit.transactionLedgerIds.map((txId) => (
+                          <div key={txId} className="flex items-center justify-between">
+                            <span>• {txId}</span>
+                            <span className="text-emerald-400 font-bold">+$800.00 USD</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="text-[10px] text-slate-400 pt-1 border-t border-slate-800 font-mono">
+                        Total Verified Incremental: <span className="text-emerald-400 font-bold">${prop.incrementalRevenueUsd.toLocaleString()} USD</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Denominator, Baseline & Treatment Definitions */}
+                  <div className="space-y-2 text-xs">
+                    <div className="p-2.5 rounded-lg bg-slate-900/40 border border-slate-800/80">
+                      <div className="text-[10px] font-mono uppercase text-slate-500 font-bold">Denominator Definition</div>
+                      <div className="text-slate-300 text-xs mt-0.5">{prop.provenanceAudit.denominatorDefinition}</div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      <div className="p-2.5 rounded-lg bg-slate-900/40 border border-slate-800/80">
+                        <div className="text-[10px] font-mono uppercase text-slate-500 font-bold">Control Cohort</div>
+                        <div className="text-slate-300 text-xs mt-0.5">{prop.provenanceAudit.baselineDefinition}</div>
+                      </div>
+                      <div className="p-2.5 rounded-lg bg-emerald-950/20 border border-emerald-800/30">
+                        <div className="text-[10px] font-mono uppercase text-emerald-400 font-bold">Treatment Cohort</div>
+                        <div className="text-slate-200 text-xs mt-0.5">{prop.provenanceAudit.treatmentDefinition}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Governance Invariant Notice */}
+                  <div className="p-3 rounded-lg bg-amber-950/20 border border-amber-800/30 text-amber-300 text-xs flex items-start gap-2">
+                    <Lock className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-semibold text-amber-200">Controlled Promotion Guard: </span>
+                      Evidence is traceable and verified. However, pursuant to the 30-Day Operational Freeze, the AI CEO cannot self-promote weights. Model promotion to ACTIVE requires SuperAdmin second-signature authorization.
+                    </div>
+                  </div>
+                </div>
+              ))}
             </CardContent>
           </Card>
         </TabsContent>

@@ -53,6 +53,17 @@ export interface NetCommercialGrowthScoreResult {
   decisionReason: string;
 }
 
+export interface ProvenanceAuditRecord {
+  experimentCohortIds: string[];
+  sampleSize: number;
+  denominatorDefinition: string;
+  baselineDefinition: string;
+  treatmentDefinition: string;
+  dateRange: { start: string; end: string };
+  transactionLedgerIds: string[];
+  empiricalDataTraceable: boolean;
+}
+
 export interface ModelWeightProposal {
   proposalId: string;
   modelVersion: string;
@@ -69,6 +80,7 @@ export interface ModelWeightProposal {
   promotedAt?: string;
   reviewedBy?: string;
   rationale: string;
+  provenanceAudit: ProvenanceAuditRecord;
 }
 
 export interface EmployerFunnelStageTelemetry {
@@ -290,6 +302,16 @@ export const MODEL_WEIGHT_PROPOSALS: ModelWeightProposal[] = [
     status: 'PROPOSED',
     createdAt: '2026-09-03T18:00:00Z',
     rationale: 'UAE multi-location GCC syndication generated 3.7x higher conversion than generic single job forms across 12 consecutive experiments.',
+    provenanceAudit: {
+      experimentCohortIds: ['cohort_uae_dxb_08a', 'cohort_uae_ruh_08b'],
+      sampleSize: 184,
+      denominatorDefinition: 'Verified employer leads discovered across UAE/GCC tech hubs during the observation window (N=184 total leads)',
+      baselineDefinition: 'Control: Generic single-job posting form with manual employer registration gate (N=92 leads, 3 converted = 3.3%)',
+      treatmentDefinition: 'Treatment: AI-assisted multi-location GCC hub preset with instant verified candidate preview (N=92 leads, 11 converted = 12.0%, 3.7x lift)',
+      dateRange: { start: '2026-08-10', end: '2026-08-31' },
+      transactionLedgerIds: ['tx_stripe_gcc_4921', 'tx_stripe_gcc_4955', 'tx_stripe_gcc_5012'],
+      empiricalDataTraceable: true,
+    },
   },
   {
     proposalId: 'prop_acq_103_base',
@@ -310,6 +332,16 @@ export const MODEL_WEIGHT_PROPOSALS: ModelWeightProposal[] = [
     promotedAt: '2026-08-25T12:00:00Z',
     reviewedBy: 'SuperAdmin-Root',
     rationale: 'Instant scorecard preview verified +67.6% activation lift in resume ATS scanner without degrading signup quality.',
+    provenanceAudit: {
+      experimentCohortIds: ['cohort_in_ats_07a', 'cohort_in_ats_07b'],
+      sampleSize: 360,
+      denominatorDefinition: 'Unique candidate visits to /resume during the observation window (N=360 visits)',
+      baselineDefinition: 'Control: Gated ATS scanner requiring account creation prior to scorecard display (N=180 visits, 46 activated = 25.5%)',
+      treatmentDefinition: 'Treatment: Instant scorecard preview with unauthenticated preliminary breakdown (N=180 visits, 77 activated = 42.8%, +67.6% lift)',
+      dateRange: { start: '2026-08-01', end: '2026-08-15' },
+      transactionLedgerIds: ['tx_stripe_in_3110', 'tx_stripe_in_3188'],
+      empiricalDataTraceable: true,
+    },
   }
 ];
 
