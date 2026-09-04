@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useConnectionRequests } from '@/hooks/useConnectionRequests';
 import { useNavigate, Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { getStandardAvatarUrl } from '@/utils/avatarUtils';
 import { generatePersonProfileSlug, getPublicProfilePath } from '@/utils/userProfileSlug';
@@ -53,6 +53,21 @@ export const Verified: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIndustry, setSelectedIndustry] = useState('all');
   const [verificationLevel, setVerificationLevel] = useState('all');
+  const queryClient = useQueryClient();
+
+  // Real-time synchronization with Supabase profiles
+  useEffect(() => {
+    const channel = supabase
+      .channel('verified-profiles-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['real-verified-professionals'] });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   // Fetch 100% Real Verified Profiles directly from Supabase
   const { data: verifiedProfiles = [], isLoading } = useQuery({
@@ -122,6 +137,8 @@ export const Verified: React.FC = () => {
           const resolvedAvatar = isTalentXcelBrand
             ? 'https://dthlgsnakhoftinssokm.supabase.co/storage/v1/object/public/avatars/5fc21d0d-dd1d-4fd8-802c-9e4ae8d6a062/talentxcel_avatar_5fc21d0d-dd1d-4fd8-802c-9e4ae8d6a062_1788429769570.png?v=mtlcwqeppz5b&v=1788429770161'
             : getStandardAvatarUrl(rawAvatar);
+
+          const targetSlug = (p as any).slug || (p as any).custom_profile_url || generatePersonProfileSlug(p.full_name);
 
           return {
             id: p.id,

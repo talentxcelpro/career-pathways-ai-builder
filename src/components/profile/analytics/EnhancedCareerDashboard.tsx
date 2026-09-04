@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -28,7 +28,7 @@ import {
   Rocket,
   Globe
 } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { LiveEngagementChart } from './LiveEngagementChart';
@@ -87,6 +87,35 @@ export const EnhancedCareerDashboard = () => {
   const { user } = useAuth();
   const [selectedPeriod, setSelectedPeriod] = useState<'7d' | '30d' | '90d' | '1y'>('30d');
   const [activeTab, setActiveTab] = useState('overview');
+  const queryClient = useQueryClient();
+
+  // Real-time synchronization for Enhanced Dashboard
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const channel = supabase
+      .channel(`enhanced-analytics-live-${user.id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profile_views' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['enhanced-career-dashboard'] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'connections' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['enhanced-career-dashboard'] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['enhanced-career-dashboard'] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'post_likes' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['enhanced-career-dashboard'] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_skills' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['enhanced-career-dashboard'] });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id, queryClient]);
 
   const { data: dashboardData, isLoading, refetch } = useQuery({
     queryKey: ['enhanced-career-dashboard', user?.id, selectedPeriod],
@@ -191,12 +220,11 @@ export const EnhancedCareerDashboard = () => {
           .select('skill_name, endorsements_count')
           .eq('user_id', user.id),
 
-        // Career passport completion
+        // Public passport views count
         supabase
-          .from('career_passport')
-          .select('completion_percentage, achievements_count')
-          .eq('user_id', user.id)
-          .single()
+          .from('public_passport_views')
+          .select('*', { count: 'exact', head: true })
+          .eq('passport_owner_id', user.id)
       ]);
 
       const profile = profileData.data;
@@ -370,13 +398,12 @@ export const EnhancedCareerDashboard = () => {
           trend: calculateTrend(calculateChange(currentArticleComments, previousArticleComments))
         },
         careerProgress: {
-          currentLevel: careerPassportData.data?.completion_percentage > 80 ? 'Expert' : 
-                       careerPassportData.data?.completion_percentage > 60 ? 'Professional' : 
-                       careerPassportData.data?.completion_percentage > 40 ? 'Intermediate' : 'Beginner',
-          skillsGained: userSkills.length,
+          currentLevel: (profile?.skills?.length || 0) >= 5 ? 'Professional' : 
+                       (profile?.skills?.length || 0) >= 3 ? 'Intermediate' : 'Beginner',
+          skillsGained: userSkills.length || (profile?.skills?.length || 0),
           connectionsGrown: currentConnectionsCount,
           articlesPublished: currentPostsData.length,
-          completionScore: careerPassportData.data?.completion_percentage || 0
+          completionScore: Math.min(100, 30 + (profile?.headline ? 20 : 0) + (profile?.skills?.length ? 25 : 0) + (profile?.about ? 25 : 0))
         },
         skillTrends,
         peerComparison,

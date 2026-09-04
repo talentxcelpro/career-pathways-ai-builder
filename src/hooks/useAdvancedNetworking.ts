@@ -8,7 +8,13 @@ export const useAdvancedNetworking = () => {
   const [loading, setLoading] = useState(false);
 
   // Skill Exchange Functions
-  const createSkillExchange = async (skillOffered: string, skillSought: string, description: string) => {
+  const createSkillExchange = async (
+    skillOffered: string, 
+    skillRequested: string, 
+    description: string,
+    creditsValue: number = 10,
+    estimatedHours: number = 1
+  ) => {
     if (!user?.id) return { success: false };
     
     try {
@@ -16,20 +22,24 @@ export const useAdvancedNetworking = () => {
       const { data, error } = await supabase
         .from('skill_exchanges')
         .insert({
-          user_id: user.id,
+          requester_id: user.id,
           skill_offered: skillOffered,
-          skill_sought: skillSought,
+          skill_requested: skillRequested,
           description,
+          credits_value: creditsValue,
+          estimated_hours: estimatedHours,
           status: 'active'
         })
         .select()
         .single();
 
       if (error) throw error;
+      toast.success('Skill exchange posted successfully!');
       return { success: true, data };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating skill exchange:', error);
-      return { success: false };
+      toast.error(error?.message || 'Failed to create skill exchange');
+      return { success: false, error };
     } finally {
       setLoading(false);
     }

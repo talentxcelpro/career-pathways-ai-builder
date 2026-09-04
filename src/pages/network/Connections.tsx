@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, UserCheck, UserPlus, MessageCircle, UserX, Search, Filter, Calendar, Building2, MapPin } from "lucide-react";
+import { Users, UserCheck, UserPlus, MessageCircle, UserX, Search, Filter, Calendar, Building2, MapPin, Bell } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -18,6 +18,70 @@ const Connections = () => {
   const [sortBy, setSortBy] = useState('recent');
   const [filterBy, setFilterBy] = useState('all');
   const queryClient = useQueryClient();
+
+  // Set up live real-time synchronization with Supabase
+  useEffect(() => {
+    const channel = supabase
+      .channel('connections-live-channel')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'connections' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['userConnections'] });
+        queryClient.invalidateQueries({ queryKey: ['connectionStats'] });
+        queryClient.invalidateQueries({ queryKey: ['pendingRequestsCount'] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'connection_requests' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['userConnections'] });
+        queryClient.invalidateQueries({ queryKey: ['pendingRequestsCount'] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['userMessagesCount'] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['userConnections'] });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
+  // Fetch live messages count directly from database
+  const { data: messagesCount = 0 } = useQuery({
+    queryKey: ['userMessagesCount'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return 0;
+
+      const { count, error } = await supabase
+        .from('messages')
+        .select('*', { count: 'exact', head: true })
+        .or(`recipient_id.eq.${user.id},sender_id.eq.${user.id}`);
+
+      if (error) {
+        console.error('Error fetching messages count:', error);
+        return 0;
+      }
+      return count || 0;
+    }
+  });
+
+  // Fetch pending connection requests count
+  const { data: pendingRequestsCount = 0 } = useQuery({
+    queryKey: ['pendingRequestsCount'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return 0;
+
+      const { count, error } = await supabase
+        .from('connections')
+        .select('*', { count: 'exact', head: true })
+        .eq('recipient_id', user.id)
+        .eq('status', 'pending');
+
+      if (error) return 0;
+      return count || 0;
+    }
+  });
 
   // Use the enhanced realtime connections hook
   const { 
@@ -238,16 +302,40 @@ const Connections = () => {
 
           <Card>
             <CardContent className="p-4">
-              <div className="flex items-center">
+              <Link to="/network/messages" className="flex items-center hover:opacity-80 transition-opacity">
                 <MessageCircle className="h-8 w-8 text-green-600" />
                 <div className="ml-3">
                   <p className="text-sm font-medium text-gray-600">Messages</p>
-                  <p className="text-2xl font-bold text-gray-900">0</p>
+                  <p className="text-2xl font-bold text-gray-900">{messagesCount}</p>
                 </div>
-              </div>
+              </Link>
             </CardContent>
           </Card>
         </div>
+
+        {/* Pending Requests Alert Banner */}
+        {pendingRequestsCount > 0 && (
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl flex items-center justify-between shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-100 rounded-full text-blue-700">
+                <Bell className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="font-semibold text-blue-900">
+                  {pendingRequestsCount} pending connection request{pendingRequestsCount > 1 ? 's' : ''} waiting for your response
+                </p>
+                <p className="text-xs text-blue-700">
+                  Accept or decline requests to grow your professional executive network.
+                </p>
+              </div>
+            </div>
+            <Link to="/network/requests">
+              <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
+                Review Requests ({pendingRequestsCount})
+              </Button>
+            </Link>
+          </div>
+        )}
 
         {/* Filters and Search */}
         <Card className="mb-6">
