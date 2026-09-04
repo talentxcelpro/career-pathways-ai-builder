@@ -71,7 +71,6 @@ export function SocialNotifications() {
         .from('notifications')
         .select('*')
         .eq('user_id', user.id)
-        .eq('module', 'social')
         .order('created_at', { ascending: false })
         .limit(20);
 
@@ -165,9 +164,14 @@ export function SocialNotifications() {
       </CardHeader>
       <CardContent>
         {notifications.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            <Bell className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>No social notifications yet</p>
+          <div className="text-center py-6 text-muted-foreground space-y-2">
+            <div className="w-10 h-10 mx-auto rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
+              <Bell className="h-5 w-5" />
+            </div>
+            <p className="text-xs font-semibold text-foreground">You're all caught up!</p>
+            <p className="text-[11px] text-muted-foreground px-4">
+              New connection requests, post reactions, and messages will notify you here in real time.
+            </p>
           </div>
         ) : (
           <div className="space-y-3">

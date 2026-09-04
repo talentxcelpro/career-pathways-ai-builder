@@ -5,11 +5,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Users, UserPlus, Search, Loader2 } from "lucide-react";
+import { Users, UserPlus, UserCheck, MessageCircle, Search, Loader2 } from "lucide-react";
 import { UserFollowButton } from "@/components/social/UserFollowButton";
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { formatDistanceToNow } from "date-fns";
+import { Link } from "react-router-dom";
 
 interface User {
   id: string;
@@ -29,8 +30,15 @@ interface Follow {
   user?: User;
 }
 
+interface ConnectionItem {
+  id: string;
+  connected_at: string;
+  user: User;
+}
+
 export function FollowingFollowersList() {
   const [currentUser, setCurrentUser] = useState<string | null>(null);
+  const [connections, setConnections] = useState<ConnectionItem[]>([]);
   const [following, setFollowing] = useState<Follow[]>([]);
   const [followers, setFollowers] = useState<Follow[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -48,7 +56,57 @@ export function FollowingFollowersList() {
 
       setCurrentUser(user.id);
 
-      // Get following list
+      // 1. Get real connections from connections table
+      try {
+        const { data: connectionsData } = await supabase
+          .from('connections')
+          .select(`
+            id,
+            requester_id,
+            recipient_id,
+            status,
+            connected_at,
+            created_at
+          `)
+          .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
+          .eq('status', 'accepted')
+          .order('connected_at', { ascending: false });
+
+        if (connectionsData && connectionsData.length > 0) {
+          const otherUserIds = connectionsData.map(c => 
+            c.requester_id === user.id ? c.recipient_id : c.requester_id
+          ).filter(Boolean);
+
+          const { data: profilesData } = await supabase
+            .from('profiles')
+            .select('id, full_name, profile_picture_url, title, location, current_company')
+            .in('id', otherUserIds);
+
+          const profileMap = new Map((profilesData || []).map(p => [p.id, p]));
+
+          const mappedConnections: ConnectionItem[] = connectionsData.map(c => {
+            const otherId = c.requester_id === user.id ? c.recipient_id : c.requester_id;
+            const p = profileMap.get(otherId);
+            return {
+              id: c.id,
+              connected_at: c.connected_at || c.created_at,
+              user: {
+                id: otherId,
+                full_name: p?.full_name || 'Professional Member',
+                profile_picture_url: p?.profile_picture_url,
+                title: p?.title || (p?.current_company ? `Professional at ${p.current_company}` : 'TalentXcel Member'),
+                location: p?.location
+              }
+            };
+          });
+
+          setConnections(mappedConnections);
+        }
+      } catch (connErr) {
+        console.warn('Could not load connections table:', connErr);
+      }
+
+      // 2. Get following list
       const { data: followingData, error: followingError } = await supabase
         .from('user_follows')
         .select(`
@@ -68,7 +126,7 @@ export function FollowingFollowersList() {
 
       if (followingError) throw followingError;
 
-      // Get followers list
+      // 3. Get followers list
       const { data: followersData, error: followersError } = await supabase
         .from('user_follows')
         .select(`
@@ -100,15 +158,17 @@ export function FollowingFollowersList() {
 
     } catch (error) {
       console.error('Error loading follow data:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load connections",
-        variant: "destructive",
-      });
+      // Non-blocking error handling
     } finally {
       setIsLoading(false);
     }
   };
+
+  const filteredConnections = connections.filter(c =>
+    c.user?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    c.user?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    c.user?.location?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const filteredFollowing = following.filter(f =>
     f.user?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -119,6 +179,47 @@ export function FollowingFollowersList() {
     f.user?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     f.user?.title?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const ConnectionCard = ({ connection }: { connection: ConnectionItem }) => {
+    if (!connection.user) return null;
+
+    return (
+      <Card className="hover:border-blue-200 transition-colors">
+        <CardContent className="p-3.5 sm:p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <Link to={`/network/people/${connection.user.id}`}>
+                <Avatar className="h-10 w-10 sm:h-11 sm:w-11 hover:scale-105 transition-transform shrink-0">
+                  <AvatarImage src={connection.user.profile_picture_url} />
+                  <AvatarFallback className="bg-blue-100 text-blue-700 font-bold text-xs">
+                    {connection.user.full_name?.charAt(0) || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+              </Link>
+              <div className="min-w-0">
+                <Link to={`/network/people/${connection.user.id}`} className="hover:text-blue-600 transition-colors">
+                  <h4 className="font-semibold text-xs sm:text-sm text-foreground truncate">{connection.user.full_name}</h4>
+                </Link>
+                {connection.user.title && (
+                  <p className="text-xs text-muted-foreground truncate">{connection.user.title}</p>
+                )}
+                <div className="flex items-center gap-2 mt-0.5 text-[11px] text-muted-foreground">
+                  {connection.user.location && <span className="truncate">{connection.user.location} &bull;</span>}
+                  <span className="shrink-0">Connected {formatDistanceToNow(new Date(connection.connected_at))} ago</span>
+                </div>
+              </div>
+            </div>
+            <Link to={`/network/messages/new?userId=${connection.user.id}`} className="shrink-0">
+              <Button size="sm" variant="outline" className="gap-1.5 text-xs text-blue-600 border-blue-200 hover:bg-blue-50 h-8">
+                <MessageCircle className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Message</span>
+              </Button>
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
 
   const UserCard = ({ follow, isFollowing = false }: { follow: Follow; isFollowing?: boolean }) => {
     if (!follow.user) return null;
@@ -207,29 +308,56 @@ export function FollowingFollowersList() {
         </div>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="following" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="following" className="flex items-center gap-2">
-              <UserPlus className="h-4 w-4" />
-              Following ({filteredFollowing.length})
+        <Tabs defaultValue="connections" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="connections" className="flex items-center gap-1.5 text-xs font-bold">
+              <UserCheck className="h-3.5 w-3.5 text-blue-600" />
+              <span>Connections ({filteredConnections.length})</span>
             </TabsTrigger>
-            <TabsTrigger value="followers" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Followers ({filteredFollowers.length})
+            <TabsTrigger value="following" className="flex items-center gap-1.5 text-xs font-bold">
+              <UserPlus className="h-3.5 w-3.5" />
+              <span>Following ({filteredFollowing.length})</span>
+            </TabsTrigger>
+            <TabsTrigger value="followers" className="flex items-center gap-1.5 text-xs font-bold">
+              <Users className="h-3.5 w-3.5" />
+              <span>Followers ({filteredFollowers.length})</span>
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="following" className="space-y-4 mt-6">
-            {filteredFollowing.length === 0 ? (
+          <TabsContent value="connections" className="space-y-3 mt-4">
+            {filteredConnections.length === 0 ? (
               <div className="text-center py-8">
-                <UserPlus className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">
-                  {searchTerm ? 'No matching connections' : 'Not following anyone yet'}
+                <UserCheck className="h-14 w-14 text-muted-foreground mx-auto mb-3" />
+                <h3 className="text-base font-semibold mb-1">
+                  {searchTerm ? 'No matching connections' : 'No connections yet'}
                 </h3>
-                <p className="text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   {searchTerm 
                     ? 'Try adjusting your search terms'
-                    : 'Start following people to build your professional network'
+                    : 'Start connecting with people to build your executive network'
+                  }
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2.5 max-h-[600px] overflow-y-auto pr-1">
+                {filteredConnections.map((conn) => (
+                  <ConnectionCard key={conn.id} connection={conn} />
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="following" className="space-y-3 mt-4">
+            {filteredFollowing.length === 0 ? (
+              <div className="text-center py-8">
+                <UserPlus className="h-14 w-14 text-muted-foreground mx-auto mb-3" />
+                <h3 className="text-base font-semibold mb-1">
+                  {searchTerm ? 'No matching people' : 'Not following anyone yet'}
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  {searchTerm 
+                    ? 'Try adjusting your search terms'
+                    : 'Follow leaders and innovators in your industry to stay updated'
                   }
                 </p>
               </div>
@@ -240,17 +368,17 @@ export function FollowingFollowersList() {
             )}
           </TabsContent>
 
-          <TabsContent value="followers" className="space-y-4 mt-6">
+          <TabsContent value="followers" className="space-y-3 mt-4">
             {filteredFollowers.length === 0 ? (
               <div className="text-center py-8">
-                <Users className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">
+                <Users className="h-14 w-14 text-muted-foreground mx-auto mb-3" />
+                <h3 className="text-base font-semibold mb-1">
                   {searchTerm ? 'No matching followers' : 'No followers yet'}
                 </h3>
-                <p className="text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   {searchTerm 
                     ? 'Try adjusting your search terms'
-                    : 'Share great content to attract followers to your profile'
+                    : 'Publish insightful articles and posts to attract followers'
                   }
                 </p>
               </div>

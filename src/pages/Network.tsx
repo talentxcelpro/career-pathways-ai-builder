@@ -282,17 +282,41 @@ const Network: React.FC = () => {
           </TabsContent>
 
           {/* TAB CONTENT: CONNECTIONS */}
-          <TabsContent value="connections" className="mt-0">
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-              <React.Suspense fallback={<div className="p-8 text-center">Loading Connections...</div>}>
-                <FollowingFollowersList />
-              </React.Suspense>
-              <React.Suspense fallback={<div className="p-8 text-center">Loading Subscriptions...</div>}>
-                <SubscriptionsManager />
-              </React.Suspense>
-              <React.Suspense fallback={<div className="p-8 text-center">Loading Notifications...</div>}>
-                <SocialNotifications />
-              </React.Suspense>
+          <TabsContent value="connections" className="mt-0 space-y-4">
+            {/* Quick Hub Header Banner */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3.5 sm:p-4 bg-white dark:bg-card rounded-xl border border-slate-200/80 dark:border-border/60 shadow-xs gap-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2 sm:p-2.5 bg-blue-50 dark:bg-blue-950/50 text-blue-600 rounded-xl">
+                  <Users className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-sm text-foreground">Professional Connections Hub</h3>
+                  <p className="text-xs text-muted-foreground">Manage your connections, pending invitations, and message peers in real time.</p>
+                </div>
+              </div>
+              <Button 
+                size="sm" 
+                onClick={() => navigate('/network/connections')}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shrink-0"
+              >
+                Open Full Connections Hub &rarr;
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+              <div className="lg:col-span-8">
+                <React.Suspense fallback={<div className="p-8 text-center">Loading Connections...</div>}>
+                  <FollowingFollowersList />
+                </React.Suspense>
+              </div>
+              <div className="lg:col-span-4 space-y-4">
+                <React.Suspense fallback={<div className="p-8 text-center">Loading Subscriptions...</div>}>
+                  <SubscriptionsManager />
+                </React.Suspense>
+                <React.Suspense fallback={<div className="p-8 text-center">Loading Notifications...</div>}>
+                  <SocialNotifications />
+                </React.Suspense>
+              </div>
             </div>
           </TabsContent>
 

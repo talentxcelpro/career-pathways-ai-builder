@@ -11,7 +11,8 @@ export function SubscriptionsManager() {
   const { 
     subscriptions, 
     isLoading, 
-    unsubscribe 
+    unsubscribe,
+    subscribe
   } = useContentSubscriptions();
 
   const groupedSubscriptions = subscriptions.reduce((groups, sub) => {
@@ -62,22 +63,45 @@ export function SubscriptionsManager() {
     );
   }
 
+  const SUGGESTED_TOPICS = [
+    { name: 'Artificial Intelligence', type: 'topic' as const, icon: BookOpen },
+    { name: 'Career Growth', type: 'topic' as const, icon: BookOpen },
+    { name: '#TechHiring', type: 'hashtag' as const, icon: Hash },
+    { name: '#RemoteWork', type: 'hashtag' as const, icon: Hash },
+    { name: 'Engineering Leadership', type: 'topic' as const, icon: BookOpen },
+  ];
+
   if (subscriptions.length === 0) {
     return (
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Settings className="h-5 w-5" />
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-sm font-bold">
+            <Settings className="h-4 w-4 text-blue-600" />
             Content Subscriptions
           </CardTitle>
+          <p className="text-xs text-muted-foreground">Follow topics to curate your executive feed</p>
         </CardHeader>
-        <CardContent>
-          <div className="text-center py-8">
-            <BellOff className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No subscriptions yet</h3>
-            <p className="text-muted-foreground">
-              Start following topics, hashtags, users, or companies to get personalized content updates.
-            </p>
+        <CardContent className="space-y-3 pt-0">
+          <div className="space-y-2">
+            <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Suggested Topics</p>
+            {SUGGESTED_TOPICS.map((item) => (
+              <div key={item.name} className="flex items-center justify-between p-2 rounded-lg border border-slate-100 hover:border-blue-200 hover:bg-blue-50/40 transition-colors">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="p-1.5 rounded-md bg-blue-50 text-blue-600">
+                    <item.icon className="h-3.5 w-3.5" />
+                  </div>
+                  <span className="text-xs font-medium text-foreground truncate">{item.name}</span>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-6 px-2 text-[11px] font-semibold text-blue-600 border-blue-200 hover:bg-blue-100"
+                  onClick={() => subscribe(item.type, item.name)}
+                >
+                  + Follow
+                </Button>
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>
