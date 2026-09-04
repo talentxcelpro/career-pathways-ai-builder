@@ -39,7 +39,8 @@ import FastPassportRedirect from "@/components/passport/FastPassportRedirect";
 import { EnhancedSEODemoWrapper } from "@/components/seo/EnhancedSEODemoWrapper";
 const JobDetails = lazy(() => import("@/pages/jobs/JobDetails"));
 const Blog = lazy(() => import("@/pages/Blog"));
-const BlogPost = lazy(() => import("@/pages/BlogPost").then(m => ({ default: m.BlogPost })));
+const BlogPost = lazy(() => import("@/pages/BlogPost"));
+const BlogRedirect = lazy(() => import("@/pages/BlogRedirect"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const ResourceDetail = lazy(() => import("@/pages/resources/ResourceDetail"));
 const SlugProfile = lazy(() => import("@/pages/SlugProfile"));
@@ -325,7 +326,9 @@ const App = () => {
                 <Route path="/tools/skill-assessment-engine" element={<SkillAssessmentEngine />} />
                 <Route path="/tools/skill-assessment" element={<SkillAssessmentEngine />} />
                 <Route path="/resources/:slug" element={<ResourceDetail />} />
-                <Route path="/resources" element={<Blog />} />
+                <Route path="/resources" element={<BlogRedirect />} />
+                <Route path="/blog/:slug" element={<Suspense fallback={null}><BlogPost /></Suspense>} />
+                <Route path="/blog" element={<Suspense fallback={null}><Blog /></Suspense>} />
                 <Route path="/skills/:skill/:subtopic" element={<Suspense fallback={null}><JobsBySkill /></Suspense>} />
                 <Route path="/skills/:p1/:p2/:subtopic" element={<Suspense fallback={null}><JobsBySkill /></Suspense>} />
                 <Route path="/skills/:skill" element={<JobsBySkill />} />

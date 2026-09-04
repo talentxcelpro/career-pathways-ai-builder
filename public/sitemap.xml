@@ -152,4 +152,8 @@
     <loc>https://talentxcel.in/sitemap-news.xml</loc>
     <lastmod>2026-09-04</lastmod>
   </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-blog.xml</loc>
+    <lastmod>2026-09-04</lastmod>
+  </sitemap>
 </sitemapindex>

@@ -1,8 +1,11 @@
 // src/lib/acquisition-os/gscFeedbackLoop.ts
 // Closed Search Console Feedback Loop for TalentXcel AI Growth Organization
 // Invariant: GSC is the external intelligence feedback layer guiding what the AI organization builds next.
+// Extended with Brand Marketing triage — all brand metrics sourced from real GSC rows only.
 
-import type { GscFeedbackOpportunity } from './types';
+import type { GscFeedbackOpportunity, BrandedQueryTriage } from './types';
+import { classifyBrandQuery, resolveBrandedLandingPage } from '@/lib/seo/brandIntelligence/brandQueryClassifier';
+
 
 export const SAMPLE_GSC_FEEDBACK_OPPORTUNITIES: GscFeedbackOpportunity[] = [
   {
@@ -178,4 +181,102 @@ export async function persistOpportunity(opp: AcquisitionOpportunity): Promise<b
     return false;
   }
 }
+
+// ==========================================
+// BRAND QUERY TRIAGE
+// All metrics sourced from real GSC rows only.
+// Never fabricates impressions, clicks, or conversion data.
+// ==========================================
+
+/**
+ * Classifies real GSC query rows through the brand classifier and emits
+ * structured BrandedQueryTriage records for the AI CEO opportunity model.
+ *
+ * IMPORTANT: Input rows must come from actual GSC API responses.
+ * This function never invents data — if the input is empty, output is empty.
+ *
+ * Thresholds:
+ *  - BRAND_AWARENESS_GAP: branded query with position > 10 → no strong brand page competing
+ *  - BRAND_CTR_LOSS: branded query in pos 1–5 with CTR < 15% (brand queries should have high CTR by default)
+ *  - BRAND_HEALTHY: branded query with good position AND CTR
+ */
+export function triageBrandedQueryMetrics(
+  gscRows: Array<{
+    query: string;
+    impressions: number;
+    clicks: number;
+    ctr: number;       // 0–1
+    position: number;
+    landingPage?: string;
+  }>
+): BrandedQueryTriage[] {
+  const result: BrandedQueryTriage[] = [];
+
+  for (const row of gscRows) {
+    const cls = classifyBrandQuery(row.query);
+    if (!cls.isBranded) continue;
+
+    const ctrPct = Math.round(row.ctr * 10000) / 100; // 0–100
+    const recommendedLandingPage = resolveBrandedLandingPage(cls);
+
+    // Triage logic
+    let feedbackCategory: BrandedQueryTriage['feedbackCategory'];
+    let recommendedAction: string;
+    let priority: BrandedQueryTriage['priority'];
+
+    if (row.position > 10) {
+      // Brand query not ranking on page 1 — awareness gap
+      feedbackCategory = 'BRAND_AWARENESS_GAP';
+      priority = row.impressions >= 500 ? 'P0' : row.impressions >= 100 ? 'P1' : 'P2';
+      recommendedAction = [
+        `Brand query "${row.query}" at position ${row.position.toFixed(1)} (off page 1).`,
+        `Sub-category: ${cls.primarySubCategory}.`,
+        `Recommended page: ${recommendedLandingPage}.`,
+        row.position > 20
+          ? 'Priority: build/strengthen canonical brand page with explicit entity signals.'
+          : 'Priority: improve title, meta, and Organization schema on existing brand page.',
+      ].join(' ');
+    } else if (row.position <= 5 && ctrPct < 15) {
+      // Brand query on page 1 top 5 but CTR is low — messaging/snippet problem
+      feedbackCategory = 'BRAND_CTR_LOSS';
+      priority = row.impressions >= 1000 ? 'P0' : 'P1';
+      recommendedAction = [
+        `Brand query "${row.query}" at position ${row.position.toFixed(1)} with CTR ${ctrPct.toFixed(1)}% (below 15% expected for brand queries in top 5).`,
+        `Sub-category: ${cls.primarySubCategory}.`,
+        `Action: update meta title/description on ${recommendedLandingPage} to be more brand-assertive and match the user's brand intent.`,
+      ].join(' ');
+    } else {
+      feedbackCategory = 'BRAND_HEALTHY';
+      priority = 'INFO';
+      recommendedAction = `Brand query "${row.query}" performing well at position ${row.position.toFixed(1)}, CTR ${ctrPct.toFixed(1)}%.`;
+    }
+
+    result.push({
+      query: row.query,
+      brandSubCategory: cls.primarySubCategory ?? 'BRAND_NAVIGATION',
+      subCategories: cls.subCategories,
+      geoSignal: cls.geoSignal,
+      productSignal: cls.productSignal,
+      competitorMentioned: cls.competitorMentioned,
+      recommendedLandingPage,
+      impressions: row.impressions,
+      clicks: row.clicks,
+      ctrPct,
+      averagePosition: Math.round(row.position * 10) / 10,
+      feedbackCategory,
+      recommendedAction,
+      priority,
+    });
+  }
+
+  // Sort: P0 first, then P1, then P2, then INFO; within same priority by impressions desc
+  const priorityOrder = { P0: 0, P1: 1, P2: 2, INFO: 3 };
+  result.sort((a, b) =>
+    (priorityOrder[a.priority] - priorityOrder[b.priority]) ||
+    (b.impressions - a.impressions)
+  );
+
+  return result;
+}
+
 

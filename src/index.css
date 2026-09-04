@@ -1,7 +1,35 @@
 
-/* Import mobile-first & dark text optimizations */
 @import url('./styles/mobile-first-global.css');
 @import './styles/apple-dark-text.css';
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: local('Inter'), local('Inter-Regular');
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Inter, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  letter-spacing: -0.011em;
+  font-size: 17px;
+}
+
+#root {
+  min-height: 100vh;
+  opacity: 0;
+  animation: fadeIn .2s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
 
 @tailwind base;
 @tailwind components;

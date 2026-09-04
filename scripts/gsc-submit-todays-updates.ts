@@ -121,7 +121,9 @@ async function main() {
     'https://talentxcel.in/sitemap-services.xml',
     'https://talentxcel.in/sitemap-learning.xml',
     'https://talentxcel.in/sitemap-jobs.xml',
-    'https://talentxcel.in/sitemap-colleges.xml'
+    'https://talentxcel.in/sitemap-colleges.xml',
+    'https://talentxcel.in/sitemap-blog.xml',
+    'https://talentxcel.in/sitemap-news.xml'
   ];
 
   console.log('📡 Submitting Updated Sitemaps to Google Search Console...');
@@ -161,6 +163,16 @@ async function main() {
     'https://talentxcel.in/profile/dimple-dhangar',
     'https://talentxcel.in/profile/gaurav-bhatia',
     'https://talentxcel.in/profile/talentxcel-services',
+
+    // Canonical Brand Entity Hub
+    'https://talentxcel.in/about/talentxcel',
+
+    // GSC High-Performing & Gap Opportunity URLs (Jobs & Locations)
+    'https://talentxcel.in/locations/varanasi',
+    'https://talentxcel.in/jobs/safety-officer/hyderabad/fresher',
+    'https://talentxcel.in/jobs/credit-analyst/india/experienced',
+    'https://talentxcel.in/jobs/biomedical-engineer/chennai/bangalore',
+    'https://talentxcel.in/jobs/structural-engineer/india/remote-hybrid',
 
     // Global Education & Programs
     'https://talentxcel.in/colleges/global-programs',

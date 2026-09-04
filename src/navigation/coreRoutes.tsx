@@ -11,6 +11,7 @@ const PrivacyPolicy = lazy(() => import("../pages/PrivacyPolicy"));
 const Terms = lazy(() => import("../pages/Terms"));
 const ReturnRefundPolicy = lazy(() => import("../pages/ReturnRefundPolicy").then(m => ({ default: m.ReturnRefundPolicy })));
 const Blog = lazy(() => import("../pages/Blog"));
+const BlogPost = lazy(() => import("../pages/BlogPost"));
 const NotFound = lazy(() => import("../pages/NotFound"));
 const Dashboard = lazy(() => import("../pages/Dashboard"));
 const SEOAdmin = lazy(() => import("../pages/admin/SEOAdmin"));
@@ -98,6 +99,15 @@ export const coreRoutes = [
     title: "Blog",
     to: "/blog",
     page: <S><Blog /></S>,
+    isPublic: true,
+    requiresAuth: false,
+  },
+  {
+    title: "Blog Post",
+    to: "/blog/:slug",
+    page: <S><BlogPost /></S>,
+    isPublic: true,
+    requiresAuth: false,
   },
   {
     title: "Careers",

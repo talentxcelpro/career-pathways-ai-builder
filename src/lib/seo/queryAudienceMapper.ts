@@ -2,6 +2,7 @@
 // TalentXcel Global Organic Acquisition Operating System (GO-AOS)
 // Multi-Dimensional Semantic Query -> Geo -> Intent -> Audience -> Business Segment -> Acquisition Type -> Product -> Content Gap Mapper
 // Zero Hardcoded Cities — Fully Dynamic with Provenance & Confidence Tracking
+// Extended with Brand Marketing dimensions (demandType, brandSubCategory)
 
 import { AcquisitionSurfaceId } from '@/lib/acquisition-os/types';
 import { 
@@ -13,6 +14,9 @@ import {
 } from './acquisitionTaxonomy';
 import { RegionalMarketId, AcquisitionType, REGIONAL_MARKETS } from './regionalTaxonomy';
 import { resolveGeoEntityFromQuery, ResolvedGeoEntity } from './geoEntityResolver';
+import { classifyBrandQuery, resolveBrandedLandingPage, type BrandSubCategory } from './brandIntelligence/brandQueryClassifier';
+import type { DemandType } from '@/lib/acquisition-os/types';
+
 
 export type ContentGapStatus = 'OPTIMIZE_EXISTING' | 'CREATE_CANONICAL' | 'CONSOLIDATE_PARENT';
 
@@ -46,6 +50,14 @@ export interface QueryAcquisitionMapping {
   locale: string;
   contentGapStatus: ContentGapStatus;
 
+  // Brand Marketing Dimensions (null for generic queries)
+  demandType: DemandType;
+  brandSubCategory: BrandSubCategory | null;
+  brandSubCategories: BrandSubCategory[];
+  brandGeoSignal: string | null;
+  brandProductSignal: string | null;
+  brandCompetitorMentioned: string | null;
+
   // Complete Audit Trace of Inferences
   inferences: {
     geo: ProvenanceInference<string>;
@@ -57,6 +69,7 @@ export interface QueryAcquisitionMapping {
     contentGap: ProvenanceInference<ContentGapStatus>;
   };
 }
+
 
 /**
  * Normalizes query string for uniform tokenization and matching
@@ -331,7 +344,18 @@ export function mapQueryToRegionalProduct(rawQuery: string, countryHint?: string
     productConf = 0.88;
   }
 
-  const landingPage = resolveRegionalDestination(product, geo, intentInf.value);
+  // ── Brand Classification ──────────────────────────────────────
+  // Run classifier on the normalized query. Does not modify any existing inference.
+  const brandResult = classifyBrandQuery(norm);
+  const demandType: DemandType = brandResult.isBranded ? 'BRANDED' : 'GENERIC';
+
+  // For branded queries, override the landing page with brand-aware routing
+  const genericLandingPage = resolveRegionalDestination(product, geo, intentInf.value);
+  const landingPage = brandResult.isBranded
+    ? resolveBrandedLandingPage(brandResult)
+    : genericLandingPage;
+  // ─────────────────────────────────────────────────────────────
+
   const contentGap = evaluateContentGap(product, geo, intentInf.value);
   const def = PRODUCT_CONVERSION_REGISTRY[product];
 
@@ -361,6 +385,14 @@ export function mapQueryToRegionalProduct(rawQuery: string, countryHint?: string
     locale: geo.locale,
     contentGapStatus: contentGap,
 
+    // Brand Marketing Dimensions
+    demandType,
+    brandSubCategory: brandResult.primarySubCategory ?? null,
+    brandSubCategories: brandResult.subCategories as BrandSubCategory[],
+    brandGeoSignal: brandResult.geoSignal,
+    brandProductSignal: brandResult.productSignal,
+    brandCompetitorMentioned: brandResult.competitorMentioned,
+
     inferences: {
       geo: { value: `${geo.cityName || geo.countryName} (${geo.market})`, confidence: geo.confidenceScore, provenance: geo.provenance, evidenceSnippet: geo.evidenceSnippet },
       intent: intentInf,
@@ -372,6 +404,7 @@ export function mapQueryToRegionalProduct(rawQuery: string, countryHint?: string
     },
   };
 }
+
 
 /**
  * Backward compatibility alias for mapQueryToRegionalProduct

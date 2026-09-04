@@ -1,5 +1,6 @@
 // src/lib/acquisition-os/types.ts
 // Authoritative Type System for TalentXcel Global Acquisition OS (12 Product Surfaces)
+// Extended with Brand Marketing dimensions (demandType, brandSubCategory)
 
 export type AcquisitionSurfaceId =
   | 'JOBS'              // 1. Role x Experience x City x Company
@@ -56,8 +57,49 @@ export interface GscFeedbackOpportunity {
   currentClicks: number;
   currentCtrPct: number;
   averagePosition: number;
-  feedbackCategory: 'HIGH_DEMAND_ZERO_PAGE' | 'LOW_CTR_HIGH_IMPRESSION' | 'LOW_CONVERSION_HIGH_TRAFFIC';
+  feedbackCategory: 
+    | 'HIGH_DEMAND_ZERO_PAGE' 
+    | 'LOW_CTR_HIGH_IMPRESSION' 
+    | 'LOW_CONVERSION_HIGH_TRAFFIC'
+    | 'BRAND_AWARENESS_GAP'     // Brand query has high impressions but no dedicated brand landing response
+    | 'BRAND_CTR_LOSS';         // Brand query in top 5 but CTR below expected for brand queries
   recommendedAction: string;
   delegatedAgent: string;
   priority: 'P0' | 'P1' | 'P2';
+
+  // Brand Marketing dimensions — null for non-branded queries
+  demandType?: 'GENERIC' | 'BRANDED';
+  brandSubCategory?: string | null;  // BrandSubCategory string (avoids circular import)
+  geoSignal?: string | null;
+  productSignal?: string | null;
+  competitorMentioned?: string | null;
 }
+
+/**
+ * Demand type dimension for the unified Acquisition Intelligence model.
+ * GENERIC = user searches for something, finds TalentXcel.
+ * BRANDED = user searches for TalentXcel specifically.
+ */
+export type DemandType = 'GENERIC' | 'BRANDED';
+
+/**
+ * Result of processing a single branded GSC row through the brand classifier + triage logic.
+ * All metrics here come from real GSC rows — never fabricated.
+ */
+export interface BrandedQueryTriage {
+  query: string;
+  brandSubCategory: string;          // BrandSubCategory string
+  subCategories: string[];
+  geoSignal: string | null;
+  productSignal: string | null;
+  competitorMentioned: string | null;
+  recommendedLandingPage: string;
+  impressions: number;
+  clicks: number;
+  ctrPct: number;
+  averagePosition: number;
+  feedbackCategory: 'BRAND_AWARENESS_GAP' | 'BRAND_CTR_LOSS' | 'BRAND_HEALTHY';
+  recommendedAction: string;
+  priority: 'P0' | 'P1' | 'P2' | 'INFO';
+}
+

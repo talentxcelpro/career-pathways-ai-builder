@@ -13,6 +13,15 @@ export type NewsArchetype =
   | 'Professional Journal'
   | 'Trade Publication';
 
+export type EvidenceStatus = 'EDITORIAL' | 'RESEARCH' | 'INDUSTRY_OBSERVATION';
+export type ClaimStatus = 'VERIFIED' | 'EDITORIAL_OPINION' | 'REVIEW_REQUIRED';
+
+export interface ArticleSource {
+  name: string;
+  url?: string;
+  citationType?: 'OFFICIAL_STANDARD' | 'LABOR_DATA' | 'INDUSTRY_BENCHMARK' | 'ACADEMIC' | 'INTERNAL_TELEMETRY';
+}
+
 export interface NewsAuthor {
   name: string;
   role: string;
@@ -35,8 +44,19 @@ export interface NewsArticle {
   metricsSnapshot?: Record<string, string | number>;
   author: NewsAuthor;
   imageUrl: string;
+  imageAlt?: string;
+  imageCaption?: string;
+  imageLicense?: string;
   readTime: string;
   tags: string[];
   keyTakeaways: string[];
   isFeatured?: boolean;
+
+  // Editorial Evidence Governance Layer
+  evidenceStatus?: EvidenceStatus;
+  claimStatus?: ClaimStatus;
+  sources?: ArticleSource[];
+  methodology?: string | null;
+  limitations?: string | null;
+  lastReviewedAt?: string;
 }

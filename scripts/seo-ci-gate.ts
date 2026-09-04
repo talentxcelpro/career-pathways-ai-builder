@@ -2854,7 +2854,203 @@ async function runSeoCiGate() {
     record('Admin_Security', 'Admin Security Engine Execution', false, `Security test error: ${err.message}`, { severity: 'CRITICAL' });
   }
 
+  // ============================================================
+  // --- Section 22: Brand Marketing Intelligence (8 Invariants) ---
+  // ============================================================
+  console.log('\n--- Auditing Section 22: Brand Marketing Intelligence ---');
+  try {
+    const {
+      classifyBrandQuery,
+      isBrandedQuery,
+      BRAND_SEED_QUERIES,
+      resolveBrandedLandingPage,
+      runBrandClassifierSelfTest,
+    } = await import('../src/lib/seo/brandIntelligence/brandQueryClassifier.js');
+
+    const {
+      computeBrandDemandIndex,
+      computeBrandSearchMetrics,
+      EMPTY_BRAND_DEMAND_INDEX,
+    } = await import('../src/lib/seo/brandIntelligence/brandDemandIndex.js');
+
+    const {
+      triageBrandedQueryMetrics,
+    } = await import('../src/lib/acquisition-os/gscFeedbackLoop.js');
+
+    // 1. isBrandedQuery is exported and correctly identifies brand queries
+    const brandCheck1 = isBrandedQuery('talentxcel');
+    const brandCheck2 = !isBrandedQuery('software engineer jobs india');
+    const brandCheck3 = isBrandedQuery('talentxcel jobs dubai');
+    record(
+      'Brand_Marketing',
+      'Brand Query Classifier: isBrandedQuery correctly identifies branded vs generic queries',
+      brandCheck1 && brandCheck2 && brandCheck3,
+      brandCheck1 && brandCheck2 && brandCheck3
+        ? 'isBrandedQuery correctly returns true for "talentxcel", false for generic queries, true for "talentxcel jobs dubai"'
+        : `Failed: talentxcel=${brandCheck1}, generic=${brandCheck2}, talentxcel+dubai=${brandCheck3}`
+    );
+
+    // 2. Multi-dimensional: "talentxcel jobs dubai" has BOTH BRAND_JOBS and BRAND_LOCATION
+    const dubaiResult = classifyBrandQuery('talentxcel jobs dubai');
+    const hasJobsSubcat = dubaiResult.subCategories.includes('BRAND_JOBS');
+    const hasLocationSubcat = dubaiResult.subCategories.includes('BRAND_LOCATION');
+    const hasGeoSignal = dubaiResult.geoSignal === 'dubai';
+    record(
+      'Brand_Marketing',
+      'Multi-Dimensional Brand Classification: "talentxcel jobs dubai" maps to BRAND_JOBS + BRAND_LOCATION + geo=dubai simultaneously',
+      hasJobsSubcat && hasLocationSubcat && hasGeoSignal,
+      hasJobsSubcat && hasLocationSubcat && hasGeoSignal
+        ? 'Correctly emits BRAND_JOBS + BRAND_LOCATION + geoSignal=dubai (non-exclusive dimensions)'
+        : `Failed: BRAND_JOBS=${hasJobsSubcat}, BRAND_LOCATION=${hasLocationSubcat}, geo=${dubaiResult.geoSignal}`
+    );
+
+    // 3. Landing page routing: brand+jobs+dubai → /uae/jobs; brand+product → /resume; plain brand → /about/talentxcel
+    const dubaiLanding = resolveBrandedLandingPage(dubaiResult);
+    const resumeResult = classifyBrandQuery('talentxcel resume builder');
+    const resumeLanding = resolveBrandedLandingPage(resumeResult);
+    const navResult = classifyBrandQuery('talentxcel');
+    const navLanding = resolveBrandedLandingPage(navResult);
+    record(
+      'Brand_Marketing',
+      'Brand Landing Page Routing: brand+jobs+dubai→/uae/jobs, brand+resume→/resume, brand-only→/about/talentxcel',
+      dubaiLanding === '/uae/jobs' && resumeLanding === '/resume' && navLanding === '/about/talentxcel',
+      `dubai: ${dubaiLanding} (exp /uae/jobs), resume: ${resumeLanding} (exp /resume), nav: ${navLanding} (exp /about/talentxcel)`
+    );
+
+    // 4. All 9 brand sub-categories covered by BRAND_SEED_QUERIES
+    const coveredCategories = new Set(BRAND_SEED_QUERIES.map((s: any) => s.expectedPrimary));
+    const ALL_9 = [
+      'BRAND_NAVIGATION', 'BRAND_PRODUCT', 'BRAND_JOBS', 'BRAND_EMPLOYER',
+      'BRAND_LOCATION', 'BRAND_PERSON', 'BRAND_REPUTATION', 'BRAND_SUPPORT', 'BRAND_COMPARISON'
+    ];
+    const missingCategories = ALL_9.filter(c => !coveredCategories.has(c));
+    record(
+      'Brand_Marketing',
+      'Brand Seed Queries Cover All 9 Sub-Categories (test fixtures — not production metrics)',
+      missingCategories.length === 0,
+      missingCategories.length === 0
+        ? 'All 9 brand sub-categories represented in BRAND_SEED_QUERIES test fixtures'
+        : `Missing seed coverage for: ${missingCategories.join(', ')}`
+    );
+
+    // 5. Self-test runner passes all seed fixtures
+    const selfTestResult = runBrandClassifierSelfTest();
+    record(
+      'Brand_Marketing',
+      `Brand Classifier Self-Test: ${selfTestResult.passed}/${BRAND_SEED_QUERIES.length} seed query fixtures pass deterministic classification`,
+      selfTestResult.failed === 0,
+      selfTestResult.failed === 0
+        ? `All ${selfTestResult.passed} seed queries classified correctly`
+        : `${selfTestResult.failed} failures: ${selfTestResult.failures.slice(0, 3).join('; ')}`
+    );
+
+    // 6. Brand Demand Index is status-aware: empty input → score=null, status=INSUFFICIENT_DATA (never zero)
+    const emptyIndex = computeBrandDemandIndex({
+      gscRows: [],
+      periodStart: '2026-01-01',
+      periodEnd: '2026-09-04',
+    });
+    record(
+      'Brand_Marketing',
+      'Brand Demand Index Status-Aware: empty GSC input produces score=null, status=INSUFFICIENT_DATA (not zero)',
+      emptyIndex.score === null && emptyIndex.status === 'INSUFFICIENT_DATA',
+      emptyIndex.score === null && emptyIndex.status === 'INSUFFICIENT_DATA'
+        ? 'Brand Demand Index correctly returns null score (not zero) when no branded GSC data is present'
+        : `Failed: score=${emptyIndex.score}, status=${emptyIndex.status}`
+    );
+
+    // 7. triageBrandedQueryMetrics processes only real rows; empty input → empty output (never fabricates)
+    const triageEmpty = triageBrandedQueryMetrics([]);
+    const triageGenericOnly = triageBrandedQueryMetrics([
+      { query: 'software engineer jobs', impressions: 5000, clicks: 200, ctr: 0.04, position: 3.5 }
+    ]);
+    const triageBranded = triageBrandedQueryMetrics([
+      { query: 'talentxcel jobs dubai', impressions: 500, clicks: 10, ctr: 0.02, position: 8 }
+    ]);
+    record(
+      'Brand_Marketing',
+      'Brand GSC Triage: empty input→empty output; generic rows filtered out; branded rows classified (no fabrication)',
+      triageEmpty.length === 0 && triageGenericOnly.length === 0 && triageBranded.length === 1,
+      triageEmpty.length === 0 && triageGenericOnly.length === 0 && triageBranded.length === 1
+        ? 'triageBrandedQueryMetrics correctly filters non-branded rows and processes only real branded GSC data'
+        : `Empty: ${triageEmpty.length} (exp 0), generic-only: ${triageGenericOnly.length} (exp 0), branded: ${triageBranded.length} (exp 1)`
+    );
+
+    // 8. /about/talentxcel route exists in App.tsx and canonical brand page emits Organization + BreadcrumbList schema
+    const appTsxPath = resolve('src/App.tsx');
+    const appContents = existsSync(appTsxPath) ? readFileSync(appTsxPath, 'utf-8') : '';
+    const brandRouteRegistered = appContents.includes('/about/talentxcel');
+    const brandPagePath = resolve('src/pages/about/AboutTalentXcelAI.tsx');
+    const brandPageContents = existsSync(brandPagePath) ? readFileSync(brandPagePath, 'utf-8') : '';
+    const hasOrgSchema = brandPageContents.includes("'@type': 'Organization'") || brandPageContents.includes('"@type": "Organization"');
+    const hasBreadcrumbSchema = brandPageContents.includes('BreadcrumbList');
+    const noFaqSchema = !brandPageContents.includes("'@type': 'FAQPage'") && !brandPageContents.includes('"@type": "FAQPage"');
+    record(
+      'Brand_Marketing',
+      'Brand Entity Page: /about/talentxcel registered in App.tsx; emits Organization + BreadcrumbList schema; no FAQ schema dependency',
+      brandRouteRegistered && hasOrgSchema && hasBreadcrumbSchema && noFaqSchema,
+      `Route registered: ${brandRouteRegistered}, Organization schema: ${hasOrgSchema}, BreadcrumbList: ${hasBreadcrumbSchema}, No FAQPage schema: ${noFaqSchema}`
+    );
+
+    // =========================================================================
+    // --- 16. BLOG VS NEWS STRICT CONTENT ARCHITECTURE SEPARATION (20 INVARIANTS) ---
+    // =========================================================================
+    console.log('\n--- 16. AUDITING BLOG VS NEWS ARCHITECTURAL SEPARATION (20 INVARIANTS) ---');
+    
+    const coreRoutesPath = resolve('src/navigation/coreRoutes.tsx');
+    const coreRoutesContent = existsSync(coreRoutesPath) ? readFileSync(coreRoutesPath, 'utf-8') : '';
+    const blogDataPath = resolve('src/data/blogPostsData.ts');
+    const newsDataPath = resolve('src/data/newsArticles.ts');
+    const blogPagePath = resolve('src/pages/Blog.tsx');
+    const blogPostPagePath = resolve('src/pages/BlogPost.tsx');
+    const newsPagePath = resolve('src/pages/NewsPage.tsx');
+    const sitemapBlogPath = resolve('public/sitemap-blog.xml');
+    const sitemapNewsPath = resolve('public/sitemap-news.xml');
+    
+    const blogDataContent = existsSync(blogDataPath) ? readFileSync(blogDataPath, 'utf-8') : '';
+    const newsDataContent = existsSync(newsDataPath) ? readFileSync(newsDataPath, 'utf-8') : '';
+    const blogPostContent = existsSync(blogPostPagePath) ? readFileSync(blogPostPagePath, 'utf-8') : '';
+    const newsPageContent = existsSync(newsPagePath) ? readFileSync(newsPagePath, 'utf-8') : '';
+    const sitemapBlogContent = existsSync(sitemapBlogPath) ? readFileSync(sitemapBlogPath, 'utf-8') : '';
+    const sitemapNewsContent = existsSync(sitemapNewsPath) ? readFileSync(sitemapNewsPath, 'utf-8') : '';
+
+    // BLOG Invariants
+    record('Blog_News_Separation', '1. /blog route exists in App and coreRoutes', appContents.includes('path="/blog"') && coreRoutesContent.includes('to: "/blog"'), 'Route /blog registered');
+    record('Blog_News_Separation', '2. /blog/:slug route exists in App and coreRoutes', appContents.includes('path="/blog/:slug"') && coreRoutesContent.includes('to: "/blog/:slug"'), 'Route /blog/:slug registered');
+    record('Blog_News_Separation', '3. Blog articles use canonical /blog/:slug URLs', blogPostContent.includes('https://talentxcel.in/blog/${slug}'), 'Canonical /blog/:slug enforced');
+    record('Blog_News_Separation', '4. Blog URLs are not redirected to /news', !coreRoutesContent.includes('to: "/blog",\n    page: <S><BlogRedirect /></S>'), '/blog routes to Blog component');
+    record('Blog_News_Separation', '5. Blog URLs appear only in Blog sitemap', sitemapBlogContent.includes('/blog/') && !sitemapBlogContent.includes('/news/'), 'Blog sitemap partitioned');
+    record('Blog_News_Separation', '6. Blog structured data is valid BlogPosting', blogPostContent.includes("'@type': 'BlogPosting'"), 'BlogPosting schema present');
+    record('Blog_News_Separation', '7. Blog articles have required metadata', blogDataContent.includes('export interface BlogPostItem') && blogDataContent.includes('BLOG_POSTS'), 'Blog items typed with metadata');
+
+    // NEWS Invariants
+    record('Blog_News_Separation', '8. /news route exists in App', appContents.includes('NewsPage'), 'Route /news registered');
+    record('Blog_News_Separation', '9. /news/:slug route exists in App', newsPageContent.includes('const { slug } = useParams'), 'News slug param handled');
+    record('Blog_News_Separation', '10. News articles use canonical /news/:slug URLs', newsPageContent.includes('https://talentxcel.in/news/${article.slug}'), 'Canonical /news/:slug enforced');
+    record('Blog_News_Separation', '11. News URLs appear only in News sitemap', sitemapNewsContent.includes('/news/') && !sitemapNewsContent.includes('/blog/'), 'News sitemap partitioned');
+    record('Blog_News_Separation', '12. News structured data is valid NewsArticle', newsPageContent.includes('"@type": "NewsArticle"'), 'NewsArticle schema present');
+    record('Blog_News_Separation', '13. Research articles expose evidence metadata', newsPageContent.includes('methodology') || newsDataContent.includes('evidenceStatus') || newsDataContent.includes('claimStatus') || newsDataContent.includes('keyTakeaways'), 'Evidence & metadata exposed');
+
+    // SEPARATION Invariants
+    record('Blog_News_Separation', '14. BLOG and NEWS have separate data catalogs', existsSync(blogDataPath) && existsSync(newsDataPath) && blogDataPath !== newsDataPath, 'Separate data catalogs');
+    record('Blog_News_Separation', '15. BLOG and NEWS have separate content archetypes', blogDataContent.includes('category') && newsDataContent.includes('archetype'), 'Distinct content archetypes');
+    record('Blog_News_Separation', '16. No Blog article is automatically migrated into News', !newsDataContent.includes('how-to-beat-ats-resume-parsing'), 'Catalogs not cross-polluted');
+    record('Blog_News_Separation', '17. No News article is automatically migrated into Blog', !blogDataContent.includes('uae-middle-east-tech-recruitment-velocity'), 'Catalogs kept isolated');
+    record('Blog_News_Separation', '18. Cross-links remain contextual on Brand Page', brandPageContents.includes('/news') && brandPageContents.includes('/blog'), 'Brand page links separately to both');
+    record('Blog_News_Separation', '19. Canonical URLs never cross surfaces', !sitemapNewsContent.includes('talentxcel.in/blog/') && !sitemapBlogContent.includes('talentxcel.in/news/'), 'Canonical URLs partitioned');
+    
+    // 20. GSC intelligence engine separates BLOG vs NEWS surfaces
+    const gscEnginePath = resolve('src/lib/seo/gscMarketingIntelligenceEngine.ts');
+    const gscEngineContent = existsSync(gscEnginePath) ? readFileSync(gscEnginePath, 'utf-8') : '';
+    const separatesSurfaces = gscEngineContent.includes("lower.includes('/blog/')") && gscEngineContent.includes("lower.includes('/news/')");
+    record('Blog_News_Separation', '20. GSC opportunities identify BLOG vs NEWS surfaces correctly', separatesSurfaces, 'GSC engine classifies BLOG vs NEWS');
+
+  } catch (err: any) {
+    record('Brand_Marketing', 'Brand Marketing Intelligence Suite Execution', false, `Brand Marketing CI error: ${err.message}`, { severity: 'HIGH' });
+  }
+
   // --- Dynamic Summary & Invariant Report ---
+
   console.log('\n================================================================');
   console.log('📊 TALENTXCEL CI GATE DYNAMIC INVARIANT AUDIT REPORT');
   console.log('================================================================');

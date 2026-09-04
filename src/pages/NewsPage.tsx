@@ -245,7 +245,7 @@ const NewsPage: React.FC = () => {
               </div>
             )}
             <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-              <CheckCircle2 className="h-3 w-3" /> 15-Day Cadence
+              <CheckCircle2 className="h-3 w-3" /> Verified Publication
             </span>
           </div>
 
@@ -532,7 +532,7 @@ const NewsPage: React.FC = () => {
             </div>
 
             <span className="hidden md:inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 shrink-0">
-              <CheckCircle2 className="h-3 w-3" /> 15-Day Cadence
+              <CheckCircle2 className="h-3 w-3" /> Verified Editorial
             </span>
           </div>
 
