@@ -254,14 +254,10 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
 
   // ✨ TalentXcel AI: Rewrite & Transform Post
   const handleAiTransform = async (mode: 'polish' | 'professional' | 'career' | 'engaging' | 'concise' | 'job_seeker' | 'hiring' | 'hindi') => {
-    if (!content.trim()) {
-      toast.error('Please write some thoughts first for AI to transform');
-      return;
-    }
     setIsGeneratingAi(true);
     try {
       const profile = user?.user_metadata || {};
-      const result = await rewriteTalentXcelPost(content, mode, profile);
+      const result = await rewriteTalentXcelPost(content || '', mode, profile);
       setContent(result.text);
 
       if (result.hashtags && result.hashtags.length > 0) {
@@ -272,7 +268,18 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
         setTags(Array.from(new Set([...tags, ...result.skills])));
       }
 
-      toast.success(`Post transformed with TalentXcel AI (${mode.replace('_', ' ')})!`);
+      const modeNames: Record<string, string> = {
+        professional: 'Professional',
+        career: 'Career Milestone',
+        engaging: 'High Engagement',
+        job_seeker: 'Looking for Work',
+        hiring: 'We Are Hiring',
+        hindi: 'Hindi / Hinglish',
+        polish: 'Polished',
+        concise: 'Concise'
+      };
+
+      toast.success(`TalentXcel AI generated ${modeNames[mode] || mode} post!`);
       setShowAiDrawer(false);
     } catch (err: any) {
       toast.error('AI transformation failed');

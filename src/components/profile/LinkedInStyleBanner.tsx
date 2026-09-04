@@ -111,15 +111,15 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
         {/* Profile Avatar & Details Content */}
         <CardContent className="px-3.5 pb-3.5 pt-0 relative flex flex-col items-center text-center">
           
-          {/* Circular Overlapping Avatar */}
-          <div className="relative -mt-8 mb-2">
-            <Avatar className="w-16 h-16 border-3 border-white dark:border-slate-900 shadow-md bg-slate-900">
-              <AvatarImage src={avatarUrl || undefined} alt={fullName} className="object-cover" />
-              <AvatarFallback className="text-base font-black bg-slate-900 text-white">
-                {fullName.charAt(0).toUpperCase()}
+          {/* Circular Overlapping Avatar (20% smaller with light blue background) */}
+          <div className="relative -mt-7 mb-1.5">
+            <Avatar className="w-14 h-14 border-2 border-sky-400 dark:border-sky-600 shadow-md bg-sky-100 dark:bg-sky-950">
+              <AvatarImage src={avatarUrl || undefined} alt={fullName} className="w-full h-full object-contain p-1 bg-sky-100 dark:bg-sky-950 rounded-full" />
+              <AvatarFallback className="text-sm font-black bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-200">
+                {(fullName || 'U').charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-500 border-2 border-white dark:border-slate-900 rounded-full shadow-xs" />
+            <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-slate-900 rounded-full shadow-xs" />
           </div>
 
           {/* Candidate Name & Verified Badge */}

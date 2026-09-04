@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
+import { useRealtimeUpdates } from '@/hooks/useRealtimeUpdates';
 
 export interface EnhancedConnectionSuggestion {
   id: string;
@@ -161,21 +162,10 @@ export const useEnhancedConnectionSuggestions = () => {
     }
   });
 
-  // Realtime subscription on connections table
-  useEffect(() => {
-    if (!user?.id) return;
-
-    const channel = supabase
-      .channel(`connections-realtime-${user.id}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'connections' }, () => {
-        queryClient.invalidateQueries({ queryKey: ['enhanced-connection-suggestions'] });
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [user?.id, queryClient]);
+  // Realtime updates using consolidated event bus (zero binding conflicts)
+  useRealtimeUpdates('connections', () => {
+    queryClient.invalidateQueries({ queryKey: ['enhanced-connection-suggestions'] });
+  }, [queryClient]);
 
   // Mutation to send connection request
   const sendConnectionMutation = useMutation({

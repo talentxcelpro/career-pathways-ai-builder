@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useRealtimeUpdates } from '@/hooks/useRealtimeUpdates';
 import { 
   TrendingUp, 
   Eye, 
@@ -141,28 +142,11 @@ export const NetworkAnalytics = () => {
     enabled: !!currentUser?.id
   });
 
-  // Live Realtime Subscriptions for Real Database sync
-  useEffect(() => {
-    if (!currentUser?.id) return;
-
-    const channel = supabase
-      .channel(`network-analytics-live-${currentUser.id}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => {
-        refetchAnalytics();
-      })
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'connections' }, () => {
-        refetchAnalytics();
-      })
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
-        refetchProfile();
-        refetchAnalytics();
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [currentUser?.id, refetchAnalytics, refetchProfile]);
+  // Live Realtime Subscriptions using central event bus (zero binding conflicts)
+  useRealtimeUpdates(['connections', 'user_activities'], () => {
+    refetchAnalytics();
+    refetchProfile();
+  }, [refetchAnalytics, refetchProfile]);
 
   const periodLabels = {
     '7d': 'Last 7 days',

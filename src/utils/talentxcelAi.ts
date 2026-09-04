@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { getSmartTalentXcelContent, getRandomTalentXcelPost } from '@/data/talentxcelAiContentPool';
 
 export interface TalentXcelPostResult {
   hook: string;
@@ -37,11 +38,12 @@ export async function generateTalentXcelPost(topic: string, tone: string = 'Thou
     if (error || !data?.data) throw error || new Error('No response');
     return data.data;
   } catch (err) {
-    console.warn('TalentXcel post assistant fallback engaged:', err);
+    console.warn('TalentXcel post assistant dynamic pool engaged:', err);
+    const smartContent = getSmartTalentXcelContent('professional', '', topic, tone);
     return {
-      hook: `🚀 Key insights on ${topic || 'Professional Leadership'}!`,
-      content: `The business landscape is transforming rapidly. By focusing on innovation, execution excellence, and team empowerment, we unlock exponential growth.\n\nWhat strategies are driving the biggest impact for your team this quarter?`,
-      hashtags: ['#Leadership', '#CareerGrowth', '#Innovation', '#TalentXcel']
+      hook: smartContent.hook,
+      content: smartContent.content,
+      hashtags: smartContent.hashtags.map(h => h.startsWith('#') ? h : `#${h}`)
     };
   }
 }

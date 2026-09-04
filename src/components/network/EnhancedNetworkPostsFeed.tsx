@@ -38,18 +38,30 @@ export const EnhancedNetworkPostsFeed: React.FC<EnhancedNetworkPostsFeedProps> =
 
   const posts = data?.pages.flatMap(page => page.data) || [];
 
-  // Realtime subscription on posts table so newly published articles/posts immediately show
+  // Realtime subscription on posts table with graceful fallback
   useEffect(() => {
-    const channel = supabase
-      .channel('feed-posts-realtime-sync')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => {
-        refetch();
-      })
-      .subscribe();
+    try {
+      const channel = supabase
+        .channel(`feed-posts-realtime-sync-${Date.now()}`)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => {
+          refetch();
+        })
+        .subscribe((status) => {
+          if (status === 'CHANNEL_ERROR') {
+            console.warn('Feed posts realtime channel notice: falling back to regular query refetch');
+          }
+        });
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
+      return () => {
+        try {
+          supabase.removeChannel(channel);
+        } catch {
+          // ignore
+        }
+      };
+    } catch (e) {
+      console.warn('Feed posts realtime bypassed:', e);
+    }
   }, [refetch]);
 
   // Intersection observer for infinite scroll

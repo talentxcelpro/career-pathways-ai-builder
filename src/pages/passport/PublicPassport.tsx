@@ -244,15 +244,15 @@ const PublicPassport: React.FC = () => {
             {/* Identity Info */}
             <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center">
               
-              {/* Profile Avatar with Active Status Indicator */}
+              {/* Profile Avatar with Active Status Indicator (20% smaller with light blue background) */}
               <div className="relative shrink-0">
-                <Avatar className="w-24 h-24 sm:w-28 sm:h-28 border-4 border-white dark:border-slate-800 shadow-xl bg-white">
-                  <AvatarImage src={avatarUrl || undefined} alt={fullName} className="object-cover" />
-                  <AvatarFallback className="text-3xl font-extrabold bg-slate-900 text-white">
-                    {fullName.charAt(0).toUpperCase()}
+                <Avatar className="w-20 h-20 sm:w-22 sm:h-22 border-2 border-sky-400 dark:border-sky-600 shadow-xl bg-sky-100 dark:bg-sky-950">
+                  <AvatarImage src={avatarUrl || undefined} alt={fullName} className="w-full h-full object-contain p-1.5 bg-sky-100 dark:bg-sky-950 rounded-full" />
+                  <AvatarFallback className="text-2xl font-black bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-200">
+                    {(fullName || 'U').charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                <span className="absolute bottom-1 right-1 w-5 h-5 bg-emerald-500 border-2 border-white dark:border-slate-800 rounded-full shadow-md" title="Active Status" />
+                <span className="absolute bottom-0.5 right-0.5 w-4 h-4 bg-emerald-500 border-2 border-white dark:border-slate-800 rounded-full shadow-md" title="Active Status" />
               </div>
 
               {/* Name, Title, Location & Headline */}

@@ -340,58 +340,62 @@ const SlugProfile = () => {
               {/* Background Decorative Mesh Pattern */}
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-500/20 via-purple-500/10 to-transparent pointer-events-none" />
 
-              <div className="relative p-6 md:p-8 flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">
-                <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
+              <div className="relative p-4 md:p-6 flex flex-col md:flex-row gap-4 md:gap-5 items-start md:items-center justify-between">
+                <div className="flex flex-col md:flex-row gap-4 md:gap-5 items-start md:items-center">
                   
-                  {/* Glowing Avatar Frame */}
+                  {/* Glowing Avatar Frame (20% smaller with Light Blue background) */}
                   <div className="relative flex-shrink-0">
-                    <div className="w-24 h-24 md:w-32 md:h-32 rounded-full p-1 bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 shadow-2xl">
-                      <Avatar className="w-full h-full rounded-full border-2 border-slate-900">
-                        <AvatarImage src={profile.profile_picture_url || undefined} alt={profile.full_name} className="object-cover" />
-                        <AvatarFallback className="text-3xl font-extrabold bg-slate-900 text-white">
-                          {profile.full_name.charAt(0)}
+                    <div className="w-20 h-20 md:w-24 md:h-24 rounded-full p-1 bg-gradient-to-br from-sky-300 via-blue-400 to-indigo-500 shadow-xl">
+                      <Avatar className="w-full h-full rounded-full border-2 border-sky-400 bg-sky-100 dark:bg-sky-950 shadow-inner overflow-hidden flex items-center justify-center">
+                        <AvatarImage 
+                          src={profile.profile_picture_url || undefined} 
+                          alt={profile.full_name} 
+                          className="w-full h-full object-contain p-1.5 bg-sky-100 dark:bg-sky-950" 
+                        />
+                        <AvatarFallback className="text-xl md:text-2xl font-black bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-200">
+                          {(profile?.full_name || profile?.name || 'U').charAt(0).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                     </div>
                     {/* Active Indicator Badge */}
-                    <span className="absolute bottom-1 right-1 w-5 h-5 bg-emerald-500 border-2 border-slate-900 rounded-full shadow-md" title="Active on TalentXcel" />
+                    <span className="absolute bottom-0.5 right-0.5 w-4 h-4 bg-emerald-500 border-2 border-slate-900 rounded-full shadow-md" title="Active on TalentXcel" />
                   </div>
 
-                  {/* Name & Headline */}
-                  <div className="space-y-2">
-                    <div className="flex flex-wrap items-center gap-3">
-                      <h1 className="text-2xl md:text-4xl font-extrabold tracking-tight text-white flex items-center gap-2">
+                  {/* Name & Headline (20% smaller typography) */}
+                  <div className="space-y-1.5">
+                    <div className="flex flex-wrap items-center gap-2.5">
+                      <h1 className="text-xl md:text-2xl font-extrabold tracking-tight text-white flex items-center gap-1.5">
                         {profile.full_name}
-                        <CheckCircle2 className="h-6 w-6 text-cyan-400 fill-cyan-400/20 shrink-0" />
+                        <CheckCircle2 className="h-5 w-5 text-cyan-400 fill-cyan-400/20 shrink-0" />
                       </h1>
-                      <div className="flex flex-wrap gap-2">
-                        <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/30 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                      <div className="flex flex-wrap gap-1.5">
+                        <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/30 text-[11px] font-semibold px-2 py-0.5 rounded-full">
                           Open to Work
                         </Badge>
-                        <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/30 hover:bg-purple-500/30 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                        <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/30 hover:bg-purple-500/30 text-[11px] font-semibold px-2 py-0.5 rounded-full">
                           Available for Projects
                         </Badge>
                       </div>
                     </div>
 
                     {profile.title && (
-                      <p className="text-lg md:text-xl font-medium text-slate-200">{profile.title}</p>
+                      <p className="text-sm md:text-base font-semibold text-slate-200">{profile.title}</p>
                     )}
 
                     {profile.headline && (
-                      <p className="text-sm md:text-base text-slate-300 max-w-2xl leading-relaxed">{profile.headline}</p>
+                      <p className="text-xs md:text-sm text-slate-300 max-w-2xl leading-relaxed">{profile.headline}</p>
                     )}
 
-                    <div className="flex flex-wrap items-center gap-4 text-xs md:text-sm text-slate-400 pt-1 font-medium">
+                    <div className="flex flex-wrap items-center gap-3.5 text-xs text-slate-400 pt-0.5 font-medium">
                       {profile.location && (
-                        <span className="flex items-center gap-1.5">
-                          <MapPin className="h-4 w-4 text-cyan-400" />
+                        <span className="flex items-center gap-1">
+                          <MapPin className="h-3.5 w-3.5 text-cyan-400" />
                           {profile.location}
                         </span>
                       )}
                       {profile.website && (
-                        <span className="flex items-center gap-1.5">
-                          <Globe className="h-4 w-4 text-cyan-400" />
+                        <span className="flex items-center gap-1">
+                          <Globe className="h-3.5 w-3.5 text-cyan-400" />
                           <a href={profile.website} target="_blank" rel="noopener noreferrer" className="hover:underline text-slate-300">
                             {profile.website.replace(/^https?:\/\//, '')}
                           </a>
@@ -402,51 +406,51 @@ const SlugProfile = () => {
                 </div>
               </div>
 
-              {/* Inset Action Toolbar with GUARANTEED HIGH CONTRAST Text & Icons */}
-              <div className="bg-slate-900/90 backdrop-blur-md px-6 py-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-4">
-                <div className="flex flex-wrap gap-3">
+              {/* Inset Action Toolbar (20% smaller padding and buttons) */}
+              <div className="bg-slate-900/90 backdrop-blur-md px-4 py-2.5 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-wrap gap-2.5">
                   {/* Dynamic Connect Button */}
                   {isOwnProfile ? (
-                    <Button onClick={() => navigate('/profile/edit')} className="rounded-full bg-blue-600 hover:bg-blue-500 text-white font-bold shadow-lg border-0 px-6">
-                      <Edit className="h-4 w-4 mr-2 text-white" />
+                    <Button onClick={() => navigate('/profile/edit')} className="rounded-full bg-blue-600 hover:bg-blue-500 text-white font-bold shadow-md border-0 h-8 px-4 text-xs">
+                      <Edit className="h-3.5 w-3.5 mr-1.5 text-white" />
                       <span className="text-white font-semibold">Edit Profile</span>
                     </Button>
                   ) : connectionState?.status === 'accepted' ? (
-                    <Button variant="secondary" disabled className="rounded-full bg-slate-800 text-white border border-slate-700 px-6">
-                      <UserCheck className="h-4 w-4 mr-2 text-emerald-400" />
+                    <Button variant="secondary" disabled className="rounded-full bg-slate-800 text-white border border-slate-700 h-8 px-4 text-xs">
+                      <UserCheck className="h-3.5 w-3.5 mr-1.5 text-emerald-400" />
                       <span className="text-white font-semibold">Connected</span>
                     </Button>
                   ) : connectionState?.status === 'pending' ? (
-                    <Button variant="secondary" disabled className="rounded-full bg-slate-800 text-white border border-slate-700 px-6">
-                      <Clock className="h-4 w-4 mr-2 text-amber-400" />
+                    <Button variant="secondary" disabled className="rounded-full bg-slate-800 text-white border border-slate-700 h-8 px-4 text-xs">
+                      <Clock className="h-3.5 w-3.5 mr-1.5 text-amber-400" />
                       <span className="text-white font-semibold">Request Sent</span>
                     </Button>
                   ) : (
-                    <Button onClick={handleConnect} disabled={isSending} className="rounded-full bg-blue-600 hover:bg-blue-500 text-white font-bold shadow-lg border-0 px-6">
-                      {isSending ? <Loader2 className="h-4 w-4 mr-2 animate-spin text-white" /> : <Users className="h-4 w-4 mr-2 text-white" />}
+                    <Button onClick={handleConnect} disabled={isSending} className="rounded-full bg-blue-600 hover:bg-blue-500 text-white font-bold shadow-md border-0 h-8 px-4 text-xs">
+                      {isSending ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin text-white" /> : <Users className="h-3.5 w-3.5 mr-1.5 text-white" />}
                       <span className="text-white font-semibold">Connect</span>
                     </Button>
                   )}
 
                   {/* Dynamic Message Button */}
                   {!isOwnProfile && (
-                    <Button onClick={handleMessage} className="rounded-full border border-white/30 bg-white/10 hover:bg-white/20 text-white font-semibold shadow-sm px-6 backdrop-blur-md">
-                      <MessageSquare className="h-4 w-4 mr-2 text-cyan-300" />
+                    <Button onClick={handleMessage} className="rounded-full border border-white/30 bg-white/10 hover:bg-white/20 text-white font-semibold shadow-xs h-8 px-4 text-xs backdrop-blur-md">
+                      <MessageSquare className="h-3.5 w-3.5 mr-1.5 text-cyan-300" />
                       <span className="text-white font-semibold">Message</span>
                     </Button>
                   )}
 
                   {/* Work With Me Button */}
-                  <Button onClick={handleWorkWithMe} className="rounded-full border border-white/30 bg-white/10 hover:bg-white/20 text-white font-semibold shadow-sm px-6 backdrop-blur-md">
-                    <Briefcase className="h-4 w-4 mr-2 text-purple-300" />
+                  <Button onClick={handleWorkWithMe} className="rounded-full border border-white/30 bg-white/10 hover:bg-white/20 text-white font-semibold shadow-xs h-8 px-4 text-xs backdrop-blur-md">
+                    <Briefcase className="h-3.5 w-3.5 mr-1.5 text-purple-300" />
                     <span className="text-white font-semibold">Work With Me</span>
                   </Button>
 
                   {/* Website Button */}
                   {profile.website && (
-                    <Button asChild className="rounded-full border border-white/30 bg-white/10 hover:bg-white/20 text-white font-semibold shadow-sm px-6 backdrop-blur-md">
+                    <Button asChild className="rounded-full border border-white/30 bg-white/10 hover:bg-white/20 text-white font-semibold shadow-xs h-8 px-4 text-xs backdrop-blur-md">
                       <a href={profile.website} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="h-4 w-4 mr-2 text-emerald-300" />
+                        <ExternalLink className="h-3.5 w-3.5 mr-1.5 text-emerald-300" />
                         <span className="text-white font-semibold">Website</span>
                       </a>
                     </Button>
