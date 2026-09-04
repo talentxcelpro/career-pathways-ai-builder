@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { BookOpen, Clock, Eye, Star, TrendingUp, Users, Search, Sparkles, Plus, PenTool, FileText, Heart, MessageCircle, Share2, Filter, Upload, Image as ImageIcon, X, Award, Zap } from "lucide-react";
+import { BookOpen, Clock, Eye, Star, TrendingUp, Users, Search, Sparkles, Plus, PenTool, FileText, Heart, MessageCircle, Share2, Filter, Upload, Image as ImageIcon, X, Award, Zap, Edit, Trash2, Send, CheckCircle2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useDropzone } from 'react-dropzone';
@@ -31,11 +31,14 @@ interface Article {
   is_featured: boolean;
   featured_image_url?: string;
   created_at: string;
+  status?: string;
+  author_id?: string;
 }
 
-const categories = ["All", "Career Advice", "Interview Tips", "Resume Help", "Skill Development", "Industry Insights", "Market Trends"];
+const categories = ["All", "My Articles & Drafts", "Career Advice", "Interview Tips", "Resume Help", "Skill Development", "Industry Insights", "Market Trends"];
 
 const categoryColors = {
+  "My Articles & Drafts": "bg-indigo-500/10 text-indigo-700 border-indigo-200",
   "Career Advice": "bg-blue-500/10 text-blue-700 border-blue-200",
   "Interview Tips": "bg-green-500/10 text-green-700 border-green-200", 
   "Resume Help": "bg-purple-500/10 text-purple-700 border-purple-200",
@@ -52,6 +55,7 @@ export function CareerContentHub() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [editingArticleId, setEditingArticleId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const { toast } = useToast();
@@ -106,20 +110,30 @@ export function CareerContentHub() {
       views: post.views_count || 0,
       is_featured: !!post.is_featured,
       featured_image_url: post.featured_image_url || undefined,
-      created_at: post.created_at || new Date().toISOString()
+      created_at: post.created_at || new Date().toISOString(),
+      status: post.status || 'published',
+      author_id: post.author_id || post.user_id
     };
   };
 
   const fetchArticles = async () => {
     try {
       setLoading(true);
-      const { data: postsData, error } = await supabase
+      const user = authUser || currentUser || (await supabase.auth.getUser()).data.user;
+
+      let query = supabase
         .from('posts')
         .select('*')
-        .eq('post_type', 'article')
-        .eq('status', 'published')
+        .in('post_type', ['article', 'career_article'])
         .order('created_at', { ascending: false });
 
+      if (user?.id) {
+        query = query.or(`status.eq.published,author_id.eq.${user.id},user_id.eq.${user.id}`);
+      } else {
+        query = query.eq('status', 'published');
+      }
+
+      const { data: postsData, error } = await query;
       if (error) throw error;
 
       if (!postsData || postsData.length === 0) {
@@ -127,7 +141,7 @@ export function CareerContentHub() {
         return;
       }
 
-      const authorIds = [...new Set(postsData.map(p => p.author_id).filter(Boolean))];
+      const authorIds = [...new Set(postsData.map(p => p.author_id || p.user_id).filter(Boolean))];
       let profilesMap = new Map();
       if (authorIds.length > 0) {
         const { data: profiles } = await supabase
@@ -182,7 +196,7 @@ export function CareerContentHub() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [authUser?.id]);
 
   const onDrop = (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -317,7 +331,83 @@ export function CareerContentHub() {
     }
   };
 
-  const submitArticle = async () => {
+  const openNewArticleDialog = () => {
+    setEditingArticleId(null);
+    setFormData({
+      title: "",
+      category: "",
+      tags: "",
+      summary: "",
+      content: "",
+      is_public: true
+    });
+    setImagePreview(null);
+    setSelectedImage(null);
+    setIsCreateDialogOpen(true);
+  };
+
+  const handleEditDraft = (article: Article, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setFormData({
+      title: article.title === 'Untitled Article' ? '' : article.title,
+      category: article.category || "Career Advice",
+      tags: (article.tags || []).join(', '),
+      summary: article.summary || '',
+      content: article.content || '',
+      is_public: article.status === 'published'
+    });
+    setImagePreview(article.featured_image_url || null);
+    setSelectedImage(null);
+    setEditingArticleId(article.id);
+    setIsCreateDialogOpen(true);
+  };
+
+  const handleQuickPublish = async (articleId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      const { error } = await supabase
+        .from('posts')
+        .update({ status: 'published', is_public: true } as any)
+        .eq('id', articleId);
+      if (error) throw error;
+      toast({
+        title: "Article Published! 🎉",
+        description: "Your article is now live and visible to the entire community.",
+      });
+      await fetchArticles();
+    } catch (err: any) {
+      toast({
+        title: "Publish Error",
+        description: err.message || "Failed to publish article",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleDeleteDraft = async (articleId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!window.confirm("Are you sure you want to delete this article/draft?")) return;
+    try {
+      const { error } = await supabase
+        .from('posts')
+        .delete()
+        .eq('id', articleId);
+      if (error) throw error;
+      toast({
+        title: "Deleted",
+        description: "Your article/draft has been removed.",
+      });
+      await fetchArticles();
+    } catch (err: any) {
+      toast({
+        title: "Delete Error",
+        description: err.message || "Failed to delete article",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const submitArticle = async (isDraft: boolean = false) => {
     let userToUse = authUser || currentUser;
     if (!userToUse) {
       const { data: { user } } = await supabase.auth.getUser();
@@ -327,13 +417,13 @@ export function CareerContentHub() {
     if (!userToUse) {
       toast({
         title: "Authentication Required",
-        description: "Please sign in to publish articles.",
+        description: "Please sign in to publish or save articles.",
         variant: "destructive"
       });
       return;
     }
 
-    if (!formData.content || !formData.content.trim()) {
+    if (!isDraft && (!formData.content || !formData.content.trim())) {
       toast({
         title: "Content Required",
         description: "Please enter article content before publishing.",
@@ -345,14 +435,16 @@ export function CareerContentHub() {
     // Auto-extract title if user scrolled past title or left it empty
     let finalTitle = formData.title?.trim();
     if (!finalTitle) {
-      const lines = formData.content
+      const lines = (formData.content || '')
         .split('\n')
         .map(l => l.replace(/^#+\s*/, '').replace(/^---/, '').trim())
         .filter(l => l.length > 2);
-      finalTitle = lines[0] || "Career Insights & Perspectives";
+      finalTitle = lines[0] || (isDraft ? "Untitled Draft" : "Career Insights & Perspectives");
     }
 
     const finalCategory = formData.category || "Career Advice";
+    const statusToSave = isDraft ? 'draft' : 'published';
+    const isPublic = !isDraft;
 
     try {
       setIsSubmitting(true);
@@ -363,55 +455,78 @@ export function CareerContentHub() {
         imageUrl = await uploadImage();
       }
 
-      const words = formData.content.trim().split(/\s+/).filter(Boolean).length;
+      const words = (formData.content || '').trim().split(/\s+/).filter(Boolean).length;
       const readingTimeMinutes = Math.max(1, Math.ceil(words / 200));
       const tagsArray = formData.tags
         ? formData.tags.split(',').map(tag => tag.trim()).filter(Boolean)
         : [finalCategory.replace(/\s+/g, '')];
 
       const cleanSummary = formData.summary?.trim() ||
-        formData.content
+        (formData.content || '')
           .replace(/^[#\-*\s]+/gm, '')
           .replace(/\n+/g, ' ')
           .trim()
           .substring(0, 160) + '...';
 
-      // Insert article directly into posts table
-      const { data: postData, error: postError } = await supabase
-        .from('posts')
-        .insert({
-          headline: finalTitle,
-          tagline: cleanSummary,
-          content: formData.content.trim(),
-          post_type: 'article',
-          article_category: finalCategory,
-          tags: tagsArray,
-          featured_image_url: imageUrl,
-          reading_time: readingTimeMinutes,
-          status: 'published',
-          author_id: userToUse.id,
-          user_id: userToUse.id,
-          is_public: true,
-          is_featured: false,
-          views_count: 0,
-          likes_count: 0,
-          comments_count: 0,
-          shares_count: 0
-        })
-        .select()
-        .single();
+      let postError = null;
+
+      if (editingArticleId) {
+        const { error } = await supabase
+          .from('posts')
+          .update({
+            headline: finalTitle,
+            tagline: cleanSummary,
+            content: (formData.content || '').trim(),
+            post_type: 'article',
+            article_category: finalCategory,
+            tags: tagsArray,
+            featured_image_url: imageUrl,
+            reading_time: readingTimeMinutes,
+            status: statusToSave,
+            is_public: isPublic,
+            updated_at: new Date().toISOString()
+          } as any)
+          .eq('id', editingArticleId);
+        postError = error;
+      } else {
+        const { error } = await supabase
+          .from('posts')
+          .insert({
+            headline: finalTitle,
+            tagline: cleanSummary,
+            content: (formData.content || '').trim(),
+            post_type: 'article',
+            article_category: finalCategory,
+            tags: tagsArray,
+            featured_image_url: imageUrl,
+            reading_time: readingTimeMinutes,
+            status: statusToSave,
+            author_id: userToUse.id,
+            user_id: userToUse.id,
+            is_public: isPublic,
+            is_featured: false,
+            views_count: 0,
+            likes_count: 0,
+            comments_count: 0,
+            shares_count: 0
+          } as any);
+        postError = error;
+      }
 
       if (postError) {
-        console.error('Post insertion error:', postError);
+        console.error('Post save error:', postError);
         throw postError;
       }
 
       toast({
-        title: "Article Published! 🎉",
-        description: "Your article is now live and visible to the entire TalentXcel community.",
+        title: isDraft ? "Draft Saved 💾" : "Article Published! 🎉",
+        description: isDraft
+          ? "Your article has been saved to your drafts."
+          : "Your article is now live and visible to the entire TalentXcel community.",
       });
 
       setIsCreateDialogOpen(false);
+      setEditingArticleId(null);
       setFormData({
         title: "",
         category: "",
@@ -425,10 +540,10 @@ export function CareerContentHub() {
       // Refresh articles list immediately
       await fetchArticles();
     } catch (error: any) {
-      console.error('Error publishing article:', error);
+      console.error('Error saving article:', error);
       toast({
-        title: "Publication Error",
-        description: error?.message || "Failed to publish article. Please try again.",
+        title: "Error",
+        description: error?.message || "Failed to save article. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -436,12 +551,22 @@ export function CareerContentHub() {
     }
   };
 
+  const currentUserId = authUser?.id || currentUser?.id;
+  const myArticles = articles.filter(a => currentUserId && a.author_id === currentUserId);
+
   const filteredArticles = articles.filter(article => {
+    if (selectedCategory === "My Articles & Drafts") {
+      return currentUserId && article.author_id === currentUserId;
+    }
+    // If it's a draft, only show it to its author
+    if (article.status === 'draft') {
+      return currentUserId && article.author_id === currentUserId;
+    }
     const matchesCategory = selectedCategory === "All" || article.category === selectedCategory;
     return matchesCategory;
   });
 
-  const featuredArticles = filteredArticles.filter(article => article.is_featured);
+  const featuredArticles = filteredArticles.filter(article => article.is_featured && article.status === 'published');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background/80 to-primary/5 relative overflow-hidden">
@@ -525,19 +650,23 @@ export function CareerContentHub() {
             </div>
             
             <div className="flex items-center gap-3">
-              <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="relative group rounded-2xl px-8 h-14 bg-gradient-to-r from-secondary via-secondary/90 to-accent hover:from-secondary/90 hover:to-accent/90 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-                    <PenTool className="w-5 h-5 mr-2 relative z-10" />
-                    <span className="relative z-10 font-semibold">✨ Share Your Expertise</span>
-                  </Button>
-                </DialogTrigger>
+              <Dialog open={isCreateDialogOpen} onOpenChange={(open) => {
+                setIsCreateDialogOpen(open);
+                if (!open) setEditingArticleId(null);
+              }}>
+                <Button 
+                  onClick={openNewArticleDialog}
+                  className="relative group rounded-2xl px-8 h-14 bg-gradient-to-r from-secondary via-secondary/90 to-accent hover:from-secondary/90 hover:to-accent/90 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                  <PenTool className="w-5 h-5 mr-2 relative z-10" />
+                  <span className="relative z-10 font-semibold">✨ Share Your Expertise</span>
+                </Button>
                 <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                       <PenTool className="w-5 h-5" />
-                      Create New Article
+                      {editingArticleId ? "Edit Article / Saved Draft" : "Create New Article"}
                     </DialogTitle>
                   </DialogHeader>
                   <div className="space-y-4">
@@ -663,19 +792,29 @@ export function CareerContentHub() {
                         Cancel
                       </Button>
                       <Button 
-                        onClick={submitArticle}
+                        type="button"
+                        variant="outline"
+                        onClick={() => submitArticle(true)}
                         disabled={isSubmitting || uploadingImage}
-                        className="bg-gradient-to-r from-primary to-secondary"
+                        className="border-slate-300 hover:bg-slate-100"
+                      >
+                        {editingArticleId ? "Update Draft" : "Save Draft"}
+                      </Button>
+                      <Button 
+                        type="button"
+                        onClick={() => submitArticle(false)}
+                        disabled={isSubmitting || uploadingImage}
+                        className="bg-gradient-to-r from-primary to-secondary text-white font-semibold"
                       >
                         {isSubmitting || uploadingImage ? (
                           <>
                             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                            {uploadingImage ? 'Uploading...' : 'Publishing...'}
+                            {uploadingImage ? 'Uploading...' : 'Saving...'}
                           </>
                         ) : (
                           <>
                             <Plus className="w-4 h-4 mr-2" />
-                            Publish Article
+                            {editingArticleId ? "Update & Publish" : "Publish Article"}
                           </>
                         )}
                       </Button>
@@ -710,6 +849,134 @@ export function CareerContentHub() {
           </div>
         ) : (
           <>
+            {/* Your Articles & Saved Drafts Section */}
+            {myArticles.length > 0 && (selectedCategory === "All" || selectedCategory === "My Articles & Drafts") && (
+              <div className="space-y-3 bg-gradient-to-r from-blue-50/60 to-indigo-50/60 dark:from-muted/40 dark:to-muted/20 border-2 border-blue-200/80 dark:border-blue-900/40 rounded-2xl p-4 sm:p-5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-2 bg-blue-600 text-white rounded-xl shadow-xs">
+                      <PenTool className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h3 className="text-base sm:text-lg font-bold text-foreground flex items-center gap-2">
+                        Your Articles &amp; Saved Drafts
+                        <Badge className="bg-blue-600 text-white font-bold text-[11px] px-2 py-0.5">
+                          {myArticles.length}
+                        </Badge>
+                      </h3>
+                      <p className="text-xs text-muted-foreground">Articles and drafts created by you</p>
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    onClick={openNewArticleDialog}
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs gap-1.5 h-8"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Write New</span>
+                  </Button>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 pt-1">
+                  {myArticles.map((article) => (
+                    <Card
+                      key={article.id}
+                      className="hover:shadow-md transition-all border border-slate-200 dark:border-border/60 hover:border-blue-400 bg-white dark:bg-card flex flex-col justify-between"
+                    >
+                      <CardContent className="p-3.5 space-y-2">
+                        <div className="flex items-center justify-between gap-2">
+                          <Badge
+                            variant="secondary"
+                            className={article.status === 'draft' ? 'bg-amber-100 text-amber-900 border border-amber-300 font-bold text-[10px]' : 'bg-emerald-100 text-emerald-900 border border-emerald-300 font-bold text-[10px]'}
+                          >
+                            {article.status === 'draft' ? '📝 Saved Draft' : '✅ Published'}
+                          </Badge>
+                          <span className="text-[11px] text-muted-foreground">{article.read_time}</span>
+                        </div>
+                        <h4 
+                          onClick={() => handleArticleClick(article.id)}
+                          className="font-bold text-sm text-foreground line-clamp-1 hover:text-blue-600 transition-colors cursor-pointer"
+                        >
+                          {article.title}
+                        </h4>
+                        <p className="text-xs text-muted-foreground line-clamp-2">
+                          {article.summary}
+                        </p>
+                        <div className="text-[11px] text-muted-foreground">
+                          Created {new Date(article.created_at).toLocaleDateString()}
+                        </div>
+                      </CardContent>
+
+                      <div className="px-3.5 py-2 bg-slate-50/60 dark:bg-muted/20 border-t border-slate-100 dark:border-border/40 flex items-center justify-between gap-1 rounded-b-xl">
+                        <div className="flex items-center gap-1">
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="ghost"
+                            className="h-7 px-2 text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-100/60 font-semibold gap-1"
+                            onClick={(e) => handleEditDraft(article, e)}
+                          >
+                            <Edit className="w-3 h-3" />
+                            Edit
+                          </Button>
+                          {article.status === 'draft' && (
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="outline"
+                              className="h-7 px-2 text-xs bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100 font-semibold gap-1"
+                              onClick={(e) => handleQuickPublish(article.id, e)}
+                            >
+                              <Send className="w-3 h-3" />
+                              Publish
+                            </Button>
+                          )}
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="ghost"
+                            className="h-7 w-7 p-0 text-slate-400 hover:text-red-600 hover:bg-red-50"
+                            onClick={(e) => handleDeleteDraft(article.id, e)}
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleArticleClick(article.id)}
+                          className="font-semibold text-xs text-blue-600 hover:underline"
+                        >
+                          View &rarr;
+                        </button>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Empty State for My Articles & Drafts */}
+            {selectedCategory === "My Articles & Drafts" && myArticles.length === 0 && (
+              <div className="p-8 text-center bg-white dark:bg-card rounded-2xl border border-slate-200 dark:border-border/60 shadow-xs space-y-4 max-w-lg mx-auto">
+                <div className="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-950/50 text-blue-600 flex items-center justify-center mx-auto">
+                  <PenTool className="w-6 h-6" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="font-bold text-base text-foreground">No Articles or Drafts Yet</h4>
+                  <p className="text-xs text-muted-foreground">
+                    You haven't written or saved any articles yet. Write your thoughts and share them with the TalentXcel community.
+                  </p>
+                </div>
+                <Button
+                  onClick={openNewArticleDialog}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs gap-1.5"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  Write Your First Article
+                </Button>
+              </div>
+            )}
+
             {/* Featured Articles */}
             {selectedCategory === "All" && featuredArticles.length > 0 && (
               <div className="space-y-4">

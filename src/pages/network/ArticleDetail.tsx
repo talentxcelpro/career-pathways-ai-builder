@@ -18,13 +18,16 @@ import {
   UserCheck,
   Calendar,
   MapPin,
-  ExternalLink
+  ExternalLink,
+  Send,
+  CheckCircle2
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useArticleSubscriptions, useArticleBookmarks } from '@/hooks/useArticleSubscriptions';
 import { CommentsSection } from '@/components/posts/CommentsSection';
 import { PostActions } from '@/components/posts/PostActions';
+import { FOUNDATION_NEWS_ARTICLES } from '@/data/newsArticles';
 import { toast } from 'sonner';
 
 const ArticleDetail = () => {
@@ -48,26 +51,68 @@ const ArticleDetail = () => {
     isUnbookmarking 
   } = useArticleBookmarks(user?.id);
 
+  const [isPublishing, setIsPublishing] = useState(false);
+
+  const handlePublishDraft = async () => {
+    if (!id) return;
+    setIsPublishing(true);
+    try {
+      const { error } = await supabase
+        .from('posts')
+        .update({ status: 'published', is_public: true } as any)
+        .eq('id', id);
+      if (error) throw error;
+      toast.success('Article published successfully! 🎉');
+      setTimeout(() => window.location.reload(), 600);
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to publish article');
+    } finally {
+      setIsPublishing(false);
+    }
+  };
+
   // Fetch article details
   const { data: article, isLoading } = useQuery({
     queryKey: ['article', id],
     queryFn: async () => {
       if (!id) throw new Error('Article ID is required');
 
-      // Increment view count - implement later if needed
-
-      // First get the post
+      // First get the post from DB
       const { data: postData, error: postError } = await supabase
         .from('posts')
         .select('*')
         .eq('id', id)
-        .eq('post_type', 'article')
-        .single();
+        .maybeSingle();
 
-      if (postError) throw postError;
+      if (!postData) {
+        // Fallback to foundation news articles if it exists
+        const foundFallback = (FOUNDATION_NEWS_ARTICLES || []).find((a: any) => a.id === id);
+        if (foundFallback) {
+          return {
+            id: foundFallback.id,
+            headline: foundFallback.title,
+            tagline: foundFallback.summary || '',
+            content: foundFallback.sections?.map((s: any) => `## ${s.heading}\n\n${s.body}`).join('\n\n') || foundFallback.summary || '',
+            featured_image_url: foundFallback.imageUrl,
+            article_category: foundFallback.category || 'career_advice',
+            reading_time: foundFallback.readingTimeMinutes || 5,
+            word_count: 500,
+            created_at: foundFallback.publishedAt || new Date().toISOString(),
+            author_id: 'talentxcel-research',
+            status: 'published',
+            profiles: {
+              id: 'talentxcel-research',
+              full_name: foundFallback.author?.name || 'TalentXcel Research Team',
+              profile_picture_url: foundFallback.author?.avatarUrl,
+              title: foundFallback.author?.role || 'Career Research Fellow'
+            }
+          };
+        }
+        throw new Error('Article not found');
+      }
 
       // Then get the profile data
-      const { data: profileData, error: profileError } = await supabase
+      const { data: profileData } = await supabase
         .from('profiles')
         .select(`
           id,
@@ -79,15 +124,12 @@ const ArticleDetail = () => {
           location
         `)
         .eq('id', postData.author_id)
-        .single();
+        .maybeSingle();
 
-      // Combine the data (profile might be null if not found)
-      const data = {
+      return {
         ...postData,
         profiles: profileData || null
       };
-
-      return data;
     },
     enabled: !!id
   });
@@ -259,6 +301,30 @@ const ArticleDetail = () => {
             </Button>
           </Link>
         </div>
+
+        {/* Draft Notice Banner */}
+        {article.status === 'draft' && (
+          <div className="mb-6 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 dark:from-amber-950/40 dark:to-orange-950/20 dark:border-amber-800/60 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl p-2 bg-amber-100 dark:bg-amber-900/60 rounded-xl">📝</span>
+              <div>
+                <h4 className="font-bold text-amber-900 dark:text-amber-200 text-sm sm:text-base">This Article is Saved as a Draft</h4>
+                <p className="text-xs text-amber-700 dark:text-amber-400">It is currently private and only visible to you. Publish it to make it live for the entire community.</p>
+              </div>
+            </div>
+            {user?.id === article.author_id && (
+              <Button
+                size="sm"
+                onClick={handlePublishDraft}
+                disabled={isPublishing}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs gap-1.5 shrink-0 h-9 px-4"
+              >
+                <Send className="w-3.5 h-3.5" />
+                {isPublishing ? "Publishing..." : "Publish Article Now"}
+              </Button>
+            )}
+          </div>
+        )}
 
         {/* Article Card */}
         <Card className="overflow-hidden">

@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Camera, Edit3, Zap, CheckCircle2, MapPin, Briefcase, Building2, ChevronRight, ShieldCheck, Users, ArrowUpDown, Bookmark, Clock, Settings, Eye } from 'lucide-react';
+import { Camera, Edit3, Zap, CheckCircle2, MapPin, Briefcase, Building2, ChevronRight, ShieldCheck, Users, ArrowUpDown, Bookmark, Clock, Settings, Eye, BookOpen, PenTool } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useFileUpload } from '@/hooks/useFileUpload';
 import { toast } from 'sonner';
@@ -187,6 +187,14 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
             <div className="flex items-center gap-2">
               <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-600"><ArrowUpDown className="h-3.5 w-3.5" /></div>
               <span className="text-xs font-semibold text-slate-700 dark:text-slate-200 group-hover:text-primary">Skill Swap</span>
+            </div>
+            <ChevronRight className="h-3 w-3 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
+          </Link>
+
+          <Link to="/network/articles" className="flex items-center justify-between p-1.5 rounded-xl hover:bg-slate-100/80 dark:hover:bg-muted/50 transition-colors group">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-600"><BookOpen className="h-3.5 w-3.5" /></div>
+              <span className="text-xs font-semibold text-slate-700 dark:text-slate-200 group-hover:text-primary">Articles &amp; Drafts</span>
             </div>
             <ChevronRight className="h-3 w-3 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
           </Link>

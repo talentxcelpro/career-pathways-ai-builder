@@ -105,52 +105,54 @@ export const ArticleCreateForm: React.FC<ArticleCreateFormProps> = ({
 
   const handleSubmit = async (submitStatus: 'draft' | 'published') => {
     // Validation
-    if (!headline.trim()) {
+    const cleanHeadline = headline.trim() || (submitStatus === 'draft' ? 'Untitled Draft' : '');
+    if (!cleanHeadline) {
       toast.error('Please enter a headline');
       return;
     }
 
-    if (!tagline.trim()) {
-      toast.error('Please enter a tagline');
-      return;
-    }
+    if (submitStatus === 'published') {
+      if (!tagline.trim()) {
+        toast.error('Please enter a tagline');
+        return;
+      }
 
-    if (!content.trim()) {
-      toast.error('Please enter article content');
-      return;
-    }
+      if (!content.trim()) {
+        toast.error('Please enter article content');
+        return;
+      }
 
-    if (content.length < 100) {
-      toast.error('Article content must be at least 100 words');
-      return;
-    }
+      if (content.length < 50) {
+        toast.error('Article content is too short to publish');
+        return;
+      }
 
-    if (content.length > 3000 * 5) { // Approximate character count for 3000 words
-      toast.error('Article content cannot exceed 3000 words');
-      return;
-    }
+      if (content.length > 3000 * 5) { // Approximate character count for 3000 words
+        toast.error('Article content cannot exceed 3000 words');
+        return;
+      }
 
-    if (!category) {
-      toast.error('Please select a category');
-      return;
-    }
-
-    if (!featuredImage && submitStatus === 'published') {
-      toast.error('Please add a featured image before publishing');
-      return;
+      if (!category) {
+        toast.error('Please select a category');
+        return;
+      }
     }
 
     setIsSubmitting(true);
     try {
+      const finalTagline = tagline.trim() || content.trim().substring(0, 150) || 'Article draft';
+      const finalCategory = category || 'career_advice';
+      const finalContent = content.trim() || 'Draft content...';
+
       const { data: articleData, error } = await supabase
         .from('posts')
         .insert({
-          headline,
-          tagline,
-          content,
+          headline: cleanHeadline,
+          tagline: finalTagline,
+          content: finalContent,
           post_type: 'article',
-          article_category: category,
-          featured_image_url: featuredImage,
+          article_category: finalCategory,
+          featured_image_url: featuredImage || null,
           status: submitStatus,
           author_id: user?.id,
           user_id: user?.id,
@@ -351,7 +353,7 @@ export const ArticleCreateForm: React.FC<ArticleCreateFormProps> = ({
             <Button
               variant="outline"
               onClick={() => handleSubmit('draft')}
-              disabled={isSubmitting || !headline || !tagline || !content}
+              disabled={isSubmitting || (!headline.trim() && !content.trim())}
             >
               {isSubmitting ? (
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
