@@ -174,6 +174,7 @@ export const DEFAULT_ACTION_PERMISSIONS: Record<AgentId, PermissionMatrixItem[]>
     { actionType: 'ANALYZE', policy: 'AUTO', description: 'Analyze employer acquisition funnel drop-offs' },
     { actionType: 'CREATE_DRAFT', policy: 'AUTO', description: 'Draft employer messaging' },
     { actionType: 'SEND_EMAIL', policy: 'REVIEW', description: 'Outreach emails strictly require human approval' },
+    { actionType: 'OUTREACH_LEAD', policy: 'REVIEW', description: 'B2B employer lead outreach requires explicit human approval' },
     { actionType: 'DELETE_PAGE', policy: 'FORBIDDEN', description: 'Prohibited' },
     { actionType: 'SPEND_MONEY', policy: 'FORBIDDEN', description: 'Prohibited' },
   ],

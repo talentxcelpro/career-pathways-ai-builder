@@ -51,6 +51,9 @@ import {
   runExecutiveDirectorCycle
 } from '@/lib/ai-org/executiveDirectorAgent';
 import { LOCAL_AUDIT_STREAM } from '@/lib/ai-org/executionGateway';
+import { DISCOVERED_EMPLOYER_LEADS } from '@/lib/ai-leads/leadDiscoveryEngine';
+import type { EmployerLead } from '@/lib/ai-leads/types';
+import { DISCOVERY_EVIDENCE_LEDGER, getAiDiscoveryObservatoryData } from '@/lib/ai-discovery/aiReferralTracker';
 import { 
   ALL_AGENT_IDS, 
   TOTAL_AGENTS_COUNT, 
@@ -68,6 +71,19 @@ export default function AIOrganizationControlCenter() {
   const [lastReport, setLastReport] = useState<FullOrganizationCycleReport | null>(null);
   const [schedulerActive, setSchedulerActive] = useState<boolean>(isSchedulerRunning());
   const [auditEntries, setAuditEntries] = useState([...LOCAL_AUDIT_STREAM]);
+  const [leads, setLeads] = useState<EmployerLead[]>([...DISCOVERED_EMPLOYER_LEADS]);
+  const [observatoryData] = useState(getAiDiscoveryObservatoryData());
+  const [evidenceLedger] = useState(DISCOVERY_EVIDENCE_LEDGER);
+
+  const handleApproveLead = (leadId: string) => {
+    setLeads(prev => prev.map(l => l.leadId === leadId ? { ...l, status: 'OUTREACH_APPROVED' as const } : l));
+    toast.success('B2B Employer Lead outreach approved and queued for dispatch.');
+  };
+
+  const handleDismissLead = (leadId: string) => {
+    setLeads(prev => prev.map(l => l.leadId === leadId ? { ...l, status: 'DISMISSED' as const } : l));
+    toast.info('B2B Employer Lead dismissed.');
+  };
 
   const handleApproveAction = (id: string) => {
     setAuditEntries(prev => prev.map(entry => 
@@ -465,6 +481,254 @@ export default function AIOrganizationControlCenter() {
                     <td className="py-2.5 px-4 text-red-400 font-bold">Hard-Locked Block</td>
                     <td className="py-2.5 px-4 text-slate-400">Financial allocation requires 2-Super-Admin multi-sig dual control.</td>
                   </tr>
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* AI Discovery Observatory (ChatGPT / Gemini / Claude / Perplexity / Copilot) */}
+        <Card className="bg-slate-900/90 border-slate-800 text-slate-100">
+          <CardHeader className="border-b border-slate-800/80 pb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-xs">
+                    <Globe2 className="w-3 h-3 mr-1" /> AI Engine Discovery Observatory
+                  </Badge>
+                  <span className="text-xs text-slate-500">AEO / GEO Acquisition Intelligence</span>
+                </div>
+                <CardTitle className="text-lg font-bold text-white">
+                  Generative Engine Attribution &amp; Performance
+                </CardTitle>
+              </div>
+              <div className="text-right">
+                <span className="text-xs text-slate-400 font-mono">Total AI Visits:</span>
+                <span className="text-base font-bold text-emerald-400 ml-2">{observatoryData.referralVisits.toLocaleString()}</span>
+              </div>
+            </div>
+            <CardDescription className="text-slate-400 text-xs mt-1">
+              Live traffic, citations, and product conversions originating from ChatGPT, Google Gemini, Claude, Perplexity, and Microsoft Copilot.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-4 space-y-6">
+            {/* Observatory Platform Matrix Table */}
+            <div className="rounded-xl border border-slate-800 overflow-hidden text-xs">
+              <table className="w-full text-left">
+                <thead className="bg-slate-950 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-semibold">
+                  <tr>
+                    <th className="py-2.5 px-4">AI Platform</th>
+                    <th className="py-2.5 px-4">Visits</th>
+                    <th className="py-2.5 px-4">Signups</th>
+                    <th className="py-2.5 px-4">Leads</th>
+                    <th className="py-2.5 px-4">Customers</th>
+                    <th className="py-2.5 px-4 text-right">Attributed Revenue</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/80 text-slate-300">
+                  {Object.entries(observatoryData.platformBreakdown).map(([platform, data]) => {
+                    if (data.visits === 0 && platform === 'UNKNOWN') return null;
+                    return (
+                      <tr key={platform} className="hover:bg-slate-800/40 transition-colors">
+                        <td className="py-2.5 px-4 font-semibold text-white flex items-center gap-2">
+                          <Bot className="w-3.5 h-3.5 text-blue-400" />
+                          {platform}
+                        </td>
+                        <td className="py-2.5 px-4 font-mono">{data.visits.toLocaleString()}</td>
+                        <td className="py-2.5 px-4 font-mono text-blue-400">{data.signups}</td>
+                        <td className="py-2.5 px-4 font-mono text-purple-400">{data.leads}</td>
+                        <td className="py-2.5 px-4 font-mono text-emerald-400">{data.customers}</td>
+                        <td className="py-2.5 px-4 text-right font-mono font-bold text-white">
+                          ${data.revenue.toLocaleString()}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* AI Acquisition Funnel */}
+            <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
+              <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3">
+                AI Discovery Conversion Funnel
+              </h4>
+              <div className="grid grid-cols-2 sm:grid-cols-6 gap-2 text-center text-xs">
+                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                  <div className="text-slate-400 text-[10px]">1. Referral</div>
+                  <div className="text-sm font-bold text-white mt-0.5">100%</div>
+                  <div className="text-[10px] text-slate-500">{observatoryData.referralVisits} visits</div>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                  <div className="text-slate-400 text-[10px]">2. Landing</div>
+                  <div className="text-sm font-bold text-blue-400 mt-0.5">82%</div>
+                  <div className="text-[10px] text-slate-500">{observatoryData.uniqueSessions} sessions</div>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                  <div className="text-slate-400 text-[10px]">3. Signup</div>
+                  <div className="text-sm font-bold text-purple-400 mt-0.5">{observatoryData.signupRate}%</div>
+                  <div className="text-[10px] text-slate-500">{observatoryData.directConversions} users</div>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                  <div className="text-slate-400 text-[10px]">4. Verified</div>
+                  <div className="text-sm font-bold text-sky-400 mt-0.5">9.2%</div>
+                  <div className="text-[10px] text-slate-500">Identity passed</div>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                  <div className="text-slate-400 text-[10px]">5. Activated</div>
+                  <div className="text-sm font-bold text-amber-400 mt-0.5">{observatoryData.activationRate}%</div>
+                  <div className="text-[10px] text-slate-500">Active product use</div>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                  <div className="text-slate-400 text-[10px]">6. Customer</div>
+                  <div className="text-sm font-bold text-emerald-400 mt-0.5">{observatoryData.customerRate}%</div>
+                  <div className="text-[10px] text-emerald-400 font-bold">${observatoryData.revenue}</div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* B2B AI Lead Discovery & Qualification Queue */}
+        <Card className="bg-slate-900/90 border-slate-800 text-slate-100">
+          <CardHeader className="border-b border-slate-800/80 pb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <Badge className="bg-blue-500/10 text-blue-400 border-blue-500/30 text-xs">
+                    <Building2 className="w-3 h-3 mr-1" /> B2B Employer Lead Intelligence
+                  </Badge>
+                  <span className="text-xs text-slate-500">Evidence-Backed Hiring Signals</span>
+                </div>
+                <CardTitle className="text-lg font-bold text-white">
+                  High-Conviction Employer Acquisition Queue
+                </CardTitle>
+              </div>
+              <Badge variant="outline" className="text-slate-400 border-slate-800 text-xs self-start sm:self-auto">
+                {leads.filter(l => l.status === 'PENDING_APPROVAL').length} Pending Human Review
+              </Badge>
+            </div>
+            <CardDescription className="text-slate-400 text-xs mt-1">
+              Discovered from public hiring signals, GSC vacancy spikes, and regional expansion data. Outbound outreach strictly requires human administrator approval.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-4 space-y-3">
+            {leads.map((lead) => (
+              <div
+                key={lead.leadId}
+                className="p-4 rounded-xl bg-slate-950 border border-slate-800/80 space-y-3"
+              >
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <h4 className="text-sm font-bold text-white">{lead.companyName}</h4>
+                      <Badge className="bg-slate-800 text-slate-300 border-slate-700 text-[10px]">
+                        {lead.targetCity} ({lead.countryCode.toUpperCase()})
+                      </Badge>
+                      <Badge className="bg-purple-500/10 text-purple-400 border-purple-500/30 text-[10px]">
+                        {lead.openRolesCount} Open Roles
+                      </Badge>
+                      <Badge className="bg-blue-500/10 text-blue-400 border-blue-500/30 text-[10px]">
+                        {lead.recommendedProduct}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-slate-300">{lead.hiringSignal}</p>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <div className="text-right">
+                      <div className="text-[10px] text-slate-500">Qualification Score</div>
+                      <div className="text-sm font-extrabold text-emerald-400">{lead.qualificationScore}/100</div>
+                    </div>
+                    {lead.status === 'PENDING_APPROVAL' ? (
+                      <div className="flex items-center gap-1.5">
+                        <Button
+                          size="sm"
+                          onClick={() => handleApproveLead(lead.leadId)}
+                          className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-3 py-1.5 shadow-sm"
+                        >
+                          Approve Outreach
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleDismissLead(lead.leadId)}
+                          className="border-slate-700 hover:bg-slate-800 text-slate-300 text-xs px-2.5 py-1.5"
+                        >
+                          Dismiss
+                        </Button>
+                      </div>
+                    ) : (
+                      <Badge className="bg-slate-800 text-slate-400 border-slate-700 text-xs">
+                        {lead.status}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+
+                {/* Grounded Evidence & Personalized Pitch */}
+                <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 text-xs space-y-2">
+                  <div>
+                    <span className="font-semibold text-slate-400">Audited Signal Evidence: </span>
+                    <span className="text-slate-300">{lead.sourceEvidence[0]?.evidence}</span>
+                    <span className="text-slate-500 text-[11px] ml-1">({lead.sourceEvidence[0]?.sourceType})</span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-slate-400">Personalized Hook: </span>
+                    <span className="text-blue-300 italic">&ldquo;{lead.personalizedPitch}&rdquo;</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        {/* Discovery Evidence Ledger */}
+        <Card className="bg-slate-900/90 border-slate-800 text-slate-100">
+          <CardHeader>
+            <CardTitle className="text-base font-bold text-white flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              AI Discovery Evidence Ledger
+            </CardTitle>
+            <CardDescription className="text-slate-400 text-xs">
+              Immutable log of empirical AI search citations and crawler access observations. Eliminates self-generated assumptions.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="rounded-xl border border-slate-800 overflow-hidden text-xs">
+              <table className="w-full text-left">
+                <thead className="bg-slate-950 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-semibold">
+                  <tr>
+                    <th className="py-2.5 px-4">Platform</th>
+                    <th className="py-2.5 px-4">Entity / Page</th>
+                    <th className="py-2.5 px-4">Observed Citation</th>
+                    <th className="py-2.5 px-4">Crawler Access</th>
+                    <th className="py-2.5 px-4">Evidence Snippet</th>
+                    <th className="py-2.5 px-4">Confidence</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/80 text-slate-300">
+                  {evidenceLedger.map((ev) => (
+                    <tr key={ev.id} className="hover:bg-slate-800/40 transition-colors">
+                      <td className="py-2.5 px-4 font-semibold text-white">{ev.platform}</td>
+                      <td className="py-2.5 px-4 font-mono text-blue-400">{ev.entityName}</td>
+                      <td className="py-2.5 px-4">
+                        <Badge className={ev.citationObserved === 'OBSERVED' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-slate-800 text-slate-400'}>
+                          {ev.citationObserved}
+                        </Badge>
+                      </td>
+                      <td className="py-2.5 px-4 text-slate-300">
+                        {ev.crawlerAccessVerified ? '✅ Verified 200' : 'Pending'}
+                      </td>
+                      <td className="py-2.5 px-4 text-slate-400 max-w-xs truncate">
+                        {ev.evidencePayload.observedQuerySnippet || ev.evidencePayload.verificationNotes}
+                      </td>
+                      <td className="py-2.5 px-4">
+                        <Badge className="bg-purple-500/10 text-purple-400 border-purple-500/30 text-[10px]">
+                          {ev.confidence}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>

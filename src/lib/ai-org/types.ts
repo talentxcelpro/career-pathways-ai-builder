@@ -48,6 +48,7 @@ export type ActionType =
   | 'PUBLISH_PAGE'              // Deploy page to live site & XML sitemap
   | 'PUBLISH_SOCIAL_POST'       // Distribute content to external social channel
   | 'SEND_EMAIL'                // Dispatch email outreach to employers/users
+  | 'OUTREACH_LEAD'             // B2B employer outreach on verified hiring signal
   | 'CHANGE_SEO_METADATA'       // Optimize titles, meta descriptions, JSON-LD
   | 'MUTATE_GRAPH_RELATIONSHIP' // Add or refresh derived entity edge
   | 'AUDIT_ENTITY_QUALITY'      // Compute profile quality score & indexability

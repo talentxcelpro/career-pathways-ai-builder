@@ -55,19 +55,30 @@ Allow: /
 
 
 # ------------------------------
-# Generative AI & LLM Crawlers (AIO / GEO Optimized)
+# Generative AI Search Discovery Crawlers (Real-Time Citations & Search)
+# ------------------------------
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+
+# ------------------------------
+# Generative AI & Model Training Crawlers
 # ------------------------------
 
 User-agent: GPTBot
 Allow: /
 
-User-agent: OAI-SearchBot
-Allow: /
-
 User-agent: ChatGPT-User
-Allow: /
-
-User-agent: PerplexityBot
 Allow: /
 
 User-agent: ClaudeBot

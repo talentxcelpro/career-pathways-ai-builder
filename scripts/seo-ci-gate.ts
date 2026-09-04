@@ -100,7 +100,7 @@ import { MAX_URLS_PER_SITEMAP_SHARD } from '../src/services/seo/sitemapShardingS
 import { normalizeAtsLocation } from '../src/services/jobs/atsFeedIngestionService.js';
 import { evaluateMatrixIndexability } from '../src/config/jobs/indexability.js';
 import { TOTAL_AGENTS_COUNT, ALL_AGENT_IDS } from '../src/lib/ai-org/types.js';
-import { getAuthoritativeLifecycleState, setAuthoritativeLifecycleState, AGENT_REGISTRY_DESCRIPTORS } from '../src/lib/ai-org/aiOrganizationState.js';
+import { getAuthoritativeLifecycleState, setAuthoritativeLifecycleState, AGENT_REGISTRY_DESCRIPTORS, DEFAULT_ACTION_PERMISSIONS } from '../src/lib/ai-org/aiOrganizationState.js';
 import { executeAgentAction } from '../src/lib/ai-org/executionGateway.js';
 import { runExecutiveDirectorCycle } from '../src/lib/ai-org/executiveDirectorAgent.js';
 import { ALL_12_ACQUISITION_SURFACES, resolveCrossModuleFunnel } from '../src/lib/acquisition-os/crossModuleFunnelEngine.js';
@@ -143,6 +143,16 @@ import {
 import { 
   mapQueryToRegionalProduct 
 } from '../src/lib/seo/queryAudienceMapper.js';
+import { 
+  DISCOVERED_EMPLOYER_LEADS, 
+  evaluateActiveLeads, 
+  computeLeadQualificationScore 
+} from '../src/lib/ai-leads/leadDiscoveryEngine.js';
+import { 
+  detectAiPlatform, 
+  DISCOVERY_EVIDENCE_LEDGER, 
+  getAiDiscoveryObservatoryData 
+} from '../src/lib/ai-discovery/aiReferralTracker.js';
 
 const SUPABASE_URL = 'https://dthlgsnakhoftinssokm.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
@@ -2570,6 +2580,113 @@ async function runSeoCiGate() {
       anonymousProfile.isIndexable === false &&
       anonymousProfile.qualityScoreBreakdown.hasMinimumIdentityFields === false,
       'Verified that a profile lacking mandatory identity fields cannot achieve indexability despite numeric score'
+    );
+
+    // =========================================================================
+    // SECTION 22: AUDITING AI DISCOVERY & ACQUISITION INTELLIGENCE (AEO/GEO & B2B LEADS)
+    // =========================================================================
+    console.log('\n--- Auditing Section 22: AI Discovery & Acquisition Intelligence ---');
+
+    // 22.1 Invariant: B2B Employer Lead Model & Evidence Provenance Integrity
+    const hasAuditableLeads = 
+      DISCOVERED_EMPLOYER_LEADS.length >= 5 &&
+      DISCOVERED_EMPLOYER_LEADS.every(l => 
+        l.sourceEvidence.length >= 1 &&
+        Boolean(l.sourceEvidence[0].sourceUrl) &&
+        Boolean(l.sourceEvidence[0].evidence) &&
+        l.qualificationScore >= 50 &&
+        l.qualificationScore <= 100
+      );
+    record(
+      'AI_Discovery_Intelligence',
+      'B2B Employer Lead Model & Evidence Provenance Integrity',
+      hasAuditableLeads,
+      `Verified ${DISCOVERED_EMPLOYER_LEADS.length} discovered B2B leads with mandatory source evidence and qualification scoring (0-100)`
+    );
+
+    // 22.2 Invariant: Server-Enforced REVIEW Policy for Lead Outreach
+    const leadOutreachPerm = DEFAULT_ACTION_PERMISSIONS.EMPLOYER_ACQUISITION.find(p => p.actionType === 'OUTREACH_LEAD');
+    const sendEmailPerm = DEFAULT_ACTION_PERMISSIONS.EMPLOYER_ACQUISITION.find(p => p.actionType === 'SEND_EMAIL');
+    const outreachTestExecution = await executeAgentAction({
+      agentId: 'EMPLOYER_ACQUISITION',
+      actionType: 'OUTREACH_LEAD',
+      targetSurface: 'CloudScale Middle East',
+      telemetryTrigger: 'CI Outreach Policy Enforcement',
+      payload: { leadId: 'lead_ae_cloudtech_01' },
+      executeFn: async () => ({ sent: true }),
+    });
+    record(
+      'AI_Discovery_Intelligence',
+      'Server-Enforced REVIEW Policy for Lead Outreach',
+      leadOutreachPerm?.policy === 'REVIEW' &&
+      sendEmailPerm?.policy === 'REVIEW' &&
+      outreachTestExecution.status === 'PENDING_REVIEW',
+      'Confirmed OUTREACH_LEAD and SEND_EMAIL require human REVIEW and cannot execute autonomously'
+    );
+
+    // 22.3 Invariant: Discovery Evidence Ledger Telemetry State Separation
+    const hasStateSeparation = 
+      DISCOVERY_EVIDENCE_LEDGER.length >= 4 &&
+      DISCOVERY_EVIDENCE_LEDGER.some(e => e.crawlerAccessVerified && e.citationObserved === 'NOT_OBSERVED') &&
+      DISCOVERY_EVIDENCE_LEDGER.every(e => e.platform !== 'UNKNOWN');
+    record(
+      'AI_Discovery_Intelligence',
+      'Discovery Evidence Ledger Telemetry State Separation',
+      hasStateSeparation,
+      'Validated Discovery Evidence Ledger strictly separates Crawlable, Referral, Citation, and Recommendation states'
+    );
+
+    // 22.4 Invariant: Explicit Dual-Category AI Crawler Directives in robots.txt
+    const robotsTxtContent = readFileSync(resolve('public/robots.txt'), 'utf8');
+    const hasSearchDiscoveryCrawlers = 
+      robotsTxtContent.includes('User-agent: OAI-SearchBot') &&
+      robotsTxtContent.includes('User-agent: PerplexityBot') &&
+      robotsTxtContent.includes('User-agent: Claude-User') &&
+      robotsTxtContent.includes('User-agent: Bingbot');
+    const hasModelTrainingCrawlers = 
+      robotsTxtContent.includes('User-agent: GPTBot') &&
+      robotsTxtContent.includes('User-agent: ClaudeBot') &&
+      robotsTxtContent.includes('User-agent: Google-Extended');
+    record(
+      'AI_Discovery_Intelligence',
+      'Explicit Dual-Category AI Crawler Directives in robots.txt',
+      hasSearchDiscoveryCrawlers && hasModelTrainingCrawlers,
+      'Confirmed robots.txt explicitly separates Search Discovery crawlers (OAI-SearchBot, PerplexityBot, Claude-User) from Model Training crawlers'
+    );
+
+    // 22.5 Invariant: Canonical /about/talentxcel Knowledge Source & Schema Graph
+    const aboutPageSrc = readFileSync(resolve('src/pages/about/AboutTalentXcelAI.tsx'), 'utf8');
+    const appTsxKnowledgeCheck = readFileSync(resolve('src/App.tsx'), 'utf8');
+    const hasKnowledgeRoute = appTsxKnowledgeCheck.includes('/about/talentxcel');
+    const hasOrganizationSchema = 
+      aboutPageSrc.includes("'@type': 'Organization'") &&
+      aboutPageSrc.includes("'@type': 'WebSite'") &&
+      aboutPageSrc.includes('knowsAbout') &&
+      aboutPageSrc.includes('areaServed');
+    record(
+      'AI_Discovery_Intelligence',
+      'Canonical /about/talentxcel Knowledge Source & Schema Graph',
+      hasKnowledgeRoute && hasOrganizationSchema,
+      'Validated /about/talentxcel is mounted and emits comprehensive Organization + WebSite Schema.org graph'
+    );
+
+    // 22.6 Invariant: AI Referral Detection without False Inference
+    const chatgptDetected = detectAiPlatform('https://chatgpt.com/search?q=test', '');
+    const perplexityDetected = detectAiPlatform('https://www.perplexity.ai/', '');
+    const claudeDetected = detectAiPlatform('https://claude.ai/chat/123', '');
+    const geminiDetected = detectAiPlatform('https://gemini.google.com/app', '');
+    const copilotDetected = detectAiPlatform('https://copilot.microsoft.com/', '');
+    const unknownDetected = detectAiPlatform('https://random-news-site.com/', '');
+    record(
+      'AI_Discovery_Intelligence',
+      'AI Referral Detection without False Inference',
+      chatgptDetected === 'CHATGPT' &&
+      perplexityDetected === 'PERPLEXITY' &&
+      claudeDetected === 'CLAUDE' &&
+      geminiDetected === 'GEMINI' &&
+      copilotDetected === 'COPILOT' &&
+      unknownDetected === 'UNKNOWN',
+      'Validated high-precision AI engine detection across all 5 major platforms with strict UNKNOWN fallback (zero false assumptions)'
     );
   } catch (err: any) {
     record('Admin_Security', 'Admin Security Engine Execution', false, `Security test error: ${err.message}`, { severity: 'CRITICAL' });

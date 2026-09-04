@@ -107,20 +107,34 @@ export async function runContentEngineRoutine(): Promise<SpecialistAgentExecutio
   };
 }
 
+import { evaluateActiveLeads } from '@/lib/ai-leads/leadDiscoveryEngine';
+
 /**
- * 4. Employer Acquisition Agent Routine
+ * 4. Employer Acquisition Agent Routine (with B2B AI Lead Discovery Pipeline)
  */
 export async function runEmployerAcquisitionRoutine(): Promise<SpecialistAgentExecutionSummary> {
+  const leadsEvaluation = evaluateActiveLeads();
+  const topLead = leadsEvaluation.topLeads[0];
+
+  // Lead outreach requires REVIEW policy. Execution Gateway will safely queue it.
   const res = await executeAgentAction({
     agentId: 'EMPLOYER_ACQUISITION',
-    actionType: 'ANALYZE',
-    targetSurface: '/hire & /employers/post-job',
-    telemetryTrigger: 'Reviewing multi-location campaign adoption',
+    actionType: 'OUTREACH_LEAD',
+    targetSurface: topLead ? `${topLead.companyName} (${topLead.targetCity})` : '/hire & B2B Leads',
+    telemetryTrigger: topLead 
+      ? `Hiring signal verified: ${topLead.openRolesCount} roles. Score: ${topLead.qualificationScore}/100`
+      : 'Reviewing active B2B employer lead discovery pipeline',
+    payload: {
+      totalLeadsDiscovered: leadsEvaluation.totalLeads,
+      pendingApproval: leadsEvaluation.pendingApproval,
+      averageScore: leadsEvaluation.averageScore,
+      targetLeadId: topLead?.leadId,
+      personalizedPitch: topLead?.personalizedPitch,
+    },
     executeFn: async () => {
       return {
-        multiLocationAdoptionRatePct: 34.5,
-        averageCitiesPerCampaign: 7.2,
-        recommendation: 'Feature Top 10 Indian Tech Metros 1-click preset higher on the composer.',
+        leadsDiscovered: leadsEvaluation.totalLeads,
+        topLeadQueued: topLead?.companyName,
       };
     },
   });
@@ -128,11 +142,13 @@ export async function runEmployerAcquisitionRoutine(): Promise<SpecialistAgentEx
   return {
     agentId: 'EMPLOYER_ACQUISITION',
     agentName: 'Employer Acquisition Agent',
-    actionExecuted: 'ANALYZE',
+    actionExecuted: 'OUTREACH_LEAD',
     status: res.status,
     rejectionReason: res.rejectionReason,
-    summary: res.success
-      ? 'Analyzed employer funnel: 34.5% multi-location adoption with 7.2 average city spawns.'
+    summary: res.status === 'PENDING_REVIEW'
+      ? `Evaluated ${leadsEvaluation.totalLeads} B2B leads (avg score ${leadsEvaluation.averageScore}/100). Prepared verified outreach for ${topLead?.companyName || 'top prospect'} and queued for human approval.`
+      : res.success
+      ? `Analyzed employer pipeline: ${leadsEvaluation.totalLeads} active leads identified.`
       : (res.rejectionReason || 'Execution blocked.'),
   };
 }
