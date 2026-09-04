@@ -41,6 +41,8 @@ export default defineConfig(({ mode }) => ({
         // Keep React and all related runtime in a single chunk to avoid
         // multiple React instances / null import issues.
         manualChunks: (id) => {
+          // Keep React and all related runtime in a single chunk to avoid
+          // multiple React instances / null import issues.
           if (
             id.includes('node_modules/react/') ||
             id.includes('node_modules/react-dom/') ||
@@ -64,14 +66,50 @@ export default defineConfig(({ mode }) => ({
           if (id.includes('node_modules/lucide-react')) {
             return 'icons';
           }
-          if (id.includes('node_modules/pdfjs-dist') || id.includes('node_modules/jspdf') || id.includes('node_modules/html2canvas')) {
-            return 'pdf-vendor';
+          // Decompose heavy PDF engines into separate single-purpose chunks
+          if (id.includes('node_modules/pdfjs-dist')) {
+            return 'pdfjs-vendor';
+          }
+          if (id.includes('node_modules/jspdf')) {
+            return 'jspdf-vendor';
+          }
+          if (id.includes('node_modules/html2canvas')) {
+            return 'html2canvas-vendor';
+          }
+          if (id.includes('node_modules/@react-pdf')) {
+            return 'react-pdf-vendor';
+          }
+          // Specialized heavy feature libraries (Three.js, Office, Canvas, Flow, DnD)
+          if (id.includes('node_modules/three') || id.includes('node_modules/@react-three')) {
+            return 'three-vendor';
+          }
+          if (id.includes('node_modules/docx') || id.includes('node_modules/mammoth') || id.includes('node_modules/jszip')) {
+            return 'office-vendor';
+          }
+          if (id.includes('node_modules/fabric') || id.includes('node_modules/@xyflow')) {
+            return 'canvas-vendor';
+          }
+          if (id.includes('node_modules/@dnd-kit') || id.includes('node_modules/@hello-pangea')) {
+            return 'dnd-vendor';
+          }
+          if (id.includes('node_modules/react-big-calendar') || id.includes('node_modules/react-day-picker')) {
+            return 'calendar-vendor';
           }
           if (id.includes('node_modules/@tanstack')) {
             return 'query-vendor';
           }
           if (id.includes('node_modules/date-fns') || id.includes('node_modules/lodash')) {
             return 'utils-vendor';
+          }
+          // High-volume static catalog and dataset chunks
+          if (id.includes('indianInstitutionsCatalog') || id.includes('indianEducationService')) {
+            return 'indian-education-catalog';
+          }
+          if (id.includes('locations.ts')) {
+            return 'geo-locations';
+          }
+          if (id.includes('talentxcelAiContentPool')) {
+            return 'ai-content-pool';
           }
           if (id.includes('node_modules')) {
             return 'vendor';
@@ -82,7 +120,7 @@ export default defineConfig(({ mode }) => ({
         assetFileNames: 'assets/[name]-[hash].[ext]',
       },
     },
-    chunkSizeWarningLimit: 500,
+    chunkSizeWarningLimit: 1000,
     sourcemap: false,
     minify: 'terser',
     terserOptions: {

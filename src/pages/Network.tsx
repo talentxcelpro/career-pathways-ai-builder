@@ -41,6 +41,7 @@ import { LinkedInStyleBanner } from "@/components/profile/LinkedInStyleBanner";
 import { EnhancedCreatePost } from "@/components/posts/EnhancedCreatePost";
 
 const Network: React.FC = () => {
+  const { user } = useAuth();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();

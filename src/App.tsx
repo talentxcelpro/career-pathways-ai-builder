@@ -45,12 +45,12 @@ import UniversalProfileRouteHandler from "@/components/profile/UniversalProfileR
 import LegacyProfileRedirect from "@/components/profile/LegacyProfileRedirect";
 import FastPassportRedirect from "@/components/passport/FastPassportRedirect";
 import { EnhancedSEODemoWrapper } from "@/components/seo/EnhancedSEODemoWrapper";
-import JobDetails from "@/pages/jobs/JobDetails";
-import Blog from "@/pages/Blog";
-import { BlogPost } from "@/pages/BlogPost";
-import NotFound from "@/pages/NotFound";
-import ResourceDetail from "@/pages/resources/ResourceDetail";
-import SlugProfile from "@/pages/SlugProfile";
+const JobDetails = lazy(() => import("@/pages/jobs/JobDetails"));
+const Blog = lazy(() => import("@/pages/Blog"));
+const BlogPost = lazy(() => import("@/pages/BlogPost").then(m => ({ default: m.BlogPost })));
+const NotFound = lazy(() => import("@/pages/NotFound"));
+const ResourceDetail = lazy(() => import("@/pages/resources/ResourceDetail"));
+const SlugProfile = lazy(() => import("@/pages/SlugProfile"));
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";

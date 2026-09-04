@@ -456,3 +456,90 @@ export const TODAYS_GROWTH_DECISION: TodaysGrowthDecision = {
   confidence: 'HIGH',
   whyNotAutoExecute: 'External outreach and personalized prospecting require explicit human approval at the Execution Gateway.',
 };
+
+// ============================================================================
+// 8. Phase 9: GSC-Led Organic Growth Operations Framework
+// ============================================================================
+
+export const GSC_OPERATIONAL_PHASE = 'PHASE_9_GSC_ORGANIC_GROWTH_OPERATIONS';
+
+export const GSC_MARKETING_FREEZE_POLICY = {
+  phase: 'PHASE_9_GSC_ORGANIC_GROWTH_OPERATIONS',
+  status: 'FROZEN',
+  frozenChannels: [
+    { channel: 'Paid Google Ads', reason: 'Zero paid ad spend; pure organic search discovery', status: 'FROZEN' },
+    { channel: 'Meta / Instagram Ads', reason: 'Unqualified consumer churn without high intent', status: 'FROZEN' },
+    { channel: 'LinkedIn Paid Ads', reason: 'Prohibitive B2B CPC ($12-18); replaced by GSC organic employer surfaces', status: 'FROZEN' },
+    { channel: 'Cold Email Scraper Outreach', reason: 'Spam reputation risk; replaced by GSC high-intent inbound search', status: 'FROZEN' },
+    { channel: 'Mass Automated Social Posting', reason: 'Low-signal algorithmic noise; replaced by quality GSC ranking assets', status: 'FROZEN' },
+    { channel: 'Influencer & Vanity PR Campaigns', reason: 'Unverified attribution; zero traceable conversion telemetry', status: 'FROZEN' },
+    { channel: 'Purchased Backlink Schemes', reason: 'Google spam penalty risk; replaced by organic authority & linkable tools', status: 'FROZEN' },
+    { channel: 'FameHero / Third-Party Directory Blasts', reason: 'Doorway footprint risk; replaced by verified canonical graph', status: 'FROZEN' },
+  ],
+  activeOperatingChannel: {
+    channel: 'Google Search Console (GSC) Organic Demand Engine',
+    status: 'ACTIVE_PRIMARY_SENSOR',
+    role: 'Single source of truth for external market demand, search intent, and query evidence',
+  }
+};
+
+export interface GscWeeklyCadenceQuestion {
+  id: number;
+  question: string;
+  sensorDataSource: string;
+  responsibleOrg: string;
+  activeFinding: string;
+  actionableOutput: string;
+}
+
+export const GSC_WEEKLY_OPERATIONAL_CADENCE: GscWeeklyCadenceQuestion[] = [
+  { id: 1, question: "What searches grew this week?", sensorDataSource: "GSC Search Analytics API (Impression Delta)", responsibleOrg: "SEO & Demand Intelligence", activeFinding: "UAE regional tech roles (+44% WoW), ATS resume checker (+31% WoW)", actionableOutput: "Prioritize inventory validation on Dubai/Bangalore role pages." },
+  { id: 2, question: "What pages gained organic traffic?", sensorDataSource: "GSC Clicks & Landing Analytics", responsibleOrg: "Acquisition Intelligence", activeFinding: "/uae/jobs/software-engineer/dubai (+280 clicks), /resume (+410 clicks)", actionableOutput: "Maintain freshness and benchmark internal authority." },
+  { id: 3, question: "What pages lost organic traffic?", sensorDataSource: "GSC Impression/Position Degradation Monitor", responsibleOrg: "Rank Tracking & SERP Monitor", activeFinding: "/jobs/marketing-executive-noida (Rank slipped from 6.4 to 8.2)", actionableOutput: "Execute title tag & meta description CTR refresh experiment." },
+  { id: 4, question: "Where is CTR weak vs benchmark position?", sensorDataSource: "GSC CTR Gap Engine (Benchmark vs Actual)", responsibleOrg: "CRO & Snippet Optimizer", activeFinding: "P2-P4 queries on /tools/salary-analyzer averaging 4.1% CTR vs 11.0% benchmark", actionableOutput: "Deploy rich schema salary snippet and punchy action verbs." },
+  { id: 5, question: "Which landing pages generate verified signups?", sensorDataSource: "First-Party Attribution Ledger (GSC Landing -> Signup)", responsibleOrg: "Conversion Engineering", activeFinding: "/resume (19.4% signup yield), /colleges/pathway (16.2% signup yield)", actionableOutput: "Double down on value-first interactive preview." },
+  { id: 6, question: "Which pages generate activated users?", sensorDataSource: "Identity & Passport Activation Telemetry", responsibleOrg: "Product Experience Team", activeFinding: "ATS Scanner visitors have 59.7% activation rate once signed up", actionableOutput: "Streamline Career Passport creation immediately post-scan." },
+  { id: 7, question: "Which search queries generate employer leads?", sensorDataSource: "B2B Employer Pipeline Telemetry", responsibleOrg: "B2B Expansion & Sourcing", activeFinding: "'hire software engineers uae' generated 4 qualified enterprise employer inquiries", actionableOutput: "Enhance multi-location employer syndication presets." },
+  { id: 8, question: "Which regional markets are producing revenue?", sensorDataSource: "TXC Token & B2B Transaction Ledger", responsibleOrg: "AI CEO & Revenue Operations", activeFinding: "UAE ($4,200 net observed) & India ($3,600 net observed) driving 91% of revenue", actionableOutput: "Focus next programmatic freshness cycle on UAE and Tier-1 India tech hubs." }
+];
+
+export const GSC_DEMAND_SURFACE_ROUTING_MATRIX = [
+  { intentType: "Transactional Job", queryPattern: "software engineer jobs dubai", targetRoute: "/uae/jobs/software-engineer/dubai", conversionGoal: "Job Application & Career Passport", status: "VERIFIED_INVENTORY" },
+  { intentType: "Commercial Tool", queryPattern: "ats resume checker free india", targetRoute: "/resume", conversionGoal: "Resume Scan & Profile Signup", status: "HIGH_CONVERTING" },
+  { intentType: "Salary Benchmark", queryPattern: "software engineer salary dubai", targetRoute: "/tools/salary-analyzer", conversionGoal: "Benchmark Report & Dubai Role Matches", status: "ACTIVE" },
+  { intentType: "B2B Employer Hiring", queryPattern: "hire software engineers uae", targetRoute: "/uae/employers", conversionGoal: "Multi-City Job Post & Employer Account", status: "REVENUE_GENERATING" },
+  { intentType: "Higher Education", queryPattern: "top engineering colleges bangalore", targetRoute: "/colleges", conversionGoal: "NIRF Comparison & Global Pathway Exploration", status: "INDEXED_ACTIVE" },
+  { intentType: "Career Transition Guide", queryPattern: "how to become data analyst in india", targetRoute: "/news", conversionGoal: "Editorial Deep Dive & Career Map Launch", status: "DEMAND_TRIGGERED" },
+  { intentType: "Company Benchmarking", queryPattern: "top ai startups rankings", targetRoute: "/rankings", conversionGoal: "Claim #1 Bid & Company Profile Claim", status: "ACTIVE" }
+];
+
+export const INVERTED_BUSINESS_KPI_HIERARCHY = [
+  { level: 1, name: "Net Commercial Revenue", metric: "TXC token burns & B2B employer subscriptions", priority: "PRIMARY_BUSINESS_OBJECTIVE" },
+  { level: 2, name: "Paying Customers / Employers", metric: "Active hiring employers & premium passport holders", priority: "BUSINESS_HEALTH" },
+  { level: 3, name: "Activated Users", metric: "Users who completed ATS scan, applied to job, or connected", priority: "PRODUCT_ENGAGEMENT" },
+  { level: 4, name: "Verified Users", metric: "Users with verified identity, verified skills, or Career Passport", priority: "TRUST_ASSET" },
+  { level: 5, name: "New Registrations / Signups", metric: "Candidate & Recruiter accounts created from landing pages", priority: "FUNNEL_ENTRY" },
+  { level: 6, name: "Organic Landing Sessions", metric: "Qualified first-party sessions arriving on canonical URLs", priority: "ACQUISITION_VOLUME" },
+  { level: 7, name: "Google Organic Clicks", metric: "Traffic delivered from Google SERPs across all 14 surfaces", priority: "SEARCH_DELIVERY" },
+  { level: 8, name: "Google Search Impressions", metric: "Diagnostic sensor of market search volume & keyword footprint", priority: "DEMAND_SENSOR_ONLY" }
+];
+
+export const NEWS_DEMAND_EDITORIAL_POLICY = {
+  policyName: "GSC Demand-Driven Quality Editorial",
+  maxInventoryGuideline: "Grow gradually from existing ~20 articles based strictly on GSC demand signals",
+  antiContentFactoryLock: true,
+  requiredArticleAnatomy: [
+    "Authoritative Problem Formulation",
+    "Forensic Comparison Table or Salary Benchmark",
+    "Interactive TalentXcel Tool Embed or Calculator",
+    "Actionable 6-Step Practical Career Pathway",
+    "Live Verified Jobs or Employer Links"
+  ],
+  activeGscDemandsQueue: [
+    { query: "what is an AI career", gscMonthlyImpressions: 18400, editorialStatus: "RECOMMENDED_NEXT", priority: "P1" },
+    { query: "how ATS works 2026", gscMonthlyImpressions: 14200, editorialStatus: "DRAFT_READY", priority: "P1" },
+    { query: "software engineer salary dubai", gscMonthlyImpressions: 11900, editorialStatus: "IN_REVIEW", priority: "P1" },
+    { query: "resume for freshers tech", gscMonthlyImpressions: 9800, editorialStatus: "QUEUED", priority: "P2" },
+    { query: "data analyst skills roadmap", gscMonthlyImpressions: 8700, editorialStatus: "QUEUED", priority: "P2" }
+  ]
+};

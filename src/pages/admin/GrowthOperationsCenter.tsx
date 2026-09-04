@@ -29,7 +29,12 @@ import {
   Zap,
   Lock,
   ChevronRight,
-  HelpCircle
+  HelpCircle,
+  XCircle,
+  Radio,
+  FileText,
+  Target,
+  Filter
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -43,7 +48,13 @@ import {
   MODEL_WEIGHT_PROPOSALS,
   ACTIVE_MODEL_VERSION,
   RECORDED_ATTRIBUTION_TOUCHPOINTS,
-  computeNetCommercialGrowthValue
+  computeNetCommercialGrowthValue,
+  GSC_OPERATIONAL_PHASE,
+  GSC_MARKETING_FREEZE_POLICY,
+  GSC_WEEKLY_OPERATIONAL_CADENCE,
+  GSC_DEMAND_SURFACE_ROUTING_MATRIX,
+  INVERTED_BUSINESS_KPI_HIERARCHY,
+  NEWS_DEMAND_EDITORIAL_POLICY
 } from '@/lib/acquisition-os/growthOperationsEngine';
 import { 
   resolveNext10kUsersRoadmap, 
@@ -52,7 +63,7 @@ import {
 import { getAiDiscoveryObservatoryData } from '@/lib/ai-discovery/aiReferralTracker';
 
 export default function GrowthOperationsCenter() {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('phase9');
   const [roadmap] = useState(resolveNext10kUsersRoadmap());
   const [unitEconomics] = useState(computeMarketUnitEconomics());
   const [observatoryData] = useState(getAiDiscoveryObservatoryData());
@@ -209,7 +220,10 @@ export default function GrowthOperationsCenter() {
 
       {/* Main Tabbed Operations Interface */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="bg-slate-900 border border-slate-800 p-1 rounded-xl">
+        <TabsList className="bg-slate-900 border border-slate-800 p-1 rounded-xl flex-wrap h-auto gap-1">
+          <TabsTrigger value="phase9" className="data-[state=active]:bg-emerald-950/80 data-[state=active]:text-emerald-300 data-[state=active]:border-emerald-500/40 text-xs font-bold border border-transparent">
+            <Radio className="w-3.5 h-3.5 mr-1.5 text-emerald-400 animate-pulse" /> Phase 9: GSC Organic OS
+          </TabsTrigger>
           <TabsTrigger value="overview" className="data-[state=active]:bg-slate-800 text-xs">
             <Sparkles className="w-3.5 h-3.5 mr-1.5 text-blue-400" /> Executive Overview
           </TabsTrigger>
@@ -229,6 +243,303 @@ export default function GrowthOperationsCenter() {
             <Brain className="w-3.5 h-3.5 mr-1.5 text-rose-400" /> AI CEO Closed-Loop
           </TabsTrigger>
         </TabsList>
+
+        {/* TAB 0: PHASE 9 — GSC-LED ORGANIC GROWTH OPERATIONS */}
+        <TabsContent value="phase9" className="space-y-6">
+          
+          {/* Executive Strategy Banner */}
+          <div className="bg-gradient-to-r from-emerald-950/50 via-slate-900 to-slate-950 border border-emerald-500/40 rounded-2xl p-5 sm:p-6 shadow-xl space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-emerald-500/20 text-emerald-400 rounded-xl border border-emerald-500/30">
+                  <Radio className="w-6 h-6 text-emerald-400 animate-pulse" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/40 text-xs uppercase tracking-wider font-bold">
+                      Active Operational Directive
+                    </Badge>
+                    <Badge variant="outline" className="text-xs text-amber-400 border-amber-500/30 font-mono">
+                      Marketing Architecture: FROZEN
+                    </Badge>
+                  </div>
+                  <h2 className="text-xl sm:text-2xl font-bold text-white mt-1">
+                    Phase 9: GSC-Led Organic Growth Operations
+                  </h2>
+                </div>
+              </div>
+              <div className="text-right">
+                <span className="text-xs text-slate-400 block">Single External Sensor</span>
+                <span className="text-sm font-mono font-bold text-emerald-400">Google Search Console (GSC)</span>
+              </div>
+            </div>
+
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-4xl">
+              All infrastructure is built. We are no longer asking <em>"What marketing architecture should we build?"</em> We are operating the closed-loop engine: 
+              <strong className="text-white"> Google Search → GSC demand → AI Growth Org → TalentXcel products → organic users → activation → revenue → feedback into GSC</strong>.
+            </p>
+          </div>
+
+          {/* 1. Active Channel Freeze vs Sole External Sensor */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+            {/* Frozen Channels Card */}
+            <Card className="lg:col-span-7 bg-slate-900/90 border-slate-800">
+              <CardHeader className="pb-3 border-b border-slate-800">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm font-bold text-white flex items-center gap-2">
+                    <XCircle className="w-4 h-4 text-rose-400" />
+                    Strict Marketing Freeze (Zero Budget / Zero Distraction)
+                  </CardTitle>
+                  <Badge variant="outline" className="text-[10px] text-rose-400 border-rose-500/30 font-mono">
+                    8 CHANNELS FROZEN
+                  </Badge>
+                </div>
+                <CardDescription className="text-xs text-slate-400">
+                  Explicit operational moratorium on paid campaigns, cold outreach, and artificial spam.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="divide-y divide-slate-800/80 text-xs">
+                  {GSC_MARKETING_FREEZE_POLICY.frozenChannels.map((item, idx) => (
+                    <div key={idx} className="p-3 flex items-start justify-between gap-3 hover:bg-slate-800/30">
+                      <div>
+                        <span className="font-bold text-slate-200 block">{item.channel}</span>
+                        <span className="text-slate-400 text-[11px]">{item.reason}</span>
+                      </div>
+                      <Badge className="bg-rose-950/60 text-rose-400 border-rose-800/50 text-[10px] shrink-0 font-mono">
+                        ❌ FROZEN
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Sole Primary Sensor Card */}
+            <Card className="lg:col-span-5 bg-gradient-to-br from-slate-900 to-emerald-950/30 border-emerald-900/40">
+              <CardHeader className="pb-3 border-b border-slate-800">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm font-bold text-white flex items-center gap-2">
+                    <Radio className="w-4 h-4 text-emerald-400" />
+                    Sole Marketing Sensor
+                  </CardTitle>
+                  <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/40 text-[10px] font-mono">
+                    ACTIVE SENSOR
+                  </Badge>
+                </div>
+                <CardDescription className="text-xs text-slate-400">
+                  Google Search Console is the authoritative source of market demand.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-4 space-y-4 text-xs">
+                <div className="p-3.5 bg-slate-950/80 rounded-xl border border-slate-800 space-y-2">
+                  <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider block">
+                    Why GSC is the Only Channel
+                  </span>
+                  <p className="text-slate-300 leading-relaxed">
+                    Search intent represents <strong>genuine, pull-based human need</strong>. When someone searches <em>"software engineer jobs dubai"</em> or <em>"free ats resume scanner"</em>, they have immediate intent. We do not need to interrupt strangers on social media or email.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                    Operating Principle
+                  </span>
+                  <div className="p-3 bg-emerald-950/30 border border-emerald-500/30 rounded-xl font-mono text-[11px] text-emerald-300 leading-relaxed">
+                    "GSC is the input and feedback system. TalentXcel's products are the conversion mechanism. The AI organization is the decision engine."
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-slate-400 text-[11px]">
+                  <span>First-Party Funnel Telemetry:</span>
+                  <span className="text-emerald-400 font-mono font-bold">CONNECTED</span>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* 2. GSC 1:1 Demand-to-Surface Routing Matrix */}
+          <Card className="bg-slate-900/90 border-slate-800">
+            <CardHeader className="pb-3 border-b border-slate-800">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-bold text-white flex items-center gap-2">
+                  <Target className="w-4 h-4 text-blue-400" />
+                  GSC Query-to-Product Ecosystem Routing Matrix
+                </CardTitle>
+                <Badge variant="outline" className="text-[10px] text-blue-400 border-blue-500/30 font-mono">
+                  7 CORE INTENT MAPPINGS
+                </Badge>
+              </div>
+              <CardDescription className="text-xs text-slate-400">
+                GSC does not feed "Jobs SEO" alone — it maps search demand directly into the entire multi-product TalentXcel engine.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-0 overflow-x-auto">
+              <table className="w-full text-xs text-left">
+                <thead className="bg-slate-950/80 text-slate-400 text-[11px] border-b border-slate-800 font-mono">
+                  <tr>
+                    <th className="p-3">Intent Pattern</th>
+                    <th className="p-3">Sample GSC Query</th>
+                    <th className="p-3">Destination Route</th>
+                    <th className="p-3">Conversion Objective</th>
+                    <th className="p-3 text-right">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/80 font-mono">
+                  {GSC_DEMAND_SURFACE_ROUTING_MATRIX.map((item, idx) => (
+                    <tr key={idx} className="hover:bg-slate-800/40">
+                      <td className="p-3 font-bold text-white">{item.intentType}</td>
+                      <td className="p-3 text-emerald-400">"{item.queryPattern}"</td>
+                      <td className="p-3 text-blue-400">
+                        <Link to={item.targetRoute} className="hover:underline flex items-center gap-1">
+                          {item.targetRoute} <ArrowRight className="w-3 h-3 inline" />
+                        </Link>
+                      </td>
+                      <td className="p-3 text-slate-300 font-sans">{item.conversionGoal}</td>
+                      <td className="p-3 text-right">
+                        <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-[10px]">
+                          {item.status}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </CardContent>
+          </Card>
+
+          {/* 3. The 8-Question Weekly Executive Marketing Cadence */}
+          <Card className="bg-slate-900/90 border-slate-800">
+            <CardHeader className="pb-3 border-b border-slate-800">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-bold text-white flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-purple-400" />
+                  Weekly GSC Growth Review Cadence (The 8 Operational Questions)
+                </CardTitle>
+                <Badge variant="outline" className="text-[10px] text-purple-400 border-purple-500/30 font-mono">
+                  WEEKLY CADENCE
+                </Badge>
+              </div>
+              <CardDescription className="text-xs text-slate-400">
+                This 8-question audit replaces marketing meetings. It ties Google signals directly to product interventions.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-0 overflow-x-auto">
+              <div className="divide-y divide-slate-800/80 text-xs">
+                {GSC_WEEKLY_OPERATIONAL_CADENCE.map((q) => (
+                  <div key={q.id} className="p-3.5 hover:bg-slate-800/30 grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                    <div className="md:col-span-4">
+                      <div className="flex items-center gap-2">
+                        <span className="w-5 h-5 rounded-full bg-purple-500/20 text-purple-400 font-mono text-[10px] flex items-center justify-center font-bold">
+                          {q.id}
+                        </span>
+                        <span className="font-bold text-white">{q.question}</span>
+                      </div>
+                      <span className="text-[10px] text-slate-500 block ml-7 mt-0.5 font-mono">
+                        Sensor: {q.sensorDataSource}
+                      </span>
+                    </div>
+                    <div className="md:col-span-4 text-slate-300">
+                      <span className="text-[10px] uppercase font-bold text-slate-500 block">Observed Finding:</span>
+                      <span className="text-emerald-400 font-mono text-[11px]">{q.activeFinding}</span>
+                    </div>
+                    <div className="md:col-span-4">
+                      <span className="text-[10px] uppercase font-bold text-slate-500 block">Actionable Output:</span>
+                      <span className="text-slate-200">{q.actionableOutput}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 4. Inverted KPI Hierarchy & /news Quality Editorial Policy */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+            
+            {/* Inverted KPI Pyramid */}
+            <Card className="lg:col-span-6 bg-slate-900/90 border-slate-800">
+              <CardHeader className="pb-3 border-b border-slate-800">
+                <CardTitle className="text-sm font-bold text-white flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4 text-emerald-400" />
+                  Inverted KPI Hierarchy (Business Value First)
+                </CardTitle>
+                <CardDescription className="text-xs text-slate-400">
+                  Impressions are diagnostic sensors; revenue and activated users are the victory condition.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-3 space-y-1.5 text-xs">
+                {INVERTED_BUSINESS_KPI_HIERARCHY.map((kpi) => (
+                  <div key={kpi.level} className="p-2 rounded-lg bg-slate-950/70 border border-slate-800/80 flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-5 h-5 rounded bg-emerald-500/10 text-emerald-400 font-mono text-[10px] flex items-center justify-center font-bold">
+                        L{kpi.level}
+                      </span>
+                      <div>
+                        <span className="font-bold text-white block">{kpi.name}</span>
+                        <span className="text-[10px] text-slate-400">{kpi.metric}</span>
+                      </div>
+                    </div>
+                    <Badge variant="outline" className="text-[9px] font-mono text-slate-400 border-slate-800">
+                      {kpi.priority}
+                    </Badge>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* /news Demand-Driven Editorial Queue */}
+            <Card className="lg:col-span-6 bg-slate-900/90 border-slate-800">
+              <CardHeader className="pb-3 border-b border-slate-800">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm font-bold text-white flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-amber-400" />
+                    /news Demand-Driven Editorial Policy
+                  </CardTitle>
+                  <Badge className="bg-amber-500/10 text-amber-400 border-amber-500/30 text-[10px] font-mono">
+                    ANTI-CONTENT-FACTORY
+                  </Badge>
+                </div>
+                <CardDescription className="text-xs text-slate-400">
+                  Keep existing ~20 articles. Only write new deep-dives when GSC proves real query volume.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-4 space-y-4 text-xs">
+                <div className="p-3 bg-amber-950/20 border border-amber-500/30 rounded-xl space-y-1.5">
+                  <span className="font-bold text-amber-300 text-[11px] block">Mandatory Article Anatomy</span>
+                  <ul className="space-y-1 text-slate-300 text-[11px] list-disc list-inside">
+                    <li>Authoritative Problem Formulation</li>
+                    <li>Forensic Benchmark Table (Salaries, Fees, NIRF)</li>
+                    <li>Interactive Embedded Tool (ATS Scanner, Calculator)</li>
+                    <li>6-Step Practical Career Pathway</li>
+                    <li>Live Verified Jobs & Direct Apply Paths</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-2">
+                    GSC Discovered Editorial Queue (Demand-Validated)
+                  </span>
+                  <div className="space-y-1.5">
+                    {NEWS_DEMAND_EDITORIAL_POLICY.activeGscDemandsQueue.map((item, idx) => (
+                      <div key={idx} className="p-2 rounded-lg bg-slate-950/80 border border-slate-800 flex items-center justify-between font-mono">
+                        <div>
+                          <span className="text-white font-bold block text-xs">"{item.query}"</span>
+                          <span className="text-[10px] text-slate-400">{item.gscMonthlyImpressions.toLocaleString()} GSC Impr/mo</span>
+                        </div>
+                        <Badge className="bg-blue-500/10 text-blue-400 border-blue-500/30 text-[10px]">
+                          {item.editorialStatus}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+              </CardContent>
+            </Card>
+
+          </div>
+
+        </TabsContent>
 
         {/* TAB 1: EXECUTIVE OVERVIEW */}
         <TabsContent value="overview" className="space-y-4">

@@ -1,11 +1,17 @@
+import { lazy, Suspense } from "react";
 import { FileText, Briefcase, TrendingUp, Building2, MessageSquare, Search } from "lucide-react";
 import { TieredAccessGuard } from "@/components/access/TieredAccessGuard";
-import ResumeBuilder from "../pages/tools/ResumeBuilder";
-import Jobs from "../pages/Jobs";
-import MarketInsights from "../pages/tools/MarketInsights";
-import Companies from "../pages/Companies";
-import InterviewPrep from "../pages/tools/InterviewPrep";
-import AIJobMatchGPT from "../pages/tools/AIJobMatchGPT";
+
+const ResumeBuilder = lazy(() => import("../pages/tools/ResumeBuilder"));
+const Jobs = lazy(() => import("../pages/Jobs"));
+const MarketInsights = lazy(() => import("../pages/tools/MarketInsights"));
+const Companies = lazy(() => import("../pages/Companies"));
+const InterviewPrep = lazy(() => import("../pages/tools/InterviewPrep"));
+const AIJobMatchGPT = lazy(() => import("../pages/tools/AIJobMatchGPT"));
+
+const S = ({ children }: { children: React.ReactNode }) => (
+  <Suspense fallback={null}>{children}</Suspense>
+);
 
 export const publicRoutes = [
   {
@@ -18,7 +24,7 @@ export const publicRoutes = [
         requiresAuth={false}
         requiredTier="free"
       >
-        <ResumeBuilder />
+        <S><ResumeBuilder /></S>
       </TieredAccessGuard>
     ),
     isPublic: true,
@@ -35,7 +41,7 @@ export const publicRoutes = [
         requiresAuth={false}
         requiredTier="free"
       >
-        <Jobs />
+        <S><Jobs /></S>
       </TieredAccessGuard>
     ),
     isPublic: true,
@@ -52,7 +58,7 @@ export const publicRoutes = [
         requiresAuth={false}
         requiredTier="free"
       >
-        <MarketInsights />
+        <S><MarketInsights /></S>
       </TieredAccessGuard>
     ),
     isPublic: true,
@@ -69,7 +75,7 @@ export const publicRoutes = [
         requiresAuth={false}
         requiredTier="free"
       >
-        <Companies />
+        <S><Companies /></S>
       </TieredAccessGuard>
     ),
     isPublic: true,
@@ -86,7 +92,7 @@ export const publicRoutes = [
         requiresAuth={false}
         requiredTier="free"
       >
-        <InterviewPrep />
+        <S><InterviewPrep /></S>
       </TieredAccessGuard>
     ),
     isPublic: true,
@@ -103,7 +109,7 @@ export const publicRoutes = [
         requiresAuth={false}
         requiredTier="free"
       >
-        <AIJobMatchGPT />
+        <S><AIJobMatchGPT /></S>
       </TieredAccessGuard>
     ),
     isPublic: true,
