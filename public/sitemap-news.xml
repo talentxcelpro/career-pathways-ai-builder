@@ -1,9 +1,284 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
   <url>
-    <loc>https://talentxcel.in/news/future-of-ai-recruitment-in-india</loc>
-    <lastmod>2026-08-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+    <loc>https://talentxcel.in/news/the-future-of-work-ai-driven-job-matching</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+    <news:news>
+      <news:publication>
+        <news:name>TalentXcel News &amp; Career Intelligence</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>2026-08-25T08:00:00.000Z</news:publication_date>
+      <news:title>The Future of Work: AI-Driven Job Matching and Personalized Career Paths</news:title>
+    </news:news>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/news/india-gcc-tech-corridor-talent-mobility</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+    <news:news>
+      <news:publication>
+        <news:name>TalentXcel News &amp; Career Intelligence</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>2026-08-22T10:30:00.000Z</news:publication_date>
+      <news:title>The India-GCC Tech Corridor: Cross-Border Talent Mobility &amp; Engineering Compensation</news:title>
+    </news:news>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/news/autonomous-sourcing-vs-contingency-recruiting</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+    <news:news>
+      <news:publication>
+        <news:name>TalentXcel News &amp; Career Intelligence</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>2026-08-20T14:00:00.000Z</news:publication_date>
+      <news:title>Autonomous Sourcing vs Contingency Recruiting: The 2026 Labor Economics Shift</news:title>
+    </news:news>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/news/rise-of-verifiable-credentials-digital-passport</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+    <news:news>
+      <news:publication>
+        <news:name>TalentXcel News &amp; Career Intelligence</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>2026-08-19T09:15:00.000Z</news:publication_date>
+      <news:title>The Rise of Verifiable Credentials: Why Static Diplomas Are Losing Relevance</news:title>
+    </news:news>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/news/what-is-an-ai-career-platform-boost-job-search</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+    <news:news>
+      <news:publication>
+        <news:name>TalentXcel News &amp; Career Intelligence</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>2026-08-26T11:00:00.000Z</news:publication_date>
+      <news:title>What is an AI Career Platform and How Can It Boost Your Job Search?</news:title>
+    </news:news>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/news/how-to-build-ats-friendly-resume-ai</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+    <news:news>
+      <news:publication>
+        <news:name>TalentXcel News &amp; Career Intelligence</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>2026-08-24T09:00:00.000Z</news:publication_date>
+      <news:title>How to Build an ATS-Friendly Resume with AI Assistance in 2026</news:title>
+    </news:news>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/news/mastering-technical-behavioral-interviews-ai-coaching</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+    <news:news>
+      <news:publication>
+        <news:name>TalentXcel News &amp; Career Intelligence</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>2026-08-21T15:30:00.000Z</news:publication_date>
+      <news:title>Mastering Technical &amp; Behavioral Interviews with Simulated AI Coaching</news:title>
+    </news:news>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/news/guide-to-tuition-free-higher-education-worldwide</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+    <news:news>
+      <news:publication>
+        <news:name>TalentXcel News &amp; Career Intelligence</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>2026-08-18T11:45:00.000Z</news:publication_date>
+      <news:title>The Complete Guide to Navigating Tuition-Free Higher Education Worldwide</news:title>
+    </news:news>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/news/top-10-ai-powered-job-search-platforms-2026</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+    <news:news>
+      <news:publication>
+        <news:name>TalentXcel News &amp; Career Intelligence</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>2026-08-27T08:00:00.000Z</news:publication_date>
+      <news:title>Top 10 AI-Powered Platforms Revolutionizing the Job Search Landscape</news:title>
+    </news:news>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/news/top-7-ats-resume-scanners-compared-2026</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+    <news:news>
+      <news:publication>
+        <news:name>TalentXcel News &amp; Career Intelligence</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>2026-08-23T13:00:00.000Z</news:publication_date>
+      <news:title>Top 7 ATS Resume Scanners Compared: Accuracy, Parsing &amp; Pricing</news:title>
+    </news:news>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/news/talentxcel-vs-traditional-job-portals-comparison</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+    <news:news>
+      <news:publication>
+        <news:name>TalentXcel News &amp; Career Intelligence</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>2026-08-21T10:00:00.000Z</news:publication_date>
+      <news:title>Global Job Platforms Compared: TalentXcel vs Traditional Job Portals</news:title>
+    </news:news>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/news/top-developer-engineering-communities-direct-hiring</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+    <news:news>
+      <news:publication>
+        <news:name>TalentXcel News &amp; Career Intelligence</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>2026-08-17T14:30:00.000Z</news:publication_date>
+      <news:title>Top Developer &amp; Engineering Communities for Direct Hiring in 2026</news:title>
+    </news:news>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/news/unlocking-career-potential-ai-resume-prep-tools</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+    <news:news>
+      <news:publication>
+        <news:name>TalentXcel News &amp; Career Intelligence</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>2026-08-28T09:00:00.000Z</news:publication_date>
+      <news:title>Unlocking Career Potential: AI Resume Builders, Interview Prep, and Skill Growth Tools</news:title>
+    </news:news>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/news/mechanics-of-ats-parsing-engines-technical-analysis</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+    <news:news>
+      <news:publication>
+        <news:name>TalentXcel News &amp; Career Intelligence</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>2026-08-24T14:00:00.000Z</news:publication_date>
+      <news:title>The Mechanics of ATS Parsing Engines: A Technical Analysis of Screening Algorithms</news:title>
+    </news:news>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/news/decentralized-career-passports-skill-validation</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+    <news:news>
+      <news:publication>
+        <news:name>TalentXcel News &amp; Career Intelligence</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>2026-08-19T16:00:00.000Z</news:publication_date>
+      <news:title>Decentralized Career Passports: Cryptographic Skill Validation &amp; Fraud Prevention</news:title>
+    </news:news>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/news/modernizing-college-placement-cells-tpo-gateways</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+    <news:news>
+      <news:publication>
+        <news:name>TalentXcel News &amp; Career Intelligence</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>2026-08-18T10:00:00.000Z</news:publication_date>
+      <news:title>Modernizing College Placement Cells: From WhatsApp Groups to Programmatic TPO Gateways</news:title>
+    </news:news>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/news/2026-state-of-recruitment-report-ai-adoption</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+    <news:news>
+      <news:publication>
+        <news:name>TalentXcel News &amp; Career Intelligence</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>2026-08-29T07:30:00.000Z</news:publication_date>
+      <news:title>2026 State of Recruitment Report: AI Adoption in Hiring Reaches All-Time High</news:title>
+    </news:news>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/news/2026-resume-parser-benchmark-format-failure-study</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+    <news:news>
+      <news:publication>
+        <news:name>TalentXcel News &amp; Career Intelligence</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>2026-08-25T13:45:00.000Z</news:publication_date>
+      <news:title>The 2026 Resume Parser Benchmark: Why 72% of Formats Fail Keyword Extraction</news:title>
+    </news:news>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/news/10250-colleges-nirf-placement-roi-index</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+    <news:news>
+      <news:publication>
+        <news:name>TalentXcel News &amp; Career Intelligence</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>2026-08-22T16:00:00.000Z</news:publication_date>
+      <news:title>The 10,250 Colleges NIRF &amp; Placement ROI Index: India Higher Education Report</news:title>
+    </news:news>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/news/uae-middle-east-tech-recruitment-velocity-index-q3-2026</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+    <news:news>
+      <news:publication>
+        <news:name>TalentXcel News &amp; Career Intelligence</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>2026-08-30T09:30:00.000Z</news:publication_date>
+      <news:title>UAE &amp; Middle East Tech Recruitment Velocity Index: Q3 2026</news:title>
+    </news:news>
   </url>
 </urlset>

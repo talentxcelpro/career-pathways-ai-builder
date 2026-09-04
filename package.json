@@ -11,6 +11,7 @@
     "preview": "vite preview",
     "predev": "npx tsx scripts/generate-sitemap.ts",
     "prebuild": "npx tsx scripts/generate-sitemap.ts",
+    "refresh:news": "npx tsx scripts/content/run-15day-news-refresh.ts",
     "postbuild": "npx tsx scripts/prerender-static-seo.ts && npx tsx scripts/seo-ci-gate.ts"
   },
   "dependencies": {

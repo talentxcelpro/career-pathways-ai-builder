@@ -1,12 +1,18 @@
-﻿import { supabase } from '@/integrations/supabase/client';
-import { NewsArticle, NewsCategory } from '@/types/news';
+import { supabase } from '@/integrations/supabase/client';
+import { NewsArticle, NewsCategory, NewsArchetype } from '@/types/news';
 import { FOUNDATION_NEWS_ARTICLES } from '@/data/newsArticles';
+import { evaluateAndRefreshArticles, FreshnessEvaluationResult } from '@/services/news/newsFreshnessEngine';
 
 export class NewsService {
   /**
-   * Fetch list of articles with optional category and search filters
+   * Fetch list of articles with optional category, search, and archetype filters
+   * Automatically applies the 15-day automated freshness & rewriter engine.
    */
-  public async getArticles(category?: NewsCategory, search?: string): Promise<NewsArticle[]> {
+  public async getArticles(
+    category?: NewsCategory, 
+    search?: string, 
+    archetype?: NewsArchetype | 'All'
+  ): Promise<NewsArticle[]> {
     let articles: NewsArticle[] = [];
 
     try {
@@ -25,8 +31,13 @@ export class NewsService {
           summary: d.summary || d.description || '',
           content: d.content || '',
           category: (d.category || 'Company News') as Exclude<NewsCategory, 'All'>,
+          archetype: d.archetype as NewsArchetype | undefined,
           publishedAt: d.published_at || d.created_at,
           updatedAt: d.updated_at,
+          lastRefreshedAt: d.last_refreshed_at || d.updated_at,
+          editionVersion: d.edition_version || 'v1.0 - September 2026 Edition',
+          refreshCadenceDays: d.refresh_cadence_days || 15,
+          metricsSnapshot: d.metrics_snapshot,
           author: {
             name: d.author_name || 'TalentXcel Editorial Desk',
             role: d.author_role || 'Platform Intelligence',
@@ -45,9 +56,18 @@ export class NewsService {
       articles = FOUNDATION_NEWS_ARTICLES;
     }
 
+    // 15-Day Automated Freshness Evaluation
+    const freshness = evaluateAndRefreshArticles(articles);
+    articles = freshness.articles;
+
     // Filter by Category
     if (category && category !== 'All') {
       articles = articles.filter(a => a.category.toLowerCase() === category.toLowerCase());
+    }
+
+    // Filter by Archetype
+    if (archetype && archetype !== 'All') {
+      articles = articles.filter(a => a.archetype === archetype);
     }
 
     // Filter by Search Query
@@ -56,6 +76,7 @@ export class NewsService {
       articles = articles.filter(a => 
         a.title.toLowerCase().includes(q) ||
         a.summary.toLowerCase().includes(q) ||
+        (a.archetype && a.archetype.toLowerCase().includes(q)) ||
         a.tags.some(t => t.toLowerCase().includes(q))
       );
     }
@@ -64,44 +85,19 @@ export class NewsService {
   }
 
   /**
-   * Get single article by slug
+   * Get single article by slug (with automated 15-day freshness check)
    */
   public async getArticleBySlug(slug: string): Promise<NewsArticle | null> {
-    try {
-      const { data, error } = await (supabase as any)
-        .from('news_articles')
-        .select('*')
-        .or(`slug.eq.${slug},url.eq.${slug}`)
-        .eq('published_status', 'published')
-        .maybeSingle();
+    const all = await this.getArticles();
+    return all.find(a => a.slug === slug) || null;
+  }
 
-      if (!error && data) {
-        return {
-          id: data.id,
-          slug: data.slug || data.url || data.id,
-          title: data.title,
-          summary: data.summary || data.description || '',
-          content: data.content || '',
-          category: (data.category || 'Company News') as Exclude<NewsCategory, 'All'>,
-          publishedAt: data.published_at || data.created_at,
-          updatedAt: data.updated_at,
-          author: {
-            name: data.author_name || 'TalentXcel Editorial Desk',
-            role: data.author_role || 'Platform Intelligence',
-            avatar: data.author_avatar || '/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png'
-          },
-          imageUrl: data.image_url || '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png',
-          readTime: data.read_time || '4 min read',
-          tags: data.tags || ['TalentXcel'],
-          keyTakeaways: data.key_takeaways || [],
-          isFeatured: data.is_featured || false
-        };
-      }
-    } catch {
-      // Fallback to in-memory foundation articles
-    }
-
-    return FOUNDATION_NEWS_ARTICLES.find(a => a.slug === slug) || null;
+  /**
+   * Trigger on-demand 15-day freshness cycle
+   */
+  public async triggerFreshnessCycle(forceAll = false): Promise<FreshnessEvaluationResult> {
+    const articles = await this.getArticles();
+    return evaluateAndRefreshArticles(articles, forceAll);
   }
 
   /**

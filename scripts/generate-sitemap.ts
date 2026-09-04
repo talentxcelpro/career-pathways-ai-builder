@@ -502,6 +502,9 @@ export async function generateProductionSitemaps() {
   if (existsSync(resolve(publicDir, 'sitemaps/jobs-matrix-global.xml'))) {
     validSitemapsForIndex.push({ filename: 'sitemaps/jobs-matrix-global.xml', count: 2460 });
   }
+  if (existsSync(resolve(publicDir, 'sitemap-news.xml'))) {
+    validSitemapsForIndex.push({ filename: 'sitemap-news.xml', count: 20 });
+  }
 
   // Generate Master Index (sitemap.xml)
   const masterXml = buildSitemapIndexXml(validSitemapsForIndex);

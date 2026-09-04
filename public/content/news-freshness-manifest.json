@@ -1,0 +1,225 @@
+{
+  "generatedAt": "2026-09-04T07:40:21.848Z",
+  "nextScheduledCycleAt": "2026-09-19T07:40:21.848Z",
+  "cadenceDays": 15,
+  "totalPublications": 20,
+  "refreshedPublications": 20,
+  "telemetrySnapshot": {
+    "verifiedCollegesCount": 10250,
+    "verifiedJobsInventory": 14200,
+    "atsScanAccuracyRate": "98.4%",
+    "activeGccHiringSignals": 37,
+    "verifiedCountriesSupported": 195,
+    "tuitionFreeProgramsCount": 120,
+    "verifiedCandidatePassports": 1840
+  },
+  "archetypeDistribution": {
+    "sectorReports": 4,
+    "careerGuides": 4,
+    "industryInsiders": 4,
+    "professionalJournals": 4,
+    "tradePublications": 4
+  },
+  "publications": [
+    {
+      "id": "art-001",
+      "slug": "the-future-of-work-ai-driven-job-matching",
+      "title": "The Future of Work: AI-Driven Job Matching and Personalized Career Paths",
+      "archetype": "Sector Report",
+      "category": "Career Intelligence",
+      "editionVersion": "v1.1 - September 2026 Edition",
+      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "cadenceDays": 15
+    },
+    {
+      "id": "art-002",
+      "slug": "india-gcc-tech-corridor-talent-mobility",
+      "title": "The India-GCC Tech Corridor: Cross-Border Talent Mobility & Engineering Compensation",
+      "archetype": "Sector Report",
+      "category": "Career Intelligence",
+      "editionVersion": "v1.1 - September 2026 Edition",
+      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "cadenceDays": 15
+    },
+    {
+      "id": "art-003",
+      "slug": "autonomous-sourcing-vs-contingency-recruiting",
+      "title": "Autonomous Sourcing vs Contingency Recruiting: The 2026 Labor Economics Shift",
+      "archetype": "Sector Report",
+      "category": "Company News",
+      "editionVersion": "v1.1 - September 2026 Edition",
+      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "cadenceDays": 15
+    },
+    {
+      "id": "art-004",
+      "slug": "rise-of-verifiable-credentials-digital-passport",
+      "title": "The Rise of Verifiable Credentials: Why Static Diplomas Are Losing Relevance",
+      "archetype": "Sector Report",
+      "category": "Education Intelligence",
+      "editionVersion": "v1.1 - September 2026 Edition",
+      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "cadenceDays": 15
+    },
+    {
+      "id": "art-005",
+      "slug": "what-is-an-ai-career-platform-boost-job-search",
+      "title": "What is an AI Career Platform and How Can It Boost Your Job Search?",
+      "archetype": "Career Guide",
+      "category": "Career Intelligence",
+      "editionVersion": "v1.1 - September 2026 Edition",
+      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "cadenceDays": 15
+    },
+    {
+      "id": "art-006",
+      "slug": "how-to-build-ats-friendly-resume-ai",
+      "title": "How to Build an ATS-Friendly Resume with AI Assistance in 2026",
+      "archetype": "Career Guide",
+      "category": "Career Intelligence",
+      "editionVersion": "v1.1 - September 2026 Edition",
+      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "cadenceDays": 15
+    },
+    {
+      "id": "art-007",
+      "slug": "mastering-technical-behavioral-interviews-ai-coaching",
+      "title": "Mastering Technical & Behavioral Interviews with Simulated AI Coaching",
+      "archetype": "Career Guide",
+      "category": "Career Intelligence",
+      "editionVersion": "v1.1 - September 2026 Edition",
+      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "cadenceDays": 15
+    },
+    {
+      "id": "art-008",
+      "slug": "guide-to-tuition-free-higher-education-worldwide",
+      "title": "The Complete Guide to Navigating Tuition-Free Higher Education Worldwide",
+      "archetype": "Career Guide",
+      "category": "Education Intelligence",
+      "editionVersion": "v1.1 - September 2026 Edition",
+      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "cadenceDays": 15
+    },
+    {
+      "id": "art-009",
+      "slug": "top-10-ai-powered-job-search-platforms-2026",
+      "title": "Top 10 AI-Powered Platforms Revolutionizing the Job Search Landscape",
+      "archetype": "Industry Insider",
+      "category": "Career Intelligence",
+      "editionVersion": "v1.1 - September 2026 Edition",
+      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "cadenceDays": 15
+    },
+    {
+      "id": "art-010",
+      "slug": "top-7-ats-resume-scanners-compared-2026",
+      "title": "Top 7 ATS Resume Scanners Compared: Accuracy, Parsing & Pricing",
+      "archetype": "Industry Insider",
+      "category": "Career Intelligence",
+      "editionVersion": "v1.1 - September 2026 Edition",
+      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "cadenceDays": 15
+    },
+    {
+      "id": "art-011",
+      "slug": "talentxcel-vs-traditional-job-portals-comparison",
+      "title": "Global Job Platforms Compared: TalentXcel vs Traditional Job Portals",
+      "archetype": "Industry Insider",
+      "category": "Company News",
+      "editionVersion": "v1.1 - September 2026 Edition",
+      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "cadenceDays": 15
+    },
+    {
+      "id": "art-012",
+      "slug": "top-developer-engineering-communities-direct-hiring",
+      "title": "Top Developer & Engineering Communities for Direct Hiring in 2026",
+      "archetype": "Industry Insider",
+      "category": "TalentXcel Network",
+      "editionVersion": "v1.1 - September 2026 Edition",
+      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "cadenceDays": 15
+    },
+    {
+      "id": "art-013",
+      "slug": "unlocking-career-potential-ai-resume-prep-tools",
+      "title": "Unlocking Career Potential: AI Resume Builders, Interview Prep, and Skill Growth Tools",
+      "archetype": "Professional Journal",
+      "category": "Career Intelligence",
+      "editionVersion": "v1.1 - September 2026 Edition",
+      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "cadenceDays": 15
+    },
+    {
+      "id": "art-014",
+      "slug": "mechanics-of-ats-parsing-engines-technical-analysis",
+      "title": "The Mechanics of ATS Parsing Engines: A Technical Analysis of Screening Algorithms",
+      "archetype": "Professional Journal",
+      "category": "Career Intelligence",
+      "editionVersion": "v1.1 - September 2026 Edition",
+      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "cadenceDays": 15
+    },
+    {
+      "id": "art-015",
+      "slug": "decentralized-career-passports-skill-validation",
+      "title": "Decentralized Career Passports: Cryptographic Skill Validation & Fraud Prevention",
+      "archetype": "Professional Journal",
+      "category": "Company News",
+      "editionVersion": "v1.1 - September 2026 Edition",
+      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "cadenceDays": 15
+    },
+    {
+      "id": "art-016",
+      "slug": "modernizing-college-placement-cells-tpo-gateways",
+      "title": "Modernizing College Placement Cells: From WhatsApp Groups to Programmatic TPO Gateways",
+      "archetype": "Professional Journal",
+      "category": "Education Intelligence",
+      "editionVersion": "v1.1 - September 2026 Edition",
+      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "cadenceDays": 15
+    },
+    {
+      "id": "art-017",
+      "slug": "2026-state-of-recruitment-report-ai-adoption",
+      "title": "2026 State of Recruitment Report: AI Adoption in Hiring Reaches All-Time High",
+      "archetype": "Trade Publication",
+      "category": "Press & Media",
+      "editionVersion": "v1.1 - September 2026 Edition",
+      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "cadenceDays": 15
+    },
+    {
+      "id": "art-018",
+      "slug": "2026-resume-parser-benchmark-format-failure-study",
+      "title": "The 2026 Resume Parser Benchmark: Why 72% of Formats Fail Keyword Extraction",
+      "archetype": "Trade Publication",
+      "category": "Career Intelligence",
+      "editionVersion": "v1.1 - September 2026 Edition",
+      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "cadenceDays": 15
+    },
+    {
+      "id": "art-019",
+      "slug": "10250-colleges-nirf-placement-roi-index",
+      "title": "The 10,250 Colleges NIRF & Placement ROI Index: India Higher Education Report",
+      "archetype": "Trade Publication",
+      "category": "Education Intelligence",
+      "editionVersion": "v1.1 - September 2026 Edition",
+      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "cadenceDays": 15
+    },
+    {
+      "id": "art-020",
+      "slug": "uae-middle-east-tech-recruitment-velocity-index-q3-2026",
+      "title": "UAE & Middle East Tech Recruitment Velocity Index: Q3 2026",
+      "archetype": "Trade Publication",
+      "category": "Press & Media",
+      "editionVersion": "v1.1 - September 2026 Edition",
+      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "cadenceDays": 15
+    }
+  ]
+}
