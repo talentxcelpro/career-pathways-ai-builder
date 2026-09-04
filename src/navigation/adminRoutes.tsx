@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';;
-import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag, Bot, Globe, AlertTriangle, Link, Newspaper, Coins, Upload, Database, Rocket, Eye, Target } from "lucide-react";
+import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag, Bot, Globe, AlertTriangle, Link, Newspaper, Coins, Upload, Database, Rocket, Eye, Target, TrendingUp } from "lucide-react";
 
 const BulkUserImports = lazy(() => import('../pages/admin/BulkUserImports'));
 const Phase1Dashboard = lazy(() => import('../components/network/Phase1Dashboard'));
@@ -61,6 +61,7 @@ const EnterpriseBilling = lazy(() => import('../pages/admin/EnterpriseBilling'))
 const GoogleJobPostingHealth = lazy(() => import('../pages/admin/GoogleJobPostingHealth'));
 const GoogleSearchHealthCenter = lazy(() => import('../pages/admin/GoogleSearchHealthCenter'));
 const AIOrganizationControlCenter = lazy(() => import('../pages/admin/AIOrganizationControlCenter'));
+const GrowthOperationsCenter = lazy(() => import('../pages/admin/GrowthOperationsCenter'));
 const SearchEntityDashboard = lazy(() => import('../pages/admin/SearchEntityDashboard'));
 const OrganicAcquisitionDashboard = lazy(() => import('../pages/admin/OrganicAcquisitionDashboard'));
 const EnterpriseClients = lazy(() => import('../pages/admin/EnterpriseClients'));
@@ -642,6 +643,13 @@ export const adminRoutes = [
     to: "/admin/ai-organization",
     icon: <Bot className="h-4 w-4 text-purple-400" />,
     page: <Suspense fallback={null}><AIOrganizationControlCenter /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "Growth Operations Center",
+    to: "/admin/growth-operations",
+    icon: <TrendingUp className="h-4 w-4 text-emerald-400" />,
+    page: <Suspense fallback={null}><GrowthOperationsCenter /></Suspense>,
     isPublic: true,
   }
 ];

@@ -111,3 +111,9 @@ export interface AiDiscoveryMetrics {
   revenueStatus: MetricStatus;
   revenueUsd: number;
 }
+
+export type AiAttributionMode = 
+  | 'AI_REFERRAL_OBSERVED' 
+  | 'AI_REFERRAL_SELF_REPORTED' 
+  | 'AI_REFERRAL_ASSISTED' 
+  | 'UNKNOWN';

@@ -4,6 +4,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { Link } from 'react-router-dom';
 import {
   Bot,
   Power,
@@ -205,7 +206,18 @@ export default function AIOrganizationControlCenter() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="text-xs border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20"
+            >
+              <Link to="/admin/growth-operations">
+                <TrendingUp className="w-3.5 h-3.5 mr-1.5 text-emerald-400" />
+                Growth Operations Center →
+              </Link>
+            </Button>
             <Button
               variant="outline"
               size="sm"
