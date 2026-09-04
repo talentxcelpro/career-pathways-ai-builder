@@ -16,8 +16,9 @@ import {
   Activity
 } from 'lucide-react';
 import { PerformanceDashboard } from '@/components/performance/PerformanceDashboard';
-import AdvancedSEOAdmin from '@/pages/admin/AdvancedSEOAdmin';
 import { toast } from 'sonner';
+
+const AdvancedSEOAdmin = React.lazy(() => import('@/pages/admin/AdvancedSEOAdmin'));
 
 export const Phase4Dashboard: React.FC = () => {
   const phase4Features = [
@@ -199,7 +200,9 @@ export const Phase4Dashboard: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="seo" className="space-y-6">
-          <AdvancedSEOAdmin />
+          <React.Suspense fallback={<div className="p-8 text-center text-slate-400">Loading SEO Admin...</div>}>
+            <AdvancedSEOAdmin />
+          </React.Suspense>
         </TabsContent>
       </Tabs>
 

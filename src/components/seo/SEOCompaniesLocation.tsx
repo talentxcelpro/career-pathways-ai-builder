@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { useParams } from 'react-router-dom';
-import Companies from '@/pages/Companies';
+
+const Companies = lazy(() => import('@/pages/Companies'));
 
 export const SEOCompaniesLocation = () => {
   const { location } = useParams();
-  return <Companies />;
+  return (
+    <Suspense fallback={null}>
+      <Companies />
+    </Suspense>
+  );
 };

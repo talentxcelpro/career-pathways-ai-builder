@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -12,7 +11,7 @@ import {
   TrendingUp, 
   MessageSquare, 
   Brain, 
-  Award,
+  Award, 
   Users,
   Globe,
   Briefcase,
@@ -24,14 +23,14 @@ import {
   Star
 } from 'lucide-react';
 
-// Import existing tool components
-import ResumeCheck from '@/pages/tools/ResumeCheck';
-import CoverLetter from '@/pages/tools/CoverLetter';
-import SalaryAnalyzer from '@/pages/tools/SalaryAnalyzer';
-import MarketInsights from '@/pages/tools/MarketInsights';
-import InterviewPrep from '@/pages/tools/InterviewPrep';
-import AICareerAssistant from '@/pages/tools/AICareerAssistant';
-import { ProfileScore } from '@/pages/tools/ProfileScore';
+// Lazy load tool components
+const ResumeCheck = lazy(() => import('@/pages/tools/ResumeCheck'));
+const CoverLetter = lazy(() => import('@/pages/tools/CoverLetter'));
+const SalaryAnalyzer = lazy(() => import('@/pages/tools/SalaryAnalyzer'));
+const MarketInsights = lazy(() => import('@/pages/tools/MarketInsights'));
+const InterviewPrep = lazy(() => import('@/pages/tools/InterviewPrep'));
+const AICareerAssistant = lazy(() => import('@/pages/tools/AICareerAssistant'));
+const ProfileScore = lazy(() => import('@/pages/tools/ProfileScore').then(m => ({ default: m.ProfileScore })));
 
 interface Tool {
   id: string;
@@ -393,7 +392,11 @@ const ToolsTabsInterface = () => {
                   const activeTool_obj = tools.find(t => t.id === activeTool);
                   if (activeTool_obj) {
                     const ToolComponent = activeTool_obj.component;
-                    return <ToolComponent />;
+                    return (
+                      <Suspense fallback={<div className="p-8 text-center text-slate-400">Loading tool...</div>}>
+                        <ToolComponent />
+                      </Suspense>
+                    );
                   }
                   return null;
                 })()}

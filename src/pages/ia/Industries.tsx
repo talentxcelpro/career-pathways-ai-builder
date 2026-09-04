@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { useParams } from 'react-router-dom';
 import { LandingLayout, LinkGrid, JobsBlock, breadcrumbSchema, schemaGraph } from '@/components/landing/LandingLayout';
 import { Section } from '@/components/layout/PageShell';
 import { Badge } from '@/components/ui/badge';
 import { INDUSTRY_HUBS } from '@/config/publicIA';
 import { useLandingJobs } from '@/hooks/useLandingJobs';
-import NotFound from '@/pages/NotFound';
+
+const NotFound = lazy(() => import('@/pages/NotFound'));
 
 export const IndustriesIndex: React.FC = () => {
   const crumbs = [{ label: 'Home', href: '/' }, { label: 'Industries' }];
@@ -34,7 +35,7 @@ export const IndustryPage: React.FC<{ slug?: string }> = ({ slug: slugProp }) =>
   const hub = INDUSTRY_HUBS.find((i) => i.slug === slug);
   const { jobs, total, loading } = useLandingJobs({ keywords: hub?.keywords ?? [], limit: 12 });
 
-  if (!hub) return <NotFound />;
+  if (!hub) return <Suspense fallback={null}><NotFound /></Suspense>;
 
   const crumbs = [{ label: 'Home', href: '/' }, { label: 'Industries', href: '/industries' }, { label: hub.name }];
 

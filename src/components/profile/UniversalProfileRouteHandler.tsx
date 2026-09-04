@@ -1,6 +1,6 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import { useParams, Navigate } from "react-router-dom";
-import SlugProfile from "@/pages/SlugProfile";
+const SlugProfile = lazy(() => import("@/pages/SlugProfile"));
 
 // Comprehensive set of reserved application routes and static assets
 export const RESERVED_ROUTES = new Set([
@@ -39,7 +39,11 @@ export const UniversalProfileRouteHandler: React.FC = () => {
   }
 
   // Render Universal Public Profile
-  return <SlugProfile />;
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-400">Loading profile...</div>}>
+      <SlugProfile />
+    </Suspense>
+  );
 };
 
 export default UniversalProfileRouteHandler;

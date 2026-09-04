@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { fetchContentItem, categoryToCtaPageType, getCategoryLabel, ContentItem } from '@/config/contentRegistry';
@@ -12,7 +12,8 @@ import {
   Loader2, AlertCircle, ArrowRight, TrendingUp, Users, Zap, Award, Star,
   ChevronRight,
 } from 'lucide-react';
-import NotFound from '@/pages/NotFound';
+
+const NotFound = lazy(() => import('@/pages/NotFound'));
 
 // ─── CTA Icon Map ────────────────────────────────────────────────────────────
 const CTA_ICONS: Record<string, React.ReactNode> = {
@@ -125,7 +126,7 @@ export const ResourceDetail: React.FC = () => {
 
   // Not found — real 404, not a generic shell
   if (item === null) {
-    return <NotFound />;
+    return <Suspense fallback={null}><NotFound /></Suspense>;
   }
 
   const ctaPageType = categoryToCtaPageType(item.category);

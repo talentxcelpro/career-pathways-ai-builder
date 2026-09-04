@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { useParams } from 'react-router-dom';
 import { LandingLayout, LinkGrid, JobsBlock, breadcrumbSchema, schemaGraph } from '@/components/landing/LandingLayout';
 import { Section } from '@/components/layout/PageShell';
 import { Badge } from '@/components/ui/badge';
 import { LOCATION_HUBS, INDUSTRY_HUBS } from '@/config/publicIA';
 import { useLandingJobs } from '@/hooks/useLandingJobs';
-import NotFound from '@/pages/NotFound';
+
+const NotFound = lazy(() => import('@/pages/NotFound'));
 
 export const LocationsIndex: React.FC = () => {
   const crumbs = [{ label: 'Home', href: '/' }, { label: 'Locations' }];
@@ -38,7 +39,7 @@ export const LocationPage: React.FC<{ slug?: string }> = ({ slug: slugProp }) =>
     limit: 12,
   });
 
-  if (!hub) return <NotFound />;
+  if (!hub) return <Suspense fallback={null}><NotFound /></Suspense>;
 
   const crumbs = [{ label: 'Home', href: '/' }, { label: 'Locations', href: '/locations' }, { label: hub.name }];
   const isRemote = hub.slug === 'remote';

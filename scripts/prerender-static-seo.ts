@@ -45,15 +45,22 @@ async function prerender() {
   const sourceIndexHtmlPath = path.resolve(__dirname, '../index.html');
   let cleanBaseTemplate = fs.readFileSync(sourceIndexHtmlPath, 'utf8');
 
-  // Discover compiled Vite assets in dist/assets
+  // Discover compiled Vite assets in dist/assets (sorted by mtime to ensure latest build output)
   let mainJsAsset = '';
   let mainCssAsset = '';
   if (fs.existsSync(path.join(DIST_DIR, 'assets'))) {
     const assetFiles = fs.readdirSync(path.join(DIST_DIR, 'assets'));
-    const jsMatch = assetFiles.find((f) => f.startsWith('index-') && f.endsWith('.js'));
-    const cssMatch = assetFiles.find((f) => f.startsWith('index-') && f.endsWith('.css'));
-    if (jsMatch) mainJsAsset = `/assets/${jsMatch}`;
-    if (cssMatch) mainCssAsset = `/assets/${cssMatch}`;
+    const jsFiles = assetFiles
+      .filter((f) => f.startsWith('index-') && f.endsWith('.js'))
+      .map((f) => ({ name: f, mtime: fs.statSync(path.join(DIST_DIR, 'assets', f)).mtimeMs }))
+      .sort((a, b) => b.mtime - a.mtime);
+    const cssFiles = assetFiles
+      .filter((f) => f.startsWith('index-') && f.endsWith('.css'))
+      .map((f) => ({ name: f, mtime: fs.statSync(path.join(DIST_DIR, 'assets', f)).mtimeMs }))
+      .sort((a, b) => b.mtime - a.mtime);
+
+    if (jsFiles.length > 0) mainJsAsset = `/assets/${jsFiles[0].name}`;
+    if (cssFiles.length > 0) mainCssAsset = `/assets/${cssFiles[0].name}`;
   }
 
   // Pre-patch base template with production JS and CSS bundles

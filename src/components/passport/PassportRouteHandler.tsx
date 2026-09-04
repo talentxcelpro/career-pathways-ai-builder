@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, lazy, Suspense } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import CareerPassportDashboard from '@/pages/passport/CareerPassportDashboard';
+
+const CareerPassportDashboard = lazy(() => import('@/pages/passport/CareerPassportDashboard'));
 
 /**
  * Route handler for /passport/:param
@@ -72,7 +73,11 @@ const PassportRouteHandler: React.FC = () => {
   }
 
   // Not a UUID -> treat as username and render the dashboard
-  return <CareerPassportDashboard />;
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}>
+      <CareerPassportDashboard />
+    </Suspense>
+  );
 };
 
 export default PassportRouteHandler;

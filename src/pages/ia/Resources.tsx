@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { useParams } from 'react-router-dom';
 import { LandingLayout, LinkGrid, breadcrumbSchema, schemaGraph } from '@/components/landing/LandingLayout';
 import { RESOURCE_HUBS } from '@/config/publicIA';
-import NotFound from '@/pages/NotFound';
+
+const NotFound = lazy(() => import('@/pages/NotFound'));
 
 export const ResourcesIndex: React.FC = () => {
   const crumbs = [{ label: 'Home', href: '/' }, { label: 'Resources' }];
@@ -30,7 +31,7 @@ export const ResourceHubPage: React.FC<{ slug?: string }> = ({ slug: slugProp })
   const params = useParams<{ slug: string }>();
   const slug = slugProp ?? params.slug;
   const hub = RESOURCE_HUBS.find((h) => h.slug === slug);
-  if (!hub) return <NotFound />;
+  if (!hub) return <Suspense fallback={null}><NotFound /></Suspense>;
 
   const crumbs = [{ label: 'Home', href: '/' }, { label: 'Resources', href: '/resources' }, { label: hub.name }];
 
