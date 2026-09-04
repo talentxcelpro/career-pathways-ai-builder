@@ -95,16 +95,24 @@ export const EnhancedSmartConnectAI: React.FC = () => {
     <div className="space-y-6">
       
       {/* TalentXcel AI Header Card */}
-      <Card className="border border-purple-200 dark:border-purple-900 bg-gradient-to-r from-purple-500/10 via-indigo-500/10 to-blue-500/10 rounded-3xl p-6">
+      <Card className="border border-purple-200 dark:border-purple-900 bg-gradient-to-r from-purple-500/10 via-indigo-500/10 to-blue-500/10 rounded-3xl p-5 sm:p-6 shadow-xs">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <h2 className="text-base font-extrabold text-foreground flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-purple-600" />
-              TalentXcel AI Smart Connect &amp; Matchmaker
-            </h2>
-            <p className="text-xs text-muted-foreground font-medium">
-              AI-driven connection recommendations and personalized pitch messages powered by TalentXcel AI.
-            </p>
+          <div className="flex items-center gap-3.5">
+            <Avatar className="w-12 h-12 border-2 border-purple-300 dark:border-purple-800 shadow-xs">
+              <AvatarImage src={currentUserProfile?.profile_picture_url || undefined} />
+              <AvatarFallback className="bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-bold text-sm">
+                {(currentUserProfile?.full_name || 'U').charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div className="space-y-0.5">
+              <h2 className="text-base sm:text-lg font-extrabold text-foreground flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-purple-600 shrink-0" />
+                {currentUserProfile?.full_name ? `AI Matchmaker for ${currentUserProfile.full_name}` : "TalentXcel AI Smart Connect & Matchmaker"}
+              </h2>
+              <p className="text-xs text-muted-foreground font-medium">
+                {currentUserProfile?.title ? `Personalized for ${currentUserProfile.title}` : "AI-driven connection recommendations and personalized pitch messages powered by TalentXcel AI."}
+              </p>
+            </div>
           </div>
 
           <Button 

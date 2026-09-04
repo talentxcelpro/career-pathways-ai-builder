@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   TrendingUp, 
@@ -60,7 +61,22 @@ export const NetworkAnalytics = () => {
     }
   });
 
-  const { data: analyticsData, isLoading } = useQuery({
+  // Fetch current user's profile with name, avatar, headline
+  const { data: userProfile, refetch: refetchProfile } = useQuery({
+    queryKey: ['user-analytics-profile', currentUser?.id],
+    queryFn: async () => {
+      if (!currentUser?.id) return null;
+      const { data } = await supabase
+        .from('profiles')
+        .select('id, full_name, profile_picture_url, headline, title, profile_views_count, skills, career_goals, career_interests')
+        .eq('id', currentUser.id)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!currentUser?.id
+  });
+
+  const { data: analyticsData, isLoading, refetch: refetchAnalytics } = useQuery({
     queryKey: ['network-analytics', currentUser?.id, selectedPeriod],
     queryFn: async (): Promise<AnalyticsData> => {
       if (!currentUser?.id) throw new Error('User not authenticated');
@@ -72,7 +88,7 @@ export const NetworkAnalytics = () => {
           .from('profiles')
           .select('profile_views_count, skills, career_goals, career_interests')
           .eq('id', currentUser.id)
-          .single(),
+          .maybeSingle(),
         
         // Get user's posts analytics
         supabase
@@ -125,6 +141,29 @@ export const NetworkAnalytics = () => {
     enabled: !!currentUser?.id
   });
 
+  // Live Realtime Subscriptions for Real Database sync
+  useEffect(() => {
+    if (!currentUser?.id) return;
+
+    const channel = supabase
+      .channel(`network-analytics-live-${currentUser.id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => {
+        refetchAnalytics();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'connections' }, () => {
+        refetchAnalytics();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
+        refetchProfile();
+        refetchAnalytics();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [currentUser?.id, refetchAnalytics, refetchProfile]);
+
   const periodLabels = {
     '7d': 'Last 7 days',
     '30d': 'Last 30 days', 
@@ -158,20 +197,37 @@ export const NetworkAnalytics = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-foreground">Analytics Dashboard</h2>
-          <p className="text-muted-foreground">
-            Track your growth, insights, and influence within the community.
-          </p>
+      {/* Personalized Header with Real User Info & Realtime Status */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-card border border-slate-200/80 dark:border-border/60 p-4 sm:p-5 rounded-3xl shadow-xs">
+        <div className="flex items-center gap-3.5">
+          <Avatar className="w-12 h-12 border-2 border-primary/20 shadow-xs">
+            <AvatarImage src={userProfile?.profile_picture_url || undefined} />
+            <AvatarFallback className="font-bold bg-primary/10 text-primary text-base">
+              {(userProfile?.full_name || currentUser?.email || 'U').charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h2 className="text-xl sm:text-2xl font-bold text-foreground">
+                {userProfile?.full_name ? `${userProfile.full_name}'s Analytics` : "Your Analytics Dashboard"}
+              </h2>
+              <Badge variant="outline" className="bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border-emerald-300 dark:border-emerald-800 font-bold text-[10px] flex items-center gap-1.5 px-2 py-0.5 rounded-full">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Live Realtime
+              </Badge>
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5 font-medium">
+              {userProfile?.headline || userProfile?.title || "Track your growth, content performance, and community influence."}
+            </p>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 flex-wrap">
           {Object.entries(periodLabels).map(([key, label]) => (
             <Button
               key={key}
               variant={selectedPeriod === key ? 'default' : 'outline'}
               size="sm"
+              className="rounded-xl text-xs h-8 font-semibold"
               onClick={() => setSelectedPeriod(key as any)}
             >
               {label}

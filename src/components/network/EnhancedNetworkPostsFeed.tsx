@@ -8,6 +8,7 @@ import { AlertCircle, Loader2 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { getCustomStorageUrl } from '@/utils/storage';
+import { supabase } from '@/integrations/supabase/client';
 
 interface EnhancedNetworkPostsFeedProps {
   feedType: 'all' | 'connections' | 'trending';
@@ -20,7 +21,6 @@ export const EnhancedNetworkPostsFeed: React.FC<EnhancedNetworkPostsFeedProps> =
 }) => {
   const [openComments, setOpenComments] = React.useState<string | null>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
-  
   
   const {
     data,
@@ -37,6 +37,20 @@ export const EnhancedNetworkPostsFeed: React.FC<EnhancedNetworkPostsFeedProps> =
   });
 
   const posts = data?.pages.flatMap(page => page.data) || [];
+
+  // Realtime subscription on posts table so newly published articles/posts immediately show
+  useEffect(() => {
+    const channel = supabase
+      .channel('feed-posts-realtime-sync')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => {
+        refetch();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [refetch]);
 
   // Intersection observer for infinite scroll
   useEffect(() => {

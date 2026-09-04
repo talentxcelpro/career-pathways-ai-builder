@@ -1,8 +1,9 @@
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Link } from 'react-router-dom';
-import { CheckCircle2, Globe, Send, Share2, ThumbsUp, MessageSquare, MoreHorizontal, Copy, X } from "lucide-react";
+import { CheckCircle2, Globe, Send, Share2, ThumbsUp, MessageSquare, MoreHorizontal, Copy, X, BookOpen, ArrowRight, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { EnhancedCommentsSection } from "@/components/posts/EnhancedCommentsSection";
@@ -15,6 +16,10 @@ interface NetworkPost {
   created_at: string;
   author_id: string;
   headline?: string;
+  tagline?: string;
+  article_category?: string;
+  featured_image_url?: string;
+  reading_time?: number;
   media_urls?: string[];
   post_type?: string;
   tags?: string[];
@@ -296,42 +301,109 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
           </div>
         </div>
 
-        {/* Post Body Content */}
-        <div className="space-y-2 text-sm text-foreground leading-relaxed font-medium">
-          <p>{post.content}</p>
-          
-          {/* Hashtags */}
-          {post.tags && post.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 pt-1">
-              {post.tags.map((tag, idx) => (
-                <span key={idx} className="text-xs font-bold text-blue-600 hover:underline cursor-pointer">
-                  #{tag.replace(/^#/, '')}
+        {/* Article vs Standard Post Rendering */}
+        {post.post_type === 'article' || post.headline ? (
+          <div className="space-y-3">
+            {/* Article category & read time badge */}
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800 text-[11px] font-bold flex items-center gap-1.5 py-0.5">
+                <FileText className="w-3 h-3 text-blue-600" />
+                <span>Article • {post.article_category || 'Career Insights'}</span>
+              </Badge>
+              {post.reading_time && (
+                <span className="text-[11px] text-muted-foreground font-semibold">
+                  {post.reading_time} min read
                 </span>
-              ))}
+              )}
             </div>
-          )}
-        </div>
 
-        {/* Media Images & Videos */}
-        {post.media_urls && post.media_urls.length > 0 && post.media_urls[0] && (
-          <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-border/60 bg-slate-950/5 dark:bg-muted/30">
-            {isVideoUrl(post.media_urls[0]) || post.post_type === 'video' ? (
-              <video 
-                src={post.media_urls[0]} 
-                controls 
-                playsInline
-                preload="metadata"
-                className="w-full max-h-[480px] object-contain mx-auto bg-black rounded-2xl shadow-sm" 
-              />
-            ) : (
-              <img 
-                src={post.media_urls[0]} 
-                alt="Post media" 
-                className="w-full max-h-[500px] object-cover cursor-pointer hover:opacity-95 transition-opacity rounded-2xl"
-                onClick={() => setSelectedMediaUrl(post.media_urls[0])}
-              />
+            {/* Headline */}
+            {post.headline && (
+              <Link to={`/network/articles/${post.id}`}>
+                <h3 className="text-base sm:text-lg font-bold text-foreground hover:text-blue-600 transition-colors leading-snug cursor-pointer">
+                  {post.headline}
+                </h3>
+              </Link>
+            )}
+
+            {/* Featured Image if present */}
+            {(post.featured_image_url || (post.media_urls && post.media_urls[0])) && (
+              <Link to={`/network/articles/${post.id}`} className="block overflow-hidden rounded-2xl border border-slate-200 dark:border-border/60 group">
+                <img 
+                  src={post.featured_image_url || post.media_urls?.[0]} 
+                  alt={post.headline || "Article cover"} 
+                  className="w-full max-h-[360px] object-cover group-hover:scale-[1.01] transition-transform duration-300"
+                />
+              </Link>
+            )}
+
+            {/* Summary or tagline */}
+            <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
+              {post.tagline || (post.content ? post.content.replace(/^[#\-*\s]+/gm, ' ').replace(/\n+/g, ' ').trim() : '')}
+            </p>
+
+            {/* Read full article action link */}
+            <div className="pt-1">
+              <Link 
+                to={`/network/articles/${post.id}`}
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline"
+              >
+                <span>Read Full Article</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+
+            {/* Hashtags */}
+            {post.tags && post.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {post.tags.map((tag, idx) => (
+                  <span key={idx} className="text-xs font-bold text-blue-600 hover:underline cursor-pointer">
+                    #{tag.replace(/^#/, '')}
+                  </span>
+                ))}
+              </div>
             )}
           </div>
+        ) : (
+          <>
+            {/* Post Body Content */}
+            <div className="space-y-2 text-sm text-foreground leading-relaxed font-medium">
+              <p>{post.content}</p>
+              
+              {/* Hashtags */}
+              {post.tags && post.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {post.tags.map((tag, idx) => (
+                    <span key={idx} className="text-xs font-bold text-blue-600 hover:underline cursor-pointer">
+                      #{tag.replace(/^#/, '')}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Media Images & Videos */}
+            {post.media_urls && post.media_urls.length > 0 && post.media_urls[0] && (
+              <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-border/60 bg-slate-950/5 dark:bg-muted/30">
+                {isVideoUrl(post.media_urls[0]) || post.post_type === 'video' ? (
+                  <video 
+                    src={post.media_urls[0]} 
+                    controls 
+                    playsInline
+                    preload="metadata"
+                    className="w-full max-h-[480px] object-contain mx-auto bg-black rounded-2xl shadow-sm" 
+                  />
+                ) : (
+                  <img 
+                    src={post.media_urls[0]} 
+                    alt="Post media" 
+                    className="w-full max-h-[500px] object-cover cursor-pointer hover:opacity-95 transition-opacity rounded-2xl"
+                    onClick={() => setSelectedMediaUrl(post.media_urls[0])}
+                  />
+                )}
+              </div>
+            )}
+          </>
         )}
 
         {/* REAL Reaction & Comment Counter Row */}

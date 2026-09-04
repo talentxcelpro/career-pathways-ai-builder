@@ -23,8 +23,10 @@ import {
   Zap,
   Compass,
   Check,
-  Minimize2
+  Minimize2,
+  FileText
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
@@ -63,6 +65,7 @@ const COMMON_TECH_HUBS = [
 ];
 
 export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCreate }) => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [content, setContent] = useState('');
@@ -889,6 +892,17 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
           >
             <MapPin className="h-4 w-4 mr-1.5 text-emerald-600" />
             Location
+          </Button>
+
+          <Button 
+            type="button"
+            variant="ghost" 
+            size="sm" 
+            onClick={() => navigate('/network?tab=discover')} 
+            className="rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-amber-50 dark:hover:bg-amber-950/50 hover:text-amber-600 transition-colors"
+          >
+            <FileText className="h-4 w-4 mr-1.5 text-amber-600" />
+            Write Article
           </Button>
 
           {/* Privacy Dropdown (Fixed clean single-chevron UI) */}

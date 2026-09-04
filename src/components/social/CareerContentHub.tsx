@@ -577,90 +577,89 @@ export function CareerContentHub() {
         <div className="absolute top-1/2 left-0 w-64 h-64 bg-accent/10 rounded-full blur-2xl animate-bounce"></div>
       </div>
 
-      <div className="relative z-10 container mx-auto px-4 py-8 space-y-8">
-        {/* Header */}
-        <div className="text-center space-y-6">
-          <div className="flex items-center justify-center gap-4 mb-4">
+      <div className="relative z-10 container mx-auto px-4 py-3 sm:py-4 space-y-3.5">
+        {/* Header (Compacted to remove excessive empty space) */}
+        <div className="text-center space-y-2">
+          <div className="flex items-center justify-center gap-3 mb-1">
             <div className="relative group">
               <img 
                 src="/talentxcel-official-logo.png" 
                 alt="TalentXcel Logo" 
-                className="w-16 h-16 rounded-2xl shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110 object-contain bg-slate-900 p-2"
+                className="w-10 h-10 rounded-xl shadow-md group-hover:shadow-lg transition-all duration-300 object-contain bg-slate-900 p-1.5"
               />
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
             </div>
             <div className="text-left">
-              <h1 className="text-5xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent leading-tight">
                 TalentXcel
               </h1>
-              <p className="text-xl font-semibold text-muted-foreground">Career Hub</p>
+              <p className="text-sm font-semibold text-muted-foreground leading-none">Career Hub</p>
             </div>
           </div>
           
-          <div className="max-w-3xl mx-auto">
-            <p className="text-lg text-muted-foreground leading-relaxed">
+          <div className="max-w-2xl mx-auto">
+            <p className="text-xs sm:text-sm text-muted-foreground leading-normal">
               🚀 Share your expertise, discover career insights, and grow with a community of professionals. 
               <span className="text-primary font-semibold"> Your success story starts here!</span>
             </p>
           </div>
           
-          {/* Enhanced Stats */}
-          <div className="flex items-center justify-center gap-8 mt-8">
-            <div className="flex items-center gap-2 bg-card/50 backdrop-blur-sm px-4 py-2 rounded-full border border-primary/20">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <FileText className="w-4 h-4 text-primary" />
+          {/* Compact Stats */}
+          <div className="flex items-center justify-center gap-3 mt-1.5 flex-wrap">
+            <div className="flex items-center gap-1.5 bg-card/50 backdrop-blur-sm px-3 py-1 rounded-full border border-primary/20 text-xs">
+              <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+              <FileText className="w-3.5 h-3.5 text-primary" />
               <span className="font-semibold">{articles.length}+ Articles</span>
             </div>
-            <div className="flex items-center gap-2 bg-card/50 backdrop-blur-sm px-4 py-2 rounded-full border border-secondary/20">
-              <Award className="w-4 h-4 text-secondary" />
+            <div className="flex items-center gap-1.5 bg-card/50 backdrop-blur-sm px-3 py-1 rounded-full border border-secondary/20 text-xs">
+              <Award className="w-3.5 h-3.5 text-secondary" />
               <span className="font-semibold">Expert Community</span>
             </div>
-            <div className="flex items-center gap-2 bg-card/50 backdrop-blur-sm px-4 py-2 rounded-full border border-accent/20">
-              <Zap className="w-4 h-4 text-accent" />
+            <div className="flex items-center gap-1.5 bg-card/50 backdrop-blur-sm px-3 py-1 rounded-full border border-accent/20 text-xs">
+              <Zap className="w-3.5 h-3.5 text-accent" />
               <span className="font-semibold">AI-Powered</span>
             </div>
           </div>
         </div>
 
-        {/* Action Bar */}
-        <div className="bg-card/60 backdrop-blur-xl p-8 rounded-3xl border border-primary/20 shadow-2xl">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-4 w-full lg:w-auto">
-              <div className="relative flex-1 lg:w-96">
+        {/* Action Bar (Compacted) */}
+        <div className="bg-card/70 backdrop-blur-xl p-3 sm:p-4 rounded-2xl border border-primary/20 shadow-md">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-3">
+            <div className="flex items-center gap-2 w-full lg:w-auto">
+              <div className="relative flex-1 lg:w-80">
                 <Input
-                  placeholder="🔍 Search articles, topics, or skills with AI..."
+                  placeholder="🔍 Search articles, topics, or skills..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                  className="pl-12 pr-4 h-14 text-base rounded-2xl border-2 border-muted hover:border-primary/50 focus:border-primary transition-all duration-300 bg-background/80 backdrop-blur-sm shadow-inner"
+                  className="pl-9 pr-3 h-9.5 text-xs rounded-xl border border-muted hover:border-primary/50 focus:border-primary transition-all bg-background/80 shadow-xs"
                 />
-                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
-                  <Search className="text-muted-foreground w-5 h-5" />
-                  <Sparkles className="text-primary w-4 h-4 animate-pulse" />
+                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 flex items-center gap-1.5 pointer-events-none">
+                  <Search className="text-muted-foreground w-4 h-4" />
                 </div>
               </div>
               <Button 
                 onClick={handleSearch}
-                className="rounded-2xl px-8 h-14 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary shadow-lg hover:shadow-xl transition-all duration-300"
-                size="lg"
+                className="rounded-xl px-4 h-9.5 text-xs font-bold bg-primary hover:bg-primary/90 shadow-xs"
+                size="sm"
               >
-                <Search className="w-5 h-5 mr-2" />
+                <Search className="w-3.5 h-3.5 mr-1" />
                 Search
               </Button>
             </div>
             
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
               <Dialog open={isCreateDialogOpen} onOpenChange={(open) => {
                 setIsCreateDialogOpen(open);
                 if (!open) setEditingArticleId(null);
               }}>
                 <Button 
                   onClick={openNewArticleDialog}
-                  className="relative group rounded-2xl px-8 h-14 bg-gradient-to-r from-secondary via-secondary/90 to-accent hover:from-secondary/90 hover:to-accent/90 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
+                  size="sm"
+                  className="relative group rounded-xl px-4 h-9.5 text-xs font-bold bg-gradient-to-r from-secondary via-secondary/90 to-accent hover:from-secondary/90 hover:to-accent/90 shadow-xs overflow-hidden"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-                  <PenTool className="w-5 h-5 mr-2 relative z-10" />
-                  <span className="relative z-10 font-semibold">✨ Share Your Expertise</span>
+                  <PenTool className="w-3.5 h-3.5 mr-1.5 relative z-10" />
+                  <span className="relative z-10 font-bold">✨ Share Your Expertise</span>
                 </Button>
                 <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
@@ -826,17 +825,19 @@ export function CareerContentHub() {
           </div>
         </div>
 
-        {/* Category Filter */}
-        <div className="flex flex-wrap justify-center gap-2">
+        {/* Category Filter (Compacted) */}
+        <div className="flex flex-wrap justify-center gap-1.5 pt-0.5">
           {categories.map((category) => (
             <Button
               key={category}
               variant={selectedCategory === category ? "default" : "outline"}
               size="sm"
               onClick={() => setSelectedCategory(category)}
-              className="transition-all duration-200 rounded-full hover:scale-105"
+              className={`transition-all duration-200 rounded-full h-7 text-xs px-3 font-semibold ${
+                selectedCategory === category ? "shadow-xs" : "bg-white/80 dark:bg-card"
+              }`}
             >
-              <Filter className="w-3 h-3 mr-1" />
+              <Filter className="w-2.5 h-2.5 mr-1" />
               {category}
             </Button>
           ))}

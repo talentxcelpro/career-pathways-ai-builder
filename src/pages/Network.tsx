@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { ProfessionalFeed } from "@/components/social/ProfessionalFeed";
 import { CareerContentHub } from "@/components/social/CareerContentHub";
 import { AdvertisingSidebar } from "@/components/network/AdvertisingSidebar";
@@ -43,7 +43,15 @@ import { EnhancedCreatePost } from "@/components/posts/EnhancedCreatePost";
 const Network: React.FC = () => {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get('tab') || 'feed';
+  const handleTabChange = (value: string) => {
+    setSearchParams(prev => {
+      const updated = new URLSearchParams(prev);
+      updated.set('tab', value);
+      return updated;
+    }, { replace: true });
+  };
   const [searchTerm, setSearchTerm] = useState('');
   const [postFilter, setPostFilter] = useState<'all' | 'latest' | 'trending'>('all');
   
@@ -120,7 +128,7 @@ const Network: React.FC = () => {
         {/* ============================================================================ */}
         {/* 1. SUB-NAVIGATION PILL TAB BAR (COMPACT PADDING & MARGINS) */}
         {/* ============================================================================ */}
-        <Tabs defaultValue="feed" className="w-full">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           
           <div className="bg-white/80 dark:bg-card backdrop-blur-md rounded-xl border border-slate-200/80 dark:border-border/60 p-1 shadow-xs mb-2.5 overflow-x-auto no-scrollbar">
             <TabsList className="flex items-center gap-1 bg-transparent h-auto p-0">

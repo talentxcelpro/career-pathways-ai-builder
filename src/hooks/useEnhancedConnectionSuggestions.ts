@@ -100,34 +100,82 @@ export const useEnhancedConnectionSuggestions = () => {
           ).filter(id => id !== user.id) || []
         );
 
-        // Fetch potential matches from profiles
+        // Fetch potential matches from profiles (query a larger pool to bypass existing connections)
         const { data: profiles } = await supabase
           .from('profiles')
           .select('*')
           .neq('id', user.id)
           .not('full_name', 'is', null)
-          .limit(20);
+          .limit(150);
 
         if (!profiles || profiles.length === 0) {
           return fallbackSuggestions;
         }
 
-        const res: EnhancedConnectionSuggestion[] = profiles
-          .filter(p => !connectedUserIds.has(p.id))
-          .map(p => ({
-            ...p,
-            matchScore: 85 + Math.floor(Math.random() * 12),
-            matchReasons: ['Shared Professional Network', 'Active on TalentXcel'],
-            suggestionType: 'skill_match' as const
-          }));
+        const userSkills = new Set((currentUserProfile?.skills || []).map((s: string) => s.toLowerCase()));
+        const userLocation = currentUserProfile?.location?.toLowerCase() || '';
+        const userTitle = currentUserProfile?.title?.toLowerCase() || '';
 
-        return res.length > 0 ? res : fallbackSuggestions;
+        const res: EnhancedConnectionSuggestion[] = profiles
+          .filter(p => !connectedUserIds.has(p.id) && p.full_name?.trim())
+          .map(p => {
+            const pSkills = (p.skills || []).map((s: string) => s.toLowerCase());
+            const sharedSkills = pSkills.filter((s: string) => userSkills.has(s));
+            const sameLocation = userLocation && p.location && (userLocation.includes(p.location.toLowerCase()) || p.location.toLowerCase().includes(userLocation));
+            const similarTitle = userTitle && p.title && (userTitle.includes(p.title.toLowerCase()) || p.title.toLowerCase().includes(userTitle));
+
+            let suggestionType: EnhancedConnectionSuggestion['suggestionType'] = 'skill_match';
+            const matchReasons: string[] = [];
+
+            if (sharedSkills.length > 0) {
+              suggestionType = 'skill_match';
+              matchReasons.push(`Shares ${sharedSkills.length} skill${sharedSkills.length > 1 ? 's' : ''}`);
+            } else if (sameLocation) {
+              suggestionType = 'location_match';
+              matchReasons.push(`Located in ${p.location}`);
+            } else if (similarTitle) {
+              suggestionType = 'title_match';
+              matchReasons.push('Similar leadership role');
+            } else {
+              suggestionType = 'industry_match';
+              matchReasons.push('Active TalentXcel member');
+            }
+
+            matchReasons.push('Verified Profile');
+
+            const matchScore = 82 + (sharedSkills.length * 4) + (sameLocation ? 5 : 0) + (similarTitle ? 6 : 0);
+
+            return {
+              ...p,
+              matchScore: Math.min(98, matchScore),
+              matchReasons,
+              suggestionType
+            };
+          });
+
+        return res.length > 0 ? res.slice(0, 30) : fallbackSuggestions;
       } catch (err) {
         console.warn('Fallback connection suggestions engaged:', err);
         return fallbackSuggestions;
       }
     }
   });
+
+  // Realtime subscription on connections table
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const channel = supabase
+      .channel(`connections-realtime-${user.id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'connections' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['enhanced-connection-suggestions'] });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id, queryClient]);
 
   // Mutation to send connection request
   const sendConnectionMutation = useMutation({
