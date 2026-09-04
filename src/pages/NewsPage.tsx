@@ -472,101 +472,107 @@ const NewsPage: React.FC = () => {
       </Helmet>
 
       {/* Hero Header Section */}
-      <section className="border-b bg-gradient-to-b from-card via-card/80 to-background py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
-        <div className="w-full max-w-[1360px] mx-auto text-center space-y-2.5">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[11px] font-extrabold uppercase tracking-wider">
-            <Newspaper className="h-3.5 w-3.5" />
+      <section className="border-b bg-gradient-to-b from-card via-card/80 to-background py-3.5 sm:py-5 px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-[1360px] mx-auto text-center space-y-1.5">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-extrabold uppercase tracking-wider">
+            <Newspaper className="h-3 w-3" />
             Authority & Intelligence Layer
           </div>
           
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-foreground leading-tight">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-foreground leading-tight">
             NEWS & CAREER INTELLIGENCE
           </h1>
           
-          <p className="max-w-2xl mx-auto text-muted-foreground text-xs sm:text-sm leading-relaxed">
+          <p className="max-w-xl mx-auto text-muted-foreground text-xs sm:text-[13px] leading-normal">
             First-party company announcements, empirical hiring demand trends, higher education insights, and platform milestones.
           </p>
 
           {/* Search Bar */}
           <div className="max-w-md mx-auto pt-1 relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <Input 
               type="search"
               placeholder="Search news, skills, hiring trends, scholarships..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-4 h-10 rounded-xl bg-card border-border/80 text-xs shadow-xs focus-visible:ring-primary"
+              className="pl-9 pr-3.5 h-8.5 rounded-lg bg-card border-border/80 text-xs shadow-xs focus-visible:ring-primary"
             />
           </div>
         </div>
       </section>
 
       {/* Unified Editorial Filter Bar */}
-      <section className="border-b bg-card/90 sticky top-16 z-20 backdrop-blur-md py-2 shadow-xs">
-        <div className="w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row md:items-center justify-between gap-2.5">
-          {/* Archetype Primary Pills */}
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-            {ARCHETYPES.map((arch) => {
-              const isSelected = selectedArchetype === arch;
-              const config = arch !== 'All' ? ARCHETYPE_CONFIG[arch] : null;
-              return (
-                <button
-                  key={arch}
-                  onClick={() => setSelectedArchetype(arch)}
-                  className={`whitespace-nowrap px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
-                    isSelected
-                      ? (config 
-                          ? `${config.badgeStyle} bg-card shadow-xs ring-1 ring-primary/40` 
-                          : 'bg-primary text-primary-foreground border-primary shadow-xs')
-                      : 'bg-card text-muted-foreground border-border/60 hover:text-foreground hover:bg-muted/60'
-                  }`}
-                >
-                  {arch === 'All' ? 'All Publications (20)' : arch}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Secondary Category Filters & Cadence Badge */}
-          <div className="flex items-center justify-between md:justify-end gap-2 overflow-x-auto no-scrollbar">
-            <div className="flex items-center gap-1 shrink-0">
-              {CATEGORIES.map((cat) => {
-                const isSelected = selectedCategory === cat;
+      <section className="border-b bg-card/95 sticky top-16 z-20 backdrop-blur-md py-2 shadow-xs">
+        <div className="w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 space-y-1.5">
+          {/* Row 1: Publication Archetypes + Cadence Badge */}
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden py-0.5">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 shrink-0 hidden sm:inline mr-1">
+                Archetype:
+              </span>
+              {ARCHETYPES.map((arch) => {
+                const isSelected = selectedArchetype === arch;
+                const config = arch !== 'All' ? ARCHETYPE_CONFIG[arch] : null;
                 return (
                   <button
-                    key={cat}
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`whitespace-nowrap px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all ${
+                    key={arch}
+                    onClick={() => setSelectedArchetype(arch)}
+                    className={`whitespace-nowrap px-3 py-1 rounded-lg text-xs font-bold transition-all border shrink-0 ${
                       isSelected
-                        ? 'bg-primary/10 text-primary font-bold border border-primary/20'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'
+                        ? (config 
+                            ? `${config.badgeStyle} bg-card shadow-xs ring-1 ring-primary/40` 
+                            : 'bg-primary text-primary-foreground border-primary shadow-xs')
+                        : 'bg-card text-muted-foreground border-border/60 hover:text-foreground hover:bg-muted/60'
                     }`}
                   >
-                    {cat}
+                    {arch === 'All' ? 'All Publications (20)' : arch}
                   </button>
                 );
               })}
             </div>
 
-            <span className="hidden xl:inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 shrink-0">
+            <span className="hidden md:inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 shrink-0">
               <CheckCircle2 className="h-3 w-3" /> 15-Day Cadence
             </span>
+          </div>
+
+          {/* Row 2: Secondary Category Navigation */}
+          <div className="flex items-center gap-1 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden pt-1 border-t border-border/40">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80 shrink-0 hidden sm:inline mr-1">
+              Category:
+            </span>
+            {CATEGORIES.map((cat) => {
+              const isSelected = selectedCategory === cat;
+              return (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`whitespace-nowrap px-2.5 py-0.5 rounded-md text-[11px] font-semibold transition-all shrink-0 ${
+                    isSelected
+                      ? 'bg-primary/10 text-primary font-bold border border-primary/20'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'
+                  }`}
+                >
+                  {cat}
+                </button>
+              );
+            })}
           </div>
         </div>
       </section>
 
       {/* Main Content Area */}
-      <main className="w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
+      <main className="w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6 space-y-6">
         {isListLoading ? (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-pulse">
-            <div className="lg:col-span-8 h-96 bg-muted rounded-3xl" />
-            <div className="lg:col-span-4 h-96 bg-muted rounded-3xl" />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-pulse">
+            <div className="lg:col-span-7 h-96 bg-muted rounded-2xl" />
+            <div className="lg:col-span-5 h-96 bg-muted rounded-2xl" />
           </div>
         ) : articles.length === 0 ? (
-          <div className="py-20 text-center space-y-4">
+          <div className="py-16 text-center space-y-4">
             <Newspaper className="h-12 w-12 text-muted-foreground mx-auto" />
-            <h2 className="text-2xl font-bold text-foreground">No articles match your search</h2>
-            <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+            <h2 className="text-xl font-bold text-foreground">No articles match your search</h2>
+            <p className="text-xs text-muted-foreground max-w-sm mx-auto">
               Try selecting another category or archetype tab or clearing the search query.
             </p>
             <Button 
@@ -581,27 +587,27 @@ const NewsPage: React.FC = () => {
           <>
             {/* Top Featured Section (Left: Hero Feature | Right: Top Briefs) */}
             {featuredArticle && !searchQuery && selectedArchetype === 'All' && selectedCategory === 'All' && (
-              <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-stretch">
+              <section className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
                 {/* Main Featured Article (Left 7 columns) */}
                 <Link 
                   to={`/news/${featuredArticle.slug}`}
-                  className="group lg:col-span-7 flex flex-col justify-between p-5 sm:p-6 rounded-3xl bg-card border border-border/80 hover:border-primary/40 hover:shadow-xl transition-all overflow-hidden"
+                  className="group lg:col-span-7 flex flex-col justify-between p-4 sm:p-5 rounded-2xl bg-card border border-border/80 hover:border-primary/40 hover:shadow-lg transition-all overflow-hidden"
                 >
-                  <div className="space-y-3.5">
+                  <div className="space-y-3">
                     <NewsArticleBanner 
                       slug={featuredArticle.slug} 
                       category={featuredArticle.category} 
                       title={featuredArticle.title} 
                       imageUrl={featuredArticle.imageUrl}
                       size="hero" 
-                      className="shadow-md" 
+                      className="shadow-sm" 
                     />
 
-                    <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground font-medium pt-1">
+                    <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground font-medium pt-0.5">
                       {featuredArticle.archetype && ARCHETYPE_CONFIG[featuredArticle.archetype] && (
                         <Badge 
                           variant="outline" 
-                          className={`font-bold text-[11px] px-2.5 py-0.5 border ${ARCHETYPE_CONFIG[featuredArticle.archetype].badgeStyle}`}
+                          className={`font-bold text-[10px] px-2 py-0.5 border ${ARCHETYPE_CONFIG[featuredArticle.archetype].badgeStyle}`}
                         >
                           {featuredArticle.archetype}
                         </Badge>
@@ -620,24 +626,24 @@ const NewsPage: React.FC = () => {
                       <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {featuredArticle.readTime}</span>
                     </div>
 
-                    <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-foreground group-hover:text-primary transition-colors leading-tight">
+                    <h2 className="text-lg sm:text-xl md:text-2xl font-extrabold text-foreground group-hover:text-primary transition-colors leading-tight">
                       {featuredArticle.title}
                     </h2>
 
-                    <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 sm:line-clamp-3 leading-relaxed">
+                    <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 leading-relaxed">
                       {featuredArticle.summary}
                     </p>
                   </div>
 
-                  <div className="flex items-center justify-between pt-4 mt-3 border-t border-border/60">
+                  <div className="flex items-center justify-between pt-3.5 mt-3 border-t border-border/60">
                     <div className="flex items-center gap-2.5">
                       <img 
                         src={featuredArticle.author?.avatar || '/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png'} 
                         alt={featuredArticle.author?.name || 'Author'}
-                        className="w-8 h-8 rounded-full border border-primary/20 object-cover"
+                        className="w-7 h-7 rounded-full border border-primary/20 object-cover"
                       />
                       <div className="text-xs">
-                        <p className="font-bold text-foreground leading-none">{featuredArticle.author?.name || 'TalentXcel'}</p>
+                        <p className="font-bold text-foreground leading-none text-[11px]">{featuredArticle.author?.name || 'TalentXcel'}</p>
                         <p className="text-muted-foreground text-[10px] mt-0.5">{featuredArticle.author?.role || 'Platform Intelligence'}</p>
                       </div>
                     </div>
@@ -648,23 +654,23 @@ const NewsPage: React.FC = () => {
                   </div>
                 </Link>
 
-                {/* Top Stories Briefs (Right 5 columns) */}
-                <div className="lg:col-span-5 flex flex-col gap-3">
+                {/* Top Stories Briefs (Right 5 columns) - Compact without huge vertical voids */}
+                <div className="lg:col-span-5 flex flex-col gap-2.5">
                   <div className="flex items-center justify-between px-1">
-                    <h3 className="text-sm sm:text-base font-extrabold text-foreground flex items-center gap-2">
-                      <TrendingUp className="h-4 w-4 text-primary" /> Top Intelligence Briefs
+                    <h3 className="text-xs sm:text-sm font-extrabold text-foreground flex items-center gap-1.5 uppercase tracking-wide">
+                      <TrendingUp className="h-3.5 w-3.5 text-primary" /> Top Intelligence Briefs
                     </h3>
                   </div>
 
-                  <div className="flex flex-col gap-2.5 flex-1 justify-between">
+                  <div className="flex flex-col gap-2.5">
                     {topStories.map((story) => (
                       <Link 
                         key={story.id}
                         to={`/news/${story.slug}`}
-                        className="group p-3 sm:p-3.5 rounded-2xl bg-card border border-border/80 hover:border-primary/40 hover:shadow-md transition-all flex items-center gap-3.5"
+                        className="group p-2.5 sm:p-3 rounded-xl bg-card border border-border/80 hover:border-primary/40 hover:shadow-md transition-all flex items-center gap-3"
                       >
                         {/* Real AI Human Photo Thumbnail */}
-                        <div className="w-24 h-20 sm:w-28 sm:h-22 shrink-0 rounded-xl overflow-hidden bg-muted relative">
+                        <div className="w-24 h-18 sm:w-26 sm:h-20 shrink-0 rounded-lg overflow-hidden bg-muted relative">
                           <img 
                             src={story.imageUrl || '/images/news/sector-report-executives.jpg'} 
                             alt={story.title}
@@ -673,7 +679,7 @@ const NewsPage: React.FC = () => {
                           />
                         </div>
 
-                        <div className="min-w-0 flex-1 space-y-1">
+                        <div className="min-w-0 flex-1 space-y-0.5">
                           <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
                             {story.archetype && ARCHETYPE_CONFIG[story.archetype] ? (
                               <Badge variant="outline" className={`text-[9px] font-bold px-1.5 py-0 border ${ARCHETYPE_CONFIG[story.archetype].badgeStyle}`}>
@@ -685,10 +691,10 @@ const NewsPage: React.FC = () => {
                               </Badge>
                             )}
                             <span>•</span>
-                            <span className="flex items-center gap-1 font-medium"><Clock className="h-3 w-3" /> {story.readTime}</span>
+                            <span className="flex items-center gap-0.5 font-medium"><Clock className="h-3 w-3" /> {story.readTime}</span>
                           </div>
 
-                          <h4 className="text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug">
+                          <h4 className="text-xs font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug">
                             {story.title}
                           </h4>
 
@@ -704,33 +710,33 @@ const NewsPage: React.FC = () => {
             )}
 
             {/* Latest Intelligence Grid Section */}
-            <section className="space-y-6">
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/80 pb-4">
+            <section className="space-y-4 pt-2">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/80 pb-3">
                 <div>
-                  <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
+                  <h2 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">
                     {selectedArchetype !== 'All' 
                       ? `${selectedArchetype} Publications` 
                       : (selectedCategory === 'All' ? 'Latest Intelligence & Analysis' : `${selectedCategory}`)}
                   </h2>
-                  <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
+                  <p className="text-xs text-muted-foreground mt-0.5">
                     {selectedArchetype !== 'All' 
                       ? ARCHETYPE_CONFIG[selectedArchetype]?.description 
                       : 'Empirical data, verified institutional updates, and strategic platform capabilities.'}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-muted-foreground bg-muted/60 px-3 py-1 rounded-full">
+                  <span className="text-xs font-bold text-muted-foreground bg-muted/60 px-2.5 py-0.5 rounded-full">
                     {articles.length} {articles.length === 1 ? 'Publication' : 'Publications'}
                   </span>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 {(searchQuery || selectedArchetype !== 'All' ? articles : remainingArticles).map((art) => (
                   <Link 
                     key={art.id}
                     to={`/news/${art.slug}`}
-                    className="group flex flex-col justify-between rounded-3xl bg-card border border-border/80 hover:border-primary/40 hover:shadow-xl transition-all overflow-hidden"
+                    className="group flex flex-col justify-between rounded-2xl bg-card border border-border/80 hover:border-primary/40 hover:shadow-lg transition-all overflow-hidden"
                   >
                     <NewsArticleBanner 
                       slug={art.slug} 
@@ -740,9 +746,9 @@ const NewsPage: React.FC = () => {
                       size="card" 
                     />
 
-                    <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
-                      <div className="space-y-2.5">
-                        <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground font-medium">
+                    <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-3">
+                      <div className="space-y-2">
+                        <div className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground font-medium">
                           {art.archetype && ARCHETYPE_CONFIG[art.archetype] && (
                             <Badge 
                               variant="outline" 
@@ -760,18 +766,18 @@ const NewsPage: React.FC = () => {
                           <span>{art.readTime}</span>
                         </div>
                         
-                        <h3 className="text-base sm:text-lg font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug">
+                        <h3 className="text-sm sm:text-base font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug">
                           {art.title}
                         </h3>
                         
-                        <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+                        <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
                           {art.summary}
                         </p>
                       </div>
 
-                      <div className="pt-4 border-t border-border/60 flex items-center justify-between text-xs sm:text-sm font-bold text-primary">
+                      <div className="pt-3 border-t border-border/60 flex items-center justify-between text-xs font-bold text-primary">
                         <span>Read full publication</span>
-                        <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                        <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </div>
                   </Link>

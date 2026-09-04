@@ -43,7 +43,9 @@ export class NewsService {
             role: d.author_role || 'Platform Intelligence',
             avatar: d.author_avatar || '/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png'
           },
-          imageUrl: d.image_url || '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png',
+          imageUrl: (d.image_url && !d.image_url.includes('lovable-uploads') && !d.image_url.includes('placeholder'))
+            ? d.image_url
+            : (FOUNDATION_NEWS_ARTICLES.find(f => f.slug === (d.slug || d.url || d.id))?.imageUrl || '/images/news/sector-report-executives.jpg'),
           readTime: d.read_time || '4 min read',
           tags: d.tags || ['TalentXcel', 'Career News'],
           keyTakeaways: d.key_takeaways || [],

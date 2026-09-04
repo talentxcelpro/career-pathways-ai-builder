@@ -62,7 +62,7 @@ export const FOUNDATION_NEWS_ARTICLES: NewsArticle[] = [
       "role": "GCC Regional Strategy Lead",
       "avatar": "/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png"
     },
-    "imageUrl": "/images/news/sector-report-executives.jpg",
+    "imageUrl": "/images/news/remote-work-global.jpg",
     "readTime": "5 min read",
     "tags": [
       "GCC Hiring",
@@ -128,7 +128,7 @@ export const FOUNDATION_NEWS_ARTICLES: NewsArticle[] = [
       "role": "Global Education Standards Director",
       "avatar": "/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png"
     },
-    "imageUrl": "/images/news/remote-work-global.jpg",
+    "imageUrl": "/images/news/professional-journal-ai.jpg",
     "readTime": "4 min read",
     "tags": [
       "Career Passport",
@@ -194,7 +194,7 @@ export const FOUNDATION_NEWS_ARTICLES: NewsArticle[] = [
       "role": "Lead ATS Optimization Engineer",
       "avatar": "/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png"
     },
-    "imageUrl": "/images/news/career-guide-candidate.jpg",
+    "imageUrl": "/images/news/ats-resume-engineer.jpg",
     "readTime": "6 min read",
     "tags": [
       "ATS Resume",
@@ -227,7 +227,7 @@ export const FOUNDATION_NEWS_ARTICLES: NewsArticle[] = [
       "role": "Principal Interview Coach",
       "avatar": "/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png"
     },
-    "imageUrl": "/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png",
+    "imageUrl": "/images/news/interview-coaching-hr.jpg",
     "readTime": "5 min read",
     "tags": [
       "Interview Prep",
@@ -260,7 +260,7 @@ export const FOUNDATION_NEWS_ARTICLES: NewsArticle[] = [
       "role": "Global Education Advisor",
       "avatar": "/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png"
     },
-    "imageUrl": "/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png",
+    "imageUrl": "/images/news/tuition-free-university.jpg",
     "readTime": "6 min read",
     "tags": [
       "Global Education",
@@ -293,7 +293,7 @@ export const FOUNDATION_NEWS_ARTICLES: NewsArticle[] = [
       "role": "Tech Industry Analyst",
       "avatar": "/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png"
     },
-    "imageUrl": "/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png",
+    "imageUrl": "/images/news/ai-job-platform.jpg",
     "readTime": "7 min read",
     "tags": [
       "Top 10 Platforms",
@@ -326,7 +326,7 @@ export const FOUNDATION_NEWS_ARTICLES: NewsArticle[] = [
       "role": "Software Evaluation Specialist",
       "avatar": "/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png"
     },
-    "imageUrl": "/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png",
+    "imageUrl": "/images/news/ats-scanner-comparison.jpg",
     "readTime": "6 min read",
     "tags": [
       "ATS Scanners",
@@ -359,7 +359,7 @@ export const FOUNDATION_NEWS_ARTICLES: NewsArticle[] = [
       "role": "TalentXcel Research & Analysis",
       "avatar": "/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png"
     },
-    "imageUrl": "/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png",
+    "imageUrl": "/images/news/industry-insider-team.jpg",
     "readTime": "5 min read",
     "tags": [
       "Comparison",
@@ -392,7 +392,7 @@ export const FOUNDATION_NEWS_ARTICLES: NewsArticle[] = [
       "role": "Developer Relations Lead",
       "avatar": "/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png"
     },
-    "imageUrl": "/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png",
+    "imageUrl": "/images/news/developer-community.jpg",
     "readTime": "5 min read",
     "tags": [
       "Developer Community",
@@ -425,7 +425,7 @@ export const FOUNDATION_NEWS_ARTICLES: NewsArticle[] = [
       "role": "Director of Career Sciences Institute",
       "avatar": "/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png"
     },
-    "imageUrl": "/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png",
+    "imageUrl": "/images/news/ats-resume-engineer.jpg",
     "readTime": "7 min read",
     "tags": [
       "Career Sciences",
@@ -458,7 +458,7 @@ export const FOUNDATION_NEWS_ARTICLES: NewsArticle[] = [
       "role": "Principal Systems Architect",
       "avatar": "/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png"
     },
-    "imageUrl": "/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png",
+    "imageUrl": "/images/news/professional-journal-ai.jpg",
     "readTime": "6 min read",
     "tags": [
       "ATS Mechanics",
@@ -491,7 +491,7 @@ export const FOUNDATION_NEWS_ARTICLES: NewsArticle[] = [
       "role": "Chief Cryptography & Trust Officer",
       "avatar": "/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png"
     },
-    "imageUrl": "/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png",
+    "imageUrl": "/images/news/remote-work-global.jpg",
     "readTime": "5 min read",
     "tags": [
       "Career Passport",
@@ -524,7 +524,7 @@ export const FOUNDATION_NEWS_ARTICLES: NewsArticle[] = [
       "role": "Dean of Institutional Alliances",
       "avatar": "/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png"
     },
-    "imageUrl": "/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png",
+    "imageUrl": "/images/news/trade-publication-campus.jpg",
     "readTime": "6 min read",
     "tags": [
       "College Placements",
@@ -557,7 +557,7 @@ export const FOUNDATION_NEWS_ARTICLES: NewsArticle[] = [
       "role": "Enterprise Intelligence Bureau",
       "avatar": "/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png"
     },
-    "imageUrl": "/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png",
+    "imageUrl": "/images/news/sector-report-executives.jpg",
     "readTime": "8 min read",
     "tags": [
       "State of Recruitment",
@@ -590,7 +590,7 @@ export const FOUNDATION_NEWS_ARTICLES: NewsArticle[] = [
       "role": "TalentXcel Diagnostics Division",
       "avatar": "/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png"
     },
-    "imageUrl": "/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png",
+    "imageUrl": "/images/news/ats-scanner-comparison.jpg",
     "readTime": "6 min read",
     "tags": [
       "Resume Benchmark",
@@ -623,7 +623,7 @@ export const FOUNDATION_NEWS_ARTICLES: NewsArticle[] = [
       "role": "TalentXcel Education Analytics",
       "avatar": "/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png"
     },
-    "imageUrl": "/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png",
+    "imageUrl": "/images/news/tuition-free-university.jpg",
     "readTime": "7 min read",
     "tags": [
       "NIRF Rankings",
@@ -656,7 +656,7 @@ export const FOUNDATION_NEWS_ARTICLES: NewsArticle[] = [
       "role": "TalentXcel Global Intelligence",
       "avatar": "/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png"
     },
-    "imageUrl": "/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png",
+    "imageUrl": "/images/news/compensation-benchmarks.jpg",
     "readTime": "6 min read",
     "tags": [
       "UAE Hiring",

@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-04T07:40:21.848Z",
-  "nextScheduledCycleAt": "2026-09-19T07:40:21.848Z",
+  "generatedAt": "2026-09-04T07:52:32.136Z",
+  "nextScheduledCycleAt": "2026-09-19T07:52:32.136Z",
   "cadenceDays": 15,
   "totalPublications": 20,
   "refreshedPublications": 20,
@@ -28,7 +28,7 @@
       "archetype": "Sector Report",
       "category": "Career Intelligence",
       "editionVersion": "v1.1 - September 2026 Edition",
-      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "lastRefreshedAt": "2026-09-04T07:52:32.136Z",
       "cadenceDays": 15
     },
     {
@@ -38,7 +38,7 @@
       "archetype": "Sector Report",
       "category": "Career Intelligence",
       "editionVersion": "v1.1 - September 2026 Edition",
-      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "lastRefreshedAt": "2026-09-04T07:52:32.136Z",
       "cadenceDays": 15
     },
     {
@@ -48,7 +48,7 @@
       "archetype": "Sector Report",
       "category": "Company News",
       "editionVersion": "v1.1 - September 2026 Edition",
-      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "lastRefreshedAt": "2026-09-04T07:52:32.136Z",
       "cadenceDays": 15
     },
     {
@@ -58,7 +58,7 @@
       "archetype": "Sector Report",
       "category": "Education Intelligence",
       "editionVersion": "v1.1 - September 2026 Edition",
-      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "lastRefreshedAt": "2026-09-04T07:52:32.136Z",
       "cadenceDays": 15
     },
     {
@@ -68,7 +68,7 @@
       "archetype": "Career Guide",
       "category": "Career Intelligence",
       "editionVersion": "v1.1 - September 2026 Edition",
-      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "lastRefreshedAt": "2026-09-04T07:52:32.136Z",
       "cadenceDays": 15
     },
     {
@@ -78,7 +78,7 @@
       "archetype": "Career Guide",
       "category": "Career Intelligence",
       "editionVersion": "v1.1 - September 2026 Edition",
-      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "lastRefreshedAt": "2026-09-04T07:52:32.136Z",
       "cadenceDays": 15
     },
     {
@@ -88,7 +88,7 @@
       "archetype": "Career Guide",
       "category": "Career Intelligence",
       "editionVersion": "v1.1 - September 2026 Edition",
-      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "lastRefreshedAt": "2026-09-04T07:52:32.136Z",
       "cadenceDays": 15
     },
     {
@@ -98,7 +98,7 @@
       "archetype": "Career Guide",
       "category": "Education Intelligence",
       "editionVersion": "v1.1 - September 2026 Edition",
-      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "lastRefreshedAt": "2026-09-04T07:52:32.136Z",
       "cadenceDays": 15
     },
     {
@@ -108,7 +108,7 @@
       "archetype": "Industry Insider",
       "category": "Career Intelligence",
       "editionVersion": "v1.1 - September 2026 Edition",
-      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "lastRefreshedAt": "2026-09-04T07:52:32.136Z",
       "cadenceDays": 15
     },
     {
@@ -118,7 +118,7 @@
       "archetype": "Industry Insider",
       "category": "Career Intelligence",
       "editionVersion": "v1.1 - September 2026 Edition",
-      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "lastRefreshedAt": "2026-09-04T07:52:32.136Z",
       "cadenceDays": 15
     },
     {
@@ -128,7 +128,7 @@
       "archetype": "Industry Insider",
       "category": "Company News",
       "editionVersion": "v1.1 - September 2026 Edition",
-      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "lastRefreshedAt": "2026-09-04T07:52:32.136Z",
       "cadenceDays": 15
     },
     {
@@ -138,7 +138,7 @@
       "archetype": "Industry Insider",
       "category": "TalentXcel Network",
       "editionVersion": "v1.1 - September 2026 Edition",
-      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "lastRefreshedAt": "2026-09-04T07:52:32.136Z",
       "cadenceDays": 15
     },
     {
@@ -148,7 +148,7 @@
       "archetype": "Professional Journal",
       "category": "Career Intelligence",
       "editionVersion": "v1.1 - September 2026 Edition",
-      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "lastRefreshedAt": "2026-09-04T07:52:32.136Z",
       "cadenceDays": 15
     },
     {
@@ -158,7 +158,7 @@
       "archetype": "Professional Journal",
       "category": "Career Intelligence",
       "editionVersion": "v1.1 - September 2026 Edition",
-      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "lastRefreshedAt": "2026-09-04T07:52:32.136Z",
       "cadenceDays": 15
     },
     {
@@ -168,7 +168,7 @@
       "archetype": "Professional Journal",
       "category": "Company News",
       "editionVersion": "v1.1 - September 2026 Edition",
-      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "lastRefreshedAt": "2026-09-04T07:52:32.136Z",
       "cadenceDays": 15
     },
     {
@@ -178,7 +178,7 @@
       "archetype": "Professional Journal",
       "category": "Education Intelligence",
       "editionVersion": "v1.1 - September 2026 Edition",
-      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "lastRefreshedAt": "2026-09-04T07:52:32.136Z",
       "cadenceDays": 15
     },
     {
@@ -188,7 +188,7 @@
       "archetype": "Trade Publication",
       "category": "Press & Media",
       "editionVersion": "v1.1 - September 2026 Edition",
-      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "lastRefreshedAt": "2026-09-04T07:52:32.136Z",
       "cadenceDays": 15
     },
     {
@@ -198,7 +198,7 @@
       "archetype": "Trade Publication",
       "category": "Career Intelligence",
       "editionVersion": "v1.1 - September 2026 Edition",
-      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "lastRefreshedAt": "2026-09-04T07:52:32.136Z",
       "cadenceDays": 15
     },
     {
@@ -208,7 +208,7 @@
       "archetype": "Trade Publication",
       "category": "Education Intelligence",
       "editionVersion": "v1.1 - September 2026 Edition",
-      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "lastRefreshedAt": "2026-09-04T07:52:32.136Z",
       "cadenceDays": 15
     },
     {
@@ -218,7 +218,7 @@
       "archetype": "Trade Publication",
       "category": "Press & Media",
       "editionVersion": "v1.1 - September 2026 Edition",
-      "lastRefreshedAt": "2026-09-04T07:40:21.848Z",
+      "lastRefreshedAt": "2026-09-04T07:52:32.136Z",
       "cadenceDays": 15
     }
   ]
