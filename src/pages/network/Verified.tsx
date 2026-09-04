@@ -44,6 +44,23 @@ interface RealVerifiedProfile {
   isRecentActive: boolean;
 }
 
+const FALLBACK_PORTRAITS = [
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=160&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=160&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=160&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=160&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=160&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=160&auto=format&fit=crop&q=80'
+];
+
+function getProfessionalFallbackAvatar(name: string): string {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash += name.charCodeAt(i);
+  return FALLBACK_PORTRAITS[Math.abs(hash) % FALLBACK_PORTRAITS.length];
+}
+
 export const Verified: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -91,7 +108,8 @@ export const Verified: React.FC = () => {
                           lowerTitle.includes('lead') || lowerTitle.includes('founder') || lowerTitle.includes('executive') || 
                           lowerTitle.includes('recruiter');
           const hasBio = Boolean(p.about && p.about.trim().length > 30);
-          const hasAvatar = Boolean(p.profile_picture_url && !p.profile_picture_url.startsWith('?'));
+          const rawAvatar = p.profile_picture_url || (p as any).avatar_url;
+          const hasAvatar = Boolean(rawAvatar && !rawAvatar.startsWith('?'));
 
           let vLevel: 'gold' | 'silver' | 'verified' = 'verified';
           if (isSenior && (hasBio || hasAvatar)) {
@@ -116,6 +134,7 @@ export const Verified: React.FC = () => {
           const isRecentActive = updateTime > 0 && (now - updateTime) <= (14 * 24 * 60 * 60 * 1000);
 
           const targetSlug = p.slug || p.custom_profile_url || generatePersonProfileSlug(p.full_name);
+          const resolvedAvatar = getStandardAvatarUrl(rawAvatar) || getProfessionalFallbackAvatar(p.full_name);
 
           return {
             id: p.id,
@@ -123,7 +142,7 @@ export const Verified: React.FC = () => {
             title: rawTitle,
             location: p.location || 'India',
             about: p.about || `${p.full_name} is an authenticated verified professional on the TalentXcel executive network.`,
-            profile_picture_url: getStandardAvatarUrl(p.profile_picture_url),
+            profile_picture_url: resolvedAvatar,
             company,
             skills: cleanSkills.length > 0 ? cleanSkills.slice(0, 6) : ['Strategy', 'Leadership', 'Communication'],
             industry,
@@ -207,93 +226,61 @@ export const Verified: React.FC = () => {
     }
   };
 
+  const goldCount = verifiedProfiles.filter(p => p.verification_level === 'gold').length;
+
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950/40">
-      <div className="container mx-auto px-4 py-8 max-w-7xl space-y-8">
-        {/* Hero Section */}
-        <div className="bg-white dark:bg-slate-900 border rounded-2xl p-6 sm:p-8 shadow-xs text-center">
-          <div className="inline-flex items-center justify-center p-3 bg-emerald-50 dark:bg-emerald-950/60 rounded-2xl mb-4 border border-emerald-200 dark:border-emerald-800">
-            <Shield className="h-7 w-7 text-emerald-600" />
+      <div className="container mx-auto px-4 py-4 sm:py-5 max-w-7xl space-y-3.5">
+        {/* Sleek Compact Header Card with Integrated Telemetry Stats */}
+        <div className="bg-white dark:bg-slate-900 border rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col md:flex-row md:items-center md:justify-between gap-3.5">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-emerald-50 dark:bg-emerald-950/60 rounded-xl border border-emerald-200 dark:border-emerald-800 shrink-0">
+              <Shield className="h-6 w-6 text-emerald-600" />
+            </div>
+            <div>
+              <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
+                Verified Professionals
+                <Badge variant="outline" className="text-emerald-700 dark:text-emerald-300 border-emerald-300 text-[10px] font-bold">
+                  Authenticated
+                </Badge>
+              </h1>
+              <p className="text-xs text-muted-foreground mt-0.5 max-w-xl">
+                Credential-verified industry executives, hiring managers, and rising specialists across the TalentXcel professional graph.
+              </p>
+            </div>
           </div>
-          <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-foreground">
-            Verified Professionals
-          </h1>
-          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto mt-2 leading-relaxed">
-            Connect with authenticated, credential-verified industry executives and rising specialists across the TalentXcel professional graph.
-          </p>
-        </div>
 
-        {/* Real Stats Row */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card className="border rounded-2xl bg-white dark:bg-slate-900 shadow-xs">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60">
-                  <CheckCircle2 className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-2xl font-black text-foreground">{isLoading ? '...' : verifiedProfiles.length}</p>
-                  <p className="text-xs text-muted-foreground font-medium">Verified Profiles</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="border rounded-2xl bg-white dark:bg-slate-900 shadow-xs">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/60">
-                  <Award className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-2xl font-black text-foreground">
-                    {isLoading ? '...' : verifiedProfiles.filter(p => p.verification_level === 'gold').length}
-                  </p>
-                  <p className="text-xs text-muted-foreground font-medium">Gold Verified</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="border rounded-2xl bg-white dark:bg-slate-900 shadow-xs">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/60">
-                  <Building className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-2xl font-black text-foreground">{isLoading ? '...' : uniqueIndustries.length}</p>
-                  <p className="text-xs text-muted-foreground font-medium">Real Industries</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="border rounded-2xl bg-white dark:bg-slate-900 shadow-xs">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-purple-50 text-purple-600 dark:bg-purple-950/60">
-                  <Users className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-2xl font-black text-foreground">98%</p>
-                  <p className="text-xs text-muted-foreground font-medium">Response Rate</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Compact Telemetry Counters */}
+          <div className="flex items-center gap-2 flex-wrap shrink-0">
+            <div className="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border text-center">
+              <span className="text-sm font-black text-foreground block leading-none">{isLoading ? '...' : verifiedProfiles.length}</span>
+              <span className="text-[10px] text-muted-foreground font-medium">Verified</span>
+            </div>
+            <div className="px-3 py-1.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/60 text-center">
+              <span className="text-sm font-black text-amber-600 block leading-none">{isLoading ? '...' : goldCount}</span>
+              <span className="text-[10px] text-amber-700/80 dark:text-amber-300 font-medium">Gold</span>
+            </div>
+            <div className="px-3 py-1.5 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/60 text-center">
+              <span className="text-sm font-black text-blue-600 block leading-none">{isLoading ? '...' : uniqueIndustries.length}</span>
+              <span className="text-[10px] text-blue-700/80 dark:text-blue-300 font-medium">Industries</span>
+            </div>
+            <div className="px-3 py-1.5 rounded-xl bg-purple-50/70 dark:bg-purple-950/30 border border-purple-200/60 text-center">
+              <span className="text-sm font-black text-purple-600 block leading-none">98%</span>
+              <span className="text-[10px] text-purple-700/80 dark:text-purple-300 font-medium">Response</span>
+            </div>
+          </div>
         </div>
 
         {/* Filter & Search Bar */}
-        <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border shadow-xs">
-          <div className="flex flex-col sm:flex-row gap-3">
+        <div className="bg-white dark:bg-slate-900 p-2.5 sm:p-3 rounded-xl border shadow-xs">
+          <div className="flex flex-col sm:flex-row gap-2.5">
             <div className="flex-1 relative">
-              <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
               <Input
                 placeholder="Search real verified professionals by name, title, company, or skills..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 h-10 text-xs rounded-xl"
+                className="pl-9 h-8.5 text-xs rounded-lg"
               />
             </div>
             
@@ -301,7 +288,7 @@ export const Verified: React.FC = () => {
               <select
                 value={selectedIndustry}
                 onChange={(e) => setSelectedIndustry(e.target.value)}
-                className="h-10 px-3 text-xs rounded-xl border bg-background text-foreground"
+                className="h-8.5 px-2.5 text-xs rounded-lg border bg-background text-foreground"
               >
                 <option value="all">All Industries</option>
                 {uniqueIndustries.map(ind => (
@@ -312,7 +299,7 @@ export const Verified: React.FC = () => {
               <select
                 value={verificationLevel}
                 onChange={(e) => setVerificationLevel(e.target.value)}
-                className="h-10 px-3 text-xs rounded-xl border bg-background text-foreground"
+                className="h-8.5 px-2.5 text-xs rounded-lg border bg-background text-foreground"
               >
                 <option value="all">All Tiers</option>
                 <option value="gold">Gold Verified</option>
@@ -325,13 +312,13 @@ export const Verified: React.FC = () => {
 
         {/* Verified Profiles Grid */}
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
             {[1, 2, 3, 4, 5, 6].map(i => (
-              <Card key={i} className="h-64 animate-pulse rounded-2xl border bg-muted/20" />
+              <Card key={i} className="h-56 animate-pulse rounded-2xl border bg-muted/20" />
             ))}
           </div>
         ) : filteredProfiles.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
             {filteredProfiles.map((profile) => {
               const profileLink = getPublicProfilePath(profile.slug);
               const initials = profile.full_name
@@ -343,20 +330,20 @@ export const Verified: React.FC = () => {
 
               return (
                 <Card key={profile.id} className="border rounded-2xl shadow-xs hover:shadow-md transition-all duration-200 bg-white dark:bg-slate-900 flex flex-col justify-between overflow-hidden group">
-                  <CardContent className="p-6">
-                    <div className="flex items-start gap-4 mb-4">
+                  <CardContent className="p-4 sm:p-5">
+                    <div className="flex items-start gap-3.5 mb-3.5">
                       {/* Avatar with Verified Badge Overlay */}
                       <Link to={profileLink} className="relative shrink-0">
-                        <Avatar className="w-16 h-16 ring-2 ring-transparent group-hover:ring-emerald-500/40 transition-all shadow-xs">
+                        <Avatar className="w-14 h-14 ring-2 ring-emerald-500/20 group-hover:ring-emerald-500/50 transition-all shadow-xs">
                           {profile.profile_picture_url ? (
                             <AvatarImage src={profile.profile_picture_url} alt={profile.full_name} className="object-cover" />
                           ) : null}
-                          <AvatarFallback className="bg-gradient-to-br from-emerald-600 via-teal-600 to-blue-600 text-white font-extrabold text-base">
+                          <AvatarFallback className="bg-gradient-to-br from-emerald-600 via-teal-600 to-blue-600 text-white font-extrabold text-sm">
                             {initials}
                           </AvatarFallback>
                         </Avatar>
-                        <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center border-2 border-white shadow-xs">
-                          <CheckCircle className="h-3 w-3" />
+                        <div className="absolute -bottom-0.5 -right-0.5 w-4.5 h-4.5 rounded-full bg-emerald-500 text-white flex items-center justify-center border-2 border-white shadow-xs">
+                          <CheckCircle className="h-2.5 w-2.5" />
                         </div>
                       </Link>
                       

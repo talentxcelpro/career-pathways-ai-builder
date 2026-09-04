@@ -24,13 +24,15 @@ export interface UserLike {
  * Standardizes avatar URL from various possible field names
  * Priority: profile_picture_url -> avatar_url -> profile_photo_url
  */
-export function getStandardAvatarUrl(profile: ProfileLike | null | undefined): string | null {
+export function getStandardAvatarUrl(profile: ProfileLike | string | null | undefined): string | null {
   if (!profile) return null;
   
-  const rawUrl = profile.profile_picture_url || 
-                 profile.avatar_url || 
-                 profile.profile_photo_url || 
-                 null;
+  const rawUrl = typeof profile === 'string'
+    ? profile
+    : (profile.profile_picture_url || 
+       profile.avatar_url || 
+       profile.profile_photo_url || 
+       null);
 
   if (!rawUrl || typeof rawUrl !== 'string' || !rawUrl.trim()) {
     return null;

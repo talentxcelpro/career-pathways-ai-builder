@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { 
   Sparkles, 
   ImagePlus, 
@@ -21,7 +22,8 @@ import {
   CheckCircle2,
   Zap,
   Compass,
-  Check
+  Check,
+  Minimize2
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -93,6 +95,7 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
 
   // Posting state
   const [isPosting, setIsPosting] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
@@ -434,6 +437,7 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
       setTags([]);
       setPrivacy('public');
       setShowAiDrawer(false);
+      setIsExpanded(false);
 
       toast.success('Post published successfully to TalentXcel Network!');
     } catch (error: any) {
@@ -443,6 +447,65 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
       setIsPosting(false);
     }
   };
+
+  // Compact collapsed state: keeps feed visible above the fold just like Smart Feed
+  if (!isExpanded && !content.trim() && mediaItems.length === 0) {
+    return (
+      <Card className="w-full border border-slate-200/80 dark:border-border/60 shadow-xs bg-white dark:bg-card rounded-2xl p-3 space-y-2.5">
+        <div className="flex items-center gap-3">
+          <Avatar className="w-9 h-9 border border-slate-200 dark:border-border shrink-0">
+            <AvatarImage src={user?.user_metadata?.avatar_url} />
+            <AvatarFallback className="bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-extrabold text-xs">
+              {user?.email?.charAt(0).toUpperCase() || 'U'}
+            </AvatarFallback>
+          </Avatar>
+          <button
+            onClick={() => setIsExpanded(true)}
+            className="flex-1 text-left px-4 py-2 rounded-full border border-slate-200/80 dark:border-border/60 bg-slate-50 dark:bg-muted/40 hover:bg-slate-100 dark:hover:bg-muted text-xs text-muted-foreground font-medium transition-colors"
+          >
+            Share thoughts, achievements, or project milestones...
+          </button>
+        </div>
+
+        <div className="flex items-center justify-between pt-1.5 border-t border-slate-100 dark:border-border/40 px-1">
+          <div className="flex items-center gap-1 sm:gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => { setIsExpanded(true); setTimeout(() => fileInputRef.current?.click(), 50); }}
+              className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground gap-1.5 rounded-lg"
+            >
+              <ImagePlus className="h-3.5 w-3.5 text-blue-500" />
+              <span className="text-[11px] font-semibold">Photo</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => { setIsExpanded(true); setTimeout(() => videoInputRef.current?.click(), 50); }}
+              className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground gap-1.5 rounded-lg"
+            >
+              <Video className="h-3.5 w-3.5 text-purple-500" />
+              <span className="text-[11px] font-semibold">Video</span>
+            </Button>
+          </div>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => { setIsExpanded(true); setShowAiDrawer(true); }}
+            className="h-7 px-2.5 text-[11px] font-bold text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800 bg-purple-500/10 hover:bg-purple-500/20 rounded-full gap-1"
+          >
+            <Sparkles className="h-3 w-3 text-purple-600" />
+            <span>TalentXcel AI</span>
+          </Button>
+        </div>
+
+        {/* Hidden file inputs so they work from buttons */}
+        <input type="file" ref={fileInputRef} onChange={handleFileSelect} accept="image/*" multiple className="hidden" />
+        <input type="file" ref={videoInputRef} onChange={handleVideoSelect} accept="video/*" className="hidden" />
+      </Card>
+    );
+  }
 
   return (
     <Card 
@@ -454,7 +517,7 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
       }`}
     >
       
-      {/* Header: Title & AI Copilot Launcher */}
+      {/* Header: Title, Minimize & AI Copilot Launcher */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="h-6 w-6 rounded-lg bg-blue-50 dark:bg-blue-950/80 flex items-center justify-center border border-blue-200 dark:border-blue-800">
@@ -463,19 +526,32 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
           <h2 className="text-sm font-extrabold text-foreground tracking-tight">Create Enhanced Post</h2>
         </div>
 
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setShowAiDrawer(prev => !prev)}
-          className={`rounded-full text-xs font-extrabold transition-all px-3.5 h-7 gap-1.5 ${
-            showAiDrawer 
-              ? 'bg-purple-600 text-white border-purple-600 shadow-md' 
-              : 'border-purple-300 dark:border-purple-800 bg-gradient-to-r from-purple-500/10 to-indigo-500/10 text-purple-700 dark:text-purple-300 hover:bg-purple-500/20'
-          }`}
-        >
-          <Wand2 className="h-3.5 w-3.5 text-purple-600 dark:text-purple-300" />
-          <span>TalentXcel AI</span>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsExpanded(false)}
+            className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground rounded-lg gap-1"
+            title="Collapse"
+          >
+            <Minimize2 className="h-3.5 w-3.5" />
+            <span className="text-[11px] hidden sm:inline">Minimize</span>
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowAiDrawer(prev => !prev)}
+            className={`rounded-full text-xs font-extrabold transition-all px-3.5 h-7 gap-1.5 ${
+              showAiDrawer 
+                ? 'bg-purple-600 text-white border-purple-600 shadow-md' 
+                : 'border-purple-300 dark:border-purple-800 bg-gradient-to-r from-purple-500/10 to-indigo-500/10 text-purple-700 dark:text-purple-300 hover:bg-purple-500/20'
+            }`}
+          >
+            <Wand2 className="h-3.5 w-3.5 text-purple-600 dark:text-purple-300" />
+            <span>TalentXcel AI</span>
+          </Button>
+        </div>
       </div>
 
       {/* ✨ TalentXcel AI Assistant Panel */}

@@ -204,30 +204,30 @@ const Network: React.FC = () => {
               </div>
 
               {/* MIDDLE COLUMN: GLOBAL SEARCH, ENHANCED CREATE POST & FEED */}
-              <div className="md:col-span-8 lg:col-span-6 space-y-6">
+              <div className="md:col-span-8 lg:col-span-6 space-y-3.5">
                 
                 {/* 1. Global Search Bar matching mockup */}
-                <div className="relative bg-white dark:bg-card border border-slate-200/80 dark:border-border/60 rounded-3xl p-2.5 shadow-sm flex items-center gap-3">
-                  <Search className="h-4 w-4 text-muted-foreground ml-2 shrink-0" />
+                <div className="relative bg-white dark:bg-card border border-slate-200/80 dark:border-border/60 rounded-2xl p-1.5 shadow-xs flex items-center gap-2.5">
+                  <Search className="h-3.5 w-3.5 text-muted-foreground ml-2 shrink-0" />
                   <Input
                     placeholder="Search posts, people, companies, jobs, hashtags..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="border-0 bg-transparent text-xs font-semibold placeholder:text-muted-foreground focus-visible:ring-0 h-8"
+                    className="border-0 bg-transparent text-xs font-semibold placeholder:text-muted-foreground focus-visible:ring-0 h-7"
                   />
-                  <Button variant="ghost" size="sm" className="rounded-2xl h-8 w-8 p-0 text-muted-foreground hover:text-foreground shrink-0">
-                    <SlidersHorizontal className="h-4 w-4" />
+                  <Button variant="ghost" size="sm" className="rounded-xl h-7 w-7 p-0 text-muted-foreground hover:text-foreground shrink-0">
+                    <SlidersHorizontal className="h-3.5 w-3.5" />
                   </Button>
                 </div>
 
-                {/* 2. Enhanced Create Post Card matching mockup */}
+                {/* 2. Enhanced Create Post Card matching mockup (compact by default) */}
                 <EnhancedCreatePost />
 
                 {/* 3. Feed Controls Bar matching mockup */}
-                <div className="flex items-center justify-between pt-2">
-                  <div className="flex items-center gap-1 text-xs font-bold text-slate-700 dark:text-slate-300 bg-white dark:bg-card px-3 py-1.5 rounded-2xl border border-slate-200/80 dark:border-border/60 shadow-sm cursor-pointer">
+                <div className="flex items-center justify-between pt-0.5">
+                  <div className="flex items-center gap-1 text-xs font-bold text-slate-700 dark:text-slate-300 bg-white dark:bg-card px-2.5 py-1 rounded-xl border border-slate-200/80 dark:border-border/60 shadow-xs cursor-pointer">
                     <span>All Posts</span>
-                    <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                    <ChevronDown className="h-3 w-3 text-muted-foreground" />
                   </div>
 
                   <div className="flex items-center gap-2">
