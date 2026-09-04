@@ -55,6 +55,10 @@ import { DISCOVERED_EMPLOYER_LEADS } from '@/lib/ai-leads/leadDiscoveryEngine';
 import type { EmployerLead } from '@/lib/ai-leads/types';
 import { DISCOVERY_EVIDENCE_LEDGER, getAiDiscoveryObservatoryData } from '@/lib/ai-discovery/aiReferralTracker';
 import { 
+  resolveNext10kUsersRoadmap, 
+  computeMarketUnitEconomics 
+} from '@/lib/acquisition-os/acquisitionIntelligenceEngine';
+import { 
   ALL_AGENT_IDS, 
   TOTAL_AGENTS_COUNT, 
   type AgentId, 
@@ -74,6 +78,8 @@ export default function AIOrganizationControlCenter() {
   const [leads, setLeads] = useState<EmployerLead[]>([...DISCOVERED_EMPLOYER_LEADS]);
   const [observatoryData] = useState(getAiDiscoveryObservatoryData());
   const [evidenceLedger] = useState(DISCOVERY_EVIDENCE_LEDGER);
+  const [roadmap] = useState(resolveNext10kUsersRoadmap());
+  const [unitEconomics] = useState(computeMarketUnitEconomics());
 
   const handleApproveLead = (leadId: string) => {
     setLeads(prev => prev.map(l => l.leadId === leadId ? { ...l, status: 'OUTREACH_APPROVED' as const } : l));
@@ -328,27 +334,52 @@ export default function AIOrganizationControlCenter() {
               {dailyPlan.priorities.map((p) => (
                 <div
                   key={p.rank}
-                  className="p-4 rounded-xl bg-slate-950 border border-slate-800/80 flex flex-col md:flex-row md:items-center justify-between gap-3"
+                  className="p-4 rounded-xl bg-slate-950 border border-slate-800/80 space-y-2.5"
                 >
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="w-5 h-5 rounded-full bg-blue-600/20 border border-blue-500/40 text-blue-400 text-[11px] font-bold flex items-center justify-center">
-                        {p.rank}
-                      </span>
-                      <h4 className="text-sm font-semibold text-white">{p.title}</h4>
-                      <Badge className="bg-purple-500/10 text-purple-400 border-purple-500/30 text-[10px]">
-                        {p.delegatedAgentId}
-                      </Badge>
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                    <div className="space-y-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="w-5 h-5 rounded-full bg-blue-600/20 border border-blue-500/40 text-blue-400 text-[11px] font-bold flex items-center justify-center">
+                          {p.rank}
+                        </span>
+                        <h4 className="text-sm font-semibold text-white">{p.title}</h4>
+                        <Badge className="bg-purple-500/10 text-purple-400 border-purple-500/30 text-[10px]">
+                          {p.delegatedAgentId}
+                        </Badge>
+                        {p.decision && (
+                          <Badge className={p.decision === 'NO_ACTION' ? 'bg-rose-500/10 text-rose-400 border-rose-500/30 text-[10px]' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-[10px]'}>
+                            {p.decision}
+                          </Badge>
+                        )}
+                        {p.executionPolicy && (
+                          <Badge className={p.executionPolicy === 'BLOCKED' ? 'bg-rose-500/10 text-rose-400 border-rose-500/30 text-[10px]' : p.executionPolicy === 'REVIEW' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30 text-[10px]' : 'bg-blue-500/10 text-blue-400 border-blue-500/30 text-[10px]'}>
+                            Policy: {p.executionPolicy}
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-xs text-slate-400 pl-7">{p.telemetryTrigger}</p>
+                      <p className="text-xs text-emerald-400/90 pl-7 flex items-center gap-1 font-mono">
+                        <ArrowRight className="w-3 h-3" /> {p.proposedAction}
+                      </p>
                     </div>
-                    <p className="text-xs text-slate-400 pl-7">{p.telemetryTrigger}</p>
-                    <p className="text-xs text-emerald-400/90 pl-7 flex items-center gap-1 font-mono">
-                      <ArrowRight className="w-3 h-3" /> {p.proposedAction}
-                    </p>
+                    <div className="text-right shrink-0 pl-7 md:pl-0">
+                      <div className="text-xs font-mono text-slate-400">Impact Score</div>
+                      <div className="text-base font-extrabold text-blue-400">{p.impactScore}/100</div>
+                    </div>
                   </div>
-                  <div className="text-right shrink-0 pl-7 md:pl-0">
-                    <div className="text-xs font-mono text-slate-400">Impact Score</div>
-                    <div className="text-base font-extrabold text-blue-400">{p.impactScore}/100</div>
-                  </div>
+
+                  {/* Auditable Why Explanation (Fact -> Signal -> Inference -> Policy) */}
+                  {p.why && (
+                    <div className="ml-7 p-3 rounded-lg bg-slate-900 border border-slate-800 text-xs space-y-1.5">
+                      <div className="flex items-center justify-between text-[11px] text-slate-400 pb-1 border-b border-slate-800/80">
+                        <span className="font-semibold text-slate-300">Auditable Cognitive Reasoning:</span>
+                        <span>Confidence: <strong className="text-white">{p.why.confidence}</strong> | Value: <strong className="text-emerald-400">{p.why.projectedValue}</strong></span>
+                      </div>
+                      <div className="text-slate-300"><span className="text-slate-500 font-semibold">FACT: </span>{p.why.fact}</div>
+                      <div className="text-slate-300"><span className="text-slate-500 font-semibold">SIGNAL: </span>{p.why.signal}</div>
+                      <div className="text-blue-300 italic"><span className="text-slate-500 font-semibold not-italic">INFERENCE: </span>{p.why.inference}</div>
+                    </div>
+                  )}
                 </div>
               ))}
             </CardContent>
@@ -550,40 +581,185 @@ export default function AIOrganizationControlCenter() {
 
             {/* AI Acquisition Funnel */}
             <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-              <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3">
-                AI Discovery Conversion Funnel
-              </h4>
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+                  AI Discovery Conversion Funnel (Decoupled Stage Mathematics)
+                </h4>
+                <Badge variant="outline" className="text-[10px] text-emerald-400 border-emerald-500/30">
+                  Overall Landing-to-Customer: {observatoryData.overallLandingToCustomerRatePct}%
+                </Badge>
+              </div>
               <div className="grid grid-cols-2 sm:grid-cols-6 gap-2 text-center text-xs">
-                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
-                  <div className="text-slate-400 text-[10px]">1. Referral</div>
-                  <div className="text-sm font-bold text-white mt-0.5">100%</div>
-                  <div className="text-[10px] text-slate-500">{observatoryData.referralVisits} visits</div>
+                {observatoryData.funnelStages.map((stage) => {
+                  const stepLabel = stage.conversionFromPreviousPct !== null 
+                    ? `${stage.conversionFromPreviousPct}% step` 
+                    : '100% (Top)';
+                  return (
+                    <div key={stage.stageName} className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 flex flex-col justify-between">
+                      <div>
+                        <div className="text-slate-400 text-[10px] font-mono">
+                          {stage.stageIndex}. {stage.stageName}
+                        </div>
+                        <div className="text-sm font-bold text-blue-400 mt-1">
+                          {stepLabel}
+                        </div>
+                      </div>
+                      <div className="mt-2 pt-2 border-t border-slate-800/80">
+                        <div className="text-[11px] font-bold text-white font-mono">
+                          {stage.count.toLocaleString()}
+                        </div>
+                        <div className="text-[9px] text-slate-500 mt-0.5">
+                          {stage.stageIndex === 1 ? 'Total Referrals' : `${stage.overallConversionFromLandingPct}% of landing`}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Acquisition Intelligence & Revenue Optimization Engine (Architecture v1.0) */}
+        <Card className="bg-slate-900/90 border-slate-800 text-slate-100">
+          <CardHeader className="border-b border-slate-800/80 pb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-xs">
+                    <TrendingUp className="w-3 h-3 mr-1" /> Acquisition Intelligence OS v1.0
+                  </Badge>
+                  <span className="text-xs text-slate-400">Multi-Channel Capacity & Unit Economics</span>
                 </div>
-                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
-                  <div className="text-slate-400 text-[10px]">2. Landing</div>
-                  <div className="text-sm font-bold text-blue-400 mt-0.5">82%</div>
-                  <div className="text-[10px] text-slate-500">{observatoryData.uniqueSessions} sessions</div>
-                </div>
-                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
-                  <div className="text-slate-400 text-[10px]">3. Signup</div>
-                  <div className="text-sm font-bold text-purple-400 mt-0.5">{observatoryData.signupRate}%</div>
-                  <div className="text-[10px] text-slate-500">{observatoryData.directConversions} users</div>
-                </div>
-                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
-                  <div className="text-slate-400 text-[10px]">4. Verified</div>
-                  <div className="text-sm font-bold text-sky-400 mt-0.5">9.2%</div>
-                  <div className="text-[10px] text-slate-500">Identity passed</div>
-                </div>
-                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
-                  <div className="text-slate-400 text-[10px]">5. Activated</div>
-                  <div className="text-sm font-bold text-amber-400 mt-0.5">{observatoryData.activationRate}%</div>
-                  <div className="text-[10px] text-slate-500">Active product use</div>
-                </div>
-                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
-                  <div className="text-slate-400 text-[10px]">6. Customer</div>
-                  <div className="text-sm font-bold text-emerald-400 mt-0.5">{observatoryData.customerRate}%</div>
-                  <div className="text-[10px] text-emerald-400 font-bold">${observatoryData.revenue}</div>
-                </div>
+                <CardTitle className="text-lg font-bold text-white">
+                  Next 10,000 Users Capacity Model & Regional Unit Economics
+                </CardTitle>
+                <CardDescription className="text-slate-400 text-xs mt-1">
+                  Strict empirical modeling: zero invented metrics. Incomplete spend data is explicitly designated as INSUFFICIENT_DATA.
+                </CardDescription>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="text-xs font-mono text-emerald-400 border-emerald-500/30">
+                  Run Rate: {roadmap.totalMonthlyRunRate.toLocaleString()}/mo
+                </Badge>
+                <Badge variant="outline" className="text-xs font-mono text-blue-400 border-blue-500/30">
+                  Target Timeframe: ~{roadmap.projectedMonthsToTarget} mos
+                </Badge>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-6 space-y-6">
+            {/* Multi-Channel Capacity Breakdown */}
+            <div>
+              <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+                <Layers className="w-3.5 h-3.5 text-blue-400" />
+                Channel Acquisition Run-Rate to 10K Target
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                {roadmap.channelCapacities.map((ch) => (
+                  <div key={ch.channel} className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-[10px] text-slate-400 font-medium truncate">{ch.channel}</span>
+                        <Badge 
+                          variant="outline" 
+                          className={`text-[9px] px-1 py-0 ${
+                            ch.status === 'OBSERVED' 
+                              ? 'text-emerald-400 border-emerald-500/30' 
+                              : 'text-amber-400 border-amber-500/30'
+                          }`}
+                        >
+                          {ch.status}
+                        </Badge>
+                      </div>
+                      <div className="text-lg font-bold text-white font-mono mt-1">
+                        {ch.monthlyCapacity.toLocaleString()} <span className="text-xs font-normal text-slate-400">/mo</span>
+                      </div>
+                    </div>
+                    <div className="mt-2 text-xs text-blue-400 font-mono">
+                      {ch.sharePct}% share
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Regional Unit Economics & Status-Aware CAC/LTV */}
+            <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                  <Globe2 className="w-3.5 h-3.5 text-emerald-400" />
+                  Regional Market Unit Economics (Status-Aware CAC / LTV)
+                </h4>
+                <span className="text-[10px] text-slate-500 font-mono">Governed by Zero-Hallucination Policy</span>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-slate-800 text-slate-400 text-[10px] uppercase font-mono">
+                      <th className="pb-2">Market</th>
+                      <th className="pb-2">CAC (USD)</th>
+                      <th className="pb-2">LTV (USD)</th>
+                      <th className="pb-2">LTV / CAC</th>
+                      <th className="pb-2">Observed Rev</th>
+                      <th className="pb-2">Projected Rev</th>
+                      <th className="pb-2">Commercial Evidence Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800/60">
+                    {unitEconomics.map((econ) => (
+                      <tr key={econ.market} className="hover:bg-slate-900/40">
+                        <td className="py-2.5 font-semibold text-white font-mono">{econ.market}</td>
+                        <td className="py-2.5 font-mono">
+                          {econ.cacValueUsd !== null ? (
+                            <span className="text-white">${econ.cacValueUsd.toFixed(2)}</span>
+                          ) : (
+                            <span className="text-slate-500 italic">No Spend Data</span>
+                          )}
+                          <Badge 
+                            variant="outline" 
+                            className={`ml-1.5 text-[8px] px-1 py-0 ${
+                              econ.cacStatus === 'OBSERVED' 
+                                ? 'text-emerald-400 border-emerald-500/30' 
+                                : econ.cacStatus === 'ESTIMATED'
+                                ? 'text-amber-400 border-amber-500/30'
+                                : 'text-slate-500 border-slate-700'
+                            }`}
+                          >
+                            {econ.cacStatus}
+                          </Badge>
+                        </td>
+                        <td className="py-2.5 font-mono">
+                          {econ.ltvValueUsd !== null ? (
+                            <span className="text-white">${econ.ltvValueUsd.toFixed(0)}</span>
+                          ) : (
+                            <span className="text-slate-500 italic">Insufficient Data</span>
+                          )}
+                          <Badge 
+                            variant="outline" 
+                            className={`ml-1.5 text-[8px] px-1 py-0 ${
+                              econ.ltvStatus === 'OBSERVED' 
+                                ? 'text-emerald-400 border-emerald-500/30' 
+                                : econ.ltvStatus === 'ESTIMATED'
+                                ? 'text-amber-400 border-amber-500/30'
+                                : 'text-slate-500 border-slate-700'
+                            }`}
+                          >
+                            {econ.ltvStatus}
+                          </Badge>
+                        </td>
+                        <td className="py-2.5 font-mono font-bold text-white">
+                          {econ.ltvToCacRatio !== null ? `${econ.ltvToCacRatio.toFixed(1)}x` : '—'}
+                        </td>
+                        <td className="py-2.5 font-mono text-emerald-400 font-bold">${econ.observedRevenueTotalUsd.toLocaleString()}</td>
+                        <td className="py-2.5 font-mono text-slate-300">${econ.projectedRevenueTotalUsd.toLocaleString()}</td>
+                        <td className="py-2.5 text-slate-400 text-[11px] max-w-xs truncate" title={econ.notes}>
+                          {econ.notes}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
           </CardContent>

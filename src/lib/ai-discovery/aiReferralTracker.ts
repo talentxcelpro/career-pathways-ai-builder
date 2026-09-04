@@ -203,23 +203,74 @@ export function getAiDiscoveryObservatoryData(): AiDiscoveryMetrics {
   ];
 
   const totalVisits = Object.values(platformBreakdown).reduce((acc, p) => acc + p.visits, 0);
+  const totalLandingSessions = Math.round(totalVisits * 0.88);
   const totalSignups = Object.values(platformBreakdown).reduce((acc, p) => acc + p.signups, 0);
-  const totalLeads = Object.values(platformBreakdown).reduce((acc, p) => acc + p.leads, 0);
+  const totalVerified = Math.round(totalSignups * 0.72);
+  const totalActivated = Math.round(totalSignups * 0.45);
   const totalCustomers = Object.values(platformBreakdown).reduce((acc, p) => acc + p.customers, 0);
   const totalRevenue = Object.values(platformBreakdown).reduce((acc, p) => acc + p.revenue, 0);
+
+  // Decoupled dynamic funnel stages - strictly prevents denominator mixing
+  const funnelStages = [
+    {
+      stageName: 'REFERRAL' as const,
+      stageIndex: 1,
+      count: totalVisits,
+      conversionFromPreviousPct: null, // First stage baseline
+      overallConversionFromLandingPct: 100,
+    },
+    {
+      stageName: 'LANDING' as const,
+      stageIndex: 2,
+      count: totalLandingSessions,
+      conversionFromPreviousPct: totalVisits > 0 ? Number(((totalLandingSessions / totalVisits) * 100).toFixed(1)) : 0,
+      overallConversionFromLandingPct: 100, // Baseline for landing sessions
+    },
+    {
+      stageName: 'SIGNUP' as const,
+      stageIndex: 3,
+      count: totalSignups,
+      conversionFromPreviousPct: totalLandingSessions > 0 ? Number(((totalSignups / totalLandingSessions) * 100).toFixed(1)) : 0,
+      overallConversionFromLandingPct: totalLandingSessions > 0 ? Number(((totalSignups / totalLandingSessions) * 100).toFixed(1)) : 0,
+    },
+    {
+      stageName: 'VERIFIED' as const,
+      stageIndex: 4,
+      count: totalVerified,
+      conversionFromPreviousPct: totalSignups > 0 ? Number(((totalVerified / totalSignups) * 100).toFixed(1)) : 0,
+      overallConversionFromLandingPct: totalLandingSessions > 0 ? Number(((totalVerified / totalLandingSessions) * 100).toFixed(1)) : 0,
+    },
+    {
+      stageName: 'ACTIVATED' as const,
+      stageIndex: 5,
+      count: totalActivated,
+      conversionFromPreviousPct: totalVerified > 0 ? Number(((totalActivated / totalVerified) * 100).toFixed(1)) : 0,
+      overallConversionFromLandingPct: totalLandingSessions > 0 ? Number(((totalActivated / totalLandingSessions) * 100).toFixed(1)) : 0,
+    },
+    {
+      stageName: 'CUSTOMER' as const,
+      stageIndex: 6,
+      count: totalCustomers,
+      conversionFromPreviousPct: totalActivated > 0 ? Number(((totalCustomers / totalActivated) * 100).toFixed(1)) : 0,
+      overallConversionFromLandingPct: totalLandingSessions > 0 ? Number(((totalCustomers / totalLandingSessions) * 100).toFixed(2)) : 0,
+    },
+  ];
 
   return {
     crawlSignals: 2480,
     referralVisits: totalVisits,
-    uniqueSessions: Math.round(totalVisits * 0.88),
+    uniqueSessions: totalLandingSessions,
     platformBreakdown,
     topLandingPages,
+    funnelStages,
     assistedConversions: Math.round(totalSignups * 1.35),
     directConversions: totalSignups,
-    signupRate: Number(((totalSignups / totalVisits) * 100).toFixed(1)),
-    activationRate: Number(((totalLeads / totalSignups) * 100).toFixed(1)),
-    leadRate: Number(((totalLeads / totalVisits) * 100).toFixed(1)),
-    customerRate: Number(((totalCustomers / totalVisits) * 100).toFixed(1)),
-    revenue: totalRevenue,
+    signupFromLandingRatePct: totalLandingSessions > 0 ? Number(((totalSignups / totalLandingSessions) * 100).toFixed(1)) : 0,
+    verifiedFromSignupRatePct: totalSignups > 0 ? Number(((totalVerified / totalSignups) * 100).toFixed(1)) : 0,
+    activatedFromVerifiedRatePct: totalVerified > 0 ? Number(((totalActivated / totalVerified) * 100).toFixed(1)) : 0,
+    customerFromActivatedRatePct: totalActivated > 0 ? Number(((totalCustomers / totalActivated) * 100).toFixed(1)) : 0,
+    overallLandingToCustomerRatePct: totalLandingSessions > 0 ? Number(((totalCustomers / totalLandingSessions) * 100).toFixed(2)) : 0,
+    revenueStatus: 'OBSERVED',
+    revenueUsd: totalRevenue,
   };
 }

@@ -1,6 +1,8 @@
 // src/lib/ai-discovery/types.ts
 // Authoritative Data Contracts for AI Engine Discovery & Generative Engine Optimization (AEO/GEO)
 
+export type MetricStatus = 'OBSERVED' | 'ESTIMATED' | 'INSUFFICIENT_DATA';
+
 export type AiPlatform = 
   | 'CHATGPT' 
   | 'GEMINI' 
@@ -10,19 +12,48 @@ export type AiPlatform =
   | 'OTHER_AI' 
   | 'UNKNOWN';
 
-export type DiscoveryTelemetryState = 
-  | 'CRAWLABLE' 
+/**
+ * 1. Technical Discovery Lifecycle State Machine (Search & Crawl Indexing)
+ * Strictly separates crawler/indexing presence from commercial acquisition:
+ * CRAWLED != DISCOVERED != INDEXED != SURFACED != AI_REFERRAL != CONVERTED
+ */
+export type DiscoveryLifecycleState = 
+  | 'CRAWLED' 
   | 'DISCOVERED' 
   | 'INDEXED' 
+  | 'ELIGIBLE_FOR_SEARCH' 
   | 'SURFACED' 
-  | 'AI_REFERRAL' 
+  | 'AI_REFERRAL_OBSERVED' 
+  | 'CONVERTED';
+
+/**
+ * 2. Commercial Acquisition Funnel State Machine (Conversion Tracking)
+ * Strictly decoupled from the crawler discovery lifecycle.
+ */
+export type AcquisitionFunnelStage = 
+  | 'REFERRAL' 
+  | 'LANDING' 
   | 'SIGNUP' 
+  | 'VERIFIED' 
+  | 'ACTIVATED' 
   | 'CUSTOMER';
 
 /**
+ * Dynamic Funnel Stage Metric.
+ * Decouples stage-to-stage step conversion (Ci / Ci-1) from overall conversion (Cfinal / Clanding).
+ * Never mixes denominators.
+ */
+export interface DynamicFunnelStage {
+  stageName: AcquisitionFunnelStage;
+  stageIndex: number;
+  count: number;
+  conversionFromPreviousPct: number | null; // e.g. Signup -> Verified
+  overallConversionFromLandingPct: number;  // e.g. Stage -> Landing
+}
+
+/**
  * Immutable Discovery Evidence Ledger Record.
- * Strictly separates distinct empirical observation states:
- * Crawlable != Discovered != Indexed != Surfaced != AI_Referral != Customer
+ * Immutably logs verified empirical observations.
  */
 export interface DiscoveryEvidenceRecord {
   id: string;
@@ -68,11 +99,15 @@ export interface AiDiscoveryMetrics {
   uniqueSessions: number;
   platformBreakdown: Record<AiPlatform, PlatformPerformanceBreakdown>;
   topLandingPages: AiDiscoveredLandingPage[];
+  funnelStages: DynamicFunnelStage[];
   assistedConversions: number;
   directConversions: number;
-  signupRate: number; // percentage
-  activationRate: number; // percentage
-  leadRate: number; // percentage
-  customerRate: number; // percentage
-  revenue: number; // currency amount in USD / converted
+  // Rigorous decoupled rates:
+  signupFromLandingRatePct: number;
+  verifiedFromSignupRatePct: number;
+  activatedFromVerifiedRatePct: number;
+  customerFromActivatedRatePct: number;
+  overallLandingToCustomerRatePct: number;
+  revenueStatus: MetricStatus;
+  revenueUsd: number;
 }

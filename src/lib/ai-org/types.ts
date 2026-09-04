@@ -173,6 +173,18 @@ export interface DailyOperatingPlan {
     proposedAction: string;
     delegatedAgentId: AgentId;
     impactScore: number;
+    decision?: 'EXECUTE' | 'EXPERIMENT' | 'NO_ACTION' | 'REVIEW';
+    executionPolicy?: 'AUTO' | 'REVIEW' | 'BLOCKED';
+    why?: {
+      fact: string;
+      signal: string;
+      inference: string;
+      action?: string;
+      evidenceCount: number;
+      observedConversion: string;
+      projectedValue: string;
+      confidence: 'HIGH' | 'MEDIUM' | 'LOW';
+    };
   }>;
   overallTargetNotes: string;
   regionalPlans?: Record<string, RegionalMarketPlan>;

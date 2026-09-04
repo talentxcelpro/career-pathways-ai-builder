@@ -153,6 +153,16 @@ import {
   DISCOVERY_EVIDENCE_LEDGER, 
   getAiDiscoveryObservatoryData 
 } from '../src/lib/ai-discovery/aiReferralTracker.js';
+import { 
+  ACQUISITION_EVIDENCE_LEDGER, 
+  queryAcquisitionLedger 
+} from '../src/lib/acquisition-os/acquisitionEvidenceLedger.js';
+import { 
+  resolveNext10kUsersRoadmap, 
+  resolveTopEmployerProspects, 
+  computeMarketUnitEconomics, 
+  ACTIVE_GROWTH_EXPERIMENTS 
+} from '../src/lib/acquisition-os/acquisitionIntelligenceEngine.js';
 
 const SUPABASE_URL = 'https://dthlgsnakhoftinssokm.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
@@ -2687,6 +2697,158 @@ async function runSeoCiGate() {
       copilotDetected === 'COPILOT' &&
       unknownDetected === 'UNKNOWN',
       'Validated high-precision AI engine detection across all 5 major platforms with strict UNKNOWN fallback (zero false assumptions)'
+    );
+
+    // =========================================================================
+    // SECTION 23: AUDITING ACQUISITION INTELLIGENCE & REVENUE OPTIMIZATION (ARCHITECTURE v1.0)
+    // =========================================================================
+    console.log('\n--- Auditing Section 23: Acquisition Intelligence & Revenue Optimization Engine ---');
+
+    // 23.1 Invariant: Fact vs Inference Separation in Acquisition Evidence Ledger
+    const ledgerValid = 
+      ACQUISITION_EVIDENCE_LEDGER.length >= 4 &&
+      ACQUISITION_EVIDENCE_LEDGER.every(rec => 
+        Boolean(rec.fact) &&
+        Boolean(rec.signal) &&
+        Boolean(rec.inference) &&
+        Boolean(rec.action) &&
+        rec.evidenceHash.startsWith('ev_hash_') &&
+        ['VERIFIED', 'HIGH', 'MEDIUM', 'LOW'].includes(rec.sourceReliability) &&
+        ['OBSERVED', 'ESTIMATED', 'INSUFFICIENT_DATA'].includes(rec.demand.status) &&
+        ['HIGH', 'MEDIUM', 'LOW', 'UNKNOWN'].includes(rec.commercialPropensity)
+      );
+    record(
+      'Acquisition_Intelligence_OS',
+      'Fact vs Inference Separation in Acquisition Evidence Ledger',
+      ledgerValid,
+      `Validated ${ACQUISITION_EVIDENCE_LEDGER.length} evidence records with strict 4-tier reasoning (fact->signal->inference->action) and deterministic hashing`
+    );
+
+    // 23.2 Invariant: Dynamic Funnel Math Invariant (Decoupled Stage-to-Stage Conversion)
+    const observatoryData = getAiDiscoveryObservatoryData();
+    const hasSixStages = observatoryData.funnelStages.length === 6;
+    const stage1 = observatoryData.funnelStages[0];
+    const stage2 = observatoryData.funnelStages[1];
+    const stage3 = observatoryData.funnelStages[2];
+    const stage4 = observatoryData.funnelStages[3];
+    const stage5 = observatoryData.funnelStages[4];
+    const stage6 = observatoryData.funnelStages[5];
+
+    // Verify step calculation: Ci / Ci-1
+    const stage2StepExpected = Number(((stage2.count / stage1.count) * 100).toFixed(1));
+    const stage3StepExpected = Number(((stage3.count / stage2.count) * 100).toFixed(1));
+    const stage4StepExpected = Number(((stage4.count / stage3.count) * 100).toFixed(1));
+    const stage5StepExpected = Number(((stage5.count / stage4.count) * 100).toFixed(1));
+    const stage6StepExpected = Number(((stage6.count / stage5.count) * 100).toFixed(1));
+
+    // Verify overall conversion from landing: Ci / C_landing
+    const overallFromLandingCustomerExpected = Number(((stage6.count / stage2.count) * 100).toFixed(2));
+
+    const funnelMathValid = 
+      hasSixStages &&
+      stage1.conversionFromPreviousPct === null &&
+      stage2.conversionFromPreviousPct === stage2StepExpected &&
+      stage3.conversionFromPreviousPct === stage3StepExpected &&
+      stage4.conversionFromPreviousPct === stage4StepExpected &&
+      stage5.conversionFromPreviousPct === stage5StepExpected &&
+      stage6.conversionFromPreviousPct === stage6StepExpected &&
+      stage6.overallConversionFromLandingPct === overallFromLandingCustomerExpected &&
+      stage3.overallConversionFromLandingPct !== null;
+    record(
+      'Acquisition_Intelligence_OS',
+      'Dynamic Funnel Math Invariant (Decoupled Stage-to-Stage Conversion)',
+      funnelMathValid,
+      `Validated decoupled stage-to-stage mathematics (${stage3.conversionFromPreviousPct}% signup, ${stage6.conversionFromPreviousPct}% customer) with zero mixed denominators`
+    );
+
+    // 23.3 Invariant: Strict Unit Economics Invariant (Zero Manufactured CAC)
+    const economics = computeMarketUnitEconomics();
+    const uaeEcon = economics.find(e => e.market === 'UAE');
+    const indiaEcon = economics.find(e => e.market === 'INDIA');
+    const europeEcon = economics.find(e => e.market === 'EUROPE');
+    const zeroManufacturedCac = 
+      uaeEcon?.cacValueUsd === null &&
+      uaeEcon?.cacStatus === 'INSUFFICIENT_DATA' &&
+      uaeEcon?.ltvToCacRatio === null &&
+      uaeEcon?.ratioStatus === 'INSUFFICIENT_DATA' &&
+      europeEcon?.ltvValueUsd === null &&
+      europeEcon?.ltvStatus === 'INSUFFICIENT_DATA' &&
+      indiaEcon?.cacStatus === 'OBSERVED' &&
+      (indiaEcon?.cacValueUsd ?? 0) > 0;
+    record(
+      'Acquisition_Intelligence_OS',
+      'Strict Unit Economics Invariant (Zero Manufactured CAC)',
+      zeroManufacturedCac,
+      'Validated that missing marketing spend strictly yields INSUFFICIENT_DATA rather than manufactured $0 CAC'
+    );
+
+    // 23.4 Invariant: Multi-Channel Capacity Model for Next 10K Users Roadmap
+    const roadmap10k = resolveNext10kUsersRoadmap();
+    const sumChannelCapacities = roadmap10k.channelCapacities.reduce((acc, c) => acc + c.monthlyCapacity, 0);
+    const sumSharePcts = roadmap10k.channelCapacities.reduce((acc, c) => acc + c.sharePct, 0);
+    const roadmapValid = 
+      roadmap10k.targetUsers === 10000 &&
+      roadmap10k.totalMonthlyRunRate === sumChannelCapacities &&
+      roadmap10k.projectedMonthsToTarget === Math.ceil(10000 / roadmap10k.totalMonthlyRunRate) &&
+      Math.abs(sumSharePcts - 100) < 1.0 &&
+      roadmap10k.channelCapacities.some(c => c.channel.includes('Organic Search')) &&
+      roadmap10k.channelCapacities.some(c => c.channel.includes('AI Search Referrals')) &&
+      roadmap10k.topClusters.length >= 5;
+    record(
+      'Acquisition_Intelligence_OS',
+      'Multi-Channel Capacity Model for Next 10K Users Roadmap',
+      roadmapValid,
+      `Validated 10k roadmap: Run-rate ${roadmap10k.totalMonthlyRunRate}/mo across ${roadmap10k.channelCapacities.length} channels (${roadmap10k.projectedMonthsToTarget} mos to target)`
+    );
+
+    // 23.5 Invariant: Dynamic Top Employers Prioritization (Weighted Dynamic Scoring)
+    const topUaeProspects = resolveTopEmployerProspects({ market: 'UAE', limit: 10 });
+    const topGlobalProspects = resolveTopEmployerProspects({ limit: 500 });
+    const dynamicScoringValid = 
+      topUaeProspects.length > 0 &&
+      topUaeProspects.every(p => p.market === 'UAE' && p.compositeRankScore >= 0 && p.compositeRankScore <= 100) &&
+      topGlobalProspects.length >= topUaeProspects.length &&
+      topGlobalProspects[0].compositeRankScore >= topGlobalProspects[topGlobalProspects.length - 1].compositeRankScore;
+    record(
+      'Acquisition_Intelligence_OS',
+      'Dynamic Top Employers Prioritization (Weighted Dynamic Scoring)',
+      dynamicScoringValid,
+      `Validated dynamic ranking: Top prospect ${topGlobalProspects[0]?.companyName} (Score: ${topGlobalProspects[0]?.compositeRankScore}/100, Propensity: ${topGlobalProspects[0]?.commercialPropensity})`
+    );
+
+    // 23.6 Invariant: AI CEO NO_ACTION Decision & "Why?" Audit Invariant
+    const aiCeoPlan = await runExecutiveDirectorCycle();
+    const hasBlockedOrNoAction = aiCeoPlan.priorities.some(p => 
+      p.decision === 'NO_ACTION' && p.executionPolicy === 'BLOCKED'
+    );
+    const allHaveWhyCognitiveReasoning = aiCeoPlan.priorities.every(p => 
+      Boolean(p.why) &&
+      Boolean(p.why.fact) &&
+      Boolean(p.why.signal) &&
+      Boolean(p.why.inference) &&
+      Boolean(p.why.action)
+    );
+    record(
+      'Acquisition_Intelligence_OS',
+      'AI CEO NO_ACTION Decision & "Why?" Audit Invariant',
+      hasBlockedOrNoAction && allHaveWhyCognitiveReasoning,
+      'Validated AI CEO anti-doorway NO_ACTION policy enforcement and 4-tier "Why?" reasoning audit across all priorities'
+    );
+
+    // 23.7 Invariant: Evidence-to-Execution Boundary (Unverified Inferences Blocked)
+    const blockedExecutionResult = await executeAgentAction({
+      agentId: 'SEO_OPPORTUNITY',
+      actionType: 'PUBLISH_PAGE',
+      targetSurface: 'Trichy Aerospace Welder Doorway',
+      telemetryTrigger: 'Zero inventory thin page attempt',
+      payload: { query: 'aerospace welder jobs trichy', inventory: 0 },
+      executeFn: async () => ({ published: true }),
+    });
+    record(
+      'Acquisition_Intelligence_OS',
+      'Evidence-to-Execution Boundary (Unverified Inferences Blocked)',
+      blockedExecutionResult.status === 'PENDING_REVIEW' || blockedExecutionResult.status === 'BLOCKED_PERMISSION',
+      'Verified that unapproved/review policies are halted at the Execution Gateway and cannot perform autonomous mutations'
     );
   } catch (err: any) {
     record('Admin_Security', 'Admin Security Engine Execution', false, `Security test error: ${err.message}`, { severity: 'CRITICAL' });
