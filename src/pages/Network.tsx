@@ -115,19 +115,19 @@ const Network: React.FC = () => {
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3 space-y-2.5">
 
         {/* ============================================================================ */}
-        {/* 1. SUB-NAVIGATION PILL TAB BAR (EXACT MATCH TO USER MOCKUP) */}
+        {/* 1. SUB-NAVIGATION PILL TAB BAR (COMPACT PADDING & MARGINS) */}
         {/* ============================================================================ */}
         <Tabs defaultValue="feed" className="w-full">
           
-          <div className="bg-white/80 dark:bg-card backdrop-blur-md rounded-2xl border border-slate-200/80 dark:border-border/60 p-1.5 shadow-sm mb-6 overflow-x-auto no-scrollbar">
-            <TabsList className="flex items-center gap-1.5 bg-transparent h-auto p-0">
+          <div className="bg-white/80 dark:bg-card backdrop-blur-md rounded-xl border border-slate-200/80 dark:border-border/60 p-1 shadow-xs mb-2.5 overflow-x-auto no-scrollbar">
+            <TabsList className="flex items-center gap-1 bg-transparent h-auto p-0">
               
               <TabsTrigger 
                 value="feed" 
-                className="rounded-xl px-4 py-2 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
+                className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-xs text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
               >
                 <MessageSquare className="w-3.5 h-3.5" />
                 <span>Feed</span>
@@ -135,7 +135,7 @@ const Network: React.FC = () => {
 
               <TabsTrigger 
                 value="smart-feed" 
-                className="rounded-xl px-4 py-2 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
+                className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-xs text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
               >
                 <Sparkles className="w-3.5 h-3.5 text-purple-500 data-[state=active]:text-white" />
                 <span>Smart Feed</span>
@@ -143,7 +143,7 @@ const Network: React.FC = () => {
 
               <button
                 onClick={() => navigate('/gamification')}
-                className="rounded-xl px-4 py-2 text-xs font-bold transition-colors text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-muted flex items-center gap-1.5"
+                className="rounded-lg px-3 py-1.5 text-xs font-bold transition-colors text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-muted flex items-center gap-1.5"
               >
                 <Trophy className="w-3.5 h-3.5 text-amber-500" />
                 <span>Gamification</span>
@@ -151,7 +151,7 @@ const Network: React.FC = () => {
 
               <button
                 onClick={() => navigate('/refer-and-earn')}
-                className="rounded-xl px-4 py-2 text-xs font-bold transition-colors text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-muted flex items-center gap-1.5"
+                className="rounded-lg px-3 py-1.5 text-xs font-bold transition-colors text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-muted flex items-center gap-1.5"
               >
                 <Gift className="w-3.5 h-3.5 text-pink-500" />
                 <span>Refer &amp; Earn</span>
@@ -159,7 +159,7 @@ const Network: React.FC = () => {
 
               <TabsTrigger 
                 value="connections" 
-                className="rounded-xl px-4 py-2 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
+                className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-xs text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
               >
                 <Users className="w-3.5 h-3.5 text-blue-500 data-[state=active]:text-white" />
                 <span>Connections</span>
@@ -167,7 +167,7 @@ const Network: React.FC = () => {
 
               <TabsTrigger 
                 value="discover" 
-                className="rounded-xl px-4 py-2 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
+                className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-xs text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
               >
                 <UserPlus className="w-3.5 h-3.5 text-emerald-500 data-[state=active]:text-white" />
                 <span>Discover</span>
@@ -175,7 +175,7 @@ const Network: React.FC = () => {
 
               <TabsTrigger 
                 value="analytics" 
-                className="rounded-xl px-4 py-2 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
+                className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-xs text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
               >
                 <TrendingUp className="w-3.5 h-3.5 text-indigo-500 data-[state=active]:text-white" />
                 <span>Analytics</span>
@@ -183,7 +183,7 @@ const Network: React.FC = () => {
 
               <TabsTrigger 
                 value="ai-connect" 
-                className="rounded-xl px-4 py-2 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
+                className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-xs text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
               >
                 <Sparkles className="w-3.5 h-3.5 text-cyan-500 data-[state=active]:text-white" />
                 <span>AI Connect</span>
@@ -196,27 +196,27 @@ const Network: React.FC = () => {
           {/* TAB CONTENT: FEED (MAIN 3-COLUMN LAYOUT MATCHING MOCKUP 1:1) */}
           {/* ============================================================================ */}
           <TabsContent value="feed" className="mt-0">
-            <div className="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-3 sm:gap-3.5">
 
               {/* LEFT COLUMN: PROFILE CARD + NAVIGATION MENU */}
-              <div className="md:col-span-4 lg:col-span-3 space-y-6">
+              <div className="md:col-span-4 lg:col-span-3 space-y-3">
                 <LinkedInStyleBanner profile={user?.user_metadata} isOwnProfile={true} />
               </div>
 
               {/* MIDDLE COLUMN: GLOBAL SEARCH, ENHANCED CREATE POST & FEED */}
-              <div className="md:col-span-8 lg:col-span-6 space-y-3.5">
+              <div className="md:col-span-8 lg:col-span-6 space-y-2.5">
                 
                 {/* 1. Global Search Bar matching mockup */}
-                <div className="relative bg-white dark:bg-card border border-slate-200/80 dark:border-border/60 rounded-2xl p-1.5 shadow-xs flex items-center gap-2.5">
+                <div className="relative bg-white dark:bg-card border border-slate-200/80 dark:border-border/60 rounded-xl p-1 shadow-xs flex items-center gap-2">
                   <Search className="h-3.5 w-3.5 text-muted-foreground ml-2 shrink-0" />
                   <Input
                     placeholder="Search posts, people, companies, jobs, hashtags..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="border-0 bg-transparent text-xs font-semibold placeholder:text-muted-foreground focus-visible:ring-0 h-7"
+                    className="border-0 bg-transparent text-xs font-semibold placeholder:text-muted-foreground focus-visible:ring-0 h-6.5"
                   />
-                  <Button variant="ghost" size="sm" className="rounded-xl h-7 w-7 p-0 text-muted-foreground hover:text-foreground shrink-0">
-                    <SlidersHorizontal className="h-3.5 w-3.5" />
+                  <Button variant="ghost" size="sm" className="rounded-lg h-6.5 w-6.5 p-0 text-muted-foreground hover:text-foreground shrink-0">
+                    <SlidersHorizontal className="h-3 w-3" />
                   </Button>
                 </div>
 
@@ -225,32 +225,32 @@ const Network: React.FC = () => {
 
                 {/* 3. Feed Controls Bar matching mockup */}
                 <div className="flex items-center justify-between pt-0.5">
-                  <div className="flex items-center gap-1 text-xs font-bold text-slate-700 dark:text-slate-300 bg-white dark:bg-card px-2.5 py-1 rounded-xl border border-slate-200/80 dark:border-border/60 shadow-xs cursor-pointer">
+                  <div className="flex items-center gap-1 text-xs font-bold text-slate-700 dark:text-slate-300 bg-white dark:bg-card px-2.5 py-1 rounded-lg border border-slate-200/80 dark:border-border/60 shadow-xs cursor-pointer">
                     <span>All Posts</span>
                     <ChevronDown className="h-3 w-3 text-muted-foreground" />
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1 text-xs font-bold text-slate-700 dark:text-slate-300 bg-white dark:bg-card px-3 py-1.5 rounded-2xl border border-slate-200/80 dark:border-border/60 shadow-sm cursor-pointer">
+                  <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-1 text-xs font-bold text-slate-700 dark:text-slate-300 bg-white dark:bg-card px-2.5 py-1 rounded-lg border border-slate-200/80 dark:border-border/60 shadow-xs cursor-pointer">
                       <span>Latest</span>
-                      <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                      <ChevronDown className="h-3 w-3 text-muted-foreground" />
                     </div>
 
                     <Button 
                       variant="outline" 
                       size="sm" 
                       onClick={() => window.location.reload()} 
-                      className="rounded-2xl h-8 w-8 p-0 border-slate-200/80 dark:border-border/60 bg-white dark:bg-card shadow-sm"
+                      className="rounded-lg h-7 w-7 p-0 border-slate-200/80 dark:border-border/60 bg-white dark:bg-card shadow-xs"
                     >
-                      <RotateCw className="h-3.5 w-3.5 text-slate-600 dark:text-slate-300" />
+                      <RotateCw className="h-3 w-3 text-slate-600 dark:text-slate-300" />
                     </Button>
                   </div>
                 </div>
 
                 {/* 4. Posts Feed */}
                 <React.Suspense fallback={
-                  <div className="flex items-center justify-center p-12">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+                  <div className="flex items-center justify-center p-8">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
                   </div>
                 }>
                   <Posts feedType="all" />
@@ -259,7 +259,7 @@ const Network: React.FC = () => {
               </div>
 
               {/* RIGHT COLUMN: PRO SPONSORED CARDS & PEOPLE YOU MAY KNOW */}
-              <div className="md:col-span-12 lg:col-span-3 space-y-6">
+              <div className="md:col-span-12 lg:col-span-3 space-y-3">
                 <AdvertisingSidebar />
               </div>
 
@@ -268,14 +268,14 @@ const Network: React.FC = () => {
 
           {/* TAB CONTENT: SMART FEED */}
           <TabsContent value="smart-feed" className="mt-0">
-            <div className="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-6">
-              <div className="md:col-span-4 lg:col-span-3">
+            <div className="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-3 sm:gap-3.5">
+              <div className="md:col-span-4 lg:col-span-3 space-y-3">
                 <LinkedInStyleBanner profile={user?.user_metadata} isOwnProfile={true} />
               </div>
-              <div className="md:col-span-8 lg:col-span-6 space-y-6">
+              <div className="md:col-span-8 lg:col-span-6 space-y-2.5">
                 <Posts feedType="connections" />
               </div>
-              <div className="md:col-span-12 lg:col-span-3">
+              <div className="md:col-span-12 lg:col-span-3 space-y-3">
                 <AdvertisingSidebar />
               </div>
             </div>
