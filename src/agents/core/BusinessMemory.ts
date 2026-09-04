@@ -27,7 +27,6 @@ export class BusinessMemory {
         jobsTodayRes,
         claim1EntitiesRes,
         claim1ListingsRes,
-        revenueRes,
         todayEventsRes,
       ] = await Promise.all([
         supabase.from('profiles').select('id', { count: 'exact', head: true }),
@@ -43,6 +42,11 @@ export class BusinessMemory {
       const activeBids = (claim1ListingsRes.data as any[] || []).filter(
         (l) => (l.bid_count || 0) > 0 || (l.current_bid_amount || 0) > 0
       ).length;
+
+      const totalRev = (claim1ListingsRes.data as any[] || []).reduce(
+        (sum, l) => sum + (Number(l.current_bid_amount) || 0), 0
+      );
+      const revToday = 0;
 
       const events = (todayEventsRes?.data as any[]) || [];
       const successfulActions = events.filter((e) => e.metadata?.success !== false).length;

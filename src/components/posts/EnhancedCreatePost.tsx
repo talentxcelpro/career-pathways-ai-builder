@@ -159,6 +159,17 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
     }
   };
 
+  // Dedicated input onChange event handlers
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleFilesSelected(e.target.files, 'image');
+    e.target.value = '';
+  };
+
+  const handleVideoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleFilesSelected(e.target.files, 'video');
+    e.target.value = '';
+  };
+
   // Drag & Drop Handlers
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -964,6 +975,9 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
 
       </div>
 
+      {/* Hidden file inputs for expanded card */}
+      <input type="file" ref={fileInputRef} onChange={handleFileSelect} accept="image/*" multiple className="hidden" />
+      <input type="file" ref={videoInputRef} onChange={handleVideoSelect} accept="video/*" className="hidden" />
     </Card>
   );
 };

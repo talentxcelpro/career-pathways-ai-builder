@@ -49,6 +49,10 @@ class BusinessMemoryGraph {
         (l) => (l.bid_count || 0) > 0 || (l.current_bid_amount || 0) > 0
       ).length;
 
+      const totalRev = (claim1ListingsRes.data as any[] || []).reduce(
+        (sum, l) => sum + (Number(l.current_bid_amount) || 0), 0
+      );
+
       this.cache = {
         timestamp: new Date().toISOString(),
         usersCount: profilesRes.count || 1284,
