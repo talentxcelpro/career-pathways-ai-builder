@@ -153,6 +153,7 @@ export const ArticleCreateForm: React.FC<ArticleCreateFormProps> = ({
           featured_image_url: featuredImage,
           status: submitStatus,
           author_id: user?.id,
+          user_id: user?.id,
           is_public: submitStatus === 'published'
         })
         .select()

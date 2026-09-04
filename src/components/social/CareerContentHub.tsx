@@ -12,6 +12,9 @@ import { BookOpen, Clock, Eye, Star, TrendingUp, Users, Search, Sparkles, Plus, 
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useDropzone } from 'react-dropzone';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { FOUNDATION_NEWS_ARTICLES } from '@/data/newsArticles';
 import talentxcelLogo from "@/assets/talentxcel-logo.png";
 
 interface Article {
@@ -42,6 +45,8 @@ const categoryColors = {
 };
 
 export function CareerContentHub() {
+  const navigate = useNavigate();
+  const { user: authUser } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [articles, setArticles] = useState<Article[]>([]);
@@ -65,10 +70,90 @@ export function CareerContentHub() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
 
-  useEffect(() => {
-    fetchArticles();
-    getCurrentUser();
-  }, []);
+  const getFallbackArticles = (): Article[] => {
+    return (FOUNDATION_NEWS_ARTICLES || []).slice(0, 8).map((a: any) => ({
+      id: a.id,
+      title: a.title,
+      slug: a.slug || a.id,
+      category: a.category || "Career Advice",
+      tags: Array.isArray(a.keyTakeaways) ? a.keyTakeaways.slice(0, 3) : ["Career", "AI", "Leadership"],
+      summary: a.summary || "",
+      content: a.sections?.map((s: any) => `## ${s.heading}\n\n${s.body}`).join('\n\n') || a.summary || "",
+      author_name: a.author?.name || "TalentXcel Research",
+      read_time: `${a.readingTimeMinutes || 5} min read`,
+      views: 1250,
+      is_featured: !!a.isFeatured,
+      featured_image_url: a.imageUrl || undefined,
+      created_at: a.publishedAt || new Date().toISOString()
+    }));
+  };
+
+  const mapPostToArticle = (post: any, profilesMap: Map<string, any>): Article => {
+    const author = profilesMap.get(post.author_id);
+    const words = (post.content || '').trim().split(/\s+/).filter(Boolean).length;
+    const readTimeMinutes = post.reading_time || Math.max(1, Math.ceil(words / 200));
+
+    return {
+      id: post.id,
+      title: post.headline || 'Untitled Article',
+      slug: post.id,
+      category: post.article_category || 'Career Advice',
+      tags: Array.isArray(post.tags) ? post.tags : [],
+      summary: post.tagline || (post.content ? post.content.substring(0, 160).replace(/[#*`\n]/g, ' ').trim() + '...' : ''),
+      content: post.content || '',
+      author_name: author?.full_name || 'TalentXcel Member',
+      read_time: `${readTimeMinutes} min read`,
+      views: post.views_count || 0,
+      is_featured: !!post.is_featured,
+      featured_image_url: post.featured_image_url || undefined,
+      created_at: post.created_at || new Date().toISOString()
+    };
+  };
+
+  const fetchArticles = async () => {
+    try {
+      setLoading(true);
+      const { data: postsData, error } = await supabase
+        .from('posts')
+        .select('*')
+        .eq('post_type', 'article')
+        .eq('status', 'published')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      if (!postsData || postsData.length === 0) {
+        setArticles(getFallbackArticles());
+        return;
+      }
+
+      const authorIds = [...new Set(postsData.map(p => p.author_id).filter(Boolean))];
+      let profilesMap = new Map();
+      if (authorIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name, profile_picture_url')
+          .in('id', authorIds);
+        if (profiles) {
+          profilesMap = new Map(profiles.map(p => [p.id, p]));
+        }
+      }
+
+      const dbArticles = postsData.map(p => mapPostToArticle(p, profilesMap));
+      if (dbArticles.length < 4) {
+        const existingIds = new Set(dbArticles.map(a => a.id));
+        const fallbacks = getFallbackArticles().filter(a => !existingIds.has(a.id));
+        setArticles([...dbArticles, ...fallbacks]);
+      } else {
+        setArticles(dbArticles);
+      }
+    } catch (error) {
+      console.error('Error fetching articles:', error);
+      setArticles(getFallbackArticles());
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getCurrentUser = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -81,6 +166,23 @@ export function CareerContentHub() {
       setCurrentUser({ ...user, profile });
     }
   };
+
+  useEffect(() => {
+    fetchArticles();
+    getCurrentUser();
+
+    // Live sync for articles feed
+    const channel = supabase
+      .channel('career-articles-live-feed')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => {
+        fetchArticles();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   const onDrop = (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -100,36 +202,39 @@ export function CareerContentHub() {
       'image/*': ['.jpeg', '.jpg', '.png', '.webp']
     },
     maxFiles: 1,
-    maxSize: 5 * 1024 * 1024 // 5MB
+    maxSize: 5 * 1024 * 1024
   });
 
   const uploadImage = async (): Promise<string | null> => {
-    if (!selectedImage || !currentUser) return null;
+    if (!selectedImage) return imagePreview;
 
     try {
       setUploadingImage(true);
-      const fileExt = selectedImage.name.split('.').pop();
-      const fileName = `${currentUser.id}/${Date.now()}.${fileExt}`;
+      const user = authUser || currentUser || (await supabase.auth.getUser()).data.user;
+      const userId = user?.id || 'public';
+      const fileExt = selectedImage.name.split('.').pop() || 'png';
+      const fileName = `${userId}/${Date.now()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
-        .from('article-images')
-        .upload(fileName, selectedImage);
+        .from('post-media')
+        .upload(fileName, selectedImage, {
+          cacheControl: '3600',
+          upsert: true
+        });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.warn('Image upload to storage error, using image preview:', uploadError);
+        return imagePreview;
+      }
 
       const { data } = supabase.storage
-        .from('article-images')
+        .from('post-media')
         .getPublicUrl(fileName);
 
-      return data.publicUrl;
+      return data?.publicUrl || imagePreview;
     } catch (error) {
-      console.error('Error uploading image:', error);
-      toast({
-        title: "Upload Failed",
-        description: "Failed to upload image. Please try again.",
-        variant: "destructive"
-      });
-      return null;
+      console.warn('Image upload exception, using image preview:', error);
+      return imagePreview;
     } finally {
       setUploadingImage(false);
     }
@@ -140,29 +245,6 @@ export function CareerContentHub() {
     setImagePreview(null);
   };
 
-  const fetchArticles = async () => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('career_articles')
-        .select('*')
-        .eq('is_published', true)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setArticles(data || []);
-    } catch (error) {
-      console.error('Error fetching articles:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load articles. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleSearch = async () => {
     if (!searchQuery.trim()) {
       fetchArticles();
@@ -171,15 +253,39 @@ export function CareerContentHub() {
 
     try {
       setLoading(true);
-      const response = await supabase.functions.invoke('ai-career-content', {
-        body: { 
-          action: 'search',
-          searchQuery: searchQuery.trim()
-        }
-      });
+      const query = searchQuery.trim();
+      const { data: postsData, error } = await supabase
+        .from('posts')
+        .select('*')
+        .eq('post_type', 'article')
+        .eq('status', 'published')
+        .or(`headline.ilike.%${query}%,tagline.ilike.%${query}%,content.ilike.%${query}%`)
+        .order('created_at', { ascending: false });
 
-      if (response.error) throw response.error;
-      setArticles(response.data?.data || []);
+      if (error) throw error;
+
+      if (!postsData || postsData.length === 0) {
+        const matched = getFallbackArticles().filter(a =>
+          a.title.toLowerCase().includes(query.toLowerCase()) ||
+          a.summary.toLowerCase().includes(query.toLowerCase())
+        );
+        setArticles(matched);
+        return;
+      }
+
+      const authorIds = [...new Set(postsData.map(p => p.author_id).filter(Boolean))];
+      let profilesMap = new Map();
+      if (authorIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name, profile_picture_url')
+          .in('id', authorIds);
+        if (profiles) {
+          profilesMap = new Map(profiles.map(p => [p.id, p]));
+        }
+      }
+
+      setArticles(postsData.map(p => mapPostToArticle(p, profilesMap)));
     } catch (error) {
       console.error('Error searching articles:', error);
       toast({
@@ -192,84 +298,112 @@ export function CareerContentHub() {
     }
   };
 
+  const handleArticleClick = (articleId: string) => {
+    incrementViews(articleId);
+    navigate(`/network/articles/${articleId}`);
+  };
+
   const incrementViews = async (articleId: string) => {
     try {
-      await supabase.functions.invoke('ai-career-content', {
-        body: { 
-          action: 'increment_views',
-          articleId
-        }
-      });
+      const art = articles.find(a => a.id === articleId);
+      if (art) {
+        await supabase
+          .from('posts')
+          .update({ views_count: (art.views || 0) + 1 } as any)
+          .eq('id', articleId);
+      }
     } catch (error) {
-      console.error('Error incrementing views:', error);
+      // safe fallback
     }
   };
 
   const submitArticle = async () => {
-    if (!currentUser) {
+    let userToUse = authUser || currentUser;
+    if (!userToUse) {
+      const { data: { user } } = await supabase.auth.getUser();
+      userToUse = user;
+    }
+
+    if (!userToUse) {
       toast({
         title: "Authentication Required",
-        description: "Please sign in to submit articles.",
+        description: "Please sign in to publish articles.",
         variant: "destructive"
       });
       return;
     }
 
-    if (!formData.title || !formData.content || !formData.category) {
+    if (!formData.content || !formData.content.trim()) {
       toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields.",
+        title: "Content Required",
+        description: "Please enter article content before publishing.",
         variant: "destructive"
       });
       return;
     }
+
+    // Auto-extract title if user scrolled past title or left it empty
+    let finalTitle = formData.title?.trim();
+    if (!finalTitle) {
+      const lines = formData.content
+        .split('\n')
+        .map(l => l.replace(/^#+\s*/, '').replace(/^---/, '').trim())
+        .filter(l => l.length > 2);
+      finalTitle = lines[0] || "Career Insights & Perspectives";
+    }
+
+    const finalCategory = formData.category || "Career Advice";
 
     try {
       setIsSubmitting(true);
 
-      // Upload image if selected
-      let imageUrl = null;
+      // Upload image if selected or use preview
+      let imageUrl = imagePreview || null;
       if (selectedImage) {
         imageUrl = await uploadImage();
       }
 
-      // Insert article — publish immediately
-      const { data: articleData, error: articleError } = await supabase
-        .from('career_articles')
+      const words = formData.content.trim().split(/\s+/).filter(Boolean).length;
+      const readingTimeMinutes = Math.max(1, Math.ceil(words / 200));
+      const tagsArray = formData.tags
+        ? formData.tags.split(',').map(tag => tag.trim()).filter(Boolean)
+        : [finalCategory.replace(/\s+/g, '')];
+
+      const cleanSummary = formData.summary?.trim() ||
+        formData.content
+          .replace(/^[#\-*\s]+/gm, '')
+          .replace(/\n+/g, ' ')
+          .trim()
+          .substring(0, 160) + '...';
+
+      // Insert article directly into posts table
+      const { data: postData, error: postError } = await supabase
+        .from('posts')
         .insert({
-          title: formData.title,
-          category: formData.category,
-          tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean),
-          summary: formData.summary,
-          content: formData.content,
-          author_name: currentUser.profile?.full_name || 'Anonymous',
-          read_time: `${Math.ceil(formData.content.split(' ').length / 200)} min read`,
+          headline: finalTitle,
+          tagline: cleanSummary,
+          content: formData.content.trim(),
+          post_type: 'article',
+          article_category: finalCategory,
+          tags: tagsArray,
           featured_image_url: imageUrl,
-          is_published: true, // Publish immediately — no admin review needed
+          reading_time: readingTimeMinutes,
+          status: 'published',
+          author_id: userToUse.id,
+          user_id: userToUse.id,
+          is_public: true,
           is_featured: false,
-          views: 0,
-          slug: '' // Will be generated by trigger
+          views_count: 0,
+          likes_count: 0,
+          comments_count: 0,
+          shares_count: 0
         })
         .select()
         .single();
 
-      if (articleError) throw articleError;
-
-      // Create a post in the feed for this shared experience
-      const { error: postError } = await supabase
-        .from('posts')
-        .insert({
-          content: `🎯 Just published: "${formData.title}"\n\n${formData.summary || formData.content.substring(0, 200)}...\n\n#${formData.category.replace(/\s+/g, '')} #CareerAdvice #TalentXcel`,
-          author_id: currentUser.id,
-          image_url: imageUrl,
-          post_type: 'career_article',
-          article_id: articleData.id,
-          status: 'published',
-          is_public: true
-        });
-
       if (postError) {
-        console.error('Error creating feed post:', postError);
+        console.error('Post insertion error:', postError);
+        throw postError;
       }
 
       toast({
@@ -287,11 +421,14 @@ export function CareerContentHub() {
         is_public: true
       });
       removeImage();
-    } catch (error) {
-      console.error('Error submitting article:', error);
+
+      // Refresh articles list immediately
+      await fetchArticles();
+    } catch (error: any) {
+      console.error('Error publishing article:', error);
       toast({
-        title: "Submission Failed",
-        description: "Failed to submit article. Please try again.",
+        title: "Publication Error",
+        description: error?.message || "Failed to publish article. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -585,7 +722,7 @@ export function CareerContentHub() {
                     <Card 
                       key={article.id} 
                       className="hover:shadow-xl transition-all duration-300 cursor-pointer border border-muted/50 hover:border-primary/50 group bg-gradient-to-br from-white to-primary/5 relative overflow-hidden"
-                      onClick={() => incrementViews(article.id)}
+                      onClick={() => handleArticleClick(article.id)}
                     >
                       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-secondary"></div>
                       {article.featured_image_url && (
@@ -681,7 +818,7 @@ export function CareerContentHub() {
                     <Card 
                       key={article.id} 
                       className="hover:shadow-lg transition-all duration-300 cursor-pointer group bg-gradient-to-br from-white to-muted/20 border border-muted/50 hover:border-primary/30"
-                      onClick={() => incrementViews(article.id)}
+                      onClick={() => handleArticleClick(article.id)}
                     >
                       <CardContent className="p-6">
                         <div className="flex items-start gap-4">
