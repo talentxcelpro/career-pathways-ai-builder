@@ -1,0 +1,163 @@
+{
+  "contentId": "cnt-batch-20260905-ai_careers",
+  "campaignId": "camp-jobs-2026",
+  "scheduledDate": "2026-09-05",
+  "scheduledTime": "09:00",
+  "topicTitle": "5 AI Careers You Can Start Without Becoming a Data Scientist",
+  "topicCategory": "AI_CAREERS",
+  "platforms": [
+    "YOUTUBE",
+    "INSTAGRAM",
+    "FACEBOOK",
+    "X"
+  ],
+  "assets": [
+    {
+      "type": "VIDEO",
+      "platform": "YOUTUBE",
+      "relative_path": "youtube/video_9x16.mp4",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-05\\camp-jobs-2026\\cnt-batch-20260905-ai_careers\\youtube\\video_9x16.mp4",
+      "cdn_url": "/social-vault/2026-09-05/camp-jobs-2026/cnt-batch-20260905-ai_careers/youtube/video_9x16.mp4",
+      "mime_type": "video/mp4",
+      "file_size_bytes": 798763,
+      "checksum": "sha256:c7a4bd94ac9a3e2a4e117cae3c4203c3c2bcda994be83549d80da64bb03f5482"
+    },
+    {
+      "type": "THUMBNAIL",
+      "platform": "YOUTUBE",
+      "relative_path": "youtube/thumbnail.svg",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-05\\camp-jobs-2026\\cnt-batch-20260905-ai_careers\\youtube\\thumbnail.svg",
+      "cdn_url": "/social-vault/2026-09-05/camp-jobs-2026/cnt-batch-20260905-ai_careers/youtube/thumbnail.svg",
+      "mime_type": "image/svg+xml",
+      "file_size_bytes": 1827,
+      "checksum": "sha256:23e32437b6eedab82808cfa82bec3548353455433707e91a858cf7a54f7fdb9e"
+    },
+    {
+      "type": "SUBTITLES",
+      "platform": "YOUTUBE",
+      "relative_path": "youtube/captions.vtt",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-05\\camp-jobs-2026\\cnt-batch-20260905-ai_careers\\youtube\\captions.vtt",
+      "cdn_url": "/social-vault/2026-09-05/camp-jobs-2026/cnt-batch-20260905-ai_careers/youtube/captions.vtt",
+      "mime_type": "text/vtt",
+      "file_size_bytes": 913,
+      "checksum": "sha256:ae453f01f747ca7c136a28529a392ae72ef4d7f121bc3ddc92345ecebfdde6b0"
+    },
+    {
+      "type": "AUDIO",
+      "platform": "YOUTUBE",
+      "relative_path": "youtube/narration.wav",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-05\\camp-jobs-2026\\cnt-batch-20260905-ai_careers\\youtube\\narration.wav",
+      "cdn_url": "/social-vault/2026-09-05/camp-jobs-2026/cnt-batch-20260905-ai_careers/youtube/narration.wav",
+      "mime_type": "audio/wav",
+      "file_size_bytes": 4017376,
+      "checksum": "sha256:ba89652c0ed4bb08a79f9bef057b3d409c805d95794129239786540091d03ec7"
+    },
+    {
+      "type": "CAROUSEL_SLIDE",
+      "platform": "INSTAGRAM",
+      "relative_path": "instagram/slide-01.svg",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-05\\camp-jobs-2026\\cnt-batch-20260905-ai_careers\\instagram\\slide-01.svg",
+      "cdn_url": "/social-vault/2026-09-05/camp-jobs-2026/cnt-batch-20260905-ai_careers/instagram/slide-01.svg",
+      "mime_type": "image/svg+xml",
+      "file_size_bytes": 2760,
+      "checksum": "sha256:6be23284389bf9e51d6e5539f06304b0d575c6e09f281a40fd01d80dd46125e6"
+    },
+    {
+      "type": "CAROUSEL_SLIDE",
+      "platform": "INSTAGRAM",
+      "relative_path": "instagram/slide-02.svg",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-05\\camp-jobs-2026\\cnt-batch-20260905-ai_careers\\instagram\\slide-02.svg",
+      "cdn_url": "/social-vault/2026-09-05/camp-jobs-2026/cnt-batch-20260905-ai_careers/instagram/slide-02.svg",
+      "mime_type": "image/svg+xml",
+      "file_size_bytes": 3337,
+      "checksum": "sha256:ffce2a0be700461a7afc93ea73bc495c5357e60f4330875e85c9f634600014fa"
+    },
+    {
+      "type": "CAROUSEL_SLIDE",
+      "platform": "INSTAGRAM",
+      "relative_path": "instagram/slide-03.svg",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-05\\camp-jobs-2026\\cnt-batch-20260905-ai_careers\\instagram\\slide-03.svg",
+      "cdn_url": "/social-vault/2026-09-05/camp-jobs-2026/cnt-batch-20260905-ai_careers/instagram/slide-03.svg",
+      "mime_type": "image/svg+xml",
+      "file_size_bytes": 3333,
+      "checksum": "sha256:d1319e27cb94d62ee69c996e9cfbc401616ed8040e671ae945f85745176506f0"
+    },
+    {
+      "type": "CAROUSEL_SLIDE",
+      "platform": "INSTAGRAM",
+      "relative_path": "instagram/slide-04.svg",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-05\\camp-jobs-2026\\cnt-batch-20260905-ai_careers\\instagram\\slide-04.svg",
+      "cdn_url": "/social-vault/2026-09-05/camp-jobs-2026/cnt-batch-20260905-ai_careers/instagram/slide-04.svg",
+      "mime_type": "image/svg+xml",
+      "file_size_bytes": 3343,
+      "checksum": "sha256:5d4bd66419971831cdf78fb51bd15e06c06b6fcfd9a44c43933770c5ce2dcd33"
+    },
+    {
+      "type": "CAROUSEL_SLIDE",
+      "platform": "INSTAGRAM",
+      "relative_path": "instagram/slide-05.svg",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-05\\camp-jobs-2026\\cnt-batch-20260905-ai_careers\\instagram\\slide-05.svg",
+      "cdn_url": "/social-vault/2026-09-05/camp-jobs-2026/cnt-batch-20260905-ai_careers/instagram/slide-05.svg",
+      "mime_type": "image/svg+xml",
+      "file_size_bytes": 2399,
+      "checksum": "sha256:a01fd4346b15a7e4766ffcb560fec89f975a15b17a911093a69ada097f8e5fbc"
+    },
+    {
+      "type": "COPY",
+      "platform": "INSTAGRAM",
+      "relative_path": "instagram/caption.txt",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-05\\camp-jobs-2026\\cnt-batch-20260905-ai_careers\\instagram\\caption.txt",
+      "cdn_url": "/social-vault/2026-09-05/camp-jobs-2026/cnt-batch-20260905-ai_careers/instagram/caption.txt",
+      "mime_type": "text/plain",
+      "file_size_bytes": 683,
+      "checksum": "sha256:3286aaeef89302bf439793c706fe5767f7c3701debe94540f764ebc93c0868cb"
+    },
+    {
+      "type": "POST_HERO",
+      "platform": "FACEBOOK",
+      "relative_path": "facebook/hero.svg",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-05\\camp-jobs-2026\\cnt-batch-20260905-ai_careers\\facebook\\hero.svg",
+      "cdn_url": "/social-vault/2026-09-05/camp-jobs-2026/cnt-batch-20260905-ai_careers/facebook/hero.svg",
+      "mime_type": "image/svg+xml",
+      "file_size_bytes": 1497,
+      "checksum": "sha256:2e1a59752be686e1ae68c91b171129429fb5efbce21fef5f1884dea80baf1645"
+    },
+    {
+      "type": "COPY",
+      "platform": "FACEBOOK",
+      "relative_path": "facebook/post.txt",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-05\\camp-jobs-2026\\cnt-batch-20260905-ai_careers\\facebook\\post.txt",
+      "cdn_url": "/social-vault/2026-09-05/camp-jobs-2026/cnt-batch-20260905-ai_careers/facebook/post.txt",
+      "mime_type": "text/plain",
+      "file_size_bytes": 820,
+      "checksum": "sha256:686fc6fa84223ecd3d4d9f3f91f686b1795058dd243b663e812168e1aee7641f"
+    },
+    {
+      "type": "POST_HERO",
+      "platform": "X",
+      "relative_path": "x/hero.svg",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-05\\camp-jobs-2026\\cnt-batch-20260905-ai_careers\\x\\hero.svg",
+      "cdn_url": "/social-vault/2026-09-05/camp-jobs-2026/cnt-batch-20260905-ai_careers/x/hero.svg",
+      "mime_type": "image/svg+xml",
+      "file_size_bytes": 1497,
+      "checksum": "sha256:2e1a59752be686e1ae68c91b171129429fb5efbce21fef5f1884dea80baf1645"
+    },
+    {
+      "type": "COPY",
+      "platform": "X",
+      "relative_path": "x/thread.txt",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-05\\camp-jobs-2026\\cnt-batch-20260905-ai_careers\\x\\thread.txt",
+      "cdn_url": "/social-vault/2026-09-05/camp-jobs-2026/cnt-batch-20260905-ai_careers/x/thread.txt",
+      "mime_type": "text/plain",
+      "file_size_bytes": 1134,
+      "checksum": "sha256:4b35c28c69c9c017bfc24c0b25471123bc1f3495a45a50ef749315a53cd3b6fe"
+    }
+  ],
+  "qualityScore": 77,
+  "safetyPassed": true,
+  "evidenceVerified": true,
+  "contentVersion": 1,
+  "status": "READY",
+  "createdAt": "2026-09-05T10:21:48.418Z",
+  "updatedAt": "2026-09-05T10:21:48.418Z"
+}

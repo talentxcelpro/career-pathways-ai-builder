@@ -44,6 +44,9 @@ const BlogRedirect = lazy(() => import("@/pages/BlogRedirect"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const ResourceDetail = lazy(() => import("@/pages/resources/ResourceDetail"));
 const SlugProfile = lazy(() => import("@/pages/SlugProfile"));
+const SocialMarketingDashboard = lazy(() => import("@/pages/admin/SocialMarketingDashboard"));
+const SocialContentStudio = lazy(() => import("@/pages/admin/SocialContentStudio"));
+const SocialMarketingCalendar = lazy(() => import("@/pages/admin/SocialMarketingCalendar"));
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
@@ -554,6 +557,9 @@ const App = () => {
                                 <Route path="/admin/email-automation" element={<AdminLayout><EmailAutomation /></AdminLayout>} />
                                 <Route path="/admin/populate-courses" element={<AdminLayout><PopulateCoursesAdmin /></AdminLayout>} />
                                 <Route path="/admin/video-manager" element={<AdminLayout><AdminVideoManager /></AdminLayout>} />
+                                 <Route path="/admin/social-marketing" element={<AdminLayout><SocialMarketingDashboard /></AdminLayout>} />
+                                 <Route path="/admin/social-marketing/studio" element={<AdminLayout><SocialContentStudio /></AdminLayout>} />
+                                 <Route path="/admin/social-marketing/calendar" element={<AdminLayout><SocialMarketingCalendar /></AdminLayout>} />
                                  {/* Explicit Public Learning Provider Directory Routes */}
                                  <Route path="/learning/providers" element={<AllProvidersPage />} />
                                  <Route path="/learning/providers/:slug" element={<ProviderPage />} />

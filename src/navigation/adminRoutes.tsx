@@ -1,7 +1,10 @@
 import { lazy, Suspense } from 'react';;
-import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag, Bot, Globe, AlertTriangle, Link, Newspaper, Coins, Upload, Database, Rocket, Eye, Target, TrendingUp } from "lucide-react";
+import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag, Bot, Globe, AlertTriangle, Link, Newspaper, Coins, Upload, Database, Rocket, Eye, Target, TrendingUp, Calendar } from "lucide-react";
 
 const BulkUserImports = lazy(() => import('../pages/admin/BulkUserImports'));
+const SocialMarketingDashboard = lazy(() => import('../pages/admin/SocialMarketingDashboard'));
+const SocialContentStudio = lazy(() => import('../pages/admin/SocialContentStudio'));
+const SocialMarketingCalendar = lazy(() => import('../pages/admin/SocialMarketingCalendar'));
 const Phase1Dashboard = lazy(() => import('../components/network/Phase1Dashboard'));
 const EnterpriseOverview = lazy(() => import('../pages/admin/EnterpriseOverview'));
 const LinkedInImporter = lazy(() => import('../pages/admin/LinkedInImporter'));
@@ -650,6 +653,27 @@ export const adminRoutes = [
     to: "/admin/growth-operations",
     icon: <TrendingUp className="h-4 w-4 text-emerald-400" />,
     page: <Suspense fallback={null}><GrowthOperationsCenter /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "AI Content Factory",
+    to: "/admin/social-marketing",
+    icon: <Bot className="h-4 w-4 text-blue-400" />,
+    page: <Suspense fallback={null}><SocialMarketingDashboard /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "Social Content Studio",
+    to: "/admin/social-marketing/studio",
+    icon: <Rocket className="h-4 w-4 text-pink-400" />,
+    page: <Suspense fallback={null}><SocialContentStudio /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "Content Review Calendar",
+    to: "/admin/social-marketing/calendar",
+    icon: <Calendar className="h-4 w-4 text-amber-400" />,
+    page: <Suspense fallback={null}><SocialMarketingCalendar /></Suspense>,
     isPublic: true,
   }
 ];

@@ -1,0 +1,30 @@
+[
+  {
+    "id": "ev-001-ats-rejection",
+    "claim": "75% of job applicant resumes are screened out by applicant tracking systems before reaching human hiring managers due to parsing and formatting mismatches.",
+    "source_url": "https://talentxcel.in/news/ats-optimization-methodology-2026",
+    "source_type": "TALENTXCEL_DATA",
+    "publisher": "TalentXcel Labor Economics & Parsing Research",
+    "publication_date": "2026-08-15",
+    "observed_at": "2026-09-01",
+    "region": "Global",
+    "dataset_sample_size": 45000,
+    "confidence_score": 96,
+    "expires_at": "2027-08-15",
+    "verification_status": "VERIFIED"
+  },
+  {
+    "id": "ev-002-ai-safety-salaries",
+    "claim": "Median compensation for verified AI Safety & Governance Analysts in India reached ₹22,00,000 per annum, reflecting a 38% year-over-year surge in enterprise compliance hiring.",
+    "source_url": "https://talentxcel.in/salaries",
+    "source_type": "TALENTXCEL_DATA",
+    "publisher": "TalentXcel Compensation Intelligence Desk",
+    "publication_date": "2026-08-20",
+    "observed_at": "2026-09-02",
+    "region": "India",
+    "dataset_sample_size": 3200,
+    "confidence_score": 94,
+    "expires_at": "2027-02-20",
+    "verification_status": "VERIFIED"
+  }
+]

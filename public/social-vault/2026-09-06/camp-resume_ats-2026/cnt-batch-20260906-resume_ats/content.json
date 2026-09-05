@@ -1,0 +1,60 @@
+{
+  "identity": {
+    "campaign_id": "camp-resume_ats-2026",
+    "topic_id": "top-60c602bd",
+    "content_id": "cnt-batch-20260906-resume_ats",
+    "parent_content_id": null,
+    "content_version": 1
+  },
+  "title": "Why 75% of Resumes Never Reach Recruiters: The 2026 Parsing Audit",
+  "hook_variants": {
+    "curiosity": "Most professionals think Why 75% of Resumes Never Reach Recruiters requires years of niche qualifications. Here is what the hiring data actually proves for 2026.",
+    "contrarian": "Stop relying on traditional application advice for Why 75% of Resumes Never Reach Recruiters. The recruitment landscape fundamentally shifted this year.",
+    "data_revelation": "According to verified industry metrics, 75% of job applicant resumes are screened out by applicant tracking systems before reaching human hiring managers due to parsing and formatt... Here is how you capitalize on this trend."
+  },
+  "narrative_summary": "An evidence-backed analysis on Why 75% of Resumes Never Reach Recruiters: The 2026 Parsing Audit, detailing real compensation dynamics, hiring demand surges, and step-by-step career progression strategies for 2026.",
+  "value_points": [
+    {
+      "heading": "1. Focus on Capability Over Rigid Credentials",
+      "body": "Recruiters and automated hiring filters in 2026 evaluate contextual proof of work and problem-solving velocity rather than static degree names. Portfolios with production-ready implementations outperform traditional resumes.",
+      "actionable_takeaway": "Audit your current project portfolio to ensure every project demonstrates measurable business impact or algorithmic complexity.",
+      "supporting_evidence_ids": [
+        "ev-001-ats-rejection"
+      ]
+    },
+    {
+      "heading": "2. Align With Automated Parsing Standards",
+      "body": "Applicant Tracking Systems parse semantic skill clusters rather than simple keyword repetition. High-density keyword stuffing triggers penalization; clean taxonomy alignment ensures direct recruiter visibility.",
+      "actionable_takeaway": "Format your technical summary using standard industry titles and clear skill categories before submitting applications.",
+      "supporting_evidence_ids": [
+        "ev-002-ai-safety-salaries"
+      ]
+    },
+    {
+      "heading": "3. Leverage Verified Salary & Compensation Data",
+      "body": "Transparent market benchmarks reveal substantial compensation premiums for professionals with multi-disciplinary capabilities (e.g. cloud orchestration combined with compliance). Negotiate from verified regional market percentiles.",
+      "actionable_takeaway": "Benchmark your current compensation against official 50th and 75th percentile salary bands before entering offer discussions.",
+      "supporting_evidence_ids": [
+        "ev-001-ats-rejection"
+      ]
+    }
+  ],
+  "supporting_claims": [
+    {
+      "claim": "75% of job applicant resumes are screened out by applicant tracking systems before reaching human hiring managers due to parsing and formatting mismatches.",
+      "evidence_id": "ev-001-ats-rejection"
+    },
+    {
+      "claim": "Median compensation for verified AI Safety & Governance Analysts in India reached ₹22,00,000 per annum, reflecting a 38% year-over-year surge in enterprise compliance hiring.",
+      "evidence_id": "ev-002-ai-safety-salaries"
+    }
+  ],
+  "target_product": "RESUME_ATS",
+  "cta_strength": "CONTEXTUAL",
+  "cta_copy": "Check your resume keywords and ATS compatibility with TalentXcel’s free optimizer.",
+  "cta_destination_url": "https://talentxcel.in/tools/ats-optimizer",
+  "tone": "AUTHORITATIVE",
+  "target_audience": "Mid-career tech and business professionals",
+  "target_region": "Global",
+  "created_at": "2026-09-05T10:21:48.421Z"
+}
