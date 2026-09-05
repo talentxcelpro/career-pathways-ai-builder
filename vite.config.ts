@@ -18,6 +18,10 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "fs": path.resolve(__dirname, "./src/lib/social-marketing/utils/browserFs.ts"),
+      "path": path.resolve(__dirname, "./src/lib/social-marketing/utils/browserPath.ts"),
+      "child_process": path.resolve(__dirname, "./src/lib/social-marketing/utils/browserChildProcess.ts"),
+      "crypto": path.resolve(__dirname, "./src/lib/social-marketing/utils/browserCrypto.ts"),
     },
     dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"],
   },

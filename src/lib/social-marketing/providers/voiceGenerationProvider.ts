@@ -4,7 +4,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import { createHash } from 'crypto';
+import { computeSha256Prefixed } from '../utils/cryptoUtils';
 import type { VoiceSpec, CoreContentDraft } from '../types';
 
 export interface GeneratedVoiceOutput {
@@ -133,9 +133,7 @@ export function buildVttAndTranscript(
 
 export class AcousticWavVoiceProvider implements VoiceGenerationProvider {
   private computeChecksum(buffer: Buffer): string {
-    const hash = createHash('sha256');
-    hash.update(buffer);
-    return `sha256:${hash.digest('hex')}`;
+    return computeSha256Prefixed(buffer);
   }
 
   async synthesizeSpeech(

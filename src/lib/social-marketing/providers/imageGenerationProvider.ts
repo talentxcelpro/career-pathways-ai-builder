@@ -4,7 +4,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import { createHash } from 'crypto';
+import { computeSha256Prefixed } from '../utils/cryptoUtils';
 import { execSync } from 'child_process';
 import type { CarouselSlideData, SocialContentAsset, SocialPlatform } from '../types';
 
@@ -202,9 +202,7 @@ export function buildHeroPostSvg(title: string, subtitle: string, platform: Soci
  */
 export class DeterministicCanvasGraphicProvider implements ImageGenerationProvider {
   private computeChecksum(buffer: Buffer): string {
-    const hash = createHash('sha256');
-    hash.update(buffer);
-    return `sha256:${hash.digest('hex')}`;
+    return computeSha256Prefixed(buffer);
   }
 
   async generateCarouselSlideImage(slide: CarouselSlideData): Promise<GeneratedImageOutput> {

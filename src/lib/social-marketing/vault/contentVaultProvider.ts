@@ -5,7 +5,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import { createHash } from 'crypto';
+import { computeSha256Prefixed } from '../utils/cryptoUtils';
 import type {
   VaultManifest,
   VaultAssetRecord,
@@ -62,14 +62,19 @@ export class LocalFilesystemVault implements ContentVaultProvider {
     // 1. Primary Physical C: drive vault
     this.primaryVaultRoot =
       customPath ||
-      process.env.TALENTXCEL_SOCIAL_VAULT_PATH ||
+      (typeof process !== 'undefined' && process.env?.TALENTXCEL_SOCIAL_VAULT_PATH) ||
       'C:\\TalentXcel\\SocialContentVault';
 
     // 2. Local public folder mirror for zero-CORS browser preview in Vite
-    this.webVaultRoot = path.resolve(process.cwd(), 'public', 'social-vault');
+    this.webVaultRoot =
+      typeof process !== 'undefined' && typeof process.cwd === 'function'
+        ? path.resolve(process.cwd(), 'public', 'social-vault')
+        : 'public/social-vault';
 
-    this.ensureDirectoryExists(this.primaryVaultRoot);
-    this.ensureDirectoryExists(this.webVaultRoot);
+    if (typeof window === 'undefined') {
+      this.ensureDirectoryExists(this.primaryVaultRoot);
+      this.ensureDirectoryExists(this.webVaultRoot);
+    }
   }
 
   getVaultRoot(): string {
@@ -92,9 +97,7 @@ export class LocalFilesystemVault implements ContentVaultProvider {
   }
 
   private computeBufferChecksum(data: Buffer | string): string {
-    const hash = createHash('sha256');
-    hash.update(data);
-    return `sha256:${hash.digest('hex')}`;
+    return computeSha256Prefixed(data);
   }
 
   async saveContentPackage(input: SavePackageInput): Promise<VaultManifest> {

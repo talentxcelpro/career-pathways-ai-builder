@@ -5,7 +5,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import { createHash } from 'crypto';
+import { computeSha256Prefixed } from './utils/cryptoUtils';
 import type { CoreContentDraft, SocialContentAsset, CarouselSlideData } from './types';
 import { defaultImageProvider } from './providers/imageGenerationProvider';
 import { defaultContentVault } from './vault/contentVaultProvider';
@@ -14,9 +14,7 @@ import { defaultContentVault } from './vault/contentVaultProvider';
  * Computes deterministic SHA-256 hash for buffer or string
  */
 function computeChecksum(content: Buffer | string): string {
-  const hash = createHash('sha256');
-  hash.update(content);
-  return `sha256:${hash.digest('hex')}`;
+  return computeSha256Prefixed(content);
 }
 
 /**

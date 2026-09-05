@@ -4,7 +4,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import { createHash } from 'crypto';
+import { computeSha256Prefixed } from '../utils/cryptoUtils';
 import { execSync } from 'child_process';
 import type { VideoRenderPackage, SocialContentAsset, VoiceSpec } from '../types';
 
@@ -45,9 +45,7 @@ export interface VideoRenderProvider {
 export class FfmpegVideoRenderer implements VideoRenderProvider {
   private computeFileChecksum(filePath: string): string {
     const data = fs.readFileSync(filePath);
-    const hash = createHash('sha256');
-    hash.update(data);
-    return `sha256:${hash.digest('hex')}`;
+    return computeSha256Prefixed(data);
   }
 
   async renderVideo(input: VideoRenderInput): Promise<VideoRenderOutput> {
