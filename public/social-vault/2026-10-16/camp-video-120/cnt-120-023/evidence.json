@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-023",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Passing Greenhouse & Lever ATS Parsers",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "How modern cloud ATS platforms score and rank candidate profiles.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Used by 70% of Tech Unicorns",
+      "confidence": 0.95
+    }
+  ]
+}

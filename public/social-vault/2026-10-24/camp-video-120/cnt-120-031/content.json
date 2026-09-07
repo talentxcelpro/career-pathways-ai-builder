@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-031",
+  "scheduled_date": "2026-10-24",
+  "title": "Study in Germany with Zero Tuition Fees",
+  "campaign_id": "camp-video-120",
+  "target_product": "COLLEGES",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-IN-NeerjaNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Public universities in Germany charge 0 euros tuition for international students. Top priorities include Technical University of Munich, Heidelberg University, and RWTH Aachen University. Annual Tuition Savings reaches $40,000 to $80,000. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Study in Germany with Zero Tuition Fees",
+      "subtitle": "Public universities in Germany charge 0 euros tuition for international students."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Technical University of Munich",
+        "Heidelberg University",
+        "RWTH Aachen University"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Annual Tuition Savings",
+      "value": "$40,000 to $80,000",
+      "note": "Only semester administration fees of around 300 euros apply."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

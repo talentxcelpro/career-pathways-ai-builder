@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-078",
+  "scheduled_date": "2026-12-10",
+  "title": "LeetCode Strategy: Patterns Over Problems",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. How to prepare for coding screens without solving 800 problems. Top priorities include Two Pointers & Sliding Window, Breadth-First & Depth-First Search, and Dynamic Programming & Memoization. Target Problem Set reaches Master 75 Core Patterns. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "LeetCode Strategy: Patterns Over Problems",
+      "subtitle": "How to prepare for coding screens without solving 800 problems."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Two Pointers & Sliding Window",
+        "Breadth-First & Depth-First Search",
+        "Dynamic Programming & Memoization"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Target Problem Set",
+      "value": "Master 75 Core Patterns",
+      "note": "Recognizing underlying algorithmic patterns solves any variation."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

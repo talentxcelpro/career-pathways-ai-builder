@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-001",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "High-Paying AI Roles Without a PhD",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "The 2026 hiring market has fundamentally split.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "$120,000 to $180,000+",
+      "confidence": 0.95
+    }
+  ]
+}

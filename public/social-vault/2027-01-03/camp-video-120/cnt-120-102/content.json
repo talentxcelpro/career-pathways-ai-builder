@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-102",
+  "scheduled_date": "2027-01-03",
+  "title": "Docker & Containerization Fundamentals",
+  "campaign_id": "camp-video-120",
+  "target_product": "CAREER_MAP",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Why every modern tech worker must understand containerized packaging. Top priorities include Solving \"It Works on My Machine\" Forever, Multi-Stage Builds for Lightweight Images, and Docker Compose for Multi-Service Local Testing. Industry Standard reaches Used Across 95% of Enterprises. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Docker & Containerization Fundamentals",
+      "subtitle": "Why every modern tech worker must understand containerized packaging."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Solving \"It Works on My Machine\" Forever",
+        "Multi-Stage Builds for Lightweight Images",
+        "Docker Compose for Multi-Service Local Testing"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Industry Standard",
+      "value": "Used Across 95% of Enterprises",
+      "note": "Container fluency bridges local code directly into cloud deployment."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

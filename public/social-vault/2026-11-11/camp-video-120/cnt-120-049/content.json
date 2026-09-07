@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-049",
+  "scheduled_date": "2026-11-11",
+  "title": "Erasmus Mundus Joint Master's: Europe",
+  "campaign_id": "camp-video-120",
+  "target_product": "SCHOLARSHIPS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Study in at least three European countries with full financial support. Top priorities include Zero Tuition Across All Universities, 1,400 Euros Monthly Living Allowance, and Free Travel & Relocation Grants. Degree Structure reaches Double or Joint European Degree. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Erasmus Mundus Joint Master's: Europe",
+      "subtitle": "Study in at least three European countries with full financial support."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Zero Tuition Across All Universities",
+        "1,400 Euros Monthly Living Allowance",
+        "Free Travel & Relocation Grants"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Degree Structure",
+      "value": "Double or Joint European Degree",
+      "note": "Unmatched cultural and academic exposure across leading universities."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-078",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "LeetCode Strategy: Patterns Over Problems",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "How to prepare for coding screens without solving 800 problems.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Master 75 Core Patterns",
+      "confidence": 0.95
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-105",
+  "scheduled_date": "2027-01-06",
+  "title": "Map Your Custom Career Pathway on TalentXcel",
+  "campaign_id": "camp-video-120",
+  "target_product": "CAREER_MAP",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Generate an AI-powered personalized education and career transition roadmap. Top priorities include Analyze Current Skills vs Goal Role, Identify Zero-Cost Learning Steps, and Track Measurable Milestones to Promotion. Career Map Tool reaches Personalized in 60 Seconds. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Map Your Custom Career Pathway on TalentXcel",
+      "subtitle": "Generate an AI-powered personalized education and career transition roadmap."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Analyze Current Skills vs Goal Role",
+        "Identify Zero-Cost Learning Steps",
+        "Track Measurable Milestones to Promotion"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Career Map Tool",
+      "value": "Personalized in 60 Seconds",
+      "note": "Take control of your professional growth at talentxcel dot com."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

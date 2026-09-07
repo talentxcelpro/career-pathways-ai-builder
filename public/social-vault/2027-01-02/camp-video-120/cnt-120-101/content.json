@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-101",
+  "scheduled_date": "2027-01-02",
+  "title": "Mastering Git & GitHub Collaboration",
+  "campaign_id": "camp-video-120",
+  "target_product": "CAREER_MAP",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. The professional development workflows every self-taught engineer needs. Top priorities include Interactive Rebasing & Clean Commit Trees, Resolving Merge Conflicts Confidently, and Writing Clear, Actionable Pull Request Descriptions. Team Onboarding reaches Instant Productive Contributor. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Mastering Git & GitHub Collaboration",
+      "subtitle": "The professional development workflows every self-taught engineer needs."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Interactive Rebasing & Clean Commit Trees",
+        "Resolving Merge Conflicts Confidently",
+        "Writing Clear, Actionable Pull Request Descriptions"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Team Onboarding",
+      "value": "Instant Productive Contributor",
+      "note": "Clean Git hygiene proves you are ready for enterprise team collaboration."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

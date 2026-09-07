@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-008",
+  "scheduled_date": "2026-10-01",
+  "title": "AI Product Manager: Core Competencies",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Leading generative AI products from proof of concept to scale. Top priorities include Prompt Latency vs Quality Tradeoffs, User Feedback RLHF Loops, and Cost Per User Economics. Median Equity Grants reaches $40,000 to $90,000/yr. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "AI Product Manager: Core Competencies",
+      "subtitle": "Leading generative AI products from proof of concept to scale."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Prompt Latency vs Quality Tradeoffs",
+        "User Feedback RLHF Loops",
+        "Cost Per User Economics"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Median Equity Grants",
+      "value": "$40,000 to $90,000/yr",
+      "note": "Product managers who understand token math outrank peers."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

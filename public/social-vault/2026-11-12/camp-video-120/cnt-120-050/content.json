@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-050",
+  "scheduled_date": "2026-11-12",
+  "title": "Swedish Institute Scholarships for Global Leaders",
+  "campaign_id": "camp-video-120",
+  "target_product": "SCHOLARSHIPS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Full-time master's study in Sweden covering all expenses. Top priorities include Full Tuition Paid Directly to University, 12,000 SEK Monthly Living Stipend, and Travel Grant & Insurance Coverage. Focus Areas reaches Sustainability, Tech, & Innovation. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Swedish Institute Scholarships for Global Leaders",
+      "subtitle": "Full-time master's study in Sweden covering all expenses."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Full Tuition Paid Directly to University",
+        "12,000 SEK Monthly Living Stipend",
+        "Travel Grant & Insurance Coverage"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Focus Areas",
+      "value": "Sustainability, Tech, & Innovation",
+      "note": "Sweden ranks as one of the world's top tech and startup nations."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

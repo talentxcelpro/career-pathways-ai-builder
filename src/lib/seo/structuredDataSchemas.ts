@@ -148,6 +148,7 @@ export function buildFAQSchema(faqs: { question: string; answer: string }[]) {
 
 /**
  * 6. SocialMediaPosting / Article Schema Generator
+ *    Supports interactionStatistic (likes/comments/shares) and public Comment objects.
  */
 export function buildPostSchema(options: {
   headline: string;
@@ -157,6 +158,14 @@ export function buildPostSchema(options: {
   authorUrl: string;
   postUrl: string;
   mediaUrls?: string[];
+  likesCount?: number;
+  commentsCount?: number;
+  sharesCount?: number;
+  publicComments?: Array<{
+    authorName: string;
+    dateCreated: string;
+    text: string;
+  }>;
 }) {
   const schema: Record<string, any> = {
     '@context': 'https://schema.org',
@@ -179,9 +188,102 @@ export function buildPostSchema(options: {
     },
   };
 
-  if (options.mediaUrls && options.mediaUrls.length > 0) {
-    schema.image = options.mediaUrls;
+  // interactionStatistic — only emit non-zero counts
+  const interactions: object[] = [];
+  if ((options.likesCount ?? 0) > 0) {
+    interactions.push({
+      '@type': 'InteractionCounter',
+      interactionType: { '@type': 'LikeAction' },
+      userInteractionCount: options.likesCount,
+    });
+  }
+  if ((options.commentsCount ?? 0) > 0) {
+    interactions.push({
+      '@type': 'InteractionCounter',
+      interactionType: { '@type': 'CommentAction' },
+      userInteractionCount: options.commentsCount,
+    });
+  }
+  if ((options.sharesCount ?? 0) > 0) {
+    interactions.push({
+      '@type': 'InteractionCounter',
+      interactionType: { '@type': 'ShareAction' },
+      userInteractionCount: options.sharesCount,
+    });
+  }
+  if (interactions.length > 0) {
+    schema.interactionStatistic = interactions;
   }
 
+  // Public Comment objects (top 3–5, non-private, non-deleted)
+  if (options.publicComments && options.publicComments.length > 0) {
+    schema.comment = options.publicComments.map((c) => ({
+      '@type': 'Comment',
+      author: {
+        '@type': 'Person',
+        name: c.authorName,
+      },
+      dateCreated: c.dateCreated,
+      text: c.text.slice(0, 500), // cap per Google guidelines
+    }));
+  }
+
+  // Image media (video URLs excluded — video goes in VideoObject schema)
+  const imageMedia = (options.mediaUrls || []).filter(url => {
+    const clean = url.split('?')[0].toLowerCase();
+    return !clean.endsWith('.mp4') && !clean.endsWith('.webm') && !clean.endsWith('.mov') && !clean.endsWith('.m4v');
+  });
+  if (imageMedia.length > 0) {
+    schema.image = imageMedia;
+  }
+
+  return schema;
+}
+
+/**
+ * 7. VideoObject Schema Generator (Googlebot-Video & Video Rich Snippets)
+ */
+export function buildVideoObjectSchema(options: {
+  name: string;
+  description: string;
+  thumbnailUrl: string;
+  uploadDate: string;
+  contentUrl: string;
+  embedUrl: string;
+  duration?: string;
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'VideoObject',
+    name: options.name,
+    description: options.description,
+    thumbnailUrl: [options.thumbnailUrl],
+    uploadDate: options.uploadDate,
+    contentUrl: options.contentUrl,
+    embedUrl: options.embedUrl,
+    ...(options.duration ? { duration: options.duration } : {}),
+  };
+}
+
+/**
+ * 8. ImageObject Schema Generator
+ *    Use for individual image attachments on posts (Googlebot-Image indexing).
+ */
+export function buildImageObjectSchema(options: {
+  url: string;
+  caption?: string;
+  width?: number;
+  height?: number;
+  contentUrl?: string;
+}) {
+  const schema: Record<string, any> = {
+    '@context': 'https://schema.org',
+    '@type': 'ImageObject',
+    url: options.url,
+    contentUrl: options.contentUrl || options.url,
+  };
+  if (options.caption) schema.caption = options.caption;
+  if (options.width) schema.width = options.width;
+  if (options.height) schema.height = options.height;
   return schema;
 }

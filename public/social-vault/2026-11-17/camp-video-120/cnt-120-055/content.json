@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-055",
+  "scheduled_date": "2026-11-17",
+  "title": "Swiss Government Excellence Scholarships",
+  "campaign_id": "camp-video-120",
+  "target_product": "SCHOLARSHIPS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Postgraduate researchers and PhDs at Swiss federal universities (ETH Zurich). Top priorities include Monthly Stipend: 1,920 Swiss Francs, Mandatory Health Insurance Covered, and Housing Allowance & Travel Support. Host Universities reaches ETH Zurich, EPFL, & Basel. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Swiss Government Excellence Scholarships",
+      "subtitle": "Postgraduate researchers and PhDs at Swiss federal universities (ETH Zurich)."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Monthly Stipend: 1,920 Swiss Francs",
+        "Mandatory Health Insurance Covered",
+        "Housing Allowance & Travel Support"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Host Universities",
+      "value": "ETH Zurich, EPFL, & Basel",
+      "note": "Switzerland leads global patents and research funding per capita."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

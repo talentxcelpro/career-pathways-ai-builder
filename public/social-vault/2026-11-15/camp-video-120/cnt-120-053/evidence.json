@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-053",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Australia Awards: Full Government Funding",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Long-term scholarships to study at Australia's top Group of Eight universities.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Indo-Pacific & Developing Nations",
+      "confidence": 0.95
+    }
+  ]
+}

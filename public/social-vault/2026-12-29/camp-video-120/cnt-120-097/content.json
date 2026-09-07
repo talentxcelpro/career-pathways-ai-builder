@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-097",
+  "scheduled_date": "2026-12-29",
+  "title": "Building a Tech Portfolio That Gets Interviews",
+  "campaign_id": "camp-video-120",
+  "target_product": "CAREER_MAP",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Why 3 deployed, production-grade apps beat 20 tutorial clones. Top priorities include Deploy Live with Custom Domain & SSL, Write Comprehensive Documentation & Architecture, and Include Real User Authentication & Database. Recruiter Conversion reaches 70% Look at Live Demos. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Building a Tech Portfolio That Gets Interviews",
+      "subtitle": "Why 3 deployed, production-grade apps beat 20 tutorial clones."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Deploy Live with Custom Domain & SSL",
+        "Write Comprehensive Documentation & Architecture",
+        "Include Real User Authentication & Database"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Recruiter Conversion",
+      "value": "70% Look at Live Demos",
+      "note": "Working live applications prove you can ship software from day one."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

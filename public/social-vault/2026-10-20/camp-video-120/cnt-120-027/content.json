@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-027",
+  "scheduled_date": "2026-10-20",
+  "title": "Cover Letters in 2026: Do They Still Matter?",
+  "campaign_id": "camp-video-120",
+  "target_product": "RESUME_ATS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. When cover letters are essential and when they are a waste of time. Top priorities include Critical for Career Transitions, High Value at Early-Stage Startups, and Optional for High-Volume Inbound. Effective Length reaches Under 250 Words. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Cover Letters in 2026: Do They Still Matter?",
+      "subtitle": "When cover letters are essential and when they are a waste of time."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Critical for Career Transitions",
+        "High Value at Early-Stage Startups",
+        "Optional for High-Volume Inbound"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Effective Length",
+      "value": "Under 250 Words",
+      "note": "A 3-paragraph targeted letter highlighting one big win stands out."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

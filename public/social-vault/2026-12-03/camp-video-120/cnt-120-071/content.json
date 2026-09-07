@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-071",
+  "scheduled_date": "2026-12-03",
+  "title": "Blockchain & Web3 Developer Pay Trends",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Smart contract development and high-throughput consensus protocols. Top priorities include Solidity & Rust Architecture, Zero-Knowledge Proof Implementations, and High-Value Security Auditing. Hourly Consulting reaches $200 to $450/hour. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Blockchain & Web3 Developer Pay Trends",
+      "subtitle": "Smart contract development and high-throughput consensus protocols."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Solidity & Rust Architecture",
+        "Zero-Knowledge Proof Implementations",
+        "High-Value Security Auditing"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Hourly Consulting",
+      "value": "$200 to $450/hour",
+      "note": "Smart contract auditors command massive fees due to billion-dollar TVL risks."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

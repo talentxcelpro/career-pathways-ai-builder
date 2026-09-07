@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-021",
+  "scheduled_date": "2026-10-14",
+  "title": "Resume Length Rules for 2026 Job Seekers",
+  "campaign_id": "camp-video-120",
+  "target_product": "RESUME_ATS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. The debate between 1-page and 2-page resumes resolved. Top priorities include Under 5 Years: Exactly 1 Page, 5+ Years: 2 Full Pages, and Zero Fluff or Filler Content. Recruiter Preference reaches 91% Prefer Concise Proof. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Resume Length Rules for 2026 Job Seekers",
+      "subtitle": "The debate between 1-page and 2-page resumes resolved."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Under 5 Years: Exactly 1 Page",
+        "5+ Years: 2 Full Pages",
+        "Zero Fluff or Filler Content"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Recruiter Preference",
+      "value": "91% Prefer Concise Proof",
+      "note": "Keep your most impressive career achievements above the fold."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

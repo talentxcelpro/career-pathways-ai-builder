@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-061",
+  "scheduled_date": "2026-11-23",
+  "title": "Software Engineer Salaries: India vs US vs Europe",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Comparing purchasing power parity and compensation across tech hubs. Top priorities include Bengaluru Median: 18 to 35 Lakhs INR, San Francisco Median: $165,000 to $240,000, and Berlin Median: 75,000 to 105,000 Euros. Cost of Living Factor reaches PPP Multiplier 3.8x. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Software Engineer Salaries: India vs US vs Europe",
+      "subtitle": "Comparing purchasing power parity and compensation across tech hubs."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Bengaluru Median: 18 to 35 Lakhs INR",
+        "San Francisco Median: $165,000 to $240,000",
+        "Berlin Median: 75,000 to 105,000 Euros"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Cost of Living Factor",
+      "value": "PPP Multiplier 3.8x",
+      "note": "Senior engineers in India retain massive savings relative to local expenses."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

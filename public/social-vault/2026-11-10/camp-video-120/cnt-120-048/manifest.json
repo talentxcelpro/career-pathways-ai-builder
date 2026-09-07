@@ -1,0 +1,46 @@
+{
+  "manifest_version": "2026.09.1",
+  "content_id": "cnt-120-048",
+  "content_version": 1,
+  "scheduled_date": "2026-11-10",
+  "campaign_id": "camp-video-120",
+  "target_product": "SCHOLARSHIPS",
+  "format_type": "SHORT_FORM_VIDEO",
+  "quality_score": 88,
+  "status": "READY_FOR_REVIEW",
+  "created_at": "2026-09-07T04:57:47.036Z",
+  "assets": [
+    {
+      "asset_id": "ast-cnt-120-048-video-9x16",
+      "asset_type": "VIDEO",
+      "relative_path": "youtube/video_9x16.mp4",
+      "checksum": "sha256:cee937f08e2e33612d3546e9f7b3016988a9801a9a0fd7333e0ba839a65bb6d9",
+      "file_size_bytes": 978621,
+      "mime_type": "video/mp4"
+    },
+    {
+      "asset_id": "ast-cnt-120-048-audio",
+      "asset_type": "AUDIO",
+      "relative_path": "youtube/narration.wav",
+      "checksum": "sha256:c8105b83fab5da5305c22200d7a77d13a9127975f49d543b0859005a4e669e9a",
+      "file_size_bytes": 2351844,
+      "mime_type": "audio/wav"
+    },
+    {
+      "asset_id": "ast-cnt-120-048-captions",
+      "asset_type": "CAPTIONS",
+      "relative_path": "youtube/captions.vtt",
+      "checksum": "sha256:6afa922dac8d01f26347e7fa807a5a2043c8cadc0daa3d874b5d5dd710b7a245",
+      "file_size_bytes": 534,
+      "mime_type": "text/vtt"
+    },
+    {
+      "asset_id": "ast-cnt-120-048-thumbnail",
+      "asset_type": "THUMBNAIL",
+      "relative_path": "youtube/thumbnail.svg",
+      "checksum": "sha256:0c1e712a9d1b7948f11185f74f16703bb412d0339f03a17bd524fbe0baeb6c06",
+      "file_size_bytes": 1305,
+      "mime_type": "image/svg+xml"
+    }
+  ]
+}

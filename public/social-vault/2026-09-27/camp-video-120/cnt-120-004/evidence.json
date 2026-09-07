@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-004",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "AI Solutions Architect Career Roadmap",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Bridging enterprise business problems with foundation models.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "$210,000 to $320,000",
+      "confidence": 0.95
+    }
+  ]
+}

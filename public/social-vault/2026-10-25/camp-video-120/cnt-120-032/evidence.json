@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-032",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Norway PhD Programs: Fully Paid as Jobs",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "PhD candidates in Norway are considered salaried university employees.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Exactly $0 + Paid Salary",
+      "confidence": 0.95
+    }
+  ]
+}

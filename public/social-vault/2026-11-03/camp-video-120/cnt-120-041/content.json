@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-041",
+  "scheduled_date": "2026-11-03",
+  "title": "Zero-Tuition Medical Degrees in Europe",
+  "campaign_id": "camp-video-120",
+  "target_product": "COLLEGES",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-IN-NeerjaNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. How aspiring doctors study medicine in Europe without lifetime debt. Top priorities include State-Funded University Medical Schools, Extensive Hospital Clinical Rotations, and Direct Pathways to EU Medical License. Debt Comparison reaches Save Over $300,000. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Zero-Tuition Medical Degrees in Europe",
+      "subtitle": "How aspiring doctors study medicine in Europe without lifetime debt."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "State-Funded University Medical Schools",
+        "Extensive Hospital Clinical Rotations",
+        "Direct Pathways to EU Medical License"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Debt Comparison",
+      "value": "Save Over $300,000",
+      "note": "Competitive entrance examinations open to global applicants."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

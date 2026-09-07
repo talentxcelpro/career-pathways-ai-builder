@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-001",
+  "scheduled_date": "2026-09-24",
+  "title": "High-Paying AI Roles Without a PhD",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. The 2026 hiring market has fundamentally split. Top priorities include AI Implementation Engineering, Autonomous Agent Architecture, and Enterprise LLM Orchestration. Median Base Salary reaches $120,000 to $180,000+. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "High-Paying AI Roles Without a PhD",
+      "subtitle": "The 2026 hiring market has fundamentally split."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "AI Implementation Engineering",
+        "Autonomous Agent Architecture",
+        "Enterprise LLM Orchestration"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Median Base Salary",
+      "value": "$120,000 to $180,000+",
+      "note": "Applied system delivery commands top compensation."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

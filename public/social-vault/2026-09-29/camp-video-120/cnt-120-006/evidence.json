@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-006",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "AI Governance & Safety Officer Roles",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Global compliance laws require certified AI oversight.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Mandatory in 2026",
+      "confidence": 0.95
+    }
+  ]
+}

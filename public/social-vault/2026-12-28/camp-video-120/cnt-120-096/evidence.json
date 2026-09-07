@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-096",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Mechanical to Software: The Hardware Advantage",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Why engineering graduates thrive in IoT, robotics, and autonomy.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "High Shortage of Hardware-AI Talent",
+      "confidence": 0.95
+    }
+  ]
+}

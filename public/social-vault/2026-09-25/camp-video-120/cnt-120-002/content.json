@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-002",
+  "scheduled_date": "2026-09-25",
+  "title": "Prompt Architect vs Software Engineer",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Prompt architecture has evolved into systems engineering. Top priorities include Context Window Optimization, Evaluation Harness Design, and RAG Pipeline Integration. Growth Rate 2026 reaches +142% Year-Over-Year. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Prompt Architect vs Software Engineer",
+      "subtitle": "Prompt architecture has evolved into systems engineering."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Context Window Optimization",
+        "Evaluation Harness Design",
+        "RAG Pipeline Integration"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Growth Rate 2026",
+      "value": "+142% Year-Over-Year",
+      "note": "Enterprises pay premiums for token-efficient pipelines."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

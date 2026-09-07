@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-045",
+  "scheduled_date": "2026-11-07",
+  "title": "Find Verified Global Programs on TalentXcel",
+  "campaign_id": "camp-video-120",
+  "target_product": "COLLEGES",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-IN-NeerjaNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Filter hundreds of tuition-free programs by country, degree, and language. Top priorities include Real Cost Transparency, Official University Direct Links, and Scholarship Eligibility Check. Database Access reaches 100% Free Discovery. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Find Verified Global Programs on TalentXcel",
+      "subtitle": "Filter hundreds of tuition-free programs by country, degree, and language."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Real Cost Transparency",
+        "Official University Direct Links",
+        "Scholarship Eligibility Check"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Database Access",
+      "value": "100% Free Discovery",
+      "note": "Explore verified global education opportunities at talentxcel dot com."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

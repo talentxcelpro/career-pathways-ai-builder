@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-024",
+  "scheduled_date": "2026-10-17",
+  "title": "Tailoring Resumes in Under 5 Minutes",
+  "campaign_id": "camp-video-120",
+  "target_product": "RESUME_ATS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Customizing resumes for every job is the fastest way to get hired. Top priorities include Keep Core Foundation Stable, Swap Top 5 Relevant Skills, and Reorder Project Highlights. Efficiency Multiplier reaches 5 Resumes per Hour. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Tailoring Resumes in Under 5 Minutes",
+      "subtitle": "Customizing resumes for every job is the fastest way to get hired."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Keep Core Foundation Stable",
+        "Swap Top 5 Relevant Skills",
+        "Reorder Project Highlights"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Efficiency Multiplier",
+      "value": "5 Resumes per Hour",
+      "note": "Targeted applications yield 4x higher response rates."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

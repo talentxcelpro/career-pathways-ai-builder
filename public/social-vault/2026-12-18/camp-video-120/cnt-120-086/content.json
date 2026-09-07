@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-086",
+  "scheduled_date": "2026-12-18",
+  "title": "Handling Senior Technical Pushback",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. How to disagree constructively when an interviewer challenges your design. Top priorities include Acknowledge Their Alternative Perspective, Revisit Underlying System Constraints, and Propose a Hybrid Benchmark Test. Soft Skill Scored reaches Collaborative Maturity. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Handling Senior Technical Pushback",
+      "subtitle": "How to disagree constructively when an interviewer challenges your design."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Acknowledge Their Alternative Perspective",
+        "Revisit Underlying System Constraints",
+        "Propose a Hybrid Benchmark Test"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Soft Skill Scored",
+      "value": "Collaborative Maturity",
+      "note": "Senior engineers are tested on adaptability and intellectual honesty."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

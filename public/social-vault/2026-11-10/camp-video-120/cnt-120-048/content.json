@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-048",
+  "scheduled_date": "2026-11-10",
+  "title": "Fulbright Foreign Student Program: USA",
+  "campaign_id": "camp-video-120",
+  "target_product": "SCHOLARSHIPS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Full-ride graduate scholarships to attend top American universities. Top priorities include Full Tuition & Academic Fees, Living Stipend & Health Coverage, and J-1 Visa Sponsorship & Networking. Annual Grant Value reaches Up to $70,000 per Year. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Fulbright Foreign Student Program: USA",
+      "subtitle": "Full-ride graduate scholarships to attend top American universities."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Full Tuition & Academic Fees",
+        "Living Stipend & Health Coverage",
+        "J-1 Visa Sponsorship & Networking"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Annual Grant Value",
+      "value": "Up to $70,000 per Year",
+      "note": "Prestigious global alumni network spanning Nobel laureates and heads of state."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

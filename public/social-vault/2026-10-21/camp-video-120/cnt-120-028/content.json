@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-028",
+  "scheduled_date": "2026-10-21",
+  "title": "Formatting Remote Work Experience for ATS",
+  "campaign_id": "camp-video-120",
+  "target_product": "RESUME_ATS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Highlighting distributed collaboration and autonomous ownership. Top priorities include Asynchronous Workflow Mastery, Cross-Timezone Collaboration, and Self-Directed Milestone Delivery. Global Remote Market reaches 35% of Tech Roles. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Formatting Remote Work Experience for ATS",
+      "subtitle": "Highlighting distributed collaboration and autonomous ownership."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Asynchronous Workflow Mastery",
+        "Cross-Timezone Collaboration",
+        "Self-Directed Milestone Delivery"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Global Remote Market",
+      "value": "35% of Tech Roles",
+      "note": "Explicitly state remote tools like Slack, Notion, and GitHub PRs."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-079",
+  "scheduled_date": "2026-12-11",
+  "title": "Questions to Ask Your Interviewer",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Turn the final 5 minutes into a powerful demonstration of leadership. Top priorities include \"What is the biggest roadblock on your roadmap?\", \"How does engineering resolve technical debt?\", and \"What separates top performers in this role?\". Interviewer Impression reaches High Strategic Interest. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Questions to Ask Your Interviewer",
+      "subtitle": "Turn the final 5 minutes into a powerful demonstration of leadership."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "\"What is the biggest roadblock on your roadmap?\"",
+        "\"How does engineering resolve technical debt?\"",
+        "\"What separates top performers in this role?\""
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Interviewer Impression",
+      "value": "High Strategic Interest",
+      "note": "Thoughtful reverse interviewing signals that you are evaluating them equally."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

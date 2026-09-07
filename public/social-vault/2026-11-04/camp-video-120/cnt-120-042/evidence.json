@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-042",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "How to Apply to European Universities Online",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Navigating Uni-Assist and national application portals smoothly.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "50 to 75 Euros per Portal",
+      "confidence": 0.95
+    }
+  ]
+}

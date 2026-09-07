@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-088",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Interviewing for US Remote Roles from Abroad",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Navigating cultural nuances, timezones, and communication.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Reliable Global Collaborator",
+      "confidence": 0.95
+    }
+  ]
+}

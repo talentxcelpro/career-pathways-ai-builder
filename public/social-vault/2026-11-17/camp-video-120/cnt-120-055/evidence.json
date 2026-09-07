@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-055",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Swiss Government Excellence Scholarships",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Postgraduate researchers and PhDs at Swiss federal universities (ETH Zurich).",
+      "confidence": 0.98
+    },
+    {
+      "claim": "ETH Zurich, EPFL, & Basel",
+      "confidence": 0.95
+    }
+  ]
+}

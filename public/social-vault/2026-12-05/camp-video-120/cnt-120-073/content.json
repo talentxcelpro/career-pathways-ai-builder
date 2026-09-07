@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-073",
+  "scheduled_date": "2026-12-05",
+  "title": "The 2026 Sign-On Bonus Playbook",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Unlocking immediate cash bonuses when accepting new corporate roles. Top priorities include Covering Unvested Stock Left Behind, Relocation & Home Office Stipends, and Non-Repayment Terms After 12 Months. Standard Range reaches $15,000 to $50,000 Cash. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "The 2026 Sign-On Bonus Playbook",
+      "subtitle": "Unlocking immediate cash bonuses when accepting new corporate roles."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Covering Unvested Stock Left Behind",
+        "Relocation & Home Office Stipends",
+        "Non-Repayment Terms After 12 Months"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Standard Range",
+      "value": "$15,000 to $50,000 Cash",
+      "note": "Sign-on bonuses have low internal friction compared to adjusting base bands."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

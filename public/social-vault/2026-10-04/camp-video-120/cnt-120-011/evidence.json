@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-011",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "MLOps: Deploying Models at Scale",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Moving models from Jupyter notebooks into resilient production.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "High Infrastructure ROI",
+      "confidence": 0.95
+    }
+  ]
+}

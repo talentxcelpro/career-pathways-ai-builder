@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-105",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Map Your Custom Career Pathway on TalentXcel",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Generate an AI-powered personalized education and career transition roadmap.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Personalized in 60 Seconds",
+      "confidence": 0.95
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-074",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Tech Salary Progression: Junior to Lead in 5 Years",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "How top engineers multiply their compensation every 18 months.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "3x to 5x Earnings Growth",
+      "confidence": 0.95
+    }
+  ]
+}

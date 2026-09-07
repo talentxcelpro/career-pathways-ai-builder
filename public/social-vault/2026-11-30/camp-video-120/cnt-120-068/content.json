@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-068",
+  "scheduled_date": "2026-11-30",
+  "title": "Cybersecurity Architect Compensation 2026",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Surging compensation driven by global ransomware and cloud threats. Top priorities include Zero Trust Security Architectures, Cloud Security Posture Management, and SOC2 and ISO 27001 Certification. Executive Priority reaches Highest Job Security. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Cybersecurity Architect Compensation 2026",
+      "subtitle": "Surging compensation driven by global ransomware and cloud threats."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Zero Trust Security Architectures",
+        "Cloud Security Posture Management",
+        "SOC2 and ISO 27001 Certification"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Executive Priority",
+      "value": "Highest Job Security",
+      "note": "Cybersecurity budgets are resilient to macroeconomic tech hiring pauses."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

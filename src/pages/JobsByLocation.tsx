@@ -35,7 +35,7 @@ const JobsByLocation = () => {
           'jobs India',
           'TalentXcel'
         ]}
-        canonical={`https://talentxcel.in/jobs/location/${location}`}
+        canonical={`https://talentxcel.in/locations/${location?.toLowerCase() || ''}`}
       />
       <JobsSimple locationFilter={location} />
     </>

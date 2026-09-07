@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-076",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "System Design Interview: 5-Step Framework",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "How senior engineers ace complex distributed system rounds.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Structured Thinking First",
+      "confidence": 0.95
+    }
+  ]
+}

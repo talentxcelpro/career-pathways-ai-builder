@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-093",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Frontend Developer to Fullstack Architect",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Expanding your skills into backend distributed systems and databases.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Eligible for 2.2x More Roles",
+      "confidence": 0.95
+    }
+  ]
+}

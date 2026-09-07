@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-050",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Swedish Institute Scholarships for Global Leaders",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Full-time master's study in Sweden covering all expenses.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Sustainability, Tech, & Innovation",
+      "confidence": 0.95
+    }
+  ]
+}

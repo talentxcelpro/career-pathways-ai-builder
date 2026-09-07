@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-073",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "The 2026 Sign-On Bonus Playbook",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Unlocking immediate cash bonuses when accepting new corporate roles.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "$15,000 to $50,000 Cash",
+      "confidence": 0.95
+    }
+  ]
+}

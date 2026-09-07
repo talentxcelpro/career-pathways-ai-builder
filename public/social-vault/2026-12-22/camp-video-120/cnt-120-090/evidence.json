@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-090",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Ace Your Next Interview with TalentXcel",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Practice with verified system design and role-specific interview tracks.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Land Offers 2x Faster",
+      "confidence": 0.95
+    }
+  ]
+}

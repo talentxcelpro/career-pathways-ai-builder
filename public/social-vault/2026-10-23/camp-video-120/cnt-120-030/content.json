@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-030",
+  "scheduled_date": "2026-10-23",
+  "title": "Free ATS Resume Auditing on TalentXcel",
+  "campaign_id": "camp-video-120",
+  "target_product": "RESUME_ATS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Scan your resume against 2026 ATS algorithms in 10 seconds. Top priorities include Instant Parsing Compatibility Check, Missing Keyword Recommendations, and Actionable Bullet Optimization. Audit Speed reaches Instant 100% Free. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Free ATS Resume Auditing on TalentXcel",
+      "subtitle": "Scan your resume against 2026 ATS algorithms in 10 seconds."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Instant Parsing Compatibility Check",
+        "Missing Keyword Recommendations",
+        "Actionable Bullet Optimization"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Audit Speed",
+      "value": "Instant 100% Free",
+      "note": "Benchmark your resume before submitting to top tier companies."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

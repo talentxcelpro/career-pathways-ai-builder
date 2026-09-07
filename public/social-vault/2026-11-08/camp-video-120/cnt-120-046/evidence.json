@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-046",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "DAAD Scholarship Germany: Complete Guide",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "The world's most prestigious funding program for graduate studies.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Over 30,000 Euros",
+      "confidence": 0.95
+    }
+  ]
+}

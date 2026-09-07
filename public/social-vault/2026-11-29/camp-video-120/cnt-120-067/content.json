@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-067",
+  "scheduled_date": "2026-11-29",
+  "title": "Cloud & DevOps Engineer Salary Benchmarks",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Managing production reliability and cloud infrastructure spend. Top priorities include AWS / Azure Kubernetes Mastery, Terraform Infrastructure as Code, and CI/CD Automated Deployment Pipelines. Median Base Pay reaches $135,000 to $185,000. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Cloud & DevOps Engineer Salary Benchmarks",
+      "subtitle": "Managing production reliability and cloud infrastructure spend."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "AWS / Azure Kubernetes Mastery",
+        "Terraform Infrastructure as Code",
+        "CI/CD Automated Deployment Pipelines"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Median Base Pay",
+      "value": "$135,000 to $185,000",
+      "note": "DevOps professionals who reduce AWS cloud bills pay for themselves."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-032",
+  "scheduled_date": "2026-10-25",
+  "title": "Norway PhD Programs: Fully Paid as Jobs",
+  "campaign_id": "camp-video-120",
+  "target_product": "COLLEGES",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-IN-NeerjaNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. PhD candidates in Norway are considered salaried university employees. Top priorities include University of Oslo & NTNU, Annual Salary: $52,000 to $60,000, and Full Health & Pension Benefits. Tuition Cost reaches Exactly $0 + Paid Salary. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Norway PhD Programs: Fully Paid as Jobs",
+      "subtitle": "PhD candidates in Norway are considered salaried university employees."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "University of Oslo & NTNU",
+        "Annual Salary: $52,000 to $60,000",
+        "Full Health & Pension Benefits"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Tuition Cost",
+      "value": "Exactly $0 + Paid Salary",
+      "note": "Generous work-life balance and full social security benefits included."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

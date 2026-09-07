@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-075",
+  "scheduled_date": "2026-12-07",
+  "title": "Benchmark Your Tech Salary on TalentXcel",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Compare verified compensation bands across top tech employers. Top priorities include Transparent Level-by-Level Bands, Base, Bonus, & Stock Breakdowns, and Global Cost-of-Living Normalized. Salary Insights reaches 100% Free Access. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Benchmark Your Tech Salary on TalentXcel",
+      "subtitle": "Compare verified compensation bands across top tech employers."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Transparent Level-by-Level Bands",
+        "Base, Bonus, & Stock Breakdowns",
+        "Global Cost-of-Living Normalized"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Salary Insights",
+      "value": "100% Free Access",
+      "note": "Know your true market value before entering your next interview cycle."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

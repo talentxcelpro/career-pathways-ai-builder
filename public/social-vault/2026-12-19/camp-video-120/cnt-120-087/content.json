@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-087",
+  "scheduled_date": "2026-12-19",
+  "title": "The Live SQL & Database Optimization Round",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Writing efficient queries and explaining execution plans. Top priorities include Window Functions (ROW_NUMBER, RANK), B-Tree vs Hash Index Tradeoffs, and JOIN Execution Plans & Table Scans. Data Competency reaches Essential for Backend & Data. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "The Live SQL & Database Optimization Round",
+      "subtitle": "Writing efficient queries and explaining execution plans."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Window Functions (ROW_NUMBER, RANK)",
+        "B-Tree vs Hash Index Tradeoffs",
+        "JOIN Execution Plans & Table Scans"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Data Competency",
+      "value": "Essential for Backend & Data",
+      "note": "Always discuss indexing strategy and query latency under heavy volume."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

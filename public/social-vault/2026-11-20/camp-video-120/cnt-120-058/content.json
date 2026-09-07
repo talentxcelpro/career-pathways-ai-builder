@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-058",
+  "scheduled_date": "2026-11-20",
+  "title": "IELTS / TOEFL Waiver Strategies for Scholarships",
+  "campaign_id": "camp-video-120",
+  "target_product": "SCHOLARSHIPS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. How to prove English proficiency without spending hundreds on exams. Top priorities include English Medium of Instruction (MOI) Certificate, Duolingo English Test Acceptance, and Previous Degree in English Waiver. Fee Savings reaches $250 to $300 Exam Fees Saved. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "IELTS / TOEFL Waiver Strategies for Scholarships",
+      "subtitle": "How to prove English proficiency without spending hundreds on exams."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "English Medium of Instruction (MOI) Certificate",
+        "Duolingo English Test Acceptance",
+        "Previous Degree in English Waiver"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Fee Savings",
+      "value": "$250 to $300 Exam Fees Saved",
+      "note": "Many European universities accept official MOI letters from your college."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

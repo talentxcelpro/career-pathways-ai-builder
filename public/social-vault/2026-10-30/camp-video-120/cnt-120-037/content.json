@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-037",
+  "scheduled_date": "2026-10-30",
+  "title": "Blocked Account Requirements for Germany",
+  "campaign_id": "camp-video-120",
+  "target_product": "COLLEGES",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-IN-NeerjaNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Everything you need to know about the German student visa proof of funds. Top priorities include Set by Federal Ministry of Foreign Affairs, Monthly Payout for Living Costs, and Can Be Covered via Full Scholarships. Annual Deposit reaches Self-Funded or DAAD Waiver. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Blocked Account Requirements for Germany",
+      "subtitle": "Everything you need to know about the German student visa proof of funds."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Set by Federal Ministry of Foreign Affairs",
+        "Monthly Payout for Living Costs",
+        "Can Be Covered via Full Scholarships"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Annual Deposit",
+      "value": "Self-Funded or DAAD Waiver",
+      "note": "This money remains entirely yours and covers your room and board."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

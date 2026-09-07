@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-084",
+  "scheduled_date": "2026-12-16",
+  "title": "The \"Tell Me About Yourself\" Master Formula",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Structuring your opening answer to set an unforgettable hook. Top priorities include Past: How You Built Technical Foundations, Present: Your Most Impressive Recent Wins, and Future: Why This Specific Team is Next. Optimal Duration reaches 90 to 120 Seconds. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "The \"Tell Me About Yourself\" Master Formula",
+      "subtitle": "Structuring your opening answer to set an unforgettable hook."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Past: How You Built Technical Foundations",
+        "Present: Your Most Impressive Recent Wins",
+        "Future: Why This Specific Team is Next"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Optimal Duration",
+      "value": "90 to 120 Seconds",
+      "note": "Hook their attention immediately with your highest-impact career proof points."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

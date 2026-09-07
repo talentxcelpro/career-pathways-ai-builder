@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-074",
+  "scheduled_date": "2026-12-06",
+  "title": "Tech Salary Progression: Junior to Lead in 5 Years",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. How top engineers multiply their compensation every 18 months. Top priorities include Year 1-2: Flawless Technical Execution, Year 3-4: System Design & Cross-Team Impact, and Year 5: Strategic Technical Leadership. Comp Velocity reaches 3x to 5x Earnings Growth. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Tech Salary Progression: Junior to Lead in 5 Years",
+      "subtitle": "How top engineers multiply their compensation every 18 months."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Year 1-2: Flawless Technical Execution",
+        "Year 3-4: System Design & Cross-Team Impact",
+        "Year 5: Strategic Technical Leadership"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Comp Velocity",
+      "value": "3x to 5x Earnings Growth",
+      "note": "Proactive ownership and cross-functional leadership accelerate promotions."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

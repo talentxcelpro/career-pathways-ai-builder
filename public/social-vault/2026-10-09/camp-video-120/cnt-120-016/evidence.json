@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-016",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Why 75% of Resumes Never Reach Recruiters",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Applicant Tracking Systems reject resumes before human eyes see them.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "From 18% to 84%",
+      "confidence": 0.95
+    }
+  ]
+}

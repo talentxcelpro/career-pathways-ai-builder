@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-051",
+  "scheduled_date": "2026-11-13",
+  "title": "Commonwealth Scholarships: UK & Global",
+  "campaign_id": "camp-video-120",
+  "target_product": "SCHOLARSHIPS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Funding for exceptional talent from Commonwealth member nations. Top priorities include Approved Master's and PhD Degrees, Full Tuition + Monthly Stipend, and Warm Clothing & Arrival Allowance. Selection Criteria reaches Academic Merit & Development Impact. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Commonwealth Scholarships: UK & Global",
+      "subtitle": "Funding for exceptional talent from Commonwealth member nations."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Approved Master's and PhD Degrees",
+        "Full Tuition + Monthly Stipend",
+        "Warm Clothing & Arrival Allowance"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Selection Criteria",
+      "value": "Academic Merit & Development Impact",
+      "note": "Designed to equip leaders to solve critical developmental challenges."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

@@ -39,6 +39,15 @@ export const JOB_EXPERIENCES: JobExperienceConfig[] = [
     maxYears: 5,
     description: 'Mid-level to senior specialist roles requiring proven architectural independence and team leadership.',
     careerAdvice: 'Emphasize distributed system design, cross-functional collaboration, performance optimization, and mentorship of junior engineers.'
+  },
+  {
+    slug: '5-plus-years',
+    label: '5+ Years Experience (Senior & Lead)',
+    badgeLabel: '5+ Years Experience',
+    minYears: 5,
+    maxYears: 15,
+    description: 'Senior, staff, principal, and leadership opportunities for seasoned professionals with 5+ years of strategic delivery.',
+    careerAdvice: 'Showcase system architecture, high-impact technical initiatives, team mentorship, and strategic business outcomes.'
   }
 ];
 export const EXPERIENCE_LEVELS = JOB_EXPERIENCES;
@@ -55,8 +64,13 @@ EXPERIENCE_MAP.set('entry-level', JOB_EXPERIENCES[0]);
 EXPERIENCE_MAP.set('0-1-years', JOB_EXPERIENCES[0]);
 EXPERIENCE_MAP.set('junior', JOB_EXPERIENCES[1]);
 EXPERIENCE_MAP.set('mid-level', JOB_EXPERIENCES[2]);
+EXPERIENCE_MAP.set('senior', JOB_EXPERIENCES[3]);
+EXPERIENCE_MAP.set('senior-level', JOB_EXPERIENCES[3]);
+EXPERIENCE_MAP.set('executive', JOB_EXPERIENCES[3]);
+EXPERIENCE_MAP.set('lead', JOB_EXPERIENCES[3]);
 
 export function getExperienceBySlug(slug: string): JobExperienceConfig | undefined {
   if (!slug) return undefined;
   return EXPERIENCE_MAP.get(slug.toLowerCase().trim());
 }
+

@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-083",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Take-Home Coding Projects: The Playbook",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "How to submit take-home assignments that guarantee final-round invites.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Production-Grade Engineering",
+      "confidence": 0.95
+    }
+  ]
+}

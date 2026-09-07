@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-039",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "University of the People: 100% Tuition-Free",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Accredited American online university designed for global access.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "$0 Tuition Ever",
+      "confidence": 0.95
+    }
+  ]
+}

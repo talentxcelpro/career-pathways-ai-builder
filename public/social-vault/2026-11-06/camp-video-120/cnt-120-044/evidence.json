@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-044",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Top 5 Tuition-Free Engineering Programs",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "The highest-ranked engineering universities charging zero tuition.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Top 100 Engineering Worldwide",
+      "confidence": 0.95
+    }
+  ]
+}

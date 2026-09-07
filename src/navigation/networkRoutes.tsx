@@ -5,6 +5,7 @@ import { NetworkPage } from "../components/performance/LazyRoutes";
 const People = lazy(() => import('../pages/network/People'));
 const Posts = lazy(() => import('../pages/network/Posts'));
 const PostDetail = lazy(() => import('../pages/network/PostDetail'));
+const PublicPostPage = lazy(() => import('../pages/posts/PublicPostPage'));
 const Groups = lazy(() => import('../pages/network/Groups'));
 const GroupDetail = lazy(() => import('../pages/network/GroupDetail'));
 const Requests = lazy(() => import('../pages/network/Requests'));
@@ -91,7 +92,7 @@ export const networkRoutes = [
   {
     title: "Post Detail",
     to: "/network/posts/:id",
-    page: <Suspense fallback={null}><PostDetail /></Suspense>,
+    page: <Suspense fallback={null}><PublicPostPage /></Suspense>,
   },
   {
     title: "Articles",

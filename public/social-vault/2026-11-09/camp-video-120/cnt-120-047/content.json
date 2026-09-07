@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-047",
+  "scheduled_date": "2026-11-09",
+  "title": "Chevening Scholarship UK: Full-Ride Master's",
+  "campaign_id": "camp-video-120",
+  "target_product": "SCHOLARSHIPS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Study any one-year master's degree at any UK university fully funded. Top priorities include 100% University Tuition Covered, Monthly Living Allowance, and Return Economy Airfare to London. Prestige Level reaches Global Leadership Network. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Chevening Scholarship UK: Full-Ride Master's",
+      "subtitle": "Study any one-year master's degree at any UK university fully funded."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "100% University Tuition Covered",
+        "Monthly Living Allowance",
+        "Return Economy Airfare to London"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Prestige Level",
+      "value": "Global Leadership Network",
+      "note": "Funded by the UK Foreign, Commonwealth and Development Office."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

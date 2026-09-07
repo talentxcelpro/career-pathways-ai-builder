@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-083",
+  "scheduled_date": "2026-12-15",
+  "title": "Take-Home Coding Projects: The Playbook",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. How to submit take-home assignments that guarantee final-round invites. Top priorities include Write Comprehensive Unit Tests, Include Clear Dockerfile & Readme Setup, and Document Known Tradeoffs & Future Scope. Reviewer Signal reaches Production-Grade Engineering. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Take-Home Coding Projects: The Playbook",
+      "subtitle": "How to submit take-home assignments that guarantee final-round invites."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Write Comprehensive Unit Tests",
+        "Include Clear Dockerfile & Readme Setup",
+        "Document Known Tradeoffs & Future Scope"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Reviewer Signal",
+      "value": "Production-Grade Engineering",
+      "note": "A clean README and working test suite beats over-engineered features."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

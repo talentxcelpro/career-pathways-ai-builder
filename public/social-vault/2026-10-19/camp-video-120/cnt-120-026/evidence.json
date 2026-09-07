@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-026",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Resume Red Flags That Trigger Instant Rejection",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "The subtle errors that cause recruiters to click pass.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "62% Dropped on First Error",
+      "confidence": 0.95
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-038",
+  "scheduled_date": "2026-10-31",
+  "title": "Part-Time Work Rights for International Students",
+  "campaign_id": "camp-video-120",
+  "target_product": "COLLEGES",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-IN-NeerjaNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. How students legally fund their living expenses across Europe. Top priorities include 140 Full Days or 280 Half Days, Minimum Wage: 12.41 Euros/hour, and Working Student Tech Contracts. Monthly Student Income reaches 900 to 1,400 Euros. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Part-Time Work Rights for International Students",
+      "subtitle": "How students legally fund their living expenses across Europe."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "140 Full Days or 280 Half Days",
+        "Minimum Wage: 12.41 Euros/hour",
+        "Working Student Tech Contracts"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Monthly Student Income",
+      "value": "900 to 1,400 Euros",
+      "note": "Working student positions at tech firms often lead to full-time hires."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

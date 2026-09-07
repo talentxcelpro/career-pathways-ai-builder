@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-095",
+  "scheduled_date": "2026-12-27",
+  "title": "IT Support to Cloud DevOps Engineer",
+  "campaign_id": "camp-video-120",
+  "target_product": "CAREER_MAP",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Escaping helpdesk tickets into automated cloud infrastructure. Top priorities include Master Bash Scripting & Git Workflows, Earn AWS Certified SysOps / Architect, and Automate Environments with Terraform. Career Velocity reaches Double Your Compensation. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "IT Support to Cloud DevOps Engineer",
+      "subtitle": "Escaping helpdesk tickets into automated cloud infrastructure."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Master Bash Scripting & Git Workflows",
+        "Earn AWS Certified SysOps / Architect",
+        "Automate Environments with Terraform"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Career Velocity",
+      "value": "Double Your Compensation",
+      "note": "Infrastructure as Code eliminates repetitive manual system administration."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

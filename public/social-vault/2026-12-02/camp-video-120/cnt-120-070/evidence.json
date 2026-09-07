@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-070",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Product Designer (UI/UX) Salary Growth",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Designers who understand design systems and AI interactions command top tier pay.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "$110,000 to $165,000",
+      "confidence": 0.95
+    }
+  ]
+}

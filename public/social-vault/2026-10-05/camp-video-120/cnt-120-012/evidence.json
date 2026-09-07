@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-012",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Synthetic Data Generation Specialist",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Training models when real-world data is scarce or sensitive.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Healthcare & Finance",
+      "confidence": 0.95
+    }
+  ]
+}

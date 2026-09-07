@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-029",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Certifications That Actually Move the Needle",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Which tech credentials impress hiring managers and which are ignored.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "+$14,000 Average Increase",
+      "confidence": 0.95
+    }
+  ]
+}

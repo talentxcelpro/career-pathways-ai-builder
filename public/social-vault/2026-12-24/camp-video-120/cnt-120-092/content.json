@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-092",
+  "scheduled_date": "2026-12-24",
+  "title": "QA Automation Engineer to Full Software Developer",
+  "campaign_id": "camp-video-120",
+  "target_product": "CAREER_MAP",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Leveraging your testing expertise into feature engineering. Top priorities include Deepen Data Structures & Algorithms, Build Fullstack React + Node Backends, and Contribute Directly to Feature Repositories. Salary Jump reaches +40% Base Increase. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "QA Automation Engineer to Full Software Developer",
+      "subtitle": "Leveraging your testing expertise into feature engineering."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Deepen Data Structures & Algorithms",
+        "Build Fullstack React + Node Backends",
+        "Contribute Directly to Feature Repositories"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Salary Jump",
+      "value": "+40% Base Increase",
+      "note": "Developers who write bulletproof automated tests are prized by teams."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

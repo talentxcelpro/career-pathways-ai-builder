@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-094",
+  "scheduled_date": "2026-12-26",
+  "title": "Data Analyst to Machine Learning Engineer",
+  "campaign_id": "camp-video-120",
+  "target_product": "CAREER_MAP",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Moving from descriptive SQL dashboards to predictive production models. Top priorities include Software Engineering Best Practices (OOP), Scikit-Learn, PyTorch & Feature Stores, and Deploying APIs via FastAPI and Docker. Median Salary Gain reaches +$35,000 Average Increase. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Data Analyst to Machine Learning Engineer",
+      "subtitle": "Moving from descriptive SQL dashboards to predictive production models."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Software Engineering Best Practices (OOP)",
+        "Scikit-Learn, PyTorch & Feature Stores",
+        "Deploying APIs via FastAPI and Docker"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Median Salary Gain",
+      "value": "+$35,000 Average Increase",
+      "note": "ML engineering values code quality and model deployment over slide decks."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

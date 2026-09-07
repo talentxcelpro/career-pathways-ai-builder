@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-004",
+  "scheduled_date": "2026-09-27",
+  "title": "AI Solutions Architect Career Roadmap",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Bridging enterprise business problems with foundation models. Top priorities include Fine-Tuning vs RAG Decisions, Data Privacy & SOC2 Compliance, and Inference Latency Optimization. Senior Total Comp reaches $210,000 to $320,000. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "AI Solutions Architect Career Roadmap",
+      "subtitle": "Bridging enterprise business problems with foundation models."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Fine-Tuning vs RAG Decisions",
+        "Data Privacy & SOC2 Compliance",
+        "Inference Latency Optimization"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Senior Total Comp",
+      "value": "$210,000 to $320,000",
+      "note": "Architects with security mastery lead enterprise deals."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-064",
+  "scheduled_date": "2026-11-26",
+  "title": "Staff Engineer Compensation Bands",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. The massive pay leap between Senior and Staff level engineering. Top priorities include Organization-Wide Architecture Scope, Base: $220,000 to $280,000, and Annual Equity: $150,000 to $300,000+. Total Compensation reaches $400,000 to $650,000+. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Staff Engineer Compensation Bands",
+      "subtitle": "The massive pay leap between Senior and Staff level engineering."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Organization-Wide Architecture Scope",
+        "Base: $220,000 to $280,000",
+        "Annual Equity: $150,000 to $300,000+"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Total Compensation",
+      "value": "$400,000 to $650,000+",
+      "note": "Staff engineers influence company strategy and mentor multiple teams."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

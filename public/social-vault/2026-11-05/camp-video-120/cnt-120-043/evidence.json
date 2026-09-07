@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-043",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Post-Study Work Permits Across Europe",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Staying and working in Europe after earning your international degree.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "21 to 27 Months in Germany",
+      "confidence": 0.95
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-072",
+  "scheduled_date": "2026-12-04",
+  "title": "Startup Equity: How to Evaluate Your Offer",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Calculating the real mathematical value of startup options. Top priorities include Know the Total Outstanding Share Count, Understand Current Valuation & Liquidation, and Factor Early Exercise & Tax Costs. Red Flag Signal reaches Hiding Share Counts. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Startup Equity: How to Evaluate Your Offer",
+      "subtitle": "Calculating the real mathematical value of startup options."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Know the Total Outstanding Share Count",
+        "Understand Current Valuation & Liquidation",
+        "Factor Early Exercise & Tax Costs"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Red Flag Signal",
+      "value": "Hiding Share Counts",
+      "note": "Always calculate your percentage ownership rather than raw number of options."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

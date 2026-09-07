@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-027",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Cover Letters in 2026: Do They Still Matter?",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "When cover letters are essential and when they are a waste of time.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Under 250 Words",
+      "confidence": 0.95
+    }
+  ]
+}

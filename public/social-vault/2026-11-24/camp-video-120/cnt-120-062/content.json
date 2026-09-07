@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-062",
+  "scheduled_date": "2026-11-24",
+  "title": "Understanding Equity: RSUs vs Stock Options",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. How tech startup and public company equity actually creates wealth. Top priorities include RSUs: Real Shares with Vesting Schedule, Options: Right to Buy at Strike Price, and 4-Year Vesting with 1-Year Cliff. Wealth Multiplier reaches Up to 60% of Senior Total Comp. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Understanding Equity: RSUs vs Stock Options",
+      "subtitle": "How tech startup and public company equity actually creates wealth."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "RSUs: Real Shares with Vesting Schedule",
+        "Options: Right to Buy at Strike Price",
+        "4-Year Vesting with 1-Year Cliff"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Wealth Multiplier",
+      "value": "Up to 60% of Senior Total Comp",
+      "note": "Never negotiate base salary alone; equity packages compound exponentially."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

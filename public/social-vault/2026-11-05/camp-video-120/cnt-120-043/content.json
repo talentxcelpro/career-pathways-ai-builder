@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-043",
+  "scheduled_date": "2026-11-05",
+  "title": "Post-Study Work Permits Across Europe",
+  "campaign_id": "camp-video-120",
+  "target_product": "COLLEGES",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-IN-NeerjaNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Staying and working in Europe after earning your international degree. Top priorities include Germany: 18-Month Jobseeker Permit, France: 12-Month APS Visa, and Direct Pathway to EU Blue Card. PR Eligibility reaches 21 to 27 Months in Germany. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Post-Study Work Permits Across Europe",
+      "subtitle": "Staying and working in Europe after earning your international degree."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Germany: 18-Month Jobseeker Permit",
+        "France: 12-Month APS Visa",
+        "Direct Pathway to EU Blue Card"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "PR Eligibility",
+      "value": "21 to 27 Months in Germany",
+      "note": "Tech graduates transition seamlessly to permanent residency."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

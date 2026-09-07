@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-014",
+  "scheduled_date": "2026-10-07",
+  "title": "Cybersecurity for AI Applications",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Defending foundation models from prompt injection attacks. Top priorities include Prompt Injection Firewalls, Adversarial Jailbreak Audits, and API Rate & Cost Defense. Security Urgency reaches Critical Vulnerability. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Cybersecurity for AI Applications",
+      "subtitle": "Defending foundation models from prompt injection attacks."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Prompt Injection Firewalls",
+        "Adversarial Jailbreak Audits",
+        "API Rate & Cost Defense"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Security Urgency",
+      "value": "Critical Vulnerability",
+      "note": "Securing enterprise agents is a top CISO mandate in 2026."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

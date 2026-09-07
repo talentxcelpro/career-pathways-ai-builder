@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-065",
+  "scheduled_date": "2026-11-27",
+  "title": "Remote Global Tech Salaries: Geo-Pay Explained",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. How US and European companies pay talent working remotely from abroad. Top priorities include Tiered Regional Adjustments, Global Equalized Pay Startups, and Contractor vs EOR Employment Models. Global Remote Median reaches $80,000 to $140,000 USD. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Remote Global Tech Salaries: Geo-Pay Explained",
+      "subtitle": "How US and European companies pay talent working remotely from abroad."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Tiered Regional Adjustments",
+        "Global Equalized Pay Startups",
+        "Contractor vs EOR Employment Models"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Global Remote Median",
+      "value": "$80,000 to $140,000 USD",
+      "note": "Companies offering uniform global compensation attract the top 1% talent."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

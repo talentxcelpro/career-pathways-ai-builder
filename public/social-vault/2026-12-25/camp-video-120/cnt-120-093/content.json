@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-093",
+  "scheduled_date": "2026-12-25",
+  "title": "Frontend Developer to Fullstack Architect",
+  "campaign_id": "camp-video-120",
+  "target_product": "CAREER_MAP",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Expanding your skills into backend distributed systems and databases. Top priorities include Master Node.js, Go, or Python Backends, Relational Database Schema Design (Postgres), and Caching Layers & Microservice APIs. Market Versatility reaches Eligible for 2.2x More Roles. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Frontend Developer to Fullstack Architect",
+      "subtitle": "Expanding your skills into backend distributed systems and databases."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Master Node.js, Go, or Python Backends",
+        "Relational Database Schema Design (Postgres)",
+        "Caching Layers & Microservice APIs"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Market Versatility",
+      "value": "Eligible for 2.2x More Roles",
+      "note": "Owning the full stack makes you an indispensable product builder."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

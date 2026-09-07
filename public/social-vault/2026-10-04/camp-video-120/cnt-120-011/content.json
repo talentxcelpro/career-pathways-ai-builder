@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-011",
+  "scheduled_date": "2026-10-04",
+  "title": "MLOps: Deploying Models at Scale",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Moving models from Jupyter notebooks into resilient production. Top priorities include vLLM & TGI Serving Clusters, GPU Auto-Scaling on Kubernetes, and Real-Time Drift Monitoring. Operational Priority reaches High Infrastructure ROI. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "MLOps: Deploying Models at Scale",
+      "subtitle": "Moving models from Jupyter notebooks into resilient production."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "vLLM & TGI Serving Clusters",
+        "GPU Auto-Scaling on Kubernetes",
+        "Real-Time Drift Monitoring"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Operational Priority",
+      "value": "High Infrastructure ROI",
+      "note": "MLOps engineers stop expensive idle GPU cloud bills."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

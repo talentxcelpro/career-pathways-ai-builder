@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-020",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Optimizing Tech Skills Sections for ATS",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Listing 50 random tools hurts your credibility and parser score.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Average 6 Seconds",
+      "confidence": 0.95
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-024",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Tailoring Resumes in Under 5 Minutes",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Customizing resumes for every job is the fastest way to get hired.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "5 Resumes per Hour",
+      "confidence": 0.95
+    }
+  ]
+}

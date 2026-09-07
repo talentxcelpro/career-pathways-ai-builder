@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-006",
+  "scheduled_date": "2026-09-29",
+  "title": "AI Governance & Safety Officer Roles",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Global compliance laws require certified AI oversight. Top priorities include EU AI Act Risk Auditing, Bias & Fairness Testing, and Hallucination Mitigation. Corporate Demand reaches Mandatory in 2026. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "AI Governance & Safety Officer Roles",
+      "subtitle": "Global compliance laws require certified AI oversight."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "EU AI Act Risk Auditing",
+        "Bias & Fairness Testing",
+        "Hallucination Mitigation"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Corporate Demand",
+      "value": "Mandatory in 2026",
+      "note": "Legal and tech hybrid professionals lead these teams."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

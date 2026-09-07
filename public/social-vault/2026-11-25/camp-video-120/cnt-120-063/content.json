@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-063",
+  "scheduled_date": "2026-11-25",
+  "title": "How to Negotiate Tech Offers in 2026",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Tactical scripts and rules to increase your starting compensation. Top priorities include Never State Your Current Pay First, Use Competing Offers as Leverage, and Negotiate Sign-On Bonuses & Relocation. Average Negotiation Gain reaches +$12,000 to +$28,000. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "How to Negotiate Tech Offers in 2026",
+      "subtitle": "Tactical scripts and rules to increase your starting compensation."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Never State Your Current Pay First",
+        "Use Competing Offers as Leverage",
+        "Negotiate Sign-On Bonuses & Relocation"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Average Negotiation Gain",
+      "value": "+$12,000 to +$28,000",
+      "note": "Companies expect counter-offers; professional negotiation shows confidence."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-100",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Overcoming Imposter Syndrome in Tech",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Navigating self-doubt when stepping into senior engineering roles.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Key Factor in Executive Growth",
+      "confidence": 0.95
+    }
+  ]
+}

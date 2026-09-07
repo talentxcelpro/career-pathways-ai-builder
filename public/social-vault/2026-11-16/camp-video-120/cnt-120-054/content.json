@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-054",
+  "scheduled_date": "2026-11-16",
+  "title": "Gates Cambridge Scholarship: Cambridge University",
+  "campaign_id": "camp-video-120",
+  "target_product": "SCHOLARSHIPS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. One of the most competitive full-cost awards in academic history. Top priorities include Full Cost of Studying at Cambridge, Maintenance Allowance: 20,000 Pounds/yr, and Discretionary Academic Development Funds. Acceptance Rate reaches Under 1.5% Globally. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Gates Cambridge Scholarship: Cambridge University",
+      "subtitle": "One of the most competitive full-cost awards in academic history."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Full Cost of Studying at Cambridge",
+        "Maintenance Allowance: 20,000 Pounds/yr",
+        "Discretionary Academic Development Funds"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Acceptance Rate",
+      "value": "Under 1.5% Globally",
+      "note": "Awarded to candidates showing outstanding intellectual ability and leadership."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-010",
+  "scheduled_date": "2026-10-03",
+  "title": "Data Pipeline Engineering for LLMs",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Cleaning and structuring enterprise knowledge bases. Top priorities include Unstructured PDF/Doc Scraping, Semantic Chunking Strategies, and Automated Deduplication. Data Integrity reaches 80% of Model Success. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Data Pipeline Engineering for LLMs",
+      "subtitle": "Cleaning and structuring enterprise knowledge bases."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Unstructured PDF/Doc Scraping",
+        "Semantic Chunking Strategies",
+        "Automated Deduplication"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Data Integrity",
+      "value": "80% of Model Success",
+      "note": "Clean retrieval data prevents costly model hallucinations."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

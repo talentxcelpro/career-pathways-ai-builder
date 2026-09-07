@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-046",
+  "scheduled_date": "2026-11-08",
+  "title": "DAAD Scholarship Germany: Complete Guide",
+  "campaign_id": "camp-video-120",
+  "target_product": "SCHOLARSHIPS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. The world's most prestigious funding program for graduate studies. Top priorities include Full Tuition Waiver, 934 Euros Monthly Living Stipend, and Health Insurance & Travel Airfare. Total Funding Value reaches Over 30,000 Euros. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "DAAD Scholarship Germany: Complete Guide",
+      "subtitle": "The world's most prestigious funding program for graduate studies."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Full Tuition Waiver",
+        "934 Euros Monthly Living Stipend",
+        "Health Insurance & Travel Airfare"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Total Funding Value",
+      "value": "Over 30,000 Euros",
+      "note": "Over 100,000 scholars funded annually across all scientific disciplines."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

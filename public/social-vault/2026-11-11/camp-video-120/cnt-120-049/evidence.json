@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-049",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Erasmus Mundus Joint Master's: Europe",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Study in at least three European countries with full financial support.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Double or Joint European Degree",
+      "confidence": 0.95
+    }
+  ]
+}

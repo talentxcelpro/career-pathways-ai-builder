@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-003",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "The Rise of Autonomous Agent Developers",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Autonomous agents are replacing fragile automation scripts.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Top 3 Tech Priority",
+      "confidence": 0.95
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-016",
+  "scheduled_date": "2026-10-09",
+  "title": "Why 75% of Resumes Never Reach Recruiters",
+  "campaign_id": "camp-video-120",
+  "target_product": "RESUME_ATS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Applicant Tracking Systems reject resumes before human eyes see them. Top priorities include Complex Multi-Column Layouts, Unparseable Graphic Headers, and Missing Exact Taxonomy Keywords. Passing Rate Boost reaches From 18% to 84%. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Why 75% of Resumes Never Reach Recruiters",
+      "subtitle": "Applicant Tracking Systems reject resumes before human eyes see them."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Complex Multi-Column Layouts",
+        "Unparseable Graphic Headers",
+        "Missing Exact Taxonomy Keywords"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Passing Rate Boost",
+      "value": "From 18% to 84%",
+      "note": "A single-column standard format guarantees 100% parse rate."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

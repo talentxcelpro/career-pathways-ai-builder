@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-060",
+  "scheduled_date": "2026-11-22",
+  "title": "Search 500+ Verified Scholarships on TalentXcel",
+  "campaign_id": "camp-video-120",
+  "target_product": "SCHOLARSHIPS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Filter verified scholarships by citizenship, degree level, and coverage. Top priorities include Official Provider Verified Links, Live Deadline Tracking, and Zero Cost-to-Learn Options. Directory Access reaches 100% Free & Transparent. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Search 500+ Verified Scholarships on TalentXcel",
+      "subtitle": "Filter verified scholarships by citizenship, degree level, and coverage."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Official Provider Verified Links",
+        "Live Deadline Tracking",
+        "Zero Cost-to-Learn Options"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Directory Access",
+      "value": "100% Free & Transparent",
+      "note": "Discover your path to a debt-free international education today."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

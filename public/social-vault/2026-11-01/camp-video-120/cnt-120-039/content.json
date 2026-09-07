@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-039",
+  "scheduled_date": "2026-11-01",
+  "title": "University of the People: 100% Tuition-Free",
+  "campaign_id": "camp-video-120",
+  "target_product": "COLLEGES",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-IN-NeerjaNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Accredited American online university designed for global access. Top priorities include BSc in Computer Science & MBA, Fully Online Flexible Pacing, and Assessment Fee Scholarships Available. Tuition Charged reaches $0 Tuition Ever. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "University of the People: 100% Tuition-Free",
+      "subtitle": "Accredited American online university designed for global access."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "BSc in Computer Science & MBA",
+        "Fully Online Flexible Pacing",
+        "Assessment Fee Scholarships Available"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Tuition Charged",
+      "value": "$0 Tuition Ever",
+      "note": "Accredited by DEAC and recognized by top technology employers."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

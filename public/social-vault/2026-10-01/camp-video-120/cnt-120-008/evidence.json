@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-008",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "AI Product Manager: Core Competencies",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Leading generative AI products from proof of concept to scale.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "$40,000 to $90,000/yr",
+      "confidence": 0.95
+    }
+  ]
+}

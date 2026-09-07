@@ -1,0 +1,46 @@
+{
+  "manifest_version": "2026.09.1",
+  "content_id": "cnt-120-033",
+  "content_version": 1,
+  "scheduled_date": "2026-10-26",
+  "campaign_id": "camp-video-120",
+  "target_product": "COLLEGES",
+  "format_type": "SHORT_FORM_VIDEO",
+  "quality_score": 88,
+  "status": "READY_FOR_REVIEW",
+  "created_at": "2026-09-07T04:48:14.254Z",
+  "assets": [
+    {
+      "asset_id": "ast-cnt-120-033-video-9x16",
+      "asset_type": "VIDEO",
+      "relative_path": "youtube/video_9x16.mp4",
+      "checksum": "sha256:35f10ae70704fbf5e17c1b736d1e01fdc8d3e6674f12110bf818ae8661635a8e",
+      "file_size_bytes": 975904,
+      "mime_type": "video/mp4"
+    },
+    {
+      "asset_id": "ast-cnt-120-033-audio",
+      "asset_type": "AUDIO",
+      "relative_path": "youtube/narration.wav",
+      "checksum": "sha256:4c513460bf298757d9f39ad95b071eaebb6f3d60931991589138ad90b3f52b4b",
+      "file_size_bytes": 2519070,
+      "mime_type": "audio/wav"
+    },
+    {
+      "asset_id": "ast-cnt-120-033-captions",
+      "asset_type": "CAPTIONS",
+      "relative_path": "youtube/captions.vtt",
+      "checksum": "sha256:628600bd2037978b694fd4354c4bc5d795b95533a33fec98a06dd5531ea84f41",
+      "file_size_bytes": 519,
+      "mime_type": "text/vtt"
+    },
+    {
+      "asset_id": "ast-cnt-120-033-thumbnail",
+      "asset_type": "THUMBNAIL",
+      "relative_path": "youtube/thumbnail.svg",
+      "checksum": "sha256:3bfdfd7697d74ba39e80c383b00d746e66f333d75b432da2b5da40a94a60587a",
+      "file_size_bytes": 1306,
+      "mime_type": "image/svg+xml"
+    }
+  ]
+}

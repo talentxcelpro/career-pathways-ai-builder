@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-077",
+  "scheduled_date": "2026-12-09",
+  "title": "Cracking the Behavioral Interview with STAR",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Answering leadership and conflict questions with decisive authority. Top priorities include Situation: Crisp Background Context, Task: Your Specific Accountability, and Action & Result: Quantified Business Win. Evaluation Factor reaches Culture & Executive Presence. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Cracking the Behavioral Interview with STAR",
+      "subtitle": "Answering leadership and conflict questions with decisive authority."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Situation: Crisp Background Context",
+        "Task: Your Specific Accountability",
+        "Action & Result: Quantified Business Win"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Evaluation Factor",
+      "value": "Culture & Executive Presence",
+      "note": "Keep your story focused on \"I\" rather than vague team accomplishments."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

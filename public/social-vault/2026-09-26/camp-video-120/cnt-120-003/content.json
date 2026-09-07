@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-003",
+  "scheduled_date": "2026-09-26",
+  "title": "The Rise of Autonomous Agent Developers",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Autonomous agents are replacing fragile automation scripts. Top priorities include Multi-Agent Tool Calling, Self-Correcting Reasoning Loops, and Long-Term State Memory. Hiring Urgency reaches Top 3 Tech Priority. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "The Rise of Autonomous Agent Developers",
+      "subtitle": "Autonomous agents are replacing fragile automation scripts."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Multi-Agent Tool Calling",
+        "Self-Correcting Reasoning Loops",
+        "Long-Term State Memory"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Hiring Urgency",
+      "value": "Top 3 Tech Priority",
+      "note": "Production agent reliability is the highest paid skill."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

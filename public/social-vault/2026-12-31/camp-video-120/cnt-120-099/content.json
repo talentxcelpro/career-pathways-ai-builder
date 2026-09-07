@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-099",
+  "scheduled_date": "2026-12-31",
+  "title": "The 30-Day Networking Sprint on LinkedIn",
+  "campaign_id": "camp-video-120",
+  "target_product": "CAREER_MAP",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. How to get employee referrals at target companies without cold spamming. Top priorities include Engage with Engineering Leader Posts, Ask Insightful Technical Questions on Architecture, and Request 15-Minute Informational Chats. Referral Advantage reaches 8x Higher Interview Rate. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "The 30-Day Networking Sprint on LinkedIn",
+      "subtitle": "How to get employee referrals at target companies without cold spamming."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Engage with Engineering Leader Posts",
+        "Ask Insightful Technical Questions on Architecture",
+        "Request 15-Minute Informational Chats"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Referral Advantage",
+      "value": "8x Higher Interview Rate",
+      "note": "Employee referrals jump to the front of internal recruiter queues."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

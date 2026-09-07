@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-040",
+  "scheduled_date": "2026-11-02",
+  "title": "Study in Taiwan: Generous Ministry Grants",
+  "campaign_id": "camp-video-120",
+  "target_product": "COLLEGES",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-IN-NeerjaNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Asia's semiconductor powerhouse offers massive international scholarships. Top priorities include National Taiwan University (NTU), Full Tuition Waiver + Living Stipend, and Direct Ties to TSMC & Tech Hubs. Monthly Living Grant reaches 15,000 to 20,000 NTD. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Study in Taiwan: Generous Ministry Grants",
+      "subtitle": "Asia's semiconductor powerhouse offers massive international scholarships."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "National Taiwan University (NTU)",
+        "Full Tuition Waiver + Living Stipend",
+        "Direct Ties to TSMC & Tech Hubs"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Monthly Living Grant",
+      "value": "15,000 to 20,000 NTD",
+      "note": "Cutting-edge hardware and microelectronics engineering facilities."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

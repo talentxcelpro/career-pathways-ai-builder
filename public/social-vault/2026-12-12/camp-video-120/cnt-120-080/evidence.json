@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-080",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "How to Handle Live Coding Freeze",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "What to do when your mind goes completely blank on a coding screen.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Grace Under Real Pressure",
+      "confidence": 0.95
+    }
+  ]
+}

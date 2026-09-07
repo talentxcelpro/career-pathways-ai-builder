@@ -177,7 +177,7 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
     }
   };
 
-  const getPostUrl = () => `${window.location.origin}/network/posts/${post.id}`;
+  const getPostUrl = () => `${window.location.origin}/post/${post.id}`;
 
   // Copy Post Link
   const handleCopyLink = async () => {

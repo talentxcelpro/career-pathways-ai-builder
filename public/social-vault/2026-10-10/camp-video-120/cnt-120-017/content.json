@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-017",
+  "scheduled_date": "2026-10-10",
+  "title": "The 3 ATS Formatting Traps to Avoid",
+  "campaign_id": "camp-video-120",
+  "target_product": "RESUME_ATS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Visual templates from design tools often fail plain-text parsers. Top priorities include Text Inside Embedded Images, Custom Icon Bullet Points, and Fancy Table Borders & Footers. Parser Recommendation reaches Standard Unicode Bullets. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "The 3 ATS Formatting Traps to Avoid",
+      "subtitle": "Visual templates from design tools often fail plain-text parsers."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Text Inside Embedded Images",
+        "Custom Icon Bullet Points",
+        "Fancy Table Borders & Footers"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Parser Recommendation",
+      "value": "Standard Unicode Bullets",
+      "note": "Clean semantic headers parse cleanly on Workday and Taleo."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

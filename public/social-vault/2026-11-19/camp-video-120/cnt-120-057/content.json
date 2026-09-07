@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-057",
+  "scheduled_date": "2026-11-19",
+  "title": "Securing Strong Letters of Recommendation",
+  "campaign_id": "camp-video-120",
+  "target_product": "SCHOLARSHIPS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. How to turn generic professor references into decisive endorsements. Top priorities include Provide a Bulleted Brag Sheet, Give Recommenders 6 Weeks Notice, and Highlight Leadership & Research Grit. Endorsement Power reaches Top 3 Ranking Parameter. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Securing Strong Letters of Recommendation",
+      "subtitle": "How to turn generic professor references into decisive endorsements."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Provide a Bulleted Brag Sheet",
+        "Give Recommenders 6 Weeks Notice",
+        "Highlight Leadership & Research Grit"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Endorsement Power",
+      "value": "Top 3 Ranking Parameter",
+      "note": "A detailed letter from an active collaborator beats a vague note from a dean."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

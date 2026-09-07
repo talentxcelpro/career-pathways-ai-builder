@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-082",
+  "scheduled_date": "2026-12-14",
+  "title": "Preparing for Technical Screening Calls",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Passing the 30-minute initial recruiter filter with ease. Top priorities include Crisp 90-Second Career Story, Fluent Explanation of Recent Projects, and Confident Compensation Expectations. Screening Pass Rate reaches 90%+ with Preparation. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Preparing for Technical Screening Calls",
+      "subtitle": "Passing the 30-minute initial recruiter filter with ease."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Crisp 90-Second Career Story",
+        "Fluent Explanation of Recent Projects",
+        "Confident Compensation Expectations"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Screening Pass Rate",
+      "value": "90%+ with Preparation",
+      "note": "Be positive, articulate, and show clear passion for the company's mission."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

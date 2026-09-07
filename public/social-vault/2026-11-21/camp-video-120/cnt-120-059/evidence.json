@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-059",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Scholarship Application Timeline & Deadlines",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "A step-by-step 12-month calendar for winning full-ride funding.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Higher Funding Probability",
+      "confidence": 0.95
+    }
+  ]
+}

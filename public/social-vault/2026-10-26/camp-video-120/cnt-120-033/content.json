@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-033",
+  "scheduled_date": "2026-10-26",
+  "title": "Finland Free Tuition for EU & Scholarships",
+  "campaign_id": "camp-video-120",
+  "target_product": "COLLEGES",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-IN-NeerjaNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. World-renowned Nordic educational quality and tech ecosystem. Top priorities include Aalto University Tech Programs, University of Helsinki AI Track, and Up to 100% Tuition Waivers. Post-Study Visa reaches 2-Year Work Search Visa. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Finland Free Tuition for EU & Scholarships",
+      "subtitle": "World-renowned Nordic educational quality and tech ecosystem."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Aalto University Tech Programs",
+        "University of Helsinki AI Track",
+        "Up to 100% Tuition Waivers"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Post-Study Visa",
+      "value": "2-Year Work Search Visa",
+      "note": "High post-graduation tech employment in robotics and telecom."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

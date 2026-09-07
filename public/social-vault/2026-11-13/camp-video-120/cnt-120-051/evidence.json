@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-051",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Commonwealth Scholarships: UK & Global",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Funding for exceptional talent from Commonwealth member nations.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Academic Merit & Development Impact",
+      "confidence": 0.95
+    }
+  ]
+}

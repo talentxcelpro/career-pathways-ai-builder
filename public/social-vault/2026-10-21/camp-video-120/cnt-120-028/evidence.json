@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-028",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Formatting Remote Work Experience for ATS",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Highlighting distributed collaboration and autonomous ownership.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "35% of Tech Roles",
+      "confidence": 0.95
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-007",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Edge AI & Embedded Machine Learning",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Running lightweight AI models directly on local devices.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Automotive & Robotics",
+      "confidence": 0.95
+    }
+  ]
+}

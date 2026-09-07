@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-034",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Austria Public Universities Low-Cost Degree",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "European degrees with tuition capped at under 800 euros per semester.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Around 726 Euros",
+      "confidence": 0.95
+    }
+  ]
+}

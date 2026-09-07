@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-104",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Building in Public: Attracting Inbound Job Offers",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "How sharing your technical learning journey online attracts hiring managers.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Recruiters Come to You",
+      "confidence": 0.95
+    }
+  ]
+}

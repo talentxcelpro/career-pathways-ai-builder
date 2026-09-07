@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-097",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Building a Tech Portfolio That Gets Interviews",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Why 3 deployed, production-grade apps beat 20 tutorial clones.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "70% Look at Live Demos",
+      "confidence": 0.95
+    }
+  ]
+}

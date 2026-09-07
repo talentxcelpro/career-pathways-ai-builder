@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-040",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Study in Taiwan: Generous Ministry Grants",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Asia's semiconductor powerhouse offers massive international scholarships.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "15,000 to 20,000 NTD",
+      "confidence": 0.95
+    }
+  ]
+}

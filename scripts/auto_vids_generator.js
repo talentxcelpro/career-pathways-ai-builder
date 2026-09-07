@@ -19,7 +19,7 @@ async function generateAndDownloadVidsClip(options) {
   // Ensure prompt side sheet is open
   const aiVideoTab = await page.$('button[aria-label="Create"], [aria-label="AI Video"]');
   if (aiVideoTab) {
-    await aiVideoTab.click();
+    try { await aiVideoTab.click({ force: true }); } catch {}
     await page.waitForTimeout(1000);
   }
 
@@ -31,7 +31,19 @@ async function generateAndDownloadVidsClip(options) {
     throw new Error('Prompt textbox not found in Google Vids UI');
   }
 
-  await textbox.click();
+  // Focus and select all content
+  await page.evaluate(() => {
+    const el = document.querySelector('[aria-label*="Describe your video"]');
+    if (el) {
+      el.focus();
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  });
+  await textbox.click({ force: true });
   await page.keyboard.press('Control+A');
   await page.keyboard.press('Backspace');
   await page.keyboard.type(prompt, { delay: 10 });
@@ -43,7 +55,7 @@ async function generateAndDownloadVidsClip(options) {
     await browser.close();
     throw new Error('Generate button not found');
   }
-  await genBtn.click();
+  await genBtn.click({ force: true });
   console.log(`[GoogleVids] Generation requested. Waiting for Google Veo render...`);
 
   // Monitor generation

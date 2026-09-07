@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-013",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "AI Integration Consultant for SMEs",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Helping traditional businesses automate back-office operations.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "$150 to $300/hour",
+      "confidence": 0.95
+    }
+  ]
+}

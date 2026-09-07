@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-044",
+  "scheduled_date": "2026-11-06",
+  "title": "Top 5 Tuition-Free Engineering Programs",
+  "campaign_id": "camp-video-120",
+  "target_product": "COLLEGES",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-IN-NeerjaNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. The highest-ranked engineering universities charging zero tuition. Top priorities include RWTH Aachen Mechanical & Electrical, TU Berlin Computer Science, and Karlsruhe Institute of Technology (KIT). Global Rank reaches Top 100 Engineering Worldwide. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Top 5 Tuition-Free Engineering Programs",
+      "subtitle": "The highest-ranked engineering universities charging zero tuition."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "RWTH Aachen Mechanical & Electrical",
+        "TU Berlin Computer Science",
+        "Karlsruhe Institute of Technology (KIT)"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Global Rank",
+      "value": "Top 100 Engineering Worldwide",
+      "note": "World-class laboratories funded directly by European industrial leaders."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

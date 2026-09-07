@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-029",
+  "scheduled_date": "2026-10-22",
+  "title": "Certifications That Actually Move the Needle",
+  "campaign_id": "camp-video-120",
+  "target_product": "RESUME_ATS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Which tech credentials impress hiring managers and which are ignored. Top priorities include AWS / GCP Solutions Architect, Kubernetes CKA Certification, and CompTIA Security+ / CISSP. Salary Premium reaches +$14,000 Average Increase. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Certifications That Actually Move the Needle",
+      "subtitle": "Which tech credentials impress hiring managers and which are ignored."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "AWS / GCP Solutions Architect",
+        "Kubernetes CKA Certification",
+        "CompTIA Security+ / CISSP"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Salary Premium",
+      "value": "+$14,000 Average Increase",
+      "note": "Hands-on practical performance exams beat multiple-choice badges."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

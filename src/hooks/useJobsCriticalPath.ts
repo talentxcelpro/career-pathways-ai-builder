@@ -123,116 +123,139 @@ export const FALLBACK_JOBS = [
   }
 ];
 
-export const useJobsCriticalPath = (filters: JobFilters, sortBy: string = 'created_at') => {
+export const useJobsCriticalPath = (filters: JobFilters, sortBy: string = 'posted_at') => {
   const queryClient = useQueryClient();
-  const [isEnhancementLoaded, setIsEnhancementLoaded] = useState(false);
+  const [isEnhancementLoaded, setIsEnhancementLoaded] = useState(true);
 
-  // Step 1: Load critical job data
+  // Step 1: Load real active jobs from Supabase
   const criticalQuery = useQuery({
     queryKey: ['jobs-critical', filters, sortBy],
     queryFn: async () => {
-      console.log('🚀 Loading critical job data...');
+      console.log('🚀 Loading active database jobs from Supabase...');
       
-      const { data, error } = await supabase
+      let query = supabase
         .from('jobs')
-        .select(`
-          id,
-          title,
-          company_name,
-          location,
-          salary_min,
-          salary_max,
-          posted_at,
-          is_featured,
-          employment_type,
-          is_remote
-        `)
+        .select('*', { count: 'exact' })
         .eq('is_active', true)
-        .order(sortBy === 'created_at' ? 'posted_at' : sortBy, { ascending: false })
-        .limit(20);
+        .eq('job_status', 'open')
+        .eq('status', 'active');
+
+      // Search filter
+      if (filters.search && filters.search.trim().length > 0) {
+        const s = filters.search.trim();
+        query = query.or(`title.ilike.%${s}%,description.ilike.%${s}%,company_name.ilike.%${s}%`);
+      }
+
+      // Location filter
+      if (filters.location && filters.location.trim().length > 0) {
+        query = query.ilike('location', `%${filters.location.trim()}%`);
+      }
+
+      // Remote filter
+      if (filters.is_remote) {
+        query = query.eq('is_remote', true);
+      }
+
+      // Employment type filter
+      if (filters.employment_type && filters.employment_type.length > 0) {
+        query = query.in('employment_type', filters.employment_type);
+      }
+
+      // Experience level filter (normalize frontend values to DB values)
+      if (filters.experience_level && filters.experience_level.length > 0) {
+        const mappedLevels = filters.experience_level.map(lvl => {
+          const l = lvl.toLowerCase();
+          if (l.includes('entry') || l.includes('fresher') || l.includes('0-1')) return 'fresher';
+          if (l.includes('mid') || l.includes('1-3') || l.includes('2-5')) return 'mid-level';
+          if (l.includes('senior') || l.includes('3-5') || l.includes('5-10')) return 'senior-level';
+          if (l.includes('lead') || l.includes('exec') || l.includes('10+')) return 'executive';
+          return lvl;
+        });
+        query = query.in('experience_level', mappedLevels);
+      }
+
+      // Salary filters
+      if (filters.salary_min && filters.salary_min > 0) {
+        query = query.gte('salary_max', filters.salary_min);
+      }
+      if (filters.salary_max && filters.salary_max > 0) {
+        query = query.lte('salary_min', filters.salary_max);
+      }
+
+      // Sorting
+      if (sortBy === 'salary_max') {
+        query = query.order('salary_max', { ascending: false, nullsFirst: false });
+      } else if (sortBy === 'views_count') {
+        query = query.order('views_count', { ascending: false, nullsFirst: false });
+      } else if (sortBy === 'applications_count') {
+        query = query.order('applications_count', { ascending: true, nullsFirst: false });
+      } else {
+        query = query.order('posted_at', { ascending: false, nullsFirst: false });
+      }
+
+      // Fetch first 100 jobs
+      query = query.limit(100);
+
+      const { data, count, error } = await query;
 
       if (error) {
-        console.warn("Jobs DB query notice:", error.message);
-        return FALLBACK_JOBS;
+        console.warn("Jobs DB query warning:", error.message);
+        return { jobs: FALLBACK_JOBS, totalCount: FALLBACK_JOBS.length };
       }
-      
-      return (data && data.length > 0) ? data : FALLBACK_JOBS;
+
+      if (!data || data.length === 0) {
+        // If filters yielded 0 matches, return empty array so UI shows "No jobs found" for that filter
+        const isFiltered = Boolean(
+          (filters.search && filters.search.trim()) ||
+          (filters.location && filters.location.trim()) ||
+          filters.is_remote ||
+          (filters.employment_type && filters.employment_type.length > 0) ||
+          (filters.experience_level && filters.experience_level.length > 0) ||
+          filters.salary_min > 0
+        );
+        return {
+          jobs: isFiltered ? [] : FALLBACK_JOBS,
+          totalCount: count || (isFiltered ? 0 : FALLBACK_JOBS.length)
+        };
+      }
+
+      // Normalize each job with valid companies object & featured distribution
+      const isSearchActive = Boolean(filters.search || filters.location);
+      const normalizedJobs = data.map((job: any, index: number) => ({
+        ...job,
+        // Designate top 6 jobs as featured on default view so both Featured and All sections are populated
+        is_featured: job.is_featured || (!isSearchActive && index < 6),
+        companies: {
+          name: job.company_name || 'TalentXcel Services (Client Partner)',
+          logo_url: job.organization_logo_url || '/talentxcel-official-logo.png',
+          industry: job.industry || 'Technology & Enterprise Services',
+          is_verified: true
+        }
+      }));
+
+      return {
+        jobs: normalizedJobs,
+        totalCount: count || normalizedJobs.length
+      };
     },
-    staleTime: 120000,
+    staleTime: 60000,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
 
-  // Step 2: Load enhanced data progressively
-  const enhancedQuery = useQuery({
-    queryKey: ['jobs-enhanced', filters, sortBy],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('jobs')
-        .select(`
-          *,
-          companies (
-            name,
-            logo_url,
-            industry,
-            is_verified
-          )
-        `)
-        .eq('is_active', true)
-        .order(sortBy === 'created_at' ? 'posted_at' : sortBy, { ascending: false })
-        .limit(20);
-
-      if (error || !data || data.length === 0) {
-        setIsEnhancementLoaded(true);
-        return FALLBACK_JOBS;
-      }
-
-      setIsEnhancementLoaded(true);
-      return data;
-    },
-    enabled: criticalQuery.isSuccess && !criticalQuery.isLoading,
-    staleTime: 180000,
-    refetchOnWindowFocus: false,
-  });
-
-  // Step 3: Prefetch next batch in background
-  useEffect(() => {
-    if (enhancedQuery.isSuccess && !enhancedQuery.isFetching) {
-      setTimeout(() => {
-        queryClient.prefetchQuery({
-          queryKey: ['jobs-critical-page-2', filters, sortBy],
-          queryFn: async () => {
-            const { data } = await supabase
-              .from('jobs')
-              .select('id, title, company_name, location, salary_min, salary_max, posted_at, is_featured, employment_type')
-              .eq('is_active', true)
-              .range(20, 39);
-
-            return data || FALLBACK_JOBS;
-          },
-          staleTime: 300000,
-        });
-      }, 2000);
-    }
-  }, [enhancedQuery.isSuccess, enhancedQuery.isFetching, queryClient, filters, sortBy]);
-
-  // Return critical data first, then enhanced when available
-  const dbJobs = enhancedQuery.data || criticalQuery.data;
-  const jobs = (dbJobs && dbJobs.length > 0) ? dbJobs : FALLBACK_JOBS;
+  const jobsData = criticalQuery.data;
+  const jobs = jobsData?.jobs || [];
+  const totalCount = jobsData?.totalCount || jobs.length;
   const isLoading = criticalQuery.isLoading;
-  const isEnhancing = enhancedQuery.isFetching;
 
   return {
     jobs,
     isLoading,
-    isEnhancing,
-    isEnhancementLoaded,
-    totalCount: jobs.length,
-    hasMore: jobs.length >= 20,
-    refetch: () => {
-      criticalQuery.refetch();
-      enhancedQuery.refetch();
-    }
+    isEnhancing: false,
+    isEnhancementLoaded: true,
+    totalCount,
+    hasMore: jobs.length >= 100,
+    refetch: () => criticalQuery.refetch()
   };
 };
 

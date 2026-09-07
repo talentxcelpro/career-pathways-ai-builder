@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-090",
+  "scheduled_date": "2026-12-22",
+  "title": "Ace Your Next Interview with TalentXcel",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Practice with verified system design and role-specific interview tracks. Top priorities include Real Company Question Banks, Verified Architecture Templates, and Interactive Interview Simulator. Preparation Advantage reaches Land Offers 2x Faster. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Ace Your Next Interview with TalentXcel",
+      "subtitle": "Practice with verified system design and role-specific interview tracks."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Real Company Question Banks",
+        "Verified Architecture Templates",
+        "Interactive Interview Simulator"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Preparation Advantage",
+      "value": "Land Offers 2x Faster",
+      "note": "Level up your technical interview performance at talentxcel dot com."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

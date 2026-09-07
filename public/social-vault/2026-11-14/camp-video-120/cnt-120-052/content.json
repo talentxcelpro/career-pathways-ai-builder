@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-052",
+  "scheduled_date": "2026-11-14",
+  "title": "MEXT Scholarship Japan: Japanese Government",
+  "campaign_id": "camp-video-120",
+  "target_product": "SCHOLARSHIPS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Full-ride undergraduate and graduate funding in Tokyo and Kyoto. Top priorities include 100% Tuition and Examination Fees, 143,000 to 145,000 Yen Monthly Stipend, and Round-Trip International Flights. Japanese Language reaches Free Prep Year Included. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "MEXT Scholarship Japan: Japanese Government",
+      "subtitle": "Full-ride undergraduate and graduate funding in Tokyo and Kyoto."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "100% Tuition and Examination Fees",
+        "143,000 to 145,000 Yen Monthly Stipend",
+        "Round-Trip International Flights"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Japanese Language",
+      "value": "Free Prep Year Included",
+      "note": "No prior Japanese language fluency required for science and tech tracks."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

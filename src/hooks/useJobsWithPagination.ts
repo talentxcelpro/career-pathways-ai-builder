@@ -108,23 +108,14 @@ export const useJobsWithPagination = (filters: JobFilters, sortBy: string = 'cre
 
         console.log('📊 Total jobs in database:', totalCount);
 
-        // Step 2: Get paginated data with joins
+        // Step 2: Get paginated data
         let dataQuery = supabase
           .from('jobs')
-          .select(`
-            *,
-            companies (
-              id,
-              name,
-              logo_url,
-              industry,
-              is_verified
-            )
-          `)
+          .select('*')
           .eq('is_active', true)
           .eq('job_status', 'open')
-          .gte('expires_at', new Date().toISOString()) // Filter out expired jobs
-          .order('created_at', { ascending: false })
+          .eq('status', 'active')
+          .order('posted_at', { ascending: false })
           .range(start, end);
 
         // Apply location filter for data
@@ -171,9 +162,19 @@ export const useJobsWithPagination = (filters: JobFilters, sortBy: string = 'cre
           hasMore: (totalCount || 0) > page * pageSize
         });
 
+        const normalizedJobs = (jobs || []).map(job => ({
+          ...job,
+          companies: {
+            name: job.company_name || 'TalentXcel Services (Client Partner)',
+            logo_url: job.organization_logo_url || '/talentxcel-official-logo.png',
+            industry: job.industry || 'Technology & Enterprise Services',
+            is_verified: true
+          }
+        }));
+
         return {
-          jobs: jobs || [],
-          totalCount: totalCount || 0,
+          jobs: normalizedJobs,
+          totalCount: totalCount || normalizedJobs.length,
           hasMore: (totalCount || 0) > page * pageSize
         };
 

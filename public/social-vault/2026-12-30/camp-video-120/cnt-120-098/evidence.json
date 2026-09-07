@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-098",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Contributing to Open Source for Career Growth",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "How public GitHub pull requests replace traditional experience credentials.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Unassailable Public Code Proof",
+      "confidence": 0.95
+    }
+  ]
+}

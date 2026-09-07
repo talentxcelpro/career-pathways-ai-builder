@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-075",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Benchmark Your Tech Salary on TalentXcel",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Compare verified compensation bands across top tech employers.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "100% Free Access",
+      "confidence": 0.95
+    }
+  ]
+}

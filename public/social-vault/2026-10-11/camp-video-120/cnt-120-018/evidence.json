@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-018",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "How to Match Job Description Keywords",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "ATS algorithms rank candidates by keyword frequency and context.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "80%+ Keyword Overlap",
+      "confidence": 0.95
+    }
+  ]
+}

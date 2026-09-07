@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-095",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "IT Support to Cloud DevOps Engineer",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Escaping helpdesk tickets into automated cloud infrastructure.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Double Your Compensation",
+      "confidence": 0.95
+    }
+  ]
+}

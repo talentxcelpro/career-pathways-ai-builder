@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-019",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Quantifying Achievements for Recruiter Impact",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Vague task lists are ignored; measurable impact wins offers.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "3.4x More Screening Calls",
+      "confidence": 0.95
+    }
+  ]
+}

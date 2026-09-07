@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-015",
+  "scheduled_date": "2026-10-08",
+  "title": "Computer Vision in Robotics 2026",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Enabling humanoid and autonomous systems to navigate reality. Top priorities include Spatial Depth Estimation, Object Detection & Tracking, and Vision-Language-Action Models. Robotics Boom reaches +88% Investment. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Computer Vision in Robotics 2026",
+      "subtitle": "Enabling humanoid and autonomous systems to navigate reality."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Spatial Depth Estimation",
+        "Object Detection & Tracking",
+        "Vision-Language-Action Models"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Robotics Boom",
+      "value": "+88% Investment",
+      "note": "Physical AI is unlocking massive factory automation hiring."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

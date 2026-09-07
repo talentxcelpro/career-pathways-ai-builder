@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-061",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Software Engineer Salaries: India vs US vs Europe",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Comparing purchasing power parity and compensation across tech hubs.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "PPP Multiplier 3.8x",
+      "confidence": 0.95
+    }
+  ]
+}

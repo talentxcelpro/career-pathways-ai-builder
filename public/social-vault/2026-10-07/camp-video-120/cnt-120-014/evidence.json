@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-014",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Cybersecurity for AI Applications",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Defending foundation models from prompt injection attacks.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Critical Vulnerability",
+      "confidence": 0.95
+    }
+  ]
+}

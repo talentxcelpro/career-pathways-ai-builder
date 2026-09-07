@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-052",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "MEXT Scholarship Japan: Japanese Government",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Full-ride undergraduate and graduate funding in Tokyo and Kyoto.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Free Prep Year Included",
+      "confidence": 0.95
+    }
+  ]
+}

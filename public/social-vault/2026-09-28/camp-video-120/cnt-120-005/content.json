@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-005",
+  "scheduled_date": "2026-09-28",
+  "title": "Vector Database Specialist Fast-Track",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Search and retrieval infrastructure is booming worldwide. Top priorities include Hybrid Keyword + Dense Search, Embedding Index Quantization, and Multi-Tenant Partitioning. Market Demand reaches Surging in FinTech & Health. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Vector Database Specialist Fast-Track",
+      "subtitle": "Search and retrieval infrastructure is booming worldwide."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Hybrid Keyword + Dense Search",
+        "Embedding Index Quantization",
+        "Multi-Tenant Partitioning"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Market Demand",
+      "value": "Surging in FinTech & Health",
+      "note": "Milvus, Pinecone, and Qdrant expertise in heavy demand."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

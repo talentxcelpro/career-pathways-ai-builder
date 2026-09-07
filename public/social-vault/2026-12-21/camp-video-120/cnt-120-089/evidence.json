@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-089",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Salary Negotiation Script During the Offer Call",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "The exact words to say when receiving a verbal job offer.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Never Accept On The Call",
+      "confidence": 0.95
+    }
+  ]
+}

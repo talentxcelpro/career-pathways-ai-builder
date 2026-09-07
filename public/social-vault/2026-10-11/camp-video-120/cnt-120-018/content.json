@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-018",
+  "scheduled_date": "2026-10-11",
+  "title": "How to Match Job Description Keywords",
+  "campaign_id": "camp-video-120",
+  "target_product": "RESUME_ATS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. ATS algorithms rank candidates by keyword frequency and context. Top priorities include Extract Hard Skill Nouns, Mirror Exact Certifications, and Include Semantic Equivalents. Target Match Score reaches 80%+ Keyword Overlap. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "How to Match Job Description Keywords",
+      "subtitle": "ATS algorithms rank candidates by keyword frequency and context."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Extract Hard Skill Nouns",
+        "Mirror Exact Certifications",
+        "Include Semantic Equivalents"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Target Match Score",
+      "value": "80%+ Keyword Overlap",
+      "note": "Contextual keyword insertion doubles interview callback rates."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-034",
+  "scheduled_date": "2026-10-27",
+  "title": "Austria Public Universities Low-Cost Degree",
+  "campaign_id": "camp-video-120",
+  "target_product": "COLLEGES",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-IN-NeerjaNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. European degrees with tuition capped at under 800 euros per semester. Top priorities include University of Vienna, TU Wien Engineering Faculty, and Bologna Process European Transfer. Semester Tuition reaches Around 726 Euros. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Austria Public Universities Low-Cost Degree",
+      "subtitle": "European degrees with tuition capped at under 800 euros per semester."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "University of Vienna",
+        "TU Wien Engineering Faculty",
+        "Bologna Process European Transfer"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Semester Tuition",
+      "value": "Around 726 Euros",
+      "note": "Globally recognized degrees in one of the world's most livable cities."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

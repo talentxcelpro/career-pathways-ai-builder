@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-009",
+  "scheduled_date": "2026-10-02",
+  "title": "Fullstack AI Developer in 2026",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Building end-to-end applications powered by autonomous LLMs. Top priorities include Next.js + Fastify Microservices, Streaming Server-Sent Events, and Background Queue Orchestration. Job Postings reaches Over 28,000 Active Roles. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Fullstack AI Developer in 2026",
+      "subtitle": "Building end-to-end applications powered by autonomous LLMs."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Next.js + Fastify Microservices",
+        "Streaming Server-Sent Events",
+        "Background Queue Orchestration"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Job Postings",
+      "value": "Over 28,000 Active Roles",
+      "note": "Combining React frontends with Python AI backends."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

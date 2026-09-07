@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-033",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Finland Free Tuition for EU & Scholarships",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "World-renowned Nordic educational quality and tech ecosystem.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "2-Year Work Search Visa",
+      "confidence": 0.95
+    }
+  ]
+}

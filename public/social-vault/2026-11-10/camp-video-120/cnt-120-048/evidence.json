@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-048",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Fulbright Foreign Student Program: USA",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Full-ride graduate scholarships to attend top American universities.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Up to $70,000 per Year",
+      "confidence": 0.95
+    }
+  ]
+}

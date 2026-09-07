@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-036",
+  "scheduled_date": "2026-10-29",
+  "title": "English-Taught Bachelor Degrees in Germany",
+  "campaign_id": "camp-video-120",
+  "target_product": "COLLEGES",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-IN-NeerjaNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. You do not need to speak German to study tech degrees at public universities. Top priorities include BSc in Computer Science (English), BSc in Data Science & AI, and BSc in Electrical Engineering. Language Requirement reaches IELTS / TOEFL Only. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "English-Taught Bachelor Degrees in Germany",
+      "subtitle": "You do not need to speak German to study tech degrees at public universities."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "BSc in Computer Science (English)",
+        "BSc in Data Science & AI",
+        "BSc in Electrical Engineering"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Language Requirement",
+      "value": "IELTS / TOEFL Only",
+      "note": "Free German language classes provided during your university studies."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

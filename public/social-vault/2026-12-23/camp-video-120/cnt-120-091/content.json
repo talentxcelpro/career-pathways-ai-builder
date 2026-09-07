@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-091",
+  "scheduled_date": "2026-12-23",
+  "title": "Transitioning from Non-Tech into Cloud & AI",
+  "campaign_id": "camp-video-120",
+  "target_product": "CAREER_MAP",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. A realistic 6-month roadmap for changing careers without a CS degree. Top priorities include Month 1-2: Python & Linux Fundamentals, Month 3-4: AWS / Cloud Solutions Architect, and Month 5-6: Deploying 3 Real Production Projects. Career Transition Timeline reaches 6 to 9 Months Realistic. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Transitioning from Non-Tech into Cloud & AI",
+      "subtitle": "A realistic 6-month roadmap for changing careers without a CS degree."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Month 1-2: Python & Linux Fundamentals",
+        "Month 3-4: AWS / Cloud Solutions Architect",
+        "Month 5-6: Deploying 3 Real Production Projects"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Career Transition Timeline",
+      "value": "6 to 9 Months Realistic",
+      "note": "Focus on portfolio proof over passive certificate collecting."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

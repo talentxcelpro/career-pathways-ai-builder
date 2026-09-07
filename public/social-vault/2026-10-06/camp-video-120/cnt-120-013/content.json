@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-013",
+  "scheduled_date": "2026-10-06",
+  "title": "AI Integration Consultant for SMEs",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Helping traditional businesses automate back-office operations. Top priorities include Customer Support Agent Setup, Internal Document Search, and Invoice & CRM Automation. Consulting Rates reaches $150 to $300/hour. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "AI Integration Consultant for SMEs",
+      "subtitle": "Helping traditional businesses automate back-office operations."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Customer Support Agent Setup",
+        "Internal Document Search",
+        "Invoice & CRM Automation"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Consulting Rates",
+      "value": "$150 to $300/hour",
+      "note": "Small enterprises will spend heavily on turnkey AI setup."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

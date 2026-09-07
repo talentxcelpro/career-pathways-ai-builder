@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-037",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Blocked Account Requirements for Germany",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Everything you need to know about the German student visa proof of funds.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Self-Funded or DAAD Waiver",
+      "confidence": 0.95
+    }
+  ]
+}

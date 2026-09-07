@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-066",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Data Scientist vs Data Engineer Compensation",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Why data infrastructure engineering often commands higher base salaries.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "1.6x More Data Engineering Postings",
+      "confidence": 0.95
+    }
+  ]
+}

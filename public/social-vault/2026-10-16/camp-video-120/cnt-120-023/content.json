@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-023",
+  "scheduled_date": "2026-10-16",
+  "title": "Passing Greenhouse & Lever ATS Parsers",
+  "campaign_id": "camp-video-120",
+  "target_product": "RESUME_ATS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. How modern cloud ATS platforms score and rank candidate profiles. Top priorities include Role Title Normalization, Years of Experience Counting, and Education Verification Fields. Modern ATS Market reaches Used by 70% of Tech Unicorns. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Passing Greenhouse & Lever ATS Parsers",
+      "subtitle": "How modern cloud ATS platforms score and rank candidate profiles."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Role Title Normalization",
+        "Years of Experience Counting",
+        "Education Verification Fields"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Modern ATS Market",
+      "value": "Used by 70% of Tech Unicorns",
+      "note": "Clear standard section titles guarantee flawless field extraction."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

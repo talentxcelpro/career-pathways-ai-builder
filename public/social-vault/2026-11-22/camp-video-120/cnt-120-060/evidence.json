@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-060",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Search 500+ Verified Scholarships on TalentXcel",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Filter verified scholarships by citizenship, degree level, and coverage.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "100% Free & Transparent",
+      "confidence": 0.95
+    }
+  ]
+}

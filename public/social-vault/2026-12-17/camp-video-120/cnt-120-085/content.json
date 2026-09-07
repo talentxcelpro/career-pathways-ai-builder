@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-085",
+  "scheduled_date": "2026-12-17",
+  "title": "System Design: Designing an API Rate Limiter",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. A classic distributed systems interview question solved step-by-step. Top priorities include Token Bucket & Leaky Bucket Algorithms, Redis In-Memory Distributed Counters, and Handling Network Partitions & Clock Drift. Scalability Metric reaches Millions of Requests/sec. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "System Design: Designing an API Rate Limiter",
+      "subtitle": "A classic distributed systems interview question solved step-by-step."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Token Bucket & Leaky Bucket Algorithms",
+        "Redis In-Memory Distributed Counters",
+        "Handling Network Partitions & Clock Drift"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Scalability Metric",
+      "value": "Millions of Requests/sec",
+      "note": "Highlight tradeoffs between strict accuracy and low-latency response times."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-088",
+  "scheduled_date": "2026-12-20",
+  "title": "Interviewing for US Remote Roles from Abroad",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Navigating cultural nuances, timezones, and communication. Top priorities include Demonstrate Asynchronous Clarity, Fluency in Written PR Discussions, and Overlapping Working Hours Flexibility. Hiring Confidence reaches Reliable Global Collaborator. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Interviewing for US Remote Roles from Abroad",
+      "subtitle": "Navigating cultural nuances, timezones, and communication."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Demonstrate Asynchronous Clarity",
+        "Fluency in Written PR Discussions",
+        "Overlapping Working Hours Flexibility"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Hiring Confidence",
+      "value": "Reliable Global Collaborator",
+      "note": "US tech teams prioritize engineers who write clean, unambiguous documentation."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-009",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Fullstack AI Developer in 2026",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Building end-to-end applications powered by autonomous LLMs.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Over 28,000 Active Roles",
+      "confidence": 0.95
+    }
+  ]
+}

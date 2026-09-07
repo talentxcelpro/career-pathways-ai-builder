@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-065",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Remote Global Tech Salaries: Geo-Pay Explained",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "How US and European companies pay talent working remotely from abroad.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "$80,000 to $140,000 USD",
+      "confidence": 0.95
+    }
+  ]
+}

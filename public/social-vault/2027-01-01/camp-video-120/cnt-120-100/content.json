@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-100",
+  "scheduled_date": "2027-01-01",
+  "title": "Overcoming Imposter Syndrome in Tech",
+  "campaign_id": "camp-video-120",
+  "target_product": "CAREER_MAP",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Navigating self-doubt when stepping into senior engineering roles. Top priorities include Recognize that Technology Moves Fast for Everyone, Focus on System Rationale Over Memorization, and Track Weekly Accomplishments in a \"Done List\". Psychological Resilience reaches Key Factor in Executive Growth. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Overcoming Imposter Syndrome in Tech",
+      "subtitle": "Navigating self-doubt when stepping into senior engineering roles."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Recognize that Technology Moves Fast for Everyone",
+        "Focus on System Rationale Over Memorization",
+        "Track Weekly Accomplishments in a \"Done List\""
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Psychological Resilience",
+      "value": "Key Factor in Executive Growth",
+      "note": "The best engineers ask clarifying questions instead of pretending to know."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

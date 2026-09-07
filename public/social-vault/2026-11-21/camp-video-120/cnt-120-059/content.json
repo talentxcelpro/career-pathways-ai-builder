@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-059",
+  "scheduled_date": "2026-11-21",
+  "title": "Scholarship Application Timeline & Deadlines",
+  "campaign_id": "camp-video-120",
+  "target_product": "SCHOLARSHIPS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. A step-by-step 12-month calendar for winning full-ride funding. Top priorities include Months 1-3: Target Identification & Exams, Months 4-6: SOP Drafting & Reference Letters, and Months 7-9: Official Portal Submission. Early Submission Advantage reaches Higher Funding Probability. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Scholarship Application Timeline & Deadlines",
+      "subtitle": "A step-by-step 12-month calendar for winning full-ride funding."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Months 1-3: Target Identification & Exams",
+        "Months 4-6: SOP Drafting & Reference Letters",
+        "Months 7-9: Official Portal Submission"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Early Submission Advantage",
+      "value": "Higher Funding Probability",
+      "note": "Most government scholarships close 9 to 11 months before classes begin."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

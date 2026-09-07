@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-069",
+  "scheduled_date": "2026-12-01",
+  "title": "Tech Salaries in Dubai & UAE: Zero Income Tax",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Why tech professionals are relocating to Dubai for tax-free earnings. Top priorities include 100% Tax-Free Personal Income, Senior Base: 35,000 to 55,000 AED/mo, and 10-Year Golden Visa for Tech Talent. Effective Take-Home reaches Save 30% to 50% More. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Tech Salaries in Dubai & UAE: Zero Income Tax",
+      "subtitle": "Why tech professionals are relocating to Dubai for tax-free earnings."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "100% Tax-Free Personal Income",
+        "Senior Base: 35,000 to 55,000 AED/mo",
+        "10-Year Golden Visa for Tech Talent"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Effective Take-Home",
+      "value": "Save 30% to 50% More",
+      "note": "A rapid transition to a global venture capital and tech headquarters hub."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

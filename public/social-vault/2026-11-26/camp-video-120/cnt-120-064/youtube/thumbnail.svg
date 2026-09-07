@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920">
+  <rect width="1080" height="1920" fill="#0A0E17"/>
+  <rect x="60" y="80" width="960" height="120" rx="16" fill="#111827" stroke="#38BDF8" stroke-width="2"/>
+  <text x="110" y="152" fill="#38BDF8" font-family="Segoe UI, Arial, sans-serif" font-size="32" font-weight="bold">TALENTXCEL 2026 INTELLIGENCE</text>
+  <rect x="60" y="240" width="960" height="1400" rx="20" fill="#0F172A" stroke="#1E293B" stroke-width="2"/>
+  <rect x="110" y="290" width="260" height="56" rx="8" fill="#2563EB" opacity="0.4" stroke="#60A5FA" stroke-width="1"/>
+  <text x="135" y="328" fill="#93C5FD" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="bold">SALARY BENCHMARKS</text>
+  <text x="110" y="440" fill="#FFFFFF" font-family="Segoe UI, Arial, sans-serif" font-size="44" font-weight="bold">Staff Engineer Compensation Bands</text>
+  <text x="110" y="520" fill="#38BDF8" font-family="Segoe UI, Arial, sans-serif" font-size="30">The massive pay leap between Senior and Staff le</text>
+  <rect x="110" y="620" width="860" height="110" rx="12" fill="#2563EB"/>
+  <text x="310" y="688" fill="#FFFFFF" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="bold">VISIT TALENTXCEL.COM</text>
+</svg>

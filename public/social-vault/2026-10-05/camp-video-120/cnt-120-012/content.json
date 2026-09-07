@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-012",
+  "scheduled_date": "2026-10-05",
+  "title": "Synthetic Data Generation Specialist",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Training models when real-world data is scarce or sensitive. Top priorities include Domain-Specific Scenario Synthesis, Differential Privacy Guarantees, and Rule-Based Quality Verification. Niche Value reaches Healthcare & Finance. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Synthetic Data Generation Specialist",
+      "subtitle": "Training models when real-world data is scarce or sensitive."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Domain-Specific Scenario Synthesis",
+        "Differential Privacy Guarantees",
+        "Rule-Based Quality Verification"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Niche Value",
+      "value": "Healthcare & Finance",
+      "note": "Synthetic data training solves healthcare privacy walls."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-045",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "Find Verified Global Programs on TalentXcel",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Filter hundreds of tuition-free programs by country, degree, and language.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "100% Free Discovery",
+      "confidence": 0.95
+    }
+  ]
+}

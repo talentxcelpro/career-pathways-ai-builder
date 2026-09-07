@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-019",
+  "scheduled_date": "2026-10-12",
+  "title": "Quantifying Achievements for Recruiter Impact",
+  "campaign_id": "camp-video-120",
+  "target_product": "RESUME_ATS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Vague task lists are ignored; measurable impact wins offers. Top priorities include Google X-Y-Z Formula, Metric Before Task Structure, and Dollar & Percentage Evidence. Callback Increase reaches 3.4x More Screening Calls. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Quantifying Achievements for Recruiter Impact",
+      "subtitle": "Vague task lists are ignored; measurable impact wins offers."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Google X-Y-Z Formula",
+        "Metric Before Task Structure",
+        "Dollar & Percentage Evidence"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Callback Increase",
+      "value": "3.4x More Screening Calls",
+      "note": "Accomplished X as measured by Y doing Z proves capability."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

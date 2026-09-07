@@ -163,8 +163,8 @@ function generateJobLocationPage(location: string, role?: string): SEOPage {
     `,
     breadcrumbs: [
       { name: 'Home', url: '/' },
-      { name: 'Jobs', url: '/jobs' },
-      { name: `${location}`, url: `/jobs/${location.toLowerCase()}` }
+      { name: 'Locations', url: '/locations' },
+      { name: `${location}`, url: `/locations/${location.toLowerCase()}` }
     ],
     faqs: [
       {
@@ -182,21 +182,24 @@ function generateJobLocationPage(location: string, role?: string): SEOPage {
     ],
     structuredData: {
       "@context": "https://schema.org",
-      "@type": "JobPosting",
-      "title": `${roleText} Jobs in ${location}`,
+      "@type": "CollectionPage",
+      "name": `${roleText} Jobs in ${location}`,
       "description": description,
-      "jobLocation": {
+      "url": `https://talentxcel.in/locations/${location.toLowerCase()}`,
+      "about": {
         "@type": "Place",
+        "name": location,
         "address": {
           "@type": "PostalAddress",
           "addressLocality": location,
           "addressCountry": "IN"
         }
       },
-      "hiringOrganization": {
+      "provider": {
         "@type": "Organization",
         "name": "TalentXcel",
-        "sameAs": "https://talentxcel.in"
+        "url": "https://talentxcel.in",
+        "logo": "https://talentxcel.in/talentxcel-official-logo.png"
       }
     }
   };

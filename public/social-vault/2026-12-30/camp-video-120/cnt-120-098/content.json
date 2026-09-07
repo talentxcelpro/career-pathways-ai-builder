@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-098",
+  "scheduled_date": "2026-12-30",
+  "title": "Contributing to Open Source for Career Growth",
+  "campaign_id": "camp-video-120",
+  "target_product": "CAREER_MAP",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-JennyNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. How public GitHub pull requests replace traditional experience credentials. Top priorities include Find Active Repositories with \"Good First Issue\", Submit Clean PRs with Passing Tests, and Network Directly with Core Maintainers. Hiring Signal reaches Unassailable Public Code Proof. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Contributing to Open Source for Career Growth",
+      "subtitle": "How public GitHub pull requests replace traditional experience credentials."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Find Active Repositories with \"Good First Issue\"",
+        "Submit Clean PRs with Passing Tests",
+        "Network Directly with Core Maintainers"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Hiring Signal",
+      "value": "Unassailable Public Code Proof",
+      "note": "Tech companies frequently hire top open-source contributors directly."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

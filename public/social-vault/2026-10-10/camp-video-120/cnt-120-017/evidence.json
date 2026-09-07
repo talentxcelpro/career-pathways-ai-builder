@@ -1,0 +1,16 @@
+{
+  "evidence_id": "ev-cnt-120-017",
+  "source": "TALENTXCEL_VERIFIED_EVIDENCE_LAKE_2026",
+  "topic": "The 3 ATS Formatting Traps to Avoid",
+  "verified_at": "2026-09-07T00:00:00Z",
+  "claims": [
+    {
+      "claim": "Visual templates from design tools often fail plain-text parsers.",
+      "confidence": 0.98
+    },
+    {
+      "claim": "Standard Unicode Bullets",
+      "confidence": 0.95
+    }
+  ]
+}

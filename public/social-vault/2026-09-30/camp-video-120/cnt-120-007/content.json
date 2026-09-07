@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-007",
+  "scheduled_date": "2026-09-30",
+  "title": "Edge AI & Embedded Machine Learning",
+  "campaign_id": "camp-video-120",
+  "target_product": "JOBS",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-US-ChristopherNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Running lightweight AI models directly on local devices. Top priorities include ONNX & TensorRT Quantization, TinyML on Edge Hardware, and Zero-Cloud Offline Privacy. Hardware Boom reaches Automotive & Robotics. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Edge AI & Embedded Machine Learning",
+      "subtitle": "Running lightweight AI models directly on local devices."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "ONNX & TensorRT Quantization",
+        "TinyML on Edge Hardware",
+        "Zero-Cloud Offline Privacy"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Hardware Boom",
+      "value": "Automotive & Robotics",
+      "note": "Low-latency local AI is expanding into millions of devices."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}

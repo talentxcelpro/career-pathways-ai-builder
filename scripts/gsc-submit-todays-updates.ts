@@ -98,9 +98,11 @@ async function main() {
   console.log('🌐 Google Search Console & Indexing API Submission Pipeline');
   console.log('================================================================\n');
 
-  const keyPath = resolve('gcp-key.json');
+  const keyPath = existsSync(resolve('gcp-key.json'))
+    ? resolve('gcp-key.json')
+    : resolve('C:/Users/Arshid.Wani/talentxcel-local/gcp-key.json');
   if (!existsSync(keyPath)) {
-    throw new Error('gcp-key.json not found');
+    throw new Error('gcp-key.json not found at ' + keyPath);
   }
 
   const serviceAccount: ServiceAccountKey = JSON.parse(readFileSync(keyPath, 'utf-8'));
@@ -114,6 +116,9 @@ async function main() {
   // 1. Sitemaps to sync/submit
   const sitemaps = [
     'https://talentxcel.in/sitemap.xml',
+    'https://talentxcel.in/sitemaps/jobs-matrix-index.xml',
+    'https://talentxcel.in/sitemaps/jobs-matrix-india.xml',
+    'https://talentxcel.in/sitemaps/jobs-matrix-global.xml',
     'https://talentxcel.in/sitemap-companies.xml',
     'https://talentxcel.in/sitemap-global-programs.xml',
     'https://talentxcel.in/sitemap-scholarships.xml',
@@ -121,6 +126,8 @@ async function main() {
     'https://talentxcel.in/sitemap-services.xml',
     'https://talentxcel.in/sitemap-learning.xml',
     'https://talentxcel.in/sitemap-jobs.xml',
+    'https://talentxcel.in/sitemap-posts.xml',
+    'https://talentxcel.in/sitemap-videos.xml',
     'https://talentxcel.in/sitemap-colleges.xml',
     'https://talentxcel.in/sitemap-blog.xml',
     'https://talentxcel.in/sitemap-news.xml'
@@ -140,50 +147,97 @@ async function main() {
     }
   }
 
-  // 2. Today's URLs to publish to Google Indexing API
+  // 2. Initialize Supabase client
+  const { createClient } = await import('@supabase/supabase-js');
+  const supabase = createClient(
+    'https://dthlgsnakhoftinssokm.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc'
+  );
+
+  // 2A. Query Supabase for top new enterprise jobs
+  console.log('📦 Fetching top newly seeded jobs from Supabase for Google Indexing API...');
+  const newJobUrls: string[] = [];
+  try {
+    const { data: dbJobs } = await supabase
+      .from('jobs')
+      .select('seo_slug, id')
+      .eq('is_active', true)
+      .eq('job_status', 'open')
+      .order('posted_at', { ascending: false })
+      .limit(30);
+
+    if (dbJobs) {
+      for (const j of dbJobs) {
+        const slug = j.seo_slug || j.id;
+        newJobUrls.push(`https://talentxcel.in/jobs/${slug}`);
+      }
+    }
+  } catch (err) {
+    console.warn('Could not fetch DB jobs for indexing:', err);
+  }
+
+  // 2B. Query Supabase for top video posts
+  console.log('🎬 Fetching top video & media posts from Supabase for Google Indexing API...');
+  const newPostUrls: string[] = [];
+  try {
+    const { data: dbMediaPosts } = await supabase
+      .from('posts')
+      .select('id, media_urls, post_type')
+      .eq('is_public', true)
+      .order('created_at', { ascending: false })
+      .limit(25);
+
+    if (dbMediaPosts) {
+      for (const p of dbMediaPosts) {
+        newPostUrls.push(`https://talentxcel.in/post/${p.id}`);
+      }
+    }
+  } catch (err) {
+    console.warn('Could not fetch DB posts for indexing:', err);
+  }
+
+  // 3. Today's URLs to publish to Google Indexing API
   const todaysUrls = [
-    // Companies & Employer Pages (Updated today with Google Favicon logos)
-    'https://talentxcel.in/companies',
-    'https://talentxcel.in/company/chatr-chat',
-    'https://talentxcel.in/company/savantis-solutions',
-    'https://talentxcel.in/company/talentxcel-services',
-    'https://talentxcel.in/company/talentxcel-enterprise',
-
-    // Network Directory & Discovery (Updated today with tier ranking and real verified data)
+    // Dynamic Professional Network Hub + Pagination
     'https://talentxcel.in/network',
-    'https://talentxcel.in/network/discover',
-    'https://talentxcel.in/network/verified',
-    'https://talentxcel.in/network/people',
+    'https://talentxcel.in/network/page/2',
+    'https://talentxcel.in/network/page/3',
+    'https://talentxcel.in/network/page/4',
+    'https://talentxcel.in/network/page/5',
 
-    // SEO Personal Profile Slugs (First-middle-last & first-last format)
-    'https://talentxcel.in/profile/arshid-hussain-wani',
-    'https://talentxcel.in/profile/priyanka-dhangar',
-    'https://talentxcel.in/profile/vishwajeet-nayak',
-    'https://talentxcel.in/profile/jaismin-maurya',
-    'https://talentxcel.in/profile/dimple-dhangar',
-    'https://talentxcel.in/profile/gaurav-bhatia',
-    'https://talentxcel.in/profile/talentxcel-services',
+    // Topic Hubs (newly prerendered static pages)
+    'https://talentxcel.in/network/jobs',
+    'https://talentxcel.in/network/careers',
+    'https://talentxcel.in/network/technology',
+    'https://talentxcel.in/network/ai',
+    'https://talentxcel.in/network/hr',
+    'https://talentxcel.in/network/leadership',
+
+    // Newly Published Video & Media Posts
+    ...newPostUrls,
+
+    // Newly Seeded Enterprise Jobs (Directly from database)
+    ...newJobUrls.slice(0, 30),
+
+    // Regional Hubs & High-Performing Location Pages
+    'https://talentxcel.in/locations/varanasi',
+    'https://talentxcel.in/locations/noida',
+    'https://talentxcel.in/locations/bengaluru',
+    'https://talentxcel.in/locations/gurugram',
+    'https://talentxcel.in/locations/mumbai',
+    'https://talentxcel.in/locations/hyderabad',
+    'https://talentxcel.in/locations/pune',
+    'https://talentxcel.in/locations/lucknow',
+    'https://talentxcel.in/locations/delhi',
+
+    // Core Jobs Catalog
+    'https://talentxcel.in/jobs',
+    'https://talentxcel.in/jobs/it-jobs',
+    'https://talentxcel.in/jobs/engineering-jobs',
+    'https://talentxcel.in/jobs/marketing-jobs',
 
     // Canonical Brand Entity Hub
     'https://talentxcel.in/about/talentxcel',
-
-    // GSC High-Performing & Gap Opportunity URLs (Jobs & Locations)
-    'https://talentxcel.in/locations/varanasi',
-    'https://talentxcel.in/jobs/safety-officer/hyderabad/fresher',
-    'https://talentxcel.in/jobs/credit-analyst/india/experienced',
-    'https://talentxcel.in/jobs/biomedical-engineer/chennai/bangalore',
-    'https://talentxcel.in/jobs/structural-engineer/india/remote-hybrid',
-
-    // Global Education & Programs
-    'https://talentxcel.in/colleges/global-programs',
-    'https://talentxcel.in/colleges/scholarships',
-    'https://talentxcel.in/colleges/pathway',
-
-    // Claim #1 Leaderboard & Watch
-    'https://talentxcel.in/rankings',
-    'https://talentxcel.in/rankings/ai-products',
-    'https://talentxcel.in/claim1/enter',
-    'https://talentxcel.in/claim1/watch'
   ];
 
   console.log(`\n🚀 Submitting ${todaysUrls.length} Updated URLs to Google Indexing API...`);

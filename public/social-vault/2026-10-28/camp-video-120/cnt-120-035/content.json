@@ -1,0 +1,41 @@
+{
+  "content_id": "cnt-120-035",
+  "scheduled_date": "2026-10-28",
+  "title": "Tuition-Free Universities in France & Poland",
+  "campaign_id": "camp-video-120",
+  "target_product": "COLLEGES",
+  "aspect_ratio": "9:16",
+  "duration_seconds": 30,
+  "voice_profile": "en-IN-NeerjaNeural",
+  "script": "Welcome to TalentXcel Career Intelligence. Affordable English-taught Bachelor and Master programs in Europe. Top priorities include Warsaw University of Technology, Sorbonne University Paris, and Subsidized Student Housing & Meals. Monthly Living Cost reaches $500 to $800/month. Explore verified opportunities at talentxcel dot com today.",
+  "scenes": [
+    {
+      "scene": 1,
+      "duration": "0-7s",
+      "headline": "Tuition-Free Universities in France & Poland",
+      "subtitle": "Affordable English-taught Bachelor and Master programs in Europe."
+    },
+    {
+      "scene": 2,
+      "duration": "7-16s",
+      "points": [
+        "Warsaw University of Technology",
+        "Sorbonne University Paris",
+        "Subsidized Student Housing & Meals"
+      ]
+    },
+    {
+      "scene": 3,
+      "duration": "16-24s",
+      "benchmark": "Monthly Living Cost",
+      "value": "$500 to $800/month",
+      "note": "Massive savings compared to US and UK international tuition rates."
+    },
+    {
+      "scene": 4,
+      "duration": "24-30s",
+      "cta": "VISIT TALENTXCEL.COM",
+      "url": "https://talentxcel.in"
+    }
+  ]
+}
