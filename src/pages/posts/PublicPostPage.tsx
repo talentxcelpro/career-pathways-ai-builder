@@ -24,6 +24,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { getPublicPostUrl, getPublicProfileUrl } from '@/lib/seo/canonicalUrls';
 import { buildPostSchema, buildBreadcrumbSchema, buildVideoObjectSchema } from '@/lib/seo/structuredDataSchemas';
+import { buildPostSeoData } from '@/lib/seo/postSeoModel';
 
 function generateDeterministicTitle(content: string, authorName: string): string {
   if (!content) return `${authorName} on TalentXcel`;
@@ -148,79 +149,45 @@ export default function PublicPostPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const mediaUrls: string[] = Array.isArray(post.media_urls) ? post.media_urls : [];
-  const videoUrl = mediaUrls.find(url => {
-    const clean = url.split('?')[0].toLowerCase();
-    return clean.endsWith('.mp4') || clean.endsWith('.webm') || clean.endsWith('.mov') || clean.endsWith('.m4v');
-  }) || (post.post_type === 'video' && mediaUrls[0] ? mediaUrls[0] : null);
-
-  const imageUrl = mediaUrls.find(url => {
-    const clean = url.split('?')[0].toLowerCase();
-    return !clean.endsWith('.mp4') && !clean.endsWith('.webm') && !clean.endsWith('.mov') && !clean.endsWith('.m4v');
-  }) || post.featured_image_url || post.author?.profile_picture_url || 'https://talentxcel.in/talentxcel-official-logo.png';
-
-  const structuredData = buildPostSchema({
-    headline,
-    content: cleanContent,
-    datePublished: post.created_at,
-    authorName,
-    authorUrl: authorProfileUrl,
-    postUrl: canonicalUrl,
-    mediaUrls: mediaUrls.length > 0 ? mediaUrls : undefined,
-  });
-
-  const videoSchema = videoUrl ? buildVideoObjectSchema({
-    name: headline,
-    description: cleanContent.slice(0, 300) || headline,
-    thumbnailUrl: imageUrl,
-    uploadDate: post.created_at,
-    contentUrl: videoUrl,
-    embedUrl: canonicalUrl,
-  }) : null;
-
-  const breadcrumbsSchema = buildBreadcrumbSchema([
-    { name: 'Home', url: 'https://talentxcel.in' },
-    { name: 'Network', url: 'https://talentxcel.in/network' },
-    { name: headline, url: canonicalUrl },
-  ]);
+  const postSeo = buildPostSeoData(post);
 
   return (
     <>
       <Helmet>
-        <title>{pageTitle}</title>
-        <meta name="description" content={metaDescription} />
-        <link rel="canonical" href={canonicalUrl} />
+        <title>{postSeo.title}</title>
+        <meta name="description" content={postSeo.description} />
+        <link rel="canonical" href={postSeo.canonicalUrl} />
 
-        <meta property="og:title" content={pageTitle} />
-        <meta property="og:description" content={metaDescription} />
-        <meta property="og:type" content={videoUrl ? 'video.other' : 'article'} />
-        <meta property="og:url" content={canonicalUrl} />
-        <meta property="og:image" content={imageUrl} />
-        {videoUrl && (
+        <meta property="og:title" content={postSeo.openGraph.title} />
+        <meta property="og:description" content={postSeo.openGraph.description} />
+        <meta property="og:type" content={postSeo.openGraph.type} />
+        <meta property="og:url" content={postSeo.openGraph.url} />
+        <meta property="og:image" content={postSeo.openGraph.image} />
+        {postSeo.openGraph.video && (
           <>
-            <meta property="og:video" content={videoUrl} />
-            <meta property="og:video:type" content="video/mp4" />
-            <meta property="og:video:width" content="1280" />
-            <meta property="og:video:height" content="720" />
+            <meta property="og:video" content={postSeo.openGraph.video} />
+            <meta property="og:video:type" content={postSeo.openGraph.videoType || 'video/mp4'} />
+            <meta property="og:video:width" content={postSeo.openGraph.videoWidth || '1280'} />
+            <meta property="og:video:height" content={postSeo.openGraph.videoHeight || '720'} />
           </>
         )}
-        <meta name="twitter:card" content={videoUrl ? 'player' : 'summary_large_image'} />
-        <meta name="twitter:title" content={pageTitle} />
-        <meta name="twitter:description" content={metaDescription} />
-        <meta name="twitter:image" content={imageUrl} />
-        {videoUrl && (
+        <meta name="twitter:card" content={postSeo.twitter.card} />
+        <meta name="twitter:title" content={postSeo.twitter.title} />
+        <meta name="twitter:description" content={postSeo.twitter.description} />
+        <meta name="twitter:image" content={postSeo.twitter.image} />
+        {postSeo.twitter.player && (
           <>
-            <meta name="twitter:player" content={canonicalUrl} />
-            <meta name="twitter:player:width" content="1280" />
-            <meta name="twitter:player:height" content="720" />
+            <meta name="twitter:player" content={postSeo.twitter.player} />
+            <meta name="twitter:player:width" content={postSeo.twitter.playerWidth || '1280'} />
+            <meta name="twitter:player:height" content={postSeo.twitter.playerHeight || '720'} />
           </>
         )}
 
-        <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
-        {videoSchema && (
-          <script type="application/ld+json">{JSON.stringify(videoSchema)}</script>
-        )}
-        <script type="application/ld+json">{JSON.stringify(breadcrumbsSchema)}</script>
+        {postSeo.jsonLdSchemas.map((schema, idx) => (
+          <script key={idx} type="application/ld+json">
+            {JSON.stringify(schema)}
+          </script>
+        ))}
       </Helmet>
 
       <div className="min-h-screen bg-slate-50/60 dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-8 px-4 pb-20">

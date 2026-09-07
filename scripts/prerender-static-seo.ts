@@ -16,6 +16,10 @@ import {
   buildVideoObjectSchema,
   buildImageObjectSchema,
 } from '../src/lib/seo/structuredDataSchemas.js';
+import {
+  buildPostSeoData,
+  resolveHashtagDestination,
+} from '../src/lib/seo/postSeoModel.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -981,9 +985,12 @@ async function prerender() {
           .map((post, i) => renderFeedArticle(post, pageComments[i]))
           .join('\n');
 
-        const pageCanonical = page === 1 ? networkCanonical : `${networkCanonical}?page=${page}`;
-        const prevLink = page > 1 ? `<link rel="prev" href="${networkCanonical}?page=${page - 1}" />` : '';
-        const nextLink = page < TOTAL_PAGES ? `<link rel="next" href="${networkCanonical}?page=${page + 1}" />` : '';
+        const pageCanonical = page === 1 ? networkCanonical : `${networkCanonical}/page/${page}`;
+        const prevHref = page === 2 ? networkCanonical : `${networkCanonical}/page/${page - 1}`;
+        const nextHref = `${networkCanonical}/page/${page + 1}`;
+        // Navigational pagination links handled via semantic <nav>
+        const prevLink = '';
+        const nextLink = '';
 
         const networkBodyHtml = `
           ${prevLink}${nextLink}
@@ -1013,9 +1020,9 @@ async function prerender() {
 
             ${TOTAL_PAGES > 1 ? `
             <nav aria-label="Network feed pagination" class="flex justify-center gap-3 pt-4">
-              ${page > 1 ? `<a href="${networkCanonical}?page=${page - 1}" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 text-sm font-semibold hover:bg-slate-700">â† Previous</a>` : ''}
+              ${page > 1 ? `<a href="${prevHref}" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 text-sm font-semibold hover:bg-slate-700">â† Previous</a>` : ''}
               <span class="px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-semibold">Page ${page} of ${TOTAL_PAGES}</span>
-              ${page < TOTAL_PAGES ? `<a href="${networkCanonical}?page=${page + 1}" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 text-sm font-semibold hover:bg-slate-700">Next â†’</a>` : ''}
+              ${page < TOTAL_PAGES ? `<a href="${nextHref}" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 text-sm font-semibold hover:bg-slate-700">Next â†’</a>` : ''}
             </nav>` : ''}
           </div>`;
 
