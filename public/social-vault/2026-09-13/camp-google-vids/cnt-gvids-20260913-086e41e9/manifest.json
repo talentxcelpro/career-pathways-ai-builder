@@ -1,0 +1,63 @@
+{
+  "contentId": "cnt-gvids-20260913-086e41e9",
+  "campaignId": "camp-google-vids",
+  "scheduledDate": "2026-09-13",
+  "scheduledTime": "12:00",
+  "topicTitle": "Create a premium vertical (1)",
+  "topicCategory": "BRAND_AUTHORITY",
+  "platforms": [
+    "YOUTUBE",
+    "INSTAGRAM",
+    "FACEBOOK",
+    "X"
+  ],
+  "assets": [
+    {
+      "type": "VIDEO",
+      "platform": "YOUTUBE",
+      "relative_path": "youtube/video_9x16.mp4",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-13\\camp-google-vids\\cnt-gvids-20260913-086e41e9\\youtube\\video_9x16.mp4",
+      "cdn_url": "/social-vault/2026-09-13/camp-google-vids/cnt-gvids-20260913-086e41e9/youtube/video_9x16.mp4",
+      "mime_type": "video/mp4",
+      "file_size_bytes": 5802938,
+      "checksum": "sha256:fef5b89f2fe7e2ef76bf012c2d0c859999788b19296cc3559eaffef8ad9c1e41"
+    },
+    {
+      "type": "THUMBNAIL",
+      "platform": "YOUTUBE",
+      "relative_path": "youtube/thumbnail.svg",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-13\\camp-google-vids\\cnt-gvids-20260913-086e41e9\\youtube\\thumbnail.svg",
+      "cdn_url": "/social-vault/2026-09-13/camp-google-vids/cnt-gvids-20260913-086e41e9/youtube/thumbnail.svg",
+      "mime_type": "image/svg+xml",
+      "file_size_bytes": 1076,
+      "checksum": "sha256:fd932834f1f70c5825dd50797a256e2b5694f27034f386051bbf734647d1f25a"
+    },
+    {
+      "type": "AUDIO",
+      "platform": "YOUTUBE",
+      "relative_path": "youtube/narration.wav",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-13\\camp-google-vids\\cnt-gvids-20260913-086e41e9\\youtube\\narration.wav",
+      "cdn_url": "/social-vault/2026-09-13/camp-google-vids/cnt-gvids-20260913-086e41e9/youtube/narration.wav",
+      "mime_type": "audio/wav",
+      "file_size_bytes": 882520,
+      "checksum": "sha256:1086ed2e9b66c47303798e650dea9188a2eebb4f05edf8e6954ee5afad2060fc"
+    },
+    {
+      "type": "SUBTITLES",
+      "platform": "YOUTUBE",
+      "relative_path": "youtube/captions.vtt",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-13\\camp-google-vids\\cnt-gvids-20260913-086e41e9\\youtube\\captions.vtt",
+      "cdn_url": "/social-vault/2026-09-13/camp-google-vids/cnt-gvids-20260913-086e41e9/youtube/captions.vtt",
+      "mime_type": "text/vtt",
+      "file_size_bytes": 228,
+      "checksum": "sha256:5ec65b87590f484541b71be037bee0ea623855b603bb4b78525b186a927295c9"
+    }
+  ],
+  "qualityScore": 88,
+  "safetyPassed": true,
+  "evidenceVerified": true,
+  "generatedAt": "2026-09-07T03:23:46.875Z",
+  "status": "READY",
+  "manifestVersion": "1.0.0",
+  "contentVersion": 1
+}

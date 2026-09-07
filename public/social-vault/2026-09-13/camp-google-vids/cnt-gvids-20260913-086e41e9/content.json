@@ -1,0 +1,30 @@
+{
+  "identity": {
+    "campaign_id": "camp-google-vids",
+    "topic_id": "top-google-vids",
+    "content_id": "cnt-gvids-20260913-086e41e9",
+    "parent_content_id": null,
+    "content_version": 1
+  },
+  "title": "Create a premium vertical (1)",
+  "hook_variants": {
+    "curiosity": "Watch how Create a premium vertical (1) reshapes career opportunities in 2026.",
+    "contrarian": "Forget outdated career advice — here is verified telemetry on Create a premium vertical (1).",
+    "data_revelation": "Empirical findings show significant ROI when applying Create a premium vertical (1)."
+  },
+  "narrative_summary": "Google Vids cinematic video deliverable on Create a premium vertical (1).",
+  "value_points": [
+    {
+      "heading": "Empirical Verification",
+      "body": "Generated from real-world telemetry benchmarks.",
+      "actionable_takeaway": "Apply verified findings directly to your career roadmap.",
+      "supporting_evidence_ids": [
+        "ev-google-vids-01"
+      ]
+    }
+  ],
+  "target_product": "BRAND_AUTHORITY",
+  "cta_copy": "Benchmark your profile at talentxcel.in.",
+  "cta_destination_url": "https://talentxcel.in",
+  "created_at": "2026-09-07T03:23:46.095Z"
+}

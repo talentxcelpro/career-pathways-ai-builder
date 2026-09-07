@@ -1,0 +1,63 @@
+{
+  "contentId": "cnt-gvids-20260911-b75979ef",
+  "campaignId": "camp-google-vids",
+  "scheduledDate": "2026-09-11",
+  "scheduledTime": "12:00",
+  "topicTitle": "Create a cinematic vertic (1)",
+  "topicCategory": "BRAND_AUTHORITY",
+  "platforms": [
+    "YOUTUBE",
+    "INSTAGRAM",
+    "FACEBOOK",
+    "X"
+  ],
+  "assets": [
+    {
+      "type": "VIDEO",
+      "platform": "YOUTUBE",
+      "relative_path": "youtube/video_9x16.mp4",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-11\\camp-google-vids\\cnt-gvids-20260911-b75979ef\\youtube\\video_9x16.mp4",
+      "cdn_url": "/social-vault/2026-09-11/camp-google-vids/cnt-gvids-20260911-b75979ef/youtube/video_9x16.mp4",
+      "mime_type": "video/mp4",
+      "file_size_bytes": 5896878,
+      "checksum": "sha256:851b1c4a483b61bc39a41acfb857caec09bd86ddd4027e00747ba16846dd7b1d"
+    },
+    {
+      "type": "THUMBNAIL",
+      "platform": "YOUTUBE",
+      "relative_path": "youtube/thumbnail.svg",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-11\\camp-google-vids\\cnt-gvids-20260911-b75979ef\\youtube\\thumbnail.svg",
+      "cdn_url": "/social-vault/2026-09-11/camp-google-vids/cnt-gvids-20260911-b75979ef/youtube/thumbnail.svg",
+      "mime_type": "image/svg+xml",
+      "file_size_bytes": 1076,
+      "checksum": "sha256:a9dce5355f95b46f4fc213f6e3127cec0b2b3b6c8651d66bc1dfe38642e6432c"
+    },
+    {
+      "type": "AUDIO",
+      "platform": "YOUTUBE",
+      "relative_path": "youtube/narration.wav",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-11\\camp-google-vids\\cnt-gvids-20260911-b75979ef\\youtube\\narration.wav",
+      "cdn_url": "/social-vault/2026-09-11/camp-google-vids/cnt-gvids-20260911-b75979ef/youtube/narration.wav",
+      "mime_type": "audio/wav",
+      "file_size_bytes": 882520,
+      "checksum": "sha256:5b46fc7fac46ec2b432c36f23e5361770b3a1c8ebebb9ef6fd68c692425dd286"
+    },
+    {
+      "type": "SUBTITLES",
+      "platform": "YOUTUBE",
+      "relative_path": "youtube/captions.vtt",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-11\\camp-google-vids\\cnt-gvids-20260911-b75979ef\\youtube\\captions.vtt",
+      "cdn_url": "/social-vault/2026-09-11/camp-google-vids/cnt-gvids-20260911-b75979ef/youtube/captions.vtt",
+      "mime_type": "text/vtt",
+      "file_size_bytes": 228,
+      "checksum": "sha256:efc28bb4ab95f57351e9829f0f3f23ef90b2de9a34fd2597ae66b5430498bb25"
+    }
+  ],
+  "qualityScore": 88,
+  "safetyPassed": true,
+  "evidenceVerified": true,
+  "generatedAt": "2026-09-07T03:23:41.108Z",
+  "status": "READY",
+  "manifestVersion": "1.0.0",
+  "contentVersion": 1
+}

@@ -1,0 +1,73 @@
+{
+  "contentId": "cnt-gvids-20260916-bb07b208",
+  "campaignId": "camp-google-vids",
+  "scheduledDate": "2026-09-16",
+  "scheduledTime": "12:00",
+  "topicTitle": "talentxcel 2",
+  "topicCategory": "BRAND_AUTHORITY",
+  "platforms": [
+    "YOUTUBE",
+    "INSTAGRAM",
+    "FACEBOOK",
+    "X"
+  ],
+  "assets": [
+    {
+      "type": "VIDEO",
+      "platform": "YOUTUBE",
+      "relative_path": "youtube/video_9x16.mp4",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-16\\camp-google-vids\\cnt-gvids-20260916-bb07b208\\youtube\\video_9x16.mp4",
+      "cdn_url": "/social-vault/2026-09-16/camp-google-vids/cnt-gvids-20260916-bb07b208/youtube/video_9x16.mp4",
+      "mime_type": "video/mp4",
+      "file_size_bytes": 18608561,
+      "checksum": "sha256:1a3ccdaef275fb51a7ae9f1da851a92cf3e83218e43a897d28e1ab3586509ce2"
+    },
+    {
+      "type": "THUMBNAIL",
+      "platform": "YOUTUBE",
+      "relative_path": "youtube/thumbnail.svg",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-16\\camp-google-vids\\cnt-gvids-20260916-bb07b208\\youtube\\thumbnail.svg",
+      "cdn_url": "/social-vault/2026-09-16/camp-google-vids/cnt-gvids-20260916-bb07b208/youtube/thumbnail.svg",
+      "mime_type": "image/svg+xml",
+      "file_size_bytes": 1059,
+      "checksum": "sha256:539425e4229f4c71636f68f367762b2757fef93cbd4d0f6a68a2d835b33817a2"
+    },
+    {
+      "type": "AUDIO",
+      "platform": "YOUTUBE",
+      "relative_path": "youtube/narration.wav",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-16\\camp-google-vids\\cnt-gvids-20260916-bb07b208\\youtube\\narration.wav",
+      "cdn_url": "/social-vault/2026-09-16/camp-google-vids/cnt-gvids-20260916-bb07b208/youtube/narration.wav",
+      "mime_type": "audio/wav",
+      "file_size_bytes": 2385998,
+      "checksum": "sha256:14c610e55f4a0f06cd4c150720dfcbe368d7c7a547f736a290361fd39d23e7f7"
+    },
+    {
+      "type": "SUBTITLES",
+      "platform": "YOUTUBE",
+      "relative_path": "youtube/captions.vtt",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-16\\camp-google-vids\\cnt-gvids-20260916-bb07b208\\youtube\\captions.vtt",
+      "cdn_url": "/social-vault/2026-09-16/camp-google-vids/cnt-gvids-20260916-bb07b208/youtube/captions.vtt",
+      "mime_type": "text/vtt",
+      "file_size_bytes": 211,
+      "checksum": "sha256:e7e44130738fee4e0434334dbea8eafc5bd2c2a89880de495078220da499cfe5"
+    },
+    {
+      "type": "VIDEO",
+      "platform": "YOUTUBE",
+      "relative_path": "youtube/video_16x9.mp4",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-16\\camp-google-vids\\cnt-gvids-20260916-bb07b208\\youtube\\video_16x9.mp4",
+      "cdn_url": "/social-vault/2026-09-16/camp-google-vids/cnt-gvids-20260916-bb07b208/youtube/video_16x9.mp4",
+      "mime_type": "video/mp4",
+      "file_size_bytes": 13087763,
+      "checksum": "sha256:bb07b20842be76fed4f7ebaa1730240b2a112643df4218ca3102a6862b7c3387"
+    }
+  ],
+  "qualityScore": 88,
+  "safetyPassed": true,
+  "evidenceVerified": true,
+  "generatedAt": "2026-09-07T03:25:04.325Z",
+  "status": "READY",
+  "manifestVersion": "1.0.0",
+  "contentVersion": 1
+}
