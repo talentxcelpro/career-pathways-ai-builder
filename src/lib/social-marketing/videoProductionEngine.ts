@@ -62,13 +62,18 @@ export async function renderVideoPackage(
 
   const durationMs = voice?.duration_ms || 30000;
 
-  // Execute physical video rendering
+  // Execute physical video rendering with rich multi-scene metadata
   const renderOutput = await defaultVideoRenderer.renderVideo({
     contentId,
     aspectRatio,
     durationMs,
     audioFilePath: audioPath,
     outputFilePath,
+    title: content.title,
+    category: content.target_product,
+    valuePoints: content.value_points,
+    ctaCopy: content.cta_copy,
+    ctaUrl: content.cta_destination_url,
     forceSimulateFailure: options?.forceSimulateFailure,
   });
 

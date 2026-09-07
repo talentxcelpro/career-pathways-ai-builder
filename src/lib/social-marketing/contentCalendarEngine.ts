@@ -364,6 +364,11 @@ export async function executeBatchProduction(
       durationMs: voiceOutput.durationMs,
       audioFilePath: tempAudioPath,
       outputFilePath: tempVideoPath,
+      title: draft.title,
+      category: draft.identity.topic_id || draft.target_product,
+      valuePoints: draft.value_points,
+      ctaCopy: draft.cta_copy,
+      ctaUrl: draft.cta_destination_url,
     });
     progress.stageProgress.video = true;
 

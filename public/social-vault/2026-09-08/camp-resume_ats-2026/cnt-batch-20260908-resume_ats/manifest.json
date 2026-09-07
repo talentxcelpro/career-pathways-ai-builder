@@ -1,7 +1,8 @@
 {
-  "contentId": "cnt-batch-20260906-resume_ats",
+  "manifestVersion": "1.0.0",
+  "contentId": "cnt-batch-20260908-resume_ats",
   "campaignId": "camp-resume_ats-2026",
-  "scheduledDate": "2026-09-06",
+  "scheduledDate": "2026-09-08",
   "scheduledTime": "09:00",
   "topicTitle": "Why 75% of Resumes Never Reach Recruiters: The 2026 Parsing Audit",
   "topicCategory": "RESUME_ATS",
@@ -16,18 +17,18 @@
       "type": "VIDEO",
       "platform": "YOUTUBE",
       "relative_path": "youtube/video_9x16.mp4",
-      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-06\\camp-resume_ats-2026\\cnt-batch-20260906-resume_ats\\youtube\\video_9x16.mp4",
-      "cdn_url": "/social-vault/2026-09-06/camp-resume_ats-2026/cnt-batch-20260906-resume_ats/youtube/video_9x16.mp4",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-08\\camp-resume_ats-2026\\cnt-batch-20260908-resume_ats\\youtube\\video_9x16.mp4",
+      "cdn_url": "/social-vault/2026-09-08/camp-resume_ats-2026/cnt-batch-20260908-resume_ats/youtube/video_9x16.mp4",
       "mime_type": "video/mp4",
-      "file_size_bytes": 2325224,
-      "checksum": "sha256:dc63290d338d5e421299a34ca5cbbf28584acc84894114e1180c040d2cd70c09"
+      "file_size_bytes": 2333559,
+      "checksum": "sha256:7ad32805440b875066e83b7eb880237cc191d0e626594e0cbbb2736e856dfbb0"
     },
     {
       "type": "THUMBNAIL",
       "platform": "YOUTUBE",
       "relative_path": "youtube/thumbnail.svg",
-      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-06\\camp-resume_ats-2026\\cnt-batch-20260906-resume_ats\\youtube\\thumbnail.svg",
-      "cdn_url": "/social-vault/2026-09-06/camp-resume_ats-2026/cnt-batch-20260906-resume_ats/youtube/thumbnail.svg",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-08\\camp-resume_ats-2026\\cnt-batch-20260908-resume_ats\\youtube\\thumbnail.svg",
+      "cdn_url": "/social-vault/2026-09-08/camp-resume_ats-2026/cnt-batch-20260908-resume_ats/youtube/thumbnail.svg",
       "mime_type": "image/svg+xml",
       "file_size_bytes": 1832,
       "checksum": "sha256:006a45b0dd0b278030b86e44aeb54f2cf08d246f852834140e05db5d8f0b359f"
@@ -36,8 +37,8 @@
       "type": "SUBTITLES",
       "platform": "YOUTUBE",
       "relative_path": "youtube/captions.vtt",
-      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-06\\camp-resume_ats-2026\\cnt-batch-20260906-resume_ats\\youtube\\captions.vtt",
-      "cdn_url": "/social-vault/2026-09-06/camp-resume_ats-2026/cnt-batch-20260906-resume_ats/youtube/captions.vtt",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-08\\camp-resume_ats-2026\\cnt-batch-20260908-resume_ats\\youtube\\captions.vtt",
+      "cdn_url": "/social-vault/2026-09-08/camp-resume_ats-2026/cnt-batch-20260908-resume_ats/youtube/captions.vtt",
       "mime_type": "text/vtt",
       "file_size_bytes": 902,
       "checksum": "sha256:4cd73202eb4fb09e4bf7af3df7f8cf48a24fe83828daa069c68ff865e8dee071"
@@ -46,8 +47,8 @@
       "type": "AUDIO",
       "platform": "YOUTUBE",
       "relative_path": "youtube/narration.wav",
-      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-06\\camp-resume_ats-2026\\cnt-batch-20260906-resume_ats\\youtube\\narration.wav",
-      "cdn_url": "/social-vault/2026-09-06/camp-resume_ats-2026/cnt-batch-20260906-resume_ats/youtube/narration.wav",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-08\\camp-resume_ats-2026\\cnt-batch-20260908-resume_ats\\youtube\\narration.wav",
+      "cdn_url": "/social-vault/2026-09-08/camp-resume_ats-2026/cnt-batch-20260908-resume_ats/youtube/narration.wav",
       "mime_type": "audio/wav",
       "file_size_bytes": 3871318,
       "checksum": "sha256:4497f933b5714bce8476db5f8a2c04041e2c2d57d29eb89147e45fa9d7ac28de"
@@ -56,8 +57,8 @@
       "type": "CAROUSEL_SLIDE",
       "platform": "INSTAGRAM",
       "relative_path": "instagram/slide-01.svg",
-      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-06\\camp-resume_ats-2026\\cnt-batch-20260906-resume_ats\\instagram\\slide-01.svg",
-      "cdn_url": "/social-vault/2026-09-06/camp-resume_ats-2026/cnt-batch-20260906-resume_ats/instagram/slide-01.svg",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-08\\camp-resume_ats-2026\\cnt-batch-20260908-resume_ats\\instagram\\slide-01.svg",
+      "cdn_url": "/social-vault/2026-09-08/camp-resume_ats-2026/cnt-batch-20260908-resume_ats/instagram/slide-01.svg",
       "mime_type": "image/svg+xml",
       "file_size_bytes": 2765,
       "checksum": "sha256:6b7f38c7e0f2f50ee52cc0d2f634a9fd1a8c689b19b7fa9069bf14fbc1d4d1e3"
@@ -66,8 +67,8 @@
       "type": "CAROUSEL_SLIDE",
       "platform": "INSTAGRAM",
       "relative_path": "instagram/slide-02.svg",
-      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-06\\camp-resume_ats-2026\\cnt-batch-20260906-resume_ats\\instagram\\slide-02.svg",
-      "cdn_url": "/social-vault/2026-09-06/camp-resume_ats-2026/cnt-batch-20260906-resume_ats/instagram/slide-02.svg",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-08\\camp-resume_ats-2026\\cnt-batch-20260908-resume_ats\\instagram\\slide-02.svg",
+      "cdn_url": "/social-vault/2026-09-08/camp-resume_ats-2026/cnt-batch-20260908-resume_ats/instagram/slide-02.svg",
       "mime_type": "image/svg+xml",
       "file_size_bytes": 3337,
       "checksum": "sha256:ffce2a0be700461a7afc93ea73bc495c5357e60f4330875e85c9f634600014fa"
@@ -76,8 +77,8 @@
       "type": "CAROUSEL_SLIDE",
       "platform": "INSTAGRAM",
       "relative_path": "instagram/slide-03.svg",
-      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-06\\camp-resume_ats-2026\\cnt-batch-20260906-resume_ats\\instagram\\slide-03.svg",
-      "cdn_url": "/social-vault/2026-09-06/camp-resume_ats-2026/cnt-batch-20260906-resume_ats/instagram/slide-03.svg",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-08\\camp-resume_ats-2026\\cnt-batch-20260908-resume_ats\\instagram\\slide-03.svg",
+      "cdn_url": "/social-vault/2026-09-08/camp-resume_ats-2026/cnt-batch-20260908-resume_ats/instagram/slide-03.svg",
       "mime_type": "image/svg+xml",
       "file_size_bytes": 3333,
       "checksum": "sha256:d1319e27cb94d62ee69c996e9cfbc401616ed8040e671ae945f85745176506f0"
@@ -86,8 +87,8 @@
       "type": "CAROUSEL_SLIDE",
       "platform": "INSTAGRAM",
       "relative_path": "instagram/slide-04.svg",
-      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-06\\camp-resume_ats-2026\\cnt-batch-20260906-resume_ats\\instagram\\slide-04.svg",
-      "cdn_url": "/social-vault/2026-09-06/camp-resume_ats-2026/cnt-batch-20260906-resume_ats/instagram/slide-04.svg",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-08\\camp-resume_ats-2026\\cnt-batch-20260908-resume_ats\\instagram\\slide-04.svg",
+      "cdn_url": "/social-vault/2026-09-08/camp-resume_ats-2026/cnt-batch-20260908-resume_ats/instagram/slide-04.svg",
       "mime_type": "image/svg+xml",
       "file_size_bytes": 3343,
       "checksum": "sha256:5d4bd66419971831cdf78fb51bd15e06c06b6fcfd9a44c43933770c5ce2dcd33"
@@ -96,8 +97,8 @@
       "type": "CAROUSEL_SLIDE",
       "platform": "INSTAGRAM",
       "relative_path": "instagram/slide-05.svg",
-      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-06\\camp-resume_ats-2026\\cnt-batch-20260906-resume_ats\\instagram\\slide-05.svg",
-      "cdn_url": "/social-vault/2026-09-06/camp-resume_ats-2026/cnt-batch-20260906-resume_ats/instagram/slide-05.svg",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-08\\camp-resume_ats-2026\\cnt-batch-20260908-resume_ats\\instagram\\slide-05.svg",
+      "cdn_url": "/social-vault/2026-09-08/camp-resume_ats-2026/cnt-batch-20260908-resume_ats/instagram/slide-05.svg",
       "mime_type": "image/svg+xml",
       "file_size_bytes": 2399,
       "checksum": "sha256:a01fd4346b15a7e4766ffcb560fec89f975a15b17a911093a69ada097f8e5fbc"
@@ -106,8 +107,8 @@
       "type": "COPY",
       "platform": "INSTAGRAM",
       "relative_path": "instagram/caption.txt",
-      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-06\\camp-resume_ats-2026\\cnt-batch-20260906-resume_ats\\instagram\\caption.txt",
-      "cdn_url": "/social-vault/2026-09-06/camp-resume_ats-2026/cnt-batch-20260906-resume_ats/instagram/caption.txt",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-08\\camp-resume_ats-2026\\cnt-batch-20260908-resume_ats\\instagram\\caption.txt",
+      "cdn_url": "/social-vault/2026-09-08/camp-resume_ats-2026/cnt-batch-20260908-resume_ats/instagram/caption.txt",
       "mime_type": "text/plain",
       "file_size_bytes": 664,
       "checksum": "sha256:efd3660e29dc88610d72e83ff68219d033030d442a23c0ffff2e963dd925ceac"
@@ -116,8 +117,8 @@
       "type": "POST_HERO",
       "platform": "FACEBOOK",
       "relative_path": "facebook/hero.svg",
-      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-06\\camp-resume_ats-2026\\cnt-batch-20260906-resume_ats\\facebook\\hero.svg",
-      "cdn_url": "/social-vault/2026-09-06/camp-resume_ats-2026/cnt-batch-20260906-resume_ats/facebook/hero.svg",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-08\\camp-resume_ats-2026\\cnt-batch-20260908-resume_ats\\facebook\\hero.svg",
+      "cdn_url": "/social-vault/2026-09-08/camp-resume_ats-2026/cnt-batch-20260908-resume_ats/facebook/hero.svg",
       "mime_type": "image/svg+xml",
       "file_size_bytes": 1502,
       "checksum": "sha256:38d3485cbc4ed76322f0715435266dad6d63f8c46cbe8f784fb3f707e4388a3c"
@@ -126,8 +127,8 @@
       "type": "COPY",
       "platform": "FACEBOOK",
       "relative_path": "facebook/post.txt",
-      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-06\\camp-resume_ats-2026\\cnt-batch-20260906-resume_ats\\facebook\\post.txt",
-      "cdn_url": "/social-vault/2026-09-06/camp-resume_ats-2026/cnt-batch-20260906-resume_ats/facebook/post.txt",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-08\\camp-resume_ats-2026\\cnt-batch-20260908-resume_ats\\facebook\\post.txt",
+      "cdn_url": "/social-vault/2026-09-08/camp-resume_ats-2026/cnt-batch-20260908-resume_ats/facebook/post.txt",
       "mime_type": "text/plain",
       "file_size_bytes": 822,
       "checksum": "sha256:dbb0cfbb7c57a362a82aa0b00d2cdfaa482f67c769d26f3656a4b4dd6164a0ef"
@@ -136,8 +137,8 @@
       "type": "POST_HERO",
       "platform": "X",
       "relative_path": "x/hero.svg",
-      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-06\\camp-resume_ats-2026\\cnt-batch-20260906-resume_ats\\x\\hero.svg",
-      "cdn_url": "/social-vault/2026-09-06/camp-resume_ats-2026/cnt-batch-20260906-resume_ats/x/hero.svg",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-08\\camp-resume_ats-2026\\cnt-batch-20260908-resume_ats\\x\\hero.svg",
+      "cdn_url": "/social-vault/2026-09-08/camp-resume_ats-2026/cnt-batch-20260908-resume_ats/x/hero.svg",
       "mime_type": "image/svg+xml",
       "file_size_bytes": 1502,
       "checksum": "sha256:38d3485cbc4ed76322f0715435266dad6d63f8c46cbe8f784fb3f707e4388a3c"
@@ -146,8 +147,8 @@
       "type": "COPY",
       "platform": "X",
       "relative_path": "x/thread.txt",
-      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-06\\camp-resume_ats-2026\\cnt-batch-20260906-resume_ats\\x\\thread.txt",
-      "cdn_url": "/social-vault/2026-09-06/camp-resume_ats-2026/cnt-batch-20260906-resume_ats/x/thread.txt",
+      "absolute_path": "C:\\TalentXcel\\SocialContentVault\\2026-09-08\\camp-resume_ats-2026\\cnt-batch-20260908-resume_ats\\x\\thread.txt",
+      "cdn_url": "/social-vault/2026-09-08/camp-resume_ats-2026/cnt-batch-20260908-resume_ats/x/thread.txt",
       "mime_type": "text/plain",
       "file_size_bytes": 1155,
       "checksum": "sha256:351430b81dc5951b07857c538688d1a225f785ef6247511de2589e3ec7f8927d"
@@ -158,6 +159,6 @@
   "evidenceVerified": true,
   "contentVersion": 1,
   "status": "READY",
-  "createdAt": "2026-09-05T10:21:51.410Z",
-  "updatedAt": "2026-09-05T10:21:51.410Z"
+  "createdAt": "2026-09-07T03:00:32.809Z",
+  "updatedAt": "2026-09-07T03:00:32.809Z"
 }
