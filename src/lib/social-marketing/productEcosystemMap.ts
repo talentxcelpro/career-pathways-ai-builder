@@ -175,6 +175,19 @@ export const TALENTXCEL_PRODUCT_ECOSYSTEM: Record<ProductSurface, ProductEcosyst
     },
     sample_keywords: ['macro trends', 'future of work', 'ai ethics', 'labor statistics', 'thought leadership'],
   },
+  SHORTS: {
+    surface: 'SHORTS',
+    name: 'TalentXcel Career Shorts & Video Insights',
+    description: 'Bite-sized, high-retention career guidance and hiring intelligence.',
+    primary_url: 'https://talentxcel.in',
+    default_cta_strength: 'SOFT',
+    cta_options: {
+      soft: 'Subscribe for daily career and hiring intelligence shorts.',
+      contextual: 'Save this video and follow TalentXcel for more career breakdowns.',
+      direct: 'Follow TalentXcel across YouTube and social for daily hiring insights.',
+    },
+    sample_keywords: ['shorts', 'reel', 'quick tip', 'breakdown', 'hack'],
+  },
 };
 
 /**

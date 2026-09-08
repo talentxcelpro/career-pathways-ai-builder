@@ -1,0 +1,42 @@
+{
+  "opportunity_id": "opp-social-ai-recruitment-mtsl4l2l",
+  "query": "ai recruitment",
+  "surface": "SHORTS",
+  "tier": "P1",
+  "cluster": "AI_RECRUITMENT",
+  "score": 74,
+  "status": "READY_FOR_REVIEW",
+  "hook_proposals": [
+    {
+      "archetype": "CURIOSITY",
+      "text": "Did an AI screening algorithm just rank your job application? Here is how recruiters use AI filtering in 2026."
+    },
+    {
+      "archetype": "CONTRARIAN",
+      "text": "Stuffing white text keywords into your resume won't trick modern AI recruiters. In fact, it flags your profile instantly."
+    },
+    {
+      "archetype": "DATA_REVELATION",
+      "text": "Over 68% of enterprise hiring teams now use automated semantic scoring before scheduling a single 15-minute phone screen."
+    },
+    {
+      "archetype": "PROBLEM_SOLUTION",
+      "text": "If you want your resume to score at the top of AI recruitment filters, format your achievements with measurable context."
+    }
+  ],
+  "script_beats": {
+    "hook_0_3s": "Did an AI screening algorithm just rank your job application? Here is how recruiters use AI filtering in 2026.",
+    "problem_3_10s": "Most candidates assume that getting rejected means they weren't qualified. But in reality, their profile broke during automated intake.",
+    "insight_10_35s": "Show on screen the ATS parsing view vs human PDF view. Highlight how custom icons, multi-column tables, and missing keywords scramble the extracted candidate profile.",
+    "solution_35_50s": "Use standard single-column layouts, clean chronological headings (Experience, Education, Skills), and mirror the exact phrasing from the target job description.",
+    "cta_50_60s": "Save this breakdown for your next job application, and check your resume compatibility free on TalentXcel."
+  },
+  "telemetry": {
+    "query": "ai recruitment",
+    "impressions": 160,
+    "clicks": 8,
+    "ctr": 5,
+    "position": 5.8
+  },
+  "created_at": "2026-09-08T11:27:16.653Z"
+}

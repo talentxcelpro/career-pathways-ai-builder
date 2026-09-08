@@ -54,7 +54,8 @@ export type ProductSurface =
   | 'TOOLS'
   | 'CAREER_PASSPORT'
   | 'SERVICES'
-  | 'BRAND_AUTHORITY';
+  | 'BRAND_AUTHORITY'
+  | 'SHORTS';
 
 export type VerificationStatus = 'VERIFIED' | 'PROVISIONAL' | 'REJECTED';
 
@@ -548,5 +549,103 @@ export interface ContentReserveStats {
     format: ContentFormatType;
     topic: string;
   };
+}
+
+// ---------------------------------------------------------------------------
+// Unified GSC -> Multi-Platform Social Video Intelligence Types
+// ---------------------------------------------------------------------------
+
+export type SocialContentFormat = 'SHORT' | 'REEL' | 'VIDEO';
+
+export type HookArchetype =
+  | 'CURIOSITY'
+  | 'CONTRARIAN'
+  | 'DATA_REVELATION'
+  | 'PROBLEM_SOLUTION';
+
+export interface HookProposal {
+  archetype: HookArchetype;
+  text: string;
+}
+
+export interface SocialPlatformVariant {
+  platform: SocialPlatform;
+  title: string;
+  caption: string;
+  hashtags: string[];
+  cta: string;
+  opening_hook: string;
+  recommended_duration_seconds: number;
+  format: SocialContentFormat;
+}
+
+export interface GscTelemetry {
+  query: string;
+  impressions: number;
+  clicks: number;
+  ctr: number;
+  position: number;
+}
+
+export interface ScriptBeatOutline {
+  hook_0_3s: string;
+  problem_3_10s: string;
+  insight_10_35s: string;
+  solution_35_50s: string;
+  cta_50_60s: string;
+}
+
+export type OpportunityTier = 'P0' | 'P1' | 'EMERGING' | 'IGNORE';
+
+export interface SocialVideoOpportunity {
+  opportunity_id: string;
+  query: string;
+  surface: 'SHORTS';
+  platform_targets: SocialPlatform[];
+  opportunity_tier: OpportunityTier;
+  suggested_topic: string;
+  primary_keyword: string;
+  cluster: string;
+  social_opportunity_score: number;
+  hook_proposals: HookProposal[];
+  gsc_telemetry: GscTelemetry;
+  script_beat_outline: ScriptBeatOutline;
+  platform_variants: Record<SocialPlatform, SocialPlatformVariant>;
+  staged_vault_path?: string;
+  status: 'DISCOVERED' | 'PACKAGED' | 'READY_FOR_REVIEW' | 'PUBLISHED';
+  created_at: string;
+}
+
+export interface SocialPlatformVideoMetrics {
+  platform: SocialPlatform;
+  views: number;
+  watch_time_seconds?: number;
+  average_view_duration_seconds?: number;
+  retention_rate_pct?: number;
+  completion_rate_pct?: number;
+  viewed_vs_swiped_pct?: number;
+  rewatch_rate_pct?: number;
+  likes: number;
+  comments: number;
+  shares: number;
+  saves?: number;
+  reposts?: number;
+  subscribers_or_followers?: number;
+  profile_visits?: number;
+  normalized_platform_score: number; // 0 - 100
+}
+
+export interface SocialVideoPerformanceRecord {
+  opportunity_id: string;
+  topic_id: string;
+  canonical_title: string;
+  hook_archetype_used: HookArchetype;
+  published_at: string;
+  total_views: number;
+  platform_metrics: Record<SocialPlatform, SocialPlatformVideoMetrics>;
+  cross_platform_score: number; // 0 - 100
+  status: 'TESTING' | 'PROMISING' | 'WINNING_TOPIC' | 'UNDERPERFORMING' | 'DROPPED';
+  is_winning_topic: boolean;
+  is_winning_hook: boolean;
 }
 

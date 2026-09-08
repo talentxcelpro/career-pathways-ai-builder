@@ -1,0 +1,42 @@
+{
+  "opportunity_id": "opp-social-ats-resume-mtsl4l2l",
+  "query": "ats resume",
+  "surface": "SHORTS",
+  "tier": "P1",
+  "cluster": "ATS",
+  "score": 76,
+  "status": "READY_FOR_REVIEW",
+  "hook_proposals": [
+    {
+      "archetype": "CURIOSITY",
+      "text": "Your resume is getting parsed by software before a human ever looks at it. Here's what that software actually sees."
+    },
+    {
+      "archetype": "CONTRARIAN",
+      "text": "ATS isn't actively trying to reject you — it's trying to group you. Here is the single formatting mistake confusing it."
+    },
+    {
+      "archetype": "DATA_REVELATION",
+      "text": "75% of qualified resumes get ranked in the bottom tier simply due to non-standard section headers and multi-column tables."
+    },
+    {
+      "archetype": "PROBLEM_SOLUTION",
+      "text": "Getting auto-rejected for jobs you are 100% qualified for? Here is how to format your resume so ATS indexes every key skill."
+    }
+  ],
+  "script_beats": {
+    "hook_0_3s": "Your resume is getting parsed by software before a human ever looks at it. Here's what that software actually sees.",
+    "problem_3_10s": "Most candidates assume that getting rejected means they weren't qualified. But in reality, their profile broke during automated intake.",
+    "insight_10_35s": "Show on screen the ATS parsing view vs human PDF view. Highlight how custom icons, multi-column tables, and missing keywords scramble the extracted candidate profile.",
+    "solution_35_50s": "Use standard single-column layouts, clean chronological headings (Experience, Education, Skills), and mirror the exact phrasing from the target job description.",
+    "cta_50_60s": "Save this breakdown for your next job application, and check your resume compatibility free on TalentXcel."
+  },
+  "telemetry": {
+    "query": "ats resume",
+    "impressions": 240,
+    "clicks": 18,
+    "ctr": 7.5,
+    "position": 3.1
+  },
+  "created_at": "2026-09-08T11:27:16.653Z"
+}
