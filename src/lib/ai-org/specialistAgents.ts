@@ -78,6 +78,8 @@ export async function runSeoOpportunityRoutine(): Promise<SpecialistAgentExecuti
   };
 }
 
+import { checkOllamaStatus, generateOllamaJson } from './ollamaClient';
+
 /**
  * 3. Content Engine Agent Routine
  */
@@ -88,12 +90,41 @@ export async function runContentEngineRoutine(): Promise<SpecialistAgentExecutio
     targetSurface: 'Bangalore Software Engineer Cluster',
     telemetryTrigger: 'Closing CTR gap on high-volume landing page',
     executeFn: async () => {
+      let generatedMeta = {
+        meta_description: 'Explore verified Software Engineer fresher jobs in Bangalore with direct employer applications, salary transparency, and instant ATS screening.',
+        open_graph_title: 'Software Engineer Fresher Jobs in Bangalore (Verified 2026) | TalentXcel',
+        source: 'Rule-Based Preset',
+      };
+
+      const ollama = await checkOllamaStatus();
+      if (ollama.isOnline) {
+        try {
+          const ollamaRes = await generateOllamaJson<{ meta_description: string; open_graph_title: string }>(
+            'Generate a high-CTR SEO meta description (under 155 characters) and OpenGraph title for https://talentxcel.in/jobs/software-engineer/freshers/bangalore. Return JSON with keys meta_description and open_graph_title.',
+            'You are the Career & Education Content Agent of TalentXcel.',
+            { model: ollama.activeModel }
+          );
+          if (ollamaRes.success && ollamaRes.data?.meta_description) {
+            generatedMeta = {
+              meta_description: ollamaRes.data.meta_description,
+              open_graph_title: ollamaRes.data.open_graph_title || generatedMeta.open_graph_title,
+              source: `Local Ollama (${ollamaRes.modelUsed})`,
+            };
+          }
+        } catch (err) {
+          console.warn('[Content Engine Agent] Ollama generation fallback:', err);
+        }
+      }
+
       return {
         updatedMetadataFields: ['meta_description', 'open_graph_title'],
         targetUrl: 'https://talentxcel.in/jobs/software-engineer/freshers/bangalore',
+        ...generatedMeta,
       };
     },
   });
+
+  const sourceNote = (res.data as any)?.source ? ` [Generated via ${(res.data as any).source}]` : '';
 
   return {
     agentId: 'CONTENT_ENGINE',
@@ -102,7 +133,7 @@ export async function runContentEngineRoutine(): Promise<SpecialistAgentExecutio
     status: res.status,
     rejectionReason: res.rejectionReason,
     summary: res.success
-      ? 'Optimized meta description and structured data for Bangalore software engineer hub to uplift CTR.'
+      ? `Optimized meta description and structured data for Bangalore software engineer hub to uplift CTR.${sourceNote}`
       : (res.rejectionReason || 'Execution blocked.'),
   };
 }

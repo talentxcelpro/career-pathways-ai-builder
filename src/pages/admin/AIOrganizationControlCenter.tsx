@@ -25,7 +25,8 @@ import {
   Building2,
   Lock,
   Layers,
-  ArrowRight
+  ArrowRight,
+  Cpu
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -59,6 +60,12 @@ import {
   resolveNext10kUsersRoadmap, 
   computeMarketUnitEconomics 
 } from '@/lib/acquisition-os/acquisitionIntelligenceEngine';
+import {
+  checkOllamaStatus,
+  getActiveOllamaModel,
+  setActiveOllamaModel,
+  type OllamaHealthStatus
+} from '@/lib/ai-org/ollamaClient';
 import { 
   ALL_AGENT_IDS, 
   TOTAL_AGENTS_COUNT, 
@@ -81,6 +88,9 @@ export default function AIOrganizationControlCenter() {
   const [evidenceLedger] = useState(DISCOVERY_EVIDENCE_LEDGER);
   const [roadmap] = useState(resolveNext10kUsersRoadmap());
   const [unitEconomics] = useState(computeMarketUnitEconomics());
+  const [ollamaStatus, setOllamaStatus] = useState<OllamaHealthStatus | null>(null);
+  const [isCheckingOllama, setIsCheckingOllama] = useState(false);
+  const [isRegeneratingPlan, setIsRegeneratingPlan] = useState(false);
 
   const handleApproveLead = (leadId: string) => {
     setLeads(prev => prev.map(l => l.leadId === leadId ? { ...l, status: 'OUTREACH_APPROVED' as const } : l));
@@ -109,11 +119,46 @@ export default function AIOrganizationControlCenter() {
   // Load server-authoritative state on mount
   useEffect(() => {
     loadServerState();
+    loadOllamaHealth();
     // Default boot AI CEO plan if empty
     if (!dailyPlan) {
       runExecutiveDirectorCycle().then((plan) => setDailyPlan(plan));
     }
   }, []);
+
+  const loadOllamaHealth = async () => {
+    setIsCheckingOllama(true);
+    try {
+      const status = await checkOllamaStatus();
+      setOllamaStatus(status);
+    } catch {
+      // Non-blocking
+    } finally {
+      setIsCheckingOllama(false);
+    }
+  };
+
+  const handleSelectModel = (model: string) => {
+    setActiveOllamaModel(model);
+    if (ollamaStatus) {
+      setOllamaStatus({ ...ollamaStatus, activeModel: model });
+    }
+    toast.info(`Active Ollama model switched to ${model}`);
+  };
+
+  const handleRegeneratePlan = async () => {
+    setIsRegeneratingPlan(true);
+    try {
+      toast.loading('Synthesizing Daily Plan via local Ollama core...', { id: 'plan-gen' });
+      const plan = await runExecutiveDirectorCycle();
+      setDailyPlan(plan);
+      toast.success(`AI CEO Operating Plan synthesized! (${plan.globalStrategy})`, { id: 'plan-gen' });
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to synthesize plan', { id: 'plan-gen' });
+    } finally {
+      setIsRegeneratingPlan(false);
+    }
+  };
 
   const loadServerState = async () => {
     const serverState = await getAuthoritativeLifecycleState();
@@ -338,17 +383,97 @@ export default function AIOrganizationControlCenter() {
           </div>
         </div>
 
+        {/* Local Ollama AI Inference Engine Panel */}
+        <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-lg shadow-black/30">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div className="flex items-start sm:items-center gap-3.5">
+              <div className={`p-3 rounded-xl border shrink-0 ${
+                ollamaStatus?.isOnline
+                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                  : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
+              }`}>
+                <Cpu className="w-5 h-5" />
+              </div>
+              <div className="space-y-0.5">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    Local Ollama AI Core
+                  </h3>
+                  {ollamaStatus?.isOnline ? (
+                    <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/40 text-[11px] font-mono">
+                      ● ONLINE ({ollamaStatus.latencyMs}ms)
+                    </Badge>
+                  ) : (
+                    <Badge className="bg-rose-500/20 text-rose-400 border-rose-500/40 text-[11px] font-mono">
+                      ○ OFFLINE (Fallback Active)
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-xs text-slate-400">
+                  Endpoint: <span className="font-mono text-slate-300">127.0.0.1:11434</span> • Zero API Cost • Local CPU Inference
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Model Selector */}
+              {ollamaStatus?.isOnline && ollamaStatus.availableModels.length > 0 && (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-slate-400 font-medium">Model:</span>
+                  <select
+                    value={ollamaStatus.activeModel}
+                    onChange={(e) => handleSelectModel(e.target.value)}
+                    className="bg-slate-950 border border-slate-700 text-slate-200 text-xs rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sky-500 focus:outline-none font-mono"
+                  >
+                    {ollamaStatus.availableModels.map((m) => (
+                      <option key={m} value={m}>
+                        {m}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={loadOllamaHealth}
+                disabled={isCheckingOllama}
+                className="text-xs border-slate-700 bg-slate-800 hover:bg-slate-750 text-slate-200"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${isCheckingOllama ? 'animate-spin' : ''}`} />
+                Check Status
+              </Button>
+
+              <Button
+                size="sm"
+                onClick={handleRegeneratePlan}
+                disabled={isRegeneratingPlan}
+                className="text-xs bg-sky-600 hover:bg-sky-500 text-white font-medium shadow-md shadow-sky-600/20"
+              >
+                <Sparkles className={`w-3.5 h-3.5 mr-1.5 ${isRegeneratingPlan ? 'animate-spin text-amber-300' : ''}`} />
+                {isRegeneratingPlan ? 'Synthesizing Plan...' : 'Synthesize Plan with Ollama'}
+              </Button>
+            </div>
+          </div>
+        </div>
+
         {/* AI CEO Daily Operating Plan */}
         {dailyPlan && (
           <Card className="bg-slate-900/90 border-slate-800 text-slate-100">
             <CardHeader className="border-b border-slate-800/80 pb-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
-                  <div className="flex items-center gap-2 mb-1">
+                  <div className="flex flex-wrap items-center gap-2 mb-1">
                     <Badge className="bg-sky-500/10 text-sky-400 border-sky-500/30 text-xs">
                       <Sparkles className="w-3 h-3 mr-1" /> Executive Director Synthesis
                     </Badge>
                     <span className="text-xs text-slate-500">Plan ID: {dailyPlan.planId}</span>
+                    {dailyPlan.globalStrategy && (
+                      <Badge variant="outline" className="text-[11px] font-mono border-sky-800/60 bg-sky-950/40 text-sky-300">
+                        {dailyPlan.globalStrategy}
+                      </Badge>
+                    )}
                   </div>
                   <CardTitle className="text-lg font-bold text-white">
                     Today&apos;s Strategic Growth Priorities
