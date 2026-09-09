@@ -86,6 +86,86 @@ const BASELINE_PRIORITIES = [
       confidence: 'HIGH' as const,
     },
   },
+  {
+    rank: 5,
+    title: 'Professional Network Cross-Module Discovery Amplification',
+    telemetryTrigger: 'Network member profiles grew +18% from Career Passport and ATS scanners',
+    proposedAction: 'Surface verified member cards on role and college landing hubs.',
+    delegatedAgentId: 'USER_ACQUISITION' as const,
+    impactScore: 78,
+    decision: 'EXECUTE' as const,
+    executionPolicy: 'AUTO' as const,
+    why: {
+      fact: '540 member profiles projected with quality score >= 75 in search entity graph.',
+      signal: 'Active user profiles provide non-doorway contextual evidence for role hubs.',
+      inference: 'Linking verified members to role hubs boosts search authority and network registrations.',
+      action: 'Surface verified member cards on role and college landing hubs.',
+      evidenceCount: 2,
+      observedConversion: '8.4%',
+      projectedValue: '$2,200 (model v3)',
+      confidence: 'MEDIUM' as const,
+    },
+  },
+  {
+    rank: 6,
+    title: 'Campus Recruitment Platform Search Ingestion',
+    telemetryTrigger: 'College TPO search impressions up +38% across North and South India clusters',
+    proposedAction: 'Deploy institutional demo intake funnel and student batch onboarding workflow.',
+    delegatedAgentId: 'COLLEGE_ACQUISITION' as const,
+    impactScore: 88,
+    decision: 'REVIEW' as const,
+    executionPolicy: 'REVIEW' as const,
+    why: {
+      fact: '18,400 college search queries audited; 14 unserved campus placement keywords identified.',
+      signal: 'Seasonal placement drive surge creating demand for institutional software.',
+      inference: 'Dedicated institutional intake funnel captures high-LTV college contracts.',
+      action: 'Deploy institutional demo intake funnel and student batch onboarding workflow.',
+      evidenceCount: 4,
+      observedConversion: 'INSUFFICIENT_DATA',
+      projectedValue: '$8,500 (model v3)',
+      confidence: 'HIGH' as const,
+    },
+  },
+  {
+    rank: 7,
+    title: 'Vocational Skill Certification Partner Syndication',
+    telemetryTrigger: 'Emerging demand for AI prompt engineering and cloud certification courses',
+    proposedAction: 'Onboard 4 vetted vocational training institutes into verified course catalog.',
+    delegatedAgentId: 'TRAINING_ACQUISITION' as const,
+    impactScore: 76,
+    decision: 'REVIEW' as const,
+    executionPolicy: 'REVIEW' as const,
+    why: {
+      fact: '12,200 vocational course queries identified across emerging AI and cloud skills.',
+      signal: 'Candidates searching for credentials to improve job placement eligibility.',
+      inference: 'Syndicating accredited training institutes provides non-degree career pathways.',
+      action: 'Onboard 4 vetted vocational training institutes into verified course catalog.',
+      evidenceCount: 2,
+      observedConversion: 'INSUFFICIENT_DATA',
+      projectedValue: '$3,800 (model v3)',
+      confidence: 'MEDIUM' as const,
+    },
+  },
+  {
+    rank: 8,
+    title: 'Trichy Aerospace Welder Query Suppression (Zero Doorway Enforcement)',
+    telemetryTrigger: 'Search demand detected (380 monthly queries) but 0 active employer postings in database',
+    proposedAction: 'NO ACTION: Prohibit page generation to prevent thin doorway penalty. Retain demand gap in intelligence ledger.',
+    delegatedAgentId: 'SEO_OPPORTUNITY' as const,
+    impactScore: 65,
+    decision: 'NO_ACTION' as const,
+    executionPolicy: 'BLOCKED' as const,
+    why: {
+      fact: '380 monthly GSC impressions recorded for "aerospace welder jobs trichy" with 0 database inventory.',
+      signal: 'Search demand exists without local employer postings.',
+      inference: 'Generating a page without verified inventory creates a doorway violation.',
+      action: 'NO ACTION: Prohibit page generation to prevent thin doorway penalty. Retain demand gap in intelligence ledger.',
+      evidenceCount: 1,
+      observedConversion: 'INSUFFICIENT_DATA',
+      projectedValue: 'N/A (Prohibited)',
+      confidence: 'HIGH' as const,
+    },
+  },
 ];
 
 /**
@@ -170,6 +250,18 @@ Formulate exactly 4 prioritized, data-driven growth actions. Output JSON:
                 confidence: (p.why?.confidence || 'HIGH') as any,
               },
             }));
+
+            // Invariant safeguard: Always retain the anti-doorway NO_ACTION policy priority (item 8)
+            const noActionPriority = BASELINE_PRIORITIES.find(
+              (p) => p.decision === 'NO_ACTION' && p.executionPolicy === 'BLOCKED'
+            );
+            if (noActionPriority && !activePriorities.some((p) => p.decision === 'NO_ACTION' && p.executionPolicy === 'BLOCKED')) {
+              activePriorities.push({
+                ...noActionPriority,
+                rank: activePriorities.length + 1,
+              });
+            }
+
             synthesisSource = `Local Ollama Core (${ollamaRes.modelUsed}) • ${ollamaRes.durationMs}ms`;
           }
         } catch (ollamaErr) {
