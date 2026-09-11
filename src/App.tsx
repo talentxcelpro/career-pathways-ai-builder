@@ -47,6 +47,9 @@ const SlugProfile = lazy(() => import("@/pages/SlugProfile"));
 const SocialMarketingDashboard = lazy(() => import("@/pages/admin/SocialMarketingDashboard"));
 const SocialContentStudio = lazy(() => import("@/pages/admin/SocialContentStudio"));
 const SocialMarketingCalendar = lazy(() => import("@/pages/admin/SocialMarketingCalendar"));
+import UDXDiscoveryDashboard from "@/pages/discovery/UDXDiscoveryDashboard";
+import { UDXSuperAdminGuard } from "@/components/auth/UDXSuperAdminGuard";
+
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
@@ -90,6 +93,10 @@ const JobMatcher                      = lazy(() => import('./pages/tools/JobMatc
 const ResumeTemplates                 = lazy(() => import('./pages/ResumeTemplates'));
 const ResumeEdit                      = lazy(() => import('./pages/resume/ResumeEditorPage').then(m => ({ default: m.ResumeEditorPage })));
 const ResumeBuilderV2                 = lazy(() => import('./pages/resume/ResumeBuilderV2'));
+const ResumeOptimizer                 = lazy(() => import('./pages/tools/ResumeOptimizer'));
+const ResumeTailorTool                = lazy(() => import('./pages/tools/ResumeTailorTool'));
+const RoleFitEvaluator                = lazy(() => import('./pages/tools/RoleFitEvaluator'));
+const MockInterviewSimulator          = lazy(() => import('./pages/tools/MockInterviewSimulator'));
 const UnifiedDashboard                = lazy(() => import('./pages/UnifiedDashboard'));
 const MobileReelsPage                 = lazy(() => import('./pages/MobileReelsPage'));
 const MobilePassport                  = lazy(() => import('./pages/mobile/MobilePassport').then(m => ({ default: m.MobilePassport })));
@@ -317,6 +324,8 @@ const App = () => {
                                 } />
                                 
                 {/* PRIORITY ROUTES - These must come BEFORE navItems.map to take precedence */}
+                <Route path="/discovery" element={<UDXSuperAdminGuard><UDXDiscoveryDashboard /></UDXSuperAdminGuard>} />
+                <Route path="/admin/discovery" element={<UDXSuperAdminGuard><UDXDiscoveryDashboard /></UDXSuperAdminGuard>} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/privacypolicy" element={<PrivacyPolicy />} />
@@ -328,6 +337,22 @@ const App = () => {
                 <Route path="/tools" element={<Tools />} />
                 <Route path="/tools/skill-assessment-engine" element={<SkillAssessmentEngine />} />
                 <Route path="/tools/skill-assessment" element={<SkillAssessmentEngine />} />
+                {/* Core Candidate & Career Tools (Explicit Precedence over /tools/:tool generic fallback) */}
+                <Route path="/tools/resume-checker" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Resume Scanner...</div>}><ResumeChecker /></Suspense>} />
+                <Route path="/tools/resume-check" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Resume Scanner...</div>}><ResumeChecker /></Suspense>} />
+                <Route path="/tools/ats-checker" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading ATS Scanner...</div>}><ResumeChecker /></Suspense>} />
+                <Route path="/tools/job-matcher" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Job Matcher...</div>}><JobMatcher /></Suspense>} />
+                <Route path="/tools/skill-assessor" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Skill Assessor...</div>}><SkillAssessor /></Suspense>} />
+                <Route path="/tools/salary-analyzer" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Salary Analyzer...</div>}><SalaryAnalyzer /></Suspense>} />
+                <Route path="/tools/interview-prep" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Interview Prep...</div>}><InterviewPrep /></Suspense>} />
+                <Route path="/tools/cover-letter" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Cover Letter Generator...</div>}><CoverLetterGenerator /></Suspense>} />
+                <Route path="/tools/cover-letter-generator" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Cover Letter Generator...</div>}><CoverLetterGenerator /></Suspense>} />
+                <Route path="/tools/resume-builder" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Resume Builder...</div>}><ResumeBuilderV2 /></Suspense>} />
+                <Route path="/tools/resume-optimizer" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Resume Optimizer...</div>}><ResumeOptimizer /></Suspense>} />
+                <Route path="/tools/resume-tailor" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Resume Tailor...</div>}><ResumeTailorTool /></Suspense>} />
+                <Route path="/tools/resume-tailor-tool" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Resume Tailor...</div>}><ResumeTailorTool /></Suspense>} />
+                <Route path="/tools/role-fit-evaluator" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Role Fit Evaluator...</div>}><RoleFitEvaluator /></Suspense>} />
+                <Route path="/tools/mock-interview-simulator" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Mock Interview Simulator...</div>}><MockInterviewSimulator /></Suspense>} />
                 <Route path="/resources/:slug" element={<ResourceDetail />} />
                 <Route path="/resources" element={<BlogRedirect />} />
                 <Route path="/blog/:slug" element={<Suspense fallback={null}><BlogPost /></Suspense>} />
@@ -339,6 +364,10 @@ const App = () => {
                 <Route path="/roles/:role/:subtopic" element={<Suspense fallback={null}><JobsByRole /></Suspense>} />
                 <Route path="/roles/:role" element={<JobsByRole />} />
                 <Route path="/roles" element={<JobsByRole />} />
+                {/* Explicit Truth Layer for Location Hubs (render verified jobs) */}
+                <Route path="/locations/varanasi" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/locations/noida" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/locations/lucknow" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
                 <Route path="/locations/:location" element={<JobsByLocation />} />
                 <Route path="/locations" element={<JobsByLocation />} />
                 <Route path="/industries/:industry" element={<IndustryJobs />} />
@@ -379,6 +408,9 @@ const App = () => {
                 <Route path="/jobs/hyderabad" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
                 <Route path="/jobs/chennai" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
                 <Route path="/jobs/pune" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/varanasi" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/noida" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/lucknow" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
                 
                 {/* Global & India Jobs Matrix Engine (Role x Experience x City) */}
                 <Route path="/jobs/:role/:experience/:country/:city" element={<Suspense fallback={<div>Loading...</div>}><JobsByRoleExperienceCity /></Suspense>} />

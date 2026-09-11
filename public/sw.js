@@ -1,8 +1,19 @@
 // TalentXcel Service Worker
-// IMPORTANT: bump CACHE_VERSION whenever caching behavior changes so old
-// caches (which may hold stale JS bundles) are evicted on activate.
-const CACHE_VERSION = 'v1.2.1-2026-08-21';
+// In development / localhost, instantly unregister and bypass to prevent Vite HMR / page loading deadlocks
+if (self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1') {
+  self.addEventListener('install', () => self.skipWaiting());
+  self.addEventListener('activate', (event) => {
+    event.waitUntil(
+      self.registration.unregister().then(() => self.clients.matchAll()).then((clients) => {
+        clients.forEach((client) => client.navigate(client.url));
+      })
+    );
+  });
+}
+
+const CACHE_VERSION = 'v1.2.2-2026-09-11';
 const CACHE_NAME = `talentxcel-${CACHE_VERSION}`;
+
 
 const CRITICAL_ASSETS = [
   '/',
@@ -37,8 +48,11 @@ self.addEventListener('message', (event) => {
 
 // Fetch strategy
 self.addEventListener('fetch', (event) => {
+  if (self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1') return;
+
   const { request } = event;
   const url = new URL(request.url);
+
 
   if (request.method !== 'GET') return;
   if (!url.protocol.startsWith('http')) return;

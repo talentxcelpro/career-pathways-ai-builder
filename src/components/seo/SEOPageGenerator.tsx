@@ -1,6 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useNavigate } from 'react-router-dom';
 import { useStructuredData } from '@/hooks/useStructuredData';
+import { supabase } from '@/integrations/supabase/client';
+import { JobCard } from '@/components/jobs/JobCard';
+import { Button } from '@/components/ui/button';
+import { AlertCircle, Globe, Sparkles, MapPin, Briefcase } from 'lucide-react';
+
 
 interface SEOPage {
   title: string;
@@ -31,13 +37,45 @@ export const SEOPageGenerator: React.FC<SEOPageGeneratorProps> = ({
   company,
   industry
 }) => {
+  const navigate = useNavigate();
+  const [liveJobs, setLiveJobs] = useState<any[]>([]);
+  const [loadingJobs, setLoadingJobs] = useState(true);
+
   const page = generateSEOPage(pageType, { location, role, skill, company, industry });
+
+  useEffect(() => {
+    async function loadRealJobs() {
+      setLoadingJobs(true);
+      try {
+        let query = supabase.from('jobs').select('*').limit(20);
+
+        if (location) {
+          const locClean = location.replace(/-/g, ' ').trim();
+          query = query.or(`location.ilike.%${locClean}%,location_city.ilike.%${locClean}%`);
+        } else if (role) {
+          const roleClean = role.replace(/-/g, ' ').trim();
+          query = query.or(`title.ilike.%${roleClean}%,job_title.ilike.%${roleClean}%`);
+        }
+
+        const { data, error } = await query;
+        if (!error && data) {
+          setLiveJobs(data);
+        }
+      } catch (e) {
+        console.warn('[SEOPageGenerator] Error fetching verified jobs:', e);
+      } finally {
+        setLoadingJobs(false);
+      }
+    }
+    loadRealJobs();
+  }, [location, role]);
   
   // Add structured data
   useStructuredData({
     schema: JSON.stringify(page.structuredData),
     id: `seo-${pageType}-structured-data`
   });
+
 
   const canonicalUrl = `https://talentxcel.in${typeof window !== 'undefined' ? window.location.pathname : ''}`;
 
@@ -85,6 +123,98 @@ export const SEOPageGenerator: React.FC<SEOPageGeneratorProps> = ({
             <h1 className="text-4xl font-bold text-foreground mb-4">{page.h1}</h1>
             <p className="text-xl text-muted-foreground leading-relaxed">{page.description}</p>
           </header>
+
+          {/* P0 TRUTH LAYER — REAL LIVE JOBS INVENTORY */}
+          <section className="my-8 pb-8 border-b border-border/80">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+              <div className="flex items-center gap-3">
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                </span>
+                <h2 className="text-2xl font-bold text-foreground tracking-tight">
+                  {location ? `Verified Openings in ${location}` : role ? `Active ${role} Roles` : 'Verified Job Openings'}
+                </h2>
+              </div>
+              {liveJobs.length > 0 && (
+                <div className="px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 text-xs font-mono flex items-center gap-1.5 self-start sm:self-auto">
+                  <span>●</span>
+                  <span>{liveJobs.length} Live Empirical {liveJobs.length === 1 ? 'Role' : 'Roles'}</span>
+                </div>
+              )}
+            </div>
+
+            {loadingJobs ? (
+              <div className="p-12 text-center rounded-2xl bg-muted/30 border border-border/60 text-muted-foreground text-sm font-mono animate-pulse">
+                Auditing live verified employer inventory for {location || role || 'this category'}...
+              </div>
+            ) : liveJobs.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {liveJobs.map(job => (
+                  <JobCard
+                    key={job.id}
+                    job={{
+                      id: job.id,
+                      title: job.title || job.job_title,
+                      description: job.job_summary || job.job_description || job.description || '',
+                      location: job.location || `${job.location_city || ''}, ${job.location_state || ''}`.trim() || location || 'India',
+                      salary_min: job.salary_min,
+                      salary_max: job.salary_max,
+                      employment_type: job.employment_type || 'Full-time',
+                      experience_level: job.experience_level || `${job.min_experience || 0}-${job.max_experience || 3} yrs`,
+                      skills_required: job.skills_required || (job.ai_skill_tags ? job.ai_skill_tags.split(',') : []),
+                      is_remote: job.is_remote,
+                      is_featured: job.is_featured,
+                      company: {
+                        id: job.company_id || 'talentxcel',
+                        name: job.company_name || 'TalentXcel Partner',
+                        industry: job.industry_domain || job.industry || 'Technology'
+                      }
+                    }}
+                  />
+                ))}
+              </div>
+            ) : (
+              /* HONEST ZERO-INVENTORY STATE — NEVER FABRICATE */
+              <div className="p-6 rounded-2xl border border-amber-500/30 bg-amber-50/20 dark:bg-amber-950/10 space-y-4">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                  <div>
+                    <h3 className="font-semibold text-foreground text-base">
+                      0 On-Site Roles Currently Active in {location}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      TalentXcel does not show ghost or fabricated job listings. While verified local openings in {location} are being audited by our employer network, you have immediate high-match alternatives:
+                    </p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => navigate('/jobs')} 
+                    className="justify-start gap-2.5 h-auto py-3 px-4 border-border bg-background hover:bg-muted"
+                  >
+                    <Globe className="w-4 h-4 text-indigo-500 shrink-0" />
+                    <div className="text-left">
+                      <div className="text-xs font-semibold">Browse Pan-India & Remote Jobs</div>
+                      <div className="text-[11px] text-muted-foreground">Work from {location} for verified tech & corporate employers</div>
+                    </div>
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => navigate('/resume/ats-check')} 
+                    className="justify-start gap-2.5 h-auto py-3 px-4 border-border bg-background hover:bg-muted"
+                  >
+                    <Sparkles className="w-4 h-4 text-emerald-500 shrink-0" />
+                    <div className="text-left">
+                      <div className="text-xs font-semibold">Instant ATS Skill Readiness Scan</div>
+                      <div className="text-[11px] text-muted-foreground">Check your resume against market salaries & get matched</div>
+                    </div>
+                  </Button>
+                </div>
+              </div>
+            )}
+          </section>
 
           <div 
             className="prose prose-lg max-w-none"
@@ -157,9 +287,10 @@ function generateJobLocationPage(location: string, role?: string): SEOPage {
         <h2 class="text-2xl font-semibold mt-8 mb-4">Salary Expectations</h2>
         <p>${roleText} professionals in ${location} can expect competitive salaries based on experience, skills, and company size. The average salary range varies from entry-level to senior positions.</p>
         
-        <h2 class="text-2xl font-semibold mt-8 mb-4">How to Apply</h2>
-        <p>Browse our latest${roleText} job listings in ${location} below. Create your profile, upload your resume, and start applying to positions that match your skills and career goals.</p>
+        <h2 class="text-2xl font-semibold mt-8 mb-4">Application & Direct Match Process</h2>
+        <p>Review the verified openings listed above. Create your profile, benchmark your skills with our ATS scanner, and connect directly with hiring teams in ${location}.</p>
       </div>
+
     `,
     breadcrumbs: [
       { name: 'Home', url: '/' },

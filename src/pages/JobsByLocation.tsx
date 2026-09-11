@@ -17,14 +17,15 @@ const JobsByLocation = () => {
     'kolkata': 'Jobs in Kolkata - Cultural capital with opportunities in education, arts, and business.',
     'gurgaon': 'Jobs in Gurgaon - Millennium city with corporate headquarters and tech companies.',
     'noida': 'Jobs in Noida - Planned city with IT, media, and software development opportunities.',
-    'ahmedabad': 'Jobs in Ahmedabad - Commercial hub with textile, chemical, and IT industry jobs.'
+    'ahmedabad': 'Jobs in Ahmedabad - Commercial hub with textile, chemical, and IT industry jobs.',
+    'varanasi': 'Jobs in Varanasi - Emerging tech and economic hub in Uttar Pradesh. Explore verified software engineering, credit risk, and enterprise roles with transparent compensation.'
   };
   
   return (
     <>
       <SEOHead
         title={`Jobs in ${formattedLocation} | TalentXcel - Top Career Opportunities in ${formattedLocation}`}
-        description={locationDescriptions[location!] || `Find the best job opportunities in ${formattedLocation}. Browse 1000+ verified jobs across various industries on TalentXcel.`}
+        description={locationDescriptions[location?.toLowerCase() || ''] || `Explore verified career opportunities in ${formattedLocation} with transparent salaries on TalentXcel.`}
         keywords={[
           `jobs in ${location}`,
           `${location} jobs`,

@@ -26,6 +26,7 @@ const SalaryAnalyzer = lazy(() => import('../pages/tools/SalaryAnalyzer'));
 const InterviewPrep = lazy(() => import('../pages/tools/InterviewPrep'));
 const CareerPathfinder = lazy(() => import('../pages/tools/CareerPathfinder'));
 const ResumeOptimizer = lazy(() => import('../pages/tools/ResumeOptimizer'));
+const ResumeChecker = lazy(() => import('../pages/tools/ResumeChecker'));
 const ResumeBuilder = lazy(() => import('../pages/tools/ResumeBuilder'));
 const NetworkBuilder = lazy(() => import('../pages/tools/NetworkBuilder'));
 const SkillAssessor = lazy(() => import('../pages/tools/SkillAssessor'));
@@ -147,6 +148,13 @@ export const toolsRoutes = [
     to: "/tools/salary-benchmark-tool",
     icon: <DollarSign className="h-4 w-4" />,
     page: <Suspense fallback={null}><SalaryBenchmarkTool /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "ATS Resume Checker",
+    to: "/tools/resume-checker",
+    icon: <FileText className="h-4 w-4" />,
+    page: <Suspense fallback={null}><ResumeChecker /></Suspense>,
     isPublic: true,
   },
   {

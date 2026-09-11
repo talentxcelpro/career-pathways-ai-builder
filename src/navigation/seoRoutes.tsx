@@ -192,12 +192,4 @@ export const seoRoutes = [
     icon: <GraduationCap className="h-4 w-4" />,
     page: <ComprehensiveSEOGenerator pageType="category" />,
   },
-
-  // Tool and resource pages
-  {
-    title: "Career Tools",
-    to: "/tools/:tool",
-    icon: <Code className="h-4 w-4" />,
-    page: <ComprehensiveSEOGenerator pageType="tool" />,
-  },
 ];

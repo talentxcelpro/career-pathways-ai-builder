@@ -34,5 +34,22 @@ root.render(
   </React.StrictMode>
 );
 
-// Register service worker for aggressive caching
+// In development, automatically unregister any stale service workers to prevent cache poisoning
+if (!import.meta.env.PROD && 'serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
+    for (const registration of registrations) {
+      registration.unregister().then(() => {
+        console.log('🧹 [Dev] Stale ServiceWorker evicted:', registration.scope);
+      });
+    }
+  });
+  if ('caches' in window) {
+    caches.keys().then((keys) => {
+      keys.forEach((key) => caches.delete(key));
+    });
+  }
+}
+
+// Register service worker for aggressive caching in production
 registerServiceWorker();
+
