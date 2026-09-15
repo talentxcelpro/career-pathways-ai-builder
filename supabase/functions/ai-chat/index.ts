@@ -7,7 +7,97 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+async function generateCoachResponse({
+  openAIApiKey,
+  lovableApiKey,
+  systemPrompt,
+  aiPrompt,
+}: {
+  openAIApiKey?: string | null;
+  lovableApiKey?: string | null;
+  systemPrompt: string;
+  aiPrompt: string;
+}) {
+  if (openAIApiKey) {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAIApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: aiPrompt }
+        ],
+        temperature: 0.7,
+        max_tokens: 1500,
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      console.error('OpenAI API error:', error);
+      throw new Error('OpenAI API request failed');
+    }
+
+    const data = await response.json();
+    return {
+      content: data.choices?.[0]?.message?.content || '',
+      tokensUsed: data.usage?.total_tokens || 0,
+      model: 'gpt-4o-mini',
+      provider: 'openai',
+    };
+  }
+
+  if (lovableApiKey) {
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${lovableApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'google/gemini-2.5-flash',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: aiPrompt }
+        ],
+        temperature: 0.7,
+        max_completion_tokens: 1500,
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      console.error('Lovable AI gateway error:', error);
+      throw new Error('Lovable AI gateway request failed');
+    }
+
+    const data = await response.json();
+    return {
+      content: data.choices?.[0]?.message?.content || '',
+      tokensUsed: data.usage?.total_tokens || 0,
+      model: 'google/gemini-2.5-flash',
+      provider: 'lovable-gateway',
+    };
+  }
+
+  return {
+    content:
+      'Cloud AI is not configured yet, but I can still guide the next step from your TalentXcel context. ' +
+      'Set OPENAI_API_KEY or LOVABLE_API_KEY in Supabase secrets for live AI reasoning. ' +
+      `For this request, focus on: ${aiPrompt.slice(0, 500)}`,
+    tokensUsed: 0,
+    model: 'local-guidance',
+    provider: 'local-fallback',
+  };
+}
+
 serve(async (req) => {
+  const startedAt = Date.now();
+
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -54,14 +144,9 @@ serve(async (req) => {
       .eq('id', user.id)
       .single();
 
-    // Initialize OpenAI
+    // Initialize AI providers. OpenAI is preferred; Lovable/Gemini is a production fallback.
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
-    if (!openAIApiKey) {
-      return new Response(JSON.stringify({ error: 'OpenAI API key not configured' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
+    const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
 
     // Create or get session
     let currentSessionId = sessionId;
@@ -141,32 +226,18 @@ Provide personalized, actionable advice. Be encouraging, professional, and speci
       }
     }
 
-    // Call OpenAI API
-    const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: aiPrompt }
-        ],
-        temperature: 0.7,
-        max_tokens: 1500,
-      }),
+    // Call configured AI provider.
+    const aiData = await generateCoachResponse({
+      openAIApiKey,
+      lovableApiKey,
+      systemPrompt,
+      aiPrompt,
     });
 
-    if (!openAIResponse.ok) {
-      const error = await openAIResponse.text();
-      console.error('OpenAI API error:', error);
-      throw new Error('OpenAI API request failed');
+    const aiResponse = aiData.content;
+    if (!aiResponse) {
+      throw new Error('AI provider returned an empty response');
     }
-
-    const aiData = await openAIResponse.json();
-    const aiResponse = aiData.choices[0].message.content;
 
     // Store AI response
     await supabase
@@ -179,8 +250,9 @@ Provide personalized, actionable advice. Be encouraging, professional, and speci
         metadata: {
           command,
           response_type: responseType,
-          tokens_used: aiData.usage?.total_tokens || 0,
-          model: 'gpt-4o-mini'
+          tokens_used: aiData.tokensUsed,
+          model: aiData.model,
+          provider: aiData.provider
         }
       });
 
@@ -193,8 +265,8 @@ Provide personalized, actionable advice. Be encouraging, professional, and speci
         input_data: { message, command, context },
         output_data: { response: aiResponse },
         status: 'completed',
-        tokens_used: aiData.usage?.total_tokens || 0,
-        processing_time_ms: Date.now() - Date.now(), // Simplified for now
+        tokens_used: aiData.tokensUsed,
+        processing_time_ms: Date.now() - startedAt,
         completed_at: new Date().toISOString()
       });
 
@@ -203,8 +275,10 @@ Provide personalized, actionable advice. Be encouraging, professional, and speci
       message: aiResponse,
       sessionId: currentSessionId,
       metadata: {
-        tokens_used: aiData.usage?.total_tokens || 0,
-        response_type: responseType
+        tokens_used: aiData.tokensUsed,
+        response_type: responseType,
+        model: aiData.model,
+        provider: aiData.provider
       }
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

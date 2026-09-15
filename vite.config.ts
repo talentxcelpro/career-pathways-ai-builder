@@ -8,10 +8,17 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    watch: {
+      ignored: [
+        "**/android/**",
+        "**/ios/**",
+        "**/supabase/**",
+      ],
+    },
   },
   plugins: [
     react(),
-    mode === 'production' && componentTagger(),
+    mode === 'development' && componentTagger(),
   ].filter(Boolean),
   resolve: {
     alias: {
@@ -21,6 +28,10 @@ export default defineConfig(({ mode }) => ({
   },
   define: {
     global: "globalThis",
+  },
+  esbuild: {
+    drop: mode === 'production' ? ['console', 'debugger'] : [],
+    legalComments: 'none',
   },
   optimizeDeps: {
     include: [
@@ -73,14 +84,7 @@ export default defineConfig(({ mode }) => ({
     },
     chunkSizeWarningLimit: 500,
     sourcemap: false,
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: mode === 'production',
-        drop_debugger: true,
-        pure_funcs: mode === 'production' ? ['console.log', 'console.info', 'console.debug'] : [],
-      },
-    },
+    minify: 'esbuild',
     cssCodeSplit: true,
     assetsInlineLimit: 4096,
   },

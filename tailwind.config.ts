@@ -217,7 +217,12 @@ export default {
 				DEFAULT: 'var(--radius)',
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)'
+				sm: 'calc(var(--radius) - 4px)',
+				xl: '1.25rem',
+				'2xl': '1.5rem',
+				'3xl': '2rem',
+				'4xl': '2.5rem',
+				full: '9999px',
 			},
 			boxShadow: {
 				card: 'var(--shadow-card)',
@@ -226,6 +231,7 @@ export default {
 				brand: 'var(--shadow-brand)',
 				float: 'var(--shadow-float)',
 				glass: 'var(--shadow-glass)',
+				'3xl': '0 35px 60px -15px rgba(0, 0, 0, 0.3)',
 			},
 			backgroundImage: {
 				'gradient-primary': 'var(--gradient-primary)',
