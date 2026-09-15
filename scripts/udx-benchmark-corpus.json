@@ -1,0 +1,1427 @@
+{
+  "version": "2.0.0",
+  "registeredAt": "2026-09-15T12:00:00.000Z",
+  "registrationNote": "Success criteria registered BEFORE benchmark execution. Criteria cannot be modified after run_id is created. Modification after the fact invalidates that run.",
+  "epistemicPolicy": {
+    "TRADITIONAL_REAL": "Actual SERP fetch performed, result IDs captured",
+    "TRADITIONAL_PROXY": "Proxy estimate from published UX research, labeled and excluded from primary headline score",
+    "GENERIC_AI_REAL": "Real language model API call with rawIntent only — zero UDX context supplied",
+    "UDX_REAL": "Live production API call to https://talentxcel.in/api/udx/resolve"
+  },
+  "successLevels": {
+    "RESOLUTION_SUCCESS": "System returned a structured response addressing the intent",
+    "ACTION_SUCCESS": "System produced at least one actionable path with a reachable target",
+    "OUTCOME_SUCCESS": "Human or downstream system confirmed the action reached the stated acceptableOutcome"
+  },
+  "dimensions": [
+    "system_latency_ms",
+    "time_to_first_action_ms",
+    "interaction_steps",
+    "friction_score",
+    "uncertainty_index",
+    "cost_proxy_inr",
+    "outcome_quality_score"
+  ],
+  "objectives": [
+    {
+      "objectiveId": "CAR-001",
+      "domain": "CAREER",
+      "rawIntent": "frontend developer job varanasi",
+      "canonicalIntent": "Find a verified frontend developer role in Varanasi with active application path",
+      "successCriteria": {
+        "minimumEvidence": ["active_job_listing", "application_url_reachable", "location_varanasi_verified"],
+        "acceptableOutcome": "User can submit application to a currently active frontend role based in Varanasi",
+        "outcomeVerification": "Application submission confirmed OR employer intake URL returns HTTP 200",
+        "maximumObservationWindowHours": 72
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "CAREER"
+    },
+    {
+      "objectiveId": "CAR-002",
+      "domain": "CAREER",
+      "rawIntent": "switch from bank job to product manager role",
+      "canonicalIntent": "Career transition from banking to product management with upskilling path",
+      "successCriteria": {
+        "minimumEvidence": ["transition_pathway_defined", "skill_gap_identified", "at_least_one_course_or_role_recommended"],
+        "acceptableOutcome": "User receives a specific actionable transition plan: course OR open role OR community to join",
+        "outcomeVerification": "User clicks/applies to recommended resource, resource is accessible",
+        "maximumObservationWindowHours": 168
+      },
+      "expectedMinimalSteps": 4,
+      "domain": "CAREER"
+    },
+    {
+      "objectiveId": "CAR-003",
+      "domain": "CAREER",
+      "rawIntent": "first job after BCA degree in Lucknow",
+      "canonicalIntent": "Entry-level IT job for fresh BCA graduate in Lucknow",
+      "successCriteria": {
+        "minimumEvidence": ["entry_level_role_listed", "location_lucknow_or_remote", "degree_requirement_bca_or_equivalent"],
+        "acceptableOutcome": "At least one open role matching BCA + Lucknow with active application path",
+        "outcomeVerification": "Application URL accessible and returns non-404",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "CAREER"
+    },
+    {
+      "objectiveId": "CAR-004",
+      "domain": "CAREER",
+      "rawIntent": "data science jobs remote india 2 years experience",
+      "canonicalIntent": "Remote data science roles in India for candidate with 2 years experience",
+      "successCriteria": {
+        "minimumEvidence": ["remote_flag_true", "data_science_role_verified", "experience_requirement_2_years_or_less"],
+        "acceptableOutcome": "Active remote data science role in India with application intake",
+        "outcomeVerification": "Job listing URL reachable, remote flag confirmed in listing",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "CAREER"
+    },
+    {
+      "objectiveId": "CAR-005",
+      "domain": "CAREER",
+      "rawIntent": "resume for software engineer how to improve ATS score",
+      "canonicalIntent": "Improve software engineer resume to pass ATS screening",
+      "successCriteria": {
+        "minimumEvidence": ["specific_ats_tips_provided", "action_available_eg_tool_or_service"],
+        "acceptableOutcome": "User receives at least 3 specific actionable ATS improvement steps AND a tool/service link",
+        "outcomeVerification": "Tool link accessible, steps are non-generic",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "CAREER"
+    },
+    {
+      "objectiveId": "CAR-006",
+      "domain": "CAREER",
+      "rawIntent": "high paying jobs in varanasi for mba finance graduate",
+      "canonicalIntent": "High-compensation roles in Varanasi for MBA Finance graduate",
+      "successCriteria": {
+        "minimumEvidence": ["role_listed", "compensation_stated_above_8lpa", "varanasi_location_verified"],
+        "acceptableOutcome": "At least one role >= 8 LPA in Varanasi with MBA Finance requirement",
+        "outcomeVerification": "Listing URL accessible and salary range confirmed",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "CAREER"
+    },
+    {
+      "objectiveId": "CAR-007",
+      "domain": "CAREER",
+      "rawIntent": "government job notification UP 2026",
+      "canonicalIntent": "Active government job notifications for Uttar Pradesh 2026",
+      "successCriteria": {
+        "minimumEvidence": ["notification_is_2026", "state_is_up_or_central_with_up_eligibility", "application_window_open"],
+        "acceptableOutcome": "At least one active UP government job notification with open application window",
+        "outcomeVerification": "Official notification URL accessible, application window end date is in future",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "CAREER"
+    },
+    {
+      "objectiveId": "CAR-008",
+      "domain": "CAREER",
+      "rawIntent": "work from home part time jobs for women varanasi",
+      "canonicalIntent": "Remote or part-time flexible roles for women in Varanasi",
+      "successCriteria": {
+        "minimumEvidence": ["remote_or_hybrid_flag", "part_time_or_flexible_hours"],
+        "acceptableOutcome": "Active flexible role with application path",
+        "outcomeVerification": "Application URL returns 200",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "CAREER"
+    },
+    {
+      "objectiveId": "CAR-009",
+      "domain": "CAREER",
+      "rawIntent": "salary of react developer in india 2026",
+      "canonicalIntent": "Current React developer salary benchmarks in India 2026",
+      "successCriteria": {
+        "minimumEvidence": ["salary_range_stated", "source_cited_or_verifiable", "data_from_2025_or_later"],
+        "acceptableOutcome": "Salary range with source citation, data from 2025 or 2026",
+        "outcomeVerification": "Source URL accessible, date of data confirmed >= 2025",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "CAREER"
+    },
+    {
+      "objectiveId": "CAR-010",
+      "domain": "CAREER",
+      "rawIntent": "how to prepare for TCS NQT exam",
+      "canonicalIntent": "Preparation strategy and resources for TCS National Qualifier Test",
+      "successCriteria": {
+        "minimumEvidence": ["nqt_syllabus_or_pattern_provided", "at_least_one_preparation_resource"],
+        "acceptableOutcome": "Specific preparation plan with at least one accessible resource",
+        "outcomeVerification": "Resource URL accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "CAREER"
+    },
+    {
+      "objectiveId": "CAR-011",
+      "domain": "CAREER",
+      "rawIntent": "java developer jobs pune 3 to 5 years experience",
+      "canonicalIntent": "Java developer roles in Pune for 3-5 years experienced candidates",
+      "successCriteria": {
+        "minimumEvidence": ["java_role_confirmed", "pune_location", "experience_3_to_5_years"],
+        "acceptableOutcome": "At least one active Java role in Pune with 3-5 year requirement",
+        "outcomeVerification": "Listing URL accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "CAREER"
+    },
+    {
+      "objectiveId": "CAR-012",
+      "domain": "CAREER",
+      "rawIntent": "linkedin profile tips for freshers IT",
+      "canonicalIntent": "LinkedIn profile optimization tips for IT freshers",
+      "successCriteria": {
+        "minimumEvidence": ["at_least_5_specific_tips", "freshers_context_addressed"],
+        "acceptableOutcome": "5+ actionable, specific tips (not generic)",
+        "outcomeVerification": "Tips are distinct and not copy of each other",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "CAREER"
+    },
+    {
+      "objectiveId": "CAR-013",
+      "domain": "CAREER",
+      "rawIntent": "best IT companies hiring in varanasi 2026",
+      "canonicalIntent": "Currently hiring IT companies in Varanasi 2026",
+      "successCriteria": {
+        "minimumEvidence": ["company_named", "varanasi_office_confirmed", "active_hiring_status"],
+        "acceptableOutcome": "At least 2 named IT companies hiring in Varanasi with active job pages",
+        "outcomeVerification": "Company career pages accessible with Varanasi listings",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "CAREER"
+    },
+    {
+      "objectiveId": "CAR-014",
+      "domain": "CAREER",
+      "rawIntent": "internship opportunities for computer science students varanasi",
+      "canonicalIntent": "CS internship opportunities in or near Varanasi for students",
+      "successCriteria": {
+        "minimumEvidence": ["internship_not_full_time", "cs_relevant_domain", "location_varanasi_or_remote_from_varanasi"],
+        "acceptableOutcome": "Active CS internship with application path",
+        "outcomeVerification": "Application URL accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "CAREER"
+    },
+    {
+      "objectiveId": "CAR-015",
+      "domain": "CAREER",
+      "rawIntent": "how to get job at google india",
+      "canonicalIntent": "Hiring process and requirements to join Google India",
+      "successCriteria": {
+        "minimumEvidence": ["google_hiring_process_described", "india_context_addressed", "actionable_first_step"],
+        "acceptableOutcome": "Verified hiring process steps + link to Google careers India page",
+        "outcomeVerification": "Google careers India URL accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "CAREER"
+    },
+    {
+      "objectiveId": "CAR-016",
+      "domain": "CAREER",
+      "rawIntent": "machine learning engineer salary hike after 2 years",
+      "canonicalIntent": "Expected salary growth trajectory for ML engineers at 2-year mark in India",
+      "successCriteria": {
+        "minimumEvidence": ["salary_data_with_source", "2_year_trajectory_addressed"],
+        "acceptableOutcome": "Salary range at 2 years + source citation",
+        "outcomeVerification": "Source URL accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "CAREER"
+    },
+    {
+      "objectiveId": "CAR-017",
+      "domain": "CAREER",
+      "rawIntent": "best way to apply for jobs when you have no experience",
+      "canonicalIntent": "Job application strategy for candidates with no formal experience",
+      "successCriteria": {
+        "minimumEvidence": ["concrete_strategy_steps", "at_least_one_actionable_resource"],
+        "acceptableOutcome": "At least 4 specific steps and one resource link",
+        "outcomeVerification": "Resource URL accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "CAREER"
+    },
+    {
+      "objectiveId": "CAR-018",
+      "domain": "CAREER",
+      "rawIntent": "placement preparation for tier 2 college student india",
+      "canonicalIntent": "Campus placement preparation strategy for tier-2 college students in India",
+      "successCriteria": {
+        "minimumEvidence": ["tier2_context_addressed", "company_list_or_strategy", "timeline_recommended"],
+        "acceptableOutcome": "Specific preparation roadmap for tier-2 placement",
+        "outcomeVerification": "Resources mentioned are accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "CAREER"
+    },
+    {
+      "objectiveId": "CAR-019",
+      "domain": "CAREER",
+      "rawIntent": "digital marketing jobs remote india entry level",
+      "canonicalIntent": "Entry-level remote digital marketing roles in India",
+      "successCriteria": {
+        "minimumEvidence": ["remote_flag", "entry_level_requirement", "digital_marketing_domain"],
+        "acceptableOutcome": "Active remote entry-level digital marketing role",
+        "outcomeVerification": "Listing URL accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "CAREER"
+    },
+    {
+      "objectiveId": "CAR-020",
+      "domain": "CAREER",
+      "rawIntent": "career counselling for 12th pass student varanasi",
+      "canonicalIntent": "Career counselling resources or services for 12th pass students in Varanasi",
+      "successCriteria": {
+        "minimumEvidence": ["counselling_service_or_resource_named", "varanasi_or_accessible_online"],
+        "acceptableOutcome": "Named counselling service or credible resource accessible to Varanasi student",
+        "outcomeVerification": "Contact/booking URL accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "CAREER"
+    },
+    {
+      "objectiveId": "EDU-001",
+      "domain": "EDUCATION",
+      "rawIntent": "MBA college in Lucknow with placement above 10 lakh",
+      "canonicalIntent": "MBA colleges in Lucknow with median placement package above 10 LPA",
+      "successCriteria": {
+        "minimumEvidence": ["college_named", "lucknow_location", "placement_data_10lpa_or_above", "source_cited"],
+        "acceptableOutcome": "At least 2 colleges named with verifiable placement data >= 10 LPA",
+        "outcomeVerification": "College website accessible, placement data available",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "EDUCATION"
+    },
+    {
+      "objectiveId": "EDU-002",
+      "domain": "EDUCATION",
+      "rawIntent": "best data science course online under 30000 rupees",
+      "canonicalIntent": "Online data science course under ₹30,000 with credible certification",
+      "successCriteria": {
+        "minimumEvidence": ["course_named", "price_under_30000_verified", "certification_offered"],
+        "acceptableOutcome": "Course link, price, and certification details accessible",
+        "outcomeVerification": "Course URL accessible, price confirmed on page",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "EDUCATION"
+    },
+    {
+      "objectiveId": "EDU-003",
+      "domain": "EDUCATION",
+      "rawIntent": "BHU admission 2026 process for BTech",
+      "canonicalIntent": "Banaras Hindu University BTech admission process for 2026",
+      "successCriteria": {
+        "minimumEvidence": ["bhu_confirmed", "btech_admission", "2026_intake_addressed", "application_process_described"],
+        "acceptableOutcome": "BHU BTech 2026 admission URL + key dates",
+        "outcomeVerification": "BHU official admission page accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "EDUCATION"
+    },
+    {
+      "objectiveId": "EDU-004",
+      "domain": "EDUCATION",
+      "rawIntent": "UPSC coaching classes in varanasi fees and reviews",
+      "canonicalIntent": "UPSC coaching institutes in Varanasi with fee structure and reviews",
+      "successCriteria": {
+        "minimumEvidence": ["institute_named", "varanasi_location", "fee_mentioned", "review_source_cited"],
+        "acceptableOutcome": "At least 2 named UPSC coaching institutes in Varanasi with fees",
+        "outcomeVerification": "Institute contact or website accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "EDUCATION"
+    },
+    {
+      "objectiveId": "EDU-005",
+      "domain": "EDUCATION",
+      "rawIntent": "scholarship for SC ST students engineering UP",
+      "canonicalIntent": "Scholarships available for SC/ST engineering students in Uttar Pradesh",
+      "successCriteria": {
+        "minimumEvidence": ["scholarship_named", "sc_st_eligibility_confirmed", "engineering_eligible", "up_jurisdiction"],
+        "acceptableOutcome": "Named scholarship with application URL",
+        "outcomeVerification": "Scholarship portal accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "EDUCATION"
+    },
+    {
+      "objectiveId": "EDU-006",
+      "domain": "EDUCATION",
+      "rawIntent": "free online programming courses with certificate 2026",
+      "canonicalIntent": "Free online programming courses offering verified certificates in 2026",
+      "successCriteria": {
+        "minimumEvidence": ["course_is_free", "certificate_offered", "programming_domain", "2026_availability"],
+        "acceptableOutcome": "At least 2 free programming courses with free certificate option",
+        "outcomeVerification": "Course URLs accessible, free tier confirmed",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "EDUCATION"
+    },
+    {
+      "objectiveId": "EDU-007",
+      "domain": "EDUCATION",
+      "rawIntent": "distance MBA from Indira Gandhi open university details",
+      "canonicalIntent": "IGNOU distance MBA program details, fees, and admission process",
+      "successCriteria": {
+        "minimumEvidence": ["ignou_confirmed", "mba_program_details", "admission_process", "fees_stated"],
+        "acceptableOutcome": "IGNOU MBA program URL with fees and admission steps",
+        "outcomeVerification": "IGNOU official page accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "EDUCATION"
+    },
+    {
+      "objectiveId": "EDU-008",
+      "domain": "EDUCATION",
+      "rawIntent": "top engineering colleges in UP with fees less than 1 lakh per year",
+      "canonicalIntent": "Engineering colleges in UP with annual fees under ₹1,00,000",
+      "successCriteria": {
+        "minimumEvidence": ["college_named", "up_location", "annual_fee_under_100000"],
+        "acceptableOutcome": "At least 3 named colleges with verified fee below 1 lakh",
+        "outcomeVerification": "College URLs accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "EDUCATION"
+    },
+    {
+      "objectiveId": "EDU-009",
+      "domain": "EDUCATION",
+      "rawIntent": "how to apply for JEE advanced 2026",
+      "canonicalIntent": "JEE Advanced 2026 application process and eligibility",
+      "successCriteria": {
+        "minimumEvidence": ["official_jee_advanced_source", "2026_dates_or_process", "eligibility_stated"],
+        "acceptableOutcome": "JEE Advanced 2026 official notification URL with key dates",
+        "outcomeVerification": "Official JEE website accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "EDUCATION"
+    },
+    {
+      "objectiveId": "EDU-010",
+      "domain": "EDUCATION",
+      "rawIntent": "part time diploma courses in varanasi for working professionals",
+      "canonicalIntent": "Part-time or evening diploma courses in Varanasi for working professionals",
+      "successCriteria": {
+        "minimumEvidence": ["course_named", "varanasi_location", "part_time_or_evening_schedule"],
+        "acceptableOutcome": "Named diploma course in Varanasi with schedule information",
+        "outcomeVerification": "Institute contact or website accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "EDUCATION"
+    },
+    {
+      "objectiveId": "EDU-011",
+      "domain": "EDUCATION",
+      "rawIntent": "CLAT 2026 preparation guide law aspirant",
+      "canonicalIntent": "CLAT 2026 preparation strategy and resources for law aspirants",
+      "successCriteria": {
+        "minimumEvidence": ["clat_syllabus_addressed", "2026_exam_date_or_schedule", "preparation_resource"],
+        "acceptableOutcome": "CLAT 2026 preparation roadmap with at least one resource link",
+        "outcomeVerification": "Resource URL accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "EDUCATION"
+    },
+    {
+      "objectiveId": "EDU-012",
+      "domain": "EDUCATION",
+      "rawIntent": "learn python for free online beginners",
+      "canonicalIntent": "Free Python learning resources for beginners",
+      "successCriteria": {
+        "minimumEvidence": ["resource_is_free", "beginner_level", "python_language"],
+        "acceptableOutcome": "At least 2 free Python beginner resources with accessible URLs",
+        "outcomeVerification": "Resource URLs return 200",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "EDUCATION"
+    },
+    {
+      "objectiveId": "EDU-013",
+      "domain": "EDUCATION",
+      "rawIntent": "study abroad consultants varanasi for USA universities",
+      "canonicalIntent": "Study abroad consultants in Varanasi specializing in USA university admissions",
+      "successCriteria": {
+        "minimumEvidence": ["consultant_named", "varanasi_location", "usa_university_specialization"],
+        "acceptableOutcome": "Named consultant in Varanasi with USA focus and contact",
+        "outcomeVerification": "Contact URL or phone accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "EDUCATION"
+    },
+    {
+      "objectiveId": "EDU-014",
+      "domain": "EDUCATION",
+      "rawIntent": "IIT BHU cutoff 2025 CSE branch",
+      "canonicalIntent": "IIT BHU CSE branch JEE cutoff ranks for 2025",
+      "successCriteria": {
+        "minimumEvidence": ["iit_bhu_confirmed", "cse_branch", "cutoff_rank_stated", "2025_or_2024_data"],
+        "acceptableOutcome": "IIT BHU CSE cutoff rank for 2025 from verifiable source",
+        "outcomeVerification": "Source URL accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "EDUCATION"
+    },
+    {
+      "objectiveId": "EDU-015",
+      "domain": "EDUCATION",
+      "rawIntent": "how to become a chartered accountant after 12th commerce",
+      "canonicalIntent": "CA pathway after 12th commerce: steps, exams, timeline",
+      "successCriteria": {
+        "minimumEvidence": ["icai_process_described", "exam_stages_mentioned", "timeline_estimated"],
+        "acceptableOutcome": "Full CA pathway with ICAI registration link",
+        "outcomeVerification": "ICAI website accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "EDUCATION"
+    },
+    {
+      "objectiveId": "BIZ-001",
+      "domain": "BUSINESS",
+      "rawIntent": "how to register MSME in Uttar Pradesh",
+      "canonicalIntent": "MSME registration process in Uttar Pradesh via Udyam portal",
+      "successCriteria": {
+        "minimumEvidence": ["udyam_portal_mentioned", "up_context", "step_by_step_process"],
+        "acceptableOutcome": "Udyam registration URL + key steps for UP MSME",
+        "outcomeVerification": "Udyam portal accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "BUSINESS"
+    },
+    {
+      "objectiveId": "BIZ-002",
+      "domain": "BUSINESS",
+      "rawIntent": "find CA for GST filing varanasi",
+      "canonicalIntent": "Chartered Accountant for GST filing services in Varanasi",
+      "successCriteria": {
+        "minimumEvidence": ["ca_firm_or_professional_named", "varanasi_location", "gst_services_confirmed"],
+        "acceptableOutcome": "Named CA or firm in Varanasi with GST services and contact",
+        "outcomeVerification": "Contact accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "BUSINESS"
+    },
+    {
+      "objectiveId": "BIZ-003",
+      "domain": "BUSINESS",
+      "rawIntent": "B2B supplier for cotton fabric wholesale varanasi",
+      "canonicalIntent": "Wholesale cotton fabric B2B supplier based in or shipping from Varanasi",
+      "successCriteria": {
+        "minimumEvidence": ["supplier_named", "cotton_fabric_confirmed", "varanasi_or_up_location", "contact_or_platform_provided"],
+        "acceptableOutcome": "Named supplier with contact or marketplace listing",
+        "outcomeVerification": "Contact or listing URL accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "BUSINESS"
+    },
+    {
+      "objectiveId": "BIZ-004",
+      "domain": "BUSINESS",
+      "rawIntent": "startup incubators in Varanasi UP for tech startups",
+      "canonicalIntent": "Technology startup incubators and accelerators in Varanasi",
+      "successCriteria": {
+        "minimumEvidence": ["incubator_named", "varanasi_or_up_location", "tech_startups_supported"],
+        "acceptableOutcome": "Named incubator with application/contact URL",
+        "outcomeVerification": "Incubator website or contact accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "BUSINESS"
+    },
+    {
+      "objectiveId": "BIZ-005",
+      "domain": "BUSINESS",
+      "rawIntent": "how to open a restaurant in India legal requirements",
+      "canonicalIntent": "Legal licenses and registrations required to open a restaurant in India",
+      "successCriteria": {
+        "minimumEvidence": ["fssai_mentioned", "at_least_4_license_types_listed", "application_process_described"],
+        "acceptableOutcome": "Complete list of required licenses with application links",
+        "outcomeVerification": "At least 2 official portal URLs accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "BUSINESS"
+    },
+    {
+      "objectiveId": "BIZ-006",
+      "domain": "BUSINESS",
+      "rawIntent": "ecommerce business registration india flipkart amazon seller",
+      "canonicalIntent": "Process to register as a seller on Flipkart and Amazon India",
+      "successCriteria": {
+        "minimumEvidence": ["seller_registration_steps_flipkart_or_amazon", "gstin_requirement_mentioned"],
+        "acceptableOutcome": "Seller registration URL for at least one platform + GST requirements",
+        "outcomeVerification": "Registration URL accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "BUSINESS"
+    },
+    {
+      "objectiveId": "BIZ-007",
+      "domain": "BUSINESS",
+      "rawIntent": "digital marketing agency for small business varanasi",
+      "canonicalIntent": "Digital marketing agency serving small businesses in Varanasi",
+      "successCriteria": {
+        "minimumEvidence": ["agency_named", "varanasi_location", "small_business_services"],
+        "acceptableOutcome": "Named agency with contact and service description",
+        "outcomeVerification": "Website accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "BUSINESS"
+    },
+    {
+      "objectiveId": "BIZ-008",
+      "domain": "BUSINESS",
+      "rawIntent": "how to get startup India recognition",
+      "canonicalIntent": "Startup India DPIIT recognition process and benefits",
+      "successCriteria": {
+        "minimumEvidence": ["dpiit_portal_mentioned", "eligibility_criteria", "application_steps"],
+        "acceptableOutcome": "DPIIT recognition URL + eligibility and steps",
+        "outcomeVerification": "Startup India portal accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "BUSINESS"
+    },
+    {
+      "objectiveId": "BIZ-009",
+      "domain": "BUSINESS",
+      "rawIntent": "GST return filing process monthly for small business",
+      "canonicalIntent": "Monthly GST return filing process for small businesses (GSTR-1, GSTR-3B)",
+      "successCriteria": {
+        "minimumEvidence": ["gstr1_and_gstr3b_mentioned", "due_dates_stated", "gst_portal_url"],
+        "acceptableOutcome": "GST filing steps with due dates and portal URL",
+        "outcomeVerification": "GST portal accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "BUSINESS"
+    },
+    {
+      "objectiveId": "BIZ-010",
+      "domain": "BUSINESS",
+      "rawIntent": "trade license varanasi municipal corporation apply online",
+      "canonicalIntent": "Online trade license application process with Varanasi Municipal Corporation",
+      "successCriteria": {
+        "minimumEvidence": ["vmc_or_varanasi_municipal", "trade_license_process", "online_application_url"],
+        "acceptableOutcome": "VMC trade license application URL or process steps",
+        "outcomeVerification": "Portal URL accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "BUSINESS"
+    },
+    {
+      "objectiveId": "BIZ-011",
+      "domain": "BUSINESS",
+      "rawIntent": "handloom business export opportunities varanasi banarasi silk",
+      "canonicalIntent": "Export opportunities and process for Varanasi Banarasi silk handloom products",
+      "successCriteria": {
+        "minimumEvidence": ["export_process_mentioned", "banarasi_silk_context", "at_least_one_export_body_named"],
+        "acceptableOutcome": "Export pathway or trade body contact for Banarasi silk",
+        "outcomeVerification": "Contact or URL accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "BUSINESS"
+    },
+    {
+      "objectiveId": "BIZ-012",
+      "domain": "BUSINESS",
+      "rawIntent": "how to get business loan for small business in UP",
+      "canonicalIntent": "Business loan options for small businesses in Uttar Pradesh",
+      "successCriteria": {
+        "minimumEvidence": ["scheme_or_bank_named", "up_eligibility", "loan_amount_range", "application_process"],
+        "acceptableOutcome": "Named scheme with application URL and eligibility",
+        "outcomeVerification": "Application URL accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "BUSINESS"
+    },
+    {
+      "objectiveId": "BIZ-013",
+      "domain": "BUSINESS",
+      "rawIntent": "co-working space varanasi per day cost",
+      "canonicalIntent": "Co-working spaces in Varanasi with day-pass pricing",
+      "successCriteria": {
+        "minimumEvidence": ["space_named", "varanasi_location", "daily_cost_mentioned"],
+        "acceptableOutcome": "Named co-working space with day rate in Varanasi",
+        "outcomeVerification": "Contact or booking URL accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "BUSINESS"
+    },
+    {
+      "objectiveId": "BIZ-014",
+      "domain": "BUSINESS",
+      "rawIntent": "PM Vishwakarma yojana eligibility artisan varanasi",
+      "canonicalIntent": "PM Vishwakarma scheme eligibility and application for artisans in Varanasi",
+      "successCriteria": {
+        "minimumEvidence": ["vishwakarma_scheme_confirmed", "eligibility_criteria", "application_process"],
+        "acceptableOutcome": "Scheme URL + eligibility + how to apply",
+        "outcomeVerification": "Official portal accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "BUSINESS"
+    },
+    {
+      "objectiveId": "BIZ-015",
+      "domain": "BUSINESS",
+      "rawIntent": "private equity investors looking for tech startups in India",
+      "canonicalIntent": "Active PE/VC investors interested in early-stage tech startups in India",
+      "successCriteria": {
+        "minimumEvidence": ["investor_or_fund_named", "tech_startup_focus", "india_investment_confirmed"],
+        "acceptableOutcome": "Named investor or fund with application/pitch process",
+        "outcomeVerification": "Investor website or AngelList profile accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "BUSINESS"
+    },
+    {
+      "objectiveId": "FIN-001",
+      "domain": "FINANCE",
+      "rawIntent": "best SIP to invest 5000 per month for 10 years",
+      "canonicalIntent": "Best SIP mutual fund options for ₹5,000/month 10-year investment horizon",
+      "successCriteria": {
+        "minimumEvidence": ["fund_named", "10_year_horizon_addressed", "risk_level_stated"],
+        "acceptableOutcome": "At least 2 named funds with historical returns and risk profile",
+        "outcomeVerification": "Fund details accessible on AMFI or fund house website",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "FINANCE"
+    },
+    {
+      "objectiveId": "FIN-002",
+      "domain": "FINANCE",
+      "rawIntent": "home loan EMI calculator varanasi property 50 lakh",
+      "canonicalIntent": "Home loan EMI calculation for ₹50 lakh property in Varanasi",
+      "successCriteria": {
+        "minimumEvidence": ["emi_calculated_or_tool_provided", "interest_rate_assumption_stated", "tenure_options"],
+        "acceptableOutcome": "EMI range for 50L loan with stated interest rate assumption + bank or tool link",
+        "outcomeVerification": "EMI calculator or bank URL accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "FINANCE"
+    },
+    {
+      "objectiveId": "FIN-003",
+      "domain": "FINANCE",
+      "rawIntent": "tax saving options under 80C for salaried employee 2025",
+      "canonicalIntent": "Section 80C tax-saving investment options for salaried employees in FY2025",
+      "successCriteria": {
+        "minimumEvidence": ["80c_instruments_listed", "limit_stated_150000", "salaried_context"],
+        "acceptableOutcome": "Complete 80C instruments list with current limit and comparison",
+        "outcomeVerification": "Income tax or SEBI source URL accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "FINANCE"
+    },
+    {
+      "objectiveId": "FIN-004",
+      "domain": "FINANCE",
+      "rawIntent": "UPI payment not working troubleshoot",
+      "canonicalIntent": "Troubleshoot UPI payment failure — common causes and fixes",
+      "successCriteria": {
+        "minimumEvidence": ["at_least_4_troubleshooting_steps", "upi_specific_not_generic"],
+        "acceptableOutcome": "4+ UPI-specific troubleshooting steps",
+        "outcomeVerification": "Steps are distinct and actionable",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "FINANCE"
+    },
+    {
+      "objectiveId": "FIN-005",
+      "domain": "FINANCE",
+      "rawIntent": "credit score improve fast tips india",
+      "canonicalIntent": "Actionable steps to improve CIBIL credit score quickly in India",
+      "successCriteria": {
+        "minimumEvidence": ["cibil_context", "at_least_5_specific_steps", "timeline_indication"],
+        "acceptableOutcome": "5+ specific credit score improvement steps with timeline estimates",
+        "outcomeVerification": "Steps are distinct and India-specific",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "FINANCE"
+    },
+    {
+      "objectiveId": "FIN-006",
+      "domain": "FINANCE",
+      "rawIntent": "fixed deposit interest rates comparison 2026 india",
+      "canonicalIntent": "Fixed deposit interest rates comparison across major Indian banks in 2026",
+      "successCriteria": {
+        "minimumEvidence": ["at_least_3_banks_compared", "interest_rate_stated", "2025_or_2026_data"],
+        "acceptableOutcome": "FD rate comparison table with 3+ banks and current rates",
+        "outcomeVerification": "Source URL accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "FINANCE"
+    },
+    {
+      "objectiveId": "FIN-007",
+      "domain": "FINANCE",
+      "rawIntent": "PPF account opening process SBI varanasi",
+      "canonicalIntent": "How to open a PPF account at SBI in Varanasi",
+      "successCriteria": {
+        "minimumEvidence": ["ppf_process_described", "sbi_context", "documents_required"],
+        "acceptableOutcome": "PPF opening steps + SBI branch or online option",
+        "outcomeVerification": "SBI PPF URL accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "FINANCE"
+    },
+    {
+      "objectiveId": "FIN-008",
+      "domain": "FINANCE",
+      "rawIntent": "how to file ITR online india 2025-26",
+      "canonicalIntent": "Online ITR filing process for India FY 2025-26",
+      "successCriteria": {
+        "minimumEvidence": ["incometax_portal_mentioned", "filing_steps", "fy_2025_26_addressed"],
+        "acceptableOutcome": "ITR filing steps with official income tax portal URL",
+        "outcomeVerification": "Income tax portal accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "FINANCE"
+    },
+    {
+      "objectiveId": "FIN-009",
+      "domain": "FINANCE",
+      "rawIntent": "best health insurance plan for family of 4 india under 20000 per year",
+      "canonicalIntent": "Family health insurance plan in India for family of 4, premium under ₹20,000/year",
+      "successCriteria": {
+        "minimumEvidence": ["plan_named", "family_floater_type", "premium_under_20000", "coverage_amount_stated"],
+        "acceptableOutcome": "Named plan with premium and coverage details",
+        "outcomeVerification": "Insurer or aggregator URL accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "FINANCE"
+    },
+    {
+      "objectiveId": "FIN-010",
+      "domain": "FINANCE",
+      "rawIntent": "gold price today varanasi and where to buy certified gold",
+      "canonicalIntent": "Current gold price in Varanasi and certified purchase options",
+      "successCriteria": {
+        "minimumEvidence": ["gold_price_today_stated", "certified_seller_or_platform_named"],
+        "acceptableOutcome": "Today's gold price + at least one certified purchase option",
+        "outcomeVerification": "Price source is dated today, seller/platform accessible",
+        "maximumObservationWindowHours": 4
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "FINANCE"
+    },
+    {
+      "objectiveId": "FIN-011",
+      "domain": "FINANCE",
+      "rawIntent": "jan dhan account benefits 2026",
+      "canonicalIntent": "PM Jan Dhan Yojana account benefits and how to open in 2026",
+      "successCriteria": {
+        "minimumEvidence": ["jdyp_benefits_listed", "opening_process", "official_source"],
+        "acceptableOutcome": "Jan Dhan benefits list + official PMJDY URL",
+        "outcomeVerification": "PMJDY portal accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "FINANCE"
+    },
+    {
+      "objectiveId": "FIN-012",
+      "domain": "FINANCE",
+      "rawIntent": "stock market beginner guide india where to start",
+      "canonicalIntent": "Stock market beginner guide for India: account opening, platforms, first steps",
+      "successCriteria": {
+        "minimumEvidence": ["sebi_regulated_broker_mentioned", "demat_account_process", "beginner_resources"],
+        "acceptableOutcome": "Demat account steps + at least one SEBI-registered broker link",
+        "outcomeVerification": "Broker or SEBI URL accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "FINANCE"
+    },
+    {
+      "objectiveId": "FIN-013",
+      "domain": "FINANCE",
+      "rawIntent": "EPF withdrawal process online claim",
+      "canonicalIntent": "Online EPF/PF withdrawal process via EPFO portal",
+      "successCriteria": {
+        "minimumEvidence": ["epfo_portal_mentioned", "claim_types_mentioned", "eligibility_conditions"],
+        "acceptableOutcome": "EPFO online withdrawal steps + portal URL",
+        "outcomeVerification": "EPFO portal accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "FINANCE"
+    },
+    {
+      "objectiveId": "FIN-014",
+      "domain": "FINANCE",
+      "rawIntent": "best savings account interest rate 2026 india",
+      "canonicalIntent": "Highest savings account interest rates from Indian banks in 2026",
+      "successCriteria": {
+        "minimumEvidence": ["at_least_3_banks", "interest_rate_stated", "2025_or_2026_data"],
+        "acceptableOutcome": "Savings rate comparison table with 3+ banks",
+        "outcomeVerification": "Source URL accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "FINANCE"
+    },
+    {
+      "objectiveId": "FIN-015",
+      "domain": "FINANCE",
+      "rawIntent": "pm mudra loan eligibility and how to apply",
+      "canonicalIntent": "PM Mudra loan eligibility criteria and application process",
+      "successCriteria": {
+        "minimumEvidence": ["mudra_loan_types_mentioned", "eligibility_criteria", "application_channel"],
+        "acceptableOutcome": "Mudra loan types + eligibility + bank/mudra portal URL",
+        "outcomeVerification": "Mudra or participating bank URL accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "FINANCE"
+    },
+    {
+      "objectiveId": "LOC-001",
+      "domain": "LOCAL_SERVICES",
+      "rawIntent": "plumber in varanasi who accepts UPI",
+      "canonicalIntent": "Verified plumber in Varanasi accepting UPI payments",
+      "successCriteria": {
+        "minimumEvidence": ["service_provider_named", "varanasi_location", "upi_or_digital_payment_confirmed"],
+        "acceptableOutcome": "Named plumber or service with contact + UPI acceptance confirmation",
+        "outcomeVerification": "Contact accessible, UPI mentioned in profile or listing",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "LOCAL_SERVICES"
+    },
+    {
+      "objectiveId": "LOC-002",
+      "domain": "LOCAL_SERVICES",
+      "rawIntent": "best rated dermatologist varanasi",
+      "canonicalIntent": "Top-rated dermatologist in Varanasi with appointment booking",
+      "successCriteria": {
+        "minimumEvidence": ["doctor_named", "varanasi_location", "dermatology_specialty", "review_count_or_rating"],
+        "acceptableOutcome": "Named dermatologist with rating and appointment contact in Varanasi",
+        "outcomeVerification": "Contact URL or phone accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "LOCAL_SERVICES"
+    },
+    {
+      "objectiveId": "LOC-003",
+      "domain": "LOCAL_SERVICES",
+      "rawIntent": "electrician near me varanasi emergency contact",
+      "canonicalIntent": "Emergency electrician service in Varanasi with contact number",
+      "successCriteria": {
+        "minimumEvidence": ["electrician_named_or_service", "varanasi_location", "contact_number_or_booking"],
+        "acceptableOutcome": "Named electrician or service with Varanasi contact",
+        "outcomeVerification": "Contact accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "LOCAL_SERVICES"
+    },
+    {
+      "objectiveId": "LOC-004",
+      "domain": "LOCAL_SERVICES",
+      "rawIntent": "car wash service varanasi home pickup",
+      "canonicalIntent": "Home pickup car wash service in Varanasi",
+      "successCriteria": {
+        "minimumEvidence": ["service_named", "varanasi_location", "home_pickup_mentioned"],
+        "acceptableOutcome": "Named service with home pickup + contact/booking",
+        "outcomeVerification": "Contact accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "LOCAL_SERVICES"
+    },
+    {
+      "objectiveId": "LOC-005",
+      "domain": "LOCAL_SERVICES",
+      "rawIntent": "courier service same day delivery varanasi to lucknow",
+      "canonicalIntent": "Same-day courier service from Varanasi to Lucknow",
+      "successCriteria": {
+        "minimumEvidence": ["courier_service_named", "varanasi_to_lucknow_route", "same_day_claim_confirmed"],
+        "acceptableOutcome": "Named courier with Varanasi-Lucknow same-day service + booking contact",
+        "outcomeVerification": "Contact or booking URL accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "LOCAL_SERVICES"
+    },
+    {
+      "objectiveId": "LOC-006",
+      "domain": "LOCAL_SERVICES",
+      "rawIntent": "yoga classes varanasi morning batch",
+      "canonicalIntent": "Morning yoga classes in Varanasi with timing and fees",
+      "successCriteria": {
+        "minimumEvidence": ["class_or_centre_named", "varanasi_location", "morning_schedule_confirmed"],
+        "acceptableOutcome": "Named yoga centre with morning batch timing and contact",
+        "outcomeVerification": "Contact accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "LOCAL_SERVICES"
+    },
+    {
+      "objectiveId": "LOC-007",
+      "domain": "LOCAL_SERVICES",
+      "rawIntent": "ambulance service varanasi 24 hour contact",
+      "canonicalIntent": "24-hour ambulance service contact number in Varanasi",
+      "successCriteria": {
+        "minimumEvidence": ["ambulance_service_named", "24_hour_confirmed", "varanasi_contact"],
+        "acceptableOutcome": "Named 24-hour ambulance service with verified contact in Varanasi",
+        "outcomeVerification": "Phone number or URL accessible",
+        "maximumObservationWindowHours": 12
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "LOCAL_SERVICES"
+    },
+    {
+      "objectiveId": "LOC-008",
+      "domain": "LOCAL_SERVICES",
+      "rawIntent": "Tiffin service varanasi for office workers monthly subscription",
+      "canonicalIntent": "Monthly tiffin subscription service for office workers in Varanasi",
+      "successCriteria": {
+        "minimumEvidence": ["service_named", "varanasi_location", "monthly_subscription_available", "price_mentioned"],
+        "acceptableOutcome": "Named tiffin service with monthly rate and contact in Varanasi",
+        "outcomeVerification": "Contact accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "LOCAL_SERVICES"
+    },
+    {
+      "objectiveId": "LOC-009",
+      "domain": "LOCAL_SERVICES",
+      "rawIntent": "maid service varanasi for daily house cleaning",
+      "canonicalIntent": "Daily house cleaning maid service provider in Varanasi",
+      "successCriteria": {
+        "minimumEvidence": ["service_named", "varanasi_location", "daily_frequency_available"],
+        "acceptableOutcome": "Named service with Varanasi coverage and contact",
+        "outcomeVerification": "Contact accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "LOCAL_SERVICES"
+    },
+    {
+      "objectiveId": "LOC-010",
+      "domain": "LOCAL_SERVICES",
+      "rawIntent": "AC repair service varanasi rate list",
+      "canonicalIntent": "AC repair service in Varanasi with pricing",
+      "successCriteria": {
+        "minimumEvidence": ["service_named", "varanasi_location", "rate_or_price_mentioned"],
+        "acceptableOutcome": "Named AC repair service with price range and contact",
+        "outcomeVerification": "Contact accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "LOCAL_SERVICES"
+    },
+    {
+      "objectiveId": "LOC-011",
+      "domain": "LOCAL_SERVICES",
+      "rawIntent": "wedding photographer varanasi packages price 2026",
+      "canonicalIntent": "Wedding photographer in Varanasi with 2026 package pricing",
+      "successCriteria": {
+        "minimumEvidence": ["photographer_named", "varanasi_location", "package_price_mentioned"],
+        "acceptableOutcome": "Named photographer with package price and portfolio/contact",
+        "outcomeVerification": "Website or contact accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "LOCAL_SERVICES"
+    },
+    {
+      "objectiveId": "LOC-012",
+      "domain": "LOCAL_SERVICES",
+      "rawIntent": "blood test home collection varanasi pathology",
+      "canonicalIntent": "Home blood collection pathology service in Varanasi",
+      "successCriteria": {
+        "minimumEvidence": ["lab_named", "varanasi_coverage", "home_collection_service"],
+        "acceptableOutcome": "Named lab with home collection in Varanasi and booking contact",
+        "outcomeVerification": "Contact or booking URL accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "LOCAL_SERVICES"
+    },
+    {
+      "objectiveId": "LOC-013",
+      "domain": "LOCAL_SERVICES",
+      "rawIntent": "pet grooming services varanasi",
+      "canonicalIntent": "Pet grooming services in Varanasi",
+      "successCriteria": {
+        "minimumEvidence": ["service_named", "varanasi_location"],
+        "acceptableOutcome": "Named pet grooming service with contact",
+        "outcomeVerification": "Contact accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "LOCAL_SERVICES"
+    },
+    {
+      "objectiveId": "LOC-014",
+      "domain": "LOCAL_SERVICES",
+      "rawIntent": "pest control service varanasi residential",
+      "canonicalIntent": "Residential pest control service in Varanasi",
+      "successCriteria": {
+        "minimumEvidence": ["service_named", "varanasi_coverage", "residential_confirmed"],
+        "acceptableOutcome": "Named pest control service with Varanasi residential coverage and contact",
+        "outcomeVerification": "Contact accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "LOCAL_SERVICES"
+    },
+    {
+      "objectiveId": "LOC-015",
+      "domain": "LOCAL_SERVICES",
+      "rawIntent": "internet service provider varanasi best speed plans",
+      "canonicalIntent": "Best broadband/ISP plans by speed in Varanasi",
+      "successCriteria": {
+        "minimumEvidence": ["isp_named", "varanasi_coverage", "speed_and_price_stated"],
+        "acceptableOutcome": "Named ISP with speed tier and price for Varanasi",
+        "outcomeVerification": "ISP plan URL accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "LOCAL_SERVICES"
+    },
+    {
+      "objectiveId": "LOC-016",
+      "domain": "LOCAL_SERVICES",
+      "rawIntent": "gym membership varanasi near BHU student discount",
+      "canonicalIntent": "Gym near BHU Varanasi offering student membership discounts",
+      "successCriteria": {
+        "minimumEvidence": ["gym_named", "bhu_vicinity", "student_discount_mentioned"],
+        "acceptableOutcome": "Named gym near BHU with student plan and contact",
+        "outcomeVerification": "Contact accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "LOCAL_SERVICES"
+    },
+    {
+      "objectiveId": "LOC-017",
+      "domain": "LOCAL_SERVICES",
+      "rawIntent": "solar panel installation varanasi home subsidy",
+      "canonicalIntent": "Solar panel installation for homes in Varanasi with government subsidy",
+      "successCriteria": {
+        "minimumEvidence": ["installer_named_or_subsidy_scheme", "varanasi_or_up_coverage", "subsidy_amount_or_process"],
+        "acceptableOutcome": "Named installer or subsidy scheme with application URL",
+        "outcomeVerification": "URL accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "LOCAL_SERVICES"
+    },
+    {
+      "objectiveId": "LOC-018",
+      "domain": "LOCAL_SERVICES",
+      "rawIntent": "chartered bus service varanasi to delhi overnight",
+      "canonicalIntent": "Overnight bus service from Varanasi to Delhi — booking options",
+      "successCriteria": {
+        "minimumEvidence": ["service_named", "varanasi_to_delhi_route", "overnight_option"],
+        "acceptableOutcome": "Named service with booking URL or contact for Varanasi-Delhi overnight",
+        "outcomeVerification": "Booking URL or contact accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "LOCAL_SERVICES"
+    },
+    {
+      "objectiveId": "LOC-019",
+      "domain": "LOCAL_SERVICES",
+      "rawIntent": "water purifier repair varanasi kent aquaguard",
+      "canonicalIntent": "Kent or Aquaguard water purifier repair service in Varanasi",
+      "successCriteria": {
+        "minimumEvidence": ["service_or_authorized_center_named", "varanasi_coverage"],
+        "acceptableOutcome": "Authorized or verified repair service for water purifier in Varanasi",
+        "outcomeVerification": "Contact accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "LOCAL_SERVICES"
+    },
+    {
+      "objectiveId": "LOC-020",
+      "domain": "LOCAL_SERVICES",
+      "rawIntent": "passport seva kendra varanasi appointment booking",
+      "canonicalIntent": "Passport Seva Kendra appointment in Varanasi — how to book",
+      "successCriteria": {
+        "minimumEvidence": ["passportindia_portal_mentioned", "varanasi_psk_location", "appointment_process"],
+        "acceptableOutcome": "Passport Seva portal URL + Varanasi PSK address",
+        "outcomeVerification": "Passport India portal accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "LOCAL_SERVICES"
+    },
+    {
+      "objectiveId": "PER-001",
+      "domain": "PERSONAL",
+      "rawIntent": "should I move from varanasi to pune for better salary",
+      "canonicalIntent": "Cost-benefit analysis of relocating from Varanasi to Pune for salary improvement",
+      "successCriteria": {
+        "minimumEvidence": ["salary_comparison_data", "cost_of_living_comparison", "actionable_recommendation"],
+        "acceptableOutcome": "Verified salary differential + cost of living data + recommendation with caveats",
+        "outcomeVerification": "Data sources cited and accessible",
+        "maximumObservationWindowHours": 48
+      },
+      "expectedMinimalSteps": 3,
+      "domain": "PERSONAL"
+    },
+    {
+      "objectiveId": "PER-002",
+      "domain": "PERSONAL",
+      "rawIntent": "best laptop under 60000 rupees for college student 2026",
+      "canonicalIntent": "Best laptop for college students under ₹60,000 in 2026",
+      "successCriteria": {
+        "minimumEvidence": ["at_least_2_models_named", "price_under_60000", "student_use_case_addressed"],
+        "acceptableOutcome": "At least 2 laptops under ₹60K with specs and buy link",
+        "outcomeVerification": "Purchase URL accessible, current price confirmed",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "PERSONAL"
+    },
+    {
+      "objectiveId": "PER-003",
+      "domain": "PERSONAL",
+      "rawIntent": "how to reduce screen time addiction for productivity",
+      "canonicalIntent": "Practical steps to reduce digital screen time and improve productivity",
+      "successCriteria": {
+        "minimumEvidence": ["at_least_5_actionable_steps", "app_or_tool_recommended"],
+        "acceptableOutcome": "5+ specific steps and at least one tool recommendation",
+        "outcomeVerification": "Tool URL accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "PERSONAL"
+    },
+    {
+      "objectiveId": "PER-004",
+      "domain": "PERSONAL",
+      "rawIntent": "best time management techniques for working professionals india",
+      "canonicalIntent": "Evidence-based time management techniques for Indian working professionals",
+      "successCriteria": {
+        "minimumEvidence": ["at_least_4_named_techniques", "actionable_implementation"],
+        "acceptableOutcome": "4+ named techniques with implementation steps",
+        "outcomeVerification": "Techniques are named (not vague) and implementable",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "PERSONAL"
+    },
+    {
+      "objectiveId": "PER-005",
+      "domain": "PERSONAL",
+      "rawIntent": "how to apply for indian passport first time varanasi",
+      "canonicalIntent": "First-time passport application process for Varanasi residents",
+      "successCriteria": {
+        "minimumEvidence": ["passportindia_portal", "documents_required", "varanasi_psk_address"],
+        "acceptableOutcome": "Complete application steps + Varanasi PSK address + portal URL",
+        "outcomeVerification": "Passport India portal accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "PERSONAL"
+    },
+    {
+      "objectiveId": "PER-006",
+      "domain": "PERSONAL",
+      "rawIntent": "best diet plan for weight loss for Indian vegetarian",
+      "canonicalIntent": "Evidence-based weight loss diet plan for Indian vegetarians",
+      "successCriteria": {
+        "minimumEvidence": ["calorie_targets_stated", "indian_vegetarian_foods", "at_least_7_day_plan_or_framework"],
+        "acceptableOutcome": "Weekly diet framework with Indian vegetarian meals and calorie guidance",
+        "outcomeVerification": "Plan is internally consistent and India-specific",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "PERSONAL"
+    },
+    {
+      "objectiveId": "PER-007",
+      "domain": "PERSONAL",
+      "rawIntent": "how to learn a new skill in 30 days practical guide",
+      "canonicalIntent": "30-day framework for acquiring a new skill effectively",
+      "successCriteria": {
+        "minimumEvidence": ["30_day_structure", "learning_science_referenced_or_applied", "actionable_daily_plan"],
+        "acceptableOutcome": "Structured 30-day learning plan with daily/weekly milestones",
+        "outcomeVerification": "Framework is specific, not generic",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "PERSONAL"
+    },
+    {
+      "objectiveId": "PER-008",
+      "domain": "PERSONAL",
+      "rawIntent": "aadhaar card correction online process",
+      "canonicalIntent": "Online Aadhaar card correction process via UIDAI",
+      "successCriteria": {
+        "minimumEvidence": ["uidai_portal_mentioned", "correction_process_steps", "documents_required"],
+        "acceptableOutcome": "UIDAI Aadhaar correction URL + steps + documents",
+        "outcomeVerification": "UIDAI portal accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "PERSONAL"
+    },
+    {
+      "objectiveId": "PER-009",
+      "domain": "PERSONAL",
+      "rawIntent": "meditation apps best free for beginners india",
+      "canonicalIntent": "Best free meditation apps for Indian beginners",
+      "successCriteria": {
+        "minimumEvidence": ["at_least_2_apps_named", "free_tier_confirmed", "beginner_suitability"],
+        "acceptableOutcome": "2+ free meditation apps with download links and beginner context",
+        "outcomeVerification": "App store or website URLs accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "PERSONAL"
+    },
+    {
+      "objectiveId": "PER-010",
+      "domain": "PERSONAL",
+      "rawIntent": "how to manage anxiety without medication practical tips",
+      "canonicalIntent": "Evidence-based non-medication strategies for managing anxiety",
+      "successCriteria": {
+        "minimumEvidence": ["at_least_5_techniques", "evidence_cited_or_source_referenced", "not_a_medical_disclaimer_only"],
+        "acceptableOutcome": "5+ specific evidence-based anxiety management techniques",
+        "outcomeVerification": "Techniques are named and actionable",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "PERSONAL"
+    },
+    {
+      "objectiveId": "PER-011",
+      "domain": "PERSONAL",
+      "rawIntent": "how to save money on a 25000 salary per month India",
+      "canonicalIntent": "Personal savings strategy for ₹25,000/month salary in India",
+      "successCriteria": {
+        "minimumEvidence": ["budget_breakdown_provided", "savings_target_percentage", "india_cost_context"],
+        "acceptableOutcome": "Monthly budget plan for ₹25K with specific savings allocation",
+        "outcomeVerification": "Budget is internally consistent and India-specific",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "PERSONAL"
+    },
+    {
+      "objectiveId": "PER-012",
+      "domain": "PERSONAL",
+      "rawIntent": "voter id card apply online UP 2026",
+      "canonicalIntent": "Online voter ID card application process in Uttar Pradesh 2026",
+      "successCriteria": {
+        "minimumEvidence": ["nvsp_or_voters_portal", "up_context", "application_steps"],
+        "acceptableOutcome": "Voter ID application URL + UP-specific steps",
+        "outcomeVerification": "NVSP or Voters portal accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "PERSONAL"
+    },
+    {
+      "objectiveId": "PER-013",
+      "domain": "PERSONAL",
+      "rawIntent": "best book for personality development India recommended",
+      "canonicalIntent": "Recommended personality development books for Indian readers",
+      "successCriteria": {
+        "minimumEvidence": ["at_least_3_books_named", "author_cited", "india_relevance_or_general_applicability"],
+        "acceptableOutcome": "3+ books with author, brief description, and buy/read link",
+        "outcomeVerification": "At least one book URL accessible",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "PERSONAL"
+    },
+    {
+      "objectiveId": "PER-014",
+      "domain": "PERSONAL",
+      "rawIntent": "how to write a professional email in Hindi and English",
+      "canonicalIntent": "Template and guide for professional emails in both Hindi and English",
+      "successCriteria": {
+        "minimumEvidence": ["template_provided", "both_hindi_and_english", "professional_context_addressed"],
+        "acceptableOutcome": "Professional email template in both languages",
+        "outcomeVerification": "Templates are usable and non-generic",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "PERSONAL"
+    },
+    {
+      "objectiveId": "PER-015",
+      "domain": "PERSONAL",
+      "rawIntent": "how to start exercising daily when you have no habit",
+      "canonicalIntent": "Habit formation strategy for starting a daily exercise routine",
+      "successCriteria": {
+        "minimumEvidence": ["habit_science_applied", "beginner_appropriate_routine", "at_least_4_week_plan"],
+        "acceptableOutcome": "4-week beginner exercise habit plan with specific daily actions",
+        "outcomeVerification": "Plan is specific, not generic motivational content",
+        "maximumObservationWindowHours": 24
+      },
+      "expectedMinimalSteps": 2,
+      "domain": "PERSONAL"
+    }
+  ]
+}
