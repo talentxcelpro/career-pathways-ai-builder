@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -6,37 +6,101 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, UserCheck, UserPlus, MessageCircle, UserX, Search, Filter, Calendar, Building2, MapPin } from "lucide-react";
+import { Users, UserCheck, UserPlus, MessageCircle, UserX, Search, Filter, Calendar, Building2, MapPin, Bell } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Link } from 'react-router-dom';
-import { useRealtimeTalentNetwork } from '@/hooks/useRealtimeTalentNetwork';
+import { useRealtimeConnections } from '@/hooks/useRealtimeConnections';
 
-const TalentNetwork = () => {
+const Connections = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('recent');
   const [filterBy, setFilterBy] = useState('all');
   const queryClient = useQueryClient();
 
-  // Use the enhanced realtime TalentNetwork hook
+  // Set up live real-time synchronization with Supabase
+  useEffect(() => {
+    const channel = supabase
+      .channel('connections-live-channel')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'connections' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['userConnections'] });
+        queryClient.invalidateQueries({ queryKey: ['connectionStats'] });
+        queryClient.invalidateQueries({ queryKey: ['pendingRequestsCount'] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'connection_requests' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['userConnections'] });
+        queryClient.invalidateQueries({ queryKey: ['pendingRequestsCount'] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['userMessagesCount'] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['userConnections'] });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
+  // Fetch live messages count directly from database
+  const { data: messagesCount = 0 } = useQuery({
+    queryKey: ['userMessagesCount'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return 0;
+
+      const { count, error } = await supabase
+        .from('messages')
+        .select('*', { count: 'exact', head: true })
+        .or(`recipient_id.eq.${user.id},sender_id.eq.${user.id}`);
+
+      if (error) {
+        console.error('Error fetching messages count:', error);
+        return 0;
+      }
+      return count || 0;
+    }
+  });
+
+  // Fetch pending connection requests count
+  const { data: pendingRequestsCount = 0 } = useQuery({
+    queryKey: ['pendingRequestsCount'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return 0;
+
+      const { count, error } = await supabase
+        .from('connections')
+        .select('*', { count: 'exact', head: true })
+        .eq('recipient_id', user.id)
+        .eq('status', 'pending');
+
+      if (error) return 0;
+      return count || 0;
+    }
+  });
+
+  // Use the enhanced realtime connections hook
   const { 
-    users: TalentNetwork, 
-    loading: TalentNetworkLoading, 
+    users: connections, 
+    loading: connectionsLoading, 
     stats,
     showOnlineOnly,
     setShowOnlineOnly,
     getLastSeenText 
-  } = useRealtimeTalentNetwork();
+  } = useRealtimeConnections();
 
-  // Fetch user's actual TalentNetwork
-  const { data: userTalentNetwork, isLoading: userTalentNetworkLoading } = useQuery({
-    queryKey: ['userTalentNetwork'],
+  // Fetch user's actual connections
+  const { data: userConnections, isLoading: userConnectionsLoading } = useQuery({
+    queryKey: ['userConnections'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
 
-      const { data: TalentNetworkData, error } = await supabase
+      const { data: connectionsData, error } = await supabase
         .from('connections')
         .select(`
           id,
@@ -54,7 +118,7 @@ const TalentNetwork = () => {
       if (error) throw error;
 
       // Get other user IDs and fetch their profiles
-      const otherUserIds = TalentNetworkData.map(conn => 
+      const otherUserIds = connectionsData.map(conn => 
         conn.requester_id === user.id ? conn.recipient_id : conn.requester_id
       ).filter(Boolean);
 
@@ -80,7 +144,7 @@ const TalentNetwork = () => {
 
       const profilesMap = new Map(profiles?.map(p => [p.id, p]) || []);
 
-      return TalentNetworkData.map(conn => {
+      return connectionsData.map(conn => {
         const otherUserId = conn.requester_id === user.id ? conn.recipient_id : conn.requester_id;
         return {
           ...conn,
@@ -112,8 +176,8 @@ const TalentNetwork = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['userTalentNetwork'] });
-      queryClient.invalidateQueries({ queryKey: ['TalentNetworktats'] });
+      queryClient.invalidateQueries({ queryKey: ['userConnections'] });
+      queryClient.invalidateQueries({ queryKey: ['connectionStats'] });
       toast.success('Connection removed successfully');
     },
     onError: (error) => {
@@ -145,7 +209,7 @@ const TalentNetwork = () => {
   };
 
   // Enhanced filtering and sorting
-  const filteredAndSortedTalentNetwork = userTalentNetwork
+  const filteredAndSortedConnections = userConnections
     ?.filter(conn => {
       if (!searchTerm && filterBy === 'all' && !showOnlineOnly) return true;
       
@@ -164,7 +228,7 @@ const TalentNetwork = () => {
       
       const matchesFilter = filterBy === 'all' || 
         (filterBy === 'recent' && new Date(conn.connected_at) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)) ||
-        (filterBy === 'same_company' && user.current_company === userTalentNetwork?.[0]?.otherUser?.current_company);
+        (filterBy === 'same_company' && user.current_company === userConnections?.[0]?.otherUser?.current_company);
       
       const matchesOnline = !showOnlineOnly || user.is_online;
       
@@ -188,7 +252,7 @@ const TalentNetwork = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">My TalentNetwork</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">My Connections</h1>
           <p className="text-gray-600">Manage and explore your professional network</p>
         </div>
 
@@ -200,7 +264,7 @@ const TalentNetwork = () => {
                 <Users className="h-8 w-8 text-blue-600" />
                 <div className="ml-3">
                   <p className="text-sm font-medium text-gray-600">Total</p>
-                  <p className="text-2xl font-bold text-gray-900">{userTalentNetwork?.length || 0}</p>
+                  <p className="text-2xl font-bold text-gray-900">{userConnections?.length || 0}</p>
                 </div>
               </div>
             </CardContent>
@@ -213,7 +277,7 @@ const TalentNetwork = () => {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Online Now</p>
                   <p className="text-2xl font-bold text-gray-900">
-                    {userTalentNetwork?.filter(c => c.otherUser.is_online).length || 0}
+                    {userConnections?.filter(c => c.otherUser.is_online).length || 0}
                   </p>
                 </div>
               </div>
@@ -227,7 +291,7 @@ const TalentNetwork = () => {
                 <div className="ml-3">
                   <p className="text-sm font-medium text-gray-600">This Month</p>
                   <p className="text-2xl font-bold text-gray-900">
-                    {userTalentNetwork?.filter(c => 
+                    {userConnections?.filter(c => 
                       new Date(c.connected_at) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
                     ).length || 0}
                   </p>
@@ -238,16 +302,40 @@ const TalentNetwork = () => {
 
           <Card>
             <CardContent className="p-4">
-              <div className="flex items-center">
+              <Link to="/network/messages" className="flex items-center hover:opacity-80 transition-opacity">
                 <MessageCircle className="h-8 w-8 text-green-600" />
                 <div className="ml-3">
                   <p className="text-sm font-medium text-gray-600">Messages</p>
-                  <p className="text-2xl font-bold text-gray-900">0</p>
+                  <p className="text-2xl font-bold text-gray-900">{messagesCount}</p>
                 </div>
-              </div>
+              </Link>
             </CardContent>
           </Card>
         </div>
+
+        {/* Pending Requests Alert Banner */}
+        {pendingRequestsCount > 0 && (
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl flex items-center justify-between shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-100 rounded-full text-blue-700">
+                <Bell className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="font-semibold text-blue-900">
+                  {pendingRequestsCount} pending connection request{pendingRequestsCount > 1 ? 's' : ''} waiting for your response
+                </p>
+                <p className="text-xs text-blue-700">
+                  Accept or decline requests to grow your professional executive network.
+                </p>
+              </div>
+            </div>
+            <Link to="/network/requests">
+              <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
+                Review Requests ({pendingRequestsCount})
+              </Button>
+            </Link>
+          </div>
+        )}
 
         {/* Filters and Search */}
         <Card className="mb-6">
@@ -256,7 +344,7 @@ const TalentNetwork = () => {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input
-                  placeholder="Search TalentNetwork by name, title, company..."
+                  placeholder="Search connections by name, title, company..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -280,7 +368,7 @@ const TalentNetwork = () => {
                     <SelectValue placeholder="Filter by" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All TalentNetwork</SelectItem>
+                    <SelectItem value="all">All Connections</SelectItem>
                     <SelectItem value="recent">Recent (30 days)</SelectItem>
                     <SelectItem value="same_company">Same Company</SelectItem>
                   </SelectContent>
@@ -299,36 +387,33 @@ const TalentNetwork = () => {
           </CardContent>
         </Card>
 
-        {/* TalentNetwork List */}
+        {/* Connections Grid — compact avatar view, 8-10 per row */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <UserCheck className="h-5 w-5" />
-              Your Network ({filteredAndSortedTalentNetwork?.length || 0})
+              Your Network ({filteredAndSortedConnections?.length || 0})
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {userTalentNetworkLoading ? (
-              <div className="space-y-4">
-                {[...Array(5)].map((_, i) => (
-                  <div key={i} className="flex items-center space-x-4 animate-pulse">
-                    <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
-                    <div className="flex-1 space-y-2">
-                      <div className="h-4 bg-gray-300 rounded w-1/3"></div>
-                      <div className="h-3 bg-gray-300 rounded w-1/2"></div>
-                    </div>
+            {userConnectionsLoading ? (
+              <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-3">
+                {[...Array(20)].map((_, i) => (
+                  <div key={i} className="flex flex-col items-center gap-1 animate-pulse">
+                    <div className="h-12 w-12 bg-gray-200 rounded-full" />
+                    <div className="h-2 w-10 bg-gray-200 rounded" />
                   </div>
                 ))}
               </div>
-            ) : filteredAndSortedTalentNetwork?.length === 0 ? (
+            ) : filteredAndSortedConnections?.length === 0 ? (
               <div className="text-center py-12">
                 <Users className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {searchTerm || filterBy !== 'all' || showOnlineOnly ? 'No matching TalentNetwork' : 'No TalentNetwork yet'}
+                  {searchTerm || filterBy !== 'all' || showOnlineOnly ? 'No matching connections' : 'No connections yet'}
                 </h3>
                 <p className="text-gray-600 mb-6">
                   {searchTerm || filterBy !== 'all' || showOnlineOnly
-                    ? 'Try adjusting your filters or search terms' 
+                    ? 'Try adjusting your filters or search terms'
                     : 'Start building your professional network by connecting with colleagues'
                   }
                 </p>
@@ -340,73 +425,53 @@ const TalentNetwork = () => {
                 </Link>
               </div>
             ) : (
-              <div className="space-y-4">
-                {filteredAndSortedTalentNetwork?.map((connection) => (
-                  <div key={connection.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50/50 transition-colors group">
-                    <div className="flex items-center space-x-4">
-                      <div className="relative">
-                        <Link to={`/network/people/${connection.otherUser.id}`}>
-                          <Avatar className="cursor-pointer hover:scale-105 transition-transform">
-                            <AvatarImage src={connection.otherUser.profile_picture_url} />
-                            <AvatarFallback>
-                              {generateInitials(connection.otherUser)}
-                            </AvatarFallback>
-                          </Avatar>
-                        </Link>
-                        {connection.otherUser.is_online && (
-                          <div className="absolute -bottom-1 -right-1 h-4 w-4 bg-green-500 border-2 border-white rounded-full"></div>
-                        )}
-                      </div>
-                      
-                      <div className="flex-1">
-                        <Link 
-                          to={`/network/people/${connection.otherUser.id}`}
-                          className="hover:text-blue-600 transition-colors"
-                        >
-                          <h4 className="font-semibold text-gray-900">
-                            {formatDisplayName(connection.otherUser)}
-                          </h4>
-                        </Link>
-                        
-                        {connection.otherUser.title && (
-                          <p className="text-sm text-gray-600 flex items-center gap-1">
-                            <Building2 className="h-3 w-3" />
-                            {connection.otherUser.title}
-                            {connection.otherUser.current_company && ` at ${connection.otherUser.current_company}`}
-                          </p>
-                        )}
-                        
-                        {connection.otherUser.location && (
-                          <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
-                            <MapPin className="h-3 w-3" />
-                            {connection.otherUser.location}
-                          </p>
-                        )}
-                        
-                        <div className="flex items-center gap-2 mt-2">
-                          <p className="text-xs text-gray-400">
-                            Connected {new Date(connection.connected_at).toLocaleDateString()}
-                          </p>
-                          <Badge variant="outline" className="text-xs">
-                            {connection.otherUser.is_online ? 'Online' : getLastSeenText(connection.otherUser.last_seen || '')}
-                          </Badge>
-                        </div>
-                      </div>
+              <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
+                {filteredAndSortedConnections?.map((connection) => (
+                  <div
+                    key={connection.id}
+                    className="group relative flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-gray-50 transition-colors"
+                  >
+                    {/* Avatar + online indicator */}
+                    <div className="relative">
+                      <Link to={`/network/people/${connection.otherUser.id}`}>
+                        <Avatar className="h-11 w-11 hover:scale-105 transition-transform ring-2 ring-transparent group-hover:ring-blue-200">
+                          <AvatarImage src={connection.otherUser.profile_picture_url} />
+                          <AvatarFallback className="text-xs font-bold bg-gradient-to-br from-blue-100 to-purple-100 text-blue-700">
+                            {generateInitials(connection.otherUser)}
+                          </AvatarFallback>
+                        </Avatar>
+                      </Link>
+                      {connection.otherUser.is_online && (
+                        <div className="absolute bottom-0 right-0 h-2.5 w-2.5 bg-green-500 border-2 border-white rounded-full" />
+                      )}
                     </div>
-                    
-                    <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+
+                    {/* First name */}
+                    <p className="text-[11px] font-medium text-gray-800 text-center leading-tight truncate w-full">
+                      {formatDisplayName(connection.otherUser).split(' ')[0]}
+                    </p>
+
+                    {/* Title — very small, hidden on very small screens */}
+                    {connection.otherUser.title && (
+                      <p className="text-[9px] text-gray-400 text-center leading-tight truncate w-full hidden sm:block">
+                        {connection.otherUser.title}
+                      </p>
+                    )}
+
+                    {/* Hover action buttons — centred overlay */}
+                    <div className="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl bg-white/85">
                       <Link to={`/network/messages/new?userId=${connection.otherUser.id}`}>
-                        <Button variant="outline" size="sm">
-                          <MessageCircle className="h-4 w-4" />
+                        <Button variant="outline" size="sm" className="h-6 w-6 p-0 rounded-full shadow border-blue-200 text-blue-600">
+                          <MessageCircle className="h-3 w-3" />
                         </Button>
                       </Link>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         size="sm"
+                        className="h-6 w-6 p-0 rounded-full shadow border-red-100 text-red-500 hover:text-red-600"
                         onClick={() => handleRemoveConnection(connection.id)}
-                        className="text-red-600 hover:text-red-700 hover:border-red-200"
                       >
-                        <UserX className="h-4 w-4" />
+                        <UserX className="h-3 w-3" />
                       </Button>
                     </div>
                   </div>
@@ -420,5 +485,4 @@ const TalentNetwork = () => {
   );
 };
 
-export default TalentNetwork;
-
+export default Connections;

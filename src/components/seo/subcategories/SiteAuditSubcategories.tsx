@@ -259,7 +259,7 @@ const CoreWebVitalsComponent = () => (
       <div className="text-center py-8">
         <Zap className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
         <h3 className="text-lg font-semibold mb-2">Core Web Vitals Coming Soon</h3>
-        <p className="text-muted-foreground">Real-time performance monitoring CommandCenter</p>
+        <p className="text-muted-foreground">Real-time performance monitoring dashboard</p>
       </div>
     </CardContent>
   </Card>
@@ -359,4 +359,3 @@ const InternationalSEOComponent = () => (
     </CardContent>
   </Card>
 );
-

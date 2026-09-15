@@ -49,7 +49,7 @@ export interface ModuleProgress {
   achievements_unlocked: string[];
 }
 
-export interface PlatformCareerAnalytics {
+export interface PlatformAnalytics {
   user_id: string;
   module_usage: Record<string, number>;
   feature_engagement: Record<string, number>;
@@ -97,6 +97,3 @@ export interface ModuleConfig {
   isPremium: boolean;
   sortOrder: number;
 }
-
-
-

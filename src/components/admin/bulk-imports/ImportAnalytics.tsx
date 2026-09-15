@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart3, TrendingUp, Users, Mail, UserCheck, AlertTriangle } from 'lucide-react';
 
-export function ImportCareerAnalytics() {
+export function ImportAnalytics() {
   return (
     <div className="space-y-6">
       {/* Key Metrics */}
@@ -165,7 +165,3 @@ export function ImportCareerAnalytics() {
     </div>
   );
 }
-
-
-
-

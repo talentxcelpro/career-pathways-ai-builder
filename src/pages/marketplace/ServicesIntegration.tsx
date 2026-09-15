@@ -275,9 +275,9 @@ const ServicesIntegration = () => {
                 Personalized Recommendations
               </h4>
               <ul className="space-y-2 text-sm text-gray-600">
-                <li>• Performance service matching based on your skills and goals</li>
+                <li>• AI-powered service matching based on your skills and goals</li>
                 <li>• Job performance analysis drives service suggestions</li>
-                <li>• Network-based service discovery through TalentNetwork</li>
+                <li>• Network-based service discovery through connections</li>
                 <li>• Real-time recommendations as your profile evolves</li>
               </ul>
             </div>
@@ -289,7 +289,7 @@ const ServicesIntegration = () => {
               <ul className="space-y-2 text-sm text-gray-600">
                 <li>• Leverage existing professional relationships</li>
                 <li>• Discover service providers in your network</li>
-                <li>• Get referrals from trusted TalentNetwork</li>
+                <li>• Get referrals from trusted connections</li>
                 <li>• Build stronger professional communities</li>
               </ul>
             </div>
@@ -301,4 +301,3 @@ const ServicesIntegration = () => {
 };
 
 export default ServicesIntegration;
-

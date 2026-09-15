@@ -158,7 +158,7 @@ export const AdvancedEmployerCRM: React.FC = () => {
           <div>
             <h1 className="text-3xl font-bold">Advanced CRM</h1>
             <p className="text-muted-foreground">
-              Manage your candidate pipeline with Performance insights
+              Manage your candidate pipeline with AI-powered insights
             </p>
           </div>
           <div className="flex gap-2">
@@ -187,7 +187,7 @@ export const AdvancedEmployerCRM: React.FC = () => {
           <UsageMeter
             type="dailyAIRequests"
             currentUsage={23}
-            label="Intelligence Metrics Used Today"
+            label="AI Insights Used Today"
           />
           <UsageMeter
             type="storageGB"
@@ -277,7 +277,7 @@ export const AdvancedEmployerCRM: React.FC = () => {
             <TabsTrigger value="pipeline">Pipeline</TabsTrigger>
             <TabsTrigger value="candidates">Candidates</TabsTrigger>
             <TabsTrigger value="communications">Communications</TabsTrigger>
-            <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="automation">Automation</TabsTrigger>
           </TabsList>
 
@@ -486,12 +486,12 @@ export const AdvancedEmployerCRM: React.FC = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="CareerAnalytics" className="space-y-4">
+          <TabsContent value="analytics" className="space-y-4">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <BarChart3 className="h-5 w-5" />
-                  CRM CareerAnalytics
+                  CRM Analytics
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -644,6 +644,3 @@ export const AdvancedEmployerCRM: React.FC = () => {
     </TieredAccessGuard>
   );
 };
-
-
-

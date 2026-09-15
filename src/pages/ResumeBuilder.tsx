@@ -14,14 +14,14 @@ const ResumeBuilder = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [selectedTemplate, setSelectedTemplate] = useState('modern');
-  const [showAINavigator, setShowAINavigator] = useState(false);
+  const [showAIAssistant, setShowAIAssistant] = useState(false);
   const [resumeData, setResumeData] = useState<any>(null);
 
   // SEO meta tags and structured data
   React.useEffect(() => {
     updateMetaTags({
       title: 'Free ATS Resume Builder | Create Professional Resumes | TalentXcel',
-      description: 'Build ATS-friendly resumes that get you hired. Free professional resume templates, Performance suggestions, and expert tips. Download in PDF & Word formats.',
+      description: 'Build ATS-friendly resumes that get you hired. Free professional resume templates, AI-powered suggestions, and expert tips. Download in PDF & Word formats.',
       url: `${window.location.origin}/resume-builder`,
       keywords: ['resume builder', 'ATS resume', 'free resume builder', 'professional resume', 'CV maker', 'resume templates', 'job application'],
       type: 'website',
@@ -34,18 +34,13 @@ const ResumeBuilder = () => {
       "@type": "SoftwareApplication",
       "name": "TalentXcel Resume Builder",
       "description": "Free ATS-friendly resume builder with professional templates",
-      "url": `${window.location.origin}/resume-builder`,
+      "url": "https://talentxcel.in/public/resume-builder",
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web",
       "offers": {
         "@type": "Offer",
         "price": "0",
         "priceCurrency": "INR"
-      },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.8",
-        "reviewCount": "2500"
       }
     };
 
@@ -97,11 +92,11 @@ const ResumeBuilder = () => {
           <div className="flex items-center justify-between h-16">
             <Button variant="ghost" onClick={() => navigate('/')} className="flex items-center text-slate-600 hover:text-slate-900">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to CommandCenter
+              Back to Dashboard
             </Button>
             <Badge variant="secondary" className="bg-blue-100 text-blue-700">
               <Sparkles className="w-3 h-3 mr-1" />
-              TalentXcel Performance
+              TalentXcel AI-Powered
             </Badge>
           </div>
         </div>
@@ -112,18 +107,20 @@ const ResumeBuilder = () => {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <img 
-                src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
-                alt="TalentXcel" 
-                className="h-12 w-12 rounded-lg"
-              />
+              <div className="h-12 w-12 rounded-xl bg-slate-900 flex items-center justify-center p-1.5 shadow-md">
+                <img 
+                  src="/talentxcel-official-logo.png" 
+                  alt="TalentXcel" 
+                  className="h-full w-full object-contain"
+                />
+              </div>
             </div>
             <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6">
               Build Your Dream Resume with
               <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> TalentXcel AI</span>
             </h1>
             <p className="text-xl text-slate-600 mb-8 max-w-3xl mx-auto">
-              Create a professional resume with TalentXcel Performance tools and beautiful TalentXcel templates.
+              Create a professional resume with TalentXcel AI-powered tools and beautiful TalentXcel templates.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
@@ -228,21 +225,21 @@ const ResumeBuilder = () => {
         </div>
       </div>
 
-      {/* Floating TalentXcel Navigator Button */}
+      {/* Floating AI Assistant Button */}
       <div className="fixed bottom-6 right-6 z-50">
         <Button
-          onClick={() => setShowAINavigator(true)}
+          onClick={() => setShowAIAssistant(true)}
           className="h-14 w-14 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 animate-pulse"
         >
           <MessageCircle className="h-6 w-6" />
         </Button>
       </div>
 
-      {/* TalentXcel Navigator Dialog */}
-      <Dialog open={showAINavigator} onOpenChange={setShowAINavigator}>
+      {/* AI Assistant Dialog */}
+      <Dialog open={showAIAssistant} onOpenChange={setShowAIAssistant}>
         <DialogContent className="max-w-4xl h-[80vh] p-0">
           <DialogHeader className="sr-only">
-            <DialogTitle>AI Resume Navigator</DialogTitle>
+            <DialogTitle>AI Resume Assistant</DialogTitle>
           </DialogHeader>
           <ChatGPTStyleInterface 
             resumeData={resumeData}
@@ -255,6 +252,3 @@ const ResumeBuilder = () => {
 };
 
 export default ResumeBuilder;
-
-
-

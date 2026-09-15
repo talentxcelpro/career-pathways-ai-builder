@@ -82,7 +82,7 @@ export const EnhancedCompanyProfile: React.FC = () => {
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="media">Media</TabsTrigger>
-          <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
 
@@ -112,13 +112,13 @@ export const EnhancedCompanyProfile: React.FC = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="CareerAnalytics">
+        <TabsContent value="analytics">
           <Card>
             <CardHeader>
-              <CardTitle>Profile CareerAnalytics</CardTitle>
+              <CardTitle>Profile Analytics</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground">View detailed CareerAnalytics about your company profile.</p>
+              <p className="text-muted-foreground">View detailed analytics about your company profile.</p>
             </CardContent>
           </Card>
         </TabsContent>
@@ -137,6 +137,3 @@ export const EnhancedCompanyProfile: React.FC = () => {
     </div>
   );
 };
-
-
-

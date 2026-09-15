@@ -70,27 +70,32 @@ export const ProfilePhotoUpload = ({ currentPhotoUrl, onUploadSuccess }: Profile
     setUploading(true);
 
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}/profile_photos/profile_photo.${fileExt}`;
+      const fileExt = (file.name.split('.').pop() || 'jpg').toLowerCase();
+      const fileName = `${user.id}/profile_${Date.now()}.${fileExt}`;
 
-      // Upload to user-uploads bucket
+      // Upload to public avatars bucket
       const { error: uploadError } = await supabase.storage
-        .from('user-uploads')
+        .from('avatars')
         .upload(fileName, file, {
-          upsert: true
+          cacheControl: '3600',
+          upsert: true,
+          contentType: file.type,
         });
 
       if (uploadError) throw uploadError;
 
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
-        .from('user-uploads')
+        .from('avatars')
         .getPublicUrl(fileName);
 
-      // Update user profile
+      // Update user profile (use primary column consumed across the app)
       const { error: updateError } = await supabase
         .from('profiles')
-        .update({ profile_photo_url: publicUrl })
+        .update({
+          profile_picture_url: publicUrl,
+          profile_photo_url: publicUrl,
+        })
         .eq('id', user.id);
 
       if (updateError) throw updateError;
@@ -118,17 +123,16 @@ export const ProfilePhotoUpload = ({ currentPhotoUrl, onUploadSuccess }: Profile
     if (!user) return;
 
     try {
-      // Update profile to remove photo URL
       const { error } = await supabase
         .from('profiles')
-        .update({ profile_photo_url: null })
+        .update({ profile_picture_url: null, profile_photo_url: null })
         .eq('id', user.id);
 
       if (error) throw error;
 
       setPreviewUrl(null);
       onUploadSuccess?.('');
-      
+
       toast({
         title: "Photo Removed",
         description: "Your profile photo has been removed.",

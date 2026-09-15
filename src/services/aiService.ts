@@ -409,7 +409,7 @@ class AIService {
   }
 
   /**
-   * Get all AI features status for admin CommandCenter
+   * Get all AI features status for admin dashboard
    */
   async getAllFeaturesStatus(): Promise<AIFeatureStatus[]> {
     try {
@@ -431,9 +431,9 @@ class AIService {
   }
 
   /**
-   * Get AI usage CareerAnalytics
+   * Get AI usage analytics
    */
-  async getUsageCareerAnalytics(timeframe: 'day' | 'week' | 'month' = 'week') {
+  async getUsageAnalytics(timeframe: 'day' | 'week' | 'month' = 'week') {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       let dateFilter = new Date();
@@ -474,7 +474,7 @@ class AIService {
         recentActivity: data.slice(0, 10)
       };
     } catch (error) {
-      console.error('Failed to get usage CareerAnalytics:', error);
+      console.error('Failed to get usage analytics:', error);
       return null;
     }
   }
@@ -674,7 +674,7 @@ class AIService {
   async askCollegeQuestion(question: string, context?: any) {
     return this.call({
       module: 'Colleges',
-      feature: 'college_qa_Navigator',
+      feature: 'college_qa_assistant',
       input: {
         question: question,
         context: context ? JSON.stringify(context) : null
@@ -702,6 +702,71 @@ class AIService {
       }
     });
   }
+
+  /**
+   * DEFENSIVE CANDIDATE CONTEXT EXTRACTOR
+   * Safely fetches and unifies candidate career data with defensive null-guards
+   * to prevent silent failures or unparsed AI prompts.
+   */
+  async getUnifiedCandidateContext(userId: string) {
+    if (!userId) {
+      return {
+        hasData: false,
+        passport: null,
+        primaryResume: null,
+        skills: [],
+        assessments: [],
+        completenessScore: 0
+      };
+    }
+
+    try {
+      // Parallel queries with graceful fallback handling
+      const [passportRes, resumeRes, skillsRes, assessmentsRes] = await Promise.all([
+        supabase.from('career_passport').select('*').eq('user_id', userId).maybeSingle(),
+        supabase.from('resumes').select('*').eq('user_id', userId).order('updated_at', { ascending: false }).limit(1).maybeSingle(),
+        supabase.from('user_skills').select('*').eq('user_id', userId),
+        supabase.from('assessment_attempts').select('*').eq('user_id', userId)
+      ]);
+
+      const passport = passportRes?.data || null;
+      const primaryResume = resumeRes?.data || null;
+      const skills = (skillsRes?.data || []).map(s => ({
+        name: s.skill_name || s.name || 'Unspecified Skill',
+        level: s.proficiency_level || 'Intermediate',
+        verified: Boolean(s.verified || s.is_verified)
+      }));
+      const assessments = (assessmentsRes?.data || []).map(a => ({
+        title: a.assessment_title || 'Skill Assessment',
+        score: typeof a.score === 'number' ? a.score : 0,
+        passed: Boolean(a.passed)
+      }));
+
+      const hasData = Boolean(passport || primaryResume || skills.length > 0);
+      const completenessScore = hasData 
+        ? Math.min(100, (passport ? 30 : 0) + (primaryResume ? 40 : 0) + Math.min(30, skills.length * 5))
+        : 0;
+
+      return {
+        hasData,
+        passport,
+        primaryResume,
+        skills,
+        assessments,
+        completenessScore
+      };
+    } catch (err) {
+      console.warn('⚠️ Defensive Candidate Context fetch warning:', err);
+      return {
+        hasData: false,
+        passport: null,
+        primaryResume: null,
+        skills: [],
+        assessments: [],
+        completenessScore: 0
+      };
+    }
+  }
 }
 
 // Export singleton instance
@@ -712,7 +777,3 @@ export async function isAIFeatureAvailable(module: string, featureKey: string): 
   const status = await aiService.checkFeatureStatus(module, featureKey);
   return status ? status.enabled : false;
 }
-
-
-
-

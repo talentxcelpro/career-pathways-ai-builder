@@ -50,19 +50,22 @@ const Articles = () => {
       let query = supabase
         .from('posts')
         .select('*')
-        .eq('post_type', 'article')
-        .eq('status', 'published')
+        .in('post_type', ['article', 'career_article'])
         .order('created_at', { ascending: false });
 
       // Filter by following if needed
       if (activeTab === 'following' && subscriptions?.length) {
         const followedAuthorIds = subscriptions.map(sub => sub.author_id);
-        query = query.in('author_id', followedAuthorIds);
-      }
-
-      // Filter by my articles
-      if (activeTab === 'my-articles' && user) {
-        query = query.eq('author_id', user.id);
+        query = query.in('author_id', followedAuthorIds).eq('status', 'published');
+      } else if (activeTab === 'my-articles' && user) {
+        // Show both published and saved drafts for the current user
+        query = query.or(`author_id.eq.${user.id},user_id.eq.${user.id}`);
+      } else {
+        if (user) {
+          query = query.or(`status.eq.published,author_id.eq.${user.id},user_id.eq.${user.id}`);
+        } else {
+          query = query.eq('status', 'published');
+        }
       }
 
       // Filter by category

@@ -70,7 +70,7 @@ export const CareerInsights = () => {
           <CheckCircle2 className="h-4 w-4 text-green-600" />
         </div>
         <CardDescription className="text-xs">
-          Performance career recommendations
+          AI-powered career recommendations
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -129,4 +129,3 @@ export const CareerInsights = () => {
     </Card>
   );
 };
-

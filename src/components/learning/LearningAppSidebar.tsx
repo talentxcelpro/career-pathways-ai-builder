@@ -47,7 +47,7 @@ const learningFeatures = [
 
 const careerTools = [
   { title: "Employment Bridge", url: "/learning/employment-bridge", icon: Briefcase, badge: "Jobs" },
-  { title: "Career CareerAnalytics", url: "/learning/career-CareerAnalytics", icon: BarChart3 },
+  { title: "Career Analytics", url: "/learning/career-analytics", icon: BarChart3 },
   { title: "Certificates", url: "/learning/certificates", icon: Award },
 ];
 
@@ -189,6 +189,3 @@ export function LearningAppSidebar() {
     </Sidebar>
   );
 }
-
-
-

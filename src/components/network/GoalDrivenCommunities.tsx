@@ -197,7 +197,7 @@ export const GoalDrivenCommunities: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* User Progress CommandCenter */}
+      {/* User Progress Dashboard */}
       {currentUser && userProgress && (
         <Card className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200">
           <CardContent className="p-6">
@@ -438,4 +438,3 @@ export const GoalDrivenCommunities: React.FC = () => {
     </div>
   );
 };
-

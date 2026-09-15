@@ -77,7 +77,7 @@ export const ProgressiveDisclosure: React.FC<ProgressiveDisclosureProps> = ({
                     <h4 className="font-semibold mb-3">Customize Your View</h4>
                     <div className="space-y-2">
                       {[
-                        { id: 'personal-CommandCenter', label: 'Personal CommandCenter' },
+                        { id: 'personal-dashboard', label: 'Personal Dashboard' },
                         { id: 'ai-matching', label: 'AI Job Matching' },
                         { id: 'salary-widget', label: 'Salary Transparency' },
                         { id: 'quick-apply', label: 'Quick Apply Widget' },
@@ -181,7 +181,7 @@ export const ProgressiveDisclosure: React.FC<ProgressiveDisclosureProps> = ({
                 <h4 className="font-semibold text-blue-900">Getting Started</h4>
                 <p className="text-sm text-blue-700 mt-1">
                   Browse jobs above or use the search bar to find opportunities. 
-                  Click "Show All Features" to access Precision Match, salary insights, and more advanced tools.
+                  Click "Show All Features" to access AI matching, salary insights, and more advanced tools.
                 </p>
                 <Button 
                   variant="outline" 
@@ -199,4 +199,3 @@ export const ProgressiveDisclosure: React.FC<ProgressiveDisclosureProps> = ({
     </div>
   );
 };
-

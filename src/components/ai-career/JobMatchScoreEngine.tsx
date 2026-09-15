@@ -401,10 +401,10 @@ const JobMatchScoreEngine: React.FC = () => {
                 </Card>
               </div>
 
-              {/* Career Moves */}
+              {/* AI Recommendations */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Career Moves</CardTitle>
+                  <CardTitle>AI Recommendations</CardTitle>
                   <CardDescription>
                     Personalized insights to improve your match score
                   </CardDescription>

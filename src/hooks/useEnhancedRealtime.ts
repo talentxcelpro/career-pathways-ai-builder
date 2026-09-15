@@ -8,7 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 export function useEnhancedRealtime() {
   const { user } = useAuth();
   const [presenceData, setPresenceData] = useState<any>({});
-  const [activityPulse, setActivityPulse] = useState<any[]>([]);
+  const [activityFeed, setActivityFeed] = useState<any[]>([]);
   const channelRef = useRef<any>(null);
   const [isConnected, setIsConnected] = useState(false);
 
@@ -44,7 +44,7 @@ export function useEnhancedRealtime() {
       .on('postgres_changes', 
         { event: '*', schema: 'public', table: 'ai_career_recommendations', filter: `user_id=eq.${user.id}` },
         (payload) => {
-          setActivityPulse(prev => [{
+          setActivityFeed(prev => [{
             type: 'career_recommendation',
             data: payload.new,
             timestamp: new Date().toISOString()
@@ -54,7 +54,7 @@ export function useEnhancedRealtime() {
       .on('postgres_changes',
         { event: '*', schema: 'public', table: 'ai_job_matches', filter: `user_id=eq.${user.id}` },
         (payload) => {
-          setActivityPulse(prev => [{
+          setActivityFeed(prev => [{
             type: 'job_match',
             data: payload.new,
             timestamp: new Date().toISOString()
@@ -64,7 +64,7 @@ export function useEnhancedRealtime() {
       .on('postgres_changes',
         { event: '*', schema: 'public', table: 'job_applications', filter: `user_id=eq.${user.id}` },
         (payload) => {
-          setActivityPulse(prev => [{
+          setActivityFeed(prev => [{
             type: 'application_update',
             data: payload.new,
             timestamp: new Date().toISOString()
@@ -74,7 +74,7 @@ export function useEnhancedRealtime() {
       .on('postgres_changes',
         { event: '*', schema: 'public', table: 'notifications', filter: `user_id=eq.${user.id}` },
         (payload) => {
-          setActivityPulse(prev => [{
+          setActivityFeed(prev => [{
             type: 'notification',
             data: payload.new,
             timestamp: new Date().toISOString()
@@ -124,7 +124,7 @@ export function useEnhancedRealtime() {
   return {
     isConnected,
     presenceData,
-    activityPulse,
+    activityFeed,
     updateUserActivity
   };
 }

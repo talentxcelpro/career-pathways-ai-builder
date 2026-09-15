@@ -135,7 +135,7 @@ export const PeopleYouMayKnow: React.FC = () => {
                     {person.title} at {person.company}
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
-                    {person.mutualConnections} mutual TalentNetwork
+                    {person.mutualConnections} mutual connections
                   </p>
                 </div>
               </div>
@@ -169,4 +169,3 @@ export const PeopleYouMayKnow: React.FC = () => {
     </Card>
   );
 };
-

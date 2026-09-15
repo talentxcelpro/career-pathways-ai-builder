@@ -1,10 +1,6 @@
-import { Capacitor } from '@capacitor/core';
-import { unregisterServiceWorker } from './serviceWorkerRegistration';
-
 // Production optimization utilities
 export const optimizeForProduction = () => {
-  // Remove console logs in production - DISABLED FOR DEBUGGING
-  /*
+  // Remove console logs in production
   if (!import.meta.env.DEV) {
     console.log = () => {};
     console.warn = () => {};
@@ -12,7 +8,6 @@ export const optimizeForProduction = () => {
     console.debug = () => {};
     console.info = () => {};
   }
-  */
 
   // Disable React DevTools in production
   if (!import.meta.env.DEV && typeof window !== 'undefined') {
@@ -49,18 +44,13 @@ export const optimizeImageUrl = (url: string, options: {
   return url;
 };
 
-// Critical resource preloader removed as it used hardcoded paths incompatible with hashed Vite assets
+// Critical resource preloader
 export const preloadCriticalResources = () => {
-  // Relying on Vite's native preloading and CSS-based font loading
+  // Preconnect and DNS prefetch are handled in criticalPerformance and HTML head
 };
 
 // Service Worker registration
 export const registerServiceWorker = async () => {
-  if (Capacitor.isNativePlatform()) {
-    await unregisterServiceWorker();
-    return;
-  }
-
   if ('serviceWorker' in navigator && !import.meta.env.DEV) {
     try {
       const registration = await navigator.serviceWorker.register('/sw.js');

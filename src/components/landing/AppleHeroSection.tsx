@@ -1,13 +1,10 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { AuthDialog } from '../auth/AuthDialog';
 import { ChevronRight } from 'lucide-react';
 import careerPassportPreview from '@/assets/career-passport-preview.png';
 
 export const AppleHeroSection = () => {
-  const navigate = useNavigate();
-
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-background via-muted/30 to-muted/50">
       {/* Floating geometric elements with semantic colors */}
@@ -17,11 +14,11 @@ export const AppleHeroSection = () => {
         <div className="absolute bottom-1/4 right-1/4 w-40 h-40 bg-gradient-to-br from-secondary/20 to-accent/20 rounded-full blur-xl animate-pulse delay-2000"></div>
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-6 py-20">
-        <div className="grid lg:grid-cols-2 gap-16 items-center min-h-[80vh]">
+      <div className="relative max-w-7xl mx-auto px-6 py-8 sm:py-12 md:py-16">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           {/* Left Side - Text Content */}
-          <div className="space-y-8 text-center lg:text-left">
-            <div className="space-y-6">
+          <div className="space-y-6 text-center lg:text-left">
+            <div className="space-y-4">
               {/* Globe Icon with semantic colors */}
               <div className="flex justify-center lg:justify-start mb-4">
                 <div className="w-[clamp(3rem,4vw,4rem)] h-[clamp(3rem,4vw,4rem)] bg-gradient-to-br from-primary via-primary to-accent rounded-full flex items-center justify-center shadow-lg relative overflow-hidden">
@@ -34,37 +31,41 @@ export const AppleHeroSection = () => {
                 </div>
               </div>
               
-              <h1 className="text-display font-heading tracking-tight text-foreground leading-[1.1] animate-in fade-in slide-in-from-bottom-8 duration-1000">
-                Powering Global
-                <span className="block font-medium bg-gradient-to-r from-primary via-purple-500 to-accent bg-clip-text text-transparent animate-gradient-x">
-                  CareerIntelligence
+              <h1 className="text-display font-heading tracking-tight text-foreground leading-[1.1]">
+                AI-Powered Platform for
+                <span className="block font-medium bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+                  Jobs, Skills & Higher Ed
                 </span>
               </h1>
               
-              <p className="text-body-large text-muted-foreground font-light leading-relaxed max-w-2xl mx-auto lg:mx-0 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-200">
-                The FAANG-tier CommandCenter for elite professionals. Network, build with AI, and land high-impact opportunities tailored to your unique trajectory.
+              <p className="text-body-large text-muted-foreground font-light leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                Search verified jobs, build ATS-optimized resumes, explore 10,250+ Indian colleges, and fast-track your career with AI-guided learning and verified skill passports.
               </p>
             </div>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <AuthDialog>
-                <Button 
-                  size="lg" 
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground apple-rounded-xl apple-padding-lg text-body font-semibold shadow-lg hover:shadow-xl transition-all duration-300 group"
-                >
-                  Get Started with Pro
-                  <ChevronRight className="ml-2 icon-sm group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </AuthDialog>
-              <Button 
-                variant="outline"
-                size="lg" 
-                className="apple-rounded-xl apple-padding-lg text-body font-medium border-border/50 hover:bg-white/5 transition-all duration-300"
-                onClick={() => navigate('/ai-career-hub')}
+            {/* CTA Buttons - Direct Zero-Barrier Free Utility */}
+            <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+              <a 
+                href="/resume"
+                className="inline-flex items-center justify-center px-6 py-3.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-black rounded-2xl shadow-lg hover:shadow-xl transition-all group"
               >
-                Explore AI Hub
-              </Button>
+                Check My Resume — Free ATS Scan
+                <ChevronRight className="ml-1.5 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              </a>
+
+              <a 
+                href="/tools/salary-analyzer"
+                className="inline-flex items-center justify-center px-5 py-3.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:bg-slate-50 text-sm font-bold rounded-2xl shadow-sm transition-all"
+              >
+                Salary Calculator
+              </a>
+
+              <a 
+                href="/colleges"
+                className="inline-flex items-center justify-center px-5 py-3.5 bg-slate-100 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 hover:bg-slate-200 text-sm font-bold rounded-2xl transition-all"
+              >
+                10,250+ Colleges
+              </a>
             </div>
 
             {/* Social Proof */}
@@ -89,14 +90,14 @@ export const AppleHeroSection = () => {
             </div>
           </div>
 
-          {/* Right Side - Evolution Hub Preview */}
+          {/* Right Side - Career Passport Preview */}
           <div className="relative">
             <div className="absolute -inset-4 bg-gradient-to-tr from-primary/20 via-secondary/15 to-accent/20 rounded-[2rem] blur-2xl" aria-hidden="true"></div>
             <div className="relative rounded-[2rem] overflow-hidden shadow-2xl ring-1 ring-border/50">
               <a href="/passport" className="block transition-transform hover:scale-105">
                 <img
                   src={careerPassportPreview}
-                  alt="TalentXcel Evolution Hub - Professional CommandCenter for tracking career progress"
+                  alt="TalentXcel Career Passport - Professional dashboard for tracking career progress"
                   loading="lazy"
                   decoding="async"
                   width="600"
@@ -111,5 +112,3 @@ export const AppleHeroSection = () => {
     </div>
   );
 };
-
-

@@ -5,8 +5,8 @@ import { Mail, Settings, BarChart3, TestTube, Users, Calendar, Send } from 'luci
 import { EventManagement } from '@/components/admin/email/EventManagement';
 import { TemplateManagement } from '@/components/admin/email/TemplateManagement';
 import { CampaignManagement } from '@/components/admin/email/CampaignManagement';
-import { ABTestingCommandCenter } from '@/components/admin/email/ABTestingDashboard';
-import { EmailCareerAnalyticsCommandCenter } from '@/components/admin/email/EmailAnalyticsDashboard';
+import { ABTestingDashboard } from '@/components/admin/email/ABTestingDashboard';
+import { EmailAnalyticsDashboard } from '@/components/admin/email/EmailAnalyticsDashboard';
 import { QueueMonitor } from '@/components/admin/email/QueueMonitor';
 import { SendEmailTest } from '@/components/admin/email/SendEmailTest';
 
@@ -51,7 +51,7 @@ const EmailAutomation = () => {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
-          <EmailCareerAnalyticsCommandCenter />
+          <EmailAnalyticsDashboard />
         </TabsContent>
 
         <TabsContent value="events" className="space-y-6">
@@ -67,7 +67,7 @@ const EmailAutomation = () => {
         </TabsContent>
 
         <TabsContent value="abtesting" className="space-y-6">
-          <ABTestingCommandCenter />
+          <ABTestingDashboard />
         </TabsContent>
 
         <TabsContent value="queue" className="space-y-6">
@@ -83,6 +83,3 @@ const EmailAutomation = () => {
 };
 
 export default EmailAutomation;
-
-
-

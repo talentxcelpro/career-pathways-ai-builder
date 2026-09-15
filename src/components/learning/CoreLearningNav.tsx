@@ -22,7 +22,7 @@ const coreFeatures = [
   {
     id: 'learning-hub',
     title: 'Learning Hub',
-    description: 'Your learning CommandCenter',
+    description: 'Your learning dashboard',
     icon: Home,
     href: '/learning',
     badge: '',
@@ -90,11 +90,11 @@ const coreFeatures = [
     iconColor: 'text-pink-600'
   },
   {
-    id: 'CareerAnalytics',
-    title: 'CareerAnalytics',
+    id: 'analytics',
+    title: 'Analytics',
     description: 'Learning insights',
     icon: BarChart3,
-    href: '/learning/CareerAnalytics',
+    href: '/learning/analytics',
     badge: '',
     color: 'bg-gradient-to-br from-teal-50 to-teal-100 border-teal-200 text-teal-700',
     iconColor: 'text-teal-600'
@@ -121,7 +121,7 @@ export const CoreLearningNav: React.FC = () => {
           <Sparkles className="h-6 w-6 text-primary" />
         </div>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Your complete learning ecosystem with Performance recommendations, career tools, and community features
+          Your complete learning ecosystem with AI-powered recommendations, career tools, and community features
         </p>
       </div>
 
@@ -191,6 +191,3 @@ export const CoreLearningNav: React.FC = () => {
     </div>
   );
 };
-
-
-

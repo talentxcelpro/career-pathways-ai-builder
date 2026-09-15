@@ -55,8 +55,8 @@ export const ToolJSONLD: React.FC<ToolJSONLDProps> = ({ tool }) => {
       "ratingCount": "100"
     } : undefined,
     "featureList": tool.features || [
-      "Performance optimization",
-      "Real-time Feedback",
+      "AI-powered optimization",
+      "Real-time feedback",
       "Professional templates"
     ],
     "url": `https://talentxcel.in/tools/${tool.id}`,
@@ -131,4 +131,3 @@ export const CourseJSONLD: React.FC<CourseJSONLDProps> = ({ course }) => {
     />
   );
 };
-

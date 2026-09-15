@@ -47,7 +47,7 @@ interface Communication {
   created_at: string;
 }
 
-export default function CRMCommandCenter() {
+export default function CRMDashboard() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [communications, setCommunications] = useState<Communication[]>([]);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
@@ -290,7 +290,7 @@ export default function CRMCommandCenter() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">CRM CommandCenter</h1>
+          <h1 className="text-3xl font-bold">CRM Dashboard</h1>
           <p className="text-muted-foreground mt-2">
             Manage your leads and client communications
           </p>
@@ -470,7 +470,7 @@ export default function CRMCommandCenter() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg TalentScore</CardTitle>
+            <CardTitle className="text-sm font-medium">Avg AI Score</CardTitle>
             <Star className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -538,7 +538,7 @@ export default function CRMCommandCenter() {
                       </Badge>
                       {lead.ai_lead_score > 0 && (
                         <Badge variant="outline">
-                          TalentScore: {lead.ai_lead_score}
+                          AI Score: {lead.ai_lead_score}
                         </Badge>
                       )}
                     </div>
@@ -719,4 +719,3 @@ export default function CRMCommandCenter() {
     </div>
   );
 }
-

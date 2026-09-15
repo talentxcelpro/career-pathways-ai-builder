@@ -89,8 +89,8 @@ export const AdvancedJobListings: React.FC<AdvancedJobListingsProps> = ({
       {/* Header with controls */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div className="space-y-2">
-          <h2 className="text-3xl font-heavy bg-slate-950 bg-clip-text text-transparent tracking-tight">
-            Opportunity Matches
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            Job Opportunities
           </h2>
           <p className="text-muted-foreground">
             Find your perfect match from <span className="font-semibold text-primary">{totalCount}</span> active positions
@@ -106,14 +106,13 @@ export const AdvancedJobListings: React.FC<AdvancedJobListingsProps> = ({
             size="sm"
             onClick={refreshJobs}
             disabled={isLoading}
-            className="rounded-xl border-slate-200"
           >
             <RefreshCw className={`mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-            Sync Signals
+            Refresh
           </Button>
 
           <Select value={sortBy} onValueChange={(value: SortOption) => setSortBy(value)}>
-            <SelectTrigger className="w-48 rounded-xl border-slate-200">
+            <SelectTrigger className="w-48">
               <SelectValue placeholder="Sort by..." />
             </SelectTrigger>
             <SelectContent>
@@ -144,12 +143,11 @@ export const AdvancedJobListings: React.FC<AdvancedJobListingsProps> = ({
             </SelectContent>
           </Select>
 
-          <div className="flex items-center border border-slate-200 rounded-xl p-1 bg-white">
+          <div className="flex items-center border rounded-lg p-1">
             <Button
               variant={viewMode === 'list' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setViewMode('list')}
-              className="rounded-lg h-8 w-8 p-0"
             >
               <List className="h-4 w-4" />
             </Button>
@@ -157,7 +155,6 @@ export const AdvancedJobListings: React.FC<AdvancedJobListingsProps> = ({
               variant={viewMode === 'grid' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setViewMode('grid')}
-              className="rounded-lg h-8 w-8 p-0"
             >
               <Grid className="h-4 w-4" />
             </Button>
@@ -191,19 +188,15 @@ export const AdvancedJobListings: React.FC<AdvancedJobListingsProps> = ({
       </div>
 
       {jobs.length === 0 ? (
-        <Card className="p-16 text-center rounded-[40px] border-slate-100 bg-white/50 backdrop-blur-sm shadow-xl">
-          <div className="space-y-6">
-            <div className="flex justify-center">
-              <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center">
-                <Search className="h-10 w-10 text-slate-300" />
-              </div>
-            </div>
-            <h3 className="text-2xl font-heavy text-slate-900">No signals detected</h3>
-            <p className="text-slate-500 max-w-sm mx-auto">
-              Iterate on your search parameters or profile signals to uncover more matches.
+        <Card className="p-12 text-center">
+          <div className="space-y-4">
+            <div className="text-6xl">🔍</div>
+            <h3 className="text-2xl font-bold">No jobs found</h3>
+            <p className="text-muted-foreground max-w-md mx-auto">
+              Try adjusting your filters or search terms to find more opportunities.
             </p>
-            <Button onClick={onClearFilters} className="bg-slate-950 text-white rounded-full px-8 h-12 hover:bg-slate-800 transition-all">
-              Reset Filters
+            <Button onClick={onClearFilters} className="mt-4">
+              Clear all filters
             </Button>
           </div>
         </Card>

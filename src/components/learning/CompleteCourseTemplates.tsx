@@ -63,7 +63,7 @@ export const completeCourseTemplates = [
             order: 1,
             content_text: `
               <h2>What is Cloud Computing?</h2>
-              <p>Cloud computing is the delivery of computing services over the internet, including servers, storage, databases, networking, software, CareerAnalytics, and intelligence.</p>
+              <p>Cloud computing is the delivery of computing services over the internet, including servers, storage, databases, networking, software, analytics, and intelligence.</p>
               
               <h3>Key Benefits:</h3>
               <ul>
@@ -549,7 +549,7 @@ sin_arr = np.sin(arr1)
     price: 0,
     is_free: true,
     instructor_name: 'TalentXcel Academy',
-    description: 'Complete digital marketing course covering SEO, social media, paid advertising, and CareerAnalytics.'
+    description: 'Complete digital marketing course covering SEO, social media, paid advertising, and analytics.'
   },
 
   {
@@ -566,6 +566,3 @@ sin_arr = np.sin(arr1)
 ];
 
 export default completeCourseTemplates;
-
-
-

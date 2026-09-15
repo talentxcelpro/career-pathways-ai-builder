@@ -24,13 +24,31 @@ export interface UserLike {
  * Standardizes avatar URL from various possible field names
  * Priority: profile_picture_url -> avatar_url -> profile_photo_url
  */
-export function getStandardAvatarUrl(profile: ProfileLike | null | undefined): string | null {
+export function getStandardAvatarUrl(profile: ProfileLike | string | null | undefined): string | null {
   if (!profile) return null;
   
-  return profile.profile_picture_url || 
-         profile.avatar_url || 
-         profile.profile_photo_url || 
-         null;
+  const rawUrl = typeof profile === 'string'
+    ? profile
+    : (profile.profile_picture_url || 
+       profile.avatar_url || 
+       profile.profile_photo_url || 
+       null);
+
+  if (!rawUrl || typeof rawUrl !== 'string' || !rawUrl.trim()) {
+    return null;
+  }
+
+  // Reject query-string only corruptions (e.g. "?v=1780633599") or non-image URLs
+  const trimmed = rawUrl.trim();
+  if (trimmed.startsWith('?') || (!trimmed.startsWith('http') && !trimmed.startsWith('/') && !trimmed.startsWith('data:'))) {
+    return null;
+  }
+
+  if (trimmed.includes('chatr.chat')) {
+    return '/assets/avatar-placeholder.png';
+  }
+
+  return trimmed;
 }
 
 /**
@@ -52,7 +70,11 @@ export function getStandardUsername(profile: ProfileLike | null | undefined): st
  */
 export function getUserAvatarUrl(user: UserLike | null | undefined): string | null {
   if (!user?.user_metadata) return null;
-  return user.user_metadata.avatar_url || null;
+  const rawUrl = user.user_metadata.avatar_url || null;
+  if (rawUrl && rawUrl.includes('chatr.chat')) {
+    return '/assets/avatar-placeholder.png';
+  }
+  return rawUrl;
 }
 
 /**

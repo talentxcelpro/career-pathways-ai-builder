@@ -219,7 +219,7 @@ export const AIProviderStatus: React.FC = () => {
               <li>• <strong>99.9% Uptime:</strong> Automatic switching ensures continuous service</li>
               <li>• <strong>Cost Optimization:</strong> DeepSeek provides excellent value as backup</li>
               <li>• <strong>Performance:</strong> Smart routing for optimal response times</li>
-              <li>• <strong>Reliability:</strong> Never lose Performance SEO insights</li>
+              <li>• <strong>Reliability:</strong> Never lose AI-powered SEO insights</li>
             </ul>
           </CardContent>
         </Card>

@@ -128,9 +128,9 @@ export const ProfessionalEndorsements: React.FC<ProfessionalEndorsementsProps> =
     enabled: !!user?.id && isOwnProfile
   });
 
-  // Fetch user's TalentNetwork for endorsement requests
-  const { data: TalentNetwork = [] } = useQuery({
-    queryKey: ['user-TalentNetwork', user?.id],
+  // Fetch user's connections for endorsement requests
+  const { data: connections = [] } = useQuery({
+    queryKey: ['user-connections', user?.id],
     queryFn: async () => {
       if (!user?.id || !isOwnProfile) return [];
 
@@ -287,7 +287,7 @@ export const ProfessionalEndorsements: React.FC<ProfessionalEndorsementsProps> =
                       <SelectValue placeholder="Choose someone to request from" />
                     </SelectTrigger>
                     <SelectContent>
-                      {TalentNetwork.map((connection: any) => (
+                      {connections.map((connection: any) => (
                         <SelectItem key={connection.id} value={connection.id}>
                           <div className="flex items-center gap-2">
                             <Avatar className="h-6 w-6">
@@ -512,4 +512,3 @@ export const ProfessionalEndorsements: React.FC<ProfessionalEndorsementsProps> =
     </div>
   );
 };
-

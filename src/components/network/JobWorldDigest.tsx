@@ -162,10 +162,9 @@ export const JobWorldDigest: React.FC = () => {
       
       <div className="mt-4 pt-3 border-t border-border/30">
         <Button variant="outline" className="w-full text-sm">
-          📈 View Career Trends CommandCenter
+          📈 View Career Trends Dashboard
         </Button>
       </div>
     </Card>
   );
 };
-

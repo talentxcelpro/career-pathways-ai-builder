@@ -140,8 +140,8 @@ const agentConfigs: AgentConfig[] = [
     displayName: 'Shelly (Customer Service)',
     icon: MessageSquare,
     color: 'text-cyan-600',
-    triggers: ['new_support_chat', 'negative_Feedback_detected'],
-    tasks: ['answer_faqs', 'resolve_simple_queries', 'log_Feedback'],
+    triggers: ['new_support_chat', 'negative_feedback_detected'],
+    tasks: ['answer_faqs', 'resolve_simple_queries', 'log_feedback'],
     escalationRules: ['forward_unsatisfied_to_human'],
     isActive: true
   },
@@ -511,7 +511,7 @@ export const TriggerAutomationFlow: React.FC = () => {
                   <div className="flex items-start gap-3">
                     <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold text-sm">3</div>
                     <div>
-                      <h3 className="font-semibold">Add Logging CommandCenter</h3>
+                      <h3 className="font-semibold">Add Logging Dashboard</h3>
                       <p className="text-sm text-muted-foreground">Recent Tasks, KPI updates</p>
                     </div>
                   </div>
@@ -679,5 +679,3 @@ export const TriggerAutomationFlow: React.FC = () => {
     </div>
   );
 };
-
-

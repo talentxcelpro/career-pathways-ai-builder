@@ -79,8 +79,6 @@ const AILearningPathGenerator = () => {
         }
       });
 
-      if (aiError) throw aiError;
-
       const result = {
         path_overview: {
           title: aiResponse?.path_overview?.title || `${learningGoal} Mastery Path`,
@@ -483,7 +481,7 @@ const AILearningPathGenerator = () => {
                   </div>
                   <h2 className="text-2xl font-bold mb-2">AI Learning Path Generator</h2>
                   <p className="text-muted-foreground mb-6">
-                    Custom roadmap with top resources and Growth Path
+                    Custom roadmap with top resources and progress tracking
                   </p>
                 </div>
 

@@ -175,7 +175,7 @@ const CompetitiveAnalysis = () => {
 
   const featureComparisons: FeatureComparison[] = [
     {
-      feature: 'Performance Job Matching',
+      feature: 'AI-Powered Job Matching',
       talentxcel: 95,
       naukri: 35,
       linkedin: 70,
@@ -222,7 +222,7 @@ const CompetitiveAnalysis = () => {
       indeed: 40,
       monster: 50,
       weight: 15,
-      description: 'Performance career advice and guidance'
+      description: 'AI-powered career advice and guidance'
     },
     {
       feature: 'Job Database Size',
@@ -298,7 +298,7 @@ const CompetitiveAnalysis = () => {
       title: 'Network Effects',
       description: 'LinkedIn\'s networking advantage is hard to replicate',
       severity: 'Medium', 
-      mitigation: 'Build unique Performance networking features'
+      mitigation: 'Build unique AI-powered networking features'
     },
     {
       title: 'Database Size',
@@ -312,7 +312,7 @@ const CompetitiveAnalysis = () => {
     {
       category: 'Differentiation',
       recommendations: [
-        'Double down on Performance features that competitors can\'t easily replicate',
+        'Double down on AI-powered features that competitors can\'t easily replicate',
         'Focus on career guidance and personalized growth paths',
         'Build unique features like AI interview prep and skill gap analysis'
       ]
@@ -321,7 +321,7 @@ const CompetitiveAnalysis = () => {
       category: 'User Acquisition',
       recommendations: [
         'Partner with educational institutions and bootcamps',
-        'Create viral referral programs with AI-matched TalentNetwork',
+        'Create viral referral programs with AI-matched connections',
         'Focus on underserved segments like fresh graduates and career changers'
       ]
     },
@@ -337,7 +337,7 @@ const CompetitiveAnalysis = () => {
       category: 'Market Positioning',
       recommendations: [
         'Position as "Future of Career Development" vs traditional job boards',
-        'Emphasize Performance personalization and career growth',
+        'Emphasize AI-powered personalization and career growth',
         'Target tech-savvy professionals and young graduates first'
       ]
     }
@@ -416,7 +416,7 @@ const CompetitiveAnalysis = () => {
                 <div className="bg-primary/10 p-4 rounded-lg text-center">
                   <div className="text-2xl font-bold text-primary">{calculateOverallScore('talentxcel')}</div>
                   <div className="text-sm font-medium">TalentXcel</div>
-                  <div className="text-xs text-muted-foreground">Performance</div>
+                  <div className="text-xs text-muted-foreground">AI-Powered</div>
                 </div>
                 <div className="bg-muted p-4 rounded-lg text-center">
                   <div className="text-2xl font-bold">{calculateOverallScore('linkedin')}</div>
@@ -714,4 +714,3 @@ const CompetitiveAnalysis = () => {
 };
 
 export default CompetitiveAnalysis;
-

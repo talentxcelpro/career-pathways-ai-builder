@@ -36,7 +36,7 @@ const ToolResultsHistory = () => {
   const [selectedTool, setSelectedTool] = useState('all');
   const { toast } = useToast();
 
-  const toolNames = ['resume-check', 'cover-letter', 'salary-analyzer', 'interview-prep', 'ai-Navigator', 'profile-score', 'market-insights'];
+  const toolNames = ['resume-check', 'cover-letter', 'salary-analyzer', 'interview-prep', 'ai-assistant', 'profile-score', 'market-insights'];
 
   useEffect(() => {
     fetchSavedResults();
@@ -156,7 +156,7 @@ const ToolResultsHistory = () => {
       'cover-letter': 'Cover Letter Generator',
       'salary-analyzer': 'Salary Analyzer',
       'interview-prep': 'Interview Prep',
-      'ai-Navigator': 'AI Career Navigator',
+      'ai-assistant': 'AI Career Assistant',
       'profile-score': 'Profile Score',
       'market-insights': 'Market Insights'
     };
@@ -303,4 +303,3 @@ const ToolResultsHistory = () => {
 };
 
 export default ToolResultsHistory;
-

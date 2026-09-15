@@ -124,7 +124,7 @@ export function EmailQueueManager() {
       console.error('Error stack:', error?.stack);
       console.error('Full error object:', error);
       
-      // Determine error type for better user Feedback
+      // Determine error type for better user feedback
       let userMessage = 'Failed to process email queue';
       if (error instanceof TypeError && error.message.includes('fetch')) {
         userMessage = 'Network connection failed. Please check your internet connection and try again.';
@@ -424,4 +424,3 @@ export function EmailQueueManager() {
     </div>
   );
 }
-

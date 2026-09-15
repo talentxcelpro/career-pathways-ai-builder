@@ -1,102 +1,93 @@
 import React from 'react';
-import { toast } from 'sonner';
-
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-
-type TestNotificationType = 'profile_completion_reminder' | 'welcome' | 'job_match';
-
-const TEST_NOTIFICATIONS: Record<TestNotificationType, {
-  title: string;
-  body: string;
-  richContent: (name: string) => string;
-  actions: Array<{ action: string; label: string; url?: string }>;
-}> = {
-  profile_completion_reminder: {
-    title: 'Complete Your TalentXcel Profile',
-    body: 'Unlock stronger career signals by completing your profile',
-    richContent: (name) => `Hello ${name}.
-
-Complete your profile to access:
-- Precision Match roles
-- Priority applications
-- Talent Network opportunities
-- Intelligence Metrics`,
-    actions: [
-      { action: 'complete', label: 'Complete Now', url: '/profile' },
-      { action: 'dismiss', label: 'Later' },
-    ],
-  },
-  welcome: {
-    title: 'Welcome to TalentXcel',
-    body: 'Your career momentum starts here',
-    richContent: (name) => `Welcome to TalentXcel, ${name}.
-
-TalentXcel helps you:
-- Find your next role
-- Build your Talent Network
-- Advance your career
-- Unlock opportunities`,
-    actions: [
-      { action: 'explore', label: 'Explore Jobs', url: '/jobs' },
-      { action: 'profile', label: 'Set Up Profile', url: '/profile' },
-    ],
-  },
-  job_match: {
-    title: 'New Precision Match Found',
-    body: 'We found roles that match your strongest skills',
-    richContent: () => `Great news. We found roles that match your profile:
-
-- Frontend Developer at TechCorp
-- $80k - $120k per year
-- Remote / San Francisco
-- 95% skill match
-
-Ready to apply?`,
-    actions: [
-      { action: 'view_job', label: 'View Jobs', url: '/jobs' },
-      { action: 'dismiss', label: 'Not Now' },
-    ],
-  },
-};
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 export const TestNotificationSender: React.FC = () => {
   const { user } = useAuth();
 
-  const sendTestNotification = async (type: TestNotificationType) => {
+  const sendTestNotification = async (type: string) => {
     if (!user) {
-      toast.error('Please sign in to test notifications');
+      toast.error('Please log in to test notifications');
       return;
     }
 
-    const notificationData = TEST_NOTIFICATIONS[type];
-    const name = user.email?.split('@')[0] || 'there';
+    const notifications = {
+      profile_completion_reminder: {
+        title: 'Complete Your TalentXcel Profile',
+        body: 'Unlock all features by completing your profile',
+        rich_content: `Hello ${user.email?.split('@')[0] || 'there'}! 🎯 
+
+Complete your profile to access premium features like:
+• Advanced job matching
+• Priority applications
+• Networking opportunities
+• Career insights`,
+        actions: [
+          { action: 'complete', label: 'Complete Now', url: '/profile' },
+          { action: 'dismiss', label: 'Later' }
+        ]
+      },
+      welcome: {
+        title: 'Welcome to TalentXcel! 🎉',
+        body: 'Your career journey starts here',
+        rich_content: `Welcome to TalentXcel, ${user.email?.split('@')[0] || 'there'}! 
+
+We're excited to help you:
+🚀 Find your dream job
+🤝 Connect with professionals
+📈 Advance your career
+✨ Unlock opportunities`,
+        actions: [
+          { action: 'explore', label: 'Explore Jobs', url: '/jobs' },
+          { action: 'profile', label: 'Setup Profile', url: '/profile' }
+        ]
+      },
+      job_match: {
+        title: 'New Job Match Found! 💼',
+        body: 'We found 3 jobs that match your skills perfectly',
+        rich_content: `Great news! We found jobs that match your profile:
+
+🎯 Frontend Developer at TechCorp
+💰 $80k - $120k per year
+📍 Remote / San Francisco
+⭐ 95% skill match
+
+Ready to apply?`,
+        actions: [
+          { action: 'view_job', label: 'View Jobs', url: '/jobs' },
+          { action: 'dismiss', label: 'Not Now' }
+        ]
+      }
+    };
 
     try {
+      const notificationData = notifications[type];
+      
       const { error } = await supabase.functions.invoke('send-push-notification', {
         body: {
           user_ids: [user.id],
           title: notificationData.title,
           body: notificationData.body,
           trigger_type: type,
-          rich_content: notificationData.richContent(name),
+          rich_content: notificationData.rich_content,
           actions: notificationData.actions,
           priority: 'normal',
           data: {
             url: '/',
-            test: true,
-          },
-        },
+            test: true
+          }
+        }
       });
 
       if (error) throw error;
-
-      toast.success('Test notification sent');
+      
+      toast.success(`${type} notification sent!`);
     } catch (error) {
       console.error('Error sending notification:', error);
-      toast.error('Could not send test notification');
+      toast.error('Failed to send notification');
     }
   };
 
@@ -106,25 +97,25 @@ export const TestNotificationSender: React.FC = () => {
         <CardTitle className="text-lg">Test Rich Notifications</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        <Button
+        <Button 
           onClick={() => sendTestNotification('profile_completion_reminder')}
           className="w-full bg-blue-600 hover:bg-blue-700"
         >
-          Profile Completion
+          ✨ Profile Completion
         </Button>
-
-        <Button
+        
+        <Button 
           onClick={() => sendTestNotification('welcome')}
           className="w-full bg-green-600 hover:bg-green-700"
         >
-          Welcome Message
+          🎉 Welcome Message
         </Button>
-
-        <Button
+        
+        <Button 
           onClick={() => sendTestNotification('job_match')}
           className="w-full bg-purple-600 hover:bg-purple-700"
         >
-          Precision Match
+          💼 Job Match
         </Button>
       </CardContent>
     </Card>

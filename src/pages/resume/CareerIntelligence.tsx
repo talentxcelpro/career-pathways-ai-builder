@@ -50,7 +50,7 @@ const mockMarketData: MarketData[] = [
     growth: 32,
     demand: 'High',
     locations: ['Bangalore', 'Mumbai', 'Delhi NCR', 'Hyderabad'],
-    skills: ['Strategy', 'CareerAnalytics', 'Leadership', 'Agile'],
+    skills: ['Strategy', 'Analytics', 'Leadership', 'Agile'],
     companies: 670
   },
   {
@@ -132,7 +132,7 @@ const CareerIntelligence = () => {
   return (
     <>
       <Helmet>
-        <title>CareerIntelligence | Market Data & Insights | TalentXcel</title>
+        <title>Career Intelligence | Market Data & Insights | TalentXcel</title>
         <meta 
           name="description" 
           content="Real-time career market data, salary trends, skill demand, and location insights. Make data-driven career decisions." 
@@ -145,7 +145,7 @@ const CareerIntelligence = () => {
         <section className="pt-20 pb-8 px-4">
           <div className="max-w-7xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary via-purple-600 to-blue-600 bg-clip-text text-transparent">
-              CareerIntelligence Hub
+              Career Intelligence Hub
             </h1>
             <p className="text-xl text-muted-foreground mb-8 max-w-3xl">
               Make data-driven career decisions with real-time market insights, salary trends, and skill demand analysis.
@@ -606,6 +606,3 @@ const CareerIntelligence = () => {
 };
 
 export default CareerIntelligence;
-
-
-

@@ -49,7 +49,7 @@ interface InterviewSession {
   questions: InterviewQuestion[];
   current_question: number;
   responses: string[];
-  ai_Feedback?: any;
+  ai_feedback?: any;
   overall_score?: number;
   strengths?: string[];
   improvement_areas?: string[];
@@ -259,12 +259,12 @@ export function AIInterviewCoach() {
       setSessionTimer(null);
     }
 
-    // Generate AI Feedback (mock)
+    // Generate AI feedback (mock)
     const aiFeedback = generateAIFeedback(session);
     
     const completedSession = {
       ...session,
-      ai_Feedback: aiFeedback,
+      ai_feedback: aiFeedback,
       overall_score: aiFeedback.overall_score,
       strengths: aiFeedback.strengths,
       improvement_areas: aiFeedback.improvement_areas,
@@ -291,7 +291,7 @@ export function AIInterviewCoach() {
   };
 
   const generateAIFeedback = (session: InterviewSession) => {
-    // Mock AI Feedback generation
+    // Mock AI feedback generation
     const scores = [75, 82, 68, 91, 77];
     const randomScore = scores[Math.floor(Math.random() * scores.length)];
     
@@ -300,7 +300,7 @@ export function AIInterviewCoach() {
       question_scores: session.responses.map((_, index) => ({
         question_index: index,
         score: Math.floor(Math.random() * 40) + 60,
-        Feedback: 'Good response with clear structure. Consider adding more specific examples.',
+        feedback: 'Good response with clear structure. Consider adding more specific examples.',
         strengths: ['Clear communication', 'Structured thinking'],
         improvements: ['Add more quantifiable results', 'Include stakeholder impact']
       })),
@@ -373,7 +373,7 @@ export function AIInterviewCoach() {
             AI Interview Coach
           </h2>
           <p className="text-muted-foreground">
-            Practice interviews with Performance Feedback and real-time coaching
+            Practice interviews with AI-powered feedback and real-time coaching
           </p>
         </div>
         
@@ -775,7 +775,7 @@ export function AIInterviewCoach() {
           <Brain className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
           <h3 className="text-xl font-semibold mb-2">Ready to Practice?</h3>
           <p className="text-muted-foreground mb-6">
-            Start an Performance interview session to improve your skills and confidence.
+            Start an AI-powered interview session to improve your skills and confidence.
           </p>
           <Button onClick={() => setShowSettings(true)} size="lg">
             <Play className="w-4 h-4 mr-2" />
@@ -786,4 +786,3 @@ export function AIInterviewCoach() {
     </div>
   );
 }
-

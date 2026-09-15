@@ -131,7 +131,7 @@ export const CompanyContent: React.FC<CompanyContentProps> = ({ company, userRol
           <TabsTrigger value="posts" className="text-xs">Posts & Announcements</TabsTrigger>
           <TabsTrigger value="events" className="text-xs">Events</TabsTrigger>
           <TabsTrigger value="media" className="text-xs">Media Library</TabsTrigger>
-          <TabsTrigger value="CareerAnalytics" className="text-xs">Content CareerAnalytics</TabsTrigger>
+          <TabsTrigger value="analytics" className="text-xs">Content Analytics</TabsTrigger>
         </TabsList>
 
         {/* Posts Tab */}
@@ -269,8 +269,8 @@ export const CompanyContent: React.FC<CompanyContentProps> = ({ company, userRol
           </Card>
         </TabsContent>
 
-        {/* Content CareerAnalytics Tab */}
-        <TabsContent value="CareerAnalytics">
+        {/* Content Analytics Tab */}
+        <TabsContent value="analytics">
           <div className="space-y-6">
             {/* Content Performance Summary */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -328,12 +328,12 @@ export const CompanyContent: React.FC<CompanyContentProps> = ({ company, userRol
             <Card>
               <CardHeader>
                 <CardTitle>Content Performance Insights</CardTitle>
-                <CardDescription>Detailed CareerAnalytics for your content strategy</CardDescription>
+                <CardDescription>Detailed analytics for your content strategy</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="text-center py-12">
                   <MessageSquare className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-xl font-medium text-gray-900 mb-2">Advanced CareerAnalytics Coming Soon</h3>
+                  <h3 className="text-xl font-medium text-gray-900 mb-2">Advanced Analytics Coming Soon</h3>
                   <p className="text-gray-600">Track engagement rates, optimal posting times, and content performance metrics</p>
                 </div>
               </CardContent>
@@ -344,6 +344,3 @@ export const CompanyContent: React.FC<CompanyContentProps> = ({ company, userRol
     </div>
   );
 };
-
-
-

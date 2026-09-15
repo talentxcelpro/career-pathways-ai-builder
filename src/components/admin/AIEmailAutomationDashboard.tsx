@@ -40,7 +40,7 @@ interface BehavioralTrigger {
   conversionRate: number;
 }
 
-export const AIEmailAutomationCommandCenter: React.FC = () => {
+export const AIEmailAutomationDashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [aiData, setAiData] = useState<AIOptimizationData>({
     subjectLineOptimizations: 0,
@@ -84,7 +84,7 @@ export const AIEmailAutomationCommandCenter: React.FC = () => {
       id: 'new_match',
       type: 'new_job_match',
       name: 'New Job Match',
-      description: 'Performance job recommendations with high match scores',
+      description: 'AI-powered job recommendations with high match scores',
       isActive: true,
       triggerCount24h: 156,
       conversionRate: 28.3
@@ -101,10 +101,10 @@ export const AIEmailAutomationCommandCenter: React.FC = () => {
   ];
 
   useEffect(() => {
-    loadCommandCenterData();
+    loadDashboardData();
   }, []);
 
-  const loadCommandCenterData = async () => {
+  const loadDashboardData = async () => {
     try {
       setIsLoading(true);
       
@@ -133,8 +133,8 @@ export const AIEmailAutomationCommandCenter: React.FC = () => {
       setBehavioralTriggers(defaultBehavioralTriggers);
 
     } catch (error) {
-      console.error('Error loading AI CommandCenter data:', error);
-      toast.error('Failed to load AI CommandCenter data');
+      console.error('Error loading AI dashboard data:', error);
+      toast.error('Failed to load AI dashboard data');
     } finally {
       setIsLoading(false);
     }
@@ -160,7 +160,7 @@ export const AIEmailAutomationCommandCenter: React.FC = () => {
       if (error) throw error;
 
       toast.success(`${type} optimization completed successfully!`);
-      loadCommandCenterData(); // Refresh data
+      loadDashboardData(); // Refresh data
       
     } catch (error) {
       console.error(`Error running ${type} optimization:`, error);
@@ -177,7 +177,7 @@ export const AIEmailAutomationCommandCenter: React.FC = () => {
       if (error) throw error;
 
       toast.success('Behavioral triggers processed successfully!');
-      loadCommandCenterData();
+      loadDashboardData();
       
     } catch (error) {
       console.error('Error running behavioral engine:', error);
@@ -280,7 +280,7 @@ export const AIEmailAutomationCommandCenter: React.FC = () => {
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="optimization">AI Optimization</TabsTrigger>
           <TabsTrigger value="behavioral">Behavioral Triggers</TabsTrigger>
-          <TabsTrigger value="CareerAnalytics">Predictive CareerAnalytics</TabsTrigger>
+          <TabsTrigger value="analytics">Predictive Analytics</TabsTrigger>
           <TabsTrigger value="personalization">Smart Personalization</TabsTrigger>
         </TabsList>
 
@@ -290,7 +290,7 @@ export const AIEmailAutomationCommandCenter: React.FC = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Brain className="h-5 w-5" />
-                Performance Email Optimization
+                AI-Powered Email Optimization
               </CardTitle>
               <CardDescription>
                 Advanced AI algorithms to optimize every aspect of your email campaigns
@@ -308,7 +308,7 @@ export const AIEmailAutomationCommandCenter: React.FC = () => {
                     <span className="font-semibold">Subject Line Optimization</span>
                   </div>
                   <p className="text-sm text-muted-foreground text-left">
-                    Performance subject line variants for maximum open rates
+                    AI-powered subject line variants for maximum open rates
                   </p>
                 </Button>
 
@@ -364,7 +364,7 @@ export const AIEmailAutomationCommandCenter: React.FC = () => {
                     <span className="font-semibold">Performance Analysis</span>
                   </div>
                   <p className="text-sm text-muted-foreground text-left">
-                    Performance insights and optimization recommendations
+                    AI-powered insights and optimization recommendations
                   </p>
                 </Button>
 
@@ -441,8 +441,8 @@ export const AIEmailAutomationCommandCenter: React.FC = () => {
           </Card>
         </TabsContent>
 
-        {/* Predictive CareerAnalytics Tab */}
-        <TabsContent value="CareerAnalytics" className="space-y-4">
+        {/* Predictive Analytics Tab */}
+        <TabsContent value="analytics" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
               <CardHeader>
@@ -534,7 +534,7 @@ export const AIEmailAutomationCommandCenter: React.FC = () => {
                 <div className="p-4 border rounded-lg">
                   <h4 className="font-semibold mb-2">Job Recommendations</h4>
                   <p className="text-sm text-muted-foreground mb-3">
-                    Performance job matching integrated into email campaigns
+                    AI-powered job matching integrated into email campaigns
                   </p>
                   <Badge variant="outline">Active</Badge>
                 </div>
@@ -554,6 +554,3 @@ export const AIEmailAutomationCommandCenter: React.FC = () => {
     </div>
   );
 };
-
-
-

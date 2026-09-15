@@ -406,7 +406,7 @@ const CoverLetter = () => {
       onStepChange={setCurrentStep}
       results={generatedLetter}
       isProcessing={isGenerating}
-      onSave={() => toast.success('Cover letter saved to your CommandCenter!')}
+      onSave={() => toast.success('Cover letter saved to your dashboard!')}
       onExport={downloadAsDoc}
       onShare={() => {
         navigator.clipboard.writeText(generatedLetter);
@@ -417,4 +417,3 @@ const CoverLetter = () => {
 };
 
 export default CoverLetter;
-

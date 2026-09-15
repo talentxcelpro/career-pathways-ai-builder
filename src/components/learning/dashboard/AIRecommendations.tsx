@@ -56,7 +56,7 @@ export const AIRecommendations: React.FC<AIRecommendationsProps> = ({
             <Sparkles className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold">Career Moves</h2>
+            <h2 className="text-2xl font-bold">AI Recommendations</h2>
             <p className="text-muted-foreground">Personalized courses based on your profile and goals</p>
           </div>
         </div>
@@ -64,7 +64,7 @@ export const AIRecommendations: React.FC<AIRecommendationsProps> = ({
         <div className="flex items-center gap-3">
           <Badge className="bg-gradient-to-r from-blue-500 to-purple-600 text-white border-0">
             <Brain className="h-3 w-3 mr-1" />
-            Performance
+            AI Powered
           </Badge>
           <Button variant="outline" size="sm">
             View All
@@ -73,7 +73,7 @@ export const AIRecommendations: React.FC<AIRecommendationsProps> = ({
         </div>
       </div>
 
-      {/* Intelligence Metrics Card */}
+      {/* AI Insights Card */}
       <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
         <CardContent className="p-6">
           <div className="flex items-start gap-4">

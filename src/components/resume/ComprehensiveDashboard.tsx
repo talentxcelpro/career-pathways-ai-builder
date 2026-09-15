@@ -20,13 +20,13 @@ import { useSmartEnhancement } from '@/hooks/useSmartEnhancement';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 
-interface ComprehensiveCommandCenterProps {
+interface ComprehensiveDashboardProps {
   resumeData: any;
   onEnhance: (section: string, content: string) => void;
   onOptimize: (optimizedData: any) => void;
 }
 
-export const ComprehensiveCommandCenter: React.FC<ComprehensiveCommandCenterProps> = ({
+export const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
   resumeData,
   onEnhance,
   onOptimize
@@ -262,7 +262,7 @@ export const ComprehensiveCommandCenter: React.FC<ComprehensiveCommandCenterProp
                     Smart Suggestions
                   </CardTitle>
                   <CardDescription>
-                    {suggestions.length} Performance improvement recommendations
+                    {suggestions.length} AI-powered improvement recommendations
                   </CardDescription>
                 </div>
                 <Button
@@ -357,5 +357,3 @@ export const ComprehensiveCommandCenter: React.FC<ComprehensiveCommandCenterProp
     </div>
   );
 };
-
-

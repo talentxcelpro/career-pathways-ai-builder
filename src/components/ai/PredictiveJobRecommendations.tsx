@@ -173,7 +173,7 @@ export const PredictiveJobRecommendations: React.FC = () => {
           <Sparkles className="h-12 w-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">AI Job Predictions</h3>
           <p className="text-gray-600 mb-4">
-            Login to get Performance job recommendations tailored for you
+            Login to get AI-powered job recommendations tailored for you
           </p>
         </CardContent>
       </Card>
@@ -240,7 +240,7 @@ export const PredictiveJobRecommendations: React.FC = () => {
           className="flex items-center gap-2"
         >
           <Brain className="h-4 w-4" />
-          Intelligence Metrics
+          AI Insights
         </Button>
       </div>
 
@@ -291,7 +291,7 @@ export const PredictiveJobRecommendations: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Intelligence Metrics */}
+                {/* AI Insights */}
                 <div className="bg-blue-50 rounded-lg p-4 mb-4">
                   <h4 className="font-medium text-blue-900 mb-2 flex items-center gap-2">
                     <Brain className="h-4 w-4" />
@@ -401,13 +401,13 @@ export const PredictiveJobRecommendations: React.FC = () => {
         </Card>
       )}
 
-      {/* Intelligence Metrics */}
+      {/* AI Insights */}
       {viewMode === 'insights' && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Brain className="h-5 w-5 text-purple-600" />
-              Personalized Intelligence Metrics
+              Personalized AI Insights
             </CardTitle>
             <p className="text-sm text-muted-foreground">
               Deep analysis of your career trajectory and market positioning

@@ -17,7 +17,7 @@ export default function PublicResumeBuilder() {
   ];
 
   const features = [
-    'Performance content suggestions',
+    'AI-powered content suggestions',
     'ATS-optimized templates',
     'Real-time preview',
     'One-click download',
@@ -82,7 +82,7 @@ export default function PublicResumeBuilder() {
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
               <Sparkles className="h-4 w-4" />
-              Free Performance Resume Builder
+              Free AI-Powered Resume Builder
             </div>
             <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Build Your Perfect Resume in Minutes
@@ -172,7 +172,7 @@ export default function PublicResumeBuilder() {
             <Card className="text-center">
               <CardHeader>
                 <Sparkles className="h-12 w-12 text-primary mx-auto mb-4" />
-                <CardTitle>Performance Content</CardTitle>
+                <CardTitle>AI-Powered Content</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">

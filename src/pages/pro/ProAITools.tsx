@@ -18,7 +18,7 @@ const ProAITools: React.FC = () => {
             className="mr-4 hover:bg-white/80"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to CommandCenter
+            Back to Dashboard
           </Button>
           <div>
             <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
@@ -36,7 +36,7 @@ const ProAITools: React.FC = () => {
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Bot className="h-6 w-6 text-blue-600" />
-                <CardTitle>TalentXcel Navigator</CardTitle>
+                <CardTitle>AI Assistant</CardTitle>
               </div>
               <CardDescription>
                 Get help with business tasks using AI
@@ -45,7 +45,7 @@ const ProAITools: React.FC = () => {
             <CardContent>
               <Button className="w-full">
                 <Sparkles className="h-4 w-4 mr-2" />
-                Launch TalentXcel Navigator
+                Launch AI Assistant
               </Button>
             </CardContent>
           </Card>
@@ -72,16 +72,16 @@ const ProAITools: React.FC = () => {
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Bot className="h-6 w-6 text-green-600" />
-                <CardTitle>Smart CareerAnalytics</CardTitle>
+                <CardTitle>Smart Analytics</CardTitle>
               </div>
               <CardDescription>
-                Performance insights for your business
+                AI-powered insights for your business
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Button className="w-full" variant="outline">
                 <Sparkles className="h-4 w-4 mr-2" />
-                View CareerAnalytics
+                View Analytics
               </Button>
             </CardContent>
           </Card>
@@ -90,7 +90,7 @@ const ProAITools: React.FC = () => {
         {/* Feature Description */}
         <Card className="mt-8">
           <CardHeader>
-            <CardTitle>Performance Business Growth</CardTitle>
+            <CardTitle>AI-Powered Business Growth</CardTitle>
             <CardDescription>
               Leverage artificial intelligence to streamline your business operations
             </CardDescription>
@@ -112,7 +112,7 @@ const ProAITools: React.FC = () => {
               </div>
               <div>
                 <h4 className="font-medium">Smart Insights</h4>
-                <p className="text-sm text-gray-600">Get Performance recommendations for business growth</p>
+                <p className="text-sm text-gray-600">Get AI-powered recommendations for business growth</p>
               </div>
             </div>
             
@@ -133,6 +133,3 @@ const ProAITools: React.FC = () => {
 };
 
 export default ProAITools;
-
-
-

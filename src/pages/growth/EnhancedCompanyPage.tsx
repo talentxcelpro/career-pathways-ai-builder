@@ -8,7 +8,7 @@ const EnhancedCompanyPage = () => {
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold tracking-tight">Enhanced Company Profiles</h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Create comprehensive company pages with rich media, updates, and detailed CareerAnalytics
+            Create comprehensive company pages with rich media, updates, and detailed analytics
           </p>
         </div>
         
@@ -29,6 +29,3 @@ const EnhancedCompanyPage = () => {
 };
 
 export default EnhancedCompanyPage;
-
-
-

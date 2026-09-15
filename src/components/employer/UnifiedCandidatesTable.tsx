@@ -351,7 +351,7 @@ export const UnifiedCandidatesTable: React.FC = () => {
               <ul>
                   <li>✅ Access personalized job recommendations</li>
                   <li>🤝 Connect with top employers</li>
-                  <li>📈 Get Performance career insights</li>
+                  <li>📈 Get AI-powered career insights</li>
                   <li>💼 Apply to exclusive opportunities</li>
               </ul>
           </div>

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useCareerAnalyticsTracking as useAnalyticsTracking } from '@/hooks/useAnalyticsTracking';
+import { useAnalyticsTracking } from '@/hooks/useAnalyticsTracking';
 import { 
   Smartphone, 
   TrendingUp, 
@@ -71,7 +71,7 @@ const ComprehensiveMobileNetworkAnalysis: React.FC = () => {
       },
       {
         platform: 'LinkedIn Mobile',
-        feature: 'Performance Content Suggestions',
+        feature: 'AI-Powered Content Suggestions',
         status: 'missing',
         description: 'AI suggests content topics based on industry trends and user interests',
         priority: 'high',
@@ -149,9 +149,9 @@ const ComprehensiveMobileNetworkAnalysis: React.FC = () => {
       // Professional Networking
       {
         platform: 'LinkedIn Mobile',
-        feature: 'Mutual TalentNetwork Display',
+        feature: 'Mutual Connections Display',
         status: 'basic',
-        description: 'Show mutual TalentNetwork when viewing profiles',
+        description: 'Show mutual connections when viewing profiles',
         priority: 'high',
         implementation_complexity: 'easy'
       },
@@ -159,7 +159,7 @@ const ComprehensiveMobileNetworkAnalysis: React.FC = () => {
         platform: 'LinkedIn Mobile',
         feature: 'Smart Connection Suggestions',
         status: 'missing',
-        description: 'Performance suggestions based on profile, interests, and network',
+        description: 'AI-powered suggestions based on profile, interests, and network',
         priority: 'high',
         implementation_complexity: 'hard'
       },
@@ -201,9 +201,9 @@ const ComprehensiveMobileNetworkAnalysis: React.FC = () => {
       // Mobile-Specific Features
       {
         platform: 'TikTok',
-        feature: 'Swipe-to-Navigate Pulse',
+        feature: 'Swipe-to-Navigate Feed',
         status: 'missing',
-        description: 'Vertical swipe navigation through content Pulse',
+        description: 'Vertical swipe navigation through content feed',
         priority: 'high',
         implementation_complexity: 'easy'
       },
@@ -211,25 +211,25 @@ const ComprehensiveMobileNetworkAnalysis: React.FC = () => {
         platform: 'Instagram',
         feature: 'Pull-to-Refresh',
         status: 'basic',
-        description: 'Pull down gesture to refresh content Pulse',
+        description: 'Pull down gesture to refresh content feed',
         priority: 'high',
         implementation_complexity: 'easy'
       },
       {
         platform: 'Snapchat',
-        feature: 'Haptic Pulseback',
+        feature: 'Haptic Feedback',
         status: 'missing',
-        description: 'Tactile Pulseback for interactions and notifications',
+        description: 'Tactile feedback for interactions and notifications',
         priority: 'medium',
         implementation_complexity: 'easy'
       },
       
-      // CareerAnalytics & Insights
+      // Analytics & Insights
       {
         platform: 'LinkedIn Mobile',
-        feature: 'Profile View CareerAnalytics',
+        feature: 'Profile View Analytics',
         status: 'missing',
-        description: 'See who viewed your profile and engagement CareerAnalytics',
+        description: 'See who viewed your profile and engagement analytics',
         priority: 'high',
         implementation_complexity: 'medium'
       },
@@ -237,7 +237,7 @@ const ComprehensiveMobileNetworkAnalysis: React.FC = () => {
         platform: 'Instagram Business',
         feature: 'Content Performance Insights',
         status: 'missing',
-        description: 'Detailed CareerAnalytics on post performance and audience insights',
+        description: 'Detailed analytics on post performance and audience insights',
         priority: 'medium',
         implementation_complexity: 'medium'
       }
@@ -524,7 +524,7 @@ const ComprehensiveMobileNetworkAnalysis: React.FC = () => {
                       Real-time Database Sync
                     </h4>
                     <p className="text-sm text-muted-foreground">
-                      Implement Supabase real-time subscriptions for posts, TalentNetwork, and messages
+                      Implement Supabase real-time subscriptions for posts, connections, and messages
                     </p>
                     <div className="ml-6 space-y-2 text-sm">
                       <div>• Posts and reactions sync across devices</div>
@@ -543,7 +543,7 @@ const ComprehensiveMobileNetworkAnalysis: React.FC = () => {
                       Cache critical data locally and sync when connection is restored
                     </p>
                     <div className="ml-6 space-y-2 text-sm">
-                      <div>• Cache user profile and TalentNetwork</div>
+                      <div>• Cache user profile and connections</div>
                       <div>• Queue actions when offline</div>
                       <div>• Background sync when online</div>
                       <div>• Conflict resolution for simultaneous edits</div>
@@ -562,7 +562,7 @@ const ComprehensiveMobileNetworkAnalysis: React.FC = () => {
                       <div>• Unified user session management</div>
                       <div>• Synchronized notification preferences</div>
                       <div>• Shared draft posts and content</div>
-                      <div>• Cross-device CareerAnalytics tracking</div>
+                      <div>• Cross-device analytics tracking</div>
                     </div>
                   </div>
                 </div>
@@ -620,7 +620,7 @@ const ComprehensiveMobileNetworkAnalysis: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-yellow-600" />
-                      <span>Profile CareerAnalytics and insights</span>
+                      <span>Profile analytics and insights</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-yellow-600" />
@@ -641,7 +641,7 @@ const ComprehensiveMobileNetworkAnalysis: React.FC = () => {
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-yellow-600" />
-                      <span>Performance content suggestions</span>
+                      <span>AI-powered content suggestions</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-yellow-600" />
@@ -667,7 +667,3 @@ const ComprehensiveMobileNetworkAnalysis: React.FC = () => {
 };
 
 export default ComprehensiveMobileNetworkAnalysis;
-
-
-
-

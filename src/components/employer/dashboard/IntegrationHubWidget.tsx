@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 interface Integration {
   id: string;
   name: string;
-  type: 'ats' | 'calendar' | 'communication' | 'CareerAnalytics' | 'background_check';
+  type: 'ats' | 'calendar' | 'communication' | 'analytics' | 'background_check';
   status: 'connected' | 'disconnected' | 'error' | 'syncing';
   description: string;
   lastSync: string;
@@ -160,7 +160,3 @@ export const IntegrationHubWidget = () => {
     </Card>
   );
 };
-
-
-
-

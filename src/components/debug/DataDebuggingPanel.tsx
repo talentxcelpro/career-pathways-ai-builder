@@ -167,10 +167,10 @@ export const DataDebuggingPanel: React.FC = () => {
     }
   };
 
-  // Test 5: Force refresh posts Pulse
-  const refreshPostsPulse = async () => {
+  // Test 5: Force refresh posts feed
+  const refreshPostsFeed = async () => {
     try {
-      console.log('🔄 Force refreshing posts Pulse...');
+      console.log('🔄 Force refreshing posts feed...');
       const { data, error } = await supabase
         .from('posts')
         .select('*')
@@ -178,12 +178,12 @@ export const DataDebuggingPanel: React.FC = () => {
 
       if (error) {
         console.error("❌ Error fetching posts:", error);
-        toast.error('Failed to refresh posts Pulse');
+        toast.error('Failed to refresh posts feed');
         return;
       }
 
       // Find posts container and update it
-      const postsContainer = document.getElementById("posts-Pulse");
+      const postsContainer = document.getElementById("posts-feed");
       if (postsContainer) {
         postsContainer.innerHTML = "";
         
@@ -197,11 +197,11 @@ export const DataDebuggingPanel: React.FC = () => {
           postsContainer.appendChild(div);
         });
         
-        console.log('✅ Posts Pulse refreshed:', data?.length, 'posts');
-        toast.success(`Posts Pulse refreshed: ${data?.length} posts`);
+        console.log('✅ Posts feed refreshed:', data?.length, 'posts');
+        toast.success(`Posts feed refreshed: ${data?.length} posts`);
       } else {
-        console.log('⚠️ No posts-Pulse container found');
-        toast.warning('Posts Pulse container not found on this page');
+        console.log('⚠️ No posts-feed container found');
+        toast.warning('Posts feed container not found on this page');
       }
     } catch (err) {
       console.error('❌ Force refresh error:', err);
@@ -244,9 +244,9 @@ export const DataDebuggingPanel: React.FC = () => {
               <RefreshCw className={`h-3 w-3 mr-1 ${isPolling ? 'animate-spin' : ''}`} />
               {isPolling ? 'Stop Poll' : 'Start Poll'}
             </Button>
-            <Button variant="outline" onClick={refreshPostsPulse} className="text-xs">
+            <Button variant="outline" onClick={refreshPostsFeed} className="text-xs">
               <RefreshCw className="h-3 w-3 mr-1" />
-              Refresh Pulse
+              Refresh Feed
             </Button>
             <Button variant="outline" onClick={clearResults} className="text-xs">
               Clear Results
@@ -322,14 +322,14 @@ export const DataDebuggingPanel: React.FC = () => {
             </div>
           </div>
 
-          {/* Posts Pulse Container */}
+          {/* Posts Feed Container */}
           <div className="space-y-2">
-            <h4 className="font-medium text-sm">Posts Pulse (for testing):</h4>
+            <h4 className="font-medium text-sm">Posts Feed (for testing):</h4>
             <div 
-              id="posts-Pulse" 
+              id="posts-feed" 
               className="border rounded-lg p-4 min-h-32 bg-gray-50 max-h-64 overflow-y-auto"
             >
-              <p className="text-gray-500 text-sm">Click "Refresh Pulse" to populate this area</p>
+              <p className="text-gray-500 text-sm">Click "Refresh Feed" to populate this area</p>
             </div>
           </div>
         </CardContent>

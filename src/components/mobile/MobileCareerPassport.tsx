@@ -47,7 +47,7 @@ export const MobileCareerPassport: React.FC = () => {
   const [publicPassportData, setPublicPassportData] = useState<any>(null);
   const [isPublicView, setIsPublicView] = useState(false);
   const [publicLoading, setPublicLoading] = useState(false);
-  const [connectionStatus, setconnectionStatus] = useState<'none' | 'pending' | 'connected'>('none');
+  const [connectionStatus, setConnectionStatus] = useState<'none' | 'pending' | 'connected'>('none');
 
   useEffect(() => {
     const initializeView = async () => {
@@ -56,14 +56,14 @@ export const MobileCareerPassport: React.FC = () => {
         setIsPublicView(true);
         await loadPublicPassportData(userId);
         if (user?.id) {
-          await checkconnectionStatus(userId);
+          await checkConnectionStatus(userId);
         }
       } else if (user?.id) {
         setIsPublicView(false);
       }
     };
 
-    const checkconnectionStatus = async (targetUserId: string) => {
+    const checkConnectionStatus = async (targetUserId: string) => {
       if (!user?.id) return;
       
       try {
@@ -74,7 +74,7 @@ export const MobileCareerPassport: React.FC = () => {
           .single();
         
         if (data) {
-          setconnectionStatus(data.status);
+          setConnectionStatus(data.status);
         }
       } catch (error) {
         console.error('Error checking connection status:', error);
@@ -91,7 +91,7 @@ export const MobileCareerPassport: React.FC = () => {
           .eq('id', targetUserId)
           .single();
 
-        // Fetch public Evolution Hub data
+        // Fetch public career passport data
         const { data: passportData } = await supabase
           .from('career_passport')
           .select('completion_percentage, career_readiness_score, market_competitiveness_score, resumes_count, jobs_applied_count, certifications_count, connections_count')
@@ -167,8 +167,8 @@ export const MobileCareerPassport: React.FC = () => {
   const handleShare = async () => {
     const shareUrl = `https://talentxcel.in/passport/${displayData.profile?.username || userId || user?.id}`;
     const shareData = {
-      title: `${getDisplayName()}'s Evolution Hub - TalentXcel`,
-      text: `Check out ${getDisplayName()}'s Professional Evolution Hub on TalentXcel`,
+      title: `${getDisplayName()}'s Career Passport - TalentXcel`,
+      text: `Check out ${getDisplayName()}'s professional career passport on TalentXcel`,
       url: shareUrl,
     };
 
@@ -179,7 +179,7 @@ export const MobileCareerPassport: React.FC = () => {
         await navigator.clipboard.writeText(shareUrl);
         toast({
           title: "Link Copied",
-          description: "Evolution Hub link copied to clipboard!",
+          description: "Career passport link copied to clipboard!",
         });
       }
     } catch (error) {
@@ -187,7 +187,7 @@ export const MobileCareerPassport: React.FC = () => {
         await navigator.clipboard.writeText(shareUrl);
         toast({
           title: "Link Copied",
-          description: "Evolution Hub link copied to clipboard!",
+          description: "Career passport link copied to clipboard!",
         });
       } catch (clipboardError) {
         toast({
@@ -248,7 +248,7 @@ export const MobileCareerPassport: React.FC = () => {
                   Join TalentXcel to Connect
                 </h2>
                 <p className="text-gray-600 mb-4">
-                  Sign up to view full Evolution Hubs and connect with professionals
+                  Sign up to view full career passports and connect with professionals
                 </p>
               </div>
               <AuthDialog buttonText="Sign Up to Connect" variant="default">
@@ -286,7 +286,7 @@ export const MobileCareerPassport: React.FC = () => {
   return (
     <MobileLayout>
       <div className="min-h-screen bg-gray-900">
-        {/* TalentXcel Evolution Hub Card - Exact Screenshot Match */}
+        {/* TalentXcel Career Passport Card - Exact Screenshot Match */}
         <div className="p-4">
           <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl shadow-2xl p-6 text-white relative overflow-hidden border border-gray-700">
             {/* Decorative elements */}
@@ -296,7 +296,7 @@ export const MobileCareerPassport: React.FC = () => {
             {/* Header */}
             <div className="relative z-10">
               <h1 className="text-2xl font-bold text-white mb-6 tracking-wide">
-                TALENTXCEL<br />Evolution Hub
+                TALENTXCEL<br />CAREER PASSPORT
               </h1>
               
               {/* Profile and ID Section */}
@@ -392,7 +392,7 @@ export const MobileCareerPassport: React.FC = () => {
                     <Users className="h-8 w-8 text-gray-400 mx-auto" />
                   </div>
                   <div className="text-white text-2xl font-bold">0</div>
-                  <div className="text-gray-400 text-xs">TalentNetwork</div>
+                  <div className="text-gray-400 text-xs">Connections</div>
                 </div>
               </div>
               
@@ -493,7 +493,7 @@ export const MobileCareerPassport: React.FC = () => {
                 <div className="text-2xl font-bold text-gray-900">
                   {displayData.passport?.connections_count || 0}
                 </div>
-                <div className="text-sm text-gray-600">TalentNetwork</div>
+                <div className="text-sm text-gray-600">Connections</div>
               </CardContent>
             </Card>
 
@@ -645,4 +645,3 @@ export const MobileCareerPassport: React.FC = () => {
     </MobileLayout>
   );
 };
-

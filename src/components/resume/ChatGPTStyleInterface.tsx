@@ -52,7 +52,7 @@ export const ChatGPTStyleInterface: React.FC<ChatGPTStyleInterfaceProps> = ({
     {
       id: '1',
       type: 'ai',
-      content: "👋 Hi! I'm your AI Resume Navigator. I can help you optimize your resume with smart titles, tone adjustments, and keyword optimization. Upload your resume or start creating one to get personalized AI enhancements!",
+      content: "👋 Hi! I'm your AI Resume Assistant. I can help you optimize your resume with smart titles, tone adjustments, and keyword optimization. Upload your resume or start creating one to get personalized AI enhancements!",
       timestamp: new Date()
     }
   ]);
@@ -275,7 +275,7 @@ export const ChatGPTStyleInterface: React.FC<ChatGPTStyleInterfaceProps> = ({
               <Sparkles className="h-4 w-4 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-lg font-semibold text-foreground">AI Resume Navigator</h1>
+              <h1 className="text-lg font-semibold text-foreground">AI Resume Assistant</h1>
               <p className="text-sm text-muted-foreground">Smart enhancements powered by AI</p>
             </div>
           </div>
@@ -448,4 +448,3 @@ export const ChatGPTStyleInterface: React.FC<ChatGPTStyleInterfaceProps> = ({
     </div>
   );
 };
-

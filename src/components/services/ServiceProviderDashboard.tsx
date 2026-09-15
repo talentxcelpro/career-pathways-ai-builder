@@ -113,7 +113,7 @@ const mockEarnings = {
   avgOrderValue: 2400
 };
 
-export const ServiceProviderCommandCenter: React.FC = () => {
+export const ServiceProviderDashboard: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState('overview');
 
   const getStatusBadge = (status: string) => {
@@ -285,7 +285,7 @@ export const ServiceProviderCommandCenter: React.FC = () => {
         </div>
       </div>
 
-      {/* Main CommandCenter */}
+      {/* Main Dashboard */}
       <Tabs value={selectedTab} onValueChange={setSelectedTab}>
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -312,7 +312,7 @@ export const ServiceProviderCommandCenter: React.FC = () => {
                 </Button>
                 <Button variant="outline" className="h-20 flex flex-col gap-2">
                   <TrendingUp className="h-6 w-6" />
-                  CareerAnalytics
+                  Analytics
                 </Button>
               </div>
             </CardContent>
@@ -545,6 +545,3 @@ export const ServiceProviderCommandCenter: React.FC = () => {
     </div>
   );
 };
-
-
-

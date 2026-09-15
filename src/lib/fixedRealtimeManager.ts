@@ -234,4 +234,3 @@ export function getFixedRealtimeStatus() {
 export function cleanupFixedRealtime() {
   fixedRealtimeManager.cleanupAll();
 }
-

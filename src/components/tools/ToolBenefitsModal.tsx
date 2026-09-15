@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Dialog,
   DialogContent,
@@ -24,7 +25,8 @@ import {
   ArrowRight,
   BarChart3,
   Shield,
-  Sparkles
+  Sparkles,
+  Crown
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -64,11 +66,12 @@ interface Feature {
   name: string;
   description: string;
   isPremium: boolean;
-  category: 'ai' | 'CareerAnalytics' | 'export' | 'collaboration';
+  category: 'ai' | 'analytics' | 'export' | 'collaboration';
 }
 
 export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOpen = false, onOpenChange, onStartTesting }) => {
   const [isModalOpen, setIsModalOpen] = useState(isOpen);
+  const navigate = useNavigate();
 
   // Early return if tool is null to prevent rendering issues
   if (!tool) {
@@ -84,6 +87,33 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
     setIsModalOpen(open);
     if (onOpenChange) {
       onOpenChange(open);
+    }
+  };
+
+  const handleLaunchTool = () => {
+    handleOpenChange(false);
+    if (onStartTesting) {
+      onStartTesting();
+    }
+    
+    if (tool?.slug) {
+      const routeMap: Record<string, string> = {
+        'job-application-funnel': '/tools/job-matcher',
+        'resume-performance-insights': '/resume',
+        'career-growth-score': '/career-intelligence',
+        'ai-career-pathfinder': '/roadmap-builder',
+        'skill-gap-analyzer': '/skills-assessment',
+        'interview-simulator': '/tools/interview-prep',
+        'salary-market-insights': '/tools/salary-analyzer',
+        'resume-builder-pro': '/resume/build',
+        'cover-letter-generator': '/tools/cover-letter',
+        'profile-optimizer': '/tools/profile-optimizer',
+        'skill-assessment-engine': '/tools/skill-assessment-engine',
+        'skills-verification-center': '/skills-verification',
+        'instant-networking-system': '/instant-networking',
+      };
+      const targetRoute = routeMap[tool.slug] || (tool.slug.startsWith('/') ? tool.slug : `/tools/${tool.slug}`);
+      navigate(targetRoute);
     }
   };
 
@@ -128,15 +158,15 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
         {
           id: 'confidence-building',
           title: 'Confidence Building',
-          description: 'Build confidence through repeated practice and Feedback',
+          description: 'Build confidence through repeated practice and feedback',
           icon: TrendingUp,
           category: 'immediate',
           impact: 'high'
         },
         {
-          id: 'Feedback-insights',
-          title: 'Performance CareerAnalytics',
-          description: 'Get detailed Feedback on your answers and presentation style',
+          id: 'feedback-insights',
+          title: 'Performance Analytics',
+          description: 'Get detailed feedback on your answers and presentation style',
           icon: BarChart3,
           category: 'skills',
           impact: 'medium'
@@ -328,7 +358,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
         {
           id: 'growth-metrics',
           title: 'Career Growth Metrics',
-          description: 'Quantify your career progression with Performance scoring',
+          description: 'Quantify your career progression with AI-powered scoring',
           icon: TrendingUp,
           category: 'career',
           impact: 'high'
@@ -355,8 +385,8 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
     // Get tool-specific benefits or fallback to generic ones
     const specificBenefits = toolSpecificBenefits[tool.slug] || [
       {
-        id: 'Performance',
-        title: 'Performance Analysis',
+        id: 'ai-powered',
+        title: 'AI-Powered Analysis',
         description: `Get intelligent insights tailored for ${tool.name}`,
         icon: Brain,
         category: 'immediate',
@@ -395,11 +425,11 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
           category: 'ai'
         },
         {
-          id: 'role-CareerAnalytics',
-          name: 'Role Compatibility CommandCenter',
+          id: 'role-analytics',
+          name: 'Role Compatibility Dashboard',
           description: 'Comprehensive analysis of role compatibility and growth potential',
           isPremium: false,
-          category: 'CareerAnalytics'
+          category: 'analytics'
         },
         {
           id: 'detailed-reports',
@@ -426,15 +456,15 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
         },
         {
           id: 'performance-tracking',
-          name: 'Performance CareerAnalytics',
+          name: 'Performance Analytics',
           description: 'Track improvement across multiple practice sessions',
           isPremium: false,
-          category: 'CareerAnalytics'
+          category: 'analytics'
         },
         {
           id: 'video-recording',
           name: 'Video Analysis & Feedback',
-          description: 'Performance body language and speech pattern analysis',
+          description: 'AI-powered body language and speech pattern analysis',
           isPremium: true,
           category: 'ai'
         },
@@ -459,7 +489,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
           name: 'Keyword Optimization Engine',
           description: 'AI-driven keyword analysis for maximum visibility',
           isPremium: false,
-          category: 'CareerAnalytics'
+          category: 'analytics'
         },
         {
           id: 'multiple-formats',
@@ -471,7 +501,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
         {
           id: 'recruiter-insights',
           name: 'Recruiter Feedback Network',
-          description: 'Get Feedback from verified industry recruiters',
+          description: 'Get feedback from verified industry recruiters',
           isPremium: true,
           category: 'collaboration'
         }
@@ -489,7 +519,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
           name: 'Real-Time Market Analysis',
           description: 'Live job market data and trend analysis',
           isPremium: false,
-          category: 'CareerAnalytics'
+          category: 'analytics'
         },
         {
           id: 'roadmap-export',
@@ -510,7 +540,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
         {
           id: 'swot-engine',
           name: 'Advanced SWOT Engine',
-          description: 'Performance analysis of strengths, weaknesses, opportunities, threats',
+          description: 'AI-powered analysis of strengths, weaknesses, opportunities, threats',
           isPremium: false,
           category: 'ai'
         },
@@ -519,7 +549,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
           name: 'Competitive Positioning',
           description: 'Analyze your position relative to industry peers',
           isPremium: false,
-          category: 'CareerAnalytics'
+          category: 'analytics'
         },
         {
           id: 'strategy-export',
@@ -540,7 +570,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
         {
           id: 'transition-ai',
           name: 'Career Transition AI',
-          description: 'TalentXcel Navigator specialized in career change strategies',
+          description: 'AI assistant specialized in career change strategies',
           isPremium: false,
           category: 'ai'
         },
@@ -549,7 +579,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
           name: 'Transition Risk Assessment',
           description: 'Analyze financial and professional risks of career change',
           isPremium: false,
-          category: 'CareerAnalytics'
+          category: 'analytics'
         },
         {
           id: 'transition-plan',
@@ -579,7 +609,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
           name: 'Adaptive Difficulty',
           description: 'Questions adapt to your performance and skill level',
           isPremium: false,
-          category: 'CareerAnalytics'
+          category: 'analytics'
         },
         {
           id: 'custom-bank',
@@ -609,7 +639,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
           name: 'Impact Quantification',
           description: 'Calculate and optimize the impact metrics in your stories',
           isPremium: false,
-          category: 'CareerAnalytics'
+          category: 'analytics'
         },
         {
           id: 'story-library',
@@ -619,9 +649,9 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
           category: 'export'
         },
         {
-          id: 'story-Feedback',
+          id: 'story-feedback',
           name: 'Story Feedback Circle',
-          description: 'Get Feedback on your stories from interview coaches',
+          description: 'Get feedback on your stories from interview coaches',
           isPremium: true,
           category: 'collaboration'
         }
@@ -636,10 +666,10 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
         },
         {
           id: 'conversion-metrics',
-          name: 'Conversion CareerAnalytics',
+          name: 'Conversion Analytics',
           description: 'Track application-to-interview conversion rates',
           isPremium: false,
-          category: 'CareerAnalytics'
+          category: 'analytics'
         },
         {
           id: 'funnel-reports',
@@ -669,7 +699,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
           name: 'Industry Benchmarking',
           description: 'Compare your growth against industry peers',
           isPremium: false,
-          category: 'CareerAnalytics'
+          category: 'analytics'
         },
         {
           id: 'growth-reports',
@@ -692,17 +722,17 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
     const defaultFeatures: Feature[] = [
       {
         id: 'ai-analysis',
-        name: 'Performance Analysis',
+        name: 'AI-Powered Analysis',
         description: `Smart analysis capabilities specifically designed for ${tool.name}`,
         isPremium: false,
         category: 'ai'
       },
       {
         id: 'progress-tracking',
-        name: 'Growth Path',
+        name: 'Progress Tracking',
         description: 'Monitor your improvement and track key metrics over time',
         isPremium: false,
-        category: 'CareerAnalytics'
+        category: 'analytics'
       },
       {
         id: 'export-results',
@@ -816,445 +846,226 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
         </Button>
       </DialogTrigger>
       
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden bg-gradient-to-br from-white/95 via-white/90 to-purple-50/30 backdrop-blur-xl border-2 border-white/20 shadow-2xl rounded-3xl">
-        <DialogHeader className="pb-6">
-          <DialogTitle className="flex items-center gap-4 text-2xl font-semibold">
-            <div className="p-3 bg-gradient-to-br from-purple-100/80 to-blue-100/80 rounded-2xl backdrop-blur-sm border border-white/40 shadow-lg">
+      <DialogContent className="max-w-2xl max-h-[85vh] p-0 overflow-hidden bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 shadow-2xl rounded-2xl flex flex-col">
+        {/* Header */}
+        <DialogHeader className="p-4 sm:p-5 pb-3 border-b border-slate-200/80 dark:border-slate-800/80 bg-slate-50/70 dark:bg-slate-900/60">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60 flex items-center justify-center shadow-2xs shrink-0">
               {tool.icon && React.createElement(tool.icon, { 
-                className: "h-7 w-7 text-purple-600" 
+                className: "h-4.5 w-4.5 stroke-[2.2]" 
               })}
             </div>
-            <div className="flex flex-col">
-              <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                {tool.name}
-              </span>
-              <span className="text-sm font-normal text-slate-600">
-                Benefits & Features Overview
-              </span>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-0.5">
+                <DialogTitle className="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight truncate">
+                  {tool.name}
+                </DialogTitle>
+                <Badge variant="outline" className="border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/50 text-[9px] font-bold uppercase tracking-wider font-mono px-1.5 py-0">
+                  TalentXcel • {tool.category}
+                </Badge>
+              </div>
+              <DialogDescription className="text-xs text-slate-500 dark:text-slate-400 leading-snug font-normal">
+                Powered by TalentXcel AI — Unlock actionable insights designed to advance your career trajectory with {tool.name}.
+              </DialogDescription>
             </div>
-          </DialogTitle>
-          <DialogDescription className="text-base text-slate-700 leading-relaxed">
-            Discover how {tool.name} can accelerate your career growth and maximize your potential
-          </DialogDescription>
+          </div>
         </DialogHeader>
 
-        <div className="overflow-y-auto max-h-[calc(90vh-200px)] pr-2">
-          <Tabs defaultValue="benefits" className="space-y-8">
-            <TabsList className="grid w-full grid-cols-4 bg-white/80 backdrop-blur-sm rounded-2xl p-2 border border-white/40 shadow-lg">
-              <TabsTrigger value="benefits" className="rounded-xl font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-blue-500 data-[state=active]:text-white transition-all duration-300">Benefits</TabsTrigger>
-              <TabsTrigger value="features" className="rounded-xl font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-blue-500 data-[state=active]:text-white transition-all duration-300">Features</TabsTrigger>
-              <TabsTrigger value="stats" className="rounded-xl font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-blue-500 data-[state=active]:text-white transition-all duration-300">Stats</TabsTrigger>
-              <TabsTrigger value="roadmap" className="rounded-xl font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-blue-500 data-[state=active]:text-white transition-all duration-300">Roadmap</TabsTrigger>
+        {/* Scrollable Tabs Body */}
+        <div className="overflow-y-auto p-4 sm:p-5 flex-1 space-y-4">
+          <Tabs defaultValue="benefits" className="space-y-3">
+            <TabsList className="grid w-full grid-cols-4 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-0.5 h-8">
+              <TabsTrigger value="benefits" className="rounded-md font-bold text-[11px] text-slate-600 dark:text-slate-400 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white shadow-2xs transition-all py-1">
+                Benefits
+              </TabsTrigger>
+              <TabsTrigger value="features" className="rounded-md font-bold text-[11px] text-slate-600 dark:text-slate-400 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white shadow-2xs transition-all py-1">
+                Features
+              </TabsTrigger>
+              <TabsTrigger value="stats" className="rounded-md font-bold text-[11px] text-slate-600 dark:text-slate-400 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white shadow-2xs transition-all py-1">
+                Impact Stats
+              </TabsTrigger>
+              <TabsTrigger value="roadmap" className="rounded-md font-bold text-[11px] text-slate-600 dark:text-slate-400 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white shadow-2xs transition-all py-1">
+                Action Plan
+              </TabsTrigger>
             </TabsList>
 
             {/* Benefits Tab */}
-            <TabsContent value="benefits" className="space-y-8 animate-fade-in">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <TabsContent value="benefits" className="space-y-2.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {benefits.map((benefit, index) => (
-                  <Card 
+                  <div 
                     key={benefit.id}
                     className={cn(
-                      "group transition-all duration-500 hover:shadow-2xl cursor-pointer transform hover:-translate-y-2",
-                      "border-2 backdrop-blur-sm",
-                      "hover:scale-105",
-                      benefit.impact === 'high' && "border-l-4 border-l-green-400 bg-gradient-to-br from-green-50/80 to-emerald-50/60 hover:from-green-100/90 hover:to-emerald-100/80",
-                      benefit.impact === 'medium' && "border-l-4 border-l-amber-400 bg-gradient-to-br from-amber-50/80 to-yellow-50/60 hover:from-amber-100/90 hover:to-yellow-100/80",
-                      benefit.impact === 'low' && "border-l-4 border-l-slate-400 bg-gradient-to-br from-slate-50/80 to-gray-50/60 hover:from-slate-100/90 hover:to-gray-100/80"
+                      "rounded-xl p-3.5 transition-all duration-200 border flex flex-col justify-between shadow-2xs hover:shadow-xs",
+                      benefit.impact === 'high' && "bg-emerald-50/70 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/60",
+                      benefit.impact === 'medium' && "bg-amber-50/70 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800/60",
+                      benefit.impact === 'low' && "bg-blue-50/70 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800/60"
                     )}
-                    style={{
-                      animationDelay: `${index * 150}ms`
-                    }}
                   >
-                    <CardHeader className="pb-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-4">
+                    <div>
+                      <div className="flex items-center justify-between gap-2 mb-1.5">
+                        <div className="flex items-center gap-2">
                           <div className={cn(
-                            "p-3 rounded-2xl shadow-lg backdrop-blur-sm transition-all duration-300 group-hover:scale-110",
-                            benefit.impact === 'high' && "bg-gradient-to-br from-green-100/90 to-emerald-100/90 text-green-600 group-hover:shadow-green-200",
-                            benefit.impact === 'medium' && "bg-gradient-to-br from-amber-100/90 to-yellow-100/90 text-amber-600 group-hover:shadow-amber-200",
-                            benefit.impact === 'low' && "bg-gradient-to-br from-slate-100/90 to-gray-100/90 text-slate-600 group-hover:shadow-slate-200"
+                            "p-1.5 rounded-lg border font-bold",
+                            benefit.impact === 'high' && "bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 border-emerald-300 dark:border-emerald-700",
+                            benefit.impact === 'medium' && "bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200 border-amber-300 dark:border-amber-700",
+                            benefit.impact === 'low' && "bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-200 border-blue-300 dark:border-blue-700"
                           )}>
-                            {React.createElement(benefit.icon, { className: "h-6 w-6" })}
+                            {React.createElement(benefit.icon, { className: "h-3.5 w-3.5" })}
                           </div>
-                          <div>
-                            <CardTitle className="text-lg font-semibold">{benefit.title}</CardTitle>
-                            <Badge 
-                              variant="outline" 
-                              className={cn(
-                                "text-xs mt-2 capitalize font-medium border-2 backdrop-blur-sm",
-                                benefit.impact === 'high' && "border-green-400/60 text-green-700 bg-green-50/80",
-                                benefit.impact === 'medium' && "border-amber-400/60 text-amber-700 bg-amber-50/80",
-                                benefit.impact === 'low' && "border-slate-400/60 text-slate-700 bg-slate-50/80"
-                              )}
-                            >
-                              {benefit.impact} impact
-                            </Badge>
-                          </div>
+                          <h4 className={cn(
+                            "font-bold text-xs sm:text-sm tracking-tight",
+                            benefit.impact === 'high' && "text-emerald-950 dark:text-emerald-100",
+                            benefit.impact === 'medium' && "text-amber-950 dark:text-amber-100",
+                            benefit.impact === 'low' && "text-blue-950 dark:text-blue-100"
+                          )}>
+                            {benefit.title}
+                          </h4>
                         </div>
+                        <Badge 
+                          variant="outline" 
+                          className={cn(
+                            "text-[9px] font-bold uppercase tracking-wide px-1.5 py-0 border",
+                            benefit.impact === 'high' && "border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-200 bg-emerald-100/90 dark:bg-emerald-900/80",
+                            benefit.impact === 'medium' && "border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-200 bg-amber-100/90 dark:bg-amber-900/80",
+                            benefit.impact === 'low' && "border-blue-300 dark:border-blue-700 text-blue-800 dark:text-blue-200 bg-blue-100/90 dark:bg-blue-900/80"
+                          )}
+                        >
+                          {benefit.impact} impact
+                        </Badge>
                       </div>
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      <CardDescription className="text-sm leading-relaxed text-slate-700 font-medium">
+                      <p className={cn(
+                        "text-xs font-normal leading-snug mt-1",
+                        benefit.impact === 'high' && "text-emerald-900/90 dark:text-emerald-200",
+                        benefit.impact === 'medium' && "text-amber-900/90 dark:text-amber-200",
+                        benefit.impact === 'low' && "text-blue-900/90 dark:text-blue-200"
+                      )}>
                         {benefit.description}
-                      </CardDescription>
-                    </CardContent>
-                  </Card>
+                      </p>
+                    </div>
+                  </div>
                 ))}
               </div>
             </TabsContent>
 
-          {/* Features Tab */}
-          <TabsContent value="features" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold flex items-center gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-green-600" />
-                  Free Features
-                </h3>
-                {features.filter(f => !f.isPremium).map((feature) => (
-                  <Card key={feature.id} className="bg-green-50/50 border-green-200">
-                    <CardContent className="p-4">
-                      <div className="flex items-start gap-3">
-                        <div className="p-2 bg-green-100 rounded-lg">
-                          {feature.category === 'ai' && <Brain className="h-4 w-4 text-green-600" />}
-                          {feature.category === 'CareerAnalytics' && <BarChart3 className="h-4 w-4 text-green-600" />}
-                          {feature.category === 'export' && <ArrowRight className="h-4 w-4 text-green-600" />}
-                          {feature.category === 'collaboration' && <Users className="h-4 w-4 text-green-600" />}
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-medium text-green-900">{feature.name}</h4>
-                          <p className="text-sm text-green-700 mt-1">{feature.description}</p>
-                        </div>
+            {/* Features Tab */}
+            <TabsContent value="features" className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <h4 className="text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                    Standard Features
+                  </h4>
+                  {features.filter(f => !f.isPremium).map((feature) => (
+                    <div key={feature.id} className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-start gap-2 shadow-2xs">
+                      <div className="p-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 mt-0.5 shrink-0">
+                        <Sparkles className="h-3 w-3" />
                       </div>
-                    </CardContent>
-                  </Card>
+                      <div>
+                        <h5 className="font-bold text-xs text-slate-900 dark:text-white">{feature.name}</h5>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">{feature.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="space-y-2">
+                  <h4 className="text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                    <Crown className="h-3.5 w-3.5 text-amber-500" />
+                    Advanced AI Capabilities
+                  </h4>
+                  {features.filter(f => f.isPremium).map((feature) => (
+                    <div key={feature.id} className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-start gap-2 shadow-2xs">
+                      <div className="p-1.5 rounded-lg bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 mt-0.5 shrink-0">
+                        <Brain className="h-3 w-3" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <h5 className="font-bold text-xs text-slate-900 dark:text-white">{feature.name}</h5>
+                          <Badge className="bg-amber-500 text-white font-extrabold text-[8px] px-1 py-0 uppercase">Pro</Badge>
+                        </div>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">{feature.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* Stats Tab */}
+            <TabsContent value="stats" className="space-y-4">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center shadow-2xs">
+                  <Clock className="h-4.5 w-4.5 text-blue-600 dark:text-blue-400 mx-auto mb-1" />
+                  <div className="text-lg font-black text-slate-900 dark:text-white">{stats.avgTimeReduction}</div>
+                  <div className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">Time Saved</div>
+                </div>
+                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center shadow-2xs">
+                  <Target className="h-4.5 w-4.5 text-emerald-600 dark:text-emerald-400 mx-auto mb-1" />
+                  <div className="text-lg font-black text-slate-900 dark:text-white">{stats.accuracyImprovement}</div>
+                  <div className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">Accuracy</div>
+                </div>
+                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center shadow-2xs">
+                  <Star className="h-4.5 w-4.5 text-amber-500 mx-auto mb-1" />
+                  <div className="text-lg font-black text-slate-900 dark:text-white">{stats.userSatisfaction}</div>
+                  <div className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">Satisfaction</div>
+                </div>
+                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center shadow-2xs">
+                  <TrendingUp className="h-4.5 w-4.5 text-purple-600 dark:text-purple-400 mx-auto mb-1" />
+                  <div className="text-lg font-black text-slate-900 dark:text-white">{stats.careerAdvancement}</div>
+                  <div className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">Career Growth</div>
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* Roadmap Tab */}
+            <TabsContent value="roadmap" className="space-y-2.5">
+              <div className="space-y-2">
+                {[
+                  { step: 1, title: 'Input & Profile Analysis', desc: 'Synthesizes your experience, target criteria, and skill profile.', time: '2 mins' },
+                  { step: 2, title: 'AI Evaluation & Alignment', desc: 'Runs deep semantic models against benchmark market parameters.', time: 'Instant' },
+                  { step: 3, title: 'Actionable Roadmap Output', desc: 'Generates tailored strategy recommendations and verified steps.', time: 'Instant' },
+                  { step: 4, title: 'Continuous Career Iteration', desc: 'Track progress, re-evaluate metrics, and refine your trajectory.', time: 'Ongoing' }
+                ].map((item) => (
+                  <div key={item.step} className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3 shadow-2xs">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-6 h-6 rounded-lg bg-indigo-600 text-white font-bold text-[10px] flex items-center justify-center shrink-0 shadow-2xs">
+                        {item.step}
+                      </div>
+                      <div className="min-w-0">
+                        <h5 className="font-bold text-xs text-slate-900 dark:text-white truncate">{item.title}</h5>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-snug truncate">{item.desc}</p>
+                      </div>
+                    </div>
+                    <Badge variant="outline" className="border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-[9px] font-medium shrink-0 px-1.5 py-0">
+                      {item.time}
+                    </Badge>
+                  </div>
                 ))}
               </div>
+            </TabsContent>
+          </Tabs>
+        </div>
 
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-purple-600" />
-                  Premium Features
-                </h3>
-                {features.filter(f => f.isPremium).map((feature) => (
-                  <Card key={feature.id} className="bg-gradient-to-br from-purple-50 to-blue-50 border-purple-200">
-                    <CardContent className="p-4">
-                      <div className="flex items-start gap-3">
-                        <div className="p-2 bg-purple-100 rounded-lg">
-                          {feature.category === 'ai' && <Brain className="h-4 w-4 text-purple-600" />}
-                          {feature.category === 'CareerAnalytics' && <BarChart3 className="h-4 w-4 text-purple-600" />}
-                          {feature.category === 'export' && <ArrowRight className="h-4 w-4 text-purple-600" />}
-                          {feature.category === 'collaboration' && <Users className="h-4 w-4 text-purple-600" />}
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <h4 className="font-medium text-purple-900">{feature.name}</h4>
-                            <Badge className="bg-gradient-to-r from-purple-600 to-blue-600 text-white text-xs">
-                              Pro
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-purple-700 mt-1">{feature.description}</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+        {/* Apple-grade High-Contrast Bottom Launch Footer */}
+        <div className="p-3.5 sm:p-4 px-5 border-t border-slate-200/90 dark:border-slate-800/90 bg-slate-50/90 dark:bg-slate-900/90 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="space-y-0.5 text-center sm:text-left">
+            <div className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white tracking-tight">
+              Ready to launch {tool.name}?
             </div>
-          </TabsContent>
-
-          {/* Stats Tab */}
-          <TabsContent value="stats" className="space-y-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              <Card className="text-center bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200">
-                <CardContent className="p-6">
-                  <Clock className="h-8 w-8 text-blue-600 mx-auto mb-3" />
-                  <div className="text-2xl font-bold text-blue-900 mb-1">
-                    {stats.avgTimeReduction}
-                  </div>
-                  <div className="text-sm text-blue-700">Time Reduction</div>
-                </CardContent>
-              </Card>
-
-              <Card className="text-center bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
-                <CardContent className="p-6">
-                  <Target className="h-8 w-8 text-green-600 mx-auto mb-3" />
-                  <div className="text-2xl font-bold text-green-900 mb-1">
-                    {stats.accuracyImprovement}
-                  </div>
-                  <div className="text-sm text-green-700">Accuracy</div>
-                </CardContent>
-              </Card>
-
-              <Card className="text-center bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-200">
-                <CardContent className="p-6">
-                  <Star className="h-8 w-8 text-yellow-600 mx-auto mb-3" />
-                  <div className="text-2xl font-bold text-yellow-900 mb-1">
-                    {stats.userSatisfaction}
-                  </div>
-                  <div className="text-sm text-yellow-700">User Rating</div>
-                </CardContent>
-              </Card>
-
-              <Card className="text-center bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200">
-                <CardContent className="p-6">
-                  <TrendingUp className="h-8 w-8 text-purple-600 mx-auto mb-3" />
-                  <div className="text-2xl font-bold text-purple-900 mb-1">
-                    {stats.careerAdvancement}
-                  </div>
-                  <div className="text-sm text-purple-700">Career Growth</div>
-                </CardContent>
-              </Card>
+            <div className="text-[11px] text-slate-500 dark:text-slate-400 font-normal">
+              TalentXcel Intelligence • Instant recommendations tailored to your career milestones.
             </div>
-
-            {/* Usage Trends */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Success Stories</CardTitle>
-                <CardDescription>Real outcomes from tool users</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-4 p-4 bg-green-50 rounded-xl">
-                    <Award className="h-6 w-6 text-green-600" />
-                    <div>
-                      <div className="font-medium">Sarah M. - Software Engineer</div>
-                      <div className="text-sm text-green-700">
-                        "Landed 3 interviews in 2 weeks after using this tool. The Intelligence Metrics were game-changing!"
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-4 p-4 bg-blue-50 rounded-xl">
-                    <TrendingUp className="h-6 w-6 text-blue-600" />
-                    <div>
-                      <div className="font-medium">Mike R. - Product Manager</div>
-                      <div className="text-sm text-blue-700">
-                        "Got promoted 6 months earlier than expected. The skill gap analysis was spot-on!"
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-4 p-4 bg-purple-50 rounded-xl">
-                    <Star className="h-6 w-6 text-purple-600" />
-                    <div>
-                      <div className="font-medium">Lisa K. - Marketing Director</div>
-                      <div className="text-sm text-purple-700">
-                        "Increased my market value by 40%. The personalized recommendations were incredible!"
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Roadmap Tab */}
-          <TabsContent value="roadmap" className="space-y-8 animate-fade-in">
-            <Card className="bg-gradient-to-br from-white/80 to-purple-50/40 backdrop-blur-sm border-2 border-white/40 shadow-xl rounded-3xl">
-              <CardHeader>
-                <CardTitle className="text-xl bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                  Your Career Journey with {tool.name}
-                </CardTitle>
-                <CardDescription className="text-base text-slate-700">
-                  Here's how this tool fits into your career advancement strategy
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-8">
-                  {(() => {
-                    // Tool-specific roadmap steps
-                    const toolRoadmaps: Record<string, any[]> = {
-                      'role-fit-evaluator': [
-                        {
-                          step: 1,
-                          title: "Skills & Goals Assessment",
-                          description: "Comprehensive analysis of your current skills and career aspirations",
-                          duration: "8-12 minutes",
-                          color: "emerald"
-                        },
-                        {
-                          step: 2,
-                          title: "AI Role Matching",
-                          description: "Advanced algorithms match you with compatible roles and opportunities",
-                          duration: "Instant",
-                          color: "blue"
-                        },
-                        {
-                          step: 3,
-                          title: "Gap Analysis & Strategy",
-                          description: "Identify skill gaps and create targeted development plan",
-                          duration: "1-2 weeks",
-                          color: "purple"
-                        },
-                        {
-                          step: 4,
-                          title: "Implementation & Tracking",
-                          description: "Execute your career plan with continuous progress monitoring",
-                          duration: "Ongoing",
-                          color: "amber"
-                        }
-                      ],
-                      'mock-interview-simulator': [
-                        {
-                          step: 1,
-                          title: "Interview Preparation",
-                          description: "Set up your interview type, role, and difficulty preferences",
-                          duration: "3-5 minutes",
-                          color: "emerald"
-                        },
-                        {
-                          step: 2,
-                          title: "AI Interview Simulation",
-                          description: "Practice with realistic AI interviewer in your target role scenario",
-                          duration: "15-30 minutes",
-                          color: "blue"
-                        },
-                        {
-                          step: 3,
-                          title: "Performance Analysis",
-                          description: "Receive detailed Feedback on answers, confidence, and presentation",
-                          duration: "5-10 minutes",
-                          color: "purple"
-                        },
-                        {
-                          step: 4,
-                          title: "Skill Improvement",
-                          description: "Implement Feedback and track improvement across practice sessions",
-                          duration: "Ongoing",
-                          color: "amber"
-                        }
-                      ],
-                      'resume-performance-insights': [
-                        {
-                          step: 1,
-                          title: "Resume Upload & Scan",
-                          description: "Upload your resume for comprehensive Performance analysis",
-                          duration: "2-3 minutes",
-                          color: "emerald"
-                        },
-                        {
-                          step: 2,
-                          title: "ATS & Performance Analysis",
-                          description: "Deep analysis of ATS compatibility and market performance",
-                          duration: "Instant",
-                          color: "blue"
-                        },
-                        {
-                          step: 3,
-                          title: "Optimization Implementation",
-                          description: "Apply Career Moves to optimize your resume",
-                          duration: "1-2 hours",
-                          color: "purple"
-                        },
-                        {
-                          step: 4,
-                          title: "Performance Monitoring",
-                          description: "Track application success rates and iterate based on results",
-                          duration: "Ongoing",
-                          color: "amber"
-                        }
-                      ]
-                    };
-
-                    const defaultRoadmap = [
-                      {
-                        step: 1,
-                        title: "Assessment & Analysis",
-                        description: "Complete comprehensive analysis of your current position",
-                        duration: "5-10 minutes",
-                        color: "emerald"
-                      },
-                      {
-                        step: 2,
-                        title: "Performance Insights",
-                        description: "Receive personalized recommendations and action items",
-                        duration: "Instant",
-                        color: "blue"
-                      },
-                      {
-                        step: 3,
-                        title: "Implementation",
-                        description: "Apply insights to your career strategy and materials",
-                        duration: "1-2 weeks",
-                        color: "purple"
-                      },
-                      {
-                        step: 4,
-                        title: "Track Progress",
-                        description: "Monitor improvements and iterate based on results",
-                        duration: "Ongoing",
-                        color: "amber"
-                      }
-                    ];
-
-                    return (toolRoadmaps[tool.slug] || defaultRoadmap).map((step, index) => (
-                    <div key={step.step} className="flex items-start gap-6 group">
-                      <div className={cn(
-                        "flex-shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center text-white font-bold text-lg shadow-lg backdrop-blur-sm transition-all duration-300 group-hover:scale-110",
-                        step.color === "emerald" && "bg-gradient-to-br from-emerald-500 to-green-500 group-hover:shadow-emerald-200",
-                        step.color === "blue" && "bg-gradient-to-br from-blue-500 to-cyan-500 group-hover:shadow-blue-200",
-                        step.color === "purple" && "bg-gradient-to-br from-purple-500 to-violet-500 group-hover:shadow-purple-200",
-                        step.color === "amber" && "bg-gradient-to-br from-amber-500 to-orange-500 group-hover:shadow-amber-200"
-                      )}>
-                        {step.step}
-                      </div>
-                      <div className="flex-1 pb-8">
-                        <div className="flex items-center justify-between mb-3">
-                          <h4 className="font-semibold text-lg text-slate-800">{step.title}</h4>
-                          <Badge 
-                            variant="outline" 
-                            className={cn(
-                              "text-sm font-medium border-2 backdrop-blur-sm",
-                              step.color === "emerald" && "border-emerald-400/60 text-emerald-700 bg-emerald-50/80",
-                              step.color === "blue" && "border-blue-400/60 text-blue-700 bg-blue-50/80",
-                              step.color === "purple" && "border-purple-400/60 text-purple-700 bg-purple-50/80",
-                              step.color === "amber" && "border-amber-400/60 text-amber-700 bg-amber-50/80"
-                            )}
-                          >
-                            {step.duration}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-slate-600 leading-relaxed font-medium">
-                          {step.description}
-                        </p>
-                        {index < 3 && (
-                          <div className="mt-4 w-full h-0.5 bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 rounded-full opacity-30"></div>
-                        )}
-                      </div>
-                    </div>
-                  ));
-                  })()}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-
-        {/* CTA Section */}
-        <div className="flex items-center justify-between p-8 bg-gradient-to-r from-purple-50/80 via-blue-50/80 to-purple-50/80 rounded-3xl border-2 border-white/40 backdrop-blur-sm shadow-xl">
-          <div>
-            <h4 className="font-semibold text-xl bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-              Ready to accelerate your career?
-            </h4>
-            <p className="text-sm text-slate-600 mt-1">
-              Join thousands of professionals already using {tool.name}
-            </p>
           </div>
           <Button 
-            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-2xl px-8 py-6 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-            onClick={() => handleOpenChange(false)}
+            className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-5 py-2 text-xs font-bold shadow-xs hover:shadow-indigo-500/25 flex items-center justify-center gap-1.5 shrink-0 transition-all hover:scale-[1.02] h-9"
+            onClick={handleLaunchTool}
           >
-            Start Using Tool
-            <ArrowRight className="ml-3 h-5 w-5" />
+            Launch {tool.name} Now
+            <ArrowRight className="h-3.5 w-3.5" />
           </Button>
-        </div>
         </div>
       </DialogContent>
     </Dialog>
   );
 };
-
-
-
-

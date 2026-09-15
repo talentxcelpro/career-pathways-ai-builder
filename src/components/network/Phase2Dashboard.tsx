@@ -15,7 +15,7 @@ import {
   Target
 } from 'lucide-react';
 
-export default function Phase2CommandCenter() {
+export default function Phase2Dashboard() {
   const [isOptimizing, setIsOptimizing] = useState(false);
 
   const handleOptimizeProcessing = async () => {
@@ -269,4 +269,3 @@ export default function Phase2CommandCenter() {
     </div>
   );
 }
-

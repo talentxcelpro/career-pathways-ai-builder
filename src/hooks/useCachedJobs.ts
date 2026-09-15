@@ -31,13 +31,10 @@ export function useCachedJobs(filters: JobFilters = {}) {
     // Fetch from Supabase if not cached
     let query = supabase
       .from('jobs')
-      .select(`
-        *,
-        companies(name, logo_url, industry, is_verified)
-      `)
+      .select('*', { count: 'exact' })
       .eq('is_active', true)
       .eq('job_status', 'open')
-      .gt('expires_at', new Date().toISOString());
+      .eq('status', 'active');
 
     // Apply filters
     if (filters.search) {
@@ -105,9 +102,19 @@ export function useCachedJobs(filters: JobFilters = {}) {
 
     if (error) throw error;
 
+    const normalizedJobs = (data || []).map(job => ({
+      ...job,
+      companies: {
+        name: job.company_name || 'TalentXcel Services (Client Partner)',
+        logo_url: job.organization_logo_url || '/talentxcel-official-logo.png',
+        industry: job.industry || 'Technology & Enterprise Services',
+        is_verified: true
+      }
+    }));
+
     const result = {
-      jobs: data || [],
-      total: count || 0,
+      jobs: normalizedJobs,
+      total: count || normalizedJobs.length,
       page,
       limit,
       hasMore: (count || 0) > page * limit

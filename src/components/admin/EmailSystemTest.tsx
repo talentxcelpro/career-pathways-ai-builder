@@ -211,7 +211,7 @@ const EmailSystemTest: React.FC = () => {
             <li>• <strong>Process Queue</strong> - Processes pending emails in queue</li>
             <li>• <strong>SES Health Check</strong> - Tests profile completion template</li>
             <li>• Check your inbox AND spam folder after testing</li>
-            <li>• Monitor AWS SES CommandCenter for delivery statistics</li>
+            <li>• Monitor AWS SES dashboard for delivery statistics</li>
           </ul>
         </div>
       </CardContent>
@@ -220,4 +220,3 @@ const EmailSystemTest: React.FC = () => {
 };
 
 export default EmailSystemTest;
-

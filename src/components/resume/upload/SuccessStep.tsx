@@ -52,7 +52,7 @@ export const SuccessStep: React.FC<SuccessStepProps> = ({ onComplete, resumeData
       if (error) throw error;
 
       toast.success('Resume saved successfully!', {
-        description: 'You can find it in your resume CommandCenter'
+        description: 'You can find it in your resume dashboard'
       });
     } catch (error: any) {
       console.error('Save error:', error);
@@ -307,7 +307,7 @@ export const SuccessStep: React.FC<SuccessStepProps> = ({ onComplete, resumeData
         <CardContent className="p-6">
           <h3 className="font-semibold text-purple-900 mb-4 flex items-center">
             <Star className="h-5 w-5 text-purple-600 mr-2" />
-            Performance Features Available
+            AI-Powered Features Available
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
             <div className="flex items-center space-x-2">
@@ -332,5 +332,3 @@ export const SuccessStep: React.FC<SuccessStepProps> = ({ onComplete, resumeData
     </div>
   );
 };
-
-

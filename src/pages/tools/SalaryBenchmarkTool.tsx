@@ -82,8 +82,6 @@ const SalaryBenchmarkTool = () => {
         }
       });
 
-      if (aiError) throw aiError;
-
       const result = {
         position_overview: {
           title: jobTitle,

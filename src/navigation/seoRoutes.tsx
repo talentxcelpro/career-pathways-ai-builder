@@ -1,4 +1,5 @@
-import { lazy } from "react";
+
+import { lazy, Suspense } from "react";
 import { Briefcase, MapPin, GraduationCap, Building, Code, DollarSign, Users, FileText } from "lucide-react";
 
 const JobsByLocation = lazy(() => import("../pages/seo/JobsByLocation"));
@@ -11,6 +12,9 @@ const SalaryGuidePage = lazy(() => import("../pages/seo/SalaryGuidePage"));
 const IndustryJobs = lazy(() => import("../pages/seo/IndustryJobs"));
 const ComprehensiveSEOGenerator = lazy(() => import("../components/seo/ComprehensiveSEOGenerator").then(m => ({ default: m.ComprehensiveSEOGenerator })));
 
+const S = ({ children }: { children: React.ReactNode }) => (
+  <Suspense fallback={null}>{children}</Suspense>
+);
 
 export const seoRoutes = [
   // Location-based job pages
@@ -18,7 +22,7 @@ export const seoRoutes = [
     title: "Jobs by Location",
     to: "/jobs/location/:location",
     icon: <MapPin className="h-4 w-4" />,
-    page: <JobsByLocation />,
+    page: <S><JobsByLocation /></S>,
   },
   
   // Role-based job pages
@@ -26,7 +30,7 @@ export const seoRoutes = [
     title: "Jobs by Role",
     to: "/jobs/role/:role",
     icon: <Briefcase className="h-4 w-4" />,
-    page: <JobsByRole />,
+    page: <S><JobsByRole /></S>,
   },
 
   // Skill-based job pages
@@ -34,7 +38,7 @@ export const seoRoutes = [
     title: "Jobs by Skill",
     to: "/jobs/skill/:skill",
     icon: <Code className="h-4 w-4" />,
-    page: <JobsBySkill />,
+    page: <S><JobsBySkill /></S>,
   },
   
   // Course category pages
@@ -42,7 +46,7 @@ export const seoRoutes = [
     title: "Courses by Category",
     to: "/courses/category/:category",
     icon: <GraduationCap className="h-4 w-4" />,
-    page: <CoursesByCategory />,
+    page: <S><CoursesByCategory /></S>,
   },
 
   // Companies by location
@@ -50,7 +54,7 @@ export const seoRoutes = [
     title: "Companies by Location",
     to: "/companies/location/:location",
     icon: <Building className="h-4 w-4" />,
-    page: <CompaniesByLocation />,
+    page: <S><CompaniesByLocation /></S>,
   },
 
   // Salary guides
@@ -58,7 +62,7 @@ export const seoRoutes = [
     title: "Salary Guide",
     to: "/salary/:role",
     icon: <DollarSign className="h-4 w-4" />,
-    page: <SalaryGuide />,
+    page: <S><SalaryGuide /></S>,
   },
   
   // Advanced salary guides with location
@@ -66,7 +70,7 @@ export const seoRoutes = [
     title: "Salary Guide by Location",
     to: "/salary/:role/:location",
     icon: <DollarSign className="h-4 w-4" />,
-    page: <SalaryGuidePage />,
+    page: <S><SalaryGuidePage /></S>,
   },
   
   // Industry-based job pages
@@ -74,7 +78,7 @@ export const seoRoutes = [
     title: "Jobs by Industry",
     to: "/industry/:industry",
     icon: <Building className="h-4 w-4" />,
-    page: <IndustryJobs />,
+    page: <S><IndustryJobs /></S>,
   },
   
   // Combined job pages (role + location)
@@ -82,7 +86,7 @@ export const seoRoutes = [
     title: "Jobs by Role and Location",
     to: "/jobs/:role/in/:location",
     icon: <Briefcase className="h-4 w-4" />,
-    page: <JobsByRole />,
+    page: <S><JobsByRole /></S>,
   },
   
   // Skill-based jobs by location
@@ -90,7 +94,7 @@ export const seoRoutes = [
     title: "Skill Jobs by Location",
     to: "/jobs/:skill/jobs/in/:location",
     icon: <Code className="h-4 w-4" />,
-    page: <JobsBySkill />,
+    page: <S><JobsBySkill /></S>,
   },
 
   // User/Profile SEO Pages
@@ -187,19 +191,5 @@ export const seoRoutes = [
     to: "/training/category/:category",
     icon: <GraduationCap className="h-4 w-4" />,
     page: <ComprehensiveSEOGenerator pageType="category" />,
-  },
-
-  // Tool and resource pages
-  {
-    title: "Career Tools",
-    to: "/tools/:tool",
-    icon: <Code className="h-4 w-4" />,
-    page: <ComprehensiveSEOGenerator pageType="tool" />,
-  },
-  {
-    title: "Career Resources",
-    to: "/resources/:tool",
-    icon: <Code className="h-4 w-4" />,
-    page: <ComprehensiveSEOGenerator pageType="tool" />,
   },
 ];

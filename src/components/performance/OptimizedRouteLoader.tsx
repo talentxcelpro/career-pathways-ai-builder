@@ -37,7 +37,7 @@ export const MinimalLoader: React.FC = () => (
 );
 
 // Page-specific loading skeletons
-export const CommandCenterLoader: React.FC = () => (
+export const DashboardLoader: React.FC = () => (
   <div className="container mx-auto px-4 py-8 space-y-6">
     <Skeleton className="h-16 w-full" />
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -77,5 +77,3 @@ export const ProfileLoader: React.FC = () => (
     <Skeleton className="h-64 w-full" />
   </div>
 );
-
-

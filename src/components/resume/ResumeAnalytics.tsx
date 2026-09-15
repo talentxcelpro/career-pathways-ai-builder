@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface CareerAnalyticsData {
+interface AnalyticsData {
   views: number;
   downloads: number;
   applications: number;
@@ -21,18 +21,18 @@ interface CareerAnalyticsData {
   improvementSuggestions: string[];
 }
 
-interface ResumeCareerAnalyticsProps {
+interface ResumeAnalyticsProps {
   resumeId?: string;
   isLive?: boolean;
   className?: string;
 }
 
-export const ResumeCareerAnalytics: React.FC<ResumeCareerAnalyticsProps> = ({
+export const ResumeAnalytics: React.FC<ResumeAnalyticsProps> = ({
   resumeId,
   isLive = false,
   className
 }) => {
-  const [CareerAnalytics, setCareerAnalytics] = useState<CareerAnalyticsData>({
+  const [analytics, setAnalytics] = useState<AnalyticsData>({
     views: 247,
     downloads: 89,
     applications: 12,
@@ -52,28 +52,28 @@ export const ResumeCareerAnalytics: React.FC<ResumeCareerAnalyticsProps> = ({
   const performanceMetrics = [
     {
       label: 'Profile Views',
-      value: CareerAnalytics.views,
+      value: analytics.views,
       change: +23,
       icon: <Eye className="h-4 w-4" />,
       color: 'text-blue-600'
     },
     {
       label: 'Downloads',
-      value: CareerAnalytics.downloads,
+      value: analytics.downloads,
       change: +15,
       icon: <Download className="h-4 w-4" />,
       color: 'text-green-600'
     },
     {
       label: 'Applications',
-      value: CareerAnalytics.applications,
+      value: analytics.applications,
       change: +8,
       icon: <Briefcase className="h-4 w-4" />,
       color: 'text-purple-600'
     },
     {
       label: 'Response Rate',
-      value: `${CareerAnalytics.responseRate}%`,
+      value: `${analytics.responseRate}%`,
       change: +12,
       icon: <Target className="h-4 w-4" />,
       color: 'text-orange-600'
@@ -126,15 +126,15 @@ export const ResumeCareerAnalytics: React.FC<ResumeCareerAnalyticsProps> = ({
             <div className="space-y-4">
               <div className="text-center">
                 <div className="text-4xl font-bold text-blue-600 mb-2">
-                  {CareerAnalytics.atsScore}%
+                  {analytics.atsScore}%
                 </div>
-                <Progress value={CareerAnalytics.atsScore} className="h-3" />
+                <Progress value={analytics.atsScore} className="h-3" />
                 <p className="text-sm text-muted-foreground mt-2">
                   Excellent ATS compatibility
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
-                {CareerAnalytics.topKeywords.map((keyword) => (
+                {analytics.topKeywords.map((keyword) => (
                   <Badge key={keyword} variant="secondary" className="bg-blue-100 text-blue-700">
                     {keyword}
                   </Badge>
@@ -155,9 +155,9 @@ export const ResumeCareerAnalytics: React.FC<ResumeCareerAnalyticsProps> = ({
             <div className="space-y-4">
               <div className="text-center">
                 <div className="text-4xl font-bold text-purple-600 mb-2">
-                  Top {CareerAnalytics.industryRanking}%
+                  Top {analytics.industryRanking}%
                 </div>
-                <Progress value={CareerAnalytics.industryRanking} className="h-3" />
+                <Progress value={analytics.industryRanking} className="h-3" />
                 <p className="text-sm text-muted-foreground mt-2">
                   Better than 85% of profiles in your field
                 </p>
@@ -218,7 +218,7 @@ export const ResumeCareerAnalytics: React.FC<ResumeCareerAnalyticsProps> = ({
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {CareerAnalytics.improvementSuggestions.map((suggestion, index) => (
+            {analytics.improvementSuggestions.map((suggestion, index) => (
               <div key={index} className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
                 <div className="h-6 w-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
                   {index + 1}
@@ -237,6 +237,3 @@ export const ResumeCareerAnalytics: React.FC<ResumeCareerAnalyticsProps> = ({
     </div>
   );
 };
-
-
-

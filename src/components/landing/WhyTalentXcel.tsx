@@ -19,7 +19,7 @@ const features = [
   },
   {
     icon: BookOpen,
-    title: 'Performance Learning Hub',
+    title: 'AI-Powered Learning Hub',
     description: 'Upskill with courses designed for your career trajectory',
     color: 'from-green-500 to-emerald-500',
     link: '/learning'
@@ -33,7 +33,7 @@ const features = [
   },
   {
     icon: TrendingUp,
-    title: 'Career CareerAnalytics',
+    title: 'Career Analytics',
     description: 'Track your progress with detailed insights and metrics',
     color: 'from-indigo-500 to-purple-500',
     link: '/tools'
@@ -120,6 +120,3 @@ export const WhyTalentXcel = () => {
     </section>
   );
 };
-
-
-

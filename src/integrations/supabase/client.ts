@@ -9,43 +9,18 @@ const { url: SUPABASE_URL, anonKey: SUPABASE_PUBLISHABLE_KEY } = getSupabaseConf
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-import { Preferences } from '@capacitor/preferences';
-import { Capacitor } from '@capacitor/core';
-
-const isNative = Capacitor.isNativePlatform();
-
-// Custom storage adapter for Capacitor to ensure native session persistence
-const capacitorStorage = {
-  getItem: async (key: string) => {
-    if (!isNative) {
-      return window.localStorage.getItem(key);
-    }
-    const { value } = await Preferences.get({ key });
-    return value;
-  },
-  setItem: async (key: string, value: string) => {
-    if (!isNative) {
-      window.localStorage.setItem(key, value);
-      return;
-    }
-    await Preferences.set({ key, value });
-  },
-  removeItem: async (key: string) => {
-    if (!isNative) {
-      window.localStorage.removeItem(key);
-      return;
-    }
-    await Preferences.remove({ key });
-  },
-};
-
 export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
-    storage: capacitorStorage as any,
+    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
     persistSession: true,
     autoRefreshToken: true,
-    detectSessionInUrl: !isNative,
+    detectSessionInUrl: true,
     flowType: 'pkce'
+  },
+  global: {
+    headers: {
+      'cache-control': 'no-cache'
+    }
   },
   // Add retry configuration for better reliability
   db: {
@@ -56,7 +31,7 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
     params: {
       eventsPerSecond: 10
     },
-    // Add error handling for realtime TalentNetwork
+    // Add error handling for realtime connections
     heartbeatIntervalMs: 30000,
     reconnectAfterMs: (tries: number) => {
       return Math.min(tries * 1000, 30000);
@@ -76,16 +51,19 @@ export const getSupabaseFunctions = () => {
       SUPABASE_PUBLISHABLE_KEY,
       {
         auth: {
-          storage: capacitorStorage as any,
+          storage: typeof window !== 'undefined' ? window.localStorage : undefined,
           persistSession: true,
           autoRefreshToken: true,
           detectSessionInUrl: false, // Prevent duplicate session detection
           flowType: 'pkce'
+        },
+        global: {
+          headers: {
+            'cache-control': 'no-cache'
+          }
         },
       }
     );
   }
   return supabaseFunctionsInstance;
 };
-
-

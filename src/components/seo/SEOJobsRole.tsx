@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { useParams } from 'react-router-dom';
-import Jobs from '@/pages/Jobs';
 import { SEOHead } from './SEOHead';
 import { InternalLinks } from './InternalLinks';
+
+const Jobs = lazy(() => import('@/pages/Jobs'));
 
 export const SEOJobsRole = () => {
   const { role } = useParams();
@@ -16,7 +17,9 @@ export const SEOJobsRole = () => {
         keywords={[`${role} jobs`, `${formattedRole} careers`, `${role} opportunities`, `${formattedRole} hiring`, `${role} positions`]}
         canonical={`https://talentxcel.in/jobs/role/${role}`}
       />
-      <Jobs />
+      <Suspense fallback={null}>
+        <Jobs />
+      </Suspense>
       <InternalLinks currentPage={`/jobs/role/${role}`} />
     </>
   );

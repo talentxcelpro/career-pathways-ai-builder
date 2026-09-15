@@ -1,16 +1,9 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.1";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
-
-const json = (body: Record<string, unknown>, status = 200) =>
-  new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-  });
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -18,25 +11,20 @@ serve(async (req) => {
   }
 
   try {
-    const authHeader = req.headers.get('Authorization') ?? '';
+    // Get the JWT token from Authorization header
+    const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      return json({ error: 'Authorization required' }, 401);
+      throw new Error('No authorization header');
     }
 
-    const supabaseUrl = Deno.env.get('SUPABASE_URL');
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
-    if (!supabaseUrl || !supabaseAnonKey) {
-      return json({ error: 'Supabase auth config not configured' }, 500);
-    }
-
-    const authClient = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } },
-      auth: { persistSession: false },
-    });
-
-    const { data: { user }, error: userError } = await authClient.auth.getUser();
-    if (userError || !user?.id) {
-      return json({ error: 'Invalid authorization token' }, 401);
+    const token = authHeader.replace('Bearer ', '');
+    
+    // Verify JWT and extract user info (simplified for now)
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const userId = payload.sub;
+    
+    if (!userId) {
+      throw new Error('Invalid token');
     }
 
     const { message, serviceType, conversationId } = await req.json();
@@ -69,24 +57,7 @@ serve(async (req) => {
       
       skill_development: `You are a learning and development specialist who helps professionals identify 
         and develop relevant skills. Recommend learning paths, resources, and strategies for skill 
-        acquisition in various fields.`,
-      
-      job_matching: `You are a Senior Technical Recruiter and AI Job Matcher. 
-        Your task is to analyze the compatibility between a candidate's profile/resume and a specific job description or search query.
-        
-        Provide a detailed response in JSON format with:
-        1. match_score (0-100)
-        2. match_reasons (Array of 3-5 specific bullet points explaining the fit)
-        3. skill_gap_analysis (Specific skills missing)
-        4. interview_readiness_score (0-100)
-        5. personalized_tips (Specific advice to improve chances)
-        
-        Focus on:
-        - Technical skill overlap
-        - Years of experience vs. requirements
-        - Industry relevance
-        - Cultural fit markers (from resume summary)
-        - Location/Remote preference alignment`
+        acquisition in various fields.`
     };
 
     const systemPrompt = systemPrompts[serviceType as keyof typeof systemPrompts] || 
@@ -124,19 +95,24 @@ serve(async (req) => {
 
     // TODO: Store conversation and messages in database
     // For now, just log the successful interaction
-    console.log('AI service matching completed for user:', user.id, 'service:', serviceType);
+    console.log('AI service matching completed for user:', userId, 'service:', serviceType);
 
-    return json({
+    return new Response(JSON.stringify({
       response: aiResponse,
       conversationId,
       serviceType,
-      userId: user.id,
+      userId
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (error) {
     console.error('Error in AI service matching:', error);
-    return json({
+    return new Response(JSON.stringify({ 
       error: error instanceof Error ? error.message : 'Internal server error' 
-    }, 500);
+    }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 });

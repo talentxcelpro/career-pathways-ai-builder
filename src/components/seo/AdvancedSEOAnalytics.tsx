@@ -36,11 +36,11 @@ import {
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
-export const AdvancedSEOCareerAnalytics = () => {
+export const AdvancedSEOAnalytics = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [timeRange, setTimeRange] = useState('30d');
 
-  // Mock data - in real implementation, fetch from CareerAnalytics API
+  // Mock data - in real implementation, fetch from analytics API
   const performanceData = [
     { date: '2024-01-01', impressions: 12500, clicks: 850, ctr: 6.8, position: 4.2 },
     { date: '2024-01-02', impressions: 13200, clicks: 920, ctr: 7.0, position: 4.1 },
@@ -86,7 +86,7 @@ export const AdvancedSEOCareerAnalytics = () => {
       {/* Header Controls */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Advanced SEO CareerAnalytics</h2>
+          <h2 className="text-2xl font-bold">Advanced SEO Analytics</h2>
           <p className="text-gray-600">Comprehensive performance insights and competitive analysis</p>
         </div>
         <div className="flex gap-2">
@@ -364,7 +364,7 @@ export const AdvancedSEOCareerAnalytics = () => {
                 <div className="flex items-center justify-between p-3 border rounded-lg">
                   <div>
                     <h4 className="font-medium">Content Optimization</h4>
-                    <p className="text-sm text-gray-600">Performance content suggestions</p>
+                    <p className="text-sm text-gray-600">AI-powered content suggestions</p>
                   </div>
                   <Badge variant="secondary">Planned</Badge>
                 </div>
@@ -406,7 +406,3 @@ export const AdvancedSEOCareerAnalytics = () => {
     </div>
   );
 };
-
-
-
-

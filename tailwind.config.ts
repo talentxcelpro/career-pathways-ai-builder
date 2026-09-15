@@ -10,12 +10,14 @@ export default {
 	],
 	prefix: "",
 	theme: {
-	fontFamily: {
-			// Unified Inter-based font system for consistent, modern look
-			sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
-			heading: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-			display: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-			mono: ['SF Mono', 'Monaco', 'Menlo', 'Roboto Mono', 'Source Code Pro', 'monospace'],
+		fontFamily: {
+			// SF Pro system stack — renders SF Pro Display/Text on Apple devices,
+			// with high-quality fallbacks (Segoe UI / Roboto / Inter) elsewhere.
+			sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Inter', 'Arial', 'sans-serif'],
+			text: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Inter', 'Arial', 'sans-serif'],
+			heading: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Inter', 'sans-serif'],
+			display: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Inter', 'sans-serif'],
+			mono: ['"SF Mono"', 'Monaco', 'Menlo', '"Roboto Mono"', '"Source Code Pro"', 'monospace'],
 		},
 		container: {
 			center: true,
@@ -137,56 +139,32 @@ export default {
 				}
 			},
 			fontSize: {
-				// Apple-inspired responsive typography that scales automatically
-				'display': [
-					'clamp(2rem, 5vw, 4rem)', 
-					{ lineHeight: '1.1', fontWeight: '700', letterSpacing: '-0.04em' }
-				],
-				'headline': [
-					'clamp(1.75rem, 4vw, 3rem)', 
-					{ lineHeight: '1.15', fontWeight: '600', letterSpacing: '-0.03em' }
-				],
-				'title': [
-					'clamp(1.5rem, 3vw, 2.5rem)', 
-					{ lineHeight: '1.2', fontWeight: '600', letterSpacing: '-0.02em' }
-				],
-				'subtitle': [
-					'clamp(1.25rem, 2.5vw, 2rem)', 
-					{ lineHeight: '1.25', fontWeight: '500', letterSpacing: '-0.015em' }
-				],
-				'subheading': [
-					'clamp(1.125rem, 2vw, 1.75rem)', 
-					{ lineHeight: '1.3', fontWeight: '500', letterSpacing: '-0.01em' }
-				],
-				
-				// Apple-style responsive body text
-				'body-large': [
-					'clamp(1rem, 1.5vw, 1.375rem)', 
-					{ lineHeight: '1.5', fontWeight: '400', letterSpacing: '-0.005em' }
-				],
-				'body': [
-					'clamp(0.875rem, 1.25vw, 1.125rem)', 
-					{ lineHeight: '1.55', fontWeight: '400', letterSpacing: '0' }
-				],
-				'body-small': [
-					'clamp(0.75rem, 1vw, 1rem)', 
-					{ lineHeight: '1.5', fontWeight: '400', letterSpacing: '0' }
-				],
-				'caption': [
-					'clamp(0.625rem, 0.875vw, 0.875rem)', 
-					{ lineHeight: '1.4', fontWeight: '500', letterSpacing: '0.01em' }
-				],
-				
-				// Apple system responsive sizing
-				'xs': ['clamp(0.625rem, 0.75vw, 0.75rem)', { lineHeight: '1.4' }],
-				'sm': ['clamp(0.75rem, 0.875vw, 0.875rem)', { lineHeight: '1.5' }],
-				'base': ['clamp(0.875rem, 1vw, 1rem)', { lineHeight: '1.5' }],
-				'lg': ['clamp(1rem, 1.125vw, 1.125rem)', { lineHeight: '1.5' }],
-				'xl': ['clamp(1.125rem, 1.25vw, 1.25rem)', { lineHeight: '1.4' }],
-				'2xl': ['clamp(1.25rem, 1.5vw, 1.5rem)', { lineHeight: '1.3' }],
-				'3xl': ['clamp(1.5rem, 2vw, 1.875rem)', { lineHeight: '1.25' }],
-				'4xl': ['clamp(1.875rem, 2.5vw, 2.25rem)', { lineHeight: '1.2' }],
-				'5xl': ['clamp(2.25rem, 3vw, 3rem)', { lineHeight: '1.1' }],
+				// Scaled platform typography — Regular text -10%, Headings -25%
+				'eyebrow':    ['0.675rem', { lineHeight: '0.9rem',     fontWeight: '600', letterSpacing: '0.08em',  textTransform: 'uppercase' as any }],
+				'caption':    ['0.675rem', { lineHeight: '0.9rem',     fontWeight: '500', letterSpacing: '0' }],
+				'body-sm':    ['0.73rem',  { lineHeight: '1.125rem',  fontWeight: '400', letterSpacing: '-0.003em' }],
+				'body':       ['0.84rem',  { lineHeight: '1.35rem',   fontWeight: '400', letterSpacing: '-0.006em' }],
+				'body-lg':    ['0.95rem',  { lineHeight: '1.45rem',   fontWeight: '400', letterSpacing: '-0.011em' }],
+				'title-3':    ['0.89rem',  { lineHeight: '1.15rem',   fontWeight: '600', letterSpacing: '-0.014em' }],
+				'title-2':    ['1.03rem',  { lineHeight: '1.3rem',    fontWeight: '600', letterSpacing: '-0.018em' }],
+				'title-1':    ['1.31rem',  { lineHeight: '1.6rem',    fontWeight: '600', letterSpacing: '-0.022em' }],
+				'headline':   ['1.59rem',  { lineHeight: '1.875rem',  fontWeight: '600', letterSpacing: '-0.024em' }],
+				'display-3':  ['1.875rem', { lineHeight: '2.15rem',   fontWeight: '600', letterSpacing: '-0.026em' }],
+				'display-2':  ['2.4375rem',{ lineHeight: '2.625rem',  fontWeight: '600', letterSpacing: '-0.028em' }],
+				'display-1':  ['3rem',     { lineHeight: '3.1875rem', fontWeight: '600', letterSpacing: '-0.032em' }],
+
+				// Tailwind defaults — Scaled (Regular -10%, Headings lg+ -25%)
+				'xs':   ['0.675rem',  { lineHeight: '0.9rem' }],
+				'sm':   ['0.7875rem', { lineHeight: '1.125rem' }],
+				'base': ['0.9rem',     { lineHeight: '1.35rem' }],
+				'lg':   ['0.84rem',   { lineHeight: '1.2rem' }],
+				'xl':   ['0.9375rem', { lineHeight: '1.3rem' }],
+				'2xl':  ['1.125rem',  { lineHeight: '1.5rem' }],
+				'3xl':  ['1.4rem',    { lineHeight: '1.7rem' }],
+				'4xl':  ['1.6875rem', { lineHeight: '1.9rem' }],
+				'5xl':  ['2.25rem',   { lineHeight: '1.1' }],
+				'6xl':  ['2.8125rem', { lineHeight: '1.05' }],
+				'7xl':  ['3.375rem',  { lineHeight: '1.05' }],
 			},
 			letterSpacing: {
 				'tighter': '-0.04em', // Apple ultra-tight for displays
@@ -217,12 +195,7 @@ export default {
 				DEFAULT: 'var(--radius)',
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)',
-				xl: '1.25rem',
-				'2xl': '1.5rem',
-				'3xl': '2rem',
-				'4xl': '2.5rem',
-				full: '9999px',
+				sm: 'calc(var(--radius) - 4px)'
 			},
 			boxShadow: {
 				card: 'var(--shadow-card)',
@@ -231,7 +204,6 @@ export default {
 				brand: 'var(--shadow-brand)',
 				float: 'var(--shadow-float)',
 				glass: 'var(--shadow-glass)',
-				'3xl': '0 35px 60px -15px rgba(0, 0, 0, 0.3)',
 			},
 			backgroundImage: {
 				'gradient-primary': 'var(--gradient-primary)',

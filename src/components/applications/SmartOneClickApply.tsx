@@ -97,7 +97,7 @@ export function SmartOneClickApply() {
           industry: 'Technology',
           resume_template: {},
           cover_letter_template: 'Dear Product Team,\n\nI am thrilled to apply for the Product Manager position...',
-          keywords: ['Product Strategy', 'Agile', 'User Research', 'CareerAnalytics', 'Roadmap'],
+          keywords: ['Product Strategy', 'Agile', 'User Research', 'Analytics', 'Roadmap'],
           success_rate: 72.8,
           usage_count: 18,
           is_default: false
@@ -253,7 +253,7 @@ export function SmartOneClickApply() {
             Smart One-Click Apply
           </h2>
           <p className="text-muted-foreground">
-            Performance job applications with automatic resume and cover letter optimization
+            AI-powered job applications with automatic resume and cover letter optimization
           </p>
         </div>
         
@@ -563,6 +563,3 @@ export function SmartOneClickApply() {
     </div>
   );
 }
-
-
-

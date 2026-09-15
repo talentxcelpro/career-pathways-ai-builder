@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
-import { getEmailRedirectUrl } from '@/utils/authRedirect';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -21,7 +20,7 @@ const ForgotPassword = () => {
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: getEmailRedirectUrl('/auth/reset-password'),
+        redirectTo: `${window.location.origin}/auth/reset-password`,
       });
 
       if (error) {

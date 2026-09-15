@@ -1,5 +1,5 @@
 /**
- * Performance Route Predictor
+ * AI-Powered Route Predictor
  * Learns user navigation patterns and preloads likely next routes
  */
 
@@ -177,4 +177,3 @@ export function usePredictivePreloading() {
 }
 
 export { routePredictor };
-

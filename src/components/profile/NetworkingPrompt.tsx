@@ -37,7 +37,7 @@ export const NetworkingPrompt: React.FC<NetworkingPromptProps> = ({ profile }) =
               Boost Your Networking Presence
             </h3>
             <p className="text-blue-700 text-sm mb-3">
-              Complete your profile to make meaningful TalentNetwork and stand out in the network.
+              Complete your profile to make meaningful connections and stand out in the network.
             </p>
             <Button 
               size="sm" 
@@ -53,5 +53,3 @@ export const NetworkingPrompt: React.FC<NetworkingPromptProps> = ({ profile }) =
     </Card>
   );
 };
-
-

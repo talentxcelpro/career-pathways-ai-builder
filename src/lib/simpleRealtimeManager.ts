@@ -143,11 +143,11 @@ export class SimpleRealtimeManager {
   }
 
   /**
-   * Cleanup all TalentNetwork
+   * Cleanup all connections
    */
   cleanup() {
     if (this.config.enableLogging) {
-      console.log('🧹 [SimpleRealtime] Cleaning up all TalentNetwork');
+      console.log('🧹 [SimpleRealtime] Cleaning up all connections');
     }
     
     this.channels.forEach((channel) => {
@@ -183,4 +183,3 @@ export function getSimpleRealtimeStatus() {
 export function cleanupSimpleRealtime() {
   simpleRealtimeManager.cleanup();
 }
-

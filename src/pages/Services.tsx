@@ -7,6 +7,7 @@ import { Separator } from '@/components/ui/separator';
 import { Coins, Star, Crown, Shield, Zap, Users, Briefcase, FileText, Pickaxe, ArrowRight } from 'lucide-react';
 import { TXCPricingCard } from '@/components/txc/TXCPricingCard';
 import { useTokenBalance } from '@/hooks/useTokenBalance';
+import { useTXCPurchase } from '@/hooks/useTXCPurchase';
 import { 
   TXC_PROFILE_UPGRADES, 
   TXC_JOB_POSTING, 
@@ -34,6 +35,7 @@ export default function Services() {
   });
 
   const { availableBalance } = useTokenBalance();
+  const { purchaseWithTXC, isLoading: isPurchasing } = useTXCPurchase();
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
@@ -159,9 +161,14 @@ export default function Services() {
                   variant="outline"
                   size="sm"
                   className="w-full"
-                  disabled={availableBalance < tool.cost}
+                  disabled={availableBalance < tool.cost || isPurchasing}
+                  onClick={() => purchaseWithTXC({ 
+                    featureId: tool.feature, 
+                    cost: tool.cost, 
+                    description: tool.description 
+                  })}
                 >
-                  {availableBalance >= tool.cost ? 'Purchase with TXC' : 'Insufficient TXC'}
+                  {isPurchasing ? 'Processing...' : availableBalance >= tool.cost ? 'Purchase with TXC' : 'Insufficient TXC'}
                 </Button>
               </CardContent>
             </Card>
@@ -246,7 +253,7 @@ export default function Services() {
             <Button asChild size="lg" className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600">
               <Link to="/txc/mining" className="flex items-center gap-2">
                 <Pickaxe className="h-5 w-5" />
-                Access Mining CommandCenter
+                Access Mining Dashboard
                 <ArrowRight className="h-5 w-5" />
               </Link>
             </Button>
@@ -284,4 +291,3 @@ export default function Services() {
     </div>
   );
 }
-

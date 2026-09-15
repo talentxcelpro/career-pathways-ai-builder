@@ -8,15 +8,15 @@ import { Button } from '@/components/ui/button';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { TrendingUp, Target, User, Briefcase, Award, Star } from 'lucide-react';
 
-const CareerCareerAnalytics = () => {
+const CareerAnalytics = () => {
   React.useEffect(() => {
     updateMetaTags({
-      title: 'Career CareerAnalytics | TalentXcel Learning',
+      title: 'Career Analytics | TalentXcel Learning',
       description: 'Personal career development insights, skill gap analysis, and growth recommendations.'
     });
   }, []);
 
-  // Mock CareerAnalytics data
+  // Mock analytics data
   const skillGrowthData = [
     { month: 'Jan', React: 65, JavaScript: 70, Python: 40 },
     { month: 'Feb', React: 70, JavaScript: 75, Python: 45 },
@@ -64,7 +64,7 @@ const CareerCareerAnalytics = () => {
         <div className="flex items-center gap-3 mb-8">
           <TrendingUp className="h-8 w-8 text-blue-600" />
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Career CareerAnalytics</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Career Analytics</h1>
             <p className="text-gray-600">
               Personal career development insights and growth recommendations
             </p>
@@ -226,7 +226,7 @@ const CareerCareerAnalytics = () => {
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Star className="h-5 w-5 mr-2" />
-                Career Moves
+                AI Recommendations
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -272,7 +272,4 @@ const CareerCareerAnalytics = () => {
   );
 };
 
-export default CareerCareerAnalytics;
-
-
-
+export default CareerAnalytics;

@@ -9,7 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface NotificationEvent {
-  type: 'job_deadline' | 'profile_view_spike' | 'new_connection' | 'learning_reminder' | 'market_opportunity';
+  type: 'job_deadline' | 'profile_view_spike' | 'new_connections' | 'learning_reminder' | 'market_opportunity';
   data: any;
 }
 
@@ -174,7 +174,7 @@ export const ProactiveNotificationSystem: React.FC = () => {
             .single();
 
           if (requester) {
-            createNotification('new_connection', {
+            createNotification('new_connections', {
               title: 'New Connection Request',
               message: `${requester.full_name} (${requester.title || 'Professional'}) wants to connect with you.`,
               priority: 'medium',
@@ -319,7 +319,7 @@ const NotificationCard: React.FC<{
         return <AlertTriangle className="h-5 w-5 text-destructive" />;
       case 'profile_view_spike':
         return <Info className="h-5 w-5 text-blue-500" />;
-      case 'new_connection':
+      case 'new_connections':
         return <CheckCircle className="h-5 w-5 text-green-500" />;
       case 'learning_reminder':
         return <Bell className="h-5 w-5 text-yellow-500" />;
@@ -401,4 +401,3 @@ const NotificationCard: React.FC<{
     </Card>
   );
 };
-

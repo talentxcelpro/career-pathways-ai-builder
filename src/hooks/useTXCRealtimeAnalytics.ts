@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
-interface TXCCareerAnalytics {
+interface TXCAnalytics {
   totalTransactions: number;
   totalEarned: number;
   totalSpent: number;
@@ -20,9 +20,9 @@ interface RealtimeEvent {
   timestamp: Date;
 }
 
-export const useTXCRealtimeCareerAnalytics = () => {
+export const useTXCRealtimeAnalytics = () => {
   const { user } = useAuth();
-  const [CareerAnalytics, setCareerAnalytics] = useState<TXCCareerAnalytics>({
+  const [analytics, setAnalytics] = useState<TXCAnalytics>({
     totalTransactions: 0,
     totalEarned: 0,
     totalSpent: 0,
@@ -38,7 +38,7 @@ export const useTXCRealtimeCareerAnalytics = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [connectionHealth, setConnectionHealth] = useState<'healthy' | 'degraded' | 'disconnected'>('disconnected');
 
-  const calculateCareerAnalytics = useCallback(async () => {
+  const calculateAnalytics = useCallback(async () => {
     if (!user?.id) return;
 
     try {
@@ -51,7 +51,7 @@ export const useTXCRealtimeCareerAnalytics = () => {
         .limit(1000); // Analyze last 1000 transactions
 
       if (error) {
-        console.error('Error fetching CareerAnalytics data:', error);
+        console.error('Error fetching analytics data:', error);
         return;
       }
 
@@ -117,7 +117,7 @@ export const useTXCRealtimeCareerAnalytics = () => {
         .sort((a, b) => b.total - a.total)
         .slice(0, 5);
 
-      setCareerAnalytics({
+      setAnalytics({
         totalTransactions,
         totalEarned,
         totalSpent,
@@ -130,7 +130,7 @@ export const useTXCRealtimeCareerAnalytics = () => {
       });
 
     } catch (error) {
-      console.error('Error calculating CareerAnalytics:', error);
+      console.error('Error calculating analytics:', error);
     }
   }, [user?.id]);
 
@@ -156,7 +156,7 @@ export const useTXCRealtimeCareerAnalytics = () => {
 
     const setupRealtimeConnection = () => {
       const channel = supabase
-        .channel(`txc_CareerAnalytics:${user.id}`)
+        .channel(`txc_analytics:${user.id}`)
         .on(
           'postgres_changes',
           {
@@ -168,7 +168,7 @@ export const useTXCRealtimeCareerAnalytics = () => {
           (payload) => {
             console.log('TXC transaction update:', payload);
             addRealtimeEvent('transaction', payload);
-            calculateCareerAnalytics(); // Recalculate CareerAnalytics on new transaction
+            calculateAnalytics(); // Recalculate analytics on new transaction
             setConnectionHealth('healthy');
           }
         )
@@ -187,7 +187,7 @@ export const useTXCRealtimeCareerAnalytics = () => {
           }
         )
         .subscribe((status, err) => {
-          console.log('TXC CareerAnalytics subscription status:', status);
+          console.log('TXC Analytics subscription status:', status);
           
           if (status === 'SUBSCRIBED') {
             setIsConnected(true);
@@ -219,7 +219,7 @@ export const useTXCRealtimeCareerAnalytics = () => {
           }
           
           if (err) {
-            console.error('TXC CareerAnalytics subscription error:', err);
+            console.error('TXC Analytics subscription error:', err);
             addRealtimeEvent('rate_limit', { error: err.message });
           }
         });
@@ -227,8 +227,8 @@ export const useTXCRealtimeCareerAnalytics = () => {
       return channel;
     };
 
-    // Initial CareerAnalytics calculation
-    calculateCareerAnalytics();
+    // Initial analytics calculation
+    calculateAnalytics();
     
     // Setup realtime connection
     const channel = setupRealtimeConnection();
@@ -241,27 +241,23 @@ export const useTXCRealtimeCareerAnalytics = () => {
       setIsConnected(false);
       setConnectionHealth('disconnected');
     };
-  }, [user?.id, calculateCareerAnalytics, addRealtimeEvent, realtimeEvents]);
+  }, [user?.id, calculateAnalytics, addRealtimeEvent, realtimeEvents]);
 
-  const getconnectionStatus = () => {
+  const getConnectionStatus = () => {
     if (!isConnected) return 'Disconnected';
     return connectionHealth === 'healthy' ? 'Connected' : 'Degraded';
   };
 
-  const refreshCareerAnalytics = useCallback(() => {
-    calculateCareerAnalytics();
-  }, [calculateCareerAnalytics]);
+  const refreshAnalytics = useCallback(() => {
+    calculateAnalytics();
+  }, [calculateAnalytics]);
 
   return {
-    CareerAnalytics,
+    analytics,
     realtimeEvents,
     isConnected,
     connectionHealth,
-    connectionStatus: getconnectionStatus(),
-    refreshCareerAnalytics
+    connectionStatus: getConnectionStatus(),
+    refreshAnalytics
   };
 };
-
-
-
-

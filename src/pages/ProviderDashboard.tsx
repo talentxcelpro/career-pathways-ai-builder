@@ -1,29 +1,28 @@
 import React from 'react';
-import { ServiceProviderCommandCenter } from '@/components/services/ServiceProviderDashboard';
+import { ServiceProviderDashboard } from '@/components/services/ServiceProviderDashboard';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { useSEO } from '@/hooks/useSEO';
 
-const ProviderCommandCenter: React.FC = () => {
+const ProviderDashboard: React.FC = () => {
   useSEO({
-    title: 'Provider CommandCenter - Manage Your Services | TalentXcel',
+    title: 'Provider Dashboard - Manage Your Services | TalentXcel',
     description: 'Manage your services, track orders, view earnings, and grow your business on TalentXcel marketplace.',
     keywords: [
-      'provider CommandCenter',
+      'provider dashboard',
       'service provider',
       'manage services',
       'track orders',
-      'earnings CommandCenter',
+      'earnings dashboard',
       'freelance business'
     ],
-    canonical: 'https://talentxcel.in/provider/CommandCenter'
+    canonical: 'https://talentxcel.in/provider/dashboard'
   });
 
   return (
     <ProtectedRoute>
-      <ServiceProviderCommandCenter />
+      <ServiceProviderDashboard />
     </ProtectedRoute>
   );
 };
 
-export default ProviderCommandCenter;
-
+export default ProviderDashboard;

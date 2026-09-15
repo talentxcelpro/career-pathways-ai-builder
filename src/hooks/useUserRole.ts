@@ -8,7 +8,7 @@ export interface UserRoleData {
   created_at: string;
 }
 
-export interface CommandCenterConfig {
+export interface DashboardConfig {
   user_id: string;
   layout_type: 'student' | 'employer' | 'college_admin' | 'default';
   widget_preferences: Record<string, any>;
@@ -80,7 +80,7 @@ export function useUserRole() {
     enabled: !!user?.id,
   });
 
-  const getCommandCenterType = (): 'student' | 'employer' | 'college_admin' | 'admin' | 'default' => {
+  const getDashboardType = (): 'student' | 'employer' | 'college_admin' | 'admin' | 'default' => {
     if (userRole?.role === 'super_admin' || userRole?.role === 'admin') return 'admin';
     if (isCollegeAdmin) return 'college_admin';
     if (isEmployer) return 'employer';
@@ -93,8 +93,7 @@ export function useUserRole() {
     userRole,
     isEmployer,
     isCollegeAdmin,
-    CommandCenterType: getCommandCenterType(),
+    dashboardType: getDashboardType(),
     isLoading
   };
 }
-

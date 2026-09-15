@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS passport_visibility jsonb NOT NULL DEFAULT '{"education":true,"experience":true,"certificates":true,"skills":true,"contact":false,"trust_score":true}'::jsonb;

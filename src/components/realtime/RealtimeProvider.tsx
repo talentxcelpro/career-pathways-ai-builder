@@ -29,7 +29,7 @@ export const RealtimeProvider: React.FC<RealtimeProviderProps> = ({
 
   const [isConnected, setIsConnected] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<{ table: WatchedTable; payload: RealtimePayload } | null>(null);
-  const [connectionStatus, setconnectionStatus] = useState<Record<string, string>>({});
+  const [connectionStatus, setConnectionStatus] = useState<Record<string, string>>({});
   const [usePollingFallback, setUsePollingFallback] = useState(false);
 
   useEffect(() => {
@@ -48,7 +48,7 @@ export const RealtimeProvider: React.FC<RealtimeProviderProps> = ({
       setUsePollingFallback(false); // Realtime is working, disable polling
       // Update connection status
       const status = realtimeManager.getStatus();
-      setconnectionStatus(status);
+      setConnectionStatus(status);
 
       // Show toast notifications for updates (optional)
       if (showToasts) {
@@ -81,7 +81,7 @@ export const RealtimeProvider: React.FC<RealtimeProviderProps> = ({
     // Check connection status periodically and enable polling fallback if needed
     const statusInterval = setInterval(() => {
       const status = realtimeManager.getStatus();
-      setconnectionStatus(status);
+      setConnectionStatus(status);
       const connectedChannels = Object.values(status).filter(s => s === 'SUBSCRIBED').length;
       const wasConnected = isConnected;
       setIsConnected(connectedChannels > 0);
@@ -179,4 +179,3 @@ export function useRealtimeStatus() {
   const { isConnected, connectionStatus } = useRealtimeContext();
   return { isConnected, connectionStatus };
 }
-

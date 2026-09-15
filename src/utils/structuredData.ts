@@ -24,10 +24,17 @@ interface JobData {
 export const generateJobStructuredData = (job: JobData) => {
   const company = job.company || job.companies;
   
-  // Ensure required fields are present
+  // Ensure required fields are present with strict ISO 8601 formatting
   const currentDate = new Date().toISOString();
   const postedDate = job.posted_at || job.created_at || currentDate;
-  const expiryDate = job.expires_at || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(); // 30 days from now
+  const expiryDate = (() => {
+    try {
+      const d = job.expires_at ? new Date(job.expires_at) : new Date(Date.now() + 60 * 24 * 60 * 60 * 1000);
+      return isNaN(d.getTime()) ? new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString() : d.toISOString();
+    } catch {
+      return new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString();
+    }
+  })();
   
   // Parse location for better address structure
   const locationParts = job.location?.split(',') || ['Remote'];
@@ -143,13 +150,6 @@ export const generateOrganizationStructuredData = (company: any) => {
       company.linkedin_url,
       `https://talentxcel.in/companies/${company.id}`
     ].filter(Boolean),
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.5",
-      "bestRating": "5",
-      "worstRating": "1",
-      "ratingCount": "100"
-    },
     "contactPoint": {
       "@type": "ContactPoint",
       "telephone": company.phone,
@@ -250,7 +250,7 @@ export const generateSoftwareApplicationStructuredData = (tool: any) => {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     "name": tool.name || "TalentXcel AI Tools",
-    "description": tool.description || `${tool.name} - Professional Performance tool by TalentXcel`,
+    "description": tool.description || `${tool.name} - Professional AI-powered tool by TalentXcel`,
     "applicationCategory": "BusinessApplication",
     "operatingSystem": "Web Browser",
     "url": `https://talentxcel.in${tool.path}`,
@@ -260,7 +260,7 @@ export const generateSoftwareApplicationStructuredData = (tool: any) => {
       "url": "https://talentxcel.in"
     },
     "featureList": tool.features || [
-      "Performance Analysis",
+      "AI-Powered Analysis",
       "Professional Templates", 
       "Real-time Optimization",
       "Export Capabilities",
@@ -271,13 +271,6 @@ export const generateSoftwareApplicationStructuredData = (tool: any) => {
       "price": "0",
       "priceCurrency": "INR",
       "category": "free"
-    },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.7",
-      "bestRating": "5",
-      "worstRating": "1",
-      "ratingCount": "500"
     },
     "screenshot": tool.screenshot_url,
     "downloadUrl": `https://talentxcel.in${tool.path}`,
@@ -432,4 +425,3 @@ export const removeAllStructuredData = () => {
   const scripts = document.querySelectorAll('script[type="application/ld+json"]');
   scripts.forEach(script => script.remove());
 };
-

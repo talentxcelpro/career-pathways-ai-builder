@@ -54,7 +54,7 @@ export const QuickApplyWidget: React.FC = () => {
               <Zap className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h3 className="text-xl font-bold text-gray-900">Quick Apply CommandCenter</h3>
+              <h3 className="text-xl font-bold text-gray-900">Quick Apply Dashboard</h3>
               <p className="text-sm text-muted-foreground">Lightning-fast job applications with AI assistance</p>
             </div>
           </div>
@@ -189,4 +189,3 @@ export const QuickApplyWidget: React.FC = () => {
     </Card>
   );
 };
-

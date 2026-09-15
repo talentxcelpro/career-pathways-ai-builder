@@ -218,7 +218,7 @@ class PerformanceTrackerClass {
       (value <= threshold.good ? 'good' : value <= threshold.poor ? 'needs-improvement' : 'poor') :
       'unknown';
 
-    this.reportToCareerAnalytics('web_vital', {
+    this.reportToAnalytics('web_vital', {
       metric_name: name,
       metric_value: Math.round(value),
       metric_rating: rating,
@@ -232,7 +232,7 @@ class PerformanceTrackerClass {
   }
 
   private reportMetric(name: string, value: any, metadata?: Record<string, any>): void {
-    this.reportToCareerAnalytics('performance_metric', {
+    this.reportToAnalytics('performance_metric', {
       metric_name: name,
       metric_value: value,
       ...metadata
@@ -240,7 +240,7 @@ class PerformanceTrackerClass {
   }
 
   private reportCustomMetric(name: string, duration: number, metadata?: Record<string, any>): void {
-    this.reportToCareerAnalytics('custom_timing', {
+    this.reportToAnalytics('custom_timing', {
       timing_category: 'Performance',
       timing_var: name,
       timing_value: Math.round(duration),
@@ -251,26 +251,26 @@ class PerformanceTrackerClass {
 
   private reportSlowResource(url: string, duration: number): void {
     console.warn(`Slow resource: ${url} (${duration}ms)`);
-    this.reportToCareerAnalytics('slow_resource', {
+    this.reportToAnalytics('slow_resource', {
       resource_url: url,
       load_time: Math.round(duration)
     });
   }
 
-  private reportToCareerAnalytics(eventName: string, parameters: Record<string, any>): void {
-    // Google CareerAnalytics 4
+  private reportToAnalytics(eventName: string, parameters: Record<string, any>): void {
+    // Google Analytics 4
     if (typeof window !== 'undefined' && window.gtag) {
       window.gtag('event', eventName, parameters);
     }
 
-    // Vercel CareerAnalytics
+    // Vercel Analytics
     if (typeof window !== 'undefined' && (window as any).va) {
       (window as any).va('event', eventName);
     }
 
-    // Custom CareerAnalytics endpoint
+    // Custom analytics endpoint
     if (process.env.NODE_ENV === 'production') {
-      fetch('/api/CareerAnalytics/performance', {
+      fetch('/api/analytics/performance', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ event: eventName, data: parameters }),
@@ -348,10 +348,6 @@ if (typeof window !== 'undefined') {
 // TypeScript declarations
 declare global {
   interface Window {
-    gtag: (...args: any[]) => void;
     va?: (...args: any[]) => void;
   }
 }
-
-
-

@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Play, RefreshCw, AlertTriangle, CheckCircle, Clock, Users, Activity } from 'lucide-react';
-import { AgentActivityCommandCenter } from './AgentActivityCommandCenter';
+import { AgentActivityDashboard } from './AgentActivityDashboard';
 
 interface Agent {
   id: string;
@@ -387,7 +387,7 @@ export const AIAgentOperations: React.FC = () => {
       <Tabs defaultValue="operations" className="space-y-6">
         <TabsList>
           <TabsTrigger value="operations">Operations</TabsTrigger>
-          <TabsTrigger value="activity">Activity CommandCenter</TabsTrigger>
+          <TabsTrigger value="activity">Activity Dashboard</TabsTrigger>
         </TabsList>
 
         <TabsContent value="operations" className="space-y-6">
@@ -616,10 +616,9 @@ export const AIAgentOperations: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="activity">
-          <AgentActivityCommandCenter />
+          <AgentActivityDashboard />
         </TabsContent>
       </Tabs>
     </div>
   );
 };
-

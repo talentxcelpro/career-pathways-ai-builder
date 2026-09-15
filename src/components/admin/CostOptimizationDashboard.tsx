@@ -23,7 +23,7 @@ interface OptimizationResult {
   records_affected: number;
 }
 
-export const CostOptimizationCommandCenter = () => {
+export const CostOptimizationDashboard = () => {
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [results, setResults] = useState<OptimizationResult[]>([]);
   const [summary, setSummary] = useState({
@@ -306,4 +306,3 @@ export const CostOptimizationCommandCenter = () => {
     </div>
   );
 };
-

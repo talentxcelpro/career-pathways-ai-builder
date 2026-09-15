@@ -1,20 +1,20 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { NotificationCareerAnalyticsCommandCenter } from '@/components/admin/NotificationAnalyticsDashboard';
+import { NotificationAnalyticsDashboard } from '@/components/admin/NotificationAnalyticsDashboard';
 import { EmailAutomationOptimizer } from '@/components/admin/EmailAutomationOptimizer';
 import { TestNotificationSender } from '@/components/notifications/TestNotificationSender';
 import { NotificationPreferences } from '@/components/notifications/NotificationPreferences';
 import { TXCTestButton } from '@/components/TXCTestButton';
 import { Bell, Settings, BarChart3, Zap, Coins } from 'lucide-react';
 
-export const TestingCommandCenter: React.FC = () => {
+export const TestingDashboard: React.FC = () => {
   return (
     <div className="container mx-auto p-6 space-y-6">
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold">Testing CommandCenter</h1>
+        <h1 className="text-3xl font-bold">Testing Dashboard</h1>
         <p className="text-muted-foreground">
-          Test all notification CareerAnalytics and email automation features
+          Test all notification analytics and email automation features
         </p>
       </div>
 
@@ -24,9 +24,9 @@ export const TestingCommandCenter: React.FC = () => {
             <Bell className="h-4 w-4" />
             Notifications
           </TabsTrigger>
-          <TabsTrigger value="CareerAnalytics" className="flex items-center gap-2">
+          <TabsTrigger value="analytics" className="flex items-center gap-2">
             <BarChart3 className="h-4 w-4" />
-            CareerAnalytics
+            Analytics
           </TabsTrigger>
           <TabsTrigger value="automation" className="flex items-center gap-2">
             <Zap className="h-4 w-4" />
@@ -58,16 +58,16 @@ export const TestingCommandCenter: React.FC = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="CareerAnalytics" className="space-y-6">
+        <TabsContent value="analytics" className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BarChart3 className="h-5 w-5" />
-                Notification CareerAnalytics CommandCenter
+                Notification Analytics Dashboard
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <NotificationCareerAnalyticsCommandCenter />
+              <NotificationAnalyticsDashboard />
             </CardContent>
           </Card>
         </TabsContent>
@@ -119,6 +119,3 @@ export const TestingCommandCenter: React.FC = () => {
     </div>
   );
 };
-
-
-

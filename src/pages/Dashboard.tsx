@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
-import { StatsCards } from '@/components/CommandCenter/StatsCards';
-import { FeaturedJobs } from '@/components/CommandCenter/FeaturedJobs';
-import { TrendingCourses } from '@/components/CommandCenter/TrendingCourses';
-import { QuickActions } from '@/components/CommandCenter/QuickActions';
-import { CareerInsights } from '@/components/CommandCenter/CareerInsights';
+import { StatsCards } from '@/components/dashboard/StatsCards';
+import { FeaturedJobs } from '@/components/dashboard/FeaturedJobs';
+import { TrendingCourses } from '@/components/dashboard/TrendingCourses';
+import { QuickActions } from '@/components/dashboard/QuickActions';
+import { CareerInsights } from '@/components/dashboard/CareerInsights';
 // import { useSmartAutoRefresh, REFRESH_INTERVALS } from '@/hooks/useAutoRefresh';
 import { useJobsRealtime } from '@/hooks/useRealtimeData';
 import { DataFreshness } from '@/components/shared/DataFreshness';
@@ -21,14 +21,14 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { TrendingUp, Clock, Target, BookOpen, Briefcase, Users, Star, ArrowRight, Zap, CheckCircle2, Award, ExternalLink } from 'lucide-react';
 
-const CommandCenter = () => {
+const Dashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   
   // Get data with auto-refresh
-  const { data: CommandCenterStats, isLoading: statsLoading, dataUpdatedAt: statsUpdatedAt, refetch: refetchStats } = useQuery({
-    queryKey: ['CommandCenter_stats', user?.id],
-    queryFn: () => realDataService.getCommandCenterStats(user?.id),
+  const { data: dashboardStats, isLoading: statsLoading, dataUpdatedAt: statsUpdatedAt, refetch: refetchStats } = useQuery({
+    queryKey: ['dashboard_stats', user?.id],
+    queryFn: () => realDataService.getDashboardStats(user?.id),
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
     enabled: !!user,
@@ -37,9 +37,9 @@ const CommandCenter = () => {
   const { data: featuredJobs = [], isLoading: jobsLoading, refetch: refetchJobs } = useQuery({
     queryKey: ['featured_jobs'],
     queryFn: async () => {
-      console.log('🏆 CommandCenter: Fetching featured jobs...');
+      console.log('🏆 Dashboard: Fetching featured jobs...');
       const result = await realDataService.getFeaturedJobs();
-      console.log('🏆 CommandCenter: Featured jobs result:', result?.length, result);
+      console.log('🏆 Dashboard: Featured jobs result:', result?.length, result);
       return result;
     },
     staleTime: 10 * 60 * 1000,
@@ -53,7 +53,7 @@ const CommandCenter = () => {
     gcTime: 30 * 60 * 1000,
   });
 
-  // Auto-refresh CommandCenter data (temporarily disabled)
+  // Auto-refresh dashboard data (temporarily disabled)
   // useSmartAutoRefresh(() => {
   //   refetchStats();
   //   refetchJobs();
@@ -69,9 +69,9 @@ const CommandCenter = () => {
   // Meta tags
   useEffect(() => {
     updateMetaTags({
-      title: 'CommandCenter | TalentXcel - Your Career CommandCenter',
+      title: 'Dashboard | TalentXcel - Your Career Command Center',
       description: 'Track your job applications, discover new opportunities, and accelerate your career growth with TalentXcel.',
-      url: `${window.location.origin}/CommandCenter`,
+      url: `${window.location.origin}/dashboard`,
     });
   }, []);
 
@@ -145,7 +145,7 @@ const CommandCenter = () => {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center mobile-optimized">
         <div className="text-center px-4">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
-          <p className="text-sm text-slate-600 font-medium">Loading your CommandCenter...</p>
+          <p className="text-sm text-slate-600 font-medium">Loading your dashboard...</p>
         </div>
       </div>
     );
@@ -153,11 +153,11 @@ const CommandCenter = () => {
 
   // Transform stats to match StatsCards interface
   const userStats = {
-    coursesCompleted: CommandCenterStats?.coursesCompleted || 0,
-    resumeViews: CommandCenterStats?.resumeViews || 0,
+    coursesCompleted: dashboardStats?.coursesCompleted || 0,
+    resumeViews: dashboardStats?.resumeViews || 0,
     appliedJobs: jobApplicationsCount?.total || 0,
     appliedJobsThisWeek: jobApplicationsCount?.thisWeek || 0,
-    profileViews: CommandCenterStats?.profileViews || 0,
+    profileViews: dashboardStats?.profileViews || 0,
   };
 
   const getCurrentGreeting = () => {
@@ -215,11 +215,13 @@ const CommandCenter = () => {
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2 sm:py-3">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
-              <img 
-                src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
-                alt="TalentXcel" 
-                className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg flex-shrink-0"
-              />
+              <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-slate-900 flex items-center justify-center p-1 shadow-sm flex-shrink-0">
+                <img 
+                  src="/talentxcel-official-logo.png" 
+                  alt="TalentXcel" 
+                  className="h-full w-full object-contain"
+                />
+              </div>
               <div className="min-w-0 flex-1">
                 <h1 className="text-base sm:text-lg font-bold text-slate-900 truncate">
                   {getCurrentGreeting()}{userProfile?.full_name ? `, ${userProfile.full_name.split(' ')[0]}` : ''}! 👋
@@ -384,6 +386,4 @@ const CommandCenter = () => {
   );
 };
 
-export default CommandCenter;
-
-
+export default Dashboard;

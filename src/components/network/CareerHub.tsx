@@ -26,7 +26,7 @@ export const CareerHub = () => {
   const stats = [
     { label: '0+ Articles', icon: BookOpen },
     { label: 'Expert Community', icon: Users },
-    { label: 'Performance', icon: TrendingUp },
+    { label: 'AI-Powered', icon: TrendingUp },
   ];
 
   return (
@@ -34,8 +34,8 @@ export const CareerHub = () => {
       {/* Header */}
       <div className="text-center space-y-4 bg-gradient-to-br from-primary/5 via-background to-accent/30 p-6 rounded-xl border border-border/50">
         <div className="flex items-center justify-center gap-4">
-          <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center shadow-lg">
-            <BookOpen className="w-8 h-8 text-primary-foreground" />
+          <div className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg overflow-hidden bg-slate-900 p-2">
+            <img src="/talentxcel-official-logo.png" alt="TalentXcel Logo" className="w-full h-full object-contain" />
           </div>
           <div className="text-left">
             <h1 className="text-2xl font-bold text-foreground">TalentXcel</h1>
@@ -116,7 +116,7 @@ export const CareerHub = () => {
             <h2 className="text-xl font-bold text-foreground">AI Spotlight</h2>
             <Badge variant="secondary" className="ml-auto">Top 3 Trending</Badge>
           </div>
-          <p className="text-muted-foreground mb-4">Performance trending articles based on community engagement</p>
+          <p className="text-muted-foreground mb-4">AI-powered trending articles based on community engagement</p>
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
               <div key={i} className="p-3 bg-background/60 rounded-lg border border-border/50">
@@ -161,7 +161,7 @@ export const CareerHub = () => {
               <TrendingUp className="w-5 h-5 text-primary" />
               Recommended for You
             </h3>
-            <p className="text-muted-foreground text-sm mb-4">Personalized article Pulse based on your interests</p>
+            <p className="text-muted-foreground text-sm mb-4">Personalized article feed based on your interests</p>
             <div className="space-y-2">
               <div className="p-2 bg-accent/30 rounded border-l-2 border-primary">
                 <p className="text-sm font-medium">Coming Soon</p>

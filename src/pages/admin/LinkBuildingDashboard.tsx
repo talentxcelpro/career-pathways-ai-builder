@@ -24,7 +24,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 
-const LinkBuildingCommandCenter = () => {
+const LinkBuildingDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [campaigns, setCampaigns] = useState<any[]>([]);
   const [metrics, setMetrics] = useState<any>({});
@@ -32,10 +32,10 @@ const LinkBuildingCommandCenter = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    loadCommandCenterData();
+    loadDashboardData();
   }, []);
 
-  const loadCommandCenterData = async () => {
+  const loadDashboardData = async () => {
     try {
       // Load campaign data
       const { data: campaignData } = await supabase
@@ -71,7 +71,7 @@ const LinkBuildingCommandCenter = () => {
       }
 
     } catch (error) {
-      console.error('Error loading CommandCenter data:', error);
+      console.error('Error loading dashboard data:', error);
     }
   };
 
@@ -96,7 +96,7 @@ const LinkBuildingCommandCenter = () => {
       });
 
       // Refresh data
-      loadCommandCenterData();
+      loadDashboardData();
 
     } catch (error: any) {
       toast({
@@ -126,7 +126,7 @@ const LinkBuildingCommandCenter = () => {
         description: `Targeting ${data.target_universities} universities with ${data.expected_responses} expected responses`,
       });
 
-      loadCommandCenterData();
+      loadDashboardData();
 
     } catch (error: any) {
       toast({
@@ -156,7 +156,7 @@ const LinkBuildingCommandCenter = () => {
         description: `Submitting to ${data.directories_targeted} directories with ${data.expected_approvals} expected approvals`,
       });
 
-      loadCommandCenterData();
+      loadDashboardData();
 
     } catch (error: any) {
       toast({
@@ -186,7 +186,7 @@ const LinkBuildingCommandCenter = () => {
         description: `${data.content_assets_planned} high-value assets planned with ${data.estimated_total_backlinks} potential backlinks`,
       });
 
-      loadCommandCenterData();
+      loadDashboardData();
 
     } catch (error: any) {
       toast({
@@ -222,7 +222,7 @@ const LinkBuildingCommandCenter = () => {
         <div className="text-center space-y-4">
           <div className="flex items-center justify-center gap-3">
             <Target className="w-8 h-8 text-green-600" />
-            <h1 className="text-4xl font-bold text-slate-900">Link Building CommandCenter</h1>
+            <h1 className="text-4xl font-bold text-slate-900">Link Building Command Center</h1>
           </div>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto">
             Execute comprehensive interlinking and backlink strategy to boost domain authority
@@ -302,14 +302,14 @@ const LinkBuildingCommandCenter = () => {
           })}
         </div>
 
-        {/* Main CommandCenter */}
+        {/* Main Dashboard */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="campaigns">Active Campaigns</TabsTrigger>
             <TabsTrigger value="internal">Internal Links</TabsTrigger>
             <TabsTrigger value="backlinks">Backlink Progress</TabsTrigger>
-            <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview">
@@ -659,11 +659,11 @@ const LinkBuildingCommandCenter = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="CareerAnalytics">
+          <TabsContent value="analytics">
             <div className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Performance CareerAnalytics</CardTitle>
+                  <CardTitle>Performance Analytics</CardTitle>
                   <CardDescription>Link building campaign effectiveness</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -703,7 +703,4 @@ const LinkBuildingCommandCenter = () => {
   );
 };
 
-export default LinkBuildingCommandCenter;
-
-
-
+export default LinkBuildingDashboard;

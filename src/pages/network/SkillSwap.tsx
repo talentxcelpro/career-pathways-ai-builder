@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { sampleSkillExchanges } from './sample-data';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAdvancedNetworking } from '@/hooks/useAdvancedNetworking';
+import { useTokenBalance } from '@/hooks/useTokenBalance';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -27,6 +28,7 @@ import {
 
 interface SkillExchange {
   id: string;
+  requester_id?: string;
   skill_offered: string;
   skill_sought: string;
   description: string;
@@ -46,6 +48,7 @@ const SkillSwap: React.FC = () => {
   const { user } = useAuth();
   const { createSkillExchange, loading } = useAdvancedNetworking();
   const { toast } = useToast();
+  const { availableBalance, refreshBalance } = useTokenBalance();
   const [skillExchanges, setSkillExchanges] = useState<SkillExchange[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -62,15 +65,17 @@ const SkillSwap: React.FC = () => {
     credits_required: 10
   });
 
+  const displayCredits = availableBalance > 0 ? availableBalance : userCredits;
+
   useEffect(() => {
     fetchSkillExchanges();
     if (user) {
       fetchUserCredits();
     }
 
-    // Set up real-time subscription
+    // Set up real-time subscription for live updates
     const channel = supabase
-      .channel('skill-exchanges-changes')
+      .channel('skill-exchanges-live-channel')
       .on(
         'postgres_changes',
         {
@@ -80,6 +85,18 @@ const SkillSwap: React.FC = () => {
         },
         () => {
           fetchSkillExchanges();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'user_txc_balances'
+        },
+        () => {
+          refreshBalance();
+          fetchUserCredits();
         }
       )
       .subscribe();
@@ -93,38 +110,79 @@ const SkillSwap: React.FC = () => {
     try {
       setIsLoading(true);
       
-      const { data, error } = await supabase
+      const { data: rawExchanges, error } = await supabase
         .from('skill_exchanges')
-        .select(`
-          *,
-          profiles!skill_exchanges_user_id_fkey (
-            full_name,
-            title,
-            profile_picture_url
-          )
-        `)
-        .eq('status', 'active')
+        .select('*')
         .order('created_at', { ascending: false });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching skill exchanges:', error);
+      }
       
-      const formattedData = data?.map(exchange => ({
-        ...exchange,
-        user_profile: {
-          full_name: exchange.profiles?.full_name || 'Anonymous User',
-          title: exchange.profiles?.title || 'Professional',
-          profile_picture_url: exchange.profiles?.profile_picture_url
+      let formattedData: SkillExchange[] = [];
+
+      if (rawExchanges && rawExchanges.length > 0) {
+        // Fetch profiles for users who posted exchanges
+        const userIds = Array.from(new Set(rawExchanges.map(e => e.requester_id).filter(Boolean)));
+        let profilesMap = new Map<string, any>();
+        
+        if (userIds.length > 0) {
+          const { data: profiles } = await supabase
+            .from('profiles')
+            .select('id, full_name, title, profile_picture_url')
+            .in('id', userIds);
+          
+          if (profiles) {
+            profilesMap = new Map(profiles.map(p => [p.id, p]));
+          }
         }
-      })) || [];
+
+        formattedData = rawExchanges.map(exchange => {
+          const profile = profilesMap.get(exchange.requester_id);
+          return {
+            id: exchange.id,
+            requester_id: exchange.requester_id,
+            skill_offered: exchange.skill_offered,
+            skill_sought: exchange.skill_requested || exchange.skill_offered,
+            description: exchange.description,
+            difficulty_level: (exchange as any).difficulty_level || 'intermediate',
+            session_length: (exchange.estimated_hours ? exchange.estimated_hours * 60 : 60),
+            credits_required: exchange.credits_value || 10,
+            status: exchange.status || 'active',
+            created_at: exchange.created_at,
+            user_profile: {
+              full_name: profile?.full_name || 'Verified Member',
+              title: profile?.title || 'Professional Specialist',
+              profile_picture_url: profile?.profile_picture_url || undefined
+            }
+          };
+        });
+      }
+
+      // Fallback to initial exchange opportunities if database has none
+      if (formattedData.length === 0) {
+        formattedData = sampleSkillExchanges.map(sample => ({
+          id: sample.id,
+          requester_id: undefined,
+          skill_offered: sample.skill_offered,
+          skill_sought: sample.skill_sought,
+          description: sample.description,
+          difficulty_level: sample.difficulty_level,
+          session_length: 60,
+          credits_required: sample.credits_offered,
+          status: 'active',
+          created_at: sample.created_at,
+          user_profile: {
+            full_name: sample.profiles.full_name,
+            title: 'Verified Specialist',
+            profile_picture_url: sample.profiles.profile_picture_url || undefined
+          }
+        }));
+      }
       
       setSkillExchanges(formattedData);
     } catch (error) {
       console.error('Error fetching skill exchanges:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load skill exchanges",
-        variant: "destructive"
-      });
     } finally {
       setIsLoading(false);
     }
@@ -142,7 +200,9 @@ const SkillSwap: React.FC = () => {
       
       if (error && error.code !== 'PGRST116') throw error;
       
-      setUserCredits(data?.txc_balance || 250);
+      if (data?.txc_balance !== undefined) {
+        setUserCredits(data.txc_balance);
+      }
     } catch (error) {
       console.error('Error fetching user credits:', error);
     }
@@ -161,7 +221,9 @@ const SkillSwap: React.FC = () => {
     const result = await createSkillExchange(
       formData.skill_offered,
       formData.skill_sought,
-      formData.description
+      formData.description,
+      formData.credits_required,
+      Math.round(formData.session_length / 60) || 1
     );
 
     if (result.success) {
@@ -175,6 +237,7 @@ const SkillSwap: React.FC = () => {
         credits_required: 10
       });
       fetchSkillExchanges();
+      refreshBalance();
     }
   };
 
@@ -261,7 +324,7 @@ const SkillSwap: React.FC = () => {
                 <Coins className="h-8 w-8 text-white" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900">{userCredits} TXC Credits</p>
+                <p className="text-2xl font-bold text-gray-900">{displayCredits} TXC Credits</p>
                 <p className="text-gray-600">Available for skill exchanges</p>
               </div>
             </div>
@@ -412,9 +475,9 @@ const SkillSwap: React.FC = () => {
                       <Button 
                         className="flex-1 apple-button"
                         onClick={() => handleExchangeRequest(exchange.id)}
-                        disabled={loading || userCredits < exchange.credits_required}
+                        disabled={loading || displayCredits < exchange.credits_required}
                       >
-                        {userCredits < exchange.credits_required ? 'Insufficient Credits' : 'Request Exchange'}
+                        {displayCredits < exchange.credits_required ? 'Insufficient Credits' : 'Request Exchange'}
                       </Button>
                       <Button className="p-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl border-0 transition-all duration-200">
                         <MessageSquare className="h-5 w-5" />
@@ -427,22 +490,55 @@ const SkillSwap: React.FC = () => {
           </TabsContent>
 
           <TabsContent value="my-exchanges" className="space-y-6">
-            <div className="text-center py-16">
-              <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <ArrowLeftRight className="h-12 w-12 text-blue-600" />
+            {skillExchanges.filter(e => e.requester_id === user?.id).length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {skillExchanges.filter(e => e.requester_id === user?.id).map((exchange) => (
+                  <div key={exchange.id} className="apple-card hover:shadow-xl transition-all duration-300">
+                    <div className="p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <Badge className={getBadgeVariant(exchange.difficulty_level)}>
+                          {exchange.difficulty_level}
+                        </Badge>
+                        <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50">
+                          {exchange.status}
+                        </Badge>
+                      </div>
+
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">{exchange.skill_offered}</h3>
+                      <p className="text-sm text-gray-500 mb-4">Seeking: {exchange.skill_sought}</p>
+                      <p className="text-gray-600 mb-6 line-clamp-3 text-sm">{exchange.description}</p>
+
+                      <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                        <div className="flex items-center gap-2 text-blue-600 font-bold">
+                          <Coins className="h-4 w-4" />
+                          <span>{exchange.credits_required} TXC</span>
+                        </div>
+                        <span className="text-xs text-gray-400">
+                          {new Date(exchange.created_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">No exchanges yet</h3>
-              <p className="text-gray-600 mb-8 max-w-md mx-auto">
-                Start by creating your first skill exchange or browsing available opportunities
-              </p>
-              <Button 
-                onClick={() => setShowCreateForm(true)}
-                className="apple-button"
-              >
-                <Plus className="h-5 w-5 mr-2" />
-                Create Your First Exchange
-              </Button>
-            </div>
+            ) : (
+              <div className="text-center py-16">
+                <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <ArrowLeftRight className="h-12 w-12 text-blue-600" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">No exchanges yet</h3>
+                <p className="text-gray-600 mb-8 max-w-md mx-auto">
+                  Start by creating your first skill exchange or browsing available opportunities
+                </p>
+                <Button 
+                  onClick={() => setShowCreateForm(true)}
+                  className="apple-button"
+                >
+                  <Plus className="h-5 w-5 mr-2" />
+                  Create Your First Exchange
+                </Button>
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </div>

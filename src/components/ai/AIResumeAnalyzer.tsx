@@ -61,7 +61,7 @@ const AIResumeAnalyzer = () => {
           </div>
           <div>
             <h2 className="text-2xl font-bold">TalentXcel AI Resume Analyzer</h2>
-            <p className="text-muted-foreground">Get instant Feedback to optimize your resume with TalentXcel AI</p>
+            <p className="text-muted-foreground">Get instant feedback to optimize your resume with TalentXcel AI</p>
           </div>
         </div>
         <Button className="gap-2">
@@ -247,4 +247,3 @@ const AIResumeAnalyzer = () => {
 };
 
 export default AIResumeAnalyzer;
-

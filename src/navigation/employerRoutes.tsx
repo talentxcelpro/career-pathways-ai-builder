@@ -1,22 +1,21 @@
-import { lazy } from "react";
+import { lazy, Suspense } from 'react';
 // Import refactored route modules
 import { employerCoreRoutes } from "./employer/coreRoutes";
 import { employerJobRoutes } from "./employer/jobRoutes";
 import { employerProfileRoutes } from "./employer/profileRoutes";
 import { employerCRMRoutes } from "./employer/crmRoutes";
-
-const RequestAccess = lazy(() => import("../pages/employer/RequestAccess"));
-const EmployerLanding = lazy(() => import("../pages/employer/EmployerLanding"));
-const CompanyCommandCenter = lazy(() => import("../pages/companies/CompanyDashboard"));
 import { EmployerAccessGuard } from "../components/employer/EmployerAccessGuard";
 
+const CompanyDashboard = lazy(() => import('../pages/companies/CompanyDashboard'));
+const EmployerLanding = lazy(() => import('../pages/employer/EmployerLanding'));
+const RequestAccess = lazy(() => import('../pages/employer/RequestAccess'));
 
 export const employerRoutes = [
   // Employer Landing Page (public route)
   {
     title: "Employer",
     to: "/employer",
-    page: <EmployerLanding />,
+    page: <Suspense fallback={null}><EmployerLanding /></Suspense>,
     requiresAuth: false,
     isPublic: true,
   },
@@ -25,15 +24,15 @@ export const employerRoutes = [
   {
     title: "Request Employer Access",
     to: "/employer/request-access",
-    page: <RequestAccess />,
+    page: <Suspense fallback={null}><RequestAccess /></Suspense>,
     requiresAuth: false,
   },
   
-  // Company Command Center
+  // Company Dashboard
   {
-    title: "Company Command Center",
-    to: "/company/command-center",
-    page: <CompanyCommandCenter />,
+    title: "Company Dashboard",
+    to: "/company/dashboard",
+    page: <Suspense fallback={null}><CompanyDashboard /></Suspense>,
   },
   
   // Core employer functionality
@@ -48,5 +47,3 @@ export const employerRoutes = [
   // CRM and collaboration features
   ...employerCRMRoutes,
 ];
-
-

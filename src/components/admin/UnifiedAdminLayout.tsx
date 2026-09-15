@@ -17,7 +17,7 @@ interface UnifiedAdminLayoutProps {
 
 export const UnifiedAdminLayout: React.FC<UnifiedAdminLayoutProps> = ({ 
   children, 
-  title = "Admin CommandCenter", 
+  title = "Admin Dashboard", 
   description 
 }) => {
   const { user, signOut } = useAuth();
@@ -76,5 +76,3 @@ export const UnifiedAdminLayout: React.FC<UnifiedAdminLayoutProps> = ({
     </AdminGuard>
   );
 };
-
-

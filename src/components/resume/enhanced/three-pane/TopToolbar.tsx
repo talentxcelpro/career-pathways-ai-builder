@@ -34,10 +34,10 @@ interface TopToolbarProps {
   saveStatus: 'idle' | 'saving' | 'saved' | 'error';
   lastSaved: Date;
   onToggleVoice?: () => void;
-  onToggleCareerAnalytics?: () => void;
+  onToggleAnalytics?: () => void;
   onToggleCollaboration?: () => void;
   showVoice?: boolean;
-  showCareerAnalytics?: boolean;
+  showAnalytics?: boolean;
   showCollaboration?: boolean;
 }
 
@@ -56,10 +56,10 @@ export const TopToolbar: React.FC<TopToolbarProps> = ({
   saveStatus,
   lastSaved,
   onToggleVoice,
-  onToggleCareerAnalytics,
+  onToggleAnalytics,
   onToggleCollaboration,
   showVoice = false,
-  showCareerAnalytics = false,
+  showAnalytics = false,
   showCollaboration = false
 }) => {
   const getSaveStatusInfo = () => {
@@ -151,13 +151,13 @@ export const TopToolbar: React.FC<TopToolbarProps> = ({
             </Button>
             
             <Button
-              variant={showCareerAnalytics ? "default" : "outline"}
+              variant={showAnalytics ? "default" : "outline"}
               size="sm"
-              onClick={onToggleCareerAnalytics}
+              onClick={onToggleAnalytics}
               className="gap-2"
             >
               <BarChart3 className="h-4 w-4" />
-              AI CareerAnalytics
+              AI Analytics
             </Button>
             
             <Button
@@ -211,6 +211,3 @@ export const TopToolbar: React.FC<TopToolbarProps> = ({
     </div>
   );
 };
-
-
-

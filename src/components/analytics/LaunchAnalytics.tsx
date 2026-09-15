@@ -1,15 +1,8 @@
 import React, { useEffect } from 'react';
 
-declare global {
-  interface Window {
-    gtag: (...args: any[]) => void;
-    dataLayer: any[];
-  }
-}
-
-export const LaunchCareerAnalytics: React.FC = () => {
+export const LaunchAnalytics: React.FC = () => {
   useEffect(() => {
-    // Initialize Google CareerAnalytics 4
+    // Initialize Google Analytics 4
     if (!import.meta.env.DEV) {
       // Load GA4 script
       const script = document.createElement('script');
@@ -46,19 +39,16 @@ export const LaunchCareerAnalytics: React.FC = () => {
       });
     }
 
-    // Development CareerAnalytics
+    // Development analytics
     if (import.meta.env.DEV) {
-      console.log('🎯 CareerAnalytics initialized for development');
+      console.log('🎯 Analytics initialized for development');
       
-      // Mock CareerAnalytics for development
+      // Mock analytics for development
       window.gtag = (command: string, targetId: string, config?: any) => {
-        console.log('📊 CareerAnalytics Event:', { command, targetId, config });
+        console.log('📊 Analytics Event:', { command, targetId, config });
       };
     }
   }, []);
 
   return null; // This component doesn't render anything
 };
-
-
-

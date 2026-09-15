@@ -19,7 +19,7 @@ import {
   Zap
 } from 'lucide-react';
 import { EditorResume } from '@/types/editor-resume';
-import { useResumeCareerAnalytics } from '@/hooks/useResumeAnalytics';
+import { useResumeAnalytics } from '@/hooks/useResumeAnalytics';
 import { useAdvancedAIFeatures } from '@/hooks/useAdvancedAIFeatures';
 import { useAIService } from '@/hooks/useAIService';
 import { useRealTimeATS } from '@/hooks/useRealTimeATS';
@@ -64,7 +64,7 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
     atsScore, 
     suggestions, 
     refreshAnalysis 
-  } = useResumeCareerAnalytics(enhancedData);
+  } = useResumeAnalytics(enhancedData);
   
   const {
     performAdvancedATSAnalysis,
@@ -292,7 +292,7 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
                 {mode === 'create' ? 'Create Resume' : 'Edit Resume'}
               </h1>
               <p className="text-muted-foreground">
-                Performance resume builder with real-time optimization
+                AI-powered resume builder with real-time optimization
               </p>
             </div>
             
@@ -394,7 +394,7 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
             </TabsTrigger>
             <TabsTrigger value="insights" className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
-              Intelligence Metrics
+              AI Insights
               {suggestions.length > 0 && (
                 <Badge variant="secondary" className="ml-1 text-xs">
                   {suggestions.length}
@@ -713,7 +713,3 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
     </div>
   );
 };
-
-
-
-

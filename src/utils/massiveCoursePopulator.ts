@@ -86,7 +86,7 @@ const courseTemplates: CourseTemplate[] = [
     difficulty: 'beginner',
     duration_hours: 30,
     price: 2499,
-    skills: ['SEO', 'Social Media Marketing', 'Google Ads', 'CareerAnalytics'],
+    skills: ['SEO', 'Social Media Marketing', 'Google Ads', 'Analytics'],
     tags: ['marketing', 'digital marketing', 'seo']
   },
   {
@@ -102,16 +102,16 @@ const courseTemplates: CourseTemplate[] = [
     tags: ['project management', 'agile', 'business']
   },
   {
-    title: 'Business CareerAnalytics & Intelligence',
-    description: 'Transform data into actionable business insights using modern CareerAnalytics tools',
+    title: 'Business Analytics & Intelligence',
+    description: 'Transform data into actionable business insights using modern analytics tools',
     category: 'Business',
-    subcategory: 'CareerAnalytics',
-    instructor: 'CareerAnalytics Expert',
+    subcategory: 'Analytics',
+    instructor: 'Analytics Expert',
     difficulty: 'intermediate',
     duration_hours: 35,
     price: 3499,
     skills: ['Business Intelligence', 'Data Analysis', 'Tableau', 'Power BI'],
-    tags: ['CareerAnalytics', 'business intelligence', 'data']
+    tags: ['analytics', 'business intelligence', 'data']
   },
   
   // Design Courses (80 variations)
@@ -314,6 +314,3 @@ export const populateMassiveCourseDatabase = async () => {
     throw error;
   }
 };
-
-
-

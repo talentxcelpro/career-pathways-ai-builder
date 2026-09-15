@@ -18,10 +18,30 @@ import {
 } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
 
 export default function PublicJobSearch() {
   const [searchQuery, setSearchQuery] = useState('');
   const [location, setLocation] = useState('');
+  const [savedJobs, setSavedJobs] = useState<string[]>([]);
+  const [appliedJobs, setAppliedJobs] = useState<string[]>([]);
+
+  const handleToggleSave = (jobTitle: string) => {
+    if (savedJobs.includes(jobTitle)) {
+      setSavedJobs(savedJobs.filter(t => t !== jobTitle));
+      toast.info(`Removed ${jobTitle} from saved jobs.`);
+    } else {
+      setSavedJobs([...savedJobs, jobTitle]);
+      toast.success(`Saved ${jobTitle} to your saved listings!`);
+    }
+  };
+
+  const handleApply = (jobTitle: string) => {
+    if (!appliedJobs.includes(jobTitle)) {
+      setAppliedJobs([...appliedJobs, jobTitle]);
+      toast.success(`🎉 Application submitted for ${jobTitle}!`);
+    }
+  };
 
   const featuredJobs = [
     {
@@ -39,7 +59,7 @@ export default function PublicJobSearch() {
       location: 'Mumbai, India',
       salary: '₹20-30 LPA',
       type: 'Full-time',
-      skills: ['Product Strategy', 'CareerAnalytics', 'Leadership'],
+      skills: ['Product Strategy', 'Analytics', 'Leadership'],
       posted: '1 day ago'
     },
     {
@@ -75,7 +95,7 @@ export default function PublicJobSearch() {
     <>
       <Helmet>
         <title>Jobs in India 2025 | Latest IT Jobs, Fresher Jobs, Remote Jobs - TalentXcel</title>
-        <meta name="description" content="Find latest jobs in India 2025. Browse 15,000+ IT jobs, fresher positions, remote work opportunities. Performance job matching with top companies." />
+        <meta name="description" content="Find latest jobs in India 2025. Browse 15,000+ IT jobs, fresher positions, remote work opportunities. AI-powered job matching with top companies." />
         <meta name="keywords" content="jobs in India 2025, latest IT jobs, fresher jobs, remote jobs India, job search, software engineer jobs, product manager jobs" />
         <link rel="canonical" href="https://talentxcel.in/public/jobs" />
         <meta property="og:title" content="Jobs in India 2025 | Latest IT Jobs, Fresher Jobs, Remote Jobs - TalentXcel" />
@@ -87,7 +107,7 @@ export default function PublicJobSearch() {
             "@context": "https://schema.org",
             "@type": "JobBoard",
             "name": "TalentXcel Jobs",
-            "description": "Find latest jobs in India with Performance matching",
+            "description": "Find latest jobs in India with AI-powered matching",
             "url": "https://talentxcel.in/public/jobs",
             "hiringOrganization": {
               "@type": "Organization",
@@ -116,7 +136,7 @@ export default function PublicJobSearch() {
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
               <Sparkles className="h-4 w-4" />
-              Performance Job Matching
+              AI-Powered Job Matching
             </div>
             <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
               Find Your Perfect Job
@@ -247,9 +267,23 @@ export default function PublicJobSearch() {
                         </div>
                       </div>
                       
-                      <div className="flex gap-2">
-                        <Button variant="outline">Save</Button>
-                        <Button>Apply Now</Button>
+                      <div className="flex items-center gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleToggleSave(job.title)}
+                          className="rounded-xl text-xs font-semibold"
+                        >
+                          {savedJobs.includes(job.title) ? 'Saved ✓' : 'Save'}
+                        </Button>
+                        <Button 
+                          size="sm"
+                          disabled={appliedJobs.includes(job.title)}
+                          onClick={() => handleApply(job.title)}
+                          className={appliedJobs.includes(job.title) ? "bg-emerald-600 text-white rounded-xl text-xs font-bold" : "rounded-xl text-xs font-bold"}
+                        >
+                          {appliedJobs.includes(job.title) ? 'Applied ✓' : 'Apply Now'}
+                        </Button>
                       </div>
                     </div>
                   </CardContent>
@@ -336,6 +370,3 @@ export default function PublicJobSearch() {
     </>
   );
 }
-
-
-

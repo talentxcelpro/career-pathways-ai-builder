@@ -182,11 +182,15 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
         url: urlData.url
       }));
 
+      const postType = attachments.some(a => a.type === 'video') 
+        ? 'video' 
+        : (attachments.length > 0 ? 'image' : 'text');
+
       const { data: postData, error } = await supabase
         .from('posts')
         .insert({
           content,
-          post_type: 'text',
+          post_type: postType,
           author_id: user.id,
           user_id: user.id,
           media_urls: attachments.map(att => att.url),
@@ -400,7 +404,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
                 className="text-sm border-0 bg-transparent"
               >
                 <option value="public">Public</option>
-                <option value="connections">TalentNetwork</option>
+                <option value="connections">Connections</option>
                 <option value="private">Private</option>
               </select>
             </div>
@@ -428,5 +432,3 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
 };
 
 export default CreatePost;
-
-

@@ -373,7 +373,7 @@ export const UnifiedResumeBuilder = () => {
       setProcessingProgress(100);
       setProcessingStatus('Complete!');
       
-      // Phase 5: Success Feedback
+      // Phase 5: Success feedback
       const hasContent = convertedData.personalInfo.fullName || 
                         convertedData.experience.length > 0 || 
                         convertedData.skills.length > 0;
@@ -1026,8 +1026,8 @@ export const UnifiedResumeBuilder = () => {
                   >
                     Back to Enhance
                   </Button>
-                  <Button onClick={() => navigate('/CommandCenter')}>
-                    Go to CommandCenter
+                  <Button onClick={() => navigate('/dashboard')}>
+                    Go to Dashboard
                   </Button>
                 </div>
               </CardContent>
@@ -1038,5 +1038,3 @@ export const UnifiedResumeBuilder = () => {
     </div>
   );
 };
-
-

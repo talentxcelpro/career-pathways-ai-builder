@@ -6,6 +6,7 @@ import { ImageOptimizer } from '@/utils/imageOptimization';
 import { useUrlDetection } from '@/hooks/useUrlDetection';
 import { useUrlPreview } from '@/hooks/useUrlPreview';
 import LinkPreview from '@/components/shared/LinkPreview';
+import { X } from 'lucide-react';
 
 interface MediaPreviewProps {
   content: string;
@@ -50,7 +51,13 @@ const MediaItem: React.FC<MediaItemProps> = ({ mediaUrl, isVideo, className, ind
   );
 };
 
-const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], isMessage = false }) => {
+export const MediaPreview: React.FC<MediaPreviewProps> = ({ 
+  content, 
+  mediaUrls = [], 
+  isMessage = false 
+}) => {
+  const [previewModalUrl, setPreviewModalUrl] = useState<string | null>(null);
+
   // Use URL detection hook to find URLs in content
   const { detectedUrls } = useUrlDetection(content);
   
@@ -155,7 +162,7 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
                 ) : (
                   <div 
                     className={itemClass}
-                    onClick={() => window.open(url, '_blank')}
+                    onClick={() => setPreviewModalUrl(url)}
                   >
                     <FastImage
                       src={url}
@@ -196,6 +203,32 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
               +{linkPreviewUrls.length - 3} more links
             </div>
           )}
+        </div>
+      )}
+
+      {/* In-App Media Lightbox Modal (Keeps user on talentxcel.in) */}
+      {previewModalUrl && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setPreviewModalUrl(null)}
+        >
+          <div 
+            className="relative max-w-4xl max-h-[90vh] bg-slate-900 rounded-3xl overflow-hidden p-2 shadow-2xl border border-slate-700" 
+            onClick={e => e.stopPropagation()}
+          >
+            <button 
+              onClick={() => setPreviewModalUrl(null)}
+              className="absolute top-4 right-4 z-10 p-2.5 rounded-full bg-black/70 text-white hover:bg-black/90 transition-colors shadow-md"
+              title="Close"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <img 
+              src={previewModalUrl} 
+              alt="Full preview" 
+              className="max-w-full max-h-[85vh] object-contain rounded-2xl mx-auto" 
+            />
+          </div>
         </div>
       )}
     </div>

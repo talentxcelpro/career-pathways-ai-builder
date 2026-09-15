@@ -1,4 +1,6 @@
-import { lazy } from "react";
+
+import { lazy, Suspense } from "react";
+import { AuthErrorBoundaryWrapper } from "../components/auth/AuthErrorBoundaryWrapper";
 
 const Login = lazy(() => import("../pages/auth/Login"));
 const Register = lazy(() => import("../pages/auth/Register"));
@@ -10,8 +12,9 @@ const PrivacyPolicy = lazy(() => import("../pages/auth/PrivacyPolicy"));
 const AuthPage = lazy(() => import("../pages/auth/AuthPage").then(m => ({ default: m.AuthPage })));
 const OnboardingFlow = lazy(() => import("../pages/auth/OnboardingFlow").then(m => ({ default: m.OnboardingFlow })));
 
-import { AuthErrorBoundaryWrapper } from "../components/auth/AuthErrorBoundaryWrapper";
-
+const S = ({ children }: { children: React.ReactNode }) => (
+  <Suspense fallback={null}>{children}</Suspense>
+);
 
 export const authRoutes = [
   {
@@ -19,7 +22,7 @@ export const authRoutes = [
     to: "/auth",
     page: (
       <AuthErrorBoundaryWrapper>
-        <AuthPage />
+        <S><AuthPage /></S>
       </AuthErrorBoundaryWrapper>
     ),
     isPublic: true
@@ -27,49 +30,49 @@ export const authRoutes = [
   {
     title: "Login",
     to: "/auth/login",
-    page: <Login />,
+    page: <S><Login /></S>,
     isPublic: true
   },
   {
     title: "Register", 
     to: "/auth/register",
-    page: <Register />,
+    page: <S><Register /></S>,
     isPublic: true
   },
   {
     title: "Forgot Password",
     to: "/auth/forgot-password",
-    page: <ForgotPassword />,
+    page: <S><ForgotPassword /></S>,
     isPublic: true
   },
   {
     title: "Reset Password",
     to: "/auth/reset-password",
-    page: <ResetPassword />,
+    page: <S><ResetPassword /></S>,
     isPublic: true
   },
   {
     title: "OAuth Callback",
     to: "/auth/callback",
-    page: <OAuthCallback />,
+    page: <S><OAuthCallback /></S>,
     isPublic: true
   },
   {
     title: "Terms of Service",
     to: "/terms",
-    page: <Terms />,
+    page: <S><Terms /></S>,
     isPublic: true
   },
   {
     title: "Privacy Policy", 
     to: "/privacypolicy",
-    page: <PrivacyPolicy />,
+    page: <S><PrivacyPolicy /></S>,
     isPublic: true
   },
   {
     title: "Onboarding",
     to: "/onboarding",
-    page: <OnboardingFlow />,
+    page: <S><OnboardingFlow /></S>,
     isPublic: false
   },
 ];

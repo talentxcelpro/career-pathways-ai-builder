@@ -1,159 +1,136 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { InfiniteReelsPulse } from '@/components/Pulse/InfiniteReelsPulse';
+import { InfiniteReelsFeed } from '@/components/reels/InfiniteReelsFeed';
 import { ReelsUploadModal } from '@/components/mobile/ReelsUploadModal';
 import { ReelsHeader } from '@/components/mobile/ReelsHeader';
 import { Button } from '@/components/ui/button';
-import { Plus, Home, Search, User, Heart, MessageCircle, Zap, Shield, Sparkles } from 'lucide-react';
+import { Plus, Home, Search, User, Heart, MessageCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { realtimeManager } from '@/lib/realtimeManager';
-import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '@/lib/utils';
 
 export const MobileReels = () => {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [activeTab, setActiveTab] = useState<'following' | 'explore'>('explore');
   const navigate = useNavigate();
 
+  // Disable realtime on this page to prevent binding conflicts
   useEffect(() => {
+    console.log('🎬 MobileReels: Disabling realtime to prevent conflicts');
     try {
       realtimeManager.cleanup();
     } catch (error) {
       console.warn('Failed to cleanup realtime:', error);
     }
+    
+    return () => {
+      console.log('🎬 MobileReels: Component unmounting');
+    };
   }, []);
 
   const handleUploadSuccess = () => {
-    toast.success("Talent story shared successfully!");
+    toast.success("Your reel has been uploaded successfully!");
     setShowUploadModal(false);
   };
 
+  const handleTabChange = (tab: 'following' | 'explore') => {
+    setActiveTab(tab);
+  };
+
   return (
-    <div className="edge-to-edge">
+    <>
       <Helmet>
-        <title>Talent Reels | Professional Discovery | TalentXcel</title>
-        <meta name="description" content="High-velocity professional stories and Professional Intelligence signals on TalentXcel." />
+        <title>TalentXcel Reels - Discover Professional Stories | Career Growth Videos</title>
+        <meta name="description" content="Discover inspiring career stories, professional tips, and growth content on TalentXcel Reels. Connect with professionals and share your journey." />
+        <meta name="keywords" content="career reels, professional videos, career growth, job tips, networking, professional development" />
+        <meta property="og:title" content="TalentXcel Reels - Professional Video Stories" />
+        <meta property="og:description" content="Watch and share professional career stories, tips, and insights on TalentXcel Reels." />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="TalentXcel Reels - Career Growth Videos" />
+        <meta name="twitter:description" content="Discover inspiring career stories and professional content." />
+        <link rel="canonical" href="https://talentxcel.in/mobile/reels" />
       </Helmet>
       
-      <div className="w-full h-screen overflow-hidden bg-slate-950 relative">
-        {/* TalentXcel Stream Header */}
-        <div className="absolute top-0 left-0 right-0 z-[60] bg-gradient-to-b from-black/80 via-black/40 to-transparent pt-12 pb-8 px-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="bg-blue-600 p-1.5 rounded-lg shadow-lg shadow-blue-500/20">
-                <Zap className="h-5 w-5 text-white" />
-              </div>
-              <h1 className="text-xl font-apple-heavy text-white tracking-tight">Talent Reels</h1>
-            </div>
-            
-            <div className="flex items-center bg-white/10 backdrop-blur-md rounded-full p-1 border border-white/10">
-              <button 
-                onClick={() => setActiveTab('explore')}
-                className={cn(
-                  "px-4 py-1.5 rounded-full text-[10px] font-apple-heavy transition-all",
-                  activeTab === 'explore' ? "bg-white text-slate-950" : "text-white/60"
-                )}
-              >
-                DISCOVER
-              </button>
-              <button 
-                onClick={() => setActiveTab('following')}
-                className={cn(
-                  "px-4 py-1.5 rounded-full text-[10px] font-apple-heavy transition-all",
-                  activeTab === 'following' ? "bg-white text-slate-950" : "text-white/60"
-                )}
-              >
-                FOLLOWING
-              </button>
-            </div>
-
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={() => navigate('/communication/messages')}
-              className="rounded-full bg-white/10 backdrop-blur-md text-white border border-white/10"
-            >
-              <MessageCircle className="h-5 w-5" />
-            </Button>
-          </div>
-        </div>
-
-        {/* Infinite Reels Pulse - Main Stream */}
-        <InfiniteReelsPulse 
-          onUploadClick={() => setShowUploadModal(true)}
-          PulseType={activeTab}
+      <div className="w-full h-screen overflow-hidden bg-black relative">
+        {/* Enhanced Mobile Header */}
+        <ReelsHeader
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          onSearch={() => console.log('Search opened')}
+          onNotifications={() => navigate('/mobile/notifications')}
+          onMessages={() => navigate('/network/messages')}
+          notificationCount={0}
+          messageCount={0}
         />
 
-        {/* Premium Bottom Navigation Overlays */}
-        <div className="absolute bottom-0 left-0 right-0 z-50 px-6 pb-8 pt-20 bg-gradient-to-t from-black via-black/60 to-transparent">
-          <div className="flex items-center justify-between max-w-lg mx-auto bg-white/10 backdrop-blur-2xl rounded-[32px] border border-white/10 p-2 shadow-2xl">
+        {/* Infinite Reels Feed with Enhanced Features */}
+        <InfiniteReelsFeed 
+          onUploadClick={() => setShowUploadModal(true)}
+          feedType={activeTab}
+        />
+
+        {/* Enhanced Bottom Navigation */}
+        <div className="absolute bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-black via-black/90 to-transparent backdrop-blur-md">
+          <div className="flex items-center justify-around py-3 px-4">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => navigate('/')}
-              className="rounded-2xl h-14 w-14 text-white/60 hover:text-white hover:bg-white/10"
+              className="flex flex-col items-center gap-1 text-white/70 hover:text-white hover:bg-white/10 rounded-xl h-12 w-12 transition-all"
             >
-              <Home className="h-6 w-6" />
+              <Home className="h-5 w-5" />
+              <span className="text-xs">Home</span>
             </Button>
             
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => navigate('/network')}
-              className="rounded-2xl h-14 w-14 text-white/60 hover:text-white hover:bg-white/10"
+              onClick={() => navigate('/network/people')}
+              className="flex flex-col items-center gap-1 text-white/70 hover:text-white hover:bg-white/10 rounded-xl h-12 w-12 transition-all"
             >
-              <Sparkles className="h-6 w-6" />
-            </Button>
-            
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                onClick={() => setShowUploadModal(true)}
-                className="bg-blue-600 text-white rounded-[24px] h-16 w-16 shadow-xl shadow-blue-500/20 hover:bg-blue-500"
-              >
-                <Plus className="h-8 w-8" />
-              </Button>
-            </motion.div>
-            
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate('/communication/messages')}
-              className="rounded-2xl h-14 w-14 text-white/60 hover:text-white hover:bg-white/10"
-            >
-              <MessageCircle className="h-6 w-6" />
+              <Heart className="h-5 w-5" />
+              <span className="text-xs">Activity</span>
             </Button>
             
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => navigate('/profile')}
-              className="rounded-2xl h-14 w-14 text-white/60 hover:text-white hover:bg-white/10"
+              onClick={() => setShowUploadModal(true)}
+              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 rounded-xl h-14 w-14 shadow-lg transform hover:scale-105 transition-all"
             >
-              <User className="h-6 w-6" />
+              <Plus className="h-6 w-6" />
             </Button>
-          </div>
-          
-          <div className="flex justify-center mt-4">
-            <div className="flex items-center gap-1 text-[10px] font-apple-bold text-white/40 uppercase tracking-tighter">
-              <Shield className="h-3 w-3" /> TalentXcel Encrypted Stream
-            </div>
+            
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/network/messages')}
+              className="flex flex-col items-center gap-1 text-white/70 hover:text-white hover:bg-white/10 rounded-xl h-12 w-12 transition-all"
+            >
+              <MessageCircle className="h-5 w-5" />
+              <span className="text-xs">Messages</span>
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/mobile/profile')}
+              className="flex flex-col items-center gap-1 text-white/70 hover:text-white hover:bg-white/10 rounded-xl h-12 w-12 transition-all"
+            >
+              <User className="h-5 w-5" />
+              <span className="text-xs">Profile</span>
+            </Button>
           </div>
         </div>
       
-        {/* Upload Modal */}
-        <AnimatePresence>
-          {showUploadModal && (
-            <ReelsUploadModal
-              isOpen={showUploadModal}
-              onClose={() => setShowUploadModal(false)}
-              onUploadSuccess={handleUploadSuccess}
-            />
-          )}
-        </AnimatePresence>
+      {/* Upload Modal */}
+      <ReelsUploadModal
+        isOpen={showUploadModal}
+        onClose={() => setShowUploadModal(false)}
+        onUploadSuccess={handleUploadSuccess}
+        />
       </div>
-    </div>
+    </>
   );
 };
-
-export default MobileReels;

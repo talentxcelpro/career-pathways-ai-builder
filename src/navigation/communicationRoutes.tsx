@@ -1,8 +1,8 @@
-import React, { lazy } from 'react';
-const DirectMessaging = lazy(() => import("@/components/communication/DirectMessaging"));
-const VideoConsultations = lazy(() => import("@/components/communication/VideoConsultations"));
-const GroupChatSystem = lazy(() => import("@/components/communication/GroupChatSystem"));
-
+import React from 'react';
+import { lazy, Suspense } from 'react';
+import DirectMessaging from "@/components/communication/DirectMessaging";
+import VideoConsultations from "@/components/communication/VideoConsultations";
+import GroupChatSystem from "@/components/communication/GroupChatSystem";
 
 export const communicationRoutes = [
   {

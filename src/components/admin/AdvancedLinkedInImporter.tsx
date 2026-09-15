@@ -39,7 +39,7 @@ interface LinkedInProfile {
   skills: string[];
   experience: string;
   education: string;
-  TalentNetwork: number;
+  connections: number;
 }
 
 interface ImportJob {
@@ -265,7 +265,7 @@ export const AdvancedLinkedInImporter: React.FC = () => {
         skills: (profile.skills || '').split(';').filter(Boolean),
         experience: profile.experience || '',
         education: profile.education || '',
-        TalentNetwork: parseInt(profile.TalentNetwork) || 0
+        connections: parseInt(profile.connections) || 0
       };
     }).filter(profile => profile.email && profile.linkedinUrl);
   };
@@ -283,7 +283,7 @@ export const AdvancedLinkedInImporter: React.FC = () => {
         skills: [],
         experience: '',
         education: '',
-        TalentNetwork: 0
+        connections: 0
       }));
   };
 
@@ -300,9 +300,9 @@ export const AdvancedLinkedInImporter: React.FC = () => {
   };
 
   const downloadTemplate = () => {
-    const template = `name,email,linkedin_url,title,company,location,skills,experience,education,TalentNetwork
+    const template = `name,email,linkedin_url,title,company,location,skills,experience,education,connections
 John Doe,john@example.com,https://linkedin.com/in/johndoe,Software Engineer,TechCorp,San Francisco,"JavaScript;React;Node.js","5 years in software development",MIT Computer Science,500+
-Jane Smith,jane@example.com,https://linkedin.com/in/janesmith,Product Manager,StartupCo,New York,"Product Management;CareerAnalytics;Strategy","3 years in product management",Stanford MBA,750+`;
+Jane Smith,jane@example.com,https://linkedin.com/in/janesmith,Product Manager,StartupCo,New York,"Product Management;Analytics;Strategy","3 years in product management",Stanford MBA,750+`;
     
     const blob = new Blob([template], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -593,7 +593,3 @@ https://linkedin.com/in/username3"
     </div>
   );
 };
-
-
-
-

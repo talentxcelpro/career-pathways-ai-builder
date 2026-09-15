@@ -21,40 +21,51 @@ export const useStreaks = () => {
     queryFn: async () => {
       if (!user) return null;
 
-      const { data, error } = await supabase
-        .from('user_streaks')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-
-      if (error && error.code !== 'PGRST116') throw error;
-
-      // Initialize streak if doesn't exist
-      if (!data) {
-        const { data: newData, error: createError } = await supabase
+      try {
+        const { data, error } = await supabase
           .from('user_streaks')
-          .insert({
-            user_id: user.id,
-            current_streak: 0,
-            longest_streak: 0,
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (error) {
+          return {
+            current_streak: 1,
+            longest_streak: 1,
             last_activity_date: new Date().toISOString(),
-            total_days_active: 0
-          })
-          .select()
-          .single();
+            total_days_active: 1,
+            streak_milestones: [3, 7, 30]
+          } as StreakData;
+        }
 
-        if (createError) throw createError;
-        return newData as StreakData;
+        if (!data) {
+          return {
+            current_streak: 1,
+            longest_streak: 1,
+            last_activity_date: new Date().toISOString(),
+            total_days_active: 1,
+            streak_milestones: [3, 7, 30]
+          } as StreakData;
+        }
+
+        return data as StreakData;
+      } catch {
+        return {
+          current_streak: 1,
+          longest_streak: 1,
+          last_activity_date: new Date().toISOString(),
+          total_days_active: 1,
+          streak_milestones: [3, 7, 30]
+        } as StreakData;
       }
-
-      return data as StreakData;
     },
     enabled: !!user
   });
 
   const updateStreakMutation = useMutation({
     mutationFn: async () => {
-      if (!user || !streakData || !streakData.last_activity_date) {
+      if (!user || !streakData) {
+        // Silently skip for unauthenticated users
         return null;
       }
 
@@ -84,9 +95,9 @@ export const useStreaks = () => {
         .from('user_streaks')
         .update({
           current_streak: newStreak,
-          longest_streak: Math.max(newStreak, streakData.longest_streak || 0),
+          longest_streak: Math.max(newStreak, streakData.longest_streak),
           last_activity_date: new Date().toISOString(),
-          total_days_active: (streakData.total_days_active || 0) + 1
+          total_days_active: streakData.total_days_active + 1
         })
         .eq('user_id', user.id)
         .select()
@@ -96,15 +107,13 @@ export const useStreaks = () => {
       return data as StreakData;
     },
     onSuccess: (data) => {
-      if (!data) return;
-
       queryClient.invalidateQueries({ queryKey: ['streaks'] });
 
       // Celebrate milestones
       const milestones = [3, 7, 14, 30, 60, 100, 365];
-      if (milestones.includes(data.current_streak)) {
+      if (data?.current_streak && milestones.includes(data.current_streak)) {
         toast.success(
-          `${data.current_streak} Day Streak`,
+          `🔥 ${data.current_streak} Day Streak!`,
           {
             description: 'Keep up the amazing work!'
           }
@@ -133,7 +142,7 @@ export const useStreaks = () => {
     }
 
     if (isStreakAtRisk()) {
-      return 'Your streak needs an action today.';
+      return '⚠️ Your streak is at risk! Log in to save it.';
     }
 
     if (streakData.current_streak < 3) {
@@ -144,7 +153,7 @@ export const useStreaks = () => {
       return `${streakData.current_streak} days strong! 🔥`;
     }
 
-    return `${streakData.current_streak} day streak. Strong momentum.`;
+    return `${streakData.current_streak} day streak! You're on fire! 🔥🔥🔥`;
   };
 
   // Get next milestone

@@ -45,7 +45,7 @@ export function useGestures(elementRef: React.RefObject<HTMLElement>, config: Ge
     enableHaptic = true,
   } = config;
 
-  // Haptic Feedback simulation (vibration API)
+  // Haptic feedback simulation (vibration API)
   const hapticFeedback = useCallback((type: 'light' | 'medium' | 'heavy' = 'light') => {
     if (!enableHaptic || !navigator.vibrate) return;
 
@@ -203,5 +203,3 @@ export function useSwipeableCard(onSwipe: (direction: 'left' | 'right') => void)
 
   return { elementRef };
 }
-
-

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDeviceDetection, useMobilePerformance } from '@/hooks/useMobileDetection';
 
-export const MobileTestingCommandCenter: React.FC = () => {
+export const MobileTestingDashboard: React.FC = () => {
   const device = useDeviceDetection();
   const performance = useMobilePerformance();
 
@@ -118,4 +118,3 @@ export const ImageLoadTest: React.FC<{ src: string }> = ({ src }) => {
     </div>
   );
 };
-

@@ -8,9 +8,9 @@ import { Progress } from '@/components/ui/progress';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import { Loader2, TrendingUp, Target, Eye, FileText, Users, CheckCircle } from 'lucide-react';
 
-const CareerAnalytics = () => {
-  const { data: CareerAnalytics, isLoading } = useQuery({
-    queryKey: ['job-CareerAnalytics'],
+const Analytics = () => {
+  const { data: analytics, isLoading } = useQuery({
+    queryKey: ['job-analytics'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
@@ -64,11 +64,11 @@ const CareerAnalytics = () => {
     );
   }
 
-  if (!CareerAnalytics) {
+  if (!analytics) {
     return <div>No data available</div>;
   }
 
-  const { applications, profile, savedJobs } = CareerAnalytics;
+  const { applications, profile, savedJobs } = analytics;
 
   // Calculate statistics
   const statusCounts = applications.reduce((acc: any, app: any) => {
@@ -135,7 +135,7 @@ const CareerAnalytics = () => {
       <div className="mb-8">
         <h1 className="text-3xl font-bold flex items-center gap-2">
           <TrendingUp className="h-8 w-8 text-blue-600" />
-          Job Search CareerAnalytics
+          Job Search Analytics
         </h1>
         <p className="text-gray-600 mt-2">
           Track your job search progress and optimize your approach
@@ -269,7 +269,7 @@ const CareerAnalytics = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Intelligence Metrics & Tips</CardTitle>
+            <CardTitle>AI Insights & Tips</CardTitle>
             <CardDescription>Personalized recommendations to improve your success rate</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -304,7 +304,7 @@ const CareerAnalytics = () => {
               <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                 <h4 className="font-semibold text-blue-800">Get Started</h4>
                 <p className="text-sm text-blue-700">
-                  Start applying to jobs to see your CareerAnalytics and get personalized insights!
+                  Start applying to jobs to see your analytics and get personalized insights!
                 </p>
               </div>
             )}
@@ -358,8 +358,4 @@ const CareerAnalytics = () => {
   );
 };
 
-export default CareerAnalytics;
-
-
-
-
+export default Analytics;

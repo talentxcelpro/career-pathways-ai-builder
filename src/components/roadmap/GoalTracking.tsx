@@ -133,7 +133,7 @@ const sampleGoals: Goal[] = [
   {
     id: '3',
     title: 'Expand Professional Network',
-    description: 'Build meaningful TalentNetwork with 50 industry professionals and thought leaders',
+    description: 'Build meaningful connections with 50 industry professionals and thought leaders',
     category: 'network',
     priority: 'medium',
     status: 'in_progress',
@@ -163,7 +163,7 @@ const sampleGoals: Goal[] = [
       }
     ],
     metrics: [
-      { key: 'New TalentNetwork', current: 31, target: 50, unit: 'people' },
+      { key: 'New Connections', current: 31, target: 50, unit: 'people' },
       { key: 'Events Attended', current: 6, target: 8, unit: 'events' },
       { key: 'Conversations', current: 12, target: 20, unit: 'conversations' }
     ],
@@ -174,7 +174,7 @@ const sampleGoals: Goal[] = [
   {
     id: '4',
     title: 'Master Data Science Fundamentals',
-    description: 'Develop strong foundation in data science, machine learning, and CareerAnalytics',
+    description: 'Develop strong foundation in data science, machine learning, and analytics',
     category: 'skill',
     priority: 'medium',
     status: 'paused',
@@ -208,7 +208,7 @@ const sampleGoals: Goal[] = [
       { key: 'Study Hours', current: 45, target: 180, unit: 'hours' }
     ],
     dependencies: [],
-    tags: ['Data Science', 'Python', 'Machine Learning', 'CareerAnalytics'],
+    tags: ['Data Science', 'Python', 'Machine Learning', 'Analytics'],
     estimatedEffort: '10 hours per week for 8 months'
   }
 ];
@@ -521,7 +521,3 @@ export const GoalTracking: React.FC = () => {
     </div>
   );
 };
-
-
-
-

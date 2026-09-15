@@ -223,5 +223,3 @@ export const SmartJobMatcher: React.FC<SmartJobMatcherProps> = ({
     </Card>
   );
 };
-
-

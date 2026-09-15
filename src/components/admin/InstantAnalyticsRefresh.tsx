@@ -30,21 +30,21 @@ interface RecalculationResult {
   improved: boolean;
 }
 
-export const InstantCareerAnalyticsRefresh: React.FC<{ onComplete?: () => void }> = ({ onComplete }) => {
+export const InstantAnalyticsRefresh: React.FC<{ onComplete?: () => void }> = ({ onComplete }) => {
   const [isRecalculating, setIsRecalculating] = useState(false);
   const [result, setResult] = useState<RecalculationResult | null>(null);
 
-  const recalculateCareerAnalytics = async () => {
+  const recalculateAnalytics = async () => {
     try {
       setIsRecalculating(true);
       setResult(null);
 
       toast({
-        title: "Recalculating CareerAnalytics...",
+        title: "Recalculating analytics...",
         description: "Analyzing email data for accurate metrics"
       });
 
-      // Get current CareerAnalytics first (before recalculation)
+      // Get current analytics first (before recalculation)
       const timeRangeDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
       
       // Fetch queue data
@@ -98,12 +98,12 @@ export const InstantCareerAnalyticsRefresh: React.FC<{ onComplete?: () => void }
         clicked: uniqueClickers.size,
       };
 
-      // Update daily CareerAnalytics table with corrected data
+      // Update daily analytics table with corrected data
       const today = new Date().toISOString().split('T')[0];
       
       try {
         await supabase
-          .from('email_CareerAnalytics_daily')
+          .from('email_analytics_daily')
           .upsert({
             stat_date: today,
             emails_sent: newStats.totalSent,
@@ -117,7 +117,7 @@ export const InstantCareerAnalyticsRefresh: React.FC<{ onComplete?: () => void }
             onConflict: 'stat_date'
           });
       } catch (upsertError) {
-        console.log('Daily CareerAnalytics update failed (this is OK):', upsertError);
+        console.log('Daily analytics update failed (this is OK):', upsertError);
       }
 
       const improved = (
@@ -133,10 +133,10 @@ export const InstantCareerAnalyticsRefresh: React.FC<{ onComplete?: () => void }
       });
 
       toast({
-        title: "CareerAnalytics recalculated successfully!",
+        title: "Analytics recalculated successfully!",
         description: improved 
-          ? "CareerAnalytics have been corrected and improved" 
-          : "CareerAnalytics data has been verified and updated",
+          ? "Analytics have been corrected and improved" 
+          : "Analytics data has been verified and updated",
         variant: improved ? "default" : "default"
       });
 
@@ -146,7 +146,7 @@ export const InstantCareerAnalyticsRefresh: React.FC<{ onComplete?: () => void }
       }
 
     } catch (error: any) {
-      console.error('CareerAnalytics recalculation error:', error);
+      console.error('Analytics recalculation error:', error);
       toast({
         title: "Recalculation failed",
         description: error.message || 'Unknown error occurred',
@@ -184,16 +184,16 @@ export const InstantCareerAnalyticsRefresh: React.FC<{ onComplete?: () => void }
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <BarChart3 className="h-5 w-5 text-green-600" />
-          Instant CareerAnalytics Refresh
+          Instant Analytics Refresh
         </CardTitle>
         <CardDescription>
-          Immediately recalculate and correct email CareerAnalytics using proper correlation logic
+          Immediately recalculate and correct email analytics using proper correlation logic
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         
         <Button 
-          onClick={recalculateCareerAnalytics}
+          onClick={recalculateAnalytics}
           disabled={isRecalculating}
           className="w-full"
           size="lg"
@@ -206,7 +206,7 @@ export const InstantCareerAnalyticsRefresh: React.FC<{ onComplete?: () => void }
           ) : (
             <>
               <RefreshCw className="w-4 h-4 mr-2" />
-              Recalculate CareerAnalytics Now
+              Recalculate Analytics Now
             </>
           )}
         </Button>
@@ -218,7 +218,7 @@ export const InstantCareerAnalyticsRefresh: React.FC<{ onComplete?: () => void }
               <CheckCircle className="h-4 w-4" />
               <AlertDescription>
                 <div className="flex items-center gap-2">
-                  <strong>CareerAnalytics Updated:</strong>
+                  <strong>Analytics Updated:</strong>
                   {result.improved ? (
                     <Badge className="bg-green-100 text-green-800">
                       <TrendingUp className="w-3 h-3 mr-1" />
@@ -246,13 +246,10 @@ export const InstantCareerAnalyticsRefresh: React.FC<{ onComplete?: () => void }
 
         <div className="text-xs text-muted-foreground space-y-1">
           <div><strong>Fixes:</strong> Correlates queue data with delivery events properly</div>
-          <div><strong>Updates:</strong> Daily CareerAnalytics table and live CommandCenter</div>
+          <div><strong>Updates:</strong> Daily analytics table and live dashboard</div>
           <div><strong>Result:</strong> Accurate delivery rates and engagement metrics</div>
         </div>
       </CardContent>
     </Card>
   );
 };
-
-
-

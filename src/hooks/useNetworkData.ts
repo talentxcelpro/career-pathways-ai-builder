@@ -28,7 +28,7 @@ export interface Connection {
 
 export const useNetworkData = () => {
   const [profiles, setProfiles] = useState<NetworkProfile[]>([]);
-  const [TalentNetwork, setTalentNetwork] = useState<Connection[]>([]);
+  const [connections, setConnections] = useState<Connection[]>([]);
   const [pendingRequests, setPendingRequests] = useState<Connection[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -49,8 +49,8 @@ export const useNetworkData = () => {
 
       if (profilesError) throw profilesError;
 
-      // Fetch user's TalentNetwork
-      const { data: TalentNetworkData, error: TalentNetworkError } = await supabase
+      // Fetch user's connections
+      const { data: connectionsData, error: connectionsError } = await supabase
         .from('connections')
         .select(`
           *,
@@ -59,7 +59,7 @@ export const useNetworkData = () => {
         .eq('status', 'accepted')
         .order('created_at', { ascending: false });
 
-      if (TalentNetworkError) throw TalentNetworkError;
+      if (connectionsError) throw connectionsError;
 
       // Fetch pending connection requests
       const { data: pendingData, error: pendingError } = await supabase
@@ -74,7 +74,7 @@ export const useNetworkData = () => {
       if (pendingError) throw pendingError;
 
       setProfiles(profilesData || []);
-      setTalentNetwork(TalentNetworkData || []);
+      setConnections(connectionsData || []);
       setPendingRequests(pendingData || []);
     } catch (error) {
       console.error('Error fetching network data:', error);
@@ -154,7 +154,7 @@ export const useNetworkData = () => {
 
   return {
     profiles,
-    TalentNetwork,
+    connections,
     pendingRequests,
     loading,
     sendConnectionRequest,
@@ -162,4 +162,3 @@ export const useNetworkData = () => {
     refreshData: fetchNetworkData
   };
 };
-

@@ -7,10 +7,12 @@ import { useState, useCallback, useRef } from 'react';
 import { aiServiceManager, AIServiceRequest, AIServiceResponse, AIFeedback } from '@/services/ai-service-manager';
 import { CoreResumeData } from '@/types/resume-core';
 import { toast } from 'sonner';
+import { analyzeATSFit, serializeATSResultForStorage, isATSAnalysis, ATSFitResult } from '@/lib/resume/atsEngine';
+
 
 export interface UseAIServiceOptions {
   enableFeedback?: boolean;
-  enableCareerAnalytics?: boolean;
+  enableAnalytics?: boolean;
   autoRetry?: boolean;
   maxRetries?: number;
 }
@@ -26,7 +28,7 @@ export interface AIOperationState {
 export function useAIService(options: UseAIServiceOptions = {}) {
   const {
     enableFeedback = true,
-    enableCareerAnalytics = true,
+    enableAnalytics = true,
     autoRetry = true,
     maxRetries = 2
   } = options;
@@ -225,7 +227,7 @@ export function useAIService(options: UseAIServiceOptions = {}) {
     );
   }, [executeOperation]);
 
-  // ATS Optimization
+  // ATS Optimization (legacy — passes resume data as CoreResumeData shape)
   const optimizeForATS = useCallback(async (
     resumeData: CoreResumeData,
     jobDescription: string,
@@ -240,28 +242,66 @@ export function useAIService(options: UseAIServiceOptions = {}) {
     );
   }, [executeOperation]);
 
+  // Phase 1 Real ATS Fit Analysis — uses real resume + job records from Supabase
+  const analyzeRealATSFit = useCallback(async (
+    resumeId: string,
+    jobId: string,
+    userId?: string
+  ): Promise<ATSFitResult | null> => {
+    updateState({
+      isProcessing: true,
+      currentOperation: 'ATS Fit Analysis',
+      progress: 10,
+      error: null,
+    });
+    try {
+      updateState({ progress: 30 });
+      const result = await analyzeATSFit(resumeId, jobId, userId);
+      updateState({ progress: 90 });
+      if (isATSAnalysis(result)) {
+        toast.success(`ATS analysis complete — score: ${result.score}/100`);
+      } else {
+        toast.warning(`ATS analysis unavailable: ${result.reason}`);
+      }
+      return result;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'ATS analysis failed';
+      updateState({ error: message });
+      toast.error('ATS analysis could not be completed. Your application was still submitted.');
+      return null;
+    } finally {
+      setTimeout(() => updateState({ isProcessing: false, currentOperation: null, progress: 0 }), 1000);
+    }
+  }, [updateState]);
+
+  // Serialize ATS result for application_data storage — safe merge helper
+  const getATSStoragePayload = useCallback((result: ATSFitResult) => {
+    return serializeATSResultForStorage(result);
+  }, []);
+
+
   // Feedback submission
   const submitFeedback = useCallback(async (
     operationId: string,
     rating: 1 | 2 | 3 | 4 | 5,
-    Feedback?: {
+    feedback?: {
       text?: string;
       improvements?: string[];
     }
   ) => {
     if (!enableFeedback) return;
 
-    const FeedbackData: AIFeedback = {
+    const feedbackData: AIFeedback = {
       operation_id: operationId,
       rating,
-      Feedback_text: Feedback?.text,
-      improvement_suggestions: Feedback?.improvements
+      feedback_text: feedback?.text,
+      improvement_suggestions: feedback?.improvements
     };
 
     try {
-      await aiServiceManager.submitFeedback(FeedbackData);
+      await aiServiceManager.submitFeedback(feedbackData);
     } catch (error) {
-      console.error('Failed to submit Feedback:', error);
+      console.error('Failed to submit feedback:', error);
     }
   }, [enableFeedback]);
 
@@ -279,18 +319,18 @@ export function useAIService(options: UseAIServiceOptions = {}) {
     }
   }, []);
 
-  // Get usage CareerAnalytics
-  const getUsageCareerAnalytics = useCallback(async (timeframe: 'day' | 'week' | 'month' = 'week') => {
-    if (!enableCareerAnalytics) return null;
+  // Get usage analytics
+  const getUsageAnalytics = useCallback(async (timeframe: 'day' | 'week' | 'month' = 'week') => {
+    if (!enableAnalytics) return null;
 
     try {
-      const CareerAnalytics = await aiServiceManager.getUsageCareerAnalytics(timeframe);
-      return CareerAnalytics;
+      const analytics = await aiServiceManager.getUsageAnalytics(timeframe);
+      return analytics;
     } catch (error) {
-      console.error('Failed to get usage CareerAnalytics:', error);
+      console.error('Failed to get usage analytics:', error);
       return null;
     }
-  }, [enableCareerAnalytics]);
+  }, [enableAnalytics]);
 
   // Cancel operation
   const cancelOperation = useCallback(() => {
@@ -425,6 +465,10 @@ export function useAIService(options: UseAIServiceOptions = {}) {
     getCareerAdvice,
     optimizeForATS,
 
+    // Phase 1 Real ATS Engine
+    analyzeRealATSFit,
+    getATSStoragePayload,
+
     // Legacy compatibility
     invokeAITool,
     analyzeCareerPath,
@@ -433,7 +477,7 @@ export function useAIService(options: UseAIServiceOptions = {}) {
     // Utility operations
     submitFeedback,
     checkServiceHealth,
-    getUsageCareerAnalytics,
+    getUsageAnalytics,
     cancelOperation,
     batchProcess,
 
@@ -441,7 +485,3 @@ export function useAIService(options: UseAIServiceOptions = {}) {
     serviceManager: aiServiceManager
   };
 }
-
-
-
-

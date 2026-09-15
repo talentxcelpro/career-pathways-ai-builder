@@ -159,9 +159,9 @@ export const useLearningProgressTracking = () => {
         [update.lessonId]: data
       }));
 
-      // Track CareerAnalytics
+      // Track analytics
       await supabase
-        .from('learning_CareerAnalytics')
+        .from('learning_analytics')
         .insert({
           user_id: user.id,
           course_id: update.courseId,
@@ -190,7 +190,7 @@ export const useLearningProgressTracking = () => {
     progressPercentage?: number
   ) => {
     try {
-      // Use the database function for efficient video Growth Path
+      // Use the database function for efficient video progress tracking
       const { error } = await supabase.rpc('track_video_progress', {
         p_lesson_id: lessonId,
         p_position_seconds: positionSeconds,
@@ -307,6 +307,3 @@ export const useLearningProgressTracking = () => {
     resetProgress
   };
 };
-
-
-

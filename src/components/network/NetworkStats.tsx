@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 interface NetworkStatsProps {
   stats?: {
-    TalentNetwork: number;
+    connections: number;
     messages: number;
     profileViews: number;
     events: number;
@@ -19,7 +19,7 @@ export const NetworkStats: React.FC<NetworkStatsProps> = ({ stats }) => {
   
   // Use accurate stats if available, otherwise fallback to props
   const displayStats = {
-    TalentNetwork: accurateStats?.TalentNetwork || stats?.TalentNetwork || 0,
+    connections: accurateStats?.connections || stats?.connections || 0,
     messages: stats?.messages || 0, // Messages not tracked in new system yet
     profileViews: accurateStats?.profileViews || stats?.profileViews || 0,
     events: stats?.events || 0 // Events not tracked in new system yet
@@ -33,9 +33,9 @@ export const NetworkStats: React.FC<NetworkStatsProps> = ({ stats }) => {
         <div className="flex items-center justify-between py-1">
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4 text-blue-600" />
-            <span className="text-sm text-slate-800 font-medium">TalentNetwork</span>
+            <span className="text-sm text-slate-800 font-medium">Connections</span>
           </div>
-          <span className="text-sm font-semibold text-blue-600">{displayStats.TalentNetwork}</span>
+          <span className="text-sm font-semibold text-blue-600">{displayStats.connections}</span>
         </div>
         
         <div className="flex items-center justify-between py-1">
@@ -67,4 +67,3 @@ export const NetworkStats: React.FC<NetworkStatsProps> = ({ stats }) => {
     </Card>
   );
 };
-

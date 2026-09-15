@@ -57,7 +57,7 @@ const categories = [
   'Video & Animation',
   'Music & Audio',
   'Business Consulting',
-  'Data & CareerAnalytics',
+  'Data & Analytics',
   'AI & Machine Learning'
 ];
 
@@ -451,6 +451,3 @@ export const ServicesMarketplace: React.FC = () => {
     </div>
   );
 };
-
-
-

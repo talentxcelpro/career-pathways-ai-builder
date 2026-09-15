@@ -219,7 +219,7 @@ const CollegeChatAI = () => {
               <div className="ml-auto">
                 <Badge variant="secondary" className="bg-green-100 text-green-700">
                   <Sparkles className="h-3 w-3 mr-1" />
-                  Performance
+                  AI Powered
                 </Badge>
               </div>
             </div>
@@ -276,7 +276,7 @@ const CollegeChatAI = () => {
                         {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </div>
 
-                      {/* Smart Moves */}
+                      {/* AI Suggestions */}
                       {message.type === 'ai' && message.suggestions && (
                         <div className="mt-3 space-y-1">
                           {message.suggestions.map((suggestion, index) => (

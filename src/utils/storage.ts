@@ -12,14 +12,14 @@ const CUSTOM_IMAGE_BASE = `https://images.talentxcel.in/image-proxy/`;
  */
 export const getCustomStorageUrl = (originalUrl: string): string => {
   if (!originalUrl) return originalUrl;
-  
-  // If it's a Supabase public storage URL, convert to our image proxy for SEO
-  const publicBaseRegex = /https:\/\/[a-z0-9-]+\.supabase\.co\/storage\/v1\/object\/public\//i;
-  if (publicBaseRegex.test(originalUrl)) {
-    const path = originalUrl.replace(publicBaseRegex, '');
-    
-    // Use edge function image proxy for reliability; can switch to custom domain when ready
-    return `${IMAGE_PROXY_BASE}${path}`;
+
+  // Image-proxy edge function is currently unreliable — serve the original
+  // public storage URL directly (Cloudflare CDN on Supabase handles caching).
+  if (originalUrl.startsWith(IMAGE_PROXY_BASE)) {
+    return originalUrl.replace(IMAGE_PROXY_BASE, `https://${SUPABASE_PROJECT_REF}.supabase.co/storage/v1/object/public/`);
+  }
+  if (originalUrl.startsWith(CUSTOM_IMAGE_BASE)) {
+    return originalUrl.replace(CUSTOM_IMAGE_BASE, `https://${SUPABASE_PROJECT_REF}.supabase.co/storage/v1/object/public/`);
   }
   return originalUrl;
 };

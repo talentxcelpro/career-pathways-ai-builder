@@ -54,7 +54,7 @@ export const AIServiceHistory = () => {
           <div className="text-center py-8">
             <MessageSquare className="w-12 h-12 mx-auto text-muted-foreground/50 mb-3" />
             <p className="text-muted-foreground">
-              No conversations yet. Start chatting with the TalentXcel Navigator!
+              No conversations yet. Start chatting with the AI assistant!
             </p>
           </div>
         ) : (

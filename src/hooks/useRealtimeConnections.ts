@@ -16,7 +16,7 @@ interface RealtimeUser {
   email: string | null;
 }
 
-export function useRealtimeTalentNetwork() {
+export function useRealtimeConnections() {
   const { user } = useAuth();
   const [users, setUsers] = useState<RealtimeUser[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,14 +29,14 @@ export function useRealtimeTalentNetwork() {
     try {
       setLoading(true);
       
-      // Get users excluding current user and existing TalentNetwork
-      const { data: existingTalentNetwork } = await supabase
+      // Get users excluding current user and existing connections
+      const { data: existingConnections } = await supabase
         .from('connections')
         .select('recipient_id, requester_id')
         .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
         .eq('status', 'accepted');
 
-      const connectedUserIds = existingTalentNetwork?.map(conn => 
+      const connectedUserIds = existingConnections?.map(conn => 
         conn.requester_id === user.id ? conn.recipient_id : conn.requester_id
       ) || [];
 
@@ -167,7 +167,7 @@ export function useRealtimeTalentNetwork() {
 
   return {
     users: filteredUsers,
-    TalentNetwork: filteredUsers.map(u => ({ id: u.id, otherUser: u })), // backward compatibility
+    connections: filteredUsers.map(u => ({ id: u.id, otherUser: u })), // backward compatibility
     loading,
     isLoading: loading, // backward compatibility
     stats: {
@@ -181,4 +181,3 @@ export function useRealtimeTalentNetwork() {
     refetch: fetchUsers
   };
 }
-

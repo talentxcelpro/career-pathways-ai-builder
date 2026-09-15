@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { 
-  useTalentNetworkRealtime,
+  useConnectionsRealtime,
   useMessagesRealtime,
   useActivitiesRealtime,
   useTXCRealtime,
@@ -68,11 +68,11 @@ export const RealtimeDemo: React.FC = () => {
     });
   });
 
-  // TalentNetwork realtime
-  useTalentNetworkRealtime((payload) => {
+  // Connections realtime
+  useConnectionsRealtime((payload) => {
     addEvent('connections', payload);
     toast({
-      title: "TalentNetwork Update",
+      title: "Connections Update",
       description: `Connection ${payload.eventType.toLowerCase()}d in real-time!`,
       duration: 3000,
     });
@@ -243,7 +243,7 @@ export const RealtimeDemo: React.FC = () => {
             <div className="text-xs text-muted-foreground">Real-time enabled</div>
           </div>
           <div className="text-center p-2">
-            <div className="text-sm font-medium">TalentNetwork Module</div>
+            <div className="text-sm font-medium">Connections Module</div>
             <div className="text-xs text-muted-foreground">Real-time enabled</div>
           </div>
         </div>
@@ -251,4 +251,3 @@ export const RealtimeDemo: React.FC = () => {
     </Card>
   );
 };
-

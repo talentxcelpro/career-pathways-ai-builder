@@ -109,9 +109,9 @@ export const VideoUrlFixer: React.FC = () => {
           videoUrl = 'https://www.youtube.com/embed/_b4QHbOKY3k'; // Resume & Interview Skills - verified working
         }
         
-        // DATA SCIENCE & CareerAnalytics
-        else if ((allText.includes('data science') || allText.includes('data CareerAnalytics') || 
-                  allText.includes('CareerAnalytics') || allText.includes('data visualization')) &&
+        // DATA SCIENCE & ANALYTICS
+        else if ((allText.includes('data science') || allText.includes('data analytics') || 
+                  allText.includes('analytics') || allText.includes('data visualization')) &&
                  !allText.includes('python')) {
           videoUrl = 'https://www.youtube.com/embed/ua-CiDNNj30'; // Data Science Fundamentals - verified working
         }
@@ -146,9 +146,9 @@ export const VideoUrlFixer: React.FC = () => {
           videoUrl = 'https://www.youtube.com/embed/HXV3zeQKqGY'; // SQL Tutorial - verified working
         }
         
-        // BUSINESS CareerAnalytics
-        else if (courseTitle.includes('business CareerAnalytics') || courseTitle.includes('data-driven')) {
-          videoUrl = 'https://www.youtube.com/embed/yZvFH7B6gKI'; // Business CareerAnalytics - verified working
+        // BUSINESS ANALYTICS
+        else if (courseTitle.includes('business analytics') || courseTitle.includes('data-driven')) {
+          videoUrl = 'https://www.youtube.com/embed/yZvFH7B6gKI'; // Business Analytics - verified working
         }
         
         // CUSTOMER SERVICE & COMMUNICATION
@@ -259,6 +259,3 @@ export const VideoUrlFixer: React.FC = () => {
     </Card>
   );
 };
-
-
-

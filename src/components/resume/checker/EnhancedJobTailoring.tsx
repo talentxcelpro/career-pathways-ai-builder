@@ -55,7 +55,7 @@ We offer competitive salary, comprehensive benefits, and opportunities for profe
 
 Requirements:
 - 3+ years marketing experience
-- Google CareerAnalytics and Ads certification
+- Google Analytics and Ads certification
 - Experience with email marketing platforms
 - Strong analytical and communication skills
 - Bachelor's degree in Marketing or Business
@@ -211,7 +211,7 @@ export const EnhancedJobTailoring: React.FC<EnhancedJobTailoringProps> = ({
             <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
               <h5 className="font-semibold text-blue-900 mb-2">Ready to Optimize Your Resume?</h5>
               <p className="text-sm text-blue-800 mb-3">
-                Use our Performance resume builder to automatically incorporate these insights and create a perfectly tailored resume.
+                Use our AI-powered resume builder to automatically incorporate these insights and create a perfectly tailored resume.
               </p>
               <Button className="bg-blue-600 hover:bg-blue-700">
                 <Sparkles className="h-4 w-4 mr-2" />
@@ -231,7 +231,3 @@ export const EnhancedJobTailoring: React.FC<EnhancedJobTailoringProps> = ({
     </Card>
   );
 };
-
-
-
-

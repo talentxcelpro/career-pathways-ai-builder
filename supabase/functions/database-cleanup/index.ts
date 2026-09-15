@@ -17,7 +17,7 @@ const handler = async (req: Request): Promise<Response> => {
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const { action, confirm } = await req.json();
-
+    
     if (!confirm || confirm !== 'EMERGENCY_CLEANUP') {
       return new Response(JSON.stringify({
         success: false,
@@ -29,7 +29,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     console.log('Starting emergency database cleanup...');
-
+    
     const results = [];
 
     // Clean up old function logs (older than 7 days)
@@ -38,7 +38,7 @@ const handler = async (req: Request): Promise<Response> => {
         .from('function_health_logs')
         .delete()
         .lt('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
-
+      
       if (logsError) {
         console.error('Error cleaning function logs:', logsError);
       } else {
@@ -54,7 +54,7 @@ const handler = async (req: Request): Promise<Response> => {
         .delete()
         .in('status', ['sent', 'failed'])
         .lt('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
-
+      
       if (emailError) {
         console.error('Error cleaning email queue:', emailError);
       } else {
@@ -69,7 +69,7 @@ const handler = async (req: Request): Promise<Response> => {
         .from('security_events')
         .delete()
         .lt('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString());
-
+      
       if (securityError) {
         console.error('Error cleaning security events:', securityError);
       } else {
@@ -84,7 +84,7 @@ const handler = async (req: Request): Promise<Response> => {
         .from('ai_processing_logs')
         .delete()
         .lt('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
-
+      
       if (aiLogsError) {
         console.error('Error cleaning AI logs:', aiLogsError);
       } else {
@@ -99,7 +99,7 @@ const handler = async (req: Request): Promise<Response> => {
         .from('ai_prefill_cache')
         .delete()
         .lt('expires_at', new Date().toISOString());
-
+      
       if (cacheError) {
         console.error('Error cleaning cache:', cacheError);
       } else {

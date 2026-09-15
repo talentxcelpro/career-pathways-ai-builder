@@ -33,8 +33,8 @@ import {
 const PLATFORM_MODULES: ModuleConfig[] = [
   {
     name: 'passport',
-    title: 'Evolution Hub',
-    description: 'Your comprehensive career profile and Growth Path',
+    title: 'Career Passport',
+    description: 'Your comprehensive career profile and progress tracking',
     icon: '🛡️',
     route: '/passport',
     isEnabled: true,
@@ -66,7 +66,7 @@ const PLATFORM_MODULES: ModuleConfig[] = [
   },
   {
     name: 'employer',
-    title: 'Employer CommandCenter',
+    title: 'Employer Dashboard',
     description: 'Manage job postings and recruit talent',
     icon: '🏢',
     route: '/employer',
@@ -144,7 +144,7 @@ const PLATFORM_MODULES: ModuleConfig[] = [
   {
     name: 'career-map',
     title: 'Career Roadmap',
-    description: 'Plan your career journey with Intelligence Metrics',
+    description: 'Plan your career journey with AI insights',
     icon: '🗺️',
     route: '/career-map',
     isEnabled: true,
@@ -228,13 +228,13 @@ function PlatformOverview({ userProfile, careerPassport }: PlatformOverviewProps
         </CardContent>
       </Card>
 
-      {/* Evolution Hub Summary */}
+      {/* Career Passport Summary */}
       {careerPassport && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Award className="h-5 w-5" />
-              Evolution Hub Summary
+              Career Passport Summary
             </CardTitle>
           </CardHeader>
           
@@ -343,7 +343,7 @@ export function TalentXcelPlatform() {
     setError(null);
 
     try {
-      // Load user profile and Evolution Hub in parallel
+      // Load user profile and career passport in parallel
       const [profileResult, passportResult] = await Promise.allSettled([
         safeApiCall(() => apiClient.getCareerPassport(user.id)),
         safeApiCall(() => apiClient.getCareerPassport(user.id))
@@ -397,4 +397,3 @@ export function TalentXcelPlatform() {
 }
 
 export default TalentXcelPlatform;
-

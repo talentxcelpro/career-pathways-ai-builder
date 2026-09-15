@@ -26,6 +26,7 @@ export const useTXCMining = () => {
   const { refreshBalance } = useTokenBalance();
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
+  const lastFailedTime = useState(() => ({ current: 0 }))[0];
 
   // Verify policy integrity on hook initialization
   useEffect(() => {
@@ -80,6 +81,11 @@ export const useTXCMining = () => {
       return false; // Silent fail for cooldown
     }
 
+    // Skip edge function calls if in failed request cooldown (60s)
+    if (Date.now() - lastFailedTime.current < 60000) {
+      return false;
+    }
+
     // Skip edge function calls if already processing to prevent spam
     if (isProcessing) {
       return false;
@@ -95,6 +101,11 @@ export const useTXCMining = () => {
           metadata
         }
       });
+
+      if (error) {
+        lastFailedTime.current = Date.now();
+        return false;
+      }
       
       if (data?.success) {
         // Show success message
@@ -116,12 +127,11 @@ export const useTXCMining = () => {
         refreshBalance();
         return true;
       } else {
-        // Silent fail for cooldown or other non-critical errors
         return false;
       }
-      return false;
     } catch (error) {
-      console.error('TXC earning error:', error);
+      console.warn('TXC earning error (cooldown activated 60s):', error);
+      lastFailedTime.current = Date.now();
       return false;
     } finally {
       setIsProcessing(false);

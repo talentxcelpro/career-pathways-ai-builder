@@ -45,4 +45,3 @@ export function RealtimeStatusIndicator() {
     </Badge>
   );
 }
-

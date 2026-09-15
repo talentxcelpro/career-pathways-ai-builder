@@ -10,7 +10,7 @@ interface VideoEvent {
   session_id: string;
 }
 
-interface VideoCareerAnalytics {
+interface VideoAnalytics {
   totalWatchTime: number;
   completionRate: number;
   averageSessionDuration: number;
@@ -20,7 +20,7 @@ interface VideoCareerAnalytics {
   errors: number;
 }
 
-export const useVideoCareerAnalytics = (lessonId: string, userId?: string) => {
+export const useVideoAnalytics = (lessonId: string, userId?: string) => {
   const sessionId = useRef(Math.random().toString(36).substring(7));
   const sessionStartTime = useRef(Date.now());
   const lastHeartbeat = useRef(Date.now());
@@ -75,16 +75,16 @@ export const useVideoCareerAnalytics = (lessonId: string, userId?: string) => {
 
     try {
       const { error } = await supabase
-        .from('video_CareerAnalytics')
+        .from('video_analytics')
         .insert(events);
 
       if (error) {
-        console.error('Failed to save video CareerAnalytics:', error);
+        console.error('Failed to save video analytics:', error);
         // Re-queue events on failure
         eventQueue.current.unshift(...events);
       }
     } catch (error) {
-      console.error('CareerAnalytics flush error:', error);
+      console.error('Analytics flush error:', error);
       // Re-queue events on network error
       eventQueue.current.unshift(...events);
     }
@@ -107,8 +107,8 @@ export const useVideoCareerAnalytics = (lessonId: string, userId?: string) => {
     }
   }, []);
 
-  // Calculate CareerAnalytics
-  const calculateCareerAnalytics = useCallback((): VideoCareerAnalytics => {
+  // Calculate analytics
+  const calculateAnalytics = useCallback((): VideoAnalytics => {
     const totalWatchTime = watchSegments.current.reduce(
       (total, segment) => total + (segment.end - segment.start),
       0
@@ -131,11 +131,11 @@ export const useVideoCareerAnalytics = (lessonId: string, userId?: string) => {
     if (now - lastHeartbeat.current > 30000) { // 30 seconds
       trackVideoEvent('heartbeat', {
         session_duration: now - sessionStartTime.current,
-        total_watch_time: calculateCareerAnalytics().totalWatchTime
+        total_watch_time: calculateAnalytics().totalWatchTime
       });
       lastHeartbeat.current = now;
     }
-  }, [trackVideoEvent, calculateCareerAnalytics]);
+  }, [trackVideoEvent, calculateAnalytics]);
 
   // Track engagement milestones
   const trackMilestone = useCallback((percentage: number, duration: number) => {
@@ -227,7 +227,7 @@ export const useVideoCareerAnalytics = (lessonId: string, userId?: string) => {
       endWatchSegment(Date.now());
       trackVideoEvent('session_end', {
         session_duration: Date.now() - sessionStartTime.current,
-        total_watch_time: calculateCareerAnalytics().totalWatchTime
+        total_watch_time: calculateAnalytics().totalWatchTime
       });
       flushEvents();
     };
@@ -246,7 +246,7 @@ export const useVideoCareerAnalytics = (lessonId: string, userId?: string) => {
       // Final flush
       flushEvents();
     };
-  }, [endWatchSegment, trackVideoEvent, calculateCareerAnalytics, flushEvents]);
+  }, [endWatchSegment, trackVideoEvent, calculateAnalytics, flushEvents]);
 
   // Periodic heartbeat
   useEffect(() => {
@@ -264,10 +264,7 @@ export const useVideoCareerAnalytics = (lessonId: string, userId?: string) => {
     trackVariant,
     trackError,
     trackAccessibility,
-    CareerAnalytics: calculateCareerAnalytics(),
+    analytics: calculateAnalytics(),
     sessionId: sessionId.current
   };
 };
-
-
-

@@ -37,7 +37,7 @@ import {
   BarChart3
 } from 'lucide-react';
 
-interface CareerAnalyticsData {
+interface AnalyticsData {
   toolUsage: Array<{ tool: string; usage: number; efficiency: number }>;
   timeSpent: Array<{ date: string; minutes: number; tools_used: number }>;
   successRates: Array<{ tool: string; success_rate: number; completion_rate: number }>;
@@ -53,23 +53,23 @@ interface CareerAnalyticsData {
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];
 
-const AdvancedCareerAnalytics = () => {
-  const [CareerAnalyticsData, setCareerAnalyticsData] = useState<CareerAnalyticsData | null>(null);
+const AdvancedAnalytics = () => {
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
   const [dateRange, setDateRange] = useState('30d');
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
-    fetchAdvancedCareerAnalytics();
+    fetchAdvancedAnalytics();
   }, [dateRange]);
 
-  const fetchAdvancedCareerAnalytics = async () => {
+  const fetchAdvancedAnalytics = async () => {
     setLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Fetch tool usage CareerAnalytics
+      // Fetch tool usage analytics
       const { data: toolUsageData, error: toolError } = await supabase
         .from('tool_usage')
         .select('tool_name, session_data, results, created_at')
@@ -88,13 +88,13 @@ const AdvancedCareerAnalytics = () => {
       if (resultsError) throw resultsError;
 
       // Process the data
-      const processedData = processCareerAnalyticsData(toolUsageData || [], savedResults || []);
-      setCareerAnalyticsData(processedData);
+      const processedData = processAnalyticsData(toolUsageData || [], savedResults || []);
+      setAnalyticsData(processedData);
     } catch (error) {
-      console.error('Error fetching advanced CareerAnalytics:', error);
+      console.error('Error fetching advanced analytics:', error);
       toast({
         title: "Error",
-        description: "Failed to load advanced CareerAnalytics.",
+        description: "Failed to load advanced analytics.",
         variant: "destructive",
       });
     } finally {
@@ -108,7 +108,7 @@ const AdvancedCareerAnalytics = () => {
     return new Date(now.getTime() - (daysBack * 24 * 60 * 60 * 1000)).toISOString();
   };
 
-  const processCareerAnalyticsData = (usage: any[], results: any[]): CareerAnalyticsData => {
+  const processAnalyticsData = (usage: any[], results: any[]): AnalyticsData => {
     // Tool usage efficiency
     const toolUsage = usage.reduce((acc, item) => {
       const existing = acc.find((t: any) => t.tool === item.tool_name);
@@ -186,18 +186,18 @@ const AdvancedCareerAnalytics = () => {
     }));
   };
 
-  const exportCareerAnalytics = () => {
-    if (!CareerAnalyticsData) return;
+  const exportAnalytics = () => {
+    if (!analyticsData) return;
 
     const exportData = {
       generated_at: new Date().toISOString(),
       date_range: dateRange,
-      ...CareerAnalyticsData
+      ...analyticsData
     };
 
     const dataStr = JSON.stringify(exportData, null, 2);
     const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-    const exportFileDefaultName = `advanced-CareerAnalytics-${new Date().toISOString().split('T')[0]}.json`;
+    const exportFileDefaultName = `advanced-analytics-${new Date().toISOString().split('T')[0]}.json`;
     
     const linkElement = document.createElement('a');
     linkElement.setAttribute('href', dataUri);
@@ -206,7 +206,7 @@ const AdvancedCareerAnalytics = () => {
 
     toast({
       title: "Success",
-      description: "CareerAnalytics data exported successfully!",
+      description: "Analytics data exported successfully!",
     });
   };
 
@@ -215,19 +215,19 @@ const AdvancedCareerAnalytics = () => {
       <div className="flex items-center justify-center p-8">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading advanced CareerAnalytics...</p>
+          <p className="text-gray-600">Loading advanced analytics...</p>
         </div>
       </div>
     );
   }
 
-  if (!CareerAnalyticsData) {
+  if (!analyticsData) {
     return (
       <Card>
         <CardContent className="p-8 text-center">
           <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No CareerAnalytics data</h3>
-          <p className="text-gray-600">Start using tools to see advanced CareerAnalytics.</p>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No analytics data</h3>
+          <p className="text-gray-600">Start using tools to see advanced analytics.</p>
         </CardContent>
       </Card>
     );
@@ -238,7 +238,7 @@ const AdvancedCareerAnalytics = () => {
       {/* Header with controls */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Advanced CareerAnalytics</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Advanced Analytics</h2>
           <p className="text-gray-600">Deep insights into your tool usage and performance</p>
         </div>
         <div className="flex space-x-2">
@@ -251,7 +251,7 @@ const AdvancedCareerAnalytics = () => {
             <option value="30d">Last 30 days</option>
             <option value="90d">Last 90 days</option>
           </select>
-          <Button onClick={exportCareerAnalytics}>
+          <Button onClick={exportAnalytics}>
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
@@ -265,7 +265,7 @@ const AdvancedCareerAnalytics = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Your Rank</p>
-                <p className="text-2xl font-bold text-gray-900">#{CareerAnalyticsData.userComparison.user_rank}</p>
+                <p className="text-2xl font-bold text-gray-900">#{analyticsData.userComparison.user_rank}</p>
               </div>
               <Award className="h-8 w-8 text-yellow-600" />
             </div>
@@ -277,7 +277,7 @@ const AdvancedCareerAnalytics = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Percentile</p>
-                <p className="text-2xl font-bold text-gray-900">{CareerAnalyticsData.userComparison.percentile}th</p>
+                <p className="text-2xl font-bold text-gray-900">{analyticsData.userComparison.percentile}th</p>
               </div>
               <Target className="h-8 w-8 text-green-600" />
             </div>
@@ -289,7 +289,7 @@ const AdvancedCareerAnalytics = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Your Score</p>
-                <p className="text-2xl font-bold text-gray-900">{CareerAnalyticsData.userComparison.user_score}</p>
+                <p className="text-2xl font-bold text-gray-900">{analyticsData.userComparison.user_score}</p>
               </div>
               <TrendingUp className="h-8 w-8 text-blue-600" />
             </div>
@@ -301,7 +301,7 @@ const AdvancedCareerAnalytics = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Avg. Score</p>
-                <p className="text-2xl font-bold text-gray-900">{CareerAnalyticsData.userComparison.avg_score}</p>
+                <p className="text-2xl font-bold text-gray-900">{analyticsData.userComparison.avg_score}</p>
               </div>
               <BarChart3 className="h-8 w-8 text-purple-600" />
             </div>
@@ -325,7 +325,7 @@ const AdvancedCareerAnalytics = () => {
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={CareerAnalyticsData.toolUsage}>
+                  <BarChart data={analyticsData.toolUsage}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="tool" />
                     <YAxis />
@@ -343,7 +343,7 @@ const AdvancedCareerAnalytics = () => {
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
-                  <AreaChart data={CareerAnalyticsData.timeSpent}>
+                  <AreaChart data={analyticsData.timeSpent}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="date" />
                     <YAxis />
@@ -366,7 +366,7 @@ const AdvancedCareerAnalytics = () => {
                 <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
                     <Pie
-                      data={CareerAnalyticsData.successRates}
+                      data={analyticsData.successRates}
                       cx="50%"
                       cy="50%"
                       labelLine={false}
@@ -375,7 +375,7 @@ const AdvancedCareerAnalytics = () => {
                       fill="#8884d8"
                       dataKey="success_rate"
                     >
-                      {CareerAnalyticsData.successRates.map((entry, index) => (
+                      {analyticsData.successRates.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
@@ -391,7 +391,7 @@ const AdvancedCareerAnalytics = () => {
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={CareerAnalyticsData.weeklyTrends}>
+                  <LineChart data={analyticsData.weeklyTrends}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="week" />
                     <YAxis />
@@ -413,7 +413,7 @@ const AdvancedCareerAnalytics = () => {
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={400}>
-                <RadarChart data={CareerAnalyticsData.skillDevelopment}>
+                <RadarChart data={analyticsData.skillDevelopment}>
                   <PolarGrid />
                   <PolarAngleAxis dataKey="skill" />
                   <PolarRadiusAxis angle={30} domain={[0, 100]} />
@@ -433,7 +433,7 @@ const AdvancedCareerAnalytics = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
-                {CareerAnalyticsData.skillDevelopment.map((skill, index) => (
+                {analyticsData.skillDevelopment.map((skill, index) => (
                   <div key={index} className="space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="font-medium">{skill.skill}</span>
@@ -457,8 +457,4 @@ const AdvancedCareerAnalytics = () => {
   );
 };
 
-export default AdvancedCareerAnalytics;
-
-
-
-
+export default AdvancedAnalytics;

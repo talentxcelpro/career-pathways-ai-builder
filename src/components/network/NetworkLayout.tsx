@@ -4,12 +4,12 @@ import PeopleTab from './PeopleTab';
 import RequestsTab from './RequestsTab';
 import CVUploadTab from './CVUploadTab';
 import CVSearchTab from './CVSearchTab';
-import Phase2CommandCenter from './Phase2CommandCenter';
-import Phase3CommandCenter from './Phase3CommandCenter';
-import Phase4CommandCenter from './Phase4CommandCenter';
-import { CostOptimizationCommandCenter } from '@/components/admin/CostOptimizationCommandCenter';
+import Phase2Dashboard from './Phase2Dashboard';
+import Phase3Dashboard from './Phase3Dashboard';
+import Phase4Dashboard from './Phase4Dashboard';
+import { CostOptimizationDashboard } from '@/components/admin/CostOptimizationDashboard';
 import { UltraCostOptimizer } from '@/components/admin/UltraCostOptimizer';
-import SystemHealthCommandCenter from '@/components/admin/SystemHealthCommandCenter';
+import SystemHealthDashboard from '@/components/admin/SystemHealthDashboard';
 import { PerformanceOptimizer } from '@/components/admin/PerformanceOptimizer';
 import { SecurityHardening } from '@/components/admin/SecurityHardening';
 
@@ -54,19 +54,19 @@ export default function NetworkLayout({ currentTab, onTabChange }: NetworkLayout
         </TabsContent>
 
         <TabsContent value="phase2">
-          <Phase2CommandCenter />
+          <Phase2Dashboard />
         </TabsContent>
 
         <TabsContent value="phase3">
-          <Phase3CommandCenter />
+          <Phase3Dashboard />
         </TabsContent>
 
         <TabsContent value="phase4">
-          <Phase4CommandCenter />
+          <Phase4Dashboard />
         </TabsContent>
 
         <TabsContent value="optimize">
-          <CostOptimizationCommandCenter />
+          <CostOptimizationDashboard />
         </TabsContent>
 
         <TabsContent value="ultra">
@@ -74,7 +74,7 @@ export default function NetworkLayout({ currentTab, onTabChange }: NetworkLayout
         </TabsContent>
 
         <TabsContent value="health">
-          <SystemHealthCommandCenter />
+          <SystemHealthDashboard />
         </TabsContent>
         <TabsContent value="performance">
           <PerformanceOptimizer />
@@ -86,4 +86,3 @@ export default function NetworkLayout({ currentTab, onTabChange }: NetworkLayout
     </div>
   );
 }
-

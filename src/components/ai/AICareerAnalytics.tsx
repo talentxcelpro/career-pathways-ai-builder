@@ -46,11 +46,11 @@ interface NetworkInsight {
   priority: number;
 }
 
-export const AICareerCareerAnalytics: React.FC = () => {
+export const AICareerAnalytics: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'predictions' | 'skills' | 'network'>('predictions');
 
   const { data: currentUser } = useQuery({
-    queryKey: ['current-user-CareerAnalytics'],
+    queryKey: ['current-user-analytics'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
@@ -121,7 +121,7 @@ export const AICareerCareerAnalytics: React.FC = () => {
     {
       type: 'connection_opportunity',
       title: 'Connect with 5 Senior Developers',
-      description: 'These TalentNetwork could provide mentorship opportunities',
+      description: 'These connections could provide mentorship opportunities',
       actionable: true,
       priority: 90
     },
@@ -164,9 +164,9 @@ export const AICareerCareerAnalytics: React.FC = () => {
       <Card>
         <CardContent className="p-6 text-center">
           <Brain className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">AI Career CareerAnalytics</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">AI Career Analytics</h3>
           <p className="text-gray-600 mb-4">
-            Login to get personalized Performance career insights
+            Login to get personalized AI-powered career insights
           </p>
         </CardContent>
       </Card>
@@ -183,7 +183,7 @@ export const AICareerCareerAnalytics: React.FC = () => {
               <Brain className="h-6 w-6 text-purple-600" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-purple-900">AI Career CareerAnalytics</h2>
+              <h2 className="text-xl font-bold text-purple-900">AI Career Analytics</h2>
               <p className="text-sm text-purple-700">Powered by advanced machine learning</p>
             </div>
           </div>
@@ -402,7 +402,7 @@ export const AICareerCareerAnalytics: React.FC = () => {
                 <div className="text-lg font-bold text-blue-600">78%</div>
               </div>
               <p className="text-sm text-gray-600 mt-2">
-                Your network is growing well. Focus on quality TalentNetwork in your target industry.
+                Your network is growing well. Focus on quality connections in your target industry.
               </p>
             </div>
           </CardContent>
@@ -411,7 +411,3 @@ export const AICareerCareerAnalytics: React.FC = () => {
     </div>
   );
 };
-
-
-
-

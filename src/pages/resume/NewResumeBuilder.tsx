@@ -68,7 +68,7 @@ export const NewResumeBuilder: React.FC = () => {
     { id: 'upload', title: 'Upload Resume', description: 'Upload your existing resume' },
     { id: 'template', title: 'Choose Template', description: 'Select a professional template' },
     { id: 'edit', title: 'Edit Content', description: 'Review and edit your information' },
-    { id: 'enhance', title: 'AI Enhancement', description: 'Enhance with Performance tools' },
+    { id: 'enhance', title: 'AI Enhancement', description: 'Enhance with AI-powered tools' },
     { id: 'preview', title: 'Preview & Save', description: 'Final review and save' }
   ];
 
@@ -178,7 +178,7 @@ export const NewResumeBuilder: React.FC = () => {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-2">Create Your Professional Resume</h1>
           <p className="text-muted-foreground">
-            Build a standout resume in minutes with our Performance builder
+            Build a standout resume in minutes with our AI-powered builder
           </p>
         </div>
 

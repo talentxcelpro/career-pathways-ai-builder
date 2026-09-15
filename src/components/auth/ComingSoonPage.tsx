@@ -23,7 +23,7 @@ export const ComingSoonPage: React.FC<ComingSoonPageProps> = ({
     {
       icon: Star,
       title: "Premium Features",
-      description: "Access to advanced tools and CareerAnalytics"
+      description: "Access to advanced tools and analytics"
     },
     {
       icon: Users,
@@ -109,7 +109,7 @@ export const ComingSoonPage: React.FC<ComingSoonPageProps> = ({
                   </p>
                   <div className="flex gap-3 justify-center">
                     <Button asChild>
-                      <Link to="/CommandCenter">Go to CommandCenter</Link>
+                      <Link to="/dashboard">Go to Dashboard</Link>
                     </Button>
                     <Button variant="outline" asChild>
                       <Link to="/network">Explore Network</Link>
@@ -150,6 +150,3 @@ export const ComingSoonPage: React.FC<ComingSoonPageProps> = ({
     </div>
   );
 };
-
-
-

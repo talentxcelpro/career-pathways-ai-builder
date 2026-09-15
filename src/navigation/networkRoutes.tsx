@@ -1,50 +1,49 @@
-import { lazy } from "react";
+import { lazy, Suspense } from 'react';
+
 import { Users, Coins } from "lucide-react";
-
-// Use existing LazyRoutes or convert others to lazy
 import { NetworkPage } from "../components/performance/LazyRoutes";
-const People = lazy(() => import("../pages/network/People"));
-const Posts = lazy(() => import("../pages/network/Posts"));
-const PostDetail = lazy(() => import("../pages/network/PostDetail"));
-const Groups = lazy(() => import("../pages/network/Groups"));
-const GroupDetail = lazy(() => import("../pages/network/GroupDetail"));
-const Requests = lazy(() => import("../pages/network/Requests"));
-const Events = lazy(() => import("../pages/network/Events"));
-const EventDetail = lazy(() => import("../pages/network/EventDetail"));
-const Messages = lazy(() => import("../pages/network/Messages"));
-const NewMessage = lazy(() => import("../pages/network/NewMessage"));
-const MessageConversation = lazy(() => import("../pages/network/MessageConversation"));
-const MessageRequests = lazy(() => import("../pages/network/MessageRequests"));
-const ArchivedMessages = lazy(() => import("../pages/network/ArchivedMessages"));
-const MessageSettings = lazy(() => import("../pages/network/MessageSettings"));
-const TalentNetwork = lazy(() => import("../pages/network/MyNetwork"));
-const NetworkCareerAnalytics = lazy(() => import("../pages/network/NetworkAnalytics"));
+const People = lazy(() => import('../pages/network/People'));
+const Posts = lazy(() => import('../pages/network/Posts'));
+const PostDetail = lazy(() => import('../pages/network/PostDetail'));
+const PublicPostPage = lazy(() => import('../pages/posts/PublicPostPage'));
+const Groups = lazy(() => import('../pages/network/Groups'));
+const GroupDetail = lazy(() => import('../pages/network/GroupDetail'));
+const Requests = lazy(() => import('../pages/network/Requests'));
+const Events = lazy(() => import('../pages/network/Events'));
+const EventDetail = lazy(() => import('../pages/network/EventDetail'));
+const Messages = lazy(() => import('../pages/network/Messages'));
+const NewMessage = lazy(() => import('../pages/network/NewMessage'));
+const MessageConversation = lazy(() => import('../pages/network/MessageConversation'));
+const MessageRequests = lazy(() => import('../pages/network/MessageRequests'));
+const ArchivedMessages = lazy(() => import('../pages/network/ArchivedMessages'));
+const MessageSettings = lazy(() => import('../pages/network/MessageSettings'));
+const Connections = lazy(() => import('../pages/network/Connections'));
+const NetworkAnalytics = lazy(() => import('../pages/network/NetworkAnalytics'));
 
-const ProfileCareerAnalytics = lazy(() => import("../pages/profile/ProfileAnalytics"));
-const Notifications = lazy(() => import("../pages/network/Notifications"));
-const Suggestions = lazy(() => import("../pages/network/Suggestions"));
-const UserProfile = lazy(() => import("../pages/network/UserProfile"));
-const PublicUserProfile = lazy(() => import("../pages/network/PublicUserProfile"));
-const Articles = lazy(() => import("../pages/network/Articles"));
-const ArticleDetail = lazy(() => import("../pages/network/ArticleDetail"));
-const MyNetwork = lazy(() => import("../pages/network/MyNetwork"));
-const Discover = lazy(() => import("../pages/network/Discover"));
-const ProfileUrlRedirect = lazy(() => import("../components/profile/ProfileUrlRedirect"));
-const ComprehensiveMobileNetworkAnalysis = lazy(() => import("../components/analysis/ComprehensiveMobileNetworkAnalysis").then(m => ({ default: m.default })));
-const MobileNetwork = lazy(() => import("../pages/mobile/MobileNetwork").then(m => ({ default: m.MobileNetwork })));
-const SkillSwap = lazy(() => import("../pages/network/SkillSwap"));
-const VideoIntros = lazy(() => import("../pages/network/VideoIntros"));
-const Verified = lazy(() => import("../pages/network/Verified"));
-const Communities = lazy(() => import("../pages/network/Communities"));
-const Leaderboards = lazy(() => import("../pages/network/Leaderboards"));
-
+const ProfileAnalytics = lazy(() => import('../pages/profile/ProfileAnalytics'));
+const Notifications = lazy(() => import('../pages/network/Notifications'));
+const Suggestions = lazy(() => import('../pages/network/Suggestions'));
+const UserProfile = lazy(() => import('../pages/network/UserProfile'));
+const PublicUserProfile = lazy(() => import('../pages/network/PublicUserProfile'));
+const Articles = lazy(() => import('../pages/network/Articles'));
+const ArticleDetail = lazy(() => import('../pages/network/ArticleDetail'));
+const MyNetwork = lazy(() => import('../pages/network/MyNetwork'));
+const Discover = lazy(() => import('../pages/network/Discover'));
+import ProfileUrlRedirect from "../components/profile/ProfileUrlRedirect";
+import ComprehensiveMobileNetworkAnalysis from "../components/analysis/ComprehensiveMobileNetworkAnalysis";
+const MobileNetwork = lazy(() => import('../pages/mobile/MobileNetwork').then(m => ({ default: m.MobileNetwork })));
+const SkillSwap = lazy(() => import('../pages/network/SkillSwap'));
+const VideoIntros = lazy(() => import('../pages/network/VideoIntros'));
+const Verified = lazy(() => import('../pages/network/Verified'));
+const Communities = lazy(() => import('../pages/network/Communities'));
+const Leaderboards = lazy(() => import('../pages/network/Leaderboards'));
 
 export const networkRoutes = [
   {
-    title: "Ecosystem Sync",
+    title: "Network",
     to: "/network",
     icon: <Users className="h-4 w-4" />,
-    page: <NetworkPage />,
+    page: <Suspense fallback={null}><NetworkPage /></Suspense>,
     isPublic: true,
   },
   {
@@ -57,158 +56,153 @@ export const networkRoutes = [
   {
     title: "Network People",
     to: "/network/people",
-    page: <People />,
+    page: <Suspense fallback={null}><People /></Suspense>,
     isPublic: true,
   },
   {
-    title: "Ecosystem Hub",
-    to: "/network/talent-network",
-    page: <TalentNetwork />,
+    title: "My Connections",
+    to: "/network/connections",
+    page: <Suspense fallback={null}><Connections /></Suspense>,
   },
   {
-    title: "Intelligence Matrix",
-    to: "/network/career-analytics",
-    page: <NetworkCareerAnalytics />,
+    title: "Network Analytics",
+    to: "/network/analytics",
+    page: <Suspense fallback={null}><NetworkAnalytics /></Suspense>,
   },
   {
     title: "Discover",
     to: "/network/discover",
-    page: <Discover />,
+    page: <Suspense fallback={null}><Discover /></Suspense>,
   },
   {
     title: "User Profile (Redirect to Username)",
     to: "/network/people/:id",
-    page: <ProfileUrlRedirect />, // This will redirect to /profile/:username
+    page: <Suspense fallback={null}><ProfileUrlRedirect /></Suspense>, // This will redirect to /profile/:username
   },
   {
     title: "Public User Profile",
     to: "/p/:id",
-    page: <PublicUserProfile />,
+    page: <Suspense fallback={null}><PublicUserProfile /></Suspense>,
   },
   {
     title: "Network Posts",
     to: "/network/posts",
-    page: <Posts />,
+    page: <Suspense fallback={null}><Posts /></Suspense>,
   },
   {
     title: "Post Detail",
     to: "/network/posts/:id",
-    page: <PostDetail />,
+    page: <Suspense fallback={null}><PublicPostPage /></Suspense>,
   },
   {
     title: "Articles",
     to: "/network/articles",
-    page: <Articles />,
+    page: <Suspense fallback={null}><Articles /></Suspense>,
   },
   {
     title: "Article Detail",
     to: "/network/articles/:id",
-    page: <ArticleDetail />,
+    page: <Suspense fallback={null}><ArticleDetail /></Suspense>,
   },
   {
     title: "Network Groups",
     to: "/network/groups",
-    page: <Groups />,
+    page: <Suspense fallback={null}><Groups /></Suspense>,
   },
   {
     title: "Group Detail",
     to: "/network/groups/:id",
-    page: <GroupDetail />,
+    page: <Suspense fallback={null}><GroupDetail /></Suspense>,
   },
   {
     title: "Network Requests",
     to: "/network/requests",
-    page: <Requests />,
+    page: <Suspense fallback={null}><Requests /></Suspense>,
   },
   {
     title: "Network Events",
     to: "/network/events",
-    page: <Events />,
+    page: <Suspense fallback={null}><Events /></Suspense>,
   },
   {
     title: "Event Detail",
     to: "/network/events/:id",
-    page: <EventDetail />,
+    page: <Suspense fallback={null}><EventDetail /></Suspense>,
   },
   {
     title: "Network Messages",
     to: "/network/messages",
-    page: <Messages />,
+    page: <Suspense fallback={null}><Messages /></Suspense>,
   },
   {
     title: "New Message",
     to: "/network/messages/new",
-    page: <NewMessage />,
+    page: <Suspense fallback={null}><NewMessage /></Suspense>,
   },
   {
     title: "Message Conversation",
     to: "/network/messages/:id",
-    page: <MessageConversation />,
+    page: <Suspense fallback={null}><Messages /></Suspense>,
   },
   {
     title: "Message Requests",
     to: "/network/messages/requests",
-    page: <MessageRequests />,
+    page: <Suspense fallback={null}><MessageRequests /></Suspense>,
   },
   {
     title: "Archived Messages",
     to: "/network/messages/archived",
-    page: <ArchivedMessages />,
+    page: <Suspense fallback={null}><ArchivedMessages /></Suspense>,
   },
   {
     title: "Message Settings",
     to: "/network/messages/settings",
-    page: <MessageSettings />,
+    page: <Suspense fallback={null}><MessageSettings /></Suspense>,
   },
   {
-    title: "Profile Career Analytics",
-    to: "/network/profile/career-analytics",
-    page: <ProfileCareerAnalytics />,
+    title: "Profile Analytics",
+    to: "/network/profile/analytics",
+    page: <Suspense fallback={null}><ProfileAnalytics /></Suspense>,
     isPublic: true,
   },
   {
     title: "Network Notifications",
     to: "/network/notifications",
-    page: <Notifications />,
+    page: <Suspense fallback={null}><Notifications /></Suspense>,
   },
   {
-    title: "Network Smart Moves",
+    title: "Network Suggestions",
     to: "/network/suggestions",
-    page: <Suggestions />,
+    page: <Suspense fallback={null}><Suggestions /></Suspense>,
   },
   {
     title: "Mobile Network Analysis",
     to: "/network/mobile-analysis",
-    page: <ComprehensiveMobileNetworkAnalysis />,
+    page: <Suspense fallback={null}><ComprehensiveMobileNetworkAnalysis /></Suspense>,
   },
   {
     title: "Skill Swap",
     to: "/network/skill-swap",
-    page: <SkillSwap />,
+    page: <Suspense fallback={null}><SkillSwap /></Suspense>,
   },
   {
     title: "Video Introductions",
     to: "/network/video-intros",
-    page: <VideoIntros />,
+    page: <Suspense fallback={null}><VideoIntros /></Suspense>,
   },
   {
     title: "Verified Professionals",
     to: "/network/verified",
-    page: <Verified />,
+    page: <Suspense fallback={null}><Verified /></Suspense>,
   },
   {
     title: "Communities",
     to: "/network/communities",
-    page: <Communities />,
+    page: <Suspense fallback={null}><Communities /></Suspense>,
   },
   {
     title: "Leaderboards",
     to: "/network/leaderboards",
-    page: <Leaderboards />,
+    page: <Suspense fallback={null}><Leaderboards /></Suspense>,
   },
 ];
-
-
-
-
-

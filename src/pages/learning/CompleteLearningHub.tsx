@@ -3,7 +3,7 @@ import { updateMetaTags } from "@/utils/metaTags";
 import { CourseraStyleHeader } from '@/components/learning/CourseraStyleHeader';
 import { CoreLearningNav } from '@/components/learning/CoreLearningNav';
 import { RealLearningSearchHub } from '@/components/learning/RealLearningSearchHub';
-import { RealDataLearningCommandCenter } from '@/components/learning/RealDataLearningDashboard';
+import { RealDataLearningDashboard } from '@/components/learning/RealDataLearningDashboard';
 import { SmartLearningNav } from '@/components/learning/SmartLearningNav';
 import { useAdvancedLearningData } from '@/hooks/useAdvancedLearningData';
 import { supabase } from '@/integrations/supabase/client';
@@ -27,7 +27,7 @@ export default function CompleteLearningHub() {
   React.useEffect(() => {
     updateMetaTags({
       title: "Complete Learning Hub | TalentXcel - Master Any Skill",
-      description: "Access 7,000+ courses, Performance learning paths, skill assessments, and career tools. Your complete learning ecosystem for professional growth."
+      description: "Access 7,000+ courses, AI-powered learning paths, skill assessments, and career tools. Your complete learning ecosystem for professional growth."
     });
   }, []);
 
@@ -45,9 +45,9 @@ export default function CompleteLearningHub() {
       {/* Main Content Container */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         
-        {/* Personalized command center for users */}
+        {/* Personalized Dashboard for users */}
         <section className="mb-16">
-          <RealDataLearningCommandCenter userId={user?.id} />
+          <RealDataLearningDashboard userId={user?.id} />
         </section>
 
         <Separator className="mb-16" />
@@ -93,4 +93,3 @@ export default function CompleteLearningHub() {
     </div>
   );
 }
-

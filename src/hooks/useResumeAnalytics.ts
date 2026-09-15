@@ -2,7 +2,7 @@
 import { useState, useCallback } from 'react';
 import { EnhancedResumeData } from '@/types/enhanced-resume';
 
-interface ResumeCareerAnalytics {
+interface ResumeAnalytics {
   overallScore: number;
   atsScore: number;
   suggestions: Array<{
@@ -30,8 +30,8 @@ interface ResumeEvent {
   created_at: string;
 }
 
-export const useResumeCareerAnalytics = (resumeData: EnhancedResumeData | null | string) => {
-  const [CareerAnalytics, setCareerAnalytics] = useState<ResumeCareerAnalytics>({
+export const useResumeAnalytics = (resumeData: EnhancedResumeData | null | string) => {
+  const [analytics, setAnalytics] = useState<ResumeAnalytics>({
     overallScore: 0,
     atsScore: 0,
     suggestions: []
@@ -132,7 +132,7 @@ export const useResumeCareerAnalytics = (resumeData: EnhancedResumeData | null |
       { event_type: 'shared', created_at: new Date(Date.now() - 172800000).toISOString() }
     ];
 
-    setCareerAnalytics({
+    setAnalytics({
       overallScore: Math.min(overallScore, 100),
       atsScore: Math.min(atsScore, 100),
       suggestions
@@ -144,14 +144,10 @@ export const useResumeCareerAnalytics = (resumeData: EnhancedResumeData | null |
   }, [resumeData]);
 
   return {
-    ...CareerAnalytics,
+    ...analytics,
     metrics,
     events,
     isLoading,
     refreshAnalysis
   };
 };
-
-
-
-

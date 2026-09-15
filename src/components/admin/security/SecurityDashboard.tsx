@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useSecurityManagement } from '@/hooks/useSecurityManagement';
 import { Shield, AlertTriangle, Lock, Eye, Users, Activity } from 'lucide-react';
 
-export const SecurityCommandCenter = () => {
+export const SecurityDashboard = () => {
   const { securityStats, statsLoading } = useSecurityManagement();
 
   if (statsLoading) {
@@ -75,7 +75,7 @@ export const SecurityCommandCenter = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold tracking-tight">Security CommandCenter</h2>
+        <h2 className="text-2xl font-bold tracking-tight">Security Dashboard</h2>
         <div className="flex gap-2">
           <Badge variant="outline" className="text-green-600 border-green-200">
             All Systems Operational
@@ -143,4 +143,3 @@ export const SecurityCommandCenter = () => {
     </div>
   );
 };
-

@@ -42,7 +42,7 @@ const Notifications = () => {
         tools: 'tools',
         learning: 'learning',
         colleges: 'colleges',
-        career_Pulse: 'network',
+        career_feed: 'network',
         discover: 'tools'
       };
       
@@ -85,7 +85,7 @@ const Notifications = () => {
       tools: moduleStats.tools || 0,
       learning: moduleStats.learning || 0,
       colleges: moduleStats.colleges || 0,
-      career_Pulse: moduleStats.network || 0,
+      career_feed: moduleStats.network || 0,
       discover: moduleStats.tools || 0,
       employer: moduleStats.employer || 0
     };

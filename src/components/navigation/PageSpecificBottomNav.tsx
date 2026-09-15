@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -20,15 +20,14 @@ import {
   GraduationCap,
   Zap,
   Target,
-  Gauge,
-  Sparkles,
-  Radio,
   FileText,
   PenTool,
   Play,
   Gift,
-  Send
+  Send,
+  Grid3X3
 } from 'lucide-react';
+import { ModulesLauncher } from '@/components/mobile/ModulesLauncher';
 
 export interface BottomNavItem {
   icon: React.ComponentType<{ className?: string }>;
@@ -52,7 +51,7 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
         {
           icon: Home,
           label: 'Home',
-          action: () => navigate('/career-os'),
+          action: () => navigate('/'),
           isActive: false
         },
         {
@@ -74,7 +73,7 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
         {
           icon: MessageCircle,
           label: 'Messages',
-          action: () => navigate('/communication/messages'),
+          action: () => navigate('/network/messages'),
           isActive: false
         },
         {
@@ -89,35 +88,33 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
     case basePath === '/network' || basePath.startsWith('/network/'):
       return [
         {
-          icon: Home,
-          label: 'Home',
-          action: () => navigate('/career-os'),
-          isActive: false
-        },
-        {
           icon: Users,
-          label: 'Pulse',
+          label: 'Network',
           action: () => navigate('/network'),
           isActive: true
         },
         {
-          icon: PenTool,
-          label: 'Post',
-          action: () => {
-            window.dispatchEvent(new CustomEvent('networkComposerFocus'));
-          },
-          isPrimary: true
-        },
-        {
-          icon: Briefcase,
-          label: 'Matches',
-          action: () => navigate('/talent-beacon'),
+          icon: Play,
+          label: 'Reels',
+          action: () => navigate('/mobile/reels'),
           isActive: false
         },
         {
-          icon: Sparkles,
-          label: 'Navigator',
-          action: () => navigate('/navigator'),
+          icon: Briefcase,
+          label: 'Jobs',
+          action: () => navigate('/jobs'),
+          isActive: false
+        },
+        {
+          icon: Gift,
+          label: 'Rewards',
+          action: () => navigate('/gamification'),
+          isActive: false
+        },
+        {
+          icon: Send,
+          label: 'Refer',
+          action: () => navigate('/refer-and-earn'),
           isActive: false
         }
       ];
@@ -128,12 +125,12 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
         {
           icon: Home,
           label: 'Home',
-          action: () => navigate('/career-os'),
+          action: () => navigate('/'),
           isActive: false
         },
         {
           icon: BookOpen,
-          label: 'Capability Hub',
+          label: 'Courses',
           action: () => navigate('/learning'),
           isActive: basePath === '/learning'
         },
@@ -149,7 +146,7 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
         {
           icon: MessageCircle,
           label: 'Messages',
-          action: () => navigate('/communication/messages'),
+          action: () => navigate('/network/messages'),
           isActive: false
         },
         {
@@ -166,7 +163,7 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
         {
           icon: Home,
           label: 'Home',
-          action: () => navigate('/career-os'),
+          action: () => navigate('/'),
           isActive: false
         },
         {
@@ -204,7 +201,7 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
         {
           icon: Home,
           label: 'Home',
-          action: () => navigate('/career-os'),
+          action: () => navigate('/'),
           isActive: false
         },
         {
@@ -225,7 +222,7 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
         {
           icon: MessageCircle,
           label: 'Messages',
-          action: () => navigate('/communication/messages'),
+          action: () => navigate('/network/messages'),
           isActive: false
         },
         {
@@ -242,13 +239,13 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
         {
           icon: Home,
           label: 'Home',
-          action: () => navigate('/career-os'),
+          action: () => navigate('/'),
           isActive: false
         },
         {
           icon: TrendingUp,
-          label: 'Performance',
-          action: () => navigate('/profile?tab=Performance'),
+          label: 'Analytics',
+          action: () => navigate('/profile?tab=analytics'),
           isActive: false
         },
         {
@@ -260,7 +257,7 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
         {
           icon: MessageCircle,
           label: 'Messages',
-          action: () => navigate('/communication/messages'),
+          action: () => navigate('/network/messages'),
           isActive: false
         },
         {
@@ -271,30 +268,30 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
         }
       ];
 
-    // Career CommandCenter Navigation
-    case basePath === '/career-CommandCenter' || basePath.startsWith('/career-CommandCenter/'):
+    // Career Dashboard Navigation
+    case basePath === '/career-dashboard' || basePath.startsWith('/career-dashboard/'):
       return [
         {
           icon: Home,
           label: 'Home',
-          action: () => navigate('/career-os'),
+          action: () => navigate('/'),
           isActive: false
         },
         {
           icon: TrendingUp,
-          label: 'Ecosystem Intelligence',
-          action: () => navigate('/career-CommandCenter?tab=insights'),
+          label: 'Insights',
+          action: () => navigate('/career-dashboard?tab=insights'),
           isActive: false
         },
         {
           icon: Target,
           label: 'Goals',
-          action: () => navigate('/career-CommandCenter?tab=goals'),
+          action: () => navigate('/career-dashboard?tab=goals'),
           isPrimary: true
         },
         {
           icon: Briefcase,
-          label: 'Precision Matches',
+          label: 'Jobs',
           action: () => navigate('/jobs'),
           isActive: false
         },
@@ -312,7 +309,7 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
         {
           icon: Home,
           label: 'Home',
-          action: () => navigate('/career-os'),
+          action: () => navigate('/'),
           isActive: false
         },
         {
@@ -323,7 +320,7 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
         },
         {
           icon: Zap,
-          label: 'Identity Hub',
+          label: 'AI Build',
           action: () => {
             // Navigate to resume builder
             navigate('/resume');
@@ -333,7 +330,7 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
         {
           icon: MessageCircle,
           label: 'Messages',
-          action: () => navigate('/communication/messages'),
+          action: () => navigate('/network/messages'),
           isActive: false
         },
         {
@@ -350,12 +347,12 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
         {
           icon: Home,
           label: 'Home',
-          action: () => navigate('/career-os'),
+          action: () => navigate('/'),
           isActive: false
         },
         {
           icon: Briefcase,
-          label: 'Precision Matches',
+          label: 'Jobs',
           action: () => navigate('/jobs'),
           isActive: false
         },
@@ -385,7 +382,7 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
         {
           icon: Home,
           label: 'Home',
-          action: () => navigate('/career-os'),
+          action: () => navigate('/'),
           isActive: false
         },
         {
@@ -407,7 +404,7 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
         {
           icon: MessageCircle,
           label: 'Messages',
-          action: () => navigate('/communication/messages'),
+          action: () => navigate('/network/messages'),
           isActive: false
         },
         {
@@ -419,38 +416,37 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
       ];
 
     // Default Navigation (for other pages)
-    case basePath === '/career-os':
     default:
       return [
         {
-          icon: Home,
-          label: 'Home',
-          action: () => navigate('/career-os'),
-          isActive: basePath === '/career-os' || basePath === '/'
+          icon: Users,
+          label: 'Network',
+          action: () => navigate('/network'),
+          isActive: false
         },
         {
-          icon: Gauge,
-          label: 'Score',
-          action: () => navigate('/talent-score'),
-          isActive: basePath === '/talent-score'
+          icon: Play,
+          label: 'Reels',
+          action: () => navigate('/mobile/reels'),
+          isActive: false
         },
         {
           icon: Briefcase,
-          label: 'Matches',
-          action: () => navigate('/talent-beacon'),
-          isActive: basePath === '/talent-beacon' || basePath === '/jobs'
+          label: 'Jobs',
+          action: () => navigate('/jobs'),
+          isActive: false
         },
         {
-          icon: Users,
-          label: 'Pulse',
-          action: () => navigate('/network'),
-          isActive: basePath === '/network'
+          icon: Gift,
+          label: 'Rewards',
+          action: () => navigate('/gamification'),
+          isActive: false
         },
         {
-          icon: Sparkles,
-          label: 'Navigator',
-          action: () => navigate('/navigator'),
-          isActive: basePath === '/navigator'
+          icon: Send,
+          label: 'Refer',
+          action: () => navigate('/refer-and-earn'),
+          isActive: false
         }
       ];
   }
@@ -460,25 +456,46 @@ export const PageSpecificBottomNav: React.FC<PageSpecificBottomNavProps> = ({ cl
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
+  const [showModulesLauncher, setShowModulesLauncher] = useState(false);
 
+  console.log('PageSpecificBottomNav - isMobile:', isMobile, 'currentPath:', location.pathname);
+  
   // Don't render on desktop or in certain contexts
   if (!isMobile) {
+    console.log('PageSpecificBottomNav - Not mobile, returning null');
     return null;
   }
 
   const navigationItems = getPageNavigation(location.pathname, navigate);
-  const bottomNavStyle = {
-    bottom: 'max(env(safe-area-inset-bottom), 0.75rem)',
-    paddingBottom: 'max(env(safe-area-inset-bottom), 0.25rem)',
-  } as const;
+  const isDefaultNav = location.pathname === '/';
+  const isNetworkPage = location.pathname === '/network' || location.pathname.startsWith('/network/');
 
   return (
     <>
+      {/* Transparent More Button for Default Navigation and Network Page */}
+      {(isDefaultNav || isNetworkPage) && (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setShowModulesLauncher(true)}
+          className="fixed top-4 right-4 z-50 bg-black/20 backdrop-blur-sm border border-white/20 rounded-full p-3 text-white hover:bg-black/30 transition-all duration-300"
+        >
+          <Grid3X3 className="h-5 w-5" />
+        </Button>
+      )}
+
+      {/* Modules Launcher Modal */}
+      <ModulesLauncher 
+        isOpen={showModulesLauncher} 
+        onClose={() => setShowModulesLauncher(false)} 
+      />
+
       <div className={cn(
-        "fixed left-3 right-3 z-[999] rounded-[30px] border border-slate-200/70 bg-white/90 shadow-[0_18px_48px_rgba(15,23,42,0.12)] backdrop-blur-3xl",
+        "fixed bottom-0 left-0 right-0 z-[999] bg-gradient-to-t from-black via-black/90 to-transparent backdrop-blur-md",
+        "border-t border-white/10",
         className
-      )} style={bottomNavStyle}>
-        <div className="mx-auto flex max-w-md items-center justify-between gap-1.5 px-2 py-2.5">
+      )}>
+        <div className="flex items-center justify-around py-3 px-4 max-w-md mx-auto">
           {navigationItems.map((item, index) => {
             const Icon = item.icon;
             return (
@@ -488,36 +505,31 @@ export const PageSpecificBottomNav: React.FC<PageSpecificBottomNavProps> = ({ cl
                 size="icon"
                 onClick={item.action}
                 className={cn(
-                  "touch-target relative flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-2xl px-1 py-2 transition-all duration-200",
+                  "flex flex-col items-center gap-1 transition-all duration-200 min-h-[44px] touch-target",
                   item.isPrimary 
-                    ? "mx-auto h-14 w-14 flex-none bg-slate-950 !text-white shadow-lg hover:scale-105 hover:bg-slate-800 [&_*]:!text-white"
+                    ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 rounded-xl h-14 w-14 shadow-lg transform hover:scale-105" 
                     : item.isActive
-                      ? "min-h-[62px] bg-blue-50 !text-blue-700 [&_*]:!text-blue-700"
-                      : "min-h-[62px] text-slate-500 hover:text-slate-950 hover:bg-slate-100"
+                      ? "text-white bg-white/20 rounded-xl h-12 w-12"
+                      : "text-white/70 hover:text-white hover:bg-white/10 rounded-xl h-12 w-12"
                 )}
               >
                 <Icon className={cn(
-                  item.isPrimary ? "h-6 w-6" : "h-5 w-5",
-                  item.isPrimary ? "!text-white" : item.isActive ? "!text-blue-700" : "text-slate-500"
+                  item.isPrimary ? "h-6 w-6" : "h-5 w-5"
                 )} />
                 {!item.isPrimary && (
-                  <span
-                    className={cn(
-                      "w-full px-0.5 text-center text-[10px] font-apple-bold leading-tight whitespace-nowrap",
-                      item.isActive ? "!text-blue-700" : "text-slate-600"
-                    )}
-                  >
-                    {item.label}
-                  </span>
-                )}
-                {item.isPrimary && (
-                  <span className="sr-only">{item.label}</span>
+                  <span className="text-xs font-medium">{item.label}</span>
                 )}
               </Button>
             );
           })}
         </div>
       </div>
+
+      {/* Modules Launcher Modal */}
+      <ModulesLauncher 
+        isOpen={showModulesLauncher}
+        onClose={() => setShowModulesLauncher(false)}
+      />
     </>
   );
 };

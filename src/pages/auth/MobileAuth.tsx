@@ -8,7 +8,6 @@ import { Card } from '@/components/ui/card';
 import { Eye, EyeOff, Mail, Lock, User, Briefcase } from 'lucide-react';
 import { toast } from 'sonner';
 import { useMobileDetection } from '@/hooks/useMobileDetection';
-import { getEmailRedirectUrl } from '@/utils/authRedirect';
 
 export const MobileAuth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -23,7 +22,7 @@ export const MobileAuth = () => {
 
   useEffect(() => {
     if (user) {
-      navigate('/career-os', { replace: true });
+      navigate('/network', { replace: true });
     }
   }, [user, navigate]);
 
@@ -44,7 +43,7 @@ export const MobileAuth = () => {
           email,
           password,
           options: {
-            emailRedirectTo: getEmailRedirectUrl('/career-os'),
+            emailRedirectTo: `${window.location.origin}/`,
             data: {
               full_name: fullName,
             }
@@ -78,16 +77,15 @@ export const MobileAuth = () => {
     <div className="min-h-screen bg-gradient-to-br from-primary/10 via-white to-accent/10 flex flex-col">
       {/* Header */}
       <div className="text-center pt-12 pb-8 px-6">
-        <div className="w-16 h-16 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
+        <div className="w-16 h-16 bg-slate-900 rounded-2xl mx-auto mb-4 flex items-center justify-center p-2 shadow-lg border border-slate-800">
           <img 
-            src="/lovable-uploads/92d46ee5-0b5a-4272-905d-72a40b1c8bdc.png" 
+            src="/talentxcel-official-logo.png" 
             alt="TalentXcel logo"
-            className="w-10 h-10 rounded-lg object-cover"
-            onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/lovable-uploads/1a30569a-4f31-4bd4-abe8-79d630d989f9.png'; }}
+            className="w-full h-full object-contain"
           />
         </div>
         <h1 className="text-2xl font-bold text-gray-900 mb-2">TalentXcel</h1>
-        <p className="text-gray-600">Your Performance career companion</p>
+        <p className="text-gray-600">Your AI-powered career companion</p>
       </div>
 
       {/* Auth Form */}
@@ -177,7 +175,7 @@ export const MobileAuth = () => {
         <div className="space-y-3">
           <div className="flex items-center gap-3 text-sm text-gray-600">
             <div className="w-2 h-2 bg-primary rounded-full"></div>
-            <span>Performance job matching</span>
+            <span>AI-powered job matching</span>
           </div>
           <div className="flex items-center gap-3 text-sm text-gray-600">
             <div className="w-2 h-2 bg-primary rounded-full"></div>
@@ -192,4 +190,3 @@ export const MobileAuth = () => {
     </div>
   );
 };
-

@@ -4,22 +4,22 @@
  */
 
 :root {
-  /* Enhanced text color palette - Apple inspired */
-  --text-primary-dark: 210 11% 15%;       /* Darker primary text */
-  --text-secondary-dark: 210 9% 31%;      /* Darker secondary text */
-  --text-muted-dark: 210 6% 46%;          /* Darker muted text */
-  --text-accent-dark: 210 11% 23%;        /* Darker accent text */
+  /* Darker black high-contrast text palette */
+  --text-primary-dark: 240 10% 4%;       /* Darker black #09090b */
+  --text-secondary-dark: 220 15% 20%;     /* Dark charcoal #242830 */
+  --text-muted-dark: 220 15% 25%;         /* Slate #2b303a */
+  --text-accent-dark: 240 10% 4%;
   
   /* High contrast text colors */
-  --text-high-contrast: 210 11% 8%;       /* Maximum contrast */
-  --text-medium-contrast: 210 10% 25%;    /* Medium contrast */
-  --text-low-contrast: 210 8% 40%;        /* Low contrast for subtle text */
+  --text-high-contrast: 0 0% 0%;          /* Pure black #000000 */
+  --text-medium-contrast: 240 10% 8%;     /* Very dark #121215 */
+  --text-low-contrast: 220 15% 25%;
   
   /* Apple's text opacity system */
-  --text-opacity-primary: 0.95;           /* Primary content */
-  --text-opacity-secondary: 0.75;         /* Secondary content */
-  --text-opacity-tertiary: 0.55;          /* Tertiary content */
-  --text-opacity-disabled: 0.35;          /* Disabled state */
+  --text-opacity-primary: 0.98;
+  --text-opacity-secondary: 0.88;
+  --text-opacity-tertiary: 0.75;
+  --text-opacity-disabled: 0.45;
 }
 
 /* Enhanced text classes that work alongside existing system */
@@ -145,43 +145,31 @@
   --text-low-contrast: 210 8% 60%;
 }
 
-/* Auto-enhance existing text elements without breaking them */
+/* Auto-enhance existing text elements with natural inheritance */
 h1, h2, h3, h4, h5, h6 {
-  color: hsl(var(--text-primary-dark)) !important;
   letter-spacing: -0.015em;
   text-rendering: optimizeLegibility;
 }
 
 p {
-  color: hsl(var(--text-secondary-dark));
   line-height: 1.6;
 }
 
-/* Enhance existing button text */
+/* Enhance existing button text styling without overriding variant text colors */
 button, .btn {
-  color: hsl(var(--text-primary-dark));
   font-weight: 500;
   letter-spacing: 0.005em;
 }
 
 /* Enhance existing navigation */
 nav a, .nav-link {
-  color: hsl(var(--text-medium-contrast));
   font-weight: 500;
   transition: color 0.15s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-nav a:hover, .nav-link:hover {
-  color: hsl(var(--text-primary-dark));
-}
-
 /* Enhance existing form inputs */
 input, textarea, select {
-  color: hsl(var(--text-primary-dark)) !important;
-}
-
-input::placeholder, textarea::placeholder {
-  color: hsl(var(--text-muted-dark) / var(--text-opacity-tertiary)) !important;
+  letter-spacing: 0;
 }
 
 /* Enhance existing labels */
@@ -191,15 +179,13 @@ label {
   letter-spacing: 0.01em;
 }
 
-/* Enhance existing cards */
+/* Enhance existing cards with natural inheritance */
 .card h3, .card h4 {
-  color: hsl(var(--text-primary-dark));
   font-weight: 600;
   letter-spacing: -0.01em;
 }
 
 .card p {
-  color: hsl(var(--text-secondary-dark));
   line-height: 1.5;
 }
 

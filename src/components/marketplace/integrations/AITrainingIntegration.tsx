@@ -52,7 +52,7 @@ export const AITrainingIntegration: React.FC<AITrainingIntegrationProps> = ({
       if (modelsError) throw modelsError;
       setTrainingModels(models || []);
 
-      // Generate Performance training recommendations
+      // Generate AI-powered training recommendations
       const trainingRecommendations = generateTrainingRecommendations(userSkills, careerGoals);
       setRecommendations(trainingRecommendations);
 
@@ -65,11 +65,11 @@ export const AITrainingIntegration: React.FC<AITrainingIntegrationProps> = ({
   };
 
   const generateTrainingRecommendations = (skills: string[], goals: string[]): AITrainingRecommendation[] => {
-    // Performance recommendation logic based on user profile
+    // AI-powered recommendation logic based on user profile
     const baseRecommendations: AITrainingRecommendation[] = [
       {
         id: '1',
-        title: 'Performance Resume Optimization',
+        title: 'AI-Powered Resume Optimization',
         description: 'Learn to use AI models for resume enhancement and ATS optimization',
         aiModel: 'resume_enhancement_v2',
         difficulty: 'intermediate',
@@ -91,14 +91,14 @@ export const AITrainingIntegration: React.FC<AITrainingIntegrationProps> = ({
       },
       {
         id: '3',
-        title: 'Career Path AI CareerAnalytics',
+        title: 'Career Path AI Analytics',
         description: 'Use AI to analyze and predict optimal career trajectories',
         aiModel: 'career_analysis_v1',
         difficulty: 'intermediate',
         duration: '3 weeks',
-        skills: ['Data CareerAnalytics', 'Career Planning', 'Intelligence Metrics'],
+        skills: ['Data Analytics', 'Career Planning', 'AI Insights'],
         relevanceScore: 0,
-        serviceId: 'career-CareerAnalytics'
+        serviceId: 'career-analytics'
       },
       {
         id: '4',
@@ -280,6 +280,3 @@ export const AITrainingIntegration: React.FC<AITrainingIntegrationProps> = ({
     </div>
   );
 };
-
-
-

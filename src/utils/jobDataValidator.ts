@@ -1,4 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
+import { normalizeJobContent } from '@/lib/job/normalizeJobContent';
+import { toJobsTablePayload } from '@/lib/job/toJobsTablePayload';
+
 
 export interface JobValidationResult {
   isValid: boolean;
@@ -24,7 +27,7 @@ export class JobDataValidator {
     'developer': ['JavaScript', 'Python', 'React', 'Node.js', 'SQL', 'Git'],
     'designer': ['Figma', 'Adobe', 'Sketch', 'UI/UX', 'Prototyping'],
     'sales': ['CRM', 'Negotiation', 'Lead Generation', 'Communication'],
-    'marketing': ['SEO', 'SEM', 'CareerAnalytics', 'Content Marketing', 'Social Media'],
+    'marketing': ['SEO', 'SEM', 'Analytics', 'Content Marketing', 'Social Media'],
     'hr': ['Talent Acquisition', 'ATS', 'HR Policies', 'Recruitment'],
     'manager': ['Leadership', 'Project Management', 'Team Management', 'Strategy']
   };
@@ -387,20 +390,32 @@ export class JobDataValidator {
     );
   }
 
-  // Auto-fix function that applies corrections
+  // Auto-fix function that applies corrections and Gate 2D canonical normalization
   static autoFixJobData(jobData: any): any {
-    const validation = this.validateJobData(jobData);
+    // ── Gate 2D: Run canonical normalization ──────────
+    const normResult = normalizeJobContent(jobData);
+    const canonicalPayload = toJobsTablePayload(normResult.normalized);
+
+    const validation = this.validateJobData({
+      ...jobData,
+      ...canonicalPayload,
+    });
     
-    if (!validation.correctedData) {
-      return jobData;
+    const base = {
+      ...jobData,
+      ...canonicalPayload,
+      ...(validation.correctedData || {}),
+    };
+
+    if (!validation.correctedData && normResult.status === 'OK') {
+      return base;
     }
 
     return {
-      ...jobData,
-      ...validation.correctedData,
+      ...base,
       // Add metadata about the fixes
       _auto_fixed: true,
-      _fixes_applied: Object.keys(validation.correctedData),
+      _fixes_applied: Object.keys(validation.correctedData || {}),
       _validation_warnings: validation.warnings,
       _validation_suggestions: validation.suggestions
     };
@@ -470,6 +485,3 @@ export const validateJobField = (fieldName: string, value: any, jobData: any) =>
     )
   };
 };
-
-
-

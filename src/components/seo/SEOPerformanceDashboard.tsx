@@ -23,7 +23,7 @@ interface ContentMetrics {
   total_blog_posts: number;
 }
 
-export const SEOPerformanceCommandCenter: React.FC = () => {
+export const SEOPerformanceDashboard: React.FC = () => {
   const [seoMetrics, setSeoMetrics] = useState<SEOMetrics | null>(null);
   const [contentMetrics, setContentMetrics] = useState<ContentMetrics | null>(null);
   const [loading, setLoading] = useState(true);
@@ -87,7 +87,7 @@ export const SEOPerformanceCommandCenter: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">SEO Performance CommandCenter</h1>
+        <h1 className="text-3xl font-bold">SEO Performance Dashboard</h1>
         <p className="text-muted-foreground">Monitor and optimize your website's search engine performance</p>
       </div>
 
@@ -160,4 +160,3 @@ export const SEOPerformanceCommandCenter: React.FC = () => {
     </div>
   );
 };
-

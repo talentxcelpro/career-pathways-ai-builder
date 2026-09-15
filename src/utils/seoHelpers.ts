@@ -120,20 +120,27 @@ export const generateJobStructuredData = (job: JobSEOData & { id: string; extern
     "description": job.description,
     "identifier": {
       "@type": "PropertyValue",
-      "name": job.company,
-      "value": `TXL-${job.id.substring(0, 8)}`
+      "name": job.company || "TalentXcel",
+      "value": `TXL-${(job.id || 'job').substring(0, 8)}`
     },
-    "datePosted": job.postedDate,
-    "validThrough": `${job.expiryDate}T23:59`,
+    "datePosted": job.postedDate || new Date().toISOString(),
+    "validThrough": (() => {
+      try {
+        const d = job.expiryDate ? new Date(job.expiryDate) : new Date(Date.now() + 60 * 24 * 60 * 60 * 1000);
+        return isNaN(d.getTime()) ? new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString() : d.toISOString();
+      } catch {
+        return new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString();
+      }
+    })(),
     "employmentType": job.employmentType?.toLowerCase().includes('full') ? 'FULL_TIME' :
                      job.employmentType?.toLowerCase().includes('part') ? 'PART_TIME' :
                      job.employmentType?.toLowerCase().includes('contract') ? 'CONTRACTOR' :
                      job.employmentType?.toLowerCase().includes('intern') ? 'INTERN' : 'FULL_TIME',
     "hiringOrganization": {
       "@type": "Organization",
-      "name": "TalentXcel Services",
-      "sameAs": "https://talentxcel.in",
-      "logo": "https://talentxcel.in/logo.png"
+      "name": job.company || "TalentXcel Services",
+      "sameAs": job.organizationWebsite || "https://talentxcel.in",
+      "logo": job.organizationLogo || "https://talentxcel.in/logo.png"
     },
     "jobLocation": {
       "@type": "Place",

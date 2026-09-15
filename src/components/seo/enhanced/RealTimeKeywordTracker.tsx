@@ -365,7 +365,7 @@ export const RealTimeKeywordTracker = () => {
         <TabsContent value="insights" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Performance Insights</CardTitle>
+              <CardTitle>AI-Powered Insights</CardTitle>
               <CardDescription>Smart recommendations based on your data</CardDescription>
             </CardHeader>
             <CardContent>

@@ -1,115 +1,136 @@
-import { lazy } from "react";
+import { lazy, Suspense } from 'react';
+import { Navigate } from 'react-router-dom';
+
 import { Compass, TrendingUp, Users, Shield, Target } from "lucide-react";
 
-const CareerMap = lazy(() => import("../pages/CareerMap"));
-const Generate = lazy(() => import("../pages/career-map/Generate"));
-const SkillsGap = lazy(() => import("../pages/career-map/SkillsGap"));
-const Recommendations = lazy(() => import("../pages/career-map/Recommendations"));
-const Comparison = lazy(() => import("../pages/career-map/Comparison"));
-const AIRoadmapBuilder = lazy(() => import("../pages/career-map/AIRoadmapBuilder"));
-const MyRoadmaps = lazy(() => import("../pages/career-map/MyRoadmaps"));
-const RoadmapDetail = lazy(() => import("../pages/career-map/RoadmapDetail"));
-const CareerSwitch = lazy(() => import("../pages/career-map/CareerSwitch"));
-const EnhancedCareerCareerAnalytics = lazy(() => import("../components/ai/EnhancedCareerAnalytics"));
-const IndustryBenchmarking = lazy(() => import("../components/ai/IndustryBenchmarking"));
-const CareerCredibilityScore = lazy(() => import("../components/ai/CareerCredibilityScore"));
-const NetworkingIntelligence = lazy(() => import("../components/ai/NetworkingIntelligence"));
-const ComprehensiveCareerIntelligence = lazy(() => import("../pages/ComprehensiveCareerIntelligence"));
-
+const ComprehensiveCareerIntelligence = lazy(() => import('../pages/ComprehensiveCareerIntelligence'));
+const NetworkingIntelligence = lazy(() => import('../components/ai/NetworkingIntelligence'));
+const CareerCredibilityScore = lazy(() => import('../components/ai/CareerCredibilityScore'));
+const IndustryBenchmarking = lazy(() => import('../components/ai/IndustryBenchmarking'));
+const EnhancedCareerAnalytics = lazy(() => import('../components/ai/EnhancedCareerAnalytics'));
+const CareerSwitch = lazy(() => import('../pages/career-map/CareerSwitch'));
+const RoadmapDetail = lazy(() => import('../pages/career-map/RoadmapDetail'));
+const MyRoadmaps = lazy(() => import('../pages/career-map/MyRoadmaps'));
+const AIRoadmapBuilder = lazy(() => import('../pages/career-map/AIRoadmapBuilder'));
+const Comparison = lazy(() => import('../pages/career-map/Comparison'));
+const Recommendations = lazy(() => import('../pages/career-map/Recommendations'));
+const SkillsGap = lazy(() => import('../pages/career-map/SkillsGap'));
+const Generate = lazy(() => import('../pages/career-map/Generate'));
+const CareerMap = lazy(() => import('../pages/CareerMap'));
 
 export const careerMapRoutes = [
   {
-    title: "Comprehensive CareerIntelligence",
+    title: "Comprehensive Career Intelligence",
     to: "/career-map/comprehensive-intelligence",
     icon: <Compass className="h-4 w-4" />,
-    page: <ComprehensiveCareerIntelligence />,
+    page: <Suspense fallback={null}><ComprehensiveCareerIntelligence /></Suspense>,
     isPublic: true,
   },
   {
     title: "Career Map",
     to: "/career-map",
     icon: <Compass className="h-4 w-4" />,
-    page: <CareerMap />,
+    page: <Suspense fallback={null}><CareerMap /></Suspense>,
     isPublic: true,
   },
   {
     title: "Generate Career Map",
     to: "/career-map/generate",
-    page: <Generate />,
+    page: <Suspense fallback={null}><Generate /></Suspense>,
     isPublic: true,
   },
   {
     title: "AI Roadmap Builder",
     to: "/career-map/ai-roadmap-builder",
-    page: <AIRoadmapBuilder />,
+    page: <Suspense fallback={null}><AIRoadmapBuilder /></Suspense>,
     isPublic: true,
   },
   {
     title: "My Roadmaps",
     to: "/career-map/my-roadmaps", 
-    page: <MyRoadmaps />,
+    page: <Suspense fallback={null}><MyRoadmaps /></Suspense>,
     isPublic: true,
   },
   {
-    title: "Roadmap Detail",
-    to: "/career-map/:id",
-    page: <RoadmapDetail />,
+    title: "AI Career Co-Pilot Redirect",
+    to: "/career-map/ai-copilot",
+    page: <Navigate to="/career-map/ai-roadmap-builder" replace />,
+    isPublic: true,
+  },
+  {
+    title: "Job Match Engine Redirect",
+    to: "/career-map/job-match-engine",
+    page: <Navigate to="/tools/ai-job-match-gpt" replace />,
+    isPublic: true,
+  },
+  {
+    title: "Career Pathfinder Redirect",
+    to: "/career-map/pathfinder",
+    page: <Navigate to="/colleges/career-pathway" replace />,
+    isPublic: true,
+  },
+  {
+    title: "Learning ROI Redirect",
+    to: "/career-map/learning-roi",
+    page: <Navigate to="/tools/skill-assessment-engine" replace />,
     isPublic: true,
   },
   {
     title: "Skills Gap Analysis",
     to: "/career-map/skills-gap",
-    page: <SkillsGap />,
+    page: <Suspense fallback={null}><SkillsGap /></Suspense>,
     isPublic: true,
   },
   {
     title: "Career Recommendations",
     to: "/career-map/recommendations",
-    page: <Recommendations />,
+    page: <Suspense fallback={null}><Recommendations /></Suspense>,
     isPublic: true,
   },
   {
     title: "Career Comparison",
     to: "/career-map/comparison",
-    page: <Comparison />,
+    page: <Suspense fallback={null}><Comparison /></Suspense>,
     isPublic: true,
   },
   {
     title: "Career Switch Evaluator",
     to: "/career-map/switch",
-    page: <CareerSwitch />,
+    page: <Suspense fallback={null}><CareerSwitch /></Suspense>,
     isPublic: true,
   },
   {
-    title: "Enhanced Career CareerAnalytics",
-    to: "/career-map/enhanced-CareerAnalytics",
+    title: "Roadmap Detail",
+    to: "/career-map/:id",
+    page: <Suspense fallback={null}><RoadmapDetail /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "Enhanced Career Analytics",
+    to: "/career-map/enhanced-analytics",
     icon: <TrendingUp className="h-4 w-4" />,
-    page: <EnhancedCareerCareerAnalytics />,
+    page: <Suspense fallback={null}><EnhancedCareerAnalytics /></Suspense>,
     isPublic: true,
   },
   {
     title: "Industry Benchmarking",
     to: "/career-map/industry-benchmarking",
     icon: <Target className="h-4 w-4" />,
-    page: <IndustryBenchmarking />,
+    page: <Suspense fallback={null}><IndustryBenchmarking /></Suspense>,
     isPublic: true,
   },
   {
     title: "Career Credibility Score",
     to: "/career-map/credibility-score",
     icon: <Shield className="h-4 w-4" />,
-    page: <CareerCredibilityScore />,
+    page: <Suspense fallback={null}><CareerCredibilityScore /></Suspense>,
     isPublic: true,
   },
   {
     title: "Networking Intelligence",
     to: "/career-map/networking",
     icon: <Users className="h-4 w-4" />,
-    page: <NetworkingIntelligence />,
+    page: <Suspense fallback={null}><NetworkingIntelligence /></Suspense>,
     isPublic: true,
   },
 ];
-
-
-
-

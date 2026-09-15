@@ -261,7 +261,7 @@ export const SmartSuggestionsPanel: React.FC<SmartSuggestionsPanelProps> = ({
               className="w-full"
             >
               <Wand2 className="h-4 w-4 mr-2" />
-              Generate More Smart Moves
+              Generate More AI Suggestions
             </Button>
           </CardContent>
         </Card>

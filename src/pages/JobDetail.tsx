@@ -30,8 +30,8 @@ import { formatDistanceToNow } from 'date-fns';
 import { formatSalaryRange } from '@/utils/currencyUtils';
 import { toast } from 'sonner';
 import { BrandedFooter } from '@/components/branded/BrandedFooter';
-import { updateMetaTags } from '@/utils/metaTags';
 import { ReactJobStructuredData } from '@/components/seo/ReactJobStructuredData';
+import { buildJobPostingSchema } from '@/lib/seo/jobPostingSchema';
 import ComprehensiveJobApplicationForm from '@/components/jobs/ComprehensiveJobApplicationForm';
 
 const JobDetail = () => {
@@ -249,55 +249,18 @@ const JobDetail = () => {
       });
 
       // Add JobPosting structured data
-      const jobPostingSchema = {
-        "@context": "https://schema.org/",
-        "@type": "JobPosting",
-        "title": job.title,
-        "description": job.description,
-        "datePosted": job.posted_at || job.created_at,
-        "validThrough": job.expires_at,
-        "employmentType": job.employment_type?.toUpperCase(),
-        "hiringOrganization": {
-          "@type": "Organization",
-          "name": job.companies?.name || job.company_name,
-          "url": job.companies?.website_url || "#",
-          "logo": job.companies?.logo_url
-        },
-        "jobLocation": {
-          "@type": "Place",
-          "address": {
-            "@type": "PostalAddress",
-            "addressLocality": job.location,
-            "addressCountry": "IN"
-          }
-        },
-        "baseSalary": job.salary_min || job.salary_max ? {
-          "@type": "MonetaryAmount",
-          "currency": "INR",
-          "value": {
-            "@type": "QuantitativeValue",
-            "minValue": job.salary_min,
-            "maxValue": job.salary_max,
-            "unitText": "YEAR"
-          }
-        } : undefined,
-        "url": `${window.location.origin}/jobs/${job.seo_slug}`,
-        "applicationContact": {
-          "@type": "ContactPoint",
-          "url": `${window.location.origin}/jobs/${job.seo_slug}`,
-          "contactType": "Application"
-        }
-      };
-
-      const script = document.createElement('script');
-      script.type = 'application/ld+json';
-      script.textContent = JSON.stringify(jobPostingSchema);
-      script.id = 'job-schema';
-      
-      const existing = document.getElementById('job-schema');
-      if (existing) existing.remove();
-      
-      document.head.appendChild(script);
+      const jobPostingSchema = buildJobPostingSchema(job);
+      if (jobPostingSchema) {
+        const script = document.createElement('script');
+        script.type = 'application/ld+json';
+        script.textContent = JSON.stringify(jobPostingSchema);
+        script.id = 'job-schema';
+        
+        const existing = document.getElementById('job-schema');
+        if (existing) existing.remove();
+        
+        document.head.appendChild(script);
+      }
 
       return () => {
         const schemaScript = document.getElementById('job-schema');
@@ -405,18 +368,34 @@ const JobDetail = () => {
   }
 
   if (error || !job) {
+    const rawRole = slugOrId ? slugOrId.replace(/[-_]+/g, ' ') : 'Career';
+    const roleCapitalized = rawRole.replace(/\b\w/g, (c) => c.toUpperCase());
+
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-foreground mb-2">Job Not Found</h1>
-          <p className="text-muted-foreground mb-4">
-            The job you're looking for doesn't exist or has been removed.
+      <div className="min-h-screen bg-background py-16 px-4">
+        <div className="max-w-2xl mx-auto text-center space-y-6 bg-card border border-border rounded-2xl p-8 shadow-sm">
+          <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto text-primary">
+            <Briefcase className="h-6 w-6" />
+          </div>
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">
+            {roleCapitalized} Opportunities on TalentXcel
+          </h1>
+          <p className="text-muted-foreground text-sm leading-relaxed max-w-lg mx-auto">
+            This specific listing may have expired or transitioned into an active candidate search. Explore verified {rawRole} openings, optimize your resume, and benchmark your career path below.
           </p>
-          <Button onClick={() => navigate('/jobs')}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Jobs
-          </Button>
+          <div className="pt-4 flex flex-wrap justify-center gap-3">
+            <Button onClick={() => navigate(`/jobs?search=${encodeURIComponent(rawRole)}`)} className="font-semibold">
+              <Briefcase className="h-4 w-4 mr-2" />
+              Browse {roleCapitalized} Jobs
+            </Button>
+            <Button variant="outline" onClick={() => navigate('/resume')}>
+              <CheckCircle className="h-4 w-4 mr-2" />
+              Build ATS Resume
+            </Button>
+            <Button variant="secondary" onClick={() => navigate('/careermap')}>
+              Explore Career Map
+            </Button>
+          </div>
         </div>
       </div>
     );

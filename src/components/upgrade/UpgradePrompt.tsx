@@ -30,7 +30,7 @@ export const UpgradePrompt: React.FC<UpgradePromptProps> = ({
           '50 AI requests daily',
           '100 job applications/month',
           '15 resume templates',
-          'Advanced CareerAnalytics',
+          'Advanced analytics',
           'Priority support',
           'Custom branding'
         ];
@@ -39,7 +39,7 @@ export const UpgradePrompt: React.FC<UpgradePromptProps> = ({
           'Unlimited AI requests',
           'Unlimited job applications',
           'All resume templates',
-          'Advanced CareerAnalytics',
+          'Advanced analytics',
           'Priority 24/7 support',
           'Custom branding',
           'API access',
@@ -171,6 +171,3 @@ export const UpgradePrompt: React.FC<UpgradePromptProps> = ({
     </div>
   );
 };
-
-
-

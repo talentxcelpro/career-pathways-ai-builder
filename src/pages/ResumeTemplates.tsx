@@ -99,43 +99,42 @@ const ResumeTemplates = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
-      <div className="max-w-7xl mx-auto px-4 py-16">
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
+      <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl lg:text-6xl font-bold text-slate-900 mb-6">
+        <div className="text-center mb-6 space-y-2">
+          <div className="inline-flex items-center gap-1.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-full text-[11px] font-extrabold border border-blue-500/20">
+            <Star className="h-3.5 w-3.5" />
+            <span>Recruiter-Approved Templates</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">
             Professional Resume Templates
           </h1>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-            Choose from our collection of ATS-friendly, professionally designed resume templates. 
-            Crafted by experts to help you land your dream job.
+          <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl mx-auto leading-relaxed font-medium">
+            Choose from our collection of ATS-friendly, professionally designed resume templates crafted by experts to help you land interviews.
           </p>
         </div>
 
         {/* Search and Filter */}
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
+        <div className="flex flex-col md:flex-row gap-3 mb-6 bg-card/70 border border-border/80 rounded-2xl p-3 shadow-sm">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search templates..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-9 h-10 text-xs font-medium rounded-xl"
             />
-          </div>
-          <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4 text-slate-500" />
-            <span className="text-sm text-slate-600">Category:</span>
           </div>
         </div>
 
         {/* Category Tabs */}
-        <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="mb-8">
-          <TabsList className="grid w-full grid-cols-3 md:grid-cols-7">
+        <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="mb-6">
+          <TabsList className="grid w-full grid-cols-3 md:grid-cols-7 h-auto p-1 rounded-2xl">
             {categories.map(category => (
-              <TabsTrigger key={category.id} value={category.id} className="text-xs">
+              <TabsTrigger key={category.id} value={category.id} className="text-xs font-bold py-1.5 rounded-xl">
                 {category.name}
-                <Badge variant="secondary" className="ml-1 text-xs">
+                <Badge variant="secondary" className="ml-1 text-[10px] py-0 px-1">
                   {category.count}
                 </Badge>
               </TabsTrigger>

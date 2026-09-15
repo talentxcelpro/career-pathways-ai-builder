@@ -12,7 +12,7 @@ interface EnhancedSEOConfig {
   noindex?: boolean;
   canonical?: string;
   type?: 'website' | 'article' | 'profile' | 'organization' | 'jobposting';
-  enableCareerAnalytics?: boolean;
+  enableAnalytics?: boolean;
   enableAIIndexing?: boolean;
 }
 
@@ -21,8 +21,8 @@ export const useEnhancedSEO = (config: EnhancedSEOConfig = {}) => {
 
   useEffect(() => {
     const {
-      title = 'TalentXcel - Performance Career Platform',
-      description = 'Find your dream job, grow your skills, and advance your career with Performance tools.',
+      title = 'TalentXcel - AI-Powered Career Platform',
+      description = 'Find your dream job, grow your skills, and advance your career with AI-powered tools.',
       keywords = [],
       image = '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png',
       structuredData,
@@ -30,7 +30,7 @@ export const useEnhancedSEO = (config: EnhancedSEOConfig = {}) => {
       noindex = false,
       canonical,
       type = 'website',
-      enableCareerAnalytics = true,
+      enableAnalytics = true,
       enableAIIndexing = true
     } = config;
 
@@ -122,8 +122,8 @@ export const useEnhancedSEO = (config: EnhancedSEOConfig = {}) => {
       document.head.appendChild(breadcrumbScript);
     }
 
-    // CareerAnalytics tracking
-    if (enableCareerAnalytics && window.gtag) {
+    // Analytics tracking
+    if (enableAnalytics && window.gtag) {
       window.gtag('config', 'GA_MEASUREMENT_ID', {
         page_path: location.pathname,
         page_title: title
@@ -163,8 +163,8 @@ export const getPageSEO = (pageType: string, data?: any): EnhancedSEOConfig => {
   switch (pageType) {
     case 'home':
       return {
-        title: 'TalentXcel - Performance Career Platform | Find Jobs, Learn Skills, Network',
-        description: 'Accelerate your career with TalentXcel. Find dream jobs, learn new skills, network with professionals, and get Performance career guidance. Join 100,000+ professionals.',
+        title: 'TalentXcel - AI-Powered Career Platform | Find Jobs, Learn Skills, Network',
+        description: 'Accelerate your career with TalentXcel. Find dream jobs, learn new skills, network with professionals, and get AI-powered career guidance. Join 100,000+ professionals.',
         keywords: ['jobs', 'careers', 'learning', 'networking', 'AI career guidance', 'skill development', 'job search', 'professional networking'],
         type: 'website',
         enableAIIndexing: true,
@@ -174,7 +174,7 @@ export const getPageSEO = (pageType: string, data?: any): EnhancedSEOConfig => {
     case 'job':
       return {
         title: data?.title ? `${data.title} - ${data.company} | TalentXcel Jobs` : 'Job Opportunity | TalentXcel',
-        description: data?.description || 'Explore this exciting job opportunity and apply with Performance tools.',
+        description: data?.description || 'Explore this exciting job opportunity and apply with AI-powered tools.',
         keywords: ['job', 'career', 'hiring', 'employment', ...(data?.skills || [])],
         type: 'jobposting',
         structuredData: data ? generateJobStructuredData(data) : undefined,
@@ -264,7 +264,3 @@ const generateCompanyStructuredData = (company: any) => {
 
   return JSON.stringify(structuredData, null, 2);
 };
-
-
-
-

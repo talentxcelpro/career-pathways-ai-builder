@@ -48,30 +48,30 @@ const NetworkGrowthTracker = () => {
     setIsAnalyzing(true);
 
     try {
-      // Fetch user's TalentNetwork and network activity
-      const [TalentNetworkRes, postsRes, messagesRes, profileRes] = await Promise.all([
+      // Fetch user's connections and network activity
+      const [connectionsRes, postsRes, messagesRes, profileRes] = await Promise.all([
         supabase.from('connections').select('*').or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`),
         supabase.from('posts').select('*').eq('author_id', user.id).order('created_at', { ascending: false }).limit(10),
         supabase.from('messages').select('*').eq('sender_id', user.id).order('created_at', { ascending: false }).limit(20),
         supabase.from('profiles').select('*').eq('id', user.id).single()
       ]);
 
-      const TalentNetwork = TalentNetworkRes.data || [];
+      const connections = connectionsRes.data || [];
       const posts = postsRes.data || [];
       const messages = messagesRes.data || [];
       const profile = profileRes.data;
 
       // Calculate network metrics
-      const totalTalentNetwork = TalentNetwork.length;
-      const recentTalentNetwork = TalentNetwork.filter(conn => {
+      const totalConnections = connections.length;
+      const recentConnections = connections.filter(conn => {
         const createdDate = new Date(conn.created_at);
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
         return createdDate >= thirtyDaysAgo;
       }).length;
 
-      const acceptedTalentNetwork = TalentNetwork.filter(conn => conn.status === 'accepted').length;
-      const pendingTalentNetwork = TalentNetwork.filter(conn => conn.status === 'pending').length;
+      const acceptedConnections = connections.filter(conn => conn.status === 'accepted').length;
+      const pendingConnections = connections.filter(conn => conn.status === 'pending').length;
 
       const recentPosts = posts.filter(post => {
         const postDate = new Date(post.created_at);
@@ -92,10 +92,10 @@ const NetworkGrowthTracker = () => {
         body: {
           type: 'network-growth-analysis',
           data: {
-            totalTalentNetwork,
-            recentTalentNetwork,
-            acceptedTalentNetwork,
-            pendingTalentNetwork,
+            totalConnections,
+            recentConnections,
+            acceptedConnections,
+            pendingConnections,
             recentPosts,
             recentMessages,
             profile
@@ -106,24 +106,24 @@ const NetworkGrowthTracker = () => {
 
       const result = {
         overview: {
-          total_TalentNetwork: totalTalentNetwork,
-          recent_TalentNetwork: recentTalentNetwork,
-          acceptance_rate: totalTalentNetwork > 0 ? Math.round((acceptedTalentNetwork / totalTalentNetwork) * 100) : 0,
-          pending_requests: pendingTalentNetwork,
-          engagement_score: Math.min(100, (recentPosts * 10) + (recentMessages * 5) + (recentTalentNetwork * 15))
+          total_connections: totalConnections,
+          recent_connections: recentConnections,
+          acceptance_rate: totalConnections > 0 ? Math.round((acceptedConnections / totalConnections) * 100) : 0,
+          pending_requests: pendingConnections,
+          engagement_score: Math.min(100, (recentPosts * 10) + (recentMessages * 5) + (recentConnections * 15))
         },
         growth_metrics: {
-          monthly_growth: recentTalentNetwork,
-          growth_rate: totalTalentNetwork > 0 ? Math.round((recentTalentNetwork / Math.max(totalTalentNetwork - recentTalentNetwork, 1)) * 100) : 0,
+          monthly_growth: recentConnections,
+          growth_rate: totalConnections > 0 ? Math.round((recentConnections / Math.max(totalConnections - recentConnections, 1)) * 100) : 0,
           activity_level: recentPosts + recentMessages,
-          networking_frequency: Math.round((recentMessages + recentTalentNetwork) / 4) // Weekly average
+          networking_frequency: Math.round((recentMessages + recentConnections) / 4) // Weekly average
         },
         performance_indicators: [
           {
             metric: 'Connection Quality',
-            value: Math.round((acceptedTalentNetwork / Math.max(totalTalentNetwork, 1)) * 100),
+            value: Math.round((acceptedConnections / Math.max(totalConnections, 1)) * 100),
             target: 85,
-            status: acceptedTalentNetwork / Math.max(totalTalentNetwork, 1) >= 0.85 ? 'good' : 'needs_improvement'
+            status: acceptedConnections / Math.max(totalConnections, 1) >= 0.85 ? 'good' : 'needs_improvement'
           },
           {
             metric: 'Engagement Rate', 
@@ -133,31 +133,31 @@ const NetworkGrowthTracker = () => {
           },
           {
             metric: 'Network Growth',
-            value: recentTalentNetwork,
+            value: recentConnections,
             target: 10,
-            status: recentTalentNetwork >= 10 ? 'excellent' : recentTalentNetwork >= 5 ? 'good' : 'needs_improvement'
+            status: recentConnections >= 10 ? 'excellent' : recentConnections >= 5 ? 'good' : 'needs_improvement'
           }
         ],
         insights: aiResponse?.insights || [
-          totalTalentNetwork === 0 ? 'Start building your professional network by connecting with colleagues' : `You have ${totalTalentNetwork} TalentNetwork - great foundation!`,
-          recentTalentNetwork > 5 ? 'Excellent networking activity this month!' : 'Consider being more active in making new TalentNetwork',
+          totalConnections === 0 ? 'Start building your professional network by connecting with colleagues' : `You have ${totalConnections} connections - great foundation!`,
+          recentConnections > 5 ? 'Excellent networking activity this month!' : 'Consider being more active in making new connections',
           recentPosts > 2 ? 'Good content sharing keeps you visible' : 'Share more content to increase your visibility',
-          `Your acceptance rate of ${Math.round((acceptedTalentNetwork / Math.max(totalTalentNetwork, 1)) * 100)}% shows good connection quality`
+          `Your acceptance rate of ${Math.round((acceptedConnections / Math.max(totalConnections, 1)) * 100)}% shows good connection quality`
         ],
         recommendations: aiResponse?.recommendations || [
-          recentTalentNetwork < 5 ? 'Aim to make 2-3 new TalentNetwork weekly' : 'Maintain your excellent networking pace',
+          recentConnections < 5 ? 'Aim to make 2-3 new connections weekly' : 'Maintain your excellent networking pace',
           recentPosts === 0 ? 'Share industry insights or achievements weekly' : 'Continue sharing valuable content',
-          recentMessages < 5 ? 'Engage more with your TalentNetwork\' posts' : 'Great engagement with your network',
+          recentMessages < 5 ? 'Engage more with your connections\' posts' : 'Great engagement with your network',
           'Set networking goals and track progress monthly'
         ],
         action_plan: {
           weekly_goals: [
-            `Connect with ${Math.max(2, Math.ceil(10 - recentTalentNetwork / 4))} new professionals`,
+            `Connect with ${Math.max(2, Math.ceil(10 - recentConnections / 4))} new professionals`,
             `Share ${Math.max(1, 3 - Math.ceil(recentPosts / 4))} valuable posts`,
-            `Engage with ${Math.max(3, 10 - Math.ceil(recentMessages / 4))} TalentNetwork' content`
+            `Engage with ${Math.max(3, 10 - Math.ceil(recentMessages / 4))} connections' content`
           ],
           monthly_targets: {
-            new_connection: Math.max(10, recentTalentNetwork + 5),
+            new_connections: Math.max(10, recentConnections + 5),
             content_posts: Math.max(4, recentPosts + 2),
             meaningful_interactions: Math.max(20, recentMessages + 10)
           }
@@ -213,14 +213,14 @@ const NetworkGrowthTracker = () => {
           <Card>
             <CardContent className="p-6 text-center">
               <Users className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold">{networkData.overview.total_TalentNetwork}</div>
-              <div className="text-sm text-muted-foreground">Total TalentNetwork</div>
+              <div className="text-2xl font-bold">{networkData.overview.total_connections}</div>
+              <div className="text-sm text-muted-foreground">Total Connections</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-6 text-center">
               <TrendingUp className="h-8 w-8 text-green-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold">{networkData.overview.recent_TalentNetwork}</div>
+              <div className="text-2xl font-bold">{networkData.overview.recent_connections}</div>
               <div className="text-sm text-muted-foreground">New This Month</div>
             </CardContent>
           </Card>
@@ -334,8 +334,8 @@ const NetworkGrowthTracker = () => {
                 <h4 className="font-semibold mb-3">Monthly Targets</h4>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span>New TalentNetwork:</span>
-                    <Badge variant="outline">{networkData.action_plan.monthly_targets.new_connection}</Badge>
+                    <span>New Connections:</span>
+                    <Badge variant="outline">{networkData.action_plan.monthly_targets.new_connections}</Badge>
                   </div>
                   <div className="flex justify-between">
                     <span>Content Posts:</span>
@@ -415,7 +415,7 @@ const NetworkGrowthTracker = () => {
                 <div>
                   <h2 className="text-2xl font-bold mb-2">Network Growth Tracker</h2>
                   <p className="text-muted-foreground mb-6">
-                    Tracks growth in professional TalentNetwork and engagement
+                    Tracks growth in professional connections and engagement
                   </p>
                 </div>
                 <Button onClick={analyzeNetwork} size="lg" className="px-8">
@@ -434,4 +434,3 @@ const NetworkGrowthTracker = () => {
 };
 
 export default NetworkGrowthTracker;
-

@@ -1,0 +1,396 @@
+import React, { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { learningAggregatorService } from '@/services/learningAggregatorService';
+import { learningStateService } from '@/services/learningStateService';
+import { AggregatedCourse } from '@/types/learningAggregator';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { toast } from 'sonner';
+import { 
+  ExternalLink, 
+  Sparkles, 
+  ShieldCheck, 
+  Clock, 
+  Award, 
+  Globe, 
+  Briefcase, 
+  ChevronRight, 
+  ArrowLeft, 
+  Share2, 
+  Bookmark, 
+  CheckCircle2, 
+  Building2
+} from 'lucide-react';
+
+export const AggregatedCourseDetail: React.FC = () => {
+  const { id, slug } = useParams<{ id?: string; slug?: string }>();
+  const navigate = useNavigate();
+  const courseIdentifier = slug || id || 'microsoft-power-bi-data-analyst';
+
+  const [isSaved, setIsSaved] = useState(false);
+
+  // Fetch course detail
+  const { data: course, isLoading } = useQuery({
+    queryKey: ['aggregated-course-detail', courseIdentifier],
+    queryFn: () => learningAggregatorService.getCourseBySlugOrId(courseIdentifier)
+  });
+
+  // Fetch alternatives
+  const { data: alternatives = [] } = useQuery({
+    queryKey: ['aggregated-course-alternatives', courseIdentifier],
+    queryFn: () => course ? learningAggregatorService.getAlternatives(course) : Promise.resolve([]),
+    enabled: !!course
+  });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-8">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-sm font-semibold text-muted-foreground">Loading course intelligence...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!course) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-8 text-center">
+        <h2 className="text-xl font-bold text-foreground mb-4">Course Not Found</h2>
+        <Button onClick={() => navigate('/learning')}>Return to Learning Hub</Button>
+      </div>
+    );
+  }
+
+  const handleStartCourseHandoff = async () => {
+    await learningStateService.recordHandoffStart(course);
+
+    const monetizedUrl = await learningAggregatorService.trackHandoff({
+      course_id: course.id,
+      provider_id: course.provider_id,
+      provider_name: course.provider_name,
+      source_url: course.source_url,
+      clicked_at: new Date().toISOString(),
+      source_page: 'course_detail'
+    });
+
+    toast.success(`Redirecting to official course on ${course.provider_name}...`);
+    window.open(monetizedUrl, '_blank', 'noopener,noreferrer');
+  };
+
+  return (
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 pb-16 text-slate-900 dark:text-slate-100 pt-2">
+      
+      {/* Container Wrapper with Compact Padding */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 space-y-6">
+        
+        {/* Breadcrumb Navigation */}
+        <div className="flex items-center justify-between text-xs font-semibold bg-white dark:bg-card p-3 rounded-2xl border border-slate-200/80 dark:border-border shadow-2xs">
+          <button 
+            onClick={() => navigate('/learning')}
+            className="flex items-center gap-1.5 text-slate-700 dark:text-slate-200 hover:text-blue-600 transition-colors cursor-pointer"
+          >
+            <ArrowLeft className="h-4 w-4 text-blue-600" /> 
+            <span className="font-extrabold">Back to Learning Hub</span>
+          </button>
+          
+          <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+            <span className="hover:text-blue-600 cursor-pointer" onClick={() => navigate('/learning')}>Learning</span>
+            <ChevronRight className="h-3 w-3" />
+            <span>{course.category}</span>
+            <ChevronRight className="h-3 w-3" />
+            <span className="text-blue-600 font-extrabold truncate max-w-[200px]">{course.title}</span>
+          </div>
+        </div>
+
+        {/* Compact Hero Card Section - No Giant Empty Space */}
+        <Card className="rounded-3xl border border-slate-200 dark:border-border bg-white dark:bg-card shadow-md p-6 sm:p-8 overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            {/* Left Content Area */}
+            <div className="lg:col-span-8 space-y-4">
+              
+              {/* Badges Bar */}
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge className="bg-blue-600 hover:bg-blue-500 text-white rounded-full px-3 py-1 text-xs font-extrabold flex items-center gap-1.5 shadow-2xs">
+                  <ShieldCheck className="h-3.5 w-3.5" />
+                  <span>Course Provided by {course.provider_name}</span>
+                </Badge>
+
+                <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 text-xs font-extrabold px-3 py-1 rounded-full border border-emerald-200">
+                  {course.free_type.replace(/_/g, ' ')}
+                </Badge>
+
+                <Badge variant="outline" className="border-slate-300 text-slate-700 dark:text-slate-300 rounded-full text-xs font-bold px-3 py-1">
+                  {course.level} Level
+                </Badge>
+              </div>
+
+              {/* Title */}
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+                {course.title}
+              </h1>
+
+              {/* Description */}
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium leading-relaxed max-w-2xl">
+                {course.short_description}
+              </p>
+
+              {/* Metadata Pills */}
+              <div className="flex flex-wrap items-center gap-3 text-xs text-slate-800 dark:text-slate-200 font-bold pt-2">
+                <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-muted px-3 py-1.5 rounded-full border border-slate-200">
+                  <Clock className="h-4 w-4 text-blue-600" />
+                  <span>{course.duration_text}</span>
+                </div>
+
+                <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-muted px-3 py-1.5 rounded-full border border-slate-200">
+                  <Award className="h-4 w-4 text-emerald-600" />
+                  <span>{course.certificate_type.replace(/_/g, ' ')}</span>
+                </div>
+
+                <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-muted px-3 py-1.5 rounded-full border border-slate-200">
+                  <Globe className="h-4 w-4 text-purple-600" />
+                  <span>{course.language}</span>
+                </div>
+
+                {course.talentxcel_match && (
+                  <div className="flex items-center gap-1.5 text-purple-800 bg-purple-100 dark:bg-purple-950/60 border border-purple-300 px-3.5 py-1.5 rounded-full font-extrabold">
+                    <Sparkles className="h-4 w-4 text-purple-600" />
+                    <span>{course.talentxcel_match}% TalentXcel Match</span>
+                  </div>
+                )}
+              </div>
+
+            </div>
+
+            {/* Right Side Action Container */}
+            <div className="lg:col-span-4 space-y-4 bg-slate-50 dark:bg-muted/30 p-5 rounded-2xl border border-slate-200/80 dark:border-border">
+              
+              <div className="space-y-1">
+                <div className="text-[11px] text-slate-500 font-extrabold uppercase tracking-wider">Access Model</div>
+                <div className="text-lg font-extrabold text-emerald-600 flex items-center justify-between">
+                  <span>{course.free_type.replace(/_/g, ' ')}</span>
+                  <span className="text-[10px] font-bold text-slate-600 bg-white dark:bg-card px-2.5 py-0.5 rounded-full border border-slate-200">Verified</span>
+                </div>
+              </div>
+
+              {/* Start Course CTA */}
+              <Button
+                onClick={handleStartCourseHandoff}
+                className="w-full h-11 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs shadow-sm flex items-center justify-center gap-2 group cursor-pointer"
+              >
+                <span>Start Course on {course.provider_name}</span>
+                <ExternalLink className="h-3.5 w-3.5" />
+              </Button>
+
+              {/* Handoff Banner */}
+              <div className="p-3 rounded-xl bg-white dark:bg-card border border-slate-200/80 text-[11px] text-slate-600 dark:text-slate-300 space-y-1">
+                <div className="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-blue-600" />
+                  <span>External Provider Handoff</span>
+                </div>
+                <p className="leading-normal font-medium text-[10px]">
+                  Provided officially by <strong>{course.provider_name}</strong>. Continues on official provider site while TalentXcel stays open.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 pt-1">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => {
+                    setIsSaved(!isSaved);
+                    toast.success(isSaved ? "Removed from saved" : "Saved to My Learning!");
+                  }}
+                  className="flex-1 rounded-xl text-xs font-extrabold border-slate-300 text-slate-800 cursor-pointer"
+                >
+                  <Bookmark className={`h-3.5 w-3.5 mr-1 ${isSaved ? 'fill-blue-600 text-blue-600' : ''}`} />
+                  {isSaved ? 'Saved' : 'Save'}
+                </Button>
+
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.href);
+                    toast.success("Link copied!");
+                  }}
+                  className="rounded-xl text-xs font-extrabold border-slate-300 text-slate-800 cursor-pointer"
+                >
+                  <Share2 className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+
+            </div>
+
+          </div>
+        </Card>
+
+        {/* 3. Main Details Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          {/* Left Column Details (8 Cols) */}
+          <div className="lg:col-span-8 space-y-8">
+            
+            {/* Why TalentXcel Recommends This Box */}
+            <Card className="rounded-3xl border-purple-200 dark:border-purple-900/60 bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-purple-950/20 dark:to-blue-950/20 dark:via-card shadow-xs p-6 space-y-3">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-purple-600" />
+                <h3 className="text-base font-extrabold text-foreground">Why TalentXcel Recommends This</h3>
+              </div>
+              <p className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed font-medium">
+                {course.recommendation_reason || `This ${course.level} level course in ${course.category} directly aligns with in-demand technical competencies required across modern enterprise job roles.`}
+              </p>
+
+              <div className="flex flex-wrap items-center gap-2 pt-2">
+                <Badge className="bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-300 font-extrabold text-[11px]">
+                  Skill Gap: {course.skills[0] || 'Technical Skill'}
+                </Badge>
+                <Badge className="bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300 font-extrabold text-[11px]">
+                  Target Career: {course.career_relevance[0] || 'Software Professional'}
+                </Badge>
+                <Badge className="bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 font-extrabold text-[11px]">
+                  Verified 100% Free Access
+                </Badge>
+              </div>
+            </Card>
+
+            {/* About Course */}
+            <div className="space-y-3">
+              <h2 className="text-lg font-extrabold text-foreground">About This Course</h2>
+              <p className="text-xs sm:text-sm text-slate-800 dark:text-slate-300 leading-relaxed whitespace-pre-line font-medium">
+                {course.long_description || course.short_description}
+              </p>
+            </div>
+
+            <Separator />
+
+            {/* Skills You Will Learn */}
+            <div className="space-y-3">
+              <h2 className="text-lg font-extrabold text-foreground">Skills You Will Master</h2>
+              <div className="flex flex-wrap gap-2">
+                {course.skills.map((skill, i) => (
+                  <div key={i} className="px-3.5 py-1.5 rounded-xl bg-white dark:bg-card border border-slate-200 dark:border-border text-xs font-bold text-slate-800 dark:text-slate-100 shadow-2xs flex items-center gap-2">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-blue-600" />
+                    <span>{skill}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Careers Using These Skills */}
+            <div className="space-y-3">
+              <h2 className="text-lg font-extrabold text-foreground">Careers Using These Skills</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {course.career_relevance.map((career, i) => (
+                  <div key={i} className="p-4 rounded-2xl bg-white dark:bg-card border border-slate-200 dark:border-border shadow-2xs space-y-1">
+                    <div className="text-xs sm:text-sm font-extrabold text-foreground flex items-center gap-2">
+                      <Briefcase className="h-4 w-4 text-blue-600" />
+                      <span>{career}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground font-medium">
+                      Average industry entry: ₹8 - ₹18 LPA ($75k - $115k)
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Alternatives Grid */}
+            {alternatives.length > 0 && (
+              <div className="space-y-4">
+                <h2 className="text-lg font-extrabold text-foreground">Alternatives from Other Providers</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {alternatives.map(alt => (
+                    <Card 
+                      key={alt.id} 
+                      onClick={() => navigate(`/learning/courses/${alt.slug || alt.id}`)}
+                      className="rounded-2xl border-slate-200 dark:border-border hover:border-blue-500 transition-all cursor-pointer p-4 space-y-3"
+                    >
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-extrabold text-blue-600">{alt.provider_name}</span>
+                        <Badge variant="outline" className="text-[10px] font-bold">{alt.duration_text}</Badge>
+                      </div>
+
+                      <h4 className="text-xs font-extrabold text-foreground line-clamp-2">{alt.title}</h4>
+
+                      <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-1">
+                        <span className="font-medium">{alt.free_type.replace(/_/g, ' ')}</span>
+                        <span className="text-blue-600 font-extrabold flex items-center">
+                          View Course <ChevronRight className="h-3 w-3 ml-0.5" />
+                        </span>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
+
+          </div>
+
+          {/* Right Column Related Jobs Widget (4 Cols) */}
+          <div className="lg:col-span-4 space-y-6">
+            
+            <Card className="rounded-3xl border-slate-200 dark:border-border shadow-sm p-6 space-y-4 bg-white dark:bg-card">
+              <div className="flex items-center gap-2">
+                <Building2 className="h-5 w-5 text-blue-600" />
+                <h3 className="text-base font-extrabold text-foreground">Matching TalentXcel Jobs</h3>
+              </div>
+
+              <p className="text-xs text-muted-foreground font-medium">
+                Open jobs requiring skills taught in this course:
+              </p>
+
+              <div className="space-y-3">
+                {[
+                  { title: 'Junior Data Analyst', company: 'Savantis Solutions', location: 'India (Remote)', salary: '₹8 - ₹12 LPA', skills: ['SQL', 'Power BI'] },
+                  { title: 'BI Specialist', company: 'Nexgenn Services', location: 'Hyderabad', salary: '₹10 - ₹16 LPA', skills: ['Power BI', 'Data Modeling'] },
+                  { title: 'Analytics Associate', company: 'Global Tech Corp', location: 'Bengaluru', salary: '₹9 - ₹14 LPA', skills: ['Excel', 'SQL'] }
+                ].map((job, i) => (
+                  <div 
+                    key={i} 
+                    onClick={() => navigate(`/jobs?q=${encodeURIComponent(job.title)}`)}
+                    className="p-3.5 rounded-2xl bg-slate-50 dark:bg-muted/30 hover:bg-blue-50 dark:hover:bg-muted/60 transition-colors cursor-pointer border border-slate-200/80 dark:border-border/40 space-y-2"
+                  >
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-xs font-extrabold text-foreground">{job.title}</h4>
+                      <Badge variant="secondary" className="text-[9px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">{job.salary}</Badge>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground font-medium">{job.company} • {job.location}</p>
+                    <div className="flex flex-wrap gap-1">
+                      {job.skills.map((s, idx) => (
+                        <span key={idx} className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-white dark:bg-card border border-slate-200 text-slate-700">
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <Button 
+                onClick={() => navigate('/jobs')}
+                className="w-full rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white cursor-pointer"
+              >
+                Explore All Jobs Requiring These Skills
+              </Button>
+            </Card>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  );
+};
+
+export default AggregatedCourseDetail;

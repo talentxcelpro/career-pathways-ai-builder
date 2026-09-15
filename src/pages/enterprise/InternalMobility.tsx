@@ -35,10 +35,10 @@ export const InternalMobility: React.FC = () => {
       id: 'sarah-smith',
       name: 'Sarah Smith',
       currentRole: 'Data Analyst',
-      department: 'CareerAnalytics',
+      department: 'Analytics',
       careerScore: 92,
       skillGaps: ['Machine Learning', 'Python'],
-      suggestedRoles: ['Data Scientist', 'ML Engineer', 'CareerAnalytics Manager'],
+      suggestedRoles: ['Data Scientist', 'ML Engineer', 'Analytics Manager'],
       learningPath: ['Python for Data Science', 'ML Fundamentals', 'Data Visualization']
     }
   ];
@@ -53,7 +53,7 @@ export const InternalMobility: React.FC = () => {
           <div className="flex items-center gap-3 mb-4">
             <TrendingUp className="h-8 w-8 text-primary" />
             <h1 className="text-3xl font-bold text-gray-900 font-display">
-              Performance Internal Mobility & Career Pathing
+              AI-Powered Internal Mobility & Career Pathing
             </h1>
           </div>
           <p className="text-lg text-gray-600">
@@ -61,15 +61,15 @@ export const InternalMobility: React.FC = () => {
           </p>
         </div>
 
-        <Tabs defaultValue="CommandCenter" className="space-y-6">
+        <Tabs defaultValue="dashboard" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="CommandCenter">CommandCenter</TabsTrigger>
+            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="employees">Employee Insights</TabsTrigger>
             <TabsTrigger value="paths">Career Paths</TabsTrigger>
-            <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="CommandCenter" className="space-y-6">
+          <TabsContent value="dashboard" className="space-y-6">
             {/* Key Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <Card>
@@ -136,7 +136,7 @@ export const InternalMobility: React.FC = () => {
                   {[
                     { name: 'Alice Johnson', from: 'Junior Developer', to: 'Senior Developer', department: 'Engineering', date: '2 days ago' },
                     { name: 'Bob Wilson', from: 'Marketing Specialist', to: 'Marketing Manager', department: 'Marketing', date: '1 week ago' },
-                    { name: 'Carol Brown', from: 'Data Analyst', to: 'Data Scientist', department: 'CareerAnalytics', date: '2 weeks ago' }
+                    { name: 'Carol Brown', from: 'Data Analyst', to: 'Data Scientist', department: 'Analytics', date: '2 weeks ago' }
                   ].map((movement, index) => (
                     <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                       <div className="flex items-center gap-4">
@@ -292,7 +292,7 @@ export const InternalMobility: React.FC = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="CareerAnalytics" className="space-y-6">
+          <TabsContent value="analytics" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
@@ -348,6 +348,3 @@ export const InternalMobility: React.FC = () => {
     </div>
   );
 };
-
-
-

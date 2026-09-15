@@ -355,7 +355,7 @@ export const VisualRoadmapShowcase: React.FC<VisualRoadmapShowcaseProps> = ({ cl
             Your Interactive Career Roadmap
           </h1>
           <p className="text-lg text-text-secondary">
-            Experience your personalized career journey with real-time Intelligence Metrics 
+            Experience your personalized career journey with real-time AI insights 
             tailored to your profile and goals.
           </p>
         </div>
@@ -437,7 +437,7 @@ export const VisualRoadmapShowcase: React.FC<VisualRoadmapShowcaseProps> = ({ cl
               Your Career Progression Path
             </h2>
             <p className="text-gray-600">
-              {userProfile?.full_name ? `${userProfile.full_name}'s` : 'Your'} personalized roadmap with Performance insights
+              {userProfile?.full_name ? `${userProfile.full_name}'s` : 'Your'} personalized roadmap with AI-powered insights
             </p>
           </div>
           
@@ -486,7 +486,7 @@ export const VisualRoadmapShowcase: React.FC<VisualRoadmapShowcaseProps> = ({ cl
           </div>
           <h3 className="text-3xl font-bold mb-4">Ready to Accelerate Your Career?</h3>
           <p className="text-blue-100 mb-8 max-w-2xl mx-auto">
-            Your personalized roadmap is ready. Take the next step with Performance insights 
+            Your personalized roadmap is ready. Take the next step with AI-powered insights 
             tailored specifically for {userProfile?.full_name || 'your success'}.
           </p>
           <div className="flex gap-4 justify-center">

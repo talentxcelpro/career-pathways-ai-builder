@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, lazy, Suspense } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import CareerPassportCommandCenter from '@/pages/passport/CareerPassportDashboard';
+
+const CareerPassportDashboard = lazy(() => import('@/pages/passport/CareerPassportDashboard'));
 
 /**
  * Route handler for /passport/:param
  * - If :param is a UUID -> redirect to /profile/:username (SEO-friendly)
- * - Else treat as username and render CareerPassportCommandCenter
+ * - Else treat as username and render CareerPassportDashboard
  */
 const PassportRouteHandler: React.FC = () => {
   const { username: param } = useParams<{ username: string }>();
@@ -25,7 +26,7 @@ const PassportRouteHandler: React.FC = () => {
       const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
       if (!uuidRegex.test(param)) {
-        // It's a username — render CommandCenter by ending the check
+        // It's a username — render dashboard by ending the check
         setChecking(false);
         return;
       }
@@ -71,10 +72,12 @@ const PassportRouteHandler: React.FC = () => {
     );
   }
 
-  // Not a UUID -> treat as username and render the CommandCenter
-  return <CareerPassportCommandCenter />;
+  // Not a UUID -> treat as username and render the dashboard
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}>
+      <CareerPassportDashboard />
+    </Suspense>
+  );
 };
 
 export default PassportRouteHandler;
-
-

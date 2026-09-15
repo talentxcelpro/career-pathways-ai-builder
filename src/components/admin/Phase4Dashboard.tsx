@@ -15,10 +15,12 @@ import {
   Gauge,
   Activity
 } from 'lucide-react';
-import AdvancedSEOAdmin from '@/pages/admin/AdvancedSEOAdmin';
+import { PerformanceDashboard } from '@/components/performance/PerformanceDashboard';
 import { toast } from 'sonner';
 
-export const Phase4CommandCenter: React.FC = () => {
+const AdvancedSEOAdmin = React.lazy(() => import('@/pages/admin/AdvancedSEOAdmin'));
+
+export const Phase4Dashboard: React.FC = () => {
   const phase4Features = [
     {
       category: 'Performance Optimization',
@@ -35,7 +37,7 @@ export const Phase4CommandCenter: React.FC = () => {
       features: [
         { name: 'Enhanced Sitemaps', status: 'active', description: 'Multi-level sitemaps with images' },
         { name: 'Advanced Structured Data', status: 'active', description: 'Rich JSON-LD implementation' },
-        { name: 'RSS Pulse Generation', status: 'active', description: 'Automated content syndication' },
+        { name: 'RSS Feed Generation', status: 'active', description: 'Automated content syndication' },
         { name: 'Robots.txt Optimization', status: 'active', description: 'Advanced crawling instructions' },
         { name: 'Multi-language Support', status: 'active', description: 'Hreflang implementation' }
       ]
@@ -194,15 +196,13 @@ export const Phase4CommandCenter: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="performance" className="space-y-6">
-          <div className="p-12 text-center border-2 border-dashed rounded-lg">
-            <Activity className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold">Performance Monitoring System</h3>
-            <p className="text-muted-foreground">The real-time monitoring CommandCenter has been disabled to maintain a clean UI.</p>
-          </div>
+          <PerformanceDashboard />
         </TabsContent>
 
         <TabsContent value="seo" className="space-y-6">
-          <AdvancedSEOAdmin />
+          <React.Suspense fallback={<div className="p-8 text-center text-slate-400">Loading SEO Admin...</div>}>
+            <AdvancedSEOAdmin />
+          </React.Suspense>
         </TabsContent>
       </Tabs>
 
@@ -272,4 +272,3 @@ export const Phase4CommandCenter: React.FC = () => {
     </div>
   );
 };
-

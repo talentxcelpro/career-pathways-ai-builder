@@ -20,7 +20,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 
-export const ReferralCommandCenter: React.FC = () => {
+export const ReferralDashboard: React.FC = () => {
   const { 
     referralData, 
     referralEvents, 
@@ -55,7 +55,7 @@ export const ReferralCommandCenter: React.FC = () => {
     <div className="w-full space-y-6">
       {/* Header */}
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-foreground mb-2">Your Referral CommandCenter</h2>
+        <h2 className="text-3xl font-bold text-foreground mb-2">Your Referral Dashboard</h2>
         <p className="text-muted-foreground">Track your progress and share your success</p>
       </div>
 
@@ -277,4 +277,3 @@ export const ReferralCommandCenter: React.FC = () => {
     </div>
   );
 };
-

@@ -158,7 +158,7 @@ const CareerPathfinder = () => {
             </div>
             <div>
               <h1 className="text-3xl font-bold text-gray-900">AI Career Pathfinder</h1>
-              <p className="text-gray-600">Discover your ideal career path with Performance recommendations</p>
+              <p className="text-gray-600">Discover your ideal career path with AI-powered recommendations</p>
             </div>
           </div>
         </div>
@@ -292,7 +292,7 @@ const CareerPathfinder = () => {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">Your Career Path Recommendations</h2>
-                <p className="text-gray-600">Performance analysis based on your profile</p>
+                <p className="text-gray-600">AI-powered analysis based on your profile</p>
               </div>
               <Button variant="outline" onClick={() => setResults(null)}>
                 Generate New Paths
@@ -400,4 +400,3 @@ const CareerPathfinder = () => {
 };
 
 export default CareerPathfinder;
-

@@ -1,0 +1,21 @@
+{
+  "runId": "bench-v2-2026-09-15-1789487219631",
+  "executionTimestamp": "2026-09-15T16:31:31.683Z",
+  "nodeVersion": "v25.6.1",
+  "platform": "win32",
+  "udxEndpoint": "https://talentxcel.in/api/udx/resolve",
+  "genericAiModel": "phi3:mini (local Ollama)",
+  "corpusVersion": "2.0.0",
+  "totalObjectivesProcessed": 100,
+  "resultsSummary": {
+    "udxWins": 80,
+    "udxLosses": 14,
+    "ties": 6,
+    "insufficientData": 0,
+    "udxWinRate": "80.0%",
+    "udxLossRate": "14.0%",
+    "tieRate": "6.0%",
+    "medianResolutionAdvantage": "0.0901",
+    "meanResolutionAdvantage": "0.0122"
+  }
+}

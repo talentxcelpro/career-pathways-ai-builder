@@ -16,9 +16,9 @@ import {
 } from '@/hooks/useAdvancedJobScraper';
 import { formatDistanceToNow } from 'date-fns';
 
-// ============= PHASE 4: ADVANCED MONITORING CommandCenter =============
+// ============= PHASE 4: ADVANCED MONITORING DASHBOARD =============
 
-export const AdvancedJobScrapingCommandCenter: React.FC = () => {
+export const AdvancedJobScrapingDashboard: React.FC = () => {
   const [selectedTimeframe, setSelectedTimeframe] = useState<'24h' | '7d' | '30d'>('24h');
   const [autoRefresh, setAutoRefresh] = useState(true);
 
@@ -158,7 +158,7 @@ export const AdvancedJobScrapingCommandCenter: React.FC = () => {
         </Card>
       </div>
 
-      {/* ============= MAIN CommandCenter TABS ============= */}
+      {/* ============= MAIN DASHBOARD TABS ============= */}
       <Tabs defaultValue="overview" className="space-y-6">
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -461,4 +461,3 @@ export const AdvancedJobScrapingCommandCenter: React.FC = () => {
     </div>
   );
 };
-

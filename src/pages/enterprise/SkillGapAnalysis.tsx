@@ -37,7 +37,7 @@ export const SkillGapAnalysis: React.FC = () => {
       name: 'Marketing',
       totalEmployees: 28,
       skillGaps: [
-        { skill: 'Digital CareerAnalytics', gap: 72, priority: 'high', employees: 15 },
+        { skill: 'Digital Analytics', gap: 72, priority: 'high', employees: 15 },
         { skill: 'Content Strategy', gap: 58, priority: 'high', employees: 12 },
         { skill: 'SEO/SEM', gap: 42, priority: 'medium', employees: 8 },
         { skill: 'Social Media Marketing', gap: 35, priority: 'low', employees: 5 }
@@ -94,8 +94,8 @@ export const SkillGapAnalysis: React.FC = () => {
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="analysis">Gap Analysis</TabsTrigger>
             <TabsTrigger value="training">Training Marketplace</TabsTrigger>
-            <TabsTrigger value="tracking">Growth Path</TabsTrigger>
-            <TabsTrigger value="roi">ROI CareerAnalytics</TabsTrigger>
+            <TabsTrigger value="tracking">Progress Tracking</TabsTrigger>
+            <TabsTrigger value="roi">ROI Analytics</TabsTrigger>
           </TabsList>
 
           <TabsContent value="analysis" className="space-y-6">
@@ -302,7 +302,7 @@ export const SkillGapAnalysis: React.FC = () => {
                     {[
                       { course: 'React Native Fundamentals', participants: 12, progress: 65, completion: '3 weeks' },
                       { course: 'DevOps Best Practices', participants: 8, progress: 40, completion: '5 weeks' },
-                      { course: 'Digital Marketing CareerAnalytics', participants: 15, progress: 80, completion: '1 week' }
+                      { course: 'Digital Marketing Analytics', participants: 15, progress: 80, completion: '1 week' }
                     ].map((program, index) => (
                       <div key={index} className="p-4 border rounded-lg space-y-2">
                         <div className="flex items-center justify-between">
@@ -442,6 +442,3 @@ export const SkillGapAnalysis: React.FC = () => {
     </div>
   );
 };
-
-
-

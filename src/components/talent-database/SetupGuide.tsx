@@ -128,7 +128,7 @@ export const SetupGuide = () => {
         <Brain className="h-12 w-12 mx-auto text-primary mb-4" />
         <h2 className="text-2xl font-bold">Talent Database Setup</h2>
         <p className="text-muted-foreground mt-2">
-          Configure the Performance talent management system
+          Configure the AI-powered talent management system
         </p>
       </div>
 

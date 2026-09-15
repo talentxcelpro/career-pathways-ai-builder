@@ -65,7 +65,7 @@ const QRNetworking: React.FC = () => {
               QR Networking Hub
             </h1>
             <p className="text-xl text-muted-foreground mt-2">
-              Instant professional TalentNetwork through smart QR technology
+              Instant professional connections through smart QR technology
             </p>
           </motion.div>
 
@@ -94,7 +94,7 @@ const QRNetworking: React.FC = () => {
               <CardContent className="p-4 text-center">
                 <Users className="h-8 w-8 mx-auto mb-2 text-blue-600" />
                 <div className="text-2xl font-bold">∞</div>
-                <div className="text-sm text-muted-foreground">TalentNetwork</div>
+                <div className="text-sm text-muted-foreground">Connections</div>
               </CardContent>
             </Card>
             <Card>
@@ -243,7 +243,7 @@ const QRNetworking: React.FC = () => {
                       Professional Network
                     </CardTitle>
                     <p className="text-sm text-muted-foreground">
-                      Manage TalentNetwork made through QR networking
+                      Manage connections made through QR networking
                     </p>
                   </CardHeader>
                   <CardContent>
@@ -285,7 +285,7 @@ const QRNetworking: React.FC = () => {
                     <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
                       <Zap className="h-6 w-6 text-primary" />
                     </div>
-                    <h3 className="font-medium mb-2">Instant TalentNetwork</h3>
+                    <h3 className="font-medium mb-2">Instant Connections</h3>
                     <p className="text-sm text-muted-foreground">
                       Connect with professionals in seconds, no typing required
                     </p>
@@ -305,7 +305,7 @@ const QRNetworking: React.FC = () => {
                     </div>
                     <h3 className="font-medium mb-2">Professional Network</h3>
                     <p className="text-sm text-muted-foreground">
-                      Build meaningful TalentNetwork at events and meetings
+                      Build meaningful connections at events and meetings
                     </p>
                   </div>
                 </div>
@@ -319,4 +319,3 @@ const QRNetworking: React.FC = () => {
 };
 
 export default QRNetworking;
-

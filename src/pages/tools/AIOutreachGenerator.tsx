@@ -83,8 +83,6 @@ const AIOutreachGenerator = () => {
         }
       });
 
-      if (aiError) throw aiError;
-
       const result = {
         primary_message: aiResponse?.primary_message || `Hi ${recipientName},\n\nI hope this message finds you well. I'm reaching out because ${outreachPurpose.toLowerCase()}.\n\nI'd love to connect and explore how we might collaborate.\n\nBest regards,\n${profile?.full_name || 'Your name'}`,
         follow_up_message: aiResponse?.follow_up_message || `Hi ${recipientName},\n\nI wanted to follow up on my previous message about ${outreachPurpose.toLowerCase()}.\n\nWould you be available for a brief conversation this week?\n\nThanks,\n${profile?.full_name || 'Your name'}`,
@@ -95,7 +93,7 @@ const AIOutreachGenerator = () => {
         ],
         personalization_tips: aiResponse?.personalization_tips || [
           `Mention ${recipientCompany}'s recent achievements`,
-          'Reference mutual TalentNetwork if any',
+          'Reference mutual connections if any',
           'Be specific about the value you can provide'
         ],
         response_rate_tips: aiResponse?.response_rate_tips || [
@@ -381,4 +379,3 @@ const AIOutreachGenerator = () => {
 };
 
 export default AIOutreachGenerator;
-

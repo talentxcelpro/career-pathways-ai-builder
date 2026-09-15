@@ -3,9 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, TrendingDown, Eye, Users, Target, Award } from 'lucide-react';
 
-interface CollegeCareerAnalyticsProps {
+interface CollegeAnalyticsProps {
   college: any;
-  CareerAnalytics?: {
+  analytics?: {
     placementRate?: number;
     stateAverage?: number;
     popularityScore?: number;
@@ -16,9 +16,9 @@ interface CollegeCareerAnalyticsProps {
   };
 }
 
-export const CollegeCareerAnalytics: React.FC<CollegeCareerAnalyticsProps> = ({
+export const CollegeAnalytics: React.FC<CollegeAnalyticsProps> = ({
   college,
-  CareerAnalytics = {}
+  analytics = {}
 }) => {
   const {
     placementRate = college.placement_percentage || 75,
@@ -28,7 +28,7 @@ export const CollegeCareerAnalytics: React.FC<CollegeCareerAnalyticsProps> = ({
     studentsSearched = 450,
     regionRank = 12,
     roiScore = 78
-  } = CareerAnalytics;
+  } = analytics;
 
   const placementComparison = placementRate - stateAverage;
   const isAboveAverage = placementComparison > 0;
@@ -132,6 +132,3 @@ export const CollegeCareerAnalytics: React.FC<CollegeCareerAnalyticsProps> = ({
     </div>
   );
 };
-
-
-

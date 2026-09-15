@@ -5,11 +5,11 @@ import { toast } from 'sonner';
 import { useTXCMining } from './useTXCMining';
 import { useTokenBalance } from './useTokenBalance';
 
-export interface TalentNetworkuggestion {
+export interface ConnectionSuggestion {
   id: string;
   user_id: string;
   suggested_user_id: string;
-  suggestion_type: 'skills_match' | 'company_match' | 'education_match' | 'mutual_TalentNetwork';
+  suggestion_type: 'skills_match' | 'company_match' | 'education_match' | 'mutual_connections';
   confidence_score: number;
   is_dismissed: boolean;
   created_at: string;
@@ -24,7 +24,7 @@ export interface TalentNetworkuggestion {
   };
 }
 
-export const useTalentNetworkuggestions = () => {
+export const useConnectionSuggestions = () => {
   const queryClient = useQueryClient();
   const { earnTXC } = useTXCMining();
   const { refreshBalance } = useTokenBalance();
@@ -54,7 +54,7 @@ export const useTalentNetworkuggestions = () => {
         .limit(20);
 
       if (error) throw error;
-      return data as TalentNetworkuggestion[];
+      return data as ConnectionSuggestion[];
     },
     retry: 1
   });
@@ -199,4 +199,3 @@ export const useTalentNetworkuggestions = () => {
     isGenerating: generateSuggestionsMutation.isPending
   };
 };
-

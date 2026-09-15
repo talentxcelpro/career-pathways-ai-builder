@@ -2,7 +2,6 @@ import { useState, useCallback, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useTurbo } from './useTurbo';
-import { getEmailRedirectUrl } from '@/utils/authRedirect';
 
 interface RegistrationData {
   fullName: string;
@@ -149,7 +148,7 @@ export const useOptimizedRegistration = () => {
     });
   }, []);
 
-  // Optimized registration with Growth Path
+  // Optimized registration with progress tracking
   const register = useCallback(async (data: RegistrationData, referralCode?: string | null) => {
     setLoading(true);
     setProgress(10);
@@ -179,7 +178,7 @@ export const useOptimizedRegistration = () => {
         email: data.email.trim().toLowerCase(),
         password: data.password,
         options: {
-          emailRedirectTo: getEmailRedirectUrl('/career-os'),
+          emailRedirectTo: `${window.location.origin}/`,
           data: {
             full_name: data.fullName.trim(),
             job_title: data.jobTitle || '',
@@ -301,4 +300,3 @@ export const useOptimizedRegistration = () => {
     getPasswordStrengthDetails
   };
 };
-

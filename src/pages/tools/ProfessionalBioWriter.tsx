@@ -77,8 +77,6 @@ const ProfessionalBioWriter = () => {
         }
       });
 
-      if (aiError) throw aiError;
-
       const result = {
         short_bio: aiResponse?.short_bio || generateFallbackBio('short'),
         medium_bio: aiResponse?.medium_bio || generateFallbackBio('medium'),
@@ -125,7 +123,7 @@ const ProfessionalBioWriter = () => {
     const name = user?.user_metadata?.full_name || 'Professional';
     switch (length) {
       case 'short':
-        return `${name} is a results-driven professional with expertise in driving growth and innovation. Passionate about delivering excellence and building meaningful TalentNetwork.`;
+        return `${name} is a results-driven professional with expertise in driving growth and innovation. Passionate about delivering excellence and building meaningful connections.`;
       case 'medium':
         return `${name} is an experienced professional with a proven track record of success. With expertise across multiple domains, they bring a unique blend of strategic thinking and hands-on execution to every project. Known for their collaborative approach and commitment to excellence.`;
       case 'long':
@@ -367,4 +365,3 @@ const ProfessionalBioWriter = () => {
 };
 
 export default ProfessionalBioWriter;
-

@@ -68,13 +68,13 @@ interface RealTimeData {
     type: 'completion' | 'enrollment' | 'progress';
     time: string;
   }>;
-  activeTalentNetwork: number;
+  activeConnections: number;
 }
 
-export const useEnterpriseCareerAnalytics = (timeRange: string) => {
+export const useEnterpriseAnalytics = (timeRange: string) => {
   const [realTimeData, setRealTimeData] = useState<RealTimeData>({
     activities: [],
-    activeTalentNetwork: 0
+    activeConnections: 0
   });
 
   // Fetch enterprise metrics
@@ -205,7 +205,7 @@ export const useEnterpriseCareerAnalytics = (timeRange: string) => {
       setRealTimeData(prev => ({
         ...prev,
         activities: [newActivity, ...prev.activities.slice(0, 19)],
-        activeTalentNetwork: 2847 + Math.floor(Math.random() * 100)
+        activeConnections: 2847 + Math.floor(Math.random() * 100)
       }));
     }, 3000);
 
@@ -226,7 +226,3 @@ export const useEnterpriseCareerAnalytics = (timeRange: string) => {
     isLoading: metricsLoading || chartLoading
   };
 };
-
-
-
-

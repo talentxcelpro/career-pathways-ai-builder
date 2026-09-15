@@ -76,7 +76,7 @@ export const PostCard: React.FC<PostCardProps> = ({
   const shareContent = createPostShareData(post);
 
   return (
-    <Card className="hover:shadow-2xl transition-all duration-500 rounded-3xl border-slate-100 overflow-hidden">
+    <Card className="hover:shadow-md transition-shadow">
       <CardContent className="p-6">
         {/* Post Header */}
         <div className="flex items-start justify-between mb-4">

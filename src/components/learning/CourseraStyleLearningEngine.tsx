@@ -24,7 +24,7 @@ import {
 const mockCourses = [
   {
     id: '1',
-    title: 'Google Data CareerAnalytics Professional Certificate',
+    title: 'Google Data Analytics Professional Certificate',
     instructor: 'Google Career Certificates',
     university: 'Google',
     rating: 4.6,
@@ -100,8 +100,8 @@ const mockCourses = [
 const mockPaths = [
   {
     id: '1',
-    title: 'Google Data CareerAnalytics Professional Certificate',
-    description: 'Prepare for a career in data CareerAnalytics with hands-on training from Google experts',
+    title: 'Google Data Analytics Professional Certificate',
+    description: 'Prepare for a career in data analytics with hands-on training from Google experts',
     provider: 'Google',
     courses: 8,
     duration: '6 months',
@@ -155,7 +155,7 @@ export const CourseraStyleLearningEngine: React.FC<CourseraStyleLearningEnginePr
                   ⭐ Most Popular
                 </Badge>
                 <h2 className="text-4xl font-bold mb-4">
-                  Google Data CareerAnalytics Professional Certificate
+                  Google Data Analytics Professional Certificate
                 </h2>
                 <p className="text-xl text-blue-100 mb-6">
                   Get job-ready in 6 months. No degree or experience required.
@@ -323,6 +323,3 @@ export const CourseraStyleLearningEngine: React.FC<CourseraStyleLearningEnginePr
     </div>
   );
 };
-
-
-

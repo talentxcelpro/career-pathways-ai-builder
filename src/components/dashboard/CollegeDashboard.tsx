@@ -18,12 +18,12 @@ import {
   Target
 } from 'lucide-react';
 
-export function CollegeCommandCenter() {
+export function CollegeDashboard() {
   return (
     <div className="space-y-6">
       {/* Welcome Section */}
       <div className="bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-950/20 dark:to-purple-950/20 p-6 rounded-lg">
-        <h1 className="text-2xl font-bold mb-2">College Administrator CommandCenter</h1>
+        <h1 className="text-2xl font-bold mb-2">College Administrator Dashboard</h1>
         <p className="text-muted-foreground">
           Manage student placements, track progress, and connect with employers.
         </p>
@@ -85,7 +85,7 @@ export function CollegeCommandCenter() {
                 </Button>
                 <Button variant="outline" className="h-20 flex-col gap-2">
                   <BarChart3 className="h-6 w-6" />
-                  <span className="text-sm">Placement CareerAnalytics</span>
+                  <span className="text-sm">Placement Analytics</span>
                 </Button>
                 <Button variant="outline" className="h-20 flex-col gap-2">
                   <FileText className="h-6 w-6" />
@@ -286,6 +286,3 @@ export function CollegeCommandCenter() {
     </div>
   );
 }
-
-
-

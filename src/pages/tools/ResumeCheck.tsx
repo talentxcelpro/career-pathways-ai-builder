@@ -345,7 +345,7 @@ const ResumeCheck = () => {
       onStepChange={setCurrentStep}
       results={analysis}
       isProcessing={isAnalyzing}
-      onSave={() => toast.success('Analysis saved to your CommandCenter!')}
+      onSave={() => toast.success('Analysis saved to your dashboard!')}
       onExport={() => toast.success('Analysis exported as PDF!')}
       onShare={() => toast.success('Analysis link copied to clipboard!')}
     />
@@ -353,4 +353,3 @@ const ResumeCheck = () => {
 };
 
 export default ResumeCheck;
-

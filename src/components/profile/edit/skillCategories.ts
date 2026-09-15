@@ -41,7 +41,7 @@ export const SKILL_CATEGORIES = [
     ]
   },
   {
-    name: "Data & CareerAnalytics",
+    name: "Data & Analytics",
     emoji: "📊",
     skills: [
       "Excel (Advanced)",
@@ -120,7 +120,7 @@ export const SKILL_CATEGORIES = [
       "Branding",
       "Email Marketing",
       "Social Media Strategy",
-      "Google CareerAnalytics"
+      "Google Analytics"
     ]
   },
   {
@@ -177,6 +177,3 @@ export const SKILL_CATEGORIES = [
     ]
   }
 ];
-
-
-

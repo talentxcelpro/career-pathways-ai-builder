@@ -212,11 +212,11 @@ const JobMatchGPT: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-3">
-            <Sparkles className="h-8 w-8 text-primary" />
-            Precision Match
+            <Brain className="h-8 w-8 text-primary" />
+            Job Match GPT
           </h1>
           <p className="text-lg text-muted-foreground mt-2">
-            Performance resume analysis and intelligent job matching
+            AI-powered resume analysis and intelligent job matching
           </p>
         </div>
         <div className="flex gap-2">
@@ -237,7 +237,7 @@ const JobMatchGPT: React.FC = () => {
           </TabsTrigger>
           <TabsTrigger value="analysis" disabled={!analysisData}>
             <Target className="h-4 w-4 mr-2" />
-            Precision Analysis
+            AI Analysis
           </TabsTrigger>
           <TabsTrigger value="matches" disabled={jobMatches.length === 0}>
             <Zap className="h-4 w-4 mr-2" />
@@ -245,7 +245,7 @@ const JobMatchGPT: React.FC = () => {
           </TabsTrigger>
           <TabsTrigger value="insights" disabled={!analysisData}>
             <TrendingUp className="h-4 w-4 mr-2" />
-            Intelligence Metrics
+            Career Insights
           </TabsTrigger>
         </TabsList>
 
@@ -255,7 +255,7 @@ const JobMatchGPT: React.FC = () => {
             <CardHeader>
               <CardTitle>Upload Your Resume</CardTitle>
               <p className="text-muted-foreground">
-                Upload your resume to get Performance analysis and job matching
+                Upload your resume to get AI-powered analysis and job matching
               </p>
             </CardHeader>
             <CardContent>
@@ -442,7 +442,7 @@ const JobMatchGPT: React.FC = () => {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-xl font-semibold">
-                  Performance Job Matches ({jobMatches.length})
+                  AI-Powered Job Matches ({jobMatches.length})
                 </h3>
                 <Button onClick={generateJobMatches} variant="outline" size="sm">
                   <RefreshCw className="h-4 w-4 mr-2" />
@@ -528,7 +528,7 @@ const JobMatchGPT: React.FC = () => {
 
                     {job.recommendations.length > 0 && (
                       <div className="mb-4">
-                        <p className="font-medium mb-2">💡 Career Moves:</p>
+                        <p className="font-medium mb-2">💡 AI Recommendations:</p>
                         <ul className="space-y-1">
                           {job.recommendations.map((rec, index) => (
                             <li key={index} className="text-sm flex items-start gap-2">

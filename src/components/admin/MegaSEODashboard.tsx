@@ -21,7 +21,7 @@ import {
   Eye
 } from 'lucide-react';
 
-export const MegaSEOCommandCenter = () => {
+export const MegaSEODashboard = () => {
   const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -163,7 +163,7 @@ export const MegaSEOCommandCenter = () => {
         <div className="flex items-center gap-3">
           <Globe className="h-8 w-8 text-blue-600" />
           <div>
-            <h1 className="text-3xl font-bold">Mega SEO CommandCenter</h1>
+            <h1 className="text-3xl font-bold">Mega SEO Dashboard</h1>
             <p className="text-gray-600">Comprehensive SEO strategy for 20,000+ indexed pages</p>
           </div>
         </div>
@@ -319,4 +319,3 @@ export const MegaSEOCommandCenter = () => {
     </div>
   );
 };
-

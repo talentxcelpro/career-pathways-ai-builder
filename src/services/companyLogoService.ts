@@ -1,120 +1,208 @@
 /**
- * Company Logo Service
- * Provides company logos using a placeholder service and maps to well-known companies
+ * Company Logo & Intelligence Service
+ * Uses direct Google Favicon API (128px), Google S2, DuckDuckGo, and brand intelligence
  */
+
+import { supabase } from '@/integrations/supabase/client';
 
 export interface CompanyLogoMapping {
   name: string;
-  logo_url: string;
+  domain: string;
+  logo_url?: string;
   industry?: string;
+  location?: string;
 }
 
-// Well-known Indian and international companies with reliable logo sources
+// Canonical company registry with exact Google domain mapping
 export const COMPANY_LOGO_MAPPINGS: CompanyLogoMapping[] = [
-  // Indian IT Giants
-  { name: "Tata Consultancy Services", logo_url: "https://logo.clearbit.com/tcs.com", industry: "Technology" },
-  { name: "Infosys", logo_url: "https://logo.clearbit.com/infosys.com", industry: "Technology" },
-  { name: "Wipro", logo_url: "https://logo.clearbit.com/wipro.com", industry: "Technology" },
-  { name: "HCL Technologies", logo_url: "https://logo.clearbit.com/hcltech.com", industry: "Technology" },
-  { name: "Tech Mahindra", logo_url: "https://logo.clearbit.com/techmahindra.com", industry: "Technology" },
-  { name: "Cognizant", logo_url: "https://logo.clearbit.com/cognizant.com", industry: "Technology" },
-  { name: "Accenture", logo_url: "https://logo.clearbit.com/accenture.com", industry: "Technology" },
-  
-  // Global Tech Companies
-  { name: "Microsoft India", logo_url: "https://logo.clearbit.com/microsoft.com", industry: "Technology" },
-  { name: "Google India", logo_url: "https://logo.clearbit.com/google.com", industry: "Technology" },
-  { name: "Amazon India", logo_url: "https://logo.clearbit.com/amazon.com", industry: "Technology" },
-  { name: "IBM India", logo_url: "https://logo.clearbit.com/ibm.com", industry: "Technology" },
-  { name: "Oracle", logo_url: "https://logo.clearbit.com/oracle.com", industry: "Technology" },
-  { name: "SAP", logo_url: "https://logo.clearbit.com/sap.com", industry: "Technology" },
-  { name: "Adobe", logo_url: "https://logo.clearbit.com/adobe.com", industry: "Technology" },
-  { name: "Meta", logo_url: "https://logo.clearbit.com/meta.com", industry: "Technology" },
-  
-  // Indian Startups & Unicorns
-  { name: "Flipkart", logo_url: "https://logo.clearbit.com/flipkart.com", industry: "E-commerce" },
-  { name: "Paytm", logo_url: "https://logo.clearbit.com/paytm.com", industry: "Fintech" },
-  { name: "Zomato", logo_url: "https://logo.clearbit.com/zomato.com", industry: "Food Tech" },
-  { name: "Swiggy", logo_url: "https://logo.clearbit.com/swiggy.com", industry: "Food Tech" },
-  { name: "BYJU'S", logo_url: "https://logo.clearbit.com/byjus.com", industry: "EdTech" },
-  { name: "Ola", logo_url: "https://logo.clearbit.com/olacabs.com", industry: "Transportation" },
-  { name: "Uber India", logo_url: "https://logo.clearbit.com/uber.com", industry: "Transportation" },
-  { name: "Myntra", logo_url: "https://logo.clearbit.com/myntra.com", industry: "Fashion" },
-  { name: "BigBasket", logo_url: "https://logo.clearbit.com/bigbasket.com", industry: "E-commerce" },
-  { name: "Razorpay", logo_url: "https://logo.clearbit.com/razorpay.com", industry: "Fintech" },
-  { name: "PhonePe", logo_url: "https://logo.clearbit.com/phonepe.com", industry: "Fintech" },
-  { name: "Nykaa", logo_url: "https://logo.clearbit.com/nykaa.com", industry: "Beauty" },
-  
-  // Banking & Finance
-  { name: "State Bank of India", logo_url: "https://logo.clearbit.com/sbi.co.in", industry: "Banking" },
-  { name: "HDFC Bank", logo_url: "https://logo.clearbit.com/hdfcbank.com", industry: "Banking" },
-  { name: "ICICI Bank", logo_url: "https://logo.clearbit.com/icicibank.com", industry: "Banking" },
-  { name: "Axis Bank", logo_url: "https://logo.clearbit.com/axisbank.com", industry: "Banking" },
-  { name: "Kotak Mahindra Bank", logo_url: "https://logo.clearbit.com/kotak.com", industry: "Banking" },
-  
-  // Traditional Indian Companies
-  { name: "Reliance Industries", logo_url: "https://logo.clearbit.com/ril.com", industry: "Conglomerate" },
-  { name: "Tata Group", logo_url: "https://logo.clearbit.com/tata.com", industry: "Conglomerate" },
-  { name: "Aditya Birla Group", logo_url: "https://logo.clearbit.com/adityabirla.com", industry: "Conglomerate" },
-  { name: "Mahindra Group", logo_url: "https://logo.clearbit.com/mahindra.com", industry: "Automotive" },
-  { name: "Bajaj Group", logo_url: "https://logo.clearbit.com/bajaj.com", industry: "Financial Services" },
-  
-  // Consulting & Services
-  { name: "Deloitte", logo_url: "https://logo.clearbit.com/deloitte.com", industry: "Consulting" },
-  { name: "PwC", logo_url: "https://logo.clearbit.com/pwc.com", industry: "Consulting" },
-  { name: "EY", logo_url: "https://logo.clearbit.com/ey.com", industry: "Consulting" },
-  { name: "KPMG", logo_url: "https://logo.clearbit.com/kpmg.com", industry: "Consulting" },
-  
-  // Healthcare & Pharma
-  { name: "Apollo Hospitals", logo_url: "https://logo.clearbit.com/apollohospitals.com", industry: "Healthcare" },
-  { name: "Dr. Reddy's", logo_url: "https://logo.clearbit.com/drreddys.com", industry: "Pharmaceuticals" },
-  { name: "Cipla", logo_url: "https://logo.clearbit.com/cipla.com", industry: "Pharmaceuticals" },
-  { name: "Sun Pharma", logo_url: "https://logo.clearbit.com/sunpharma.com", industry: "Pharmaceuticals" },
+  { 
+    name: "chatr Chat", 
+    domain: "chatr.chat",
+    logo_url: "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chatr.chat&size=128", 
+    industry: "Artificial Intelligence & Telecom",
+    location: "New Delhi, Delhi NCR, India"
+  },
+  { 
+    name: "Savantis Solutions", 
+    domain: "savantis.com",
+    logo_url: "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://savantis.com&size=128", 
+    industry: "IT Services & Consulting",
+    location: "Noida, Uttar Pradesh, India"
+  },
+  { 
+    name: "TalentXcel Services", 
+    domain: "talentxcel.in",
+    logo_url: "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://talentxcel.in&size=128", 
+    industry: "AI Recruitment & Staffing",
+    location: "Noida, Uttar Pradesh, India"
+  },
+  { 
+    name: "TalentXcel Enterprise", 
+    domain: "talentxcel.in",
+    logo_url: "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://talentxcel.in&size=128", 
+    industry: "HR Tech & Career AI",
+    location: "Gurgaon, Delhi NCR, India"
+  },
+  { name: "Google", domain: "google.com" },
+  { name: "Microsoft", domain: "microsoft.com" },
+  { name: "Amazon", domain: "amazon.com" },
+  { name: "Apple", domain: "apple.com" },
+  { name: "Meta", domain: "meta.com" },
+  { name: "Infosys", domain: "infosys.com" },
+  { name: "Tata Consultancy Services", domain: "tcs.com" },
+  { name: "TCS", domain: "tcs.com" },
+  { name: "Wipro", domain: "wipro.com" },
+  { name: "Accenture", domain: "accenture.com" },
+  { name: "Cognizant", domain: "cognizant.com" },
+  { name: "HCL Technologies", domain: "hcltech.com" },
+  { name: "HCL", domain: "hcltech.com" },
+  { name: "IBM", domain: "ibm.com" },
+  { name: "Oracle", domain: "oracle.com" }
 ];
 
 /**
- * Get a company logo URL by name
+ * Extracts clean domain name from URL or free text string
  */
+export const extractDomain = (input?: string): string => {
+  if (!input) return '';
+  try {
+    let clean = input.trim();
+    if (!clean.startsWith('http://') && !clean.startsWith('https://')) {
+      clean = `https://${clean}`;
+    }
+    const url = new URL(clean);
+    return url.hostname.replace(/^www\./, '').toLowerCase();
+  } catch {
+    return input.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0].toLowerCase().trim();
+  }
+};
+
+/**
+ * Resolves the primary domain for a given company
+ */
+export const resolveCompanyDomain = (companyName: string, websiteUrl?: string): string => {
+  if (websiteUrl) {
+    const d = extractDomain(websiteUrl);
+    if (d && d.includes('.')) return d;
+  }
+
+  const cleanName = companyName.toLowerCase().trim();
+  const mapping = COMPANY_LOGO_MAPPINGS.find(
+    c => c.name.toLowerCase() === cleanName ||
+         cleanName.includes(c.name.toLowerCase()) ||
+         c.name.toLowerCase().includes(cleanName)
+  );
+  if (mapping?.domain) return mapping.domain;
+
+  // Derive domain from name (e.g. "Savantis Solutions" -> "savantis.com")
+  const firstWord = cleanName.split(/[\s,.-]+/)[0].replace(/[^a-z0-9]/g, '');
+  if (firstWord && firstWord.length > 2) {
+    return `${firstWord}.com`;
+  }
+
+  return `${cleanName.replace(/[^a-z0-9]/g, '')}.com`;
+};
+
+/**
+ * Build primary Google Favicon V2 URL (returns direct 200 image/png or image/jpeg)
+ */
+export const buildGoogleLogoUrl = (domain: string): string => {
+  const cleanDomain = extractDomain(domain);
+  return `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://${cleanDomain}&size=128`;
+};
+
+/**
+ * Return ordered fallback logo candidates
+ */
+export const getCompanyLogoCandidates = (companyName: string, websiteUrl?: string, customLogoUrl?: string): string[] => {
+  const candidates: string[] = [];
+
+  if (customLogoUrl && customLogoUrl.startsWith('http')) {
+    candidates.push(customLogoUrl);
+  }
+
+  const domain = resolveCompanyDomain(companyName, websiteUrl);
+  if (domain) {
+    candidates.push(buildGoogleLogoUrl(domain));
+    candidates.push(`https://www.google.com/s2/favicons?domain=${domain}&sz=128`);
+    candidates.push(`https://icons.duckduckgo.com/ip3/${domain}.ico`);
+  }
+
+  return candidates;
+};
+
+/**
+ * Fetch high-res logo from Google Favicon API
+ */
+export const getGoogleCompanyLogo = (companyName: string, websiteUrl?: string): string => {
+  const domain = resolveCompanyDomain(companyName, websiteUrl);
+  return buildGoogleLogoUrl(domain);
+};
+
 export const getCompanyLogo = (companyName: string): string | null => {
   const mapping = COMPANY_LOGO_MAPPINGS.find(
     company => company.name.toLowerCase() === companyName.toLowerCase()
   );
-  return mapping?.logo_url || null;
+  if (mapping?.logo_url) return mapping.logo_url;
+  if (mapping?.domain) return buildGoogleLogoUrl(mapping.domain);
+  return null;
 };
 
-/**
- * Generate a fallback logo URL using company initials
- */
 export const generateFallbackLogo = (companyName: string): string => {
   const initials = companyName
     .split(' ')
+    .filter(Boolean)
     .map(word => word.charAt(0))
     .join('')
     .toUpperCase()
     .slice(0, 2);
   
-  // Use a placeholder service that generates logos with initials
-  return `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&size=200&background=0F172A&color=fff&format=png&rounded=true&bold=true`;
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(initials || 'CO')}&size=200&background=1E293B&color=fff&format=png&rounded=true&bold=true`;
+};
+
+export const getCompanyLogoWithFallback = (companyName: string, customLogoUrl?: string, websiteUrl?: string): string => {
+  if (customLogoUrl && customLogoUrl.startsWith('http')) return customLogoUrl;
+  return getGoogleCompanyLogo(companyName, websiteUrl);
 };
 
 /**
- * Get company logo with fallback
+ * Persist logo to Supabase companies table so it's permanently stored for all users
  */
-export const getCompanyLogoWithFallback = (companyName: string): string => {
-  return getCompanyLogo(companyName) || generateFallbackLogo(companyName);
-};
+export const saveCompanyLogoToDatabase = async (companyId: string, companyName: string, logoUrl: string): Promise<boolean> => {
+  try {
+    // Try update by id first
+    if (companyId && !companyId.startsWith('comp_')) {
+      const { error } = await supabase
+        .from('companies')
+        .update({ logo_url: logoUrl, updated_at: new Date().toISOString() })
+        .eq('id', companyId);
+      if (!error) return true;
+    }
 
-/**
- * Get all companies with their logos
- */
-export const getAllCompaniesWithLogos = (): CompanyLogoMapping[] => {
-  return COMPANY_LOGO_MAPPINGS;
-};
+    // Try update by company name
+    const { error: nameError } = await supabase
+      .from('companies')
+      .update({ logo_url: logoUrl, updated_at: new Date().toISOString() })
+      .ilike('name', companyName.trim());
 
-/**
- * Search for companies by industry
- */
-export const getCompaniesByIndustry = (industry: string): CompanyLogoMapping[] => {
-  return COMPANY_LOGO_MAPPINGS.filter(
-    company => company.industry?.toLowerCase().includes(industry.toLowerCase())
-  );
+    if (!nameError) return true;
+
+    // If company does not exist in table, insert it
+    const { error: insertError } = await supabase
+      .from('companies')
+      .insert({
+        name: companyName.trim(),
+        logo_url: logoUrl,
+        website_url: companyName.toLowerCase().includes('chatr') ? 'https://chatr.chat' : 
+                     companyName.toLowerCase().includes('savantis') ? 'https://savantis.com' : 'https://talentxcel.in',
+        is_verified: true,
+        verification_status: 'verified',
+        updated_at: new Date().toISOString()
+      });
+
+    return !insertError;
+  } catch (err) {
+    console.warn('Failed to save company logo to database:', err);
+    return false;
+  }
 };

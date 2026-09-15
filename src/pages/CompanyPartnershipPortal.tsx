@@ -117,7 +117,7 @@ export const CompanyPartnershipPortal: React.FC = () => {
     queryFn: async () => {
       if (!selectedHiringRequest) return [];
       
-      // Mock talent matches - replace with actual Precision Match query
+      // Mock talent matches - replace with actual AI matching query
       const mockMatches: TalentMatch[] = [
         {
           id: '1',

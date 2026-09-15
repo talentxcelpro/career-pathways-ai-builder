@@ -303,8 +303,7 @@ async function searchPosts(query: string): Promise<SearchResult[]> {
     title: post.content.substring(0, 50) + '...',
     type: 'post' as const,
     description: post.content.substring(0, 100),
-    url: `/Pulse?post=${post.id}`,
+    url: `/feed?post=${post.id}`,
     score: 0.2,
   }));
 }
-

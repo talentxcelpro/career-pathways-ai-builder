@@ -1,0 +1,114 @@
+[
+  {
+    "objectiveId": "BIZ-006",
+    "domain": "BUSINESS",
+    "rawIntent": "ecommerce business registration india flipkart amazon seller",
+    "whyUdxLost": "NO_RESOLUTION: UDX could not resolve the intent (no supply or out-of-domain).",
+    "udxOutcomeQuality": 0,
+    "genericAiOutcomeQuality": 0.4
+  },
+  {
+    "objectiveId": "LOC-014",
+    "domain": "LOCAL_SERVICES",
+    "rawIntent": "pest control service varanasi residential",
+    "whyUdxLost": "NO_RESOLUTION: UDX could not resolve the intent (no supply or out-of-domain).",
+    "udxOutcomeQuality": 0,
+    "genericAiOutcomeQuality": 0.4
+  },
+  {
+    "objectiveId": "LOC-015",
+    "domain": "LOCAL_SERVICES",
+    "rawIntent": "internet service provider varanasi best speed plans",
+    "whyUdxLost": "NO_RESOLUTION: UDX could not resolve the intent (no supply or out-of-domain).",
+    "udxOutcomeQuality": 0,
+    "genericAiOutcomeQuality": 0.4
+  },
+  {
+    "objectiveId": "LOC-016",
+    "domain": "LOCAL_SERVICES",
+    "rawIntent": "gym membership varanasi near BHU student discount",
+    "whyUdxLost": "NO_RESOLUTION: UDX could not resolve the intent (no supply or out-of-domain).",
+    "udxOutcomeQuality": 0,
+    "genericAiOutcomeQuality": 0.4
+  },
+  {
+    "objectiveId": "LOC-017",
+    "domain": "LOCAL_SERVICES",
+    "rawIntent": "solar panel installation varanasi home subsidy",
+    "whyUdxLost": "NO_RESOLUTION: UDX could not resolve the intent (no supply or out-of-domain).",
+    "udxOutcomeQuality": 0,
+    "genericAiOutcomeQuality": 0.4
+  },
+  {
+    "objectiveId": "LOC-018",
+    "domain": "LOCAL_SERVICES",
+    "rawIntent": "chartered bus service varanasi to delhi overnight",
+    "whyUdxLost": "NO_RESOLUTION: UDX could not resolve the intent (no supply or out-of-domain).",
+    "udxOutcomeQuality": 0,
+    "genericAiOutcomeQuality": 0.6
+  },
+  {
+    "objectiveId": "LOC-019",
+    "domain": "LOCAL_SERVICES",
+    "rawIntent": "water purifier repair varanasi kent aquaguard",
+    "whyUdxLost": "NO_RESOLUTION: UDX could not resolve the intent (no supply or out-of-domain).",
+    "udxOutcomeQuality": 0,
+    "genericAiOutcomeQuality": 0.6
+  },
+  {
+    "objectiveId": "LOC-020",
+    "domain": "LOCAL_SERVICES",
+    "rawIntent": "passport seva kendra varanasi appointment booking",
+    "whyUdxLost": "NO_RESOLUTION: UDX could not resolve the intent (no supply or out-of-domain).",
+    "udxOutcomeQuality": 0,
+    "genericAiOutcomeQuality": 0.6
+  },
+  {
+    "objectiveId": "PER-001",
+    "domain": "PERSONAL",
+    "rawIntent": "should I move from varanasi to pune for better salary",
+    "whyUdxLost": "NO_RESOLUTION: UDX could not resolve the intent (no supply or out-of-domain).",
+    "udxOutcomeQuality": 0,
+    "genericAiOutcomeQuality": 0
+  },
+  {
+    "objectiveId": "PER-002",
+    "domain": "PERSONAL",
+    "rawIntent": "best laptop under 60000 rupees for college student 2026",
+    "whyUdxLost": "NO_RESOLUTION: UDX could not resolve the intent (no supply or out-of-domain).",
+    "udxOutcomeQuality": 0,
+    "genericAiOutcomeQuality": 0.4
+  },
+  {
+    "objectiveId": "PER-003",
+    "domain": "PERSONAL",
+    "rawIntent": "how to reduce screen time addiction for productivity",
+    "whyUdxLost": "NO_RESOLUTION: UDX could not resolve the intent (no supply or out-of-domain).",
+    "udxOutcomeQuality": 0,
+    "genericAiOutcomeQuality": 0.4
+  },
+  {
+    "objectiveId": "PER-004",
+    "domain": "PERSONAL",
+    "rawIntent": "best time management techniques for working professionals india",
+    "whyUdxLost": "NO_RESOLUTION: UDX could not resolve the intent (no supply or out-of-domain).",
+    "udxOutcomeQuality": 0,
+    "genericAiOutcomeQuality": 0.4
+  },
+  {
+    "objectiveId": "PER-005",
+    "domain": "PERSONAL",
+    "rawIntent": "how to apply for indian passport first time varanasi",
+    "whyUdxLost": "NO_RESOLUTION: UDX could not resolve the intent (no supply or out-of-domain).",
+    "udxOutcomeQuality": 0,
+    "genericAiOutcomeQuality": 0.6
+  },
+  {
+    "objectiveId": "PER-006",
+    "domain": "PERSONAL",
+    "rawIntent": "best diet plan for weight loss for Indian vegetarian",
+    "whyUdxLost": "NO_RESOLUTION: UDX could not resolve the intent (no supply or out-of-domain).",
+    "udxOutcomeQuality": 0,
+    "genericAiOutcomeQuality": 0.4
+  }
+]

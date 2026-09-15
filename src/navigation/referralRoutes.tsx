@@ -1,9 +1,13 @@
-import { lazy } from "react";
+import { lazy, Suspense } from "react";
 import { NavItem } from "../types/nav-item";
 import { Navigate } from "react-router-dom";
+
 const PersonalizedReferral = lazy(() => import("../pages/PersonalizedReferral"));
 const ReferralCenter = lazy(() => import("../pages/ReferralCenter"));
 
+const S = ({ children }: { children: React.ReactNode }) => (
+  <Suspense fallback={null}>{children}</Suspense>
+);
 
 export const referralRoutes: NavItem[] = [
   {
@@ -14,13 +18,13 @@ export const referralRoutes: NavItem[] = [
   {
     title: "Referral Center",
     to: "/referral",
-    page: <ReferralCenter />,
+    page: <S><ReferralCenter /></S>,
     requiresAuth: true,
   },
   {
     title: "Referral",
     to: "/refer/:username",
-    page: <PersonalizedReferral />,
+    page: <S><PersonalizedReferral /></S>,
     requiresAuth: false,
   },
 ];

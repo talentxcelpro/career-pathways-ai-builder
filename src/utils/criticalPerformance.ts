@@ -1,5 +1,3 @@
-import { Capacitor } from '@capacitor/core';
-
 /**
  * Critical performance optimizations
  * Applied immediately on app initialization
@@ -50,7 +48,7 @@ export const optimizePageImages = () => {
 
 // Prefetch critical routes
 export const prefetchCriticalRoutes = () => {
-  if (typeof document === 'undefined' || Capacitor.isNativePlatform()) return;
+  if (typeof document === 'undefined') return;
 
   const routes = ['/jobs', '/network', '/passport'];
   

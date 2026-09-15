@@ -30,13 +30,13 @@ const CareerPlatformShowcase: React.FC = () => {
   React.useEffect(() => {
     updateMetaTags({
       title: 'TalentXcel - Complete AI Career Development Platform | Professional Success Platform',
-      description: 'The most comprehensive Performance career development platform. Features TalentXcel Navigatoring, interview simulation, skills assessment, career roadmaps, and real-time market intelligence.'
+      description: 'The most comprehensive AI-powered career development platform. Features AI coaching, interview simulation, skills assessment, career roadmaps, and real-time market intelligence.'
     });
   }, []);
 
   const platformFeatures = [
     {
-      category: 'Performance Coaching',
+      category: 'AI-Powered Coaching',
       features: [
         {
           icon: <Brain className="h-6 w-6" />,
@@ -47,7 +47,7 @@ const CareerPlatformShowcase: React.FC = () => {
         },
         {
           icon: <Mic className="h-6 w-6" />,
-          title: 'Voice TalentXcel Navigator',
+          title: 'Voice AI Coach',
           description: 'Natural voice conversations with WebSocket real-time audio',
           status: 'active',
           link: '/ai/advanced-hub'
@@ -67,7 +67,7 @@ const CareerPlatformShowcase: React.FC = () => {
         {
           icon: <MessageSquare className="h-6 w-6" />,
           title: 'AI Interview Simulator',
-          description: 'Realistic interview practice with real-time Feedback and scoring',
+          description: 'Realistic interview practice with real-time feedback and scoring',
           status: 'active',
           link: '/ai/advanced-hub'
         },
@@ -88,12 +88,12 @@ const CareerPlatformShowcase: React.FC = () => {
       ]
     },
     {
-      category: 'CareerIntelligence',
+      category: 'Career Intelligence',
       features: [
         {
           icon: <TrendingUp className="h-6 w-6" />,
-          title: 'Predictive CareerAnalytics',
-          description: 'Performance career trajectory forecasting and market trends',
+          title: 'Predictive Analytics',
+          description: 'AI-powered career trajectory forecasting and market trends',
           status: 'active',
           link: '/ai/advanced-hub'
         },
@@ -132,10 +132,10 @@ const CareerPlatformShowcase: React.FC = () => {
         },
         {
           icon: <Briefcase className="h-6 w-6" />,
-          title: 'Evolution Hub',
+          title: 'Career Passport',
           description: 'Comprehensive career profile and achievement tracking',
           status: 'active',
-          link: '/CommandCenter'
+          link: '/dashboard'
         }
       ]
     }
@@ -170,7 +170,7 @@ const CareerPlatformShowcase: React.FC = () => {
               Complete Platform
             </Badge>
             <Badge variant="outline">
-              Performance
+              AI-Powered
             </Badge>
             <Badge variant="secondary">
               Real-time Features
@@ -182,8 +182,8 @@ const CareerPlatformShowcase: React.FC = () => {
           </h1>
           
           <p className="text-xl text-muted-foreground mb-8 max-w-4xl mx-auto">
-            Experience the most comprehensive Performance career development platform ever built. 
-            From voice coaching to predictive CareerAnalytics, everything you need for professional success.
+            Experience the most comprehensive AI-powered career development platform ever built. 
+            From voice coaching to predictive analytics, everything you need for professional success.
           </p>
 
           {/* Stats */}
@@ -200,7 +200,7 @@ const CareerPlatformShowcase: React.FC = () => {
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/CommandCenter">
+            <Link to="/dashboard">
               <Button size="lg" className="gap-2">
                 <Rocket className="h-5 w-5" />
                 Launch Full Platform
@@ -295,7 +295,7 @@ const CareerPlatformShowcase: React.FC = () => {
               <CardContent className="p-6 text-center">
                 <Zap className="h-8 w-8 text-primary mx-auto mb-4" />
                 <h4 className="font-semibold mb-2">Real-time Processing</h4>
-                <p className="text-sm text-muted-foreground">Instant Feedback and live data updates</p>
+                <p className="text-sm text-muted-foreground">Instant feedback and live data updates</p>
               </CardContent>
             </Card>
 
@@ -359,11 +359,11 @@ const CareerPlatformShowcase: React.FC = () => {
             Experience the Future of Career Development
           </h2>
           <p className="text-xl opacity-90 mb-8">
-            Join the most advanced Performance career platform. Everything you need for professional success, 
+            Join the most advanced AI-powered career platform. Everything you need for professional success, 
             powered by cutting-edge technology and intelligent automation.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/CommandCenter">
+            <Link to="/dashboard">
               <Button size="lg" variant="secondary" className="gap-2">
                 <Rocket className="h-5 w-5" />
                 Launch Complete Platform
@@ -383,7 +383,3 @@ const CareerPlatformShowcase: React.FC = () => {
 };
 
 export default CareerPlatformShowcase;
-
-
-
-

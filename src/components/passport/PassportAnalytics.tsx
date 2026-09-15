@@ -17,21 +17,21 @@ import {
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 
-interface PassportCareerAnalyticsProps {
+interface PassportAnalyticsProps {
   passport?: any;
   metrics?: any;
   userScores?: any;
   isOwner?: boolean;
 }
 
-export function PassportCareerAnalytics({ 
+export function PassportAnalytics({ 
   passport, 
   metrics, 
   userScores, 
   isOwner = true 
-}: PassportCareerAnalyticsProps) {
+}: PassportAnalyticsProps) {
   
-  // Sample CareerAnalytics data - in real app, this would come from backend
+  // Sample analytics data - in real app, this would come from backend
   const profileViews = [
     { date: '2024-01', views: 12, shares: 3 },
     { date: '2024-02', views: 18, shares: 5 },
@@ -53,7 +53,7 @@ export function PassportCareerAnalytics({
     { name: 'Resume Updates', value: 8 },
     { name: 'Job Applications', value: 23 },
     { name: 'Skill Additions', value: 12 },
-    { name: 'TalentNetwork Made', value: 18 }
+    { name: 'Connections Made', value: 18 }
   ];
 
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
@@ -64,7 +64,7 @@ export function PassportCareerAnalytics({
 
   return (
     <div className="space-y-6">
-      {/* CareerAnalytics Overview */}
+      {/* Analytics Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200">
           <CardContent className="p-4">
@@ -96,7 +96,7 @@ export function PassportCareerAnalytics({
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-purple-700">TalentNetwork</p>
+                <p className="text-sm font-medium text-purple-700">Connections</p>
                 <p className="text-2xl font-bold text-purple-800">{metrics?.connections_count || 0}</p>
                 <p className="text-xs text-purple-600">+8% this month</p>
               </div>
@@ -308,7 +308,3 @@ export function PassportCareerAnalytics({
     </div>
   );
 }
-
-
-
-

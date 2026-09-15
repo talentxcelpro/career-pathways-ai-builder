@@ -8,7 +8,7 @@ export const MobileQRScanner: React.FC = () => {
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [Feedback, setFeedback] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<string | null>(null);
   
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -52,11 +52,11 @@ export const MobileQRScanner: React.FC = () => {
   };
 
   useEffect(() => {
-    if (Feedback) {
+    if (feedback) {
       const timer = setTimeout(() => setFeedback(null), 3000);
       return () => clearTimeout(timer);
     }
-  }, [Feedback]);
+  }, [feedback]);
 
   return (
     <MobileNavWrapper>
@@ -83,7 +83,7 @@ export const MobileQRScanner: React.FC = () => {
               </div>
               <h3 className="font-semibold text-gray-900 mb-2">Camera Permission Required</h3>
               <p className="text-sm text-gray-600 mb-4">Please allow camera access to scan QR codes</p>
-              <Button onClick={requestCameraPermission} className="touch-Feedback">
+              <Button onClick={requestCameraPermission} className="touch-feedback">
                 Enable Camera
               </Button>
             </div>
@@ -91,7 +91,7 @@ export const MobileQRScanner: React.FC = () => {
 
           {hasPermission && !isScanning && (
             <div className="text-center py-8">
-              <Button onClick={startScanning} size="lg" className="touch-Feedback">
+              <Button onClick={startScanning} size="lg" className="touch-feedback">
                 Start Scanning
               </Button>
             </div>
@@ -113,7 +113,7 @@ export const MobileQRScanner: React.FC = () => {
                 onClick={stopScanning}
                 variant="outline"
                 size="sm"
-                className="absolute top-2 right-2 bg-white/90 touch-Feedback"
+                className="absolute top-2 right-2 bg-white/90 touch-feedback"
               >
                 Stop
               </Button>
@@ -142,7 +142,7 @@ export const MobileQRScanner: React.FC = () => {
                 }}
                 variant="outline"
                 size="sm"
-                className="flex-1 touch-Feedback"
+                className="flex-1 touch-feedback"
               >
                 Copy
               </Button>
@@ -150,7 +150,7 @@ export const MobileQRScanner: React.FC = () => {
                 onClick={() => window.open(scanResult, '_blank')}
                 disabled={!scanResult.startsWith('http')}
                 size="sm"
-                className="flex-1 touch-Feedback"
+                className="flex-1 touch-feedback"
               >
                 Open
               </Button>
@@ -173,7 +173,7 @@ export const MobileQRScanner: React.FC = () => {
                 onClick={() => setFeedback('QR code shared!')}
                 variant="outline"
                 size="sm"
-                className="touch-Feedback"
+                className="touch-feedback"
               >
                 Share
               </Button>
@@ -181,7 +181,7 @@ export const MobileQRScanner: React.FC = () => {
                 onClick={() => setFeedback('QR code downloaded!')}
                 variant="outline"
                 size="sm"
-                className="touch-Feedback"
+                className="touch-feedback"
               >
                 Download
               </Button>
@@ -191,13 +191,13 @@ export const MobileQRScanner: React.FC = () => {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-2 gap-3">
-          <div className="native-card p-4 text-center touch-Feedback">
+          <div className="native-card p-4 text-center touch-feedback">
             <svg className="w-6 h-6 mx-auto mb-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.959 8.959 0 01-4.906-1.502L3 21l1.502-5.094A8.959 8.959 0 013 12c0-4.418 3.582-8 8-8s8 3.582 8 8z" />
             </svg>
             <p className="text-sm font-medium">Scan History</p>
           </div>
-          <div className="native-card p-4 text-center touch-Feedback">
+          <div className="native-card p-4 text-center touch-feedback">
             <svg className="w-6 h-6 mx-auto mb-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -206,10 +206,10 @@ export const MobileQRScanner: React.FC = () => {
           </div>
         </div>
 
-        {Feedback && (
+        {feedback && (
           <div className="fixed bottom-20 left-4 right-4 z-50">
             <div className="bg-green-600 text-white px-4 py-2 rounded-lg text-center text-sm">
-              {Feedback}
+              {feedback}
             </div>
           </div>
         )}
@@ -220,4 +220,3 @@ export const MobileQRScanner: React.FC = () => {
 };
 
 export default MobileQRScanner;
-

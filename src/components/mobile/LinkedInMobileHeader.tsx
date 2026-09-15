@@ -46,7 +46,7 @@ export const LinkedInMobileHeader: React.FC<LinkedInMobileHeaderProps> = ({
 
   // Get pending connection requests count
   const { data: pendingRequests = 0 } = useQuery<number>({
-    queryKey: ['pending-TalentNetwork-count', user?.id],
+    queryKey: ['pending-connections-count', user?.id],
     queryFn: async (): Promise<number> => {
       if (!user?.id) return 0;
       const { count, error } = await supabase
@@ -55,7 +55,7 @@ export const LinkedInMobileHeader: React.FC<LinkedInMobileHeaderProps> = ({
         .eq('recipient_id', user.id)
         .eq('status', 'pending');
       if (error) {
-        console.warn('Failed to count pending TalentNetwork', error);
+        console.warn('Failed to count pending connections', error);
         return 0;
       }
       return count ?? 0;
@@ -106,12 +106,12 @@ export const LinkedInMobileHeader: React.FC<LinkedInMobileHeaderProps> = ({
             )}
           </Button>
 
-          {/* Pending TalentNetwork */}
+          {/* Pending Connections */}
           <Button
             variant="ghost"
             size="icon"
             className="relative w-10 h-10 hover:bg-gray-100/80 rounded-full transition-all duration-200"
-            onClick={() => navigate('/mobile/pending-TalentNetwork')}
+            onClick={() => navigate('/mobile/pending-connections')}
           >
             <Users className="w-4 h-4 text-gray-600" />
             {pendingRequests > 0 && (
@@ -137,4 +137,3 @@ export const LinkedInMobileHeader: React.FC<LinkedInMobileHeaderProps> = ({
     </div>
   );
 };
-

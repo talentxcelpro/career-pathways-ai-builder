@@ -119,7 +119,7 @@ const EnhancedJobCard = ({
           </div>
         </div>
 
-        {/* Intelligence Metrics */}
+        {/* AI Insights */}
         {showAIInsights && job.ai_insights && (
           <div className="bg-blue-50 p-3 rounded-lg">
             <div className="flex items-center gap-2">

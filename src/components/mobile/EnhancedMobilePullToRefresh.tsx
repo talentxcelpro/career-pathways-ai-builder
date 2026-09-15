@@ -44,7 +44,7 @@ export const MobilePullToRefresh: React.FC<MobilePullToRefreshProps> = ({
     const elasticDistance = Math.min(distance * 0.6, threshold * 1.5);
     setPullDistance(elasticDistance);
 
-    // Provide haptic Feedback at threshold
+    // Provide haptic feedback at threshold
     if (elasticDistance >= threshold && pullDistance < threshold) {
       triggerHaptic('medium');
     }
@@ -149,4 +149,3 @@ export const MobilePullToRefresh: React.FC<MobilePullToRefreshProps> = ({
     </div>
   );
 };
-

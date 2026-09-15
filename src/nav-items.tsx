@@ -24,28 +24,35 @@ import { referralRoutes } from "./navigation/referralRoutes";
 import { passportRoutes } from "./navigation/passportRoutes";
 import { mobileRoutes } from "./navigation/mobileRoutes";
 import { aiRoutes } from "./navigation/aiRoutes";
-import { IntelligenceMatrixRoutes } from "./navigation/analyticsRoutes";
+import { analyticsRoutes } from "./navigation/analyticsRoutes";
 import { growthRoutes } from "./navigation/growthRoutes";
 import { gamificationRoutes } from "./navigation/gamificationRoutes";
 import { publicRoutes } from "./navigation/publicRoutes";
-import AIAgentCommandCenter from "./pages/ai/AIAgentDashboard";
-import CampaignManager from "./pages/CampaignManager";
-import MobileSearch from "./pages/mobile/MobileSearch";
-import NotificationsPage from "./pages/NotificationsPage";
-import TalentXcelServices from "./pages/TalentXcelServices";
-import PulseEmbeds from "./pages/SocialHub";
-import LinkedInToolsHub from "./pages/admin/LinkedInToolsHub";
-import { TestingCommandCenter } from "./pages/TestingDashboard";
-import { SavedJobsPage } from "./pages/SavedJobs";
+import { informationArchitectureRoutes } from "./navigation/informationArchitectureRoutes";
 
-// Navigator routes
-export const navigatorRoutes = [
+// ── Lazy-loaded nav pages ─────────────────────────────────────────────────
+const AIAgentDashboard  = React.lazy(() => import("./pages/ai/AIAgentDashboard"));
+const CampaignManager   = React.lazy(() => import("./pages/CampaignManager"));
+const MobileSearch      = React.lazy(() => import("./pages/mobile/MobileSearch"));
+const NotificationsPage = React.lazy(() => import("./pages/NotificationsPage"));
+const TalentXcelServices= React.lazy(() => import("./pages/TalentXcelServices"));
+const FeedEmbeds        = React.lazy(() => import("./pages/FeedEmbeds"));
+const LinkedInToolsHub  = React.lazy(() => import("./pages/admin/LinkedInToolsHub"));
+const TestingDashboard  = React.lazy(() => import("./pages/TestingDashboard").then(m => ({ default: m.TestingDashboard })));
+const SavedJobsPage     = React.lazy(() => import("./pages/SavedJobs").then(m => ({ default: m.SavedJobsPage })));
+
+const S = ({ C }: { C: React.LazyExoticComponent<any> }) => (
+  <React.Suspense fallback={null}><C /></React.Suspense>
+);
+
+// AI Agent routes
+export const aiAgentRoutes = [
   {
-    title: "TalentXcel Navigator",
-    to: "/navigator",
-    icon: "sparkles",
-    page: <AIAgentCommandCenter />,
-    description: "Your personalized professional navigator",
+    title: "AI Career Agent",
+    to: "/ai-agent",
+    icon: "brain",
+    page: <S C={AIAgentDashboard} />,
+    description: "Your personalized AI career companion",
     isPublic: true
   }
 ];
@@ -56,19 +63,19 @@ export const campaignRoutes = [
     title: "Campaign Manager",
     to: "/campaigns",
     icon: "target",
-    page: <CampaignManager />,
+    page: <S C={CampaignManager} />,
     description: "Launch and manage content & outreach campaigns",
     isPublic: true
   }
 ];
 
-// Pulse Embeds routes
+// Feed Embeds routes
 export const embedRoutes = [
   {
-    title: "Ecosystem Sync Embeds",
-    to: "/Pulse-embeds",
+    title: "Feed Embeds",
+    to: "/feed-embeds",
     icon: "link",
-    page: <PulseEmbeds />,
+    page: <S C={FeedEmbeds} />,
     description: "Native-looking embeds for external content",
     isPublic: true
   }
@@ -80,7 +87,7 @@ export const mobileSearchRoutes = [
     title: "Mobile Search",
     to: "/mobile/search",
     icon: "search",
-    page: <MobileSearch />,
+    page: <S C={MobileSearch} />,
     description: "Mobile search interface",
     isPublic: true
   }
@@ -92,7 +99,7 @@ export const notificationRoutes = [
     title: "Notifications",
     to: "/notifications",
     icon: "bell",
-    page: <NotificationsPage />,
+    page: <S C={NotificationsPage} />,
     description: "Real-time notifications and alerts",
     isPublic: true
   }
@@ -101,10 +108,18 @@ export const notificationRoutes = [
 // TalentXcel Services route
 export const servicesRoutes = [
   {
+    title: "Services",
+    to: "/services",
+    icon: "briefcase",
+    page: <S C={TalentXcelServices} />,
+    description: "Strategic Talent Solutions for the Future of Work",
+    isPublic: true
+  },
+  {
     title: "TalentXcel Services",
     to: "/talentxcelservices",
     icon: "briefcase",
-    page: <TalentXcelServices />,
+    page: <S C={TalentXcelServices} />,
     description: "Strategic Talent Solutions for the Future of Work",
     isPublic: true
   }
@@ -116,19 +131,19 @@ export const linkedInToolsRoutes = [
     title: "LinkedIn Tools Hub",
     to: "/admin/linkedin-tools",
     icon: "linkedin",
-    page: <LinkedInToolsHub />,
+    page: <S C={LinkedInToolsHub} />,
     description: "Advanced LinkedIn data management and automation",
     isPublic: true
   }
 ];
 
-// Testing CommandCenter route
+// Testing Dashboard route
 export const testingRoutes = [
   {
-    title: "Testing CommandCenter",
+    title: "Testing Dashboard",
     to: "/testing",
     icon: "flask",
-    page: <TestingCommandCenter />,
+    page: <S C={TestingDashboard} />,
     description: "Test all notification and automation features",
     isPublic: true
   }
@@ -140,13 +155,16 @@ export const savedJobsRoutes = [
     title: "Saved Jobs",
     to: "/saved-jobs",
     icon: "heart",
-    page: <SavedJobsPage />,
+    page: <S C={SavedJobsPage} />,
     description: "View your liked and bookmarked jobs",
     isPublic: false
   }
 ];
 
 export const navItems = [
+  // Public SEO information architecture — registered first so its static
+  // paths win over legacy dynamic routes (/employers/:name, /resources/:tool).
+  ...informationArchitectureRoutes,
   ...publicRoutes,
   ...coreRoutes,
   ...authRoutes,
@@ -172,10 +190,10 @@ export const navItems = [
   ...mobileSearchRoutes,
   ...notificationRoutes,
   ...servicesRoutes,
-  ...IntelligenceMatrixRoutes,
+  ...analyticsRoutes,
   ...growthRoutes,
   ...aiRoutes,
-  ...navigatorRoutes,
+  ...aiAgentRoutes,
   ...campaignRoutes,
   ...embedRoutes,
   ...savedJobsRoutes,
@@ -185,7 +203,3 @@ export const navItems = [
   ...adminRoutes,
   ...enterpriseRoutes,
 ];
-
-
-
-

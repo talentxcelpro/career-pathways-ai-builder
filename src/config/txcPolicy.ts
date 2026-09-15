@@ -113,7 +113,7 @@ export const OFFICIAL_TXC_MINING_POLICY: Record<string, TXCReward> = {
     category: 'networking'
   },
 
-  // LEARNING & Feedback
+  // LEARNING & FEEDBACK
   'course_completed': {
     action: 'course_completed',
     amount: 600,
@@ -121,10 +121,10 @@ export const OFFICIAL_TXC_MINING_POLICY: Record<string, TXCReward> = {
     cooldownMinutes: 60, // 1h
     category: 'learning'
   },
-  'Feedback_given': {
-    action: 'Feedback_given',
+  'feedback_given': {
+    action: 'feedback_given',
     amount: 45,
-    description: 'Provide Feedback',
+    description: 'Provide feedback',
     cooldownMinutes: 60, // 1h
     category: 'learning'
   },
@@ -208,7 +208,7 @@ export function verifyPolicyIntegrity(): boolean {
   const requiredActions = [
     'daily_login', 'post_created', 'connection_made', 'profile_completed',
     'resume_created', 'job_applied', 'recommendation_given', 'skill_added',
-    'course_completed', 'Feedback_given', 'joining_bonus', 'referral_made',
+    'course_completed', 'feedback_given', 'joining_bonus', 'referral_made',
     'post_liked', 'comment_made', 'article_posted', 'social_activity_bonus'
   ];
   
@@ -225,4 +225,3 @@ if (!verifyPolicyIntegrity()) {
   console.error('The TXC mining policy has been tampered with or is incomplete.');
   console.error('This is a critical security issue that must be addressed immediately.');
 }
-

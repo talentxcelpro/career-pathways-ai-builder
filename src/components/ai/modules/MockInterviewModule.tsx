@@ -22,7 +22,7 @@ interface Question {
 interface Answer {
   questionId: number;
   answer: string;
-  Feedback?: string;
+  feedback?: string;
   score?: number;
 }
 
@@ -97,7 +97,7 @@ export const MockInterviewModule: React.FC<MockInterviewModuleProps> = ({ onResu
       questionId: questions[currentQuestionIndex].id,
       answer: currentAnswer,
       score: Math.floor(Math.random() * 30) + 70, // Mock scoring
-      Feedback: `Good response! Consider adding more specific examples and quantifiable results.`
+      feedback: `Good response! Consider adding more specific examples and quantifiable results.`
     };
 
     setAnswers(prev => [...prev, newAnswer]);
@@ -109,7 +109,7 @@ export const MockInterviewModule: React.FC<MockInterviewModuleProps> = ({ onResu
       setCurrentQuestionIndex(prev => prev + 1);
     } else {
       setInterviewMode('review');
-      onResult('Mock interview completed! Review your performance and Feedback.');
+      onResult('Mock interview completed! Review your performance and feedback.');
     }
   };
 
@@ -280,7 +280,7 @@ export const MockInterviewModule: React.FC<MockInterviewModuleProps> = ({ onResu
                   </Badge>
                 </div>
                 <p className="text-sm font-medium">{question?.question}</p>
-                <p className="text-xs text-muted-foreground">{answer.Feedback}</p>
+                <p className="text-xs text-muted-foreground">{answer.feedback}</p>
               </div>
             );
           })}
@@ -313,5 +313,3 @@ export const MockInterviewModule: React.FC<MockInterviewModuleProps> = ({ onResu
     </Card>
   );
 };
-
-

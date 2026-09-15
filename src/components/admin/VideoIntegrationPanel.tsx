@@ -207,7 +207,7 @@ export const VideoIntegrationPanel: React.FC = () => {
                 <li>• Replaces YouTube URLs with Mux playback IDs</li>
                 <li>• Creates course-specific video content</li>
                 <li>• Improves video delivery performance</li>
-                <li>• Enables better video CareerAnalytics</li>
+                <li>• Enables better video analytics</li>
               </ul>
             </div>
           </div>
@@ -216,6 +216,3 @@ export const VideoIntegrationPanel: React.FC = () => {
     </Card>
   );
 };
-
-
-

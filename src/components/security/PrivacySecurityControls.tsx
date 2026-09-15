@@ -14,7 +14,7 @@ export const PrivacySecurityControls: React.FC = () => {
     skills: true,
     achievements: false,
     recommendations: true,
-    CareerAnalytics: false,
+    analytics: false,
     realTimeUpdates: true
   });
 
@@ -168,6 +168,3 @@ export const PrivacySecurityControls: React.FC = () => {
     </div>
   );
 };
-
-
-

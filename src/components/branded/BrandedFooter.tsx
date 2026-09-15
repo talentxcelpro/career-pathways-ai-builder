@@ -28,7 +28,7 @@ export const BrandedFooter: React.FC = () => {
           <div>
             <h3 className="text-2xl font-bold mb-4 font-display">TalentXcel</h3>
             <p className="text-primary-foreground/80 mb-4">
-              Empowering careers with Performance insights and professional tools.
+              Empowering careers with AI-powered insights and professional tools.
             </p>
           </div>
 

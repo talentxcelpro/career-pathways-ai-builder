@@ -29,7 +29,7 @@ interface ABTest {
   end_date?: string;
 }
 
-export const ABTestingCommandCenter = () => {
+export const ABTestingDashboard = () => {
   const [activeTests] = useState<ABTest[]>([
     {
       id: '1',
@@ -77,7 +77,7 @@ export const ABTestingCommandCenter = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">A/B Testing CommandCenter</h2>
+          <h2 className="text-2xl font-bold">A/B Testing Dashboard</h2>
           <p className="text-muted-foreground">Optimize conversion rates through experimentation</p>
         </div>
         <Button>
@@ -215,4 +215,3 @@ export const ABTestingCommandCenter = () => {
     </div>
   );
 };
-

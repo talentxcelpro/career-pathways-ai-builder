@@ -70,10 +70,10 @@ const FRESHER_TRACKS: SkillTrack[] = [
   {
     id: 'digital-marketing',
     name: 'Digital Marketing',
-    description: 'Master online marketing, SEO, social media, and CareerAnalytics',
+    description: 'Master online marketing, SEO, social media, and analytics',
     difficulty: 'Beginner',
     duration_weeks: 10,
-    skills: ['SEO/SEM', 'Google CareerAnalytics', 'Social Media', 'Content Marketing'],
+    skills: ['SEO/SEM', 'Google Analytics', 'Social Media', 'Content Marketing'],
     job_prospects: ['Digital Marketer', 'SEO Specialist', 'Social Media Manager'],
     salary_range: '₹3-7 LPA',
     completion_rate: 82
@@ -183,7 +183,7 @@ export const FresherMode: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Job Readiness CommandCenter */}
+      {/* Job Readiness Dashboard */}
       {fresherProfile && (
         <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
           <CardHeader>
@@ -390,6 +390,3 @@ export const FresherMode: React.FC = () => {
     </div>
   );
 };
-
-
-

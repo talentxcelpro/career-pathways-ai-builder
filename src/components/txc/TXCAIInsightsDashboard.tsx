@@ -110,7 +110,7 @@ const InsightCard: React.FC<InsightCardProps> = ({ insight, onDismiss }) => {
   );
 };
 
-export const TXCAIInsightsCommandCenter: React.FC = () => {
+export const TXCAIInsightsDashboard: React.FC = () => {
   const { 
     patterns, 
     insights, 
@@ -128,7 +128,7 @@ export const TXCAIInsightsCommandCenter: React.FC = () => {
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <Brain className="w-5 h-5" />
-              Performance TXC Insights
+              AI-Powered TXC Insights
             </CardTitle>
             <Button variant="outline" onClick={refreshAnalysis} disabled={isAnalyzing}>
               <RefreshCw className={`w-4 h-4 ${isAnalyzing ? 'animate-spin' : ''}`} />
@@ -155,7 +155,7 @@ export const TXCAIInsightsCommandCenter: React.FC = () => {
         <div className="space-y-4">
           <h3 className="text-lg font-semibold flex items-center gap-2">
             <Lightbulb className="w-5 h-5" />
-            Intelligence Metrics & Recommendations
+            AI Insights & Recommendations
           </h3>
           {insights.map((insight, index) => (
             <InsightCard
@@ -275,7 +275,7 @@ export const TXCAIInsightsCommandCenter: React.FC = () => {
             <Brain className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
             <h3 className="text-lg font-medium mb-2">No Patterns Detected Yet</h3>
             <p className="text-muted-foreground mb-4">
-              Start using TXC to unlock Performance insights and predictions
+              Start using TXC to unlock AI-powered insights and predictions
             </p>
             <Button variant="outline" onClick={refreshAnalysis}>
               <RefreshCw className="w-4 h-4 mr-2" />
@@ -287,4 +287,3 @@ export const TXCAIInsightsCommandCenter: React.FC = () => {
     </div>
   );
 };
-

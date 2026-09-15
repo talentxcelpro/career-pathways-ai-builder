@@ -365,7 +365,7 @@ const AIMarketIntelligence: React.FC = () => {
           </TabsContent>
         </Tabs>
 
-        {/* Intelligence Metrics Summary */}
+        {/* AI Insights Summary */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">

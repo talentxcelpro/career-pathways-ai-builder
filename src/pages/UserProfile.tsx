@@ -50,14 +50,14 @@ const UserProfile = () => {
   const { availableBalance, isLoading: balanceLoading } = useTokenBalance();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [connectionStatus, setconnectionStatus] = useState<'none' | 'pending' | 'connected'>('none');
+  const [connectionStatus, setConnectionStatus] = useState<'none' | 'pending' | 'connected'>('none');
   const [profileStrength, setProfileStrength] = useState(0);
 
   useEffect(() => {
     if (username) {
       fetchUserProfile();
       if (currentUser) {
-        checkconnectionStatus();
+        checkConnectionStatus();
       }
     }
   }, [username, currentUser]);
@@ -123,7 +123,7 @@ const UserProfile = () => {
     setProfileStrength(Math.round(score));
   };
 
-  const checkconnectionStatus = async () => {
+  const checkConnectionStatus = async () => {
     if (!currentUser?.id || !profile?.id) return;
 
     try {
@@ -134,11 +134,11 @@ const UserProfile = () => {
         .single();
 
       if (data) {
-        setconnectionStatus(data.status);
+        setConnectionStatus(data.status);
       }
     } catch (error) {
       // No connection exists
-      setconnectionStatus('none');
+      setConnectionStatus('none');
     }
   };
 
@@ -156,7 +156,7 @@ const UserProfile = () => {
 
       if (error) throw error;
 
-      setconnectionStatus('pending');
+      setConnectionStatus('pending');
       toast.success('Connection request sent!');
     } catch (error) {
       console.error('Error sending connection request:', error);
@@ -214,9 +214,9 @@ const UserProfile = () => {
         {/* Profile Header */}
         <div className="text-center space-y-4">
           <div className="relative inline-block">
-            <Avatar className="w-24 h-24">
-              <AvatarImage src={profile.profile_picture_url} alt={profile.full_name} />
-              <AvatarFallback className="text-2xl">
+            <Avatar className="w-20 h-20 border-2 border-sky-400 bg-sky-100 dark:bg-sky-950 shadow-md">
+              <AvatarImage src={profile.profile_picture_url} alt={profile.full_name} className="w-full h-full object-contain p-1 bg-sky-100 dark:bg-sky-950 rounded-full" />
+              <AvatarFallback className="text-xl font-bold bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-200">
                 {profile.full_name?.split(' ').map(n => n[0]).join('') || 'U'}
               </AvatarFallback>
             </Avatar>
@@ -373,4 +373,3 @@ const UserProfile = () => {
 };
 
 export default UserProfile;
-

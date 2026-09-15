@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SEOPerformanceCommandCenter } from '@/components/seo/SEOPerformanceDashboard';
+import { SEOPerformanceDashboard } from '@/components/seo/SEOPerformanceDashboard';
 import { ClientSideGenerator } from '@/components/seo/ClientSideGenerator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -42,7 +42,7 @@ interface GenerationProgress {
   log: string[];
 }
 
-export const SEOCommandCenterNew = () => {
+export const SEODashboardNew = () => {
   const [metrics, setMetrics] = useState<SEOMetrics | null>(null);
   const [progress, setProgress] = useState<GenerationProgress>({
     isGenerating: false,
@@ -510,7 +510,7 @@ export const SEOCommandCenterNew = () => {
           </TabsList>
 
           <TabsContent value="performance" className="space-y-6">
-            <SEOPerformanceCommandCenter />
+            <SEOPerformanceDashboard />
           </TabsContent>
 
           <TabsContent value="automation" className="space-y-6">
@@ -686,4 +686,3 @@ export const SEOCommandCenterNew = () => {
     </div>
   );
 };
-

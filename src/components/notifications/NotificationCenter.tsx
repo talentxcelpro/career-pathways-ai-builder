@@ -11,13 +11,7 @@ import {
   Settings, 
   TestTube2,
   Check,
-  Trash2,
-  Briefcase,
-  ClipboardList,
-  Eye,
-  MessageSquare,
-  Sparkles,
-  Users
+  Trash2
 } from 'lucide-react';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { formatDistanceToNow } from 'date-fns';
@@ -45,21 +39,21 @@ export const NotificationCenter: React.FC = () => {
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case 'job_match':
-        return Briefcase;
+        return '💼';
       case 'connection_request':
-        return Users;
+        return '👥';
       case 'message':
-        return MessageSquare;
+        return '💬';
       case 'application_update':
-        return ClipboardList;
+        return '📋';
       case 'profile_view':
-        return Eye;
+        return '👁️';
       case 'profile_completion_reminder':
-        return Sparkles;
+        return '✨';
       case 'welcome':
-        return Sparkles;
+        return '🎉';
       default:
-        return Bell;
+        return '🔔';
     }
   };
 
@@ -213,11 +207,8 @@ export const NotificationCenter: React.FC = () => {
                  >
                   <div className="flex items-start justify-between">
                      <div className="flex items-start gap-4 flex-1">
-                       <div className="w-12 h-12 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center text-xl flex-shrink-0 text-blue-600">
-                         {(() => {
-                           const NotificationIcon = getNotificationIcon(notification.type);
-                           return <NotificationIcon className="h-5 w-5" />;
-                         })()}
+                       <div className="w-12 h-12 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center text-xl flex-shrink-0">
+                         {getNotificationIcon(notification.type)}
                        </div>
                       
                        <div className="flex-1">
@@ -244,7 +235,7 @@ export const NotificationCenter: React.FC = () => {
                                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-3 rounded-lg border border-blue-100 mb-2">
                                      <div className="flex items-center gap-2 mb-2">
                                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                         <Sparkles className="h-4 w-4 text-blue-600" />
+                                         <span className="text-blue-600 text-sm">✨</span>
                                        </div>
                                        <div>
                                          <p className="font-medium text-sm text-blue-900">Complete Your Profile</p>
@@ -268,10 +259,10 @@ export const NotificationCenter: React.FC = () => {
                                    <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-3 rounded-lg border border-green-100 mb-2">
                                      <div className="flex items-center gap-2 mb-2">
                                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                                         <Sparkles className="h-4 w-4 text-green-600" />
+                                         <span className="text-green-600 text-sm">🎉</span>
                                        </div>
                                        <div>
-                                         <p className="font-medium text-sm text-green-900">Welcome to TalentXcel</p>
+                                         <p className="font-medium text-sm text-green-900">Welcome to TalentXcel!</p>
                                          <p className="text-xs text-green-700">Your career journey starts here</p>
                                        </div>
                                      </div>
@@ -306,11 +297,11 @@ export const NotificationCenter: React.FC = () => {
                                      <div className="flex items-center justify-between">
                                        <div className="flex items-center gap-2">
                                          <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                                           <Briefcase className="h-4 w-4 text-purple-600" />
+                                           <span className="text-purple-600 text-sm">💼</span>
                                          </div>
                                          <div>
-                                           <p className="font-medium text-sm text-purple-900">New Precision Match</p>
-                                           <p className="text-xs text-purple-700">Strong fit for your skills</p>
+                                           <p className="font-medium text-sm text-purple-900">New Job Match</p>
+                                           <p className="text-xs text-purple-700">Perfect for your skills</p>
                                          </div>
                                        </div>
                                        <Button 
@@ -321,7 +312,7 @@ export const NotificationCenter: React.FC = () => {
                                            navigate('/jobs');
                                          }}
                                        >
-                                         View Role
+                                         View Job
                                        </Button>
                                      </div>
                                    </div>

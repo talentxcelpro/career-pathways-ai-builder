@@ -32,7 +32,7 @@ interface DeviceMetrics {
   tablet: { score: number; visitors: number };
 }
 
-export const PerformanceCareerAnalytics: React.FC = () => {
+export const PerformanceAnalytics: React.FC = () => {
   const [metrics, setMetrics] = useState<PerformanceMetrics | null>(null);
   const [deviceMetrics, setDeviceMetrics] = useState<DeviceMetrics | null>(null);
   const [loading, setLoading] = useState(true);
@@ -315,6 +315,3 @@ export const PerformanceCareerAnalytics: React.FC = () => {
     </div>
   );
 };
-
-
-

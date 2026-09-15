@@ -126,7 +126,7 @@ export const generateMetaDescription = (
   fallback?: string
 ): string => {
   const descriptions: Record<string, string> = {
-    home: 'Accelerate your career with TalentXcel. Find dream jobs, learn new skills, network with professionals, and get Performance career guidance. Join 50,000+ professionals.',
+    home: 'Accelerate your career with TalentXcel. Find dream jobs, learn new skills, network with professionals, and get AI-powered career guidance. Join 50,000+ professionals.',
     jobs: 'Discover thousands of job opportunities across India. Latest openings in IT, Finance, Marketing, Healthcare, and more. Apply with one click and get hired faster.',
     'job-detail': data?.title && data?.company && data?.location 
       ? `Apply for ${data.title} at ${data.company} in ${data.location}. ${data.salary ? `Salary: ${data.salary}. ` : ''}Join top companies and advance your career with TalentXcel.`
@@ -139,12 +139,12 @@ export const generateMetaDescription = (
     'course-detail': data?.title 
       ? `Master new skills with ${data.title}. ${data.duration ? `${data.duration} comprehensive course. ` : ''}Get certified and advance your career with industry-relevant skills.`
       : 'Enhance your skills with comprehensive online courses. Get certified and boost your career prospects.',
-    network: 'Build your professional network. Connect with industry experts, join professional groups, attend virtual events, and advance your career through meaningful TalentNetwork.',
+    network: 'Build your professional network. Connect with industry experts, join professional groups, attend virtual events, and advance your career through meaningful connections.',
     salary: 'Discover salary insights and compensation data across industries in India. Make informed career decisions with comprehensive salary reports and trends.',
     profile: 'Manage your professional profile, track job applications, update skills, and optimize your career journey with personalized insights and recommendations.',
-    'auth-login': 'Sign in to TalentXcel to access thousands of job opportunities, professional networking, skill development courses, and Performance career guidance.',
+    'auth-login': 'Sign in to TalentXcel to access thousands of job opportunities, professional networking, skill development courses, and AI-powered career guidance.',
     'auth-register': 'Join TalentXcel today! Create your profile to access exclusive job opportunities, professional networking, and career development resources.',
-    'not-found': 'Page not found. Explore TalentXcel for job opportunities, professional networking, skill development, and Performance career guidance.'
+    'not-found': 'Page not found. Explore TalentXcel for job opportunities, professional networking, skill development, and AI-powered career guidance.'
   };
 
   return descriptions[pageType] || fallback || descriptions.home;
@@ -242,4 +242,3 @@ export const calculateSEOScore = (factors: {
 
   return Math.min(score, maxScore);
 };
-

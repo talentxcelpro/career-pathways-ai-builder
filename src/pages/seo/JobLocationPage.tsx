@@ -1,37 +1,44 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { supabase } from '@/integrations/supabase/client';
 import { JobCard } from '@/components/jobs/JobCard';
 import { Button } from '@/components/ui/button';
-import { Search, Filter, MapPin, Building, TrendingUp } from 'lucide-react';
+import { Search, Filter, MapPin, Building, TrendingUp, AlertCircle, Globe, Sparkles } from 'lucide-react';
 
 interface JobLocationPageProps {}
 
 const JobLocationPage: React.FC<JobLocationPageProps> = () => {
   const { location } = useParams<{ location: string }>();
+  const navigate = useNavigate();
+  const [realJobs, setRealJobs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   
   const locationData = getLocationData(location || '');
-  
-  // Mock job data - in production, this would come from API
-  const mockJobs = [
-    {
-      id: '1',
-      title: 'Software Developer Fresher',
-      description: 'Exciting opportunity for fresh graduates...',
-      location: locationData.name,
-      salary_min: 300000,
-      salary_max: 500000,
-      employment_type: 'full_time',
-      is_remote: false,
-      posted_at: new Date().toISOString(),
-      company: {
-        id: 'techcorp',
-        name: 'TechCorp',
-        logo_url: '/images/company-logo.png',
-        industry: 'Technology'
+
+  useEffect(() => {
+    async function loadJobs() {
+      setLoading(true);
+      try {
+        const locClean = (location || '').replace(/-/g, ' ').trim();
+        const { data, error } = await supabase
+          .from('jobs')
+          .select('*')
+          .or(`location.ilike.%${locClean}%,location_city.ilike.%${locClean}%`)
+          .limit(20);
+
+        if (!error && data) {
+          setRealJobs(data);
+        }
+      } catch (err) {
+        console.warn('[JobLocationPage] Error loading location jobs:', err);
+      } finally {
+        setLoading(false);
       }
     }
-  ];
+    loadJobs();
+  }, [location]);
+
 
   return (
     <>
@@ -133,14 +140,79 @@ const JobLocationPage: React.FC<JobLocationPageProps> = () => {
 
                 {/* Job Listings */}
                 <div className="space-y-6">
-                  <h2 className="text-2xl font-semibold text-foreground">Latest Jobs in {locationData.name}</h2>
-                  <div className="grid gap-6">
-                    {mockJobs.map((job) => (
-                      <JobCard key={job.id} job={job} />
-                    ))}
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-2xl font-semibold text-foreground">Verified Jobs in {locationData.name}</h2>
+                    {realJobs.length > 0 && (
+                      <span className="px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-mono">
+                        {realJobs.length} Live Openings
+                      </span>
+                    )}
                   </div>
+
+                  {loading ? (
+                    <div className="p-12 text-center text-sm font-mono text-muted-foreground animate-pulse">
+                      Loading verified jobs in {locationData.name}...
+                    </div>
+                  ) : realJobs.length > 0 ? (
+                    <div className="grid gap-6">
+                      {realJobs.map((job) => (
+                        <JobCard 
+                          key={job.id} 
+                          job={{
+                            id: job.id,
+                            title: job.title || job.job_title,
+                            description: job.job_summary || job.job_description || job.description || '',
+                            location: job.location || `${job.location_city || ''}, ${job.location_state || ''}`.trim() || locationData.name,
+                            salary_min: job.salary_min,
+                            salary_max: job.salary_max,
+                            employment_type: job.employment_type || 'Full-time',
+                            experience_level: job.experience_level || `${job.min_experience || 0}-${job.max_experience || 3} yrs`,
+                            skills_required: job.skills_required || (job.ai_skill_tags ? job.ai_skill_tags.split(',') : []),
+                            is_remote: job.is_remote,
+                            is_featured: job.is_featured,
+                            company: {
+                              id: job.company_id || 'talentxcel',
+                              name: job.company_name || 'TalentXcel Partner',
+                              industry: job.industry_domain || job.industry || 'Technology'
+                            }
+                          }} 
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="p-6 rounded-2xl border border-amber-500/30 bg-amber-50/20 dark:bg-amber-950/10 space-y-4">
+                      <div className="flex items-start gap-3">
+                        <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                        <div>
+                          <h3 className="font-semibold text-foreground text-base">
+                            0 On-Site Roles Currently Active in {locationData.name}
+                          </h3>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            TalentXcel does not show ghost or fabricated listings. While local employers in {locationData.name} are onboarding, explore immediate matching alternatives:
+                          </p>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                        <Button variant="outline" onClick={() => navigate('/jobs')} className="justify-start gap-2 h-auto py-3">
+                          <Globe className="w-4 h-4 text-indigo-500 shrink-0" />
+                          <div className="text-left">
+                            <div className="text-xs font-semibold">Browse Pan-India & Remote Jobs</div>
+                            <div className="text-[11px] text-muted-foreground">Work from {locationData.name} for verified employers</div>
+                          </div>
+                        </Button>
+                        <Button variant="outline" onClick={() => navigate('/resume/ats-check')} className="justify-start gap-2 h-auto py-3">
+                          <Sparkles className="w-4 h-4 text-emerald-500 shrink-0" />
+                          <div className="text-left">
+                            <div className="text-xs font-semibold">Instant ATS Skill Readiness Scan</div>
+                            <div className="text-[11px] text-muted-foreground">Benchmark profile & get matched automatically</div>
+                          </div>
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
+
 
               {/* Sidebar */}
               <div className="space-y-8">

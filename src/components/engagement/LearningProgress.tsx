@@ -104,7 +104,7 @@ export const LearningProgress: React.FC = () => {
           <CardTitle className="flex items-center justify-between">
             <span className="flex items-center gap-2">
               <GraduationCap className="h-5 w-5 text-primary" />
-              Learning CommandCenter
+              Learning Dashboard
             </span>
             <Dialog open={isAddCourseOpen} onOpenChange={setIsAddCourseOpen}>
               <DialogTrigger asChild>
@@ -375,4 +375,3 @@ export const LearningProgress: React.FC = () => {
     </div>
   );
 };
-

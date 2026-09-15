@@ -33,7 +33,7 @@ export const MobileAIMatching = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Mock Precision Match data
+    // Mock AI matching data
     const mockMatches: JobMatch[] = [
       {
         id: '1',
@@ -172,7 +172,7 @@ export const MobileAIMatching = () => {
             )}
 
             <div className="space-y-2">
-              <p className="text-sm font-medium">Career Moves:</p>
+              <p className="text-sm font-medium">AI Recommendations:</p>
               {insights.recommendations.map((rec, index) => (
                 <div key={index} className="flex items-start gap-2">
                   <TrendingUp className="h-3 w-3 text-primary mt-0.5 flex-shrink-0" />

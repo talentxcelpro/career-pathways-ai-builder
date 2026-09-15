@@ -35,7 +35,7 @@ const ReportsSubcategories = () => {
       id: 'content',
       title: 'Content Performance Reports',
       icon: FileText,
-      description: 'Content CareerAnalytics and optimization insights',
+      description: 'Content analytics and optimization insights',
       status: 'active'
     },
     {
@@ -284,6 +284,3 @@ const ReportsSubcategories = () => {
 };
 
 export default ReportsSubcategories;
-
-
-

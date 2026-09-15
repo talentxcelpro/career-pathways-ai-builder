@@ -118,7 +118,7 @@ const CareerRoadmap = () => {
     },
     datascience: {
       title: 'Data Scientist',
-      description: 'Extract insights from data using advanced CareerAnalytics',
+      description: 'Extract insights from data using advanced analytics',
       currentLevel: 'Beginner',
       targetRole: 'Data Scientist',
       progress: 25,
@@ -355,6 +355,3 @@ const CareerRoadmap = () => {
 };
 
 export default CareerRoadmap;
-
-
-

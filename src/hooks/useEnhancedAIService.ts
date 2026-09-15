@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 
 export interface AIServiceWithFeedback {
   invokeWithFeedback: (options: any, onSuccess?: (result: any) => void, onError?: (error: string) => void) => Promise<any>;
-  submitFeedback: (operationId: string, rating: number, Feedback?: string) => Promise<void>;
+  submitFeedback: (operationId: string, rating: number, feedback?: string) => Promise<void>;
   getRecommendations: (userProfile: any, context: string) => Promise<any>;
   isProcessing: boolean;
 }
@@ -26,7 +26,7 @@ export const useEnhancedAIService = (): AIServiceWithFeedback => {
       
       const result = await invokeAITool(options);
       
-      // Store operation for Feedback collection
+      // Store operation for feedback collection
       setOperationHistory(prev => new Map(prev).set(operationId, {
         ...options,
         result,
@@ -37,7 +37,7 @@ export const useEnhancedAIService = (): AIServiceWithFeedback => {
         console.log(`✅ Enhanced AI operation ${operationId} succeeded`);
         onSuccess?.(result);
         
-        // Show Feedback prompt after a delay
+        // Show feedback prompt after a delay
         setTimeout(() => {
           toast('How was this AI result?', {
             action: {
@@ -65,17 +65,17 @@ export const useEnhancedAIService = (): AIServiceWithFeedback => {
   const submitFeedback = useCallback(async (
     operationId: string, 
     rating: number, 
-    Feedback?: string
+    feedback?: string
   ) => {
     try {
-      console.log(`📝 Submitting Feedback for operation ${operationId}:`, { rating, Feedback });
+      console.log(`📝 Submitting feedback for operation ${operationId}:`, { rating, feedback });
       
-      // Here you would submit to your Feedback system
+      // Here you would submit to your feedback system
       // For now, just log and show success
-      toast.success('Thank you for your Feedback!');
+      toast.success('Thank you for your feedback!');
     } catch (error) {
-      console.error('Failed to submit Feedback:', error);
-      toast.error('Failed to submit Feedback');
+      console.error('Failed to submit feedback:', error);
+      toast.error('Failed to submit feedback');
     }
   }, []);
 
@@ -100,5 +100,3 @@ export const useEnhancedAIService = (): AIServiceWithFeedback => {
     isProcessing
   };
 };
-
-

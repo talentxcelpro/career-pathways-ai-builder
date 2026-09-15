@@ -27,22 +27,22 @@ export const useReelsData = () => {
   const { user } = useAuth();
 
   return useInfiniteQuery({
-    queryKey: ['reels-Pulse', user?.id],
+    queryKey: ['reels-feed', user?.id],
     queryFn: async ({ pageParam = 0 }) => {
       console.log('Fetching reels with pageParam:', pageParam);
       const limit = 10;
       const offset = pageParam * limit;
       
-      // Primary: try RPC (server-optimized Pulse)
+      // Primary: try RPC (server-optimized feed)
       try {
-        const { data, error } = await supabase.rpc('get_reel_Pulse', {
+        const { data, error } = await supabase.rpc('get_reel_feed', {
           user_id_param: user?.id || null,
           limit_param: limit,
           offset_param: offset
         });
 
         if (error) {
-          console.error('RPC get_reel_Pulse error:', error);
+          console.error('RPC get_reel_feed error:', error);
           throw error;
         }
         
@@ -51,7 +51,7 @@ export const useReelsData = () => {
         return (data as ReelData[]) || [];
       } catch (err: any) {
         // Fallback: derive reels from posts with video media
-        console.warn('RPC get_reel_Pulse failed, using posts fallback:', err?.message || err);
+        console.warn('RPC get_reel_feed failed, using posts fallback:', err?.message || err);
         
         const { data: posts, error: postsError } = await supabase
           .from('posts')
@@ -198,4 +198,3 @@ export const useReelViewTracking = () => {
 
   return { trackView };
 };
-

@@ -84,7 +84,7 @@ const MatchingEngine = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Button className="h-20 flex-col gap-2">
               <Brain className="h-6 w-6" />
-              Run Precision Match
+              Run AI Matching
             </Button>
             <Button variant="outline" className="h-20 flex-col gap-2">
               <Mail className="h-6 w-6" />
@@ -219,7 +219,7 @@ const MatchingEngine = () => {
               <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
                 <Brain className="h-6 w-6 text-purple-600" />
               </div>
-              <h3 className="font-semibold mb-2">3. Precision Match</h3>
+              <h3 className="font-semibold mb-2">3. AI Matching</h3>
               <p className="text-sm text-muted-foreground">
                 Intelligent algorithm calculates compatibility scores and ranks matches
               </p>

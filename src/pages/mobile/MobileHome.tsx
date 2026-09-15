@@ -111,7 +111,7 @@ export const MobileHome = () => {
     {
       id: 'qr',
       title: 'QR Scanner',
-      description: 'Quick TalentNetwork',
+      description: 'Quick connections',
       icon: <QrCode className="w-6 h-6" />,
       route: '/mobile/qr-scanner',
       color: 'bg-teal-100 text-teal-600'
@@ -171,7 +171,7 @@ export const MobileHome = () => {
               {quickActions.map((action, index) => (
                 <div
                   key={index}
-                  className="native-card p-4 text-center touch-Feedback"
+                  className="native-card p-4 text-center touch-feedback"
                   onClick={() => handleModuleClick(action.route)}
                 >
                   <div className="w-8 h-8 mx-auto mb-2 text-primary flex items-center justify-center">
@@ -201,7 +201,7 @@ export const MobileHome = () => {
               {modules.map((module) => (
                 <Card 
                   key={module.id}
-                  className="native-card cursor-pointer touch-Feedback hover:shadow-lg transition-all duration-200"
+                  className="native-card cursor-pointer touch-feedback hover:shadow-lg transition-all duration-200"
                   onClick={() => handleModuleClick(module.route)}
                 >
                   <CardContent className="p-4">
@@ -247,7 +247,7 @@ export const MobileHome = () => {
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
                 <div className="text-lg font-bold text-primary">24</div>
-                <div className="text-xs text-gray-600">TalentNetwork</div>
+                <div className="text-xs text-gray-600">Connections</div>
               </div>
               <div>
                 <div className="text-lg font-bold text-primary">5</div>
@@ -279,5 +279,3 @@ export const MobileHome = () => {
     </MobileNavWrapper>
   );
 };
-
-

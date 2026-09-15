@@ -34,7 +34,7 @@ const primaryFeatures = [
     icon: Target,
     href: '/learning/my-courses',
     color: 'bg-green-50 text-green-600 border-green-200',
-    stats: 'Personal CommandCenter'
+    stats: 'Personal dashboard'
   },
   {
     title: 'Skill Assessment',
@@ -42,7 +42,7 @@ const primaryFeatures = [
     icon: Brain,
     href: '/learning/skill-assessment',
     color: 'bg-purple-50 text-purple-600 border-purple-200',
-    stats: 'Performance'
+    stats: 'AI-powered'
   }
 ];
 
@@ -62,11 +62,11 @@ const discoveryFeatures = [
     badge: 'Social'
   },
   {
-    title: 'Career CareerAnalytics',
+    title: 'Career Analytics',
     description: 'Data-driven career insights',
     icon: BarChart3,
-    href: '/learning/career-CareerAnalytics',
-    badge: 'CareerAnalytics'
+    href: '/learning/career-analytics',
+    badge: 'Analytics'
   },
   {
     title: 'Employment Bridge',
@@ -208,6 +208,3 @@ export const SmartLearningNav: React.FC = () => {
     </div>
   );
 };
-
-
-

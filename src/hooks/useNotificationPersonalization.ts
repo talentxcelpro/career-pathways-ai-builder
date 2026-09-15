@@ -18,7 +18,7 @@ interface NotificationPreferences {
     resume: boolean;
     tools: boolean;
     colleges: boolean;
-    career_Pulse: boolean;
+    career_feed: boolean;
     discover: boolean;
   };
   priority_filter: 'all' | 'high_only' | 'normal_and_high';
@@ -61,7 +61,7 @@ export const useNotificationPersonalization = () => {
             resume: true,
             tools: true,
             colleges: true,
-            career_Pulse: true,
+            career_feed: true,
             discover: true
           },
           priority_filter: 'all',

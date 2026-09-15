@@ -138,13 +138,13 @@ export const ProfessionalPortfolio: React.FC = () => {
     enabled: !!user?.id
   });
 
-  // Fetch portfolio CareerAnalytics
-  const { data: CareerAnalytics } = useQuery({
-    queryKey: ['portfolio-CareerAnalytics', user?.id],
+  // Fetch portfolio analytics
+  const { data: analytics } = useQuery({
+    queryKey: ['portfolio-analytics', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
       
-      // Mock CareerAnalytics data - in production this would come from actual tracking
+      // Mock analytics data - in production this would come from actual tracking
       return {
         total_views: 1250,
         views_this_week: 89,
@@ -261,7 +261,7 @@ export const ProfessionalPortfolio: React.FC = () => {
               <Eye className="h-8 w-8 text-primary" />
               <div>
                 <p className="text-sm text-muted-foreground">Profile Views</p>
-                <p className="text-2xl font-bold">{CareerAnalytics?.total_views || 0}</p>
+                <p className="text-2xl font-bold">{analytics?.total_views || 0}</p>
               </div>
             </div>
           </CardContent>
@@ -297,7 +297,7 @@ export const ProfessionalPortfolio: React.FC = () => {
               <Users className="h-8 w-8 text-green-600" />
               <div>
                 <p className="text-sm text-muted-foreground">Endorsements</p>
-                <p className="text-2xl font-bold">{CareerAnalytics?.endorsements_count || 0}</p>
+                <p className="text-2xl font-bold">{analytics?.endorsements_count || 0}</p>
               </div>
             </div>
           </CardContent>
@@ -829,7 +829,7 @@ export const ProfessionalPortfolio: React.FC = () => {
                   
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="font-medium">CareerAnalytics Tracking</h4>
+                      <h4 className="font-medium">Analytics Tracking</h4>
                       <p className="text-sm text-muted-foreground">Track portfolio views and engagement</p>
                     </div>
                     <Button variant="outline" size="sm">
@@ -909,6 +909,3 @@ export const ProfessionalPortfolio: React.FC = () => {
     </div>
   );
 };
-
-
-

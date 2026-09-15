@@ -297,7 +297,7 @@ export const AIResumeAnalyzer: React.FC<AIResumeAnalyzerProps> = ({
       {(atsScore || jobMatchResult) && (
         <Card>
           <CardHeader>
-            <CardTitle>Performance Optimizations</CardTitle>
+            <CardTitle>AI-Powered Optimizations</CardTitle>
             <CardDescription>
               Get personalized suggestions to improve your resume
             </CardDescription>

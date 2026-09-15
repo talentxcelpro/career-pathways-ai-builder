@@ -241,4 +241,3 @@ export const SocialPostCard: React.FC<SocialPostCardProps> = ({
     </Card>
   );
 };
-

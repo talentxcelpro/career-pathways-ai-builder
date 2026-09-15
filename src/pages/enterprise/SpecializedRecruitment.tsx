@@ -107,7 +107,7 @@ export const SpecializedRecruitment: React.FC = () => {
             <TabsTrigger value="search">Talent Search</TabsTrigger>
             <TabsTrigger value="freelancers">Freelancer Pool</TabsTrigger>
             <TabsTrigger value="projects">Project Management</TabsTrigger>
-            <TabsTrigger value="CareerAnalytics">Performance CareerAnalytics</TabsTrigger>
+            <TabsTrigger value="analytics">Performance Analytics</TabsTrigger>
           </TabsList>
 
           <TabsContent value="search" className="space-y-6">
@@ -443,7 +443,7 @@ export const SpecializedRecruitment: React.FC = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="CareerAnalytics" className="space-y-6">
+          <TabsContent value="analytics" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <Card>
                 <CardHeader>
@@ -488,7 +488,7 @@ export const SpecializedRecruitment: React.FC = () => {
 
             <Card>
               <CardHeader>
-                <CardTitle>Performance CommandCenter</CardTitle>
+                <CardTitle>Performance Dashboard</CardTitle>
                 <CardDescription>Key metrics and trends for your freelance workforce</CardDescription>
               </CardHeader>
               <CardContent>
@@ -551,6 +551,3 @@ export const SpecializedRecruitment: React.FC = () => {
     </div>
   );
 };
-
-
-

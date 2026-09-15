@@ -167,7 +167,7 @@ export const AIScreeningWidget = () => {
             className="flex items-center justify-center gap-2 p-2 bg-violet-50 rounded-lg hover:bg-violet-100 transition-colors cursor-pointer"
             onClick={() => navigate('/employer/ai/screening')}
           >
-            <span className="text-sm font-semibold text-violet-700">View Intelligence Metrics</span>
+            <span className="text-sm font-semibold text-violet-700">View AI Insights</span>
             <Brain className="h-3 w-3 text-violet-700" />
           </div>
         </div>
@@ -175,4 +175,3 @@ export const AIScreeningWidget = () => {
     </Card>
   );
 };
-

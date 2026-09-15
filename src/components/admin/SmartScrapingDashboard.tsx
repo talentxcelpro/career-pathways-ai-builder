@@ -34,7 +34,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-export const SmartScrapingCommandCenter = () => {
+export const SmartScrapingDashboard = () => {
   const [testUrls, setTestUrls] = useState('');
   const [selectedBotId, setSelectedBotId] = useState('');
   const [newDomain, setNewDomain] = useState('');
@@ -113,7 +113,7 @@ export const SmartScrapingCommandCenter = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Smart Job Scraping</h1>
-          <p className="text-muted-foreground">Performance job scraping with portal filtering and quality scoring</p>
+          <p className="text-muted-foreground">AI-powered job scraping with portal filtering and quality scoring</p>
         </div>
         <Button 
           onClick={handleRunAutomation}
@@ -283,7 +283,7 @@ export const SmartScrapingCommandCenter = () => {
           <Card>
             <CardHeader>
               <CardTitle>Recent Source Validations</CardTitle>
-              <CardDescription>Performance classification of job sources</CardDescription>
+              <CardDescription>AI-powered classification of job sources</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
@@ -381,4 +381,3 @@ export const SmartScrapingCommandCenter = () => {
     </div>
   );
 };
-

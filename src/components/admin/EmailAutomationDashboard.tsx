@@ -39,7 +39,7 @@ interface RecentActivity {
   processed_at?: string;
 }
 
-export const EmailAutomationCommandCenter = () => {
+export const EmailAutomationDashboard = () => {
   const [automationRules, setAutomationRules] = useState<AutomationRule[]>([]);
   const [queueStats, setQueueStats] = useState<QueueStats>({
     pending: 0,
@@ -51,13 +51,13 @@ export const EmailAutomationCommandCenter = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    loadCommandCenterData();
+    loadDashboardData();
     // Refresh every 30 seconds
-    const interval = setInterval(loadCommandCenterData, 30000);
+    const interval = setInterval(loadDashboardData, 30000);
     return () => clearInterval(interval);
   }, []);
 
-  const loadCommandCenterData = async () => {
+  const loadDashboardData = async () => {
     try {
       // Load automation rules
       const { data: rules, error: rulesError } = await supabase
@@ -95,8 +95,8 @@ export const EmailAutomationCommandCenter = () => {
       setRecentActivity(activity || []);
 
     } catch (error) {
-      console.error('Error loading CommandCenter data:', error);
-      toast.error('Failed to load CommandCenter data');
+      console.error('Error loading dashboard data:', error);
+      toast.error('Failed to load dashboard data');
     } finally {
       setIsLoading(false);
     }
@@ -339,4 +339,3 @@ export const EmailAutomationCommandCenter = () => {
     </div>
   );
 };
-

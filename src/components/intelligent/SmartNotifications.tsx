@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card, CardContent } from '@/components/ui/card';
 import { useCrossModuleNotifications } from '@/hooks/useCrossModuleNotifications';
-import { useAdvancedPulseAlgorithm } from '@/hooks/useAdvancedPulseAlgorithm';
+import { useAdvancedFeedAlgorithm } from '@/hooks/useAdvancedFeedAlgorithm';
 import { cn } from '@/lib/utils';
 import {
   Bell,
@@ -48,7 +48,7 @@ export const SmartNotifications: React.FC<SmartNotificationsProps> = ({
   maxItems = 10
 }) => {
   const { notifications: crossModuleNotifications, markAsRead } = useCrossModuleNotifications();
-  const { personalizedPulse } = useAdvancedPulseAlgorithm('network');
+  const { personalizedFeed } = useAdvancedFeedAlgorithm('network');
   const [smartNotifications, setSmartNotifications] = useState<SmartNotification[]>([]);
 
   // Generate smart notifications based on user behavior and content
@@ -71,9 +71,9 @@ export const SmartNotifications: React.FC<SmartNotificationsProps> = ({
         });
       });
 
-      // Generate Performance content recommendations
-      if (personalizedPulse.length > 0) {
-        const topRecommendation = personalizedPulse[0];
+      // Generate AI-powered content recommendations
+      if (personalizedFeed.length > 0) {
+        const topRecommendation = personalizedFeed[0];
         if (topRecommendation.relevanceScore > 0.8) {
           notifications.push({
             id: `rec-${topRecommendation.id}`,
@@ -95,7 +95,7 @@ export const SmartNotifications: React.FC<SmartNotificationsProps> = ({
       }
 
       // Generate trending notifications
-      const trendingContent = personalizedPulse.filter(item => 
+      const trendingContent = personalizedFeed.filter(item => 
         item.engagement.likes > 100 || item.engagement.views > 1000
       );
 
@@ -151,7 +151,7 @@ export const SmartNotifications: React.FC<SmartNotificationsProps> = ({
     // Refresh every 5 minutes
     const interval = setInterval(generateSmartNotifications, 5 * 60 * 1000);
     return () => clearInterval(interval);
-  }, [crossModuleNotifications, personalizedPulse, maxItems]);
+  }, [crossModuleNotifications, personalizedFeed, maxItems]);
 
   const getNotificationIcon = (type: string) => {
     switch (type) {

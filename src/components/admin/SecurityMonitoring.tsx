@@ -35,7 +35,7 @@ interface SecurityStats {
   activeUsers: number;
 }
 
-export const SecurityMonitoring = () => {
+const SecurityMonitoring = () => {
   const [securityEvents, setSecurityEvents] = useState<SecurityEvent[]>([]);
   const [stats, setStats] = useState<SecurityStats>({
     totalEvents: 0,
@@ -346,3 +346,5 @@ export const SecurityMonitoring = () => {
     </div>
   );
 };
+
+export default SecurityMonitoring;

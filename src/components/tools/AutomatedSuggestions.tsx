@@ -260,7 +260,7 @@ const AutomatedSuggestions = () => {
         'profile-score': '/tools',
         'salary-analyzer': '/tools',
         'interview-prep': '/tools',
-        'ai-Navigator': '/tools',
+        'ai-assistant': '/tools',
         'market-insights': '/tools'
       };
 
@@ -380,7 +380,7 @@ const AutomatedSuggestions = () => {
         </Card>
       )}
 
-      {/* Smart Moves */}
+      {/* AI Suggestions */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
@@ -506,5 +506,3 @@ const AutomatedSuggestions = () => {
 };
 
 export default AutomatedSuggestions;
-
-

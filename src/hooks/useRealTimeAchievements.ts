@@ -126,7 +126,7 @@ export function useRealTimeAchievements() {
         // Fetch current metrics for progress calculation
         const [
           jobAppsResponse,
-          TalentNetworkResponse,
+          connectionsResponse,
           postsResponse,
           profileResponse
         ] = await Promise.all([
@@ -137,7 +137,7 @@ export function useRealTimeAchievements() {
         ]);
 
         const jobAppsCount = jobAppsResponse.data?.length || 0;
-        const TalentNetworkCount = TalentNetworkResponse.data?.length || 0;
+        const connectionsCount = connectionsResponse.data?.length || 0;
         const postsCount = postsResponse.data?.length || 0;
 
         // Calculate profile completion
@@ -182,10 +182,10 @@ export function useRealTimeAchievements() {
             type: 'network_builder',
             title: 'Network Builder',
             description: 'Connect with 10 professionals',
-            current: TalentNetworkCount,
+            current: connectionsCount,
             target: 10,
-            progress: Math.min((TalentNetworkCount / 10) * 100, 100),
-            isCompleted: TalentNetworkCount >= 10
+            progress: Math.min((connectionsCount / 10) * 100, 100),
+            isCompleted: connectionsCount >= 10
           },
           {
             type: 'content_creator',
@@ -199,11 +199,11 @@ export function useRealTimeAchievements() {
           {
             type: 'active_networker',
             title: 'Active Networker',
-            description: 'Build a network of 25 TalentNetwork',
-            current: TalentNetworkCount,
+            description: 'Build a network of 25 connections',
+            current: connectionsCount,
             target: 25,
-            progress: Math.min((TalentNetworkCount / 25) * 100, 100),
-            isCompleted: TalentNetworkCount >= 25
+            progress: Math.min((connectionsCount / 25) * 100, 100),
+            isCompleted: connectionsCount >= 25
           }
         ];
 
@@ -309,4 +309,3 @@ export function useRealTimeAchievements() {
     pendingCount: progressAchievements.filter(p => !p.isCompleted).length
   };
 }
-

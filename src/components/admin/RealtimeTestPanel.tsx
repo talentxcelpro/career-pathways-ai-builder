@@ -284,7 +284,7 @@ export const RealtimeTestPanel: React.FC = () => {
           Realtime System Test Panel
         </CardTitle>
         <CardDescription>
-          Comprehensive testing of all realtime TalentNetwork and functionality
+          Comprehensive testing of all realtime connections and functionality
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -419,7 +419,7 @@ export const RealtimeTestPanel: React.FC = () => {
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
               Click "Run Realtime Tests" to verify if your realtime system is working properly. 
-              This will test all realtime TalentNetwork, check authentication, and verify data flow.
+              This will test all realtime connections, check authentication, and verify data flow.
             </AlertDescription>
           </Alert>
         )}
@@ -432,4 +432,3 @@ export const RealtimeTestPanel: React.FC = () => {
     </div>
   );
 };
-

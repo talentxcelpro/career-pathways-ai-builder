@@ -23,7 +23,7 @@ interface NetworkLead {
 }
 
 interface NetworkStats {
-  totalTalentNetwork: number;
+  totalConnections: number;
   serviceProviders: number;
   potentialLeads: number;
   referralOpportunities: number;
@@ -42,7 +42,7 @@ export const NetworkIntegration: React.FC<NetworkIntegrationProps> = ({
 }) => {
   const [networkLeads, setNetworkLeads] = useState<NetworkLead[]>([]);
   const [networkStats, setNetworkStats] = useState<NetworkStats>({
-    totalTalentNetwork: 0,
+    totalConnections: 0,
     serviceProviders: 0,
     potentialLeads: 0,
     referralOpportunities: 0
@@ -59,8 +59,8 @@ export const NetworkIntegration: React.FC<NetworkIntegrationProps> = ({
     try {
       setLoading(true);
 
-      // Fetch user's TalentNetwork
-      const { data: TalentNetwork, error: TalentNetworkError } = await supabase
+      // Fetch user's connections
+      const { data: connections, error: connectionsError } = await supabase
         .from('connections')
         .select(`
           *,
@@ -70,14 +70,14 @@ export const NetworkIntegration: React.FC<NetworkIntegrationProps> = ({
         .or(`requester_id.eq.${userProfile.id},recipient_id.eq.${userProfile.id}`)
         .eq('status', 'accepted');
 
-      if (TalentNetworkError) throw TalentNetworkError;
+      if (connectionsError) throw connectionsError;
 
-      // Process TalentNetwork to identify potential leads
-      const leads = await processTalentNetworkForLeads(TalentNetwork || []);
+      // Process connections to identify potential leads
+      const leads = await processConnectionsForLeads(connections || []);
       setNetworkLeads(leads);
 
       // Calculate network stats
-      const stats = calculateNetworkStats(TalentNetwork || [], leads);
+      const stats = calculateNetworkStats(connections || [], leads);
       setNetworkStats(stats);
 
     } catch (error) {
@@ -88,10 +88,10 @@ export const NetworkIntegration: React.FC<NetworkIntegrationProps> = ({
     }
   };
 
-  const processTalentNetworkForLeads = async (TalentNetwork: any[]): Promise<NetworkLead[]> => {
+  const processConnectionsForLeads = async (connections: any[]): Promise<NetworkLead[]> => {
     const leads: NetworkLead[] = [];
 
-    for (const connection of TalentNetwork) {
+    for (const connection of connections) {
       const isRequester = connection.requester_id === userProfile.id;
       const contactProfile = isRequester ? connection.recipient : connection.requester;
 
@@ -117,7 +117,7 @@ export const NetworkIntegration: React.FC<NetworkIntegrationProps> = ({
       }
     }
 
-    // Add some 2nd degree TalentNetwork (mock data for demo)
+    // Add some 2nd degree connections (mock data for demo)
     const secondDegreeLeads = generateSecondDegreeLeads();
     leads.push(...secondDegreeLeads);
 
@@ -173,7 +173,7 @@ export const NetworkIntegration: React.FC<NetworkIntegrationProps> = ({
       leadScore += 15;
     }
 
-    // Base score for all TalentNetwork
+    // Base score for all connections
     leadScore += 10;
 
     return {
@@ -185,7 +185,7 @@ export const NetworkIntegration: React.FC<NetworkIntegrationProps> = ({
   };
 
   const generateSecondDegreeLeads = (): NetworkLead[] => {
-    // Mock 2nd degree TalentNetwork for demo
+    // Mock 2nd degree connections for demo
     return [
       {
         id: 'mock-1',
@@ -214,9 +214,9 @@ export const NetworkIntegration: React.FC<NetworkIntegrationProps> = ({
     ];
   };
 
-  const calculateNetworkStats = (TalentNetwork: any[], leads: NetworkLead[]): NetworkStats => {
+  const calculateNetworkStats = (connections: any[], leads: NetworkLead[]): NetworkStats => {
     return {
-      totalTalentNetwork: TalentNetwork.length,
+      totalConnections: connections.length,
       serviceProviders: leads.filter(lead => lead.isServiceProvider).length,
       potentialLeads: leads.length,
       referralOpportunities: leads.filter(lead => lead.leadScore > 70).length
@@ -275,8 +275,8 @@ export const NetworkIntegration: React.FC<NetworkIntegrationProps> = ({
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center p-4 bg-blue-50 rounded-lg">
               <Users className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-blue-600">{networkStats.totalTalentNetwork}</div>
-              <div className="text-sm text-gray-600">Total TalentNetwork</div>
+              <div className="text-2xl font-bold text-blue-600">{networkStats.totalConnections}</div>
+              <div className="text-sm text-gray-600">Total Connections</div>
             </div>
             <div className="text-center p-4 bg-green-50 rounded-lg">
               <Briefcase className="h-8 w-8 text-green-600 mx-auto mb-2" />
@@ -330,7 +330,7 @@ export const NetworkIntegration: React.FC<NetworkIntegrationProps> = ({
                     {getConnectionLevelBadge(lead.connectionLevel)}
                     <span className="flex items-center gap-1">
                       <Users className="h-4 w-4" />
-                      {lead.mutualConnections} mutual TalentNetwork
+                      {lead.mutualConnections} mutual connections
                     </span>
                     {lead.isServiceProvider && (
                       <Badge className="bg-green-100 text-green-800">Service Provider</Badge>
@@ -396,4 +396,3 @@ export const NetworkIntegration: React.FC<NetworkIntegrationProps> = ({
     </div>
   );
 };
-

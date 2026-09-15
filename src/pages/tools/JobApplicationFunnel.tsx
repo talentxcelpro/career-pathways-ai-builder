@@ -77,7 +77,7 @@ const JobApplicationFunnel = () => {
         { name: 'Offers', count: offers, percentage: totalApplications ? Math.round((offers / totalApplications) * 100) : 0, color: 'bg-red-500' }
       ];
 
-      // Generate Intelligence Metrics using real data
+      // Generate AI insights using real data
       const { data: aiResponse, error: aiError } = await supabase.functions.invoke('ai-tools', {
         body: {
           type: 'application-funnel-analysis',
@@ -151,7 +151,7 @@ const JobApplicationFunnel = () => {
       'Job Application Funnel Analysis',
       analysisResult,
       'analysis',
-      ['CareerAnalytics', 'applications', 'funnel']
+      ['analytics', 'applications', 'funnel']
     );
   };
 
@@ -316,6 +316,3 @@ const JobApplicationFunnel = () => {
 };
 
 export default JobApplicationFunnel;
-
-
-

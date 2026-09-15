@@ -272,7 +272,7 @@ export const EmailConfigurationPanel = () => {
               <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded">
                 <p className="text-sm text-blue-700">
                   <strong>Credentials:</strong> Amazon SES credentials are securely stored in Supabase Edge Function secrets.
-                  To update: Supabase CommandCenter → Edge Functions → Secrets → Update SES_ACCESS_KEY_ID and SES_SECRET_ACCESS_KEY.
+                  To update: Supabase Dashboard → Edge Functions → Secrets → Update SES_ACCESS_KEY_ID and SES_SECRET_ACCESS_KEY.
                 </p>
               </div>
               <div className="mt-4">
@@ -408,4 +408,3 @@ export const EmailConfigurationPanel = () => {
     </div>
   );
 };
-

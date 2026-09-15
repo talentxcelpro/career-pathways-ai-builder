@@ -138,7 +138,7 @@ export const useTXCSmartRecommendations = () => {
         estimated_txc: 50,
         time_window: '5 minutes',
         difficulty: 'easy',
-        requirements: ['Log in daily', 'Check CommandCenter'],
+        requirements: ['Log in daily', 'Check dashboard'],
         description: 'Start your daily TXC earning streak'
       });
     }
@@ -277,7 +277,7 @@ export const useTXCSmartRecommendations = () => {
         action_items: [
           'Explore premium job matching',
           'Try AI resume optimization',
-          'Unlock advanced CareerAnalytics'
+          'Unlock advanced analytics'
         ],
         is_personalized: true,
         expires_at: new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000),
@@ -378,6 +378,3 @@ export const useTXCSmartRecommendations = () => {
     markOpportunityCompleted
   };
 };
-
-
-

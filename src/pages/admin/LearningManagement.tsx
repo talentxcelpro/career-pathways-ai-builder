@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { UnifiedAdminLayout } from '@/components/admin/UnifiedAdminLayout';
-import { LearningCommandCenter } from '@/components/admin/learning/LearningDashboard';
+import { LearningDashboard } from '@/components/admin/learning/LearningDashboard';
 import { CoursesManagement } from '@/components/admin/learning/CoursesManagement';
 import { LearningPathsManagement } from '@/components/admin/learning/LearningPathsManagement';
 import { MultimediaManagement } from '@/components/admin/learning/MultimediaManagement';
 import { AssessmentsManagement } from '@/components/admin/learning/AssessmentsManagement';
 import { EnrollmentManagement } from '@/components/admin/learning/EnrollmentManagement';
 import { CommunityManagement } from '@/components/admin/learning/CommunityManagement';
-import { LearningCareerAnalytics } from '@/components/admin/learning/LearningAnalytics';
+import { LearningAnalytics } from '@/components/admin/learning/LearningAnalytics';
 import { ContentModeration } from '@/components/admin/learning/ContentModeration';
 import { LearningSettings } from '@/components/admin/learning/LearningSettings';
 import { LMSIntegration } from '@/components/learning/LMSIntegration';
@@ -27,17 +27,17 @@ import {
 } from 'lucide-react';
 
 const LearningManagement = () => {
-  const [activeTab, setActiveTab] = useState('CommandCenter');
+  const [activeTab, setActiveTab] = useState('dashboard');
 
   const tabs = [
-    { id: 'CommandCenter', label: 'CommandCenter', icon: Home, component: LearningCommandCenter },
+    { id: 'dashboard', label: 'Dashboard', icon: Home, component: LearningDashboard },
     { id: 'courses', label: 'Courses', icon: BookOpen, component: CoursesManagement },
     { id: 'paths', label: 'Learning Paths', icon: Target, component: LearningPathsManagement },
     { id: 'multimedia', label: 'Multimedia', icon: Play, component: MultimediaManagement },
     { id: 'assessments', label: 'Assessments', icon: FileCheck, component: AssessmentsManagement },
     { id: 'enrollments', label: 'Enrollments', icon: Users, component: EnrollmentManagement },
     { id: 'community', label: 'Community', icon: MessageSquare, component: CommunityManagement },
-    { id: 'CareerAnalytics', label: 'CareerAnalytics', icon: BarChart3, component: LearningCareerAnalytics },
+    { id: 'analytics', label: 'Analytics', icon: BarChart3, component: LearningAnalytics },
     { id: 'moderation', label: 'Moderation', icon: Shield, component: ContentModeration },
     { id: 'lms', label: 'LMS Integration', icon: Database, component: LMSIntegration },
     { id: 'settings', label: 'Settings', icon: Settings, component: LearningSettings }
@@ -81,6 +81,3 @@ const LearningManagement = () => {
 };
 
 export default LearningManagement;
-
-
-

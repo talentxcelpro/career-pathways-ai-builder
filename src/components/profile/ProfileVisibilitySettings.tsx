@@ -6,10 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { Eye, EyeOff, Users, Globe, Share } from "lucide-react";
 
 interface ProfileVisibilitySettingsProps {
-  visibility: 'public' | 'private' | 'TalentNetwork_only';
+  visibility: 'public' | 'private' | 'connections_only';
   allowSharing: boolean;
   customUrl?: string;
-  onVisibilityChange: (visibility: 'public' | 'private' | 'TalentNetwork_only') => void;
+  onVisibilityChange: (visibility: 'public' | 'private' | 'connections_only') => void;
   onSharingChange: (allow: boolean) => void;
 }
 
@@ -28,9 +28,9 @@ export const ProfileVisibilitySettings: React.FC<ProfileVisibilitySettingsProps>
       icon: Globe
     },
     {
-      value: 'TalentNetwork_only' as const,
-      label: 'TalentNetwork Only',
-      description: 'Only your TalentNetwork can view your profile',
+      value: 'connections_only' as const,
+      label: 'Connections Only',
+      description: 'Only your connections can view your profile',
       icon: Users
     },
     {
@@ -103,7 +103,7 @@ export const ProfileVisibilitySettings: React.FC<ProfileVisibilitySettingsProps>
                 <span className="font-medium">Allow Profile Sharing</span>
               </div>
               <p className="text-sm text-gray-600">
-                Let others share your profile link with potential TalentNetwork
+                Let others share your profile link with potential connections
               </p>
             </div>
             <Switch
@@ -139,5 +139,3 @@ export const ProfileVisibilitySettings: React.FC<ProfileVisibilitySettingsProps>
     </Card>
   );
 };
-
-

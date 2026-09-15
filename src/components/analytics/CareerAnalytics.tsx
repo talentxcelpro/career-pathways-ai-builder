@@ -28,12 +28,12 @@ interface CareerMetric {
   industry_average?: number;
 }
 
-interface CareerCareerAnalyticsProps {
+interface CareerAnalyticsProps {
   userId?: string;
   timeRange?: '7d' | '30d' | '90d' | '1y';
 }
 
-export const CareerCareerAnalytics: React.FC<CareerCareerAnalyticsProps> = ({
+export const CareerAnalytics: React.FC<CareerAnalyticsProps> = ({
   userId,
   timeRange = '30d'
 }) => {
@@ -171,7 +171,7 @@ export const CareerCareerAnalytics: React.FC<CareerCareerAnalyticsProps> = ({
         ))}
       </div>
 
-      {/* Detailed CareerAnalytics Tabs */}
+      {/* Detailed Analytics Tabs */}
       <Tabs defaultValue="skills" className="space-y-4">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="skills">Skills Analysis</TabsTrigger>
@@ -349,7 +349,7 @@ export const CareerCareerAnalytics: React.FC<CareerCareerAnalyticsProps> = ({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5" />
-                CareerIntelligence Trends
+                Career Intelligence Trends
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -379,6 +379,3 @@ export const CareerCareerAnalytics: React.FC<CareerCareerAnalyticsProps> = ({
     </div>
   );
 };
-
-
-

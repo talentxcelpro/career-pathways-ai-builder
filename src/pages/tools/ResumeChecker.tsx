@@ -274,10 +274,10 @@ Responsibilities:
             </h1>
           </div>
           <p className="text-xl text-gray-600 mb-4">
-            Get your free Performance resume analysis in seconds
+            Get your free AI-powered resume analysis in seconds
           </p>
           <p className="text-gray-500">
-            Upload your resume and get detailed Feedback on ATS compatibility, content quality, and more
+            Upload your resume and get detailed feedback on ATS compatibility, content quality, and more
           </p>
         </div>
 
@@ -336,7 +336,7 @@ Responsibilities:
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
               <Sparkles className="h-6 w-6 text-green-600" />
             </div>
-            <h3 className="font-semibold mb-2">Performance Analysis</h3>
+            <h3 className="font-semibold mb-2">AI-Powered Analysis</h3>
             <p className="text-gray-600 text-sm">Get intelligent suggestions to improve your resume</p>
           </div>
           <div className="text-center">
@@ -353,5 +353,3 @@ Responsibilities:
 };
 
 export default ResumeChecker;
-
-

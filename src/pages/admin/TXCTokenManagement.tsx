@@ -101,7 +101,7 @@ const TXCTokenManagement = () => {
         <TabsList>
           <TabsTrigger value="holders">Top Holders</TabsTrigger>
           <TabsTrigger value="transactions">Recent Transactions</TabsTrigger>
-          <TabsTrigger value="mining">Mining CareerAnalytics</TabsTrigger>
+          <TabsTrigger value="mining">Mining Analytics</TabsTrigger>
           <TabsTrigger value="admin">Admin Actions</TabsTrigger>
         </TabsList>
 
@@ -272,6 +272,3 @@ const WrappedTXCTokenManagement = () => (
 );
 
 export default WrappedTXCTokenManagement;
-
-
-

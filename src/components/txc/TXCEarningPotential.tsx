@@ -445,7 +445,7 @@ export const TXCEarningPotential: React.FC = () => {
               onClick={() => navigate('/gamification')}
               className="flex-1"
             >
-              View CommandCenter
+              View Dashboard
             </Button>
           </div>
         </CardContent>
@@ -453,4 +453,3 @@ export const TXCEarningPotential: React.FC = () => {
     </div>
   );
 };
-

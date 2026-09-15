@@ -9,6 +9,7 @@ import {
 import { updateMetaTags } from '@/utils/metaTags';
 import { injectStructuredData } from '@/utils/structuredData';
 import { generateMetaDescription, validateMetaTags } from '@/utils/seoValidator';
+import { DEFAULT_TITLE, absoluteUrl, canonicalFor, isNoindexPath } from '@/config/seo';
 
 interface SEOConfig {
   title?: string;
@@ -31,7 +32,7 @@ export const useSEO = (config: SEOConfig = {}) => {
 
   useEffect(() => {
     const {
-      title = 'TalentXcel - Performance Career Platform',
+      title = DEFAULT_TITLE,
       description,
       keywords = [],
       image = '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png',
@@ -56,8 +57,8 @@ export const useSEO = (config: SEOConfig = {}) => {
     updateMetaTags({
       title,
       description: finalDescription,
-      image: image.startsWith('http') ? image : `https://talentxcel.in${image}`,
-      url: `https://talentxcel.in${location.pathname}`,
+      image: absoluteUrl(image),
+      url: canonicalFor(location.pathname),
       type: 'website',
       keywords
     });
@@ -71,7 +72,7 @@ export const useSEO = (config: SEOConfig = {}) => {
       canonicalLink.rel = 'canonical';
       document.head.appendChild(canonicalLink);
     }
-    canonicalLink.href = canonical || `https://talentxcel.in${location.pathname}`;
+    canonicalLink.href = canonicalFor(canonical || location.pathname);
 
     // Update robots meta
     let robotsMeta = document.querySelector('meta[name="robots"]') as HTMLMetaElement;
@@ -80,7 +81,7 @@ export const useSEO = (config: SEOConfig = {}) => {
       robotsMeta.name = 'robots';
       document.head.appendChild(robotsMeta);
     }
-    robotsMeta.content = noindex ? 'noindex,nofollow' : 'index,follow';
+    robotsMeta.content = noindex || isNoindexPath(location.pathname) ? 'noindex,nofollow' : 'index,follow';
 
     // Inject structured data
     if (structuredData) {
@@ -88,14 +89,6 @@ export const useSEO = (config: SEOConfig = {}) => {
     } else if (breadcrumbs.length > 0) {
       const breadcrumbData = generateBreadcrumbStructuredData(breadcrumbs);
       injectStructuredData(breadcrumbData);
-    }
-
-    // Google CareerAnalytics page view tracking
-    if (window.gtag) {
-      window.gtag('config', 'GA_MEASUREMENT_ID', {
-        page_path: location.pathname,
-        page_title: title
-      });
     }
 
   }, [location.pathname, config]);
@@ -117,8 +110,8 @@ export const usePageSEO = (pageType: string, data?: any) => {
     switch (pageType) {
       case 'home':
         return {
-          title: 'TalentXcel - Performance Career Platform | Find Jobs, Learn Skills, Network',
-          description: 'Accelerate your career with TalentXcel. Find dream jobs, learn new skills, network with professionals, and get Performance career guidance. Join 50,000+ professionals.',
+          title: 'TalentXcel - AI-Powered Career Platform | Find Jobs, Learn Skills, Network',
+          description: 'Accelerate your career with TalentXcel. Find dream jobs, learn new skills, network with professionals, and get AI-powered career guidance. Join 50,000+ professionals.',
           keywords: ['jobs', 'careers', 'learning', 'networking', 'AI career guidance', 'skill development', 'job search', 'professional networking'],
           breadcrumbs: [{ name: 'Home', url: '/' }]
         };
@@ -165,8 +158,8 @@ export const usePageSEO = (pageType: string, data?: any) => {
       case 'network':
         return {
           title: 'Professional Network | Connect with Industry Experts | TalentXcel',
-          description: 'Build your professional network. Connect with industry experts, join professional groups, attend virtual events, and advance your career through meaningful TalentNetwork.',
-          keywords: ['professional networking', 'industry experts', 'Ecosystem Networking', 'professional TalentNetwork', 'industry events'],
+          description: 'Build your professional network. Connect with industry experts, join professional groups, attend virtual events, and advance your career through meaningful connections.',
+          keywords: ['professional networking', 'industry experts', 'career networking', 'professional connections', 'industry events'],
           breadcrumbs: [
             { name: 'Home', url: '/' },
             { name: 'Network', url: '/network' }
@@ -175,8 +168,8 @@ export const usePageSEO = (pageType: string, data?: any) => {
 
       default:
         return {
-          title: 'TalentXcel - Performance Career Platform',
-          description: 'Accelerate your career with Performance tools and comprehensive career resources.',
+          title: 'TalentXcel - AI-Powered Career Platform',
+          description: 'Accelerate your career with AI-powered tools and comprehensive career resources.',
           keywords: ['careers', 'jobs', 'professional development']
         };
     }
@@ -184,8 +177,3 @@ export const usePageSEO = (pageType: string, data?: any) => {
 
   useSEO(getSEOConfig());
 };
-
-
-
-
-

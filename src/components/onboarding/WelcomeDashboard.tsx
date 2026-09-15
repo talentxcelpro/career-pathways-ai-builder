@@ -3,12 +3,12 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { CheckCircle, Sparkles, Briefcase, BookOpen, TrendingUp } from 'lucide-react';
 
-interface WelcomeCommandCenterProps {
+interface WelcomeDashboardProps {
   data: any;
   flow: string;
 }
 
-export const WelcomeCommandCenter: React.FC<WelcomeCommandCenterProps> = ({ data, flow }) => {
+export const WelcomeDashboard: React.FC<WelcomeDashboardProps> = ({ data, flow }) => {
   const quickActions = [
     {
       icon: Briefcase,
@@ -48,7 +48,7 @@ export const WelcomeCommandCenter: React.FC<WelcomeCommandCenterProps> = ({ data
         </div>
         <h3 className="text-2xl font-bold">Welcome, {data.fullName}!</h3>
         <p className="text-muted-foreground">
-          Your personalized career CommandCenter is ready. Let's start achieving your goals!
+          Your personalized career dashboard is ready. Let's start achieving your goals!
         </p>
       </div>
 
@@ -95,12 +95,12 @@ export const WelcomeCommandCenter: React.FC<WelcomeCommandCenterProps> = ({ data
         </div>
       </div>
 
-      {/* Career Moves */}
+      {/* AI Recommendations */}
       <Card className="p-4 bg-gradient-to-br from-primary/5 to-secondary/5 border-primary/20">
         <div className="flex items-start gap-3">
           <Sparkles className="h-5 w-5 text-primary mt-0.5" />
           <div className="flex-1">
-            <h4 className="font-semibold mb-1">Performance Recommendations</h4>
+            <h4 className="font-semibold mb-1">AI-Powered Recommendations</h4>
             <p className="text-sm text-muted-foreground mb-3">
               Based on your profile, we've prepared personalized job matches, learning paths, and career insights.
             </p>
@@ -115,5 +115,3 @@ export const WelcomeCommandCenter: React.FC<WelcomeCommandCenterProps> = ({ data
     </div>
   );
 };
-
-

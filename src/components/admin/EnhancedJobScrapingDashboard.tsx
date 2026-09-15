@@ -25,7 +25,7 @@ import {
   Globe
 } from 'lucide-react';
 
-export const EnhancedJobScrapingCommandCenter = () => {
+export const EnhancedJobScrapingDashboard = () => {
   const [targetJobCount, setTargetJobCount] = useState(10000);
   const [batchName, setBatchName] = useState('High-Volume-Batch-' + Date.now());
 
@@ -194,7 +194,7 @@ export const EnhancedJobScrapingCommandCenter = () => {
               AI Salary Normalization
             </CardTitle>
             <CardDescription>
-              Normalize salary data with Performance parsing and validation
+              Normalize salary data with AI-powered parsing and validation
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -276,4 +276,3 @@ export const EnhancedJobScrapingCommandCenter = () => {
     </div>
   );
 };
-

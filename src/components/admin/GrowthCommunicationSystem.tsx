@@ -203,7 +203,7 @@ export const GrowthCommunicationSystem: React.FC = () => {
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="campaigns">Growth Campaigns</TabsTrigger>
           <TabsTrigger value="segments">User Segments</TabsTrigger>
-          <TabsTrigger value="CareerAnalytics">Growth CareerAnalytics</TabsTrigger>
+          <TabsTrigger value="analytics">Growth Analytics</TabsTrigger>
           <TabsTrigger value="automation">Smart Automation</TabsTrigger>
         </TabsList>
 
@@ -382,8 +382,8 @@ export const GrowthCommunicationSystem: React.FC = () => {
           </Card>
         </TabsContent>
 
-        {/* Growth CareerAnalytics Tab */}
-        <TabsContent value="CareerAnalytics" className="space-y-6">
+        {/* Growth Analytics Tab */}
+        <TabsContent value="analytics" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
               { title: 'Email Open Rate', value: '24.5%', change: '+2.1%', icon: Mail },
@@ -412,7 +412,7 @@ export const GrowthCommunicationSystem: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="h-64 flex items-center justify-center text-muted-foreground">
-                Growth CareerAnalytics chart will be displayed here
+                Growth analytics chart will be displayed here
               </div>
             </CardContent>
           </Card>
@@ -427,7 +427,7 @@ export const GrowthCommunicationSystem: React.FC = () => {
                 Smart Growth Automation
               </CardTitle>
               <CardDescription>
-                Performance automation rules for maximum growth impact
+                AI-powered automation rules for maximum growth impact
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -473,7 +473,3 @@ export const GrowthCommunicationSystem: React.FC = () => {
     </div>
   );
 };
-
-
-
-

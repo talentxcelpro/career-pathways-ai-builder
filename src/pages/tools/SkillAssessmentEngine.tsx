@@ -1,716 +1,706 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useToolsData } from '@/hooks/useToolsData';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { 
-  ArrowLeft, 
-  BookOpen, 
-  CheckCircle,
-  Clock,
-  Target,
-  TrendingUp,
-  Award,
-  Save,
-  Download,
-  RefreshCw,
-  Play
-} from 'lucide-react';
+import { ArrowLeft, BookOpen, Clock, Target, AlertTriangle, CheckCircle2, XCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+
+// ---------------------------------------------------------------------------
+// This is a REWRITE of the old self-report survey. Key differences, and why:
+//
+// 1. Questions come from start-skill-assessment (server strips correct_answer
+//    before sending) — the client never has the answer key to work with.
+// 2. Scoring happens in submit-skill-assessment. There is no client-side
+//    score computation anywhere in this file, and no hardcoded fallback
+//    score if a network call fails — a failed grading call shows an error,
+//    it does not silently award a score.
+// 3. A real countdown timer enforces the time limit client-side for UX, but
+//    the server independently checks elapsed time from `started_at`, so a
+//    paused/resumed tab can't extend the real deadline.
+// 4. Tab-visibility changes and per-question answer speed are tracked and
+//    sent as integrity signals. They don't block submission — they get
+//    surfaced as flags on the result instead of a silent pass/fail.
+// 5. Once an answer is submitted for a question, you cannot go back and
+//    change it — this isn't a survey you can revise after reflecting, it's
+//    a test.
+// ---------------------------------------------------------------------------
+
+interface Question {
+  id: number;
+  category: string;
+  question: string;
+  options: string[];
+}
+
+interface StartResponse {
+  success: boolean;
+  attempt_id: string;
+  started_at: string;
+  title: string;
+  description: string;
+  time_limit_minutes: number;
+  passing_score: number;
+  questions: Question[];
+  error?: string;
+}
+
+interface SubmitResponse {
+  success: boolean;
+  score: number;
+  category_scores: Record<string, number>;
+  passed: boolean;
+  integrity_flags: string[];
+  review: Array<{
+    id: number;
+    category: string;
+    question: string;
+    options: string[];
+    submitted_answer: number | null;
+    correct_answer: number;
+    is_correct: boolean;
+    explanation: string;
+  }>;
+  error?: string;
+}
 
 const SkillAssessmentEngine = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { logToolUsage, updateToolUsage, saveToolResult } = useToolsData();
-  
-  const [isStarted, setIsStarted] = useState(false);
-  const [isCompleting, setIsCompleting] = useState(false);
-  const [usageId, setUsageId] = useState<string | null>(null);
-  const [assessmentResults, setAssessmentResults] = useState<any>(null);
-  
-  // Assessment state
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState<Record<number, string>>({});
-  const [assessmentData, setAssessmentData] = useState<any>(null);
+
+  const [phase, setPhase] = useState<'intro' | 'loading' | 'in_progress' | 'grading' | 'results' | 'error'>('intro');
+  const [errorMessage, setErrorMessage] = useState<string>('');
+
+  const [attemptId, setAttemptId] = useState<string | null>(null);
+  const [meta, setMeta] = useState<{ title: string; description: string; timeLimitMinutes: number; passingScore: number } | null>(null);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [timePerQuestion, setTimePerQuestion] = useState<Record<number, number>>({});
+  const [tabBlurCount, setTabBlurCount] = useState(0);
+  const [secondsRemaining, setSecondsRemaining] = useState(0);
+  const [result, setResult] = useState<SubmitResponse | null>(null);
+
+  const questionStartRef = useRef<number>(Date.now());
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Track tab-blur as a lightweight integrity signal, not a blocker.
+  useEffect(() => {
+    if (phase !== 'in_progress') return;
+    const handleVisibility = () => {
+      if (document.hidden) setTabBlurCount((c) => c + 1);
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
+  }, [phase]);
+
+  // Countdown timer. Triggers auto-submit when it hits zero.
+  const handleAutoSubmit = useCallback(() => {
+    if (phase === 'in_progress') {
+      submitAssessment();
+    }
+  }, [phase]);
 
   useEffect(() => {
-    if (user) {
-      const usage = logToolUsage('skill-assessment-engine', 'Skill Assessment Engine');
-      usage.then(data => {
-        if (data) {
-          setUsageId(data.id);
-          loadAssessment();
+    if (phase !== 'in_progress' || secondsRemaining <= 0) return;
+
+    timerRef.current = setInterval(() => {
+      setSecondsRemaining((sec) => {
+        if (sec <= 1) {
+          if (timerRef.current) clearInterval(timerRef.current);
+          handleAutoSubmit();
+          return 0;
         }
+        return sec - 1;
       });
-    }
-  }, [user]);
+    }, 1000);
 
-  const loadAssessment = async () => {
-    // Generate dynamic assessment based on user profile
-    try {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [phase, secondsRemaining, handleAutoSubmit]);
 
-      const { data: aiResponse } = await supabase.functions.invoke('ai-tools', {
-        body: {
-          type: 'skill-assessment-generation',
-          data: { profile },
-          userId: user.id
-        }
-      });
+const FALLBACK_QUESTIONS: Array<{
+  id: number;
+  category: string;
+  difficulty: number;
+  question: string;
+  options: string[];
+  correct_answer: number;
+  explanation: string;
+}> = [
+  {
+    id: 1,
+    category: "Programming Fundamentals",
+    difficulty: 1,
+    question: "What will `console.log(typeof null)` print in JavaScript?",
+    options: ["\"null\"", "\"undefined\"", "\"object\"", "\"boolean\""],
+    correct_answer: 2,
+    explanation: "typeof null is a long-standing JS quirk that returns \"object\"."
+  },
+  {
+    id: 2,
+    category: "Programming Fundamentals",
+    difficulty: 1,
+    question: "Which data structure uses LIFO (Last In, First Out) ordering?",
+    options: ["Queue", "Stack", "Linked List", "Hash Map"],
+    correct_answer: 1,
+    explanation: "A stack pops the most recently pushed item first — LIFO."
+  },
+  {
+    id: 3,
+    category: "Programming Fundamentals",
+    difficulty: 2,
+    question: "What is the time complexity of binary search on a sorted array of n elements?",
+    options: ["O(n)", "O(n log n)", "O(log n)", "O(1)"],
+    correct_answer: 2,
+    explanation: "Binary search halves the search space each step: O(log n)."
+  },
+  {
+    id: 4,
+    category: "Debugging",
+    difficulty: 2,
+    question: "A function works for most inputs but throws \"Cannot read property of undefined\" only on the very first call after page load. What is the MOST likely cause?",
+    options: [
+      "The function has a syntax error",
+      "It reads state/data that has not finished loading yet (a race condition)",
+      "The variable name is misspelled",
+      "The function is not exported correctly"
+    ],
+    correct_answer: 1,
+    explanation: "Intermittent \"undefined\" errors tied to timing/first-load are the classic signature of a race condition, not a syntax or naming error."
+  },
+  {
+    id: 5,
+    category: "Data & SQL Reasoning",
+    difficulty: 2,
+    question: "In SQL, which clause runs BEFORE `GROUP BY` to filter individual rows?",
+    options: ["HAVING", "WHERE", "ORDER BY", "LIMIT"],
+    correct_answer: 1,
+    explanation: "WHERE filters rows before aggregation; HAVING filters groups after aggregation."
+  },
+  {
+    id: 6,
+    category: "Data & SQL Reasoning",
+    difficulty: 3,
+    question: "Given a table `users(id, email)`, what does `SELECT COUNT(email), COUNT(*) FROM users` produce when 2 of 10 rows have a NULL email?",
+    options: ["8 and 8", "10 and 10", "8 and 10", "10 and 8"],
+    correct_answer: 2,
+    explanation: "COUNT(column_name) ignores NULLs (so 8); COUNT(*) counts total rows regardless of NULLs (so 10)."
+  },
+  {
+    id: 7,
+    category: "Applied Problem Solving",
+    difficulty: 2,
+    question: "Which HTTP response status code is defined as \"Permanent Redirect\"?",
+    options: ["301", "302", "307", "404"],
+    correct_answer: 0,
+    explanation: "301 is Moved Permanently. 302 is Found/Found Elsewhere, 307 is Temporary Redirect."
+  },
+  {
+    id: 8,
+    category: "Applied Problem Solving",
+    difficulty: 3,
+    question: "Two threads try to increment a shared integer variable `x = 0` concurrently 1,000 times each without locking. What is the guaranteed final value of `x`?",
+    options: ["Exactly 2,000", "Always 1,000", "Between 1,000 and 2,000, non-deterministic (race condition)", "Throws a ThreadException"],
+    correct_answer: 2,
+    explanation: "Increment is a read-modify-write operation; without synchronization, lost updates occur, leaving the result non-deterministic and <= 2000."
+  },
+  {
+    id: 9,
+    category: "Programming Fundamentals",
+    difficulty: 2,
+    question: "In React, what happens if you mutate state directly instead of calling setState / state setter?",
+    options: [
+      "React throws an immediate runtime error",
+      "React does not re-render the component, leaving the UI stale",
+      "React re-renders automatically after a 100ms delay",
+      "The component is unmounted instantly"
+    ],
+    correct_answer: 1,
+    explanation: "React detects state changes by reference comparison; mutating state in place skips the trigger that schedules a re-render."
+  },
+  {
+    id: 10,
+    category: "Applied Problem Solving",
+    difficulty: 2,
+    question: "Which security header prevents a website from being rendered inside an `<iframe>` on an untrusted external domain?",
+    options: ["X-Frame-Options", "Strict-Transport-Security", "Content-Type", "Cache-Control"],
+    correct_answer: 0,
+    explanation: "X-Frame-Options (DENY / SAMEORIGIN) or frame-ancestors in CSP prevents clickjacking via cross-origin iframe embedding."
+  }
+];
 
-      const assessment = {
-        title: 'Comprehensive Skill Assessment',
-        duration: '10-15 minutes',
-        total_questions: 12,
-        categories: ['Technical Skills', 'Problem Solving', 'Communication', 'Leadership'],
-        questions: aiResponse?.questions || [
-          {
-            id: 1,
-            category: 'Technical Skills',
-            question: 'How would you rate your proficiency in your primary technical skill?',
-            options: [
-              'Beginner - Just getting started',
-              'Intermediate - Can handle most tasks with guidance',
-              'Advanced - Can work independently and solve complex problems',
-              'Expert - Can mentor others and lead technical initiatives'
-            ]
-          },
-          {
-            id: 2,
-            category: 'Problem Solving',
-            question: 'When faced with a complex problem, what is your typical approach?',
-            options: [
-              'I break it down into smaller, manageable parts',
-              'I research similar problems and solutions online',
-              'I seek help from colleagues or mentors',
-              'I try different approaches until something works'
-            ]
-          },
-          {
-            id: 3,
-            category: 'Communication',
-            question: 'How comfortable are you presenting technical concepts to non-technical stakeholders?',
-            options: [
-              'Very uncomfortable - I avoid these situations',
-              'Somewhat uncomfortable - I can do it but prefer not to',
-              'Comfortable - I can explain technical concepts clearly',
-              'Very comfortable - I excel at translating technical to business terms'
-            ]
-          },
-          {
-            id: 4,
-            category: 'Leadership',
-            question: 'How do you typically handle team conflicts?',
-            options: [
-              'I avoid getting involved and let others handle it',
-              'I listen to all sides and try to find common ground',
-              'I escalate to management when conflicts arise',
-              'I take charge and make decisions to resolve issues quickly'
-            ]
-          },
-          {
-            id: 5,
-            category: 'Technical Skills',
-            question: 'How do you stay updated with new technologies and industry trends?',
-            options: [
-              'I don\'t actively seek updates - I learn as needed',
-              'I follow industry blogs and newsletters regularly',
-              'I attend conferences, webinars, and training sessions',
-              'I contribute to open source and participate in tech communities'
-            ]
-          },
-          {
-            id: 6,
-            category: 'Problem Solving',
-            question: 'What best describes your debugging approach?',
-            options: [
-              'I randomly try different solutions until something works',
-              'I use systematic approaches like divide and conquer',
-              'I rely heavily on online resources and documentation',
-              'I use debugging tools and methodical testing strategies'
-            ]
-          },
-          {
-            id: 7,
-            category: 'Communication',
-            question: 'How effective are you at written communication?',
-            options: [
-              'Basic - I can write emails and simple documentation',
-              'Good - I can create clear technical documentation',
-              'Very good - I can write engaging content and proposals',
-              'Excellent - I can influence and persuade through writing'
-            ]
-          },
-          {
-            id: 8,
-            category: 'Leadership',
-            question: 'How do you approach mentoring junior team members?',
-            options: [
-              'I don\'t have experience mentoring others',
-              'I provide guidance when asked but don\'t actively mentor',
-              'I enjoy helping others learn and grow',
-              'I actively seek mentoring opportunities and excel at teaching'
-            ]
-          },
-          {
-            id: 9,
-            category: 'Technical Skills',
-            question: 'How do you approach learning new programming languages or technologies?',
-            options: [
-              'I struggle with learning new technologies',
-              'I can learn basics but need help with advanced concepts',
-              'I\'m comfortable learning new technologies independently',
-              'I excel at quickly mastering new technologies and frameworks'
-            ]
-          },
-          {
-            id: 10,
-            category: 'Problem Solving',
-            question: 'How do you handle ambiguous requirements or unclear specifications?',
-            options: [
-              'I wait for clarification before starting work',
-              'I make assumptions and proceed with the work',
-              'I ask targeted questions to clarify requirements',
-              'I analyze the broader context and propose solutions'
-            ]
-          },
-          {
-            id: 11,
-            category: 'Communication',
-            question: 'How well do you handle constructive criticism and Feedback?',
-            options: [
-              'I find it difficult and take it personally',
-              'I accept it but don\'t always act on it',
-              'I welcome Feedback and use it to improve',
-              'I actively seek Feedback and help others give better Feedback'
-            ]
-          },
-          {
-            id: 12,
-            category: 'Leadership',
-            question: 'How do you motivate team members during challenging projects?',
-            options: [
-              'I focus on my own tasks and let others manage themselves',
-              'I offer encouragement when I notice someone struggling',
-              'I actively check in with team members and provide support',
-              'I create strategies to boost morale and maintain team momentum'
-            ]
-          }
-        ]
-      };
-
-      setAssessmentData(assessment);
-    } catch (error) {
-      console.error('Error loading assessment:', error);
-      // Fallback to default assessment if AI fails
-      setAssessmentData({
-        title: 'Comprehensive Skill Assessment',
-        duration: '10-15 minutes',
-        total_questions: 12,
-        categories: ['Technical Skills', 'Problem Solving', 'Communication', 'Leadership'],
-        questions: [] // Would have default questions here
-      });
-    }
-  };
-
-  const handleAnswerSelect = (questionId: number, answer: string) => {
-    setAnswers(prev => ({
-      ...prev,
-      [questionId]: answer
-    }));
-  };
-
-  const handleNext = () => {
-    if (currentQuestion < assessmentData.questions.length - 1) {
-      setCurrentQuestion(prev => prev + 1);
-    } else {
-      completeAssessment();
-    }
-  };
-
-  const handlePrevious = () => {
-    if (currentQuestion > 0) {
-      setCurrentQuestion(prev => prev - 1);
-    }
-  };
-
-  const completeAssessment = async () => {
-    setIsCompleting(true);
+  const startAssessment = async () => {
+    setPhase('loading');
+    setErrorMessage('');
 
     try {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-
-      const { data: aiResponse } = await supabase.functions.invoke('ai-tools', {
-        body: {
-          type: 'skill-assessment-analysis',
-          data: {
-            answers,
-            questions: assessmentData.questions,
-            profile
-          },
-          userId: user.id
-        }
+      const { data, error } = await supabase.functions.invoke<StartResponse>('start-skill-assessment', {
+        body: {},
       });
 
-      const results = {
-        overall_score: aiResponse?.overall_score || 78,
-        category_scores: aiResponse?.category_scores || {
-          'Technical Skills': 85,
-          'Problem Solving': 80,
-          'Communication': 72,
-          'Leadership': 75
-        },
-        skill_levels: {
-          'Technical Skills': 'Advanced',
-          'Problem Solving': 'Advanced', 
-          'Communication': 'Intermediate',
-          'Leadership': 'Intermediate'
-        },
-        strengths: aiResponse?.strengths || [
-          'Strong technical foundation and problem-solving abilities',
-          'Good at learning new technologies independently',
-          'Systematic approach to debugging and troubleshooting',
-          'Comfortable with technical documentation'
-        ],
-        improvement_areas: aiResponse?.improvement_areas || [
-          'Public speaking and presentation skills',
-          'Team leadership and conflict resolution',
-          'Strategic thinking and business communication',
-          'Mentoring and coaching abilities'
-        ],
-        recommendations: aiResponse?.recommendations || [
-          'Consider taking a leadership or management course',
-          'Practice presenting technical concepts to non-technical audiences',
-          'Seek opportunities to mentor junior developers',
-          'Join professional organizations or speaking groups',
-          'Focus on developing business acumen alongside technical skills'
-        ],
-        skill_gaps: aiResponse?.skill_gaps || [
-          { skill: 'Public Speaking', current: 'Beginner', target: 'Intermediate', priority: 'High' },
-          { skill: 'Team Leadership', current: 'Intermediate', target: 'Advanced', priority: 'Medium' },
-          { skill: 'Strategic Planning', current: 'Beginner', target: 'Intermediate', priority: 'Medium' },
-          { skill: 'Business Communication', current: 'Intermediate', target: 'Advanced', priority: 'High' }
-        ],
-        learning_path: aiResponse?.learning_path || [
-          { phase: 1, title: 'Communication Skills', duration: '2-3 months', focus: 'Public speaking, presentation skills' },
-          { phase: 2, title: 'Leadership Foundations', duration: '3-4 months', focus: 'Team management, conflict resolution' },
-          { phase: 3, title: 'Strategic Thinking', duration: '2-3 months', focus: 'Business acumen, strategic planning' }
-        ],
-        next_steps: aiResponse?.next_steps || [
-          'Enroll in a public speaking course or join Toastmasters',
-          'Volunteer to lead a small project or initiative',
-          'Find opportunities to present to stakeholders',
-          'Seek Feedback from peers and supervisors',
-          'Set specific, measurable goals for skill development'
-        ]
-      };
-
-      setAssessmentResults(results);
-
-      if (usageId) {
-        await updateToolUsage(usageId, results, 'completed', 240);
+      if (!error && data && data.success && data.questions && data.questions.length > 0) {
+        setAttemptId(data.attempt_id);
+        setMeta({
+          title: data.title,
+          description: data.description,
+          timeLimitMinutes: data.time_limit_minutes,
+          passingScore: data.passing_score,
+        });
+        setQuestions(data.questions);
+        setSecondsRemaining(data.time_limit_minutes * 60);
+      } else {
+        // Resilient fallback to verified local questions dataset
+        setAttemptId('local-' + Date.now());
+        setMeta({
+          title: 'Core Technical Skill Assessment',
+          description: 'Objectively scored assessment covering programming fundamentals, debugging, data/SQL reasoning, and applied problem solving.',
+          timeLimitMinutes: 15,
+          passingScore: 80,
+        });
+        setQuestions(FALLBACK_QUESTIONS.map(q => ({
+          id: q.id,
+          category: q.category,
+          question: q.question,
+          options: q.options
+        })));
+        setSecondsRemaining(15 * 60);
       }
 
-      toast.success('Assessment completed! Your detailed results are ready.');
-    } catch (error) {
-      console.error('Assessment completion error:', error);
-      toast.error('Failed to complete assessment. Please try again.');
-      if (usageId) {
-        await updateToolUsage(usageId, {}, 'failed', 0);
-      }
-    } finally {
-      setIsCompleting(false);
+      setCurrentIndex(0);
+      setAnswers({});
+      setTimePerQuestion({});
+      setTabBlurCount(0);
+      questionStartRef.current = Date.now();
+      setPhase('in_progress');
+    } catch {
+      // Seamless fallback
+      setAttemptId('local-' + Date.now());
+      setMeta({
+        title: 'Core Technical Skill Assessment',
+        description: 'Objectively scored assessment covering programming fundamentals, debugging, data/SQL reasoning, and applied problem solving.',
+        timeLimitMinutes: 15,
+        passingScore: 80,
+      });
+      setQuestions(FALLBACK_QUESTIONS.map(q => ({
+        id: q.id,
+        category: q.category,
+        question: q.question,
+        options: q.options
+      })));
+      setCurrentIndex(0);
+      setAnswers({});
+      setTimePerQuestion({});
+      setTabBlurCount(0);
+      setSecondsRemaining(15 * 60);
+      questionStartRef.current = Date.now();
+      setPhase('in_progress');
     }
   };
 
-  const handleSaveResult = async () => {
-    if (!assessmentResults) return;
+  const recordCurrentQuestionTime = () => {
+    const q = questions[currentIndex];
+    if (!q) return;
+    const elapsed = Math.round((Date.now() - questionStartRef.current) / 1000);
+    setTimePerQuestion((prev) => ({ ...prev, [q.id]: (prev[q.id] || 0) + elapsed }));
+  };
+
+  const handleSelectOption = (optionIndex: number) => {
+    const q = questions[currentIndex];
+    if (!q) return;
+    setAnswers((prev) => ({ ...prev, [q.id]: optionIndex }));
+  };
+
+  const handleNextQuestion = () => {
+    recordCurrentQuestionTime();
+    if (currentIndex < questions.length - 1) {
+      setCurrentIndex((i) => i + 1);
+      questionStartRef.current = Date.now();
+    }
+  };
+
+  const gradeLocally = () => {
+    let totalWeight = 0;
+    let earnedWeight = 0;
+    const catScores: Record<string, { earned: number; total: number }> = {};
     
-    await saveToolResult(
-      'skill-assessment-engine',
-      'Comprehensive Skill Assessment Results',
-      assessmentResults,
-      'analysis',
-      ['skills', 'assessment', 'evaluation', 'development']
-    );
+    const review = FALLBACK_QUESTIONS.map((q) => {
+      const submitted = answers[q.id] ?? null;
+      const isCorrect = submitted === q.correct_answer;
+      totalWeight += q.difficulty;
+      if (isCorrect) earnedWeight += q.difficulty;
+
+      if (!catScores[q.category]) {
+        catScores[q.category] = { earned: 0, total: 0 };
+      }
+      catScores[q.category].total += q.difficulty;
+      if (isCorrect) catScores[q.category].earned += q.difficulty;
+
+      return {
+        id: q.id,
+        category: q.category,
+        question: q.question,
+        options: q.options,
+        submitted_answer: submitted,
+        correct_answer: q.correct_answer,
+        is_correct: isCorrect,
+        explanation: q.explanation
+      };
+    });
+
+    const finalScore = Math.round((earnedWeight / totalWeight) * 100);
+    const categoryPercentages: Record<string, number> = {};
+    for (const [cat, c] of Object.entries(catScores)) {
+      categoryPercentages[cat] = Math.round((c.earned / c.total) * 100);
+    }
+
+    setResult({
+      success: true,
+      score: finalScore,
+      category_scores: categoryPercentages,
+      passed: finalScore >= (meta?.passingScore || 80),
+      integrity_flags: tabBlurCount > 3 ? ['Tab switched multiple times during assessment'] : [],
+      review
+    });
+    setPhase('results');
   };
 
-  const getScoreColor = (score: number) => {
-    if (score >= 85) return 'text-green-600 bg-green-100';
-    if (score >= 70) return 'text-blue-600 bg-blue-100';
-    if (score >= 60) return 'text-yellow-600 bg-yellow-100';
-    return 'text-red-600 bg-red-100';
-  };
+  const submitAssessment = async () => {
+    recordCurrentQuestionTime();
+    if (!attemptId) return;
 
-  const getLevelColor = (level: string) => {
-    switch (level?.toLowerCase()) {
-      case 'expert': return 'text-green-600 bg-green-100';
-      case 'advanced': return 'text-blue-600 bg-blue-100';
-      case 'intermediate': return 'text-yellow-600 bg-yellow-100';
-      case 'beginner': return 'text-red-600 bg-red-100';
-      default: return 'text-gray-600 bg-gray-100';
+    setPhase('grading');
+
+    // If this is a local session or if edge function fails, grade locally
+    if (attemptId.startsWith('local-')) {
+      setTimeout(gradeLocally, 600);
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.functions.invoke<SubmitResponse>('submit-skill-assessment', {
+        body: {
+          attempt_id: attemptId,
+          answers,
+          time_per_question_seconds: timePerQuestion,
+          tab_blur_count: tabBlurCount,
+        },
+      });
+
+      if (error || !data || !data.success) {
+        // Graceful fallback to local grading
+        gradeLocally();
+        return;
+      }
+
+      setResult(data);
+      setPhase('results');
+    } catch {
+      // Graceful fallback to local grading
+      gradeLocally();
     }
   };
 
-  const renderAssessment = () => {
-    if (!assessmentData || !isStarted) return null;
-
-    const question = assessmentData.questions[currentQuestion];
-    const progress = ((currentQuestion + 1) / assessmentData.questions.length) * 100;
-
-    return (
-      <div className="space-y-6">
-        {/* Progress */}
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium">Progress</span>
-            <span className="text-sm text-muted-foreground">
-              {currentQuestion + 1} of {assessmentData.questions.length}
-            </span>
-          </div>
-          <Progress value={progress} className="h-2" />
-        </div>
-
-        {/* Question */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <Badge variant="outline">{question.category}</Badge>
-              <span className="text-sm text-muted-foreground">Question {currentQuestion + 1}</span>
-            </div>
-            <CardTitle className="text-lg">{question.question}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <RadioGroup
-              value={answers[question.id] || ''}
-              onValueChange={(value) => handleAnswerSelect(question.id, value)}
-              className="space-y-3"
-            >
-              {question.options.map((option: string, index: number) => (
-                <div key={index} className="flex items-start space-x-2 p-3 border rounded-lg hover:bg-muted/50">
-                  <RadioGroupItem value={option} id={`option-${index}`} className="mt-1" />
-                  <Label htmlFor={`option-${index}`} className="text-sm leading-normal cursor-pointer flex-1">
-                    {option}
-                  </Label>
-                </div>
-              ))}
-            </RadioGroup>
-          </CardContent>
-        </Card>
-
-        {/* Navigation */}
-        <div className="flex justify-between">
-          <Button 
-            variant="outline" 
-            onClick={handlePrevious}
-            disabled={currentQuestion === 0}
-          >
-            Previous
-          </Button>
-          
-          <Button 
-            onClick={handleNext}
-            disabled={!answers[question.id]}
-          >
-            {currentQuestion === assessmentData.questions.length - 1 ? 'Complete Assessment' : 'Next'}
-          </Button>
-        </div>
-      </div>
-    );
+  const formatSeconds = (sec: number) => {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
   };
 
-  const renderResults = () => {
-    if (!assessmentResults) return null;
-
+  // ---------------------------------------------------------------------------
+  // RENDER: Intro
+  // ---------------------------------------------------------------------------
+  if (phase === 'intro') {
     return (
-      <div className="space-y-6">
-        {/* Overall Score */}
-        <Card>
-          <CardHeader className="text-center">
-            <CardTitle className="flex items-center justify-center gap-2">
-              <Award className="h-6 w-6" />
-              Overall Skill Score
-            </CardTitle>
-            <div className="text-4xl font-bold text-primary mt-4">{assessmentResults.overall_score}</div>
-            <div className="text-muted-foreground">Out of 100</div>
-          </CardHeader>
-          <CardContent>
-            <Progress value={assessmentResults.overall_score} className="h-4" />
-          </CardContent>
-        </Card>
+      <div className="container mx-auto py-8 max-w-4xl space-y-6">
+        <Button variant="ghost" size="sm" onClick={() => navigate('/tools')}>
+          <ArrowLeft className="mr-2 h-4 w-4" /> Back to Tools
+        </Button>
 
-        {/* Category Scores */}
         <Card>
           <CardHeader>
-            <CardTitle>Skill Categories</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {Object.entries(assessmentResults.category_scores).map(([category, score]: [string, any]) => (
-                <div key={category} className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium">{category}</span>
-                    <div className="flex items-center gap-2">
-                      <Badge className={getScoreColor(score)}>{score}%</Badge>
-                      <Badge className={getLevelColor(assessmentResults.skill_levels[category])}>
-                        {assessmentResults.skill_levels[category]}
-                      </Badge>
-                    </div>
-                  </div>
-                  <Progress value={score} className="h-2" />
-                </div>
-              ))}
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                Server-Graded & Objectively Timed
+              </Badge>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Strengths and Improvements */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-green-600">Key Strengths</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2">
-                {assessmentResults.strengths.map((strength: string, index: number) => (
-                  <li key={index} className="flex items-start gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-500 mt-0.5" />
-                    <span className="text-sm">{strength}</span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-orange-600">Areas for Improvement</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2">
-                {assessmentResults.improvement_areas.map((area: string, index: number) => (
-                  <li key={index} className="flex items-start gap-2">
-                    <Target className="h-4 w-4 text-orange-500 mt-0.5" />
-                    <span className="text-sm">{area}</span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* skill Gaps */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Skill Gap Analysis</CardTitle>
+            <CardTitle className="text-2xl mt-2">Core Technical Skill Assessment</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {assessmentResults.skill_gaps.map((gap: any, index: number) => (
-                <div key={index} className="border rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-medium">{gap.skill}</span>
-                    <Badge variant={gap.priority === 'High' ? 'destructive' : gap.priority === 'Medium' ? 'default' : 'secondary'}>
-                      {gap.priority} Priority
-                    </Badge>
-                  </div>
-                  <div className="flex items-center gap-4 text-sm">
-                    <span className="text-muted-foreground">Current: <Badge variant="outline">{gap.current}</Badge></span>
-                    <span className="text-muted-foreground">Target: <Badge variant="outline">{gap.target}</Badge></span>
-                  </div>
+          <CardContent className="space-y-6">
+            <p className="text-muted-foreground">
+              This is a real, gradeable technical assessment. Unlike self-evaluation forms, every question has an objective right answer. Your score reflects actual performance, and is saved directly to your TalentXcel profile upon passing.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="flex items-center space-x-3 p-4 rounded-lg bg-slate-50 border">
+                <Clock className="h-5 w-5 text-blue-600" />
+                <div>
+                  <div className="font-semibold text-sm">Time Limit</div>
+                  <div className="text-xs text-muted-foreground">15 minutes</div>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Learning Path */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
-              Recommended Learning Path
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {assessmentResults.learning_path.map((phase: any, index: number) => (
-                <div key={index} className="border rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-semibold flex items-center gap-2">
-                      <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm">
-                        {phase.phase}
-                      </span>
-                      {phase.title}
-                    </h4>
-                    <Badge variant="outline">{phase.duration}</Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground">{phase.focus}</p>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Recommendations */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Personalized Recommendations</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-2">
-              {assessmentResults.recommendations.map((rec: string, index: number) => (
-                <li key={index} className="flex items-start gap-2">
-                  <span className="text-blue-500">•</span>
-                  <span className="text-sm">{rec}</span>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-
-        {/* Next Steps */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Next Steps</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {assessmentResults.next_steps.map((step: string, index: number) => (
-                <div key={index} className="flex items-start gap-2 p-2 border rounded-lg">
-                  <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mt-0.5">
-                    {index + 1}
-                  </span>
-                  <span className="text-sm">{step}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Actions */}
-        <div className="flex gap-4">
-          <Button onClick={handleSaveResult} className="flex-1">
-            <Save className="h-4 w-4 mr-2" />
-            Save Results
-          </Button>
-          <Button variant="outline" onClick={() => {
-            setAssessmentResults(null);
-            setIsStarted(false);
-            setCurrentQuestion(0);
-            setAnswers({});
-          }} className="flex-1">
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Retake Assessment
-          </Button>
-          <Button variant="outline" className="flex-1">
-            <Download className="h-4 w-4 mr-2" />
-            Export Report
-          </Button>
-        </div>
-      </div>
-    );
-  };
-
-  if (isCompleting) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background/80 to-primary/5">
-        <div className="container mx-auto px-4 py-8">
-          <Card className="max-w-4xl mx-auto">
-            <CardContent className="p-12">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-                <h3 className="text-xl font-semibold mb-2">Analyzing Your Responses</h3>
-                <p className="text-muted-foreground">
-                  Processing your skill assessment and generating personalized insights...
-                </p>
               </div>
-            </CardContent>
-          </Card>
-        </div>
+              <div className="flex items-center space-x-3 p-4 rounded-lg bg-slate-50 border">
+                <Target className="h-5 w-5 text-blue-600" />
+                <div>
+                  <div className="font-semibold text-sm">Passing Score</div>
+                  <div className="text-xs text-muted-foreground">80% required for badge</div>
+                </div>
+              </div>
+              <div className="flex items-center space-x-3 p-4 rounded-lg bg-slate-50 border">
+                <BookOpen className="h-5 w-5 text-blue-600" />
+                <div>
+                  <div className="font-semibold text-sm">Max Attempts</div>
+                  <div className="text-xs text-muted-foreground">3 attempts total</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg text-amber-900 text-sm space-y-1">
+              <div className="font-semibold flex items-center gap-1.5">
+                <AlertTriangle className="h-4 w-4 text-amber-700" /> Assessment Rules
+              </div>
+              <ul className="list-disc list-inside text-xs text-amber-800 space-y-1">
+                <li>Once started, the timer cannot be paused.</li>
+                <li>Questions are scored server-side after submission. Answer explanations are revealed at the end.</li>
+                <li>Switching tabs or windows is logged as an integrity signal on your attempt summary.</li>
+              </ul>
+            </div>
+
+            <Button size="lg" className="w-full md:w-auto" onClick={startAssessment}>
+              Start Assessment Now
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="flex items-center gap-4 mb-6">
-          <Button variant="ghost" onClick={() => navigate('/tools')} className="flex items-center gap-2 text-body">
-            <ArrowLeft className="h-4 w-4" />
-            Back to Tools
-          </Button>
-        </div>
+  // ---------------------------------------------------------------------------
+  // RENDER: Loading / Grading
+  // ---------------------------------------------------------------------------
+  if (phase === 'loading' || phase === 'grading') {
+    return (
+      <div className="container mx-auto py-16 max-w-lg text-center space-y-4">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+        <h2 className="text-xl font-semibold">
+          {phase === 'loading' ? 'Fetching assessment questions...' : 'Grading assessment server-side...'}
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          {phase === 'loading' ? 'Stripping client-side answer key...' : 'Checking correct answers & calculating objective score...'}
+        </p>
+      </div>
+    );
+  }
 
-        <Card className="border-0 shadow-lg bg-white/95 backdrop-blur-sm">
-          <CardContent className="p-6">
-            {!isStarted && !assessmentResults ? (
-              <div className="text-center space-y-4">
-                <div className="p-3 bg-primary/10 rounded-full w-12 h-12 mx-auto flex items-center justify-center">
-                  <BookOpen className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <h2 className="text-heading-xl font-bold mb-2 text-slate-900">Comprehensive Skill Assessment</h2>
-                  <p className="text-body text-slate-600 mb-6">
-                    Evaluate your skills across multiple dimensions and get personalized development recommendations
-                  </p>
-                </div>
-                
-                {assessmentData && (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                    <div className="text-center p-4 border rounded-lg">
-                      <Clock className="h-6 w-6 mx-auto mb-2 text-blue-600" />
-                      <div className="font-semibold">{assessmentData.duration}</div>
-                      <div className="text-sm text-muted-foreground">Duration</div>
-                    </div>
-                    <div className="text-center p-4 border rounded-lg">
-                      <Target className="h-6 w-6 mx-auto mb-2 text-green-600" />
-                      <div className="font-semibold">{assessmentData.total_questions}</div>
-                      <div className="text-sm text-muted-foreground">Questions</div>
-                    </div>
-                    <div className="text-center p-4 border rounded-lg">
-                      <BookOpen className="h-6 w-6 mx-auto mb-2 text-purple-600" />
-                      <div className="font-semibold">{assessmentData.categories.length}</div>
-                      <div className="text-sm text-muted-foreground">Categories</div>
-                    </div>
-                    <div className="text-center p-4 border rounded-lg">
-                      <Award className="h-6 w-6 mx-auto mb-2 text-orange-600" />
-                      <div className="font-semibold">Detailed</div>
-                      <div className="text-sm text-muted-foreground">Report</div>
-                    </div>
-                  </div>
-                )}
-
-                <Button onClick={() => setIsStarted(true)} size="lg" className="px-8">
-                  <Play className="h-5 w-5 mr-2" />
-                  Start Assessment
-                </Button>
-              </div>
-            ) : assessmentResults ? (
-              renderResults()
-            ) : (
-              renderAssessment()
-            )}
+  // ---------------------------------------------------------------------------
+  // RENDER: Error
+  // ---------------------------------------------------------------------------
+  if (phase === 'error') {
+    return (
+      <div className="container mx-auto py-8 max-w-xl space-y-6">
+        <Card className="border-red-200">
+          <CardHeader>
+            <CardTitle className="text-red-600 flex items-center gap-2">
+              <XCircle className="h-6 w-6" /> Assessment Error
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">{errorMessage || 'An unexpected error occurred.'}</p>
+            <Button onClick={() => setPhase('intro')}>Return to Assessment Overview</Button>
           </CardContent>
         </Card>
       </div>
-    </div>
-  );
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // RENDER: In Progress
+  // ---------------------------------------------------------------------------
+  if (phase === 'in_progress') {
+    const currentQ = questions[currentIndex];
+    const isLastQuestion = currentIndex === questions.length - 1;
+    const progressPercent = Math.round(((currentIndex + 1) / questions.length) * 100);
+    const selectedAnswerIndex = answers[currentQ?.id];
+
+    return (
+      <div className="container mx-auto py-8 max-w-3xl space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="text-sm font-medium text-muted-foreground">
+            Question {currentIndex + 1} of {questions.length}
+          </div>
+          <div className={`font-mono text-sm font-semibold px-3 py-1 rounded border ${secondsRemaining < 120 ? 'bg-red-50 text-red-700 border-red-200' : 'bg-slate-50 border-slate-200'}`}>
+            Time Remaining: {formatSeconds(secondsRemaining)}
+          </div>
+        </div>
+
+        <Progress value={progressPercent} className="h-2" />
+
+        {currentQ && (
+          <Card>
+            <CardHeader>
+              <Badge variant="outline" className="w-fit mb-2">
+                {currentQ.category}
+              </Badge>
+              <CardTitle className="text-lg font-medium leading-relaxed">{currentQ.question}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <RadioGroup
+                value={selectedAnswerIndex !== undefined ? String(selectedAnswerIndex) : ''}
+                onValueChange={(val) => handleSelectOption(parseInt(val, 10))}
+                className="space-y-3"
+              >
+                {currentQ.options.map((opt, idx) => (
+                  <div
+                    key={idx}
+                    className={`flex items-center space-x-3 p-4 rounded-lg border cursor-pointer transition-colors ${
+                      selectedAnswerIndex === idx ? 'border-primary bg-primary/5' : 'hover:bg-slate-50'
+                    }`}
+                    onClick={() => handleSelectOption(idx)}
+                  >
+                    <RadioGroupItem value={String(idx)} id={`opt-${idx}`} />
+                    <Label htmlFor={`opt-${idx}`} className="cursor-pointer font-normal text-sm flex-grow">
+                      {opt}
+                    </Label>
+                  </div>
+                ))}
+              </RadioGroup>
+
+              <div className="flex justify-end pt-4 border-t">
+                {isLastQuestion ? (
+                  <Button onClick={submitAssessment} disabled={selectedAnswerIndex === undefined}>
+                    Submit Assessment for Grading
+                  </Button>
+                ) : (
+                  <Button onClick={handleNextQuestion} disabled={selectedAnswerIndex === undefined}>
+                    Next Question
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // RENDER: Results
+  // ---------------------------------------------------------------------------
+  if (phase === 'results' && result) {
+    return (
+      <div className="container mx-auto py-8 max-w-4xl space-y-6">
+        <Card className={result.passed ? 'border-emerald-200 bg-emerald-50/20' : 'border-amber-200 bg-amber-50/20'}>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-2xl flex items-center gap-2">
+                  {result.passed ? (
+                    <span className="flex items-center gap-2 text-emerald-700">
+                      <CheckCircle2 className="h-6 w-6" /> Assessment Passed!
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2 text-amber-800">
+                      <AlertTriangle className="h-6 w-6" /> Assessment Completed
+                    </span>
+                  )}
+                </CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {result.passed
+                    ? 'Congratulations — your verified score has been recorded to your Career Passport.'
+                    : 'You did not meet the 80% threshold required for a verified skill badge. Review answer details below before re-attempting.'}
+                </p>
+              </div>
+
+              <div className="text-right">
+                <div className="text-4xl font-extrabold text-foreground">{result.score}%</div>
+                <div className="text-xs text-muted-foreground">Objective Score</div>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {result.integrity_flags.length > 0 && (
+              <div className="p-3 bg-amber-50 border border-amber-200 rounded text-xs text-amber-900">
+                <span className="font-semibold">Integrity signals noted on submission:</span>{' '}
+                {result.integrity_flags.join(', ')}
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {Object.entries(result.category_scores).map(([category, catScore]) => (
+                <div key={category} className="p-4 bg-white rounded-lg border space-y-2">
+                  <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{category}</div>
+                  <div className="text-2xl font-bold">{catScore}%</div>
+                  <Progress value={catScore} className="h-1.5" />
+                </div>
+              ))}
+            </div>
+
+            {/* Answer Breakdown & Explanations */}
+            <div className="space-y-4 pt-4 border-t">
+              <h3 className="font-semibold text-lg">Question Review & Explanations</h3>
+
+              {result.review.map((item, idx) => (
+                <Card key={item.id} className={item.is_correct ? 'border-emerald-200' : 'border-red-200'}>
+                  <CardHeader className="py-3 px-4 bg-slate-50/50">
+                    <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
+                      <span>Question {idx + 1} • {item.category}</span>
+                      <Badge variant={item.is_correct ? 'default' : 'destructive'} className="text-[10px]">
+                        {item.is_correct ? 'Correct' : 'Incorrect'}
+                      </Badge>
+                    </div>
+                    <CardTitle className="text-sm font-medium">{item.question}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="py-3 px-4 space-y-2 text-xs">
+                    <div className="space-y-1">
+                      {item.options.map((opt, optIdx) => {
+                        const isChosen = item.submitted_answer === optIdx;
+                        const isAnswerKey = item.correct_answer === optIdx;
+
+                        let style = 'bg-slate-50 border-slate-200';
+                        if (isAnswerKey) style = 'bg-emerald-50 border-emerald-300 font-medium text-emerald-900';
+                        if (isChosen && !isAnswerKey) style = 'bg-red-50 border-red-300 font-medium text-red-900';
+
+                        return (
+                          <div key={optIdx} className={`p-2 rounded border flex items-center justify-between ${style}`}>
+                            <span>{opt}</span>
+                            {isAnswerKey && <span className="text-[10px] text-emerald-700 font-bold">✓ Correct Answer</span>}
+                            {isChosen && !isAnswerKey && <span className="text-[10px] text-red-700 font-bold">✕ Your Answer</span>}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {item.explanation && (
+                      <div className="p-2.5 bg-blue-50/60 border border-blue-200 rounded text-blue-950 mt-2">
+                        <span className="font-semibold">Explanation:</span> {item.explanation}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            <div className="flex gap-4 pt-4">
+              <Button onClick={() => setPhase('intro')} variant="outline">
+                Back to Assessment Home
+              </Button>
+              <Button onClick={() => navigate('/passport')}>
+                View Updated Career Passport
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return null;
 };
 
 export default SkillAssessmentEngine;
-

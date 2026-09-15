@@ -216,7 +216,7 @@ export const CollaborationFeatures: React.FC<CollaborationFeaturesProps> = ({
 
             <div className="flex space-x-2">
               <Textarea
-                placeholder="Add your Feedback or suggestion..."
+                placeholder="Add your feedback or suggestion..."
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
                 className="flex-1 min-h-[80px] resize-none"
@@ -297,7 +297,7 @@ export const CollaborationFeatures: React.FC<CollaborationFeaturesProps> = ({
               <div className="text-center py-8">
                 <MessageSquare className="h-12 w-12 text-gray-300 mx-auto mb-4" />
                 <p className="text-gray-500">No comments yet</p>
-                <p className="text-sm text-gray-400">Share your resume to get Feedback from others</p>
+                <p className="text-sm text-gray-400">Share your resume to get feedback from others</p>
               </div>
             )}
           </div>
@@ -326,4 +326,3 @@ export const CollaborationFeatures: React.FC<CollaborationFeaturesProps> = ({
     </div>
   );
 };
-

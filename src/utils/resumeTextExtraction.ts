@@ -88,7 +88,7 @@ export const isValidPersonName = (name: string): boolean => {
   if (!name || name.trim().length < 2) return false;
   
   const invalidPatterns = [
-    /executive/i, /Navigator/i, /experience/i, /summary/i, /professional/i,
+    /executive/i, /assistant/i, /experience/i, /summary/i, /professional/i,
     /engineer/i, /manager/i, /developer/i, /analyst/i, /having/i, /international/i,
     /skilled/i, /qualified/i, /certified/i, /expert/i, /specialist/i,
     /voice\s+process/i, /experienced/i, /fresher/i, /graduate/i

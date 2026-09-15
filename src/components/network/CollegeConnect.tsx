@@ -434,7 +434,7 @@ export const CollegeConnect: React.FC = () => {
                     <h4 className="font-semibold">Mock Interview Sessions</h4>
                   </div>
                   <p className="text-sm text-gray-600 mb-4">
-                    Practice with industry experts and get personalized Feedback
+                    Practice with industry experts and get personalized feedback
                   </p>
                   <Button size="sm" className="w-full" variant="outline">
                     Book Session
@@ -478,4 +478,3 @@ export const CollegeConnect: React.FC = () => {
     </div>
   );
 };
-

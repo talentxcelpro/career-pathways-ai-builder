@@ -34,7 +34,7 @@ export const SmartJobRecommendations: React.FC<SmartJobRecommendationsProps> = (
   const navigate = useNavigate();
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Mock recommended jobs with Intelligence Metrics
+  // Mock recommended jobs with AI insights
   const recommendedJobs = [
     {
       id: '1',
@@ -132,7 +132,7 @@ export const SmartJobRecommendations: React.FC<SmartJobRecommendationsProps> = (
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <Brain className="h-5 w-5 text-purple-500" />
-            Performance Job Recommendations
+            AI-Powered Job Recommendations
           </CardTitle>
           <Button 
             variant="ghost" 
@@ -229,11 +229,11 @@ export const SmartJobRecommendations: React.FC<SmartJobRecommendationsProps> = (
                 ))}
               </div>
 
-              {/* Intelligence Metrics */}
+              {/* AI Insights */}
               <div className="bg-purple-50 p-3 rounded-lg">
                 <div className="flex items-center gap-2 mb-2">
                   <Brain className="h-4 w-4 text-purple-600" />
-                  <span className="text-sm font-medium text-purple-800">Intelligence Metrics</span>
+                  <span className="text-sm font-medium text-purple-800">AI Insights</span>
                 </div>
                 
                 <div className="space-y-2 text-xs">
@@ -266,7 +266,7 @@ export const SmartJobRecommendations: React.FC<SmartJobRecommendationsProps> = (
         <div className="text-center pt-4">
           <Button variant="outline" onClick={handleRefreshRecommendations}>
             <Star className="h-4 w-4 mr-2" />
-            Get More Career Moves
+            Get More AI Recommendations
           </Button>
         </div>
       </CardContent>

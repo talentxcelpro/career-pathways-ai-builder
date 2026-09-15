@@ -1,5 +1,5 @@
 
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Camera, Upload } from "lucide-react";
 import { useFileUpload } from '@/hooks/useFileUpload';
@@ -21,34 +21,61 @@ export const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
   onImageChange
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [previewUrl, setPreviewUrl] = useState(currentImageUrl || '');
   const { uploadFile, uploading } = useFileUpload({
     bucket: 'avatars',
-    maxSize: 5 * 1024 * 1024,
-    allowedTypes: ['image/jpeg', 'image/png', 'image/webp']
+    maxSize: 10 * 1024 * 1024, // 10MB
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml', 'image/*']
   });
   const { updateProfilePicture } = useProfileUpdate();
+
+  useEffect(() => {
+    setPreviewUrl(currentImageUrl || '');
+  }, [currentImageUrl]);
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    const localPreviewUrl = URL.createObjectURL(file);
+    setPreviewUrl(localPreviewUrl);
+
     try {
       // Upload file to storage
-      const url = await uploadFile(file, `${userId}/avatar.${file.name.split('.').pop()}`);
-      if (url) {
-        // Update profile picture in database
-        await updateProfilePicture.mutateAsync(url);
-        // Call the callback for local state update
-        onImageChange(url);
-      }
-    } catch (error) {
-      console.error('Upload failed:', error);
-      toast.error('Failed to upload profile picture');
-    }
+      const url = await uploadFile(file);
+      if (url && (url.startsWith('http') || url.startsWith('/'))) {
+        // Cache-bust the public URL cleanly so the fresh image displays immediately
+        const sep = url.includes('?') ? '&' : '?';
+        const finalUrl = `${url}${sep}t=${Date.now()}`;
 
-    // Reset input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+        // 1. Immediately update preview
+        setPreviewUrl(finalUrl);
+
+        // 2. Immediately notify parent form with the valid permanent storage URL
+        onImageChange(finalUrl);
+
+        // 3. Persist to database in background
+        try {
+          await updateProfilePicture.mutateAsync(finalUrl);
+        } catch (dbErr) {
+          console.warn('Background profile picture DB sync notice:', dbErr);
+        }
+
+        toast.success('Profile picture uploaded successfully');
+      } else {
+        throw new Error('Could not obtain valid image URL from storage');
+      }
+    } catch (error: any) {
+      console.error('Upload failed:', error);
+      setPreviewUrl(currentImageUrl || '');
+      toast.error(error?.message || 'Failed to upload profile picture. Please try again.');
+    } finally {
+      URL.revokeObjectURL(localPreviewUrl);
+
+      // Reset input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
@@ -65,7 +92,7 @@ export const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
     <div className="flex flex-col items-center space-y-4">
       <div className="relative group">
         <UserAvatar 
-          src={currentImageUrl}
+          src={previewUrl}
           userName={userName}
           size="2xl"
           alt={userName || 'Profile'} 

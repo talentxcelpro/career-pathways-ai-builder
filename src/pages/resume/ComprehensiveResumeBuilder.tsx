@@ -204,7 +204,7 @@ const ComprehensiveResumeBuilder: React.FC = () => {
                 onClick={() => navigate('/resume')}
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to CommandCenter
+                Back to Dashboard
               </Button>
               <div>
                 <h1 className="text-xl font-semibold">Resume Builder</h1>
@@ -273,5 +273,3 @@ const ComprehensiveResumeBuilder: React.FC = () => {
 };
 
 export default ComprehensiveResumeBuilder;
-
-

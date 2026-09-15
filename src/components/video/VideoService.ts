@@ -48,11 +48,6 @@ class VideoService {
   }
 
   private async registerServiceWorker() {
-    const isNativeLocalhost = typeof location !== 'undefined' && location.hostname === 'localhost';
-    if (isNativeLocalhost) {
-      return;
-    }
-
     if ('serviceWorker' in navigator) {
       try {
         await navigator.serviceWorker.register('/video-sw.js');

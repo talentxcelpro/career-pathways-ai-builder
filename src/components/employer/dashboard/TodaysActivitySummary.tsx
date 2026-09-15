@@ -141,7 +141,7 @@ export const TodaysActivitySummary = () => {
               variant="ghost" 
               size="sm" 
               className="text-xs font-semibold"
-              onClick={() => navigate('/employer/CareerAnalytics')}
+              onClick={() => navigate('/employer/analytics')}
             >
               Activity Reports
             </Button>
@@ -151,7 +151,3 @@ export const TodaysActivitySummary = () => {
     </Card>
   );
 };
-
-
-
-

@@ -36,34 +36,19 @@ export const useCriticalRenderingPath = (options: CriticalRenderingOptions = {})
     document.head.insertBefore(style, document.head.firstChild);
   }, [inlineCriticalCSS]);
 
-  // Optimize web font loading
+  // Optimize web font loading with system fonts
   const optimizeFontLoading = useCallback(() => {
-    if (!optimizeWebFonts) return;
-
-    // Use font-display: swap for faster rendering
-    // Local font files (/fonts/inter-var.woff2) don't exist in the dist bundle.
-    // Inter is served via Google Fonts with font-display:swap declared in index.html.
-    const style = document.createElement('style');
-    style.textContent = `
-      @font-face {
-        font-family: 'Inter';
-        font-style: normal;
-        font-weight: 100 900;
-        font-display: swap;
-        src: local('Inter');
-      }
-    `;
-    document.head.appendChild(style);
+    // System font stack is used natively; no external network font download required
   }, [optimizeWebFonts]);
 
   // Defer non-critical resources
   const deferNonCriticalResources = useCallback(() => {
     if (!deferNonCritical) return;
 
-    // Defer CareerAnalytics and tracking scripts
+    // Defer analytics and tracking scripts
     const deferredScripts = [
       'gtag',
-      'CareerAnalytics',
+      'analytics',
       'tracking',
       'social-media'
     ];
@@ -200,6 +185,3 @@ export const useCriticalRenderingPath = (options: CriticalRenderingOptions = {})
     criticalResourcesLoaded: criticalResourcesLoaded.current
   };
 };
-
-
-

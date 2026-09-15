@@ -33,7 +33,7 @@ export const CompletedCareerIntelligenceSystem: React.FC = () => {
 
   const systemHealth = {
     uptime: '99.9%',
-    activeTalentNetwork: 12,
+    activeConnections: 12,
     dataProcessed: '2.4M',
     realTimeEvents: 847
   };
@@ -69,12 +69,12 @@ export const CompletedCareerIntelligenceSystem: React.FC = () => {
         <div className="flex items-center justify-center gap-3">
           <Brain className="h-8 w-8 text-primary" />
           <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-            Complete CareerIntelligence System
+            Complete Career Intelligence System
           </h1>
         </div>
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-          Real-time CareerIntelligence with banking-level security, blockchain verification, 
-          and Performance insights for the modern professional.
+          Real-time career intelligence with banking-level security, blockchain verification, 
+          and AI-powered insights for the modern professional.
         </p>
       </div>
 
@@ -152,8 +152,8 @@ export const CompletedCareerIntelligenceSystem: React.FC = () => {
                 <div className="text-2xl font-bold text-green-600">{systemHealth.uptime}</div>
               </div>
               <div>
-                <div className="text-sm text-muted-foreground">Active TalentNetwork</div>
-                <div className="text-2xl font-bold text-blue-600">{systemHealth.activeTalentNetwork}</div>
+                <div className="text-sm text-muted-foreground">Active Connections</div>
+                <div className="text-2xl font-bold text-blue-600">{systemHealth.activeConnections}</div>
               </div>
               <div>
                 <div className="text-sm text-muted-foreground">Data Processed</div>
@@ -246,14 +246,14 @@ export const CompletedCareerIntelligenceSystem: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <CheckCircle2 className="h-5 w-5 text-green-600" />
-            Real-Time CareerIntelligence - Complete
+            Real-Time Career Intelligence - Complete
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="flex items-center gap-3 p-3 rounded-lg bg-green-50 border border-green-200">
               <CheckCircle2 className="h-5 w-5 text-green-600" />
-              <span className="text-sm font-medium">Smart Career CareerAnalytics</span>
+              <span className="text-sm font-medium">Smart Career Analytics</span>
             </div>
             <div className="flex items-center gap-3 p-3 rounded-lg bg-green-50 border border-green-200">
               <CheckCircle2 className="h-5 w-5 text-green-600" />
@@ -273,7 +273,7 @@ export const CompletedCareerIntelligenceSystem: React.FC = () => {
             </div>
             <div className="flex items-center gap-3 p-3 rounded-lg bg-green-50 border border-green-200">
               <CheckCircle2 className="h-5 w-5 text-green-600" />
-              <span className="text-sm font-medium">Real-time CareerAnalytics</span>
+              <span className="text-sm font-medium">Real-time Analytics</span>
             </div>
           </div>
         </CardContent>
@@ -281,7 +281,3 @@ export const CompletedCareerIntelligenceSystem: React.FC = () => {
     </div>
   );
 };
-
-
-
-

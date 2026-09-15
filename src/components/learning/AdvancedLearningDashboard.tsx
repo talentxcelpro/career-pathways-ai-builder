@@ -21,21 +21,21 @@ import {
 import { 
   useUserSkills, 
   useUserAchievements, 
-  useLearningCareerAnalytics,
+  useLearningAnalytics,
   useSkillsAssessment,
   type UserSkill,
   type UserAchievement 
 } from '@/hooks/useAdvancedLearning';
 import { toast } from 'sonner';
 
-interface AdvancedLearningCommandCenterProps {
+interface AdvancedLearningDashboardProps {
   userId: string;
 }
 
-export const AdvancedLearningCommandCenter: React.FC<AdvancedLearningCommandCenterProps> = ({ userId }) => {
+export const AdvancedLearningDashboard: React.FC<AdvancedLearningDashboardProps> = ({ userId }) => {
   const { data: userSkills, isLoading: skillsLoading } = useUserSkills(userId);
   const { data: achievements, isLoading: achievementsLoading } = useUserAchievements(userId);
-  const { data: CareerAnalytics, isLoading: CareerAnalyticsLoading } = useLearningCareerAnalytics(userId);
+  const { data: analytics, isLoading: analyticsLoading } = useLearningAnalytics(userId);
   const { runAssessment, isLoading: assessmentLoading } = useSkillsAssessment();
 
   const [selectedSkillArea, setSelectedSkillArea] = useState<string>('');
@@ -130,12 +130,12 @@ export const AdvancedLearningCommandCenter: React.FC<AdvancedLearningCommandCent
         </Card>
       </div>
 
-      {/* Main CommandCenter Tabs */}
+      {/* Main Dashboard Tabs */}
       <Tabs defaultValue="skills" className="w-full">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="skills">Skills</TabsTrigger>
           <TabsTrigger value="achievements">Achievements</TabsTrigger>
-          <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="assessment">AI Assessment</TabsTrigger>
         </TabsList>
 
@@ -268,7 +268,7 @@ export const AdvancedLearningCommandCenter: React.FC<AdvancedLearningCommandCent
           </Card>
         </TabsContent>
 
-        <TabsContent value="CareerAnalytics" className="space-y-4">
+        <TabsContent value="analytics" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
               <CardHeader>
@@ -330,7 +330,7 @@ export const AdvancedLearningCommandCenter: React.FC<AdvancedLearningCommandCent
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Lightbulb className="h-5 w-5" />
-                Performance Skills Assessment
+                AI-Powered Skills Assessment
               </CardTitle>
               <p className="text-sm text-muted-foreground">
                 Get personalized insights into your skills and learning path recommendations
@@ -345,7 +345,7 @@ export const AdvancedLearningCommandCenter: React.FC<AdvancedLearningCommandCent
                 >
                   <option value="">Select skill area for assessment</option>
                   <option value="programming">Programming & Development</option>
-                  <option value="data-science">Data Science & CareerAnalytics</option>
+                  <option value="data-science">Data Science & Analytics</option>
                   <option value="design">Design & Creative</option>
                   <option value="business">Business & Marketing</option>
                   <option value="general">General Assessment</option>
@@ -386,6 +386,3 @@ export const AdvancedLearningCommandCenter: React.FC<AdvancedLearningCommandCent
     </div>
   );
 };
-
-
-

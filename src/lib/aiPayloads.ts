@@ -82,9 +82,9 @@ export const talentXcelAIPayloads = {
       prompt: `Generate a professional LinkedIn post about: ${topic}.`
     }),
     
-    suggest_TalentNetwork: (userId: string, industry: string): AIPayload => ({
+    suggest_connections: (userId: string, industry: string): AIPayload => ({
       module: 'network',
-      task: 'suggest_TalentNetwork',
+      task: 'suggest_connections',
       userId,
       input: { industry },
       prompt: `Suggest networking strategies and connection ideas for professionals in ${industry}.`
@@ -244,4 +244,3 @@ export const getPayloadByCommand = (command: string, userId: string, userProfile
 
   return commandMap[command]?.() || null;
 };
-

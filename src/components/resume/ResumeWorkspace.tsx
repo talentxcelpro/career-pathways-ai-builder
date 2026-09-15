@@ -21,7 +21,7 @@ import { ResumePreview } from "./ResumePreview";
 import { TemplateSelector } from "./TemplateSelector";
 import { ATSScoreChecker } from "./ATSScoreChecker";
 import { VersionHistory } from "./VersionHistory";
-import { AINavigator } from "./AINavigator";
+import { AIAssistant } from "./AIAssistant";
 
 interface ResumeWorkspaceProps {
   resumeId?: string;
@@ -33,7 +33,7 @@ export const ResumeWorkspace = ({ resumeId, mode = 'edit' }: ResumeWorkspaceProp
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('editor');
-  const [showAINavigator, setShowAINavigator] = useState(false);
+  const [showAIAssistant, setShowAIAssistant] = useState(false);
   const [showVersionHistory, setShowVersionHistory] = useState(false);
   const [isAutoSaving, setIsAutoSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
@@ -193,7 +193,7 @@ export const ResumeWorkspace = ({ resumeId, mode = 'edit' }: ResumeWorkspaceProp
               Unable to load the resume. Please try again.
             </p>
             <Button onClick={() => navigate('/resume')}>
-              Back to CommandCenter
+              Back to Dashboard
             </Button>
           </CardContent>
         </Card>
@@ -212,7 +212,7 @@ export const ResumeWorkspace = ({ resumeId, mode = 'edit' }: ResumeWorkspaceProp
                 variant="ghost" 
                 onClick={() => navigate('/resume')}
               >
-                ← Back to CommandCenter
+                ← Back to Dashboard
               </Button>
               <div>
                 <h1 className="text-xl font-semibold">
@@ -252,10 +252,10 @@ export const ResumeWorkspace = ({ resumeId, mode = 'edit' }: ResumeWorkspaceProp
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setShowAINavigator(true)}
+                onClick={() => setShowAIAssistant(true)}
               >
                 <MessageSquare className="h-4 w-4 mr-2" />
-                TalentXcel Navigator
+                AI Assistant
               </Button>
               
               <Button
@@ -446,13 +446,13 @@ export const ResumeWorkspace = ({ resumeId, mode = 'edit' }: ResumeWorkspaceProp
         </Tabs>
       </div>
 
-      {/* TalentXcel Navigator Dialog */}
-      <Dialog open={showAINavigator} onOpenChange={setShowAINavigator}>
+      {/* AI Assistant Dialog */}
+      <Dialog open={showAIAssistant} onOpenChange={setShowAIAssistant}>
         <DialogContent className="max-w-2xl h-[600px]">
           <DialogHeader>
-            <DialogTitle>AI Resume Navigator</DialogTitle>
+            <DialogTitle>AI Resume Assistant</DialogTitle>
           </DialogHeader>
-          <AINavigator 
+          <AIAssistant 
             resumeContent={resume?.content}
             onSuggestionApply={(suggestion) => {
               // Apply AI suggestion to resume
@@ -480,5 +480,3 @@ export const ResumeWorkspace = ({ resumeId, mode = 'edit' }: ResumeWorkspaceProp
     </div>
   );
 };
-
-

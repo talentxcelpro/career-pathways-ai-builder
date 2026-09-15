@@ -34,10 +34,10 @@ export const AppleInspiredResumeEditor: React.FC<AppleInspiredResumeEditorProps>
   const {
     performAdvancedATSAnalysis,
     optimizeForSpecificJob,
-    generatePerformanceCareerAnalytics,
+    generatePerformanceAnalytics,
     isAnalyzing,
     isOptimizing,
-    isGeneratingCareerAnalytics
+    isGeneratingAnalytics
   } = useAdvancedAIFeatures();
 
   const {
@@ -155,14 +155,14 @@ export const AppleInspiredResumeEditor: React.FC<AppleInspiredResumeEditorProps>
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="grid grid-cols-12 gap-6">
-          {/* TalentXcel Navigator Panel */}
+          {/* AI Assistant Panel */}
           {showAIPanel && (
             <div className="col-span-12 lg:col-span-3">
               <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg sticky top-24">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg flex items-center">
                     <Brain className="h-5 w-5 mr-2 text-blue-600" />
-                    TalentXcel Navigator
+                    AI Assistant
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -212,14 +212,14 @@ export const AppleInspiredResumeEditor: React.FC<AppleInspiredResumeEditorProps>
                     </Button>
 
                     <Button
-                      onClick={() => generatePerformanceCareerAnalytics(resumeId)}
-                      disabled={isGeneratingCareerAnalytics}
+                      onClick={() => generatePerformanceAnalytics(resumeId)}
+                      disabled={isGeneratingAnalytics}
                       size="sm"
                       variant="outline"
                       className="w-full justify-start"
                     >
                       <BarChart3 className="h-4 w-4 mr-2" />
-                      {isGeneratingCareerAnalytics ? 'Generating...' : 'Performance CareerAnalytics'}
+                      {isGeneratingAnalytics ? 'Generating...' : 'Performance Analytics'}
                     </Button>
                   </div>
 
@@ -397,7 +397,3 @@ export const AppleInspiredResumeEditor: React.FC<AppleInspiredResumeEditorProps>
     </div>
   );
 };
-
-
-
-

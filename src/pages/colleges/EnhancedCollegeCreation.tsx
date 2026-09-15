@@ -264,7 +264,7 @@ const EnhancedCollegeCreation = () => {
       if (error) throw error;
 
       toast.success('College creation request submitted successfully! We will review and get back to you within 2-3 business days.');
-      navigate('/colleges/admin-CommandCenter');
+      navigate('/colleges/admin-dashboard');
     } catch (error: any) {
       console.error('Error submitting college request:', error);
       toast.error('Failed to submit request. Please try again.');
@@ -741,4 +741,3 @@ const EnhancedCollegeCreation = () => {
 };
 
 export default EnhancedCollegeCreation;
-

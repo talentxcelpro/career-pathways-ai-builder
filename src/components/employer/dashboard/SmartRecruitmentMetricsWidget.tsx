@@ -103,7 +103,7 @@ export const SmartRecruitmentMetricsWidget = () => {
             variant="outline" 
             size="sm" 
             className="text-xs font-semibold"
-            onClick={() => navigate('/employer/CareerAnalytics/metrics')}
+            onClick={() => navigate('/employer/analytics/metrics')}
           >
             View All
           </Button>
@@ -115,7 +115,7 @@ export const SmartRecruitmentMetricsWidget = () => {
           <div 
             key={metric.id}
             className="flex items-start gap-3 p-3 bg-slate-50/50 rounded-lg hover:bg-slate-100/50 transition-colors cursor-pointer"
-            onClick={() => navigate(`/employer/CareerAnalytics/metrics/${metric.id}`)}
+            onClick={() => navigate(`/employer/analytics/metrics/${metric.id}`)}
           >
             <div className="p-1.5 bg-emerald-100 rounded-md">
               {getMetricIcon(metric.name)}
@@ -145,9 +145,9 @@ export const SmartRecruitmentMetricsWidget = () => {
         <div className="pt-2 border-t border-slate-100">
           <div 
             className="flex items-center justify-center gap-2 p-2 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors cursor-pointer"
-            onClick={() => navigate('/employer/CareerAnalytics/metrics')}
+            onClick={() => navigate('/employer/analytics/metrics')}
           >
-            <span className="text-sm font-semibold text-emerald-700">Performance CommandCenter</span>
+            <span className="text-sm font-semibold text-emerald-700">Performance Dashboard</span>
             <BarChart3 className="h-3 w-3 text-emerald-700" />
           </div>
         </div>
@@ -155,7 +155,3 @@ export const SmartRecruitmentMetricsWidget = () => {
     </Card>
   );
 };
-
-
-
-

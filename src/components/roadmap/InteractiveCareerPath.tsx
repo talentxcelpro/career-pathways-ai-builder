@@ -67,8 +67,8 @@ export const InteractiveCareerPath: React.FC<InteractiveCareerPathProps> = ({
     fabricCanvas.clear();
     fabricCanvas.backgroundColor = '#fafafa';
 
-    // Create TalentNetwork between nodes with animation
-    const createTalentNetwork = () => {
+    // Create connections between nodes with animation
+    const createConnections = () => {
       for (let i = 0; i < nodes.length - 1; i++) {
         const currentNode = nodes[i];
         const nextNode = nodes[i + 1];
@@ -153,7 +153,7 @@ export const InteractiveCareerPath: React.FC<InteractiveCareerPathProps> = ({
       });
     };
 
-    createTalentNetwork();
+    createConnections();
     createNodes();
 
     fabricCanvas.renderAll();
@@ -227,7 +227,7 @@ export const InteractiveCareerPath: React.FC<InteractiveCareerPathProps> = ({
               <span className="text-sm font-medium text-text-primary">Interactive Career Progression</span>
             </div>
             <p className="text-xs text-text-secondary">
-              Click on any node to explore detailed information and Intelligence Metrics
+              Click on any node to explore detailed information and AI insights
             </p>
           </div>
 
@@ -361,4 +361,3 @@ export const InteractiveCareerPath: React.FC<InteractiveCareerPathProps> = ({
     </div>
   );
 };
-

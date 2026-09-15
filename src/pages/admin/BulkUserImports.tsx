@@ -5,7 +5,7 @@ import { ImportUploader } from '@/components/admin/bulk-imports/ImportUploader';
 import { ImportBatchMonitor } from '@/components/admin/bulk-imports/ImportBatchMonitor';
 import { LeadManagement } from '@/components/admin/bulk-imports/LeadManagement';
 import { EmailCampaigns } from '@/components/admin/bulk-imports/EmailCampaigns';
-import { ImportCareerAnalytics } from '@/components/admin/bulk-imports/ImportAnalytics';
+import { ImportAnalytics } from '@/components/admin/bulk-imports/ImportAnalytics';
 import { EnrichmentSettings } from '@/components/admin/bulk-imports/EnrichmentSettings';
 
 export default function BulkUserImports() {
@@ -41,9 +41,9 @@ export default function BulkUserImports() {
               <Mail className="h-4 w-4" />
               Campaigns
             </TabsTrigger>
-            <TabsTrigger value="CareerAnalytics" className="flex items-center gap-2">
+            <TabsTrigger value="analytics" className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
-              CareerAnalytics
+              Analytics
             </TabsTrigger>
             <TabsTrigger value="settings" className="flex items-center gap-2">
               <Settings className="h-4 w-4" />
@@ -67,8 +67,8 @@ export default function BulkUserImports() {
             <EmailCampaigns />
           </TabsContent>
 
-          <TabsContent value="CareerAnalytics">
-            <ImportCareerAnalytics />
+          <TabsContent value="analytics">
+            <ImportAnalytics />
           </TabsContent>
 
           <TabsContent value="settings">
@@ -79,7 +79,3 @@ export default function BulkUserImports() {
     </div>
   );
 }
-
-
-
-

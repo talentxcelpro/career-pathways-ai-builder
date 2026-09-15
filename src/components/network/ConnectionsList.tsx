@@ -3,11 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { MessageCircle, UserMinus, Users, UserPlus } from "lucide-react";
-import { useRealtimeTalentNetwork } from "@/hooks/useRealtimeTalentNetwork";
+import { useRealtimeConnections } from "@/hooks/useRealtimeConnections";
 import { Link } from 'react-router-dom';
 
-export const TalentNetworkList = () => {
-  const { TalentNetwork, isLoading } = useRealtimeTalentNetwork();
+export const ConnectionsList = () => {
+  const { connections, isLoading } = useRealtimeConnections();
 
   const formatDisplayName = (profile: any) => {
     if (profile?.full_name && profile.full_name.trim()) {
@@ -31,7 +31,7 @@ export const TalentNetworkList = () => {
     return (
       <Card className="border-0 shadow-lg bg-gradient-to-br from-background to-muted/20">
         <CardHeader className="pb-4">
-          <CardTitle className="text-lg font-semibold">Your TalentNetwork</CardTitle>
+          <CardTitle className="text-lg font-semibold">Your Connections</CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
           <div className="space-y-4">
@@ -54,14 +54,14 @@ export const TalentNetworkList = () => {
     );
   }
 
-  if (!TalentNetwork || TalentNetwork.length === 0) {
+  if (!connections || connections.length === 0) {
     return (
       <Card className="border-0 shadow-lg bg-gradient-to-br from-background to-muted/20">
         <CardContent className="p-8 text-center">
           <div className="mx-auto mb-4 p-3 bg-muted/50 rounded-full w-fit">
             <Users className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h3 className="text-lg font-medium text-foreground mb-2">No TalentNetwork yet</h3>
+          <h3 className="text-lg font-medium text-foreground mb-2">No connections yet</h3>
           <p className="text-muted-foreground text-sm mb-4 max-w-md mx-auto">
             Start building your professional network by connecting with colleagues, 
             industry professionals, and potential collaborators.
@@ -82,7 +82,7 @@ export const TalentNetworkList = () => {
     <Card className="border-0 shadow-lg bg-gradient-to-br from-background to-muted/20">
       <CardContent className="p-6">
         <div className="space-y-3">
-          {TalentNetwork.map((connection, index) => {
+          {connections.map((connection, index) => {
             const otherUser = connection.otherUser;
             
             return (
@@ -145,4 +145,3 @@ export const TalentNetworkList = () => {
     </Card>
   );
 };
-

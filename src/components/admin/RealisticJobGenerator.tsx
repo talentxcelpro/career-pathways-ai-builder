@@ -424,7 +424,7 @@ const generateFallbackJobs = (count: number) => {
     ["Blockchain", "Solidity", "Web3", "Ethereum"],
     ["Unity", "C#", "Game Development", "3D Modeling"],
     ["Figma", "Adobe XD", "UI/UX", "Design Systems"],
-    ["Digital Marketing", "SEO", "Google CareerAnalytics", "Social Media"],
+    ["Digital Marketing", "SEO", "Google Analytics", "Social Media"],
     ["Project Management", "Agile", "Scrum", "Kanban"],
     ["Business Analysis", "Requirements Gathering", "Process Improvement"],
     ["Financial Modeling", "Excel", "Financial Analysis", "Budgeting"],
@@ -504,6 +504,3 @@ const generateFallbackJobs = (count: number) => {
   
   return jobs;
 };
-
-
-

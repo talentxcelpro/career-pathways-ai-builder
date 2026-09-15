@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Plus, Trophy } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 
-export const ABTestingCommandCenter = () => {
+export const ABTestingDashboard = () => {
   const queryClient = useQueryClient();
   
   const { data: tests, isLoading } = useQuery({
@@ -180,5 +180,3 @@ export const ABTestingCommandCenter = () => {
     </Card>
   );
 };
-
-

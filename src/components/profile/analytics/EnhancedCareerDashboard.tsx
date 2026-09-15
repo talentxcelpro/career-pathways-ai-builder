@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -28,7 +28,7 @@ import {
   Rocket,
   Globe
 } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { LiveEngagementChart } from './LiveEngagementChart';
@@ -37,7 +37,7 @@ import { AICareerInsights } from './AICareerInsights';
 import { PeerBenchmarks } from './PeerBenchmarks';
 import { InteractiveProgressTracker } from './InteractiveProgressTracker';
 
-interface CommandCenterData {
+interface DashboardData {
   profileViews: { current: number; change: number; trend: 'up' | 'down' | 'stable' };
   profileShares: { current: number; change: number; trend: 'up' | 'down' | 'stable' };
   endorsements: { current: number; change: number; trend: 'up' | 'down' | 'stable' };
@@ -49,7 +49,7 @@ interface CommandCenterData {
   careerProgress: {
     currentLevel: string;
     skillsGained: number;
-    TalentNetworkGrown: number;
+    connectionsGrown: number;
     articlesPublished: number;
     completionScore: number;
   };
@@ -68,7 +68,7 @@ interface CommandCenterData {
     industry: string;
     role: string;
     benchmarks: {
-      TalentNetwork: { user: number; average: number; percentile: number };
+      connections: { user: number; average: number; percentile: number };
       profileViews: { user: number; average: number; percentile: number };
       skills: { user: number; average: number; percentile: number };
     };
@@ -83,14 +83,43 @@ interface CommandCenterData {
   }>;
 }
 
-export const EnhancedCareerCommandCenter = () => {
+export const EnhancedCareerDashboard = () => {
   const { user } = useAuth();
   const [selectedPeriod, setSelectedPeriod] = useState<'7d' | '30d' | '90d' | '1y'>('30d');
   const [activeTab, setActiveTab] = useState('overview');
+  const queryClient = useQueryClient();
 
-  const { data: CommandCenterData, isLoading, refetch } = useQuery({
-    queryKey: ['enhanced-career-CommandCenter', user?.id, selectedPeriod],
-    queryFn: async (): Promise<CommandCenterData> => {
+  // Real-time synchronization for Enhanced Dashboard
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const channel = supabase
+      .channel(`enhanced-analytics-live-${user.id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profile_views' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['enhanced-career-dashboard'] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'connections' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['enhanced-career-dashboard'] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['enhanced-career-dashboard'] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'post_likes' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['enhanced-career-dashboard'] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_skills' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['enhanced-career-dashboard'] });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id, queryClient]);
+
+  const { data: dashboardData, isLoading, refetch } = useQuery({
+    queryKey: ['enhanced-career-dashboard', user?.id, selectedPeriod],
+    queryFn: async (): Promise<DashboardData> => {
       if (!user?.id) throw new Error('User not authenticated');
 
       // Calculate date ranges for comparison
@@ -102,13 +131,13 @@ export const EnhancedCareerCommandCenter = () => {
       const periodStart = new Date(currentDate.getTime() - (daysToUse * 24 * 60 * 60 * 1000));
       const previousPeriodStart = new Date(periodStart.getTime() - (daysToUse * 24 * 60 * 60 * 1000));
 
-      // Fetch comprehensive CareerAnalytics data
+      // Fetch comprehensive analytics data
       const [
         profileData,
         currentViews,
         previousViews,
-        currentTalentNetwork,
-        previousTalentNetwork,
+        currentConnections,
+        previousConnections,
         currentPosts,
         previousPosts,
         currentEngagement,
@@ -138,7 +167,7 @@ export const EnhancedCareerCommandCenter = () => {
           .gte('viewed_at', previousPeriodStart.toISOString())
           .lt('viewed_at', periodStart.toISOString()),
 
-        // Current period TalentNetwork
+        // Current period connections
         supabase
           .from('connections')
           .select('*', { count: 'exact' })
@@ -146,7 +175,7 @@ export const EnhancedCareerCommandCenter = () => {
           .eq('status', 'accepted')
           .gte('created_at', periodStart.toISOString()),
 
-        // Previous period TalentNetwork
+        // Previous period connections
         supabase
           .from('connections')
           .select('*', { count: 'exact' })
@@ -191,19 +220,18 @@ export const EnhancedCareerCommandCenter = () => {
           .select('skill_name, endorsements_count')
           .eq('user_id', user.id),
 
-        // Evolution Hub completion
+        // Public passport views count
         supabase
-          .from('career_passport')
-          .select('completion_percentage, achievements_count')
-          .eq('user_id', user.id)
-          .single()
+          .from('public_passport_views')
+          .select('*', { count: 'exact', head: true })
+          .eq('passport_owner_id', user.id)
       ]);
 
       const profile = profileData.data;
       const currentViewsCount = currentViews.count || 0;
       const previousViewsCount = previousViews.count || 0;
-      const currentTalentNetworkCount = currentTalentNetwork.count || 0;
-      const previousTalentNetworkCount = previousTalentNetwork.count || 0;
+      const currentConnectionsCount = currentConnections.count || 0;
+      const previousConnectionsCount = previousConnections.count || 0;
 
       // Calculate metrics with percentage changes
       const calculateChange = (current: number, previous: number) => {
@@ -239,7 +267,7 @@ export const EnhancedCareerCommandCenter = () => {
         industry: profile?.industry || 'Technology',
         role: profile?.title || 'Professional',
         benchmarks: {
-          TalentNetwork: {
+          connections: {
             user: profile?.connections_count || 0,
             average: 245,
             percentile: 75
@@ -305,7 +333,7 @@ export const EnhancedCareerCommandCenter = () => {
         }
       ];
 
-      // Performance recommendations
+      // AI-powered recommendations
       const aiRecommendations = [
         {
           type: 'skill' as const,
@@ -320,7 +348,7 @@ export const EnhancedCareerCommandCenter = () => {
           title: 'Connect with AI Mentors',
           description: 'We found 12 AI professionals in your network who could mentor you.',
           priority: 'high' as const,
-          reasoning: 'Mentorship TalentNetwork in your target field increase career progression by 65%.',
+          reasoning: 'Mentorship connections in your target field increase career progression by 65%.',
           actionUrl: '/network/ai-connect'
         },
         {
@@ -370,13 +398,12 @@ export const EnhancedCareerCommandCenter = () => {
           trend: calculateTrend(calculateChange(currentArticleComments, previousArticleComments))
         },
         careerProgress: {
-          currentLevel: careerPassportData.data?.completion_percentage > 80 ? 'Expert' : 
-                       careerPassportData.data?.completion_percentage > 60 ? 'Professional' : 
-                       careerPassportData.data?.completion_percentage > 40 ? 'Intermediate' : 'Beginner',
-          skillsGained: userSkills.length,
-          TalentNetworkGrown: currentTalentNetworkCount,
+          currentLevel: (profile?.skills?.length || 0) >= 5 ? 'Professional' : 
+                       (profile?.skills?.length || 0) >= 3 ? 'Intermediate' : 'Beginner',
+          skillsGained: userSkills.length || (profile?.skills?.length || 0),
+          connectionsGrown: currentConnectionsCount,
           articlesPublished: currentPostsData.length,
-          completionScore: careerPassportData.data?.completion_percentage || 0
+          completionScore: Math.min(100, 30 + (profile?.headline ? 20 : 0) + (profile?.skills?.length ? 25 : 0) + (profile?.about ? 25 : 0))
         },
         skillTrends,
         peerComparison,
@@ -416,7 +443,7 @@ export const EnhancedCareerCommandCenter = () => {
     );
   }
 
-  if (!CommandCenterData) return null;
+  if (!dashboardData) return null;
 
   const MetricCard = ({ 
     title, 
@@ -468,7 +495,7 @@ export const EnhancedCareerCommandCenter = () => {
       {/* Header with controls */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Career CommandCenter</h1>
+          <h1 className="text-3xl font-bold text-foreground">Career Dashboard</h1>
           <p className="text-muted-foreground">
             Live insights into your professional growth and market positioning
           </p>
@@ -515,7 +542,7 @@ export const EnhancedCareerCommandCenter = () => {
           </TabsTrigger>
           <TabsTrigger value="ai-insights" className="flex items-center gap-2">
             <Zap className="h-4 w-4" />
-            Intelligence Metrics
+            AI Insights
           </TabsTrigger>
         </TabsList>
 
@@ -524,31 +551,31 @@ export const EnhancedCareerCommandCenter = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <MetricCard
               title="Profile Views"
-              value={CommandCenterData.profileViews.current}
-              change={CommandCenterData.profileViews.change}
-              trend={CommandCenterData.profileViews.trend}
+              value={dashboardData.profileViews.current}
+              change={dashboardData.profileViews.change}
+              trend={dashboardData.profileViews.trend}
               icon={Eye}
               color="bg-blue-100"
             />
             <MetricCard
               title="Profile Shares"
-              value={CommandCenterData.profileShares.current}
-              change={CommandCenterData.profileShares.change}
-              trend={CommandCenterData.profileShares.trend}
+              value={dashboardData.profileShares.current}
+              change={dashboardData.profileShares.change}
+              trend={dashboardData.profileShares.trend}
               icon={Share2}
               color="bg-green-100"
             />
             <MetricCard
               title="Endorsements"
-              value={CommandCenterData.endorsements.current}
-              change={CommandCenterData.endorsements.change}
-              trend={CommandCenterData.endorsements.trend}
+              value={dashboardData.endorsements.current}
+              change={dashboardData.endorsements.change}
+              trend={dashboardData.endorsements.trend}
               icon={Award}
               color="bg-purple-100"
             />
             <MetricCard
               title="Skill Interests"
-              value={CommandCenterData.skillInterests.length}
+              value={dashboardData.skillInterests.length}
               change={12}
               trend="up"
               icon={Star}
@@ -556,7 +583,7 @@ export const EnhancedCareerCommandCenter = () => {
             />
           </div>
 
-          <PeerBenchmarks data={CommandCenterData.peerComparison} />
+          <PeerBenchmarks data={dashboardData.peerComparison} />
         </TabsContent>
 
         {/* Engagement Tab */}
@@ -564,33 +591,33 @@ export const EnhancedCareerCommandCenter = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <MetricCard
               title="Article Views"
-              value={CommandCenterData.articleViews.current}
-              change={CommandCenterData.articleViews.change}
-              trend={CommandCenterData.articleViews.trend}
+              value={dashboardData.articleViews.current}
+              change={dashboardData.articleViews.change}
+              trend={dashboardData.articleViews.trend}
               icon={Eye}
               color="bg-blue-100"
             />
             <MetricCard
               title="Likes"
-              value={CommandCenterData.articleLikes.current}
-              change={CommandCenterData.articleLikes.change}
-              trend={CommandCenterData.articleLikes.trend}
+              value={dashboardData.articleLikes.current}
+              change={dashboardData.articleLikes.change}
+              trend={dashboardData.articleLikes.trend}
               icon={Heart}
               color="bg-red-100"
             />
             <MetricCard
               title="Bookmarks"
-              value={CommandCenterData.articleBookmarks.current}
-              change={CommandCenterData.articleBookmarks.change}
-              trend={CommandCenterData.articleBookmarks.trend}
+              value={dashboardData.articleBookmarks.current}
+              change={dashboardData.articleBookmarks.change}
+              trend={dashboardData.articleBookmarks.trend}
               icon={BookOpen}
               color="bg-yellow-100"
             />
             <MetricCard
               title="Comments"
-              value={CommandCenterData.articleComments.current}
-              change={CommandCenterData.articleComments.change}
-              trend={CommandCenterData.articleComments.trend}
+              value={dashboardData.articleComments.current}
+              change={dashboardData.articleComments.change}
+              trend={dashboardData.articleComments.trend}
               icon={MessageCircle}
               color="bg-green-100"
             />
@@ -601,23 +628,19 @@ export const EnhancedCareerCommandCenter = () => {
 
         {/* Career Progress Tab */}
         <TabsContent value="career" className="space-y-6">
-          <InteractiveProgressTracker data={CommandCenterData.careerProgress} />
+          <InteractiveProgressTracker data={dashboardData.careerProgress} />
         </TabsContent>
 
         {/* Skills Intelligence Tab */}
         <TabsContent value="skills" className="space-y-6">
-          <SkillDemandTrends trends={CommandCenterData.skillTrends} />
+          <SkillDemandTrends trends={dashboardData.skillTrends} />
         </TabsContent>
 
-        {/* Intelligence Metrics Tab */}
+        {/* AI Insights Tab */}
         <TabsContent value="ai-insights" className="space-y-6">
-          <AICareerInsights recommendations={CommandCenterData.aiRecommendations} />
+          <AICareerInsights recommendations={dashboardData.aiRecommendations} />
         </TabsContent>
       </Tabs>
     </div>
   );
 };
-
-
-
-

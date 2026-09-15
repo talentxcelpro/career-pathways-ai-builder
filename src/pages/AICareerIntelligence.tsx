@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Brain, Target, FileText, MessageSquare, TrendingUp } from "lucide-react";
-import AICareerCommandCenter from '@/components/ai/AICareerDashboard';
+import AICareerDashboard from '@/components/ai/AICareerDashboard';
 import IntelligentJobMatching from '@/components/ai/IntelligentJobMatching';
 import AIResumeAnalyzer from '@/components/ai/AIResumeAnalyzer';
 import AICareerChat from '@/components/ai/AICareerChat';
@@ -16,7 +16,7 @@ const AICareerIntelligence = () => {
             <Brain className="h-8 w-8 text-primary" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold">AI CareerIntelligence</h1>
+            <h1 className="text-3xl font-bold">AI Career Intelligence</h1>
             <p className="text-muted-foreground text-lg">
               Harness the power of AI to accelerate your career growth
             </p>
@@ -24,11 +24,11 @@ const AICareerIntelligence = () => {
         </div>
 
         {/* AI Tools Tabs */}
-        <Tabs defaultValue="CommandCenter" className="w-full">
+        <Tabs defaultValue="dashboard" className="w-full">
           <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="CommandCenter" className="flex items-center gap-2">
+            <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <Brain className="h-4 w-4" />
-              <span className="hidden md:inline">CommandCenter</span>
+              <span className="hidden md:inline">Dashboard</span>
             </TabsTrigger>
             <TabsTrigger value="matching" className="flex items-center gap-2">
               <Target className="h-4 w-4" />
@@ -48,8 +48,8 @@ const AICareerIntelligence = () => {
             </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="CommandCenter" className="mt-6">
-            <AICareerCommandCenter />
+          <TabsContent value="dashboard" className="mt-6">
+            <AICareerDashboard />
           </TabsContent>
           
           <TabsContent value="matching" className="mt-6">
@@ -69,7 +69,7 @@ const AICareerIntelligence = () => {
               <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-semibold mb-2">Career Insights Coming Soon</h3>
               <p className="text-muted-foreground">
-                Advanced market CareerAnalytics and personalized career insights will be available here.
+                Advanced market analytics and personalized career insights will be available here.
               </p>
             </div>
           </TabsContent>
@@ -80,6 +80,3 @@ const AICareerIntelligence = () => {
 };
 
 export default AICareerIntelligence;
-
-
-

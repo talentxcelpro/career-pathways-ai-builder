@@ -149,14 +149,14 @@ export const NetworkingSuggestions: React.FC<NetworkingSuggestionsProps> = ({
             Strategic Networking for {targetRole}
           </CardTitle>
           <CardDescription>
-            AI-curated TalentNetwork and events to accelerate your career growth
+            AI-curated connections and events to accelerate your career growth
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center p-4 bg-white rounded-lg">
               <div className="text-2xl font-bold text-purple-600">{suggestedContacts.length}</div>
-              <div className="text-sm text-gray-600">Suggested TalentNetwork</div>
+              <div className="text-sm text-gray-600">Suggested Connections</div>
             </div>
             <div className="text-center p-4 bg-white rounded-lg">
               <div className="text-2xl font-bold text-blue-600">{upcomingEvents.length}</div>
@@ -170,12 +170,12 @@ export const NetworkingSuggestions: React.FC<NetworkingSuggestionsProps> = ({
         </CardContent>
       </Card>
 
-      {/* Suggested TalentNetwork */}
+      {/* Suggested Connections */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <MessageCircle className="h-5 w-5 text-blue-600" />
-            Recommended TalentNetwork
+            Recommended Connections
           </CardTitle>
           <CardDescription>
             High-value professionals who can help advance your career
@@ -213,7 +213,7 @@ export const NetworkingSuggestions: React.FC<NetworkingSuggestionsProps> = ({
                         </div>
                         <div className="flex items-center gap-1">
                           <Users className="h-3 w-3" />
-                          {contact.mutualConnections} mutual TalentNetwork
+                          {contact.mutualConnections} mutual connections
                         </div>
                       </div>
                       <div className="flex flex-wrap gap-1 mb-2">
@@ -323,5 +323,3 @@ export const NetworkingSuggestions: React.FC<NetworkingSuggestionsProps> = ({
     </div>
   );
 };
-
-

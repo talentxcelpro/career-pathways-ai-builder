@@ -7,7 +7,7 @@ import { AlertTriangle, CheckCircle, Clock, Zap, TrendingUp } from 'lucide-react
 import { useSEOAudit } from '@/hooks/useSEOAudit';
 import { turboCore } from '@/utils/turboCore';
 
-export const SEOCommandCenter: React.FC = () => {
+export const SEODashboard: React.FC = () => {
   const { auditResult, isAuditing, refreshAudit } = useSEOAudit();
   const [performanceScore, setPerformanceScore] = React.useState<number>(0);
   const [isOptimizing, setIsOptimizing] = React.useState(false);
@@ -55,7 +55,7 @@ export const SEOCommandCenter: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">SEO Performance CommandCenter</h2>
+        <h2 className="text-2xl font-bold">SEO Performance Dashboard</h2>
         <Button onClick={optimizeNow} disabled={isOptimizing}>
           {isOptimizing ? (
             <>
@@ -228,4 +228,3 @@ export const SEOCommandCenter: React.FC = () => {
     </div>
   );
 };
-

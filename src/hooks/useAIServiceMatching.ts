@@ -29,7 +29,7 @@ export interface ChatMessage {
   conversation_id: string;
   user_id: string;
   content: string;
-  role: 'user' | 'Navigator';
+  role: 'user' | 'assistant';
   created_at: string;
 }
 

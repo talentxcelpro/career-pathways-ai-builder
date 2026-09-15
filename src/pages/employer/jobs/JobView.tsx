@@ -40,10 +40,10 @@ const JobView = () => {
       color: "text-blue-600"
     },
     {
-      title: "CareerAnalytics",
+      title: "Analytics",
       icon: BarChart3,
       count: jobData.viewsCount,
-      action: () => navigate(`/jobs/manage/${id}/CareerAnalytics`),
+      action: () => navigate(`/jobs/manage/${id}/analytics`),
       color: "text-green-600"
     },
     {
@@ -224,7 +224,7 @@ const JobView = () => {
               </Button>
               <Button variant="outline" className="w-full" onClick={() => navigate(`/jobs/manage/${id}/ai-insights`)}>
                 <BarChart3 className="h-4 w-4 mr-2" />
-                Intelligence Metrics
+                AI Insights
               </Button>
             </CardContent>
           </Card>
@@ -235,7 +235,3 @@ const JobView = () => {
 };
 
 export default JobView;
-
-
-
-

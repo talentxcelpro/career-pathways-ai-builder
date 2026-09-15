@@ -69,9 +69,9 @@ export function useProfilePosts(userId: string) {
     enabled: !!userId
   });
 
-  // Get posts for global Pulse (all public posts)
-  const { data: globalPulsePosts } = useQuery({
-    queryKey: ['global-Pulse-posts'],
+  // Get posts for global feed (all public posts)
+  const { data: globalFeedPosts } = useQuery({
+    queryKey: ['global-feed-posts'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('posts')
@@ -149,7 +149,7 @@ export function useProfilePosts(userId: string) {
       }
       
       queryClient.invalidateQueries({ queryKey: ['profile-posts'] });
-      queryClient.invalidateQueries({ queryKey: ['global-Pulse-posts'] });
+      queryClient.invalidateQueries({ queryKey: ['global-feed-posts'] });
       queryClient.invalidateQueries({ queryKey: ['posts'] });
       queryClient.invalidateQueries({ queryKey: ['token-balance'] });
     },
@@ -171,7 +171,7 @@ export function useProfilePosts(userId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile-posts'] });
-      queryClient.invalidateQueries({ queryKey: ['global-Pulse-posts'] });
+      queryClient.invalidateQueries({ queryKey: ['global-feed-posts'] });
       queryClient.invalidateQueries({ queryKey: ['posts'] });
       toast.success('Post deleted successfully');
     },
@@ -203,7 +203,7 @@ export function useProfilePosts(userId: string) {
 
   return {
     profilePosts,
-    globalPulsePosts,
+    globalFeedPosts,
     isLoading,
     createPost,
     deletePost,

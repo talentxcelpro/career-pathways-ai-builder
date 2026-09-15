@@ -17,7 +17,7 @@ const CRMNotes = () => {
         <FileText className="h-8 w-8 text-blue-600" />
         <div>
           <h1 className="text-3xl font-bold text-gray-900">CRM Notes</h1>
-          <p className="text-gray-600">All notes and Feedback across candidates</p>
+          <p className="text-gray-600">All notes and feedback across candidates</p>
         </div>
       </div>
 
@@ -38,5 +38,3 @@ const CRMNotes = () => {
 };
 
 export default CRMNotes;
-
-

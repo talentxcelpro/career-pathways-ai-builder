@@ -14,12 +14,12 @@ import {
 } from 'lucide-react';
 
 const TrackingSubcategories = () => {
-  const [activeSubcategory, setActiveSubcategory] = useState('CommandCenter');
+  const [activeSubcategory, setActiveSubcategory] = useState('dashboard');
 
   const subcategories = [
     {
-      id: 'CommandCenter',
-      title: 'Rank Tracking CommandCenter',
+      id: 'dashboard',
+      title: 'Rank Tracking Dashboard',
       icon: TrendingUp,
       description: 'Monitor keyword rankings across search engines',
       status: 'active'
@@ -90,7 +90,7 @@ const TrackingSubcategories = () => {
           </Badge>
         </div>
 
-        {activeSubcategory === 'CommandCenter' && (
+        {activeSubcategory === 'dashboard' && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card>
               <CardHeader>
@@ -257,4 +257,3 @@ const TrackingSubcategories = () => {
 };
 
 export default TrackingSubcategories;
-

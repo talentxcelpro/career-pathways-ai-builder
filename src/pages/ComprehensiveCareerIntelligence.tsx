@@ -2,8 +2,8 @@ import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Brain, TrendingUp, Target, Shield, Users, BarChart } from 'lucide-react';
-import CareerIntelligenceCommandCenter from '@/components/ai/CareerIntelligenceDashboard';
-import EnhancedCareerCareerAnalytics from '@/components/ai/EnhancedCareerAnalytics';
+import CareerIntelligenceDashboard from '@/components/ai/CareerIntelligenceDashboard';
+import EnhancedCareerAnalytics from '@/components/ai/EnhancedCareerAnalytics';
 import IndustryBenchmarking from '@/components/ai/IndustryBenchmarking';
 import CareerCredibilityScore from '@/components/ai/CareerCredibilityScore';
 import NetworkingIntelligence from '@/components/ai/NetworkingIntelligence';
@@ -13,8 +13,8 @@ import { updateMetaTags } from '@/utils/metaTags';
 const ComprehensiveCareerIntelligence: React.FC = () => {
   React.useEffect(() => {
     updateMetaTags({
-      title: 'Comprehensive CareerIntelligence - TalentXcel | Performance Career CareerAnalytics',
-      description: 'Access comprehensive Performance CareerIntelligence including real-time market data, credibility scoring, networking insights, and personalized career recommendations.'
+      title: 'Comprehensive Career Intelligence - TalentXcel | AI-Powered Career Analytics',
+      description: 'Access comprehensive AI-powered career intelligence including real-time market data, credibility scoring, networking insights, and personalized career recommendations.'
     });
   }, []);
 
@@ -29,10 +29,10 @@ const ComprehensiveCareerIntelligence: React.FC = () => {
             </div>
             <div>
               <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                Comprehensive CareerIntelligence
+                Comprehensive Career Intelligence
               </h1>
               <p className="text-muted-foreground text-lg mt-2">
-                Advanced Performance career CareerAnalytics and real-time market intelligence
+                Advanced AI-powered career analytics and real-time market intelligence
               </p>
             </div>
           </div>
@@ -42,15 +42,15 @@ const ComprehensiveCareerIntelligence: React.FC = () => {
             <Card className="hover:shadow-lg transition-shadow">
               <CardContent className="p-4 text-center">
                 <Brain className="h-8 w-8 text-primary mx-auto mb-2" />
-                <h3 className="font-semibold mb-1">AI CommandCenter</h3>
-                <p className="text-xs text-muted-foreground">Real-time CareerIntelligence</p>
+                <h3 className="font-semibold mb-1">AI Dashboard</h3>
+                <p className="text-xs text-muted-foreground">Real-time career intelligence</p>
               </CardContent>
             </Card>
             
             <Card className="hover:shadow-lg transition-shadow">
               <CardContent className="p-4 text-center">
                 <TrendingUp className="h-8 w-8 text-primary mx-auto mb-2" />
-                <h3 className="font-semibold mb-1">Market CareerAnalytics</h3>
+                <h3 className="font-semibold mb-1">Market Analytics</h3>
                 <p className="text-xs text-muted-foreground">Live market data and trends</p>
               </CardContent>
             </Card>
@@ -90,16 +90,16 @@ const ComprehensiveCareerIntelligence: React.FC = () => {
         </div>
 
         {/* Main Intelligence Tabs */}
-        <Tabs defaultValue="CommandCenter" className="w-full">
+        <Tabs defaultValue="dashboard" className="w-full">
           <TabsList className="grid w-full grid-cols-6">
-            <TabsTrigger value="CommandCenter" className="flex items-center gap-2">
+            <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <Brain className="h-4 w-4" />
-              <span className="hidden md:inline">CommandCenter</span>
+              <span className="hidden md:inline">Dashboard</span>
               <span className="md:hidden">AI</span>
             </TabsTrigger>
-            <TabsTrigger value="CareerAnalytics" className="flex items-center gap-2">
+            <TabsTrigger value="analytics" className="flex items-center gap-2">
               <Target className="h-4 w-4" />
-              <span className="hidden md:inline">CareerAnalytics</span>
+              <span className="hidden md:inline">Analytics</span>
               <span className="md:hidden">Path</span>
             </TabsTrigger>
             <TabsTrigger value="benchmarking" className="flex items-center gap-2">
@@ -124,12 +124,12 @@ const ComprehensiveCareerIntelligence: React.FC = () => {
             </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="CommandCenter" className="mt-6">
-            <CareerIntelligenceCommandCenter />
+          <TabsContent value="dashboard" className="mt-6">
+            <CareerIntelligenceDashboard />
           </TabsContent>
           
-          <TabsContent value="CareerAnalytics" className="mt-6">
-            <EnhancedCareerCareerAnalytics />
+          <TabsContent value="analytics" className="mt-6">
+            <EnhancedCareerAnalytics />
           </TabsContent>
           
           <TabsContent value="benchmarking" className="mt-6">
@@ -154,11 +154,11 @@ const ComprehensiveCareerIntelligence: React.FC = () => {
           <CardContent className="p-6">
             <div className="text-center">
               <h3 className="text-2xl font-bold mb-2">
-                🚀 Next-Generation CareerIntelligence
+                🚀 Next-Generation Career Intelligence
               </h3>
               <p className="text-muted-foreground mb-4 max-w-3xl mx-auto">
-                This comprehensive CareerIntelligence platform provides real-time market analysis, 
-                Performance insights, professional credibility scoring, and strategic networking intelligence 
+                This comprehensive career intelligence platform provides real-time market analysis, 
+                AI-powered insights, professional credibility scoring, and strategic networking intelligence 
                 to accelerate your career growth with data-driven decisions.
               </p>
               
@@ -170,7 +170,7 @@ const ComprehensiveCareerIntelligence: React.FC = () => {
                   </p>
                 </div>
                 <div className="p-4 bg-white/50 rounded-lg">
-                  <h4 className="font-semibold mb-2">🧠 Performance Insights</h4>
+                  <h4 className="font-semibold mb-2">🧠 AI-Powered Insights</h4>
                   <p className="text-sm text-muted-foreground">
                     Personalized career recommendations and strategic guidance
                   </p>
@@ -191,6 +191,3 @@ const ComprehensiveCareerIntelligence: React.FC = () => {
 };
 
 export default ComprehensiveCareerIntelligence;
-
-
-

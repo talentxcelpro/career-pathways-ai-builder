@@ -239,7 +239,7 @@ export const TXCComingSoonModal: React.FC<TXCComingSoonModalProps> = ({
                   Help Shape TalentXcel's Future
                 </p>
                 <p className="text-xs text-purple-600/80">
-                  Your activity and Feedback help us prioritize which features to launch first.
+                  Your activity and feedback help us prioritize which features to launch first.
                 </p>
               </div>
               <Button 
@@ -260,4 +260,3 @@ export const TXCComingSoonModal: React.FC<TXCComingSoonModalProps> = ({
     </Dialog>
   );
 };
-

@@ -86,22 +86,25 @@ export const AddAdminDialog: React.FC<AddAdminDialogProps> = ({ onAdminAdded }) 
           </div>
           
           <div>
-            <Label htmlFor="role">Admin Role *</Label>
+            <Label htmlFor="role">Admin Operational Scope *</Label>
             <Select value={formData.role} onValueChange={(value) => setFormData({ ...formData, role: value })}>
               <SelectTrigger>
-                <SelectValue placeholder="Select admin role" />
+                <SelectValue placeholder="Select admin scope" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="super_admin">Super Admin</SelectItem>
-                <SelectItem value="admin">Admin</SelectItem>
-                <SelectItem value="moderator">Moderator</SelectItem>
+                <SelectItem value="job_admin">Employer & Job Admin (jobs.*, employers.*)</SelectItem>
+                <SelectItem value="content_admin">Content & Editorial Admin (content.*, news.*)</SelectItem>
+                <SelectItem value="seo_admin">SEO & Distribution Admin (seo.*, sitemaps.*)</SelectItem>
+                <SelectItem value="finance_admin">Finance & TXC Admin (billing.*, txc.award)</SelectItem>
+                <SelectItem value="moderator">Community Moderator (moderation.*, network.*)</SelectItem>
+                <SelectItem value="support_admin">Support & Operations Admin (users.read, tickets.*)</SelectItem>
               </SelectContent>
             </Select>
           </div>
           
-          <div className="bg-muted p-3 rounded-lg">
-            <p className="text-sm text-muted-foreground">
-              <strong>Note:</strong> An invitation email will be sent to the user with login instructions and temporary password.
+          <div className="bg-amber-50 border border-amber-200 p-3 rounded-lg">
+            <p className="text-xs text-amber-900 leading-relaxed font-medium">
+              🔒 <strong>Super Admin Hard-Lock Invariant:</strong> Root platform authority is strictly frozen to the 2 hardware credentials (9910678611 / 9717845477). New administrators are created with least-privilege operational scopes.
             </p>
           </div>
           
@@ -109,8 +112,8 @@ export const AddAdminDialog: React.FC<AddAdminDialogProps> = ({ onAdminAdded }) 
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit">
-              Create Admin
+            <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold">
+              Appoint Scoped Admin
             </Button>
           </div>
         </form>

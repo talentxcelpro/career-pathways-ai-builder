@@ -960,7 +960,7 @@ const ResumeEditorV1: React.FC = () => {
         <Helmet>
           <title>{pageTitle}</title>
           <meta name="description" content={pageDesc} />
-          <link rel="canonical" href={`${window.location.origin}/resume/editor/${id || ''}`} />
+          <link rel="canonical" href={`https://talentxcel.in/resume/editor/${id || ''}`} />
         </Helmet>
         Loading editor...
       </div>
@@ -973,7 +973,7 @@ const ResumeEditorV1: React.FC = () => {
       <Helmet>
         <title>{pageTitle}</title>
         <meta name="description" content={pageDesc} />
-        <link rel="canonical" href={`${window.location.origin}/resume/editor/${id || ''}`} />
+        <link rel="canonical" href={`https://talentxcel.in/resume/editor/${id || ''}`} />
       </Helmet>
 
       <Toolbar

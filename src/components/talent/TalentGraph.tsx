@@ -241,7 +241,7 @@ export function TalentGraph() {
       <div className="text-center">
         <h1 className="text-3xl font-bold mb-2">Your Talent Graph</h1>
         <p className="text-muted-foreground">
-          Performance insights connecting your skills, learning, and career opportunities
+          AI-powered insights connecting your skills, learning, and career opportunities
         </p>
       </div>
 

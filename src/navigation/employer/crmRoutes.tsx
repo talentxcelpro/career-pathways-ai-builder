@@ -1,14 +1,13 @@
-import { lazy } from "react";
+
 import { Users, User, FileText, Bell, Mail } from "lucide-react";
 
 // CRM & Collaboration
-const CRMCandidates = lazy(() => import("../../pages/employer/crm/CRMCandidates"));
-const CRMCandidateDetail = lazy(() => import("../../pages/employer/crm/CRMCandidateDetail"));
-const CRMNotes = lazy(() => import("../../pages/employer/crm/CRMNotes"));
-const CRMTeam = lazy(() => import("../../pages/employer/crm/CRMTeam"));
-const CRMReminders = lazy(() => import("../../pages/employer/crm/CRMReminders"));
-const CRMEmailTemplate = lazy(() => import("../../pages/employer/crm/CRMEmailTemplate"));
-
+import CRMCandidates from "../../pages/employer/crm/CRMCandidates";
+import CRMCandidateDetail from "../../pages/employer/crm/CRMCandidateDetail";
+import CRMNotes from "../../pages/employer/crm/CRMNotes";
+import CRMTeam from "../../pages/employer/crm/CRMTeam";
+import CRMReminders from "../../pages/employer/crm/CRMReminders";
+import CRMEmailTemplate from "../../pages/employer/crm/CRMEmailTemplate";
 
 export const employerCRMRoutes = [
   // CRM & Collaboration

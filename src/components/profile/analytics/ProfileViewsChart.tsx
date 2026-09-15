@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 interface ChartData {
   month: string;
   views: number;
-  TalentNetwork: number;
+  connections: number;
 }
 
 interface ProfileViewsChartProps {
@@ -34,5 +34,3 @@ export const ProfileViewsChart = ({ chartData }: ProfileViewsChartProps) => {
     </Card>
   );
 };
-
-

@@ -114,7 +114,7 @@ export const PlatformOverviewWidget: React.FC<PlatformOverviewProps> = ({ stats 
       type: 'info',
       message: 'System running optimally',
       action: 'View Details',
-      link: '/admin/CareerAnalytics',
+      link: '/admin/analytics',
       show: (stats?.pendingEmployerRequests || 0) === 0
     }
   ];
@@ -211,6 +211,3 @@ export const PlatformOverviewWidget: React.FC<PlatformOverviewProps> = ({ stats 
     </div>
   );
 };
-
-
-

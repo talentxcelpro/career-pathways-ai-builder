@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-export const useLinkedInCareerAnalytics = () => {
+export const useLinkedInAnalytics = () => {
   return useQuery({
-    queryKey: ['linkedin-CareerAnalytics'],
+    queryKey: ['linkedin-analytics'],
     queryFn: async () => {
       const [
         { count: totalImports },
@@ -62,9 +62,9 @@ export const useLinkedInCareerAnalytics = () => {
   });
 };
 
-export const useLinkedInScrapingCareerAnalytics = () => {
+export const useLinkedInScrapingAnalytics = () => {
   return useQuery({
-    queryKey: ['linkedin-scraping-CareerAnalytics'],
+    queryKey: ['linkedin-scraping-analytics'],
     queryFn: async () => {
       const [
         { count: totalJobs },
@@ -104,6 +104,3 @@ export const useLinkedInScrapingCareerAnalytics = () => {
     }
   });
 };
-
-
-

@@ -3,7 +3,7 @@ import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { AdvancedSEOCareerAnalytics } from '@/components/seo/AdvancedSEOAnalytics';
+import { AdvancedSEOAnalytics } from '@/components/seo/AdvancedSEOAnalytics';
 import { SEOAutomation } from '@/components/seo/SEOAutomation';
 import { InteractiveSEOLandingPages } from '@/components/seo/InteractiveSEOLandingPages';
 import { SEOContentCalendar } from '@/components/seo/SEOContentCalendar';
@@ -24,7 +24,7 @@ import {
 
 const Phase5SEOAdmin = () => {
   const phase5Stats = [
-    { label: 'Advanced CareerAnalytics', value: 'Active', icon: <BarChart3 className="h-4 w-4" />, status: 'success' },
+    { label: 'Advanced Analytics', value: 'Active', icon: <BarChart3 className="h-4 w-4" />, status: 'success' },
     { label: 'SEO Automation', value: '8 Rules', icon: <Bot className="h-4 w-4" />, status: 'success' },
     { label: 'Interactive Pages', value: '24 Pages', icon: <Globe className="h-4 w-4" />, status: 'success' },
     { label: 'Content Calendar', value: '15 Tasks', icon: <Calendar className="h-4 w-4" />, status: 'success' },
@@ -43,10 +43,10 @@ const Phase5SEOAdmin = () => {
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-2">
             <Zap className="h-8 w-8 text-blue-600" />
-            Phase 5 - Advanced SEO & CareerAnalytics
+            Phase 5 - Advanced SEO & Analytics
           </h1>
           <p className="text-gray-600 mt-2">
-            Advanced CareerAnalytics, automation, and interactive SEO landing pages
+            Advanced analytics, automation, and interactive SEO landing pages
           </p>
         </div>
         <Badge variant="default" className="px-4 py-2">
@@ -104,11 +104,11 @@ const Phase5SEOAdmin = () => {
       </Card>
 
       {/* Main Content Tabs */}
-      <Tabs defaultValue="CareerAnalytics" className="w-full">
+      <Tabs defaultValue="analytics" className="w-full">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="CareerAnalytics" className="flex items-center gap-2">
+          <TabsTrigger value="analytics" className="flex items-center gap-2">
             <BarChart3 className="h-4 w-4" />
-            Advanced CareerAnalytics
+            Advanced Analytics
           </TabsTrigger>
           <TabsTrigger value="automation" className="flex items-center gap-2">
             <Bot className="h-4 w-4" />
@@ -124,8 +124,8 @@ const Phase5SEOAdmin = () => {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="CareerAnalytics" className="space-y-4">
-          <AdvancedSEOCareerAnalytics />
+        <TabsContent value="analytics" className="space-y-4">
+          <AdvancedSEOAnalytics />
         </TabsContent>
 
         <TabsContent value="automation" className="space-y-4">
@@ -152,7 +152,7 @@ const Phase5SEOAdmin = () => {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <h4 className="font-semibold mb-3">Advanced CareerAnalytics</h4>
+              <h4 className="font-semibold mb-3">Advanced Analytics</h4>
               <ul className="space-y-2 text-sm">
                 <li className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
@@ -164,7 +164,7 @@ const Phase5SEOAdmin = () => {
                 </li>
                 <li className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  Competitor analysis CommandCenter
+                  Competitor analysis dashboard
                 </li>
                 <li className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
@@ -185,7 +185,7 @@ const Phase5SEOAdmin = () => {
                 </li>
                 <li className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  Performance content suggestions
+                  AI-powered content suggestions
                 </li>
                 <li className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
@@ -243,7 +243,3 @@ const Phase5SEOAdmin = () => {
 };
 
 export default Phase5SEOAdmin;
-
-
-
-

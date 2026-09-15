@@ -90,7 +90,7 @@ const AutomatedWorkflowBuilder: React.FC = () => {
       {
         id: '3',
         name: 'Network Engagement',
-        description: 'Automatically engage with network TalentNetwork',
+        description: 'Automatically engage with network connections',
         status: 'paused',
         trigger: 'new_connection',
         steps: [],
@@ -402,7 +402,7 @@ const AutomatedWorkflowBuilder: React.FC = () => {
                     </div>
                     <div className="p-4 border rounded-lg hover:bg-muted cursor-pointer">
                       <BarChart3 className="h-6 w-6 mx-auto mb-2 text-orange-500" />
-                      <p className="text-sm font-medium">CareerAnalytics</p>
+                      <p className="text-sm font-medium">Analytics</p>
                     </div>
                   </div>
                 </div>
@@ -462,7 +462,3 @@ const AutomatedWorkflowBuilder: React.FC = () => {
 };
 
 export default AutomatedWorkflowBuilder;
-
-
-
-

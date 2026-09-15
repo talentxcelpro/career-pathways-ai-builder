@@ -27,7 +27,7 @@ export const PublicToolsSection: React.FC = () => {
     {
       icon: <MessageSquare className="h-8 w-8" />,
       title: "Interview Prep",
-      description: "Practice with Performance mock interviews",
+      description: "Practice with AI-powered mock interviews",
       link: "/public/interview-prep"
     }
   ];

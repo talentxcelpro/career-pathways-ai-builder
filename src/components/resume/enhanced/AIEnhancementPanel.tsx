@@ -163,7 +163,7 @@ export const AIEnhancementPanel: React.FC<AIEnhancementPanelProps> = ({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Brain className="h-5 w-5" />
-            Performance Enhancements
+            AI-Powered Enhancements
           </CardTitle>
           <CardDescription>
             Apply intelligent improvements to your resume

@@ -54,17 +54,17 @@ export const useRealtimeActivity = () => {
         }
       }
 
-      // Get recent TalentNetwork
-      const { data: TalentNetworkData } = await supabase
+      // Get recent connections
+      const { data: connectionsData } = await supabase
         .from('connections')
         .select('created_at, status, requester_id, recipient_id')
         .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
         .order('created_at', { ascending: false })
         .limit(5);
 
-      if (TalentNetworkData) {
+      if (connectionsData) {
         // Get profiles for connection users
-        const userIds = TalentNetworkData.map(conn => 
+        const userIds = connectionsData.map(conn => 
           conn.requester_id === user.id ? conn.recipient_id : conn.requester_id
         ).filter(Boolean);
         
@@ -75,7 +75,7 @@ export const useRealtimeActivity = () => {
 
         const profilesMap = new Map(connectionProfiles?.map(p => [p.id, p]) || []);
 
-        TalentNetworkData.forEach(conn => {
+        connectionsData.forEach(conn => {
           const otherUserId = conn.requester_id === user.id ? conn.recipient_id : conn.requester_id;
           const profile = profilesMap.get(otherUserId);
           
@@ -174,5 +174,3 @@ export const useRealtimeActivity = () => {
 
   return { recentActivity, isLoading };
 };
-
-

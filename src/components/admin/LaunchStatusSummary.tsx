@@ -64,7 +64,7 @@ export const LaunchStatusSummary: React.FC = () => {
           performance: "✅ Load time: 1.8s, Bundle: 850KB", 
           functionality: "✅ Core features operational",
           content: isReady ? "✅ All content cleaned and TXC standardized" : "⚠️ INR currency references need cleanup",
-          monitoring: "✅ CareerAnalytics and error tracking active"
+          monitoring: "✅ Analytics and error tracking active"
         },
         nextSteps: isReady ? [
           "✅ All cleanup tasks completed",
@@ -279,6 +279,3 @@ export const LaunchStatusSummary: React.FC = () => {
     </div>
   );
 };
-
-
-

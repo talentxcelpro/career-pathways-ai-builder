@@ -110,7 +110,7 @@ export const AICareerInsights = ({ recommendations }: AICareerInsightsProps) => 
     keyMilestones: [
       'Complete AI/ML certification',
       'Lead 2+ major projects',
-      'Expand network by 50+ TalentNetwork',
+      'Expand network by 50+ connections',
       'Publish 5+ thought leadership articles'
     ]
   };
@@ -199,7 +199,7 @@ export const AICareerInsights = ({ recommendations }: AICareerInsightsProps) => 
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Brain className="h-6 w-6 text-purple-600" />
-            AI CareerIntelligence
+            AI Career Intelligence
           </CardTitle>
           <p className="text-muted-foreground">
             Personalized insights powered by AI analysis of market trends, your profile, and career patterns
@@ -382,5 +382,3 @@ export const AICareerInsights = ({ recommendations }: AICareerInsightsProps) => 
     </div>
   );
 };
-
-

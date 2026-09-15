@@ -5,17 +5,17 @@ export function useProfileStats(userId?: string) {
   return useQuery({
     queryKey: ['profile-stats', userId],
     queryFn: async () => {
-      if (!userId) return { TalentNetwork: 0, profileViews: 0 };
+      if (!userId) return { connections: 0, profileViews: 0 };
 
-      // Get TalentNetwork count (both sent and received accepted TalentNetwork)
-      const { count: TalentNetworkCount, error: TalentNetworkError } = await supabase
+      // Get connections count (both sent and received accepted connections)
+      const { count: connectionsCount, error: connectionsError } = await supabase
         .from('connections')
         .select('*', { count: 'exact', head: true })
         .or(`requester_id.eq.${userId},recipient_id.eq.${userId}`)
         .eq('status', 'accepted');
 
-      if (TalentNetworkError) {
-        console.error('Error fetching TalentNetwork:', TalentNetworkError);
+      if (connectionsError) {
+        console.error('Error fetching connections:', connectionsError);
       }
 
       // Get profile views count 
@@ -29,7 +29,7 @@ export function useProfileStats(userId?: string) {
       }
 
       return {
-        TalentNetwork: TalentNetworkCount || 0,
+        connections: connectionsCount || 0,
         profileViews: profileViewsCount || 0,
       };
     },
@@ -37,4 +37,3 @@ export function useProfileStats(userId?: string) {
     refetchInterval: 30000, // Refetch every 30 seconds
   });
 }
-

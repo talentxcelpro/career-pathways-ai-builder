@@ -54,7 +54,7 @@ export const HeroSection = () => {
                 <div className="relative transform-gpu">
                   <HeroImage
                     src="/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png"
-                    alt="TalentXcel Evolution Hub - Professional CommandCenter showcasing career CareerAnalytics, skills tracking, and networking features"
+                    alt="TalentXcel Career Passport - Professional dashboard showcasing career analytics, skills tracking, and networking features"
                     className="w-full h-auto transform hover:scale-[1.02] transition-transform duration-700 ease-out will-change-transform"
                   />
                   {/* Apple-style subtle shadow */}
@@ -80,7 +80,3 @@ export const HeroSection = () => {
     </div>
   );
 };
-
-
-
-

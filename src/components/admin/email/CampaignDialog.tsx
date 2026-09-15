@@ -119,7 +119,7 @@ export const CampaignDialog = ({ open, onOpenChange }: CampaignDialogProps) => {
 
   const modules = [
     'Authentication', 'Profile', 'Resume Builder', 'Job Search', 'AI Career Coach',
-    'Learning', 'Networking', 'Collaboration', 'CareerAnalytics', 'Company Portal',
+    'Learning', 'Networking', 'Collaboration', 'Analytics', 'Company Portal',
     'Content', 'Gamification', 'System'
   ];
 
@@ -289,7 +289,3 @@ export const CampaignDialog = ({ open, onOpenChange }: CampaignDialogProps) => {
     </Dialog>
   );
 };
-
-
-
-

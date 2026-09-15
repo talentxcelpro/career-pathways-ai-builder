@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,14 +15,20 @@ import {
   Calendar,
   CheckCircle,
   Edit,
-  Share2
+  Share2,
+  Loader2
 } from "lucide-react";
 import { useNavigate, useLocation } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { normalizeJobContent } from '@/lib/job/normalizeJobContent';
+import { toJobsTablePayload } from '@/lib/job/toJobsTablePayload';
 
 const JobPostPreview = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { aiGenerated, formData } = location.state || {};
+  const [isPublishing, setIsPublishing] = useState(false);
 
   if (!formData) {
     return (
@@ -56,13 +62,113 @@ const JobPostPreview = () => {
     return 'Salary not disclosed';
   };
 
-  const handlePublish = () => {
-    navigate('/jobs/post/success', { 
-      state: { 
-        jobData: formData,
-        aiGenerated 
-      } 
-    });
+  const handlePublish = async () => {
+    try {
+      setIsPublishing(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('You must be logged in to publish a job');
+        setIsPublishing(false);
+        return;
+      }
+
+      // Normalize payload
+      const normResult = normalizeJobContent(formData);
+      const canonicalPayload = toJobsTablePayload(normResult.normalized);
+
+      let companyId = formData.company_id || null;
+      if (!companyId && formData.company_name?.trim()) {
+        try {
+          const { data: cId } = await supabase.rpc('find_or_create_company', {
+            company_name_param: formData.company_name.trim()
+          });
+          if (cId) companyId = cId;
+        } catch (cErr) {
+          console.warn('find_or_create_company rpc error:', cErr);
+        }
+      }
+
+      const insertData = {
+        ...canonicalPayload,
+        job_title: formData.job_title || formData.title,
+        company_name: canonicalPayload.company_name || formData.company_name,
+        job_summary: formData.job_summary,
+        job_description: formData.job_description,
+        location_city: formData.location_city,
+        location_state: formData.location_state,
+        employment_type: canonicalPayload.employment_type || formData.employment_type,
+        work_mode: formData.work_mode,
+        work_schedule: formData.work_schedule,
+        experience_level: canonicalPayload.experience_level || formData.experience_level,
+        contact_name: formData.contact_name,
+        contact_designation: formData.contact_designation,
+        contact_person_email: formData.contact_email,
+        contact_person_phone: formData.contact_phone,
+        company_website: formData.company_website,
+        industry_domain: formData.industry_domain,
+        company_size: formData.company_size,
+        posted_by: user.id,
+        company_id: companyId,
+        is_active: true,
+        visibility_status: 'active',
+        ai_match_enabled: formData.ai_match_enabled ?? true,
+        ai_priority: formData.ai_priority ?? false,
+        key_responsibilities: formData.key_responsibilities || [],
+        must_have_requirements: formData.must_have_requirements || [],
+        preferred_requirements: formData.preferred_requirements || [],
+        skills_required: formData.required_skills || [],
+        field_of_study: formData.field_of_study || [],
+        certifications: formData.certifications || [],
+        preferred_industries: formData.preferred_industries || [],
+        preferred_company_types: formData.preferred_company_types || [],
+        specific_tools: formData.specific_tools || [],
+        benefits: formData.benefits || [],
+        salary_min: formData.min_salary || null,
+        salary_max: formData.max_salary || null,
+        min_experience: formData.min_experience || null,
+        max_experience: formData.max_experience || null,
+        year_of_passing: formData.year_of_passing || null,
+        max_education_gap: formData.max_education_gap || null,
+        education_level: formData.education_level,
+        application_deadline: formData.application_deadline ? new Date(formData.application_deadline).toISOString().split('T')[0] : null
+      };
+
+      const { data, error } = await supabase
+        .from('jobs')
+        .insert(insertData)
+        .select();
+
+      if (error) {
+        console.error('Job preview publishing error:', error);
+        toast.error(error.message || 'Failed to publish job');
+        setIsPublishing(false);
+        return;
+      }
+
+      const createdJob = Array.isArray(data) ? data[0] : (data || insertData);
+      toast.success('Job published successfully!');
+      navigate('/jobs/post/success', {
+        state: {
+          jobData: {
+            ...formData,
+            id: createdJob?.id || createdJob?.seo_slug,
+            slug: createdJob?.seo_slug || createdJob?.slug || createdJob?.id,
+            title: createdJob?.job_title || createdJob?.title || formData.job_title,
+            location_city: createdJob?.location_city || formData.location_city,
+            location_state: createdJob?.location_state || formData.location_state,
+            employment_type: createdJob?.employment_type || formData.employment_type,
+            salary_min: createdJob?.salary_min ?? formData.min_salary,
+            salary_max: createdJob?.salary_max ?? formData.max_salary,
+            company_name: createdJob?.company_name || formData.company_name
+          },
+          aiGenerated
+        }
+      });
+    } catch (err: any) {
+      console.error('Unexpected error publishing job:', err);
+      toast.error(err.message || 'Failed to publish job');
+      setIsPublishing(false);
+    }
   };
 
   return (
@@ -264,9 +370,18 @@ const JobPostPreview = () => {
               <Share2 className="h-4 w-4 mr-2" />
               Save as Draft
             </Button>
-            <Button onClick={handlePublish} className="bg-green-600 hover:bg-green-700">
-              <CheckCircle className="h-4 w-4 mr-2" />
-              Publish Job
+            <Button onClick={handlePublish} disabled={isPublishing} className="bg-green-600 hover:bg-green-700 text-white font-bold">
+              {isPublishing ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Publishing...
+                </>
+              ) : (
+                <>
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  Publish Job
+                </>
+              )}
             </Button>
           </div>
         </div>

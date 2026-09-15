@@ -35,7 +35,7 @@ interface SecurityEvent {
   ip_address: string | null;
 }
 
-export const SecurityMonitoringCommandCenter = () => {
+export const SecurityMonitoringDashboard = () => {
   // Fetch security metrics
   const { data: metrics, isLoading: metricsLoading } = useQuery({
     queryKey: ['security-metrics'],
@@ -284,4 +284,3 @@ export const SecurityMonitoringCommandCenter = () => {
     </div>
   );
 };
-

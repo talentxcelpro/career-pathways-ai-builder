@@ -112,8 +112,8 @@ const IndustryBenchmarking: React.FC = () => {
     {
       name: 'Emily Johnson',
       experience: '5 years',
-      skills: ['Python', 'TensorFlow', 'Data Science', 'SQL', 'CareerAnalytics'],
-      certifications: ['Google Data CareerAnalytics', 'AWS Machine Learning'],
+      skills: ['Python', 'TensorFlow', 'Data Science', 'SQL', 'Analytics'],
+      certifications: ['Google Data Analytics', 'AWS Machine Learning'],
       salary: '$142,000',
       location: 'Remote',
       strengthScore: 85
@@ -410,6 +410,3 @@ const IndustryBenchmarking: React.FC = () => {
 };
 
 export default IndustryBenchmarking;
-
-
-

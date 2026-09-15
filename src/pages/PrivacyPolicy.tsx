@@ -38,10 +38,10 @@ const PrivacyPolicy = () => {
           <CardContent>
             <div className="text-gray-600 leading-relaxed space-y-4">
               <p>
-                Welcome to TalentXcel ("we," "our," or "us"). We are committed to protecting your personal information and your right to privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our career platform and Performance services.
+                Welcome to TalentXcel ("we," "our," or "us"). We are committed to protecting your personal information and your right to privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our career platform and AI-powered services.
               </p>
               <p>
-                TalentXcel is a comprehensive career platform that connects job seekers with employers, provides Performance career insights, resume optimization, skill development, and professional networking opportunities. We operate from Noida, India, and serve users globally.
+                TalentXcel is a comprehensive career platform that connects job seekers with employers, provides AI-powered career insights, resume optimization, skill development, and professional networking opportunities. We operate from Noida, India, and serve users globally.
               </p>
               <p>
                 By using our services, you agree to the collection and use of information in accordance with this Privacy Policy.
@@ -81,7 +81,7 @@ const PrivacyPolicy = () => {
                   <li>• Learning progress and course completions</li>
                   <li>• Platform interactions and feature usage</li>
                   <li>• Communication history and messages</li>
-                  <li>• Network TalentNetwork and professional relationships</li>
+                  <li>• Network connections and professional relationships</li>
                 </ul>
               </div>
 
@@ -111,11 +111,11 @@ const PrivacyPolicy = () => {
               <div>
                 <h3 className="font-semibold text-gray-800 mb-2">Core Services</h3>
                 <ul className="space-y-1 ml-4">
-                  <li>• Provide Performance job matching and career recommendations</li>
+                  <li>• Provide AI-powered job matching and career recommendations</li>
                   <li>• Enable resume optimization and ATS scoring</li>
-                  <li>• Facilitate TalentNetwork between job seekers and employers</li>
+                  <li>• Facilitate connections between job seekers and employers</li>
                   <li>• Deliver personalized learning and skill development content</li>
-                  <li>• Generate career insights and market CareerAnalytics</li>
+                  <li>• Generate career insights and market analytics</li>
                 </ul>
               </div>
 
@@ -164,7 +164,7 @@ const PrivacyPolicy = () => {
 
               <div>
                 <h3 className="font-semibold text-gray-800 mb-2">Service Providers</h3>
-                <p>We work with trusted third-party service providers who assist with hosting, CareerAnalytics, payment processing, and other business operations. These providers are bound by strict confidentiality agreements.</p>
+                <p>We work with trusted third-party service providers who assist with hosting, analytics, payment processing, and other business operations. These providers are bound by strict confidentiality agreements.</p>
               </div>
 
               <div>
@@ -267,7 +267,7 @@ const PrivacyPolicy = () => {
               </div>
 
               <div>
-                <h3 className="font-semibold text-gray-800 mb-2">CareerAnalytics Cookies</h3>
+                <h3 className="font-semibold text-gray-800 mb-2">Analytics Cookies</h3>
                 <p>Help us understand how you use our platform to improve performance and user experience.</p>
               </div>
 
@@ -295,7 +295,7 @@ const PrivacyPolicy = () => {
                 <li>• Active account data: Retained while your account is active</li>
                 <li>• Application history: Retained for 3 years after application</li>
                 <li>• Communication records: Retained for 2 years</li>
-                <li>• CareerAnalytics data: Anonymized and retained for 5 years</li>
+                <li>• Analytics data: Anonymized and retained for 5 years</li>
                 <li>• Legal compliance: As required by applicable laws</li>
               </ul>
               <p>
@@ -428,7 +428,3 @@ const PrivacyPolicy = () => {
 };
 
 export default PrivacyPolicy;
-
-
-
-

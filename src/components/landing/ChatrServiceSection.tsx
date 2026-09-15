@@ -55,7 +55,7 @@ export const ChatrServiceSection: React.FC = () => {
 
           {/* Headline */}
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 tracking-tight">
-            CHATR — Professional Communication
+            CHATR — A Communication Service
             <span className="block text-primary">by TalentXcel</span>
           </h2>
 
@@ -119,15 +119,15 @@ export const ChatrServiceSection: React.FC = () => {
           {serviceHighlights.map((highlight, index) => (
             <div 
               key={index}
-              className="group p-6 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl hover:border-primary/40 hover:bg-white/10 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2"
+              className="group p-6 bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl hover:border-primary/30 hover:bg-card/80 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
             >
-              <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors duration-500">
-                <highlight.icon className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                <highlight.icon className="w-6 h-6 text-primary" />
               </div>
-              <h3 className="font-apple-bold text-foreground mb-2 text-sm tracking-tight">
+              <h3 className="font-semibold text-foreground mb-2 text-sm">
                 {highlight.title}
               </h3>
-              <p className="text-xs text-muted-foreground font-apple-regular leading-relaxed">
+              <p className="text-xs text-muted-foreground">
                 {highlight.description}
               </p>
             </div>
@@ -137,10 +137,10 @@ export const ChatrServiceSection: React.FC = () => {
         {/* Footer Compliance */}
         <div className="text-center pt-8 border-t border-border/30">
           <p className="text-xs text-muted-foreground mb-1">
-            © 2026 TalentXcel Technologies Pvt Ltd
+            © 2026 TalentXcel Services Pvt Ltd
           </p>
           <p className="text-xs text-muted-foreground/70">
-            CHATR is a communication service developed and operated by TalentXcel
+            CHATR (chatr.chat / chatrchat.in) is an official brand and communication service operated by TalentXcel Services Pvt Ltd.
           </p>
         </div>
       </div>

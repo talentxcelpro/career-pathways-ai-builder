@@ -9,7 +9,6 @@ export const APP_CONFIG = {
   // Application URLs
   FUNCTIONS_URL: "https://dthlgsnakhoftinssokm.supabase.co/functions/v1",
   SITE_URL: "https://talentxcel.in",
-  VAPID_PUBLIC_KEY: "BEl62iUYgUivxIkv69yViEuiBIa40HI80NM9f40SawaN-F72YOFApNfUpVJ4LxoLHCkFCVRJfySpZ8_Q24eWBJA",
   
   // TXC Token Configuration
   TXC_USD_RATE: 0.02, // 1 TXC = $0.02 USD

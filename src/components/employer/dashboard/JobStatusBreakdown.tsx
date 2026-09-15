@@ -117,9 +117,9 @@ export const JobStatusBreakdown = () => {
               variant="ghost" 
               size="sm" 
               className="text-xs font-semibold"
-              onClick={() => navigate('/employer/CareerAnalytics')}
+              onClick={() => navigate('/employer/analytics')}
             >
-              View CareerAnalytics
+              View Analytics
             </Button>
           </div>
         </div>
@@ -127,7 +127,3 @@ export const JobStatusBreakdown = () => {
     </Card>
   );
 };
-
-
-
-

@@ -143,9 +143,9 @@ export const SkillEndorsements: React.FC<SkillEndorsementsProps> = ({ className 
 
   const handleEndorseRequest = async (skillId: string) => {
     triggerHaptic('medium');
-    // Logic to request endorsements from TalentNetwork
+    // Logic to request endorsements from connections
     await sync('skills', { action: 'request_endorsement', skillId });
-    toast.success('Endorsement request sent to your TalentNetwork');
+    toast.success('Endorsement request sent to your connections');
   };
 
   const handleAddSkill = async (skillName: string) => {
@@ -472,5 +472,3 @@ export const SkillEndorsements: React.FC<SkillEndorsementsProps> = ({ className 
     </div>
   );
 };
-
-

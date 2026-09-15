@@ -325,7 +325,7 @@ export const AIEmailOptimizer = () => {
             AI Email Optimizer
           </h2>
           <p className="text-muted-foreground">
-            Intelligent optimization powered by machine learning and behavioral CareerAnalytics
+            Intelligent optimization powered by machine learning and behavioral analytics
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -401,7 +401,7 @@ export const AIEmailOptimizer = () => {
 
       <Tabs defaultValue="optimizations" className="w-full">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="optimizations">Smart Moves</TabsTrigger>
+          <TabsTrigger value="optimizations">AI Suggestions</TabsTrigger>
           <TabsTrigger value="scheduling">Smart Scheduling</TabsTrigger>
           <TabsTrigger value="personalization">Personalization</TabsTrigger>
           <TabsTrigger value="settings">AI Settings</TabsTrigger>
@@ -664,6 +664,3 @@ export const AIEmailOptimizer = () => {
     </div>
   );
 };
-
-
-

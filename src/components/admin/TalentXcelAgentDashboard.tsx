@@ -92,8 +92,8 @@ interface ModuleStats {
   engagement: number;
 }
 
-export const TalentXcelAgentCommandCenter: React.FC = () => {
-  console.log('🚀 TalentXcelAgentCommandCenter component initializing - version 2025-08-19-03:12 - USING RECORD NOT MAP');
+export const TalentXcelAgentDashboard: React.FC = () => {
+  console.log('🚀 TalentXcelAgentDashboard component initializing - version 2025-08-19-03:12 - USING RECORD NOT MAP');
   const [activeModule, setActiveModule] = useState('Overview');
   const [expandedAgents, setExpandedAgents] = useState<Set<string>>(new Set());
   const [searchTerm, setSearchTerm] = useState('');
@@ -299,8 +299,8 @@ export const TalentXcelAgentCommandCenter: React.FC = () => {
       
       await logAgentActivity({
         taskId: `refresh-${Date.now()}`,
-        agentId: 'admin-CommandCenter',
-        actionType: 'CommandCenter_refresh',
+        agentId: 'admin-dashboard',
+        actionType: 'dashboard_refresh',
         description: 'Manual refresh of all agent statuses',
         level: 'info'
       });
@@ -447,7 +447,7 @@ export const TalentXcelAgentCommandCenter: React.FC = () => {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h1 className="text-3xl font-bold text-foreground">TalentXcel AI Agent Operations</h1>
-              <p className="text-muted-foreground">24/7 Performance platform management & virality optimization</p>
+              <p className="text-muted-foreground">24/7 AI-powered platform management & virality optimization</p>
             </div>
             <div className="flex items-center gap-3">
               <Button
@@ -753,7 +753,7 @@ export const TalentXcelAgentCommandCenter: React.FC = () => {
                   <div className="space-y-3">
                     <h4 className="font-semibold text-sm">⚡ Real-Time Operations</h4>
                     <ul className="text-sm space-y-1 text-muted-foreground">
-                      <li>• WebSocket TalentNetwork for live updates</li>
+                      <li>• WebSocket connections for live updates</li>
                       <li>• Background task processing</li>
                       <li>• Error handling and retry logic</li>
                       <li>• Performance monitoring and alerts</li>
@@ -763,7 +763,7 @@ export const TalentXcelAgentCommandCenter: React.FC = () => {
                     <h4 className="font-semibold text-sm">🎯 Module-Specific Intelligence</h4>
                     <ul className="text-sm space-y-1 text-muted-foreground">
                       <li>• Network: Connection suggestions & engagement</li>
-                      <li>• Jobs: Precision Match & skill recommendations</li>
+                      <li>• Jobs: AI matching & skill recommendations</li>
                       <li>• Learning: Personalized course paths</li>
                       <li>• Growth: Viral campaign automation</li>
                     </ul>
@@ -774,9 +774,9 @@ export const TalentXcelAgentCommandCenter: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Sidebar: Live CareerAnalytics */}
+        {/* Right Sidebar: Live Analytics */}
         <div className="w-80 border-l bg-card p-4 space-y-4">
-          <h2 className="font-semibold text-lg">Live CareerAnalytics</h2>
+          <h2 className="font-semibold text-lg">Live Analytics</h2>
           
           {/* System Health */}
           <Card>
@@ -871,7 +871,3 @@ export const TalentXcelAgentCommandCenter: React.FC = () => {
     </div>
   );
 };
-
-
-
-

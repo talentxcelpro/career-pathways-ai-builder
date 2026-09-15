@@ -1,10 +1,10 @@
 import React from 'react';
-import { TalentNetworkList } from './TalentNetworkList';
-import { TalentNetworkuggestions } from './TalentNetworkuggestions';
+import { ConnectionsList } from './ConnectionsList';
+import { ConnectionSuggestions } from './ConnectionSuggestions';
 import { PeopleToKnow } from './PeopleToKnow';
 import { Users, UserPlus, Star } from 'lucide-react';
 
-export const EnhancedTalentNetwork = () => {
+export const EnhancedConnections = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Header */}
@@ -13,39 +13,39 @@ export const EnhancedTalentNetwork = () => {
           My Network
         </h1>
         <p className="text-muted-foreground">
-          Grow your professional network and discover meaningful TalentNetwork
+          Grow your professional network and discover meaningful connections
         </p>
       </div>
 
       {/* Three Column Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column - My TalentNetwork */}
+        {/* Left Column - My Connections */}
         <div className="space-y-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-primary/10 rounded-lg">
               <Users className="h-5 w-5 text-primary" />
             </div>
             <h2 className="text-xl font-semibold text-foreground">
-              My TalentNetwork
+              My Connections
             </h2>
           </div>
           <div className="animate-fade-in">
-            <TalentNetworkList />
+            <ConnectionsList />
           </div>
         </div>
 
-        {/* Middle Column - Suggested TalentNetwork */}
+        {/* Middle Column - Suggested Connections */}
         <div className="space-y-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-secondary/10 rounded-lg">
               <UserPlus className="h-5 w-5 text-secondary-foreground" />
             </div>
             <h2 className="text-xl font-semibold text-foreground">
-              Suggested TalentNetwork
+              Suggested Connections
             </h2>
           </div>
           <div className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
-            <TalentNetworkuggestions />
+            <ConnectionSuggestions />
           </div>
         </div>
 
@@ -67,4 +67,3 @@ export const EnhancedTalentNetwork = () => {
     </div>
   );
 };
-

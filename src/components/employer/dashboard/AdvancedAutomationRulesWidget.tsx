@@ -16,7 +16,7 @@ interface AutomationRule {
   successRate: number;
   lastRun: string;
   complexity: 'simple' | 'medium' | 'advanced';
-  category: 'screening' | 'scheduling' | 'communication' | 'CareerAnalytics';
+  category: 'screening' | 'scheduling' | 'communication' | 'analytics';
 }
 
 export const AdvancedAutomationRulesWidget = () => {
@@ -51,7 +51,7 @@ export const AdvancedAutomationRulesWidget = () => {
       id: '3',
       name: 'Auto-Reject Unqualified',
       trigger: 'Application score < 40%',
-      action: 'Send rejection email + Feedback',
+      action: 'Send rejection email + feedback',
       isActive: false,
       runsToday: 0,
       successRate: 87,
@@ -87,7 +87,7 @@ export const AdvancedAutomationRulesWidget = () => {
       case 'screening': return <Filter className="h-3 w-3" />;
       case 'scheduling': return <Clock className="h-3 w-3" />;
       case 'communication': return <Users className="h-3 w-3" />;
-      case 'CareerAnalytics': return <Bot className="h-3 w-3" />;
+      case 'analytics': return <Bot className="h-3 w-3" />;
       default: return <Zap className="h-3 w-3" />;
     }
   };
@@ -187,8 +187,3 @@ export const AdvancedAutomationRulesWidget = () => {
     </Card>
   );
 };
-
-
-
-
-

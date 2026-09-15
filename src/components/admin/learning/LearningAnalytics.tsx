@@ -4,7 +4,7 @@ import { BarChart3, TrendingUp, Users, Clock, Award, BookOpen } from 'lucide-rea
 import { useEnhancedLearningManagement } from '@/hooks/useEnhancedLearningManagement';
 import { Progress } from "@/components/ui/progress";
 
-export const LearningCareerAnalytics: React.FC = () => {
+export const LearningAnalytics: React.FC = () => {
   const { learningStats, isLoading } = useEnhancedLearningManagement();
 
   if (isLoading) {
@@ -17,7 +17,7 @@ export const LearningCareerAnalytics: React.FC = () => {
     </div>;
   }
 
-  const CareerAnalytics = [
+  const analytics = [
     {
       title: "Completion Rate",
       value: `${learningStats?.completionRate || 0}%`,
@@ -56,13 +56,13 @@ export const LearningCareerAnalytics: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Learning CareerAnalytics</h2>
+          <h2 className="text-2xl font-bold">Learning Analytics</h2>
           <p className="text-muted-foreground">Track performance and engagement metrics</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        {CareerAnalytics.map((stat, index) => {
+        {analytics.map((stat, index) => {
           const Icon = stat.icon;
           return (
             <Card key={index}>
@@ -138,7 +138,7 @@ export const LearningCareerAnalytics: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Revenue CareerAnalytics</CardTitle>
+            <CardTitle>Revenue Analytics</CardTitle>
             <CardDescription>Financial performance</CardDescription>
           </CardHeader>
           <CardContent>
@@ -196,6 +196,3 @@ export const LearningCareerAnalytics: React.FC = () => {
     </div>
   );
 };
-
-
-

@@ -241,13 +241,13 @@ export const InterviewPrep: React.FC<InterviewPrepProps> = ({ className }) => {
             Interview Preparation
           </CardTitle>
           <p className="text-muted-foreground">
-            Practice with Performance mock interviews tailored to your target roles
+            Practice with AI-powered mock interviews tailored to your target roles
           </p>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[
-              { icon: <Brain className="h-5 w-5" />, label: 'Performance', desc: 'Smart question selection' },
+              { icon: <Brain className="h-5 w-5" />, label: 'AI-Powered', desc: 'Smart question selection' },
               { icon: <Video className="h-5 w-5" />, label: 'Video Practice', desc: 'Record and review responses' },
               { icon: <TrendingUp className="h-5 w-5" />, label: 'Performance Tracking', desc: 'Track improvement over time' }
             ].map((feature, index) => (

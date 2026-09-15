@@ -29,7 +29,7 @@ export interface AIServiceResponse<T = any> {
   cost_estimate?: number;
   tokens_used?: number;
   recommendations?: string[];
-  Feedback_id?: string;
+  feedback_id?: string;
 }
 
 export interface AIJobMatch {
@@ -97,7 +97,7 @@ export interface AICareerInsight {
 export interface AIFeedback {
   operation_id: string;
   rating: 1 | 2 | 3 | 4 | 5;
-  Feedback_text?: string;
+  feedback_text?: string;
   improvement_suggestions?: string[];
 }
 
@@ -464,24 +464,24 @@ class AIServiceManager {
   }
 
   // Feedback Collection
-  async submitFeedback(Feedback: AIFeedback): Promise<void> {
+  async submitFeedback(feedback: AIFeedback): Promise<void> {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      await supabase.from('ai_Feedback_system').insert({
+      await supabase.from('ai_feedback_system').insert({
         user_id: user?.id,
-        operation_id: Feedback.operation_id,
-        rating: Feedback.rating,
-        Feedback_text: Feedback.Feedback_text,
+        operation_id: feedback.operation_id,
+        rating: feedback.rating,
+        feedback_text: feedback.feedback_text,
         metadata: {
-          improvement_suggestions: Feedback.improvement_suggestions,
+          improvement_suggestions: feedback.improvement_suggestions,
           session_id: this.sessionId
         }
       });
       
-      toast.success('Thank you for your Feedback!');
+      toast.success('Thank you for your feedback!');
     } catch (error) {
-      console.error('Failed to submit Feedback:', error);
-      toast.error('Failed to submit Feedback');
+      console.error('Failed to submit feedback:', error);
+      toast.error('Failed to submit feedback');
     }
   }
 
@@ -517,8 +517,8 @@ class AIServiceManager {
     }
   }
 
-  // Get usage CareerAnalytics
-  async getUsageCareerAnalytics(timeframe: 'day' | 'week' | 'month' = 'week'): Promise<{
+  // Get usage analytics
+  async getUsageAnalytics(timeframe: 'day' | 'week' | 'month' = 'week'): Promise<{
     total_operations: number;
     successful_operations: number;
     failed_operations: number;
@@ -554,7 +554,7 @@ class AIServiceManager {
 
       if (error) throw error;
 
-      const CareerAnalytics = {
+      const analytics = {
         total_operations: data.length,
         successful_operations: data.filter(log => log.status === 'success').length,
         failed_operations: data.filter(log => log.status === 'error').length,
@@ -565,9 +565,9 @@ class AIServiceManager {
         popular_operations: this.calculatePopularOperations(data)
       };
 
-      return CareerAnalytics;
+      return analytics;
     } catch (error) {
-      console.error('Failed to get usage CareerAnalytics:', error);
+      console.error('Failed to get usage analytics:', error);
       return {
         total_operations: 0,
         successful_operations: 0,
@@ -605,7 +605,3 @@ class AIServiceManager {
 
 // Export singleton instance
 export const aiServiceManager = new AIServiceManager();
-
-
-
-

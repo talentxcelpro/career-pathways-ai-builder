@@ -7,14 +7,14 @@ import { Badge } from '@/components/ui/badge';
 import { Plus, Play, Pause, BarChart, Send } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { CampaignDialog } from './CampaignDialog';
-import { CampaignCareerAnalyticsDialog } from './CampaignAnalyticsDialog';
+import { CampaignAnalyticsDialog } from './CampaignAnalyticsDialog';
 import { useToast } from '@/hooks/use-toast';
 
 export const CampaignManagement = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [CareerAnalyticsDialogOpen, setCareerAnalyticsDialogOpen] = useState(false);
+  const [analyticsDialogOpen, setAnalyticsDialogOpen] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState<any>(null);
   
   const { data: campaigns, isLoading } = useQuery({
@@ -172,11 +172,11 @@ export const CampaignManagement = () => {
                             size="sm"
                             onClick={() => {
                               setSelectedCampaign(campaign);
-                              setCareerAnalyticsDialogOpen(true);
+                              setAnalyticsDialogOpen(true);
                             }}
                           >
                             <BarChart className="h-4 w-4 mr-1" />
-                            Career Analytics
+                            Analytics
                           </Button>
                           {campaign.status === 'draft' ? (
                             <Button 
@@ -271,15 +271,11 @@ export const CampaignManagement = () => {
       onOpenChange={setDialogOpen}
     />
     
-    <CampaignCareerAnalyticsDialog
-      open={CareerAnalyticsDialogOpen}
-      onOpenChange={setCareerAnalyticsDialogOpen}
+    <CampaignAnalyticsDialog
+      open={analyticsDialogOpen}
+      onOpenChange={setAnalyticsDialogOpen}
       campaign={selectedCampaign}
     />
     </>
   );
 };
-
-
-
-

@@ -123,7 +123,7 @@ export const EnrollmentManagement: React.FC = () => {
             </Button>
             <Button variant="outline" className="h-24 flex flex-col">
               <TrendingUp className="h-6 w-6 mb-2" />
-              Growth Path
+              Progress Tracking
             </Button>
           </div>
         </CardContent>

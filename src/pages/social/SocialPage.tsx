@@ -1,7 +1,7 @@
 import React from 'react';
 import { SocialConnect } from '@/components/social/SocialConnect';
 import { SocialShare } from '@/components/social/SocialShare';
-import { OptimizedSocialPulse } from '@/components/social/OptimizedSocialPulse';
+import { OptimizedSocialFeed } from '@/components/social/OptimizedSocialFeed';
 import { FastStoryBubbles } from '@/components/social/FastStoryBubbles';
 import { QuickCreatePost } from '@/components/social/QuickCreatePost';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -69,7 +69,7 @@ const SocialPage = () => {
         })}
       </div>
 
-      {/* Social Pulse Tabs */}
+      {/* Social Feed Tabs */}
       <Tabs defaultValue="explore" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="explore" className="flex items-center gap-2">
@@ -91,7 +91,7 @@ const SocialPage = () => {
           <div className="px-4">
             <QuickCreatePost />
           </div>
-          <OptimizedSocialPulse PulseType="explore" />
+          <OptimizedSocialFeed feedType="explore" />
           <div className="flex justify-center mt-8">
             <Button 
               variant="outline" 
@@ -109,7 +109,7 @@ const SocialPage = () => {
           <div className="px-4">
             <QuickCreatePost />
           </div>
-          <OptimizedSocialPulse PulseType="following" />
+          <OptimizedSocialFeed feedType="following" />
           <div className="flex justify-center mt-8">
             <Button 
               variant="outline" 
@@ -196,8 +196,8 @@ const SocialPage = () => {
             <CardContent>
               <SocialShare 
                 showTitle={false}
-                title="TalentXcel - Performance Career Platform"
-                description="Discover your dream job and advance your career with Performance tools. Join thousands of professionals who trust TalentXcel for their career growth."
+                title="TalentXcel - AI-Powered Career Platform"
+                description="Discover your dream job and advance your career with AI-powered tools. Join thousands of professionals who trust TalentXcel for their career growth."
                 hashtags={['TalentXcel', 'CareerGrowth', 'JobSearch', 'AI', 'ProfessionalDevelopment']}
               />
             </CardContent>

@@ -225,4 +225,3 @@ export const UniversalAppPrompt: React.FC<UniversalAppPromptProps> = ({
     </div>
   );
 };
-

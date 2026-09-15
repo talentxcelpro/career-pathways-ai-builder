@@ -12,7 +12,7 @@ import {
   Briefcase
 } from 'lucide-react';
 
-const TalentCareerAnalytics = () => {
+const TalentAnalytics = () => {
   return (
     <div className="space-y-6">
       {/* Key Metrics */}
@@ -137,7 +137,7 @@ const TalentCareerAnalytics = () => {
             <div className="space-y-3">
               <div className="text-center py-8 text-muted-foreground">
                 <Briefcase className="h-12 w-12 mx-auto mb-2" />
-                <p>Job title CareerAnalytics will appear when profiles are added</p>
+                <p>Job title analytics will appear when profiles are added</p>
               </div>
             </div>
           </CardContent>
@@ -175,21 +175,21 @@ const TalentCareerAnalytics = () => {
       {/* Quick Actions */}
       <Card>
         <CardHeader>
-          <CardTitle>Quick CareerAnalytics Actions</CardTitle>
+          <CardTitle>Quick Analytics Actions</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-4 border rounded-lg text-center">
               <Download className="h-8 w-8 mx-auto mb-2 text-blue-500" />
               <h3 className="font-semibold mb-2">Export Data</h3>
-              <p className="text-sm text-muted-foreground mb-3">Download CareerAnalytics reports</p>
+              <p className="text-sm text-muted-foreground mb-3">Download analytics reports</p>
               <button className="text-sm text-blue-600 hover:underline">Export CSV</button>
             </div>
             
             <div className="p-4 border rounded-lg text-center">
               <BarChart3 className="h-8 w-8 mx-auto mb-2 text-green-500" />
               <h3 className="font-semibold mb-2">Generate Report</h3>
-              <p className="text-sm text-muted-foreground mb-3">Create detailed CareerAnalytics report</p>
+              <p className="text-sm text-muted-foreground mb-3">Create detailed analytics report</p>
               <button className="text-sm text-green-600 hover:underline">Generate</button>
             </div>
             
@@ -206,7 +206,4 @@ const TalentCareerAnalytics = () => {
   );
 };
 
-export { TalentCareerAnalytics };
-
-
-
+export { TalentAnalytics };

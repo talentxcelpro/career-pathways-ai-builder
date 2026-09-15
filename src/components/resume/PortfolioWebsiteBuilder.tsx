@@ -28,7 +28,7 @@ export const PortfolioWebsiteBuilder: React.FC<PortfolioWebsiteBuilderProps> = (
     showExperience: true,
     showSkills: true,
     customCSS: '',
-    CareerAnalytics: false
+    analytics: false
   });
 
   const [previewMode, setPreviewMode] = useState(false);
@@ -177,12 +177,12 @@ export const PortfolioWebsiteBuilder: React.FC<PortfolioWebsiteBuilderProps> = (
             </div>
 
             <div className="flex items-center justify-between">
-              <Label htmlFor="CareerAnalytics">Enable CareerAnalytics</Label>
+              <Label htmlFor="analytics">Enable Analytics</Label>
               <Switch
-                id="CareerAnalytics"
-                checked={websiteConfig.CareerAnalytics}
+                id="analytics"
+                checked={websiteConfig.analytics}
                 onCheckedChange={(checked) => 
-                  setWebsiteConfig(prev => ({ ...prev, CareerAnalytics: checked }))
+                  setWebsiteConfig(prev => ({ ...prev, analytics: checked }))
                 }
               />
             </div>
@@ -234,6 +234,3 @@ export const PortfolioWebsiteBuilder: React.FC<PortfolioWebsiteBuilderProps> = (
     </div>
   );
 };
-
-
-

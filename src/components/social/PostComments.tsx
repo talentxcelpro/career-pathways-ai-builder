@@ -99,7 +99,7 @@ export const PostComments: React.FC<PostCommentsProps> = ({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['post-comments', postId] });
-      queryClient.invalidateQueries({ queryKey: ['social-Pulse'] });
+      queryClient.invalidateQueries({ queryKey: ['social-feed'] });
       setNewComment('');
       setReplyTo(null);
       toast.success('Comment added successfully!');
@@ -153,7 +153,7 @@ export const PostComments: React.FC<PostCommentsProps> = ({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['post-comments', postId] });
-      queryClient.invalidateQueries({ queryKey: ['social-Pulse'] });
+      queryClient.invalidateQueries({ queryKey: ['social-feed'] });
       toast.success('Comment deleted successfully!');
     },
     onError: (error) => {

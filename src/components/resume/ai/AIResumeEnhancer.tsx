@@ -118,7 +118,7 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
     {
       id: 'enhance',
       title: 'AI Resume Enhancer',
-      description: 'Improve your resume content with Performance suggestions',
+      description: 'Improve your resume content with AI-powered suggestions',
       icon: Sparkles,
       color: 'bg-gradient-to-r from-purple-500 to-pink-500',
       action: handleResumeEnhancement
@@ -224,7 +224,7 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold mb-2">Performance Resume Enhancement</h2>
+        <h2 className="text-2xl font-bold mb-2">AI-Powered Resume Enhancement</h2>
         <p className="text-muted-foreground">
           Choose an AI tool to improve your resume and increase your chances of landing interviews
         </p>

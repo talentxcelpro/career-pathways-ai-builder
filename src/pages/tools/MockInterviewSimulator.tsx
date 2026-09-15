@@ -19,7 +19,6 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { useMediaRecorder } from '../../hooks/useMediaRecorder';
 
 const MockInterviewSimulator = () => {
   const navigate = useNavigate();
@@ -33,8 +32,6 @@ const MockInterviewSimulator = () => {
   const [questions, setQuestions] = useState<string[]>([]);
   const [responses, setResponses] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const { isRecording, startRecording, stopRecording, audioBlob, audioLevel } = useMediaRecorder();
-  const [transcript, setTranscript] = useState('');
 
   useEffect(() => {
     if (user) {
@@ -89,32 +86,11 @@ const MockInterviewSimulator = () => {
     setCurrentQuestion(0);
   };
 
-  const nextQuestion = async () => {
-    if (isRecording) {
-      await stopRecording();
-    }
-    
+  const nextQuestion = () => {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
-      setTranscript(''); // Clear for next question
     } else {
       finishInterview();
-    }
-  };
-
-  const handleToggleRecording = async () => {
-    if (isRecording) {
-      const blob = await stopRecording();
-      // In a real app, you'd send this blob to a transcription service
-      // For now we'll simulate the transcription or use Web Speech API
-      toast.success('Response captured!');
-    } else {
-      try {
-        await startRecording();
-        toast.info('Recording started...');
-      } catch (err) {
-        toast.error('Could not access microphone');
-      }
     }
   };
 
@@ -125,7 +101,7 @@ const MockInterviewSimulator = () => {
     try {
       const { data: aiResponse } = await supabase.functions.invoke('ai-tools', {
         body: {
-          type: 'interview-Feedback',
+          type: 'interview-feedback',
           data: {
             questions,
             responses: responses.filter(r => r.trim())
@@ -139,7 +115,7 @@ const MockInterviewSimulator = () => {
         communication_score: aiResponse?.communication_score || Math.floor(Math.random() * 20) + 75,
         content_score: aiResponse?.content_score || Math.floor(Math.random() * 25) + 70,
         confidence_score: aiResponse?.confidence_score || Math.floor(Math.random() * 20) + 75,
-        Feedback: aiResponse?.Feedback || [
+        feedback: aiResponse?.feedback || [
           'Good storytelling structure in your responses',
           'Consider adding more specific examples',
           'Strong enthusiasm comes through clearly'
@@ -160,7 +136,7 @@ const MockInterviewSimulator = () => {
       toast.success('Interview simulation complete!');
     } catch (error) {
       console.error('Error processing interview:', error);
-      toast.error('Failed to process interview Feedback');
+      toast.error('Failed to process interview feedback');
     } finally {
       setIsLoading(false);
     }
@@ -174,7 +150,7 @@ const MockInterviewSimulator = () => {
       'Mock Interview Results',
       interviewResults,
       'analysis',
-      ['interview', 'practice', 'Feedback']
+      ['interview', 'practice', 'feedback']
     );
   };
 
@@ -209,7 +185,7 @@ const MockInterviewSimulator = () => {
                 <div>
                   <h2 className="text-2xl font-bold mb-2">Mock Interview Simulator</h2>
                   <p className="text-muted-foreground mb-6">
-                    AI interviewer with Feedback on tone, content, keywords
+                    AI interviewer with feedback on tone, content, keywords
                   </p>
                 </div>
                 <Button onClick={startInterview} size="lg" className="px-8">
@@ -227,54 +203,14 @@ const MockInterviewSimulator = () => {
                 <Card>
                   <CardContent className="p-6">
                     <h4 className="text-xl mb-4">{questions[currentQuestion]}</h4>
-                    <div className="flex flex-col gap-4">
-                      <div className="flex items-center gap-4">
-                        <Button 
-                          variant={isRecording ? "destructive" : "outline"} 
-                          size="sm"
-                          onClick={handleToggleRecording}
-                          className="relative"
-                        >
-                          {isRecording ? (
-                            <>
-                              <MicOff className="h-4 w-4 mr-2" />
-                              Stop Recording
-                              <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-                              </span>
-                            </>
-                          ) : (
-                            <>
-                              <Mic className="h-4 w-4 mr-2" />
-                              Start Recording
-                            </>
-                          )}
-                        </Button>
-                        
-                        {isRecording && (
-                          <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                            <div 
-                              className="h-full bg-primary transition-all duration-75" 
-                              style={{ width: `${Math.min(audioLevel * 100, 100)}%` }}
-                            />
-                          </div>
-                        )}
-                        
-                        {!isRecording && audioBlob && (
-                          <Badge variant="secondary" className="bg-green-50 text-green-700 border-green-200">
-                            Voice Answer Captured
-                          </Badge>
-                        )}
-                      </div>
-
-                      {isRecording && (
-                        <div className="p-4 bg-muted/30 rounded-xl border border-dashed border-primary/20 animate-pulse">
-                          <p className="text-sm text-muted-foreground italic">
-                            Speak clearly. We are analyzing your tone and content...
-                          </p>
-                        </div>
-                      )}
+                    <div className="flex items-center gap-4">
+                      <Button variant="outline" size="sm">
+                        <Mic className="h-4 w-4 mr-2" />
+                        Recording...
+                      </Button>
+                      <span className="text-sm text-muted-foreground">
+                        Take your time to answer thoughtfully
+                      </span>
                     </div>
                   </CardContent>
                 </Card>
@@ -320,7 +256,7 @@ const MockInterviewSimulator = () => {
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-2">
-                      {interviewResults.Feedback.map((item: string, index: number) => (
+                      {interviewResults.feedback.map((item: string, index: number) => (
                         <li key={index} className="flex items-start gap-2">
                           <span className="text-green-500">•</span>
                           {item}
@@ -366,5 +302,3 @@ const MockInterviewSimulator = () => {
 };
 
 export default MockInterviewSimulator;
-
-

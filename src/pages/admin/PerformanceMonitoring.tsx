@@ -63,7 +63,7 @@ const PerformanceMonitoring = () => {
   const alertsData = [
     { id: 1, severity: 'warning', message: 'CDN response time increased by 15%', time: '5 minutes ago', resolved: false },
     { id: 2, severity: 'info', message: 'Database connection pool optimized', time: '1 hour ago', resolved: true },
-    { id: 3, severity: 'error', message: 'API rate limit exceeded for user CareerAnalytics', time: '2 hours ago', resolved: true },
+    { id: 3, severity: 'error', message: 'API rate limit exceeded for user analytics', time: '2 hours ago', resolved: true },
     { id: 4, severity: 'warning', message: 'Memory usage above 80% on server-02', time: '3 hours ago', resolved: false }
   ];
 
@@ -337,6 +337,3 @@ const PerformanceMonitoring = () => {
 };
 
 export default PerformanceMonitoring;
-
-
-

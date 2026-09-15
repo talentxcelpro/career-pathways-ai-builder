@@ -2,12 +2,12 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, Users, DollarSign, MapPin } from 'lucide-react';
 
-export const CollegeCareerAnalytics: React.FC = () => {
+export const CollegeAnalytics: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">College CareerAnalytics</h2>
+          <h2 className="text-2xl font-bold">College Analytics</h2>
           <p className="text-muted-foreground">Insights and performance metrics</p>
         </div>
       </div>
@@ -60,18 +60,15 @@ export const CollegeCareerAnalytics: React.FC = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>CareerAnalytics CommandCenter</CardTitle>
+          <CardTitle>Analytics Dashboard</CardTitle>
           <CardDescription>Detailed insights coming soon</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-muted-foreground">
-            Comprehensive CareerAnalytics CommandCenter with charts and insights will be available here
+            Comprehensive analytics dashboard with charts and insights will be available here
           </div>
         </CardContent>
       </Card>
     </div>
   );
 };
-
-
-

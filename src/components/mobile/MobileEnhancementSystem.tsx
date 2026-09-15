@@ -169,7 +169,7 @@ export const quickMobileEnhancement = {
   caption: 'mobile-caption',
   
   // Touch classes
-  touchTarget: 'touch-target touch-Feedback',
+  touchTarget: 'touch-target touch-feedback',
   
   // Animation classes
   slideUp: 'slide-up',
@@ -221,5 +221,3 @@ export const checkMobileReadiness = (element: HTMLElement) => {
     score: Math.max(0, 100 - (issues.length * 10))
   };
 };
-
-

@@ -116,7 +116,7 @@ export const CommunityManagement: React.FC = () => {
             </Button>
             <Button variant="outline" className="h-24 flex flex-col">
               <TrendingUp className="h-6 w-6 mb-2" />
-              View CareerAnalytics
+              View Analytics
             </Button>
           </div>
         </CardContent>
@@ -124,6 +124,3 @@ export const CommunityManagement: React.FC = () => {
     </div>
   );
 };
-
-
-

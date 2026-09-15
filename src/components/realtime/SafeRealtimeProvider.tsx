@@ -296,4 +296,3 @@ export function useSafeRealtimeStatus() {
   const { isConnected, connectionStatus } = useSafeRealtimeContext();
   return { isConnected, connectionStatus };
 }
-

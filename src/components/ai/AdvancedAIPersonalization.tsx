@@ -14,7 +14,7 @@ export const AdvancedAIPersonalization: React.FC = () => {
   
   const { 
     performAdvancedATSAnalysis,
-    generatePerformanceCareerAnalytics,
+    generatePerformanceAnalytics,
     generateIntelligentSuggestions 
   } = useAdvancedAIFeatures();
 
@@ -159,7 +159,7 @@ export const AdvancedAIPersonalization: React.FC = () => {
             </CardContent>
           </Card>
 
-          {/* Career Moves */}
+          {/* AI Recommendations */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -212,6 +212,3 @@ export const AdvancedAIPersonalization: React.FC = () => {
     </div>
   );
 };
-
-
-

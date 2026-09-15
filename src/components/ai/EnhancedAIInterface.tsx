@@ -67,30 +67,30 @@ const QUICK_ACTIONS: QuickAction[] = [
 export function EnhancedAIInterface() {
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTab, setSelectedTab] = useState('CommandCenter');
+  const [selectedTab, setSelectedTab] = useState('dashboard');
   const [loading, setLoading] = useState(true);
   const [usageStats, setUsageStats] = useState<any>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    fetchCommandCenterData();
+    fetchDashboardData();
   }, []);
 
-  const fetchCommandCenterData = async () => {
+  const fetchDashboardData = async () => {
     setLoading(true);
     try {
       // Fetch recent operations
       const operations = await aiService.getOperationHistory(10);
       setRecentActivity(operations);
 
-      // Fetch usage CareerAnalytics
-      const CareerAnalytics = await aiService.getUsageCareerAnalytics('week');
-      setUsageStats(CareerAnalytics);
+      // Fetch usage analytics
+      const analytics = await aiService.getUsageAnalytics('week');
+      setUsageStats(analytics);
     } catch (error) {
-      console.error('Error fetching CommandCenter data:', error);
+      console.error('Error fetching dashboard data:', error);
       toast({
         title: "Error",
-        description: "Failed to load CommandCenter data",
+        description: "Failed to load dashboard data",
         variant: "destructive",
       });
     } finally {
@@ -127,7 +127,7 @@ export function EnhancedAIInterface() {
     return (
       <div className="flex items-center justify-center p-8">
         <Loader2 className="w-8 h-8 animate-spin" />
-        <span className="ml-2">Loading AI CommandCenter...</span>
+        <span className="ml-2">Loading AI Dashboard...</span>
       </div>
     );
   }
@@ -135,19 +135,19 @@ export function EnhancedAIInterface() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">TalentXcel AI Career Navigator</h1>
-        <p className="text-muted-foreground">Supercharge your career with TalentXcel Performance tools and insights</p>
+        <h1 className="text-3xl font-bold">TalentXcel AI Career Assistant</h1>
+        <p className="text-muted-foreground">Supercharge your career with TalentXcel AI-powered tools and insights</p>
       </div>
 
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="CommandCenter">CommandCenter</TabsTrigger>
+          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
           <TabsTrigger value="tools">TalentXcel AI Tools</TabsTrigger>
           <TabsTrigger value="history">History</TabsTrigger>
-          <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="CommandCenter" className="space-y-6">
+        <TabsContent value="dashboard" className="space-y-6">
           {/* Usage Stats Overview */}
           {usageStats && (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -354,7 +354,7 @@ export function EnhancedAIInterface() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="CareerAnalytics" className="space-y-6">
+        <TabsContent value="analytics" className="space-y-6">
           {usageStats && (
             <>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -427,6 +427,3 @@ export function EnhancedAIInterface() {
     </div>
   );
 }
-
-
-

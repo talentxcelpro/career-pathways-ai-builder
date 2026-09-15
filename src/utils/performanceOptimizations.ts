@@ -4,12 +4,7 @@
  * Preload critical resources for faster page loads
  */
 export const preloadCriticalResources = () => {
-  // Preload Google Identity Services
-  const googleLink = document.createElement('link');
-  googleLink.rel = 'preload';
-  googleLink.as = 'script';
-  googleLink.href = 'https://accounts.google.com/gsi/client';
-  document.head.appendChild(googleLink);
+  // Supabase client is bundled locally via npm; no obsolete CDN fetching needed.
 };
 
 /**
@@ -91,8 +86,8 @@ export const preloadRouteComponent = async (routePath: string) => {
       case '/auth/login':
         // await import('@/pages/auth/Login');
         break;
-      case '/CommandCenter':
-        // await import('@/pages/CommandCenter');
+      case '/dashboard':
+        // await import('@/pages/Dashboard');
         break;
       default:
         break;
@@ -207,7 +202,7 @@ export const initializePerformanceOptimizations = () => {
   
   // Preload critical chunks
   preloadCriticalChunks();
-  
+
   // Add performance monitoring
   if ('performance' in window && 'observe' in window.PerformanceObserver.prototype) {
     const observer = new PerformanceObserver((list) => {
@@ -225,4 +220,3 @@ export const initializePerformanceOptimizations = () => {
     observer.observe({ entryTypes: ['largest-contentful-paint', 'first-input'] });
   }
 };
-

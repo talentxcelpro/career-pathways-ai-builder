@@ -1,89 +1,94 @@
 /**
- * Apple-style typography scale and design system utilities
+ * Apple-style typography helpers — re-mapped to the canonical type ramp
+ * defined in tailwind.config.ts. Do not introduce raw text-3xl/4xl/etc.
+ *
+ * Approved tokens (single source of truth):
+ *   text-display-1 / -2 / -3
+ *   text-headline
+ *   text-title-1 / -2 / -3
+ *   text-body-lg / text-body / text-body-sm
+ *   text-caption / text-eyebrow
  */
 
-// Apple's refined text hierarchy with precise sizing
 export const appleTextSizes = {
-  // Display sizes (for hero sections)
-  'display-large': 'text-5xl md:text-6xl lg:text-7xl', // 48px -> 72px -> 80px
-  'display-medium': 'text-4xl md:text-5xl lg:text-6xl', // 36px -> 48px -> 60px
-  'display-small': 'text-3xl md:text-4xl lg:text-5xl', // 30px -> 36px -> 48px
-  
-  // Headlines (for section titles)
-  'headline-large': 'text-2xl md:text-3xl', // 24px -> 30px
-  'headline-medium': 'text-xl md:text-2xl', // 20px -> 24px
-  'headline-small': 'text-lg md:text-xl', // 18px -> 20px
-  
-  // Titles (for card headers, page titles)
-  'title-large': 'text-base md:text-lg', // 16px -> 18px
-  'title-medium': 'text-sm md:text-base', // 14px -> 16px
-  'title-small': 'text-xs md:text-sm', // 12px -> 14px
-  
-  // Body text (for content)
-  'body-large': 'text-sm', // 14px
-  'body-medium': 'text-xs', // 12px
-  'body-small': 'text-xs', // 12px
-  
-  // Labels (for buttons, badges)
-  'label-large': 'text-xs font-medium', // 12px medium
-  'label-medium': 'text-xs font-medium', // 12px medium
-  'label-small': 'text-xs font-medium', // 12px medium
+  // Display sizes (hero)
+  'display-large':   'text-display-1',
+  'display-medium':  'text-display-2',
+  'display-small':   'text-display-3',
+
+  // Headlines (section titles)
+  'headline-large':  'text-headline',
+  'headline-medium': 'text-title-1',
+  'headline-small':  'text-title-2',
+
+  // Titles
+  'title-large':     'text-title-2',
+  'title-medium':    'text-title-3',
+  'title-small':     'text-body-lg',
+
+  // Body
+  'body-large':      'text-body-lg',
+  'body-medium':     'text-body',
+  'body-small':      'text-body-sm',
+
+  // Labels
+  'label-large':     'text-body-sm font-medium',
+  'label-medium':    'text-caption font-medium',
+  'label-small':     'text-eyebrow',
 } as const;
 
-// Apple's spacing scale
 export const appleSpacing = {
-  'micro': 'space-y-0.5', // 2px
-  'tiny': 'space-y-1', // 4px
-  'small': 'space-y-2', // 8px
-  'medium': 'space-y-3', // 12px
-  'large': 'space-y-4', // 16px
-  'extra-large': 'space-y-6', // 24px
+  'micro':       'space-y-1',
+  'tiny':        'space-y-2',
+  'small':       'space-y-3',
+  'medium':      'space-y-4',
+  'large':       'space-y-6',
+  'extra-large': 'space-y-8',
 } as const;
 
-// Apple's component sizing
 export const appleComponentSizes = {
   button: {
-    small: 'h-7 px-3 text-xs',
-    medium: 'h-8 px-4 text-xs',
-    large: 'h-9 px-5 text-sm',
+    small:  'h-8 px-3 text-body-sm',
+    medium: 'h-9 px-4 text-body',
+    large:  'h-11 px-6 text-body-lg',
   },
   input: {
-    small: 'h-7 px-2 text-xs',
-    medium: 'h-8 px-3 text-xs', 
-    large: 'h-9 px-4 text-sm',
+    small:  'h-8 px-3 text-body-sm',
+    medium: 'h-9 px-3 text-body',
+    large:  'h-11 px-4 text-body-lg',
   },
   card: {
-    padding: 'p-3 md:p-4',
-    spacing: 'space-y-2',
-  }
+    padding: 'p-4 md:p-6',
+    spacing: 'space-y-3',
+  },
 } as const;
 
-// Apple's icon sizing
 export const appleIconSizes = {
-  'micro': 'w-3 h-3', // 12px
-  'tiny': 'w-3.5 h-3.5', // 14px
-  'small': 'w-4 h-4', // 16px
-  'medium': 'w-5 h-5', // 20px
-  'large': 'w-6 h-6', // 24px
+  'micro':  'w-3 h-3',
+  'tiny':   'w-3.5 h-3.5',
+  'small':  'w-4 h-4',
+  'medium': 'w-5 h-5',
+  'large':  'w-6 h-6',
 } as const;
 
-// Utility function to get consistent text classes
-export const getAppleTextClass = (size: keyof typeof appleTextSizes, weight?: 'light' | 'regular' | 'medium' | 'semibold') => {
+export const getAppleTextClass = (
+  size: keyof typeof appleTextSizes,
+  weight?: 'light' | 'regular' | 'medium' | 'semibold',
+) => {
   const sizeClass = appleTextSizes[size];
-  const weightClass = weight ? `font-apple-${weight}` : '';
+  const weightClass = weight ? `font-${weight === 'regular' ? 'normal' : weight}` : '';
   return `${sizeClass} ${weightClass}`.trim();
 };
 
-// Apple-style component variants
 export const appleVariants = {
   card: {
-    base: 'card-apple backdrop-apple transition-apple',
-    interactive: 'card-apple backdrop-apple transition-apple hover-lift cursor-pointer',
-    flat: 'bg-card/50 rounded-apple border border-border/50 p-3',
+    base:        'rounded-xl border border-border bg-card text-card-foreground shadow-card transition-all',
+    interactive: 'rounded-xl border border-border bg-card text-card-foreground shadow-card transition-all hover:shadow-elegant hover:-translate-y-0.5 cursor-pointer',
+    flat:        'rounded-xl border border-border/60 bg-card/60 p-4',
   },
   button: {
-    primary: 'btn-apple-primary transition-apple hover-lift',
-    secondary: 'btn-apple-secondary transition-apple hover-lift',
-    ghost: 'bg-transparent hover:bg-muted/50 transition-apple rounded-apple',
-  }
+    primary:   'bg-primary text-primary-foreground hover:bg-primary/90 transition-colors rounded-lg',
+    secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors rounded-lg',
+    ghost:     'bg-transparent hover:bg-muted/50 transition-colors rounded-lg',
+  },
 } as const;

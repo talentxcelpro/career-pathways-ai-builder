@@ -63,14 +63,14 @@ export const MobileSearch = () => {
                 placeholder="Search jobs, people, companies..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-gray-50 border-gray-200 touch-Feedback"
+                className="pl-10 bg-gray-50 border-gray-200 touch-feedback"
               />
             </div>
             <Button
               variant="outline"
               size="icon"
               onClick={() => setShowFilters(!showFilters)}
-              className="touch-Feedback"
+              className="touch-feedback"
             >
               <Filter className="w-4 h-4" />
             </Button>
@@ -138,7 +138,7 @@ export const MobileSearch = () => {
                         <button
                           key={term}
                           onClick={() => setSearchTerm(term)}
-                          className="px-3 py-1.5 bg-gray-100 rounded-full text-sm text-gray-700 touch-Feedback"
+                          className="px-3 py-1.5 bg-gray-100 rounded-full text-sm text-gray-700 touch-feedback"
                         >
                           {term}
                         </button>
@@ -150,7 +150,7 @@ export const MobileSearch = () => {
                     <h3 className="font-semibold text-gray-900 mb-3">Recent Searches</h3>
                     <div className="space-y-2">
                       {['React Developer Bangalore', 'Remote Python Jobs', 'Startup Jobs Mumbai'].map((search, index) => (
-                        <div key={index} className="flex items-center gap-3 py-2 touch-Feedback">
+                        <div key={index} className="flex items-center gap-3 py-2 touch-feedback">
                           <Clock className="w-4 h-4 text-gray-400" />
                           <span className="text-sm text-gray-600">{search}</span>
                         </div>
@@ -164,7 +164,7 @@ export const MobileSearch = () => {
               {searchTerm && filteredResults.length > 0 && (
                 <div className="space-y-3">
                   {filteredResults.map((result) => (
-                    <div key={result.id} className="native-card p-4 touch-Feedback">
+                    <div key={result.id} className="native-card p-4 touch-feedback">
                       <div className="flex items-start gap-3">
                         <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
                           {result.type === 'job' ? (
@@ -215,4 +215,3 @@ export const MobileSearch = () => {
 };
 
 export default MobileSearch;
-

@@ -83,7 +83,7 @@ export const useTXCPurchase = () => {
 
       let data, error;
       let attemptCount = 0;
-      const maxAttempts = 2; // Reduced from 3 for faster Feedback
+      const maxAttempts = 2; // Reduced from 3 for faster feedback
       
       while (attemptCount < maxAttempts) {
         try {
@@ -272,4 +272,3 @@ export const useTXCPurchase = () => {
     availableBalance
   };
 };
-

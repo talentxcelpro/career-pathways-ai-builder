@@ -14,15 +14,15 @@ import {
   Filter 
 } from 'lucide-react';
 
-const CareerAnalyticsSubcategories = () => {
-  const [activeSubcategory, setActiveSubcategory] = useState('google-CareerAnalytics');
+const AnalyticsSubcategories = () => {
+  const [activeSubcategory, setActiveSubcategory] = useState('google-analytics');
 
   const subcategories = [
     {
-      id: 'google-CareerAnalytics',
-      title: 'Google CareerAnalytics Integration',
+      id: 'google-analytics',
+      title: 'Google Analytics Integration',
       icon: BarChart3,
-      description: 'Connect and analyze Google CareerAnalytics data',
+      description: 'Connect and analyze Google Analytics data',
       status: 'active'
     },
     {
@@ -33,10 +33,10 @@ const CareerAnalyticsSubcategories = () => {
       status: 'active'
     },
     {
-      id: 'custom-CommandCenter',
-      title: 'Custom CareerAnalytics CommandCenter',
+      id: 'custom-dashboard',
+      title: 'Custom Analytics Dashboard',
       icon: PieChart,
-      description: 'Build custom CareerAnalytics CommandCenters',
+      description: 'Build custom analytics dashboards',
       status: 'beta'
     },
     {
@@ -54,8 +54,8 @@ const CareerAnalyticsSubcategories = () => {
       status: 'active'
     },
     {
-      id: 'roi-CareerAnalytics',
-      title: 'ROI CareerAnalytics',
+      id: 'roi-analytics',
+      title: 'ROI Analytics',
       icon: DollarSign,
       description: 'Calculate return on investment for SEO efforts',
       status: 'coming-soon'
@@ -91,12 +91,12 @@ const CareerAnalyticsSubcategories = () => {
           </Badge>
         </div>
 
-        {activeSubcategory === 'google-CareerAnalytics' && (
+        {activeSubcategory === 'google-analytics' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Google CareerAnalytics Connection</CardTitle>
-                <CardDescription>Connect your Google CareerAnalytics account for deeper insights</CardDescription>
+                <CardTitle>Google Analytics Connection</CardTitle>
+                <CardDescription>Connect your Google Analytics account for deeper insights</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between p-3 border rounded-lg">
@@ -108,7 +108,7 @@ const CareerAnalyticsSubcategories = () => {
                 </div>
                 
                 <div>
-                  <label className="text-sm font-medium">CareerAnalytics Property</label>
+                  <label className="text-sm font-medium">Analytics Property</label>
                   <select className="w-full p-2 border rounded-md mt-2">
                     <option>www.yoursite.com - UA-123456789-1</option>
                     <option>blog.yoursite.com - UA-123456789-2</option>
@@ -135,8 +135,8 @@ const CareerAnalyticsSubcategories = () => {
 
             <Card>
               <CardHeader>
-                <CardTitle>CareerAnalytics Overview</CardTitle>
-                <CardDescription>Key metrics from Google CareerAnalytics</CardDescription>
+                <CardTitle>Analytics Overview</CardTitle>
+                <CardDescription>Key metrics from Google Analytics</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 gap-4 mb-4">
@@ -267,7 +267,7 @@ const CareerAnalyticsSubcategories = () => {
         {activeSubcategory === 'conversion-tracking' && (
           <Card>
             <CardHeader>
-              <CardTitle>Conversion Tracking CommandCenter</CardTitle>
+              <CardTitle>Conversion Tracking Dashboard</CardTitle>
               <CardDescription>Monitor conversion rates and goal completions</CardDescription>
             </CardHeader>
             <CardContent>
@@ -347,7 +347,4 @@ const CareerAnalyticsSubcategories = () => {
   );
 };
 
-export default CareerAnalyticsSubcategories;
-
-
-
+export default AnalyticsSubcategories;

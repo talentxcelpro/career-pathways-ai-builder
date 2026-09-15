@@ -76,7 +76,7 @@ export const ConnectionRequests: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['connectionRequests'] });
       queryClient.invalidateQueries({ queryKey: ['connections'] });
-      queryClient.invalidateQueries({ queryKey: ['TalentNetworktats'] });
+      queryClient.invalidateQueries({ queryKey: ['connectionStats'] });
       toast.success('Connection request accepted!');
     },
     onError: (error) => {
@@ -232,5 +232,3 @@ export const ConnectionRequests: React.FC = () => {
     </Card>
   );
 };
-
-

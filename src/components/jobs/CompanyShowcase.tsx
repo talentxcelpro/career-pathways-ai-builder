@@ -38,13 +38,13 @@ const featuredCompanies = [
   },
   {
     id: "3",
-    name: "DataDriven CareerAnalytics",
+    name: "DataDriven Analytics",
     logo: "",
     industry: "Data Science",
     size: "201-500",
     openJobs: 12,
     rating: 4.6,
-    description: "Transforming businesses through advanced data CareerAnalytics and business intelligence solutions.",
+    description: "Transforming businesses through advanced data analytics and business intelligence solutions.",
     benefits: ["Performance Bonus", "Training Programs", "Flexible Schedule", "Team Outings"],
     techStack: ["SQL", "Python", "Tableau", "Spark"],
     recentHires: 24,
@@ -194,6 +194,3 @@ export const CompanyShowcase: React.FC = () => {
     </div>
   );
 };
-
-
-

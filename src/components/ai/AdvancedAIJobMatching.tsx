@@ -61,7 +61,7 @@ const AdvancedAIJobMatching: React.FC = () => {
       const { useDeepSeekAI } = await import('@/hooks/useDeepSeekAI');
       const { chatWithDeepSeek } = useDeepSeekAI();
       
-      const prompt = `Generate Performance job matches based on user profile. Return JSON with this structure:
+      const prompt = `Generate AI-powered job matches based on user profile. Return JSON with this structure:
       {
         "matches": [
           {
@@ -137,7 +137,7 @@ const AdvancedAIJobMatching: React.FC = () => {
             <div className="space-y-4">
               <div className="flex gap-2">
                 <Input
-                  placeholder="Search jobs with Performance understanding..."
+                  placeholder="Search jobs with AI-powered understanding..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="flex-1"
@@ -190,7 +190,7 @@ const AdvancedAIJobMatching: React.FC = () => {
                 <Zap className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-muted-foreground mb-2">No Job Matches Yet</h3>
                 <p className="text-muted-foreground mb-4">
-                  Connect your API to start receiving Performance job recommendations
+                  Connect your API to start receiving AI-powered job recommendations
                 </p>
                 <Button onClick={performAIMatching} disabled={isMatching}>
                   Get AI Matches

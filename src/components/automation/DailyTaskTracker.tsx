@@ -7,7 +7,7 @@ import { TouchButton } from '@/components/mobile/TouchButton';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTXCIntegration } from '@/hooks/useTXCIntegration';
 import { useTokenBalance } from '@/hooks/useTokenBalance';
-import { useHapticPulseback } from '@/hooks/useHapticPulseback';
+import { useHapticFeedback } from '@/hooks/useHapticFeedback';
 import { useTaskNotifications } from '@/hooks/useTaskNotifications';
 import { 
   Check, 
@@ -38,7 +38,7 @@ interface DailyTask {
 
 export const DailyTaskTracker: React.FC = () => {
   const { user } = useAuth();
-  const { triggerHaptic } = useHapticPulseback();
+  const { triggerHaptic } = useHapticFeedback();
   const { sendTaskCompletionNotification } = useTaskNotifications();
   const { 
     triggerJobApplied,
@@ -102,7 +102,7 @@ export const DailyTaskTracker: React.FC = () => {
   const growthTasks: DailyTask[] = useMemo(() => [
     {
       id: 'make_connection',
-      title: 'Make TalentNetwork',
+      title: 'Make Connections',
       description: 'Connect with professionals in your field',
       icon: <Users className="h-4 w-4" />,
       reward: 200,
@@ -133,7 +133,7 @@ export const DailyTaskTracker: React.FC = () => {
     {
       id: 'give_recommendation',
       title: 'Give Recommendations',
-      description: 'Write recommendations for your TalentNetwork',
+      description: 'Write recommendations for your connections',
       icon: <Pen className="h-4 w-4" />,
       reward: 300,
       action: 'recommendation_given',
@@ -355,4 +355,3 @@ export const DailyTaskTracker: React.FC = () => {
     </div>
   );
 };
-

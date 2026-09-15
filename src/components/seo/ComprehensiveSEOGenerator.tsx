@@ -256,8 +256,8 @@ export const ComprehensiveSEOGenerator: React.FC<ComprehensiveSEOGeneratorProps>
         
       default:
         return {
-          title: 'TalentXcel - Performance Career Platform',
-          description: 'Find your dream job, grow your skills, and advance your career with Performance tools.',
+          title: 'TalentXcel - AI-Powered Career Platform',
+          description: 'Find your dream job, grow your skills, and advance your career with AI-powered tools.',
           content: (
             <div className="container mx-auto py-12">
               <h1 className="text-3xl font-bold mb-6">TalentXcel - Career Platform</h1>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -26,43 +26,43 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { SEOKeywordResearch } from '@/components/seo/SEOKeywordResearch';
-import { SEOSiteAudit } from '@/components/seo/SEOSiteAudit';
-import { SEOContentOptimizer } from '@/components/seo/SEOContentOptimizer';
-import { SEORankTracker } from '@/components/seo/SEORankTracker';
-import { SEOBacklinkAnalyzer } from '@/components/seo/SEOBacklinkAnalyzer';
-import { SEOCompetitorAnalysis } from '@/components/seo/SEOCompetitorAnalysis';
-import { SEOReporting } from '@/components/seo/SEOReporting';
-import { SEOIssueManager } from '@/components/seo/SEOIssueManager';
-
-import { RealTimeSEOAnalyzer } from '@/components/seo/advanced/RealTimeSEOAnalyzer';
-import { PredictiveSEOInsights } from '@/components/seo/advanced/PredictiveSEOInsights';
-import { SEOAutomationWorkflows } from '@/components/seo/advanced/SEOAutomationWorkflows';
-import { AdvancedCompetitorIntelligence } from '@/components/seo/enhanced/AdvancedCompetitorIntelligence';
-import { LocalSEOTracker } from '@/components/seo/enhanced/LocalSEOTracker';
-import { AIContentGenerator } from '@/components/seo/phase3/AIContentGenerator';
-import { MLRankPredictor } from '@/components/seo/phase3/MLRankPredictor';
-import { SEOAutomationEngine } from '@/components/seo/phase3/SEOAutomationEngine';
-import { WhiteLabelReports } from '@/components/seo/phase3/WhiteLabelReports';
-import { EnterpriseCareerAnalyticsCommandCenter } from '@/components/seo/phase4/EnterpriseAnalyticsDashboard';
-import { AIProviderStatus } from '@/components/seo/phase4/AIProviderStatus';
-import { TestSEOSuite } from '@/components/seo/TestSEOSuite';
-import { LiveRankTracker } from '@/components/seo/real-time/LiveRankTracker';
-import { RealTimeCompetitorAnalysis } from '@/components/seo/real-time/RealTimeCompetitorAnalysis';
-import { LiveSearchVolumeTracker } from '@/components/seo/real-time/LiveSearchVolumeTracker';
-import { ABTestingSEO } from '@/components/seo/advanced-features/ABTestingSEO';
-import { HreflangManager } from '@/components/seo/advanced-features/HreflangManager';
-import { GoogleSearchConsoleIntegration } from '@/components/seo/enterprise/GoogleSearchConsoleIntegration';
-import { DeploymentDiagnostics } from '@/components/admin/DeploymentDiagnostics';
-import { VoiceSearchOptimizer } from '@/components/seo/VoiceSearchOptimizer';
-import { FeaturedSnippetsTargeting } from '@/components/seo/FeaturedSnippetsTargeting';
-import { AIContentScaler } from '@/components/seo/AIContentScaler';
-import { PredictiveCareerAnalytics } from '@/components/seo/PredictiveAnalytics';
-import { InternationalSEO } from '@/components/seo/advanced-features/InternationalSEO';
 import { toast } from 'sonner';
 
+const SEOKeywordResearch = lazy(() => import('@/components/seo/SEOKeywordResearch').then(m => ({ default: m.SEOKeywordResearch })));
+const SEOSiteAudit = lazy(() => import('@/components/seo/SEOSiteAudit').then(m => ({ default: m.SEOSiteAudit })));
+const SEOContentOptimizer = lazy(() => import('@/components/seo/SEOContentOptimizer').then(m => ({ default: m.SEOContentOptimizer })));
+const SEORankTracker = lazy(() => import('@/components/seo/SEORankTracker').then(m => ({ default: m.SEORankTracker })));
+const SEOBacklinkAnalyzer = lazy(() => import('@/components/seo/SEOBacklinkAnalyzer').then(m => ({ default: m.SEOBacklinkAnalyzer })));
+const SEOCompetitorAnalysis = lazy(() => import('@/components/seo/SEOCompetitorAnalysis').then(m => ({ default: m.SEOCompetitorAnalysis })));
+const SEOReporting = lazy(() => import('@/components/seo/SEOReporting').then(m => ({ default: m.SEOReporting })));
+const SEOIssueManager = lazy(() => import('@/components/seo/SEOIssueManager').then(m => ({ default: m.SEOIssueManager })));
+const RealTimeSEOAnalyzer = lazy(() => import('@/components/seo/advanced/RealTimeSEOAnalyzer').then(m => ({ default: m.RealTimeSEOAnalyzer })));
+const PredictiveSEOInsights = lazy(() => import('@/components/seo/advanced/PredictiveSEOInsights').then(m => ({ default: m.PredictiveSEOInsights })));
+const SEOAutomationWorkflows = lazy(() => import('@/components/seo/advanced/SEOAutomationWorkflows').then(m => ({ default: m.SEOAutomationWorkflows })));
+const AdvancedCompetitorIntelligence = lazy(() => import('@/components/seo/enhanced/AdvancedCompetitorIntelligence').then(m => ({ default: m.AdvancedCompetitorIntelligence })));
+const LocalSEOTracker = lazy(() => import('@/components/seo/enhanced/LocalSEOTracker').then(m => ({ default: m.LocalSEOTracker })));
+const AIContentGenerator = lazy(() => import('@/components/seo/phase3/AIContentGenerator').then(m => ({ default: m.AIContentGenerator })));
+const MLRankPredictor = lazy(() => import('@/components/seo/phase3/MLRankPredictor').then(m => ({ default: m.MLRankPredictor })));
+const SEOAutomationEngine = lazy(() => import('@/components/seo/phase3/SEOAutomationEngine').then(m => ({ default: m.SEOAutomationEngine })));
+const WhiteLabelReports = lazy(() => import('@/components/seo/phase3/WhiteLabelReports').then(m => ({ default: m.WhiteLabelReports })));
+const EnterpriseAnalyticsDashboard = lazy(() => import('@/components/seo/phase4/EnterpriseAnalyticsDashboard').then(m => ({ default: m.EnterpriseAnalyticsDashboard })));
+const AIProviderStatus = lazy(() => import('@/components/seo/phase4/AIProviderStatus').then(m => ({ default: m.AIProviderStatus })));
+const TestSEOSuite = lazy(() => import('@/components/seo/TestSEOSuite').then(m => ({ default: m.TestSEOSuite })));
+const LiveRankTracker = lazy(() => import('@/components/seo/real-time/LiveRankTracker').then(m => ({ default: m.LiveRankTracker })));
+const RealTimeCompetitorAnalysis = lazy(() => import('@/components/seo/real-time/RealTimeCompetitorAnalysis').then(m => ({ default: m.RealTimeCompetitorAnalysis })));
+const LiveSearchVolumeTracker = lazy(() => import('@/components/seo/real-time/LiveSearchVolumeTracker').then(m => ({ default: m.LiveSearchVolumeTracker })));
+const ABTestingSEO = lazy(() => import('@/components/seo/advanced-features/ABTestingSEO').then(m => ({ default: m.ABTestingSEO })));
+const HreflangManager = lazy(() => import('@/components/seo/advanced-features/HreflangManager').then(m => ({ default: m.HreflangManager })));
+const GoogleSearchConsoleIntegration = lazy(() => import('@/components/seo/enterprise/GoogleSearchConsoleIntegration').then(m => ({ default: m.GoogleSearchConsoleIntegration })));
+const DeploymentDiagnostics = lazy(() => import('@/components/admin/DeploymentDiagnostics').then(m => ({ default: m.DeploymentDiagnostics })));
+const VoiceSearchOptimizer = lazy(() => import('@/components/seo/VoiceSearchOptimizer').then(m => ({ default: m.VoiceSearchOptimizer })));
+const FeaturedSnippetsTargeting = lazy(() => import('@/components/seo/FeaturedSnippetsTargeting').then(m => ({ default: m.FeaturedSnippetsTargeting })));
+const AIContentScaler = lazy(() => import('@/components/seo/AIContentScaler').then(m => ({ default: m.AIContentScaler })));
+const PredictiveAnalytics = lazy(() => import('@/components/seo/PredictiveAnalytics').then(m => ({ default: m.PredictiveAnalytics })));
+const InternationalSEO = lazy(() => import('@/components/seo/advanced-features/InternationalSEO').then(m => ({ default: m.InternationalSEO })));
+
 const SEOSuite = () => {
-  const [activeTab, setActiveTab] = useState('CommandCenter');
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [seoScore, setSeoScore] = useState(0);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [websiteUrl, setWebsiteUrl] = useState('');
@@ -116,7 +116,7 @@ const SEOSuite = () => {
     setIsAnalyzing(true);
     
     try {
-      // Show immediate Feedback
+      // Show immediate feedback
       toast.info('Analyzing website metadata...');
       
       // Try to fetch metadata via edge function with timeout
@@ -231,8 +231,8 @@ const SEOSuite = () => {
   return (
     <div className="container mx-auto py-8 space-y-8">
       <Helmet>
-        <title>TalentXcel SEO Suite - Performance SEO Platform</title>
-        <meta name="description" content="Complete Performance SEO platform with keyword research, site audits, rank tracking, and competitor analysis" />
+        <title>TalentXcel SEO Suite - AI-Powered SEO Platform</title>
+        <meta name="description" content="Complete AI-powered SEO platform with keyword research, site audits, rank tracking, and competitor analysis" />
       </Helmet>
 
       {/* Header */}
@@ -241,7 +241,7 @@ const SEOSuite = () => {
           <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
             TalentXcel SEO Suite
           </h1>
-          <p className="text-muted-foreground mt-2">Performance SEO platform that outperforms industry leaders</p>
+          <p className="text-muted-foreground mt-2">AI-powered SEO platform that outperforms industry leaders</p>
         </div>
         <Badge variant="secondary" className="bg-gradient-to-r from-green-500 to-emerald-500 text-white">
           <Zap className="h-3 w-3 mr-1" />
@@ -256,7 +256,7 @@ const SEOSuite = () => {
             <Brain className="h-5 w-5 text-primary" />
             Quick SEO Analysis
           </CardTitle>
-          <CardDescription>Get instant Performance SEO insights for any website</CardDescription>
+          <CardDescription>Get instant AI-powered SEO insights for any website</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex gap-4 items-end">
@@ -355,7 +355,7 @@ const SEOSuite = () => {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-6 lg:grid-cols-12 bg-muted/50">
-          <TabsTrigger value="CommandCenter" className="text-xs">CommandCenter</TabsTrigger>
+          <TabsTrigger value="dashboard" className="text-xs">Dashboard</TabsTrigger>
           <TabsTrigger value="voice-search" className="text-xs">Voice Search</TabsTrigger>
           <TabsTrigger value="snippets" className="text-xs">Snippets</TabsTrigger>
           <TabsTrigger value="ai-scaler" className="text-xs">AI Scaler</TabsTrigger>
@@ -378,121 +378,123 @@ const SEOSuite = () => {
           <TabsTrigger value="ml-predict" className="text-xs">ML Predict</TabsTrigger>
           <TabsTrigger value="automation" className="text-xs">Automation</TabsTrigger>
           <TabsTrigger value="white-label" className="text-xs">White Label</TabsTrigger>
-          <TabsTrigger value="CareerAnalytics" className="text-xs">CareerAnalytics</TabsTrigger>
+          <TabsTrigger value="analytics" className="text-xs">Analytics</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="CommandCenter" className="space-y-6">
-          <SEOIssueManager />
-        </TabsContent>
+        <Suspense fallback={<div className="p-8 text-center text-slate-400">Loading module...</div>}>
+          <TabsContent value="dashboard" className="space-y-6">
+            <SEOIssueManager />
+          </TabsContent>
 
-        <TabsContent value="voice-search">
-          <VoiceSearchOptimizer pageTitle="TalentXcel" pageType="general" />
-        </TabsContent>
+          <TabsContent value="voice-search">
+            <VoiceSearchOptimizer pageTitle="TalentXcel" pageType="general" />
+          </TabsContent>
 
-        <TabsContent value="snippets">
-          <FeaturedSnippetsTargeting pageTitle="TalentXcel" pageType="general" />
-        </TabsContent>
+          <TabsContent value="snippets">
+            <FeaturedSnippetsTargeting pageTitle="TalentXcel" pageType="general" />
+          </TabsContent>
 
-        <TabsContent value="ai-scaler">
-          <AIContentScaler />
-        </TabsContent>
+          <TabsContent value="ai-scaler">
+            <AIContentScaler />
+          </TabsContent>
 
-        <TabsContent value="predictive">
-          <PredictiveCareerAnalytics />
-        </TabsContent>
+          <TabsContent value="predictive">
+            <PredictiveAnalytics />
+          </TabsContent>
 
-        <TabsContent value="international">
-          <InternationalSEO currentUrl="https://talentxcel.in" />
-        </TabsContent>
+          <TabsContent value="international">
+            <InternationalSEO currentUrl="https://talentxcel.in" />
+          </TabsContent>
 
-        <TabsContent value="live-rank">
-          <LiveRankTracker />
-        </TabsContent>
+          <TabsContent value="live-rank">
+            <LiveRankTracker />
+          </TabsContent>
 
-        <TabsContent value="live-volume">
-          <LiveSearchVolumeTracker />
-        </TabsContent>
+          <TabsContent value="live-volume">
+            <LiveSearchVolumeTracker />
+          </TabsContent>
 
-        <TabsContent value="real-competitor">
-          <RealTimeCompetitorAnalysis />
-        </TabsContent>
+          <TabsContent value="real-competitor">
+            <RealTimeCompetitorAnalysis />
+          </TabsContent>
 
-        <TabsContent value="ab-testing">
-          <ABTestingSEO />
-        </TabsContent>
+          <TabsContent value="ab-testing">
+            <ABTestingSEO />
+          </TabsContent>
 
-        <TabsContent value="hreflang">
-          <HreflangManager />
-        </TabsContent>
+          <TabsContent value="hreflang">
+            <HreflangManager />
+          </TabsContent>
 
-        <TabsContent value="gsc">
-          <GoogleSearchConsoleIntegration />
-        </TabsContent>
+          <TabsContent value="gsc">
+            <GoogleSearchConsoleIntegration />
+          </TabsContent>
 
-        <TabsContent value="keywords">
-          <SEOKeywordResearch />
-        </TabsContent>
+          <TabsContent value="keywords">
+            <SEOKeywordResearch />
+          </TabsContent>
 
-        <TabsContent value="audit">
-          <SEOSiteAudit />
-        </TabsContent>
+          <TabsContent value="audit">
+            <SEOSiteAudit />
+          </TabsContent>
 
-        <TabsContent value="content">
-          <SEOContentOptimizer />
-        </TabsContent>
+          <TabsContent value="content">
+            <SEOContentOptimizer />
+          </TabsContent>
 
-        <TabsContent value="tracking">
-          <SEORankTracker />
-        </TabsContent>
+          <TabsContent value="tracking">
+            <SEORankTracker />
+          </TabsContent>
 
-        <TabsContent value="backlinks">
-          <SEOBacklinkAnalyzer />
-        </TabsContent>
+          <TabsContent value="backlinks">
+            <SEOBacklinkAnalyzer />
+          </TabsContent>
 
-        <TabsContent value="competitors">
-          <ConnectProviderCard 
-            title="Competitor Analysis"
-            description="Analyze competitor SEO strategies and performance"
-            providerName="SEO Analysis Tools"
-            onConnect={() => toast.info('Competitor analysis integration coming soon!')}
-          />
-        </TabsContent>
+          <TabsContent value="competitors">
+            <ConnectProviderCard 
+              title="Competitor Analysis"
+              description="Analyze competitor SEO strategies and performance"
+              providerName="SEO Analysis Tools"
+              onConnect={() => toast.info('Competitor analysis integration coming soon!')}
+            />
+          </TabsContent>
 
-        <TabsContent value="reports">
-          <SEOReporting />
-        </TabsContent>
+          <TabsContent value="reports">
+            <SEOReporting />
+          </TabsContent>
 
-        <TabsContent value="ai-content">
-          <AIContentGenerator />
-        </TabsContent>
+          <TabsContent value="ai-content">
+            <AIContentGenerator />
+          </TabsContent>
 
-        <TabsContent value="ml-predict">
-          <MLRankPredictor />
-        </TabsContent>
+          <TabsContent value="ml-predict">
+            <MLRankPredictor />
+          </TabsContent>
 
-        <TabsContent value="automation">
-          <SEOAutomationEngine />
-        </TabsContent>
+          <TabsContent value="automation">
+            <SEOAutomationEngine />
+          </TabsContent>
 
-        <TabsContent value="white-label">
-          <WhiteLabelReports />
-        </TabsContent>
+          <TabsContent value="white-label">
+            <WhiteLabelReports />
+          </TabsContent>
 
-        <TabsContent value="CareerAnalytics">
-          <EnterpriseCareerAnalyticsCommandCenter />
-        </TabsContent>
+          <TabsContent value="analytics">
+            <EnterpriseAnalyticsDashboard />
+          </TabsContent>
 
-        <TabsContent value="ai-status">
-          <AIProviderStatus />
-        </TabsContent>
+          <TabsContent value="ai-status">
+            <AIProviderStatus />
+          </TabsContent>
 
-        <TabsContent value="deployments">
-          <DeploymentDiagnostics />
-        </TabsContent>
+          <TabsContent value="deployments">
+            <DeploymentDiagnostics />
+          </TabsContent>
 
-        <TabsContent value="testing">
-          <TestSEOSuite />
-        </TabsContent>
+          <TabsContent value="testing">
+            <TestSEOSuite />
+          </TabsContent>
+        </Suspense>
       </Tabs>
     </div>
   );
@@ -531,7 +533,3 @@ const ConnectProviderCard = ({
 );
 
 export default SEOSuite;
-
-
-
-

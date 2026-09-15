@@ -9,7 +9,8 @@ import {
   BarChart3,
   Shield,
   Search,
-  Bot
+  Bot,
+  TrendingUp
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -44,10 +45,10 @@ export const AdminNavigationPanel = () => {
       color: 'text-orange-600'
     },
     {
-      title: 'CareerAnalytics',
-      description: 'Platform CareerAnalytics & reports',
+      title: 'Analytics',
+      description: 'Platform analytics & reports',
       icon: BarChart3,
-      href: '/admin/CareerAnalytics',
+      href: '/admin/analytics',
       color: 'text-indigo-600'
     },
     {
@@ -63,6 +64,20 @@ export const AdminNavigationPanel = () => {
       icon: Search,
       href: '/admin/seo',
       color: 'text-teal-600'
+    },
+    {
+      title: 'AI Growth Organization',
+      description: 'AI CEO & Specialist Agents Master Plane',
+      icon: Bot,
+      href: '/admin/ai-organization',
+      color: 'text-purple-600'
+    },
+    {
+      title: 'Growth Operations',
+      description: 'Empirical revenue & pipeline yield',
+      icon: TrendingUp,
+      href: '/admin/growth-operations',
+      color: 'text-emerald-600'
     },
     {
       title: 'AI/Bot Management',
@@ -109,6 +124,3 @@ export const AdminNavigationPanel = () => {
     </Card>
   );
 };
-
-
-

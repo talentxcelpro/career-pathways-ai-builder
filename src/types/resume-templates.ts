@@ -193,7 +193,7 @@ export interface RecommendationRequest {
   customization?: 'minimal' | 'moderate' | 'extensive';
 }
 
-export interface TemplateCareerAnalytics {
+export interface TemplateAnalytics {
   templateId: string;
   usageCount: number;
   completionRate: number;
@@ -208,6 +208,3 @@ export interface TemplateCareerAnalytics {
     shareToHire: number;
   };
 }
-
-
-

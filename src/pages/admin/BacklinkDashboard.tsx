@@ -7,19 +7,19 @@ import { Network, ExternalLink, BarChart3, Settings, Play, Loader2 } from 'lucid
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-const BacklinkCommandCenter: React.FC = () => {
+const BacklinkDashboard: React.FC = () => {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   const fetchStats = async () => {
     try {
-      const { data, error } = await supabase.rpc('get_backlink_CommandCenter_stats');
+      const { data, error } = await supabase.rpc('get_backlink_dashboard_stats');
       if (error) throw error;
       setStats(data);
     } catch (error) {
       console.error('Error fetching stats:', error);
-      toast.error('Failed to load CommandCenter stats');
+      toast.error('Failed to load dashboard stats');
     } finally {
       setLoading(false);
     }
@@ -453,5 +453,4 @@ const BacklinkCommandCenter: React.FC = () => {
   );
 };
 
-export default BacklinkCommandCenter;
-
+export default BacklinkDashboard;

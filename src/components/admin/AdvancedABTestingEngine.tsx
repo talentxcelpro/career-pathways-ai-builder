@@ -292,7 +292,7 @@ export const AdvancedABTestingEngine: React.FC = () => {
             Advanced A/B Testing Engine
           </CardTitle>
           <CardDescription>
-            Performance A/B testing with statistical significance and automated optimization
+            AI-powered A/B testing with statistical significance and automated optimization
           </CardDescription>
         </CardHeader>
       </Card>
@@ -301,7 +301,7 @@ export const AdvancedABTestingEngine: React.FC = () => {
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="tests">Active Tests</TabsTrigger>
           <TabsTrigger value="create">Create Test</TabsTrigger>
-          <TabsTrigger value="results">Results & CareerAnalytics</TabsTrigger>
+          <TabsTrigger value="results">Results & Analytics</TabsTrigger>
         </TabsList>
 
         {/* Active Tests Tab */}
@@ -414,7 +414,7 @@ export const AdvancedABTestingEngine: React.FC = () => {
             <CardHeader>
               <CardTitle>Create New A/B Test</CardTitle>
               <CardDescription>
-                Set up a new A/B test with Performance optimization suggestions
+                Set up a new A/B test with AI-powered optimization suggestions
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -546,7 +546,7 @@ export const AdvancedABTestingEngine: React.FC = () => {
           </Card>
         </TabsContent>
 
-        {/* Results & CareerAnalytics Tab */}
+        {/* Results & Analytics Tab */}
         <TabsContent value="results" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card>
@@ -594,7 +594,7 @@ export const AdvancedABTestingEngine: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="h-64 flex items-center justify-center text-muted-foreground">
-                Advanced CareerAnalytics chart will be displayed here
+                Advanced analytics chart will be displayed here
               </div>
             </CardContent>
           </Card>
@@ -603,6 +603,3 @@ export const AdvancedABTestingEngine: React.FC = () => {
     </div>
   );
 };
-
-
-

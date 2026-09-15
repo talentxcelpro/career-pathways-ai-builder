@@ -60,7 +60,7 @@ export const SwipeableJobCard: React.FC<SwipeableJobCardProps> = ({
     setIsAnimating(true);
     setSwipeDirection(direction);
 
-    // Visual Feedback
+    // Visual feedback
     const animationTransform = direction === 'left' 
       ? 'translateX(-150%) rotate(-30deg)' 
       : direction === 'right'
@@ -260,4 +260,3 @@ export const SwipeableJobCard: React.FC<SwipeableJobCardProps> = ({
     </div>
   );
 };
-

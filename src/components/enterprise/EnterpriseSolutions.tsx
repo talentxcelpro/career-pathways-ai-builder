@@ -97,7 +97,7 @@ export const EnterpriseSolutions: React.FC = () => {
   const clientTestimonials: ClientTestimonial[] = [
     {
       company: "Tech Mahindra",
-      testimonial: "TalentXcel's Performance internal mobility platform helped us redeploy 40% of our workforce efficiently during digital transformation.",
+      testimonial: "TalentXcel's AI-powered internal mobility platform helped us redeploy 40% of our workforce efficiently during digital transformation.",
       person: "Rajesh Kumar",
       title: "VP, Human Resources",
       savings: "₹2.5Cr",
@@ -113,7 +113,7 @@ export const EnterpriseSolutions: React.FC = () => {
     },
     {
       company: "Infosys",
-      testimonial: "Reduced time-to-hire for specialized roles by 65% while improving quality of hire through Performance candidate matching.",
+      testimonial: "Reduced time-to-hire for specialized roles by 65% while improving quality of hire through AI-powered candidate matching.",
       person: "Amit Patel",
       title: "Global Head of Talent Acquisition",
       savings: "₹1.8Cr",
@@ -125,12 +125,12 @@ export const EnterpriseSolutions: React.FC = () => {
     {
       id: 'talent-intelligence',
       title: 'AI Talent Intelligence Platform',
-      subtitle: 'Workforce CareerAnalytics & Strategic Planning',
-      description: 'Real-time workforce insights, predictive CareerAnalytics, and strategic talent planning for C-suite decision making.',
+      subtitle: 'Workforce Analytics & Strategic Planning',
+      description: 'Real-time workforce insights, predictive analytics, and strategic talent planning for C-suite decision making.',
       icon: <Brain className="h-10 w-10" />,
       gradient: 'from-blue-600 to-blue-800',
       features: [
-        'Real-time workforce intelligence CommandCenters',
+        'Real-time workforce intelligence dashboards',
         'Predictive talent modeling & forecasting',
         'Skills inventory & gap analysis',
         'Diversity, equity & inclusion metrics',
@@ -142,13 +142,13 @@ export const EnterpriseSolutions: React.FC = () => {
         'Decision Speed': '10x faster',
         'Cost Reduction': '35%'
       },
-      route: '/enterprise/CareerAnalytics'
+      route: '/enterprise/analytics'
     },
     {
       id: 'internal-mobility',
       title: 'Internal Mobility Engine',
       subtitle: 'Career Pathways & Talent Optimization',
-      description: 'Performance internal talent marketplace connecting employees with growth opportunities and career advancement.',
+      description: 'AI-powered internal talent marketplace connecting employees with growth opportunities and career advancement.',
       icon: <TrendingUp className="h-10 w-10" />,
       gradient: 'from-green-600 to-emerald-700',
       features: [
@@ -232,10 +232,10 @@ export const EnterpriseSolutions: React.FC = () => {
       features: ['99.9% uptime SLA', 'Global CDN', 'Auto-scaling', 'Load balancing']
     },
     {
-      title: 'Advanced CareerAnalytics Engine',
-      description: 'Real-time insights, predictive modeling, and customizable reporting CommandCenters',
+      title: 'Advanced Analytics Engine',
+      description: 'Real-time insights, predictive modeling, and customizable reporting dashboards',
       icon: <PieChart className="h-8 w-8" />,
-      features: ['Real-time CommandCenters', 'Predictive models', 'Custom reports', 'Data visualization']
+      features: ['Real-time dashboards', 'Predictive models', 'Custom reports', 'Data visualization']
     }
   ];
 
@@ -264,7 +264,7 @@ export const EnterpriseSolutions: React.FC = () => {
                   <Building2 className="h-6 w-6 text-blue-400" />
                   <span className="text-white font-medium">Enterprise Solutions</span>
                   <Badge variant="secondary" className="bg-green-500/20 text-green-300 border-green-500/30">
-                    Performance
+                    AI-Powered
                   </Badge>
                 </div>
               </div>
@@ -529,7 +529,7 @@ export const EnterpriseSolutions: React.FC = () => {
             </h2>
             <p className="text-xl text-blue-100 mb-12 leading-relaxed">
               Join industry leaders who have revolutionized their workforce planning 
-              and talent development with Performance solutions.
+              and talent development with AI-powered solutions.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
@@ -570,6 +570,3 @@ export const EnterpriseSolutions: React.FC = () => {
     </>
   );
 };
-
-
-

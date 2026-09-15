@@ -118,26 +118,29 @@ export function useUnifiedGamification() {
   const { data: globalRankings } = useQuery({
     queryKey: ['global-rankings'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('txc_leaderboard')
-        .select('*')
-        .order('rank', { ascending: true })
-        .limit(50);
-      
-      if (error) throw error;
-      
-      return (data || []).map(ranking => ({
-        user_id: ranking.user_id || '',
-        total_points: ranking.lifetime_txc || 0,
-        txc_balance: ranking.current_txc || 0,
-        achievements_count: 0,
-        current_streak: 0,
-        rank: ranking.rank || 0,
-        profiles: {
-          full_name: ranking.full_name || 'Anonymous',
-          profile_picture_url: ranking.profile_picture_url || ''
-        }
-      })) as GlobalRanking[];
+      try {
+        const { data, error } = await supabase
+          .from('txc_leaderboard')
+          .select('*')
+          .limit(50);
+        
+        if (error || !data) return [];
+        
+        return data.map(ranking => ({
+          user_id: ranking.user_id || '',
+          total_points: ranking.lifetime_txc || 0,
+          txc_balance: ranking.current_txc || 0,
+          achievements_count: 0,
+          current_streak: 0,
+          rank: ranking.rank || 0,
+          profiles: {
+            full_name: ranking.full_name || 'Anonymous',
+            profile_picture_url: ranking.profile_picture_url || ''
+          }
+        })) as GlobalRanking[];
+      } catch {
+        return [];
+      }
     }
   });
 

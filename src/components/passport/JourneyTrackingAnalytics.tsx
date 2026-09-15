@@ -33,13 +33,13 @@ interface JourneyEvent {
   created_at: string;
 }
 
-interface CareerAnalyticsTimeframe {
+interface AnalyticsTimeframe {
   label: string;
   value: string;
   days: number;
 }
 
-const timeframes: CareerAnalyticsTimeframe[] = [
+const timeframes: AnalyticsTimeframe[] = [
   { label: 'Last 7 days', value: '7d', days: 7 },
   { label: 'Last 30 days', value: '30d', days: 30 },
   { label: 'Last 90 days', value: '90d', days: 90 },
@@ -48,7 +48,7 @@ const timeframes: CareerAnalyticsTimeframe[] = [
 
 const CHART_COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#8dd1e1'];
 
-export function JourneyTrackingCareerAnalytics({ 
+export function JourneyTrackingAnalytics({ 
   userId, 
   metrics, 
   insights 
@@ -87,8 +87,8 @@ export function JourneyTrackingCareerAnalytics({
     enabled: !!targetUserId,
   });
 
-  // Process CareerAnalytics data
-  const CareerAnalytics = React.useMemo(() => {
+  // Process analytics data
+  const analytics = React.useMemo(() => {
     if (!journeyEvents.length) return null;
 
     // Activity by day
@@ -155,10 +155,10 @@ export function JourneyTrackingCareerAnalytics({
   }, [journeyEvents, currentTimeframe.days]);
 
   if (isLoading) {
-    return <div>Loading CareerAnalytics...</div>;
+    return <div>Loading analytics...</div>;
   }
 
-  if (!CareerAnalytics) {
+  if (!analytics) {
     return (
       <Card>
         <CardContent className="p-6 text-center">
@@ -174,14 +174,14 @@ export function JourneyTrackingCareerAnalytics({
 
   return (
     <div className="space-y-6">
-      {/* CareerAnalytics Header */}
+      {/* Analytics Header */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center">
                 <BarChart3 className="w-5 h-5 mr-2" />
-                Journey CareerAnalytics
+                Journey Analytics
               </CardTitle>
               <CardDescription>
                 Track your career development activities and progress
@@ -211,25 +211,25 @@ export function JourneyTrackingCareerAnalytics({
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <MetricCard
               label="Total Activities"
-              value={CareerAnalytics.summary.totalEvents}
+              value={analytics.summary.totalEvents}
               icon={<Activity className="w-5 h-5" />}
               color="blue"
             />
             <MetricCard
               label="Impact Score"
-              value={CareerAnalytics.summary.totalImpact}
+              value={analytics.summary.totalImpact}
               icon={<Zap className="w-5 h-5" />}
               color="yellow"
             />
             <MetricCard
               label="Daily Average"
-              value={CareerAnalytics.summary.avgDailyActivity}
+              value={analytics.summary.avgDailyActivity}
               icon={<TrendingUp className="w-5 h-5" />}
               color="green"
             />
             <MetricCard
               label="Most Active"
-              value={CareerAnalytics.summary.mostActiveModule || 'N/A'}
+              value={analytics.summary.mostActiveModule || 'N/A'}
               icon={<Target className="w-5 h-5" />}
               color="purple"
               isText
@@ -255,7 +255,7 @@ export function JourneyTrackingCareerAnalytics({
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
-                <RechartsLineChart data={CareerAnalytics.charts.dailyData}>
+                <RechartsLineChart data={analytics.charts.dailyData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" />
                   <YAxis />
@@ -281,7 +281,7 @@ export function JourneyTrackingCareerAnalytics({
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
-                <RechartsBarChart data={CareerAnalytics.charts.moduleData}>
+                <RechartsBarChart data={analytics.charts.moduleData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="module" />
                   <YAxis />
@@ -303,7 +303,7 @@ export function JourneyTrackingCareerAnalytics({
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
-                    data={CareerAnalytics.charts.typeData}
+                    data={analytics.charts.typeData}
                     cx="50%"
                     cy="50%"
                     labelLine={false}
@@ -312,7 +312,7 @@ export function JourneyTrackingCareerAnalytics({
                     fill="#8884d8"
                     dataKey="count"
                   >
-                    {CareerAnalytics.charts.typeData.map((entry, index) => (
+                    {analytics.charts.typeData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                     ))}
                   </Pie>
@@ -331,11 +331,11 @@ export function JourneyTrackingCareerAnalytics({
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {CareerAnalytics.milestones.map((milestone, index) => (
+                {analytics.milestones.map((milestone, index) => (
                   <MilestoneCard key={index} milestone={milestone} />
                 ))}
                 
-                {CareerAnalytics.milestones.length === 0 && (
+                {analytics.milestones.length === 0 && (
                   <div className="text-center py-8">
                     <Target className="w-12 h-12 mx-auto text-muted-foreground mb-3" />
                     <p className="text-muted-foreground">
@@ -437,6 +437,3 @@ function formatEventDescription(eventData: any): string {
   
   return 'Career milestone achieved';
 }
-
-
-

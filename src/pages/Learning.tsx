@@ -1,12 +1,12 @@
 
 import React, { useState, useMemo } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { LearningLayout } from '@/components/learning/LearningLayout';
 import { LearningTabs } from '@/components/learning/LearningTabs';
 import { LearningProgress } from '@/components/learning/LearningProgress';
 import { QuickEnrollCTA } from '@/components/learning/QuickEnrollCTA';
 import { LearningEngineStatus } from '@/components/learning/LearningEngineStatus';
 import { useRealDataService } from '@/hooks/useRealDataService';
-import { updateMetaTags } from '@/utils/metaTags';
 import { BookOpen, TrendingUp, Users, Sparkles, Target, Zap } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,13 +25,6 @@ const Learning = () => {
     getAllLearningPaths,
     getPopularCourses
   } = useRealDataService();
-
-  React.useEffect(() => {
-    updateMetaTags({
-      title: 'Learning Platform | TalentXcel',
-      description: 'Explore courses, learning paths, and track your progress on TalentXcel\'s comprehensive learning platform.'
-    });
-  }, []);
 
   // Optimized mock data with memoization
   const mockUserCourses = useMemo(() => [
@@ -79,6 +72,22 @@ const Learning = () => {
 
   return (
     <LearningLayout>
+      <Helmet>
+        <title>AI Career Learning Hub | TalentXcel — Courses, Paths &amp; Skill Mastery</title>
+        <meta name="description" content="Accelerate your career with AI-curated courses, structured learning paths and real-time skill intelligence. Thousands of verified industry programs on TalentXcel." />
+        <meta name="keywords" content="career learning, ai courses, skill roadmap, software development, data science courses, certifications india, talentxcel learning" />
+        <link rel="canonical" href="https://talentxcel.in/learning" />
+        <meta property="og:title" content="AI Career Learning Hub | TalentXcel" />
+        <meta property="og:description" content="Accelerate your career with AI-curated courses, structured learning paths and real-time skill intelligence." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://talentxcel.in/learning" />
+        <meta property="og:image" content="https://talentxcel.in/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="AI Career Learning Hub | TalentXcel" />
+        <meta name="twitter:description" content="Master in-demand skills with AI-curated courses and structured career paths on TalentXcel." />
+        <meta name="twitter:image" content="https://talentxcel.in/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" />
+      </Helmet>
+
       {/* Dynamic AI Learning Engine Hero */}
       <div className="relative overflow-hidden rounded-3xl mb-8 bg-gradient-to-br from-primary via-ai-violet-medium to-ai-violet-dark">
         {/* Animated Background Elements */}
@@ -135,7 +144,7 @@ const Learning = () => {
             {/* Typing Animation Subtitle */}
             <p className="text-body-large opacity-90 mb-8 max-w-2xl mx-auto animate-fade-in delay-300">
               Join <span className="font-bold text-cyan-300">50,000+</span> professionals advancing their careers with our 
-              <span className="font-semibold text-ai-violet-light"> Performance learning engine</span> and expert-crafted courses.
+              <span className="font-semibold text-ai-violet-light"> AI-powered learning engine</span> and expert-crafted courses.
             </p>
             
             {/* Real-time Learning Stats */}
@@ -216,7 +225,7 @@ const Learning = () => {
             <div className="flex items-center justify-between">
               <Badge className="text-caption bg-ai-violet/10 text-ai-violet-dark border-ai-violet/20">
                 <Sparkles className="card-icon-sm mr-1 animate-spin-slow" />
-                Performance
+                AI-Powered
               </Badge>
               <div className="text-xs text-muted-foreground">94% match rate</div>
             </div>
@@ -303,7 +312,7 @@ const Learning = () => {
             
             <CardContent className="relative z-10 space-y-4">
               <div className="flex flex-wrap gap-2">
-                {['Skill Assessment', 'Career Roadmap', 'Growth Path'].map((feature, index) => (
+                {['Skill Assessment', 'Career Roadmap', 'Progress Tracking'].map((feature, index) => (
                   <Badge key={index} variant="secondary" className="text-xs animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
                     {feature}
                   </Badge>
@@ -345,7 +354,7 @@ const Learning = () => {
                 Employment Bridge
               </CardTitle>
               <p className="text-muted-foreground">
-                Job-focused training with direct employer TalentNetwork
+                Job-focused training with direct employer connections
               </p>
             </CardHeader>
             
@@ -399,7 +408,7 @@ const Learning = () => {
             
             <CardContent className="relative z-10 space-y-4">
               <div className="flex flex-wrap gap-2">
-                {['Team Training', 'CareerAnalytics', 'Custom Content'].map((feature, index) => (
+                {['Team Training', 'Analytics', 'Custom Content'].map((feature, index) => (
                   <Badge key={index} variant="secondary" className="text-xs animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
                     {feature}
                   </Badge>
@@ -454,7 +463,7 @@ const Learning = () => {
               <span className="text-caption font-medium text-muted-foreground uppercase tracking-wider">Learning Engine Active</span>
             </div>
             <h2 className="text-title font-heading text-foreground mb-2">Take Your Learning Further</h2>
-            <p className="text-body text-muted-foreground">Explore specialized Performance tools and resources designed for your success</p>
+            <p className="text-body text-muted-foreground">Explore specialized AI-powered tools and resources designed for your success</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -523,11 +532,11 @@ const Learning = () => {
             <div className="flex flex-wrap items-center justify-center gap-4">
               <Button className="bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 group">
                 <Sparkles className="w-4 h-4 mr-2 group-hover:animate-spin" />
-                Career Moves
+                AI Recommendations
               </Button>
               <Button variant="outline" className="group">
                 <TrendingUp className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
-                Learning CareerAnalytics
+                Learning Analytics
               </Button>
               <Button variant="outline" className="group">
                 <Users className="w-4 h-4 mr-2 group-hover:animate-bounce" />
@@ -542,8 +551,3 @@ const Learning = () => {
 };
 
 export default Learning;
-
-
-
-
-

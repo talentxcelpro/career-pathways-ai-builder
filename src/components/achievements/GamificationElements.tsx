@@ -76,7 +76,7 @@ const userLevel: UserLevel = {
   totalXpForNext: 10000,
   perks: [
     'Priority support',
-    'Advanced CareerAnalytics',
+    'Advanced analytics',
     'Premium templates',
     'Expert insights'
   ]
@@ -527,6 +527,3 @@ export const GamificationElements: React.FC = () => {
     </div>
   );
 };
-
-
-

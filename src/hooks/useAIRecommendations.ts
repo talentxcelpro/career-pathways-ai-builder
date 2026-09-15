@@ -273,7 +273,7 @@ export const useAIRecommendations = () => {
       setTrendingCourses(mockTrending);
       setCollaborativeFiltering(mockCollaborative);
     } catch (error) {
-      console.error('Failed to fetch Career Moves:', error);
+      console.error('Failed to fetch AI recommendations:', error);
     } finally {
       setIsLoading(false);
     }

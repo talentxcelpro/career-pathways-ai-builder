@@ -27,7 +27,7 @@ export const VirtualSpacesHub: React.FC = () => {
             </p>
             <Button 
               onClick={() => createSpace({
-                name: 'Ecosystem Networking VR',
+                name: 'Career Networking VR',
                 type: 'vr',
                 capacity: 20
               })}

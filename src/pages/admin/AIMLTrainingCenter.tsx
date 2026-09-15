@@ -57,7 +57,7 @@ import { toast } from 'sonner';
 import { DatasetManager } from '@/components/admin/ai/DatasetManager';
 import { ModelTrainingManager } from '@/components/admin/ai/ModelTrainingManager';
 import { AIDeploymentManager } from '@/components/admin/ai/AIDeploymentManager';
-import { AIMonitoringCommandCenter } from '@/components/admin/ai/AIMonitoringDashboard';
+import { AIMonitoringDashboard } from '@/components/admin/ai/AIMonitoringDashboard';
 import { AIModelVersionManager } from '@/components/admin/ai/AIModelVersionManager';
 
 import { AILogsViewer } from '@/components/admin/ai/AILogsViewer';
@@ -334,7 +334,7 @@ const AIMLTrainingCenter = () => {
         </TabsContent>
 
         <TabsContent value="monitor" className="space-y-6">
-          <AIMonitoringCommandCenter />
+          <AIMonitoringDashboard />
         </TabsContent>
 
         <TabsContent value="settings" className="space-y-6">
@@ -399,4 +399,3 @@ const AIMLTrainingCenter = () => {
 };
 
 export default AIMLTrainingCenter;
-

@@ -142,7 +142,7 @@ const CareerCredibilityScore: React.FC = () => {
       maxScore: 150,
       factors: [
         {
-          name: 'LinkedIn TalentNetwork (500+)',
+          name: 'LinkedIn Connections (500+)',
           points: 20,
           status: 'completed',
           importance: 'low'
@@ -467,4 +467,3 @@ const CareerCredibilityScore: React.FC = () => {
 };
 
 export default CareerCredibilityScore;
-

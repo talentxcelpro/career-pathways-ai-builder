@@ -47,7 +47,7 @@ export const Phase2LaunchOptimizer: React.FC = () => {
     'Bundle Optimization', 
     'Cache Configuration',
     'SEO Enhancement',
-    'CareerAnalytics Setup',
+    'Analytics Setup',
     'Monitoring Deployment'
   ];
 
@@ -118,11 +118,11 @@ export const Phase2LaunchOptimizer: React.FC = () => {
     return results;
   };
 
-  const setupCareerAnalytics = async () => {
-    // Simulate CareerAnalytics setup
+  const setupAnalytics = async () => {
+    // Simulate analytics setup
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Initialize Google CareerAnalytics 4
+    // Initialize Google Analytics 4
     if (typeof window !== 'undefined' && !window.gtag) {
       const script = document.createElement('script');
       script.async = true;
@@ -152,7 +152,7 @@ export const Phase2LaunchOptimizer: React.FC = () => {
       "@context": "https://schema.org",
       "@type": "WebApplication",
       "name": "TalentXcel",
-      "description": "Performance Career Growth Platform",
+      "description": "AI-Powered Career Platform",
       "url": "https://talentxcel.in",
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web",
@@ -196,10 +196,10 @@ export const Phase2LaunchOptimizer: React.FC = () => {
       toast.info('🔍 Enhancing SEO...');
       await enhanceSEO();
 
-      // Step 5: CareerAnalytics Setup
+      // Step 5: Analytics Setup
       setCurrentStep(5);
-      toast.info('📈 Setting up CareerAnalytics...');
-      await setupCareerAnalytics();
+      toast.info('📈 Setting up analytics...');
+      await setupAnalytics();
 
       // Step 6: Final optimizations
       setCurrentStep(6);
@@ -280,7 +280,7 @@ export const Phase2LaunchOptimizer: React.FC = () => {
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="performance">Performance</TabsTrigger>
             <TabsTrigger value="optimizations">Optimizations</TabsTrigger>
-            <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="deployment">Deployment</TabsTrigger>
           </TabsList>
 
@@ -360,19 +360,19 @@ export const Phase2LaunchOptimizer: React.FC = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="CareerAnalytics">
+          <TabsContent value="analytics">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Monitor className="w-5 h-5" />
-                  CareerAnalytics & Monitoring
+                  Analytics & Monitoring
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <Alert>
                   <CheckCircle className="h-4 w-4" />
                   <AlertDescription>
-                    Google CareerAnalytics 4 configured and tracking page views, user interactions, and conversion events.
+                    Google Analytics 4 configured and tracking page views, user interactions, and conversion events.
                   </AlertDescription>
                 </Alert>
                 
@@ -441,7 +441,7 @@ export const Phase2LaunchOptimizer: React.FC = () => {
                     </li>
                     <li className="flex items-center gap-2">
                       <CheckCircle className="w-4 h-4 text-green-500" />
-                      CareerAnalytics and monitoring active
+                      Analytics and monitoring active
                     </li>
                   </ul>
                 </div>
@@ -453,6 +453,3 @@ export const Phase2LaunchOptimizer: React.FC = () => {
     </div>
   );
 };
-
-
-

@@ -243,7 +243,7 @@ export const MultiLanguageSupport: React.FC<MultiLanguageSupportProps> = ({
             <div>
               <p className="text-sm font-medium text-blue-900">Premium Feature</p>
               <p className="text-xs text-blue-700">
-                Performance translation with cultural adaptation ensures your resume 
+                AI-powered translation with cultural adaptation ensures your resume 
                 meets local expectations and formatting standards.
               </p>
             </div>

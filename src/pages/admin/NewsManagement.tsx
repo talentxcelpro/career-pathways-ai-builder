@@ -160,7 +160,7 @@ const NewsManagement = () => {
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="overview">Articles Overview</TabsTrigger>
           <TabsTrigger value="create">Create Article</TabsTrigger>
-          <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -271,15 +271,15 @@ const NewsManagement = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="CareerAnalytics" className="space-y-6">
+        <TabsContent value="analytics" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>News CareerAnalytics</CardTitle>
+              <CardTitle>News Analytics</CardTitle>
               <CardDescription>Track article performance and engagement</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-center py-8 text-muted-foreground">
-                Detailed CareerAnalytics will be available once articles are published and receiving traffic.
+                Detailed analytics will be available once articles are published and receiving traffic.
               </div>
             </CardContent>
           </Card>
@@ -290,6 +290,3 @@ const NewsManagement = () => {
 };
 
 export default NewsManagement;
-
-
-

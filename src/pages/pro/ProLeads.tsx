@@ -18,7 +18,7 @@ const ProLeads: React.FC = () => {
             className="mr-4 hover:bg-white/80"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to CommandCenter
+            Back to Dashboard
           </Button>
           <div>
             <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
@@ -104,4 +104,3 @@ const ProLeads: React.FC = () => {
 };
 
 export default ProLeads;
-

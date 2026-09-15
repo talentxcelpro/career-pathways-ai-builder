@@ -2,11 +2,11 @@
 import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-interface GoogleCareerAnalyticsProps {
+interface GoogleAnalyticsProps {
   measurementId?: string;
 }
 
-export const GoogleCareerAnalytics: React.FC<GoogleCareerAnalyticsProps> = ({ 
+export const GoogleAnalytics: React.FC<GoogleAnalyticsProps> = ({ 
   measurementId = 'G-XXXXXXXXXX' // Replace with your actual GA4 Measurement ID
 }) => {
   const location = useLocation();
@@ -14,7 +14,7 @@ export const GoogleCareerAnalytics: React.FC<GoogleCareerAnalyticsProps> = ({
   useEffect(() => {
     // Only load if measurement ID is provided and not placeholder
     if (!measurementId || measurementId === 'G-XXXXXXXXXX') {
-      console.log('Google CareerAnalytics: Measurement ID not configured');
+      console.log('Google Analytics: Measurement ID not configured');
       return;
     }
 
@@ -24,20 +24,20 @@ export const GoogleCareerAnalytics: React.FC<GoogleCareerAnalyticsProps> = ({
       window.dataLayer.push(args);
     };
 
-    // Load Google CareerAnalytics script
+    // Load Google Analytics script
     const script = document.createElement('script');
     script.async = true;
     script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
     document.head.appendChild(script);
 
-    // Configure Google CareerAnalytics
+    // Configure Google Analytics
     window.gtag('js', new Date());
     window.gtag('config', measurementId, {
       page_title: document.title,
       page_location: window.location.href,
     });
 
-    console.log('Google CareerAnalytics initialized with ID:', measurementId);
+    console.log('Google Analytics initialized with ID:', measurementId);
 
     return () => {
       // Cleanup script on unmount
@@ -67,7 +67,3 @@ export const GoogleCareerAnalytics: React.FC<GoogleCareerAnalyticsProps> = ({
 
   return null;
 };
-
-
-
-

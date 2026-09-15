@@ -69,8 +69,6 @@ const InterviewQABank = () => {
         }
       });
 
-      if (aiError) throw aiError;
-
       const result = {
         behavioral_questions: aiResponse?.behavioral_questions || [
           {

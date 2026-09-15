@@ -1,27 +1,27 @@
-import { lazy } from "react";
+import { lazy, Suspense } from 'react';
 import { NavItem } from "../types/nav-item";
-const AssessmentsPage = lazy(() => import("../pages/assessments/index"));
-const AssessmentTaking = lazy(() => import("../pages/assessments/AssessmentTaking"));
-const AssessmentResults = lazy(() => import("../pages/assessments/AssessmentResults"));
 
+const AssessmentResults = lazy(() => import('../pages/assessments/AssessmentResults'));
+const AssessmentTaking = lazy(() => import('../pages/assessments/AssessmentTaking'));
+const AssessmentsPage = lazy(() => import('../pages/assessments/index'));
 
 export const assessmentRoutes: NavItem[] = [
   {
     title: "Assessments",
     to: "/assessments",
-    page: <AssessmentsPage />,
+    page: <Suspense fallback={null}><AssessmentsPage /></Suspense>,
     requiresAuth: false
   },
   {
     title: "Take Assessment",
     to: "/assessments/:assessmentId/take/:attemptId",
-    page: <AssessmentTaking />,
+    page: <Suspense fallback={null}><AssessmentTaking /></Suspense>,
     isPublic: true
   },
   {
     title: "Assessment Results",
     to: "/assessments/:assessmentId/results/:attemptId",
-    page: <AssessmentResults />,
+    page: <Suspense fallback={null}><AssessmentResults /></Suspense>,
     isPublic: true
   }
 ];

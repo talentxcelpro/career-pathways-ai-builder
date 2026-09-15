@@ -30,12 +30,12 @@ import {
   Calendar,
   BarChart3
 } from 'lucide-react';
-import { useNotificationCareerAnalytics } from '@/hooks/useNotificationAnalytics';
+import { useNotificationAnalytics } from '@/hooks/useNotificationAnalytics';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
-export const NotificationCareerAnalyticsCommandCenter: React.FC = () => {
-  const { metrics, isLoading, trackNotificationEvent, refreshMetrics } = useNotificationCareerAnalytics();
+export const NotificationAnalyticsDashboard: React.FC = () => {
+  const { metrics, isLoading, trackNotificationEvent, refreshMetrics } = useNotificationAnalytics();
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'quarter'>('month');
 
   const mockCategoryData = [
@@ -77,7 +77,7 @@ export const NotificationCareerAnalyticsCommandCenter: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold text-foreground">Notification CareerAnalytics</h2>
+          <h2 className="text-3xl font-bold text-foreground">Notification Analytics</h2>
           <p className="text-muted-foreground">Monitor notification performance and user engagement</p>
         </div>
         <div className="flex items-center gap-3">
@@ -147,7 +147,7 @@ export const NotificationCareerAnalyticsCommandCenter: React.FC = () => {
         </Card>
       </div>
 
-      {/* CareerAnalytics Tabs */}
+      {/* Analytics Tabs */}
       <Tabs defaultValue="overview" className="space-y-6">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -324,6 +324,3 @@ export const NotificationCareerAnalyticsCommandCenter: React.FC = () => {
     </div>
   );
 };
-
-
-

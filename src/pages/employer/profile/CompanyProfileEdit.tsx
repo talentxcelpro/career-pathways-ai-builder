@@ -279,7 +279,7 @@ const CompanyProfileEdit = () => {
             </Button>
             <div className="mt-4">
               <Button variant="outline" onClick={() => navigate('/employer')}>
-                Go to CommandCenter
+                Go to Dashboard
               </Button>
             </div>
           </CardContent>
@@ -529,5 +529,3 @@ const CompanyProfileEdit = () => {
 };
 
 export default CompanyProfileEdit;
-
-

@@ -22,7 +22,7 @@ import {
 import { useBots, useBotStats, useBotAutomation, useBotContentQueue } from '@/hooks/useBotManagement';
 import BotContentTrigger from './BotContentTrigger';
 
-export const BotAutomationCommandCenter: React.FC = () => {
+export const BotAutomationDashboard: React.FC = () => {
   const [selectedBotId, setSelectedBotId] = useState<string>('');
   
   // Try to get data safely with error handling
@@ -36,7 +36,7 @@ export const BotAutomationCommandCenter: React.FC = () => {
     return (
       <div className="space-y-6">
         <div className="text-center py-8">
-          <p className="text-muted-foreground">Loading automation CommandCenter...</p>
+          <p className="text-muted-foreground">Loading automation dashboard...</p>
         </div>
       </div>
     );
@@ -47,7 +47,7 @@ export const BotAutomationCommandCenter: React.FC = () => {
     return (
       <div className="space-y-6">
         <div className="text-center py-8">
-          <p className="text-destructive">Error loading CommandCenter: {(botsError || statsError || queueError)?.message}</p>
+          <p className="text-destructive">Error loading dashboard: {(botsError || statsError || queueError)?.message}</p>
         </div>
       </div>
     );
@@ -361,4 +361,3 @@ export const BotAutomationCommandCenter: React.FC = () => {
     </div>
   );
 };
-

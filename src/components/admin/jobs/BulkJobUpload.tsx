@@ -302,7 +302,7 @@ export const BulkJobUpload = () => {
     const template = [
       'job_id,title,company_name,location,location_type,employment_type,industry,job_function,description,education_requirements,experience_level,salary_min,salary_max,salary_currency,is_remote,skills_required,skills_keywords,job_tags,benefits,external_url,application_email,application_method,job_type_detail,priority,job_posted_at,expires_at',
       'TECH001,Senior Frontend Developer,TechCorp India,Mumbai,On-site,Full-time,Information Technology,Software Development,"Build modern web applications using React and TypeScript",Bachelor\'s in Computer Science,3-5 Years,800000,1200000,INR,false,"React,TypeScript,JavaScript","JavaScript,React.js,TypeScript,Redux,Webpack,UI Design,Frontend Development,ES6,HTML5,CSS3","Top MNC,Urgent Hiring","Health Insurance,Remote Work,Flexible Hours",https://techcorp.com/jobs/123,hr@techcorp.com,Apply on Company Site,Permanent,true,2025-01-07,2025-02-07',
-      'MKT002,Marketing Manager,Marketing Pro,Bangalore,Hybrid,Full-time,Marketing,Marketing & Communications,"Lead digital marketing campaigns and team management",MBA in Marketing,5-7 Years,600000,900000,INR,true,"Digital Marketing,SEO,CareerAnalytics","Digital Marketing,SEO,SEM,CareerAnalytics,Content Marketing,Social Media,Campaign Management","Fast Growth,Startup Culture","Health Insurance,Stock Options,Learning Budget",https://marketingpro.com/careers,careers@marketingpro.com,Email Application,Permanent,false,2025-01-07,2025-02-07',
+      'MKT002,Marketing Manager,Marketing Pro,Bangalore,Hybrid,Full-time,Marketing,Marketing & Communications,"Lead digital marketing campaigns and team management",MBA in Marketing,5-7 Years,600000,900000,INR,true,"Digital Marketing,SEO,Analytics","Digital Marketing,SEO,SEM,Analytics,Content Marketing,Social Media,Campaign Management","Fast Growth,Startup Culture","Health Insurance,Stock Options,Learning Budget",https://marketingpro.com/careers,careers@marketingpro.com,Email Application,Permanent,false,2025-01-07,2025-02-07',
       'DEV003,Junior Software Engineer,StartupTech,Remote,Remote,Full-time,Information Technology,Software Development,"Develop and maintain web applications using modern frameworks",Bachelor\'s in Engineering,0-2 Years,400000,600000,INR,true,"Python,Django,PostgreSQL","Python,Django,PostgreSQL,REST API,Git,Linux,Web Development,Backend Development","Remote First,Entry Level","Health Insurance,Learning Budget,Flexible Hours",https://startuptech.com/apply,jobs@startuptech.com,Apply on Company Site,Permanent,false,2025-01-07,2025-02-07'
     ].join('\n');
 
@@ -571,6 +571,3 @@ export const BulkJobUpload = () => {
     </div>
   );
 };
-
-
-

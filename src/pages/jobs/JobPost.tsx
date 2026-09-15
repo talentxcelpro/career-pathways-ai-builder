@@ -22,6 +22,9 @@ import AIJobGenerator from "@/components/jobs/AIJobGenerator";
 import AITestButton from "@/components/jobs/AITestButton";
 import { IndustryJobPostForm } from "@/components/jobs/IndustryJobPostForm";
 import { validateJobData } from "@/utils/jobCategories";
+import { normalizeJobContent } from '@/lib/job/normalizeJobContent';
+import { toJobsTablePayload } from '@/lib/job/toJobsTablePayload';
+
 
 function JobPostContent() {
   const navigate = useNavigate();
@@ -204,24 +207,40 @@ function JobPostContent() {
 
       console.log('Posting job with data:', jobData);
 
+      // ── Gate 2D: Run canonical normalization pipeline ──────────
+      const normResult = normalizeJobContent(jobData);
+      const canonicalPayload = toJobsTablePayload(normResult.normalized);
+
+      // Resolve company_id
+      let resolvedCompanyId = userCompany?.company_id || null;
+      if (!resolvedCompanyId && jobData.company_name?.trim()) {
+        try {
+          const { data: cId } = await supabase.rpc('find_or_create_company', {
+            company_name_param: jobData.company_name.trim()
+          });
+          if (cId) resolvedCompanyId = cId;
+        } catch (cErr) {
+          console.warn('find_or_create_company error:', cErr);
+        }
+      }
+
       // Prepare data with proper null handling and correct column names
       const insertData = {
-        // Required fields for database
-        title: jobData.job_title, // Map job_title to title
-        description: jobData.job_description || jobData.job_summary, // Map to description
-        
+        // Base canonical payload (normalized title, description, employment_type, requirement arrays)
+        ...canonicalPayload,
+
         // Map form fields to correct database columns
         job_title: jobData.job_title,
-        company_name: jobData.company_name,
+        company_name: canonicalPayload.company_name || jobData.company_name,
         job_summary: jobData.job_summary,
         job_description: jobData.job_description,
         location_city: jobData.location_city,
         location_state: jobData.location_state,
-        employment_type: jobData.employment_type,
+        employment_type: canonicalPayload.employment_type,
         work_mode: jobData.work_mode,
         work_schedule: jobData.work_schedule,
-        experience_level: jobData.experience_level,
-        
+        experience_level: canonicalPayload.experience_level || jobData.experience_level,
+
         // Contact information
         contact_name: jobData.contact_name,
         contact_designation: jobData.contact_designation,
@@ -235,7 +254,7 @@ function JobPostContent() {
         
         // System fields
         posted_by: user.id,
-        company_id: userCompany?.company_id || null,
+        company_id: resolvedCompanyId,
         is_active: jobData.visibility_status === 'active',
         visibility_status: jobData.visibility_status,
         ai_match_enabled: jobData.ai_match_enabled,
@@ -283,13 +302,31 @@ function JobPostContent() {
 
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       // Invalidate queries to refresh data
       queryClient.invalidateQueries({ queryKey: ['employer-stats'] });
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
       
+      const createdJob = Array.isArray(data) ? data[0] : (data || variables);
+      const createdId = createdJob?.id || createdJob?.seo_slug || '';
+
       toast.success('Job posted successfully!');
-      navigate('/employer');
+      navigate('/jobs/post/success', {
+        state: {
+          jobData: {
+            ...variables,
+            id: createdId,
+            slug: createdJob?.seo_slug || createdJob?.slug || createdId,
+            title: createdJob?.job_title || createdJob?.title || variables.job_title,
+            location_city: createdJob?.location_city || variables.location_city,
+            location_state: createdJob?.location_state || variables.location_state,
+            employment_type: createdJob?.employment_type || variables.employment_type,
+            salary_min: createdJob?.salary_min ?? variables.min_salary,
+            salary_max: createdJob?.salary_max ?? variables.max_salary,
+            company_name: createdJob?.company_name || variables.company_name
+          }
+        }
+      });
     },
     onError: (error: any) => {
       console.error('Job posting failed:', error);
@@ -317,8 +354,8 @@ function JobPostContent() {
         return;
       }
 
-      if (!userCompany?.company_id) {
-        toast.error('Please join a company first to post jobs');
+      if (!formData.company_name?.trim() && !userCompany?.company_id) {
+        toast.error('Please provide a company name');
         return;
       }
     } else {
@@ -343,10 +380,10 @@ function JobPostContent() {
       state: { 
         formData: {
           ...formData,
-          company_name: (userCompany?.companies as any)?.name || 'Your Company',
-          company_website: (userCompany?.companies as any)?.website || '',
-          industry_domain: (userCompany?.companies as any)?.industry || '',
-          company_size: (userCompany?.companies as any)?.size_range || ''
+          company_name: formData.company_name || (userCompany?.companies as any)?.name || 'Your Company',
+          company_website: formData.company_website || (userCompany?.companies as any)?.website || '',
+          industry_domain: formData.industry_domain || (userCompany?.companies as any)?.industry || '',
+          company_size: formData.company_size || (userCompany?.companies as any)?.size_range || ''
         }
       } 
     });
@@ -386,7 +423,7 @@ function JobPostContent() {
               </div>
             )}
           </div>
-          <p className="text-muted-foreground">Fill in the job details below to find top candidates via Performance TalentXcel.</p>
+          <p className="text-muted-foreground">Fill in the job details below to find top candidates via AI-powered TalentXcel.</p>
         </div>
 
         {/* Toggle between forms */}
@@ -552,4 +589,3 @@ function JobPostContent() {
 export default function JobPost() {
   return <JobPostContent />;
 }
-

@@ -37,7 +37,7 @@ export function QRCodeShareSection({ userProfile, insights, userId }: QRCodeShar
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `${userProfile?.full_name || 'TalentXcel'} - Evolution Hub`,
+          title: `${userProfile?.full_name || 'TalentXcel'} - Career Passport`,
           text: `Check out my career readiness score: ${insights.career_readiness_score}% | Market competitiveness: ${insights.market_competitiveness_score}%`,
           url: shareUrl
         });
@@ -70,7 +70,7 @@ export function QRCodeShareSection({ userProfile, insights, userId }: QRCodeShar
         ctx!.fillStyle = '#1f2937';
         ctx!.font = 'bold 16px Arial';
         ctx!.textAlign = 'center';
-        ctx!.fillText('TalentXcel Evolution Hub', 160, 30);
+        ctx!.fillText('TalentXcel Career Passport', 160, 30);
         
         // User name
         ctx!.font = '14px Arial';
@@ -110,7 +110,7 @@ export function QRCodeShareSection({ userProfile, insights, userId }: QRCodeShar
       <CardHeader>
         <CardTitle className="flex items-center text-blue-800">
           <Share2 className="w-5 h-5 mr-2" />
-          Share Your Evolution Hub
+          Share Your Career Passport
         </CardTitle>
       </CardHeader>
       <CardContent>

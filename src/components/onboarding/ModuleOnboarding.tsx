@@ -46,7 +46,7 @@ export const ModuleOnboarding: React.FC<ModuleOnboardingProps> = ({
     {
       id: 'jobs',
       name: 'Job Search',
-      description: 'Find your dream job with Performance matching and personalized recommendations.',
+      description: 'Find your dream job with AI-powered matching and personalized recommendations.',
       icon: <Briefcase className="w-8 h-8" />,
       route: '/jobs',
       benefits: ['AI job matching', 'Salary insights', 'One-click applications', 'Company reviews'],
@@ -56,10 +56,10 @@ export const ModuleOnboarding: React.FC<ModuleOnboardingProps> = ({
     {
       id: 'network',
       name: 'Professional Network',
-      description: 'Build meaningful TalentNetwork with industry professionals and grow your network.',
+      description: 'Build meaningful connections with industry professionals and grow your network.',
       icon: <Users className="w-8 h-8" />,
       route: '/network',
-      benefits: ['Smart TalentNetwork', 'Industry groups', 'Professional messaging', 'Networking events'],
+      benefits: ['Smart connections', 'Industry groups', 'Professional messaging', 'Networking events'],
       color: 'text-green-600',
       bgColor: 'bg-green-100'
     },
@@ -69,7 +69,7 @@ export const ModuleOnboarding: React.FC<ModuleOnboardingProps> = ({
       description: 'Upskill with 500+ courses and earn industry-recognized certifications.',
       icon: <BookOpen className="w-8 h-8" />,
       route: '/learning',
-      benefits: ['500+ courses', 'Industry certifications', 'Growth Path', 'Career Moves'],
+      benefits: ['500+ courses', 'Industry certifications', 'Progress tracking', 'AI recommendations'],
       color: 'text-orange-600',
       bgColor: 'bg-orange-100'
     },
@@ -99,7 +99,7 @@ export const ModuleOnboarding: React.FC<ModuleOnboardingProps> = ({
       description: 'Invite friends and earn cash rewards while helping others advance their careers.',
       icon: <Gift className="w-8 h-8" />,
       route: '/refer-and-earn',
-      benefits: ['Cash rewards', 'Bonus points', 'Tracking CommandCenter', 'Social sharing'],
+      benefits: ['Cash rewards', 'Bonus points', 'Tracking dashboard', 'Social sharing'],
       color: 'text-pink-600',
       bgColor: 'bg-pink-100'
     }
@@ -190,7 +190,7 @@ export const ModuleOnboarding: React.FC<ModuleOnboardingProps> = ({
                   className="bg-gradient-to-r from-primary/10 to-secondary/10 text-primary border-primary/20"
                 >
                   {currentStep === 0 && "Start your journey"}
-                  {currentStep === 1 && "Build TalentNetwork"}
+                  {currentStep === 1 && "Build connections"}
                   {currentStep === 2 && "Learn & grow"}
                   {currentStep === 3 && "Share your story"}
                   {currentStep === 4 && "Get rewarded"}
@@ -240,5 +240,3 @@ export const ModuleOnboarding: React.FC<ModuleOnboardingProps> = ({
     </Dialog>
   );
 };
-
-

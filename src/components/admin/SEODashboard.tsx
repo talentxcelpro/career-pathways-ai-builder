@@ -36,7 +36,7 @@ interface AutomationStatus {
   total_runs: number;
 }
 
-export const SEOCommandCenter: React.FC = () => {
+export const SEODashboard: React.FC = () => {
   const [metrics, setMetrics] = useState<SEOMetric[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [automation, setAutomation] = useState<AutomationStatus | null>(null);
@@ -116,7 +116,7 @@ export const SEOCommandCenter: React.FC = () => {
   const triggerSEOAutomation = async () => {
     try {
       const { data, error } = await supabase.functions.invoke('seo-automation-engine', {
-        body: { automation_type: 'manual_trigger', trigger: 'CommandCenter' }
+        body: { automation_type: 'manual_trigger', trigger: 'dashboard' }
       });
 
       if (error) throw error;
@@ -175,7 +175,7 @@ export const SEOCommandCenter: React.FC = () => {
     return (
       <div className="flex items-center justify-center p-8">
         <RefreshCw className="h-6 w-6 animate-spin mr-2" />
-        Loading SEO CommandCenter...
+        Loading SEO Dashboard...
       </div>
     );
   }
@@ -184,7 +184,7 @@ export const SEOCommandCenter: React.FC = () => {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">SEO CommandCenter</h1>
+          <h1 className="text-3xl font-bold">SEO Dashboard</h1>
           <p className="text-muted-foreground">Monitor and manage SEO automation</p>
         </div>
         <div className="flex gap-2">
@@ -420,4 +420,3 @@ export const SEOCommandCenter: React.FC = () => {
     </div>
   );
 };
-

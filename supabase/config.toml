@@ -78,9 +78,6 @@ verify_jwt = false
 [functions.ai-service-matching]
 verify_jwt = true
 
-[functions.compute-talent-score]
-verify_jwt = true
-
 # Job Management (Essential)
 [functions.bulk-job-upload-v2]
 verify_jwt = false
@@ -116,7 +113,7 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.system-optimizer]
-verify_jwt = true
+verify_jwt = false
 
 [functions.job-expiry-cleanup]
 verify_jwt = false
@@ -168,4 +165,10 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.ai-cfo-execute]
+verify_jwt = true
+
+[functions.elevenlabs-tts]
+verify_jwt = false
+
+[functions.passport-ai-coach]
 verify_jwt = true

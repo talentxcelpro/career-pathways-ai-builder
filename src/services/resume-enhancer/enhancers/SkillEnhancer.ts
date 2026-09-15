@@ -131,7 +131,7 @@ export class SkillEnhancer {
     'Machine Learning': ['Python', 'TensorFlow', 'PyTorch', 'Scikit-learn', 'Statistics'],
     'Docker': ['Kubernetes', 'DevOps', 'Containerization', 'CI/CD'],
     'SQL': ['Database Design', 'PostgreSQL', 'MySQL', 'Data Analysis'],
-    'Product Management': ['Agile', 'Scrum', 'User Research', 'A/B Testing', 'CareerAnalytics']
+    'Product Management': ['Agile', 'Scrum', 'User Research', 'A/B Testing', 'Analytics']
   };
 
   enhanceSkills(
@@ -190,7 +190,7 @@ export class SkillEnhancer {
 
     const roleKeywords = {
       'software_engineer': ['software', 'developer', 'engineer', 'programming', 'coding', 'javascript', 'python', 'react'],
-      'data_scientist': ['data', 'CareerAnalytics', 'machine learning', 'statistics', 'python', 'sql', 'tensorflow'],
+      'data_scientist': ['data', 'analytics', 'machine learning', 'statistics', 'python', 'sql', 'tensorflow'],
       'product_manager': ['product', 'manager', 'strategy', 'roadmap', 'stakeholder', 'agile', 'scrum'],
       'designer': ['design', 'ui', 'ux', 'figma', 'sketch', 'adobe', 'creative', 'wireframe']
     };
@@ -469,7 +469,3 @@ export class SkillEnhancer {
     return this.skillRelationships[skill] || [];
   }
 }
-
-
-
-

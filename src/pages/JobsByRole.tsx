@@ -9,7 +9,7 @@ const JobsByRole = () => {
   
   const roleDescriptions: { [key: string]: string } = {
     'software-engineer': 'Software Engineer jobs across India. Find opportunities in development, programming, and software architecture.',
-    'data-scientist': 'Data Scientist positions with top companies. Work with big data, machine learning, and CareerAnalytics.',
+    'data-scientist': 'Data Scientist positions with top companies. Work with big data, machine learning, and analytics.',
     'product-manager': 'Product Manager roles to lead product development and strategy in innovative companies.',
     'devops-engineer': 'DevOps Engineer jobs focusing on CI/CD, cloud infrastructure, and automation.',
     'ui-ux-designer': 'UI/UX Designer positions to create beautiful and user-friendly digital experiences.',
@@ -42,6 +42,3 @@ const JobsByRole = () => {
 };
 
 export default JobsByRole;
-
-
-

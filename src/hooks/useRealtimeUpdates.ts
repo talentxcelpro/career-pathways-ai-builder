@@ -53,9 +53,9 @@ export function useRealtimeUpdates(
 }
 
 /**
- * Hook specifically for TalentNetwork updates
+ * Hook specifically for connections updates
  */
-export function useTalentNetworkRealtime(callback: (payload: RealtimePayload) => void) {
+export function useConnectionsRealtime(callback: (payload: RealtimePayload) => void) {
   useRealtimeUpdates('connections', (_table, payload) => callback(payload));
 }
 
@@ -86,4 +86,3 @@ export function useTXCRealtime(callback: (payload: RealtimePayload) => void) {
 export function useApplicationsRealtime(callback: (payload: RealtimePayload) => void) {
   useRealtimeUpdates('job_applications', (_table, payload) => callback(payload));
 }
-

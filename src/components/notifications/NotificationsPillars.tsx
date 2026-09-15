@@ -35,11 +35,11 @@ export const NOTIFICATION_PILLARS: NotificationPillar[] = [
   },
   {
     key: 'network',
-    label: 'Talent Network',
+    label: 'Network',
     icon: Users,
     color: 'text-blue-600',
     bgColor: 'bg-blue-100',
-    description: 'Talent Network, messages, and network signals'
+    description: 'Connections, messages, and network insights'
   },
   {
     key: 'jobs',
@@ -63,7 +63,7 @@ export const NOTIFICATION_PILLARS: NotificationPillar[] = [
     icon: FileText,
     color: 'text-orange-600',
     bgColor: 'bg-orange-100',
-    description: 'Resume Feedback, downloads, and optimization tips'
+    description: 'Resume feedback, downloads, and optimization tips'
   },
   {
     key: 'tools',
@@ -71,7 +71,7 @@ export const NOTIFICATION_PILLARS: NotificationPillar[] = [
     icon: Zap,
     color: 'text-yellow-600',
     bgColor: 'bg-yellow-100',
-    description: 'TalentXcel tools, signals, and career services'
+    description: 'AI tools, insights, and career services'
   },
   {
     key: 'learning',
@@ -90,8 +90,8 @@ export const NOTIFICATION_PILLARS: NotificationPillar[] = [
     description: 'Campus events, alumni, and university updates'
   },
   {
-    key: 'career_Pulse',
-    label: 'Career Pulse',
+    key: 'career_feed',
+    label: 'Career Feed',
     icon: MessageSquare,
     color: 'text-teal-600',
     bgColor: 'bg-teal-100',
@@ -103,7 +103,7 @@ export const NOTIFICATION_PILLARS: NotificationPillar[] = [
     icon: Search,
     color: 'text-rose-600',
     bgColor: 'bg-rose-100',
-    description: 'New opportunities, CareerAnalytics, and Intelligence Metrics'
+    description: 'New opportunities, analytics, and AI insights'
   }
 ];
 
@@ -169,8 +169,3 @@ export const NotificationPillars: React.FC<NotificationPillarsProps> = ({
     </div>
   );
 };
-
-
-
-
-

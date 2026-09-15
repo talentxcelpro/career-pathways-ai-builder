@@ -56,7 +56,7 @@ interface AutomationMetrics {
   costReduction: number;
 }
 
-export default function Phase4CommandCenter() {
+export default function Phase4Dashboard() {
   const [workflows, setWorkflows] = useState<WorkflowTemplate[]>([]);
   const [integrations, setIntegrations] = useState<IntegrationConfig[]>([]);
   const [metrics, setMetrics] = useState<AutomationMetrics>({
@@ -163,7 +163,7 @@ export default function Phase4CommandCenter() {
       {
         id: '2',
         name: 'Smart Candidate Matching',
-        description: 'Performance matching with automatic notifications',
+        description: 'AI-powered matching with automatic notifications',
         triggers: ['Job Posted', 'Candidate Updated'],
         actions: ['Analyze', 'Match', 'Score', 'Notify'],
         status: 'active',
@@ -363,7 +363,7 @@ export default function Phase4CommandCenter() {
                   <span className="font-medium">Smart Matching</span>
                 </div>
                 <p className="text-sm text-muted-foreground text-left">
-                  Performance candidate-job matching with notifications
+                  AI-powered candidate-job matching with notifications
                 </p>
               </Button>
               
@@ -626,7 +626,7 @@ export default function Phase4CommandCenter() {
               <h3 className="text-lg font-semibold">System Monitoring & Alerts</h3>
               <Button className="bg-purple-600 hover:bg-purple-700">
                 <BarChart3 className="h-4 w-4 mr-2" />
-                View CareerAnalytics
+                View Analytics
               </Button>
             </div>
             
@@ -790,6 +790,3 @@ export default function Phase4CommandCenter() {
     </div>
   );
 }
-
-
-

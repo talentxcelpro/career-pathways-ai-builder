@@ -5,14 +5,18 @@ import {
 } from "lucide-react";
 
 // Enhanced hierarchical SEO route components
-import { HierarchicalJobsPage } from "@/pages/seo/hierarchical/HierarchicalJobsPage";
-import { HierarchicalNetworkPage } from "@/pages/seo/hierarchical/HierarchicalNetworkPage";
-import { HierarchicalToolsPage } from "@/pages/seo/hierarchical/HierarchicalToolsPage";
-import { HierarchicalServicesPage } from "@/pages/seo/hierarchical/HierarchicalServicesPage";
-import { HierarchicalLearningPage } from "@/pages/seo/hierarchical/HierarchicalLearningPage";
-import { HierarchicalCollegesPage } from "@/pages/seo/hierarchical/HierarchicalCollegesPage";
-import { HierarchicalCareerMapPage } from "@/pages/seo/hierarchical/HierarchicalCareerMapPage";
-import { HierarchicalCompaniesPage } from "@/pages/seo/hierarchical/HierarchicalCompaniesPage";
+const HierarchicalJobsPage = React.lazy(() => import("@/pages/seo/hierarchical/HierarchicalJobsPage").then(m => ({ default: m.HierarchicalJobsPage })));
+const HierarchicalNetworkPage = React.lazy(() => import("@/pages/seo/hierarchical/HierarchicalNetworkPage").then(m => ({ default: m.HierarchicalNetworkPage })));
+const HierarchicalToolsPage = React.lazy(() => import("@/pages/seo/hierarchical/HierarchicalToolsPage").then(m => ({ default: m.HierarchicalToolsPage })));
+const HierarchicalServicesPage = React.lazy(() => import("@/pages/seo/hierarchical/HierarchicalServicesPage").then(m => ({ default: m.HierarchicalServicesPage })));
+const HierarchicalLearningPage = React.lazy(() => import("@/pages/seo/hierarchical/HierarchicalLearningPage").then(m => ({ default: m.HierarchicalLearningPage })));
+const HierarchicalCollegesPage = React.lazy(() => import("@/pages/seo/hierarchical/HierarchicalCollegesPage").then(m => ({ default: m.HierarchicalCollegesPage })));
+const HierarchicalCareerMapPage = React.lazy(() => import("@/pages/seo/hierarchical/HierarchicalCareerMapPage").then(m => ({ default: m.HierarchicalCareerMapPage })));
+const HierarchicalCompaniesPage = React.lazy(() => import("@/pages/seo/hierarchical/HierarchicalCompaniesPage").then(m => ({ default: m.HierarchicalCompaniesPage })));
+
+const S = ({ children }: { children: React.ReactNode }) => (
+  <React.Suspense fallback={null}>{children}</React.Suspense>
+);
 
 /**
  * Enhanced SEO Routes for 2M Pages
@@ -35,7 +39,7 @@ export const enhancedSeoRoutes = [
     title: "Jobs by Type and Location",
     to: "/jobs/:type/:location",
     icon: <Briefcase className="h-4 w-4" />,
-    page: <HierarchicalJobsPage />,
+    page: <S><HierarchicalJobsPage /></S>,
     seoPattern: "jobs-type-location"
   },
   
@@ -44,7 +48,7 @@ export const enhancedSeoRoutes = [
     title: "Jobs by Type, Location and Role", 
     to: "/jobs/:type/:location/:role",
     icon: <Briefcase className="h-4 w-4" />,
-    page: <HierarchicalJobsPage />,
+    page: <S><HierarchicalJobsPage /></S>,
     seoPattern: "jobs-type-location-role"
   },
   
@@ -53,7 +57,7 @@ export const enhancedSeoRoutes = [
     title: "Remote Jobs by Role",
     to: "/jobs/remote/:role",
     icon: <Briefcase className="h-4 w-4" />,
-    page: <HierarchicalJobsPage />,
+    page: <S><HierarchicalJobsPage /></S>,
     seoPattern: "jobs-remote-role"
   },
   
@@ -62,7 +66,7 @@ export const enhancedSeoRoutes = [
     title: "Jobs by Skill and Location",
     to: "/jobs/skill/:skill/:location",
     icon: <Code className="h-4 w-4" />,
-    page: <HierarchicalJobsPage />,
+    page: <S><HierarchicalJobsPage /></S>,
     seoPattern: "jobs-skill-location"
   },
 
@@ -73,7 +77,7 @@ export const enhancedSeoRoutes = [
     title: "Network Posts by Category",
     to: "/network/:category",
     icon: <MapPin className="h-4 w-4" />,
-    page: <HierarchicalNetworkPage />,
+    page: <S><HierarchicalNetworkPage /></S>,
     seoPattern: "network-category"
   },
   
@@ -82,7 +86,7 @@ export const enhancedSeoRoutes = [
     title: "Network Posts by Category and Topic",
     to: "/network/:category/:topic",
     icon: <MapPin className="h-4 w-4" />,
-    page: <HierarchicalNetworkPage />,
+    page: <S><HierarchicalNetworkPage /></S>,
     seoPattern: "network-category-topic"
   },
 
@@ -93,7 +97,7 @@ export const enhancedSeoRoutes = [
     title: "Tools by Category",
     to: "/tools/:category",
     icon: <Wrench className="h-4 w-4" />,
-    page: <HierarchicalToolsPage />,
+    page: <S><HierarchicalToolsPage /></S>,
     seoPattern: "tools-category"
   },
   
@@ -102,7 +106,7 @@ export const enhancedSeoRoutes = [
     title: "Specific Tool Pages",
     to: "/tools/:category/:toolName",
     icon: <Wrench className="h-4 w-4" />,
-    page: <HierarchicalToolsPage />,
+    page: <S><HierarchicalToolsPage /></S>,
     seoPattern: "tools-category-tool"
   },
   
@@ -111,7 +115,7 @@ export const enhancedSeoRoutes = [
     title: "Resume Builder Templates",
     to: "/tools/resume-builder/:template",
     icon: <Wrench className="h-4 w-4" />,
-    page: <HierarchicalToolsPage />,
+    page: <S><HierarchicalToolsPage /></S>,
     seoPattern: "tools-resume-template"
   },
 
@@ -122,7 +126,7 @@ export const enhancedSeoRoutes = [
     title: "Services by Type",
     to: "/services/:type",
     icon: <HelpCircle className="h-4 w-4" />,
-    page: <HierarchicalServicesPage />,
+    page: <S><HierarchicalServicesPage /></S>,
     seoPattern: "services-type"
   },
   
@@ -131,7 +135,7 @@ export const enhancedSeoRoutes = [
     title: "Specific Service Pages",
     to: "/services/:type/:serviceName",
     icon: <HelpCircle className="h-4 w-4" />,
-    page: <HierarchicalServicesPage />,
+    page: <S><HierarchicalServicesPage /></S>,
     seoPattern: "services-type-service"
   },
   
@@ -140,7 +144,7 @@ export const enhancedSeoRoutes = [
     title: "Resume Writing Service Templates",
     to: "/services/resume-writing/:template",
     icon: <HelpCircle className="h-4 w-4" />,
-    page: <HierarchicalServicesPage />,
+    page: <S><HierarchicalServicesPage /></S>,
     seoPattern: "services-resume-template"
   },
 
@@ -151,7 +155,7 @@ export const enhancedSeoRoutes = [
     title: "Learning by Category",
     to: "/learning/:category",
     icon: <BookOpen className="h-4 w-4" />,
-    page: <HierarchicalLearningPage />,
+    page: <S><HierarchicalLearningPage /></S>,
     seoPattern: "learning-category"
   },
   
@@ -160,7 +164,7 @@ export const enhancedSeoRoutes = [
     title: "Specific Course Pages",
     to: "/learning/:category/:courseName",
     icon: <BookOpen className="h-4 w-4" />,
-    page: <HierarchicalLearningPage />,
+    page: <S><HierarchicalLearningPage /></S>,
     seoPattern: "learning-category-course"
   },
   
@@ -169,7 +173,7 @@ export const enhancedSeoRoutes = [
     title: "Learning Paths by Skill",
     to: "/learning/paths/:skill",
     icon: <BookOpen className="h-4 w-4" />,
-    page: <HierarchicalLearningPage />,
+    page: <S><HierarchicalLearningPage /></S>,
     seoPattern: "learning-paths-skill"
   },
 
@@ -180,7 +184,7 @@ export const enhancedSeoRoutes = [
     title: "Colleges by Location",
     to: "/colleges/:location",
     icon: <School className="h-4 w-4" />,
-    page: <HierarchicalCollegesPage />,
+    page: <S><HierarchicalCollegesPage /></S>,
     seoPattern: "colleges-location"
   },
   
@@ -189,7 +193,7 @@ export const enhancedSeoRoutes = [
     title: "Specific College Pages",
     to: "/colleges/:location/:collegeName",
     icon: <School className="h-4 w-4" />,
-    page: <HierarchicalCollegesPage />,
+    page: <S><HierarchicalCollegesPage /></S>,
     seoPattern: "colleges-location-college"
   },
   
@@ -198,7 +202,7 @@ export const enhancedSeoRoutes = [
     title: "College Courses by Field",
     to: "/colleges/:location/:field",
     icon: <School className="h-4 w-4" />,
-    page: <HierarchicalCollegesPage />,
+    page: <S><HierarchicalCollegesPage /></S>,
     seoPattern: "colleges-location-field"
   },
 
@@ -209,7 +213,7 @@ export const enhancedSeoRoutes = [
     title: "Career Paths by Industry",
     to: "/career-map/:industry",
     icon: <Route className="h-4 w-4" />,
-    page: <HierarchicalCareerMapPage />,
+    page: <S><HierarchicalCareerMapPage /></S>,
     seoPattern: "career-map-industry"
   },
   
@@ -218,7 +222,7 @@ export const enhancedSeoRoutes = [
     title: "Specific Career Path Pages",
     to: "/career-map/:industry/:path",
     icon: <Route className="h-4 w-4" />,
-    page: <HierarchicalCareerMapPage />,
+    page: <S><HierarchicalCareerMapPage /></S>,
     seoPattern: "career-map-industry-path"
   },
   
@@ -227,7 +231,7 @@ export const enhancedSeoRoutes = [
     title: "Career Progression by Role",
     to: "/career-map/progression/:role",
     icon: <Route className="h-4 w-4" />,
-    page: <HierarchicalCareerMapPage />,
+    page: <S><HierarchicalCareerMapPage /></S>,
     seoPattern: "career-map-progression-role"
   },
 
@@ -238,7 +242,7 @@ export const enhancedSeoRoutes = [
     title: "Companies by Location and Industry",
     to: "/companies/:location/:industry",
     icon: <Building className="h-4 w-4" />,
-    page: <HierarchicalCompaniesPage />,
+    page: <S><HierarchicalCompaniesPage /></S>,
     seoPattern: "companies-location-industry"
   },
   
@@ -247,7 +251,7 @@ export const enhancedSeoRoutes = [
     title: "Companies by Size and Location",
     to: "/companies/size/:size/:location",
     icon: <Building className="h-4 w-4" />,
-    page: <HierarchicalCompaniesPage />,
+    page: <S><HierarchicalCompaniesPage /></S>,
     seoPattern: "companies-size-location"
   },
 
@@ -258,7 +262,7 @@ export const enhancedSeoRoutes = [
     title: "Employer Resources by Topic",
     to: "/employer/resources/:topic",
     icon: <Building className="h-4 w-4" />,
-    page: <HierarchicalJobsPage />, // Reuse with employer context
+    page: <S><HierarchicalJobsPage /></S>, // Reuse with employer context
     seoPattern: "employer-resources-topic"
   },
 ];

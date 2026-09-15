@@ -44,13 +44,13 @@ const mockEngagementData = [
   { date: '2024-01-07', posts: 19, likes: 245, comments: 63, shares: 38, views: 1780 },
 ];
 
-const mockTalentNetworkData = [
-  { month: 'Jan', TalentNetwork: 45, requests_sent: 23, requests_received: 31 },
-  { month: 'Feb', TalentNetwork: 67, requests_sent: 34, requests_received: 42 },
-  { month: 'Mar', TalentNetwork: 89, requests_sent: 45, requests_received: 56 },
-  { month: 'Apr', TalentNetwork: 123, requests_sent: 67, requests_received: 78 },
-  { month: 'May', TalentNetwork: 156, requests_sent: 89, requests_received: 94 },
-  { month: 'Jun', TalentNetwork: 198, requests_sent: 112, requests_received: 123 },
+const mockConnectionsData = [
+  { month: 'Jan', connections: 45, requests_sent: 23, requests_received: 31 },
+  { month: 'Feb', connections: 67, requests_sent: 34, requests_received: 42 },
+  { month: 'Mar', connections: 89, requests_sent: 45, requests_received: 56 },
+  { month: 'Apr', connections: 123, requests_sent: 67, requests_received: 78 },
+  { month: 'May', connections: 156, requests_sent: 89, requests_received: 94 },
+  { month: 'Jun', connections: 198, requests_sent: 112, requests_received: 123 },
 ];
 
 const mockContentPerformance = [
@@ -102,7 +102,7 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, value, change, icon, tre
   );
 };
 
-export const NetworkCareerAnalyticsCommandCenter: React.FC = () => {
+export const NetworkAnalyticsDashboard: React.FC = () => {
   const [timeRange, setTimeRange] = useState('7d');
   const [activeMetric, setActiveMetric] = useState('engagement');
 
@@ -124,18 +124,18 @@ export const NetworkCareerAnalyticsCommandCenter: React.FC = () => {
     }
   });
 
-  // Fetch network CareerAnalytics
+  // Fetch network analytics
   const { data: networkMetrics, isLoading: isLoadingNetwork } = useQuery({
-    queryKey: ['network-CareerAnalytics', timeRange],
+    queryKey: ['network-analytics', timeRange],
     queryFn: async () => {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - (timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : 90));
 
       const { data, error } = await supabase
-        .from('network_CareerAnalytics')
+        .from('network_analytics')
         .select('*')
-        .gte('CareerAnalytics_date', startDate.toISOString().split('T')[0])
-        .order('CareerAnalytics_date', { ascending: true });
+        .gte('analytics_date', startDate.toISOString().split('T')[0])
+        .order('analytics_date', { ascending: true });
 
       if (error) throw error;
       return data || [];
@@ -152,7 +152,7 @@ export const NetworkCareerAnalyticsCommandCenter: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Network CareerAnalytics</h2>
+          <h2 className="text-2xl font-bold">Network Analytics</h2>
           <p className="text-muted-foreground">
             Track your network growth and engagement metrics
           </p>
@@ -180,7 +180,7 @@ export const NetworkCareerAnalyticsCommandCenter: React.FC = () => {
       {/* Key Metrics */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <MetricCard
-          title="Total TalentNetwork"
+          title="Total Connections"
           value="1,234"
           change="+12% from last week"
           trend="up"
@@ -209,13 +209,13 @@ export const NetworkCareerAnalyticsCommandCenter: React.FC = () => {
         />
       </div>
 
-      {/* CareerAnalytics Tabs */}
+      {/* Analytics Tabs */}
       <Tabs defaultValue="engagement" className="space-y-4">
         <TabsList>
           <TabsTrigger value="engagement">Engagement</TabsTrigger>
           <TabsTrigger value="network">Network Growth</TabsTrigger>
           <TabsTrigger value="content">Content Performance</TabsTrigger>
-          <TabsTrigger value="insights">Intelligence Metrics</TabsTrigger>
+          <TabsTrigger value="insights">AI Insights</TabsTrigger>
         </TabsList>
 
         <TabsContent value="engagement" className="space-y-4">
@@ -279,7 +279,7 @@ export const NetworkCareerAnalyticsCommandCenter: React.FC = () => {
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={400}>
-                <AreaChart data={mockTalentNetworkData}>
+                <AreaChart data={mockConnectionsData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
                   <YAxis />
@@ -337,7 +337,7 @@ export const NetworkCareerAnalyticsCommandCenter: React.FC = () => {
                     <Badge variant="secondary">Network Insight</Badge>
                   </div>
                   <p className="text-sm">
-                    You have strong TalentNetwork in the tech industry. 
+                    You have strong connections in the tech industry. 
                     Engaging more with AI and data science content could expand your reach.
                   </p>
                 </div>
@@ -391,7 +391,3 @@ export const NetworkCareerAnalyticsCommandCenter: React.FC = () => {
     </div>
   );
 };
-
-
-
-

@@ -349,7 +349,7 @@ export const TokenWallet = () => {
                 <li>Premium job applications</li>
                 <li>AI resume optimization</li>
                 <li>Interview coaching</li>
-                <li>Career CareerAnalytics</li>
+                <li>Career analytics</li>
               </ul>
             </div>
           </div>
@@ -358,6 +358,3 @@ export const TokenWallet = () => {
     </div>
   );
 };
-
-
-

@@ -26,7 +26,7 @@ const SEOSuite = () => {
   const { data: seoMetrics } = useQuery({
     queryKey: ['seo-metrics'],
     queryFn: async () => {
-      const [jobsData, seoContentData, CareerAnalyticsData] = await Promise.all([
+      const [jobsData, seoContentData, analyticsData] = await Promise.all([
         supabase.from('jobs').select('id, seo_slug, views_count, created_at').eq('is_active', true),
         supabase.from('seo_content_cache').select('*'),
         supabase.from('seo_metadata').select('*')
@@ -45,7 +45,7 @@ const SEOSuite = () => {
         seoOptimized,
         optimizationRate,
         cachedContent: seoContentData.data?.length || 0,
-        metadataEntries: CareerAnalyticsData.data?.length || 0
+        metadataEntries: analyticsData.data?.length || 0
       };
     }
   });
@@ -54,7 +54,7 @@ const SEOSuite = () => {
   const { data: trafficTrends } = useQuery({
     queryKey: ['seo-traffic-trends'],
     queryFn: async () => {
-      // In a real implementation, this would come from Google CareerAnalytics API or similar
+      // In a real implementation, this would come from Google Analytics API or similar
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
       
       // Generate sample data for the last 30 days
@@ -105,7 +105,7 @@ const SEOSuite = () => {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">SEO Suite</h1>
           <p className="text-muted-foreground">
-            Advanced SEO tools and CareerAnalytics for job portal optimization
+            Advanced SEO tools and analytics for job portal optimization
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -352,6 +352,3 @@ const SEOSuite = () => {
 };
 
 export default SEOSuite;
-
-
-

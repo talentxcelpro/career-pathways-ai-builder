@@ -218,7 +218,7 @@ export default function EmailSystemGuide() {
               <div>
                 <h4 className="font-semibold">Monitor Queue Processing</h4>
                 <p className="text-sm text-muted-foreground">
-                  Watch the Communication CommandCenter for real-time email metrics
+                  Watch the Communication Command Center for real-time email metrics
                 </p>
               </div>
             </div>

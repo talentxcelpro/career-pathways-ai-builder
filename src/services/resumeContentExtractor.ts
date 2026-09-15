@@ -92,7 +92,7 @@ export class ResumeContentExtractor {
   private parseResumeText(text: string): ExtractedContent {
     console.log('Parsing resume text...');
     
-    // This is where Performance parsing would happen
+    // This is where AI-powered parsing would happen
     // For now, we'll use pattern matching and return structured data
     
     const personalInfo = this.extractPersonalInfo(text);
@@ -263,4 +263,3 @@ export class ResumeContentExtractor {
     };
   }
 }
-

@@ -238,7 +238,7 @@ export const SmartConnectAI: React.FC = () => {
           <Sparkles className="h-12 w-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">Complete Your Profile</h3>
           <p className="text-gray-600 mb-4">
-            Add career goals and interests to get personalized TalentNetwork
+            Add career goals and interests to get personalized connections
           </p>
           <Link to="/profile/edit">
             <Button>
@@ -267,19 +267,19 @@ export const SmartConnectAI: React.FC = () => {
                 </Badge>
               </div>
               <p className="text-gray-700 text-sm">
-                Use AI to discover new TalentNetwork, mentors, and collaborators.
+                Use AI to discover new connections, mentors, and collaborators.
               </p>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Suggested TalentNetwork */}
+      {/* Suggested Connections */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Users className="h-5 w-5" />
-            Suggested TalentNetwork
+            Suggested Connections
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -434,7 +434,7 @@ export const SmartConnectAI: React.FC = () => {
           </p>
           <div className="text-center py-8 text-muted-foreground">
             <TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p className="text-sm">Performance mentor recommendations coming soon</p>
+            <p className="text-sm">AI-powered mentor recommendations coming soon</p>
             <p className="text-xs mt-1">We're analyzing industry expertise and career paths</p>
           </div>
         </CardContent>
@@ -502,4 +502,3 @@ export const SmartConnectAI: React.FC = () => {
     </div>
   );
 };
-

@@ -6,7 +6,7 @@ import { Plus, Users, FileText, Calendar, TrendingUp } from 'lucide-react';
 import { useBots } from '@/hooks/useBotManagement';
 import { useBotWallPosts } from '@/hooks/useBotWall';
 import { ManualWallPostEditor } from './ManualWallPostEditor';
-import { BotWallPulse } from '@/components/Pulse/BotWallPulse';
+import { BotWallFeed } from './BotWallFeed';
 
 export const BotWallManagement: React.FC = () => {
   const [selectedBotId, setSelectedBotId] = useState<string>('');
@@ -28,9 +28,9 @@ export const BotWallManagement: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Automation Wall Management</h2>
+          <h2 className="text-2xl font-bold">Bot Wall Management</h2>
           <p className="text-muted-foreground">
-            Create and manage manual posts for your automation wall Pulses
+            Create and manage manual posts for your AI bots' wall feeds
           </p>
         </div>
         
@@ -100,15 +100,15 @@ export const BotWallManagement: React.FC = () => {
       {/* Bot Selection */}
       <Card>
         <CardHeader>
-          <CardTitle>Select Automation Profile</CardTitle>
+          <CardTitle>Select Bot</CardTitle>
           <CardDescription>
-            Choose an automation profile to view and manage its wall posts
+            Choose a bot to view and manage its wall posts
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Select value={selectedBotId} onValueChange={setSelectedBotId}>
             <SelectTrigger className="w-full max-w-md">
-              <SelectValue placeholder="Choose an automation profile..." />
+              <SelectValue placeholder="Choose a bot..." />
             </SelectTrigger>
             <SelectContent>
               {bots?.map((bot) => (
@@ -143,7 +143,7 @@ export const BotWallManagement: React.FC = () => {
         </div>
       )}
 
-      {/* Wall Pulse */}
+      {/* Wall Feed */}
       {selectedBot && (
         <Card>
           <CardHeader>
@@ -155,14 +155,14 @@ export const BotWallManagement: React.FC = () => {
                   className="w-8 h-8 rounded-full"
                 />
               )}
-              {selectedBot.name}'s Wall Pulse
+              {selectedBot.name}'s Wall Feed
             </CardTitle>
             <CardDescription>
-              All posts for this automation profile, both manual and generated
+              All posts for this bot, both manual and AI-generated
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <BotWallPulse 
+            <BotWallFeed 
               botId={selectedBotId}
               showActions={true}
             />
@@ -174,8 +174,8 @@ export const BotWallManagement: React.FC = () => {
         <Card>
           <CardContent className="p-8 text-center text-muted-foreground">
             <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <h3 className="text-lg font-medium mb-2">Select an automation profile</h3>
-            <p>Choose an automation profile above to view and manage its wall posts</p>
+            <h3 className="text-lg font-medium mb-2">Select a Bot</h3>
+            <p>Choose a bot above to view and manage its wall posts</p>
           </CardContent>
         </Card>
       )}

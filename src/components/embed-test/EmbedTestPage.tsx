@@ -1,5 +1,5 @@
 import React from 'react';
-import { EmbedStatusCheck } from '@/components/Pulse/EmbedStatusCheck';
+import { EmbedStatusCheck } from '@/components/feed/EmbedStatusCheck';
 
 export const EmbedTestPage: React.FC = () => {
   return (

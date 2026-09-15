@@ -50,7 +50,7 @@ export function useCareerPassport() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  // Set up real-time subscriptions for Evolution Hub data
+  // Set up real-time subscriptions for career passport data
   useEffect(() => {
     if (!user?.id) return;
 
@@ -59,7 +59,7 @@ export function useCareerPassport() {
     const achievementsChannel = websocketManager.createChannel(`career_achievements_${user.id}`);
     const journeyChannel = websocketManager.createChannel(`user_journey_${user.id}`);
 
-    // Subscribe to Evolution Hub changes
+    // Subscribe to career passport changes
     passportChannel
       .on('postgres_changes', {
         event: '*',
@@ -310,4 +310,3 @@ export function useCareerPassport() {
     getNextMilestone
   };
 }
-

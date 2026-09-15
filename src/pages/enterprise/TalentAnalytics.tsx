@@ -19,7 +19,7 @@ import {
   Building
 } from 'lucide-react';
 
-export const TalentCareerAnalytics: React.FC = () => {
+export const TalentAnalytics: React.FC = () => {
   const [timeRange, setTimeRange] = useState('quarter');
 
   const metrics = {
@@ -46,11 +46,11 @@ export const TalentCareerAnalytics: React.FC = () => {
           <div className="flex items-center gap-3 mb-4">
             <BarChart3 className="h-8 w-8 text-primary" />
             <h1 className="text-3xl font-bold text-gray-900 font-display">
-              Talent CareerAnalytics & Workforce Planning
+              Talent Analytics & Workforce Planning
             </h1>
           </div>
           <p className="text-lg text-gray-600">
-            Real-time talent insights for C-suite executives and HR leaders with predictive CareerAnalytics
+            Real-time talent insights for C-suite executives and HR leaders with predictive analytics
           </p>
         </div>
 
@@ -359,7 +359,7 @@ export const TalentCareerAnalytics: React.FC = () => {
             <Card>
               <CardHeader>
                 <CardTitle>Retention Risk Analysis</CardTitle>
-                <CardDescription>Performance predictions for employee turnover</CardDescription>
+                <CardDescription>AI-powered predictions for employee turnover</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -467,10 +467,10 @@ export const TalentCareerAnalytics: React.FC = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Brain className="h-5 w-5" />
-                  Performance Workforce Predictions
+                  AI-Powered Workforce Predictions
                 </CardTitle>
                 <CardDescription>
-                  Advanced CareerAnalytics to forecast future talent needs and trends
+                  Advanced analytics to forecast future talent needs and trends
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -543,6 +543,3 @@ export const TalentCareerAnalytics: React.FC = () => {
     </div>
   );
 };
-
-
-

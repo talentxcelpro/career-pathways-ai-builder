@@ -1,9 +1,8 @@
 import React from 'react';
 import { TalentXcelPlatform } from '@/components/platform/TalentXcelPlatform';
 
-const TalentXcelCommandCenter = () => {
+const TalentXcelDashboard = () => {
   return <TalentXcelPlatform />;
 };
 
-export default TalentXcelCommandCenter;
-
+export default TalentXcelDashboard;

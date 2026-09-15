@@ -38,7 +38,7 @@ interface RealtimeStats {
   new_subscribers: number;
 }
 
-export const CommunicationCommandCenter: React.FC = () => {
+export const CommunicationDashboard: React.FC = () => {
   const [metrics, setMetrics] = useState<CommunicationMetrics | null>(null);
   const [realtimeStats, setRealtimeStats] = useState<RealtimeStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -146,7 +146,7 @@ export const CommunicationCommandCenter: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <MessageCircle className="h-6 w-6" />
-            Communication CommandCenter
+            Communication Command Center
           </CardTitle>
           <CardDescription>
             Monitor and optimize all platform communications for maximum growth impact
@@ -386,4 +386,3 @@ export const CommunicationCommandCenter: React.FC = () => {
     </div>
   );
 };
-

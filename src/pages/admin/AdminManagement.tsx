@@ -27,6 +27,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { AddAdminDialog } from '@/components/admin/dialogs/AddAdminDialog';
+import { isSuperAdminPhone } from '@/lib/admin/superAdminPolicy';
 
 const AdminManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -182,14 +183,20 @@ const AdminManagement = () => {
                         </Avatar>
                         <div>
                           <p className="font-medium">{admin.full_name || 'Unknown Admin'}</p>
-                          <p className="text-sm text-gray-600">{admin.email}</p>
+                          <p className="text-sm text-gray-600">{admin.email} {admin.phone && `• ${admin.phone}`}</p>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge className="bg-red-100 text-red-800">
-                        Admin
-                      </Badge>
+                      {isSuperAdminPhone(admin.phone) ? (
+                        <Badge className="bg-red-600 text-white font-mono text-[11px] font-bold">
+                          👑 ROOT SUPER ADMIN
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-blue-100 text-blue-800 font-mono text-[11px] font-semibold">
+                          🛡️ SCOPED ADMIN
+                        </Badge>
+                      )}
                     </TableCell>
                     <TableCell>
                       <Badge variant={admin.profile_completed ? 'default' : 'secondary'}>
@@ -209,15 +216,17 @@ const AdminManagement = () => {
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" title="View details">
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" title="Edit admin scope">
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button variant="outline" size="sm" className="text-red-600">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        {!isSuperAdminPhone(admin.phone) && (
+                          <Button variant="outline" size="sm" className="text-red-600" title="Revoke admin privileges">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>

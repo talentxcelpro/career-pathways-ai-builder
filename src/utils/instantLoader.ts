@@ -93,7 +93,7 @@ export const enableInstantClicks = () => {
     
     const link = (e.target as Element).closest('a[href]') as HTMLAnchorElement;
     if (link && link.hostname === location.hostname) {
-      // Instant navigation Feedback
+      // Instant navigation feedback
       link.style.opacity = '0.7';
       requestAnimationFrame(() => {
         link.style.opacity = '';
@@ -153,4 +153,3 @@ export const initInstantLoader = () => {
 
 // Export for manual initialization
 // initInstantLoader();
-

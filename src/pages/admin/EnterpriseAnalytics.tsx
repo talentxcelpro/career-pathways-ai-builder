@@ -16,8 +16,8 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 
-const EnterpriseCareerAnalytics = () => {
-  // Real usage CareerAnalytics
+const EnterpriseAnalytics = () => {
+  // Real usage analytics
   const { data: usageMetrics } = useQuery({
     queryKey: ['enterprise-usage-metrics'],
     queryFn: async () => {
@@ -65,7 +65,7 @@ const EnterpriseCareerAnalytics = () => {
     }
   });
 
-  // Revenue CareerAnalytics
+  // Revenue analytics
   const { data: revenueData } = useQuery({
     queryKey: ['enterprise-revenue'],
     queryFn: async () => {
@@ -97,7 +97,7 @@ const EnterpriseCareerAnalytics = () => {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Enterprise CareerAnalytics</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Enterprise Analytics</h1>
           <p className="text-muted-foreground">
             Performance metrics and insights for enterprise clients
           </p>
@@ -271,7 +271,4 @@ const EnterpriseCareerAnalytics = () => {
   );
 };
 
-export default EnterpriseCareerAnalytics;
-
-
-
+export default EnterpriseAnalytics;

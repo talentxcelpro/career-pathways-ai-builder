@@ -14,7 +14,7 @@ interface SecureLoginFormProps {
 
 export const SecureLoginForm: React.FC<SecureLoginFormProps> = ({ 
   onSuccess, 
-  redirectTo = '/CommandCenter' 
+  redirectTo = '/dashboard' 
 }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -117,4 +117,3 @@ export const SecureLoginForm: React.FC<SecureLoginFormProps> = ({
     </div>
   );
 };
-

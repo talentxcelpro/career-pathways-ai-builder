@@ -38,7 +38,7 @@ export const FeaturedSnippetsTargeting: React.FC<FeaturedSnippetsTargetingProps>
     content: '',
     targetRank: 1
   });
-  const [CareerAnalytics, setCareerAnalytics] = useState({
+  const [analytics, setAnalytics] = useState({
     totalTargets: 0,
     positionZero: 0,
     topThree: 0,
@@ -75,16 +75,16 @@ export const FeaturedSnippetsTargeting: React.FC<FeaturedSnippetsTargetingProps>
     ];
 
     setTargets(sampleTargets);
-    updateCareerAnalytics(sampleTargets);
+    updateAnalytics(sampleTargets);
   }, [pageTitle]);
 
-  const updateCareerAnalytics = (targetList: SnippetTarget[]) => {
+  const updateAnalytics = (targetList: SnippetTarget[]) => {
     const total = targetList.length;
     const positionZero = targetList.filter(t => t.currentRank === 1).length;
     const topThree = targetList.filter(t => t.currentRank && t.currentRank <= 3).length;
     const avgPosition = targetList.reduce((acc, t) => acc + (t.currentRank || 10), 0) / total;
 
-    setCareerAnalytics({
+    setAnalytics({
       totalTargets: total,
       positionZero,
       topThree,
@@ -109,7 +109,7 @@ export const FeaturedSnippetsTargeting: React.FC<FeaturedSnippetsTargetingProps>
 
     const updatedTargets = [...targets, target];
     setTargets(updatedTargets);
-    updateCareerAnalytics(updatedTargets);
+    updateAnalytics(updatedTargets);
     setNewTarget({
       keyword: '',
       query: '',
@@ -186,14 +186,14 @@ export const FeaturedSnippetsTargeting: React.FC<FeaturedSnippetsTargetingProps>
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* CareerAnalytics CommandCenter */}
+          {/* Analytics Dashboard */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">Total Targets</p>
-                    <p className="text-2xl font-bold">{CareerAnalytics.totalTargets}</p>
+                    <p className="text-2xl font-bold">{analytics.totalTargets}</p>
                   </div>
                   <Target className="h-8 w-8 text-blue-600" />
                 </div>
@@ -205,7 +205,7 @@ export const FeaturedSnippetsTargeting: React.FC<FeaturedSnippetsTargetingProps>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">Position #0</p>
-                    <p className="text-2xl font-bold text-green-600">{CareerAnalytics.positionZero}</p>
+                    <p className="text-2xl font-bold text-green-600">{analytics.positionZero}</p>
                   </div>
                   <Award className="h-8 w-8 text-green-600" />
                 </div>
@@ -217,7 +217,7 @@ export const FeaturedSnippetsTargeting: React.FC<FeaturedSnippetsTargetingProps>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">Top 3</p>
-                    <p className="text-2xl font-bold text-orange-600">{CareerAnalytics.topThree}</p>
+                    <p className="text-2xl font-bold text-orange-600">{analytics.topThree}</p>
                   </div>
                   <TrendingUp className="h-8 w-8 text-orange-600" />
                 </div>
@@ -229,7 +229,7 @@ export const FeaturedSnippetsTargeting: React.FC<FeaturedSnippetsTargetingProps>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">Avg Position</p>
-                    <p className="text-2xl font-bold">{CareerAnalytics.avgPosition}</p>
+                    <p className="text-2xl font-bold">{analytics.avgPosition}</p>
                   </div>
                   <BarChart className="h-8 w-8 text-purple-600" />
                 </div>
@@ -384,6 +384,3 @@ export const FeaturedSnippetsTargeting: React.FC<FeaturedSnippetsTargetingProps>
     </div>
   );
 };
-
-
-

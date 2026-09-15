@@ -26,7 +26,7 @@ interface InterviewSession {
   companyName: string;
   interviewType: 'phone' | 'video' | 'in-person' | 'panel';
   questions: InterviewQuestion[];
-  userAnswers: { questionId: string; answer: string; rating?: number; Feedback?: string }[];
+  userAnswers: { questionId: string; answer: string; rating?: number; feedback?: string }[];
   score?: number;
   completed: boolean;
   duration?: number;
@@ -115,7 +115,7 @@ export const InterviewPrepAI: React.FC = () => {
         questionId: currentQuestion.id,
         answer: userAnswer,
         rating: data.rating,
-        Feedback: data.Feedback
+        feedback: data.feedback
       };
 
       setCurrentSession(prev => ({
@@ -196,7 +196,7 @@ export const InterviewPrepAI: React.FC = () => {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Interview Prep AI</h1>
-          <p className="text-muted-foreground">Practice interviews with Performance Feedback</p>
+          <p className="text-muted-foreground">Practice interviews with AI-powered feedback</p>
         </div>
         {isSessionActive && (
           <div className="flex items-center gap-4">
@@ -415,9 +415,9 @@ export const InterviewPrepAI: React.FC = () => {
                             </div>
                             <p className="text-sm text-muted-foreground mb-2">{question?.question}</p>
                             <p className="text-sm mb-2">{answer.answer}</p>
-                            {answer.Feedback && (
+                            {answer.feedback && (
                               <div className="p-3 bg-muted rounded-lg">
-                                <p className="text-sm">{answer.Feedback}</p>
+                                <p className="text-sm">{answer.feedback}</p>
                               </div>
                             )}
                           </CardContent>
@@ -447,4 +447,3 @@ export const InterviewPrepAI: React.FC = () => {
     </div>
   );
 };
-

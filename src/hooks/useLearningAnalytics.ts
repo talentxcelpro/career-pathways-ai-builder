@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-export interface LearningCareerAnalytics {
+export interface LearningAnalytics {
   totalStudents: number;
   totalCourses: number;
   totalEnrollments: number;
@@ -25,10 +25,10 @@ export interface LearningCareerAnalytics {
   }>;
 }
 
-export const useLearningCareerAnalytics = () => {
+export const useLearningAnalytics = () => {
   return useQuery({
-    queryKey: ['learning-CareerAnalytics'],
-    queryFn: async (): Promise<LearningCareerAnalytics> => {
+    queryKey: ['learning-analytics'],
+    queryFn: async (): Promise<LearningAnalytics> => {
       try {
         // Get basic counts
         const [
@@ -134,7 +134,7 @@ export const useLearningCareerAnalytics = () => {
           monthlyStats
         };
       } catch (error) {
-        console.error('Error fetching learning CareerAnalytics:', error);
+        console.error('Error fetching learning analytics:', error);
         // Return default values on error
         return {
           totalStudents: 0,
@@ -152,9 +152,9 @@ export const useLearningCareerAnalytics = () => {
   });
 };
 
-export const useCourseCareerAnalytics = (courseId: string) => {
+export const useCourseAnalytics = (courseId: string) => {
   return useQuery({
-    queryKey: ['course-CareerAnalytics', courseId],
+    queryKey: ['course-analytics', courseId],
     queryFn: async () => {
       const { data: enrollments, error } = await supabase
         .from('course_enrollments')
@@ -186,7 +186,7 @@ export const useUserLearningStats = (userId?: string) => {
       if (!userId) throw new Error('User ID required');
       
       const { data, error } = await supabase
-        .from('user_learning_CareerAnalytics')
+        .from('user_learning_analytics')
         .select('*')
         .eq('user_id', userId);
 
@@ -214,6 +214,3 @@ export const useUserLearningStats = (userId?: string) => {
     enabled: !!userId,
   });
 };
-
-
-

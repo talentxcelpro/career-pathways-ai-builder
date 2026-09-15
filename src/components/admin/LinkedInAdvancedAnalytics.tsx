@@ -7,20 +7,20 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import { TrendingUp, Users, Briefcase, AlertTriangle, Download, Filter } from 'lucide-react';
-import { useLinkedInCareerAnalytics } from '@/hooks/useLinkedInAnalytics';
+import { useLinkedInAnalytics } from '@/hooks/useLinkedInAnalytics';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
-export default function LinkedInAdvancedCareerAnalytics() {
+export default function LinkedInAdvancedAnalytics() {
   const [timeRange, setTimeRange] = useState('7d');
   const [analysisType, setAnalysisType] = useState('profiles');
   const [customMetrics, setCustomMetrics] = useState<any[]>([]);
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
   const { toast } = useToast();
   
-  const { data: CareerAnalytics, isLoading } = useLinkedInCareerAnalytics();
+  const { data: analytics, isLoading } = useLinkedInAnalytics();
 
   useEffect(() => {
     fetchCustomMetrics();
@@ -28,7 +28,7 @@ export default function LinkedInAdvancedCareerAnalytics() {
 
   const fetchCustomMetrics = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('linkedin-CareerAnalytics-processor', {
+      const { data, error } = await supabase.functions.invoke('linkedin-analytics-processor', {
         body: {
           action: 'get_advanced_metrics',
           time_range: timeRange,
@@ -48,7 +48,7 @@ export default function LinkedInAdvancedCareerAnalytics() {
   const generateReport = async () => {
     setIsGeneratingReport(true);
     try {
-      const { data, error } = await supabase.functions.invoke('linkedin-CareerAnalytics-processor', {
+      const { data, error } = await supabase.functions.invoke('linkedin-analytics-processor', {
         body: {
           action: 'generate_report',
           time_range: timeRange,
@@ -64,12 +64,12 @@ export default function LinkedInAdvancedCareerAnalytics() {
       const url = URL.createObjectURL(new Blob([data.report], { type: 'application/pdf' }));
       const a = document.createElement('a');
       a.href = url;
-      a.download = `linkedin-CareerAnalytics-${timeRange}.pdf`;
+      a.download = `linkedin-analytics-${timeRange}.pdf`;
       a.click();
 
       toast({
         title: "Report Generated",
-        description: "CareerAnalytics report has been downloaded successfully",
+        description: "Analytics report has been downloaded successfully",
       });
     } catch (error) {
       console.error('Error generating report:', error);
@@ -112,7 +112,7 @@ export default function LinkedInAdvancedCareerAnalytics() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <div>
-            <CardTitle>Advanced LinkedIn CareerAnalytics</CardTitle>
+            <CardTitle>Advanced LinkedIn Analytics</CardTitle>
             <CardDescription>
               Deep insights and trend analysis for LinkedIn data
             </CardDescription>
@@ -152,7 +152,7 @@ export default function LinkedInAdvancedCareerAnalytics() {
                     <Users className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{CareerAnalytics?.totalImports || 0}</div>
+                    <div className="text-2xl font-bold">{analytics?.totalImports || 0}</div>
                     <p className="text-xs text-muted-foreground">
                       +12% from last week
                     </p>
@@ -355,6 +355,3 @@ export default function LinkedInAdvancedCareerAnalytics() {
     </div>
   );
 }
-
-
-

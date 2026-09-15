@@ -11,7 +11,7 @@ import {
   CheckCircle, AlertCircle, Plus, Settings
 } from "lucide-react";
 
-export const PersonalCommandCenter: React.FC = () => {
+export const PersonalDashboard: React.FC = () => {
   const [profileCompleteness, setProfileCompleteness] = useState(78);
   
   const userStats = {
@@ -77,19 +77,19 @@ export const PersonalCommandCenter: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-heavy bg-slate-950 bg-clip-text text-transparent tracking-tight">
-            CareerIntelligence
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            Personal Dashboard
           </h2>
-          <p className="text-muted-foreground font-medium">Monitoring your professional signals and growth</p>
+          <p className="text-muted-foreground">Track your job search progress and career development</p>
         </div>
-        <Button className="bg-slate-950 text-white hover:bg-slate-800 rounded-2xl px-6">
+        <Button className="bg-gradient-to-r from-primary to-secondary">
           <Settings className="mr-2 h-4 w-4" />
-          Manage OS
+          Settings
         </Button>
       </div>
 
       {/* Profile Completeness */}
-      <Card className="bg-slate-50 border-slate-100 rounded-3xl shadow-sm">
+      <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
         <CardContent className="p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -119,46 +119,46 @@ export const PersonalCommandCenter: React.FC = () => {
 
       {/* Quick Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        <Card className="p-4 hover:shadow-2xl transition-all duration-500 rounded-3xl border-slate-100 bg-white group">
+        <Card className="p-4 hover:shadow-lg transition-shadow">
           <div className="text-center space-y-2">
-            <Send className="h-6 w-6 text-slate-950 mx-auto group-hover:scale-110 transition-transform" />
-            <div className="text-2xl font-heavy">{userStats.applicationsSubmitted}</div>
-            <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Applications</div>
+            <Send className="h-6 w-6 text-green-600 mx-auto" />
+            <div className="text-2xl font-bold">{userStats.applicationsSubmitted}</div>
+            <div className="text-sm text-muted-foreground">Applications</div>
           </div>
         </Card>
-        <Card className="p-4 hover:shadow-2xl transition-all duration-500 rounded-3xl border-slate-100 bg-white group">
+        <Card className="p-4 hover:shadow-lg transition-shadow">
           <div className="text-center space-y-2">
-            <Calendar className="h-6 w-6 text-slate-950 mx-auto group-hover:scale-110 transition-transform" />
-            <div className="text-2xl font-heavy">{userStats.interviewsScheduled}</div>
-            <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Interviews</div>
+            <Calendar className="h-6 w-6 text-blue-600 mx-auto" />
+            <div className="text-2xl font-bold">{userStats.interviewsScheduled}</div>
+            <div className="text-sm text-muted-foreground">Interviews</div>
           </div>
         </Card>
-        <Card className="p-4 hover:shadow-2xl transition-all duration-500 rounded-3xl border-slate-100 bg-white group">
+        <Card className="p-4 hover:shadow-lg transition-shadow">
           <div className="text-center space-y-2">
-            <Eye className="h-6 w-6 text-slate-950 mx-auto group-hover:scale-110 transition-transform" />
-            <div className="text-2xl font-heavy">{userStats.profileViews}</div>
-            <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Signals</div>
+            <Eye className="h-6 w-6 text-purple-600 mx-auto" />
+            <div className="text-2xl font-bold">{userStats.profileViews}</div>
+            <div className="text-sm text-muted-foreground">Profile Views</div>
           </div>
         </Card>
-        <Card className="p-4 hover:shadow-2xl transition-all duration-500 rounded-3xl border-slate-100 bg-white group">
+        <Card className="p-4 hover:shadow-lg transition-shadow">
           <div className="text-center space-y-2">
-            <Heart className="h-6 w-6 text-slate-950 mx-auto group-hover:scale-110 transition-transform" />
-            <div className="text-2xl font-heavy">{userStats.savedJobs}</div>
-            <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Saved</div>
+            <Heart className="h-6 w-6 text-red-600 mx-auto" />
+            <div className="text-2xl font-bold">{userStats.savedJobs}</div>
+            <div className="text-sm text-muted-foreground">Saved Jobs</div>
           </div>
         </Card>
-        <Card className="p-4 hover:shadow-2xl transition-all duration-500 rounded-3xl border-slate-100 bg-white group">
+        <Card className="p-4 hover:shadow-lg transition-shadow">
           <div className="text-center space-y-2">
-            <Award className="h-6 w-6 text-slate-950 mx-auto group-hover:scale-110 transition-transform" />
-            <div className="text-2xl font-heavy">{userStats.skillAssessments}</div>
-            <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Verified</div>
+            <Award className="h-6 w-6 text-yellow-600 mx-auto" />
+            <div className="text-2xl font-bold">{userStats.skillAssessments}</div>
+            <div className="text-sm text-muted-foreground">Assessments</div>
           </div>
         </Card>
-        <Card className="p-4 hover:shadow-2xl transition-all duration-500 rounded-3xl border-slate-100 bg-white group">
+        <Card className="p-4 hover:shadow-lg transition-shadow">
           <div className="text-center space-y-2">
-            <MessageCircle className="h-6 w-6 text-slate-950 mx-auto group-hover:scale-110 transition-transform" />
-            <div className="text-2xl font-heavy">{userStats.networkConnections}</div>
-            <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Network</div>
+            <MessageCircle className="h-6 w-6 text-indigo-600 mx-auto" />
+            <div className="text-2xl font-bold">{userStats.networkConnections}</div>
+            <div className="text-sm text-muted-foreground">Connections</div>
           </div>
         </Card>
       </div>
@@ -308,5 +308,3 @@ export const PersonalCommandCenter: React.FC = () => {
     </div>
   );
 };
-
-

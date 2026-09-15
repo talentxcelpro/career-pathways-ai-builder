@@ -38,7 +38,7 @@ interface MonitoringData {
   recentLogs: any[];
 }
 
-export const AIMonitoringCommandCenter: React.FC = () => {
+export const AIMonitoringDashboard: React.FC = () => {
   const [monitoringData, setMonitoringData] = useState<MonitoringData>({
     totalRequests: 0,
     successfulRequests: 0,
@@ -483,4 +483,3 @@ export const AIMonitoringCommandCenter: React.FC = () => {
     </div>
   );
 };
-

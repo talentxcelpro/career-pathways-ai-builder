@@ -133,7 +133,7 @@ export const SmartJobScrapingControls = () => {
 
   return (
     <div className="space-y-6">
-      {/* Live Metrics CommandCenter */}
+      {/* Live Metrics Dashboard */}
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -175,7 +175,7 @@ export const SmartJobScrapingControls = () => {
       <Card>
         <CardHeader>
           <CardTitle>Active Scraping Jobs</CardTitle>
-          <CardDescription>Real-time Growth Path for LinkedIn job scraping</CardDescription>
+          <CardDescription>Real-time progress tracking for LinkedIn job scraping</CardDescription>
         </CardHeader>
         <CardContent>
           {Object.values(scrapingProgress).length === 0 ? (
@@ -422,4 +422,3 @@ export const SmartJobScrapingControls = () => {
     </div>
   );
 };
-

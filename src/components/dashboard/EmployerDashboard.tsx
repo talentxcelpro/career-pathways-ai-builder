@@ -18,12 +18,12 @@ import {
   Clock
 } from 'lucide-react';
 
-export function EmployerCommandCenter() {
+export function EmployerDashboard() {
   return (
     <div className="space-y-6">
       {/* Welcome Section */}
       <div className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 p-6 rounded-lg">
-        <h1 className="text-2xl font-bold mb-2">Employer CommandCenter</h1>
+        <h1 className="text-2xl font-bold mb-2">Employer Dashboard</h1>
         <p className="text-muted-foreground">
           Manage your hiring pipeline, review candidates, and grow your team.
         </p>
@@ -89,7 +89,7 @@ export function EmployerCommandCenter() {
                 </Button>
                 <Button variant="outline" className="h-20 flex-col gap-2">
                   <BarChart3 className="h-6 w-6" />
-                  <span className="text-sm">View CareerAnalytics</span>
+                  <span className="text-sm">View Analytics</span>
                 </Button>
                 <Button variant="outline" className="h-20 flex-col gap-2">
                   <Building2 className="h-6 w-6" />
@@ -277,6 +277,3 @@ export function EmployerCommandCenter() {
     </div>
   );
 }
-
-
-

@@ -119,7 +119,7 @@ export const AdvancedCompetitorIntelligence = () => {
             Advanced Competitor Intelligence
           </CardTitle>
           <CardDescription>
-            Performance competitor analysis with content gap identification and opportunity mapping
+            AI-powered competitor analysis with content gap identification and opportunity mapping
           </CardDescription>
         </CardHeader>
         <CardContent>

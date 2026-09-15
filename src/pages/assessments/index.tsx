@@ -402,7 +402,7 @@ export default function AssessmentsPage() {
               <div className="p-3 bg-primary/10 rounded-lg w-12 h-12 mx-auto mb-3 group-hover:bg-primary/20 transition-colors">
                 <Brain className="h-6 w-6 text-primary mx-auto" />
               </div>
-              <h3 className="font-bold mb-2">Performance CareerAnalytics</h3>
+              <h3 className="font-bold mb-2">AI-Powered Analytics</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 Get detailed insights and personalized recommendations powered by advanced AI
               </p>
@@ -422,6 +422,3 @@ export default function AssessmentsPage() {
     </div>
   );
 }
-
-
-

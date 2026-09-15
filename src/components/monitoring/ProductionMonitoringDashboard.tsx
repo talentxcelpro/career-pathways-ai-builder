@@ -32,7 +32,7 @@ interface SystemStatus {
   lastUpdate: Date;
 }
 
-export const ProductionMonitoringCommandCenter: React.FC = () => {
+export const ProductionMonitoringDashboard: React.FC = () => {
   const [systemStatus, setSystemStatus] = useState<SystemStatus>({
     overall: 'healthy',
     uptime: '99.9%',
@@ -313,4 +313,3 @@ export const ProductionMonitoringCommandCenter: React.FC = () => {
     </div>
   );
 };
-

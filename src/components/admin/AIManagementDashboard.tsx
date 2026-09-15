@@ -16,12 +16,12 @@ import {
 } from 'lucide-react';
 import { AISystemTester } from './AISystemTester';
 import { AIToolsConfiguration } from './AIToolsConfiguration';
-import { AIUsageCareerAnalytics } from './AIUsageAnalytics';
+import { AIUsageAnalytics } from './AIUsageAnalytics';
 import { AIPerformanceMonitor } from './AIPerformanceMonitor';
 import { AIAgentsManager } from './AIAgentsManager';
 import { useAIManagementStats } from '@/hooks/useAIManagementStats';
 
-export const AIManagementCommandCenter = () => {
+export const AIManagementDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const { stats, isLoading } = useAIManagementStats();
 
@@ -61,7 +61,7 @@ export const AIManagementCommandCenter = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">AI Management CommandCenter</h1>
+          <h1 className="text-3xl font-bold">AI Management Dashboard</h1>
           <p className="text-muted-foreground">
             Monitor and manage AI features across the platform
           </p>
@@ -100,7 +100,7 @@ export const AIManagementCommandCenter = () => {
           <TabsTrigger value="agents">AI Agents</TabsTrigger>
           <TabsTrigger value="tools">Tools Config</TabsTrigger>
           <TabsTrigger value="testing">Testing</TabsTrigger>
-          <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="monitoring">Monitoring</TabsTrigger>
         </TabsList>
 
@@ -176,8 +176,8 @@ export const AIManagementCommandCenter = () => {
           <AISystemTester />
         </TabsContent>
 
-        <TabsContent value="CareerAnalytics">
-          <AIUsageCareerAnalytics />
+        <TabsContent value="analytics">
+          <AIUsageAnalytics />
         </TabsContent>
 
         <TabsContent value="monitoring">
@@ -187,7 +187,3 @@ export const AIManagementCommandCenter = () => {
     </div>
   );
 };
-
-
-
-

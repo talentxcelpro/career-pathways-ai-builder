@@ -24,7 +24,7 @@ import {
 interface CareerProgressData {
   currentLevel: string;
   skillsGained: number;
-  TalentNetworkGrown: number;
+  connectionsGrown: number;
   articlesPublished: number;
   completionScore: number;
 }
@@ -75,7 +75,7 @@ export const InteractiveProgressTracker = ({ data }: InteractiveProgressTrackerP
     {
       id: 'network-growth',
       title: 'Network Expansion',
-      description: 'Build meaningful professional TalentNetwork',
+      description: 'Build meaningful professional connections',
       progress: 60,
       target: 100,
       icon: Users,
@@ -215,8 +215,8 @@ export const InteractiveProgressTracker = ({ data }: InteractiveProgressTrackerP
               </div>
               <div className="text-center p-3 bg-white rounded-lg border">
                 <Users className="h-5 w-5 text-blue-600 mx-auto mb-1" />
-                <p className="text-sm font-medium">TalentNetwork</p>
-                <p className="text-xl font-bold text-blue-600">{data.TalentNetworkGrown}</p>
+                <p className="text-sm font-medium">Connections</p>
+                <p className="text-xl font-bold text-blue-600">{data.connectionsGrown}</p>
               </div>
               <div className="text-center p-3 bg-white rounded-lg border">
                 <BookOpen className="h-5 w-5 text-green-600 mx-auto mb-1" />
@@ -426,4 +426,3 @@ export const InteractiveProgressTracker = ({ data }: InteractiveProgressTrackerP
     </div>
   );
 };
-

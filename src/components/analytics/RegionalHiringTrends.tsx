@@ -98,7 +98,7 @@ export const RegionalHiringTrends: React.FC = () => {
             { name: 'Data Science', jobs: 28940, growth: 34.5 }
           ],
           topCompanies: ['Infosys', 'Wipro', 'TCS', 'Accenture', 'IBM'],
-          emergingRoles: ['Talent Engineer', 'Cloud Architect', 'Product Designer'],
+          emergingRoles: ['AI Engineer', 'Cloud Architect', 'Product Designer'],
           remoteJobsPercentage: 42
         },
         {
@@ -229,7 +229,7 @@ export const RegionalHiringTrends: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <AIStatusIndicator module="CareerAnalytics" feature="Geographic Intelligence">
+          <AIStatusIndicator module="Analytics" feature="Geographic Intelligence">
             <h1 className="text-3xl font-bold text-foreground">Regional Hiring Trends</h1>
           </AIStatusIndicator>
           <p className="text-muted-foreground mt-1">
@@ -566,9 +566,9 @@ export const RegionalHiringTrends: React.FC = () => {
         <TabsContent value="forecasts" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Performance Regional Forecasts</CardTitle>
+              <CardTitle>AI-Powered Regional Forecasts</CardTitle>
               <CardDescription>
-                Predictive CareerAnalytics for regional job market evolution
+                Predictive analytics for regional job market evolution
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -624,6 +624,3 @@ export const RegionalHiringTrends: React.FC = () => {
     </div>
   );
 };
-
-
-

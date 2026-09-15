@@ -55,8 +55,8 @@ export const ProfessionalPortfolioBuilder: React.FC<ProfessionalPortfolioBuilder
   const [projects, setProjects] = useState<PortfolioProject[]>([
     {
       id: '1',
-      title: 'E-commerce CommandCenter',
-      description: 'Full-stack CommandCenter for managing online store CareerAnalytics and inventory',
+      title: 'E-commerce Dashboard',
+      description: 'Full-stack dashboard for managing online store analytics and inventory',
       image: '/api/placeholder/400/300',
       tags: ['React', 'Node.js', 'MongoDB'],
       category: 'web',
@@ -394,6 +394,3 @@ export const ProfessionalPortfolioBuilder: React.FC<ProfessionalPortfolioBuilder
     </div>
   );
 };
-
-
-

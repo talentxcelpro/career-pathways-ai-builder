@@ -15,26 +15,26 @@ import {
 
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--secondary))', 'hsl(var(--accent))', 'hsl(var(--muted))'];
 
-export const EnhancedCareerAnalyticsCommandCenter: React.FC = () => {
+export const EnhancedAnalyticsDashboard: React.FC = () => {
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d'>('30d');
   const [activeTab, setActiveTab] = useState('overview');
 
-  // Mock data - in real app, fetch from CareerAnalytics service
+  // Mock data - in real app, fetch from analytics service
   const overviewMetrics = {
     profileViews: { value: 2847, change: 12.5 },
     applications: { value: 23, change: -3.2 },
-    TalentNetwork: { value: 156, change: 8.7 },
+    connections: { value: 156, change: 8.7 },
     contentEngagement: { value: 89.3, change: 15.2 }
   };
 
   const engagementData = [
-    { day: 'Mon', views: 340, applications: 4, TalentNetwork: 8 },
-    { day: 'Tue', views: 425, applications: 6, TalentNetwork: 12 },
-    { day: 'Wed', views: 389, applications: 3, TalentNetwork: 6 },
-    { day: 'Thu', views: 567, applications: 8, TalentNetwork: 15 },
-    { day: 'Fri', views: 634, applications: 2, TalentNetwork: 9 },
-    { day: 'Sat', views: 234, applications: 1, TalentNetwork: 4 },
-    { day: 'Sun', views: 178, applications: 0, TalentNetwork: 2 }
+    { day: 'Mon', views: 340, applications: 4, connections: 8 },
+    { day: 'Tue', views: 425, applications: 6, connections: 12 },
+    { day: 'Wed', views: 389, applications: 3, connections: 6 },
+    { day: 'Thu', views: 567, applications: 8, connections: 15 },
+    { day: 'Fri', views: 634, applications: 2, connections: 9 },
+    { day: 'Sat', views: 234, applications: 1, connections: 4 },
+    { day: 'Sun', views: 178, applications: 0, connections: 2 }
   ];
 
   const skillsProgress = [
@@ -82,7 +82,7 @@ export const EnhancedCareerAnalyticsCommandCenter: React.FC = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">CareerAnalytics CommandCenter</h2>
+          <h2 className="text-3xl font-bold tracking-tight">Analytics Dashboard</h2>
           <p className="text-muted-foreground">Advanced insights into your career progress</p>
         </div>
         <div className="flex gap-2">
@@ -123,9 +123,9 @@ export const EnhancedCareerAnalyticsCommandCenter: React.FC = () => {
               icon={Target}
             />
             <MetricCard
-              title="connections"
-              value={overviewMetrics.TalentNetwork.value}
-              change={overviewMetrics.TalentNetwork.change}
+              title="Connections"
+              value={overviewMetrics.connections.value}
+              change={overviewMetrics.connections.change}
               icon={Users}
             />
             <MetricCard
@@ -222,7 +222,7 @@ export const EnhancedCareerAnalyticsCommandCenter: React.FC = () => {
         <TabsContent value="skills" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Skills Growth Path</CardTitle>
+              <CardTitle>Skills Progress Tracking</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
@@ -282,7 +282,3 @@ export const EnhancedCareerAnalyticsCommandCenter: React.FC = () => {
     </div>
   );
 };
-
-
-
-

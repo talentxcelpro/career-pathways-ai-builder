@@ -19,7 +19,7 @@ import {
   RefreshCw,
   PieChart
 } from 'lucide-react';
-import { EmailCareerAnalyticsCommandCenter } from './EmailCareerAnalyticsCommandCenter';
+import { EmailAnalyticsDashboard } from './EmailAnalyticsDashboard';
 import { EmailDeliveryTracker } from './EmailDeliveryTracker';
 
 interface CommunicationMetrics {
@@ -91,7 +91,7 @@ export const CommunicationCommandCenter: React.FC = () => {
 
       if (todayError) throw todayError;
 
-      // Get actual totals for accurate CommandCenter
+      // Get actual totals for accurate dashboard
       const { count: totalCount, error: totalError } = await supabase
         .from('email_automation_queue')
         .select('*', { count: 'exact', head: true });
@@ -232,7 +232,7 @@ export const CommunicationCommandCenter: React.FC = () => {
             <div>
               <CardTitle className="flex items-center gap-2">
                 <MessageCircle className="h-6 w-6" />
-                Communication CommandCenter
+                Communication Command Center
               </CardTitle>
               <CardDescription>
                 Monitor and optimize all platform communications for maximum growth impact
@@ -307,16 +307,16 @@ export const CommunicationCommandCenter: React.FC = () => {
       </div>
 
       {/* Communication Tabs */}
-      <Tabs defaultValue="CommandCenter" className="w-full">
+      <Tabs defaultValue="dashboard" className="w-full">
         <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="CommandCenter">CommandCenter</TabsTrigger>
+          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
           <TabsTrigger value="templates">Templates</TabsTrigger>
           <TabsTrigger value="delivery">Delivery</TabsTrigger>
-          <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="CommandCenter" className="space-y-6">
+        <TabsContent value="dashboard" className="space-y-6">
           {/* Performance Metrics */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
@@ -452,8 +452,8 @@ export const CommunicationCommandCenter: React.FC = () => {
           <EmailDeliveryTracker />
         </TabsContent>
 
-        <TabsContent value="CareerAnalytics" className="space-y-6">
-          <EmailCareerAnalyticsCommandCenter />
+        <TabsContent value="analytics" className="space-y-6">
+          <EmailAnalyticsDashboard />
         </TabsContent>
 
         <TabsContent value="settings" className="space-y-6">
@@ -473,6 +473,3 @@ export const CommunicationCommandCenter: React.FC = () => {
     </div>
   );
 };
-
-
-

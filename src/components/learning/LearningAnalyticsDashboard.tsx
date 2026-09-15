@@ -40,24 +40,24 @@ interface SkillProgress {
   last_attempt: string;
 }
 
-export const LearningCareerAnalyticsCommandCenter: React.FC = () => {
+export const LearningAnalyticsDashboard: React.FC = () => {
   const [metrics, setMetrics] = useState<LearningMetric[]>([]);
   const [enrollmentStats, setEnrollmentStats] = useState<EnrollmentStats | null>(null);
   const [skillProgress, setSkillProgress] = useState<SkillProgress[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchCareerAnalytics();
+    fetchAnalytics();
   }, []);
 
-  const fetchCareerAnalytics = async () => {
+  const fetchAnalytics = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
       // Fetch learning metrics
       const { data: metricsData } = await supabase
-        .from('learning_CareerAnalytics')
+        .from('learning_analytics')
         .select('*')
         .eq('user_id', user.id)
         .order('metric_date', { ascending: false });
@@ -141,7 +141,7 @@ export const LearningCareerAnalyticsCommandCenter: React.FC = () => {
       }
 
     } catch (error) {
-      console.error('Error fetching CareerAnalytics:', error);
+      console.error('Error fetching analytics:', error);
     } finally {
       setLoading(false);
     }
@@ -171,7 +171,7 @@ export const LearningCareerAnalyticsCommandCenter: React.FC = () => {
           <BookOpen className="h-12 w-12 text-muted-foreground mb-4" />
           <h3 className="text-lg font-medium mb-2">Start Your Learning Journey</h3>
           <p className="text-muted-foreground text-center">
-            Enroll in courses to see your learning CareerAnalytics and track your progress.
+            Enroll in courses to see your learning analytics and track your progress.
           </p>
         </CardContent>
       </Card>
@@ -358,6 +358,3 @@ export const LearningCareerAnalyticsCommandCenter: React.FC = () => {
     </div>
   );
 };
-
-
-

@@ -57,11 +57,11 @@ const exportFormats: ExportFormat[] = [
   {
     id: 'html',
     name: 'Web Page',
-    description: 'Interactive web version with CareerAnalytics',
+    description: 'Interactive web version with analytics',
     icon: <Globe className="w-5 h-5" />,
     isPremium: true,
     fileExtension: 'html',
-    features: ['Interactive', 'Mobile Responsive', 'CareerAnalytics Tracking']
+    features: ['Interactive', 'Mobile Responsive', 'Analytics Tracking']
   }
 ];
 
@@ -73,7 +73,7 @@ export const ExportOptions: React.FC<ExportOptionsProps> = ({
   const [exportSettings, setExportSettings] = useState({
     includePhoto: true,
     optimizeForATS: true,
-    includeCareerAnalytics: false,
+    includeAnalytics: false,
     customWatermark: false
   });
   const [isExporting, setIsExporting] = useState(false);
@@ -175,14 +175,14 @@ export const ExportOptions: React.FC<ExportOptionsProps> = ({
           {selectedFormat === 'html' && (
             <div className="flex items-center justify-between">
               <div>
-                <Label htmlFor="include-CareerAnalytics">Include CareerAnalytics</Label>
+                <Label htmlFor="include-analytics">Include Analytics</Label>
                 <p className="text-sm text-gray-600">Track views and engagement</p>
               </div>
               <Switch
-                id="include-CareerAnalytics"
-                checked={exportSettings.includeCareerAnalytics}
+                id="include-analytics"
+                checked={exportSettings.includeAnalytics}
                 onCheckedChange={(checked) => 
-                  setExportSettings(prev => ({ ...prev, includeCareerAnalytics: checked }))
+                  setExportSettings(prev => ({ ...prev, includeAnalytics: checked }))
                 }
               />
             </div>
@@ -274,6 +274,3 @@ export const ExportOptions: React.FC<ExportOptionsProps> = ({
     </div>
   );
 };
-
-
-

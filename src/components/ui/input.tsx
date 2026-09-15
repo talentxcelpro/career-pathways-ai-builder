@@ -2,14 +2,30 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input"> & {
-  variant?: 'default' | 'premium' | 'glass';
-}>(({ className, type, variant = 'default', ...props }, ref) => {
-  const variantClasses = {
-    default: "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm transition-all duration-300",
-    premium: "flex h-10 w-full rounded-md border border-input bg-gradient-card px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:shadow-elegant disabled:cursor-not-allowed disabled:opacity-50 md:text-sm transition-all duration-300 hover:shadow-card",
-    glass: "flex h-10 w-full rounded-md border border-glass-border bg-gradient-glass backdrop-blur-apple px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:shadow-glass disabled:cursor-not-allowed disabled:opacity-50 md:text-sm transition-all duration-300"
-  };
+/**
+ * Apple-grade Input
+ * - 44px touch height, hairline border, calm focus ring
+ * - Tokenized only; legacy `premium` / `glass` flattened
+ */
+const Input = React.forwardRef<
+  HTMLInputElement,
+  React.ComponentProps<"input"> & {
+    variant?: "default" | "premium" | "glass"
+  }
+>(({ className, type, variant = "default", ...props }, ref) => {
+  const base =
+    "flex h-11 w-full rounded-xl border bg-background px-4 py-2 text-sm text-foreground ring-offset-background " +
+    "placeholder:text-muted-foreground/70 " +
+    "file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground " +
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 " +
+    "disabled:cursor-not-allowed disabled:opacity-50 " +
+    "transition-colors duration-200"
+
+  const variantClasses: Record<string, string> = {
+    default: `${base} border-border`,
+    premium: `${base} border-border`,
+    glass: `${base} border-border/60 bg-background/70 backdrop-blur-xl`,
+  }
 
   return (
     <input
@@ -18,7 +34,7 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input"> &
       ref={ref}
       {...props}
     />
-  );
+  )
 })
 Input.displayName = "Input"
 

@@ -24,7 +24,7 @@ export function AIEnhancementPanel({ resumeData, onUpdate }: AIEnhancementPanelP
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       if (section === 'summary') {
-        const enhanced = `${resumeData.personalInfo.summary}\n\nEnhanced with Performance keywords and industry-specific terminology to improve ATS compatibility.`;
+        const enhanced = `${resumeData.personalInfo.summary}\n\nEnhanced with AI-powered keywords and industry-specific terminology to improve ATS compatibility.`;
         onUpdate({
           personalInfo: { ...resumeData.personalInfo, summary: enhanced }
         });
@@ -76,7 +76,7 @@ export function AIEnhancementPanel({ resumeData, onUpdate }: AIEnhancementPanelP
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-primary" />
-            Performance Enhancement
+            AI-Powered Enhancement
           </CardTitle>
           <CardDescription>
             Use AI to optimize your resume content for better ATS scores and readability
@@ -144,7 +144,7 @@ export function AIEnhancementPanel({ resumeData, onUpdate }: AIEnhancementPanelP
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li className="flex items-start gap-2">
               <span className="text-primary mt-1">•</span>
-              <span>AI enhancements are powered by Gemini 2.5 Flash (free until Oct 6, 2025)</span>
+              <span>AI enhancements are powered by TalentXcel Intelligence</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-primary mt-1">•</span>
@@ -164,4 +164,3 @@ export function AIEnhancementPanel({ resumeData, onUpdate }: AIEnhancementPanelP
     </div>
   );
 }
-

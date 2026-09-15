@@ -27,7 +27,7 @@ interface AdaptiveVideoPlayerProps {
 // Simplified hooks for now
 const useNetworkStatus = () => ({
   isOnline: navigator.onLine,
-  TalentNetworkpeed: 5,
+  connectionSpeed: 5,
   effectiveType: '4g'
 });
 
@@ -38,9 +38,9 @@ const useVideoCache = () => ({
   downloadProgress: 0
 });
 
-const useVideoCareerAnalytics = () => ({
+const useVideoAnalytics = () => ({
   trackVideoEvent: () => {},
-  CareerAnalytics: {}
+  analytics: {}
 });
 
 export const AdaptiveVideoPlayer: React.FC<AdaptiveVideoPlayerProps> = ({
@@ -74,19 +74,19 @@ export const AdaptiveVideoPlayer: React.FC<AdaptiveVideoPlayerProps> = ({
   const [retryCount, setRetryCount] = useState(0);
   
   // Custom hooks
-  const { isOnline, TalentNetworkpeed, effectiveType } = useNetworkStatus();
+  const { isOnline, connectionSpeed, effectiveType } = useNetworkStatus();
   const { cacheVideo, downloadProgress } = useVideoCache();
-  const { trackVideoEvent } = useVideoCareerAnalytics();
+  const { trackVideoEvent } = useVideoAnalytics();
 
   // Auto-select quality based on network
   useEffect(() => {
     if (!selectedQuality && qualities.length > 0) {
       let defaultQuality = qualities[0]; // Lowest quality as fallback
       
-      if (TalentNetworkpeed && effectiveType) {
-        if (effectiveType === '4g' && TalentNetworkpeed > 5) {
+      if (connectionSpeed && effectiveType) {
+        if (effectiveType === '4g' && connectionSpeed > 5) {
           defaultQuality = qualities[qualities.length - 1]; // Highest quality
-        } else if (effectiveType === '3g' || (TalentNetworkpeed && TalentNetworkpeed > 1)) {
+        } else if (effectiveType === '3g' || (connectionSpeed && connectionSpeed > 1)) {
           const midIndex = Math.floor(qualities.length / 2);
           defaultQuality = qualities[midIndex] || qualities[0];
         }
@@ -94,7 +94,7 @@ export const AdaptiveVideoPlayer: React.FC<AdaptiveVideoPlayerProps> = ({
       
       setSelectedQuality(defaultQuality);
     }
-  }, [qualities, TalentNetworkpeed, effectiveType, selectedQuality]);
+  }, [qualities, connectionSpeed, effectiveType, selectedQuality]);
 
   // Enhanced play function with network awareness
   const handlePlay = useCallback(async () => {
@@ -619,7 +619,3 @@ export const AdaptiveVideoPlayer: React.FC<AdaptiveVideoPlayerProps> = ({
     </div>
   );
 };
-
-
-
-

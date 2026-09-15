@@ -1,145 +1,152 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useConversations } from '@/hooks/useConversations';
 import { useAuth } from '@/contexts/AuthContext';
-import { 
-  MessageSquare, 
-  Users, 
-  Search, 
-  Plus,
-  Settings,
-  Minimize2,
-  Maximize2,
-  X
-} from 'lucide-react';
+import { MessageSquare, Sparkles, ChevronUp, ChevronDown, X } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
-export const NetworkMessagingSidebar = () => {
-  const [isMinimized, setIsMinimized] = useState(true); // Start minimized
-  const [isVisible, setIsVisible] = useState(true);
+export const NetworkMessagingSidebar: React.FC = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
-  const { conversations, isLoading } = useConversations();
+  const [isOpen, setIsOpen] = useState(false);
 
-  if (!isVisible || !user) return null;
+  // Fetch active conversations
+  const { data: conversations = [] } = useQuery({
+    queryKey: ['floating-conversations', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      const { data } = await supabase
+        .from('conversations')
+        .select('*')
+        .filter('participants', 'cs', `{${user.id}}`)
+        .order('last_updated', { ascending: false })
+        .limit(5);
+      return data || [];
+    },
+    enabled: !!user?.id
+  });
 
-  const recentConversations = conversations?.slice(0, 5) || [];
+  // Fetch profiles for conversation partners
+  const partnerIds = Array.from(new Set(
+    conversations.flatMap((c: any) => c.participants || []).filter((id: string) => id !== user?.id)
+  ));
+
+  const { data: profilesMap = {} } = useQuery({
+    queryKey: ['floating-profiles-map', partnerIds],
+    queryFn: async () => {
+      if (partnerIds.length === 0) return {};
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, full_name, profile_picture_url, title, email')
+        .in('id', partnerIds);
+
+      const map: Record<string, any> = {};
+      (profiles || []).forEach(p => {
+        map[p.id] = p;
+      });
+      return map;
+    },
+    enabled: partnerIds.length > 0
+  });
+
+  if (!user) return null;
 
   return (
-    <Card className={`fixed right-4 bottom-4 shadow-lg border-0 bg-gradient-to-r from-primary to-primary/80 backdrop-blur-sm transition-all duration-300 z-50 cursor-pointer ${
-      isMinimized ? 'w-32 h-12' : 'w-80 h-96'
-    }`} onClick={isMinimized ? () => setIsMinimized(false) : undefined}>
-      {/* Header */}
-      <CardHeader className={`p-3 ${isMinimized ? 'border-none' : 'border-b'}`}>
-        <div className="flex items-center justify-between">
-          {isMinimized ? (
-            <CardTitle className="text-sm font-semibold flex items-center gap-2 text-white">
-              <MessageSquare className="w-4 h-4" />
-              Messages
-            </CardTitle>
-          ) : (
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <MessageSquare className="w-4 h-4 text-primary" />
-              Messages
-            </CardTitle>
-          )}
-          {!isMinimized && (
-            <div className="flex items-center space-x-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-6 w-6 p-0"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsMinimized(!isMinimized);
-                }}
-              >
-                <Minimize2 className="h-3 w-3" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-6 w-6 p-0"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsVisible(false);
-                }}
-              >
-                <X className="h-3 w-3" />
-              </Button>
+    <div className="fixed bottom-4 right-4 z-50">
+      {isOpen ? (
+        <div className="w-80 shadow-2xl rounded-3xl border border-slate-200 dark:border-border bg-white dark:bg-card overflow-hidden transition-all duration-300">
+          
+          {/* Header */}
+          <div className="p-4 bg-blue-600 text-white flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <MessageSquare className="h-4 w-4 text-white" />
+              <h3 className="text-xs font-extrabold tracking-tight">Executive Messenger</h3>
             </div>
-          )}
-        </div>
-      </CardHeader>
-
-      {/* Content - only show when not minimized */}
-      {!isMinimized && (
-        <>
-          <CardContent className="p-3 flex-1 overflow-auto bg-white" onClick={(e) => e.stopPropagation()}>
-            {isLoading ? (
-              <div className="flex items-center justify-center h-full">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-              </div>
-            ) : recentConversations.length > 0 ? (
-              <div className="space-y-2">
-                {recentConversations.map((conversation) => (
-                  <Link
-                    key={conversation.id}
-                    to={`/network/messages/${conversation.id}`}
-                    className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src="/placeholder-avatar.png" />
-                      <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                        U
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">
-                        Chat {conversation.id.slice(0, 8)}
-                      </p>
-                      <p className="text-xs text-gray-500 truncate">
-                        Recent conversation
-                      </p>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center h-full text-center space-y-3">
-                <MessageSquare className="h-8 w-8 text-gray-400" />
-                <div>
-                  <p className="text-sm font-medium text-gray-900">No messages yet</p>
-                  <p className="text-xs text-gray-500">Start a conversation</p>
-                </div>
-              </div>
-            )}
-          </CardContent>
-
-          {/* Footer */}
-          <div className="p-3 border-t bg-gray-50/50" onClick={(e) => e.stopPropagation()}>
-            <div className="flex space-x-2">
-              <Button size="sm" variant="outline" className="flex-1" asChild>
-                <Link to="/network/messages/new">
-                  <Plus className="h-3 w-3 mr-1" />
-                  New
-                </Link>
-              </Button>
-              <Button size="sm" variant="outline" className="flex-1" asChild>
-                <Link to="/network/messages">
-                  <MessageSquare className="h-3 w-3 mr-1" />
-                  All
-                </Link>
-              </Button>
+            <div className="flex items-center gap-1">
+              <button onClick={() => navigate('/network/messages')} className="text-white/80 hover:text-white text-[10px] font-extrabold mr-1 hover:underline">
+                Open Full
+              </button>
+              <button onClick={() => setIsOpen(false)} className="text-white/80 hover:text-white p-1">
+                <ChevronDown className="h-4 w-4" />
+              </button>
             </div>
           </div>
-        </>
+
+          {/* Conversations List */}
+          <div className="p-2 divide-y divide-slate-100 dark:divide-border/40 max-h-72 overflow-y-auto">
+            {conversations.length === 0 ? (
+              <div className="p-6 text-center space-y-2">
+                <MessageSquare className="h-8 w-8 text-muted-foreground mx-auto" />
+                <p className="text-xs font-extrabold text-muted-foreground">No recent messages</p>
+                <Button size="sm" onClick={() => navigate('/network/messages/new')} className="rounded-xl text-xs font-bold h-7 px-3 bg-blue-600">
+                  New Chat
+                </Button>
+              </div>
+            ) : (
+              conversations.map((conv: any) => {
+                const partnerId = conv.participants?.find((id: string) => id !== user.id);
+                const profile = profilesMap[partnerId || ''];
+                const displayName = conv.is_group 
+                  ? (conv.name || "Group Chat")
+                  : (profile?.full_name || (profile?.email ? profile.email.split('@')[0] : null) || "Professional Member");
+
+                return (
+                  <div
+                    key={conv.id}
+                    onClick={() => navigate('/network/messages')}
+                    className="p-2.5 flex items-center gap-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-muted cursor-pointer transition-colors"
+                  >
+                    <div className="relative shrink-0">
+                      <Avatar className="w-8 h-8 border border-slate-200">
+                        <AvatarImage src={profile?.profile_picture_url || undefined} alt={displayName} />
+                        <AvatarFallback className="font-extrabold text-xs bg-slate-900 text-white">
+                          {displayName.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="absolute bottom-0 right-0 w-2 h-2 bg-emerald-500 rounded-full ring-2 ring-white dark:ring-card"></span>
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-extrabold text-foreground truncate">{displayName}</p>
+                      <p className="text-[10px] text-muted-foreground font-semibold truncate">
+                        {conv.last_message || profile?.title || "Executive Member"}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+
+          {/* Footer Bar */}
+          <div className="p-3 bg-slate-50 dark:bg-muted/40 border-t border-slate-200/80 dark:border-border/60 text-center">
+            <Button
+              size="sm"
+              onClick={() => navigate('/network/messages')}
+              className="w-full rounded-2xl text-xs font-extrabold bg-blue-600 hover:bg-blue-500 text-white h-8 shadow-sm"
+            >
+              Open Full Messenger Workspace
+            </Button>
+          </div>
+
+        </div>
+      ) : (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs shadow-xl transition-all hover:scale-105 border border-blue-400/40"
+        >
+          <MessageSquare className="h-4 w-4" />
+          <span>Messages</span>
+          {conversations.length > 0 && (
+            <Badge variant="secondary" className="rounded-full bg-white text-blue-700 text-[10px] font-extrabold h-4 px-1.5 min-w-4">
+              {conversations.length}
+            </Badge>
+          )}
+        </button>
       )}
-    </Card>
+    </div>
   );
 };

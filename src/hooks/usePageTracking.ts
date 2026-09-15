@@ -38,11 +38,11 @@ export const usePageTracking = () => {
         '/learning': { action: 'learning_engagement', description: 'Engaging with learning content' },
         '/companies': { action: 'company_research', description: 'Researching companies' },
         '/profile': { action: 'profile_optimization', description: 'Optimizing profile' },
-        '/passport': { action: 'passport_engagement', description: 'Evolution Hub activity' },
+        '/passport': { action: 'passport_engagement', description: 'Career passport activity' },
         '/tools': { action: 'tools_usage', description: 'Using career tools' },
         '/marketplace': { action: 'marketplace_browse', description: 'Exploring marketplace' },
-        '/ai': { action: 'ai_interaction', description: 'Performance career guidance' },
-        '/CareerAnalytics': { action: 'CareerAnalytics_insight', description: 'Analyzing career data' },
+        '/ai': { action: 'ai_interaction', description: 'AI-powered career guidance' },
+        '/analytics': { action: 'analytics_insight', description: 'Analyzing career data' },
         '/social': { action: 'social_engagement', description: 'Social platform engagement' }
       };
 
@@ -93,6 +93,3 @@ export const usePageTracking = () => {
     isGamificationPage: location.pathname === '/gamification'
   };
 };
-
-
-

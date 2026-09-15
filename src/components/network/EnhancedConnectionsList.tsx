@@ -6,22 +6,22 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Users, Search, Filter, MessageCircle, Calendar, Building2, MapPin, Globe } from "lucide-react";
-import { useRealtimeTalentNetwork } from '@/hooks/useRealtimeTalentNetwork';
+import { useRealtimeConnections } from '@/hooks/useRealtimeConnections';
 import { Link } from 'react-router-dom';
 
-export const EnhancedTalentNetworkList: React.FC = () => {
+export const EnhancedConnectionsList: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('recent');
   const [filterBy, setFilterBy] = useState('all');
   
   const { 
-    users: TalentNetwork, 
+    users: connections, 
     loading, 
     stats,
     showOnlineOnly,
     setShowOnlineOnly,
     getLastSeenText 
-  } = useRealtimeTalentNetwork();
+  } = useRealtimeConnections();
 
   const formatDisplayName = (profile: any) => {
     if (profile?.full_name && profile.full_name.trim()) {
@@ -42,7 +42,7 @@ export const EnhancedTalentNetworkList: React.FC = () => {
   };
 
   // Enhanced filtering and sorting
-  const filteredAndSortedTalentNetwork = TalentNetwork
+  const filteredAndSortedConnections = connections
     ?.filter(user => {
       if (!searchTerm && filterBy === 'all' && !showOnlineOnly) return true;
       
@@ -88,7 +88,7 @@ export const EnhancedTalentNetworkList: React.FC = () => {
             <div className="flex items-center">
               <Users className="h-8 w-8 text-blue-600" />
               <div className="ml-3">
-                <p className="text-sm font-medium text-gray-600">Total TalentNetwork</p>
+                <p className="text-sm font-medium text-gray-600">Total Connections</p>
                 <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
               </div>
             </div>
@@ -114,7 +114,7 @@ export const EnhancedTalentNetworkList: React.FC = () => {
               <div className="ml-3">
                 <p className="text-sm font-medium text-gray-600">Locations</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {new Set(TalentNetwork?.map(c => c.location).filter(Boolean)).size}
+                  {new Set(connections?.map(c => c.location).filter(Boolean)).size}
                 </p>
               </div>
             </div>
@@ -129,7 +129,7 @@ export const EnhancedTalentNetworkList: React.FC = () => {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <Input
-                placeholder="Search TalentNetwork by name, title, company..."
+                placeholder="Search connections by name, title, company..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -153,7 +153,7 @@ export const EnhancedTalentNetworkList: React.FC = () => {
                   <SelectValue placeholder="Filter by" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All TalentNetwork</SelectItem>
+                  <SelectItem value="all">All Connections</SelectItem>
                   <SelectItem value="online">Online Now</SelectItem>
                   <SelectItem value="same_company">Same Company</SelectItem>
                 </SelectContent>
@@ -172,12 +172,12 @@ export const EnhancedTalentNetworkList: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* TalentNetwork List */}
+      {/* Connections List */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Users className="h-5 w-5" />
-            Your Network ({filteredAndSortedTalentNetwork?.length || 0})
+            Your Network ({filteredAndSortedConnections?.length || 0})
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -193,11 +193,11 @@ export const EnhancedTalentNetworkList: React.FC = () => {
                 </div>
               ))}
             </div>
-          ) : filteredAndSortedTalentNetwork?.length === 0 ? (
+          ) : filteredAndSortedConnections?.length === 0 ? (
             <div className="text-center py-12">
               <Users className="h-16 w-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                {searchTerm || filterBy !== 'all' || showOnlineOnly ? 'No matching TalentNetwork' : 'No TalentNetwork yet'}
+                {searchTerm || filterBy !== 'all' || showOnlineOnly ? 'No matching connections' : 'No connections yet'}
               </h3>
               <p className="text-gray-600 mb-6">
                 {searchTerm || filterBy !== 'all' || showOnlineOnly
@@ -214,7 +214,7 @@ export const EnhancedTalentNetworkList: React.FC = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {filteredAndSortedTalentNetwork?.map((user) => (
+              {filteredAndSortedConnections?.map((user) => (
                 <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50/50 transition-colors group">
                   <div className="flex items-center space-x-4">
                     <div className="relative">
@@ -285,4 +285,3 @@ export const EnhancedTalentNetworkList: React.FC = () => {
     </div>
   );
 };
-

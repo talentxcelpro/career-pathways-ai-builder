@@ -64,7 +64,7 @@ export const DatasetManager: React.FC = () => {
     'skills_data',
     'company_data',
     'salary_data',
-    'training_Feedback',
+    'training_feedback',
     'performance_metrics'
   ];
 
@@ -526,4 +526,3 @@ export const DatasetManager: React.FC = () => {
     </div>
   );
 };
-

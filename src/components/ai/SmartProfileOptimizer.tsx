@@ -151,12 +151,12 @@ export const SmartProfileOptimizer: React.FC<SmartProfileOptimizerProps> = ({
           </p>
         </div>
 
-        {/* Smart Moves */}
+        {/* AI Suggestions */}
         {suggestions.length > 0 && (
           <div className="space-y-4">
             <h4 className="font-medium flex items-center gap-2">
               <Lightbulb className="h-4 w-4 text-yellow-500" />
-              Career Moves ({suggestions.length})
+              AI Recommendations ({suggestions.length})
             </h4>
             
             {suggestions.map((suggestion) => (
@@ -208,12 +208,10 @@ export const SmartProfileOptimizer: React.FC<SmartProfileOptimizerProps> = ({
         {suggestions.length === 0 && !isAnalyzing && (
           <div className="text-center py-8 text-muted-foreground">
             <Brain className="h-8 w-8 mx-auto mb-2 opacity-50" />
-            <p>Click "Analyze Profile" to get Performance optimization suggestions</p>
+            <p>Click "Analyze Profile" to get AI-powered optimization suggestions</p>
           </div>
         )}
       </CardContent>
     </Card>
   );
 };
-
-

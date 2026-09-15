@@ -1,26 +1,25 @@
-import { lazy } from "react";
+
 import { Building2, Users, Settings, BarChart3 } from "lucide-react";
 
-// Main Employer CommandCenter & Profile
-const EmployerCommandCenter = lazy(() => import("../../pages/employer/EmployerDashboard").then(m => ({ default: m.EmployerCommandCenter })));
-const EmployerProfile = lazy(() => import("../../pages/employer/Profile"));
-const EmployerSettings = lazy(() => import("../../pages/employer/Settings"));
-const EmployerTeam = lazy(() => import("../../pages/employer/Team"));
-const TeamManagement = lazy(() => import("../../pages/employer/TeamManagement"));
-const EmployerCareerAnalytics = lazy(() => import("../../pages/employer/analytics/EmployerAnalytics"));
-const EmployerApplications = lazy(() => import("../../pages/employer/Applications"));
-const CompanyAccessRequestPage = lazy(() => import("../../pages/employer/CompanyAccessRequest"));
-const AcceptInvitation = lazy(() => import("../../pages/employer/AcceptInvitation"));
+// Main Employer Dashboard & Profile
+import EmployerDashboard from "../../pages/employer/Dashboard";
+import EmployerProfile from "../../pages/employer/Profile";
+import EmployerSettings from "../../pages/employer/Settings";
+import EmployerTeam from "../../pages/employer/Team";
+import TeamManagement from "../../pages/employer/TeamManagement";
+import EmployerAnalytics from "../../pages/employer/analytics/EmployerAnalytics";
+import EmployerApplications from "../../pages/employer/Applications";
+import CompanyAccessRequestPage from "../../pages/employer/CompanyAccessRequest";
+import AcceptInvitation from "../../pages/employer/AcceptInvitation";
 import { EmployerAccessGuard } from "../../components/employer/EmployerAccessGuard";
-
 
 export const employerCoreRoutes = [
   // Main Employer Routes
   {
-    title: "Employer CommandCenter",
-    to: "/employer/CommandCenter",
+    title: "Employer Dashboard",
+    to: "/employer/dashboard",
     icon: <Building2 className="h-4 w-4" />,
-    page: <EmployerCommandCenter />,
+    page: <EmployerDashboard />,
     isPublic: true,
   },
   {
@@ -61,10 +60,10 @@ export const employerCoreRoutes = [
     isPublic: true,
   },
   {
-    title: "Employer CareerAnalytics",
-    to: "/employer/CareerAnalytics",
+    title: "Employer Analytics",
+    to: "/employer/analytics",
     icon: <BarChart3 className="h-4 w-4" />,
-    page: <EmployerCareerAnalytics />,
+    page: <EmployerAnalytics />,
     isPublic: true,
   },
   {
@@ -74,7 +73,3 @@ export const employerCoreRoutes = [
     isPublic: true,
   },
 ];
-
-
-
-

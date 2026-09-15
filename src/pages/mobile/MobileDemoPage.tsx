@@ -119,13 +119,13 @@ export default function MobileDemoPage() {
 
           {/* Quick Actions */}
           <div className="grid grid-cols-2 gap-3">
-            <div className="native-card p-4 text-center touch-Feedback">
+            <div className="native-card p-4 text-center touch-feedback">
               <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-2">
                 <Search className="w-4 h-4 text-primary" />
               </div>
               <p className="text-sm font-medium">Search Jobs</p>
             </div>
-            <div className="native-card p-4 text-center touch-Feedback">
+            <div className="native-card p-4 text-center touch-feedback">
               <div className="w-8 h-8 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-2">
                 <Users className="w-4 h-4 text-green-600" />
               </div>
@@ -145,7 +145,7 @@ export default function MobileDemoPage() {
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
                 <div className="text-2xl font-bold text-primary">24</div>
-                <div className="text-xs text-gray-600">TalentNetwork</div>
+                <div className="text-xs text-gray-600">Connections</div>
               </div>
               <div>
                 <div className="text-2xl font-bold text-green-600">12</div>
@@ -162,5 +162,3 @@ export default function MobileDemoPage() {
     </MobileNavWrapper>
   );
 }
-
-

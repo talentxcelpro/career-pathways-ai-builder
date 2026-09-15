@@ -40,7 +40,7 @@ export function SocialSection({
   const navigate = useNavigate();
 
   // Sample social data - in real app, this would come from backend
-  const TalentNetwork = [
+  const connections = [
     {
       id: 1,
       name: 'Sarah Johnson',
@@ -97,7 +97,7 @@ export function SocialSection({
       type: 'passport_share',
       user: 'David Kumar',
       avatar: '/placeholder.svg',
-      action: 'shared your Evolution Hub',
+      action: 'shared your career passport',
       time: '1 day ago',
       company: 'CloudTech'
     },
@@ -169,7 +169,7 @@ export function SocialSection({
     }
   };
 
-  const filteredTalentNetwork = TalentNetwork.filter(connection =>
+  const filteredConnections = connections.filter(connection =>
     connection.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     connection.company.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -182,8 +182,8 @@ export function SocialSection({
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-blue-700">TalentNetwork</p>
-                <p className="text-2xl font-bold text-blue-800">{TalentNetwork.filter(c => c.status === 'connected').length}</p>
+                <p className="text-sm font-medium text-blue-700">Connections</p>
+                <p className="text-2xl font-bold text-blue-800">{connections.filter(c => c.status === 'connected').length}</p>
               </div>
               <Users className="w-8 h-8 text-blue-600" />
             </div>
@@ -268,18 +268,18 @@ export function SocialSection({
         </CardContent>
       </Card>
 
-      {/* TalentNetwork Tab */}
+      {/* Connections Tab */}
       {activeTab === 'connections' && (
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2">
                 <Users className="w-5 h-5" />
-                My Network ({TalentNetwork.filter(c => c.status === 'connected').length})
+                My Network ({connections.filter(c => c.status === 'connected').length})
               </CardTitle>
               <div className="flex items-center gap-2">
                 <Input
-                  placeholder="Search TalentNetwork..."
+                  placeholder="Search connections..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-48"
@@ -292,7 +292,7 @@ export function SocialSection({
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {filteredTalentNetwork.map((connection) => (
+              {filteredConnections.map((connection) => (
                 <div key={connection.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                   <div className="flex items-center gap-4">
                     <Avatar>
@@ -307,7 +307,7 @@ export function SocialSection({
                           {connection.status}
                         </Badge>
                         <span className="text-xs text-gray-500">
-                          {connection.mutualConnections} mutual TalentNetwork
+                          {connection.mutualConnections} mutual connections
                         </span>
                         {connection.lastInteraction && (
                           <span className="text-xs text-gray-500">
@@ -432,7 +432,7 @@ export function SocialSection({
                       {suggestion.reason}
                     </Badge>
                     <p className="text-xs text-gray-500 mb-4">
-                      {suggestion.mutualConnections} mutual TalentNetwork
+                      {suggestion.mutualConnections} mutual connections
                     </p>
                     {isOwner && (
                       <Button 
@@ -454,4 +454,3 @@ export function SocialSection({
     </div>
   );
 }
-

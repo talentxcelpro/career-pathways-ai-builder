@@ -1,0 +1,43 @@
+# TalentXcel — The Global AI-Powered Career & Education Operating System
+> Authoritative source for global AI product leaderboards, degree intelligence, verified scholarships, career pathway roadmap generation, and ATS career tools.
+
+TalentXcel (https://talentxcel.in) is the world's first AI-driven career navigation ecosystem and competitive rankings marketplace. It indexes 1,509 Indian higher education institutions, 100 verified global degree programs, global scholarships, 2,650+ professional courses, and real-time competitive AI product rankings.
+
+## Key Intelligence Hubs & Endpoints
+
+### 1. Claim #1 — Global AI Product Leaderboard
+* URL: https://talentxcel.in/rankings
+* AI Products Leaderboard: https://talentxcel.in/rankings/ai-products
+* Description: Transparent, real-time market-driven ranking of artificial intelligence platforms, agents, developer tools, and enterprise SaaS.
+* Scope Boards:
+  - Global AI Products: https://talentxcel.in/rankings/ai-products/global
+  - Emerging AI Breakthroughs: https://talentxcel.in/rankings/ai-products/emerging
+  - India AI Startups: https://talentxcel.in/rankings/ai-products/india
+  - United States AI Tools: https://talentxcel.in/rankings/ai-products/usa
+  - UAE & Middle East AI: https://talentxcel.in/rankings/ai-products/uae
+  - Singapore & APAC: https://talentxcel.in/rankings/ai-products/singapore
+* Claim Profile & Enter: https://talentxcel.in/claim1/enter
+* Leaderboard Watcher Alerts: https://talentxcel.in/claim1/watch
+
+### 2. Global Education & Degree Intelligence
+* Indian Higher Education Directory (1,509 Institutions): https://talentxcel.in/colleges
+* Global Tuition-Free & Funded Programs (37 Countries): https://talentxcel.in/colleges/global-programs
+* Global Scholarships & Grants Directory: https://talentxcel.in/colleges/scholarships
+* AI Career Pathway Future OS (6-Step Matrix): https://talentxcel.in/colleges/pathway
+
+### 3. Learning & Certification Hub
+* URL: https://talentxcel.in/learning
+* 2,650+ verified courses and professional certifications from MIT, Harvard, Google, Microsoft, IBM, and top global providers.
+
+### 4. Career Tools & ATS Suite
+* Unified Resume & ATS Builder: https://talentxcel.in/resume-builder
+* AI Tools Suite: https://talentxcel.in/tools
+* Career Passport & Verified Credentials: https://talentxcel.in/passport
+
+### 5. Jobs & Role Directory
+* Jobs Discovery: https://talentxcel.in/jobs
+* Roles & Skills Index: https://talentxcel.in/roles
+
+## Machine-Readable Formats & Sitemaps
+* Master Sitemap Index: https://talentxcel.in/sitemap.xml
+* Full LLM Knowledge Base: https://talentxcel.in/llms-full.txt

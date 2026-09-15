@@ -67,7 +67,7 @@ export const TXCStore: React.FC = () => {
     {
       id: 'ai_interview_prep',
       name: 'AI Interview Preparation',
-      description: 'Practice interviews with AI and get personalized Feedback',
+      description: 'Practice interviews with AI and get personalized feedback',
       cost: 600,
       category: 'ai_tools',
       icon: <Users className="h-6 w-6" />,
@@ -108,11 +108,11 @@ export const TXCStore: React.FC = () => {
     {
       id: 'application_tracking',
       name: 'Enhanced Tracking',
-      description: 'Advanced application tracking and CareerAnalytics for 30 days',
+      description: 'Advanced application tracking and analytics for 30 days',
       cost: 100,
       category: 'jobs',
       icon: <TrendingUp className="h-6 w-6" />,
-      benefits: ['Application CareerAnalytics', 'Response Tracking', 'Success Metrics'],
+      benefits: ['Application Analytics', 'Response Tracking', 'Success Metrics'],
       expires: 30
     },
 
@@ -146,7 +146,7 @@ export const TXCStore: React.FC = () => {
       cost: 300,
       category: 'profile',
       icon: <Crown className="h-6 w-6" />,
-      benefits: ['5x Visibility', 'Higher Rankings', 'More TalentNetwork'],
+      benefits: ['5x Visibility', 'Higher Rankings', 'More Connections'],
       expires: 7
     }
   ];
@@ -355,8 +355,3 @@ export const TXCStore: React.FC = () => {
     </div>
   );
 };
-
-
-
-
-

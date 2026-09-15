@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 
 interface Message {
   id: string;
-  role: 'user' | 'Navigator';
+  role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
 }
@@ -37,7 +37,7 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      role: 'Navigator',
+      role: 'assistant',
       content: `Hello! I'm your AI tutor for ${courseName || 'this course'}. I'm here to help you understand the concepts, answer questions, and guide your learning journey. What would you like to learn about today?`,
       timestamp: new Date()
     }
@@ -82,14 +82,14 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
         difficulty
       });
 
-      const NavigatorMessage: Message = {
+      const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
-        role: 'Navigator',
+        role: 'assistant',
         content: response.response,
         timestamp: new Date()
       };
 
-      setMessages(prev => [...prev, NavigatorMessage]);
+      setMessages(prev => [...prev, assistantMessage]);
       setSessionId(response.sessionId);
 
       // Handle learning insights
@@ -101,7 +101,7 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
       console.error('AI Tutor error:', error);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        role: 'Navigator',
+        role: 'assistant',
         content: "I'm sorry, I'm having trouble responding right now. Please try again in a moment.",
         timestamp: new Date()
       };

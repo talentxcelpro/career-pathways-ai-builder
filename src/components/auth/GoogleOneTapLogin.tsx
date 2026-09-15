@@ -23,7 +23,7 @@ export const GoogleOneTapLogin: React.FC<GoogleOneTapLoginProps> = ({
     const urlParams = new URLSearchParams(window.location.search);
     const redirectParam = urlParams.get('redirect');
     const storedRedirect = localStorage.getItem('subdomain_redirect');
-    const redirectPath = redirectParam || storedRedirect || '/career-os';
+    const redirectPath = redirectParam || storedRedirect || '/network';
     
     // Clean up stored redirects
     localStorage.removeItem('subdomain_redirect');

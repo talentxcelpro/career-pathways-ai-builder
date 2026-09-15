@@ -195,7 +195,7 @@ export const EnhancedNotificationCenter: React.FC<EnhancedNotificationCenterProp
   const filterOptions = [
     { value: 'all', label: 'All', count: notifications.length },
     { value: 'engagement', label: 'Engagement', count: notifications.filter(n => n.type === 'engagement').length },
-    { value: 'connection', label: 'connections', count: notifications.filter(n => n.type === 'connection').length },
+    { value: 'connection', label: 'Connections', count: notifications.filter(n => n.type === 'connection').length },
     { value: 'job_match', label: 'Jobs', count: notifications.filter(n => n.type === 'job_match').length },
     { value: 'profile_visit', label: 'Profile', count: notifications.filter(n => n.type === 'profile_visit').length },
   ];
@@ -373,4 +373,3 @@ export const EnhancedNotificationCenter: React.FC<EnhancedNotificationCenterProp
     </Popover>
   );
 };
-

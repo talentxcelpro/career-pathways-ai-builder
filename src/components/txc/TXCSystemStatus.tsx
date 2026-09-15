@@ -240,8 +240,8 @@ const TXCSystemStatus: React.FC = () => {
               <div className="text-sm text-muted-foreground">Cache Hit Rate</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">{metrics.activeTalentNetwork}</div>
-              <div className="text-sm text-muted-foreground">Active TalentNetwork</div>
+              <div className="text-2xl font-bold text-purple-600">{metrics.activeConnections}</div>
+              <div className="text-sm text-muted-foreground">Active Connections</div>
             </div>
           </div>
         </CardContent>
@@ -384,4 +384,3 @@ const TXCSystemStatus: React.FC = () => {
 };
 
 export default TXCSystemStatus;
-

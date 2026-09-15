@@ -11,12 +11,12 @@ import { toast } from 'sonner';
 
 interface ATSScorerProps {
   resumeContent: any;
-  onScoreUpdate?: (score: number, Feedback: any) => void;
+  onScoreUpdate?: (score: number, feedback: any) => void;
 }
 
 export const ATSScorer: React.FC<ATSScorerProps> = ({ resumeContent, onScoreUpdate }) => {
   const [atsScore, setAtsScore] = useState<number>(0);
-  const [Feedback, setFeedback] = useState<any>(null);
+  const [feedback, setFeedback] = useState<any>(null);
   const [jobDescription, setJobDescription] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const { optimizeForATS } = useAIService();
@@ -108,17 +108,17 @@ export const ATSScorer: React.FC<ATSScorerProps> = ({ resumeContent, onScoreUpda
         </Button>
 
         {/* Feedback Display */}
-        {Feedback && (
+        {feedback && (
           <div className="space-y-4">
             {/* Strengths */}
-            {Feedback.strengths && Feedback.strengths.length > 0 && (
+            {feedback.strengths && feedback.strengths.length > 0 && (
               <div>
                 <h4 className="font-semibold text-green-600 flex items-center mb-2">
                   <CheckCircle className="h-4 w-4 mr-2" />
                   Strengths
                 </h4>
                 <ul className="space-y-1">
-                  {Feedback.strengths.map((strength: string, index: number) => (
+                  {feedback.strengths.map((strength: string, index: number) => (
                     <li key={index} className="text-sm flex items-start">
                       <CheckCircle className="h-3 w-3 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
                       {strength}
@@ -129,14 +129,14 @@ export const ATSScorer: React.FC<ATSScorerProps> = ({ resumeContent, onScoreUpda
             )}
 
             {/* Issues */}
-            {Feedback.issues && Feedback.issues.length > 0 && (
+            {feedback.issues && feedback.issues.length > 0 && (
               <div>
                 <h4 className="font-semibold text-red-600 flex items-center mb-2">
                   <AlertCircle className="h-4 w-4 mr-2" />
                   Issues to Fix
                 </h4>
                 <ul className="space-y-1">
-                  {Feedback.issues.map((issue: string, index: number) => (
+                  {feedback.issues.map((issue: string, index: number) => (
                     <li key={index} className="text-sm flex items-start">
                       <X className="h-3 w-3 text-red-500 mr-2 mt-0.5 flex-shrink-0" />
                       {issue}
@@ -147,14 +147,14 @@ export const ATSScorer: React.FC<ATSScorerProps> = ({ resumeContent, onScoreUpda
             )}
 
             {/* Recommendations */}
-            {Feedback.recommendations && Feedback.recommendations.length > 0 && (
+            {feedback.recommendations && feedback.recommendations.length > 0 && (
               <div>
                 <h4 className="font-semibold text-blue-600 flex items-center mb-2">
                   <TrendingUp className="h-4 w-4 mr-2" />
                   Recommendations
                 </h4>
                 <ul className="space-y-1">
-                  {Feedback.recommendations.map((rec: string, index: number) => (
+                  {feedback.recommendations.map((rec: string, index: number) => (
                     <li key={index} className="text-sm flex items-start">
                       <TrendingUp className="h-3 w-3 text-blue-500 mr-2 mt-0.5 flex-shrink-0" />
                       {rec}
@@ -165,15 +165,15 @@ export const ATSScorer: React.FC<ATSScorerProps> = ({ resumeContent, onScoreUpda
             )}
 
             {/* Keywords */}
-            {Feedback.keywords && (
+            {feedback.keywords && (
               <div>
                 <h4 className="font-semibold mb-2">Keyword Analysis</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  {Feedback.keywords.found && (
+                  {feedback.keywords.found && (
                     <div>
                       <p className="font-medium text-green-600">Found Keywords:</p>
                       <div className="flex flex-wrap gap-1 mt-1">
-                        {Feedback.keywords.found.map((keyword: string, index: number) => (
+                        {feedback.keywords.found.map((keyword: string, index: number) => (
                           <Badge key={index} variant="outline" className="text-xs">
                             {keyword}
                           </Badge>
@@ -181,11 +181,11 @@ export const ATSScorer: React.FC<ATSScorerProps> = ({ resumeContent, onScoreUpda
                       </div>
                     </div>
                   )}
-                  {Feedback.keywords.missing && (
+                  {feedback.keywords.missing && (
                     <div>
                       <p className="font-medium text-orange-600">Missing Keywords:</p>
                       <div className="flex flex-wrap gap-1 mt-1">
-                        {Feedback.keywords.missing.map((keyword: string, index: number) => (
+                        {feedback.keywords.missing.map((keyword: string, index: number) => (
                           <Badge key={index} variant="secondary" className="text-xs">
                             {keyword}
                           </Badge>
@@ -202,4 +202,3 @@ export const ATSScorer: React.FC<ATSScorerProps> = ({ resumeContent, onScoreUpda
     </Card>
   );
 };
-

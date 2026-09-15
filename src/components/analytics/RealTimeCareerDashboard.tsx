@@ -173,11 +173,11 @@ const RealtimeUpdate: React.FC<RealtimeUpdateProps> = ({ timestamp, message, typ
   );
 };
 
-export const RealTimeCareerCommandCenter: React.FC = () => {
+export const RealTimeCareerDashboard: React.FC = () => {
   const { careerScore, growthRate, marketRank, opportunities, loading: metricsLoading } = useCareerMetrics();
   const { achievements, totalPoints, loading: achievementsLoading } = useAchievements();
   const { activities, loading: activitiesLoading } = useRealTimeActivities();
-  const { TalentNetwork, loading: networkLoading } = useNetworkData();
+  const { connections, loading: networkLoading } = useNetworkData();
 
   const loading = metricsLoading || achievementsLoading || activitiesLoading || networkLoading;
 
@@ -209,7 +209,7 @@ export const RealTimeCareerCommandCenter: React.FC = () => {
     },
     {
       title: 'Profile Views',
-      value: 0, // Will be implemented with profile CareerAnalytics
+      value: 0, // Will be implemented with profile analytics
       change: 0,
       changeType: 'neutral' as const,
       icon: <Users className="h-4 w-4 text-blue-600" />,
@@ -227,11 +227,11 @@ export const RealTimeCareerCommandCenter: React.FC = () => {
     },
     {
       title: 'Network Size',
-      value: TalentNetwork?.length || 0,
+      value: connections?.length || 0,
       change: 15,
       changeType: 'positive' as const,
       icon: <Users className="h-4 w-4 text-purple-600" />,
-      trend: [80, 95, 110, 125, 140, TalentNetwork?.length || 0]
+      trend: [80, 95, 110, 125, 140, connections?.length || 0]
     }
   ]);
 
@@ -244,12 +244,12 @@ export const RealTimeCareerCommandCenter: React.FC = () => {
         case 'Skill Score':
           return { ...metric, value: Math.round(careerScore * 0.9) || 0 };
         case 'Network Size':
-          return { ...metric, value: TalentNetwork?.length || 0 };
+          return { ...metric, value: connections?.length || 0 };
         default:
           return metric;
       }
     }));
-  }, [careerScore, growthRate, TalentNetwork]);
+  }, [careerScore, growthRate, connections]);
 
   // Real achievements from database
   const recentAchievements = achievements?.slice(0, 3).map(achievement => ({
@@ -314,7 +314,7 @@ export const RealTimeCareerCommandCenter: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Real-time Activity Pulse */}
+        {/* Real-time Activity Feed */}
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -427,7 +427,3 @@ export const RealTimeCareerCommandCenter: React.FC = () => {
     </div>
   );
 };
-
-
-
-

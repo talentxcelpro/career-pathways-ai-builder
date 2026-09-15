@@ -1,43 +1,18 @@
-import { useState, useEffect } from 'react';
-
+// Temporary minimal implementation to bypass React dispatcher issues
 export const useDeviceDetection = () => {
-  const [windowSize, setWindowSize] = useState({
-    width: typeof window !== 'undefined' ? window.innerWidth : 1920,
-    height: typeof window !== 'undefined' ? window.innerHeight : 1080,
-  });
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const handleResize = () => {
-      setWindowSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const { width, height } = windowSize;
-  const isMobile = width < 768;
-  const isTablet = width >= 768 && width < 1024;
-  const isDesktop = width >= 1024;
-  const userAgent = typeof navigator !== 'undefined' ? navigator.userAgent : '';
-
+  // Return static values for now
   return {
-    isMobile,
-    isTablet,
-    isDesktop,
-    isIOS: /iPad|iPhone|iPod/.test(userAgent),
-    isAndroid: /Android/.test(userAgent),
-    isSafari: /Safari/.test(userAgent) && !/Chrome/.test(userAgent),
-    isChrome: /Chrome/.test(userAgent),
-    screenWidth: width,
-    screenHeight: height,
+    isMobile: typeof window !== 'undefined' ? window.innerWidth < 768 : false,
+    isTablet: typeof window !== 'undefined' ? window.innerWidth >= 768 && window.innerWidth < 1024 : false,
+    isDesktop: typeof window !== 'undefined' ? window.innerWidth >= 1024 : true,
+    isIOS: typeof window !== 'undefined' ? /iPad|iPhone|iPod/.test(navigator.userAgent) : false,
+    isAndroid: typeof window !== 'undefined' ? /Android/.test(navigator.userAgent) : false,
+    isSafari: typeof window !== 'undefined' ? /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent) : false,
+    isChrome: typeof window !== 'undefined' ? /Chrome/.test(navigator.userAgent) : false,
+    screenWidth: typeof window !== 'undefined' ? window.innerWidth : 1920,
+    screenHeight: typeof window !== 'undefined' ? window.innerHeight : 1080,
     devicePixelRatio: typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1,
-    orientation: width > height ? 'landscape' : 'portrait' as 'portrait' | 'landscape',
+    orientation: typeof window !== 'undefined' ? (window.innerWidth > window.innerHeight ? 'landscape' : 'portrait') : 'landscape' as 'portrait' | 'landscape',
     touchSupport: typeof window !== 'undefined' ? 'ontouchstart' in window : false
   };
 };

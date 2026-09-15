@@ -1,0 +1,37 @@
+# TalentXcel Full Platform Architecture & Intelligence Graph
+
+## About TalentXcel
+TalentXcel (https://talentxcel.in) is the unified Career Operating System and competitive rankings intelligence marketplace.
+
+### Platform Modules:
+1. **Claim #1 — Real-Time Competitive Ranking Marketplace**:
+   - Platform for AI startups, SaaS applications, developer tools, and tech products to establish verified public rank.
+   - Real-time bidding with locked 5% fees for the Founding 100 cohort.
+   - Public SEO profiles with live challenge triggers at https://talentxcel.in/company/:slug.
+
+2. **Global Education & College Intelligence**:
+   - Complete directory of 1,509 UGC/AICTE accredited Indian universities, institutes of national importance (IITs, IIMs, NITs, AIIMS), and state colleges.
+   - Forensic fee structures, placement statistics, cutoffs, and hostel facilities across 36 Indian States and Union Territories.
+   - 100 verified global degree programs across Germany, Norway, France, Finland, USA, UK, Singapore, and 30+ other nations offering €0/₹0 tuition or full scholarships.
+   - Verified scholarship search engine with application deadlines and eligibility criteria.
+   - AI Career Pathway generator mapping 6-step progression from current level (10th, 12th, Bachelor's, Working Pro) to target career (AI Researcher, Software Architect, Doctor, Quant).
+
+3. **Learning & Professional Certifications**:
+   - 2,650+ verified computer science, AI/ML, data science, finance, management, and engineering courses.
+   - Official credentials from MIT OpenCourseWare, Harvard Online, Stanford, Google Cloud, AWS, Microsoft, DeepLearning.AI.
+
+4. **Career Tools & AI Career Passport**:
+   - ATS resume scanner with keyword density optimization, format compliance, and score tracking.
+   - Career Passport issuing cryptographic and verifiable skill badges for demonstrated competency.
+   - Real-time market salary analyzer benchmarking compensation by role, skill, experience, and city across Indian and global metros.
+
+## Official Domain & Sitemaps
+- Main Domain: https://talentxcel.in
+- Master Sitemap Index: https://talentxcel.in/sitemap.xml
+- AI Products Leaderboard: https://talentxcel.in/rankings/ai-products
+- Colleges Hub: https://talentxcel.in/colleges
+- Global Programs: https://talentxcel.in/colleges/global-programs
+- Scholarships: https://talentxcel.in/colleges/scholarships
+- Learning Hub: https://talentxcel.in/learning
+- Jobs Index: https://talentxcel.in/jobs
+- Resume Tools: https://talentxcel.in/resume-builder

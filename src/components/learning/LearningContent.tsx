@@ -30,7 +30,7 @@ export const LearningContent: React.FC<LearningContentProps> = ({
   const aiRecommendationsRef = useRef<HTMLDivElement>(null);
   const isEnrolled = (courseId: string) => enrolledCourses.includes(courseId);
   
-  // Get Career Moves
+  // Get AI recommendations
   const { personalizedRecommendations, isLoading: recommendationsLoading } = useAIRecommendations();
   
   // Transform personalized recommendations to match AIRecommendation interface
@@ -52,7 +52,7 @@ export const LearningContent: React.FC<LearningContentProps> = ({
   if (activeTab === 'courses') {
     return (
       <div className="space-y-6">
-        {/* Career Moves with Apple-inspired design */}
+        {/* AI Recommendations with Apple-inspired design */}
         <div ref={aiRecommendationsRef} data-ai-recommendations className="bg-gradient-to-br from-white via-blue-50/30 to-purple-50/30 rounded-2xl p-6 border border-white/50 shadow-lg backdrop-blur-sm">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
@@ -208,4 +208,3 @@ export const LearningContent: React.FC<LearningContentProps> = ({
 
   return null;
 };
-

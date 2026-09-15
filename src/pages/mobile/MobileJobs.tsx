@@ -5,8 +5,6 @@ import { GlobalSearch } from '@/components/jobs/GlobalSearch';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { SEOHead } from '@/components/seo/SEOHead';
-import { Link } from 'react-router-dom';
-import { Zap } from 'lucide-react';
 
 const MobileJobs: React.FC = () => {
   const [filters, setFilters] = useState({
@@ -193,25 +191,8 @@ const MobileJobs: React.FC = () => {
           />
         </div>
 
-        {/* Reverse Job Match / Talent Beacon Banner */}
-        <div className="px-4 pt-4 pb-2">
-          <Link 
-            to="/talent-beacon"
-            className="flex items-center gap-3 bg-gradient-to-r from-blue-900 to-indigo-900 text-white p-4 rounded-2xl shadow-md press-effect relative overflow-hidden"
-          >
-            <div className="absolute right-0 top-0 w-32 h-32 bg-blue-500/20 rounded-full blur-2xl pointer-events-none -mr-10 -mt-10" />
-            <div className="w-10 h-10 rounded-full bg-blue-500/30 flex items-center justify-center shrink-0 border border-blue-400/30">
-              <Zap className="w-5 h-5 text-blue-200 fill-blue-200" />
-            </div>
-            <div>
-              <h3 className="font-bold text-[15px] leading-tight">Talent Beacon Active</h3>
-              <p className="text-blue-200 text-[13px] mt-0.5">Companies are looking for you. View matches.</p>
-            </div>
-          </Link>
-        </div>
-
         {/* Mobile Job Cards */}
-        <div className="px-4 py-4">
+        <div className="px-4 py-6">
           {jobs.length > 0 ? (
             <SwipeableJobCard
               jobs={jobs}

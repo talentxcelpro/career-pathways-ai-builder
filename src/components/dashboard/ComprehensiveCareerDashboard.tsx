@@ -21,7 +21,7 @@ import {
 import { useCareerPassport } from '@/hooks/useCareerPassport';
 import { useAuth } from '@/contexts/AuthContext';
 
-const ComprehensiveCareerCommandCenter: React.FC = () => {
+const ComprehensiveCareerDashboard: React.FC = () => {
   const { user } = useAuth();
   const { careerPassport, achievements, getCompletionBreakdown, getNextMilestone } = useCareerPassport();
   const [activeGoals, setActiveGoals] = useState(3);
@@ -30,7 +30,7 @@ const ComprehensiveCareerCommandCenter: React.FC = () => {
   const completionData = getCompletionBreakdown();
   const nextMilestone = getNextMilestone();
 
-  // Mock data for comprehensive CommandCenter
+  // Mock data for comprehensive dashboard
   const skillsProgress = [
     { name: 'AI & Machine Learning', current: 85, target: 90, trending: 'up' },
     { name: 'Leadership', current: 70, target: 85, trending: 'up' },
@@ -63,7 +63,7 @@ const ComprehensiveCareerCommandCenter: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Career CommandCenter</h1>
+          <h1 className="text-3xl font-bold">Career Dashboard</h1>
           <p className="text-muted-foreground">Your comprehensive career development overview</p>
         </div>
         <div className="flex items-center gap-2">
@@ -149,7 +149,7 @@ const ComprehensiveCareerCommandCenter: React.FC = () => {
         </Card>
       </div>
 
-      {/* Main CommandCenter Content */}
+      {/* Main Dashboard Content */}
       <Tabs defaultValue="overview" className="space-y-6">
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -275,7 +275,7 @@ const ComprehensiveCareerCommandCenter: React.FC = () => {
         <TabsContent value="skills" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Skills Development CommandCenter</CardTitle>
+              <CardTitle>Skills Development Dashboard</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-center py-8">
@@ -323,13 +323,13 @@ const ComprehensiveCareerCommandCenter: React.FC = () => {
         <TabsContent value="insights" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Performance Insights</CardTitle>
+              <CardTitle>AI-Powered Insights</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-center py-8">
                 <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <p className="text-muted-foreground">
-                  Advanced career CareerAnalytics and personalized insights coming soon.
+                  Advanced career analytics and personalized insights coming soon.
                 </p>
               </div>
             </CardContent>
@@ -340,7 +340,4 @@ const ComprehensiveCareerCommandCenter: React.FC = () => {
   );
 };
 
-export default ComprehensiveCareerCommandCenter;
-
-
-
+export default ComprehensiveCareerDashboard;

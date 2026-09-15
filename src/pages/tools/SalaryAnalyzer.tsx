@@ -484,7 +484,7 @@ const SalaryAnalyzer = () => {
       onStepChange={setCurrentStep}
       results={salaryData}
       isProcessing={isAnalyzing}
-      onSave={() => toast.success('Salary analysis saved to your CommandCenter!')}
+      onSave={() => toast.success('Salary analysis saved to your dashboard!')}
       onExport={() => toast.success('Analysis exported as PDF!')}
       onShare={() => toast.success('Analysis link copied to clipboard!')}
     />
@@ -492,4 +492,3 @@ const SalaryAnalyzer = () => {
 };
 
 export default SalaryAnalyzer;
-

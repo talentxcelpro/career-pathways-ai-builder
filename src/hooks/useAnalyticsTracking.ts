@@ -1,11 +1,11 @@
 
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useCareerAnalytics } from '@/contexts/AnalyticsContext';
+import { useAnalytics } from '@/contexts/AnalyticsContext';
 
-export const useCareerAnalyticsTracking = () => {
+export const useAnalyticsTracking = () => {
   const location = useLocation();
-  const { trackEvent } = useCareerAnalytics();
+  const { trackEvent } = useAnalytics();
 
   // Track page views with enhanced data
   useEffect(() => {
@@ -85,9 +85,3 @@ export const useCareerAnalyticsTracking = () => {
     },
   };
 };
-
-export const useAnalyticsTracking = useCareerAnalyticsTracking;
-
-
-
-

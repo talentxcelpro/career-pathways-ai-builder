@@ -24,7 +24,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       <div className="max-w-4xl mx-auto">
         <div className="relative inline-block mb-6 animate-fade-in-down">
           {showAIBadge ? (
-            <AIStatusIndicator module="TalentXcel" feature="Performance">
+            <AIStatusIndicator module="TalentXcel" feature="AI-Powered">
             <h1 className="text-headline md:text-display font-heading text-foreground animate-glow-pulse">
                 {title}
               </h1>

@@ -23,7 +23,7 @@ import {
 
 interface SyncStatus {
   posts: 'synced' | 'syncing' | 'offline' | 'error';
-  TalentNetwork: 'synced' | 'syncing' | 'offline' | 'error';
+  connections: 'synced' | 'syncing' | 'offline' | 'error';
   messages: 'synced' | 'syncing' | 'offline' | 'error';
   profile: 'synced' | 'syncing' | 'offline' | 'error';
 }
@@ -41,7 +41,7 @@ export const DataSynchronizationService: React.FC = () => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [syncStatus, setSyncStatus] = useState<SyncStatus>({
     posts: 'synced',
-    TalentNetwork: 'synced',
+    connections: 'synced',
     messages: 'synced',
     profile: 'synced'
   });
@@ -100,9 +100,9 @@ export const DataSynchronizationService: React.FC = () => {
       )
       .subscribe();
 
-    // Subscribe to TalentNetwork changes
-    const TalentNetworkChannel = supabase
-      .channel('TalentNetwork-sync')
+    // Subscribe to connections changes
+    const connectionsChannel = supabase
+      .channel('connections-sync')
       .on(
         'postgres_changes',
         {
@@ -112,7 +112,7 @@ export const DataSynchronizationService: React.FC = () => {
           filter: `requester_id=eq.${user.id},recipient_id=eq.${user.id}`
         },
         (payload) => {
-          console.log('TalentNetwork sync:', payload);
+          console.log('Connections sync:', payload);
           updateSyncStatus('synced', 'connections');
           setLastSyncTime(new Date());
         }
@@ -159,7 +159,7 @@ export const DataSynchronizationService: React.FC = () => {
 
     return () => {
       supabase.removeChannel(postsChannel);
-      supabase.removeChannel(TalentNetworkChannel);
+      supabase.removeChannel(connectionsChannel);
       supabase.removeChannel(messagesChannel);
       supabase.removeChannel(profileChannel);
     };
@@ -173,7 +173,7 @@ export const DataSynchronizationService: React.FC = () => {
         // Update all tables
         return {
           posts: status,
-          TalentNetwork: status,
+          connections: status,
           messages: status,
           profile: status
         };
@@ -196,8 +196,8 @@ export const DataSynchronizationService: React.FC = () => {
       await syncPosts();
       setSyncProgress(50);
 
-      // Sync TalentNetwork
-      await syncTalentNetwork();
+      // Sync connections
+      await syncConnections();
       setSyncProgress(75);
 
       // Sync messages and profile
@@ -275,9 +275,9 @@ export const DataSynchronizationService: React.FC = () => {
     updateSyncStatus('synced', 'posts');
   };
 
-  const syncTalentNetwork = async () => {
+  const syncConnections = async () => {
     updateSyncStatus('syncing', 'connections');
-    // Implementation for syncing TalentNetwork
+    // Implementation for syncing connections
     await new Promise(resolve => setTimeout(resolve, 500)); // Simulate sync
     updateSyncStatus('synced', 'connections');
   };
@@ -477,4 +477,3 @@ export const DataSynchronizationService: React.FC = () => {
 };
 
 export default DataSynchronizationService;
-

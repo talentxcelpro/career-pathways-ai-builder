@@ -322,11 +322,11 @@ const People = () => {
         <div className="mb-8">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
             <div>
-              <h1 className="text-4xl font-apple-bold text-slate-900 tracking-tighter mb-2">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
                 Discover Amazing People
               </h1>
-              <p className="text-slate-500 font-apple-medium flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-blue-500 animate-pulse" />
+              <p className="text-gray-600 flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-yellow-500" />
                 Connect, grow, and build meaningful relationships
               </p>
             </div>
@@ -335,10 +335,10 @@ const People = () => {
               <div className="relative group">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 transition-colors group-focus-within:text-blue-500" />
                 <Input
-                  placeholder="Try: 'React developers in Mumbai'..."
+                  placeholder="Try: 'React developers in Mumbai' or 'Senior designers with 5+ years'"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 w-96 glass border-slate-200 focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all duration-300 font-apple-medium"
+                  className="pl-10 w-96 bg-white/90 backdrop-blur-sm border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
                 />
                 {isLoading && (
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -437,7 +437,7 @@ const People = () => {
 
         {/* Main Content Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8 glass p-1">
+          <TabsList className="grid w-full grid-cols-3 mb-8 bg-white/60 backdrop-blur-sm">
             <TabsTrigger value="discover" className="flex items-center gap-2">
               <Sparkles className="h-4 w-4" />
               Discover
@@ -692,7 +692,7 @@ const People = () => {
                       Go Premium
                     </h3>
                     <p className="text-sm text-purple-100 mb-4">
-                      Unlock unlimited TalentNetwork and advanced networking features
+                      Unlock unlimited connections and advanced networking features
                     </p>
                     <Button className="w-full bg-white text-purple-600 hover:bg-purple-50">
                       Upgrade Now
@@ -823,4 +823,3 @@ const People = () => {
 };
 
 export default People;
-

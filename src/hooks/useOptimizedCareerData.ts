@@ -9,7 +9,7 @@ import { websocketManager } from '@/utils/websocketManager';
 interface CareerMetrics {
   profileCompletion: number;
   jobApplications: number;
-  TalentNetwork: number;
+  connections: number;
   skillsAdded: number;
   coursesCompleted: number;
   postsCreated: number;
@@ -38,7 +38,7 @@ export function useOptimizedCareerData() {
   const realTimeAchievements = useRealTimeAchievements();
   const { achievements, progressAchievements, isLoading: achievementsLoading, triggerAchievementCheck, isAwarding } = realTimeAchievements;
 
-  // Fetch Evolution Hub data with optimized query and real-time updates
+  // Fetch career passport data with optimized query and real-time updates
   const { data: careerData, isLoading, error } = useQuery({
     queryKey: ['optimized-career-data', user?.id],
     queryFn: async () => {
@@ -48,7 +48,7 @@ export function useOptimizedCareerData() {
       const [
         passportResponse, 
         profileResponse, 
-        TalentNetworkResponse,
+        connectionsResponse,
         jobApplicationsResponse,
         postsResponse,
         achievementsResponse,
@@ -98,7 +98,7 @@ export function useOptimizedCareerData() {
 
       const passport = passportResponse.data;
       const profile = profileResponse.data;
-      const TalentNetworkCount = TalentNetworkResponse.data?.length || 0;
+      const connectionsCount = connectionsResponse.data?.length || 0;
       const jobApplicationsCount = jobApplicationsResponse.data?.length || 0;
       const postsCount = postsResponse.data?.length || 0;
       const achievementsCount = achievementsResponse.data?.length || 0;
@@ -169,7 +169,7 @@ export function useOptimizedCareerData() {
         metrics: {
           profileCompletion,
           jobApplications: jobApplicationsCount,
-          TalentNetwork: TalentNetworkCount,
+          connections: connectionsCount,
           skillsAdded: profile?.skills?.length || 0,
           coursesCompleted: passport?.tests_completed_count || 0,
           postsCreated: postsCount,
@@ -181,7 +181,7 @@ export function useOptimizedCareerData() {
         } as CareerMetrics,
         insights: {
           career_readiness_score: passport?.career_readiness_score || profileCompletion,
-          market_competitiveness_score: passport?.market_competitiveness_score || Math.min((passport?.jobs_applied_count || 0) * 10 + TalentNetworkCount * 5, 100),
+          market_competitiveness_score: passport?.market_competitiveness_score || Math.min((passport?.jobs_applied_count || 0) * 10 + connectionsCount * 5, 100),
           industry_percentile: Math.min(profileCompletion + (passport?.tests_completed_count || 0) * 20, 95),
           strengths: profileCompletion > 80 ? ['Complete Profile', 'Active User'] : [],
           improvement_areas: profileCompletion < 50 ? ['Complete Profile'] : [],
@@ -195,7 +195,7 @@ export function useOptimizedCareerData() {
     refetchOnWindowFocus: false,
   });
 
-  // Set up real-time subscription for Evolution Hub updates
+  // Set up real-time subscription for career passport updates
   useEffect(() => {
     if (!user?.id) return;
 
@@ -208,7 +208,7 @@ export function useOptimizedCareerData() {
         table: 'career_passport',
         filter: `user_id=eq.${user.id}`
       }, (payload) => {
-        console.log('Evolution Hub updated:', payload);
+        console.log('Career passport updated:', payload);
         // The query will automatically refresh due to real-time invalidation
       })
       .subscribe();
@@ -228,7 +228,7 @@ export function useOptimizedCareerData() {
       progressAchievements 
     };
     
-    // Merge real-time metrics with Evolution Hub data
+    // Merge real-time metrics with career passport data
     const enhancedMetrics = realTimeMetrics ? {
       ...careerData.metrics,
       ...realTimeMetrics
@@ -253,4 +253,3 @@ export function useOptimizedCareerData() {
     lastUpdated: realTimeMetrics?.lastUpdated
   };
 }
-

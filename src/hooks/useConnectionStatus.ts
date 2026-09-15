@@ -6,7 +6,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 
-interface connectionState {
+interface ConnectionState {
   status: 'online' | 'offline' | 'slow' | 'reconnecting';
   latency: number;
   lastCheck: number;
@@ -16,8 +16,8 @@ interface connectionState {
 const MAX_RECONNECT_ATTEMPTS = 5;
 const INITIAL_RECONNECT_DELAY = 1000;
 
-export function useconnectionStatus() {
-  const [connectionState, setconnectionState] = useState<connectionState>({
+export function useConnectionStatus() {
+  const [connectionState, setConnectionState] = useState<ConnectionState>({
     status: 'online',
     latency: 0,
     lastCheck: Date.now(),
@@ -30,7 +30,7 @@ export function useconnectionStatus() {
   // Monitor online/offline status
   useEffect(() => {
     const handleOnline = () => {
-      setconnectionState(prev => ({
+      setConnectionState(prev => ({
         ...prev,
         status: 'online',
         reconnectAttempts: 0,
@@ -41,7 +41,7 @@ export function useconnectionStatus() {
     };
 
     const handleOffline = () => {
-      setconnectionState(prev => ({
+      setConnectionState(prev => ({
         ...prev,
         status: 'offline',
       }));
@@ -72,7 +72,7 @@ export function useconnectionStatus() {
 
       const latency = performance.now() - startTime;
 
-      setconnectionState(prev => ({
+      setConnectionState(prev => ({
         ...prev,
         status: latency > 1000 ? 'slow' : 'online',
         latency: Math.round(latency),
@@ -87,7 +87,7 @@ export function useconnectionStatus() {
         });
       }
     } catch (error) {
-      setconnectionState(prev => ({
+      setConnectionState(prev => ({
         ...prev,
         status: 'offline',
       }));
@@ -101,7 +101,7 @@ export function useconnectionStatus() {
       clearTimeout(reconnectTimeoutRef.current);
     }
 
-    setconnectionState(prev => {
+    setConnectionState(prev => {
       const newAttempts = prev.reconnectAttempts + 1;
 
       if (newAttempts > MAX_RECONNECT_ATTEMPTS) {
@@ -145,7 +145,7 @@ export function useconnectionStatus() {
   }, [checkHealth]);
 
   const forceReconnect = useCallback(() => {
-    setconnectionState(prev => ({
+    setConnectionState(prev => ({
       ...prev,
       reconnectAttempts: 0,
     }));
@@ -158,5 +158,3 @@ export function useconnectionStatus() {
     forceReconnect,
   };
 }
-
-

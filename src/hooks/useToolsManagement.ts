@@ -35,12 +35,12 @@ export const useToolsManagement = () => {
       return data.map(tool => ({
         id: tool.id,
         name: tool.tool_slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-        description: `Performance ${tool.tool_slug} tool`,
+        description: `AI-powered ${tool.tool_slug} tool`,
         category: tool.tool_slug.includes('resume') ? 'Resume' : 
                  tool.tool_slug.includes('interview') ? 'Interview' :
                  tool.tool_slug.includes('salary') ? 'Salary' : 'General',
         is_active: tool.status === 'active',
-        usage_count: Math.floor(Math.random() * 2000), // Real usage would come from CareerAnalytics
+        usage_count: Math.floor(Math.random() * 2000), // Real usage would come from analytics
         created_at: new Date().toISOString(),
         updated_at: tool.last_updated || new Date().toISOString()
       }));
@@ -110,7 +110,3 @@ export const useToolsManagement = () => {
     handleToggleToolStatus
   };
 };
-
-
-
-

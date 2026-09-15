@@ -47,7 +47,7 @@ export const ConversionBanner: React.FC<ConversionBannerProps> = ({
     const content = {
       resume: {
         text: 'Build Your Professional Resume for Free',
-        subtext: 'ATS-optimized templates • Smart Moves • 1 free download',
+        subtext: 'ATS-optimized templates • AI suggestions • 1 free download',
         cta: 'Start Building',
         link: '/auth?mode=signup&flow=resume'
       },
@@ -59,7 +59,7 @@ export const ConversionBanner: React.FC<ConversionBannerProps> = ({
       },
       interview: {
         text: 'Ace Your Next Interview',
-        subtext: '5 free practice questions • AI Feedback • Mock interviews',
+        subtext: '5 free practice questions • AI feedback • Mock interviews',
         cta: 'Start Practicing',
         link: '/auth?mode=signup&flow=interview'
       },
@@ -140,4 +140,3 @@ export const ConversionBanner: React.FC<ConversionBannerProps> = ({
     </div>
   );
 };
-

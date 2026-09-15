@@ -265,7 +265,7 @@ export const TouchOptimizedNewsCard: React.FC<TouchOptimizedNewsCardProps> = ({
 };
 
 // Mobile-optimized infinite scroll container
-export const MobileNewsPulse: React.FC<{ articles: any[] }> = ({ articles }) => {
+export const MobileNewsFeed: React.FC<{ articles: any[] }> = ({ articles }) => {
   const [visibleArticles, setVisibleArticles] = useState(10);
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);

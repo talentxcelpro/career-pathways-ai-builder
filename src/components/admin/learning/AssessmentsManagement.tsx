@@ -66,7 +66,7 @@ export const AssessmentsManagement: React.FC = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Assessment CareerAnalytics</CardTitle>
+          <CardTitle>Assessment Analytics</CardTitle>
           <CardDescription>Performance metrics and insights</CardDescription>
         </CardHeader>
         <CardContent>
@@ -89,6 +89,3 @@ export const AssessmentsManagement: React.FC = () => {
     </div>
   );
 };
-
-
-

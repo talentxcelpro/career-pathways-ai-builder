@@ -16,7 +16,7 @@ import { UsageMeter } from '@/components/ui/usage-meter';
 interface Integration {
   id: string;
   name: string;
-  type: 'crm' | 'email' | 'calendar' | 'social' | 'ats' | 'CareerAnalytics';
+  type: 'crm' | 'email' | 'calendar' | 'social' | 'ats' | 'analytics';
   description: string;
   status: 'connected' | 'disconnected' | 'error' | 'pending';
   lastSync: Date;
@@ -116,7 +116,7 @@ const IntegrationManagementSystem: React.FC = () => {
         id: '4',
         name: 'Greenhouse ATS',
         type: 'ats',
-        description: 'Track application status and Feedback',
+        description: 'Track application status and feedback',
         status: 'error',
         lastSync: new Date(Date.now() - 86400000),
         syncFrequency: 'daily',
@@ -518,7 +518,3 @@ const IntegrationManagementSystem: React.FC = () => {
 };
 
 export default IntegrationManagementSystem;
-
-
-
-

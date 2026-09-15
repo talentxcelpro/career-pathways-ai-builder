@@ -54,7 +54,7 @@ export class ImageOptimizer {
     }
   }
   /**
-   * Generate thumbnail URL (like Instagram Pulse previews)
+   * Generate thumbnail URL (like Instagram feed previews)
    */
   static getThumbnailUrl(originalUrl: string): string {
     return this.getOptimizedUrl(originalUrl, {

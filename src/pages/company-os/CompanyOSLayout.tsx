@@ -1,10 +1,10 @@
 import { NavLink, Outlet } from "react-router-dom";
-import { Sparkles, Code2, DollarSign, Megaphone, Users, Wallet, LayoutDashboard, ShieldCheck } from "lucide-react";
+import { Brain, Code2, DollarSign, Megaphone, Users, Wallet, LayoutDashboard, ShieldCheck } from "lucide-react";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Card } from "@/components/ui/card";
 
 const nav = [
-  { to: "/company-os", label: "CEO Command Center", icon: LayoutDashboard, end: true },
+  { to: "/company-os", label: "CEO Dashboard", icon: LayoutDashboard, end: true },
   { to: "/company-os/decisions", label: "Decision Queue", icon: ShieldCheck },
   { to: "/company-os/engineering", label: "Engineering", icon: Code2 },
   { to: "/company-os/sales", label: "Sales", icon: DollarSign },
@@ -18,7 +18,7 @@ export default function CompanyOSLayout() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto p-8 text-muted-foreground">Loading TalentXcel Company Core...</div>
+      <div className="container mx-auto p-8 text-muted-foreground">Loading Company OS…</div>
     );
   }
 
@@ -29,7 +29,7 @@ export default function CompanyOSLayout() {
           <ShieldCheck className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
           <h1 className="text-2xl font-semibold mb-2">Superuser Access Required</h1>
           <p className="text-muted-foreground">
-            TalentXcel Company Core is reserved for the CEO (super admin). Ask your administrator to grant access.
+            The AI Company OS is reserved for the CEO (super admin). Ask your administrator to grant access.
           </p>
         </Card>
       </div>
@@ -40,10 +40,10 @@ export default function CompanyOSLayout() {
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card">
         <div className="container mx-auto flex items-center gap-3 py-4">
-          <Sparkles className="h-6 w-6 text-primary" />
+          <Brain className="h-6 w-6 text-primary" />
           <div>
-            <h1 className="text-lg font-semibold">TalentXcel Company Core</h1>
-            <p className="text-xs text-muted-foreground">CEO control layer - 5 autonomous departments</p>
+            <h1 className="text-lg font-semibold">AI Company OS</h1>
+            <p className="text-xs text-muted-foreground">Virtual CEO • 5 autonomous departments</p>
           </div>
         </div>
       </header>
@@ -74,5 +74,3 @@ export default function CompanyOSLayout() {
     </div>
   );
 }
-
-

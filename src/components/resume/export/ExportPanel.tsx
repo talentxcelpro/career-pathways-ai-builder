@@ -59,7 +59,7 @@ export const ExportPanel = ({ resumeData, resumeId }: ExportPanelProps) => {
       const result = await exportResume(resumeData, settings);
       
       if (result.success && result.downloadUrl) {
-        // Record download for CareerAnalytics
+        // Record download for analytics
         await handleDownload(resumeId, () => {
           // Create download link
           const link = document.createElement('a');
@@ -356,6 +356,3 @@ export const ExportPanel = ({ resumeData, resumeId }: ExportPanelProps) => {
     </div>
   );
 };
-
-
-

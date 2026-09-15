@@ -2,10 +2,10 @@ import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ABTestingCommandCenter } from "@/components/marketplace/testing/ABTestingDashboard";
+import { ABTestingDashboard } from "@/components/marketplace/testing/ABTestingDashboard";
 import { PerformanceMonitoring } from "@/components/marketplace/testing/PerformanceMonitoring";
-import { UserFeedbackSystem } from "@/components/Pulse/UserFeedbackSystem";
-import { SecurityAuditCommandCenter } from "@/components/marketplace/testing/SecurityAuditDashboard";
+import { UserFeedbackSystem } from "@/components/marketplace/testing/UserFeedbackSystem";
+import { SecurityAuditDashboard } from "@/components/marketplace/testing/SecurityAuditDashboard";
 import { JobScrapingTester } from "@/components/testing/JobScrapingTester";
 import { JobTestingPanel } from "@/components/testing/JobTestingPanel";
 import { 
@@ -26,7 +26,7 @@ export default function TestingOptimization() {
         <div>
           <h1 className="text-3xl font-bold">Testing & Optimization</h1>
           <p className="text-muted-foreground">
-            Comprehensive platform optimization through testing, monitoring, and Feedback
+            Comprehensive platform optimization through testing, monitoring, and feedback
           </p>
         </div>
         <Badge variant="outline" className="text-blue-500 border-blue-500/20">
@@ -151,7 +151,7 @@ export default function TestingOptimization() {
               User-Centric Design
             </CardTitle>
             <CardDescription>
-              Continuous Feedback collection and iterative improvements
+              Continuous feedback collection and iterative improvements
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -206,26 +206,26 @@ export default function TestingOptimization() {
         <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="ab-testing">A/B Testing</TabsTrigger>
           <TabsTrigger value="performance">Performance</TabsTrigger>
-          <TabsTrigger value="Feedback">User Feedback</TabsTrigger>
+          <TabsTrigger value="feedback">User Feedback</TabsTrigger>
           <TabsTrigger value="security">Security Audit</TabsTrigger>
           <TabsTrigger value="job-workflow">Job Workflow</TabsTrigger>
-          <TabsTrigger value="job-seeding">Job Seeding</TabsTrigger>
+          <TabsTrigger value="job-seeding">🎯 Job Seeding</TabsTrigger>
         </TabsList>
 
         <TabsContent value="ab-testing">
-          <ABTestingCommandCenter />
+          <ABTestingDashboard />
         </TabsContent>
 
         <TabsContent value="performance">
           <PerformanceMonitoring />
         </TabsContent>
 
-        <TabsContent value="Feedback">
+        <TabsContent value="feedback">
           <UserFeedbackSystem />
         </TabsContent>
 
         <TabsContent value="security">
-          <SecurityAuditCommandCenter />
+          <SecurityAuditDashboard />
         </TabsContent>
 
         <TabsContent value="job-workflow">
@@ -239,5 +239,3 @@ export default function TestingOptimization() {
     </div>
   );
 }
-
-

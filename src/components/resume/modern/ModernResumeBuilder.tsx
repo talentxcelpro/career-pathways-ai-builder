@@ -187,7 +187,7 @@ export const ModernResumeBuilder: React.FC = () => {
                 Build Your Perfect Resume
               </h1>
               <p className="text-xl text-slate-600 mb-8 max-w-2xl mx-auto">
-                Create ATS-optimized resumes with Performance suggestions and professional templates
+                Create ATS-optimized resumes with AI-powered suggestions and professional templates
               </p>
               
               {/* Action Buttons */}
@@ -232,7 +232,7 @@ export const ModernResumeBuilder: React.FC = () => {
                 <div className="bg-blue-100 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                   <Brain className="w-8 h-8 text-blue-600" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Performance Writing</h3>
+                <h3 className="text-xl font-semibold mb-2">AI-Powered Writing</h3>
                 <p className="text-gray-600">Get intelligent suggestions for bullet points and content optimization</p>
               </CardContent>
             </Card>

@@ -28,7 +28,7 @@ export default function JobVisibilityForm() {
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-              <span className="text-sm">Extend or repost anytime from CommandCenter</span>
+              <span className="text-sm">Extend or repost anytime from dashboard</span>
             </div>
           </div>
         </div>
@@ -49,7 +49,7 @@ export default function JobVisibilityForm() {
                 <p className="text-xs text-muted-foreground">Auto-tags resumes by skills, education, experience</p>
               </div>
               <div className="p-3 border rounded-lg">
-                <h4 className="font-medium text-sm mb-1">💡 Smart Moves</h4>
+                <h4 className="font-medium text-sm mb-1">💡 AI Suggestions</h4>
                 <p className="text-xs text-muted-foreground">Recommends top 10 matches from TalentXcel pool</p>
               </div>
             </div>
@@ -63,7 +63,7 @@ export default function JobVisibilityForm() {
                 <p className="text-xs text-muted-foreground">Receive notifications when high-fit profiles apply</p>
               </div>
               <div className="p-3 border rounded-lg">
-                <h4 className="font-medium text-sm mb-1">📊 CareerAnalytics</h4>
+                <h4 className="font-medium text-sm mb-1">📊 Analytics</h4>
                 <p className="text-xs text-muted-foreground">Track views, clicks, applications, and drop-off points</p>
               </div>
             </div>
@@ -73,6 +73,3 @@ export default function JobVisibilityForm() {
     </Card>
   );
 }
-
-
-

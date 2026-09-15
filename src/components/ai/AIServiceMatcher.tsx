@@ -10,7 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 interface Message {
   id: string;
-  role: 'user' | 'Navigator';
+  role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
 }
@@ -68,7 +68,7 @@ export const AIServiceMatcher = () => {
       // Add AI response to chat
       const aiMessage: Message = {
         id: crypto.randomUUID(),
-        role: 'Navigator',
+        role: 'assistant',
         content: data.response,
         timestamp: new Date()
       };
@@ -101,7 +101,7 @@ export const AIServiceMatcher = () => {
           AI Career Services
         </h1>
         <p className="text-muted-foreground">
-          Get personalized Performance assistance for your career growth
+          Get personalized AI-powered assistance for your career growth
         </p>
       </div>
 
@@ -146,7 +146,7 @@ export const AIServiceMatcher = () => {
       {/* Chat Interface */}
       <Card>
         <CardHeader>
-          <CardTitle>TalentXcel Navigator</CardTitle>
+          <CardTitle>AI Assistant</CardTitle>
           <CardDescription>
             Ask questions and get personalized advice
           </CardDescription>
@@ -162,7 +162,7 @@ export const AIServiceMatcher = () => {
                     msg.role === 'user' ? 'justify-end' : 'justify-start'
                   }`}
                 >
-                  {msg.role === 'Navigator' && (
+                  {msg.role === 'assistant' && (
                     <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                       <Bot className="w-4 h-4 text-primary" />
                     </div>
@@ -235,7 +235,7 @@ export const AIServiceMatcher = () => {
             <div className="text-center py-8">
               <Bot className="w-12 h-12 mx-auto text-muted-foreground/50 mb-3" />
               <p className="text-muted-foreground">
-                Select a service type above to start chatting with the TalentXcel Navigator
+                Select a service type above to start chatting with the AI assistant
               </p>
             </div>
           )}
@@ -244,4 +244,3 @@ export const AIServiceMatcher = () => {
     </div>
   );
 };
-

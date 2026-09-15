@@ -32,7 +32,7 @@ export const AICareerInsights: React.FC<AICareerInsightsProps> = ({
   currentSkills,
   location = 'Global'
 }) => {
-  // Mock Performance insights data
+  // Mock AI-powered insights data
   const marketTrends: MarketTrend[] = [
     { skill: 'AI/ML', demand: 'high', growth: 45, salaryRange: { min: 120000, max: 180000 } },
     { skill: 'Cloud Computing', demand: 'high', growth: 38, salaryRange: { min: 110000, max: 160000 } },
@@ -85,7 +85,7 @@ export const AICareerInsights: React.FC<AICareerInsightsProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Intelligence Metrics Header */}
+      {/* AI Insights Header */}
       <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -93,7 +93,7 @@ export const AICareerInsights: React.FC<AICareerInsightsProps> = ({
             TalentXcel AI Career Insights
           </CardTitle>
           <CardDescription>
-            Powered by real-world market data and predictive CareerAnalytics
+            Powered by real-world market data and predictive analytics
           </CardDescription>
         </CardHeader>
       </Card>
@@ -143,12 +143,12 @@ export const AICareerInsights: React.FC<AICareerInsightsProps> = ({
         </CardContent>
       </Card>
 
-      {/* Intelligence Metrics */}
+      {/* AI Insights */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Star className="h-5 w-5 text-yellow-500" />
-            TalentXcel Intelligence Metrics
+            TalentXcel AI Insights
           </CardTitle>
           <CardDescription>
             Personalized recommendations based on your profile and market analysis
@@ -248,7 +248,3 @@ export const AICareerInsights: React.FC<AICareerInsightsProps> = ({
     </div>
   );
 };
-
-
-
-

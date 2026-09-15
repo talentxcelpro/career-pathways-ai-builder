@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Mail, Send, CheckCircle, Eye, MousePointer, XCircle } from 'lucide-react';
 
-export const EmailCareerAnalyticsCommandCenter = () => {
+export const EmailAnalyticsDashboard = () => {
   const queryClient = useQueryClient();
   
   const { data: stats, isLoading } = useQuery({
@@ -46,10 +46,10 @@ export const EmailCareerAnalyticsCommandCenter = () => {
     }
   });
 
-  // Real-time subscription for CareerAnalytics updates
+  // Real-time subscription for analytics updates
   React.useEffect(() => {
     const queueChannel = supabase
-      .channel('CareerAnalytics-queue-changes')
+      .channel('analytics-queue-changes')
       .on(
         'postgres_changes',
         {
@@ -64,7 +64,7 @@ export const EmailCareerAnalyticsCommandCenter = () => {
       .subscribe();
 
     const eventsChannel = supabase
-      .channel('CareerAnalytics-events-changes')
+      .channel('analytics-events-changes')
       .on(
         'postgres_changes',
         {
@@ -133,7 +133,7 @@ export const EmailCareerAnalyticsCommandCenter = () => {
   ];
 
   if (isLoading) {
-    return <div className="flex items-center justify-center h-64">Loading CareerAnalytics...</div>;
+    return <div className="flex items-center justify-center h-64">Loading analytics...</div>;
   }
 
   return (
@@ -192,7 +192,3 @@ export const EmailCareerAnalyticsCommandCenter = () => {
     </div>
   );
 };
-
-
-
-

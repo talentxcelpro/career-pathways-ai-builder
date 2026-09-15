@@ -5,6 +5,7 @@ export interface NavItem {
   title: string;
   to: string;
   exact?: boolean;
+  description?: string;
   icon?: React.ReactNode;
   page: React.ReactNode;
   children?: NavItem[];

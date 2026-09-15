@@ -33,7 +33,7 @@ const AIBusinessToolkit = () => {
     {
       id: 'lead-matcher',
       title: 'Lead Match AI',
-      description: 'Find potential clients from your network using Precision Match',
+      description: 'Find potential clients from your network using AI matching',
       icon: <Users className="h-5 w-5" />,
       color: 'text-green-600',
       bgColor: 'bg-green-50',

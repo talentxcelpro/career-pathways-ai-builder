@@ -118,7 +118,7 @@ export const useTXCAIInsights = () => {
       setPatterns(calculatedPatterns);
       setAnalysisProgress(85);
 
-      // Generate Intelligence Metrics based on patterns
+      // Generate AI insights based on patterns
       const generatedInsights = await generatePredictiveInsights(transactions, calculatedPatterns);
       setInsights(generatedInsights);
 

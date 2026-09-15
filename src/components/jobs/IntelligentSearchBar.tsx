@@ -164,7 +164,7 @@ export const IntelligentSearchBar: React.FC<IntelligentSearchBarProps> = ({
                   value={searchTerm}
                   onChange={(e) => onSearchChange(e.target.value)}
                   onFocus={() => setShowSuggestions(true)}
-                  className="pl-12 pr-16 h-14 text-base border-2 border-slate-200 focus:border-primary/50 rounded-3xl bg-white shadow-inner transition-all duration-300"
+                  className="pl-12 pr-16 h-14 text-base border-2 border-primary/20 focus:border-primary/50 rounded-2xl bg-white/80 backdrop-blur-sm"
                 />
                 <div className="absolute right-2 top-2 flex gap-1">
                   <Button
@@ -196,7 +196,7 @@ export const IntelligentSearchBar: React.FC<IntelligentSearchBarProps> = ({
                 value={location}
                 onChange={(e) => onLocationChange(e.target.value)}
                 onFocus={() => setShowSuggestions(true)}
-                className="pl-12 h-14 text-base border-2 border-slate-200 focus:border-primary/50 rounded-3xl bg-white shadow-inner transition-all duration-300"
+                className="pl-12 h-14 text-base border-2 border-primary/20 focus:border-primary/50 rounded-2xl bg-white/80 backdrop-blur-sm"
               />
             </div>
           </div>
@@ -221,7 +221,7 @@ export const IntelligentSearchBar: React.FC<IntelligentSearchBarProps> = ({
             
             <Button 
               onClick={aiMode ? handleAISearch : onSearch}
-              className="bg-slate-950 text-white hover:bg-slate-800 hover:shadow-2xl px-10 h-12 rounded-full font-heavy transition-all duration-500"
+              className="bg-gradient-to-r from-primary via-secondary to-accent hover:shadow-lg px-8 h-10 rounded-full font-semibold"
             >
               {aiMode ? (
                 <>
@@ -263,7 +263,7 @@ export const IntelligentSearchBar: React.FC<IntelligentSearchBarProps> = ({
         </div>
       </Card>
 
-      {/* Trending & Smart Moves */}
+      {/* Trending & AI Suggestions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Trending Searches */}
         <Card className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
@@ -276,7 +276,7 @@ export const IntelligentSearchBar: React.FC<IntelligentSearchBarProps> = ({
               {TRENDING_SEARCHES.map((item, index) => (
                 <div 
                   key={index}
-                  className="flex items-center justify-between p-4 bg-white rounded-2xl cursor-pointer hover:bg-slate-50 transition-all duration-500 hover:shadow-xl hover:-translate-y-1"
+                  className="flex items-center justify-between p-3 bg-white/60 rounded-xl cursor-pointer hover:bg-white/80 transition-colors"
                   onClick={() => handleSuggestionClick(item.term)}
                 >
                   <div className="flex items-center gap-3">
@@ -294,18 +294,18 @@ export const IntelligentSearchBar: React.FC<IntelligentSearchBarProps> = ({
           </div>
         </Card>
 
-        {/* Career Moves */}
+        {/* AI Recommendations */}
         <Card className="p-6 bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200">
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Brain className="h-5 w-5 text-purple-600" />
-              <span className="font-semibold text-purple-900">🧠 Career Moves</span>
+              <span className="font-semibold text-purple-900">🧠 AI Recommendations</span>
             </div>
             <div className="space-y-2">
               {AI_SUGGESTIONS.map((item, index) => (
                 <div 
                   key={index}
-                  className="flex items-center justify-between p-4 bg-white rounded-2xl cursor-pointer hover:bg-slate-50 transition-all duration-500 hover:shadow-xl hover:-translate-y-1"
+                  className="flex items-center justify-between p-3 bg-white/60 rounded-xl cursor-pointer hover:bg-white/80 transition-colors"
                   onClick={() => handleSuggestionClick(item.role)}
                 >
                   <div className="space-y-1">

@@ -813,7 +813,7 @@ export default function ServiceSetupForm() {
                 <h4 className="font-medium mb-2">Ready to publish?</h4>
                 <p className="text-sm text-muted-foreground">
                   Your service will be {formData.status === 'published' ? 'immediately live' : 'saved as ' + formData.status} on the marketplace. 
-                  You can always edit it later from your pro CommandCenter.
+                  You can always edit it later from your pro dashboard.
                 </p>
               </div>
             </div>
@@ -862,4 +862,3 @@ export default function ServiceSetupForm() {
     </div>
   );
 }
-

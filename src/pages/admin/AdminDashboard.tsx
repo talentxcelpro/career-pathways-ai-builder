@@ -17,7 +17,7 @@ import { DirectEmailTest } from '@/components/admin/DirectEmailTest';
 import { useAdminStats } from '@/hooks/useAdminStats';
 import { useUserGrowthData } from '@/hooks/useUserGrowthData';
 import { useRecentActivity } from '@/hooks/useRecentActivity';
-import SystemHealthCommandCenter from '@/components/admin/SystemHealthDashboard';
+import SystemHealthDashboard from '@/components/admin/SystemHealthDashboard';
 import { RealisticJobGenerator } from '@/components/admin/RealisticJobGenerator';
 import SocialTXCAwardPanel from '@/components/admin/SocialTXCAwardPanel';
 import { JoiningBonusPanel } from '@/components/admin/JoiningBonusPanel';
@@ -26,7 +26,7 @@ import { AdminNavigationPanel } from '@/components/admin/AdminNavigationPanel';
 import { QuickVideoFix } from '@/components/admin/QuickVideoFix';
 import { VideoHealthMonitor } from '@/components/admin/VideoHealthMonitor';
 
-const AdminCommandCenter = () => {
+const AdminDashboard = () => {
   const { data: adminStats, isLoading: statsLoading } = useAdminStats();
   const { data: userGrowthData, isLoading: growthLoading } = useUserGrowthData();
   const { data: recentActivity, isLoading: activityLoading } = useRecentActivity();
@@ -34,8 +34,8 @@ const AdminCommandCenter = () => {
   if (statsLoading || growthLoading || activityLoading) {
     return (
       <UnifiedAdminLayout 
-        title="Admin Command Center" 
-        description="Platform overview and Career Analytics"
+        title="Admin Dashboard" 
+        description="Platform overview and analytics"
       >
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -46,8 +46,8 @@ const AdminCommandCenter = () => {
 
   return (
     <UnifiedAdminLayout 
-      title="Admin Command Center" 
-      description="Platform overview and Career Analytics"
+      title="Admin Dashboard" 
+      description="Platform overview and analytics"
     >
       <div className="space-y-8">
         <PlatformStatsCards stats={adminStats} />
@@ -102,15 +102,11 @@ const AdminCommandCenter = () => {
           <ProfileReminderEmailSender />
         </div>
         
-        {/* System health monitoring */}
-        <SystemHealthCommandCenter />
+        {/* System Health Monitoring */}
+        <SystemHealthDashboard />
       </div>
     </UnifiedAdminLayout>
   );
 };
 
-export default AdminCommandCenter;
-
-
-
-
+export default AdminDashboard;

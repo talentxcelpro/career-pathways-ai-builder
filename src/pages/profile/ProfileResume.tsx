@@ -182,7 +182,7 @@ const ProfileResume = () => {
           </Card>
         )}
 
-        {/* Resume CareerAnalytics */}
+        {/* Resume Analytics */}
         <Card className="border-0 shadow-lg">
           <CardHeader>
             <CardTitle>Resume Performance</CardTitle>
@@ -328,7 +328,3 @@ const ProfileResume = () => {
 };
 
 export default ProfileResume;
-
-
-
-

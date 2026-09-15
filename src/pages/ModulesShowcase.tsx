@@ -62,7 +62,7 @@ export const ModulesShowcase = () => {
     {
       id: 'jobs',
       name: 'Job Search',
-      description: 'Find your dream job with Performance matching',
+      description: 'Find your dream job with AI-powered matching',
       longDescription: 'Advanced job search with personalized recommendations, salary insights, and one-click applications.',
       icon: <Briefcase className="w-6 h-6" />,
       route: '/jobs',
@@ -82,7 +82,7 @@ export const ModulesShowcase = () => {
       icon: <Users className="w-6 h-6" />,
       route: '/network',
       category: 'social',
-      features: ['Smart TalentNetwork', 'Industry Groups', 'Messaging', 'Networking Events'],
+      features: ['Smart Connections', 'Industry Groups', 'Messaging', 'Networking Events'],
       status: 'live',
       popularity: 88,
       color: 'text-green-600',
@@ -113,7 +113,7 @@ export const ModulesShowcase = () => {
       icon: <BookOpen className="w-6 h-6" />,
       route: '/learning',
       category: 'learning',
-      features: ['500+ Courses', 'Certifications', 'Growth Path', 'Career Moves'],
+      features: ['500+ Courses', 'Certifications', 'Progress Tracking', 'AI Recommendations'],
       status: 'live',
       popularity: 91,
       color: 'text-orange-600',
@@ -143,7 +143,7 @@ export const ModulesShowcase = () => {
       icon: <Gift className="w-6 h-6" />,
       route: '/refer-and-earn',
       category: 'rewards',
-      features: ['Cash Rewards', 'Bonus Points', 'Tracking CommandCenter', 'Social Sharing'],
+      features: ['Cash Rewards', 'Bonus Points', 'Tracking Dashboard', 'Social Sharing'],
       status: 'live',
       popularity: 73,
       color: 'text-pink-600',
@@ -197,14 +197,14 @@ export const ModulesShowcase = () => {
       estimatedTime: '3 min setup'
     },
     {
-      id: 'CareerAnalytics',
-      name: 'Career CareerAnalytics',
+      id: 'analytics',
+      name: 'Career Analytics',
       description: 'Track your career progress with insights',
-      longDescription: 'Detailed CareerAnalytics on your job search, network growth, and career development.',
+      longDescription: 'Detailed analytics on your job search, network growth, and career development.',
       icon: <BarChart3 className="w-6 h-6" />,
-      route: '/CareerAnalytics',
+      route: '/analytics',
       category: 'tools',
-      features: ['Growth Path', 'Performance Insights', 'Goal Setting', 'Reports'],
+      features: ['Progress Tracking', 'Performance Insights', 'Goal Setting', 'Reports'],
       status: 'coming-soon',
       popularity: 0,
       isPremium: true,
@@ -427,7 +427,3 @@ export const ModulesShowcase = () => {
     </>
   );
 };
-
-
-
-

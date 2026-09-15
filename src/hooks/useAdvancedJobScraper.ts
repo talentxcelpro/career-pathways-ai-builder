@@ -38,7 +38,7 @@ export interface ScrapingLog {
   metadata?: any;
 }
 
-// ============= MONITORING & CareerAnalytics =============
+// ============= MONITORING & ANALYTICS =============
 export const useScrapingStats = (timeframe: '24h' | '7d' | '30d' = '24h') => {
   return useQuery({
     queryKey: ['scraping-stats', timeframe],
@@ -328,6 +328,3 @@ export const useScrapingSchedule = () => {
     refetchInterval: 60000
   });
 };
-
-
-

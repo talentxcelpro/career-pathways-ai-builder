@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
-export interface CareerAnalyticsEvent {
+export interface AnalyticsEvent {
   id: string;
   resume_id: string;
   user_id: string;
@@ -13,18 +13,18 @@ export interface CareerAnalyticsEvent {
   created_at: string;
 }
 
-export interface CareerAnalyticsSummary {
+export interface AnalyticsSummary {
   total_views: number;
   total_downloads: number;
   total_shares: number;
-  recent_events: CareerAnalyticsEvent[];
+  recent_events: AnalyticsEvent[];
   top_sources: { source: string; count: number }[];
   daily_stats: { date: string; views: number; downloads: number }[];
 }
 
-export const useNewResumeCareerAnalytics = (resumeId?: string) => {
+export const useNewResumeAnalytics = (resumeId?: string) => {
   const { user } = useAuth();
-  const [CareerAnalytics, setCareerAnalytics] = useState<CareerAnalyticsSummary | null>(null);
+  const [analytics, setAnalytics] = useState<AnalyticsSummary | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const trackEvent = useCallback(async (eventType: string, eventData: any = {}, targetResumeId?: string) => {
@@ -32,7 +32,7 @@ export const useNewResumeCareerAnalytics = (resumeId?: string) => {
 
     try {
       await supabase
-        .from('resume_CareerAnalytics')
+        .from('resume_analytics')
         .insert({
           resume_id: targetResumeId || resumeId,
           user_id: user.id,
@@ -42,18 +42,18 @@ export const useNewResumeCareerAnalytics = (resumeId?: string) => {
           user_agent: navigator.userAgent
         });
     } catch (error) {
-      console.error('Failed to track CareerAnalytics event:', error);
+      console.error('Failed to track analytics event:', error);
     }
   }, [user, resumeId]);
 
-  const loadCareerAnalytics = useCallback(async () => {
+  const loadAnalytics = useCallback(async () => {
     if (!user || !resumeId) return;
 
     setIsLoading(true);
     try {
       // Get all events for this resume
       const { data: events, error: eventsError } = await supabase
-        .from('resume_CareerAnalytics')
+        .from('resume_analytics')
         .select('*')
         .eq('resume_id', resumeId)
         .eq('user_id', user.id)
@@ -95,7 +95,7 @@ export const useNewResumeCareerAnalytics = (resumeId?: string) => {
           return acc;
         }, {});
 
-      setCareerAnalytics({
+      setAnalytics({
         total_views: totalViews,
         total_downloads: totalDownloads,
         total_shares: totalShares,
@@ -105,7 +105,7 @@ export const useNewResumeCareerAnalytics = (resumeId?: string) => {
       });
 
     } catch (error: any) {
-      console.error('Failed to load CareerAnalytics:', error);
+      console.error('Failed to load analytics:', error);
     } finally {
       setIsLoading(false);
     }
@@ -126,20 +126,17 @@ export const useNewResumeCareerAnalytics = (resumeId?: string) => {
 
   useEffect(() => {
     if (resumeId) {
-      loadCareerAnalytics();
+      loadAnalytics();
     }
-  }, [loadCareerAnalytics, resumeId]);
+  }, [loadAnalytics, resumeId]);
 
   return {
-    CareerAnalytics,
+    analytics,
     isLoading,
     trackEvent,
     trackView,
     trackDownload,
     trackShare,
-    loadCareerAnalytics
+    loadAnalytics
   };
 };
-
-
-

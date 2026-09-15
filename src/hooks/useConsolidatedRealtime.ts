@@ -72,7 +72,7 @@ export function useConsolidatedTXCRealtime() {
  */
 export function useConsolidatedUserRealtime(userId?: string) {
   const { subscribeToTables, isAuthenticated } = useConsolidatedRealtime();
-  const [activityPulse, setActivityPulse] = useState<any[]>([]);
+  const [activityFeed, setActivityFeed] = useState<any[]>([]);
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
@@ -89,7 +89,7 @@ export function useConsolidatedUserRealtime(userId?: string) {
 
     subscribeToTables(userTables, (table, payload) => {
       if (payload.eventType === 'INSERT' && payload.new?.user_id === userId) {
-        setActivityPulse(prev => [{
+        setActivityFeed(prev => [{
           type: table,
           data: payload.new,
           timestamp: new Date().toISOString()
@@ -106,7 +106,7 @@ export function useConsolidatedUserRealtime(userId?: string) {
   }, [subscribeToTables, isAuthenticated, userId]);
 
   return {
-    activityPulse,
+    activityFeed,
     isConnected
   };
 }

@@ -55,7 +55,7 @@ const MODULE_CONFIG = {
   tools: { color: 'text-yellow-600', bgColor: 'bg-yellow-100' },
   learning: { color: 'text-indigo-600', bgColor: 'bg-indigo-100' },
   colleges: { color: 'text-pink-600', bgColor: 'bg-pink-100' },
-  career_Pulse: { color: 'text-teal-600', bgColor: 'bg-teal-100' },
+  career_feed: { color: 'text-teal-600', bgColor: 'bg-teal-100' },
   discover: { color: 'text-rose-600', bgColor: 'bg-rose-100' },
   system: { color: 'text-gray-600', bgColor: 'bg-gray-100' },
   employer: { color: 'text-red-600', bgColor: 'bg-red-100' }
@@ -157,13 +157,13 @@ export const SmartNotificationCard: React.FC<SmartNotificationCardProps> = ({
               </p>
             )}
 
-            {/* Intelligence Metrics */}
+            {/* AI Insights */}
             {notification.ai_insight && (
               <div className="p-3 rounded-lg bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20">
                 <div className="flex items-start gap-2">
                   <TrendingUp className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
                   <p className="text-sm font-medium text-primary">
-                    Talent Signal: {notification.ai_insight}
+                    🧠 AI Insight: {notification.ai_insight}
                   </p>
                 </div>
               </div>
@@ -176,7 +176,7 @@ export const SmartNotificationCard: React.FC<SmartNotificationCardProps> = ({
                 <span>{formatTimeAgo(notification.created_at)}</span>
                 {notification.expires_at && (
                   <>
-                    <span>-</span>
+                    <span>•</span>
                     <span className="text-orange-600">Expires soon</span>
                   </>
                 )}

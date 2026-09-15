@@ -226,7 +226,7 @@ const SkillAssessor = () => {
             </div>
             <div>
               <h1 className="text-3xl font-bold text-gray-900">AI Skill Assessor</h1>
-              <p className="text-gray-600">Evaluate your skills with Performance assessments</p>
+              <p className="text-gray-600">Evaluate your skills with AI-powered assessments</p>
             </div>
           </div>
         </div>
@@ -288,7 +288,7 @@ const SkillAssessor = () => {
                   <Award className="h-5 w-5 text-green-600 mt-1" />
                   <div>
                     <h4 className="font-medium">Detailed Results</h4>
-                    <p className="text-sm text-gray-600">Comprehensive Feedback and improvement suggestions</p>
+                    <p className="text-sm text-gray-600">Comprehensive feedback and improvement suggestions</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -460,5 +460,3 @@ const SkillAssessor = () => {
 };
 
 export default SkillAssessor;
-
-

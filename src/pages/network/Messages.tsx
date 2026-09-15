@@ -1,28 +1,10 @@
 import React from 'react';
-import { MobileMessaging } from "@/components/mobile/MobileMessaging";
-import { useIsMobile } from "@/hooks/use-mobile";
-import DirectMessaging from "@/components/communication/DirectMessaging";
+import { ExecutiveMessenger } from '@/components/network/ExecutiveMessenger';
 
-const Messages = () => {
-  const isMobile = useIsMobile();
-
-  if (isMobile) {
-    return (
-      <div className="h-screen bg-background overflow-hidden">
-        <MobileMessaging />
-      </div>
-    );
-  }
-
-  // Desktop view - Fallback to a styled version of the hub or DirectMessaging
+export const Messages: React.FC = () => {
   return (
-    <div className="min-h-screen bg-slate-50 p-8">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-slate-900 mb-8 tracking-tight">Messages</h1>
-        <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100">
-           <DirectMessaging />
-        </div>
-      </div>
+    <div className="w-full min-h-[calc(100vh-70px)] bg-slate-50 dark:bg-background p-2 sm:p-4">
+      <ExecutiveMessenger />
     </div>
   );
 };

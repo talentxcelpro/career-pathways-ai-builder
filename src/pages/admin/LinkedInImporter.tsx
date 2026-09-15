@@ -102,7 +102,7 @@ const LinkedInImporter = () => {
           <TabsTrigger value="advanced">Advanced Import</TabsTrigger>
           <TabsTrigger value="manager">Import Manager</TabsTrigger>
           <TabsTrigger value="scraping">Job Scraping</TabsTrigger>
-          <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="quality">Data Quality</TabsTrigger>
         </TabsList>
 
@@ -164,10 +164,10 @@ const LinkedInImporter = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="CareerAnalytics" className="space-y-4">
+        <TabsContent value="analytics" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Import CareerAnalytics</CardTitle>
+              <CardTitle>Import Analytics</CardTitle>
               <CardDescription>
                 Insights and metrics for LinkedIn data import performance
               </CardDescription>
@@ -228,6 +228,3 @@ const WrappedLinkedInImporter = () => (
 );
 
 export default WrappedLinkedInImporter;
-
-
-

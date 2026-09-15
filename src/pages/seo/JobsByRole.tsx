@@ -1,21 +1,18 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { SEOPageGenerator } from '@/components/seo/SEOPageGenerator';
-import { PerformanceOptimizer } from '@/components/seo/PerformanceOptimizer';
 
 const JobsByRole: React.FC = () => {
-  const { role, location } = useParams<{ role: string; location?: string }>();
-
-  if (!role) {
-    return <div>Role not found</div>;
-  }
+  const params = useParams<Record<string, string>>();
+  const rawRole = params.role || 'software-engineer';
+  const cleanRole = decodeURIComponent(rawRole).replace(/[-_]+/g, ' ');
 
   return (
     <div>
       <SEOPageGenerator 
         pageType="job-role"
-        role={role}
-        location={location}
+        role={cleanRole}
+        location={params.location}
       />
     </div>
   );

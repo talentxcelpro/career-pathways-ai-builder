@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { 
+  Bot, 
   Search, 
   Settings, 
   Activity,
@@ -23,11 +24,11 @@ import {
   Calendar,
   RefreshCw
 } from 'lucide-react';
-import { useLinkedInScrapingCareerAnalytics } from '@/hooks/useLinkedInAnalytics';
+import { useLinkedInScrapingAnalytics } from '@/hooks/useLinkedInAnalytics';
 import { SmartJobScrapingControls } from '@/components/admin/SmartJobScrapingControls';
 
 const LinkedInJobScraper = () => {
-  const { data: scrapingData, isLoading } = useLinkedInScrapingCareerAnalytics();
+  const { data: scrapingData, isLoading } = useLinkedInScrapingAnalytics();
 
   const scraperStats = scrapingData ? {
     totalJobsScraped: scrapingData.totalJobsScraped,
@@ -166,7 +167,7 @@ const LinkedInJobScraper = () => {
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-medium">Active Scraping Jobs</h3>
             <Button>
-              <Search className="h-4 w-4 mr-2" />
+              <Bot className="h-4 w-4 mr-2" />
               Create New Job
             </Button>
           </div>
@@ -429,6 +430,3 @@ const LinkedInJobScraper = () => {
 };
 
 export default LinkedInJobScraper;
-
-
-

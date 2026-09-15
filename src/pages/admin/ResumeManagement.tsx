@@ -227,7 +227,7 @@ const ResumeManagement = () => {
                 <AddTemplateDialog onTemplateAdded={() => window.location.reload()} />
                 <Button className="w-full" variant="outline">
                   <BarChart3 className="h-4 w-4 mr-2" />
-                  Usage CareerAnalytics
+                  Usage Analytics
                 </Button>
                 <Button className="w-full" variant="outline">
                   <Download className="h-4 w-4 mr-2" />
@@ -243,7 +243,3 @@ const ResumeManagement = () => {
 };
 
 export default ResumeManagement;
-
-
-
-

@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Eye, TrendingUp, Users, MessageSquare, Download, BarChart3 } from "lucide-react";
 
 interface MetricsCardsProps {
-  CareerAnalyticsData: {
+  analyticsData: {
     totalViews: number;
     weeklyViews: number;
     connectionRequests: number;
@@ -13,46 +13,46 @@ interface MetricsCardsProps {
   };
 }
 
-export const MetricsCards = ({ CareerAnalyticsData }: MetricsCardsProps) => {
+export const MetricsCards = ({ analyticsData }: MetricsCardsProps) => {
   const metrics = [
     {
       icon: Eye,
-      value: CareerAnalyticsData.totalViews,
+      value: analyticsData.totalViews,
       label: "Total Views",
       change: "+12% this month",
       color: "text-blue-600"
     },
     {
       icon: TrendingUp,
-      value: CareerAnalyticsData.weeklyViews,
+      value: analyticsData.weeklyViews,
       label: "Weekly Views",
       change: "+8% vs last week",
       color: "text-green-600"
     },
     {
       icon: Users,
-      value: CareerAnalyticsData.connectionRequests,
+      value: analyticsData.connectionRequests,
       label: "Connection Requests",
       change: "+15% this month",
       color: "text-purple-600"
     },
     {
       icon: MessageSquare,
-      value: CareerAnalyticsData.messagesSent,
+      value: analyticsData.messagesSent,
       label: "Messages Received",
       change: "+3% this month",
       color: "text-orange-600"
     },
     {
       icon: Download,
-      value: CareerAnalyticsData.resumeDownloads,
+      value: analyticsData.resumeDownloads,
       label: "Resume Downloads",
       change: "+22% this month",
       color: "text-red-600"
     },
     {
       icon: BarChart3,
-      value: CareerAnalyticsData.searchAppearances,
+      value: analyticsData.searchAppearances,
       label: "Search Appearances",
       change: "+18% this month",
       color: "text-indigo-600"
@@ -77,7 +77,3 @@ export const MetricsCards = ({ CareerAnalyticsData }: MetricsCardsProps) => {
     </div>
   );
 };
-
-
-
-

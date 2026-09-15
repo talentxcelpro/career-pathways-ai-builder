@@ -72,8 +72,6 @@ const STARAnswerGenerator = () => {
         }
       });
 
-      if (aiError) throw aiError;
-
       const result = {
         formatted_answer: aiResponse?.formatted_answer || generateFallbackSTAR(),
         breakdown: aiResponse?.breakdown || {

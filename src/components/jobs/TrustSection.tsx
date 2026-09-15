@@ -70,7 +70,7 @@ export const TrustSection: React.FC = () => {
               <span className="ml-2 text-lg font-semibold">4.7</span>
             </div>
             <p className="text-gray-600 italic">
-              "TalentXcel's Precision Match helped me find my dream job in just 2 weeks. 
+              "TalentXcel's AI matching helped me find my dream job in just 2 weeks. 
               The personalized recommendations were spot on!"
             </p>
             <p className="text-sm text-gray-500 mt-2">

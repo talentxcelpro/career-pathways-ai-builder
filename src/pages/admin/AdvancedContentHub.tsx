@@ -83,7 +83,7 @@ Key points covered:
 
   if (isLoading) {
     return (
-      <UnifiedAdminLayout title="Advanced Content Hub" description="Performance content creation and management">
+      <UnifiedAdminLayout title="Advanced Content Hub" description="AI-powered content creation and management">
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
@@ -92,7 +92,7 @@ Key points covered:
   }
 
   return (
-    <UnifiedAdminLayout title="Advanced Content Hub" description="Performance content creation and management">
+    <UnifiedAdminLayout title="Advanced Content Hub" description="AI-powered content creation and management">
       <div className="space-y-6">
         {/* Content Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -156,7 +156,7 @@ Key points covered:
             </Button>
             <Button variant="outline" size="sm">
               <TrendingUp className="h-4 w-4 mr-2" />
-              CareerAnalytics
+              Analytics
             </Button>
           </div>
           
@@ -362,7 +362,7 @@ Key points covered:
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="content">All Content</TabsTrigger>
             <TabsTrigger value="calendar">Content Calendar</TabsTrigger>
-            <TabsTrigger value="CareerAnalytics">Performance</TabsTrigger>
+            <TabsTrigger value="analytics">Performance</TabsTrigger>
             <TabsTrigger value="ai-tools">AI Tools</TabsTrigger>
           </TabsList>
 
@@ -494,7 +494,7 @@ Key points covered:
             </Card>
           </TabsContent>
 
-          <TabsContent value="CareerAnalytics" className="space-y-4">
+          <TabsContent value="analytics" className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Card>
                 <CardHeader>
@@ -594,6 +594,3 @@ Key points covered:
 };
 
 export default AdvancedContentHub;
-
-
-

@@ -17,7 +17,7 @@ export const TouchButton: React.FC<TouchButtonProps> = ({
 }) => {
   const handleTouch = () => {
     if (haptic && 'vibrate' in navigator) {
-      navigator.vibrate(10); // Light haptic Feedback
+      navigator.vibrate(10); // Light haptic feedback
     }
   };
 
@@ -55,4 +55,3 @@ export const TouchButton: React.FC<TouchButtonProps> = ({
 };
 
 export default TouchButton;
-

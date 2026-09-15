@@ -3,138 +3,220 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
-    <title>TalentXcel Pro</title>
-    <meta
-      name="description"
-      content="TalentXcel Pro is the command center for professional growth, talent signals, and career momentum."
-    />
-    <meta name="author" content="TalentXcel" />
-    <meta
-      name="keywords"
-      content="jobs, careers, learning, networking, career intelligence, career development, skills, resume, interview prep"
-    />
-    <meta name="theme-color" content="#2563eb" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="TalentXcel Pro" />
-    <link rel="icon" href="/app-logo.png" type="image/png" />
-    <link rel="shortcut icon" href="/app-logo.png" />
-    <link rel="manifest" href="/manifest.json" />
-    <link rel="apple-touch-icon" href="/app-logo.png" />
-    <link rel="canonical" href="https://talentxcel.in/" />
-    <meta property="og:title" content="TalentXcel Pro" />
-    <meta
-      property="og:description"
-      content="TalentXcel Pro helps professionals track talent signals, discover roles, and grow with clarity."
-    />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://talentxcel.in/" />
-    <meta
-      property="og:image"
-      content="https://talentxcel.in/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png"
-    />
-    <meta property="og:site_name" content="TalentXcel Pro" />
-    <meta property="og:locale" content="en_US" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@talentxcel" />
-    <meta name="twitter:title" content="TalentXcel Pro" />
-    <meta
-      name="twitter:description"
-      content="TalentXcel Pro helps professionals track talent signals, discover roles, and grow with clarity."
-    />
-    <meta
-      name="twitter:image"
-      content="https://talentxcel.in/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png"
-    />
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "TalentXcel Pro",
-        "url": "https://talentxcel.in",
-        "description": "Professional performance platform for job seekers and professionals",
-        "potentialAction": {
-          "@type": "SearchAction",
-          "target": "https://talentxcel.in/jobs?search={search_term_string}",
-          "query-input": "required name=search_term_string"
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    
+    <!-- Evict any stale Service Workers on localhost development -->
+    <script>
+      if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(function(regs) {
+            for (var i = 0; i < regs.length; i++) {
+              regs[i].unregister();
+            }
+          });
+        }
+        if ('caches' in window) {
+          caches.keys().then(function(keys) {
+            for (var i = 0; i < keys.length; i++) {
+              caches.delete(keys[i]);
+            }
+          });
         }
       }
     </script>
-    <style>
-      html,
-      body {
-        margin: 0;
-        min-height: 100%;
-        background: #ffffff;
-        color: #0f172a;
-        font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-      }
 
-      body,
-      #root {
-        min-height: 100vh;
-      }
+    <!-- Google Analytics - Deferred -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-CMYNTTNT56');
+      
+      // Load GA script asynchronously after page load
+      window.addEventListener('load', () => {
+        const script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-CMYNTTNT56';
+        script.async = true;
+        document.head.appendChild(script);
+      });
+    </script>
+    <title>TalentXcel — AI Career Platform for Jobs, Skills &amp; Hiring</title>
+    <meta name="description" content="Careers, Designed — Not Discovered. Search verified jobs, build an ATS-ready resume, prepare for interviews and grow your skills on TalentXcel." />
+    <meta name="author" content="TalentXcel" />
+    <link rel="icon" href="/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png" type="image/png">
+    <link rel="canonical" href="https://talentxcel.in/" />
 
-      #boot-splash {
-        position: fixed;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 24px;
-        background: #ffffff;
-        z-index: 1;
-      }
+    
+    <!-- Critical preconnect and DNS prefetch -->
+    <link rel="dns-prefetch" href="https://dthlgsnakhoftinssokm.supabase.co">
+    <link rel="preconnect" href="https://dthlgsnakhoftinssokm.supabase.co" crossorigin>
+    <link rel="dns-prefetch" href="https://accounts.google.com">
+    <link rel="preconnect" href="https://accounts.google.com" crossorigin>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+    
 
-      .boot-shell {
-        text-align: center;
-      }
+    <!-- Prefetch likely next pages -->
+    <link rel="prefetch" href="/jobs" as="document">
+    <link rel="prefetch" href="/network" as="document">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- iOS specific meta tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="TalentXcel">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <link rel="apple-touch-icon" href="/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png" />
+    <link rel="apple-touch-startup-image" href="/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png" />
 
-      .boot-ring {
-        width: 40px;
-        height: 40px;
-        margin: 0 auto;
-        border-radius: 9999px;
-        border: 2px solid #2563eb;
-        border-top-color: transparent;
-        animation: talentxcel-spin 0.9s linear infinite;
-      }
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="TalentXcel — AI Career Platform for Jobs, Skills &amp; Hiring" />
+    <meta property="og:description" content="Careers, Designed — Not Discovered. Search verified jobs, build an ATS-ready resume, prepare for interviews and grow your skills." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://talentxcel.in/" />
+    <meta property="og:image" content="https://talentxcel.in/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" />
+    <meta property="og:site_name" content="TalentXcel" />
+    <meta property="og:locale" content="en_IN" />
 
-      .boot-title {
-        margin: 16px 0 0;
-        font-size: 14px;
-        font-weight: 600;
-        color: #475569;
-      }
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="TalentXcel — AI Career Platform for Jobs, Skills &amp; Hiring" />
+    <meta name="twitter:description" content="Careers, Designed — Not Discovered. Verified jobs, ATS-ready resumes and AI interview prep." />
+    <meta name="twitter:image" content="https://talentxcel.in/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" />
 
-      .boot-copy {
-        margin: 8px 0 0;
-        font-size: 13px;
-        color: #94a3b8;
-      }
+    <!-- Additional SEO Meta Tags -->
+    <meta name="robots" content="index, follow" />
+    <meta name="googlebot" content="index, follow" />
+    <meta name="theme-color" content="#3B82F6" />
 
-      @keyframes talentxcel-spin {
-        to {
-          transform: rotate(360deg);
+    
+    <!-- Additional favicon sizes for better compatibility -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png">
+    <link rel="shortcut icon" href="/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png">
+    <meta name="mobile-web-app-capable" content="yes" />
+    
+    
+    <!-- Typography: SF Pro via system stack (no web font fetch needed) -->
+    
+    
+    
+    <!-- Google One Tap Sign-In - Loaded asynchronously by React -->
+    <!-- Removed to improve initial load time - loaded via AsyncGoogleOneTap component -->
+    
+    <!-- Structured Data -->
+    <!-- WebSite + SearchAction: tells Google the site has a search function at /jobs?search= -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "TalentXcel",
+      "alternateName": "TalentXcel — AI Career Platform",
+      "url": "https://talentxcel.in",
+      "description": "Careers, Designed — Not Discovered. India's AI career platform for job search, ATS resume building, college discovery, interview prep and skill growth.",
+      "inLanguage": "en-IN",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://talentxcel.in/jobs?search={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    <!-- Organization: core entity signal for Google and generative AI systems -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "TalentXcel",
+      "legalName": "TalentXcel Services Private Limited",
+      "alternateName": [
+        "TalentXcel",
+        "TalentXcel Services",
+        "TalentXcel AI Career Platform",
+        "Chatr",
+        "ChatrChat"
+      ],
+      "url": "https://talentxcel.in",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://talentxcel.in/talentxcel-official-logo.png",
+        "width": 200,
+        "height": 200
+      },
+      "description": "TalentXcel is an AI-powered career operating system connecting job seekers, students and professionals with verified jobs, ATS-ready resume tools, Indian college data, career learning paths, skill verification and professional networking.",
+      "foundingDate": "2024",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Noida",
+        "addressRegion": "Uttar Pradesh",
+        "addressCountry": "IN"
+      },
+      "areaServed": {
+        "@type": "Country",
+        "name": "India"
+      },
+      "brand": [
+        {
+          "@type": "Brand",
+          "name": "TalentXcel",
+          "url": "https://talentxcel.in"
+        },
+        {
+          "@type": "Brand",
+          "name": "Chatr",
+          "url": "https://chatr.chat"
+        },
+        {
+          "@type": "Brand",
+          "name": "ChatrChat",
+          "url": "https://chatrchat.in"
         }
+      ],
+      "knowsAbout": [
+        "Artificial Intelligence",
+        "AI Product Rankings & Leaderboards",
+        "AI Career Operating Systems",
+        "Higher Education & Degree Intelligence",
+        "Global Scholarships & Grants",
+        "Job Search & Career Roadmaps",
+        "Resume Building & ATS Optimization",
+        "Professional Networking & Career Passports",
+        "Skill Verification & Certifications"
+      ],
+      "sameAs": [
+        "https://www.linkedin.com/company/talentxcel-services/",
+        "https://talentxcel.in",
+        "https://talentxcel.co.in",
+        "https://talentxcel.net",
+        "https://chatr.chat",
+        "https://chatrchat.in",
+        "https://twitter.com/talentxcel"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer support",
+        "email": "support@talentxcel.in",
+        "areaServed": "IN",
+        "availableLanguage": ["en", "hi"]
       }
-    </style>
+    }
+    </script>
+
   </head>
+
   <body>
-    <div id="boot-splash" aria-hidden="true">
-      <div class="boot-shell">
-        <div class="boot-ring"></div>
-        <p class="boot-title">Loading TalentXcel</p>
-        <p class="boot-copy">Preparing your command center...</p>
-      </div>
-    </div>
     <div id="root"></div>
+    
+    <!-- Chunk Error Handler - Must load before main script -->
+    <script src="/chunk-error-handler.js"></script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

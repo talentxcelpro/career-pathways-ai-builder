@@ -10,15 +10,15 @@ import {
   Calendar,
   BarChart3
 } from 'lucide-react';
-import { useNewResumeCareerAnalytics } from '@/hooks/useNewResumeCareerAnalytics';
+import { useNewResumeAnalytics } from '@/hooks/useNewResumeAnalytics';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
-interface NewCareerAnalyticsCommandCenterProps {
+interface NewAnalyticsDashboardProps {
   resumeId: string;
 }
 
-export const NewCareerAnalyticsCommandCenter: React.FC<NewCareerAnalyticsCommandCenterProps> = ({ resumeId }) => {
-  const { CareerAnalytics, isLoading } = useNewResumeCareerAnalytics(resumeId);
+export const NewAnalyticsDashboard: React.FC<NewAnalyticsDashboardProps> = ({ resumeId }) => {
+  const { analytics, isLoading } = useNewResumeAnalytics(resumeId);
 
   if (isLoading) {
     return (
@@ -28,14 +28,14 @@ export const NewCareerAnalyticsCommandCenter: React.FC<NewCareerAnalyticsCommand
     );
   }
 
-  if (!CareerAnalytics) {
+  if (!analytics) {
     return (
       <Card>
         <CardContent className="p-8 text-center">
           <BarChart3 className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-          <h3 className="text-lg font-semibold mb-2">No CareerAnalytics Data</h3>
+          <h3 className="text-lg font-semibold mb-2">No Analytics Data</h3>
           <p className="text-muted-foreground">
-            Start sharing your resume to see CareerAnalytics data here.
+            Start sharing your resume to see analytics data here.
           </p>
         </CardContent>
       </Card>
@@ -55,7 +55,7 @@ export const NewCareerAnalyticsCommandCenter: React.FC<NewCareerAnalyticsCommand
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Total Views</p>
-                <p className="text-2xl font-bold">{CareerAnalytics.total_views}</p>
+                <p className="text-2xl font-bold">{analytics.total_views}</p>
               </div>
               <Eye className="h-8 w-8 text-blue-600" />
             </div>
@@ -67,7 +67,7 @@ export const NewCareerAnalyticsCommandCenter: React.FC<NewCareerAnalyticsCommand
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Downloads</p>
-                <p className="text-2xl font-bold">{CareerAnalytics.total_downloads}</p>
+                <p className="text-2xl font-bold">{analytics.total_downloads}</p>
               </div>
               <Download className="h-8 w-8 text-green-600" />
             </div>
@@ -79,7 +79,7 @@ export const NewCareerAnalyticsCommandCenter: React.FC<NewCareerAnalyticsCommand
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Shares</p>
-                <p className="text-2xl font-bold">{CareerAnalytics.total_shares}</p>
+                <p className="text-2xl font-bold">{analytics.total_shares}</p>
               </div>
               <Share2 className="h-8 w-8 text-purple-600" />
             </div>
@@ -97,7 +97,7 @@ export const NewCareerAnalyticsCommandCenter: React.FC<NewCareerAnalyticsCommand
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {CareerAnalytics.top_sources.map((source, index) => (
+            {analytics.top_sources.map((source, index) => (
               <div key={source.source} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Badge variant="outline">{index + 1}</Badge>
@@ -106,7 +106,7 @@ export const NewCareerAnalyticsCommandCenter: React.FC<NewCareerAnalyticsCommand
                 <span className="font-medium">{source.count} visits</span>
               </div>
             ))}
-            {CareerAnalytics.top_sources.length === 0 && (
+            {analytics.top_sources.length === 0 && (
               <p className="text-muted-foreground text-center py-4">
                 No traffic sources recorded yet
               </p>
@@ -125,7 +125,7 @@ export const NewCareerAnalyticsCommandCenter: React.FC<NewCareerAnalyticsCommand
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {CareerAnalytics.recent_events.map((event) => (
+            {analytics.recent_events.map((event) => (
               <div key={event.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
                 <div className="flex items-center gap-3">
                   {event.event_type === 'view' && <Eye className="h-4 w-4 text-blue-600" />}
@@ -147,7 +147,7 @@ export const NewCareerAnalyticsCommandCenter: React.FC<NewCareerAnalyticsCommand
                 </span>
               </div>
             ))}
-            {CareerAnalytics.recent_events.length === 0 && (
+            {analytics.recent_events.length === 0 && (
               <p className="text-muted-foreground text-center py-4">
                 No recent activity
               </p>
@@ -173,6 +173,3 @@ export const NewCareerAnalyticsCommandCenter: React.FC<NewCareerAnalyticsCommand
     </div>
   );
 };
-
-
-

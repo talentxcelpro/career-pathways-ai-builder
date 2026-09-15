@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -34,8 +34,23 @@ export const ProfessionalDetailsSection: React.FC<ProfessionalDetailsSectionProp
   onFieldChange 
 }) => {
   const [workExperiences, setWorkExperiences] = useState<WorkExperience[]>(
-    formData.work_experiences || []
+    (formData.work_experiences || []).map(exp => ({
+      ...exp,
+      isCurrent: Boolean(exp.isCurrent ?? (exp as any).is_current ?? false)
+    }))
   );
+
+  // Sync state if parent formData loads asynchronously from server
+  useEffect(() => {
+    if (formData.work_experiences && formData.work_experiences.length > 0) {
+      setWorkExperiences(
+        formData.work_experiences.map(exp => ({
+          ...exp,
+          isCurrent: Boolean(exp.isCurrent ?? (exp as any).is_current ?? false)
+        }))
+      );
+    }
+  }, [formData.work_experiences]);
 
   const addExperience = () => {
     const newExperience: WorkExperience = {
@@ -48,23 +63,29 @@ export const ProfessionalDetailsSection: React.FC<ProfessionalDetailsSectionProp
       description: '',
       location: ''
     };
-    const updatedExperiences = [...workExperiences, newExperience];
-    setWorkExperiences(updatedExperiences);
-    onFieldChange('work_experiences', updatedExperiences);
+    setWorkExperiences(prev => {
+      const updated = [...prev, newExperience];
+      onFieldChange('work_experiences', updated);
+      return updated;
+    });
   };
 
   const removeExperience = (id: string) => {
-    const updatedExperiences = workExperiences.filter(exp => exp.id !== id);
-    setWorkExperiences(updatedExperiences);
-    onFieldChange('work_experiences', updatedExperiences);
+    setWorkExperiences(prev => {
+      const updated = prev.filter(exp => exp.id !== id);
+      onFieldChange('work_experiences', updated);
+      return updated;
+    });
   };
 
-  const updateExperience = (id: string, field: keyof WorkExperience, value: string | boolean) => {
-    const updatedExperiences = workExperiences.map(exp => 
-      exp.id === id ? { ...exp, [field]: value } : exp
-    );
-    setWorkExperiences(updatedExperiences);
-    onFieldChange('work_experiences', updatedExperiences);
+  const updateExperience = (id: string, updates: Partial<WorkExperience>) => {
+    setWorkExperiences(prev => {
+      const updated = prev.map(exp => 
+        exp.id === id ? { ...exp, ...updates } : exp
+      );
+      onFieldChange('work_experiences', updated);
+      return updated;
+    });
   };
 
   return (
@@ -186,7 +207,7 @@ export const ProfessionalDetailsSection: React.FC<ProfessionalDetailsSectionProp
                     <label className="text-sm font-medium mb-2 block">Company Name *</label>
                     <Input
                       value={experience.company}
-                      onChange={(e) => updateExperience(experience.id, 'company', e.target.value)}
+                      onChange={(e) => updateExperience(experience.id, { company: e.target.value })}
                       placeholder="e.g. Google, Microsoft, Startup Inc."
                     />
                   </div>
@@ -194,7 +215,7 @@ export const ProfessionalDetailsSection: React.FC<ProfessionalDetailsSectionProp
                     <label className="text-sm font-medium mb-2 block">Job Title *</label>
                     <Input
                       value={experience.position}
-                      onChange={(e) => updateExperience(experience.id, 'position', e.target.value)}
+                      onChange={(e) => updateExperience(experience.id, { position: e.target.value })}
                       placeholder="e.g. Software Engineer, Marketing Manager"
                     />
                   </div>
@@ -203,7 +224,7 @@ export const ProfessionalDetailsSection: React.FC<ProfessionalDetailsSectionProp
                     <Input
                       type="month"
                       value={experience.startDate}
-                      onChange={(e) => updateExperience(experience.id, 'startDate', e.target.value)}
+                      onChange={(e) => updateExperience(experience.id, { startDate: e.target.value })}
                     />
                   </div>
                   <div>
@@ -211,23 +232,28 @@ export const ProfessionalDetailsSection: React.FC<ProfessionalDetailsSectionProp
                     <div className="space-y-2">
                       <Input
                         type="month"
-                        value={experience.endDate}
-                        onChange={(e) => updateExperience(experience.id, 'endDate', e.target.value)}
-                        disabled={experience.isCurrent}
+                        value={experience.isCurrent ? '' : (experience.endDate || '')}
+                        onChange={(e) => updateExperience(experience.id, { endDate: e.target.value })}
+                        disabled={Boolean(experience.isCurrent)}
+                        placeholder={experience.isCurrent ? "Present" : undefined}
+                        className={experience.isCurrent ? "bg-slate-100 dark:bg-slate-800/60 cursor-not-allowed opacity-75" : ""}
                       />
-                      <label className="flex items-center space-x-2 text-sm">
+                      <label className="flex items-center space-x-2 text-sm cursor-pointer select-none py-1 group">
                         <input
                           type="checkbox"
-                          checked={experience.isCurrent}
+                          checked={Boolean(experience.isCurrent)}
                           onChange={(e) => {
-                            updateExperience(experience.id, 'isCurrent', e.target.checked);
-                            if (e.target.checked) {
-                              updateExperience(experience.id, 'endDate', '');
-                            }
+                            const isNowCurrent = e.target.checked;
+                            updateExperience(experience.id, {
+                              isCurrent: isNowCurrent,
+                              endDate: isNowCurrent ? '' : experience.endDate
+                            });
                           }}
-                          className="rounded"
+                          className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                         />
-                        <span>I currently work here</span>
+                        <span className="font-medium text-slate-700 dark:text-slate-200 group-hover:text-blue-600 transition-colors">
+                          I currently work here
+                        </span>
                       </label>
                     </div>
                   </div>
@@ -235,7 +261,7 @@ export const ProfessionalDetailsSection: React.FC<ProfessionalDetailsSectionProp
                     <label className="text-sm font-medium mb-2 block">Location</label>
                     <Input
                       value={experience.location}
-                      onChange={(e) => updateExperience(experience.id, 'location', e.target.value)}
+                      onChange={(e) => updateExperience(experience.id, { location: e.target.value })}
                       placeholder="e.g. New York, NY or Remote"
                     />
                   </div>
@@ -243,7 +269,7 @@ export const ProfessionalDetailsSection: React.FC<ProfessionalDetailsSectionProp
                     <label className="text-sm font-medium mb-2 block">Description</label>
                     <Textarea
                       value={experience.description}
-                      onChange={(e) => updateExperience(experience.id, 'description', e.target.value)}
+                      onChange={(e) => updateExperience(experience.id, { description: e.target.value })}
                       placeholder="Describe your key responsibilities, achievements, and impact in this role..."
                       rows={3}
                       className="resize-none"

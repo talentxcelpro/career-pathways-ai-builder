@@ -129,7 +129,7 @@ export const MobileNearby = () => {
                 key={filter}
                 variant={filter === 'All' ? 'default' : 'outline'}
                 size="sm"
-                className="whitespace-nowrap touch-Feedback"
+                className="whitespace-nowrap touch-feedback"
               >
                 {filter}
               </Button>
@@ -141,7 +141,7 @@ export const MobileNearby = () => {
             <h2 className="text-lg font-semibold text-gray-900">Near You</h2>
             
             {nearbyItems.map((item) => (
-              <Card key={item.id} className="native-card touch-Feedback">
+              <Card key={item.id} className="native-card touch-feedback">
                 <CardContent className="p-4">
                   <div className="flex items-start gap-3">
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${getTypeColor(item.type)}`}>
@@ -183,7 +183,7 @@ export const MobileNearby = () => {
             <div className="grid grid-cols-2 gap-3">
               <Button 
                 variant="outline" 
-                className="touch-Feedback"
+                className="touch-feedback"
                 onClick={() => navigate('/mobile/qr-scanner')}
               >
                 <Coffee className="w-4 h-4 mr-2" />
@@ -191,7 +191,7 @@ export const MobileNearby = () => {
               </Button>
               <Button 
                 variant="outline" 
-                className="touch-Feedback"
+                className="touch-feedback"
                 onClick={() => navigate('/jobs')}
               >
                 <ExternalLink className="w-4 h-4 mr-2" />
@@ -204,4 +204,3 @@ export const MobileNearby = () => {
     </MobileNavWrapper>
   );
 };
-

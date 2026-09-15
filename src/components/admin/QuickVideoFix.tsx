@@ -294,7 +294,7 @@ export const QuickVideoFix: React.FC = () => {
       </CardHeader>
       <CardContent className="space-y-4">
         <p className="text-sm text-muted-foreground">
-          Batch process broken videos with retry logic and real-time Growth Path.
+          Batch process broken videos with retry logic and real-time progress tracking.
         </p>
         
         {isFixing && progress.total > 0 && (

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useReferralSystem } from '@/hooks/useReferralSystem';
-import { RealTimeReferralCommandCenter } from '@/components/referral/RealTimeReferralDashboard';
+import { RealTimeReferralDashboard } from '@/components/referral/RealTimeReferralDashboard';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';
 import { 
   Gift, 
@@ -32,14 +32,14 @@ const ReferAndEarn: React.FC = () => {
 
   useEnhancedSEO({
     title: 'Refer TalentXcel AI – Earn Free Pro Access, Tools & Priority Support',
-    description: 'Invite friends to TalentXcel AI and unlock exclusive benefits like free Pro upgrades, advanced career tools, unlimited access, and Performance features. Share your referral link and earn big!',
+    description: 'Invite friends to TalentXcel AI and unlock exclusive benefits like free Pro upgrades, advanced career tools, unlimited access, and AI-powered features. Share your referral link and earn big!',
     keywords: ['AI career tools', 'resume builder', 'job applications', 'freelancer services', 'career support', 'SEO resume', 'referral rewards', 'pro membership', 'professional growth platform', 'TalentXcel AI'],
     type: 'website',
     structuredData: JSON.stringify({
       "@context": "https://schema.org/",
       "@type": "OfferCatalog",
       "name": "TalentXcel AI Referral Program",
-      "description": "Refer friends and unlock exclusive benefits like free Pro upgrades, advanced career tools, and Performance features.",
+      "description": "Refer friends and unlock exclusive benefits like free Pro upgrades, advanced career tools, and AI-powered features.",
       "itemListElement": [
         {
           "@type": "Offer",
@@ -88,9 +88,9 @@ const ReferAndEarn: React.FC = () => {
   ];
 
   const quickFeatures = [
-    'Performance Career Tools',
+    'AI-Powered Career Tools',
     'Priority Support', 
-    'Advanced CareerAnalytics',
+    'Advanced Analytics',
     'Early Access to New Features'
   ];
 
@@ -110,11 +110,11 @@ const ReferAndEarn: React.FC = () => {
           {/* Compact Header */}
           <div className="mb-6">
             <div className="flex justify-center mb-3">
-              <div className="relative bg-white rounded-lg p-2 border border-gray-200 shadow-sm">
+              <div className="relative bg-slate-900 rounded-lg p-1.5 border border-slate-700 shadow-sm">
                 <img 
-                  src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
+                  src="/talentxcel-official-logo.png" 
                   alt="TalentXcel" 
-                  className="h-6 w-6 rounded-md"
+                  className="h-6 w-6 object-contain"
                 />
               </div>
             </div>
@@ -173,10 +173,10 @@ const ReferAndEarn: React.FC = () => {
                 if (referralData?.referral_code) {
                   copyReferralLink();
                 } else {
-                  document.getElementById('CommandCenter')?.scrollIntoView({ behavior: 'smooth' });
+                  document.getElementById('dashboard')?.scrollIntoView({ behavior: 'smooth' });
                 }
               }}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 text-sm font-medium w-full max-w-xs touch-Feedback"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 text-sm font-medium w-full max-w-xs touch-feedback"
             >
               <Share2 className="w-4 h-4 mr-2" />
               {referralData?.referral_code ? 'Copy Referral Link' : 'Start Referring'}
@@ -190,7 +190,7 @@ const ReferAndEarn: React.FC = () => {
                   triggerHaptic('light');
                   document.getElementById('rewards')?.scrollIntoView({ behavior: 'smooth' });
                 }}
-                className="border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 text-xs font-medium flex-1 touch-Feedback"
+                className="border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 text-xs font-medium flex-1 touch-feedback"
               >
                 <Trophy className="w-3 h-3 mr-1" />
                 Rewards
@@ -199,7 +199,7 @@ const ReferAndEarn: React.FC = () => {
               <Button 
                 size="sm" 
                 variant="ghost"
-                className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-4 py-2 text-xs font-medium flex-1 touch-Feedback"
+                className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-4 py-2 text-xs font-medium flex-1 touch-feedback"
                 asChild
               >
                 <Link to="/pro/subscription">
@@ -223,7 +223,7 @@ const ReferAndEarn: React.FC = () => {
               </h2>
             </div>
             <p className="text-sm text-muted-foreground max-w-xl mx-auto">
-              Every friend you refer unlocks premium features and Performance career tools.
+              Every friend you refer unlocks premium features and AI-powered career tools.
             </p>
           </div>
 
@@ -234,7 +234,7 @@ const ReferAndEarn: React.FC = () => {
                 const isUnlocked = referralData && referralData.successful_referrals >= tier.friends;
                 
                 return (
-                  <Card key={index} className={`min-w-[140px] md:min-w-0 relative transition-smooth hover:scale-105 touch-Feedback ${
+                  <Card key={index} className={`min-w-[140px] md:min-w-0 relative transition-smooth hover:scale-105 touch-feedback ${
                     isUnlocked 
                       ? 'gradient-card shadow-glow ring-2 ring-primary/50' 
                       : 'bg-card/50 opacity-75 hover:opacity-90'
@@ -285,15 +285,15 @@ const ReferAndEarn: React.FC = () => {
         </div>
       </section>
 
-      {/* Referral CommandCenter */}
+      {/* Referral Dashboard */}
       {referralData && (
-        <section id="CommandCenter" className="py-8 px-4 gradient-hero">
+        <section id="dashboard" className="py-8 px-4 gradient-hero">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-6">
-              <h2 className="text-xl font-bold text-foreground mb-2">Your CommandCenter</h2>
+              <h2 className="text-xl font-bold text-foreground mb-2">Your Dashboard</h2>
               <p className="text-sm text-muted-foreground">Track progress and share your link</p>
             </div>
-            <RealTimeReferralCommandCenter />
+            <RealTimeReferralDashboard />
           </div>
         </section>
       )}
@@ -318,8 +318,8 @@ const ReferAndEarn: React.FC = () => {
                 <Button 
                   size="sm" 
                   variant="secondary" 
-                  className="bg-white text-primary hover:bg-white/90 font-semibold text-sm px-6 py-3 w-full max-w-xs touch-Feedback"
-                  onClick={() => document.getElementById('CommandCenter')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="bg-white text-primary hover:bg-white/90 font-semibold text-sm px-6 py-3 w-full max-w-xs touch-feedback"
+                  onClick={() => document.getElementById('dashboard')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   <Share2 className="w-4 h-4 mr-2" />
                   Start Referring Now
@@ -329,7 +329,7 @@ const ReferAndEarn: React.FC = () => {
                   <Button 
                     size="sm" 
                     variant="ghost" 
-                    className="text-white border-white/30 hover:bg-white/10 text-xs px-4 py-2 flex-1 touch-Feedback"
+                    className="text-white border-white/30 hover:bg-white/10 text-xs px-4 py-2 flex-1 touch-feedback"
                     onClick={() => document.getElementById('rewards')?.scrollIntoView({ behavior: 'smooth' })}
                   >
                     View Rewards
@@ -337,7 +337,7 @@ const ReferAndEarn: React.FC = () => {
                   <Button 
                     size="sm" 
                     variant="outline" 
-                    className="text-white border-white/30 hover:bg-white/10 text-xs px-4 py-2 flex-1 touch-Feedback"
+                    className="text-white border-white/30 hover:bg-white/10 text-xs px-4 py-2 flex-1 touch-feedback"
                     asChild
                   >
                     <Link to="/pro/subscription">
@@ -366,7 +366,3 @@ const ReferAndEarn: React.FC = () => {
 };
 
 export default ReferAndEarn;
-
-
-
-

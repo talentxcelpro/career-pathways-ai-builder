@@ -40,7 +40,7 @@ const TalentXcelImprovementRoadmap = () => {
         { area: 'Performance & Speed', priority: 'Medium', impact: '75%', timeframe: '1-2 months' },
         { area: 'SEO & Discovery', priority: 'Medium', impact: '70%', timeframe: '1-3 months' },
         { area: 'Security & Compliance', priority: 'Medium', impact: '85%', timeframe: '2-4 months' },
-        { area: 'CareerAnalytics & Insights', priority: 'Medium', impact: '65%', timeframe: '2-3 months' }
+        { area: 'Analytics & Insights', priority: 'Medium', impact: '65%', timeframe: '2-3 months' }
       ]
     },
     
@@ -50,11 +50,11 @@ const TalentXcelImprovementRoadmap = () => {
       description: 'Advanced AI capabilities I can implement',
       items: [
         {
-          feature: 'Smart Resume Builder with Smart Moves',
+          feature: 'Smart Resume Builder with AI Suggestions',
           status: 'Can Implement',
           complexity: 'Medium',
           impact: 'High',
-          description: 'Performance resume optimization with real-time suggestions, ATS compatibility checks, and industry-specific templates.'
+          description: 'AI-powered resume optimization with real-time suggestions, ATS compatibility checks, and industry-specific templates.'
         },
         {
           feature: 'Intelligent Job Matching Engine',
@@ -75,7 +75,7 @@ const TalentXcelImprovementRoadmap = () => {
           status: 'Can Implement',
           complexity: 'High',
           impact: 'High',
-          description: 'Performance interview simulation, real-time Pulseback, and performance CareerAnalytics.'
+          description: 'AI-powered interview simulation, real-time feedback, and performance analytics.'
         },
         {
           feature: 'Smart Assessment Engine',
@@ -92,7 +92,7 @@ const TalentXcelImprovementRoadmap = () => {
           description: 'Enhanced search with better NLP understanding and conversational queries.'
         },
         {
-          feature: 'Performance Content Generation',
+          feature: 'AI-Powered Content Generation',
           status: 'Can Implement',
           complexity: 'Medium',
           impact: 'Medium',
@@ -107,18 +107,18 @@ const TalentXcelImprovementRoadmap = () => {
       description: 'UI/UX improvements and modern design implementations',
       items: [
         {
-          feature: 'Modern CommandCenter Redesign',
+          feature: 'Modern Dashboard Redesign',
           status: 'Can Implement',
           complexity: 'Medium',
           impact: 'High',
-          description: 'Clean, intuitive CommandCenter with personalized widgets and improved navigation.'
+          description: 'Clean, intuitive dashboard with personalized widgets and improved navigation.'
         },
         {
           feature: 'Enhanced Onboarding Flow',
           status: 'Can Implement',
           complexity: 'Low',
           impact: 'High',
-          description: 'Step-by-step guided onboarding with Growth Path and helpful tips.'
+          description: 'Step-by-step guided onboarding with progress tracking and helpful tips.'
         },
         {
           feature: 'Responsive Mobile Design',
@@ -282,7 +282,7 @@ const TalentXcelImprovementRoadmap = () => {
           status: 'Can Implement',
           complexity: 'High',
           impact: 'High',
-          description: 'LinkedIn-like networking with TalentNetwork, messaging, and referrals.'
+          description: 'LinkedIn-like networking with connections, messaging, and referrals.'
         },
         {
           feature: 'Skill Verification System',
@@ -303,7 +303,7 @@ const TalentXcelImprovementRoadmap = () => {
           status: 'Can Implement',
           complexity: 'High',
           impact: 'High',
-          description: 'Course creation, Growth Path, and certification system.'
+          description: 'Course creation, progress tracking, and certification system.'
         },
         {
           feature: 'Employer Branding Tools',
@@ -315,20 +315,20 @@ const TalentXcelImprovementRoadmap = () => {
       ]
     },
 
-    CareerAnalytics: {
-      title: 'CareerAnalytics & Insights',
+    analytics: {
+      title: 'Analytics & Insights',
       icon: <BarChart3 className="w-5 h-5" />,
       description: 'Data-driven insights and reporting capabilities',
       items: [
         {
-          feature: 'Advanced User CareerAnalytics',
+          feature: 'Advanced User Analytics',
           status: 'Can Implement',
           complexity: 'Medium',
           impact: 'Medium',
           description: 'User behavior tracking, conversion funnels, and engagement metrics.'
         },
         {
-          feature: 'Recruitment CareerAnalytics CommandCenter',
+          feature: 'Recruitment Analytics Dashboard',
           status: 'Can Implement',
           complexity: 'Medium',
           impact: 'High',
@@ -459,7 +459,7 @@ const TalentXcelImprovementRoadmap = () => {
             <TabsTrigger value="technical">Technical</TabsTrigger>
             <TabsTrigger value="performance">Performance</TabsTrigger>
             <TabsTrigger value="features">Features</TabsTrigger>
-            <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
           </TabsList>
 
           {Object.entries(improvementAreas).map(([key, area]) => (
@@ -559,7 +559,3 @@ const TalentXcelImprovementRoadmap = () => {
 };
 
 export default TalentXcelImprovementRoadmap;
-
-
-
-

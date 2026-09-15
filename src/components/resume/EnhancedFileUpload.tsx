@@ -217,7 +217,7 @@ export const EnhancedFileUpload: React.FC<EnhancedFileUploadProps> = ({
               <CheckCircle className="h-6 w-6 text-green-500" />
               <div>
                 <h4 className="font-medium text-sm">Smart Extraction</h4>
-                <p className="text-xs text-muted-foreground">Performance content parsing</p>
+                <p className="text-xs text-muted-foreground">AI-powered content parsing</p>
               </div>
             </div>
             
@@ -233,7 +233,7 @@ export const EnhancedFileUpload: React.FC<EnhancedFileUploadProps> = ({
               <AlertCircle className="h-6 w-6 text-orange-500" />
               <div>
                 <h4 className="font-medium text-sm">Enhancement Tools</h4>
-                <p className="text-xs text-muted-foreground">Performance improvements</p>
+                <p className="text-xs text-muted-foreground">AI-powered improvements</p>
               </div>
             </div>
           </div>

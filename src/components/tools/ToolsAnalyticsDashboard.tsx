@@ -47,16 +47,16 @@ interface UsageStats {
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D', '#FFC658'];
 
-const ToolsCareerAnalyticsCommandCenter = () => {
+const ToolsAnalyticsDashboard = () => {
   const [stats, setStats] = useState<UsageStats | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
-    fetchCareerAnalytics();
+    fetchAnalytics();
   }, []);
 
-  const fetchCareerAnalytics = async () => {
+  const fetchAnalytics = async () => {
     try {
       // Fetch tool usage data
       const { data: usageData, error: usageError } = await supabase
@@ -73,13 +73,13 @@ const ToolsCareerAnalyticsCommandCenter = () => {
       if (resultsError) throw resultsError;
 
       // Process the data
-      const processedStats = processCareerAnalyticsData(usageData || [], resultsData || []);
+      const processedStats = processAnalyticsData(usageData || [], resultsData || []);
       setStats(processedStats);
     } catch (error) {
-      console.error('Error fetching CareerAnalytics:', error);
+      console.error('Error fetching analytics:', error);
       toast({
         title: "Error",
-        description: "Failed to load CareerAnalytics data.",
+        description: "Failed to load analytics data.",
         variant: "destructive",
       });
     } finally {
@@ -87,7 +87,7 @@ const ToolsCareerAnalyticsCommandCenter = () => {
     }
   };
 
-  const processCareerAnalyticsData = (usageData: any[], resultsData: any[]): UsageStats => {
+  const processAnalyticsData = (usageData: any[], resultsData: any[]): UsageStats => {
     // Tool usage distribution
     const toolCounts = usageData.reduce((acc, item) => {
       acc[item.tool_name] = (acc[item.tool_name] || 0) + 1;
@@ -144,7 +144,7 @@ const ToolsCareerAnalyticsCommandCenter = () => {
       'cover-letter': 'Cover Letter',
       'salary-analyzer': 'Salary Analyzer',
       'interview-prep': 'Interview Prep',
-      'ai-Navigator': 'TalentXcel Navigator',
+      'ai-assistant': 'AI Assistant',
       'profile-score': 'Profile Score',
       'market-insights': 'Market Insights'
     };
@@ -156,7 +156,7 @@ const ToolsCareerAnalyticsCommandCenter = () => {
       <div className="flex items-center justify-center p-8">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading CareerAnalytics...</p>
+          <p className="text-gray-600">Loading analytics...</p>
         </div>
       </div>
     );
@@ -168,7 +168,7 @@ const ToolsCareerAnalyticsCommandCenter = () => {
         <CardContent className="p-8 text-center">
           <Activity className="h-12 w-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">No data available</h3>
-          <p className="text-gray-600">Start using tools to see your CareerAnalytics.</p>
+          <p className="text-gray-600">Start using tools to see your analytics.</p>
         </CardContent>
       </Card>
     );
@@ -346,8 +346,4 @@ const ToolsCareerAnalyticsCommandCenter = () => {
   );
 };
 
-export default ToolsCareerAnalyticsCommandCenter;
-
-
-
-
+export default ToolsAnalyticsDashboard;

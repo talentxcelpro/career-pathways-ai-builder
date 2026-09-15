@@ -55,7 +55,7 @@ export const FinalLaunchChecklist: React.FC = () => {
       id: 'ssl-https',
       category: 'security',
       name: 'SSL/HTTPS',
-      description: 'Secure TalentXcel connection enforced',
+      description: 'Secure connections enforced',
       status: 'passed',
       critical: true,
       result: 'SSL certificate valid and enforced'
@@ -130,10 +130,10 @@ export const FinalLaunchChecklist: React.FC = () => {
       result: 'All test data successfully removed'
     },
     {
-      id: 'currency-standardization',
+      id: 'currency-conversion',
       category: 'content',
       name: 'Currency Standardization',
-      description: 'Internal credits (TXC) active',
+      description: 'INR converted to TXC throughout',
       status: 'passed',
       critical: false,
       result: 'All currency references standardized to TXC'
@@ -232,49 +232,48 @@ export const FinalLaunchChecklist: React.FC = () => {
   const canLaunch = criticalIssues === 0;
 
   return (
-    <div className="w-full max-w-6xl mx-auto space-y-6 edge-to-edge">
+    <div className="w-full max-w-6xl mx-auto space-y-6">
       {/* Header */}
-      <Card className="rounded-[32px] border-slate-200 overflow-hidden shadow-xl">
-        <CardHeader className="bg-slate-950 text-white p-8">
-          <CardTitle className="flex items-center gap-3 text-2xl font-apple-heavy">
-            <Rocket className="w-8 h-8 text-blue-400" />
-            TalentXcel Readiness Matrix
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Rocket className="w-6 h-6" />
+            Final Launch Checklist
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-8">
-          <div className="flex items-center justify-between mb-8">
+        <CardContent>
+          <div className="flex items-center justify-between mb-4">
             <div>
-              <div className="text-5xl font-apple-heavy text-slate-950 tracking-tighter">{overallScore}%</div>
-              <p className="text-xs font-apple-heavy text-slate-400 uppercase tracking-widest mt-1">
-                {passedChecks}/{checks.length} PARAMETERS VALIDATED
+              <div className="text-3xl font-bold text-blue-600">{overallScore}%</div>
+              <p className="text-sm text-muted-foreground">
+                {passedChecks}/{checks.length} checks passed
               </p>
             </div>
             <Button 
               onClick={runFinalCheck} 
               disabled={isRunning}
               size="lg"
-              className="h-16 px-8 rounded-2xl bg-blue-600 text-white font-apple-heavy hover:scale-105 transition-all shadow-xl shadow-blue-500/20"
+              className="gap-2"
             >
-              <Settings className="w-5 h-5 mr-2" />
-              {isRunning ? 'Validating Core...' : 'Run Final Integrity Check'}
+              <Settings className="w-4 h-4" />
+              {isRunning ? 'Running Checks...' : 'Run Final Check'}
             </Button>
           </div>
 
           {/* Status Alerts */}
           {canLaunch ? (
-            <Alert className="border-emerald-200 bg-emerald-50 mb-4 rounded-[24px] p-6">
-              <CheckCircle className="h-6 w-6 text-emerald-600" />
-              <AlertDescription className="text-emerald-800 ml-2">
-                <strong className="font-apple-heavy uppercase tracking-widest text-xs">🚀 Launch Approved</strong> 
-                <p className="text-sm font-apple-medium mt-1">All critical parameters are synchronized. Ready for production deployment.</p>
+            <Alert className="border-green-200 bg-green-50 mb-4">
+              <CheckCircle className="h-4 w-4 text-green-600" />
+              <AlertDescription className="text-green-800">
+                <strong>🚀 LAUNCH APPROVED!</strong> All critical checks passed. 
+                {warningCount > 0 && ` ${warningCount} non-critical warnings can be addressed post-launch.`}
               </AlertDescription>
             </Alert>
           ) : (
-            <Alert className="border-red-200 bg-red-50 mb-4 rounded-[24px] p-6">
-              <XCircle className="h-6 w-6 text-red-600" />
-              <AlertDescription className="text-red-800 ml-2">
-                <strong className="font-apple-heavy uppercase tracking-widest text-xs text-red-600">Launch Blocked</strong> 
-                <p className="text-sm font-apple-medium mt-1">{criticalIssues} critical integrity issues must be resolved before deployment.</p>
+            <Alert className="border-red-200 bg-red-50 mb-4">
+              <XCircle className="h-4 w-4 text-red-600" />
+              <AlertDescription className="text-red-800">
+                <strong>LAUNCH BLOCKED:</strong> {criticalIssues} critical issue(s) must be resolved before launch.
               </AlertDescription>
             </Alert>
           )}
@@ -283,40 +282,40 @@ export const FinalLaunchChecklist: React.FC = () => {
 
       {/* Checklist by Category */}
       <Tabs defaultValue="security" className="w-full">
-        <TabsList className="grid w-full grid-cols-5 bg-white/50 backdrop-blur-md rounded-2xl p-1 h-14 border border-slate-200 mb-6">
-          <TabsTrigger value="security" className="rounded-xl font-apple-bold data-[state=active]:bg-slate-950 data-[state=active]:text-white">Security</TabsTrigger>
-          <TabsTrigger value="performance" className="rounded-xl font-apple-bold data-[state=active]:bg-slate-950 data-[state=active]:text-white">Performance</TabsTrigger>
-          <TabsTrigger value="functionality" className="rounded-xl font-apple-bold data-[state=active]:bg-slate-950 data-[state=active]:text-white">Functions</TabsTrigger>
-          <TabsTrigger value="content" className="rounded-xl font-apple-bold data-[state=active]:bg-slate-950 data-[state=active]:text-white">Content</TabsTrigger>
-          <TabsTrigger value="monitoring" className="rounded-xl font-apple-bold data-[state=active]:bg-slate-950 data-[state=active]:text-white">Telemetry</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="security">Security</TabsTrigger>
+          <TabsTrigger value="performance">Performance</TabsTrigger>
+          <TabsTrigger value="functionality">Functionality</TabsTrigger>
+          <TabsTrigger value="content">Content</TabsTrigger>
+          <TabsTrigger value="monitoring">Monitoring</TabsTrigger>
         </TabsList>
 
         {['security', 'performance', 'functionality', 'content', 'monitoring'].map(category => (
           <TabsContent key={category} value={category}>
-            <Card className="rounded-[32px] border-slate-200 shadow-xl overflow-hidden bg-white/80 backdrop-blur-xl">
-              <CardHeader className="border-b border-slate-100 p-8">
-                <CardTitle className="flex items-center gap-3 capitalize font-apple-heavy text-slate-900">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 capitalize">
                   {getCategoryIcon(category)}
-                  {category} Integrity
+                  {category} Checks
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4 p-8">
+              <CardContent className="space-y-3">
                 {checks
                   .filter(check => check.category === category)
                   .map(check => (
-                    <div key={check.id} className="flex items-center gap-4 p-6 bg-slate-50/50 rounded-2xl border border-slate-100 hover:border-blue-200 transition-all group">
+                    <div key={check.id} className="flex items-center gap-3 p-4 border rounded-lg">
                       {getStatusIcon(check.status)}
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="font-apple-heavy text-slate-900">{check.name}</span>
+                          <span className="font-medium">{check.name}</span>
                           {check.critical && (
-                            <Badge className="bg-red-100 text-red-600 border-0 text-[9px] font-apple-heavy uppercase tracking-widest rounded-lg">Critical</Badge>
+                            <Badge variant="destructive" className="text-xs">Critical</Badge>
                           )}
                         </div>
-                        <p className="text-xs font-apple-medium text-slate-500 mt-1">{check.description}</p>
+                        <p className="text-sm text-muted-foreground">{check.description}</p>
                         {check.result && (
-                          <p className="text-[10px] font-apple-bold text-slate-400 mt-2 flex items-center gap-1">
-                             <CheckCircle className="h-3 w-3 text-emerald-500" /> RESULT: {check.result}
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Result: {check.result}
                           </p>
                         )}
                       </div>
@@ -325,9 +324,8 @@ export const FinalLaunchChecklist: React.FC = () => {
                           check.status === 'passed' ? 'default' :
                           check.status === 'warning' ? 'secondary' : 'destructive'
                         }
-                        className="rounded-lg font-apple-heavy text-[10px] tracking-widest"
                       >
-                        {check.status.toUpperCase()}
+                        {check.status}
                       </Badge>
                     </div>
                   ))}
@@ -338,29 +336,32 @@ export const FinalLaunchChecklist: React.FC = () => {
       </Tabs>
 
       {/* Launch Decision */}
-      <Card className="rounded-[40px] border-slate-200 shadow-2xl overflow-hidden bg-white">
-        <CardContent className="p-12">
+      <Card>
+        <CardHeader>
+          <CardTitle>Launch Decision</CardTitle>
+        </CardHeader>
+        <CardContent>
           {canLaunch ? (
-            <div className="text-center space-y-6">
-              <div className="h-24 w-24 bg-emerald-50 rounded-[32px] flex items-center justify-center mx-auto text-4xl shadow-xl shadow-emerald-500/10">🚀</div>
-              <h3 className="text-3xl font-apple-heavy text-slate-950">Production Ready</h3>
-              <p className="text-slate-500 font-apple-medium max-w-md mx-auto leading-relaxed">
-                All critical systems are operational and meet TalentXcel high-fidelity standards. 
-                Platform core is synchronized for global deployment.
+            <div className="text-center space-y-4">
+              <div className="text-6xl">🚀</div>
+              <h3 className="text-2xl font-bold text-green-600">Ready for Launch!</h3>
+              <p className="text-muted-foreground max-w-md mx-auto">
+                All critical systems are operational and your application meets production standards. 
+                You can confidently deploy to production.
               </p>
-              <div className="flex gap-3 justify-center">
-                <Badge className="bg-slate-950 text-white border-0 rounded-xl px-4 py-1.5 font-apple-heavy text-[10px]">SECURITY VALIDATED</Badge>
-                <Badge className="bg-slate-950 text-white border-0 rounded-xl px-4 py-1.5 font-apple-heavy text-[10px]">PERFORMANCE INDEXED</Badge>
-                <Badge className="bg-slate-950 text-white border-0 rounded-xl px-4 py-1.5 font-apple-heavy text-[10px]">CONTENT VERIFIED</Badge>
+              <div className="flex gap-2 justify-center">
+                <Badge variant="default">Security ✓</Badge>
+                <Badge variant="default">Performance ✓</Badge>
+                <Badge variant="default">Functionality ✓</Badge>
               </div>
             </div>
           ) : (
-            <div className="text-center space-y-6">
-              <div className="h-24 w-24 bg-red-50 rounded-[32px] flex items-center justify-center mx-auto text-4xl shadow-xl shadow-red-500/10">⛔</div>
-              <h3 className="text-3xl font-apple-heavy text-slate-950">Synchronization Blocked</h3>
-              <p className="text-slate-500 font-apple-medium max-w-md mx-auto leading-relaxed">
-                Critical integrity parameters must be resolved before production deployment. 
-                Focus on the failed validation nodes above.
+            <div className="text-center space-y-4">
+              <div className="text-6xl">⛔</div>
+              <h3 className="text-2xl font-bold text-red-600">Launch Blocked</h3>
+              <p className="text-muted-foreground max-w-md mx-auto">
+                Critical issues must be resolved before production deployment. 
+                Focus on the failed checks above.
               </p>
             </div>
           )}

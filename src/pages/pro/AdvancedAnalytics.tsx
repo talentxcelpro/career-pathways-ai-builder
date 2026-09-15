@@ -24,8 +24,8 @@ import {
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
-export default function AdvancedCareerAnalytics() {
-  const [CareerAnalytics, setCareerAnalytics] = useState<any>(null);
+export default function AdvancedAnalytics() {
+  const [analytics, setAnalytics] = useState<any>(null);
   const [performanceMetrics, setPerformanceMetrics] = useState<any[]>([]);
   const [communications, setCommunications] = useState<any[]>([]);
   const [clientFeedback, setClientFeedback] = useState<any[]>([]);
@@ -36,10 +36,10 @@ export default function AdvancedCareerAnalytics() {
   const { toast } = useToast();
 
   useEffect(() => {
-    fetchCareerAnalyticsData();
+    fetchAnalyticsData();
   }, []);
 
-  const fetchCareerAnalyticsData = async () => {
+  const fetchAnalyticsData = async () => {
     try {
       // Fetch performance metrics
       const { data: metrics } = await supabase
@@ -54,9 +54,9 @@ export default function AdvancedCareerAnalytics() {
         .order('created_at', { ascending: false })
         .limit(10);
 
-      // Fetch client Feedback
-      const { data: Feedback } = await supabase
-        .from('pro_client_Feedback')
+      // Fetch client feedback
+      const { data: feedback } = await supabase
+        .from('pro_client_feedback')
         .select('*')
         .order('created_at', { ascending: false });
 
@@ -69,10 +69,10 @@ export default function AdvancedCareerAnalytics() {
 
       setPerformanceMetrics(metrics || []);
       setCommunications(comms || []);
-      setClientFeedback(Feedback || []);
+      setClientFeedback(feedback || []);
       setClientNotes(notes || []);
 
-      // Calculate CareerAnalytics summary
+      // Calculate analytics summary
       const revenueMetrics = metrics?.filter(m => m.metric_type === 'revenue') || [];
       const satisfactionMetrics = metrics?.filter(m => m.metric_type === 'client_satisfaction') || [];
       
@@ -81,20 +81,20 @@ export default function AdvancedCareerAnalytics() {
         ? satisfactionMetrics.reduce((sum, m) => sum + Number(m.metric_value), 0) / satisfactionMetrics.length
         : 0;
 
-      setCareerAnalytics({
+      setAnalytics({
         totalRevenue,
         avgSatisfaction,
-        totalFeedback: Feedback?.length || 0,
+        totalFeedback: feedback?.length || 0,
         totalCommunications: comms?.length || 0,
         conversionRate: 12.5, // Mock data
         clientRetention: 85, // Mock data
       });
 
     } catch (error) {
-      console.error('Error fetching CareerAnalytics:', error);
+      console.error('Error fetching analytics:', error);
       toast({
         title: "Error",
-        description: "Failed to load CareerAnalytics data",
+        description: "Failed to load analytics data",
         variant: "destructive",
       });
     } finally {
@@ -125,7 +125,7 @@ export default function AdvancedCareerAnalytics() {
       if (error) throw error;
 
       setNewNote({ title: "", content: "", note_type: "general" });
-      fetchCareerAnalyticsData();
+      fetchAnalyticsData();
       toast({
         title: "Success",
         description: "Client note added successfully",
@@ -182,13 +182,13 @@ export default function AdvancedCareerAnalytics() {
   const revenueData = getMetricTrend('revenue');
   const satisfactionData = getMetricTrend('client_satisfaction');
   const communicationStats = getCommunicationStats();
-  const FeedbackStats = getFeedbackStats();
+  const feedbackStats = getFeedbackStats();
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Advanced CareerAnalytics</h1>
+          <h1 className="text-3xl font-bold">Advanced Analytics</h1>
           <p className="text-muted-foreground mt-2">
             Comprehensive insights and performance metrics for your business
           </p>
@@ -203,7 +203,7 @@ export default function AdvancedCareerAnalytics() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${CareerAnalytics?.totalRevenue?.toLocaleString() || '0'}</div>
+            <div className="text-2xl font-bold">${analytics?.totalRevenue?.toLocaleString() || '0'}</div>
             <div className="flex items-center text-xs text-muted-foreground">
               <TrendingUp className="h-3 w-3 mr-1 text-green-500" />
               +12.5% from last month
@@ -217,7 +217,7 @@ export default function AdvancedCareerAnalytics() {
             <Star className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{CareerAnalytics?.avgSatisfaction?.toFixed(1) || '0'}/5</div>
+            <div className="text-2xl font-bold">{analytics?.avgSatisfaction?.toFixed(1) || '0'}/5</div>
             <div className="flex items-center text-xs text-muted-foreground">
               <TrendingUp className="h-3 w-3 mr-1 text-green-500" />
               +0.2 from last month
@@ -231,7 +231,7 @@ export default function AdvancedCareerAnalytics() {
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{CareerAnalytics?.conversionRate || 0}%</div>
+            <div className="text-2xl font-bold">{analytics?.conversionRate || 0}%</div>
             <div className="flex items-center text-xs text-muted-foreground">
               <TrendingDown className="h-3 w-3 mr-1 text-red-500" />
               -2.1% from last month
@@ -245,7 +245,7 @@ export default function AdvancedCareerAnalytics() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{CareerAnalytics?.clientRetention || 0}%</div>
+            <div className="text-2xl font-bold">{analytics?.clientRetention || 0}%</div>
             <div className="flex items-center text-xs text-muted-foreground">
               <TrendingUp className="h-3 w-3 mr-1 text-green-500" />
               +5.2% from last month
@@ -258,7 +258,7 @@ export default function AdvancedCareerAnalytics() {
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="performance">Performance</TabsTrigger>
           <TabsTrigger value="communications">Communications</TabsTrigger>
-          <TabsTrigger value="Feedback">Feedback</TabsTrigger>
+          <TabsTrigger value="feedback">Feedback</TabsTrigger>
           <TabsTrigger value="notes">Client Notes</TabsTrigger>
         </TabsList>
 
@@ -304,29 +304,29 @@ export default function AdvancedCareerAnalytics() {
           <Card>
             <CardHeader>
               <CardTitle>Detailed Feedback Ratings</CardTitle>
-              <CardDescription>Breakdown of client Feedback across different categories</CardDescription>
+              <CardDescription>Breakdown of client feedback across different categories</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">{FeedbackStats.overall.toFixed(1)}</div>
+                  <div className="text-2xl font-bold text-primary">{feedbackStats.overall.toFixed(1)}</div>
                   <div className="text-sm text-muted-foreground">Overall Rating</div>
-                  <Progress value={FeedbackStats.overall * 20} className="mt-2" />
+                  <Progress value={feedbackStats.overall * 20} className="mt-2" />
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">{FeedbackStats.quality.toFixed(1)}</div>
+                  <div className="text-2xl font-bold text-primary">{feedbackStats.quality.toFixed(1)}</div>
                   <div className="text-sm text-muted-foreground">Service Quality</div>
-                  <Progress value={FeedbackStats.quality * 20} className="mt-2" />
+                  <Progress value={feedbackStats.quality * 20} className="mt-2" />
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">{FeedbackStats.communication.toFixed(1)}</div>
+                  <div className="text-2xl font-bold text-primary">{feedbackStats.communication.toFixed(1)}</div>
                   <div className="text-sm text-muted-foreground">Communication</div>
-                  <Progress value={FeedbackStats.communication * 20} className="mt-2" />
+                  <Progress value={feedbackStats.communication * 20} className="mt-2" />
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">{FeedbackStats.timeliness.toFixed(1)}</div>
+                  <div className="text-2xl font-bold text-primary">{feedbackStats.timeliness.toFixed(1)}</div>
                   <div className="text-sm text-muted-foreground">Timeliness</div>
-                  <Progress value={FeedbackStats.timeliness * 20} className="mt-2" />
+                  <Progress value={feedbackStats.timeliness * 20} className="mt-2" />
                 </div>
               </div>
             </CardContent>
@@ -395,10 +395,10 @@ export default function AdvancedCareerAnalytics() {
           </div>
         </TabsContent>
 
-        <TabsContent value="Feedback" className="space-y-6">
+        <TabsContent value="feedback" className="space-y-6">
           <div className="grid grid-cols-1 gap-6">
-            {clientFeedback.slice(0, 10).map((Feedback) => (
-              <Card key={Feedback.id}>
+            {clientFeedback.slice(0, 10).map((feedback) => (
+              <Card key={feedback.id}>
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
@@ -407,35 +407,35 @@ export default function AdvancedCareerAnalytics() {
                           <Star
                             key={i}
                             className={`h-4 w-4 ${
-                              i < (Feedback.rating || 0) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
+                              i < (feedback.rating || 0) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
                             }`}
                           />
                         ))}
                       </div>
-                      <span className="text-sm font-medium">{Feedback.rating}/5</span>
+                      <span className="text-sm font-medium">{feedback.rating}/5</span>
                     </div>
-                    <Badge variant={Feedback.is_public ? 'default' : 'secondary'}>
-                      {Feedback.is_public ? 'Public' : 'Private'}
+                    <Badge variant={feedback.is_public ? 'default' : 'secondary'}>
+                      {feedback.is_public ? 'Public' : 'Private'}
                     </Badge>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4">{Feedback.review}</p>
+                  <p className="text-sm text-muted-foreground mb-4">{feedback.review}</p>
                   <div className="grid grid-cols-3 gap-4 text-xs">
                     <div>
-                      <span className="font-medium">Quality:</span> {Feedback.service_quality_rating}/5
+                      <span className="font-medium">Quality:</span> {feedback.service_quality_rating}/5
                     </div>
                     <div>
-                      <span className="font-medium">Communication:</span> {Feedback.communication_rating}/5
+                      <span className="font-medium">Communication:</span> {feedback.communication_rating}/5
                     </div>
                     <div>
-                      <span className="font-medium">Timeliness:</span> {Feedback.timeliness_rating}/5
+                      <span className="font-medium">Timeliness:</span> {feedback.timeliness_rating}/5
                     </div>
                   </div>
-                  {Feedback.response_from_provider && (
+                  {feedback.response_from_provider && (
                     <div className="mt-4 p-3 bg-muted rounded-lg">
                       <div className="text-xs font-medium mb-1">Your Response:</div>
-                      <p className="text-sm">{Feedback.response_from_provider}</p>
+                      <p className="text-sm">{feedback.response_from_provider}</p>
                     </div>
                   )}
                 </CardContent>
@@ -525,7 +525,3 @@ export default function AdvancedCareerAnalytics() {
     </div>
   );
 }
-
-
-
-

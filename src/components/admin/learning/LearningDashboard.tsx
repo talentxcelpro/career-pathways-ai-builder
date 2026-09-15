@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { Progress } from "@/components/ui/progress";
 
-export const LearningCommandCenter: React.FC = () => {
+export const LearningDashboard: React.FC = () => {
   const { learningStats, isLoading } = useEnhancedLearningManagement();
 
   if (isLoading) {
@@ -192,4 +192,3 @@ export const LearningCommandCenter: React.FC = () => {
     </div>
   );
 };
-

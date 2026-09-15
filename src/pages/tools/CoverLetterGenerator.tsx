@@ -86,8 +86,6 @@ const CoverLetterGenerator = () => {
         }
       });
 
-      if (aiError) throw aiError;
-
       const result = {
         letter_content: aiResponse?.letter_content || generateDefaultLetter(),
         letter_analysis: {

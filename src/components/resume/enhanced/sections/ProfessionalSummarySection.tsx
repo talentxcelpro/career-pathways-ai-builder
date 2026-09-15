@@ -101,7 +101,7 @@ export const ProfessionalSummarySection: React.FC<ProfessionalSummarySectionProp
                 </span>
               </div>
               <p className="text-xs text-blue-700 dark:text-blue-300 mb-3">
-                Get Smart Moves to improve impact, clarity, and keyword optimization for your summary.
+                Get AI suggestions to improve impact, clarity, and keyword optimization for your summary.
               </p>
               <Button size="sm" variant="outline" className="text-blue-600 border-blue-300">
                 <Sparkles className="h-4 w-4 mr-2" />

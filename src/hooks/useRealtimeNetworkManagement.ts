@@ -68,7 +68,7 @@ export const useRealtimeNetworkManagement = () => {
         (payload) => {
           console.log('Real-time post change:', payload);
           
-          // Add to real-time activity Pulse
+          // Add to real-time activity feed
           setRealTimeActivity(prev => [{
             id: Date.now(),
             type: payload.eventType === 'INSERT' ? 'new_post' : payload.eventType === 'DELETE' ? 'post_deleted' : 'post_updated',

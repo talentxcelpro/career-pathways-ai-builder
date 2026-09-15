@@ -31,7 +31,7 @@ interface CareerNode {
   requirements: string[];
   skills: string[];
   position: { x: number; y: number };
-  TalentNetwork: string[];
+  connections: string[];
   difficulty: 'easy' | 'medium' | 'hard';
   priority: 'low' | 'medium' | 'high' | 'critical';
   estimatedDuration: string;
@@ -61,7 +61,7 @@ const sampleNodes: CareerNode[] = [
     requirements: [],
     skills: ['JavaScript', 'React', 'Node.js'],
     position: { x: 100, y: 200 },
-    TalentNetwork: ['2', '3'],
+    connections: ['2', '3'],
     difficulty: 'medium',
     priority: 'medium',
     estimatedDuration: 'Current',
@@ -77,7 +77,7 @@ const sampleNodes: CareerNode[] = [
     requirements: ['AWS Fundamentals', 'System Design Knowledge'],
     skills: ['AWS', 'Azure', 'Cloud Architecture', 'DevOps'],
     position: { x: 300, y: 150 },
-    TalentNetwork: ['4'],
+    connections: ['4'],
     difficulty: 'hard',
     priority: 'high',
     estimatedDuration: '4 months',
@@ -93,7 +93,7 @@ const sampleNodes: CareerNode[] = [
     requirements: ['Management Training', 'Mentoring Skills'],
     skills: ['Leadership', 'Team Management', 'Project Planning'],
     position: { x: 300, y: 250 },
-    TalentNetwork: ['4'],
+    connections: ['4'],
     difficulty: 'medium',
     priority: 'high',
     estimatedDuration: '8 months'
@@ -108,7 +108,7 @@ const sampleNodes: CareerNode[] = [
     requirements: ['Technical Leadership', 'Cloud Expertise', 'Team Experience'],
     skills: ['Advanced Programming', 'Architecture Design', 'Mentoring'],
     position: { x: 500, y: 200 },
-    TalentNetwork: ['5'],
+    connections: ['5'],
     difficulty: 'hard',
     priority: 'critical',
     estimatedDuration: '6 months'
@@ -123,7 +123,7 @@ const sampleNodes: CareerNode[] = [
     requirements: ['Leadership Experience', 'Business Acumen', 'Technical Expertise'],
     skills: ['People Management', 'Strategic Planning', 'Budget Management'],
     position: { x: 700, y: 200 },
-    TalentNetwork: [],
+    connections: [],
     difficulty: 'hard',
     priority: 'critical',
     estimatedDuration: '1 year'
@@ -199,7 +199,7 @@ export const InteractiveRoadmapBuilder: React.FC = () => {
         requirements: newNode.requirements || [],
         skills: newNode.skills || [],
         position: { x: 300 + Math.random() * 200, y: 150 + Math.random() * 200 },
-        TalentNetwork: [],
+        connections: [],
         difficulty: newNode.difficulty as CareerNode['difficulty'],
         priority: newNode.priority as CareerNode['priority'],
         estimatedDuration: newNode.estimatedDuration!
@@ -254,9 +254,9 @@ export const InteractiveRoadmapBuilder: React.FC = () => {
 
   const progress = calculateProgress();
 
-  const renderTalentNetwork = () => {
+  const renderConnections = () => {
     return nodes.map(node => 
-      node.TalentNetwork.map(targetId => {
+      node.connections.map(targetId => {
         const targetNode = nodes.find(n => n.id === targetId);
         if (!targetNode) return null;
 
@@ -340,7 +340,7 @@ export const InteractiveRoadmapBuilder: React.FC = () => {
         </Button>
         <Button variant="outline">
           <Lightbulb className="h-4 w-4 mr-2" />
-          Smart Moves
+          AI Suggestions
         </Button>
         <Button variant="outline">
           <Save className="h-4 w-4 mr-2" />
@@ -357,7 +357,7 @@ export const InteractiveRoadmapBuilder: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="relative h-96 bg-gray-50 rounded-lg overflow-hidden border">
-                {renderTalentNetwork()}
+                {renderConnections()}
                 
                 {nodes.map((node) => (
                   <motion.div
@@ -620,4 +620,3 @@ export const InteractiveRoadmapBuilder: React.FC = () => {
     </div>
   );
 };
-

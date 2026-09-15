@@ -77,7 +77,7 @@ export function AIRecommendationEngine({
   const { analyzeCareerPath, isProcessing } = useAIService();
   const [selectedTab, setSelectedTab] = useState('recommendations');
 
-  // Fetch Career Moves
+  // Fetch AI recommendations
   const { data: recommendations = [], isLoading } = useQuery({
     queryKey: ['ai-recommendations', targetUserId],
     queryFn: async () => {
@@ -239,19 +239,19 @@ export function AIRecommendationEngine({
   ];
 
   if (isLoading) {
-    return <div>Loading Career Moves...</div>;
+    return <div>Loading AI recommendations...</div>;
   }
 
   return (
     <div className="space-y-6">
-      {/* Talent Engine Header */}
+      {/* AI Engine Header */}
       <Card className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center text-purple-800">
                 <Brain className="w-6 h-6 mr-2" />
-                AI Career Navigator
+                AI Career Assistant
               </CardTitle>
               <CardDescription className="text-purple-700">
                 Personalized insights and recommendations powered by AI
@@ -273,7 +273,7 @@ export function AIRecommendationEngine({
         </CardHeader>
       </Card>
 
-      {/* Career Moves Tabs */}
+      {/* AI Recommendations Tabs */}
       <Tabs value={selectedTab} onValueChange={setSelectedTab}>
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
@@ -313,7 +313,7 @@ export function AIRecommendationEngine({
                     <Lightbulb className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
                     <h3 className="text-lg font-medium mb-2">No recommendations yet</h3>
                     <p className="text-muted-foreground mb-4">
-                      Generate Performance insights to get personalized career recommendations
+                      Generate AI-powered insights to get personalized career recommendations
                     </p>
                     <Button onClick={() => generateRecommendations.mutate()}>
                       <Brain className="w-4 h-4 mr-2" />
@@ -540,4 +540,3 @@ function CareerPathCard({ careerPath }: { careerPath: CareerPath }) {
     </Card>
   );
 }
-

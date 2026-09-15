@@ -220,7 +220,7 @@ const RequestAccess = () => {
                     Congratulations! You now have employer access. You can start posting jobs and managing your company profile.
                   </p>
                   <Button onClick={() => navigate('/employer')} className="bg-green-600 hover:bg-green-700">
-                    Go to Employer CommandCenter
+                    Go to Employer Dashboard
                   </Button>
                 </div>
               )}
@@ -352,5 +352,3 @@ const RequestAccess = () => {
 };
 
 export default RequestAccess;
-
-

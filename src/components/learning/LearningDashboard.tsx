@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { BookOpen, Award, Clock, TrendingUp, Play, CheckCircle, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-export const LearningCommandCenter = () => {
+export const LearningDashboard = () => {
   // Fetch user's enrolled courses
   const { data: enrollments, isLoading } = useQuery({
     queryKey: ['user-enrollments'],
@@ -105,7 +105,7 @@ export const LearningCommandCenter = () => {
     <div className="container mx-auto py-8 space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold mb-2">Learning CommandCenter</h1>
+        <h1 className="text-3xl font-bold mb-2">Learning Dashboard</h1>
         <p className="text-muted-foreground">
           Track your progress and continue your learning journey
         </p>
@@ -304,4 +304,3 @@ export const LearningCommandCenter = () => {
     </div>
   );
 };
-

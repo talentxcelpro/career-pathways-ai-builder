@@ -6,9 +6,9 @@ export function useRealtimeSocialUpdates() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Listen for new TalentNetwork
-    const TalentNetworkChannel = supabase
-      .channel('TalentNetwork-changes')
+    // Listen for new connections
+    const connectionsChannel = supabase
+      .channel('connections-changes')
       .on(
         'postgres_changes',
         {
@@ -98,11 +98,10 @@ export function useRealtimeSocialUpdates() {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(TalentNetworkChannel);
+      supabase.removeChannel(connectionsChannel);
       supabase.removeChannel(postLikesChannel);
       supabase.removeChannel(jobInteractionsChannel);
       supabase.removeChannel(userFollowsChannel);
     };
   }, [toast]);
 }
-

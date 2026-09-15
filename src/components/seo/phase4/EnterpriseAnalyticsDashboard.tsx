@@ -35,15 +35,15 @@ import {
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
-export const EnterpriseCareerAnalyticsCommandCenter: React.FC = () => {
+export const EnterpriseAnalyticsDashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [CareerAnalyticsData, setCareerAnalyticsData] = useState<any>(null);
+  const [analyticsData, setAnalyticsData] = useState<any>(null);
   const [timeframe, setTimeframe] = useState('30d');
 
-  const fetchCareerAnalyticsData = async () => {
+  const fetchAnalyticsData = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('google-CareerAnalytics-integration', {
+      const { data, error } = await supabase.functions.invoke('google-analytics-integration', {
         body: {
           propertyId: 'GA_PROPERTY_ID',
           dateRange: {
@@ -55,28 +55,28 @@ export const EnterpriseCareerAnalyticsCommandCenter: React.FC = () => {
       });
 
       if (data?.success) {
-        setCareerAnalyticsData(data.data);
-        toast.success('CareerAnalytics data updated successfully!');
+        setAnalyticsData(data.data);
+        toast.success('Analytics data updated successfully!');
       } else {
         // Gracefully fall back to mock data if GA not configured
-        console.log('Google CareerAnalytics not configured, using demo data');
-        setCareerAnalyticsData(getMockCareerAnalyticsData());
-        toast.info('Using demo CareerAnalytics data - configure Google CareerAnalytics for live data');
+        console.log('Google Analytics not configured, using demo data');
+        setAnalyticsData(getMockAnalyticsData());
+        toast.info('Using demo analytics data - configure Google Analytics for live data');
       }
     } catch (error: any) {
-      console.log('CareerAnalytics service not available, using demo data');
+      console.log('Analytics service not available, using demo data');
       // Set mock data for demo - don't show error for missing API key
-      setCareerAnalyticsData(getMockCareerAnalyticsData());
+      setAnalyticsData(getMockAnalyticsData());
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchCareerAnalyticsData();
+    fetchAnalyticsData();
   }, [timeframe]);
 
-  const getMockCareerAnalyticsData = () => ({
+  const getMockAnalyticsData = () => ({
     summary: {
       totalSessions: 125000,
       totalUsers: 98000,
@@ -97,13 +97,13 @@ export const EnterpriseCareerAnalyticsCommandCenter: React.FC = () => {
     ]
   });
 
-  const data = CareerAnalyticsData || getMockCareerAnalyticsData();
+  const data = analyticsData || getMockAnalyticsData();
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold">Enterprise CareerAnalytics CommandCenter</h2>
+          <h2 className="text-3xl font-bold">Enterprise Analytics Dashboard</h2>
           <p className="text-muted-foreground">Comprehensive SEO and business intelligence</p>
         </div>
         <div className="flex items-center gap-4">
@@ -112,7 +112,7 @@ export const EnterpriseCareerAnalyticsCommandCenter: React.FC = () => {
             Live Data
           </Badge>
           <Button 
-            onClick={fetchCareerAnalyticsData} 
+            onClick={fetchAnalyticsData} 
             disabled={isLoading}
             size="sm"
           >
@@ -221,12 +221,12 @@ export const EnterpriseCareerAnalyticsCommandCenter: React.FC = () => {
                 <Globe className="h-5 w-5" />
                 International SEO Performance
               </CardTitle>
-              <CardDescription>Multi-language and regional performance CareerAnalytics</CardDescription>
+              <CardDescription>Multi-language and regional performance analytics</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-center py-8">
                 <Globe className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">International CareerAnalytics Ready</h3>
+                <h3 className="text-lg font-semibold mb-2">International Analytics Ready</h3>
                 <p className="text-muted-foreground mb-4">
                   Configure your international SEO settings to view regional performance data
                 </p>
@@ -305,6 +305,3 @@ export const EnterpriseCareerAnalyticsCommandCenter: React.FC = () => {
     </div>
   );
 };
-
-
-

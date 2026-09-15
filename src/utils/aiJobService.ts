@@ -146,7 +146,7 @@ class AIJobService {
     return suggestions;
   }
 
-  // Get Performance job recommendations for a user
+  // Get AI-powered job recommendations for a user
   async getJobRecommendations(userId: string, limit: number = 10): Promise<string[]> {
     try {
       const { data: profile } = await supabase
@@ -304,7 +304,7 @@ class AIJobService {
 
     // Marketing roles
     if (titleLower.includes('marketing')) {
-      suggestions.push('Digital Marketing', 'SEO', 'Content Marketing', 'CareerAnalytics');
+      suggestions.push('Digital Marketing', 'SEO', 'Content Marketing', 'Analytics');
     }
 
     return suggestions;
@@ -312,7 +312,3 @@ class AIJobService {
 }
 
 export const aiJobService = new AIJobService();
-
-
-
-

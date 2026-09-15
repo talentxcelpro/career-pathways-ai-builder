@@ -17,7 +17,7 @@ export const ScrapedJobSuccessModal: React.FC<ScrapedJobSuccessModalProps> = ({
   job
 }) => {
   const handleExternalRedirect = async () => {
-    // Track external job click with enhanced CareerAnalytics
+    // Track external job click with enhanced analytics
     if (job.external_url) {
       await trackExternalJobClick(job.id, job.external_url, 'application_success_modal');
     }
@@ -100,6 +100,3 @@ export const ScrapedJobSuccessModal: React.FC<ScrapedJobSuccessModalProps> = ({
     </Dialog>
   );
 };
-
-
-

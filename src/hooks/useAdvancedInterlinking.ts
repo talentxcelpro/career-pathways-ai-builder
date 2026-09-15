@@ -22,7 +22,7 @@ export const useAdvancedInterlinking = () => {
   const [linkMetrics, setLinkMetrics] = useState<Record<string, LinkMetrics>>({});
   const [contextualSuggestions, setContextualSuggestions] = useState<ContextualLink[]>([]);
 
-  // Performance contextual link generation
+  // AI-powered contextual link generation
   const generateContextualLinks = useCallback((content: string, currentPath: string): ContextualLink[] => {
     const linkMap = {
       '/': [
@@ -117,7 +117,7 @@ export const useAdvancedInterlinking = () => {
       };
     });
 
-    // Send CareerAnalytics
+    // Send analytics
     if (typeof window !== 'undefined' && window.gtag) {
       window.gtag('event', 'link_interaction', {
         event_category: 'interlinking',
@@ -203,6 +203,3 @@ export const useAdvancedInterlinking = () => {
     trackLinkInteraction
   };
 };
-
-
-

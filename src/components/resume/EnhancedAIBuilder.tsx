@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { VoiceInput } from './VoiceInput';
 import { ATSScoring } from './ATSScoring';
-import { ResumeCareerAnalytics } from './ResumeAnalytics';
+import { ResumeAnalytics } from './ResumeAnalytics';
 import { CollaborationPanel } from './CollaborationPanel';
 import { toast } from 'sonner';
 
@@ -44,7 +44,7 @@ export const EnhancedAIBuilder = ({
       
       setResumeContent(optimizedContent);
       onOptimize?.(suggestions);
-      toast.success('Resume optimized with Smart Moves!');
+      toast.success('Resume optimized with AI suggestions!');
     } catch (error) {
       toast.error('Optimization failed. Please try again.');
     } finally {
@@ -70,7 +70,7 @@ export const EnhancedAIBuilder = ({
       <div className="max-w-7xl mx-auto p-6">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary via-purple-600 to-blue-600 bg-clip-text text-transparent">
-            Performance Resume Builder
+            AI-Powered Resume Builder
           </h1>
           <p className="text-xl text-muted-foreground">
             Build, optimize, and collaborate on your resume with advanced AI assistance
@@ -91,9 +91,9 @@ export const EnhancedAIBuilder = ({
               <Target className="h-4 w-4" />
               ATS Score
             </TabsTrigger>
-            <TabsTrigger value="CareerAnalytics" className="gap-2">
+            <TabsTrigger value="analytics" className="gap-2">
               <BarChart3 className="h-4 w-4" />
-              CareerAnalytics
+              Analytics
             </TabsTrigger>
             <TabsTrigger value="collaborate" className="gap-2">
               <MessageCircle className="h-4 w-4" />
@@ -197,8 +197,8 @@ export const EnhancedAIBuilder = ({
             />
           </TabsContent>
 
-          <TabsContent value="CareerAnalytics" className="space-y-6">
-            <ResumeCareerAnalytics
+          <TabsContent value="analytics" className="space-y-6">
+            <ResumeAnalytics
               resumeId="current-resume"
               isLive={true}
             />
@@ -239,6 +239,3 @@ export const EnhancedAIBuilder = ({
     </div>
   );
 };
-
-
-

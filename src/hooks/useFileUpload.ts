@@ -4,6 +4,22 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { optimizedStorage } from '@/utils/optimizedStorage';
 
+const UPLOAD_TIMEOUT_MS = 30000;
+
+const withTimeout = async <T,>(promise: PromiseLike<T>, message: string): Promise<T> => {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeoutId = setTimeout(() => reject(new Error(message)), UPLOAD_TIMEOUT_MS);
+  });
+
+  try {
+    return await Promise.race([Promise.resolve(promise), timeoutPromise]);
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
+  }
+};
+
 interface UseFileUploadOptions {
   bucket: string;
   maxSize?: number; // in bytes
@@ -52,7 +68,10 @@ export function useFileUpload(options?: UseFileUploadOptions) {
     setProgress(0);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await withTimeout(
+        supabase.auth.getUser(),
+        'Authentication check timed out. Please refresh and try again.'
+      );
       if (!user) throw new Error('User not authenticated');
 
       const fileExt = file.name.split('.').pop();
@@ -97,27 +116,51 @@ export function useFileUpload(options?: UseFileUploadOptions) {
         }
       }
 
-      console.log(`Uploading file to bucket: ${bucket}, path: ${fileName}`);
+      console.log(`[upload] bucket=${bucket} path=${fileName} size=${file.size} type=${file.type}`);
 
-      const result = await optimizedStorage.uploadFile(bucket, fileName, file, {
-        cacheControl: '31536000',
-        upsert: true
-      });
+      // Direct supabase storage call — bypass cache layer that was suppressing errors / serving stale results
+      // Short cache for user-mutable images so updates propagate quickly even
+      // without query-string cache-busting. Other buckets keep a longer cache.
+      const mutableImageBuckets = new Set(['avatars', 'banners', 'profile-pictures']);
+      const cacheControl = mutableImageBuckets.has(bucket) ? '60' : '3600';
 
-      if (result.error) {
-        console.error('Upload error:', result.error);
-        throw result.error;
+      const { data, error: uploadError } = await withTimeout(
+        supabase.storage
+          .from(bucket)
+          .upload(fileName, file, {
+            cacheControl,
+            upsert: true,
+            contentType: file.type,
+          }),
+        'Upload timed out. Please check your connection and try again.'
+      );
+
+      if (uploadError) {
+        console.error('[upload] storage error:', JSON.stringify(uploadError), uploadError);
+        throw uploadError;
       }
 
-      const publicUrl = await optimizedStorage.getPublicUrl(bucket, result.data.path);
+      const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(data.path);
+      let publicUrl = urlData.publicUrl;
+
+      // Per-upload cache-busting for mutable image buckets so profile images
+      // never show a stale version after re-upload. We use a short hash of the
+      // path + upload timestamp so the URL is deterministic per upload (not
+      // changing on every render) but unique per new upload.
+      if (mutableImageBuckets.has(bucket)) {
+        const stamp = Date.now().toString(36);
+        const hash = (data.path.length * 2654435761 >>> 0).toString(36).slice(0, 4);
+        const v = `${stamp}${hash}`;
+        publicUrl = `${publicUrl}${publicUrl.includes('?') ? '&' : '?'}v=${v}`;
+      }
 
       setProgress(100);
       toast.success('File uploaded successfully');
       return publicUrl;
     } catch (error: any) {
-      console.error('Upload failed:', error);
-      const errorMessage = error.message || 'Upload failed';
-      toast.error(errorMessage);
+      console.error('[upload] failed:', JSON.stringify(error), error);
+      const errorMessage = error?.message || error?.error || 'Upload failed';
+      toast.error(`Upload failed: ${errorMessage}`);
       throw error;
     } finally {
       setUploading(false);

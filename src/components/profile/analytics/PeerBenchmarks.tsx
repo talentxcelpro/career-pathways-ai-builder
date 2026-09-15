@@ -9,7 +9,7 @@ interface PeerBenchmarksProps {
     industry: string;
     role: string;
     benchmarks: {
-      TalentNetwork: { user: number; average: number; percentile: number };
+      connections: { user: number; average: number; percentile: number };
       profileViews: { user: number; average: number; percentile: number };
       skills: { user: number; average: number; percentile: number };
     };
@@ -135,10 +135,10 @@ export const PeerBenchmarks = ({ data }: PeerBenchmarksProps) => {
       {/* Benchmark Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <BenchmarkCard
-          title="Professional TalentNetwork"
-          userValue={data.benchmarks.TalentNetwork.user}
-          average={data.benchmarks.TalentNetwork.average}
-          percentile={data.benchmarks.TalentNetwork.percentile}
+          title="Professional Connections"
+          userValue={data.benchmarks.connections.user}
+          average={data.benchmarks.connections.average}
+          percentile={data.benchmarks.connections.percentile}
           icon={Users}
         />
 
@@ -168,15 +168,15 @@ export const PeerBenchmarks = ({ data }: PeerBenchmarksProps) => {
         </CardHeader>
         <CardContent>
           <div className="grid gap-4">
-            {data.benchmarks.TalentNetwork.percentile < 50 && (
+            {data.benchmarks.connections.percentile < 50 && (
               <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                 <div className="flex items-start gap-3">
                   <Users className="h-5 w-5 text-blue-600 mt-1" />
                   <div>
                     <h4 className="font-medium text-blue-900">Expand Your Network</h4>
                     <p className="text-sm text-blue-700 mt-1">
-                      You have fewer TalentNetwork than the average {data.role}. Consider connecting with 
-                      colleagues, alumni, and industry professionals to reach the {data.benchmarks.TalentNetwork.average} 
+                      You have fewer connections than the average {data.role}. Consider connecting with 
+                      colleagues, alumni, and industry professionals to reach the {data.benchmarks.connections.average} 
                       connection average.
                     </p>
                   </div>
@@ -219,4 +219,3 @@ export const PeerBenchmarks = ({ data }: PeerBenchmarksProps) => {
     </div>
   );
 };
-

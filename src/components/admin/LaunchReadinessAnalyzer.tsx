@@ -110,11 +110,11 @@ export const LaunchReadinessAnalyzer: React.FC = () => {
         issues: [
           'Service worker needs optimization',
           'SEO meta tags could be improved',
-          'Missing CareerAnalytics configuration'
+          'Missing analytics configuration'
         ],
         suggestions: [
           'Finalize service worker caching strategy',
-          'Complete Google CareerAnalytics setup',
+          'Complete Google Analytics setup',
           'Add performance monitoring'
         ],
         critical: []
@@ -293,7 +293,7 @@ export const LaunchReadinessAnalyzer: React.FC = () => {
               <div>
                 <h4 className="font-semibold text-yellow-600 mb-2">Post-Launch (Improvements)</h4>
                 <ul className="space-y-1 text-sm">
-                  <li>📊 Implement comprehensive CareerAnalytics</li>
+                  <li>📊 Implement comprehensive analytics</li>
                   <li>⚡ Optimize performance monitoring</li>
                   <li>🎯 Add A/B testing framework</li>
                   <li>🔄 Set up automated backups</li>
@@ -325,6 +325,3 @@ export const LaunchReadinessAnalyzer: React.FC = () => {
     </div>
   );
 };
-
-
-

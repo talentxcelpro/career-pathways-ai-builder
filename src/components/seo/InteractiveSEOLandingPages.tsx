@@ -40,10 +40,10 @@ export const InteractiveSEOLandingPages = () => {
   const roles = [
     { name: 'Software Engineer', jobs: 850, demand: 'Very High', avgSalary: '15.2L', skills: ['JavaScript', 'Python', 'React'] },
     { name: 'Data Scientist', jobs: 320, demand: 'High', avgSalary: '18.5L', skills: ['Python', 'ML', 'SQL'] },
-    { name: 'Product Manager', jobs: 180, demand: 'High', avgSalary: '22.8L', skills: ['Strategy', 'CareerAnalytics', 'Leadership'] },
+    { name: 'Product Manager', jobs: 180, demand: 'High', avgSalary: '22.8L', skills: ['Strategy', 'Analytics', 'Leadership'] },
     { name: 'DevOps Engineer', jobs: 240, demand: 'Very High', avgSalary: '16.8L', skills: ['AWS', 'Docker', 'Kubernetes'] },
     { name: 'UI/UX Designer', jobs: 160, demand: 'Medium', avgSalary: '12.4L', skills: ['Figma', 'Design', 'Prototyping'] },
-    { name: 'Business Analyst', jobs: 290, demand: 'Medium', avgSalary: '13.2L', skills: ['Excel', 'SQL', 'CareerAnalytics'] },
+    { name: 'Business Analyst', jobs: 290, demand: 'Medium', avgSalary: '13.2L', skills: ['Excel', 'SQL', 'Analytics'] },
   ];
 
   const skills = [
@@ -386,7 +386,3 @@ export const InteractiveSEOLandingPages = () => {
     </div>
   );
 };
-
-
-
-

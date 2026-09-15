@@ -18,14 +18,14 @@ import {
 export default function AIFeaturesPage() {
   React.useEffect(() => {
     updateMetaTags({
-      title: 'Performance Learning Features | TalentXcel',
+      title: 'AI-Powered Learning Features | TalentXcel',
       description: 'Discover our advanced AI features that personalize your learning journey and accelerate skill development.'
     });
   }, []);
 
   const aiFeatures = [
     {
-      title: 'AI Learning Navigator',
+      title: 'AI Learning Assistant',
       description: 'Get instant help with concepts, coding problems, and project guidance',
       icon: MessageSquare,
       badge: 'Beta'
@@ -43,10 +43,10 @@ export default function AIFeaturesPage() {
       badge: 'Adaptive'
     },
     {
-      title: 'Progress CareerAnalytics',
-      description: 'Performance insights into your learning patterns and skill gaps',
+      title: 'Progress Analytics',
+      description: 'AI-powered insights into your learning patterns and skill gaps',
       icon: TrendingUp,
-      badge: 'CareerAnalytics'
+      badge: 'Analytics'
     }
   ];
 
@@ -59,7 +59,7 @@ export default function AIFeaturesPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full text-sm font-medium text-primary mb-6">
             <Bot className="h-4 w-4" />
-            Performance LEARNING
+            AI-POWERED LEARNING
           </div>
           
           <h1 className="text-4xl lg:text-5xl font-bold text-foreground mb-6">
@@ -67,7 +67,7 @@ export default function AIFeaturesPage() {
           </h1>
           
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            Experience the future of learning with our Performance features that adapt to your needs and accelerate your progress.
+            Experience the future of learning with our AI-powered features that adapt to your needs and accelerate your progress.
           </p>
           
           <Button size="lg" className="bg-primary hover:bg-primary/90">
@@ -112,7 +112,7 @@ export default function AIFeaturesPage() {
       <section className="bg-gradient-to-r from-primary to-primary/80 py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-primary-foreground mb-4">
-            Ready to Experience Performance Learning?
+            Ready to Experience AI-Powered Learning?
           </h2>
           <p className="text-xl text-primary-foreground/90 mb-8">
             Start your personalized learning journey today
@@ -126,6 +126,3 @@ export default function AIFeaturesPage() {
     </div>
   );
 }
-
-
-

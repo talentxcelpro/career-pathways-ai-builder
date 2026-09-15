@@ -20,7 +20,7 @@ export function CareerPassportCard({ userProfile, isOwner = true, publicPassport
   const displayMetrics = (!isOwner && publicPassport?.passport) ? {
     profileCompletion: publicPassport.passport.completion_percentage || 0,
     jobApplications: publicPassport.passport.jobs_applied_count || 0,
-    TalentNetwork: publicPassport.passport.connections_count || 0,
+    connections: publicPassport.passport.connections_count || 0,
     skillsAdded: 0,
     coursesCompleted: 0,
     postsCreated: 0,
@@ -42,7 +42,7 @@ export function CareerPassportCard({ userProfile, isOwner = true, publicPassport
   }
 
   const careerReadiness = insights?.career_readiness_score || displayMetrics?.profileCompletion || 0;
-  const competitiveness = insights?.market_competitiveness_score || Math.min((displayMetrics?.jobApplications || 0) * 10 + (displayMetrics?.TalentNetwork || 0) * 2, 100);
+  const competitiveness = insights?.market_competitiveness_score || Math.min((displayMetrics?.jobApplications || 0) * 10 + (displayMetrics?.connections || 0) * 2, 100);
   const industryPercentile = insights?.industry_percentile || Math.min(careerReadiness + (displayMetrics?.skillsAdded || 0) * 5, 95);
   
   // Generate user ID (simplified version)
@@ -69,7 +69,7 @@ export function CareerPassportCard({ userProfile, isOwner = true, publicPassport
         {/* Header */}
         <div className="mb-6 sm:mb-8">
           <h1 className="text-xl sm:text-2xl font-bold text-white mb-1">TALENTXCEL</h1>
-          <h2 className="text-lg sm:text-xl font-bold text-cyan-400 !text-cyan-400">Evolution Hub</h2>
+          <h2 className="text-lg sm:text-xl font-bold text-cyan-400 !text-cyan-400">CAREER PASSPORT</h2>
         </div>
 
         {/* Main content layout */}
@@ -198,15 +198,15 @@ export function CareerPassportCard({ userProfile, isOwner = true, publicPassport
               <div className="text-white text-xs sm:text-sm">Certificates</div>
             </div>
 
-            {/* TalentNetwork */}
+            {/* Connections */}
             <div className="text-center">
               <div className="w-8 h-8 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3 flex items-center justify-center">
                 <svg className="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
               </div>
-              <div className="text-white text-xl sm:text-3xl font-bold mb-1">{displayMetrics?.TalentNetwork || 0}</div>
-              <div className="text-white text-xs sm:text-sm">TalentNetwork</div>
+              <div className="text-white text-xl sm:text-3xl font-bold mb-1">{displayMetrics?.connections || 0}</div>
+              <div className="text-white text-xs sm:text-sm">Connections</div>
             </div>
           </div>
         </div>
@@ -214,4 +214,3 @@ export function CareerPassportCard({ userProfile, isOwner = true, publicPassport
     </Card>
   );
 }
-

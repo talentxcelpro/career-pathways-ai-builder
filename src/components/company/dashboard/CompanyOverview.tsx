@@ -198,10 +198,10 @@ export const CompanyOverview: React.FC<CompanyOverviewProps> = ({
               size="sm" 
               className="w-full justify-start text-xs" 
               variant="outline"
-              onClick={() => onTabChange?.('CareerAnalytics')}
+              onClick={() => onTabChange?.('analytics')}
             >
               <BarChart3 className="h-3 w-3 mr-2" />
-              View CareerAnalytics
+              View Analytics
             </Button>
           </CardContent>
         </Card>
@@ -251,6 +251,3 @@ export const CompanyOverview: React.FC<CompanyOverviewProps> = ({
     </div>
   );
 };
-
-
-

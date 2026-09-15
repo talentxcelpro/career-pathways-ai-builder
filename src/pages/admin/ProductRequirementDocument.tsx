@@ -49,7 +49,7 @@ const ProductRequirementDocument = () => {
             </div>
             <div className="p-4 bg-muted rounded-lg">
               <h4 className="font-semibold text-primary">For Agencies</h4>
-              <p className="text-sm text-muted-foreground">White-label SEO CommandCenters & reporting</p>
+              <p className="text-sm text-muted-foreground">White-label SEO dashboards & reporting</p>
             </div>
           </div>
         </CardContent>
@@ -77,7 +77,7 @@ const ProductRequirementDocument = () => {
             },
             {
               title: "Startups / SMEs",
-              wants: "Compete with big brands on SEO with affordable Performance tools",
+              wants: "Compete with big brands on SEO with affordable AI-powered tools",
               pain: "Expensive SEO agencies, lack of in-house SEO talent"
             },
             {
@@ -248,9 +248,9 @@ const ProductRequirementDocument = () => {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <p><span className="font-semibold">Frontend:</span> Extend TalentXcel CommandCenter (Lovable.dev, Next.js)</p>
+              <p><span className="font-semibold">Frontend:</span> Extend TalentXcel dashboard (Lovable.dev, Next.js)</p>
               <p><span className="font-semibold">Backend:</span> Supabase (DB), Node.js API layer</p>
-              <p><span className="font-semibold">Talent Engine:</span> DeepSeek + OpenAI (keyword clustering, AI content briefs)</p>
+              <p><span className="font-semibold">AI Engine:</span> DeepSeek + OpenAI (keyword clustering, AI content briefs)</p>
             </div>
             <div className="space-y-2">
               <p><span className="font-semibold">Crawling:</span> Python microservice workers for site audits</p>
@@ -261,7 +261,7 @@ const ProductRequirementDocument = () => {
             <h4 className="font-semibold mb-2">Integrations:</h4>
             <ul className="text-sm space-y-1">
               <li>• Google Search Console API</li>
-              <li>• Google CareerAnalytics (GA4)</li>
+              <li>• Google Analytics (GA4)</li>
               <li>• Bing Webmaster Tools (optional)</li>
             </ul>
           </div>
@@ -279,7 +279,7 @@ const ProductRequirementDocument = () => {
         <CardContent>
           <ul className="space-y-2">
             <li>• Profiles & job data: encrypted at rest (Supabase)</li>
-            <li>• GDPR/CCPA compliance for employer CareerAnalytics</li>
+            <li>• GDPR/CCPA compliance for employer analytics</li>
             <li>• OAuth2 for Google integrations</li>
             <li>• API rate limiting for crawlers</li>
           </ul>
@@ -350,6 +350,3 @@ const ProductRequirementDocument = () => {
 };
 
 export default ProductRequirementDocument;
-
-
-

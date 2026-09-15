@@ -1,228 +1,411 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+// Debug: identify which LearningHub renders
+console.info('[LearningHub V2] Component file: src/pages/learning/LearningHub.tsx mounted');
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { 
-  BookOpen, Target, Award, Flame, TrendingUp, BarChart3, 
-  Lightbulb, Users, CheckCircle, Clock, Star, ArrowRight, 
-  Play, Zap, Shield, Sparkles, Activity, Layers, Brain, 
-  Globe, ArrowUpRight, Briefcase, Fingerprint
+  BookOpen, 
+  Target, 
+  Award, 
+  Flame, 
+  TrendingUp, 
+  BarChart3, 
+  Lightbulb,
+  Users,
+  CheckCircle,
+  Clock,
+  Star,
+  ArrowRight,
+  Play
 } from "lucide-react";
-import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '@/lib/utils';
+import { updateMetaTags } from '@/utils/metaTags';
 
 export default function LearningHub() {
-  const stats = [
-    { label: "Skill Modules", value: "150+", icon: Layers, color: 'blue' },
-    { label: "Capability Tracks", value: "12", icon: Target, color: 'purple' },
-    { label: "Daily Intensity", value: "8 Days", icon: Flame, color: 'orange' },
-    { label: "Talent Score Pulse", value: "94%", icon: Activity, color: 'emerald' }
-  ];
+  React.useEffect(() => {
+    updateMetaTags({
+      title: 'Learning Hub | TalentXcel',
+      description: 'Discover courses, paths and analytics. Start learning with TalentXcel.'
+    });
+  }, []);
 
-  const capabilityTracks = [
+  const stats = [
     {
-      title: "Full Stack Mastery",
-      detail: "Master high-performance distributed systems and modern web architectures.",
-      icon: Layers,
-      color: "blue",
-      progress: 65
+      title: "Available Courses",
+      value: "10",
+      description: "Expert-designed courses"
     },
     {
-      title: "AI Product Strategy",
-      detail: "Learn to build and scale AI-driven professional intelligence tools.",
-      icon: Brain,
-      color: "purple",
-      progress: 42
+      title: "Learning Paths",
+      value: "0",
+      description: "Structured journeys"
     },
     {
-      title: "Leadership & Culture",
-      detail: "Architect high-performance teams and professional organizational identity.",
-      icon: Target,
-      color: "emerald",
-      progress: 15
+      title: "Your Streak",
+      value: "0 days",
+      description: "Keep learning daily"
+    },
+    {
+      title: "Skills Available",
+      value: "150+",
+      description: "Master new abilities"
     }
   ];
 
-  const featuredSignals = [
-    { title: "Advanced Neural Architectures", students: "1.2k", level: "Elite", duration: "45h", rating: 4.9 },
-    { title: "Strategic Market Synthesis", students: "840", level: "Senior", duration: "32h", rating: 4.8 },
-    { title: "High-Fidelity UI Design", students: "2.4k", level: "Advanced", duration: "28h", rating: 4.7 }
+  const learningFeatures = [
+    {
+      icon: BookOpen,
+      title: "10 courses",
+      subtitle: "Browse All Courses",
+      description: "Explore our comprehensive course catalog with advanced filtering and search",
+      link: "/learning/courses",
+      color: "bg-blue-50 border-blue-200 dark:bg-blue-950/20 dark:border-blue-800/50"
+    },
+    {
+      icon: Target,
+      title: "0 paths",
+      subtitle: "Learning Paths",
+      description: "Structured learning journeys for specific career goals and skills",
+      link: "/learning/paths",
+      color: "bg-purple-50 border-purple-200 dark:bg-purple-950/20 dark:border-purple-800/50"
+    },
+    {
+      icon: TrendingUp,
+      title: "Your progress",
+      subtitle: "My Learning",
+      description: "Track your progress, continue courses, and view achievements",
+      link: "/learning/my-courses",
+      color: "bg-green-50 border-green-200 dark:bg-green-950/20 dark:border-green-800/50"
+    },
+    {
+      icon: Award,
+      title: "Career focused",
+      subtitle: "Employment Bridge",
+      description: "Job-focused courses and market trends to boost your career prospects",
+      link: "/learning/employment-bridge",
+      color: "bg-orange-50 border-orange-200 dark:bg-orange-950/20 dark:border-orange-800/50"
+    },
+    {
+      icon: Lightbulb,
+      title: "Microlearning",
+      subtitle: "Quick Learning",
+      description: "Bite-sized lessons, quizzes, and flashcards for learning on the go",
+      link: "/learning/quick-learn",
+      color: "bg-yellow-50 border-yellow-200 dark:bg-yellow-950/20 dark:border-yellow-800/50"
+    },
+    {
+      icon: BarChart3,
+      title: "Data insights",
+      subtitle: "Learning Analytics",
+      description: "Detailed insights into your learning progress and skill development",
+      link: "/learning/analytics",
+      color: "bg-indigo-50 border-indigo-200 dark:bg-indigo-950/20 dark:border-indigo-800/50"
+    }
+  ];
+
+  const careerPaths = [
+    {
+      icon: BarChart3,
+      title: "Data Science Career Path",
+      description: "Master data analysis, visualization, and machine learning",
+      color: "text-blue-600"
+    },
+    {
+      icon: Lightbulb,
+      title: "AI & Machine Learning",
+      description: "Deep dive into artificial intelligence and ML algorithms",
+      color: "text-purple-600"
+    },
+    {
+      icon: Users,
+      title: "Business & Leadership",
+      description: "Develop leadership skills and business acumen",
+      color: "text-green-600"
+    }
+  ];
+
+  const popularCourses = [
+    {
+      title: "Full Stack Web Development with React & Node.js",
+      description: "Master modern web development with React, Node.js, Express, and MongoDB. Build real-world projects and deploy them to production.",
+      level: "intermediate",
+      students: 1247,
+      duration: "120h",
+      rating: 4.8
+    },
+    {
+      title: "Data Science & Machine Learning with Python",
+      description: "Comprehensive course covering data analysis, visualization, machine learning algorithms, and AI implementation using Python.",
+      level: "intermediate",
+      students: 892,
+      duration: "100h",
+      rating: 4.7
+    },
+    {
+      title: "Digital Marketing Mastery",
+      description: "Complete digital marketing course covering SEO, social media, content marketing, PPC, email marketing, and analytics.",
+      level: "beginner",
+      students: 1563,
+      duration: "80h",
+      rating: 4.9
+    }
+  ];
+
+  const benefits = [
+    "AI-powered career matching",
+    "Earn industry-recognized certificates",
+    "Learn at your own pace",
+    "Job-ready skills for the future"
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50/50 backdrop-blur-xl edge-to-edge pb-32">
-      <div className="fixed top-0 left-0 right-0 h-[500px] bg-gradient-to-b from-blue-500/5 to-transparent pointer-events-none" />
-
-      {/* Premium Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-2xl border-b border-slate-200/50">
-        <div className="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <div className="h-16 w-16 rounded-[24px] bg-slate-950 flex items-center justify-center shadow-2xl">
-              <BookOpen className="h-8 w-8 text-white" />
+    <div className="min-h-screen bg-background">
+      {/* Hero Section */}
+      <div className="container mx-auto px-6 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
+          <div className="space-y-6">
+            <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
+              Welcome back, TalentXcel Pro!
+            </h1>
+            <p className="text-lg text-muted-foreground">
+              Continue your journey to master new skills and advance your career.
+            </p>
+            <div className="flex gap-4">
+              <Button size="lg" className="bg-primary hover:bg-primary/90">
+                Start Learning Now
+              </Button>
+              <Link to="/learning/courses">
+                <Button variant="outline" size="lg">
+                  Explore All Courses
+                </Button>
+              </Link>
             </div>
-            <div>
-              <h1 className="text-3xl font-apple-heavy text-slate-950 tracking-tighter">Skill Hub</h1>
-              <div className="flex items-center gap-2 mt-1">
-                <Badge className="bg-blue-600 text-white border-0 rounded-lg px-2 py-0.5 font-apple-bold text-[9px] uppercase tracking-widest">TALENTXCEL ACADEMY</Badge>
-                <span className="text-[10px] font-apple-heavy text-slate-400 uppercase tracking-widest">Capability Indexing & Verification</span>
+            
+            {/* Streak Section */}
+            <div className="space-y-3 pt-6">
+              <div className="flex items-center gap-2">
+                <Flame className="h-5 w-5 text-orange-500" />
+                <span className="text-sm text-muted-foreground">You're on a 0-0-day streak</span>
               </div>
+              <Progress value={0} className="h-2" />
+              <p className="text-sm text-muted-foreground">
+                Complete today's lesson to grow your streak!
+              </p>
             </div>
           </div>
           
-          <div className="flex items-center gap-4">
-             <Button asChild variant="ghost" className="rounded-2xl h-14 px-8 font-apple-heavy bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all">
-               <Link to="/learning/my-courses">My Repository</Link>
-             </Button>
-             <Button asChild className="rounded-2xl h-14 px-8 font-apple-heavy bg-slate-950 text-white shadow-2xl shadow-slate-950/20 hover:scale-105 transition-all">
-               <Link to="/learning/courses">Explore Modules</Link>
-             </Button>
+          {/* Illustration placeholder */}
+          <div className="flex justify-center">
+            <div className="w-full max-w-md h-80 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-2xl flex items-center justify-center border border-blue-200 dark:border-blue-800">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <Lightbulb className="h-8 w-8 text-white" />
+                </div>
+                <p className="text-blue-700 dark:text-blue-300 font-medium">Learning Illustration</p>
+              </div>
+            </div>
           </div>
         </div>
-      </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-12 relative z-10 space-y-12">
-        {/* Capability Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {stats.map((stat, i) => (
-            <motion.div key={i} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: i * 0.1 }}>
-              <Card className="rounded-[40px] border-slate-200 bg-white/80 backdrop-blur-xl p-8 shadow-xl hover:shadow-2xl transition-all group border">
-                <div className={cn(
-                  "h-14 w-14 rounded-[20px] flex items-center justify-center mb-6 transition-transform group-hover:scale-110 shadow-sm",
-                  stat.color === 'blue' ? "bg-blue-50 text-blue-600" :
-                  stat.color === 'purple' ? "bg-purple-50 text-purple-600" :
-                  stat.color === 'emerald' ? "bg-emerald-50 text-emerald-600" : "bg-orange-50 text-orange-600"
-                )}>
-                  <stat.icon className="h-7 w-7" />
-                </div>
-                <p className="text-[10px] font-apple-heavy text-slate-400 uppercase tracking-widest mb-1">{stat.label}</p>
-                <h3 className="text-4xl font-apple-heavy text-slate-950 tracking-tighter">{stat.value}</h3>
-              </Card>
-            </motion.div>
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+          <Link to="/learning/my-courses">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <CardContent className="p-6 text-center">
+                <BookOpen className="h-8 w-8 text-blue-600 mx-auto mb-3" />
+                <h3 className="font-semibold mb-1">My Courses</h3>
+                <p className="text-sm text-muted-foreground">Resume</p>
+              </CardContent>
+            </Card>
+          </Link>
+          
+          <Link to="/learning/paths">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <CardContent className="p-6 text-center">
+                <Target className="h-8 w-8 text-blue-600 mx-auto mb-3" />
+                <h3 className="font-semibold mb-1">Learning Paths</h3>
+                <p className="text-sm text-muted-foreground">Browse</p>
+              </CardContent>
+            </Card>
+          </Link>
+          
+          <Link to="/learning/certificates">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <CardContent className="p-6 text-center">
+                <Award className="h-8 w-8 text-blue-600 mx-auto mb-3" />
+                <h3 className="font-semibold mb-1">Certificates</h3>
+                <p className="text-sm text-muted-foreground">View</p>
+              </CardContent>
+            </Card>
+          </Link>
+        </div>
+
+        {/* Stats Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+          {stats.map((stat, index) => (
+            <Card key={index}>
+              <CardContent className="p-6 text-center">
+                <div className="text-3xl font-bold text-primary mb-2">{stat.value}</div>
+                <h3 className="font-semibold mb-1">{stat.title}</h3>
+                <p className="text-sm text-muted-foreground">{stat.description}</p>
+              </CardContent>
+            </Card>
           ))}
         </div>
 
-        {/* Active Roadmaps & Next Actions */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-8">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-apple-heavy text-slate-950 tracking-tight">Active Capability Roadmaps</h2>
-              <Button variant="ghost" className="text-xs font-apple-heavy text-blue-600 hover:text-blue-700 uppercase tracking-widest">Global Index</Button>
-            </div>
-            
-            <div className="grid gap-6">
-              {capabilityTracks.map((track, i) => (
-                <motion.div key={i} initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.4 + i * 0.1 }}>
-                  <Card className="rounded-[40px] border-slate-200 bg-white/80 backdrop-blur-xl p-10 shadow-xl border group hover:shadow-2xl transition-all">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
-                      <div className="flex items-start gap-6">
-                        <div className={cn(
-                          "h-20 w-20 rounded-[28px] flex items-center justify-center shrink-0 shadow-lg transition-transform group-hover:scale-110",
-                          track.color === 'blue' ? "bg-blue-600 text-white shadow-blue-500/20" :
-                          track.color === 'purple' ? "bg-purple-600 text-white shadow-purple-500/20" : "bg-emerald-600 text-white shadow-emerald-500/20"
-                        )}>
-                          <track.icon className="h-10 w-10" />
-                        </div>
-                        <div>
-                          <h3 className="text-2xl font-apple-heavy text-slate-950 mb-2">{track.title}</h3>
-                          <p className="text-base font-apple-medium text-slate-500 leading-relaxed max-w-sm">{track.detail}</p>
-                        </div>
-                      </div>
-                      <div className="w-full md:w-64 space-y-4">
-                         <div className="flex justify-between text-[11px] font-apple-heavy text-slate-400 uppercase tracking-widest">
-                            <span>Synchronization</span>
-                            <span>{track.progress}%</span>
-                         </div>
-                         <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                            <motion.div 
-                              initial={{ width: 0 }} 
-                              animate={{ width: `${track.progress}%` }} 
-                              className="h-full bg-slate-950 rounded-full" 
-                              transition={{ duration: 1.5, ease: "easeOut" }}
-                            />
-                         </div>
-                         <Button className="w-full h-12 rounded-xl bg-slate-50 border border-slate-100 text-slate-950 font-apple-bold text-sm hover:bg-slate-100 transition-all">Continue Execution</Button>
-                      </div>
-                    </div>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
+        {/* Career Paths Section */}
+        <div className="mb-16">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl font-bold mb-4">Choose a path. Advance your future.</h2>
           </div>
-
-          <div className="space-y-8">
-             <Card className="rounded-[48px] bg-slate-950 p-10 text-white shadow-2xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12">
-                   <Award className="h-24 w-24" />
-                </div>
-                <h3 className="text-2xl font-apple-heavy mb-8 tracking-tight">Verified Credentials</h3>
-                <div className="space-y-6">
-                   {[
-                     { label: 'Cloud Architecture', date: 'Oct 2023', icon: Shield },
-                     { label: 'Strategic Product', date: 'Sep 2023', icon: Zap },
-                     { label: 'Engineering Lead', date: 'Aug 2023', icon: Star }
-                   ].map((cert, i) => (
-                     <div key={i} className="flex items-center justify-between p-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
-                        <div className="flex items-center gap-4">
-                           <cert.icon className="h-5 w-5 text-blue-400" />
-                           <span className="text-xs font-apple-heavy text-slate-300 uppercase tracking-widest">{cert.label}</span>
-                        </div>
-                        <span className="text-[10px] font-apple-heavy text-slate-500">{cert.date}</span>
-                     </div>
-                   ))}
-                </div>
-                <Button className="w-full mt-10 rounded-2xl bg-white text-slate-950 font-apple-heavy h-16 hover:scale-[1.02] transition-all shadow-xl">
-                   Market Identity Passport
-                </Button>
-             </Card>
-
-             <Card className="rounded-[40px] bg-blue-600 p-10 text-white shadow-2xl group hover:shadow-blue-500/20 transition-all">
-                <div className="h-14 w-14 bg-white/20 rounded-[20px] flex items-center justify-center mb-6">
-                   <Brain className="h-8 w-8" />
-                </div>
-                <h3 className="text-2xl font-apple-heavy mb-4">Intelligence Feed</h3>
-                <p className="font-apple-medium text-blue-100 text-lg leading-relaxed mb-8">
-                   Index your professional growth by aligning your capability roadmaps with real-time market signals.
-                </p>
-                <Button asChild variant="ghost" className="w-full rounded-2xl bg-white/10 hover:bg-white/20 border-0 font-apple-heavy h-16 text-lg">
-                   <Link to="/navigator">Synchronize Identity</Link>
-                </Button>
-             </Card>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {careerPaths.map((path, index) => {
+              const IconComponent = path.icon;
+              return (
+                <Card key={index} className="text-center hover:shadow-lg transition-shadow">
+                  <CardContent className="p-8">
+                    <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/20 rounded-lg mx-auto mb-6 flex items-center justify-center">
+                      <IconComponent className={`h-8 w-8 ${path.color}`} />
+                    </div>
+                    <h3 className="text-xl font-semibold mb-3">{path.title}</h3>
+                    <p className="text-muted-foreground mb-6">{path.description}</p>
+                    <Button className="w-full">
+                      {index === 1 ? "Browse" : "Start Path"}
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </div>
 
-        {/* Featured Modules */}
-        <section className="space-y-8">
-           <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-apple-heavy text-slate-950 tracking-tight">Premium Skill Modules</h2>
-              <Link to="/learning/courses" className="text-xs font-apple-heavy text-blue-600 hover:scale-105 transition-all">VIEW ALL REPOSITORIES</Link>
-           </div>
-           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {featuredSignals.map((signal, i) => (
-                <motion.div key={i} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.8 + i * 0.1 }}>
-                  <Card className="rounded-[40px] border-slate-200 bg-white/80 backdrop-blur-xl p-10 shadow-xl hover:shadow-2xl transition-all border group">
-                    <div className="flex justify-between items-start mb-8">
-                       <Badge className="bg-slate-100 text-slate-500 border-0 rounded-lg px-3 py-1 font-apple-bold text-[9px] uppercase tracking-widest">{signal.level} tier</Badge>
-                       <div className="flex items-center gap-1.5">
-                          <Star className="h-4 w-4 text-amber-500 fill-current" />
-                          <span className="text-xs font-apple-heavy text-slate-950">{signal.rating}</span>
-                       </div>
-                    </div>
-                    <h3 className="text-xl font-apple-heavy text-slate-950 mb-4 group-hover:text-blue-600 transition-colors line-clamp-1 tracking-tight">{signal.title}</h3>
-                    <div className="flex items-center gap-6 text-[10px] font-apple-heavy text-slate-400 uppercase tracking-widest mb-10">
-                       <span className="flex items-center gap-2"><Users className="h-4 w-4" /> {signal.students}</span>
-                       <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> {signal.duration}</span>
-                    </div>
-                    <Button className="w-full h-14 rounded-2xl bg-slate-950 text-white font-apple-heavy text-sm hover:scale-[1.02] transition-all shadow-xl">
-                       Initialize Module <ArrowUpRight className="ml-2 h-5 w-5" />
-                    </Button>
+        {/* Explore Learning Features */}
+        <div className="mb-16">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold mb-2">Explore Learning Features</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {learningFeatures.map((feature, index) => {
+              const IconComponent = feature.icon;
+              return (
+                <Link key={index} to={feature.link}>
+                  <Card className={`hover:shadow-lg transition-shadow cursor-pointer h-full ${feature.color}`}>
+                    <CardContent className="p-6">
+                      <div className="flex items-start gap-4 mb-4">
+                        <IconComponent className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                        <div className="flex-1">
+                          <h3 className="font-semibold mb-1">{feature.title}</h3>
+                          <p className="text-sm font-medium text-muted-foreground mb-2">{feature.subtitle}</p>
+                          <p className="text-sm text-muted-foreground">{feature.description}</p>
+                        </div>
+                      </div>
+                      <div className="flex justify-end">
+                        <Button variant="outline" size="sm">
+                          Explore
+                        </Button>
+                      </div>
+                    </CardContent>
                   </Card>
-                </motion.div>
-              ))}
-           </div>
-        </section>
-      </main>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Popular Courses */}
+        <div className="mb-16">
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-2xl font-bold">Popular Courses</h2>
+            <Link to="/learning/courses">
+              <Button variant="outline">View All Courses</Button>
+            </Link>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {popularCourses.map((course, index) => (
+              <Card key={index} className="hover:shadow-lg transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex justify-between items-start mb-4">
+                    <Badge variant="secondary">{course.level}</Badge>
+                    <div className="flex items-center gap-1">
+                      <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                      <span className="text-sm">{course.rating}</span>
+                    </div>
+                  </div>
+                  
+                  <h3 className="font-semibold mb-3 line-clamp-2">{course.title}</h3>
+                  <p className="text-sm text-muted-foreground mb-4 line-clamp-3">{course.description}</p>
+                  
+                  <div className="flex justify-between items-center text-sm text-muted-foreground mb-4">
+                    <div className="flex items-center gap-1">
+                      <Users className="h-4 w-4" />
+                      {course.students}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Clock className="h-4 w-4" />
+                      {course.duration}
+                    </div>
+                  </div>
+                  
+                  <Link to="/learning/courses">
+                    <Button className="w-full">
+                      <Play className="h-4 w-4 mr-2" />
+                      View Course
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+
+        {/* Why Learn Section */}
+        <div className="mb-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-2xl font-bold mb-6">Why learn with TalentXcel?</h2>
+              <div className="space-y-4">
+                {benefits.map((benefit, index) => (
+                  <div key={index} className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                    <span>{benefit}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 border-blue-200 dark:border-blue-800">
+              <CardContent className="p-8">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span className="text-white font-semibold">A</span>
+                  </div>
+                  <div>
+                    <p className="font-medium mb-2">"TalentXcel helped me land my dream job in 3 months!"</p>
+                    <p className="text-sm text-muted-foreground">Ananya, Data Analyst</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* CTA Section */}
+        <Card className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+          <CardContent className="p-8 text-center">
+            <h2 className="text-xl font-bold mb-4">Your career transformation starts today.</h2>
+            <div className="flex justify-center gap-4">
+              <Button variant="secondary" size="lg">
+                Start Learning for Free
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

@@ -57,7 +57,7 @@ interface CareerStep {
 }
 
 export const CareerPathTracker: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('CommandCenter');
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [careerGoals, setCareerGoals] = useState<CareerGoal[]>([]);
   const [careerPaths, setCareerPaths] = useState<CareerPath[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -185,13 +185,13 @@ export const CareerPathTracker: React.FC = () => {
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="CommandCenter">CommandCenter</TabsTrigger>
+          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
           <TabsTrigger value="goals">Goals</TabsTrigger>
           <TabsTrigger value="paths">Career Paths</TabsTrigger>
-          <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="CommandCenter" className="space-y-6">
+        <TabsContent value="dashboard" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card>
               <CardHeader className="pb-2">
@@ -478,14 +478,14 @@ export const CareerPathTracker: React.FC = () => {
           ))}
         </TabsContent>
 
-        <TabsContent value="CareerAnalytics">
+        <TabsContent value="analytics">
           <Card>
             <CardHeader>
-              <CardTitle>Career CareerAnalytics</CardTitle>
+              <CardTitle>Career Analytics</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-center py-8 text-muted-foreground">
-                Advanced CareerAnalytics and insights coming soon...
+                Advanced analytics and insights coming soon...
               </div>
             </CardContent>
           </Card>
@@ -494,6 +494,3 @@ export const CareerPathTracker: React.FC = () => {
     </div>
   );
 };
-
-
-

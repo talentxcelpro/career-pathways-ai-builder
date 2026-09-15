@@ -35,7 +35,7 @@ export const useVirtualSpaces = () => {
     setSpaces([
       {
         id: '1',
-        name: 'Ecosystem Networking VR',
+        name: 'Career Networking VR',
         description: 'Virtual reality space for professional networking',
         type: 'vr',
         max_capacity: 20,

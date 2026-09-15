@@ -212,8 +212,8 @@ const JobApplicants = () => {
           <Button variant="outline" onClick={() => navigate(`/jobs/manage/${jobId}/edit`)}>
             Edit Job
           </Button>
-          <Button onClick={() => navigate(`/jobs/manage/${jobId}/CareerAnalytics`)}>
-            View CareerAnalytics
+          <Button onClick={() => navigate(`/jobs/manage/${jobId}/analytics`)}>
+            View Analytics
           </Button>
         </div>
       </div>
@@ -402,7 +402,3 @@ const JobApplicants = () => {
 };
 
 export default JobApplicants;
-
-
-
-

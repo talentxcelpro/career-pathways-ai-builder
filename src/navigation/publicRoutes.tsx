@@ -1,4 +1,4 @@
-import { lazy } from "react";
+import { lazy, Suspense } from "react";
 import { FileText, Briefcase, TrendingUp, Building2, MessageSquare, Search } from "lucide-react";
 import { TieredAccessGuard } from "@/components/access/TieredAccessGuard";
 
@@ -9,6 +9,9 @@ const Companies = lazy(() => import("../pages/Companies"));
 const InterviewPrep = lazy(() => import("../pages/tools/InterviewPrep"));
 const AIJobMatchGPT = lazy(() => import("../pages/tools/AIJobMatchGPT"));
 
+const S = ({ children }: { children: React.ReactNode }) => (
+  <Suspense fallback={null}>{children}</Suspense>
+);
 
 export const publicRoutes = [
   {
@@ -21,7 +24,7 @@ export const publicRoutes = [
         requiresAuth={false}
         requiredTier="free"
       >
-        <ResumeBuilder />
+        <S><ResumeBuilder /></S>
       </TieredAccessGuard>
     ),
     isPublic: true,
@@ -38,7 +41,7 @@ export const publicRoutes = [
         requiresAuth={false}
         requiredTier="free"
       >
-        <Jobs />
+        <S><Jobs /></S>
       </TieredAccessGuard>
     ),
     isPublic: true,
@@ -55,7 +58,7 @@ export const publicRoutes = [
         requiresAuth={false}
         requiredTier="free"
       >
-        <MarketInsights />
+        <S><MarketInsights /></S>
       </TieredAccessGuard>
     ),
     isPublic: true,
@@ -72,7 +75,7 @@ export const publicRoutes = [
         requiresAuth={false}
         requiredTier="free"
       >
-        <Companies />
+        <S><Companies /></S>
       </TieredAccessGuard>
     ),
     isPublic: true,
@@ -89,7 +92,7 @@ export const publicRoutes = [
         requiresAuth={false}
         requiredTier="free"
       >
-        <InterviewPrep />
+        <S><InterviewPrep /></S>
       </TieredAccessGuard>
     ),
     isPublic: true,
@@ -106,7 +109,7 @@ export const publicRoutes = [
         requiresAuth={false}
         requiredTier="free"
       >
-        <AIJobMatchGPT />
+        <S><AIJobMatchGPT /></S>
       </TieredAccessGuard>
     ),
     isPublic: true,

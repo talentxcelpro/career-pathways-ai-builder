@@ -1,7 +1,5 @@
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { 
   Trophy, 
@@ -9,10 +7,9 @@ import {
   Target, 
   Coins, 
   Zap, 
-  Activity,
   Crown,
   Flame,
-  ChevronRight
+  Sparkles
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -34,8 +31,6 @@ interface GameProgressHeaderProps {
 export const GameProgressHeader: React.FC<GameProgressHeaderProps> = ({
   userStats,
   userName,
-  currentPage,
-  totalPages,
   unlockedToolsCount
 }) => {
   const { 
@@ -47,144 +42,113 @@ export const GameProgressHeader: React.FC<GameProgressHeaderProps> = ({
     nextLevelProgress 
   } = userStats;
 
-  const completionRate = totalTools > 0 ? (completedTools / totalTools) * 100 : 0;
-  const xpToNextLevel = 1000 - (nextLevelProgress * 10); // Simplified calculation
+  const masteryPercent = totalTools > 0 ? Math.round((completedTools / totalTools) * 100) : 0;
 
   const getLevelBadge = (level: number) => {
-    if (level >= 10) return { icon: Crown, color: 'bg-purple-500/10 text-purple-700 border-purple-500/20', title: 'Master' };
-    if (level >= 5) return { icon: Star, color: 'bg-yellow-500/10 text-yellow-700 border-yellow-500/20', title: 'Expert' };
-    if (level >= 2) return { icon: Target, color: 'bg-blue-500/10 text-blue-700 border-blue-500/20', title: 'Advanced' };
-    return { icon: Zap, color: 'bg-green-500/10 text-green-700 border-green-500/20', title: 'Beginner' };
+    if (level >= 10) return { icon: Crown, title: 'Master', color: 'from-amber-500 to-yellow-400 text-amber-950' };
+    if (level >= 5) return { icon: Star, title: 'Expert', color: 'from-purple-500 to-indigo-500 text-white' };
+    if (level >= 2) return { icon: Target, title: 'Advanced', color: 'from-blue-500 to-cyan-400 text-white' };
+    return { icon: Zap, title: 'Beginner', color: 'from-indigo-600 to-blue-500 text-white' };
   };
 
   const levelBadge = getLevelBadge(userLevel);
 
   return (
-    <div className="mb-6 sm:mb-8 space-y-4 sm:space-y-6">
-      {/* Apple-style welcome section */}
-      <div className="text-center space-y-4 px-6 py-4 animate-in fade-in slide-in-from-top-4 duration-1000">
-        <h1 className="text-3xl sm:text-5xl font-apple-bold bg-gradient-to-r from-white via-primary/80 to-accent bg-clip-text text-transparent tracking-tighter leading-tight">
-          Elite Intelligence, {userName}
-        </h1>
-        <p className="text-sm sm:text-lg text-muted-foreground/60 max-w-lg mx-auto font-apple-medium">
-          Your Pro CommandCenter. Elevate your trajectory with AI-driven precision.
-        </p>
+    <div className="mb-5 space-y-4">
+      {/* Compact Apple-style Hero Banner */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1 pb-1">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+              Welcome back, <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 font-extrabold">{userName}</span>
+            </h1>
+            <Badge variant="outline" className="hidden sm:inline-flex text-[10px] font-semibold rounded-full px-2 py-0.5 bg-indigo-50/80 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-300 border-indigo-200/60 dark:border-indigo-800/60">
+              <Sparkles className="w-2.5 h-2.5 mr-1 text-indigo-500" />
+              Pro Toolkit Active
+            </Badge>
+          </div>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium max-w-2xl leading-normal">
+            Your personal AI career acceleration toolkit. Level up skills, build verified proof, and land top opportunities.
+          </p>
+        </div>
       </div>
 
-      {/* Compact stats grid - mobile optimized */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 px-4">
-        {/* Level Progress - Apple card style */}
-        <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-primary/10 via-primary/5 to-background shadow-lg backdrop-blur-sm">
-          <CardContent className="p-4 sm:p-5">
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
-                  <levelBadge.icon className="w-5 h-5 text-primary" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-lg font-bold text-foreground">Level {userLevel}</p>
-                  <p className="text-xs text-muted-foreground/80">{levelBadge.title}</p>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Progress value={nextLevelProgress} className="h-2 bg-muted/30" />
-                <p className="text-xs text-muted-foreground text-center">
-                  {Math.round(nextLevelProgress)}% to next level
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Tools Completion */}
-        <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-background shadow-lg backdrop-blur-sm">
-          <CardContent className="p-4 sm:p-5">
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-500/10 flex items-center justify-center">
-                  <Trophy className="w-5 h-5 text-emerald-600" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-lg font-bold text-foreground">{completedTools}/{unlockedToolsCount}</p>
-                  <p className="text-xs text-muted-foreground/80">Completed</p>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Progress value={completionRate} className="h-2 bg-muted/30" />
-                <p className="text-xs text-muted-foreground text-center">
-                  {Math.round(completionRate)}% mastery
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Current Streak */}
-        <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-orange-500/10 via-orange-500/5 to-background shadow-lg backdrop-blur-sm">
-          <CardContent className="p-4 sm:p-5">
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-orange-500/20 to-orange-500/10 flex items-center justify-center">
-                  <Flame className="w-5 h-5 text-orange-600" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-lg font-bold text-foreground">{currentStreak}</p>
-                  <p className="text-xs text-muted-foreground/80">Day Streak</p>
-                </div>
-              </div>
-              <Badge variant="outline" className="text-xs bg-orange-500/10 text-orange-700 border-orange-500/30 w-full justify-center">
-                {currentStreak > 0 ? 'Keep it up! 🔥' : 'Start your streak!'}
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* TXC Balance */}
-        <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-background shadow-lg backdrop-blur-sm">
-          <CardContent className="p-4 sm:p-5">
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-500/20 to-amber-500/10 flex items-center justify-center">
-                  <Coins className="w-5 h-5 text-amber-600" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-lg font-bold text-foreground">{totalTXC.toLocaleString()}</p>
-                  <p className="text-xs text-muted-foreground/80">TXC Tokens</p>
-                </div>
-              </div>
-              <Button variant="outline" size="sm" className="text-xs h-8 w-full bg-amber-500/10 border-amber-500/30 hover:bg-amber-500/20">
-                Earn More <ChevronRight className="w-3 h-3 ml-1" />
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Minimalist progress indicator */}
-      <Card className="border-0 bg-gradient-to-r from-background/80 via-muted/20 to-background/80 shadow-lg backdrop-blur-xl mx-4">
-        <CardContent className="p-4 sm:p-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
-                <Activity className="w-5 h-5 text-primary" />
+      {/* Sleek Compact 4-Card Progress Row */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
+        
+        {/* Card 1: Level */}
+        <div className="rounded-2xl p-3.5 transition-all duration-200 bg-white/90 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800/80 backdrop-blur-xl shadow-xs hover:shadow-md">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <div className={cn("w-7 h-7 rounded-lg bg-gradient-to-br flex items-center justify-center shadow-xs", levelBadge.color)}>
+                <levelBadge.icon className="w-3.5 h-3.5 text-white" />
               </div>
               <div>
-                <h3 className="font-semibold text-foreground">Your Toolkit</h3>
-                <p className="text-xs text-muted-foreground/80">Page {currentPage} of {totalPages}</p>
+                <p className="text-xs font-bold text-slate-900 dark:text-white">Level {userLevel}</p>
+                <p className="text-[10px] text-slate-400 font-medium">{levelBadge.title}</p>
               </div>
             </div>
-            
-            <div className="flex items-center gap-2 flex-wrap">
-              <Badge className="bg-emerald-500/10 text-emerald-700 border-emerald-500/30 text-xs">
-                {unlockedToolsCount} Available
-              </Badge>
-              <Badge className="bg-slate-500/10 text-slate-700 border-slate-500/30 text-xs">
-                {totalTools - unlockedToolsCount} Locked
-              </Badge>
-            </div>
+            <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">{Math.round(nextLevelProgress)}%</span>
           </div>
-        </CardContent>
-      </Card>
+          <Progress value={nextLevelProgress} className="h-1.5 rounded-full bg-slate-100 dark:bg-slate-800" />
+        </div>
+
+        {/* Card 2: Mastery */}
+        <div className="rounded-2xl p-3.5 transition-all duration-200 bg-white/90 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800/80 backdrop-blur-xl shadow-xs hover:shadow-md">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-xs text-white">
+                <Trophy className="w-3.5 h-3.5" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-900 dark:text-white">{completedTools}/{totalTools} <span className="text-[10px] font-normal text-slate-400">Tools</span></p>
+                <p className="text-[10px] text-slate-400 font-medium">{unlockedToolsCount} available</p>
+              </div>
+            </div>
+            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">{masteryPercent}%</span>
+          </div>
+          <Progress value={masteryPercent} className="h-1.5 rounded-full bg-slate-100 dark:bg-slate-800" />
+        </div>
+
+        {/* Card 3: Daily Streak */}
+        <div className="rounded-2xl p-3.5 transition-all duration-200 bg-white/90 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800/80 backdrop-blur-xl shadow-xs hover:shadow-md">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-xs text-white">
+                <Flame className="w-3.5 h-3.5" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-900 dark:text-white">{currentStreak} Day Streak</p>
+                <p className="text-[10px] text-amber-600 dark:text-amber-400 font-medium">
+                  {currentStreak > 0 ? '🔥 Streak Active!' : 'Run a tool today!'}
+                </p>
+              </div>
+            </div>
+            <Badge variant="outline" className="text-[10px] font-bold rounded-full px-2 py-0 border-amber-200 text-amber-600 bg-amber-50/50">
+              Active
+            </Badge>
+          </div>
+        </div>
+
+        {/* Card 4: Tokens */}
+        <div className="rounded-2xl p-3.5 transition-all duration-200 bg-white/90 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800/80 backdrop-blur-xl shadow-xs hover:shadow-md">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-xs text-white">
+                <Coins className="w-3.5 h-3.5" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-900 dark:text-white">{totalTXC.toLocaleString()} <span className="text-violet-600 font-extrabold text-[11px]">TXC</span></p>
+                <p className="text-[10px] text-slate-400 font-medium">Earn on completions</p>
+              </div>
+            </div>
+            <Badge variant="outline" className="text-[10px] font-bold rounded-full px-2 py-0 border-violet-200 text-violet-600 bg-violet-50/50">
+              Tokens
+            </Badge>
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 };

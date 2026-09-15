@@ -55,7 +55,7 @@ const plans: Plan[] = [
       { name: 'Service page creation', included: true, icon: <FileText className="h-4 w-4" /> },
       { name: 'Basic profile boosting', included: true, icon: <TrendingUp className="h-4 w-4" /> },
       { name: 'Direct messaging', included: true, icon: <MessageSquare className="h-4 w-4" /> },
-      { name: 'Basic CareerAnalytics', included: true, icon: <BarChart3 className="h-4 w-4" /> },
+      { name: 'Basic analytics', included: true, icon: <BarChart3 className="h-4 w-4" /> },
       { name: 'CRM tools', included: false, icon: <Users className="h-4 w-4" /> },
       { name: 'Payment integration', included: false, icon: <CreditCard className="h-4 w-4" /> },
       { name: 'Advanced AI tools', included: false, icon: <Sparkles className="h-4 w-4" /> },
@@ -73,7 +73,7 @@ const plans: Plan[] = [
       { name: 'Service page creation', included: true, icon: <FileText className="h-4 w-4" /> },
       { name: 'Priority profile boosting', included: true, icon: <TrendingUp className="h-4 w-4" /> },
       { name: 'Unlimited messaging', included: true, icon: <MessageSquare className="h-4 w-4" /> },
-      { name: 'Advanced CareerAnalytics', included: true, icon: <BarChart3 className="h-4 w-4" /> },
+      { name: 'Advanced analytics', included: true, icon: <BarChart3 className="h-4 w-4" /> },
       { name: 'Complete CRM suite', included: true, icon: <Users className="h-4 w-4" /> },
       { name: 'Payment integration', included: true, icon: <CreditCard className="h-4 w-4" /> },
       { name: 'AI business tools', included: true, icon: <Sparkles className="h-4 w-4" /> },
@@ -276,7 +276,7 @@ const ProSubscriptionModal: React.FC<ProSubscriptionModalProps> = ({
             <li>• Get discovered by more clients with boosted profiles</li>
             <li>• Showcase your services with professional pages</li>
             <li>• Access advanced CRM tools to manage clients</li>
-            <li>• Use Performance business tools for growth</li>
+            <li>• Use AI-powered business tools for growth</li>
             <li>• Get priority support and exclusive features</li>
           </ul>
         </div>
@@ -286,6 +286,3 @@ const ProSubscriptionModal: React.FC<ProSubscriptionModalProps> = ({
 };
 
 export default ProSubscriptionModal;
-
-
-

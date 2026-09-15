@@ -253,7 +253,7 @@ export const LinkedInImportManager = () => {
   const downloadTemplate = () => {
     const csvContent = `First Name,Last Name,Email,LinkedIn URL,Job Title,Company,Location,Skills
 John,Doe,john.doe@example.com,https://linkedin.com/in/johndoe,Software Engineer,TechCorp,San Francisco,"JavaScript;React;Node.js"
-Jane,Smith,jane.smith@example.com,https://linkedin.com/in/janesmith,Product Manager,InnovateCo,New York,"Product Strategy;Agile;CareerAnalytics"`;
+Jane,Smith,jane.smith@example.com,https://linkedin.com/in/janesmith,Product Manager,InnovateCo,New York,"Product Strategy;Agile;Analytics"`;
 
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
@@ -492,6 +492,3 @@ Jane,Smith,jane.smith@example.com,https://linkedin.com/in/janesmith,Product Mana
     </div>
   );
 };
-
-
-

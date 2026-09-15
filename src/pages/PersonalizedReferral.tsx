@@ -89,11 +89,11 @@ const PersonalizedReferral: React.FC = () => {
   ];
 
   const benefits = [
-    'Performance Resume Builder & Optimization',
+    'AI-Powered Resume Builder & Optimization',
     'Smart Job Matching & Application Tracking',
     'Career Insights & Personalized Recommendations',
     'Professional Networking & Community Access',
-    'Advanced CareerAnalytics & Growth Path',
+    'Advanced Analytics & Progress Tracking',
     'Priority Support & Early Feature Access'
   ];
 
@@ -145,7 +145,7 @@ const PersonalizedReferral: React.FC = () => {
               
               <p className="text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto">
                 Join TalentXcel through this exclusive referral and both of you will earn TXC tokens! 
-                Start your Performance career journey today.
+                Start your AI-powered career journey today.
               </p>
 
               {referrerProfile.about && (
@@ -238,8 +238,8 @@ const PersonalizedReferral: React.FC = () => {
                   <CheckCircle className="h-16 w-16 text-green-500 mx-auto" />
                   <h3 className="text-2xl font-bold text-foreground">Referral Applied Successfully! 🎉</h3>
                   <p className="text-muted-foreground">Both you and your referrer have been rewarded with TXC tokens.</p>
-                  <Button onClick={() => window.location.href = '/CommandCenter'}>
-                    Go to CommandCenter <ArrowRight className="ml-2 h-4 w-4" />
+                  <Button onClick={() => window.location.href = '/dashboard'}>
+                    Go to Dashboard <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
               ) : (
@@ -305,7 +305,7 @@ const PersonalizedReferral: React.FC = () => {
                     <span className="text-lg font-bold text-primary">4</span>
                   </div>
                   <h4 className="font-semibold">Grow Career</h4>
-                  <p className="text-sm text-muted-foreground">Land your dream job with Performance tools</p>
+                  <p className="text-sm text-muted-foreground">Land your dream job with AI-powered tools</p>
                 </div>
               </div>
             </CardContent>
@@ -317,6 +317,3 @@ const PersonalizedReferral: React.FC = () => {
 };
 
 export default PersonalizedReferral;
-
-
-

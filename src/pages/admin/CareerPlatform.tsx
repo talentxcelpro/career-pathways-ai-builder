@@ -28,7 +28,7 @@ const CareerPlatform = () => {
   const { data: platformStats } = useQuery({
     queryKey: ['platform-overview'],
     queryFn: async () => {
-      const [usersData, jobsData, aiUsageData, TalentNetworkData] = await Promise.all([
+      const [usersData, jobsData, aiUsageData, connectionsData] = await Promise.all([
         supabase.from('user_profiles').select('id, created_at, user_type').limit(1000),
         supabase.from('jobs').select('id, created_at, is_active, applications_count'),
         supabase.from('ai_usage_logs').select('id, created_at, operation_type'),
@@ -40,7 +40,7 @@ const CareerPlatform = () => {
       const activeJobs = jobsData.data?.filter(job => job.is_active).length || 0;
       const totalApplications = jobsData.data?.reduce((sum, job) => sum + (job.applications_count || 0), 0) || 0;
       const aiOperations = aiUsageData.data?.length || 0;
-      const networkConnections = TalentNetworkData.data?.filter(conn => conn.status === 'accepted').length || 0;
+      const networkConnections = connectionsData.data?.filter(conn => conn.status === 'accepted').length || 0;
 
       return {
         totalUsers,
@@ -115,7 +115,7 @@ const CareerPlatform = () => {
             Career Platform Overview
           </h1>
           <p className="text-muted-foreground">
-            Complete Performance career development ecosystem
+            Complete AI-powered career development ecosystem
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -168,7 +168,7 @@ const CareerPlatform = () => {
             <div className="text-2xl font-bold">{stats.aiOperations.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">
               <Zap className="h-3 w-3 inline mr-1" />
-              Performance interactions
+              AI-powered interactions
             </p>
           </CardContent>
         </Card>
@@ -325,7 +325,7 @@ const CareerPlatform = () => {
             </Button>
             <Button variant="outline" className="h-20 flex-col gap-2">
               <BarChart3 className="h-6 w-6" />
-              <span>CareerAnalytics</span>
+              <span>Analytics</span>
             </Button>
           </div>
         </CardContent>
@@ -335,7 +335,3 @@ const CareerPlatform = () => {
 };
 
 export default CareerPlatform;
-
-
-
-

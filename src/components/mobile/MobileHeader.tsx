@@ -1,131 +1,156 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Bell, Search } from 'lucide-react';
-import { UserAvatar } from '@/components/common/UserAvatar';
+import React, { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Button } from "@/components/ui/button";
+import { UserAvatar } from "@/components/common/UserAvatar";
+import { Badge } from "@/components/ui/badge";
+import { 
+  Menu, 
+  X, 
+  Search,
+  Bell,
+  MessageSquare,
+  Settings
+} from "lucide-react";
 import { useAuth } from '@/contexts/AuthContext';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { MobileSidebar } from './MobileSidebar';
+import { cn } from '@/lib/utils';
+import { TalentXcelLogo } from '@/components/common/TalentXcelLogo';
 
 export const MobileHeader = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
 
+  // Get profile data
   const { data: profile } = useQuery({
     queryKey: ['profile', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
-
+      
       const { data: profileData } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
         .maybeSingle();
-
+      
       return profileData;
     },
-    enabled: !!user?.id,
+    enabled: !!user?.id
   });
 
+  // Get unread notifications count
   const { data: unreadCount = 0 } = useQuery({
     queryKey: ['notifications-count', user?.id],
     queryFn: async () => {
       if (!user?.id) return 0;
-
+      
       const { count } = await supabase
         .from('notifications')
         .select('*', { count: 'exact', head: true })
         .eq('user_id', user.id)
         .eq('is_read', false);
-
+      
       return count || 0;
     },
-    enabled: !!user?.id,
+    enabled: !!user?.id
   });
 
+  const getInitials = () => {
+    if (profile?.full_name) {
+      return profile.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    }
+    return user?.email?.[0]?.toUpperCase() || 'U';
+  };
+
+  const getPageTitle = () => {
+    const path = location.pathname;
+    if (path === '/network') return 'Network';
+    if (path === '/jobs') return 'Jobs';
+    if (path === '/passport') return 'Career Passport';
+    if (path.startsWith('/network/notifications')) return 'Activity';
+    if (path === '/profile') return 'Profile';
+    return 'TalentXcel';
+  };
+
   return (
-    <header
-      className="sticky top-0 z-50 md:hidden"
-      style={{
-        background: 'rgba(255,255,255,0.94)',
-        backdropFilter: 'blur(24px) saturate(200%)',
-        WebkitBackdropFilter: 'blur(24px) saturate(200%)',
-        borderBottom: '0.5px solid rgba(0,0,0,0.1)',
-        paddingTop: 'env(safe-area-inset-top)',
-      }}
-    >
-      <div className="flex items-center justify-between px-3 h-[52px]">
-        <Link to="/" className="flex items-center gap-2 press-effect">
-          <img
-            src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png"
-            alt="TalentXcel"
-            className="h-7 w-7 rounded-lg"
-            style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.12)' }}
-          />
-          <div className="leading-none">
-            <span
-              className="block font-bold text-gray-900"
-              style={{ fontSize: 15, letterSpacing: '-0.02em' }}
-            >
-              TalentXcel
-            </span>
-            <span
-              className="block font-semibold uppercase tracking-widest"
-              style={{ fontSize: 8, color: 'hsl(212,100%,48%)', marginTop: 1 }}
-            >
-              Pro
-            </span>
+    <>
+      <header className="bg-background/90 backdrop-blur-xl border-b border-border/30 sticky top-0 z-40 md:hidden shadow-apple">
+        <div className="flex items-center justify-between px-4 py-2 h-12">
+          {/* Left - Menu Button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsSidebarOpen(true)}
+            className="p-2 hover:scale-105 transition-apple hover:bg-muted/50 rounded-lg"
+          >
+            <Menu className="icon-apple-sm" />
+          </Button>
+
+          {/* Center - Executive TalentXcel Logo */}
+          <div className="flex-1 flex justify-center items-center">
+            <Link to="/" className="flex items-center">
+              <TalentXcelLogo iconSize={22} textSize="text-sm font-black" theme="auto" />
+            </Link>
           </div>
-        </Link>
 
-        <div className="flex items-center gap-0.5">
-          <button
-            onClick={() => navigate('/mobile/search')}
-            className="press-effect flex items-center justify-center w-9 h-9 rounded-full"
-            aria-label="Search"
-          >
-            <Search className="text-gray-600" style={{ width: 20, height: 20, strokeWidth: 1.75 }} />
-          </button>
-
-          <Link
-            to="/network/notifications"
-            className="press-effect relative flex items-center justify-center w-9 h-9 rounded-full"
-            aria-label="Notifications"
-          >
-            <Bell className="text-gray-600" style={{ width: 20, height: 20, strokeWidth: 1.75 }} />
-            {unreadCount > 0 && (
-              <span
-                className="absolute top-1.5 right-1.5 flex items-center justify-center rounded-full bg-red-500 text-white font-bold shadow animate-scale-in"
-                style={{
-                  minWidth: 15,
-                  height: 15,
-                  fontSize: 9,
-                  paddingInline: 3,
-                  lineHeight: '15px',
-                }}
-              >
-                {unreadCount > 99 ? '99+' : unreadCount}
-              </span>
-            )}
-          </Link>
-
-          <Link to="/profile" className="press-effect ml-1" aria-label="Profile">
-            <div
-              className="rounded-full overflow-hidden"
-              style={{
-                width: 30,
-                height: 30,
-                boxShadow: '0 0 0 1.5px rgba(0,0,0,0.1)',
-              }}
+          {/* Right - Compact Actions */}
+          <div className="flex items-center space-x-1">
+            {/* Search */}
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="p-2 hover:scale-105 transition-apple hover:bg-muted/50 rounded-lg"
+              onClick={() => navigate('/mobile/search')}
             >
+              <Search className="icon-apple-sm" />
+            </Button>
+
+            {/* Messages */}
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="p-2 hover:scale-105 transition-apple hover:bg-muted/50 rounded-lg"
+              onClick={() => navigate('/network/messages')}
+            >
+              <MessageSquare className="icon-apple-sm" />
+            </Button>
+
+            {/* Notifications */}
+            <Link to="/network/notifications">
+              <Button variant="ghost" size="sm" className="p-2 relative hover:scale-105 transition-apple hover:bg-muted/50 rounded-lg">
+                <Bell className="icon-apple-sm" />
+                {unreadCount > 0 && (
+                  <Badge 
+                    variant="destructive"
+                    className="absolute -top-1 -right-1 h-3 w-3 p-0 text-[9px] min-w-[12px] flex items-center justify-center animate-pulse"
+                  >
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </Badge>
+                )}
+              </Button>
+            </Link>
+
+            {/* Profile */}
+            <Link to="/profile" className="hover:scale-105 transition-apple">
               <UserAvatar
                 src={profile?.profile_picture_url}
                 userName={profile?.full_name}
                 size="sm"
+                className="ring-1 ring-border/30 hover:ring-primary/30 transition-apple"
               />
-            </div>
-          </Link>
+            </Link>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* Mobile Sidebar */}
+      <MobileSidebar 
+        isOpen={isSidebarOpen} 
+        onClose={() => setIsSidebarOpen(false)} 
+      />
+    </>
   );
 };

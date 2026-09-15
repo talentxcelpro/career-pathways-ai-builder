@@ -68,7 +68,7 @@ export const AutoUpdateSystem: React.FC = () => {
             lastUpdated: new Date(Date.now() - 1000 * 60 * 3).toISOString()
           },
           {
-            component: 'Trending CareerAnalytics',
+            component: 'Trending Analytics',
             status: 'completed' as const,
             lastUpdated: new Date(Date.now() - 1000 * 60 * 1).toISOString()
           },
@@ -375,8 +375,8 @@ export const AutoUpdateSystem: React.FC = () => {
               <h4 className="font-semibold">Data Sources</h4>
               <ul className="space-y-1 text-muted-foreground">
                 <li>• Real-time job postings</li>
-                <li>• Live salary data Pulses</li>
-                <li>• Market trend CareerAnalytics</li>
+                <li>• Live salary data feeds</li>
+                <li>• Market trend analytics</li>
                 <li>• Regional hiring statistics</li>
                 <li>• Company performance metrics</li>
               </ul>
@@ -398,6 +398,3 @@ export const AutoUpdateSystem: React.FC = () => {
     </div>
   );
 };
-
-
-

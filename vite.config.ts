@@ -2,6 +2,8 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
+import { mcpPlugin } from "@lovable.dev/mcp-js/stacks/supabase/vite";
+import { discoveryVitePlugin } from "./src/lib/discovery/discoveryVitePlugin";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -9,29 +11,27 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
     watch: {
-      ignored: [
-        "**/android/**",
-        "**/ios/**",
-        "**/supabase/**",
-      ],
+      ignored: ["**/dist/**", "**/.git/**"],
     },
   },
   plugins: [
     react(),
-    mode === 'development' && componentTagger(),
+    discoveryVitePlugin(),
+    mode === 'development' && mcpPlugin(),
+    mode === 'production' && componentTagger(),
   ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "fs": path.resolve(__dirname, "./src/lib/social-marketing/utils/browserFs.ts"),
+      "path": path.resolve(__dirname, "./src/lib/social-marketing/utils/browserPath.ts"),
+      "child_process": path.resolve(__dirname, "./src/lib/social-marketing/utils/browserChildProcess.ts"),
+      "crypto": path.resolve(__dirname, "./src/lib/social-marketing/utils/browserCrypto.ts"),
     },
     dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"],
   },
   define: {
     global: "globalThis",
-  },
-  esbuild: {
-    drop: mode === 'production' ? ['console', 'debugger'] : [],
-    legalComments: 'none',
   },
   optimizeDeps: {
     include: [
@@ -45,34 +45,26 @@ export default defineConfig(({ mode }) => ({
     ],
   },
   build: {
+    emptyOutDir: false,
     rollupOptions: {
       output: {
-        // Keep React and all related runtime in a single chunk to avoid
-        // multiple React instances / null import issues.
         manualChunks: (id) => {
-          if (
-            id.includes('node_modules/react/') ||
-            id.includes('node_modules/react-dom/') ||
-            id.includes('node_modules/scheduler/') ||
-            id.includes('node_modules/react-is/')
-          ) {
-            return 'react-vendor';
+          // 1. High-volume static education catalog (isolated from core application)
+          if (id.includes('indianInstitutionsCatalog') || id.includes('indianEducationService')) {
+            return 'indian-education-catalog';
           }
-          if (id.includes('@radix-ui')) {
-            return 'radix-ui';
+          // 2. Heavy standalone PDF engines (loaded strictly on-demand for PDF generation)
+          if (id.includes('node_modules/pdfjs-dist')) {
+            return 'pdfjs-vendor';
           }
-          if (id.includes('@supabase')) {
-            return 'supabase';
+          if (id.includes('node_modules/jspdf')) {
+            return 'jspdf-vendor';
           }
-          if (id.includes('node_modules/framer-motion')) {
-            return 'animations';
+          if (id.includes('node_modules/html2canvas')) {
+            return 'html2canvas-vendor';
           }
-          if (id.includes('node_modules/recharts')) {
-            return 'charts';
-          }
-          if (id.includes('node_modules/lucide-react')) {
-            return 'icons';
-          }
+          // 3. Keep all React core runtime and vendor libraries in a unified vendor chunk
+          // to prevent cross-chunk circular dependencies and uninitialized createContext calls
           if (id.includes('node_modules')) {
             return 'vendor';
           }
@@ -82,9 +74,17 @@ export default defineConfig(({ mode }) => ({
         assetFileNames: 'assets/[name]-[hash].[ext]',
       },
     },
-    chunkSizeWarningLimit: 500,
+    chunkSizeWarningLimit: 3000,
     sourcemap: false,
-    minify: 'esbuild',
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: mode === 'production',
+        drop_debugger: true,
+        pure_funcs: mode === 'production' ? ['console.log', 'console.info', 'console.debug'] : [],
+      },
+      maxWorkers: 1,
+    },
     cssCodeSplit: true,
     assetsInlineLimit: 4096,
   },

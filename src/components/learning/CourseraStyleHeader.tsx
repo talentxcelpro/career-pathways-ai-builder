@@ -34,7 +34,7 @@ const audienceOptions: AudienceOption[] = [
     id: 'businesses',
     title: 'For Businesses',
     icon: Building,
-    description: 'Upskill teams with enterprise-ready content and CareerAnalytics',
+    description: 'Upskill teams with enterprise-ready content and analytics',
     color: 'text-green-600',
     href: '/learning/businesses'
   },
@@ -162,8 +162,8 @@ export const CourseraStyleHeader: React.FC = () => {
                       <Link to="/learning/courses" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
                         Browse All Courses →
                       </Link>
-                      <Link to="/learning/CareerAnalytics" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
-                        Learning CareerAnalytics →
+                      <Link to="/learning/analytics" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+                        Learning Analytics →
                       </Link>
                     </div>
                   </div>
@@ -215,7 +215,7 @@ export const CourseraStyleHeader: React.FC = () => {
                     <Link to="/learning/certificates" className="w-full">Certificates</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <Link to="/learning/CareerAnalytics" className="w-full">CareerAnalytics</Link>
+                    <Link to="/learning/analytics" className="w-full">Analytics</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <Link to="/settings" className="w-full">Settings</Link>
@@ -229,6 +229,3 @@ export const CourseraStyleHeader: React.FC = () => {
     </>
   );
 };
-
-
-

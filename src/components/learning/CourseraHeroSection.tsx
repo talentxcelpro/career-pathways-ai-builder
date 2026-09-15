@@ -21,7 +21,7 @@ export const CourseraHeroSection: React.FC = () => {
     {
       icon: TrendingUp,
       title: 'Skill Assessment',
-      description: 'Track your progress with detailed CareerAnalytics'
+      description: 'Track your progress with detailed analytics'
     }
   ];
 
@@ -78,7 +78,7 @@ export const CourseraHeroSection: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Content - Interactive Learning CommandCenter */}
+          {/* Right Content - Interactive Learning Dashboard */}
           <div className="relative">
             <div className="relative bg-white rounded-2xl p-8 shadow-2xl border animate-fade-in">
               {/* Interactive Learning Interface */}
@@ -173,6 +173,3 @@ export const CourseraHeroSection: React.FC = () => {
     </section>
   );
 };
-
-
-

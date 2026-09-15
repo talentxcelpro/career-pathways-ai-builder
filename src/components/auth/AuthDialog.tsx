@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { UnifiedAuthForm } from './UnifiedAuthForm';
 import { LogIn } from 'lucide-react';
@@ -32,10 +32,6 @@ export const AuthDialog = ({
         )}
       </DialogTrigger>
       <DialogContent className="max-w-xs p-0 bg-transparent border-0 shadow-none">
-        <DialogTitle className="sr-only">TalentXcel sign in</DialogTitle>
-        <DialogDescription className="sr-only">
-          Sign in or create your TalentXcel account to continue.
-        </DialogDescription>
         <div className="relative">
           {/* Simplified background */}
           <div className="absolute inset-0 bg-white/95 backdrop-blur-xl rounded-xl shadow-xl border border-white/20"></div>

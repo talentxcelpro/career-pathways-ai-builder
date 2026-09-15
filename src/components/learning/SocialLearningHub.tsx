@@ -87,7 +87,7 @@ interface LiveSession {
 }
 
 export const SocialLearningHub: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('Pulse');
+  const [activeTab, setActiveTab] = useState('feed');
   const [newPost, setNewPost] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -224,9 +224,9 @@ export const SocialLearningHub: React.FC = () => {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="Pulse" className="flex items-center gap-2">
+          <TabsTrigger value="feed" className="flex items-center gap-2">
             <MessageCircle className="h-4 w-4" />
-            Pulse
+            Feed
           </TabsTrigger>
           <TabsTrigger value="groups" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
@@ -246,8 +246,8 @@ export const SocialLearningHub: React.FC = () => {
           </TabsTrigger>
         </TabsList>
 
-        {/* Learning Pulse */}
-        <TabsContent value="Pulse" className="space-y-6">
+        {/* Learning Feed */}
+        <TabsContent value="feed" className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Share Your Learning Journey</CardTitle>

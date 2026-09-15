@@ -2,11 +2,11 @@ import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Brain, TrendingUp, Target, MessageSquare, Globe, Zap } from 'lucide-react';
-import EnhancedCareerCareerAnalytics from '@/components/ai/EnhancedCareerCareerAnalytics';
+import EnhancedCareerAnalytics from '@/components/ai/EnhancedCareerAnalytics';
 import IndustryBenchmarking from '@/components/ai/IndustryBenchmarking';
 import CareerCredibilityScore from '@/components/ai/CareerCredibilityScore';
 import NetworkingIntelligence from '@/components/ai/NetworkingIntelligence';
-import IntelligentCareerCoach from '@/components/ai/IntelligentCareerCoach';
+import AICareerCoach from '@/components/ai/AICareerCoach';
 import VoiceCareerCoach from '@/components/ai/VoiceCareerCoach';
 import WebRTCVoiceCoach from '@/components/ai/WebRTCVoiceCoach';
 import AIInterviewSimulator from '@/components/ai/AIInterviewSimulator';
@@ -15,8 +15,8 @@ import { updateMetaTags } from '@/utils/metaTags';
 const AdvancedAIHub: React.FC = () => {
   React.useEffect(() => {
     updateMetaTags({
-      title: 'Advanced AI Career Hub - TalentXcel | Performance CareerIntelligence',
-      description: 'Access advanced AI features including predictive CareerAnalytics, intelligent job matching, AI career coaching, and market intelligence for accelerated career growth.'
+      title: 'Advanced AI Career Hub - TalentXcel | AI-Powered Career Intelligence',
+      description: 'Access advanced AI features including predictive analytics, intelligent job matching, AI career coaching, and market intelligence for accelerated career growth.'
     });
   }, []);
 
@@ -44,8 +44,8 @@ const AdvancedAIHub: React.FC = () => {
             <Card className="hover:shadow-lg transition-shadow">
               <CardContent className="p-4 text-center">
                 <TrendingUp className="h-8 w-8 text-primary mx-auto mb-2" />
-                <h3 className="font-semibold mb-1">Predictive CareerAnalytics</h3>
-                <p className="text-xs text-muted-foreground">Performance career trajectory forecasting</p>
+                <h3 className="font-semibold mb-1">Predictive Analytics</h3>
+                <p className="text-xs text-muted-foreground">AI-powered career trajectory forecasting</p>
               </CardContent>
             </Card>
             
@@ -76,11 +76,11 @@ const AdvancedAIHub: React.FC = () => {
         </div>
 
         {/* AI Tools Tabs */}
-        <Tabs defaultValue="CareerAnalytics" className="w-full">
+        <Tabs defaultValue="analytics" className="w-full">
           <TabsList className="grid w-full grid-cols-7">
-            <TabsTrigger value="CareerAnalytics" className="flex items-center gap-2">
+            <TabsTrigger value="analytics" className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
-              <span className="hidden md:inline">CareerAnalytics</span>
+              <span className="hidden md:inline">Analytics</span>
               <span className="md:hidden">📊</span>
             </TabsTrigger>
             <TabsTrigger value="matching" className="flex items-center gap-2">
@@ -115,8 +115,8 @@ const AdvancedAIHub: React.FC = () => {
             </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="CareerAnalytics" className="mt-6">
-            <EnhancedCareerCareerAnalytics />
+          <TabsContent value="analytics" className="mt-6">
+            <EnhancedCareerAnalytics />
           </TabsContent>
           
           <TabsContent value="matching" className="mt-6">
@@ -124,7 +124,7 @@ const AdvancedAIHub: React.FC = () => {
           </TabsContent>
           
           <TabsContent value="coach" className="mt-6">
-            <IntelligentCareerCoach />
+            <AICareerCoach />
           </TabsContent>
           
           <TabsContent value="voice" className="mt-6">
@@ -154,7 +154,7 @@ const AdvancedAIHub: React.FC = () => {
                   Unlock Full AI Potential
                 </h3>
                 <p className="text-muted-foreground">
-                  Upgrade to Pro or Enterprise to access unlimited AI features, advanced CareerAnalytics, and priority support.
+                  Upgrade to Pro or Enterprise to access unlimited AI features, advanced analytics, and priority support.
                 </p>
               </div>
               <div className="flex gap-2">
@@ -171,6 +171,3 @@ const AdvancedAIHub: React.FC = () => {
 };
 
 export default AdvancedAIHub;
-
-
-

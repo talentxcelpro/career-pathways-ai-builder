@@ -13,16 +13,19 @@ const ChunkErrorFallback = ({ error, resetErrorBoundary }: { error: Error; reset
       </p>
       <div className="flex gap-2 justify-center">
         <button
-          onClick={() => {
-            // Clear relevant caches and retry
+          onClick={async () => {
+            // Clear relevant caches and reload window to bust stale Vite chunks
             if ('caches' in window) {
-              caches.keys().then(names => {
-                names.forEach(name => caches.delete(name));
-              });
+              try {
+                const names = await caches.keys();
+                await Promise.all(names.map(name => caches.delete(name)));
+              } catch (e) {
+                console.warn('Cache clear error:', e);
+              }
             }
-            resetErrorBoundary();
+            window.location.reload();
           }}
-          className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
+          className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 font-medium"
         >
           Retry
         </button>

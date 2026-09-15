@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -12,7 +11,7 @@ import {
   TrendingUp, 
   MessageSquare, 
   Brain, 
-  Award,
+  Award, 
   Users,
   Globe,
   Briefcase,
@@ -24,14 +23,14 @@ import {
   Star
 } from 'lucide-react';
 
-// Import existing tool components
-import ResumeCheck from '@/pages/tools/ResumeCheck';
-import CoverLetter from '@/pages/tools/CoverLetter';
-import SalaryAnalyzer from '@/pages/tools/SalaryAnalyzer';
-import MarketInsights from '@/pages/tools/MarketInsights';
-import InterviewPrep from '@/pages/tools/InterviewPrep';
-import AICareerNavigator from '@/pages/tools/AICareerNavigator';
-import { ProfileScore } from '@/pages/tools/ProfileScore';
+// Lazy load tool components
+const ResumeCheck = lazy(() => import('@/pages/tools/ResumeCheck'));
+const CoverLetter = lazy(() => import('@/pages/tools/CoverLetter'));
+const SalaryAnalyzer = lazy(() => import('@/pages/tools/SalaryAnalyzer'));
+const MarketInsights = lazy(() => import('@/pages/tools/MarketInsights'));
+const InterviewPrep = lazy(() => import('@/pages/tools/InterviewPrep'));
+const AICareerAssistant = lazy(() => import('@/pages/tools/AICareerAssistant'));
+const ProfileScore = lazy(() => import('@/pages/tools/ProfileScore').then(m => ({ default: m.ProfileScore })));
 
 interface Tool {
   id: string;
@@ -64,8 +63,8 @@ const toolCategories = [
     color: 'text-slate-800'
   },
   {
-    id: 'Performance',
-    title: 'Performance Insights',
+    id: 'ai-powered',
+    title: 'AI-Powered Insights',
     subtitle: 'Advanced intelligence for career growth',
     icon: Brain,
     gradient: 'from-indigo-600 to-indigo-700',
@@ -74,7 +73,7 @@ const toolCategories = [
   {
     id: 'market-analysis',
     title: 'Market Intelligence',
-    subtitle: 'Global market trends and CareerAnalytics',
+    subtitle: 'Global market trends and analytics',
     icon: BarChart3,
     gradient: 'from-emerald-600 to-emerald-700',
     color: 'text-emerald-900'
@@ -111,12 +110,12 @@ const tools: Tool[] = [
     global: true
   },
   {
-    id: 'ai-Navigator',
+    id: 'ai-assistant',
     title: 'Career Coach AI',
     subtitle: 'Personalized career guidance',
     icon: Brain,
-    component: AICareerNavigator,
-    category: 'Performance',
+    component: AICareerAssistant,
+    category: 'ai-powered',
     premium: true
   },
   {
@@ -148,11 +147,11 @@ const tools: Tool[] = [
   },
   {
     id: 'profile-score',
-    title: 'Profile CareerAnalytics',
+    title: 'Profile Analytics',
     subtitle: 'Comprehensive profile scoring',
     icon: Award,
     component: ProfileScore,
-    category: 'Performance'
+    category: 'ai-powered'
   }
 ];
 
@@ -193,7 +192,7 @@ const ToolsTabsInterface = () => {
               </Badge>
               <Badge variant="outline" className="gap-2">
                 <Zap className="h-3 w-3" />
-                Performance
+                AI-Powered
               </Badge>
             </div>
           </div>
@@ -393,7 +392,11 @@ const ToolsTabsInterface = () => {
                   const activeTool_obj = tools.find(t => t.id === activeTool);
                   if (activeTool_obj) {
                     const ToolComponent = activeTool_obj.component;
-                    return <ToolComponent />;
+                    return (
+                      <Suspense fallback={<div className="p-8 text-center text-slate-400">Loading tool...</div>}>
+                        <ToolComponent />
+                      </Suspense>
+                    );
                   }
                   return null;
                 })()}
@@ -407,7 +410,3 @@ const ToolsTabsInterface = () => {
 };
 
 export default ToolsTabsInterface;
-
-
-
-

@@ -4,7 +4,7 @@ export const COMPREHENSIVE_INDUSTRIES = [
   { id: 'software-development', name: 'Software Development', category: 'Tech', count: 8940 },
   { id: 'artificial-intelligence', name: 'Artificial Intelligence', category: 'Tech', count: 2350 },
   { id: 'cybersecurity', name: 'Cybersecurity', category: 'Tech', count: 1890 },
-  { id: 'data-science', name: 'Data Science & CareerAnalytics', category: 'Tech', count: 3210 },
+  { id: 'data-science', name: 'Data Science & Analytics', category: 'Tech', count: 3210 },
   { id: 'cloud-computing', name: 'Cloud Computing', category: 'Tech', count: 2100 },
   { id: 'blockchain', name: 'Blockchain & Cryptocurrency', category: 'Tech', count: 680 },
   { id: 'gaming', name: 'Gaming & Esports', category: 'Tech', count: 920 },
@@ -193,6 +193,3 @@ export const HIGH_GROWTH_INDUSTRIES = [
   'virtual-reality',
   'food-tech'
 ];
-
-
-

@@ -26,7 +26,7 @@ export const usePersonalizedAIAgent = () => {
         setAgent(personalizedAgent);
       } catch (error) {
         console.error('Failed to initialize AI agent:', error);
-        toast.error('Failed to initialize your TalentXcel Navigator');
+        toast.error('Failed to initialize your AI assistant');
       } finally {
         setIsLoading(false);
       }

@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BarChart3, TrendingUp, Users, Eye, Target, Award, Clock, Download } from "lucide-react";
 
-export const AdvancedEmployerCareerAnalytics: React.FC = () => {
+export const AdvancedEmployerAnalytics: React.FC = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [timeRange, setTimeRange] = useState("30d");
 
@@ -13,7 +13,7 @@ export const AdvancedEmployerCareerAnalytics: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Hiring CareerAnalytics CommandCenter</h2>
+          <h2 className="text-2xl font-bold">Hiring Analytics Dashboard</h2>
           <p className="text-muted-foreground">Comprehensive insights into your hiring performance</p>
         </div>
         <div className="flex gap-2">
@@ -138,7 +138,7 @@ export const AdvancedEmployerCareerAnalytics: React.FC = () => {
               <CardTitle>Candidate Insights</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground">Detailed candidate CareerAnalytics and insights.</p>
+              <p className="text-muted-foreground">Detailed candidate analytics and insights.</p>
             </CardContent>
           </Card>
         </TabsContent>
@@ -168,6 +168,3 @@ export const AdvancedEmployerCareerAnalytics: React.FC = () => {
     </div>
   );
 };
-
-
-

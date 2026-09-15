@@ -14,32 +14,32 @@ import {
   Calendar
 } from 'lucide-react';
 
-interface CompanyCareerAnalyticsProps {
+interface CompanyAnalyticsProps {
   company: any;
   metrics: any;
   userRole: string;
 }
 
-export const CompanyCareerAnalytics: React.FC<CompanyCareerAnalyticsProps> = ({ 
+export const CompanyAnalytics: React.FC<CompanyAnalyticsProps> = ({ 
   company, 
   metrics, 
   userRole 
 }) => {
   const [timeRange, setTimeRange] = useState('30d');
 
-  const { data: CareerAnalyticsData, isLoading } = useQuery({
-    queryKey: ['company-CareerAnalytics', company?.id, timeRange],
+  const { data: analyticsData, isLoading } = useQuery({
+    queryKey: ['company-analytics', company?.id, timeRange],
     queryFn: async () => {
       if (!company) return null;
 
       const [sessionsRes, jobStatsRes] = await Promise.all([
         supabase
-          .from('company_CareerAnalytics_sessions')
+          .from('company_analytics_sessions')
           .select('*')
           .eq('company_id', company.id)
           .order('session_date', { ascending: false }),
         supabase
-          .from('CareerAnalytics_job_stats')
+          .from('analytics_job_stats')
           .select('*')
           .order('stat_date', { ascending: false })
       ]);
@@ -52,14 +52,14 @@ export const CompanyCareerAnalytics: React.FC<CompanyCareerAnalyticsProps> = ({
     enabled: !!company
   });
 
-  const totalPageViews = CareerAnalyticsData?.sessions.reduce((sum, session) => sum + (session.page_views || 0), 0) || 0;
-  const totalUniqueVisitors = CareerAnalyticsData?.sessions.reduce((sum, session) => sum + (session.unique_visitors || 0), 0) || 0;
+  const totalPageViews = analyticsData?.sessions.reduce((sum, session) => sum + (session.page_views || 0), 0) || 0;
+  const totalUniqueVisitors = analyticsData?.sessions.reduce((sum, session) => sum + (session.unique_visitors || 0), 0) || 0;
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-lg font-bold text-foreground">Company CareerAnalytics</h3>
+          <h3 className="text-lg font-bold text-foreground">Company Analytics</h3>
           <p className="text-sm text-muted-foreground">Track your company's performance metrics</p>
         </div>
         <div className="flex gap-2">
@@ -152,6 +152,3 @@ export const CompanyCareerAnalytics: React.FC<CompanyCareerAnalyticsProps> = ({
     </div>
   );
 };
-
-
-

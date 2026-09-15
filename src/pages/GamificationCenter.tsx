@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Trophy, Star, Users, ArrowLeft, Coins } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { GamificationCommandCenter } from '@/components/gamification/GamificationDashboard';
+import { GamificationDashboard } from '@/components/gamification/GamificationDashboard';
 import { AchievementsSection } from '@/components/gamification/AchievementsSection';
 import { LeaderboardsWidget } from '@/components/gamification/LeaderboardsWidget';
 
@@ -23,7 +23,7 @@ const GamificationCenter: React.FC = () => {
               variant="ghost"
               size="sm"
               onClick={() => navigate(-1)}
-              className="flex items-center gap-2 h-8 touch-Feedback"
+              className="flex items-center gap-2 h-8 touch-feedback"
             >
               <ArrowLeft className="h-4 w-4" />
               Back
@@ -37,7 +37,7 @@ const GamificationCenter: React.FC = () => {
           <Button
             onClick={() => navigate('/txc/mining')}
             size="sm"
-            className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white h-8 touch-Feedback"
+            className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white h-8 touch-feedback"
           >
             <Coins className="h-4 w-4 mr-1" />
             Mine TXC
@@ -47,24 +47,24 @@ const GamificationCenter: React.FC = () => {
         {/* Compact Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
           <TabsList className="grid w-full grid-cols-3 h-10">
-            <TabsTrigger value="CommandCenter" className="flex items-center gap-2 text-xs touch-Feedback">
+            <TabsTrigger value="dashboard" className="flex items-center gap-2 text-xs touch-feedback">
               <Trophy className="h-3 w-3" />
-              CommandCenter
+              Dashboard
             </TabsTrigger>
-            <TabsTrigger value="achievements" className="flex items-center gap-2 text-xs touch-Feedback">
+            <TabsTrigger value="achievements" className="flex items-center gap-2 text-xs touch-feedback">
               <Star className="h-3 w-3" />
               Achievements
             </TabsTrigger>
-            <TabsTrigger value="leaderboard" className="flex items-center gap-2 text-xs touch-Feedback">
+            <TabsTrigger value="leaderboard" className="flex items-center gap-2 text-xs touch-feedback">
               <Users className="h-3 w-3" />
               Leaderboard
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="CommandCenter" className="mt-4">
+          <TabsContent value="dashboard" className="mt-4">
             <ErrorBoundary>
               <div className="native-card p-6">
-                <GamificationCommandCenter />
+                <GamificationDashboard />
               </div>
             </ErrorBoundary>
           </TabsContent>
@@ -91,5 +91,3 @@ const GamificationCenter: React.FC = () => {
 };
 
 export default GamificationCenter;
-
-

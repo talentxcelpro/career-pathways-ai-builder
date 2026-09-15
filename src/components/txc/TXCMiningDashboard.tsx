@@ -10,7 +10,7 @@ import { useDailyLoginBonus } from '@/hooks/useDailyLoginBonus';
 import { formatTXC } from '@/types/txc-pricing';
 import txcMascot from '@/assets/txc-mascot.jpg';
 
-export const TXCMiningCommandCenter: React.FC = () => {
+export const TXCMiningDashboard: React.FC = () => {
   const { earnTXC, canEarnReward, getAllRewards, getAvailableActions, isProcessing } = useTXCMining();
   const { availableBalance, lifetimeEarned } = useTokenBalance();
   const [availableActions, setAvailableActions] = useState<string[]>([]);
@@ -165,4 +165,3 @@ export const TXCMiningCommandCenter: React.FC = () => {
     </div>
   );
 };
-

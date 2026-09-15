@@ -48,7 +48,7 @@ const MobileNetworkPageAnalysis = () => {
     {
       issue: "No Real Network Features",
       severity: "Critical", 
-      description: "Page lacks professional networking, TalentNetwork, messaging, or social interaction features",
+      description: "Page lacks professional networking, connections, messaging, or social interaction features",
       impact: "Core platform value proposition missing",
       priority: "Immediate Fix Required"
     },
@@ -74,7 +74,7 @@ const MobileNetworkPageAnalysis = () => {
       { feature: "Connection Requests", status: "Missing", impact: "Critical" },
       { feature: "Direct Messaging", status: "Missing", impact: "Critical" },
       { feature: "People Search & Filters", status: "Missing", impact: "High" },
-      { feature: "Network Pulse/Timeline", status: "Missing", impact: "High" },
+      { feature: "Network Feed/Timeline", status: "Missing", impact: "High" },
       { feature: "Connection Suggestions", status: "Missing", impact: "High" }
     ],
     engagement: [
@@ -96,7 +96,7 @@ const MobileNetworkPageAnalysis = () => {
     ai: [
       { feature: "AI Connection Recommendations", status: "Missing", impact: "High" },
       { feature: "Smart Conversation Starters", status: "Missing", impact: "Medium" },
-      { feature: "Network CareerAnalytics", status: "Missing", impact: "Medium" },
+      { feature: "Network Analytics", status: "Missing", impact: "Medium" },
       { feature: "Career Path Matching", status: "Missing", impact: "High" },
       { feature: "Industry Trend Insights", status: "Missing", impact: "Low" },
       { feature: "Automated Follow-ups", status: "Missing", impact: "Low" }
@@ -109,7 +109,7 @@ const MobileNetworkPageAnalysis = () => {
       issues: [
         "No real user profiles with photos, titles, companies",
         "Missing skills, experience, education data",
-        "No connection counts or mutual TalentNetwork",
+        "No connection counts or mutual connections",
         "No activity status (online/offline)"
       ]
     },
@@ -137,7 +137,7 @@ const MobileNetworkPageAnalysis = () => {
         "No notification system data",
         "Missing message/chat history",
         "No search history or preferences",
-        "No engagement CareerAnalytics"
+        "No engagement analytics"
       ]
     }
   ];
@@ -150,15 +150,15 @@ const MobileNetworkPageAnalysis = () => {
       "Build mobile-first responsive design"
     ],
     shortTerm: [
-      "Add Performance connection recommendations",
+      "Add AI-powered connection recommendations",
       "Implement real-time messaging with Supabase",
-      "Create professional posts and Pulse system",
+      "Create professional posts and feed system",
       "Add push notifications for mobile"
     ],
     longTerm: [
       "Build video calling integration",
       "Create industry groups and communities",
-      "Add advanced networking CareerAnalytics",
+      "Add advanced networking analytics",
       "Implement mentorship matching system"
     ]
   };
@@ -255,7 +255,7 @@ const MobileNetworkPageAnalysis = () => {
                       {category === 'core' && 'Essential networking functionality'}
                       {category === 'engagement' && 'User interaction and social features'}
                       {category === 'mobile' && 'Mobile-specific networking features'}
-                      {category === 'ai' && 'Performance networking enhancements'}
+                      {category === 'ai' && 'AI-powered networking enhancements'}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -368,8 +368,8 @@ const MobileNetworkPageAnalysis = () => {
                     <div className="space-y-2 text-sm text-slate-600">
                       <p>• Implement real-time messaging system using Supabase</p>
                       <p>• Add people search with filters (location, industry, skills)</p>
-                      <p>• Create network Pulse with professional posts</p>
-                      <p>• Build Performance connection recommendations</p>
+                      <p>• Create network feed with professional posts</p>
+                      <p>• Build AI-powered connection recommendations</p>
                     </div>
                     <div className="mt-3">
                       <Badge className="bg-orange-100 text-orange-800">Priority: High</Badge>
@@ -382,7 +382,7 @@ const MobileNetworkPageAnalysis = () => {
                     <div className="space-y-2 text-sm text-slate-600">
                       <p>• Add industry groups and communities</p>
                       <p>• Implement skill endorsements and recommendations</p>
-                      <p>• Build advanced networking CareerAnalytics</p>
+                      <p>• Build advanced networking analytics</p>
                       <p>• Add video calling integration</p>
                     </div>
                     <div className="mt-3">
@@ -429,7 +429,3 @@ const MobileNetworkPageAnalysis = () => {
 };
 
 export default MobileNetworkPageAnalysis;
-
-
-
-

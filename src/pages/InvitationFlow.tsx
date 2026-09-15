@@ -46,7 +46,7 @@ const InvitationFlow = () => {
     {
       id: 5,
       title: "Employer Access Granted",
-      description: "Automatic redirect to employer CommandCenter",
+      description: "Automatic redirect to employer dashboard",
       status: currentStep >= 5 ? "completed" : "pending"
     }
   ];
@@ -198,7 +198,7 @@ const InvitationFlow = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4" />
-                  <span>Immediate redirect to /employer CommandCenter</span>
+                  <span>Immediate redirect to /employer dashboard</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4" />
@@ -307,4 +307,3 @@ const InvitationFlow = () => {
 };
 
 export default InvitationFlow;
-

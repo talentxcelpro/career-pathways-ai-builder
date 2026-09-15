@@ -8,8 +8,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { Settings, Mail, Users, TrendingUp, Activity, BarChart3, Shield } from 'lucide-react';
 import { EmailTriggerSettingsModal } from './EmailTriggerSettingsModal';
 import { BulkEmailProcessor } from './BulkEmailProcessor';
-import { EmailCareerAnalyticsCommandCenter } from './EmailCareerAnalyticsCommandCenter';
-import { RealTimeEmailCareerAnalytics } from './RealTimeEmailCareerAnalytics';
+import { EmailAnalyticsDashboard } from './EmailAnalyticsDashboard';
+import { RealTimeEmailAnalytics } from './RealTimeEmailAnalytics';
 import { EmailDeliveryDiagnostics } from './EmailDeliveryDiagnostics';
 import { EmailConfigurationGuide } from './EmailConfigurationGuide';
 import { ProfileCompletionInsights } from './ProfileCompletionInsights';
@@ -32,7 +32,7 @@ export const EmailAutomationManager: React.FC = () => {
   const [selectedTrigger, setSelectedTrigger] = useState<EmailTrigger | null>(null);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'triggers' | 'CareerAnalytics' | 'bulk' | 'realtime' | 'insights' | 'delivery'>('triggers');
+  const [activeTab, setActiveTab] = useState<'triggers' | 'analytics' | 'bulk' | 'realtime' | 'insights' | 'delivery'>('triggers');
 
   const defaultTriggers: EmailTrigger[] = [
     {
@@ -186,7 +186,7 @@ export const EmailAutomationManager: React.FC = () => {
   const tabButtons = [
     { id: 'triggers' as const, label: 'Email Triggers', icon: Mail },
     { id: 'insights' as const, label: 'Profile Insights', icon: BarChart3 },
-    { id: 'CareerAnalytics' as const, label: 'CareerAnalytics', icon: TrendingUp },
+    { id: 'analytics' as const, label: 'Analytics', icon: TrendingUp },
     { id: 'bulk' as const, label: 'Bulk Email', icon: Users },
     { id: 'realtime' as const, label: 'Real-time Queue', icon: Activity },
     { id: 'delivery' as const, label: 'Delivery Tracking', icon: Shield }
@@ -275,9 +275,9 @@ export const EmailAutomationManager: React.FC = () => {
       )}
 
       {activeTab === 'insights' && <ProfileCompletionInsights />}
-      {activeTab === 'CareerAnalytics' && <EmailCareerAnalyticsCommandCenter />}
+      {activeTab === 'analytics' && <EmailAnalyticsDashboard />}
       {activeTab === 'bulk' && <BulkEmailProcessor />}
-      {activeTab === 'realtime' && <RealTimeEmailCareerAnalytics />}
+      {activeTab === 'realtime' && <RealTimeEmailAnalytics />}
       {activeTab === 'delivery' && <EmailDeliveryTracker />}
 
       <EmailTriggerSettingsModal
@@ -292,7 +292,3 @@ export const EmailAutomationManager: React.FC = () => {
     </div>
   );
 };
-
-
-
-

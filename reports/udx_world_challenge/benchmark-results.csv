@@ -1,0 +1,101 @@
+objective_id,domain,raw_intent,verdict,resolution_advantage,why_udx_lost,udx_status,udx_latency_ms,udx_confidence,udx_quality,udx_steps,udx_friction,generic_ai_latency_ms,generic_ai_quality,generic_ai_hallucination,traditional_proxy_steps,traditional_proxy_friction,traditional_proxy_quality,observed_at
+CAR-001,CAREER,"frontend developer job varanasi",UDX_WINS,0.0886,"",RESOLVED,465,0.88,0.6,4,2.5,17884,0.4,HIGH,3.9,5.8,0.51,2026-09-15T15:47:17.990Z
+CAR-002,CAREER,"switch from bank job to product manager role",UDX_WINS,0.0897,"",RESOLVED,388,0.88,0.6,4,2.5,18070,0.4,HIGH,3.9,5.8,0.51,2026-09-15T15:47:37.405Z
+CAR-003,CAREER,"first job after BCA degree in Lucknow",UDX_WINS,0.0903,"",RESOLVED,413,0.88,0.6,4,2.5,18250,0.4,HIGH,3.9,5.8,0.51,2026-09-15T15:47:57.281Z
+CAR-004,CAREER,"data science jobs remote india 2 years experience",UDX_WINS,0.1303,"",RESOLVED,362,0.88,0.6,4,2.5,23965,0.4,HIGH,3.9,5.8,0.51,2026-09-15T15:48:22.577Z
+CAR-005,CAREER,"resume for software engineer how to improve ATS score",UDX_WINS,0.053,"",RESOLVED,413,0.88,0.6,4,2.5,18901,0.6,HIGH,3.9,5.8,0.51,2026-09-15T15:48:42.751Z
+CAR-006,CAREER,"high paying jobs in varanasi for mba finance graduate",UDX_WINS,0.1248,"",RESOLVED,480,0.88,0.6,4,2.5,18920,0.4,HIGH,3.9,5.8,0.51,2026-09-15T15:49:03.506Z
+CAR-007,CAREER,"government job notification UP 2026",UDX_WINS,0.091,"",RESOLVED,406,0.88,0.6,4,2.5,18417,0.4,HIGH,3.9,5.8,0.51,2026-09-15T15:49:23.413Z
+CAR-008,CAREER,"work from home part time jobs for women varanasi",UDX_WINS,0.0502,"",RESOLVED,365,0.88,0.6,4,2.5,18169,0.6,HIGH,3.9,5.8,0.51,2026-09-15T15:49:42.838Z
+CAR-009,CAREER,"salary of react developer in india 2026",UDX_WINS,0.071,"",RESOLVED,407,0.88,0.6,4,2.5,19360,0.6,HIGH,3.9,5.8,0.51,2026-09-15T15:50:03.649Z
+CAR-010,CAREER,"how to prepare for TCS NQT exam",UDX_WINS,0.0972,"",RESOLVED,382,0.88,0.6,4,2.5,19873,0.4,HIGH,3.9,5.8,0.51,2026-09-15T15:50:24.938Z
+CAR-011,CAREER,"java developer jobs pune 3 to 5 years experience",UDX_WINS,0.0925,"",RESOLVED,444,0.88,0.6,4,2.5,18814,0.4,HIGH,3.9,5.8,0.51,2026-09-15T15:50:45.883Z
+CAR-012,CAREER,"linkedin profile tips for freshers IT",UDX_WINS,0.0879,"",RESOLVED,399,0.88,0.6,4,2.5,17652,0.4,HIGH,3.9,5.8,0.51,2026-09-15T15:51:04.841Z
+CAR-013,CAREER,"best IT companies hiring in varanasi 2026",UDX_WINS,0.0915,"",RESOLVED,896,0.88,0.6,4,2.5,19012,0.4,HIGH,3.9,5.8,0.51,2026-09-15T15:51:25.699Z
+CAR-014,CAREER,"internship opportunities for computer science students varanasi",UDX_WINS,0.0885,"",RESOLVED,439,0.88,0.6,4,2.5,17848,0.4,HIGH,3.9,5.8,0.51,2026-09-15T15:51:44.801Z
+CAR-015,CAREER,"how to get job at google india",UDX_WINS,0.0926,"",RESOLVED,422,0.88,0.6,4,2.5,18817,0.4,HIGH,3.9,5.8,0.51,2026-09-15T15:52:04.923Z
+CAR-016,CAREER,"machine learning engineer salary hike after 2 years",UDX_WINS,0.0952,"",RESOLVED,452,0.88,0.6,4,2.5,19449,0.4,HIGH,3.9,5.8,0.51,2026-09-15T15:52:26.617Z
+CAR-017,CAREER,"best way to apply for jobs when you have no experience",UDX_WINS,0.0697,"",RESOLVED,436,0.88,0.6,4,2.5,19095,0.6,HIGH,3.9,5.8,0.51,2026-09-15T15:52:47.021Z
+CAR-018,CAREER,"placement preparation for tier 2 college student india",UDX_WINS,0.0663,"",RESOLVED,357,0.88,0.6,4,2.5,18178,0.6,HIGH,3.9,5.8,0.51,2026-09-15T15:53:06.710Z
+CAR-019,CAREER,"digital marketing jobs remote india entry level",UDX_WINS,0.1112,"",RESOLVED,363,0.88,0.6,4,2.5,19366,0.4,HIGH,3.9,5.8,0.51,2026-09-15T15:53:27.307Z
+CAR-020,CAREER,"career counselling for 12th pass student varanasi",UDX_WINS,0.0929,"",RESOLVED,399,0.88,0.6,4,2.5,18852,0.4,HIGH,3.9,5.8,0.51,2026-09-15T15:53:47.502Z
+EDU-001,EDUCATION,"MBA college in Lucknow with placement above 10 lakh",UDX_WINS,0.1136,"",RESOLVED,504,0.88,0.6,4,2.5,23925,0.4,HIGH,3.6,5.2,0.54,2026-09-15T15:54:13.516Z
+EDU-002,EDUCATION,"best data science course online under 30000 rupees",UDX_WINS,0.2237,"",RESOLVED,551,0.88,0.6,4,2.5,0,0,UNKNOWN,3.6,5.2,0.54,2026-09-15T15:54:40.118Z
+EDU-003,EDUCATION,"BHU admission 2026 process for BTech",UDX_WINS,0.1104,"",RESOLVED,416,0.88,0.6,4,2.5,23081,0.4,HIGH,3.6,5.2,0.54,2026-09-15T15:55:04.624Z
+EDU-004,EDUCATION,"UPSC coaching classes in varanasi fees and reviews",UDX_WINS,0.1041,"",RESOLVED,359,0.88,0.6,4,2.5,21508,0.4,HIGH,3.6,5.2,0.54,2026-09-15T15:55:27.449Z
+EDU-005,EDUCATION,"scholarship for SC ST students engineering UP",UDX_WINS,0.0604,"",RESOLVED,344,0.88,0.6,4,2.5,20604,0.6,HIGH,3.6,5.2,0.54,2026-09-15T15:55:49.253Z
+EDU-006,EDUCATION,"free online programming courses with certificate 2026",UDX_WINS,0.1044,"",RESOLVED,445,0.88,0.6,4,2.5,21658,0.4,HIGH,3.6,5.2,0.54,2026-09-15T15:56:13.215Z
+EDU-007,EDUCATION,"distance MBA from Indira Gandhi open university details",UDX_WINS,0.1107,"",RESOLVED,512,0.88,0.6,4,2.5,23252,0.4,HIGH,3.6,5.2,0.54,2026-09-15T15:56:37.891Z
+EDU-008,EDUCATION,"top engineering colleges in UP with fees less than 1 lakh per year",UDX_WINS,0.1082,"",RESOLVED,525,0.88,0.6,4,2.5,22649,0.4,HIGH,3.6,5.2,0.54,2026-09-15T15:57:02.162Z
+EDU-009,EDUCATION,"how to apply for JEE advanced 2026",UDX_WINS,0.0816,"",RESOLVED,437,0.88,0.6,4,2.5,21934,0.6,HIGH,3.6,5.2,0.54,2026-09-15T15:57:25.800Z
+EDU-010,EDUCATION,"part time diploma courses in varanasi for working professionals",UDX_WINS,0.1198,"",RESOLVED,424,0.88,0.6,4,2.5,21504,0.4,HIGH,3.6,5.2,0.54,2026-09-15T15:57:48.836Z
+EDU-011,EDUCATION,"CLAT 2026 preparation guide law aspirant",UDX_WINS,0.096,"",RESOLVED,428,0.88,0.6,4,2.5,19634,0.4,HIGH,3.6,5.2,0.54,2026-09-15T15:58:10.573Z
+EDU-012,EDUCATION,"learn python for free online beginners",UDX_WINS,0.2218,"",RESOLVED,1010,0.88,0.6,4,2.5,0,0,UNKNOWN,3.6,5.2,0.54,2026-09-15T15:58:37.550Z
+EDU-013,EDUCATION,"study abroad consultants varanasi for USA universities",UDX_WINS,0.0896,"",RESOLVED,1673,0.88,0.6,4,2.5,19334,0.4,HIGH,3.6,5.2,0.54,2026-09-15T15:58:59.746Z
+EDU-014,EDUCATION,"IIT BHU cutoff 2025 CSE branch",UDX_WINS,0.054,"",RESOLVED,1000,0.88,0.6,4,2.5,19718,0.6,HIGH,3.6,5.2,0.54,2026-09-15T15:59:23.026Z
+EDU-015,EDUCATION,"how to become a chartered accountant after 12th commerce",UDX_WINS,0.0826,"",RESOLVED,3424,0.88,0.6,4,2.5,19403,0.4,HIGH,3.6,5.2,0.54,2026-09-15T15:59:47.170Z
+BIZ-001,BUSINESS,"how to register MSME in Uttar Pradesh",UDX_WINS,0.0541,"",RESOLVED,579,0.88,0.6,4,2.5,19324,0.6,HIGH,5.1,7.1,0.39,2026-09-15T16:00:08.734Z
+BIZ-002,BUSINESS,"find CA for GST filing varanasi",UDX_WINS,0.0695,"",RESOLVED,2303,0.88,0.6,4,2.5,20906,0.6,HIGH,5.1,7.1,0.39,2026-09-15T16:00:33.290Z
+BIZ-003,BUSINESS,"B2B supplier for cotton fabric wholesale varanasi",UDX_WINS,0.0736,"",RESOLVED,6900,0.88,0.6,4,2.5,20724,0.4,HIGH,5.1,7.1,0.39,2026-09-15T16:01:05.602Z
+BIZ-004,BUSINESS,"startup incubators in Varanasi UP for tech startups",UDX_WINS,0.0576,"",RESOLVED,9592,0.88,0.6,4,2.5,19588,0.4,HIGH,5.1,7.1,0.39,2026-09-15T16:01:37.496Z
+BIZ-005,BUSINESS,"how to open a restaurant in India legal requirements",UDX_WINS,0.0605,"",RESOLVED,8239,0.88,0.6,4,2.5,18925,0.4,HIGH,5.1,7.1,0.39,2026-09-15T16:02:13.051Z
+BIZ-006,BUSINESS,"ecommerce business registration india flipkart amazon seller",UDX_LOSES,-0.5231,"NO_RESOLUTION: UDX could not resolve the intent (no supply or out-of-domain).",,0,,0,0,0,9252,0.4,HIGH,5.1,7.1,0.39,2026-09-15T16:03:04.832Z
+BIZ-007,BUSINESS,"digital marketing agency for small business varanasi",UDX_WINS,0.2204,"",RESOLVED,1337,0.88,0.6,4,2.5,0,0,UNKNOWN,5.1,7.1,0.39,2026-09-15T16:03:33.460Z
+BIZ-008,BUSINESS,"how to get startup India recognition",UDX_WINS,0.0583,"",RESOLVED,7687,0.88,0.6,4,2.5,17840,0.4,HIGH,5.1,7.1,0.39,2026-09-15T16:03:59.920Z
+BIZ-009,BUSINESS,"GST return filing process monthly for small business",UDX_WINS,0.0649,"",RESOLVED,1479,0.88,0.6,4,2.5,18017,0.5,HIGH,5.1,7.1,0.39,2026-09-15T16:04:20.548Z
+BIZ-010,BUSINESS,"trade license varanasi municipal corporation apply online",TIE,0.0406,"",RESOLVED,3635,0.88,0.6,4,2.5,19134,0.6,HIGH,5.1,7.1,0.39,2026-09-15T16:04:44.266Z
+BIZ-011,BUSINESS,"handloom business export opportunities varanasi banarasi silk",UDX_WINS,0.0917,"",RESOLVED,2693,0.88,0.6,4,2.5,20861,0.4,HIGH,5.1,7.1,0.39,2026-09-15T16:05:09.524Z
+BIZ-012,BUSINESS,"how to get business loan for small business in UP",UDX_WINS,0.0754,"",RESOLVED,4983,0.88,0.6,4,2.5,19249,0.4,HIGH,5.1,7.1,0.39,2026-09-15T16:05:34.911Z
+BIZ-013,BUSINESS,"co-working space varanasi per day cost",UDX_WINS,0.0902,"",RESOLVED,1360,0.88,0.6,4,2.5,19176,0.4,HIGH,5.1,7.1,0.39,2026-09-15T16:05:56.422Z
+BIZ-014,BUSINESS,"PM Vishwakarma yojana eligibility artisan varanasi",UDX_WINS,0.1042,"",RESOLVED,963,0.88,0.6,4,2.5,22121,0.4,HIGH,5.1,7.1,0.39,2026-09-15T16:06:20.388Z
+BIZ-015,BUSINESS,"private equity investors looking for tech startups in India",TIE,0.0344,"",RESOLVED,5431,0.88,0.6,4,2.5,19448,0.6,HIGH,5.1,7.1,0.39,2026-09-15T16:06:46.428Z
+FIN-001,FINANCE,"best SIP to invest 5000 per month for 10 years",UDX_WINS,0.0855,"",RESOLVED,1648,0.88,0.6,4,2.5,18316,0.4,HIGH,4.7,6.8,0.42,2026-09-15T16:07:08.142Z
+FIN-002,FINANCE,"home loan EMI calculator varanasi property 50 lakh",UDX_WINS,0.0939,"",RESOLVED,849,0.88,0.6,4,2.5,19553,0.4,HIGH,4.7,6.8,0.42,2026-09-15T16:07:29.828Z
+FIN-003,FINANCE,"tax saving options under 80C for salaried employee 2025",UDX_WINS,0.0901,"",RESOLVED,2498,0.88,0.6,4,2.5,20270,0.4,HIGH,4.7,6.8,0.42,2026-09-15T16:07:53.583Z
+FIN-004,FINANCE,"UPI payment not working troubleshoot",UDX_WINS,0.0844,"",RESOLVED,2845,0.88,0.6,4,2.5,19272,0.4,HIGH,4.7,6.8,0.42,2026-09-15T16:08:16.964Z
+FIN-005,FINANCE,"credit score improve fast tips india",UDX_WINS,0.0933,"",RESOLVED,1943,0.88,0.6,4,2.5,20504,0.4,HIGH,4.7,6.8,0.42,2026-09-15T16:08:40.598Z
+FIN-006,FINANCE,"fixed deposit interest rates comparison 2026 india",UDX_WINS,0.0949,"",RESOLVED,488,0.88,0.6,4,2.5,19412,0.4,HIGH,4.7,6.8,0.42,2026-09-15T16:09:02.202Z
+FIN-007,FINANCE,"PPF account opening process SBI varanasi",TIE,0.0166,"",RESOLVED,9923,0.88,0.6,4,2.5,19656,0.6,HIGH,4.7,6.8,0.42,2026-09-15T16:09:32.947Z
+FIN-008,FINANCE,"how to file ITR online india 2025-26",UDX_WINS,0.1032,"",RESOLVED,671,0.88,0.6,4,2.5,21599,0.4,HIGH,4.7,6.8,0.42,2026-09-15T16:09:56.496Z
+FIN-009,FINANCE,"best health insurance plan for family of 4 india under 20000 per year",UDX_WINS,0.0998,"",RESOLVED,784,0.88,0.6,4,2.5,20885,0.4,HIGH,4.7,6.8,0.42,2026-09-15T16:10:19.327Z
+FIN-010,FINANCE,"gold price today varanasi and where to buy certified gold",UDX_WINS,0.076,"",RESOLVED,331,0.88,0.6,4,2.5,20486,0.6,HIGH,4.7,6.8,0.42,2026-09-15T16:10:41.309Z
+FIN-011,FINANCE,"jan dhan account benefits 2026",UDX_WINS,0.0932,"",RESOLVED,460,0.88,0.6,4,2.5,18983,0.4,HIGH,4.7,6.8,0.42,2026-09-15T16:11:02.654Z
+FIN-012,FINANCE,"stock market beginner guide india where to start",UDX_WINS,0.104,"",RESOLVED,310,0.88,0.6,4,2.5,21426,0.4,HIGH,4.7,6.8,0.42,2026-09-15T16:11:25.764Z
+FIN-013,FINANCE,"EPF withdrawal process online claim",UDX_WINS,0.0592,"",RESOLVED,1076,0.88,0.6,4,2.5,21034,0.6,HIGH,4.7,6.8,0.42,2026-09-15T16:11:49.091Z
+FIN-014,FINANCE,"best savings account interest rate 2026 india",UDX_WINS,0.1041,"",RESOLVED,810,0.88,0.6,4,2.5,21965,0.4,HIGH,4.7,6.8,0.42,2026-09-15T16:12:15.530Z
+FIN-015,FINANCE,"pm mudra loan eligibility and how to apply",UDX_WINS,0.098,"",RESOLVED,2017,0.88,0.6,4,2.5,21688,0.4,HIGH,4.7,6.8,0.42,2026-09-15T16:12:40.197Z
+LOC-001,LOCAL_SERVICES,"plumber in varanasi who accepts UPI",UDX_WINS,0.0973,"",RESOLVED,908,0.88,0.6,4,2.5,20432,0.4,HIGH,5.8,8.2,0.31,2026-09-15T16:13:03.175Z
+LOC-002,LOCAL_SERVICES,"best rated dermatologist varanasi",UDX_WINS,0.1125,"",RESOLVED,1523,0.88,0.6,4,2.5,24680,0.4,HIGH,5.8,8.2,0.31,2026-09-15T16:13:30.580Z
+LOC-003,LOCAL_SERVICES,"electrician near me varanasi emergency contact",UDX_WINS,0.1106,"",RESOLVED,2104,0.88,0.6,4,2.5,24803,0.4,HIGH,5.8,8.2,0.31,2026-09-15T16:13:58.607Z
+LOC-004,LOCAL_SERVICES,"car wash service varanasi home pickup",UDX_WINS,0.2159,"",RESOLVED,2434,0.88,0.6,4,2.5,0,0,UNKNOWN,5.8,8.2,0.31,2026-09-15T16:14:26.955Z
+LOC-005,LOCAL_SERVICES,"courier service same day delivery varanasi to lucknow",UDX_WINS,0.1088,"",RESOLVED,356,0.88,0.6,4,2.5,22634,0.4,HIGH,5.8,8.2,0.31,2026-09-15T16:14:51.101Z
+LOC-006,LOCAL_SERVICES,"yoga classes varanasi morning batch",UDX_WINS,0.1017,"",RESOLVED,2040,0.88,0.6,4,2.5,22616,0.4,HIGH,5.8,8.2,0.31,2026-09-15T16:15:17.580Z
+LOC-007,LOCAL_SERVICES,"ambulance service varanasi 24 hour contact",UDX_WINS,0.1044,"",RESOLVED,475,0.88,0.6,4,2.5,21684,0.4,HIGH,5.8,8.2,0.31,2026-09-15T16:15:40.850Z
+LOC-008,LOCAL_SERVICES,"Tiffin service varanasi for office workers monthly subscription",UDX_WINS,0.126,"",RESOLVED,480,0.88,0.6,4,2.5,23029,0.4,HIGH,5.8,8.2,0.31,2026-09-15T16:16:05.548Z
+LOC-009,LOCAL_SERVICES,"maid service varanasi for daily house cleaning",UDX_WINS,0.0956,"",RESOLVED,653,0.88,0.6,4,2.5,19768,0.4,HIGH,5.8,8.2,0.31,2026-09-15T16:16:27.205Z
+LOC-010,LOCAL_SERVICES,"AC repair service varanasi rate list",UDX_WINS,0.0957,"",RESOLVED,543,0.88,0.6,4,2.5,19676,0.4,HIGH,5.8,8.2,0.31,2026-09-15T16:16:48.519Z
+LOC-011,LOCAL_SERVICES,"wedding photographer varanasi packages price 2026",UDX_WINS,0.0705,"",RESOLVED,463,0.88,0.6,4,2.5,19297,0.6,HIGH,5.8,8.2,0.31,2026-09-15T16:17:10.213Z
+LOC-012,LOCAL_SERVICES,"blood test home collection varanasi pathology",UDX_WINS,0.0773,"",RESOLVED,425,0.88,0.6,4,2.5,20907,0.6,HIGH,5.8,8.2,0.31,2026-09-15T16:17:32.586Z
+LOC-013,LOCAL_SERVICES,"pet grooming services varanasi",UDX_WINS,0.0966,"",RESOLVED,460,0.88,0.6,4,2.5,19799,0.4,HIGH,5.8,8.2,0.31,2026-09-15T16:17:53.783Z
+LOC-014,LOCAL_SERVICES,"pest control service varanasi residential",UDX_LOSES,-0.4797,"NO_RESOLUTION: UDX could not resolve the intent (no supply or out-of-domain).",,0,,0,0,0,19673,0.4,HIGH,5.8,8.2,0.31,2026-09-15T16:18:14.366Z
+LOC-015,LOCAL_SERVICES,"internet service provider varanasi best speed plans",UDX_LOSES,-0.4803,"NO_RESOLUTION: UDX could not resolve the intent (no supply or out-of-domain).",,0,,0,0,0,19516,0.4,HIGH,5.8,8.2,0.31,2026-09-15T16:18:34.394Z
+LOC-016,LOCAL_SERVICES,"gym membership varanasi near BHU student discount",UDX_LOSES,-0.4796,"NO_RESOLUTION: UDX could not resolve the intent (no supply or out-of-domain).",,0,,0,0,0,19705,0.4,HIGH,5.8,8.2,0.31,2026-09-15T16:18:55.118Z
+LOC-017,LOCAL_SERVICES,"solar panel installation varanasi home subsidy",UDX_LOSES,-0.4751,"NO_RESOLUTION: UDX could not resolve the intent (no supply or out-of-domain).",,0,,0,0,0,20771,0.4,HIGH,5.8,8.2,0.31,2026-09-15T16:19:16.414Z
+LOC-018,LOCAL_SERVICES,"chartered bus service varanasi to delhi overnight",UDX_LOSES,-0.5167,"NO_RESOLUTION: UDX could not resolve the intent (no supply or out-of-domain).",,0,,0,0,0,20388,0.6,HIGH,5.8,8.2,0.31,2026-09-15T16:19:37.320Z
+LOC-019,LOCAL_SERVICES,"water purifier repair varanasi kent aquaguard",UDX_LOSES,-0.5233,"NO_RESOLUTION: UDX could not resolve the intent (no supply or out-of-domain).",,0,,0,0,0,18801,0.6,HIGH,5.8,8.2,0.31,2026-09-15T16:19:56.633Z
+LOC-020,LOCAL_SERVICES,"passport seva kendra varanasi appointment booking",UDX_LOSES,-0.5158,"NO_RESOLUTION: UDX could not resolve the intent (no supply or out-of-domain).",,0,,0,0,0,20605,0.6,HIGH,5.8,8.2,0.31,2026-09-15T16:20:17.755Z
+PER-001,PERSONAL,"should I move from varanasi to pune for better salary",UDX_LOSES,-0.3517,"NO_RESOLUTION: UDX could not resolve the intent (no supply or out-of-domain).",,0,,0,0,0,0,0,UNKNOWN,3.1,4.9,0.58,2026-09-15T16:20:43.796Z
+PER-002,PERSONAL,"best laptop under 60000 rupees for college student 2026",UDX_LOSES,-0.462,"NO_RESOLUTION: UDX could not resolve the intent (no supply or out-of-domain).",,0,,0,0,0,23915,0.4,HIGH,3.1,4.9,0.58,2026-09-15T16:21:08.239Z
+PER-003,PERSONAL,"how to reduce screen time addiction for productivity",UDX_LOSES,-0.4581,"NO_RESOLUTION: UDX could not resolve the intent (no supply or out-of-domain).",,0,,0,0,0,21005,0.4,HIGH,3.1,4.9,0.58,2026-09-15T16:21:29.759Z
+PER-004,PERSONAL,"best time management techniques for working professionals india",UDX_LOSES,-0.4764,"NO_RESOLUTION: UDX could not resolve the intent (no supply or out-of-domain).",,0,,0,0,0,20452,0.4,HIGH,3.1,4.9,0.58,2026-09-15T16:21:50.735Z
+PER-005,PERSONAL,"how to apply for indian passport first time varanasi",UDX_LOSES,-0.5174,"NO_RESOLUTION: UDX could not resolve the intent (no supply or out-of-domain).",,0,,0,0,0,20225,0.6,HIGH,3.1,4.9,0.58,2026-09-15T16:22:11.570Z
+PER-006,PERSONAL,"best diet plan for weight loss for Indian vegetarian",UDX_LOSES,-0.4651,"NO_RESOLUTION: UDX could not resolve the intent (no supply or out-of-domain).",,0,,0,0,0,23167,0.4,HIGH,3.1,4.9,0.58,2026-09-15T16:22:35.777Z
+PER-007,PERSONAL,"how to learn a new skill in 30 days practical guide",UDX_WINS,0.1767,"",RESOLVED,11828,0.88,0.6,4,2.5,0,0,UNKNOWN,3.1,4.9,0.58,2026-09-15T16:23:13.124Z
+PER-008,PERSONAL,"aadhaar card correction online process",TIE,0.0153,"",RESOLVED,640,0.88,0.6,4,2.5,19661,0.8,MEDIUM,3.1,4.9,0.58,2026-09-15T16:23:53.618Z
+PER-009,PERSONAL,"meditation apps best free for beginners india",UDX_WINS,0.0954,"",RESOLVED,539,0.88,0.6,4,2.5,19590,0.4,HIGH,3.1,4.9,0.58,2026-09-15T16:24:14.995Z
+PER-010,PERSONAL,"how to manage anxiety without medication practical tips",UDX_WINS,0.1147,"",RESOLVED,466,0.88,0.6,4,2.5,20313,0.4,HIGH,3.1,4.9,0.58,2026-09-15T16:24:36.997Z
+PER-011,PERSONAL,"how to save money on a 25000 salary per month India",TIE,0.0297,"",RESOLVED,16377,0.88,0.6,4,2.5,19675,0.4,HIGH,3.1,4.9,0.58,2026-09-15T16:25:14.971Z
+PER-012,PERSONAL,"voter id card apply online UP 2026",UDX_WINS,0.0528,"",RESOLVED,474,0.88,0.6,4,2.5,18916,0.6,HIGH,3.1,4.9,0.58,2026-09-15T16:25:49.615Z
+PER-013,PERSONAL,"best book for personality development India recommended",UDX_WINS,0.0738,"",RESOLVED,4715,0.88,0.6,4,2.5,18586,0.4,HIGH,3.1,4.9,0.58,2026-09-15T16:26:14.177Z
+PER-014,PERSONAL,"how to write a professional email in Hindi and English",TIE,0.0223,"",RESOLVED,8611,0.88,0.6,4,2.5,10120,0.4,HIGH,3.1,4.9,0.58,2026-09-15T16:26:48.611Z
+PER-015,PERSONAL,"how to start exercising daily when you have no habit",UDX_WINS,0.1036,"",RESOLVED,579,0.88,0.6,4,2.5,17770,0.4,HIGH,3.1,4.9,0.58,2026-09-15T16:27:19.974Z

@@ -105,7 +105,7 @@ export function editorToEnhanced(editor: EditorResume): EnhancedResumeData {
     tools: {
       development: editor.skills?.tools || [],
       design: [],
-      CareerAnalytics: [],
+      analytics: [],
       productivity: [],
       other: [],
     },
@@ -257,7 +257,3 @@ export function enhancedToEditor(enhanced: EnhancedResumeData): EditorResume {
 
   return editor;
 }
-
-
-
-

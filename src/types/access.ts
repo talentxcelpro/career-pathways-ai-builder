@@ -9,7 +9,7 @@ export interface TierLimits {
   storageGB: number;
   supportLevel: 'email' | 'chat' | 'priority';
   customBranding: boolean;
-  advancedCareerAnalytics: boolean;
+  advancedAnalytics: boolean;
   apiAccess: boolean;
 }
 
@@ -23,7 +23,7 @@ export const TIER_LIMITS: Record<AccessTier, TierLimits> = {
     storageGB: 1,
     supportLevel: 'email',
     customBranding: false,
-    advancedCareerAnalytics: false,
+    advancedAnalytics: false,
     apiAccess: false,
   },
   basic: {
@@ -35,7 +35,7 @@ export const TIER_LIMITS: Record<AccessTier, TierLimits> = {
     storageGB: 5,
     supportLevel: 'email',
     customBranding: false,
-    advancedCareerAnalytics: true,
+    advancedAnalytics: true,
     apiAccess: false,
   },
   pro: {
@@ -47,7 +47,7 @@ export const TIER_LIMITS: Record<AccessTier, TierLimits> = {
     storageGB: 25,
     supportLevel: 'chat',
     customBranding: true,
-    advancedCareerAnalytics: true,
+    advancedAnalytics: true,
     apiAccess: true,
   },
   enterprise: {
@@ -59,7 +59,7 @@ export const TIER_LIMITS: Record<AccessTier, TierLimits> = {
     storageGB: 100,
     supportLevel: 'priority',
     customBranding: true,
-    advancedCareerAnalytics: true,
+    advancedAnalytics: true,
     apiAccess: true,
   },
 };
@@ -109,7 +109,3 @@ export const PUBLIC_FEATURES: FeatureAccess[] = [
     description: 'Basic interview preparation resources'
   },
 ];
-
-
-
-

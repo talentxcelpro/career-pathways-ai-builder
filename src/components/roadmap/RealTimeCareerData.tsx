@@ -71,7 +71,7 @@ export const useRealTimeCareerData = () => {
           .eq('user_id', user.id)
           .eq('is_active', true);
 
-        // Fetch Career Moves
+        // Fetch AI recommendations
         const { data: aiRecommendations } = await supabase
           .from('ai_career_recommendations')
           .select('*')
@@ -282,7 +282,7 @@ export const RealTimeCareerData: React.FC = () => {
           <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mx-auto animate-pulse">
             <Brain className="h-6 w-6 text-white" />
           </div>
-          <p className="text-sm text-muted-foreground">Loading your personalized CareerIntelligence...</p>
+          <p className="text-sm text-muted-foreground">Loading your personalized career intelligence...</p>
         </div>
       </div>
     );
@@ -426,13 +426,13 @@ export const RealTimeCareerData: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Career Moves based on user profile */}
+      {/* AI Recommendations based on user profile */}
       {recommendations.length > 0 && (
         <Card className="border-0 shadow-apple-medium bg-gradient-to-br from-blue-50 to-indigo-50 rounded-apple">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg font-bold text-text-primary flex items-center gap-2">
               <Brain className="h-5 w-5 text-blue-600" />
-              Career Moves for {userProfile.full_name?.split(' ')[0]}
+              AI Recommendations for {userProfile.full_name?.split(' ')[0]}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -462,7 +462,7 @@ export const RealTimeCareerData: React.FC = () => {
         </Card>
       )}
 
-      {/* Real-time Updates Pulse */}
+      {/* Real-time Updates Feed */}
       {realTimeUpdates.length > 0 && (
         <Card className="border-0 shadow-apple-medium bg-white/95 backdrop-blur-apple rounded-apple">
           <CardHeader className="pb-3">
@@ -535,4 +535,3 @@ export const RealTimeCareerData: React.FC = () => {
     </div>
   );
 };
-

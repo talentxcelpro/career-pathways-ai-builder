@@ -7,7 +7,7 @@ import { BulkUploadManager } from '@/components/talent-database/BulkUploadManage
 import { TalentSearch } from '@/components/talent-database/TalentSearch';
 import { ProfileGenerator } from '@/components/talent-database/ProfileGenerator';
 import { MatchingEngine } from '@/components/talent-database/MatchingEngine';
-import { TalentCareerAnalytics } from '@/components/talent-database/TalentAnalytics';
+import { TalentAnalytics } from '@/components/talent-database/TalentAnalytics';
 import { SetupGuide } from '@/components/talent-database/SetupGuide';
 import { CVFilesManager } from '@/components/talent-database/CVFilesManager';
 import NameFixerTool from '@/components/talent-database/NameFixerTool';
@@ -36,7 +36,7 @@ const TalentDatabase = () => {
     {
       icon: Database,
       title: 'Searchable Database',
-      description: 'Performance talent matching',
+      description: 'AI-powered talent matching',
       count: '0 Matches',
       color: 'bg-purple-500'
     },
@@ -128,9 +128,9 @@ const TalentDatabase = () => {
             <Database className="h-4 w-4" />
             Job Matching
           </TabsTrigger>
-          <TabsTrigger value="CareerAnalytics" className="gap-2">
+          <TabsTrigger value="analytics" className="gap-2">
             <FileText className="h-4 w-4" />
-            CareerAnalytics
+            Analytics
           </TabsTrigger>
         </TabsList>
 
@@ -157,7 +157,7 @@ const TalentDatabase = () => {
             <CardHeader>
               <CardTitle>Standard Bulk CV Upload</CardTitle>
               <CardDescription>
-                Upload and process CVs with basic Performance parsing (recommended for up to 10k files)
+                Upload and process CVs with basic AI-powered parsing (recommended for up to 10k files)
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -254,16 +254,16 @@ const TalentDatabase = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="CareerAnalytics" className="space-y-6">
+        <TabsContent value="analytics" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Talent CareerAnalytics</CardTitle>
+              <CardTitle>Talent Analytics</CardTitle>
               <CardDescription>
                 Insights into talent database performance and engagement
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <TalentCareerAnalytics />
+              <TalentAnalytics />
             </CardContent>
           </Card>
         </TabsContent>
@@ -273,6 +273,3 @@ const TalentDatabase = () => {
 };
 
 export default TalentDatabase;
-
-
-

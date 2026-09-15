@@ -101,66 +101,37 @@ The candidate's name is in the FIRST LINE or top section.
 - URLs: LinkedIn, GitHub, portfolio
 
 📝 PROFESSIONAL SUMMARY:
-Extract the COMPLETE summary paragraph without truncation or corruption.
+Extract ONLY the candidate's core professional summary statement or profile paragraph.
+❌ NEVER merge or append project descriptions, project summaries, or work responsibilities into the professional summary.
 
-💼 WORK EXPERIENCE (most recent first):
-For EACH job, extract separately and completely:
+💼 WORK EXPERIENCE & INTERNSHIPS (most recent first):
+Extract all employment and internship positions completely.
 
-Structure:
+🚀 PROJECTS & PROJECT EXPERIENCE:
+If the resume has a "PROJECT EXPERIENCE" or "PROJECTS" section, extract EACH project separately:
 {
-  "title": "Exact job title from resume",
-  "company": "Full company name including 'Worked for' if present",
-  "duration": "Month YYYY – Month YYYY" (preserve exact format),
-  "location": "Work location if mentioned",
-  "description": "Brief role description if any",
-  "achievements": [
-    "Full bullet point 1 - complete sentence",
-    "Full bullet point 2 - complete sentence",
-    "Full bullet point 3 - complete sentence"
-  ]
+  "name": "Project Name (e.g. Metric Pulse, Material Shortage Planning, PRISM)",
+  "description": "Complete project summary or description",
+  "technologies": ["React", "Node.js", "Express.js", "MongoDB"],
+  "role": "Role if specified"
 }
 
-Example parsing:
-Input: "Senior Process Executive
-Infosys - Worked for Microsoft
-July 2024 – December 2024
-- Resolved technical and payment-related issues for Microsoft users via chat and voice support, ensuring high customer satisfaction.
-- Performed password resets through troubleshooting."
-
-Output: {
-  "title": "Senior Process Executive",
-  "company": "Infosys - Worked for Microsoft",
-  "duration": "July 2024 – December 2024",
-  "location": "",
-  "description": "",
-  "achievements": [
-    "Resolved technical and payment-related issues for Microsoft users via chat and voice support, ensuring high customer satisfaction.",
-    "Performed password resets through troubleshooting."
-  ]
-}
-
-🎓 EDUCATION (separate from experience!):
+🎓 EDUCATION (separate from experience and personal details!):
 {
-  "degree": "Full degree name",
+  "degree": "Full degree name (e.g. B.Tech in Computer Science, Class 12 in Science with Maths)",
   "institution": "Full institution name",
   "duration": "YYYY – YYYY",
   "location": "Location if present",
   "gpa": "GPA if present"
 }
+❌ NEVER put personal information (Father Name, Mother Name, Marital Status, Address) inside education.
 
 🛠️ SKILLS:
-Categorize ALL skills:
-- technical: ["Mac/Windows Support", "JAMF", "Okta", "MDM Administration"]
-- tools: ["AutoCAD", "Confluence", "Slack"]
-- soft: ["Problem-solving", "Leadership", "Stakeholder management"]
+Categorize ALL skills cleanly without noise or case duplicates:
+- technical: ["JavaScript", "TypeScript", "React", "Node.js", "Express.js", "Nest.js", "MongoDB", "PostgreSQL", "SQL", "Java", "Python", "Django"]
+- tools: ["Azure", "Git", "JIRA", "Agile", "Material-UI"]
+- soft: ["Leadership", "Management", "Communication"]
 - languages: [{"language": "English", "proficiency": "Fluent"}]
-
-📜 CERTIFICATIONS/AWARDS:
-{
-  "name": "Full award/cert name",
-  "issuer": "Issuing organization",
-  "date": "Date if present"
-}
 
 Return ONLY this JSON:
 {
@@ -171,7 +142,7 @@ Return ONLY this JSON:
   "linkedin": "URL if present",
   "github": "URL if present",
   "portfolio": "URL if present",
-  "summary": "COMPLETE professional summary without truncation",
+  "summary": "ONLY the candidate's core professional summary statement",
   "work_experience": [
     {
       "title": "Job Title",
@@ -179,8 +150,16 @@ Return ONLY this JSON:
       "duration": "Month YYYY – Month YYYY or Present",
       "location": "Location",
       "description": "Description if any",
-      "achievements": ["Bullet 1", "Bullet 2", "Bullet 3"],
+      "achievements": ["Bullet 1", "Bullet 2"],
       "technologies_used": ["Tech1", "Tech2"]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Project Name",
+      "description": "Project Summary",
+      "technologies": ["Tech1", "Tech2"],
+      "role": "Role if specified"
     }
   ],
   "education": [
@@ -218,7 +197,7 @@ Return ONLY this JSON:
         model: 'google/gemini-2.5-flash',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: `Extract ALL information from this resume. Focus on accuracy and completeness:\n\n${extractedText.substring(0, 30000)}` }
+          { role: 'user', content: `Extract ALL information from this resume (up to 10 pages and 25,000 words maximum). Focus on accuracy and completeness:\n\n${extractedText.substring(0, 160000)}` }
         ],
         temperature: 0.3,
       }),

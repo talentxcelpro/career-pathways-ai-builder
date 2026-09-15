@@ -19,7 +19,7 @@ const banners: BannerItem[] = [
   {
     id: '1',
     title: '🧠 Mock Interview with AI',
-    description: 'Practice with AI interviewer and get instant Feedback',
+    description: 'Practice with AI interviewer and get instant feedback',
     buttonText: 'Start Practice',
     buttonAction: '/interview-prep',
     gradient: 'from-purple-500 to-indigo-600',
@@ -28,7 +28,7 @@ const banners: BannerItem[] = [
   {
     id: '2',
     title: '🛠️ Resume Analysis',
-    description: 'Get Performance insights to improve your resume',
+    description: 'Get AI-powered insights to improve your resume',
     buttonText: 'Analyze Resume',
     buttonAction: '/resume-analysis',
     gradient: 'from-blue-500 to-cyan-600',
@@ -129,4 +129,3 @@ export const JobsBanner: React.FC = () => {
     </div>
   );
 };
-

@@ -3,7 +3,7 @@ import { SEOIssueDetail } from './SEOIssueDetail';
 import { SEOPageEditor } from './SEOPageEditor';
 import { SEOBulkOperations } from './SEOBulkOperations';
 import { SEOProgressTracker } from './SEOProgressTracker';
-import { SEOCommandCenter } from './SEODashboard';
+import { SEODashboard } from './SEODashboard';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -133,10 +133,10 @@ const mockIssues: SEOIssue[] = [
   }
 ];
 
-type ViewMode = 'CommandCenter' | 'issue-detail' | 'page-editor' | 'bulk-operations' | 'progress-tracker';
+type ViewMode = 'dashboard' | 'issue-detail' | 'page-editor' | 'bulk-operations' | 'progress-tracker';
 
 export const SEOIssueManager: React.FC = () => {
-  const [currentView, setCurrentView] = useState<ViewMode>('CommandCenter');
+  const [currentView, setCurrentView] = useState<ViewMode>('dashboard');
   const [selectedIssue, setSelectedIssue] = useState<SEOIssue | null>(null);
   const [selectedPageUrl, setSelectedPageUrl] = useState<string>('');
   const [resolvedIssues, setResolvedIssues] = useState<string[]>([]);
@@ -251,8 +251,8 @@ export const SEOIssueManager: React.FC = () => {
     setCurrentView('issue-detail');
   };
 
-  const handleBackToCommandCenter = () => {
-    setCurrentView('CommandCenter');
+  const handleBackToDashboard = () => {
+    setCurrentView('dashboard');
     setSelectedIssue(null);
     setSelectedPageUrl('');
   };
@@ -264,13 +264,13 @@ export const SEOIssueManager: React.FC = () => {
 
   const handleMarkIssueResolved = (issueId: string) => {
     setResolvedIssues(prev => [...prev, issueId]);
-    setCurrentView('CommandCenter');
+    setCurrentView('dashboard');
     setSelectedIssue(null);
   };
 
   const handlePageSave = (pageData: any) => {
     console.log('Page data saved:', pageData);
-    setCurrentView('CommandCenter');
+    setCurrentView('dashboard');
   };
 
   const renderCurrentView = () => {
@@ -279,7 +279,7 @@ export const SEOIssueManager: React.FC = () => {
         return (
           <SEOIssueDetail
             issue={selectedIssue}
-            onBack={handleBackToCommandCenter}
+            onBack={handleBackToDashboard}
             onMarkResolved={handleMarkIssueResolved}
           />
         );
@@ -289,7 +289,7 @@ export const SEOIssueManager: React.FC = () => {
           <SEOPageEditor
             pageUrl={selectedPageUrl}
             onSave={handlePageSave}
-            onClose={handleBackToCommandCenter}
+            onClose={handleBackToDashboard}
           />
         );
       
@@ -301,14 +301,14 @@ export const SEOIssueManager: React.FC = () => {
       
       default:
         return (
-          <SEOCommandCenter />
+          <SEODashboard />
         );
     }
   };
 
   return (
     <div className="space-y-6">
-      {currentView === 'CommandCenter' && (
+      {currentView === 'dashboard' && (
         <div className="flex items-center gap-4 mb-6">
           <button
             onClick={() => setCurrentView('bulk-operations')}
@@ -329,4 +329,3 @@ export const SEOIssueManager: React.FC = () => {
     </div>
   );
 };
-

@@ -18,7 +18,7 @@ const Suggestions = () => {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Smart Moves</h1>
+          <h1 className="text-3xl font-bold text-gray-900">AI Suggestions</h1>
           <p className="text-gray-600 mt-2">
             Discover relevant people, content, and opportunities curated just for you
           </p>
@@ -32,4 +32,3 @@ const Suggestions = () => {
 };
 
 export default Suggestions;
-

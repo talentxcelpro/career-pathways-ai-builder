@@ -73,7 +73,7 @@ export const ComprehensiveResumeBuilder: React.FC<ComprehensiveResumeBuilderProp
     references: []
   });
 
-  // Fetch resume with CareerAnalytics
+  // Fetch resume with analytics
   const { data: resume, isLoading } = useQuery({
     queryKey: ['resume', resumeId],
     queryFn: async () => {
@@ -92,8 +92,8 @@ export const ComprehensiveResumeBuilder: React.FC<ComprehensiveResumeBuilderProp
     enabled: !!resumeId && !!user
   });
 
-  // Simplified CareerAnalytics - computed from resume data
-  const CareerAnalyticsData = {
+  // Simplified analytics - computed from resume data
+  const analyticsData = {
     views: 0,
     downloads: 0,
     applications: 0,
@@ -101,13 +101,13 @@ export const ComprehensiveResumeBuilder: React.FC<ComprehensiveResumeBuilderProp
     lastViewed: resume?.updated_at ? new Date(resume.updated_at) : null
   };
 
-  // Load resume data and CareerAnalytics
+  // Load resume data and analytics
   useEffect(() => {
     if (resume?.content) {
       setResumeData(resume.content);
       if (resume.template_id) setSelectedTemplate(resume.template_id);
       
-      // CareerAnalytics are now computed above
+      // Analytics are now computed above
     }
   }, [resume]);
 
@@ -132,7 +132,7 @@ export const ComprehensiveResumeBuilder: React.FC<ComprehensiveResumeBuilderProp
       
       if (error) throw error;
       
-      // Track CareerAnalytics
+      // Track analytics
       await supabase.functions.invoke('track-resume-edit', {
         body: { resumeId, action: 'content_update', data: { atsScore } }
       });
@@ -371,10 +371,10 @@ export const ComprehensiveResumeBuilder: React.FC<ComprehensiveResumeBuilderProp
                 </Badge>
               )}
               <Badge variant="outline" className="text-xs">
-                ATS: {CareerAnalyticsData.atsScore}%
+                ATS: {analyticsData.atsScore}%
               </Badge>
               <Badge variant="outline" className="text-xs">
-                Views: {CareerAnalyticsData.views}
+                Views: {analyticsData.views}
               </Badge>
             </div>
           </div>
@@ -540,9 +540,9 @@ export const ComprehensiveResumeBuilder: React.FC<ComprehensiveResumeBuilderProp
                       <Sparkles className="h-3 w-3 mr-1" />
                       AI
                     </TabsTrigger>
-                    <TabsTrigger value="CareerAnalytics" className="text-xs">
+                    <TabsTrigger value="analytics" className="text-xs">
                       <BarChart3 className="h-3 w-3 mr-1" />
-                      CareerAnalytics
+                      Analytics
                     </TabsTrigger>
                   </TabsList>
                 </div>
@@ -657,7 +657,7 @@ export const ComprehensiveResumeBuilder: React.FC<ComprehensiveResumeBuilderProp
                     />
                   </TabsContent>
 
-                  <TabsContent value="CareerAnalytics" className="mt-0">
+                  <TabsContent value="analytics" className="mt-0">
                     <div className="space-y-4">
                       {/* Performance Overview */}
                       <Card>
@@ -667,19 +667,19 @@ export const ComprehensiveResumeBuilder: React.FC<ComprehensiveResumeBuilderProp
                         <CardContent>
                           <div className="grid grid-cols-2 gap-4">
                             <div className="text-center">
-                              <div className="text-2xl font-bold text-primary">{CareerAnalyticsData.views}</div>
+                              <div className="text-2xl font-bold text-primary">{analyticsData.views}</div>
                               <div className="text-xs text-muted-foreground">Views</div>
                             </div>
                             <div className="text-center">
-                              <div className="text-2xl font-bold text-primary">{CareerAnalyticsData.downloads}</div>
+                              <div className="text-2xl font-bold text-primary">{analyticsData.downloads}</div>
                               <div className="text-xs text-muted-foreground">Downloads</div>
                             </div>
                             <div className="text-center">
-                              <div className="text-2xl font-bold text-primary">{CareerAnalyticsData.applications}</div>
+                              <div className="text-2xl font-bold text-primary">{analyticsData.applications}</div>
                               <div className="text-xs text-muted-foreground">Applications</div>
                             </div>
                             <div className="text-center">
-                              <div className="text-2xl font-bold text-primary">{CareerAnalyticsData.atsScore}%</div>
+                              <div className="text-2xl font-bold text-primary">{analyticsData.atsScore}%</div>
                               <div className="text-xs text-muted-foreground">ATS Score</div>
                             </div>
                           </div>
@@ -783,6 +783,3 @@ export const ComprehensiveResumeBuilder: React.FC<ComprehensiveResumeBuilderProp
     </div>
   );
 };
-
-
-

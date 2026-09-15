@@ -1,5 +1,5 @@
 import React from 'react';
-import { EnhancedMobilePulse } from './EnhancedMobilePulse';
+import { EnhancedMobileFeed } from './EnhancedMobileFeed';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useNavigate } from 'react-router-dom';
 import { Search, Bell } from 'lucide-react';
@@ -45,9 +45,9 @@ export const EnhancedMobileNetwork: React.FC = () => {
         </div>
       </div>
 
-      {/* Professional Pulse */}
+      {/* Professional Feed */}
       <div className="flex-1 overflow-hidden">
-        <EnhancedMobilePulse />
+        <EnhancedMobileFeed />
       </div>
     </div>
   );

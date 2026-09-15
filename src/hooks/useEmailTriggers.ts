@@ -267,7 +267,7 @@ export const useEmailTriggers = () => {
 
   const triggerResumeFeedback = async (userEmail: string, userName: string) => {
     return triggerEmail({
-      triggerType: 'resume_writing_Feedback',
+      triggerType: 'resume_writing_feedback',
       recipientEmail: userEmail,
       templateData: { name: userName }
     });
@@ -434,4 +434,3 @@ const interpolateString = (template: string, data: Record<string, any>): string 
     return data[key] || match;
   });
 };
-

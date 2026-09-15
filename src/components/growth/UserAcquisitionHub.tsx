@@ -6,33 +6,15 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Users, Trophy, Gift, Share2, Target, TrendingUp } from "lucide-react";
 
-import { useGrowth } from '@/hooks/useGrowth';
-import { useAuth } from '@/contexts/AuthContext';
-import { toast } from "sonner";
-
 export const UserAcquisitionHub: React.FC = () => {
   const [activeTab, setActiveTab] = useState("referrals");
-  const [referralEmail, setReferralEmail] = useState("");
-  const { user } = useAuth();
-  const { referrals, campaigns, addReferral, isAdding } = useGrowth();
-
-  const handleInvite = async () => {
-    if (!referralEmail) return;
-    try {
-      await addReferral(referralEmail);
-      toast.success("Invitation sent successfully!");
-      setReferralEmail("");
-    } catch (error) {
-      toast.error("Failed to send invitation.");
-    }
-  };
 
   const referralStats = {
-    totalReferrals: referrals.length,
-    successfulReferrals: referrals.filter(r => r.status === 'completed').length,
-    pendingReferrals: referrals.filter(r => r.status === 'pending').length,
-    totalRewards: referrals.reduce((acc, r) => acc + (r.reward_points || 0), 0),
-    conversionRate: referrals.length > 0 ? (referrals.filter(r => r.status === 'completed').length / referrals.length) * 100 : 0
+    totalReferrals: 248,
+    successfulReferrals: 164,
+    pendingReferrals: 84,
+    totalRewards: 2480,
+    conversionRate: 66.1
   };
 
   const leaderboard = [
@@ -119,31 +101,19 @@ export const UserAcquisitionHub: React.FC = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex gap-2">
-                  <div className="flex-1 p-2 bg-muted rounded border font-mono text-xs overflow-hidden text-ellipsis">
-                    https://talentxcel.in/ref/{user?.id?.substring(0, 8)}
+                  <div className="flex-1 p-2 bg-muted rounded border font-mono text-sm">
+                    https://talentxcel.in/ref/ABC123
                   </div>
-                  <Button size="sm" onClick={() => {
-                    navigator.clipboard.writeText(`https://talentxcel.in/ref/${user?.id?.substring(0, 8)}`);
-                    toast.success("Link copied!");
-                  }}>Copy</Button>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-sm font-medium">Send Direct Invite</p>
-                  <div className="flex gap-2">
-                    <Input 
-                      placeholder="Enter colleague's email" 
-                      value={referralEmail}
-                      onChange={(e) => setReferralEmail(e.target.value)}
-                    />
-                    <Button onClick={handleInvite} disabled={isAdding}>
-                      {isAdding ? "Sending..." : "Invite"}
-                    </Button>
-                  </div>
+                  <Button size="sm">Copy</Button>
                 </div>
                 <div className="flex gap-2">
-                  <Button className="flex-1" variant="outline">
+                  <Button className="flex-1">
                     <Share2 className="h-4 w-4 mr-2" />
                     Share on LinkedIn
+                  </Button>
+                  <Button variant="outline" className="flex-1">
+                    <Share2 className="h-4 w-4 mr-2" />
+                    Share on WhatsApp
                   </Button>
                 </div>
               </CardContent>
@@ -231,24 +201,30 @@ export const UserAcquisitionHub: React.FC = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {campaigns.map((campaign) => (
-                  <div key={campaign.id} className="p-4 border rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-medium">{campaign.title}</h4>
-                      <Badge>Active</Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      {campaign.description}
-                    </p>
-                    <div className="flex justify-between text-sm">
-                      <span>Reward Multiplier: {campaign.reward_multiplier}x</span>
-                      <span>Ends: {new Date(campaign.end_date).toLocaleDateString()}</span>
-                    </div>
+                <div className="p-4 border rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-medium">New Year Boost</h4>
+                    <Badge>Active</Badge>
                   </div>
-                ))}
-                {campaigns.length === 0 && (
-                  <p className="text-sm text-muted-foreground text-center py-4">No active campaigns at the moment.</p>
-                )}
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Double rewards for all referrals until January 31st
+                  </p>
+                  <div className="flex justify-between text-sm">
+                    <span>Progress: 45/100 referrals</span>
+                    <span>Ends in 12 days</span>
+                  </div>
+                  <Progress value={45} className="h-2 mt-2" />
+                </div>
+
+                <div className="p-4 border rounded-lg opacity-60">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-medium">Spring Challenge</h4>
+                    <Badge variant="outline">Coming Soon</Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Special rewards for tech referrals starting March 1st
+                  </p>
+                </div>
               </CardContent>
             </Card>
 

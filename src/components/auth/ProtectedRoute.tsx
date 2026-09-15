@@ -1,66 +1,49 @@
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useOptimizedAuth } from '@/contexts/OptimizedAuthContext';
-import { isAuthSessionFailure, isTransientAuthError } from '@/utils/authErrors';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { user, loading, session, refreshSession } = useOptimizedAuth();
+  const { user, loading, session } = useOptimizedAuth();
   const location = useLocation();
-  const [isRefreshingExpiredSession, setIsRefreshingExpiredSession] = useState(false);
-  const [refreshFailed, setRefreshFailed] = useState(false);
-  const [attemptedRefreshExpiry, setAttemptedRefreshExpiry] = useState<number | null>(null);
-
-  const expiresAt = session?.expires_at;
-  const isExpired = !!expiresAt && Math.floor(Date.now() / 1000) >= expiresAt;
-  const hasAttemptedRefresh = attemptedRefreshExpiry === expiresAt;
-
-  useEffect(() => {
-    if (!session || !isExpired || isRefreshingExpiredSession || refreshFailed || hasAttemptedRefresh) return;
-
-    let cancelled = false;
-    setIsRefreshingExpiredSession(true);
-    setAttemptedRefreshExpiry(expiresAt ?? null);
-
-    refreshSession()
-      .then(() => {
-        if (!cancelled) setRefreshFailed(false);
-      })
-      .catch((error) => {
-        console.error('Expired session refresh failed:', error);
-        if (!cancelled && isAuthSessionFailure(error) && !isTransientAuthError(error)) {
-          setRefreshFailed(true);
-        }
-      })
-      .finally(() => {
-        if (!cancelled) setIsRefreshingExpiredSession(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [session, expiresAt, isExpired, isRefreshingExpiredSession, refreshFailed, hasAttemptedRefresh, refreshSession]);
 
   // Show loading spinner while checking auth
-  if (loading || isRefreshingExpiredSession || (session && isExpired && !refreshFailed && !hasAttemptedRefresh)) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="text-muted-foreground">
-            {isExpired ? 'Refreshing your session...' : 'Checking authentication...'}
-          </p>
+          <p className="text-muted-foreground">Checking authentication...</p>
         </div>
       </div>
     );
   }
 
-  if (refreshFailed) {
-    return <Navigate to="/auth/login" state={{ from: location, reason: 'expired' }} replace />;
+  // Validate session isn't expired with better error handling
+  if (session) {
+    try {
+      const now = Math.floor(Date.now() / 1000);
+      const expiresAt = session.expires_at;
+      
+      if (expiresAt && now >= expiresAt) {
+        console.log('Session expired in ProtectedRoute');
+        // Clear all auth-related storage
+        localStorage.removeItem('sb-dthlgsnakhoftinssokm-auth-token');
+        localStorage.removeItem('secure_session');
+        sessionStorage.clear();
+        return <Navigate to="/auth/login" state={{ from: location, reason: 'expired' }} replace />;
+      }
+    } catch (error) {
+      console.error('Session validation error:', error);
+      // Clear corrupted session data
+      localStorage.removeItem('sb-dthlgsnakhoftinssokm-auth-token');
+      sessionStorage.clear();
+      return <Navigate to="/auth/login" state={{ from: location, reason: 'error' }} replace />;
+    }
   }
 
   // Redirect to auth if no user or session

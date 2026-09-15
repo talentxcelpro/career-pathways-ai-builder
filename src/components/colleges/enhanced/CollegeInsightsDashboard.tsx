@@ -20,21 +20,21 @@ import {
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-interface CollegeInsightsCommandCenterProps {
+interface CollegeInsightsDashboardProps {
   colleges: any[];
 }
 
-export const CollegeInsightsCommandCenter: React.FC<CollegeInsightsCommandCenterProps> = ({
+export const CollegeInsightsDashboard: React.FC<CollegeInsightsDashboardProps> = ({
   colleges
 }) => {
-  const { data: CareerAnalyticsData, isLoading } = useQuery({
-    queryKey: ['colleges-insights-CareerAnalytics', colleges.length],
+  const { data: analyticsData, isLoading } = useQuery({
+    queryKey: ['colleges-insights-analytics', colleges.length],
     queryFn: async () => {
       if (!colleges.length) return null;
       
       const collegeIds = colleges.map(c => c.id);
       const { data, error } = await supabase
-        .from('college_CareerAnalytics')
+        .from('college_analytics')
         .select('*')
         .in('college_id', collegeIds);
       
@@ -173,7 +173,7 @@ export const CollegeInsightsCommandCenter: React.FC<CollegeInsightsCommandCenter
         ))}
       </div>
 
-      {/* Detailed CareerAnalytics Tabs */}
+      {/* Detailed Analytics Tabs */}
       <Tabs defaultValue="rankings" className="w-full">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="rankings">Rankings</TabsTrigger>
@@ -385,6 +385,3 @@ export const CollegeInsightsCommandCenter: React.FC<CollegeInsightsCommandCenter
     </div>
   );
 };
-
-
-

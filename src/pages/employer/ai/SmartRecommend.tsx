@@ -80,7 +80,7 @@ const SmartRecommend = () => {
           <Brain className="h-8 w-8 text-purple-600" />
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Smart Recommendations</h1>
-            <p className="text-gray-600">Performance candidate matching for your job posting</p>
+            <p className="text-gray-600">AI-powered candidate matching for your job posting</p>
           </div>
         </div>
         <div className="flex items-center space-x-2">
@@ -94,12 +94,12 @@ const SmartRecommend = () => {
         </div>
       </div>
 
-      {/* Intelligence Metrics */}
+      {/* AI Insights */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Brain className="h-5 w-5 text-purple-600" />
-            Precision Match Insights
+            AI Matching Insights
           </CardTitle>
           <CardDescription>
             Based on your job requirements, we've analyzed thousands of profiles to find the best matches
@@ -219,4 +219,3 @@ const SmartRecommend = () => {
 };
 
 export default SmartRecommend;
-

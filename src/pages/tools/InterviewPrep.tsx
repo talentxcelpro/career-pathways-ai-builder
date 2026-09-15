@@ -83,7 +83,7 @@ const InterviewPrep = () => {
             </div>
             <div>
               <h1 className="text-3xl font-bold text-gray-900">AI Interview Prep</h1>
-              <p className="text-gray-600">Practice with Performance mock interviews</p>
+              <p className="text-gray-600">Practice with AI-powered mock interviews</p>
             </div>
             <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 ml-auto">
               <Star className="h-3 w-3 mr-1" />
@@ -101,7 +101,7 @@ const InterviewPrep = () => {
               <CardContent className="space-y-6">
                 <p className="text-gray-600">
                   This mock interview session includes {mockQuestions.length} carefully selected questions 
-                  to help you practice your interview skills with Performance Feedback.
+                  to help you practice your interview skills with AI-powered feedback.
                 </p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
@@ -258,5 +258,3 @@ const InterviewPrep = () => {
 };
 
 export default InterviewPrep;
-
-

@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Settings, Zap, Link, BarChart3, Activity } from 'lucide-react';
 import AutomatedWorkflowBuilder from '@/components/automation/AutomatedWorkflowBuilder';
 import IntegrationManagementSystem from '@/components/automation/IntegrationManagementSystem';
-import AdvancedReportingCommandCenter from '@/components/reporting/AdvancedReportingCommandCenter';
+import AdvancedReportingDashboard from '@/components/reporting/AdvancedReportingDashboard';
 import PerformanceMonitoringCenter from '@/components/monitoring/PerformanceMonitoringCenter';
 import { updateMetaTags } from '@/utils/metaTags';
 
@@ -57,7 +57,7 @@ const WorkflowAutomationHub: React.FC = () => {
               <CardContent className="p-4 text-center">
                 <BarChart3 className="h-8 w-8 text-primary mx-auto mb-2" />
                 <h3 className="font-semibold mb-1">Advanced Reports</h3>
-                <p className="text-xs text-muted-foreground">Deep CareerAnalytics and insights</p>
+                <p className="text-xs text-muted-foreground">Deep analytics and insights</p>
               </CardContent>
             </Card>
             
@@ -105,7 +105,7 @@ const WorkflowAutomationHub: React.FC = () => {
           </TabsContent>
           
           <TabsContent value="reporting" className="mt-6">
-            <AdvancedReportingCommandCenter />
+            <AdvancedReportingDashboard />
           </TabsContent>
           
           <TabsContent value="monitoring" className="mt-6">
@@ -140,6 +140,3 @@ const WorkflowAutomationHub: React.FC = () => {
 };
 
 export default WorkflowAutomationHub;
-
-
-

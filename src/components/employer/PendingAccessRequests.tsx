@@ -67,7 +67,7 @@ export const PendingAccessRequests: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['pending-access-requests'] });
       queryClient.invalidateQueries({ queryKey: ['employer-access'] });
       queryClient.invalidateQueries({ queryKey: ['user-team-membership'] });
-      // Refresh the page to update the CommandCenter
+      // Refresh the page to update the dashboard
       window.location.reload();
     },
     onError: (error: any) => {
@@ -124,7 +124,7 @@ export const PendingAccessRequests: React.FC = () => {
           Pending Employer Access Requests
         </CardTitle>
         <CardDescription>
-          You have been invited to join company employer CommandCenters
+          You have been invited to join company employer dashboards
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -194,4 +194,3 @@ export const PendingAccessRequests: React.FC = () => {
     </Card>
   );
 };
-

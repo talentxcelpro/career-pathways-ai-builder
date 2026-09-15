@@ -45,12 +45,12 @@ export const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({ stats }) =
       urgent: (stats?.pendingEmployerRequests || 0) > 0
     },
     {
-      title: 'User CareerAnalytics',
+      title: 'User Analytics',
       description: `${stats?.totalUsers || 0} total users`,
       icon: BarChart3,
       color: 'text-green-600',
       bgColor: 'bg-green-50',
-      link: '/admin/CareerAnalytics'
+      link: '/admin/analytics'
     },
     {
       title: 'System Settings',
@@ -74,7 +74,7 @@ export const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({ stats }) =
       icon: Zap,
       color: 'text-yellow-600',
       bgColor: 'bg-yellow-50',
-      link: '/admin/CareerAnalytics'
+      link: '/admin/analytics'
     }
   ];
 
@@ -115,6 +115,3 @@ export const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({ stats }) =
     </Card>
   );
 };
-
-
-

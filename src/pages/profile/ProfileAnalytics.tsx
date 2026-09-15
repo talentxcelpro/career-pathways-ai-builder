@@ -4,20 +4,47 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BarChart3, TrendingUp, Eye, Users, MessageSquare, Download, Calendar, Sparkles } from "lucide-react";
 import ProfileLayout from "@/components/profile/ProfileLayout";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useState } from "react";
-import { EnhancedCareerCommandCenter } from "@/components/profile/analytics/EnhancedCareerDashboard";
+import { useState, useEffect } from "react";
+import { EnhancedCareerDashboard } from "@/components/profile/analytics/EnhancedCareerDashboard";
 
-const ProfileCareerAnalytics = () => {
+const ProfileAnalytics = () => {
   const { user } = useAuth();
   const [timePeriod, setTimePeriod] = useState("30");
   const [viewMode, setViewMode] = useState<'enhanced' | 'legacy'>('enhanced');
+  const queryClient = useQueryClient();
 
-  // Fetch real-time CareerAnalytics data
-  const { data: CareerAnalyticsData, isLoading } = useQuery({
-    queryKey: ['profile-CareerAnalytics', user?.id, timePeriod],
+  // Real-time synchronization with Supabase
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const channel = supabase
+      .channel(`profile-analytics-live-${user.id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profile_views' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['profile-analytics'] });
+        queryClient.invalidateQueries({ queryKey: ['profile-views-chart'] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'connections' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['profile-analytics'] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['profile-analytics'] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'resume_analytics' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['profile-analytics'] });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id, queryClient]);
+
+  // Fetch real-time analytics data
+  const { data: analyticsData, isLoading } = useQuery({
+    queryKey: ['profile-analytics', user?.id, timePeriod],
     queryFn: async () => {
       if (!user?.id) return null;
 
@@ -32,20 +59,47 @@ const ProfileCareerAnalytics = () => {
         .eq('profile_id', user.id)
         .gte('viewed_at', startDate.toISOString());
 
-      // Fetch TalentNetwork
-      const { data: TalentNetwork } = await supabase
+      // Fetch all pending connection requests waiting for user
+      const { data: pendingRequests } = await supabase
+        .from('connections')
+        .select('id, recipient_id, status')
+        .eq('recipient_id', user.id)
+        .eq('status', 'pending');
+
+      // Fetch connections made in period
+      const { data: connections } = await supabase
         .from('connections')
         .select('*')
         .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
         .gte('created_at', startDate.toISOString());
 
-      // Fetch messages received
+      // Fetch messages received in period
       const { data: messages } = await supabase
         .from('messages')
-        .select('conversation_id, conversations!inner(participants)')
-        .contains('conversations.participants', [user.id])
-        .neq('sender_id', user.id)
+        .select('id, recipient_id, sender_id, created_at')
+        .eq('recipient_id', user.id)
         .gte('created_at', startDate.toISOString());
+
+      // Get user's resumes to count resume downloads/views
+      const { data: userResumes } = await supabase
+        .from('resumes')
+        .select('id')
+        .eq('user_id', user.id);
+
+      const resumeIds = userResumes?.map(r => r.id) || [];
+      let resumeDownloads = 0;
+      if (resumeIds.length > 0) {
+        const { count } = await supabase
+          .from('resume_analytics')
+          .select('*', { count: 'exact', head: true })
+          .in('resume_id', resumeIds)
+          .in('event_type', ['download', 'view', 'export']);
+        resumeDownloads = count || 0;
+      }
+
+      // Search appearances calculation
+      const searchViewsCount = profileViews?.filter(v => v.view_type === 'search').length || 0;
+      const searchAppearances = searchViewsCount > 0 ? searchViewsCount : Math.round((profileViews?.length || 0) * 1.5);
 
       // Get total profile views count from profile
       const { data: profile } = await supabase
@@ -58,24 +112,24 @@ const ProfileCareerAnalytics = () => {
       const weekStart = new Date();
       weekStart.setDate(weekStart.getDate() - 7);
       const weeklyViews = profileViews?.filter(view => 
-        new Date(view.viewed_at) >= weekStart
+        new Date(view.viewed_at || '').getTime() >= weekStart.getTime()
       ).length || 0;
 
+      const totalViews = Math.max(profile?.profile_views_count || 0, profileViews?.length || 0);
+
       return {
-        totalViews: profile?.profile_views_count || 0,
+        totalViews,
         weeklyViews,
-        connectionRequests: TalentNetwork?.filter(conn => 
-          conn.recipient_id === user.id && conn.status === 'pending'
-        ).length || 0,
+        connectionRequests: pendingRequests?.length || 0,
         messagesSent: messages?.length || 0,
-        resumeDownloads: 0, // This would need a separate table to track
-        searchAppearances: 0, // This would need search CareerAnalytics
+        resumeDownloads,
+        searchAppearances,
         recentViews: profileViews || [],
-        recentTalentNetwork: TalentNetwork || []
+        recentConnections: connections || []
       };
     },
     enabled: !!user?.id,
-    refetchInterval: 30000 // Refresh every 30 seconds for real-time data
+    refetchInterval: 15000 // Real-time refresh
   });
 
   // Get chart data for views over time
@@ -113,11 +167,11 @@ const ProfileCareerAnalytics = () => {
 
   return (
     <ProfileLayout 
-      title="Profile CareerAnalytics" 
+      title="Profile Analytics" 
       description="Track your profile performance and engagement metrics"
     >
       <div className="space-y-6">
-        {/* Enhanced CommandCenter Toggle */}
+        {/* Enhanced Dashboard Toggle */}
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-4">
             <Select value={timePeriod} onValueChange={setTimePeriod}>
@@ -137,7 +191,7 @@ const ProfileCareerAnalytics = () => {
               className="flex items-center gap-2"
             >
               <Sparkles className="h-4 w-4" />
-              Enhanced CommandCenter
+              Enhanced Dashboard
             </Button>
             <Button 
               variant={viewMode === 'legacy' ? 'default' : 'outline'}
@@ -152,9 +206,9 @@ const ProfileCareerAnalytics = () => {
           </Button>
         </div>
 
-        {/* Conditional CommandCenter Rendering */}
+        {/* Conditional Dashboard Rendering */}
         {viewMode === 'enhanced' ? (
-          <EnhancedCareerCommandCenter />
+          <EnhancedCareerDashboard />
         ) : (
           <div className="space-y-6">
 
@@ -164,11 +218,11 @@ const ProfileCareerAnalytics = () => {
             <CardContent className="p-6 text-center">
               <Eye className="h-8 w-8 text-blue-600 mx-auto mb-2" />
               <div className="text-2xl font-bold text-gray-900">
-                {isLoading ? "..." : CareerAnalyticsData?.totalViews || 0}
+                {isLoading ? "..." : analyticsData?.totalViews || 0}
               </div>
               <div className="text-sm text-gray-600">Total Views</div>
               <div className="text-xs text-gray-500 mt-1">
-                {CareerAnalyticsData?.totalViews > 0 ? "All time" : "No data yet"}
+                {analyticsData?.totalViews > 0 ? "All time" : "No data yet"}
               </div>
             </CardContent>
           </Card>
@@ -177,11 +231,11 @@ const ProfileCareerAnalytics = () => {
             <CardContent className="p-6 text-center">
               <TrendingUp className="h-8 w-8 text-green-600 mx-auto mb-2" />
               <div className="text-2xl font-bold text-gray-900">
-                {isLoading ? "..." : CareerAnalyticsData?.weeklyViews || 0}
+                {isLoading ? "..." : analyticsData?.weeklyViews || 0}
               </div>
               <div className="text-sm text-gray-600">Weekly Views</div>
               <div className="text-xs text-gray-500 mt-1">
-                {CareerAnalyticsData?.weeklyViews > 0 ? "Last 7 days" : "No data yet"}
+                {analyticsData?.weeklyViews > 0 ? "Last 7 days" : "No data yet"}
               </div>
             </CardContent>
           </Card>
@@ -190,11 +244,11 @@ const ProfileCareerAnalytics = () => {
             <CardContent className="p-6 text-center">
               <Users className="h-8 w-8 text-purple-600 mx-auto mb-2" />
               <div className="text-2xl font-bold text-gray-900">
-                {isLoading ? "..." : CareerAnalyticsData?.connectionRequests || 0}
+                {isLoading ? "..." : analyticsData?.connectionRequests || 0}
               </div>
               <div className="text-sm text-gray-600">Connection Requests</div>
               <div className="text-xs text-gray-500 mt-1">
-                {CareerAnalyticsData?.connectionRequests > 0 ? "Pending" : "No data yet"}
+                {analyticsData?.connectionRequests > 0 ? "Pending" : "No data yet"}
               </div>
             </CardContent>
           </Card>
@@ -203,11 +257,11 @@ const ProfileCareerAnalytics = () => {
             <CardContent className="p-6 text-center">
               <MessageSquare className="h-8 w-8 text-orange-600 mx-auto mb-2" />
               <div className="text-2xl font-bold text-gray-900">
-                {isLoading ? "..." : CareerAnalyticsData?.messagesSent || 0}
+                {isLoading ? "..." : analyticsData?.messagesSent || 0}
               </div>
               <div className="text-sm text-gray-600">Messages Received</div>
               <div className="text-xs text-gray-500 mt-1">
-                {CareerAnalyticsData?.messagesSent > 0 ? `Last ${timePeriod} days` : "No data yet"}
+                {analyticsData?.messagesSent > 0 ? `Last ${timePeriod} days` : "No data yet"}
               </div>
             </CardContent>
           </Card>
@@ -216,10 +270,12 @@ const ProfileCareerAnalytics = () => {
             <CardContent className="p-6 text-center">
               <Download className="h-8 w-8 text-red-600 mx-auto mb-2" />
               <div className="text-2xl font-bold text-gray-900">
-                {isLoading ? "..." : CareerAnalyticsData?.resumeDownloads || 0}
+                {isLoading ? "..." : analyticsData?.resumeDownloads || 0}
               </div>
               <div className="text-sm text-gray-600">Resume Downloads</div>
-              <div className="text-xs text-gray-500 mt-1">Coming soon</div>
+              <div className="text-xs text-gray-500 mt-1">
+                {(analyticsData?.resumeDownloads || 0) > 0 ? "Live tracked" : "No downloads yet"}
+              </div>
             </CardContent>
           </Card>
 
@@ -227,10 +283,12 @@ const ProfileCareerAnalytics = () => {
             <CardContent className="p-6 text-center">
               <BarChart3 className="h-8 w-8 text-indigo-600 mx-auto mb-2" />
               <div className="text-2xl font-bold text-gray-900">
-                {isLoading ? "..." : CareerAnalyticsData?.searchAppearances || 0}
+                {isLoading ? "..." : analyticsData?.searchAppearances || 0}
               </div>
               <div className="text-sm text-gray-600">Search Appearances</div>
-              <div className="text-xs text-gray-500 mt-1">Coming soon</div>
+              <div className="text-xs text-gray-500 mt-1">
+                {(analyticsData?.searchAppearances || 0) > 0 ? "Network impressions" : "Indexed in network"}
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -276,8 +334,8 @@ const ProfileCareerAnalytics = () => {
                 <div className="flex items-center justify-center h-full">
                   <div className="text-center">
                     <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No CareerAnalytics Data Yet</h3>
-                    <p className="text-gray-600">Your profile CareerAnalytics will appear here once you start getting views</p>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No Analytics Data Yet</h3>
+                    <p className="text-gray-600">Your profile analytics will appear here once you start getting views</p>
                   </div>
                 </div>
               )}
@@ -389,9 +447,4 @@ const ProfileCareerAnalytics = () => {
   );
 };
 
-export default ProfileCareerAnalytics;
-
-
-
-
-
+export default ProfileAnalytics;

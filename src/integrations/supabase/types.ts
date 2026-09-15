@@ -776,6 +776,239 @@ export type Database = {
         }
         Relationships: []
       }
+      assessment_attempts: {
+        Row: {
+          assessment_id: string | null
+          completed_at: string | null
+          id: string
+          passed: boolean | null
+          percentage_score: number | null
+          started_at: string | null
+          status: string | null
+          total_score: number | null
+          user_id: string
+        }
+        Insert: {
+          assessment_id?: string | null
+          completed_at?: string | null
+          id?: string
+          passed?: boolean | null
+          percentage_score?: number | null
+          started_at?: string | null
+          status?: string | null
+          total_score?: number | null
+          user_id: string
+        }
+        Update: {
+          assessment_id?: string | null
+          completed_at?: string | null
+          id?: string
+          passed?: boolean | null
+          percentage_score?: number | null
+          started_at?: string | null
+          status?: string | null
+          total_score?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_attempts_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "assessments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assessment_categories: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
+      assessment_questions: {
+        Row: {
+          assessment_id: string | null
+          correct_answer: Json | null
+          created_at: string | null
+          difficulty_score: number | null
+          explanation: string | null
+          id: string
+          is_active: boolean | null
+          options: Json
+          points: number | null
+          question_text: string
+          question_type: string | null
+          sort_order: number | null
+          time_limit_seconds: number | null
+        }
+        Insert: {
+          assessment_id?: string | null
+          correct_answer?: Json | null
+          created_at?: string | null
+          difficulty_score?: number | null
+          explanation?: string | null
+          id?: string
+          is_active?: boolean | null
+          options?: Json
+          points?: number | null
+          question_text: string
+          question_type?: string | null
+          sort_order?: number | null
+          time_limit_seconds?: number | null
+        }
+        Update: {
+          assessment_id?: string | null
+          correct_answer?: Json | null
+          created_at?: string | null
+          difficulty_score?: number | null
+          explanation?: string | null
+          id?: string
+          is_active?: boolean | null
+          options?: Json
+          points?: number | null
+          question_text?: string
+          question_type?: string | null
+          sort_order?: number | null
+          time_limit_seconds?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_questions_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "assessments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assessment_responses: {
+        Row: {
+          attempt_id: string | null
+          created_at: string | null
+          id: string
+          is_correct: boolean | null
+          points_earned: number | null
+          question_id: string | null
+          time_spent_seconds: number | null
+          user_answer: Json | null
+        }
+        Insert: {
+          attempt_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_correct?: boolean | null
+          points_earned?: number | null
+          question_id?: string | null
+          time_spent_seconds?: number | null
+          user_answer?: Json | null
+        }
+        Update: {
+          attempt_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_correct?: boolean | null
+          points_earned?: number | null
+          question_id?: string | null
+          time_spent_seconds?: number | null
+          user_answer?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_responses_attempt_id_fkey"
+            columns: ["attempt_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_attempts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assessment_responses_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assessment_responses_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_questions_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assessments: {
+        Row: {
+          assessment_type: string | null
+          category_id: string | null
+          created_at: string | null
+          description: string | null
+          duration_minutes: number | null
+          id: string
+          is_active: boolean | null
+          is_published: boolean | null
+          max_attempts: number | null
+          passing_score: number | null
+          questions: Json
+          time_limit_minutes: number | null
+          title: string
+          total_questions: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          assessment_type?: string | null
+          category_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          is_active?: boolean | null
+          is_published?: boolean | null
+          max_attempts?: number | null
+          passing_score?: number | null
+          questions?: Json
+          time_limit_minutes?: number | null
+          title: string
+          total_questions?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          assessment_type?: string | null
+          category_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          is_active?: boolean | null
+          is_published?: boolean | null
+          max_attempts?: number | null
+          passing_score?: number | null
+          questions?: Json
+          time_limit_minutes?: number | null
+          title?: string
+          total_questions?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       cleanup_backup_log: {
         Row: {
           backup_created_at: string | null
@@ -969,7 +1202,7 @@ export type Database = {
         }
         Relationships: []
       }
-      college_CareerAnalytics: {
+      college_analytics: {
         Row: {
           application_completions: number | null
           application_starts: number | null
@@ -1210,6 +1443,7 @@ export type Database = {
       companies: {
         Row: {
           created_at: string | null
+          created_by: string | null
           description: string | null
           founded_year: number | null
           id: string
@@ -1225,6 +1459,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          created_by?: string | null
           description?: string | null
           founded_year?: number | null
           id?: string
@@ -1240,6 +1475,7 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          created_by?: string | null
           description?: string | null
           founded_year?: number | null
           id?: string
@@ -1288,7 +1524,7 @@ export type Database = {
         }
         Relationships: []
       }
-      company_CareerAnalytics_sessions: {
+      company_analytics_sessions: {
         Row: {
           application_completions: number | null
           application_starts: number | null
@@ -1598,7 +1834,7 @@ export type Database = {
           interaction_count: number
           interaction_types: Json
           last_interaction_at: string
-          mutual_TalentNetwork: number
+          mutual_connections: number
           updated_at: string
           user1_id: string
           user2_id: string
@@ -1611,7 +1847,7 @@ export type Database = {
           interaction_count?: number
           interaction_types?: Json
           last_interaction_at?: string
-          mutual_TalentNetwork?: number
+          mutual_connections?: number
           updated_at?: string
           user1_id: string
           user2_id: string
@@ -1624,7 +1860,7 @@ export type Database = {
           interaction_count?: number
           interaction_types?: Json
           last_interaction_at?: string
-          mutual_TalentNetwork?: number
+          mutual_connections?: number
           updated_at?: string
           user1_id?: string
           user2_id?: string
@@ -1635,7 +1871,7 @@ export type Database = {
         Row: {
           common_colleges: string[] | null
           common_companies: string[] | null
-          common_TalentNetwork: number | null
+          common_connections: number | null
           common_skills: string[] | null
           created_at: string | null
           id: string
@@ -1648,7 +1884,7 @@ export type Database = {
         Insert: {
           common_colleges?: string[] | null
           common_companies?: string[] | null
-          common_TalentNetwork?: number | null
+          common_connections?: number | null
           common_skills?: string[] | null
           created_at?: string | null
           id?: string
@@ -1661,7 +1897,7 @@ export type Database = {
         Update: {
           common_colleges?: string[] | null
           common_companies?: string[] | null
-          common_TalentNetwork?: number | null
+          common_connections?: number | null
           common_skills?: string[] | null
           created_at?: string | null
           id?: string
@@ -1673,9 +1909,10 @@ export type Database = {
         }
         Relationships: []
       }
-      TalentNetwork: {
+      connections: {
         Row: {
           connected_at: string | null
+          connected_user_id: string | null
           created_at: string | null
           id: string
           message: string | null
@@ -1683,9 +1920,11 @@ export type Database = {
           requester_id: string
           status: string | null
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           connected_at?: string | null
+          connected_user_id?: string | null
           created_at?: string | null
           id?: string
           message?: string | null
@@ -1693,9 +1932,11 @@ export type Database = {
           requester_id: string
           status?: string | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           connected_at?: string | null
+          connected_user_id?: string | null
           created_at?: string | null
           id?: string
           message?: string | null
@@ -1703,6 +1944,7 @@ export type Database = {
           requester_id?: string
           status?: string | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -1778,7 +2020,7 @@ export type Database = {
         }
         Relationships: []
       }
-      content_CareerAnalytics: {
+      content_analytics: {
         Row: {
           content_id: string | null
           created_at: string | null
@@ -1979,7 +2221,7 @@ export type Database = {
         }
         Relationships: []
       }
-      content_performance_CareerAnalytics: {
+      content_performance_analytics: {
         Row: {
           avg_position: number | null
           bounce_rate: number | null
@@ -3157,7 +3399,7 @@ export type Database = {
         }
         Relationships: []
       }
-      email_CareerAnalytics_daily: {
+      email_analytics_daily: {
         Row: {
           created_at: string
           date: string
@@ -5596,7 +5838,7 @@ export type Database = {
         }
         Relationships: []
       }
-      hiring_CareerAnalytics: {
+      hiring_analytics: {
         Row: {
           benchmark_value: number | null
           company_id: string | null
@@ -5671,7 +5913,7 @@ export type Database = {
         }
         Relationships: []
       }
-      hub_CareerAnalytics: {
+      hub_analytics: {
         Row: {
           created_at: string | null
           hub_id: string
@@ -5704,7 +5946,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "hub_CareerAnalytics_hub_id_fkey"
+            foreignKeyName: "hub_analytics_hub_id_fkey"
             columns: ["hub_id"]
             isOneToOne: false
             referencedRelation: "organization_hubs"
@@ -6023,7 +6265,7 @@ export type Database = {
         }
         Relationships: []
       }
-      job_external_CareerAnalytics: {
+      job_external_analytics: {
         Row: {
           created_at: string | null
           id: string
@@ -6053,7 +6295,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "job_external_CareerAnalytics_job_id_fkey"
+            foreignKeyName: "job_external_analytics_job_id_fkey"
             columns: ["job_id"]
             isOneToOne: true
             referencedRelation: "jobs"
@@ -6640,7 +6882,7 @@ export type Database = {
         }
         Relationships: []
       }
-      learning_CareerAnalytics: {
+      learning_analytics: {
         Row: {
           additional_data: Json | null
           course_id: string | null
@@ -6676,7 +6918,7 @@ export type Database = {
         }
         Relationships: []
       }
-      learning_progress_CareerAnalytics: {
+      learning_progress_analytics: {
         Row: {
           completion_rate: number | null
           course_id: string | null
@@ -6745,7 +6987,7 @@ export type Database = {
         }
         Relationships: []
       }
-      linkedin_CareerAnalytics: {
+      linkedin_analytics: {
         Row: {
           created_at: string
           id: string
@@ -7162,7 +7404,7 @@ export type Database = {
         }
         Relationships: []
       }
-      mentorship_TalentNetwork: {
+      mentorship_connections: {
         Row: {
           created_at: string | null
           expertise_areas: Json | null
@@ -7275,8 +7517,8 @@ export type Database = {
           completed_at: string | null
           created_at: string | null
           duration_minutes: number
-          Feedback_mentee: Json | null
-          Feedback_mentor: Json | null
+          feedback_mentee: Json | null
+          feedback_mentor: Json | null
           id: string
           meeting_link: string | null
           mentee_credits: number | null
@@ -7292,8 +7534,8 @@ export type Database = {
           completed_at?: string | null
           created_at?: string | null
           duration_minutes?: number
-          Feedback_mentee?: Json | null
-          Feedback_mentor?: Json | null
+          feedback_mentee?: Json | null
+          feedback_mentor?: Json | null
           id?: string
           meeting_link?: string | null
           mentee_credits?: number | null
@@ -7309,8 +7551,8 @@ export type Database = {
           completed_at?: string | null
           created_at?: string | null
           duration_minutes?: number
-          Feedback_mentee?: Json | null
-          Feedback_mentor?: Json | null
+          feedback_mentee?: Json | null
+          feedback_mentor?: Json | null
           id?: string
           meeting_link?: string | null
           mentee_credits?: number | null
@@ -7808,7 +8050,7 @@ export type Database = {
           created_by: string | null
           custom_css: string | null
           custom_fonts: Json | null
-          CommandCenter_layout: Json | null
+          dashboard_layout: Json | null
           email_footer_text: string | null
           email_header_logo: string | null
           favicon_url: string | null
@@ -7827,7 +8069,7 @@ export type Database = {
           created_by?: string | null
           custom_css?: string | null
           custom_fonts?: Json | null
-          CommandCenter_layout?: Json | null
+          dashboard_layout?: Json | null
           email_footer_text?: string | null
           email_header_logo?: string | null
           favicon_url?: string | null
@@ -7846,7 +8088,7 @@ export type Database = {
           created_by?: string | null
           custom_css?: string | null
           custom_fonts?: Json | null
-          CommandCenter_layout?: Json | null
+          dashboard_layout?: Json | null
           email_footer_text?: string | null
           email_header_logo?: string | null
           favicon_url?: string | null
@@ -7948,7 +8190,7 @@ export type Database = {
           name: string
           settings: Json | null
           slug: string
-          social_Pulses: Json | null
+          social_feeds: Json | null
           updated_at: string | null
           verification_status: string | null
           website_url: string | null
@@ -7971,7 +8213,7 @@ export type Database = {
           name: string
           settings?: Json | null
           slug: string
-          social_Pulses?: Json | null
+          social_feeds?: Json | null
           updated_at?: string | null
           verification_status?: string | null
           website_url?: string | null
@@ -7994,7 +8236,7 @@ export type Database = {
           name?: string
           settings?: Json | null
           slug?: string
-          social_Pulses?: Json | null
+          social_feeds?: Json | null
           updated_at?: string | null
           verification_status?: string | null
           website_url?: string | null
@@ -8467,7 +8709,7 @@ export type Database = {
           company_id: string | null
           course_id: string | null
           created_at: string | null
-          Feedback_rating: number | null
+          feedback_rating: number | null
           id: string
           placement_date: string
           position_title: string
@@ -8481,7 +8723,7 @@ export type Database = {
           company_id?: string | null
           course_id?: string | null
           created_at?: string | null
-          Feedback_rating?: number | null
+          feedback_rating?: number | null
           id?: string
           placement_date: string
           position_title: string
@@ -8495,7 +8737,7 @@ export type Database = {
           company_id?: string | null
           course_id?: string | null
           created_at?: string | null
-          Feedback_rating?: number | null
+          feedback_rating?: number | null
           id?: string
           placement_date?: string
           position_title?: string
@@ -8507,7 +8749,7 @@ export type Database = {
         }
         Relationships: []
       }
-      plan_CareerAnalytics: {
+      plan_analytics: {
         Row: {
           active_subscribers: number | null
           created_at: string | null
@@ -8540,7 +8782,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "plan_CareerAnalytics_plan_id_fkey"
+            foreignKeyName: "plan_analytics_plan_id_fkey"
             columns: ["plan_id"]
             isOneToOne: false
             referencedRelation: "pricing_plans"
@@ -8548,7 +8790,7 @@ export type Database = {
           },
         ]
       }
-      platform_CareerAnalytics: {
+      platform_analytics: {
         Row: {
           created_at: string | null
           event_data: Json | null
@@ -8707,9 +8949,39 @@ export type Database = {
         }
         Relationships: []
       }
+      portfolio_items: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          project_url: string | null
+          title: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          project_url?: string | null
+          title?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          project_url?: string | null
+          title?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       portfolio_websites: {
         Row: {
-          CareerAnalytics_data: Json | null
+          analytics_data: Json | null
           content: Json
           created_at: string | null
           custom_domain: string | null
@@ -8723,7 +8995,7 @@ export type Database = {
           visit_count: number | null
         }
         Insert: {
-          CareerAnalytics_data?: Json | null
+          analytics_data?: Json | null
           content?: Json
           created_at?: string | null
           custom_domain?: string | null
@@ -8737,7 +9009,7 @@ export type Database = {
           visit_count?: number | null
         }
         Update: {
-          CareerAnalytics_data?: Json | null
+          analytics_data?: Json | null
           content?: Json
           created_at?: string | null
           custom_domain?: string | null
@@ -8761,6 +9033,7 @@ export type Database = {
           likes_count: number
           post_id: string
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           author_id: string
@@ -8770,6 +9043,7 @@ export type Database = {
           likes_count?: number
           post_id: string
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           author_id?: string
@@ -8779,6 +9053,7 @@ export type Database = {
           likes_count?: number
           post_id?: string
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -8827,6 +9102,35 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "post_hashtag_suggestions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_likes: {
+        Row: {
+          created_at: string | null
+          id: string
+          post_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          post_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          post_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_likes_post_id_fkey"
             columns: ["post_id"]
             isOneToOne: false
             referencedRelation: "posts"
@@ -9160,7 +9464,7 @@ export type Database = {
         }
         Relationships: []
       }
-      pro_CareerAnalytics: {
+      pro_analytics: {
         Row: {
           avg_response_time_hours: number | null
           bookings_count: number | null
@@ -9229,14 +9533,14 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "pro_CareerAnalytics_profile_id_fkey"
+            foreignKeyName: "pro_analytics_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "pro_service_profiles"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "pro_CareerAnalytics_service_id_fkey"
+            foreignKeyName: "pro_analytics_service_id_fkey"
             columns: ["service_id"]
             isOneToOne: false
             referencedRelation: "pro_services"
@@ -9244,7 +9548,7 @@ export type Database = {
           },
         ]
       }
-      pro_client_Feedback: {
+      pro_client_feedback: {
         Row: {
           client_id: string | null
           communication_rating: number | null
@@ -9298,28 +9602,28 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "pro_client_Feedback_client_id_fkey"
+            foreignKeyName: "pro_client_feedback_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "employer_cv_database"
             referencedColumns: ["profile_id"]
           },
           {
-            foreignKeyName: "pro_client_Feedback_client_id_fkey"
+            foreignKeyName: "pro_client_feedback_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "pro_client_Feedback_contract_id_fkey"
+            foreignKeyName: "pro_client_feedback_contract_id_fkey"
             columns: ["contract_id"]
             isOneToOne: false
             referencedRelation: "pro_contracts"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "pro_client_Feedback_profile_id_fkey"
+            foreignKeyName: "pro_client_feedback_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "pro_service_profiles"
@@ -10156,7 +10460,7 @@ export type Database = {
           created_at: string
           features: Json
           has_ai_tools: boolean | null
-          has_CareerAnalytics: boolean | null
+          has_analytics: boolean | null
           has_branding: boolean | null
           has_contracts: boolean | null
           has_crm: boolean | null
@@ -10173,7 +10477,7 @@ export type Database = {
           created_at?: string
           features?: Json
           has_ai_tools?: boolean | null
-          has_CareerAnalytics?: boolean | null
+          has_analytics?: boolean | null
           has_branding?: boolean | null
           has_contracts?: boolean | null
           has_crm?: boolean | null
@@ -10190,7 +10494,7 @@ export type Database = {
           created_at?: string
           features?: Json
           has_ai_tools?: boolean | null
-          has_CareerAnalytics?: boolean | null
+          has_analytics?: boolean | null
           has_branding?: boolean | null
           has_contracts?: boolean | null
           has_crm?: boolean | null
@@ -10491,6 +10795,7 @@ export type Database = {
           oauth_provider: string | null
           onboarding_completed: boolean | null
           open_to_remote: boolean | null
+          passport_visibility: Json
           phone: string | null
           portfolio_url: string | null
           preferences: Json | null
@@ -10595,6 +10900,7 @@ export type Database = {
           oauth_provider?: string | null
           onboarding_completed?: boolean | null
           open_to_remote?: boolean | null
+          passport_visibility?: Json
           phone?: string | null
           portfolio_url?: string | null
           preferences?: Json | null
@@ -10699,6 +11005,7 @@ export type Database = {
           oauth_provider?: string | null
           onboarding_completed?: boolean | null
           open_to_remote?: boolean | null
+          passport_visibility?: Json
           phone?: string | null
           portfolio_url?: string | null
           preferences?: Json | null
@@ -11544,7 +11851,7 @@ export type Database = {
           },
         ]
       }
-      resume_CareerAnalytics: {
+      resume_analytics: {
         Row: {
           created_at: string | null
           event_data: Json | null
@@ -11592,7 +11899,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "resume_CareerAnalytics_resume_id_fkey"
+            foreignKeyName: "resume_analytics_resume_id_fkey"
             columns: ["resume_id"]
             isOneToOne: false
             referencedRelation: "resumes"
@@ -12918,7 +13225,7 @@ export type Database = {
         }
         Relationships: []
       }
-      revenue_CareerAnalytics: {
+      revenue_analytics: {
         Row: {
           cancelled_subscribers: number | null
           created_at: string | null
@@ -13073,7 +13380,7 @@ export type Database = {
         }
         Relationships: []
       }
-      roi_CommandCenter_metrics: {
+      roi_dashboard_metrics: {
         Row: {
           calculation_date: string | null
           company_id: string | null
@@ -13677,7 +13984,7 @@ export type Database = {
         }
         Relationships: []
       }
-      section_CareerAnalytics: {
+      section_analytics: {
         Row: {
           completion_percentage: number | null
           created_at: string | null
@@ -13716,7 +14023,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "section_CareerAnalytics_resume_id_fkey"
+            foreignKeyName: "section_analytics_resume_id_fkey"
             columns: ["resume_id"]
             isOneToOne: false
             referencedRelation: "ai_resumes"
@@ -13945,7 +14252,7 @@ export type Database = {
         }
         Relationships: []
       }
-      seo_CareerAnalytics: {
+      seo_analytics: {
         Row: {
           avg_session_duration: number | null
           bounce_rate: number | null
@@ -15257,7 +15564,7 @@ export type Database = {
         }
         Relationships: []
       }
-      service_CareerAnalytics: {
+      service_analytics: {
         Row: {
           created_at: string | null
           event_type: string
@@ -15284,7 +15591,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "service_CareerAnalytics_service_id_fkey"
+            foreignKeyName: "service_analytics_service_id_fkey"
             columns: ["service_id"]
             isOneToOne: false
             referencedRelation: "services"
@@ -15474,7 +15781,7 @@ export type Database = {
       }
       service_orders: {
         Row: {
-          client_Feedback: string | null
+          client_feedback: string | null
           client_id: string
           created_at: string
           delivery_date: string | null
@@ -15491,7 +15798,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          client_Feedback?: string | null
+          client_feedback?: string | null
           client_id: string
           created_at?: string
           delivery_date?: string | null
@@ -15508,7 +15815,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          client_Feedback?: string | null
+          client_feedback?: string | null
           client_id?: string
           created_at?: string
           delivery_date?: string | null
@@ -16200,7 +16507,7 @@ export type Database = {
         }
         Relationships: []
       }
-      sharing_CareerAnalytics: {
+      sharing_analytics: {
         Row: {
           clicked_count: number | null
           content_id: string
@@ -16674,7 +16981,7 @@ export type Database = {
           },
         ]
       }
-      skill_progression_CareerAnalytics: {
+      skill_progression_analytics: {
         Row: {
           assessment_scores: Json | null
           created_at: string | null
@@ -17046,7 +17353,7 @@ export type Database = {
         }
         Relationships: []
       }
-      smart_Pulse_preferences: {
+      smart_feed_preferences: {
         Row: {
           blocked_keywords: string[] | null
           blocked_users: string[] | null
@@ -17060,7 +17367,7 @@ export type Database = {
           include_tags: string[] | null
           preferred_industries: string[] | null
           preferred_roles: string[] | null
-          prioritize_TalentNetwork: boolean | null
+          prioritize_connections: boolean | null
           relevance_weight: number | null
           show_trending_content: boolean | null
           updated_at: string | null
@@ -17079,7 +17386,7 @@ export type Database = {
           include_tags?: string[] | null
           preferred_industries?: string[] | null
           preferred_roles?: string[] | null
-          prioritize_TalentNetwork?: boolean | null
+          prioritize_connections?: boolean | null
           relevance_weight?: number | null
           show_trending_content?: boolean | null
           updated_at?: string | null
@@ -17098,7 +17405,7 @@ export type Database = {
           include_tags?: string[] | null
           preferred_industries?: string[] | null
           preferred_roles?: string[] | null
-          prioritize_TalentNetwork?: boolean | null
+          prioritize_connections?: boolean | null
           relevance_weight?: number | null
           show_trending_content?: boolean | null
           updated_at?: string | null
@@ -17189,7 +17496,7 @@ export type Database = {
       }
       sop_drafts: {
         Row: {
-          ai_Feedback: string | null
+          ai_feedback: string | null
           ai_generated: boolean | null
           ai_prompt: string | null
           ai_score: number | null
@@ -17210,7 +17517,7 @@ export type Database = {
           word_count: number | null
         }
         Insert: {
-          ai_Feedback?: string | null
+          ai_feedback?: string | null
           ai_generated?: boolean | null
           ai_prompt?: string | null
           ai_score?: number | null
@@ -17231,7 +17538,7 @@ export type Database = {
           word_count?: number | null
         }
         Update: {
-          ai_Feedback?: string | null
+          ai_feedback?: string | null
           ai_generated?: boolean | null
           ai_prompt?: string | null
           ai_score?: number | null
@@ -17994,7 +18301,7 @@ export type Database = {
         }
         Relationships: []
       }
-      template_usage_CareerAnalytics: {
+      template_usage_analytics: {
         Row: {
           action_type: string
           id: string
@@ -18021,7 +18328,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "template_usage_CareerAnalytics_template_id_fkey"
+            foreignKeyName: "template_usage_analytics_template_id_fkey"
             columns: ["template_id"]
             isOneToOne: false
             referencedRelation: "resume_templates"
@@ -18366,8 +18673,8 @@ export type Database = {
           completion_status: string | null
           created_at: string | null
           duration_seconds: number | null
-          Feedback_rating: number | null
-          Feedback_text: string | null
+          feedback_rating: number | null
+          feedback_text: string | null
           id: string
           input_data: Json | null
           output_data: Json | null
@@ -18381,8 +18688,8 @@ export type Database = {
           completion_status?: string | null
           created_at?: string | null
           duration_seconds?: number | null
-          Feedback_rating?: number | null
-          Feedback_text?: string | null
+          feedback_rating?: number | null
+          feedback_text?: string | null
           id?: string
           input_data?: Json | null
           output_data?: Json | null
@@ -18396,8 +18703,8 @@ export type Database = {
           completion_status?: string | null
           created_at?: string | null
           duration_seconds?: number | null
-          Feedback_rating?: number | null
-          Feedback_text?: string | null
+          feedback_rating?: number | null
+          feedback_text?: string | null
           id?: string
           input_data?: Json | null
           output_data?: Json | null
@@ -18417,7 +18724,7 @@ export type Database = {
           employee_id: string | null
           enrolled_at: string | null
           enrollment_type: string | null
-          Feedback: string | null
+          feedback: string | null
           id: string
           program_id: string | null
           progress_percentage: number | null
@@ -18433,7 +18740,7 @@ export type Database = {
           employee_id?: string | null
           enrolled_at?: string | null
           enrollment_type?: string | null
-          Feedback?: string | null
+          feedback?: string | null
           id?: string
           program_id?: string | null
           progress_percentage?: number | null
@@ -18449,7 +18756,7 @@ export type Database = {
           employee_id?: string | null
           enrolled_at?: string | null
           enrollment_type?: string | null
-          Feedback?: string | null
+          feedback?: string | null
           id?: string
           program_id?: string | null
           progress_percentage?: number | null
@@ -18642,7 +18949,7 @@ export type Database = {
         }
         Relationships: []
       }
-      txc_CareerAnalytics: {
+      txc_analytics: {
         Row: {
           created_at: string | null
           event_data: Json | null
@@ -19273,7 +19580,7 @@ export type Database = {
           answers: Json | null
           assessment_id: string
           attempt_number: number | null
-          Feedback: string | null
+          feedback: string | null
           graded_at: string | null
           id: string
           score: number | null
@@ -19286,7 +19593,7 @@ export type Database = {
           answers?: Json | null
           assessment_id: string
           attempt_number?: number | null
-          Feedback?: string | null
+          feedback?: string | null
           graded_at?: string | null
           id?: string
           score?: number | null
@@ -19299,7 +19606,7 @@ export type Database = {
           answers?: Json | null
           assessment_id?: string
           attempt_number?: number | null
-          Feedback?: string | null
+          feedback?: string | null
           graded_at?: string | null
           id?: string
           score?: number | null
@@ -19310,7 +19617,7 @@ export type Database = {
         }
         Relationships: []
       }
-      user_behavior_CareerAnalytics: {
+      user_behavior_analytics: {
         Row: {
           element_selector: string | null
           event_data: Json | null
@@ -19685,7 +19992,7 @@ export type Database = {
           },
         ]
       }
-      user_engagement_CareerAnalytics: {
+      user_engagement_analytics: {
         Row: {
           action_type: string
           created_at: string | null
@@ -19760,7 +20067,7 @@ export type Database = {
         }
         Relationships: []
       }
-      user_Pulse_preferences: {
+      user_feed_preferences: {
         Row: {
           created_at: string
           id: string
@@ -19976,7 +20283,7 @@ export type Database = {
         }
         Relationships: []
       }
-      user_learning_CareerAnalytics: {
+      user_learning_analytics: {
         Row: {
           course_id: string | null
           created_at: string
@@ -20458,7 +20765,7 @@ export type Database = {
       user_progress: {
         Row: {
           communities_joined: number | null
-          TalentNetwork_made: number | null
+          connections_made: number | null
           current_streak: number | null
           id: string
           last_activity_at: string | null
@@ -20470,7 +20777,7 @@ export type Database = {
         }
         Insert: {
           communities_joined?: number | null
-          TalentNetwork_made?: number | null
+          connections_made?: number | null
           current_streak?: number | null
           id?: string
           last_activity_at?: string | null
@@ -20482,7 +20789,7 @@ export type Database = {
         }
         Update: {
           communities_joined?: number | null
-          TalentNetwork_made?: number | null
+          connections_made?: number | null
           current_streak?: number | null
           id?: string
           last_activity_at?: string | null
@@ -20538,6 +20845,7 @@ export type Database = {
           total_referrals: number | null
           total_rewards_value: number | null
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           created_at?: string | null
@@ -20552,6 +20860,7 @@ export type Database = {
           total_referrals?: number | null
           total_rewards_value?: number | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           created_at?: string | null
@@ -20566,6 +20875,7 @@ export type Database = {
           total_referrals?: number | null
           total_rewards_value?: number | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -20783,6 +21093,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_streaks: {
+        Row: {
+          created_at: string | null
+          id: string
+          last_active_date: string | null
+          streak_count: number | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          last_active_date?: string | null
+          streak_count?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          last_active_date?: string | null
+          streak_count?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
       user_subscriptions: {
         Row: {
@@ -21057,7 +21391,7 @@ export type Database = {
         }
         Relationships: []
       }
-      video_CareerAnalytics: {
+      video_analytics: {
         Row: {
           completion_rate: number
           content_id: string
@@ -21145,7 +21479,7 @@ export type Database = {
           created_at: string
           description: string | null
           duration_minutes: number
-          Feedback: string | null
+          feedback: string | null
           id: string
           meeting_id: string | null
           meeting_url: string | null
@@ -21164,7 +21498,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           duration_minutes?: number
-          Feedback?: string | null
+          feedback?: string | null
           id?: string
           meeting_id?: string | null
           meeting_url?: string | null
@@ -21183,7 +21517,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           duration_minutes?: number
-          Feedback?: string | null
+          feedback?: string | null
           id?: string
           meeting_id?: string | null
           meeting_url?: string | null
@@ -21620,7 +21954,7 @@ export type Database = {
         }
         Relationships: []
       }
-      workforce_CareerAnalytics: {
+      workforce_analytics: {
         Row: {
           benchmark_value: number | null
           company_id: string | null
@@ -21692,7 +22026,7 @@ export type Database = {
         }
         Relationships: []
       }
-      youtube_TalentNetwork: {
+      youtube_connections: {
         Row: {
           access_token: string | null
           created_at: string | null
@@ -21727,6 +22061,29 @@ export type Database = {
       }
     }
     Views: {
+      assessment_questions_public: {
+        Row: {
+          assessment_id: string | null
+          difficulty_score: number | null
+          id: string | null
+          is_active: boolean | null
+          options: Json | null
+          points: number | null
+          question_text: string | null
+          question_type: string | null
+          sort_order: number | null
+          time_limit_seconds: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_questions_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "assessments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       employer_cv_database: {
         Row: {
           application_id: string | null
@@ -21976,11 +22333,11 @@ export type Database = {
             }
             Returns: undefined
           }
-      backfill_admin_TalentNetwork: { Args: never; Returns: number }
+      backfill_admin_connections: { Args: never; Returns: number }
       batch_refresh_career_passports: { Args: never; Returns: Json }
       calculate_assessment_score: {
-        Args: { attempt_uuid: string }
-        Returns: undefined
+        Args: { attempt_id_param: string }
+        Returns: Json
       }
       calculate_career_passport_completion: {
         Args: { user_uuid: string }
@@ -22132,7 +22489,7 @@ export type Database = {
         }[]
       }
       count_words: { Args: { content_text: string }; Returns: number }
-      create_admin_TalentNetwork: {
+      create_admin_connections: {
         Args: { target_user_id: string }
         Returns: undefined
       }
@@ -22361,7 +22718,7 @@ export type Database = {
           tone: string
         }[]
       }
-      get_backlink_CommandCenter_stats: { Args: never; Returns: Json }
+      get_backlink_dashboard_stats: { Args: never; Returns: Json }
       get_batch_progress: {
         Args: never
         Returns: {
@@ -22388,7 +22745,7 @@ export type Database = {
         Returns: {
           company_name: string
           full_name: string
-          mutual_TalentNetwork: number
+          mutual_connections: number
           profile_picture_url: string
           suggested_user_id: string
           title: string
@@ -22548,7 +22905,7 @@ export type Database = {
           updated_at: string
         }[]
       }
-      get_reel_Pulse:
+      get_reel_feed:
         | {
             Args: { p_limit?: number; p_offset?: number }
             Returns: {
@@ -22670,8 +23027,8 @@ export type Database = {
               user_name: string
             }[]
           }
-      get_txc_user_CareerAnalytics: { Args: { user_uuid: string }; Returns: Json }
-      get_unified_CareerAnalytics:
+      get_txc_user_analytics: { Args: { user_uuid: string }; Returns: Json }
+      get_unified_analytics:
         | {
             Args: never
             Returns: {
@@ -23168,7 +23525,7 @@ export type Database = {
         }
         Returns: string
       }
-      track_share_CareerAnalytics: {
+      track_share_analytics: {
         Args: {
           p_content_id: string
           p_content_type: string
@@ -23329,7 +23686,7 @@ export type Database = {
         Args: { coin_change: number; reason?: string; user_uuid: string }
         Returns: number
       }
-      upsert_daily_CareerAnalytics: {
+      upsert_daily_analytics: {
         Args: { p_date: string; p_field: string; p_increment?: number }
         Returns: undefined
       }
@@ -23648,9 +24005,3 @@ export const Constants = {
     },
   },
 } as const
-
-
-
-
-
-

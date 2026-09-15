@@ -49,7 +49,7 @@ export const AIInsightsPanel: React.FC<AIInsightsPanelProps> = ({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Target className="h-5 w-5" />
-            Performance Insights & Recommendations
+            AI-Powered Insights & Recommendations
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -162,4 +162,3 @@ export const AIInsightsPanel: React.FC<AIInsightsPanelProps> = ({
     </div>
   );
 };
-

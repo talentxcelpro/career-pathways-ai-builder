@@ -23,7 +23,7 @@ export const TeamAccessInstructions = () => {
     },
     {
       role: 'Admin',
-      permissions: ['Manage team members', 'Post & edit jobs', 'View all applications', 'CareerAnalytics access'],
+      permissions: ['Manage team members', 'Post & edit jobs', 'View all applications', 'Analytics access'],
       color: 'text-red-700 bg-red-100'
     },
     {
@@ -52,10 +52,10 @@ export const TeamAccessInstructions = () => {
             <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg">
               <Users className="h-5 w-5 text-white" />
             </div>
-            Give Colleagues Access to Employer CommandCenter
+            Give Colleagues Access to Employer Dashboard
           </CardTitle>
           <CardDescription>
-            There are two ways to give your team members access to the employer CommandCenter
+            There are two ways to give your team members access to the employer dashboard
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -124,7 +124,7 @@ export const TeamAccessInstructions = () => {
             Team Role Permissions
           </CardTitle>
           <CardDescription>
-            Understanding what each role can do in your employer CommandCenter
+            Understanding what each role can do in your employer dashboard
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -159,6 +159,3 @@ export const TeamAccessInstructions = () => {
     </div>
   );
 };
-
-
-

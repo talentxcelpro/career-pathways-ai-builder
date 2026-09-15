@@ -16,13 +16,13 @@ const MyNetwork = () => {
   const queryClient = useQueryClient();
 
   // Fetch connected users
-  const { data: TalentNetwork, isLoading: TalentNetworkLoading } = useQuery({
-    queryKey: ['myTalentNetwork'],
+  const { data: connections, isLoading: connectionsLoading } = useQuery({
+    queryKey: ['myConnections'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
 
-      const { data: TalentNetworkData, error } = await supabase
+      const { data: connectionsData, error } = await supabase
         .from('connections')
         .select('*')
         .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
@@ -32,7 +32,7 @@ const MyNetwork = () => {
       if (error) throw error;
 
       // Get other user IDs
-      const otherUserIds = TalentNetworkData.map(conn => 
+      const otherUserIds = connectionsData.map(conn => 
         conn.requester_id === user.id ? conn.recipient_id : conn.requester_id
       ).filter(Boolean);
 
@@ -48,7 +48,7 @@ const MyNetwork = () => {
 
       const profilesMap = new Map(profiles?.map(p => [p.id, p]) || []);
 
-      return TalentNetworkData.map(conn => {
+      return connectionsData.map(conn => {
         const otherUserId = conn.requester_id === user.id ? conn.recipient_id : conn.requester_id;
         return {
           ...conn,
@@ -123,10 +123,10 @@ const MyNetwork = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['myTalentNetwork'] });
+      queryClient.invalidateQueries({ queryKey: ['myConnections'] });
       queryClient.invalidateQueries({ queryKey: ['pendingConnectionRequests'] });
       queryClient.invalidateQueries({ queryKey: ['connections'] });
-      queryClient.invalidateQueries({ queryKey: ['TalentNetworktats'] });
+      queryClient.invalidateQueries({ queryKey: ['connectionStats'] });
       toast.success('Connection request accepted!');
     },
     onError: (error) => {
@@ -150,7 +150,7 @@ const MyNetwork = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pendingConnectionRequests'] });
-      queryClient.invalidateQueries({ queryKey: ['TalentNetworktats'] });
+      queryClient.invalidateQueries({ queryKey: ['connectionStats'] });
       toast.success('Connection request declined');
     },
     onError: (error) => {
@@ -185,8 +185,8 @@ const MyNetwork = () => {
     return names[0].charAt(0).toUpperCase() + names[names.length - 1].charAt(0).toUpperCase();
   };
 
-  // Filter TalentNetwork based on search term
-  const filteredTalentNetwork = TalentNetwork?.filter(conn => {
+  // Filter connections based on search term
+  const filteredConnections = connections?.filter(conn => {
     if (!searchTerm) return true;
     const name = formatDisplayName(conn.otherUser).toLowerCase();
     const title = conn.otherUser?.title?.toLowerCase() || '';
@@ -208,41 +208,41 @@ const MyNetwork = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100/80 font-system">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="mb-8 animate-fade-in">
-          <h1 className="text-4xl font-apple-bold text-slate-900 tracking-tighter mb-2">My Network</h1>
-          <p className="text-slate-500 font-apple-medium">Manage your professional TalentNetwork and requests</p>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">My Network</h1>
+          <p className="text-gray-600">Manage your professional connections and requests</p>
         </div>
 
         {/* Search */}
-        <div className="mb-8">
-          <div className="relative group">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4 transition-colors group-focus-within:text-primary" />
+        <div className="mb-6">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
               placeholder="Search your network..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 glass border-slate-200 focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all duration-300 font-apple-medium"
+              className="pl-10"
             />
           </div>
         </div>
 
         {/* Tabs */}
         <Tabs defaultValue="connections" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-8 glass p-1">
-            <TabsTrigger value="connections" className="flex items-center gap-2 font-apple-semibold">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="connections" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
-              My TalentNetwork
-              {TalentNetwork && (
-                <Badge className="ml-1 bg-primary/10 text-primary border-none">
-                  {TalentNetwork.length}
+              My Connections
+              {connections && (
+                <Badge variant="secondary" className="ml-1">
+                  {connections.length}
                 </Badge>
               )}
             </TabsTrigger>
-            <TabsTrigger value="requests" className="flex items-center gap-2 font-apple-semibold">
+            <TabsTrigger value="requests" className="flex items-center gap-2">
               <UserPlus className="h-4 w-4" />
               Pending Requests
               {pendingRequests && pendingRequests.length > 0 && (
-                <Badge variant="destructive" className="ml-1 animate-pulse">
+                <Badge variant="destructive" className="ml-1">
                   {pendingRequests.length}
                 </Badge>
               )}
@@ -259,7 +259,7 @@ const MyNetwork = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {TalentNetworkLoading ? (
+                {connectionsLoading ? (
                   <div className="space-y-4">
                     {[...Array(3)].map((_, i) => (
                       <div key={i} className="flex items-center space-x-4 animate-pulse">
@@ -271,11 +271,11 @@ const MyNetwork = () => {
                       </div>
                     ))}
                   </div>
-                ) : filteredTalentNetwork?.length === 0 ? (
+                ) : filteredConnections?.length === 0 ? (
                   <div className="text-center py-8">
                     <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                      {searchTerm ? 'No matching TalentNetwork' : 'No TalentNetwork yet'}
+                      {searchTerm ? 'No matching connections' : 'No connections yet'}
                     </h3>
                     <p className="text-gray-600 mb-4">
                       {searchTerm 
@@ -294,7 +294,7 @@ const MyNetwork = () => {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {filteredTalentNetwork?.map((connection) => (
+                    {filteredConnections?.map((connection) => (
                       <div key={connection.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50/50 transition-colors">
                         <div className="flex items-center space-x-4">
                           <Link to={`/network/people/${connection.otherUser.id}`}>
@@ -454,4 +454,3 @@ const MyNetwork = () => {
 };
 
 export default MyNetwork;
-

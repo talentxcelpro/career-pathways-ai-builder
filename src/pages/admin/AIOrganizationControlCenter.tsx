@@ -1,0 +1,1148 @@
+// src/pages/admin/AIOrganizationControlCenter.tsx
+// Master Control Plane for TalentXcel AI Growth Organization (/admin/ai-organization)
+// Features 5-State Server-Authoritative Kill Switch, 9-Agent Grid (1 CEO + 8 Specialists), AI CEO Daily Plan & Audit Stream
+
+import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
+import { Link } from 'react-router-dom';
+import {
+  Bot,
+  Power,
+  Play,
+  Pause,
+  AlertTriangle,
+  ShieldAlert,
+  ShieldCheck,
+  Search,
+  CheckCircle2,
+  Clock,
+  Send,
+  Sparkles,
+  TrendingUp,
+  Globe2,
+  RefreshCw,
+  Users,
+  Building2,
+  Lock,
+  Layers,
+  ArrowRight,
+  Cpu
+} from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { toast } from 'sonner';
+import {
+  getAuthoritativeLifecycleState,
+  setAuthoritativeLifecycleState,
+  getCachedAgentStates,
+  setAgentEnabledLocally,
+  AGENT_REGISTRY_DESCRIPTORS,
+  DEFAULT_ACTION_PERMISSIONS
+} from '@/lib/ai-org/aiOrganizationState';
+import {
+  runFullOrganizationCycle,
+  isSchedulerRunning,
+  startScheduler,
+  stopScheduler,
+  type FullOrganizationCycleReport
+} from '@/lib/ai-org/aiOrganizationScheduler';
+import {
+  getActiveDailyOperatingPlan,
+  runExecutiveDirectorCycle
+} from '@/lib/ai-org/executiveDirectorAgent';
+import { LOCAL_AUDIT_STREAM } from '@/lib/ai-org/executionGateway';
+import { DISCOVERED_EMPLOYER_LEADS } from '@/lib/ai-leads/leadDiscoveryEngine';
+import type { EmployerLead } from '@/lib/ai-leads/types';
+import { DISCOVERY_EVIDENCE_LEDGER, getAiDiscoveryObservatoryData } from '@/lib/ai-discovery/aiReferralTracker';
+import { 
+  resolveNext10kUsersRoadmap, 
+  computeMarketUnitEconomics 
+} from '@/lib/acquisition-os/acquisitionIntelligenceEngine';
+import {
+  checkOllamaStatus,
+  getActiveOllamaModel,
+  setActiveOllamaModel,
+  type OllamaHealthStatus
+} from '@/lib/ai-org/ollamaClient';
+import { 
+  ALL_AGENT_IDS, 
+  TOTAL_AGENTS_COUNT, 
+  type AgentId, 
+  type OrganizationLifecycleState,
+  type DailyOperatingPlan
+} from '@/lib/ai-org/types';
+
+export default function AIOrganizationControlCenter() {
+  const [lifecycleState, setLifecycleState] = useState<OrganizationLifecycleState>('ONLINE');
+  const [isUpdatingState, setIsUpdatingState] = useState(false);
+  const [isRunningCycle, setIsRunningCycle] = useState(false);
+  const [agentStates, setAgentStates] = useState(getCachedAgentStates());
+  const [dailyPlan, setDailyPlan] = useState<DailyOperatingPlan | null>(getActiveDailyOperatingPlan());
+  const [lastReport, setLastReport] = useState<FullOrganizationCycleReport | null>(null);
+  const [schedulerActive, setSchedulerActive] = useState<boolean>(isSchedulerRunning());
+  const [auditEntries, setAuditEntries] = useState([...LOCAL_AUDIT_STREAM]);
+  const [leads, setLeads] = useState<EmployerLead[]>([...DISCOVERED_EMPLOYER_LEADS]);
+  const [observatoryData] = useState(getAiDiscoveryObservatoryData());
+  const [evidenceLedger] = useState(DISCOVERY_EVIDENCE_LEDGER);
+  const [roadmap] = useState(resolveNext10kUsersRoadmap());
+  const [unitEconomics] = useState(computeMarketUnitEconomics());
+  const [ollamaStatus, setOllamaStatus] = useState<OllamaHealthStatus | null>(null);
+  const [isCheckingOllama, setIsCheckingOllama] = useState(false);
+  const [isRegeneratingPlan, setIsRegeneratingPlan] = useState(false);
+
+  const handleApproveLead = (leadId: string) => {
+    setLeads(prev => prev.map(l => l.leadId === leadId ? { ...l, status: 'OUTREACH_APPROVED' as const } : l));
+    toast.success('B2B Employer Lead outreach approved and queued for dispatch.');
+  };
+
+  const handleDismissLead = (leadId: string) => {
+    setLeads(prev => prev.map(l => l.leadId === leadId ? { ...l, status: 'DISMISSED' as const } : l));
+    toast.info('B2B Employer Lead dismissed.');
+  };
+
+  const handleApproveAction = (id: string) => {
+    setAuditEntries(prev => prev.map(entry => 
+      entry.id === id ? { ...entry, status: 'EXECUTED' as const } : entry
+    ));
+    toast.success('Action approved by administrator and dispatched.');
+  };
+
+  const handleRejectAction = (id: string) => {
+    setAuditEntries(prev => prev.map(entry => 
+      entry.id === id ? { ...entry, status: 'BLOCKED_PERMISSION' as const } : entry
+    ));
+    toast.info('Action dismissed from queue.');
+  };
+
+  // Load server-authoritative state on mount
+  useEffect(() => {
+    loadServerState();
+    loadOllamaHealth();
+    // Default boot AI CEO plan if empty
+    if (!dailyPlan) {
+      runExecutiveDirectorCycle().then((plan) => setDailyPlan(plan));
+    }
+  }, []);
+
+  const loadOllamaHealth = async () => {
+    setIsCheckingOllama(true);
+    try {
+      const status = await checkOllamaStatus();
+      setOllamaStatus(status);
+    } catch {
+      // Non-blocking
+    } finally {
+      setIsCheckingOllama(false);
+    }
+  };
+
+  const handleSelectModel = (model: string) => {
+    setActiveOllamaModel(model);
+    if (ollamaStatus) {
+      setOllamaStatus({ ...ollamaStatus, activeModel: model });
+    }
+    toast.info(`Active Ollama model switched to ${model}`);
+  };
+
+  const handleRegeneratePlan = async () => {
+    setIsRegeneratingPlan(true);
+    try {
+      toast.loading('Synthesizing Daily Plan via local Ollama core...', { id: 'plan-gen' });
+      const plan = await runExecutiveDirectorCycle();
+      setDailyPlan(plan);
+      toast.success(`AI CEO Operating Plan synthesized! (${plan.globalStrategy})`, { id: 'plan-gen' });
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to synthesize plan', { id: 'plan-gen' });
+    } finally {
+      setIsRegeneratingPlan(false);
+    }
+  };
+
+  const loadServerState = async () => {
+    const serverState = await getAuthoritativeLifecycleState();
+    setLifecycleState(serverState);
+    setAgentStates(getCachedAgentStates());
+  };
+
+  const handleToggleLifecycle = async (targetState: OrganizationLifecycleState) => {
+    setIsUpdatingState(true);
+    try {
+      const ok = await setAuthoritativeLifecycleState(targetState, 'SuperAdmin');
+      if (ok) {
+        setLifecycleState(targetState);
+        toast.success(`AI Organization state updated to ${targetState} (Server Authoritative)`);
+      } else {
+        toast.error('Failed to update server-authoritative state.');
+      }
+    } catch {
+      toast.error('Network error updating lifecycle state.');
+    } finally {
+      setIsUpdatingState(false);
+    }
+  };
+
+  const handleAgentToggle = (agentId: AgentId, enabled: boolean) => {
+    setAgentEnabledLocally(agentId, enabled);
+    setAgentStates({ ...getCachedAgentStates() });
+    toast.info(`Agent ${AGENT_REGISTRY_DESCRIPTORS[agentId].name} is now ${enabled ? 'ENABLED' : 'DISABLED'}`);
+  };
+
+  const handleRunFullCycle = async () => {
+    setIsRunningCycle(true);
+    try {
+      const report = await runFullOrganizationCycle();
+      setLastReport(report);
+      setDailyPlan(report.dailyOperatingPlan);
+      setAgentStates(getCachedAgentStates());
+      setAuditEntries([...LOCAL_AUDIT_STREAM]);
+      
+      if (report.totalBlocked > 0 && report.totalExecuted === 0) {
+        toast.warning(`Cycle completed: ${report.totalBlocked} actions BLOCKED by Execution Gateway (Org state: ${report.lifecycleStatusAtStart}).`);
+      } else {
+        toast.success(`Cycle completed! ${report.totalExecuted} actions executed, ${report.totalPendingReview} queued for human review.`);
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to execute organization cycle.');
+    } finally {
+      setIsRunningCycle(false);
+    }
+  };
+
+  const handleToggleScheduler = () => {
+    if (schedulerActive) {
+      stopScheduler();
+      setSchedulerActive(false);
+      toast.info('Autonomous scheduler worker paused.');
+    } else {
+      startScheduler(60);
+      setSchedulerActive(true);
+      toast.success('Autonomous scheduler worker running (60-minute heartbeat).');
+    }
+  };
+
+  const isOnline = lifecycleState === 'ONLINE';
+  const isEmergencyStop = lifecycleState === 'EMERGENCY_STOP';
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-100 p-4 sm:p-6 lg:p-8">
+      <Helmet>
+        <title>TalentXcel AI Growth Organization | Admin Control Plane</title>
+      </Helmet>
+
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Breadcrumb Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Badge className="bg-purple-500/10 text-purple-400 border-purple-500/30">
+                <Bot className="w-3.5 h-3.5 mr-1" /> Autonomous Growth OS
+              </Badge>
+              <Badge variant="outline" className="text-slate-400 border-slate-800 text-[11px]">
+                Server-Authoritative (Supabase Synchronized)
+              </Badge>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
+              TalentXcel AI Growth Organization
+            </h1>
+            <p className="text-slate-400 text-xs sm:text-sm mt-1">
+              1 Executive AI CEO + 9 Department Specialist Agents ({TOTAL_AGENTS_COUNT} Total) · Server-Authoritative Kill Switch · Closed GSC Feedback Loop
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="text-xs border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20"
+            >
+              <Link to="/admin/growth-operations">
+                <TrendingUp className="w-3.5 h-3.5 mr-1.5 text-emerald-400" />
+                Growth Operations Center →
+              </Link>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleToggleScheduler}
+              className={`text-xs border-slate-800 ${
+                schedulerActive ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-slate-900 text-slate-400'
+              }`}
+            >
+              <Clock className="w-3.5 h-3.5 mr-1.5" />
+              Scheduler: {schedulerActive ? 'Worker Active (60m)' : 'Paused'}
+            </Button>
+            <Button
+              size="sm"
+              onClick={handleRunFullCycle}
+              disabled={isRunningCycle}
+              className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold"
+            >
+              <Play className={`w-3.5 h-3.5 mr-1.5 ${isRunningCycle ? 'animate-spin' : ''}`} />
+              Run Full Daily Operating Cycle
+            </Button>
+          </div>
+        </div>
+
+        {/* Governing Operational Principle Banner */}
+        <div className="bg-gradient-to-r from-amber-500/10 via-blue-500/10 to-purple-500/10 border border-amber-500/30 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg shadow-black/20">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 shrink-0">
+              <ShieldCheck className="w-5 h-5 text-amber-400" />
+            </div>
+            <div>
+              <div className="text-xs uppercase tracking-wider font-mono font-bold text-amber-400">
+                Governing Operational Principle
+              </div>
+              <p className="text-sm sm:text-base font-semibold text-white tracking-tight italic">
+                “No metric becomes a learning signal until its evidence is traceable.”
+              </p>
+            </div>
+          </div>
+          <Badge variant="outline" className="text-[11px] font-mono text-slate-300 border-slate-700 bg-slate-900/60 shrink-0">
+            Traceability Verification: ENFORCED
+          </Badge>
+        </div>
+
+        {/* Master Kill Switch Banner (Level 1 Control) */}
+        <div
+          className={`p-6 sm:p-8 rounded-3xl border transition-all ${
+            isOnline
+              ? 'bg-gradient-to-r from-emerald-950/50 via-slate-900 to-slate-900 border-emerald-500/40 shadow-xl shadow-emerald-950/20'
+              : isEmergencyStop
+              ? 'bg-gradient-to-r from-red-950/80 via-slate-900 to-slate-900 border-red-500/60 shadow-xl shadow-red-950/30'
+              : 'bg-gradient-to-r from-rose-950/40 via-slate-900 to-slate-900 border-rose-500/40 shadow-xl shadow-rose-950/20'
+          }`}
+        >
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="space-y-2 text-center md:text-left">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                <span
+                  className={`w-2.5 h-2.5 rounded-full animate-pulse ${
+                    isOnline ? 'bg-emerald-400' : isEmergencyStop ? 'bg-red-500' : 'bg-rose-400'
+                  }`}
+                />
+                <span className={isOnline ? 'text-emerald-400' : isEmergencyStop ? 'text-red-400' : 'text-rose-400'}>
+                  ORGANIZATION {lifecycleState}
+                </span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
+                {isOnline
+                  ? 'Autonomous Operations Online'
+                  : isEmergencyStop
+                  ? 'Emergency Stop Engaged'
+                  : 'Autonomous Operations Offline'}
+              </h2>
+              <p className="text-slate-300 text-xs sm:text-sm max-w-2xl">
+                {isOnline
+                  ? 'All 9 agents are authorized to execute their daily operating cycles within strict Level-3 permission boundaries. GSC demand is actively synthesized.'
+                  : isEmergencyStop
+                  ? 'CRITICAL SAFEGUARD: All autonomous mutations, publishing, indexing, and outreach are unconditionally frozen.'
+                  : 'All autonomous execution is strictly blocked at the Execution Gateway. Scheduled agents cannot publish, mutate, or enqueue actions.'}
+              </p>
+            </div>
+
+            {/* Master Control Buttons */}
+            <div className="flex flex-wrap items-center gap-3">
+              {isOnline ? (
+                <Button
+                  size="lg"
+                  variant="destructive"
+                  onClick={() => handleToggleLifecycle('OFFLINE')}
+                  disabled={isUpdatingState}
+                  className="bg-rose-600 hover:bg-rose-500 text-white font-bold px-6 py-5 shadow-lg shadow-rose-600/30"
+                >
+                  <Power className="w-4 h-4 mr-2" />
+                  Turn Organization OFF
+                </Button>
+              ) : (
+                <Button
+                  size="lg"
+                  onClick={() => handleToggleLifecycle('ONLINE')}
+                  disabled={isUpdatingState}
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-5 shadow-lg shadow-emerald-600/30"
+                >
+                  <Power className="w-4 h-4 mr-2" />
+                  Turn Organization ON
+                </Button>
+              )}
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleToggleLifecycle(isEmergencyStop ? 'OFFLINE' : 'EMERGENCY_STOP')}
+                disabled={isUpdatingState}
+                className="text-xs border-red-800 bg-red-950/50 hover:bg-red-900 text-red-300"
+              >
+                <ShieldAlert className="w-3.5 h-3.5 mr-1 text-red-400" />
+                {isEmergencyStop ? 'Disengage Emergency Stop' : 'Emergency Stop'}
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Local Ollama AI Inference Engine Panel */}
+        <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-lg shadow-black/30">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div className="flex items-start sm:items-center gap-3.5">
+              <div className={`p-3 rounded-xl border shrink-0 ${
+                ollamaStatus?.isOnline
+                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                  : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
+              }`}>
+                <Cpu className="w-5 h-5" />
+              </div>
+              <div className="space-y-0.5">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    Local Ollama AI Core
+                  </h3>
+                  {ollamaStatus?.isOnline ? (
+                    <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/40 text-[11px] font-mono">
+                      ● ONLINE ({ollamaStatus.latencyMs}ms)
+                    </Badge>
+                  ) : (
+                    <Badge className="bg-rose-500/20 text-rose-400 border-rose-500/40 text-[11px] font-mono">
+                      ○ OFFLINE (Fallback Active)
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-xs text-slate-400">
+                  Endpoint: <span className="font-mono text-slate-300">127.0.0.1:11434</span> • Zero API Cost • Local CPU Inference
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Model Selector */}
+              {ollamaStatus?.isOnline && ollamaStatus.availableModels.length > 0 && (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-slate-400 font-medium">Model:</span>
+                  <select
+                    value={ollamaStatus.activeModel}
+                    onChange={(e) => handleSelectModel(e.target.value)}
+                    className="bg-slate-950 border border-slate-700 text-slate-200 text-xs rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sky-500 focus:outline-none font-mono"
+                  >
+                    {ollamaStatus.availableModels.map((m) => (
+                      <option key={m} value={m}>
+                        {m}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={loadOllamaHealth}
+                disabled={isCheckingOllama}
+                className="text-xs border-slate-700 bg-slate-800 hover:bg-slate-750 text-slate-200"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${isCheckingOllama ? 'animate-spin' : ''}`} />
+                Check Status
+              </Button>
+
+              <Button
+                size="sm"
+                onClick={handleRegeneratePlan}
+                disabled={isRegeneratingPlan}
+                className="text-xs bg-sky-600 hover:bg-sky-500 text-white font-medium shadow-md shadow-sky-600/20"
+              >
+                <Sparkles className={`w-3.5 h-3.5 mr-1.5 ${isRegeneratingPlan ? 'animate-spin text-amber-300' : ''}`} />
+                {isRegeneratingPlan ? 'Synthesizing Plan...' : 'Synthesize Plan with Ollama'}
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* AI CEO Daily Operating Plan */}
+        {dailyPlan && (
+          <Card className="bg-slate-900/90 border-slate-800 text-slate-100">
+            <CardHeader className="border-b border-slate-800/80 pb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <div className="flex flex-wrap items-center gap-2 mb-1">
+                    <Badge className="bg-sky-500/10 text-sky-400 border-sky-500/30 text-xs">
+                      <Sparkles className="w-3 h-3 mr-1" /> Executive Director Synthesis
+                    </Badge>
+                    <span className="text-xs text-slate-500">Plan ID: {dailyPlan.planId}</span>
+                    {dailyPlan.globalStrategy && (
+                      <Badge variant="outline" className="text-[11px] font-mono border-sky-800/60 bg-sky-950/40 text-sky-300">
+                        {dailyPlan.globalStrategy}
+                      </Badge>
+                    )}
+                  </div>
+                  <CardTitle className="text-lg font-bold text-white">
+                    Today&apos;s Strategic Growth Priorities
+                  </CardTitle>
+                </div>
+                <Badge variant="outline" className="text-slate-400 border-slate-800 text-xs self-start sm:self-auto">
+                  Generated: {new Date(dailyPlan.generatedAt).toLocaleTimeString()}
+                </Badge>
+              </div>
+              <CardDescription className="text-slate-400 text-xs mt-1">
+                {dailyPlan.overallTargetNotes}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-4 space-y-3">
+              {dailyPlan.priorities.map((p) => (
+                <div
+                  key={p.rank}
+                  className="p-4 rounded-xl bg-slate-950 border border-slate-800/80 space-y-2.5"
+                >
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                    <div className="space-y-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="w-5 h-5 rounded-full bg-blue-600/20 border border-blue-500/40 text-blue-400 text-[11px] font-bold flex items-center justify-center">
+                          {p.rank}
+                        </span>
+                        <h4 className="text-sm font-semibold text-white">{p.title}</h4>
+                        <Badge className="bg-purple-500/10 text-purple-400 border-purple-500/30 text-[10px]">
+                          {p.delegatedAgentId}
+                        </Badge>
+                        {p.decision && (
+                          <Badge className={p.decision === 'NO_ACTION' ? 'bg-rose-500/10 text-rose-400 border-rose-500/30 text-[10px]' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-[10px]'}>
+                            {p.decision}
+                          </Badge>
+                        )}
+                        {p.executionPolicy && (
+                          <Badge className={p.executionPolicy === 'BLOCKED' ? 'bg-rose-500/10 text-rose-400 border-rose-500/30 text-[10px]' : p.executionPolicy === 'REVIEW' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30 text-[10px]' : 'bg-blue-500/10 text-blue-400 border-blue-500/30 text-[10px]'}>
+                            Policy: {p.executionPolicy}
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-xs text-slate-400 pl-7">{p.telemetryTrigger}</p>
+                      <p className="text-xs text-emerald-400/90 pl-7 flex items-center gap-1 font-mono">
+                        <ArrowRight className="w-3 h-3" /> {p.proposedAction}
+                      </p>
+                    </div>
+                    <div className="text-right shrink-0 pl-7 md:pl-0">
+                      <div className="text-xs font-mono text-slate-400">Impact Score</div>
+                      <div className="text-base font-extrabold text-blue-400">{p.impactScore}/100</div>
+                    </div>
+                  </div>
+
+                  {/* Auditable Why Explanation (Fact -> Signal -> Inference -> Policy) */}
+                  {p.why && (
+                    <div className="ml-7 p-3 rounded-lg bg-slate-900 border border-slate-800 text-xs space-y-1.5">
+                      <div className="flex items-center justify-between text-[11px] text-slate-400 pb-1 border-b border-slate-800/80">
+                        <span className="font-semibold text-slate-300">Auditable Cognitive Reasoning:</span>
+                        <span>Confidence: <strong className="text-white">{p.why.confidence}</strong> | Value: <strong className="text-emerald-400">{p.why.projectedValue}</strong></span>
+                      </div>
+                      <div className="text-slate-300"><span className="text-slate-500 font-semibold">FACT: </span>{p.why.fact}</div>
+                      <div className="text-slate-300"><span className="text-slate-500 font-semibold">SIGNAL: </span>{p.why.signal}</div>
+                      <div className="text-blue-300 italic"><span className="text-slate-500 font-semibold not-italic">INFERENCE: </span>{p.why.inference}</div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Level 2: 9 Agents Grid (1 Executive CEO + 8 Department Specialists) */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                <Users className="w-5 h-5 text-purple-400" />
+                Active Agent Roster (1 AI CEO + 9 Department Specialists = {TOTAL_AGENTS_COUNT} Total)
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-400">
+                Granular enable/disable controls per agent. Disabled agents are blocked from execution even when the organization is online.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {ALL_AGENT_IDS.map((agentId) => {
+              const meta = AGENT_REGISTRY_DESCRIPTORS[agentId];
+              const state = agentStates[agentId] || { enabled: true, status: 'IDLE', totalActionsExecuted: 0 };
+
+              return (
+                <Card
+                  key={agentId}
+                  className={`border transition-all ${
+                    state.enabled
+                      ? 'bg-slate-900/90 border-slate-800'
+                      : 'bg-slate-950/60 border-slate-900 opacity-60'
+                  }`}
+                >
+                  <CardHeader className="pb-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="space-y-1">
+                        <Badge
+                          variant="outline"
+                          className="text-[10px] uppercase font-semibold text-slate-400 border-slate-700"
+                        >
+                          {meta.department}
+                        </Badge>
+                        <CardTitle className="text-sm font-bold text-white leading-snug">
+                          {meta.name}
+                        </CardTitle>
+                      </div>
+                      <Switch
+                        checked={state.enabled}
+                        onCheckedChange={(val) => handleAgentToggle(agentId, val)}
+                      />
+                    </div>
+                    <div className="text-xs text-blue-400 font-medium">{meta.roleTitle}</div>
+                  </CardHeader>
+                  <CardContent className="space-y-3 text-xs">
+                    <p className="text-slate-400 line-clamp-2">{meta.mission}</p>
+                    <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-slate-400 font-mono">
+                      <span>Schedule: {meta.defaultSchedule}</span>
+                      <span className="text-emerald-400 font-bold">{state.totalActionsExecuted} Actions</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Level 3: Action Permissions Matrix & Safety Boundaries */}
+        <Card className="bg-slate-900/90 border-slate-800 text-slate-100">
+          <CardHeader>
+            <CardTitle className="text-base font-bold text-white flex items-center gap-2">
+              <Lock className="w-4 h-4 text-yellow-400" />
+              Level 3 Action Permissions Matrix &amp; Safety Policy
+            </CardTitle>
+            <CardDescription className="text-slate-400 text-xs">
+              Strict execution boundaries. Actions marked REVIEW require explicit human authorization. Actions marked FORBIDDEN are permanently hard-locked against AI agents.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="rounded-xl border border-slate-800 overflow-hidden text-xs">
+              <table className="w-full text-left">
+                <thead className="bg-slate-950 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-semibold">
+                  <tr>
+                    <th className="py-2.5 px-4">Action Type</th>
+                    <th className="py-2.5 px-4">Policy</th>
+                    <th className="py-2.5 px-4">Enforcement Mechanism</th>
+                    <th className="py-2.5 px-4">Description</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/80 text-slate-300">
+                  <tr>
+                    <td className="py-2.5 px-4 font-mono font-semibold text-white">READ_DATA / ANALYZE</td>
+                    <td className="py-2.5 px-4"><Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30">AUTO</Badge></td>
+                    <td className="py-2.5 px-4 text-slate-400">Autonomous when Org is ONLINE</td>
+                    <td className="py-2.5 px-4 text-slate-400">Read-only intelligence, demand clustering, and opportunity scoring.</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2.5 px-4 font-mono font-semibold text-white">CREATE_SEO_PAGE</td>
+                    <td className="py-2.5 px-4"><Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30">AUTO</Badge></td>
+                    <td className="py-2.5 px-4 text-slate-400">Quality-Gated programmatic drafts</td>
+                    <td className="py-2.5 px-4 text-slate-400">Permitted only when search demand passes the strict 0-doorway inventory check.</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2.5 px-4 font-mono font-semibold text-white">PUBLISH_PAGE</td>
+                    <td className="py-2.5 px-4"><Badge className="bg-yellow-500/10 text-yellow-400 border-yellow-500/30">REVIEW</Badge></td>
+                    <td className="py-2.5 px-4 text-amber-400">Human Approval Queue</td>
+                    <td className="py-2.5 px-4 text-slate-400">Requires human review before publishing to live site and sitemaps.</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2.5 px-4 font-mono font-semibold text-white">PUBLISH_SOCIAL_POST</td>
+                    <td className="py-2.5 px-4"><Badge className="bg-yellow-500/10 text-yellow-400 border-yellow-500/30">REVIEW</Badge></td>
+                    <td className="py-2.5 px-4 text-amber-400">Human Approval Queue</td>
+                    <td className="py-2.5 px-4 text-slate-400">Drafts are queued for founder/growth marketing approval before dispatch.</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2.5 px-4 font-mono font-semibold text-white">SEND_EMAIL</td>
+                    <td className="py-2.5 px-4"><Badge className="bg-yellow-500/10 text-yellow-400 border-yellow-500/30">REVIEW</Badge></td>
+                    <td className="py-2.5 px-4 text-amber-400">Human Approval Queue</td>
+                    <td className="py-2.5 px-4 text-slate-400">Outreach emails strictly require human confirmation.</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2.5 px-4 font-mono font-semibold text-red-400">DELETE_PAGE</td>
+                    <td className="py-2.5 px-4"><Badge variant="destructive">FORBIDDEN</Badge></td>
+                    <td className="py-2.5 px-4 text-red-400 font-bold">Hard-Locked Block</td>
+                    <td className="py-2.5 px-4 text-slate-400">AI agents are strictly forbidden from deleting public canonical pages.</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2.5 px-4 font-mono font-semibold text-red-400">SPEND_MONEY</td>
+                    <td className="py-2.5 px-4"><Badge variant="destructive">FORBIDDEN</Badge></td>
+                    <td className="py-2.5 px-4 text-red-400 font-bold">Hard-Locked Block</td>
+                    <td className="py-2.5 px-4 text-slate-400">Financial allocation requires 2-Super-Admin multi-sig dual control.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* AI Discovery Observatory (ChatGPT / Gemini / Claude / Perplexity / Copilot) */}
+        <Card className="bg-slate-900/90 border-slate-800 text-slate-100">
+          <CardHeader className="border-b border-slate-800/80 pb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-xs">
+                    <Globe2 className="w-3 h-3 mr-1" /> AI Engine Discovery Observatory
+                  </Badge>
+                  <span className="text-xs text-slate-500">AEO / GEO Acquisition Intelligence</span>
+                </div>
+                <CardTitle className="text-lg font-bold text-white">
+                  Generative Engine Attribution &amp; Performance
+                </CardTitle>
+              </div>
+              <div className="text-right">
+                <span className="text-xs text-slate-400 font-mono">Total AI Visits:</span>
+                <span className="text-base font-bold text-emerald-400 ml-2">{observatoryData.referralVisits.toLocaleString()}</span>
+              </div>
+            </div>
+            <CardDescription className="text-slate-400 text-xs mt-1">
+              Live traffic, citations, and product conversions originating from ChatGPT, Google Gemini, Claude, Perplexity, and Microsoft Copilot.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-4 space-y-6">
+            {/* Observatory Platform Matrix Table */}
+            <div className="rounded-xl border border-slate-800 overflow-hidden text-xs">
+              <table className="w-full text-left">
+                <thead className="bg-slate-950 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-semibold">
+                  <tr>
+                    <th className="py-2.5 px-4">AI Platform</th>
+                    <th className="py-2.5 px-4">Visits</th>
+                    <th className="py-2.5 px-4">Signups</th>
+                    <th className="py-2.5 px-4">Leads</th>
+                    <th className="py-2.5 px-4">Customers</th>
+                    <th className="py-2.5 px-4 text-right">Attributed Revenue</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/80 text-slate-300">
+                  {Object.entries(observatoryData.platformBreakdown).map(([platform, data]) => {
+                    if (data.visits === 0 && platform === 'UNKNOWN') return null;
+                    return (
+                      <tr key={platform} className="hover:bg-slate-800/40 transition-colors">
+                        <td className="py-2.5 px-4 font-semibold text-white flex items-center gap-2">
+                          <Bot className="w-3.5 h-3.5 text-blue-400" />
+                          {platform}
+                        </td>
+                        <td className="py-2.5 px-4 font-mono">{data.visits.toLocaleString()}</td>
+                        <td className="py-2.5 px-4 font-mono text-blue-400">{data.signups}</td>
+                        <td className="py-2.5 px-4 font-mono text-purple-400">{data.leads}</td>
+                        <td className="py-2.5 px-4 font-mono text-emerald-400">{data.customers}</td>
+                        <td className="py-2.5 px-4 text-right font-mono font-bold text-white">
+                          ${data.revenue.toLocaleString()}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* AI Acquisition Funnel */}
+            <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+                  AI Discovery Conversion Funnel (Decoupled Stage Mathematics)
+                </h4>
+                <Badge variant="outline" className="text-[10px] text-emerald-400 border-emerald-500/30">
+                  Overall Landing-to-Customer: {observatoryData.overallLandingToCustomerRatePct}%
+                </Badge>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-6 gap-2 text-center text-xs">
+                {observatoryData.funnelStages.map((stage) => {
+                  const stepLabel = stage.conversionFromPreviousPct !== null 
+                    ? `${stage.conversionFromPreviousPct}% step` 
+                    : '100% (Top)';
+                  return (
+                    <div key={stage.stageName} className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 flex flex-col justify-between">
+                      <div>
+                        <div className="text-slate-400 text-[10px] font-mono">
+                          {stage.stageIndex}. {stage.stageName}
+                        </div>
+                        <div className="text-sm font-bold text-blue-400 mt-1">
+                          {stepLabel}
+                        </div>
+                      </div>
+                      <div className="mt-2 pt-2 border-t border-slate-800/80">
+                        <div className="text-[11px] font-bold text-white font-mono">
+                          {stage.count.toLocaleString()}
+                        </div>
+                        <div className="text-[9px] text-slate-500 mt-0.5">
+                          {stage.stageIndex === 1 ? 'Total Referrals' : `${stage.overallConversionFromLandingPct}% of landing`}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Acquisition Intelligence & Revenue Optimization Engine (Architecture v1.0) */}
+        <Card className="bg-slate-900/90 border-slate-800 text-slate-100">
+          <CardHeader className="border-b border-slate-800/80 pb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-xs">
+                    <TrendingUp className="w-3 h-3 mr-1" /> Acquisition Intelligence OS v1.0
+                  </Badge>
+                  <span className="text-xs text-slate-400">Multi-Channel Capacity & Unit Economics</span>
+                </div>
+                <CardTitle className="text-lg font-bold text-white">
+                  Next 10,000 Users Capacity Model & Regional Unit Economics
+                </CardTitle>
+                <CardDescription className="text-slate-400 text-xs mt-1">
+                  Strict empirical modeling: zero invented metrics. Incomplete spend data is explicitly designated as INSUFFICIENT_DATA.
+                </CardDescription>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="text-xs font-mono text-emerald-400 border-emerald-500/30">
+                  Run Rate: {roadmap.totalMonthlyRunRate.toLocaleString()}/mo
+                </Badge>
+                <Badge variant="outline" className="text-xs font-mono text-blue-400 border-blue-500/30">
+                  Target Timeframe: ~{roadmap.projectedMonthsToTarget} mos
+                </Badge>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-6 space-y-6">
+            {/* Multi-Channel Capacity Breakdown */}
+            <div>
+              <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+                <Layers className="w-3.5 h-3.5 text-blue-400" />
+                Channel Acquisition Run-Rate to 10K Target
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                {roadmap.channelCapacities.map((ch) => (
+                  <div key={ch.channel} className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-[10px] text-slate-400 font-medium truncate">{ch.channel}</span>
+                        <Badge 
+                          variant="outline" 
+                          className={`text-[9px] px-1 py-0 ${
+                            ch.status === 'OBSERVED' 
+                              ? 'text-emerald-400 border-emerald-500/30' 
+                              : 'text-amber-400 border-amber-500/30'
+                          }`}
+                        >
+                          {ch.status}
+                        </Badge>
+                      </div>
+                      <div className="text-lg font-bold text-white font-mono mt-1">
+                        {ch.monthlyCapacity.toLocaleString()} <span className="text-xs font-normal text-slate-400">/mo</span>
+                      </div>
+                    </div>
+                    <div className="mt-2 text-xs text-blue-400 font-mono">
+                      {ch.sharePct}% share
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Regional Unit Economics & Status-Aware CAC/LTV */}
+            <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                  <Globe2 className="w-3.5 h-3.5 text-emerald-400" />
+                  Regional Market Unit Economics (Status-Aware CAC / LTV)
+                </h4>
+                <span className="text-[10px] text-slate-500 font-mono">Governed by Zero-Hallucination Policy</span>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-slate-800 text-slate-400 text-[10px] uppercase font-mono">
+                      <th className="pb-2">Market</th>
+                      <th className="pb-2">CAC (USD)</th>
+                      <th className="pb-2">LTV (USD)</th>
+                      <th className="pb-2">LTV / CAC</th>
+                      <th className="pb-2">Observed Rev</th>
+                      <th className="pb-2">Projected Rev</th>
+                      <th className="pb-2">Commercial Evidence Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800/60">
+                    {unitEconomics.map((econ) => (
+                      <tr key={econ.market} className="hover:bg-slate-900/40">
+                        <td className="py-2.5 font-semibold text-white font-mono">{econ.market}</td>
+                        <td className="py-2.5 font-mono">
+                          {econ.cacValueUsd !== null ? (
+                            <span className="text-white">${econ.cacValueUsd.toFixed(2)}</span>
+                          ) : (
+                            <span className="text-slate-500 italic">No Spend Data</span>
+                          )}
+                          <Badge 
+                            variant="outline" 
+                            className={`ml-1.5 text-[8px] px-1 py-0 ${
+                              econ.cacStatus === 'OBSERVED' 
+                                ? 'text-emerald-400 border-emerald-500/30' 
+                                : econ.cacStatus === 'ESTIMATED'
+                                ? 'text-amber-400 border-amber-500/30'
+                                : 'text-slate-500 border-slate-700'
+                            }`}
+                          >
+                            {econ.cacStatus}
+                          </Badge>
+                        </td>
+                        <td className="py-2.5 font-mono">
+                          {econ.ltvValueUsd !== null ? (
+                            <span className="text-white">${econ.ltvValueUsd.toFixed(0)}</span>
+                          ) : (
+                            <span className="text-slate-500 italic">Insufficient Data</span>
+                          )}
+                          <Badge 
+                            variant="outline" 
+                            className={`ml-1.5 text-[8px] px-1 py-0 ${
+                              econ.ltvStatus === 'OBSERVED' 
+                                ? 'text-emerald-400 border-emerald-500/30' 
+                                : econ.ltvStatus === 'ESTIMATED'
+                                ? 'text-amber-400 border-amber-500/30'
+                                : 'text-slate-500 border-slate-700'
+                            }`}
+                          >
+                            {econ.ltvStatus}
+                          </Badge>
+                        </td>
+                        <td className="py-2.5 font-mono font-bold text-white">
+                          {econ.ltvToCacRatio !== null ? `${econ.ltvToCacRatio.toFixed(1)}x` : '—'}
+                        </td>
+                        <td className="py-2.5 font-mono text-emerald-400 font-bold">${econ.observedRevenueTotalUsd.toLocaleString()}</td>
+                        <td className="py-2.5 font-mono text-slate-300">${econ.projectedRevenueTotalUsd.toLocaleString()}</td>
+                        <td className="py-2.5 text-slate-400 text-[11px] max-w-xs truncate" title={econ.notes}>
+                          {econ.notes}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* B2B AI Lead Discovery & Qualification Queue */}
+        <Card className="bg-slate-900/90 border-slate-800 text-slate-100">
+          <CardHeader className="border-b border-slate-800/80 pb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <Badge className="bg-blue-500/10 text-blue-400 border-blue-500/30 text-xs">
+                    <Building2 className="w-3 h-3 mr-1" /> B2B Employer Lead Intelligence
+                  </Badge>
+                  <span className="text-xs text-slate-500">Evidence-Backed Hiring Signals</span>
+                </div>
+                <CardTitle className="text-lg font-bold text-white">
+                  High-Conviction Employer Acquisition Queue
+                </CardTitle>
+              </div>
+              <Badge variant="outline" className="text-slate-400 border-slate-800 text-xs self-start sm:self-auto">
+                {leads.filter(l => l.status === 'PENDING_APPROVAL').length} Pending Human Review
+              </Badge>
+            </div>
+            <CardDescription className="text-slate-400 text-xs mt-1">
+              Discovered from public hiring signals, GSC vacancy spikes, and regional expansion data. Outbound outreach strictly requires human administrator approval.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-4 space-y-3">
+            {leads.map((lead) => (
+              <div
+                key={lead.leadId}
+                className="p-4 rounded-xl bg-slate-950 border border-slate-800/80 space-y-3"
+              >
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <h4 className="text-sm font-bold text-white">{lead.companyName}</h4>
+                      <Badge className="bg-slate-800 text-slate-300 border-slate-700 text-[10px]">
+                        {lead.targetCity} ({lead.countryCode.toUpperCase()})
+                      </Badge>
+                      <Badge className="bg-purple-500/10 text-purple-400 border-purple-500/30 text-[10px]">
+                        {lead.openRolesCount} Open Roles
+                      </Badge>
+                      <Badge className="bg-blue-500/10 text-blue-400 border-blue-500/30 text-[10px]">
+                        {lead.recommendedProduct}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-slate-300">{lead.hiringSignal}</p>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <div className="text-right">
+                      <div className="text-[10px] text-slate-500">Qualification Score</div>
+                      <div className="text-sm font-extrabold text-emerald-400">{lead.qualificationScore}/100</div>
+                    </div>
+                    {lead.status === 'PENDING_APPROVAL' ? (
+                      <div className="flex items-center gap-1.5">
+                        <Button
+                          size="sm"
+                          onClick={() => handleApproveLead(lead.leadId)}
+                          className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-3 py-1.5 shadow-sm"
+                        >
+                          Approve Outreach
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleDismissLead(lead.leadId)}
+                          className="border-slate-700 hover:bg-slate-800 text-slate-300 text-xs px-2.5 py-1.5"
+                        >
+                          Dismiss
+                        </Button>
+                      </div>
+                    ) : (
+                      <Badge className="bg-slate-800 text-slate-400 border-slate-700 text-xs">
+                        {lead.status}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+
+                {/* Grounded Evidence & Personalized Pitch */}
+                <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 text-xs space-y-2">
+                  <div>
+                    <span className="font-semibold text-slate-400">Audited Signal Evidence: </span>
+                    <span className="text-slate-300">{lead.sourceEvidence[0]?.evidence}</span>
+                    <span className="text-slate-500 text-[11px] ml-1">({lead.sourceEvidence[0]?.sourceType})</span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-slate-400">Personalized Hook: </span>
+                    <span className="text-blue-300 italic">&ldquo;{lead.personalizedPitch}&rdquo;</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        {/* Discovery Evidence Ledger */}
+        <Card className="bg-slate-900/90 border-slate-800 text-slate-100">
+          <CardHeader>
+            <CardTitle className="text-base font-bold text-white flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              AI Discovery Evidence Ledger
+            </CardTitle>
+            <CardDescription className="text-slate-400 text-xs">
+              Immutable log of empirical AI search citations and crawler access observations. Eliminates self-generated assumptions.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="rounded-xl border border-slate-800 overflow-hidden text-xs">
+              <table className="w-full text-left">
+                <thead className="bg-slate-950 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-semibold">
+                  <tr>
+                    <th className="py-2.5 px-4">Platform</th>
+                    <th className="py-2.5 px-4">Entity / Page</th>
+                    <th className="py-2.5 px-4">Observed Citation</th>
+                    <th className="py-2.5 px-4">Crawler Access</th>
+                    <th className="py-2.5 px-4">Evidence Snippet</th>
+                    <th className="py-2.5 px-4">Confidence</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/80 text-slate-300">
+                  {evidenceLedger.map((ev) => (
+                    <tr key={ev.id} className="hover:bg-slate-800/40 transition-colors">
+                      <td className="py-2.5 px-4 font-semibold text-white">{ev.platform}</td>
+                      <td className="py-2.5 px-4 font-mono text-blue-400">{ev.entityName}</td>
+                      <td className="py-2.5 px-4">
+                        <Badge className={ev.citationObserved === 'OBSERVED' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-slate-800 text-slate-400'}>
+                          {ev.citationObserved}
+                        </Badge>
+                      </td>
+                      <td className="py-2.5 px-4 text-slate-300">
+                        {ev.crawlerAccessVerified ? '✅ Verified 200' : 'Pending'}
+                      </td>
+                      <td className="py-2.5 px-4 text-slate-400 max-w-xs truncate">
+                        {ev.evidencePayload.observedQuerySnippet || ev.evidencePayload.verificationNotes}
+                      </td>
+                      <td className="py-2.5 px-4">
+                        <Badge className="bg-purple-500/10 text-purple-400 border-purple-500/30 text-[10px]">
+                          {ev.confidence}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Live AI Operations Audit Stream */}
+        <Card className="bg-slate-900/90 border-slate-800 text-slate-100">
+          <CardHeader>
+            <CardTitle className="text-base font-bold text-white flex items-center gap-2">
+              <Layers className="w-4 h-4 text-blue-400" />
+              Live AI Operations Audit Stream
+            </CardTitle>
+            <CardDescription className="text-slate-400 text-xs">
+              Every autonomous action, recommendation, or block is immutably logged with telemetry provenance.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="rounded-xl border border-slate-800 overflow-hidden text-xs">
+              <table className="w-full text-left">
+                <thead className="bg-slate-950 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-semibold">
+                  <tr>
+                    <th className="py-2.5 px-4">Time</th>
+                    <th className="py-2.5 px-4">Agent</th>
+                    <th className="py-2.5 px-4">Action</th>
+                    <th className="py-2.5 px-4">Target Surface</th>
+                    <th className="py-2.5 px-4">Telemetry Trigger</th>
+                    <th className="py-2.5 px-4">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/80 text-slate-300">
+                  {auditEntries.slice(0, 10).map((entry) => (
+                    <tr key={entry.id} className="hover:bg-slate-800/40 transition-colors">
+                      <td className="py-2.5 px-4 text-slate-500 whitespace-nowrap font-mono text-[11px]">
+                        {new Date(entry.createdAt).toLocaleTimeString()}
+                      </td>
+                      <td className="py-2.5 px-4 font-medium text-white">{entry.agentId}</td>
+                      <td className="py-2.5 px-4 font-mono text-blue-400">{entry.actionType}</td>
+                      <td className="py-2.5 px-4 text-slate-300">{entry.targetSurface || 'System'}</td>
+                      <td className="py-2.5 px-4 text-slate-400 max-w-xs truncate">{entry.telemetryTrigger || 'Routine schedule'}</td>
+                      <td className="py-2.5 px-4">
+                        {entry.status === 'PENDING_REVIEW' ? (
+                          <div className="flex items-center gap-1.5">
+                            <Badge className="bg-yellow-500/15 text-yellow-400 border-yellow-500/30 text-[10px]">
+                              PENDING_REVIEW
+                            </Badge>
+                            <button
+                              type="button"
+                              onClick={() => handleApproveAction(entry.id)}
+                              className="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-[10px] shadow-sm cursor-pointer transition-colors"
+                            >
+                              Approve
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleRejectAction(entry.id)}
+                              className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-medium text-[10px] border border-slate-700 cursor-pointer transition-colors"
+                            >
+                              Dismiss
+                            </button>
+                          </div>
+                        ) : (
+                          <Badge
+                            className={
+                              entry.status === 'EXECUTED'
+                                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                                : 'bg-rose-500/10 text-rose-400 border-rose-500/30'
+                            }
+                          >
+                            {entry.status}
+                          </Badge>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}

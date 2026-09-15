@@ -14,7 +14,7 @@ import { Plus, Edit, Trash2, Bot, Activity, FileText, Zap, User } from 'lucide-r
 import { toast } from 'sonner';
 import { BotProfileManager } from './BotProfileManager';
 
-export const BotManagerCommandCenter: React.FC = () => {
+export const BotManagerDashboard: React.FC = () => {
   const { data: bots = [], isLoading } = useBots();
   const { data: stats } = useBotStats();
   const createBot = useCreateBot();
@@ -423,4 +423,3 @@ export const BotManagerCommandCenter: React.FC = () => {
     </div>
   );
 };
-

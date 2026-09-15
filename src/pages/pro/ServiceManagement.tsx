@@ -145,7 +145,7 @@ export default function ServiceManagement() {
     <div className="container mx-auto py-8">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Services CommandCenter</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Services Dashboard</h1>
           <p className="text-muted-foreground mt-2">
             Manage your services and client booking requests
           </p>
@@ -187,5 +187,3 @@ export default function ServiceManagement() {
     </div>
   );
 }
-
-

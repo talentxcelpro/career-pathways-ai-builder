@@ -9,7 +9,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 // import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Mail, Lock, User, Building, Chrome } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { getAuthCallbackUrl, getEmailRedirectUrl } from '@/utils/authRedirect';
 
 interface AuthPageProps {
   mode?: 'signin' | 'signup';
@@ -32,7 +31,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
 
   // Get flow from URL params or props
   const currentFlow = flow || searchParams.get('flow') || 'resume';
-  const redirectTo = searchParams.get('redirect') || location.state?.from || '/career-os';
+  const redirectTo = searchParams.get('redirect') || location.state?.from || '/network';
 
   useEffect(() => {
     const urlMode = searchParams.get('mode');
@@ -51,7 +50,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
       resume: {
         title: 'Build Your Professional Resume',
         subtitle: 'Free ATS scan + 1 download',
-        benefits: ['ATS-optimized templates', 'Performance suggestions', 'Free download in PDF/Word']
+        benefits: ['ATS-optimized templates', 'AI-powered suggestions', 'Free download in PDF/Word']
       },
       jobs: {
         title: 'Find Your Dream Job',
@@ -61,7 +60,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
       interview: {
         title: 'Ace Your Interviews',
         subtitle: '5 free practice questions',
-        benefits: ['Role-specific questions', 'AI Feedback', 'Video practice']
+        benefits: ['Role-specific questions', 'AI feedback', 'Video practice']
       },
       insights: {
         title: 'Get Market Insights',
@@ -84,8 +83,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
     setIsLoading(true);
 
     try {
-      const redirectPath = `/onboarding?flow=${encodeURIComponent(currentFlow)}&type=${encodeURIComponent(userType)}`;
-      const redirectUrl = getEmailRedirectUrl(redirectPath);
+      // Use current domain for redirects
+      const baseUrl = window.location.origin;
+      const redirectUrl = `${baseUrl}/onboarding?flow=${currentFlow}&type=${userType}`;
       
       console.log('Auth attempt:', { authMode, userType, redirectUrl });
 
@@ -144,8 +144,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
     try {
       setIsLoading(true);
       
-      const redirectPath = `/onboarding?flow=${encodeURIComponent(currentFlow)}&type=${encodeURIComponent(userType)}`;
-      const redirectUrl = getAuthCallbackUrl(redirectPath);
+      // Use current domain for redirects
+      const baseUrl = window.location.origin;
+      const redirectUrl = `${baseUrl}/onboarding?flow=${currentFlow}&type=${userType}`;
       
       console.log('Social auth attempt:', { provider, redirectUrl });
       
@@ -188,11 +189,13 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
           Back to home
         </Link>
         <div className="flex items-center gap-2">
-          <img 
-            src="/lovable-uploads/92d46ee5-0b5a-4272-905d-72a40b1c8bdc.png" 
-            alt="TalentXcel" 
-            className="h-8 w-8 rounded-sm"
-          />
+          <div className="h-8 w-8 rounded-lg bg-slate-900 flex items-center justify-center p-1 shadow-sm">
+            <img 
+              src="/talentxcel-official-logo.png" 
+              alt="TalentXcel" 
+              className="h-full w-full object-contain"
+            />
+          </div>
           <span className="text-lg font-semibold">TalentXcel</span>
         </div>
         <div className="w-20" /> {/* Spacer */}
@@ -422,5 +425,3 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
     </div>
   );
 };
-
-

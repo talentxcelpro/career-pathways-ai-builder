@@ -456,5 +456,3 @@ kumar.aug09@gmail.com,Kumar Raja,job_seeker,TempPass123!"
     </Dialog>
   );
 };
-
-

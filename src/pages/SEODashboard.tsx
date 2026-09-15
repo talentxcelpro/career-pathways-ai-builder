@@ -1,5 +1,5 @@
 import React from 'react';
-import { SEOPerformanceCommandCenter } from '@/components/seo/SEOPerformanceDashboard';
+import { SEOPerformanceDashboard } from '@/components/seo/SEOPerformanceDashboard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Globe, TrendingUp, Zap, Target, BarChart3, CheckCircle } from "lucide-react";
 
-const SEOCommandCenter = () => {
-  console.log('SEOCommandCenter rendering...'); // Debug log
+const SEODashboard = () => {
+  console.log('SEODashboard rendering...'); // Debug log
 
   return (
     <div className="min-h-screen bg-background p-6">
@@ -19,8 +19,8 @@ const SEOCommandCenter = () => {
         </div>
 
         <div className="bg-card p-6 rounded-lg border mb-6">
-          <h2 className="text-2xl font-semibold mb-4">CommandCenter Status</h2>
-          <p className="text-muted-foreground">CommandCenter is loading successfully!</p>
+          <h2 className="text-2xl font-semibold mb-4">Dashboard Status</h2>
+          <p className="text-muted-foreground">Dashboard is loading successfully!</p>
         </div>
 
         <Tabs defaultValue="performance" className="w-full">
@@ -31,7 +31,7 @@ const SEOCommandCenter = () => {
           </TabsList>
 
           <TabsContent value="performance" className="space-y-6">
-            <SEOPerformanceCommandCenter />
+            <SEOPerformanceDashboard />
           </TabsContent>
 
           <TabsContent value="automation" className="space-y-6">
@@ -98,7 +98,7 @@ const SEOCommandCenter = () => {
                     Download Sitemap
                   </Button>
                   <Button variant="outline" className="w-full">
-                    View CareerAnalytics
+                    View Analytics
                   </Button>
                 </div>
               </CardContent>
@@ -197,7 +197,4 @@ const SEOCommandCenter = () => {
   );
 };
 
-export default SEOCommandCenter;
-
-
-
+export default SEODashboard;

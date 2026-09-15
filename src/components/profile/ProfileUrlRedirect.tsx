@@ -2,64 +2,69 @@ import React, { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2 } from 'lucide-react';
+import { generatePersonProfileSlug } from '@/utils/userProfileSlug';
 
 /**
- * Component to redirect from UUID-based profile URLs to username-based URLs
- * This helps with SEO migration from /network/people/:id to /profile/:username
+ * Universal Profile URL Redirect
+ * Safely redirects UUIDs, legacy paths (/network/people/:id, /user/:id)
+ * to canonical /profile/:slug without ever landing on 404.
  */
-const ProfileUrlRedirect = () => {
+const ProfileUrlRedirect: React.FC = () => {
   const { id, username } = useParams<{ id?: string; username?: string }>();
   const navigate = useNavigate();
   const param = id ?? username ?? null;
 
   useEffect(() => {
-    const redirectToUsernameUrl = async () => {
+    const redirectToProfile = async () => {
       if (!param) {
-        navigate('/404');
+        navigate('/network', { replace: true });
         return;
       }
 
       try {
-        // If the param isn't a UUID, treat it as username/slug and redirect directly
-        const value = String(param);
-        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
+        const value = String(param).trim();
+        const clean = value.startsWith('@') ? value.slice(1) : value;
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(clean);
+
         if (!isUUID) {
-          const clean = value.startsWith('@') ? value.slice(1) : value;
-          navigate(`/${clean}`, { replace: true });
+          navigate(`/profile/${clean}`, { replace: true });
           return;
         }
 
         const { data: profile, error } = await supabase
           .from('profiles')
-          .select('username, slug')
-          .eq('id', value)
+          .select('id, full_name, username, slug, custom_profile_url')
+          .eq('id', clean)
           .maybeSingle();
 
-        if (error) {
-          console.error('Error fetching profile:', error);
-          navigate('/404');
-        } else if (profile && (profile as any).username) {
-          navigate(`/${(profile as any).username}`, { replace: true });
-        } else if (profile && (profile as any).slug) {
-          // Fallback to slug if username is missing
-          navigate(`/${(profile as any).slug}`, { replace: true });
+        if (error || !profile) {
+          console.warn('Profile redirect lookup failed, routing to network directory:', error);
+          navigate('/network/discover', { replace: true });
+          return;
+        }
+
+        const targetSlug = profile.slug || profile.custom_profile_url || profile.username || 
+          (profile.full_name ? generatePersonProfileSlug(profile.full_name) : null);
+
+        if (targetSlug) {
+          navigate(`/profile/${targetSlug}`, { replace: true });
         } else {
-          navigate('/404');
+          navigate('/network/discover', { replace: true });
         }
       } catch (err) {
-        console.error('Unexpected error:', err);
-        navigate('/404');
+        console.error('Unexpected profile redirect error:', err);
+        navigate('/network/discover', { replace: true });
       }
     };
 
-    redirectToUsernameUrl();
+    redirectToProfile();
   }, [param, navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50/50 dark:bg-slate-950/40">
       <div className="text-center space-y-4">
-        <Loader2 className="h-8 w-8 animate-spin mx-auto" />
-        <p className="text-muted-foreground">Redirecting to profile...</p>
+        <Loader2 className="h-8 w-8 animate-spin mx-auto text-blue-600" />
+        <p className="text-sm font-medium text-muted-foreground">Connecting to verified profile...</p>
       </div>
     </div>
   );

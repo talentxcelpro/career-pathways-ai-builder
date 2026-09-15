@@ -1,15 +1,7 @@
-import { Capacitor } from '@capacitor/core';
+// Service Worker Registration with update handling
 
 export function registerServiceWorker() {
-  // Disable SW on native platforms to avoid conflicts with Capacitor asset handling and custom origin
-  const isNative = Capacitor.isNativePlatform();
-  const canUseServiceWorkers = 'serviceWorker' in navigator;
-  const isLocalHost =
-    window.location.hostname === 'localhost' ||
-    window.location.hostname === '127.0.0.1' ||
-    window.location.hostname === '[::1]';
-
-  if (canUseServiceWorkers && import.meta.env.PROD && !isNative) {
+  if ('serviceWorker' in navigator && import.meta.env.PROD) {
     window.addEventListener('load', async () => {
       try {
         const registration = await navigator.serviceWorker.register('/sw.js', {
@@ -23,24 +15,24 @@ export function registerServiceWorker() {
           registration.update();
         }, 60 * 60 * 1000);
 
-        // Handle updates
+        // Auto-apply updates silently — never block the user with a confirm()
+        // dialog (users dismiss it, then stay on stale JS forever which breaks
+        // features like profile/banner uploads after a deploy).
         registration.addEventListener('updatefound', () => {
           const newWorker = registration.installing;
           if (!newWorker) return;
 
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              // New version available
-              console.log('🔄 New version available! Reload to update.');
-              
-              // Optionally show a toast notification
-              if (window.confirm('New version available! Reload to update?')) {
-                newWorker.postMessage({ type: 'SKIP_WAITING' });
-                window.location.reload();
-              }
+              console.log('🔄 New version installed — activating.');
+              newWorker.postMessage({ type: 'SKIP_WAITING' });
+              // controllerchange handler below will reload exactly once
             }
           });
         });
+
+        // Trigger an immediate update check on every page load
+        registration.update().catch(() => {});
       } catch (error) {
         console.error('❌ Service Worker registration failed:', error);
       }
@@ -54,28 +46,17 @@ export function registerServiceWorker() {
         window.location.reload();
       }
     });
-  } else if (canUseServiceWorkers && (isNative || import.meta.env.DEV || isLocalHost)) {
-    console.log('Ensuring Service Worker is unregistered for this runtime');
-    unregisterServiceWorker();
   }
 }
 
-export async function unregisterServiceWorker() {
+export function unregisterServiceWorker() {
   if ('serviceWorker' in navigator) {
-    try {
-      const registrations = await navigator.serviceWorker.getRegistrations();
-      await Promise.all(registrations.map((registration) => registration.unregister()));
-    } catch (error) {
-      console.error('Service Worker unregistration failed:', error);
-    }
-  }
-
-  if ('caches' in window) {
-    try {
-      const keys = await caches.keys();
-      await Promise.all(keys.map((key) => caches.delete(key)));
-    } catch (error) {
-      console.error('Service Worker cache cleanup failed:', error);
-    }
+    navigator.serviceWorker.ready
+      .then((registration) => {
+        registration.unregister();
+      })
+      .catch((error) => {
+        console.error('Service Worker unregistration failed:', error);
+      });
   }
 }

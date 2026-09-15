@@ -35,7 +35,7 @@ export function SubscriptionGate({
   benefits = [
     "Create unlimited services",
     "Featured service listings",
-    "Advanced CareerAnalytics",
+    "Advanced analytics",
     "Priority support",
     "Custom branding",
     "Portfolio showcase"
@@ -169,6 +169,3 @@ export function SubscriptionGate({
     </div>
   );
 }
-
-
-

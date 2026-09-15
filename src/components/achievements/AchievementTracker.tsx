@@ -77,7 +77,7 @@ const achievements: Achievement[] = [
     unlocked: false,
     progress: 18,
     maxProgress: 25,
-    requirements: ['Make 25 professional TalentNetwork']
+    requirements: ['Make 25 professional connections']
   },
   {
     id: '4',
@@ -402,4 +402,3 @@ export const AchievementTracker: React.FC = () => {
     </div>
   );
 };
-

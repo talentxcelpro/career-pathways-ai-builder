@@ -35,7 +35,7 @@ import { UpdateSEODialog } from '@/components/admin/dialogs/UpdateSEODialog';
 const HomeManagement = () => {
   const [selectedSection, setSelectedSection] = useState<'metrics' | 'announcements' | 'content'>('metrics');
 
-  // Real-time CommandCenter metrics
+  // Real-time dashboard metrics
   const { data: realTimeMetrics, isLoading: metricsLoading } = useQuery({
     queryKey: ['real-time-metrics'],
     queryFn: async () => {
@@ -68,7 +68,7 @@ const HomeManagement = () => {
         {
           id: '2',
           title: 'New Features Released',
-          content: 'Check out our latest Performance job matching features.',
+          content: 'Check out our latest AI-powered job matching features.',
           type: 'feature',
           is_active: true,
           priority: 'medium',
@@ -154,7 +154,7 @@ const HomeManagement = () => {
           <div className="space-y-4">
             <div className="flex items-center justify-between p-4 border rounded-lg">
               <div>
-                <h4 className="font-medium">Auto-refresh CommandCenter</h4>
+                <h4 className="font-medium">Auto-refresh Dashboard</h4>
                 <p className="text-sm text-muted-foreground">Automatically update metrics every 5 seconds</p>
               </div>
               <Switch defaultChecked />
@@ -328,7 +328,7 @@ const HomeManagement = () => {
 
   return (
     <UnifiedAdminLayout 
-      title="Home & CommandCenter Management" 
+      title="Home & Dashboard Management" 
       description="Manage homepage content, announcements, and platform metrics"
     >
       <div className="space-y-6">
@@ -364,4 +364,3 @@ const HomeManagement = () => {
 };
 
 export default HomeManagement;
-

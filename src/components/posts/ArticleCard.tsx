@@ -27,6 +27,7 @@ interface ArticleCardProps {
     word_count: number;
     created_at: string;
     author_id: string;
+    status?: string;
     likes_count?: number;
     comments_count?: number;
     shares_count?: number;
@@ -119,12 +120,19 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
                 />
               )}
               <div className="flex-1 min-w-0">
-                <Badge 
-                  variant="secondary" 
-                  className={`text-xs mb-2 ${getCategoryColor(article.article_category)}`}
-                >
-                  {getCategoryLabel(article.article_category)}
-                </Badge>
+                <div className="flex items-center gap-1.5 mb-2">
+                  <Badge 
+                    variant="secondary" 
+                    className={`text-xs ${getCategoryColor(article.article_category)}`}
+                  >
+                    {getCategoryLabel(article.article_category)}
+                  </Badge>
+                  {article.status === 'draft' && (
+                    <Badge className="bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-bold">
+                      📝 Draft
+                    </Badge>
+                  )}
+                </div>
                 <h3 className="font-semibold text-sm line-clamp-2 mb-1">
                   {article.headline}
                 </h3>
@@ -155,11 +163,18 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
               className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
             />
           </Link>
-          <Badge 
-            className={`absolute top-3 left-3 ${getCategoryColor(article.article_category)}`}
-          >
-            {getCategoryLabel(article.article_category)}
-          </Badge>
+          <div className="absolute top-3 left-3 flex items-center gap-2">
+            <Badge 
+              className={getCategoryColor(article.article_category)}
+            >
+              {getCategoryLabel(article.article_category)}
+            </Badge>
+            {article.status === 'draft' && (
+              <Badge className="bg-amber-500 text-white font-bold text-xs shadow-xs">
+                📝 Saved Draft
+              </Badge>
+            )}
+          </div>
         </div>
       )}
 
@@ -195,6 +210,11 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
 
         {/* Article Content */}
         <div className="space-y-3">
+          {article.status === 'draft' && !article.featured_image_url && (
+            <Badge className="bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold w-fit">
+              📝 Saved Draft
+            </Badge>
+          )}
           <Link to={`/network/articles/${article.id}`}>
             <h2 className="text-xl font-bold hover:text-primary transition-colors cursor-pointer line-clamp-2">
               {article.headline}

@@ -24,7 +24,7 @@ export const useVideoViewTracking = () => {
     if (trackedViews.current.has(viewKey)) return;
 
     try {
-      // Track the view with detailed CareerAnalytics
+      // Track the view with detailed analytics
       await supabase.rpc('track_video_view', {
         viewer_id: user.id,
         content_id: data.contentId,
@@ -79,6 +79,3 @@ export const useVideoViewTracking = () => {
     resetSession
   };
 };
-
-
-

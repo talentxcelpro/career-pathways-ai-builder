@@ -98,7 +98,7 @@ export const courseCategories = [
       'Public Health',
       'Healthcare Quality',
       'Patient Care',
-      'Healthcare CareerAnalytics'
+      'Healthcare Analytics'
     ]
   },
   {
@@ -114,7 +114,7 @@ export const courseCategories = [
       'Early Childhood',
       'Adult Learning',
       'Training Design',
-      'Learning CareerAnalytics'
+      'Learning Analytics'
     ]
   },
   {
@@ -462,11 +462,11 @@ export const coursesDatabase: Course[] = [
     category: 'Marketing & Sales',
     subcategory: 'Digital Marketing',
     thumbnail: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&fit=crop&auto=format',
-    tags: ['SEO', 'Social Media', 'CareerAnalytics', 'Growth'],
+    tags: ['SEO', 'Social Media', 'Analytics', 'Growth'],
     certified: true,
     trending: true,
     description: 'Master digital marketing from SEO to social media marketing',
-    whatYouLearn: ['SEO Optimization', 'Social Media Marketing', 'Content Strategy', 'CareerAnalytics'],
+    whatYouLearn: ['SEO Optimization', 'Social Media Marketing', 'Content Strategy', 'Analytics'],
     requirements: ['Basic computer skills', 'Interest in marketing']
   },
   {
@@ -505,7 +505,7 @@ export const coursesDatabase: Course[] = [
     certified: true,
     trending: true,
     description: 'Master social media marketing across all major platforms',
-    whatYouLearn: ['Platform Strategies', 'Content Creation', 'Community Building', 'Social CareerAnalytics'],
+    whatYouLearn: ['Platform Strategies', 'Content Creation', 'Community Building', 'Social Analytics'],
     requirements: ['Basic social media usage', 'Creative mindset']
   },
   {
@@ -524,7 +524,7 @@ export const coursesDatabase: Course[] = [
     tags: ['SEO', 'SEM', 'Google Ads', 'Keyword Research'],
     certified: true,
     description: 'Master search engine optimization and search marketing',
-    whatYouLearn: ['Technical SEO', 'Keyword Research', 'Google Ads', 'Search CareerAnalytics'],
+    whatYouLearn: ['Technical SEO', 'Keyword Research', 'Google Ads', 'Search Analytics'],
     requirements: ['Basic website knowledge', 'Understanding of web basics']
   },
   {
@@ -794,6 +794,3 @@ export const getCategoryCounts = () => {
     'hospitality&tourism': 15
   };
 };
-
-
-

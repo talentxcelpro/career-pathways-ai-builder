@@ -6,7 +6,7 @@ import { websocketManager } from '@/utils/websocketManager';
 
 interface RealTimeCareerMetrics {
   jobApplications: number;
-  TalentNetwork: number;
+  connections: number;
   postsCreated: number;
   achievementsEarned: number;
   totalTXCEarned: number;
@@ -30,7 +30,7 @@ export function useRealTimeCareerMetrics() {
       try {
         const [
           jobAppsResponse,
-          TalentNetworkResponse,
+          connectionsResponse,
           postsResponse,
           achievementsResponse,
           txcResponse,
@@ -56,7 +56,7 @@ export function useRealTimeCareerMetrics() {
 
         setMetrics({
           jobApplications: jobAppsResponse.data?.length || 0,
-          TalentNetwork: TalentNetworkResponse.data?.length || 0,
+          connections: connectionsResponse.data?.length || 0,
           postsCreated: postsResponse.data?.length || 0,
           achievementsEarned: achievementsResponse.data?.length || 0,
           totalTXCEarned: txcResponse.data?.total_earned || 0,
@@ -90,7 +90,7 @@ export function useRealTimeCareerMetrics() {
 
     // Create channels for different data sources
     const jobAppsChannel = websocketManager.createChannel(`job_applications_${user.id}`);
-    const TalentNetworkChannel = websocketManager.createChannel(`TalentNetwork_${user.id}`);
+    const connectionsChannel = websocketManager.createChannel(`connections_${user.id}`);
     const postsChannel = websocketManager.createChannel(`posts_${user.id}`);
     const achievementsChannel = websocketManager.createChannel(`achievements_${user.id}`);
     const txcChannel = websocketManager.createChannel(`txc_balances_${user.id}`);
@@ -109,17 +109,17 @@ export function useRealTimeCareerMetrics() {
       })
       .subscribe();
 
-    // Subscribe to TalentNetwork changes
-    TalentNetworkChannel
+    // Subscribe to connections changes
+    connectionsChannel
       .on('postgres_changes', {
         event: '*',
         schema: 'public',
         table: 'connections'
       }, (payload) => {
-        // Filter for TalentNetwork involving this user
+        // Filter for connections involving this user
         const data = payload.new || payload.old;
         if (data && ((data as any).requester_id === user.id || (data as any).recipient_id === user.id)) {
-          console.log('TalentNetwork changed:', payload);
+          console.log('Connections changed:', payload);
           refreshMetrics();
         }
       })
@@ -179,7 +179,7 @@ export function useRealTimeCareerMetrics() {
 
     return () => {
       websocketManager.removeChannel(`job_applications_${user.id}`);
-      websocketManager.removeChannel(`TalentNetwork_${user.id}`);
+      websocketManager.removeChannel(`connections_${user.id}`);
       websocketManager.removeChannel(`posts_${user.id}`);
       websocketManager.removeChannel(`achievements_${user.id}`);
       websocketManager.removeChannel(`txc_balances_${user.id}`);
@@ -193,4 +193,3 @@ export function useRealTimeCareerMetrics() {
     lastUpdated: metrics?.lastUpdated
   };
 }
-

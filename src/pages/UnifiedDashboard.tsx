@@ -1,12 +1,15 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
+import { StudentDashboard } from '@/components/dashboard/StudentDashboard';
+import { EmployerDashboard } from '@/components/dashboard/EmployerDashboard';
+import { CollegeDashboard } from '@/components/dashboard/CollegeDashboard';
+import { AdminDashboard } from '@/components/dashboard/AdminDashboard';
 import { useAuth } from '@/contexts/AuthContext';
-import CareerDashboard from './CareerDashboard';
 
-export default function UnifiedCommandCenter() {
+export default function UnifiedDashboard() {
   const { user, loading: authLoading } = useAuth();
-  const { CommandCenterType, isLoading: roleLoading } = useUserRole();
+  const { dashboardType, isLoading: roleLoading } = useUserRole();
 
   // Show loading state while determining user role
   if (authLoading || roleLoading) {
@@ -39,24 +42,24 @@ export default function UnifiedCommandCenter() {
     return <Navigate to="/" replace />;
   }
 
-  // Render the unified Command Center. Role-specific shells were removed from
-  // the codebase, so this page now routes every authenticated role through the
-  // maintained TalentXcel dashboard surface.
-  const renderCommandCenter = () => {
-    switch (CommandCenterType) {
+  // Render appropriate dashboard based on user role
+  const renderDashboard = () => {
+    switch (dashboardType) {
       case 'admin':
+        return <AdminDashboard />;
       case 'employer':
+        return <EmployerDashboard />;
       case 'college_admin':
+        return <CollegeDashboard />;
       case 'student':
       default:
-        return <CareerDashboard />;
+        return <StudentDashboard />;
     }
   };
 
   return (
     <div className="container mx-auto p-6">
-      {renderCommandCenter()}
+      {renderDashboard()}
     </div>
   );
 }
-
