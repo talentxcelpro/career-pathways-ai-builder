@@ -31,7 +31,7 @@ import { MobileResumeViewer, MobileTouchFileUpload } from './MobileOptimizedComp
 import { AdvancedExportFeatures } from './AdvancedExportFeatures';
 import { ProfessionalPortfolioBuilder } from './ProfessionalPortfolioBuilder';
 import { RealTimeCollaboration } from './RealTimeCollaboration';
-import { ResumeAnalytics } from './ResumeAnalytics';
+import { ResumeCareerAnalytics } from './ResumeAnalytics';
 import { CareerGuidance } from './CareerGuidance';
 import { InterviewPrep } from './InterviewPrep';
 import { useEnhancedResumeUpload } from '@/hooks/useEnhancedResumeUpload';
@@ -68,7 +68,7 @@ export const AppleInspiredResumeBuilder = () => {
     resetUpload
   } = useEnhancedResumeUpload();
 
-  const [currentStep, setCurrentStep] = useState<'welcome' | 'upload' | 'processing' | 'templates' | 'export' | 'portfolio' | 'collaborate' | 'analytics' | 'career' | 'interview' | 'complete'>('welcome');
+  const [currentStep, setCurrentStep] = useState<'welcome' | 'upload' | 'processing' | 'templates' | 'export' | 'portfolio' | 'collaborate' | 'CareerAnalytics' | 'career' | 'interview' | 'complete'>('welcome');
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [resumeData, setResumeData] = useState<ResumeData>({
     personalInfo: { fullName: '', email: '', phone: '', location: '', summary: '' },
@@ -399,7 +399,7 @@ export const AppleInspiredResumeBuilder = () => {
               <div className="text-center mb-8 animate-slideInUp">
                 <h2 className="text-3xl font-bold text-gray-900 mb-4">Share & Collaborate</h2>
                 <p className="text-gray-600 max-w-2xl mx-auto">
-                  Invite others to review your resume, get feedback, and collaborate in real-time.
+                  Invite others to review your resume, get Feedback, and collaborate in real-time.
                 </p>
               </div>
               
@@ -412,10 +412,10 @@ export const AppleInspiredResumeBuilder = () => {
               <div className="mt-8 text-center space-x-4">
                 <Button
                   variant="outline"
-                  onClick={() => setCurrentStep('analytics')}
+                  onClick={() => setCurrentStep('CareerAnalytics')}
                   className="bg-white/80 backdrop-blur-sm"
                 >
-                  📊 Analytics
+                  📊 CareerAnalytics
                 </Button>
                 <Button
                   variant="outline"
@@ -443,17 +443,17 @@ export const AppleInspiredResumeBuilder = () => {
           </div>
         )}
 
-        {currentStep === 'analytics' && (
+        {currentStep === 'CareerAnalytics' && (
           <div className="min-h-screen py-8 px-4">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-8 animate-slideInUp">
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">Resume Analytics</h2>
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">Resume CareerAnalytics</h2>
                 <p className="text-gray-600 max-w-2xl mx-auto">
                   Track your resume performance and get insights to improve your job search success.
                 </p>
               </div>
               
-              <ResumeAnalytics
+              <ResumeCareerAnalytics
                 resumeId={resumeId || 'resume'}
                 className="animate-fadeInScale"
               />
@@ -467,7 +467,7 @@ export const AppleInspiredResumeBuilder = () => {
               <div className="text-center mb-8 animate-slideInUp">
                 <h2 className="text-3xl font-bold text-gray-900 mb-4">Career Guidance</h2>
                 <p className="text-gray-600 max-w-2xl mx-auto">
-                  Get AI-powered career path recommendations and skill gap analysis.
+                  Get Performance career path recommendations and skill gap analysis.
                 </p>
               </div>
               
@@ -485,7 +485,7 @@ export const AppleInspiredResumeBuilder = () => {
               <div className="text-center mb-8 animate-slideInUp">
                 <h2 className="text-3xl font-bold text-gray-900 mb-4">Interview Preparation</h2>
                 <p className="text-gray-600 max-w-2xl mx-auto">
-                  Practice with AI-powered mock interviews and get ready for your dream job.
+                  Practice with Performance mock interviews and get ready for your dream job.
                 </p>
               </div>
               
@@ -529,12 +529,12 @@ export const AppleInspiredResumeBuilder = () => {
               
               <div className="flex gap-4 justify-center">
                 <Button
-                  onClick={() => navigate('/resume-builder/dashboard')}
+                  onClick={() => navigate('/resume-builder/CommandCenter')}
                   size="lg"
                   className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
                 >
                   <Eye className="h-4 w-4 mr-2" />
-                  View Dashboard
+                  View CommandCenter
                 </Button>
                 <Button
                   variant="outline"
@@ -553,3 +553,7 @@ export const AppleInspiredResumeBuilder = () => {
     </div>
   );
 };
+
+
+
+

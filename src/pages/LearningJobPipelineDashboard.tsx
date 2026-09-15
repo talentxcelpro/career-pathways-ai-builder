@@ -33,13 +33,13 @@ interface PipelineData {
   };
 }
 
-export const LearningJobPipelineDashboard: React.FC = () => {
+export const LearningJobPipelineCommandCenter: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const queryClient = useQueryClient();
 
   // Fetch user's pipeline data
   const { data: pipelineData, isLoading } = useQuery({
-    queryKey: ['pipeline-dashboard'],
+    queryKey: ['pipeline-CommandCenter'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
@@ -112,7 +112,7 @@ export const LearningJobPipelineDashboard: React.FC = () => {
     },
     onSuccess: () => {
       toast.success('Successfully enrolled in course!');
-      queryClient.invalidateQueries({ queryKey: ['pipeline-dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['pipeline-CommandCenter'] });
     },
     onError: (error) => {
       toast.error('Failed to enroll: ' + error.message);
@@ -216,7 +216,7 @@ export const LearningJobPipelineDashboard: React.FC = () => {
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="learning">Learning Path</TabsTrigger>
           <TabsTrigger value="jobs">Job Matches</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -358,17 +358,17 @@ export const LearningJobPipelineDashboard: React.FC = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="analytics" className="space-y-6">
+        <TabsContent value="CareerAnalytics" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Pipeline Analytics</CardTitle>
+              <CardTitle>Pipeline CareerAnalytics</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-center py-12">
                 <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Analytics Coming Soon</h3>
+                <h3 className="text-lg font-semibold mb-2">CareerAnalytics Coming Soon</h3>
                 <p className="text-muted-foreground">
-                  Detailed analytics and insights will be available here.
+                  Detailed CareerAnalytics and insights will be available here.
                 </p>
               </div>
             </CardContent>
@@ -378,3 +378,6 @@ export const LearningJobPipelineDashboard: React.FC = () => {
     </div>
   );
 };
+
+
+

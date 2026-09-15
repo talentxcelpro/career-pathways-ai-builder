@@ -26,7 +26,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-export function AutomationDashboard() {
+export function AutomationCommandCenter() {
   const [isAutoScaling, setIsAutoScaling] = useState(false);
   const [batchSize, setBatchSize] = useState(50);
   const [automationFrequency, setAutomationFrequency] = useState('daily');
@@ -195,7 +195,7 @@ export function AutomationDashboard() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Automation Dashboard</h2>
+          <h2 className="text-2xl font-bold">Automation CommandCenter</h2>
           <p className="text-muted-foreground">Scale and automate your campaigns</p>
         </div>
         
@@ -302,7 +302,7 @@ export function AutomationDashboard() {
                 </Button>
                 
                 <div className="text-sm text-muted-foreground">
-                  Processes pending opportunities with AI-powered personalization
+                  Processes pending opportunities with Performance personalization
                 </div>
               </CardContent>
             </Card>
@@ -480,3 +480,4 @@ export function AutomationDashboard() {
     </div>
   );
 }
+

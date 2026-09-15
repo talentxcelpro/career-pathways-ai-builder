@@ -10,6 +10,8 @@ import { toast } from 'sonner';
 import { Eye, EyeOff, Mail, Lock, Loader2, ArrowRight, AlertTriangle } from 'lucide-react';
 import { SocialLogin } from './SocialLogin';
 import { getSubdomainRedirect } from '@/utils/subdomainRedirect';
+import { useBiometrics } from '@/hooks/useBiometrics';
+import { Fingerprint } from 'lucide-react';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
@@ -19,6 +21,7 @@ const LoginForm = () => {
   const [attemptCount, setAttemptCount] = useState(0);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { isAvailable, authenticate, getCredentials, isBiometricsEnabled } = useBiometrics();
 
   // Get return URL from query params
   const returnUrl = searchParams.get('returnUrl');
@@ -36,13 +39,44 @@ const LoginForm = () => {
           navigate(redirectParam);
         } else {
           const subdomainPath = getSubdomainRedirect();
-          const redirectPath = subdomainPath || '/network';
+          const redirectPath = subdomainPath || '/career-os';
           navigate(redirectPath);
         }
       }
     };
     checkUser();
   }, [navigate, returnUrl, redirectParam]);
+
+  const handleBiometricLogin = async () => {
+    if (!isBiometricsEnabled) {
+      toast.info('Biometric login is not enabled. Please sign in with password first and enable it in settings.');
+      return;
+    }
+
+    const success = await authenticate();
+    if (success) {
+      const credentials = await getCredentials();
+      if (credentials) {
+        setLoading(true);
+        try {
+          const { data, error } = await supabase.auth.signInWithPassword({
+            email: credentials.username.trim(),
+            password: credentials.password,
+          });
+
+          if (error) throw error;
+          
+          if (data.user) {
+            navigate('/career-os');
+          }
+        } catch (error: any) {
+          toast.error('Biometric sign-in failed: ' + error.message);
+        } finally {
+          setLoading(false);
+        }
+      }
+    }
+  };
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,14 +111,14 @@ const LoginForm = () => {
       if (data.user) {
         // Login successful - no toast message
         
-        // Redirect to return URL, subdomain path, or appropriate dashboard
+        // Redirect to return URL, subdomain path, or appropriate CommandCenter
         if (returnUrl) {
           navigate(decodeURIComponent(returnUrl));
         } else if (redirectParam) {
           navigate(redirectParam);
         } else {
           const subdomainPath = getSubdomainRedirect();
-          const redirectPath = subdomainPath || '/network';
+          const redirectPath = subdomainPath || '/career-os';
           navigate(redirectPath);
         }
       }
@@ -192,28 +226,42 @@ const LoginForm = () => {
             </div>
           </div>
 
-          <Button 
-            type="submit" 
-            className="w-full h-11 font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
-            disabled={loading || attemptCount >= 5}
-          >
-            {loading ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Signing in...
-              </>
-            ) : attemptCount >= 5 ? (
-              <>
-                <AlertTriangle className="h-4 w-4 mr-2" />
-                Too many attempts
-              </>
-            ) : (
-              <>
-                Sign in
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </>
+          <div className="flex gap-2">
+            <Button 
+              type="submit" 
+              className="flex-1 h-11 font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
+              disabled={loading || attemptCount >= 5}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Signing in...
+                </>
+              ) : attemptCount >= 5 ? (
+                <>
+                  <AlertTriangle className="h-4 w-4 mr-2" />
+                  Locked
+                </>
+              ) : (
+                <>
+                  Sign in
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </>
+              )}
+            </Button>
+
+            {isAvailable && isBiometricsEnabled && (
+              <Button
+                type="button"
+                variant="outline"
+                className="h-11 w-11 p-0 border-blue-200 text-blue-600 hover:bg-blue-50 shadow-md transition-all active:scale-90"
+                onClick={handleBiometricLogin}
+                disabled={loading}
+              >
+                <Fingerprint className="h-5 w-5" />
+              </Button>
             )}
-          </Button>
+          </div>
           
           {attemptCount >= 3 && attemptCount < 5 && (
             <div className="text-xs text-amber-600 text-center mt-2 p-2 bg-amber-50 rounded border border-amber-200">
@@ -245,3 +293,5 @@ const LoginForm = () => {
 };
 
 export default LoginForm;
+
+

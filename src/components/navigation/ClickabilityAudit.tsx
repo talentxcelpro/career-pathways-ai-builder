@@ -174,7 +174,7 @@ export const ClickabilityAudit = () => {
       {
         type: 'success',
         category: 'Touch Interaction',
-        description: 'TouchButton component provides haptic feedback',
+        description: 'TouchButton component provides haptic Feedback',
         location: 'Interactive elements'
       }
     );
@@ -311,3 +311,4 @@ export const ClickabilityAudit = () => {
 };
 
 export default ClickabilityAudit;
+

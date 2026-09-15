@@ -169,7 +169,7 @@ export const useSmartSuggestions = () => {
     return suggestions;
   }, []);
 
-  // Generate AI-powered suggestions for any section
+  // Generate Performance suggestions for any section
   const generateAISuggestions = useCallback(async (request: SuggestionRequest): Promise<SmartSuggestion[]> => {
     try {
       setIsGenerating(true);
@@ -193,17 +193,17 @@ export const useSmartSuggestions = () => {
       });
 
       if (error) {
-        console.error('AI suggestions error:', error);
-        throw new Error(`AI suggestions failed: ${error.message}`);
+        console.error('Smart Moves error:', error);
+        throw new Error(`Smart Moves failed: ${error.message}`);
       }
 
       if (!data.success) {
-        throw new Error(data.error || 'AI suggestions unsuccessful');
+        throw new Error(data.error || 'Smart Moves unsuccessful');
       }
 
       return data.suggestions || [];
     } catch (error) {
-      console.error('Failed to generate AI suggestions:', error);
+      console.error('Failed to generate Smart Moves:', error);
       toast.error('Failed to generate smart suggestions');
       return [];
     } finally {
@@ -238,7 +238,7 @@ export const useSmartSuggestions = () => {
 
     allSuggestions.push(...starSuggestions, ...summarySuggestions, ...skillsSuggestions);
 
-    // Generate AI-powered suggestions for each section
+    // Generate Performance suggestions for each section
     try {
       const sections = ['summary', 'experience', 'skills'];
       
@@ -254,7 +254,7 @@ export const useSmartSuggestions = () => {
         allSuggestions.push(...aiSuggestions);
       }
     } catch (error) {
-      console.error('Failed to generate AI suggestions:', error);
+      console.error('Failed to generate Smart Moves:', error);
     }
 
     // Sort by impact and confidence
@@ -342,10 +342,10 @@ function addMetricsToSummary(summary: string, experience?: any[]): string {
 function getRoleSpecificSkills(role?: string, industry?: string): string[] {
   const skillsMap: Record<string, string[]> = {
     'software-engineer': ['JavaScript', 'Python', 'React', 'Node.js', 'Git', 'AWS', 'Docker'],
-    'product-manager': ['Product Strategy', 'Agile', 'Scrum', 'Analytics', 'A/B Testing', 'Roadmapping'],
+    'product-manager': ['Product Strategy', 'Agile', 'Scrum', 'CareerAnalytics', 'A/B Testing', 'Roadmapping'],
     'data-scientist': ['Python', 'R', 'SQL', 'Machine Learning', 'TensorFlow', 'Pandas', 'Tableau'],
     'designer': ['Figma', 'Sketch', 'Adobe Creative Suite', 'Prototyping', 'User Research', 'Wireframing'],
-    'marketing': ['Digital Marketing', 'SEO', 'Google Analytics', 'Social Media', 'Content Strategy']
+    'marketing': ['Digital Marketing', 'SEO', 'Google CareerAnalytics', 'Social Media', 'Content Strategy']
   };
 
   return skillsMap[role || ''] || [];
@@ -354,7 +354,7 @@ function getRoleSpecificSkills(role?: string, industry?: string): string[] {
 function extractSkillsFromJobDescription(jobDescription: string): string[] {
   const commonSkills = [
     'JavaScript', 'Python', 'React', 'Node.js', 'AWS', 'Docker', 'Kubernetes',
-    'SQL', 'Git', 'Agile', 'Scrum', 'Figma', 'Adobe', 'Analytics', 'Excel'
+    'SQL', 'Git', 'Agile', 'Scrum', 'Figma', 'Adobe', 'CareerAnalytics', 'Excel'
   ];
 
   return commonSkills.filter(skill => 
@@ -376,3 +376,6 @@ function getSectionContent(resumeData: EnhancedResumeData, section: string): any
       return null;
   }
 }
+
+
+

@@ -1,12 +1,15 @@
+import { lazy } from "react";
 // Import refactored route modules
 import { employerCoreRoutes } from "./employer/coreRoutes";
 import { employerJobRoutes } from "./employer/jobRoutes";
 import { employerProfileRoutes } from "./employer/profileRoutes";
 import { employerCRMRoutes } from "./employer/crmRoutes";
-import RequestAccess from "../pages/employer/RequestAccess";
-import EmployerLanding from "../pages/employer/EmployerLanding";
-import CompanyDashboard from "../pages/companies/CompanyDashboard";
+
+const RequestAccess = lazy(() => import("../pages/employer/RequestAccess"));
+const EmployerLanding = lazy(() => import("../pages/employer/EmployerLanding"));
+const CompanyCommandCenter = lazy(() => import("../pages/companies/CompanyDashboard"));
 import { EmployerAccessGuard } from "../components/employer/EmployerAccessGuard";
+
 
 export const employerRoutes = [
   // Employer Landing Page (public route)
@@ -26,11 +29,11 @@ export const employerRoutes = [
     requiresAuth: false,
   },
   
-  // Company Dashboard
+  // Company Command Center
   {
-    title: "Company Dashboard",
-    to: "/company/dashboard",
-    page: <CompanyDashboard />,
+    title: "Company Command Center",
+    to: "/company/command-center",
+    page: <CompanyCommandCenter />,
   },
   
   // Core employer functionality
@@ -45,3 +48,5 @@ export const employerRoutes = [
   // CRM and collaboration features
   ...employerCRMRoutes,
 ];
+
+

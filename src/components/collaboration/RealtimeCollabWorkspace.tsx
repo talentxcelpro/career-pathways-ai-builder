@@ -246,3 +246,4 @@ export const RealtimeCollabWorkspace: React.FC = () => {
     </div>
   );
 };
+

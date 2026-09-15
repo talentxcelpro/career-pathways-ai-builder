@@ -49,7 +49,7 @@ export interface JobSpecificOptimization {
   };
 }
 
-export interface ResumePerformanceAnalytics {
+export interface ResumePerformanceCareerAnalytics {
   views: number;
   downloads: number;
   applications: number;
@@ -75,7 +75,7 @@ export interface ResumePerformanceAnalytics {
 export const useAdvancedAIFeatures = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isOptimizing, setIsOptimizing] = useState(false);
-  const [isGeneratingAnalytics, setIsGeneratingAnalytics] = useState(false);
+  const [isGeneratingCareerAnalytics, setIsGeneratingCareerAnalytics] = useState(false);
 
   const performAdvancedATSAnalysis = useCallback(async (
     resumeContent: any,
@@ -175,51 +175,51 @@ export const useAdvancedAIFeatures = () => {
     }
   }, []);
 
-  const generatePerformanceAnalytics = useCallback(async (
+  const generatePerformanceCareerAnalytics = useCallback(async (
     resumeId: string,
     timeframe: '30d' | '90d' | '1y' = '30d'
-  ): Promise<ResumePerformanceAnalytics | null> => {
-    setIsGeneratingAnalytics(true);
+  ): Promise<ResumePerformanceCareerAnalytics | null> => {
+    setIsGeneratingCareerAnalytics(true);
     
     try {
-      console.log('Generating performance analytics...');
+      console.log('Generating performance CareerAnalytics...');
       
-      // Get resume analytics data
-      const { data: analyticsData, error: analyticsError } = await supabase
-        .from('resume_analytics')
+      // Get resume CareerAnalytics data
+      const { data: CareerAnalyticsData, error: CareerAnalyticsError } = await supabase
+        .from('resume_CareerAnalytics')
         .select('*')
         .eq('resume_id', resumeId)
         .gte('created_at', new Date(Date.now() - (timeframe === '30d' ? 30 : timeframe === '90d' ? 90 : 365) * 24 * 60 * 60 * 1000).toISOString());
 
-      if (analyticsError) throw analyticsError;
+      if (CareerAnalyticsError) throw CareerAnalyticsError;
 
       const { data, error } = await supabase.functions.invoke('ai-comprehensive', {
         body: {
-          operation: 'performance_analytics',
+          operation: 'performance_CareerAnalytics',
           resumeId,
-          analyticsData,
+          CareerAnalyticsData,
           timeframe
         }
       });
 
       if (error) {
-        console.error('Analytics generation error:', error);
-        throw new Error(`Analytics generation failed: ${error.message}`);
+        console.error('CareerAnalytics generation error:', error);
+        throw new Error(`CareerAnalytics generation failed: ${error.message}`);
       }
 
       if (!data.success) {
-        throw new Error(data.error || 'Analytics generation unsuccessful');
+        throw new Error(data.error || 'CareerAnalytics generation unsuccessful');
       }
 
-      toast.success('Performance analytics generated!');
-      return data.analytics;
+      toast.success('Performance CareerAnalytics generated!');
+      return data.CareerAnalytics;
 
     } catch (error) {
-      console.error('Analytics generation failed:', error);
-      toast.error(`Failed to generate analytics: ${error.message}`);
+      console.error('CareerAnalytics generation failed:', error);
+      toast.error(`Failed to generate CareerAnalytics: ${error.message}`);
       return null;
     } finally {
-      setIsGeneratingAnalytics(false);
+      setIsGeneratingCareerAnalytics(false);
     }
   }, []);
 
@@ -256,11 +256,14 @@ export const useAdvancedAIFeatures = () => {
     optimizeForSpecificJob,
     isOptimizing,
     
-    // Performance Analytics
-    generatePerformanceAnalytics,
-    isGeneratingAnalytics,
+    // Performance CareerAnalytics
+    generatePerformanceCareerAnalytics,
+    isGeneratingCareerAnalytics,
     
     // Intelligent Suggestions
     generateIntelligentSuggestions,
   };
 };
+
+
+

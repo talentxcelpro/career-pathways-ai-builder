@@ -31,7 +31,7 @@ import { useEffect, useState } from 'react';
 import { TXCFloatingEarner } from './TXCFloatingEarner';
 import { useDailyLoginBonus } from '@/hooks/useDailyLoginBonus';
 
-export const GamificationDashboard: React.FC = () => {
+export const GamificationCommandCenter: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -482,3 +482,4 @@ export const GamificationDashboard: React.FC = () => {
     </div>
   );
 };
+

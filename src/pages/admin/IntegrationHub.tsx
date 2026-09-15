@@ -32,10 +32,10 @@ const IntegrationHub = () => {
   // Mock data - replace with real data from useAdvancedAdmin hook
   const integrations = [
     {
-      id: 'google-analytics',
-      name: 'Google Analytics 4',
-      description: 'Advanced web analytics and reporting',
-      category: 'Analytics',
+      id: 'google-CareerAnalytics',
+      name: 'Google CareerAnalytics 4',
+      description: 'Advanced web CareerAnalytics and reporting',
+      category: 'CareerAnalytics',
       status: 'connected',
       icon: BarChart3,
       lastSync: '2 minutes ago',
@@ -138,7 +138,7 @@ const IntegrationHub = () => {
     setIsConfiguring(true);
   };
 
-  const categories = ['All', 'Analytics', 'Email', 'Communication', 'Developer', 'Automation', 'CRM'];
+  const categories = ['All', 'CareerAnalytics', 'Email', 'Communication', 'Developer', 'Automation', 'CRM'];
   const [selectedCategory, setSelectedCategory] = useState('All');
 
   const filteredIntegrations = selectedCategory === 'All' 
@@ -373,7 +373,7 @@ const IntegrationHub = () => {
               <div className="space-y-3">
                 {[
                   { time: '2 minutes ago', event: 'SendGrid email sent successfully', status: 'success' },
-                  { time: '5 minutes ago', event: 'Google Analytics data synced', status: 'success' },
+                  { time: '5 minutes ago', event: 'Google CareerAnalytics data synced', status: 'success' },
                   { time: '15 minutes ago', event: 'Webhook endpoint called', status: 'success' },
                   { time: '1 hour ago', event: 'Slack notification failed', status: 'error' },
                   { time: '2 hours ago', event: 'API rate limit exceeded', status: 'warning' }
@@ -399,3 +399,6 @@ const IntegrationHub = () => {
 };
 
 export default IntegrationHub;
+
+
+

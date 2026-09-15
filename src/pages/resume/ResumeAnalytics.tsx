@@ -3,18 +3,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Helmet } from 'react-helmet-async';
 import { BarChart3, TrendingUp, Eye, Download, Share2 } from 'lucide-react';
 
-const ResumeAnalytics = () => {
+const ResumeCareerAnalytics = () => {
   return (
     <>
       <Helmet>
-        <title>Resume Analytics | TalentXcel Resume Builder</title>
+        <title>Resume CareerAnalytics | TalentXcel Resume Builder</title>
         <meta name="description" content="Track your resume performance and insights" />
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
         <div className="container mx-auto px-4 py-12 max-w-7xl">
           <div className="mb-8">
-            <h1 className="text-4xl font-bold mb-2">Resume Analytics</h1>
+            <h1 className="text-4xl font-bold mb-2">Resume CareerAnalytics</h1>
             <p className="text-muted-foreground">Track performance and get insights</p>
           </div>
 
@@ -103,7 +103,7 @@ const ResumeAnalytics = () => {
             <CardHeader>
               <CardTitle>Coming Soon</CardTitle>
               <CardDescription>
-                Advanced analytics features are being developed
+                Advanced CareerAnalytics features are being developed
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -122,4 +122,7 @@ const ResumeAnalytics = () => {
   );
 };
 
-export default ResumeAnalytics;
+export default ResumeCareerAnalytics;
+
+
+

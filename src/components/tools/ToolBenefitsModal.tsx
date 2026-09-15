@@ -64,7 +64,7 @@ interface Feature {
   name: string;
   description: string;
   isPremium: boolean;
-  category: 'ai' | 'analytics' | 'export' | 'collaboration';
+  category: 'ai' | 'CareerAnalytics' | 'export' | 'collaboration';
 }
 
 export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOpen = false, onOpenChange, onStartTesting }) => {
@@ -128,15 +128,15 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
         {
           id: 'confidence-building',
           title: 'Confidence Building',
-          description: 'Build confidence through repeated practice and feedback',
+          description: 'Build confidence through repeated practice and Feedback',
           icon: TrendingUp,
           category: 'immediate',
           impact: 'high'
         },
         {
-          id: 'feedback-insights',
-          title: 'Performance Analytics',
-          description: 'Get detailed feedback on your answers and presentation style',
+          id: 'Feedback-insights',
+          title: 'Performance CareerAnalytics',
+          description: 'Get detailed Feedback on your answers and presentation style',
           icon: BarChart3,
           category: 'skills',
           impact: 'medium'
@@ -328,7 +328,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
         {
           id: 'growth-metrics',
           title: 'Career Growth Metrics',
-          description: 'Quantify your career progression with AI-powered scoring',
+          description: 'Quantify your career progression with Performance scoring',
           icon: TrendingUp,
           category: 'career',
           impact: 'high'
@@ -355,8 +355,8 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
     // Get tool-specific benefits or fallback to generic ones
     const specificBenefits = toolSpecificBenefits[tool.slug] || [
       {
-        id: 'ai-powered',
-        title: 'AI-Powered Analysis',
+        id: 'Performance',
+        title: 'Performance Analysis',
         description: `Get intelligent insights tailored for ${tool.name}`,
         icon: Brain,
         category: 'immediate',
@@ -395,11 +395,11 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
           category: 'ai'
         },
         {
-          id: 'role-analytics',
-          name: 'Role Compatibility Dashboard',
+          id: 'role-CareerAnalytics',
+          name: 'Role Compatibility CommandCenter',
           description: 'Comprehensive analysis of role compatibility and growth potential',
           isPremium: false,
-          category: 'analytics'
+          category: 'CareerAnalytics'
         },
         {
           id: 'detailed-reports',
@@ -426,15 +426,15 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
         },
         {
           id: 'performance-tracking',
-          name: 'Performance Analytics',
+          name: 'Performance CareerAnalytics',
           description: 'Track improvement across multiple practice sessions',
           isPremium: false,
-          category: 'analytics'
+          category: 'CareerAnalytics'
         },
         {
           id: 'video-recording',
           name: 'Video Analysis & Feedback',
-          description: 'AI-powered body language and speech pattern analysis',
+          description: 'Performance body language and speech pattern analysis',
           isPremium: true,
           category: 'ai'
         },
@@ -459,7 +459,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
           name: 'Keyword Optimization Engine',
           description: 'AI-driven keyword analysis for maximum visibility',
           isPremium: false,
-          category: 'analytics'
+          category: 'CareerAnalytics'
         },
         {
           id: 'multiple-formats',
@@ -471,7 +471,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
         {
           id: 'recruiter-insights',
           name: 'Recruiter Feedback Network',
-          description: 'Get feedback from verified industry recruiters',
+          description: 'Get Feedback from verified industry recruiters',
           isPremium: true,
           category: 'collaboration'
         }
@@ -489,7 +489,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
           name: 'Real-Time Market Analysis',
           description: 'Live job market data and trend analysis',
           isPremium: false,
-          category: 'analytics'
+          category: 'CareerAnalytics'
         },
         {
           id: 'roadmap-export',
@@ -510,7 +510,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
         {
           id: 'swot-engine',
           name: 'Advanced SWOT Engine',
-          description: 'AI-powered analysis of strengths, weaknesses, opportunities, threats',
+          description: 'Performance analysis of strengths, weaknesses, opportunities, threats',
           isPremium: false,
           category: 'ai'
         },
@@ -519,7 +519,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
           name: 'Competitive Positioning',
           description: 'Analyze your position relative to industry peers',
           isPremium: false,
-          category: 'analytics'
+          category: 'CareerAnalytics'
         },
         {
           id: 'strategy-export',
@@ -540,7 +540,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
         {
           id: 'transition-ai',
           name: 'Career Transition AI',
-          description: 'AI assistant specialized in career change strategies',
+          description: 'TalentXcel Navigator specialized in career change strategies',
           isPremium: false,
           category: 'ai'
         },
@@ -549,7 +549,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
           name: 'Transition Risk Assessment',
           description: 'Analyze financial and professional risks of career change',
           isPremium: false,
-          category: 'analytics'
+          category: 'CareerAnalytics'
         },
         {
           id: 'transition-plan',
@@ -579,7 +579,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
           name: 'Adaptive Difficulty',
           description: 'Questions adapt to your performance and skill level',
           isPremium: false,
-          category: 'analytics'
+          category: 'CareerAnalytics'
         },
         {
           id: 'custom-bank',
@@ -609,7 +609,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
           name: 'Impact Quantification',
           description: 'Calculate and optimize the impact metrics in your stories',
           isPremium: false,
-          category: 'analytics'
+          category: 'CareerAnalytics'
         },
         {
           id: 'story-library',
@@ -619,9 +619,9 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
           category: 'export'
         },
         {
-          id: 'story-feedback',
+          id: 'story-Feedback',
           name: 'Story Feedback Circle',
-          description: 'Get feedback on your stories from interview coaches',
+          description: 'Get Feedback on your stories from interview coaches',
           isPremium: true,
           category: 'collaboration'
         }
@@ -636,10 +636,10 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
         },
         {
           id: 'conversion-metrics',
-          name: 'Conversion Analytics',
+          name: 'Conversion CareerAnalytics',
           description: 'Track application-to-interview conversion rates',
           isPremium: false,
-          category: 'analytics'
+          category: 'CareerAnalytics'
         },
         {
           id: 'funnel-reports',
@@ -669,7 +669,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
           name: 'Industry Benchmarking',
           description: 'Compare your growth against industry peers',
           isPremium: false,
-          category: 'analytics'
+          category: 'CareerAnalytics'
         },
         {
           id: 'growth-reports',
@@ -692,17 +692,17 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
     const defaultFeatures: Feature[] = [
       {
         id: 'ai-analysis',
-        name: 'AI-Powered Analysis',
+        name: 'Performance Analysis',
         description: `Smart analysis capabilities specifically designed for ${tool.name}`,
         isPremium: false,
         category: 'ai'
       },
       {
         id: 'progress-tracking',
-        name: 'Progress Tracking',
+        name: 'Growth Path',
         description: 'Monitor your improvement and track key metrics over time',
         isPremium: false,
-        category: 'analytics'
+        category: 'CareerAnalytics'
       },
       {
         id: 'export-results',
@@ -917,7 +917,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
                       <div className="flex items-start gap-3">
                         <div className="p-2 bg-green-100 rounded-lg">
                           {feature.category === 'ai' && <Brain className="h-4 w-4 text-green-600" />}
-                          {feature.category === 'analytics' && <BarChart3 className="h-4 w-4 text-green-600" />}
+                          {feature.category === 'CareerAnalytics' && <BarChart3 className="h-4 w-4 text-green-600" />}
                           {feature.category === 'export' && <ArrowRight className="h-4 w-4 text-green-600" />}
                           {feature.category === 'collaboration' && <Users className="h-4 w-4 text-green-600" />}
                         </div>
@@ -942,7 +942,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
                       <div className="flex items-start gap-3">
                         <div className="p-2 bg-purple-100 rounded-lg">
                           {feature.category === 'ai' && <Brain className="h-4 w-4 text-purple-600" />}
-                          {feature.category === 'analytics' && <BarChart3 className="h-4 w-4 text-purple-600" />}
+                          {feature.category === 'CareerAnalytics' && <BarChart3 className="h-4 w-4 text-purple-600" />}
                           {feature.category === 'export' && <ArrowRight className="h-4 w-4 text-purple-600" />}
                           {feature.category === 'collaboration' && <Users className="h-4 w-4 text-purple-600" />}
                         </div>
@@ -1020,7 +1020,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
                     <div>
                       <div className="font-medium">Sarah M. - Software Engineer</div>
                       <div className="text-sm text-green-700">
-                        "Landed 3 interviews in 2 weeks after using this tool. The AI insights were game-changing!"
+                        "Landed 3 interviews in 2 weeks after using this tool. The Intelligence Metrics were game-changing!"
                       </div>
                     </div>
                   </div>
@@ -1113,14 +1113,14 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
                         {
                           step: 3,
                           title: "Performance Analysis",
-                          description: "Receive detailed feedback on answers, confidence, and presentation",
+                          description: "Receive detailed Feedback on answers, confidence, and presentation",
                           duration: "5-10 minutes",
                           color: "purple"
                         },
                         {
                           step: 4,
                           title: "Skill Improvement",
-                          description: "Implement feedback and track improvement across practice sessions",
+                          description: "Implement Feedback and track improvement across practice sessions",
                           duration: "Ongoing",
                           color: "amber"
                         }
@@ -1129,7 +1129,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
                         {
                           step: 1,
                           title: "Resume Upload & Scan",
-                          description: "Upload your resume for comprehensive AI-powered analysis",
+                          description: "Upload your resume for comprehensive Performance analysis",
                           duration: "2-3 minutes",
                           color: "emerald"
                         },
@@ -1143,7 +1143,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
                         {
                           step: 3,
                           title: "Optimization Implementation",
-                          description: "Apply AI recommendations to optimize your resume",
+                          description: "Apply Career Moves to optimize your resume",
                           duration: "1-2 hours",
                           color: "purple"
                         },
@@ -1167,7 +1167,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
                       },
                       {
                         step: 2,
-                        title: "AI-Powered Insights",
+                        title: "Performance Insights",
                         description: "Receive personalized recommendations and action items",
                         duration: "Instant",
                         color: "blue"
@@ -1254,3 +1254,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
     </Dialog>
   );
 };
+
+
+
+

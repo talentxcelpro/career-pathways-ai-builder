@@ -23,14 +23,8 @@ export const preloadJobsPageResources = () => {
     document.head.appendChild(link);
   });
 
-  // Preload critical fonts
-  const fontLink = document.createElement('link');
-  fontLink.rel = 'preload';
-  fontLink.as = 'font';
-  fontLink.type = 'font/woff2';
-  fontLink.crossOrigin = 'anonymous';
-  fontLink.href = '/fonts/inter-var.woff2'; // Assuming Inter font
-  document.head.appendChild(fontLink);
+  // Font preloading removed - local font file doesn't exist in dist.
+  // Inter is loaded via Google Fonts CSS in index.html.
 };
 
 // Jobs data prefetching and caching strategy

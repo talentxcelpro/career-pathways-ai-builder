@@ -5,7 +5,7 @@ import { PrefillButton } from '@/components/ui/prefill-button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-export function PrefillDashboard() {
+export function PrefillCommandCenter() {
   const networkPrefill = usePrefillData({ module: 'network' });
   const resumePrefill = usePrefillData({ module: 'resume' });
   const { bulkTemplates, applyBulkTemplate, isApplying } = useBulkPrefill();
@@ -13,7 +13,7 @@ export function PrefillDashboard() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Prefill Dashboard</h2>
+        <h2 className="text-2xl font-bold">Prefill CommandCenter</h2>
         <Badge variant="secondary">Ultra-Fast Enabled</Badge>
       </div>
 
@@ -97,3 +97,4 @@ export function PrefillDashboard() {
     </div>
   );
 }
+

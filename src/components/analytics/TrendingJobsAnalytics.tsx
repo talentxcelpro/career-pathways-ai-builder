@@ -55,7 +55,7 @@ interface SkillDemand {
   trend: 'rising' | 'stable' | 'declining';
 }
 
-export const TrendingJobsAnalytics: React.FC = () => {
+export const TrendingJobsCareerAnalytics: React.FC = () => {
   const [timeRange, setTimeRange] = useState('30d');
   const [selectedCategory, setSelectedCategory] = useState('all');
 
@@ -177,8 +177,8 @@ export const TrendingJobsAnalytics: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <AIStatusIndicator module="Analytics" feature="AI-Powered Market Intelligence">
-            <h1 className="text-3xl font-bold text-foreground">Trending Jobs Analytics</h1>
+          <AIStatusIndicator module="CareerAnalytics" feature="Performance Market Intelligence">
+            <h1 className="text-3xl font-bold text-foreground">Trending Jobs CareerAnalytics</h1>
           </AIStatusIndicator>
           <p className="text-muted-foreground mt-1">
             Real-time job market trends and demand forecasting
@@ -431,9 +431,9 @@ export const TrendingJobsAnalytics: React.FC = () => {
         <TabsContent value="forecasts" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>AI-Powered Market Forecasts</CardTitle>
+              <CardTitle>Performance Market Forecasts</CardTitle>
               <CardDescription>
-                Predictive analytics for job market trends over the next 6 months
+                Predictive CareerAnalytics for job market trends over the next 6 months
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -473,7 +473,7 @@ export const TrendingJobsAnalytics: React.FC = () => {
               </div>
               
               <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <h4 className="font-semibold text-blue-900 mb-2">AI Insights</h4>
+                <h4 className="font-semibold text-blue-900 mb-2">Intelligence Metrics</h4>
                 <ul className="space-y-1 text-sm text-blue-800">
                   <li>• Remote work positions showing 45% higher growth rate</li>
                   <li>• AI/ML roles expected to double in the next 6 months</li>
@@ -488,3 +488,6 @@ export const TrendingJobsAnalytics: React.FC = () => {
     </div>
   );
 };
+
+
+

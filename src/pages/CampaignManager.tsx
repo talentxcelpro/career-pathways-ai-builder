@@ -6,12 +6,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Play, Pause, BarChart3, Users, Target, Mail, Bot, Zap } from 'lucide-react';
+import { Plus, Play, Pause, BarChart3, Users, Target, Mail, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { CreateCampaignDialog } from '@/components/campaigns/CreateCampaignDialog';
 import { CampaignStats } from '@/components/campaigns/CampaignStats';
 import { OutreachTargets } from '@/components/campaigns/OutreachTargets';
-import { AutomationDashboard } from '@/components/campaigns/AutomationDashboard';
+import { AutomationCommandCenter } from '@/components/campaigns/AutomationDashboard';
 
 export default function CampaignManager() {
   const [selectedCampaign, setSelectedCampaign] = useState<string | null>(null);
@@ -137,16 +137,16 @@ export default function CampaignManager() {
             Campaigns
           </TabsTrigger>
           <TabsTrigger value="automation" className="gap-2">
-            <Bot className="h-4 w-4" />
+            <Zap className="h-4 w-4" />
             Automation
           </TabsTrigger>
           <TabsTrigger value="outreach" className="gap-2">
             <Mail className="h-4 w-4" />
             Outreach
           </TabsTrigger>
-          <TabsTrigger value="analytics" className="gap-2">
+          <TabsTrigger value="career-analytics" className="gap-2">
             <BarChart3 className="h-4 w-4" />
-            Analytics
+            Career Analytics
           </TabsTrigger>
           <TabsTrigger value="internal-links" className="gap-2">
             <Users className="h-4 w-4" />
@@ -289,14 +289,14 @@ export default function CampaignManager() {
         </TabsContent>
 
         <TabsContent value="automation">
-          <AutomationDashboard />
+          <AutomationCommandCenter />
         </TabsContent>
 
         <TabsContent value="outreach">
           <OutreachTargets />
         </TabsContent>
 
-        <TabsContent value="analytics">
+        <TabsContent value="career-analytics">
           <CampaignStats />
         </TabsContent>
 
@@ -319,3 +319,6 @@ export default function CampaignManager() {
     </div>
   );
 }
+
+
+

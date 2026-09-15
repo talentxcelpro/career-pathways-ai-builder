@@ -142,7 +142,7 @@ export const TrendingPage = () => {
 
             <TabsContent value="all" className="space-y-4 mt-4">
               {trendingItems.map((item) => (
-                <Card key={item.id} className="native-card touch-feedback">
+                <Card key={item.id} className="native-card touch-Feedback">
                   <CardContent className="p-4">
                     <div className="flex items-start gap-3 mb-3">
                       <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${getTypeColor(item.type)}`}>
@@ -210,15 +210,15 @@ export const TrendingPage = () => {
                     
                     {/* Action Buttons */}
                     <div className="flex gap-2">
-                      <Button size="sm" variant="outline" className="flex-1 touch-feedback">
+                      <Button size="sm" variant="outline" className="flex-1 touch-Feedback">
                         <Heart className="w-3 h-3 mr-1" />
                         Like
                       </Button>
-                      <Button size="sm" variant="outline" className="flex-1 touch-feedback">
+                      <Button size="sm" variant="outline" className="flex-1 touch-Feedback">
                         <MessageSquare className="w-3 h-3 mr-1" />
                         Comment
                       </Button>
-                      <Button size="sm" variant="outline" className="touch-feedback">
+                      <Button size="sm" variant="outline" className="touch-Feedback">
                         <Share2 className="w-3 h-3" />
                       </Button>
                     </div>
@@ -243,3 +243,5 @@ export const TrendingPage = () => {
     </MobileNavWrapper>
   );
 };
+
+

@@ -39,7 +39,7 @@ export const useFollow = () => {
     },
     onSuccess: (newFollowState, variables) => {
       // Update cache
-      queryClient.setQueryData(['reels-feed', user?.id], (oldData: any) => {
+      queryClient.setQueryData(['reels-Pulse', user?.id], (oldData: any) => {
         if (!oldData?.pages) return oldData;
         
         return {
@@ -72,3 +72,4 @@ export const useFollow = () => {
     isLoading: followMutation.isPending
   };
 };
+

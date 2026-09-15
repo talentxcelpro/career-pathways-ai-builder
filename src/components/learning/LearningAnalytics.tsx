@@ -12,11 +12,11 @@ import {
   BookOpen
 } from 'lucide-react';
 
-interface LearningAnalyticsProps {
+interface LearningCareerAnalyticsProps {
   userCourses: any[];
 }
 
-export const LearningAnalytics: React.FC<LearningAnalyticsProps> = ({ userCourses }) => {
+export const LearningCareerAnalytics: React.FC<LearningCareerAnalyticsProps> = ({ userCourses }) => {
   const totalCourses = userCourses.length;
   const completedCourses = userCourses.filter(uc => uc.progress_percentage === 100);
   const inProgressCourses = userCourses.filter(uc => uc.progress_percentage > 0 && uc.progress_percentage < 100);
@@ -45,7 +45,7 @@ export const LearningAnalytics: React.FC<LearningAnalyticsProps> = ({ userCourse
           <BookOpen className="h-12 w-12 text-gray-400 mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">Start Your Learning Journey</h3>
           <p className="text-gray-600 text-center">
-            Enroll in courses to see your learning analytics and track your progress.
+            Enroll in courses to see your learning CareerAnalytics and track your progress.
           </p>
         </CardContent>
       </Card>
@@ -195,3 +195,7 @@ export const LearningAnalytics: React.FC<LearningAnalyticsProps> = ({ userCourse
     </div>
   );
 };
+
+
+
+

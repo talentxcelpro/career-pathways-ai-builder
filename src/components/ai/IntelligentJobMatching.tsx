@@ -112,7 +112,7 @@ const IntelligentJobMatching = () => {
         </div>
         <div>
           <h2 className="text-2xl font-bold">Intelligent Job Matching</h2>
-          <p className="text-muted-foreground">AI-powered job recommendations based on your profile</p>
+          <p className="text-muted-foreground">Performance job recommendations based on your profile</p>
         </div>
       </div>
 

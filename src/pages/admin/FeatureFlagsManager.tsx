@@ -114,7 +114,7 @@ const FeatureFlagsManager = () => {
           <div className="flex space-x-2">
             <Button variant="outline" size="sm">
               <BarChart3 className="h-4 w-4 mr-2" />
-              Analytics
+              CareerAnalytics
             </Button>
             <Button variant="outline" size="sm">
               <Users className="h-4 w-4 mr-2" />
@@ -216,7 +216,7 @@ const FeatureFlagsManager = () => {
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="flags">Feature Flags</TabsTrigger>
             <TabsTrigger value="targeting">Targeting Rules</TabsTrigger>
-            <TabsTrigger value="analytics">Usage Analytics</TabsTrigger>
+            <TabsTrigger value="CareerAnalytics">Usage CareerAnalytics</TabsTrigger>
             <TabsTrigger value="environments">Environments</TabsTrigger>
           </TabsList>
 
@@ -375,7 +375,7 @@ const FeatureFlagsManager = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="analytics" className="space-y-4">
+          <TabsContent value="CareerAnalytics" className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Card>
                 <CardHeader>
@@ -520,3 +520,6 @@ const FeatureFlagsManager = () => {
 };
 
 export default FeatureFlagsManager;
+
+
+

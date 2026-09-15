@@ -1,35 +1,37 @@
-
+import { lazy } from "react";
 import { BookOpen } from "lucide-react";
-import Learning from "../pages/Learning";
-import LearningHub from "../pages/LearningHub";
-import CompleteLearningHub from "../pages/learning/CompleteLearningHub";
-import AllCourses from "../pages/learning/AllCourses";
-import CourseDetail from "../pages/learning/CourseDetail";
-import CoursePlayer from "../pages/learning/CoursePlayer";
-import MyCoursesPage from "../pages/learning/MyCoursesPage";
-import MyProgress from "../pages/learning/MyProgress";
-import LearningPathsPage from "../pages/learning/LearningPathsPage";
-import LearningPathDetail from "../pages/learning/LearningPathDetail";
-import Certificates from "../pages/learning/Certificates";
-import EmploymentBridgePage from "../pages/learning/EmploymentBridgePage";
-import JobFocusedCourses from "../pages/learning/JobFocusedCourses";
-import SkillMarketTrends from "../pages/learning/SkillMarketTrends";
-import CareerAnalytics from "../pages/learning/CareerAnalytics";
-import SkillAssessment from "../pages/learning/SkillAssessment";
-import CareerRoadmap from "../pages/learning/CareerRoadmap";
-import QuickLearningPage from "../pages/learning/QuickLearningPage";
-import CommunityLearning from "../pages/learning/CommunityLearning";
-import LearningSearch from "../pages/learning/LearningSearch";
-import LearningAnalyticsPage from "../pages/learning/LearningAnalyticsPage";
-import { LearningJobPipelineDashboard } from "../pages/LearningJobPipelineDashboard";
-import { SmartLearningSystem } from "../pages/SmartLearningSystem";
-import { CompanyPartnershipPortal } from "../pages/CompanyPartnershipPortal";
-import IndividualsPage from "../pages/learning/IndividualsPage";
-import BusinessesPage from "../pages/learning/BusinessesPage";
-import UniversitiesPage from "../pages/learning/UniversitiesPage";
-import GovernmentsPage from "../pages/learning/GovernmentsPage";
-import AIFeaturesPage from "../pages/learning/AIFeaturesPage";
-import AdminCourses from "../pages/admin/AdminCourses";
+
+const Learning = lazy(() => import("../pages/Learning"));
+const LearningHub = lazy(() => import("../pages/LearningHub"));
+const CompleteLearningHub = lazy(() => import("../pages/learning/CompleteLearningHub"));
+const AllCourses = lazy(() => import("../pages/learning/AllCourses"));
+const CourseDetail = lazy(() => import("../pages/learning/CourseDetail"));
+const CoursePlayer = lazy(() => import("../pages/learning/CoursePlayer"));
+const MyCoursesPage = lazy(() => import("../pages/learning/MyCoursesPage"));
+const MyProgress = lazy(() => import("../pages/learning/MyProgress"));
+const LearningPathsPage = lazy(() => import("../pages/learning/LearningPathsPage"));
+const LearningPathDetail = lazy(() => import("../pages/learning/LearningPathDetail"));
+const Certificates = lazy(() => import("../pages/learning/Certificates"));
+const EmploymentBridgePage = lazy(() => import("../pages/learning/EmploymentBridgePage"));
+const JobFocusedCourses = lazy(() => import("../pages/learning/JobFocusedCourses"));
+const SkillMarketTrends = lazy(() => import("../pages/learning/SkillMarketTrends"));
+const CareerCareerAnalytics = lazy(() => import("../pages/learning/CareerAnalytics"));
+const SkillAssessment = lazy(() => import("../pages/learning/SkillAssessment"));
+const CareerRoadmap = lazy(() => import("../pages/learning/CareerRoadmap"));
+const QuickLearningPage = lazy(() => import("../pages/learning/QuickLearningPage"));
+const CommunityLearning = lazy(() => import("../pages/learning/CommunityLearning"));
+const LearningSearch = lazy(() => import("../pages/learning/LearningSearch"));
+const LearningCareerAnalyticsPage = lazy(() => import("../pages/learning/LearningAnalyticsPage"));
+const LearningJobPipelineCommandCenter = lazy(() => import("../pages/LearningJobPipelineDashboard").then(m => ({ default: m.LearningJobPipelineCommandCenter })));
+const SmartLearningSystem = lazy(() => import("../pages/SmartLearningSystem").then(m => ({ default: m.SmartLearningSystem })));
+const CompanyPartnershipPortal = lazy(() => import("../pages/CompanyPartnershipPortal").then(m => ({ default: m.CompanyPartnershipPortal })));
+const IndividualsPage = lazy(() => import("../pages/learning/IndividualsPage"));
+const BusinessesPage = lazy(() => import("../pages/learning/BusinessesPage"));
+const UniversitiesPage = lazy(() => import("../pages/learning/UniversitiesPage"));
+const GovernmentsPage = lazy(() => import("../pages/learning/GovernmentsPage"));
+const AIFeaturesPage = lazy(() => import("../pages/learning/AIFeaturesPage"));
+const AdminCourses = lazy(() => import("../pages/admin/AdminCourses"));
+
 
 export const learningRoutes = [
   {
@@ -88,7 +90,7 @@ export const learningRoutes = [
     isPublic: true,
   },
   {
-    title: "My Progress",
+    title: "My Growth Path",
     to: "/learning/my-progress",
     page: <MyProgress />,
     isPublic: true,
@@ -144,7 +146,7 @@ export const learningRoutes = [
   {
     title: "Career Analytics",
     to: "/learning/career-analytics",
-    page: <CareerAnalytics />,
+    page: <CareerCareerAnalytics />,
     isPublic: true,
   },
   {
@@ -178,9 +180,9 @@ export const learningRoutes = [
     isPublic: true,
   },
   {
-    title: "Learning Analytics",
-    to: "/learning/analytics",
-    page: <LearningAnalyticsPage />,
+    title: "Learning Career Analytics",
+    to: "/learning/career-analytics",
+    page: <LearningCareerAnalyticsPage />,
     isPublic: true,
   },
   {
@@ -190,9 +192,9 @@ export const learningRoutes = [
     isPublic: true,
   },
   {
-    title: "Pipeline Dashboard",
+    title: "Pipeline Command Center",
     to: "/learning/pipeline",
-    page: <LearningJobPipelineDashboard />,
+    page: <LearningJobPipelineCommandCenter />,
     isPublic: true,
   },
   {
@@ -232,7 +234,7 @@ export const learningRoutes = [
     isPublic: true,
   },
   {
-    title: "AI Features",
+    title: "Talent Engine Features",
     to: "/learning/ai-features",
     page: <AIFeaturesPage />,
     isPublic: true,
@@ -246,3 +248,7 @@ export const learningRoutes = [
     requiresAdminAccess: true,
   },
 ];
+
+
+
+

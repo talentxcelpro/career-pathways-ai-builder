@@ -299,3 +299,4 @@ export const PerformanceOptimizer: React.FC = () => {
     </div>
   );
 };
+

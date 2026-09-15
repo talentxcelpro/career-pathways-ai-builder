@@ -62,12 +62,12 @@ export const GameProgressHeader: React.FC<GameProgressHeaderProps> = ({
   return (
     <div className="mb-6 sm:mb-8 space-y-4 sm:space-y-6">
       {/* Apple-style welcome section */}
-      <div className="text-center space-y-3 px-4">
-        <h1 className="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-primary via-primary/90 to-accent bg-clip-text text-transparent tracking-tight">
-          Welcome back, {userName}
+      <div className="text-center space-y-4 px-6 py-4 animate-in fade-in slide-in-from-top-4 duration-1000">
+        <h1 className="text-3xl sm:text-5xl font-apple-bold bg-gradient-to-r from-white via-primary/80 to-accent bg-clip-text text-transparent tracking-tighter leading-tight">
+          Elite Intelligence, {userName}
         </h1>
-        <p className="text-sm sm:text-base text-muted-foreground/80 max-w-md mx-auto">
-          Continue building your career toolkit
+        <p className="text-sm sm:text-lg text-muted-foreground/60 max-w-lg mx-auto font-apple-medium">
+          Your Pro CommandCenter. Elevate your trajectory with AI-driven precision.
         </p>
       </div>
 

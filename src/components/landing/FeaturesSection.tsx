@@ -8,12 +8,12 @@ export const FeaturesSection = () => {
     {
       icon: FileText,
       title: "Resume Builder",
-      description: "Create professional resumes with AI-powered suggestions and templates",
+      description: "Create professional resumes with Performance suggestions and templates",
       link: "/resume"
     },
     {
       icon: CreditCard,
-      title: "Career Passport",
+      title: "Evolution Hub",
       description: "Your digital professional identity showcasing skills, achievements, and career journey",
       link: "/passport"
     },
@@ -31,7 +31,7 @@ export const FeaturesSection = () => {
     },
     {
       icon: GraduationCap,
-      title: "AI-Powered Learning Hub",
+      title: "Performance Learning Hub",
       description: "Upskill with courses designed for your career trajectory",
       link: "/learning"
     },
@@ -43,7 +43,7 @@ export const FeaturesSection = () => {
     },
     {
       icon: BarChart3,
-      title: "Career Analytics",
+      title: "Career CareerAnalytics",
       description: "Track your progress with detailed insights and metrics",
       link: "/tools"
     },
@@ -98,3 +98,6 @@ export const FeaturesSection = () => {
     </section>
   );
 };
+
+
+

@@ -35,7 +35,7 @@ const ContentSubcategories = () => {
       id: 'optimization',
       title: 'Content Optimization Suggestions',
       icon: Lightbulb,
-      description: 'AI-powered recommendations to improve content rankings',
+      description: 'Performance recommendations to improve content rankings',
       status: 'beta'
     },
     {

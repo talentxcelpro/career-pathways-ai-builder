@@ -26,7 +26,6 @@ import {
   Clock,
   CheckCircle,
   Zap,
-  Brain,
   Star,
   Award,
   Lightbulb
@@ -37,12 +36,12 @@ import { useCompanyRealtime } from '@/hooks/useCompanyRealtime';
 // Import module components
 import { CompanyOverview } from '@/components/company/dashboard/CompanyOverview';
 import { CompanyContent } from '@/components/company/dashboard/CompanyContent';
-import { CompanyAnalytics } from '@/components/company/dashboard/CompanyAnalytics';
+import { CompanyCareerAnalytics } from '@/components/company/dashboard/CompanyAnalytics';
 import { CompanyAIInsights } from '@/components/company/dashboard/CompanyAIInsights';
 import { CompanyJobManagement } from '@/components/company/dashboard/CompanyJobManagement';
 import { CompanySettings } from '@/components/company/dashboard/CompanySettings';
 
-const CompanyDashboard = () => {
+const CompanyCommandCenter = () => {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [activeTab, setActiveTab] = useState('overview');
   const navigate = useNavigate();
@@ -58,7 +57,7 @@ const CompanyDashboard = () => {
 
   // Get user's companies with comprehensive data
   const { data: userCompanies, isLoading } = useQuery({
-    queryKey: ['user-companies-dashboard', currentUser?.id],
+    queryKey: ['user-companies-CommandCenter', currentUser?.id],
     queryFn: async () => {
       if (!currentUser) return [];
 
@@ -146,7 +145,7 @@ const CompanyDashboard = () => {
           followers_count: followersResult.count || 0,
           active_jobs_count: jobsResult.count || 0,
           total_applications_count: applicationsResult.count || 0,
-          profile_views_count: 0, // Will be updated by analytics
+          profile_views_count: 0, // Will be updated by CareerAnalytics
           engagement_rate: 0,
           brand_reach: 0,
           success_rate: 0,
@@ -215,7 +214,7 @@ const CompanyDashboard = () => {
           <Building2 className="h-16 w-16 text-gray-300 mx-auto mb-4" />
           <h3 className="text-xl font-medium text-gray-900 mb-2">No Company Access</h3>
           <p className="text-gray-600 mb-4">
-            You don't have access to any company dashboards. Contact your company admin for access.
+            You don't have access to any company command centers. Contact your company admin for access.
           </p>
           <Link to="/employer/request-access">
             <Button>Request Company Access</Button>
@@ -250,7 +249,7 @@ const CompanyDashboard = () => {
               <div className={selectedCompany.cover_image_url ? 'text-white' : ''}>
                 <h1 className="text-4xl font-bold mb-1">{selectedCompany.name}</h1>
                 <p className={`text-lg mb-3 ${selectedCompany.cover_image_url ? 'text-gray-200' : 'text-gray-600'}`}>
-                  Company Dashboard
+                  Company Command Center
                 </p>
                 <div className="flex items-center space-x-3">
                   <Badge variant="secondary" className="bg-white/10 text-white border-white/20">
@@ -295,10 +294,10 @@ const CompanyDashboard = () => {
                 size="sm" 
                 variant="outline" 
                 className="border-border hover:bg-accent text-xs"
-                onClick={() => setActiveTab('analytics')}
+                onClick={() => setActiveTab('career-analytics')}
               >
                 <BarChart3 className="h-3 w-3 mr-1" />
-                Analytics
+                Career Analytics
               </Button>
             </div>
           </div>
@@ -362,7 +361,7 @@ const CompanyDashboard = () => {
           </Card>
         </div>
 
-        {/* Main Dashboard Tabs */}
+        {/* Main command center tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
           <TabsList className="grid w-full grid-cols-6 bg-card shadow-sm rounded-lg p-1 border">
             <TabsTrigger value="overview" className="flex items-center gap-1 text-xs">
@@ -377,13 +376,13 @@ const CompanyDashboard = () => {
               <Briefcase className="h-3 w-3" />
               Jobs
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center gap-1 text-xs">
+            <TabsTrigger value="career-analytics" className="flex items-center gap-1 text-xs">
               <BarChart3 className="h-3 w-3" />
-              Analytics
+              Career Analytics
             </TabsTrigger>
             <TabsTrigger value="insights" className="flex items-center gap-1 text-xs">
-              <Brain className="h-3 w-3" />
-              AI Insights
+              <Lightbulb className="h-3 w-3" />
+              Intelligence Metrics
             </TabsTrigger>
             <TabsTrigger value="settings" className="flex items-center gap-1 text-xs">
               <Settings className="h-3 w-3" />
@@ -416,8 +415,8 @@ const CompanyDashboard = () => {
             />
           </TabsContent>
 
-          <TabsContent value="analytics">
-            <CompanyAnalytics 
+          <TabsContent value="career-analytics">
+            <CompanyCareerAnalytics 
               company={selectedCompany} 
               metrics={companyMetrics}
               userRole={userRole}
@@ -444,4 +443,7 @@ const CompanyDashboard = () => {
   );
 };
 
-export default CompanyDashboard;
+export default CompanyCommandCenter;
+
+
+

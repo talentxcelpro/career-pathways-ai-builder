@@ -62,7 +62,7 @@ const Colleges = () => {
       location: 'Mumbai, Maharashtra',
       logo_url: '/placeholder.svg',
       image_url: '/placeholder.svg',
-      description: 'Leading technological institute with strong industry connections and research excellence.',
+      description: 'Leading technological institute with strong industry TalentNetwork and research excellence.',
       ranking: 2,
       nationalRank: 2,
       alumni_count: 38000,
@@ -158,7 +158,7 @@ const Colleges = () => {
                 TalentXcel AI College Finder
               </h1>
               <p className="text-lg text-text-secondary max-w-2xl">
-                Your intelligent guide to choosing the perfect college—based on real data and student feedback.
+                Your intelligent guide to choosing the perfect college—based on real data and student Feedback.
               </p>
             </div>
           </div>
@@ -367,3 +367,6 @@ const Colleges = () => {
 };
 
 export default Colleges;
+
+
+

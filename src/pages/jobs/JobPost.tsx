@@ -386,7 +386,7 @@ function JobPostContent() {
               </div>
             )}
           </div>
-          <p className="text-muted-foreground">Fill in the job details below to find top candidates via AI-powered TalentXcel.</p>
+          <p className="text-muted-foreground">Fill in the job details below to find top candidates via Performance TalentXcel.</p>
         </div>
 
         {/* Toggle between forms */}
@@ -552,3 +552,4 @@ function JobPostContent() {
 export default function JobPost() {
   return <JobPostContent />;
 }
+

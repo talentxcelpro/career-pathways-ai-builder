@@ -11,7 +11,7 @@ import { ProfessionalIdentityStep } from '@/components/onboarding/ProfessionalId
 import { GoalsStep } from '@/components/onboarding/GoalsStep';
 import { DocumentsStep } from '@/components/onboarding/DocumentsStep';
 import { PreferencesStep } from '@/components/onboarding/PreferencesStep';
-import { WelcomeDashboard } from '@/components/onboarding/WelcomeDashboard';
+import { WelcomeCommandCenter } from '@/components/onboarding/WelcomeDashboard';
 
 interface OnboardingData {
   // Step 1: Basic Info
@@ -109,7 +109,7 @@ export const OnboardingFlow: React.FC = () => {
 
       if (profileError) throw profileError;
 
-      // Create career passport entry
+      // Create Evolution Hub entry
       const { error: passportError } = await supabase
         .from('career_passport')
         .upsert({
@@ -129,7 +129,7 @@ export const OnboardingFlow: React.FC = () => {
 
       if (passportError) throw passportError;
 
-      toast.success('Onboarding completed successfully!');
+      toast.success('TalentXcel setup completed.');
       
       // Redirect based on flow
       const redirectMap: Record<string, string> = {
@@ -140,7 +140,7 @@ export const OnboardingFlow: React.FC = () => {
         'employer': '/resume/company-tools'
       };
       
-      navigate(redirectMap[flow] || '/network');
+      navigate(redirectMap[flow] || '/career-os');
     } catch (error) {
       console.error('Onboarding error:', error);
       toast.error('Failed to complete onboarding. Please try again.');
@@ -189,10 +189,10 @@ export const OnboardingFlow: React.FC = () => {
             <CardDescription>
               {currentStep === 1 && "We'll use this to personalize your experience"}
               {currentStep === 2 && "Help us understand your professional background"}
-              {currentStep === 3 && "We'll tailor recommendations based on your objectives"}
-              {currentStep === 4 && "Upload your resume to get AI-powered insights (optional)"}
+              {currentStep === 3 && "We'll tailor Career Moves around your objectives"}
+              {currentStep === 4 && "Upload your resume to get performance signals (optional)"}
               {currentStep === 5 && "Customize your job search preferences"}
-              {currentStep === 6 && "Your personalized dashboard is ready"}
+              {currentStep === 6 && "Your personalized Command Center is ready"}
             </CardDescription>
           </CardHeader>
 
@@ -219,7 +219,7 @@ export const OnboardingFlow: React.FC = () => {
             )}
             
             {currentStep === 6 && (
-              <WelcomeDashboard data={onboardingData} flow={flow} />
+              <WelcomeCommandCenter data={onboardingData} flow={flow} />
             )}
 
             {/* Navigation Buttons */}
@@ -245,3 +245,5 @@ export const OnboardingFlow: React.FC = () => {
     </div>
   );
 };
+
+

@@ -28,9 +28,9 @@ const WhiteLabelSubcategories = () => {
     },
     {
       id: 'client-access',
-      title: 'Client Dashboard Access',
+      title: 'Client CommandCenter Access',
       icon: Users,
-      description: 'Provide clients with branded dashboard access',
+      description: 'Provide clients with branded CommandCenter access',
       status: 'active'
     },
     {
@@ -147,7 +147,7 @@ const WhiteLabelSubcategories = () => {
                   
                   <div className="space-y-3 text-sm">
                     <div className="p-3 bg-background rounded border">
-                      <div className="font-medium">Dashboard Header</div>
+                      <div className="font-medium">CommandCenter Header</div>
                       <div className="text-muted-foreground">With your custom branding</div>
                     </div>
                     
@@ -171,14 +171,14 @@ const WhiteLabelSubcategories = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Client Dashboard Settings</CardTitle>
+                <CardTitle>Client CommandCenter Settings</CardTitle>
                 <CardDescription>Configure client access and permissions</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="font-medium">Enable Client Dashboards</span>
-                    <p className="text-sm text-muted-foreground">Allow clients to access their own dashboards</p>
+                    <span className="font-medium">Enable Client CommandCenters</span>
+                    <p className="text-sm text-muted-foreground">Allow clients to access their own CommandCenters</p>
                   </div>
                   <Switch defaultChecked />
                 </div>
@@ -208,7 +208,7 @@ const WhiteLabelSubcategories = () => {
                 </div>
                 
                 <div className="pt-4 border-t">
-                  <h4 className="font-medium mb-3">Dashboard Modules</h4>
+                  <h4 className="font-medium mb-3">CommandCenter Modules</h4>
                   <div className="grid grid-cols-2 gap-2">
                     {['Rankings', 'Traffic', 'Keywords', 'Backlinks', 'Reports', 'Competitors'].map(module => (
                       <div key={module} className="flex items-center justify-between p-2 border rounded">
@@ -223,8 +223,8 @@ const WhiteLabelSubcategories = () => {
 
             <Card>
               <CardHeader>
-                <CardTitle>Active Client Dashboards</CardTitle>
-                <CardDescription>Manage client dashboard access</CardDescription>
+                <CardTitle>Active Client CommandCenters</CardTitle>
+                <CardDescription>Manage client CommandCenter access</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
@@ -249,7 +249,7 @@ const WhiteLabelSubcategories = () => {
                   ))}
                 </div>
                 
-                <Button className="w-full mt-4">Add New Client Dashboard</Button>
+                <Button className="w-full mt-4">Add New Client CommandCenter</Button>
               </CardContent>
             </Card>
           </div>
@@ -372,3 +372,4 @@ const WhiteLabelSubcategories = () => {
 };
 
 export default WhiteLabelSubcategories;
+

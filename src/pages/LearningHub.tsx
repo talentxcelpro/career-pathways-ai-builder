@@ -3,7 +3,7 @@ import { updateMetaTags } from "@/utils/metaTags";
 import { LearningHeroNav } from '@/components/learning/LearningHeroNav';
 import { AudienceTargetSection } from '@/components/learning/AudienceTargetSection';
 import { RealLearningSearchHub } from '@/components/learning/RealLearningSearchHub';
-import { RealDataLearningDashboard } from '@/components/learning/RealDataLearningDashboard';
+import { RealDataLearningCommandCenter } from '@/components/learning/RealDataLearningDashboard';
 import { SmartLearningNav } from '@/components/learning/SmartLearningNav';
 import { useAdvancedLearningData } from '@/hooks/useAdvancedLearningData';
 import { supabase } from '@/integrations/supabase/client';
@@ -27,7 +27,7 @@ export default function LearningHub() {
   React.useEffect(() => {
     updateMetaTags({
       title: "TalentXcel Learning Hub | Master Any Skill with TalentXcel Academy",
-      description: "Access 7,000+ courses, AI-powered learning paths, skill assessments, and career tools. Your complete learning ecosystem for professional growth."
+      description: "Access 7,000+ courses, Performance learning paths, skill assessments, and career tools. Your complete learning ecosystem for professional growth."
     });
   }, []);
 
@@ -42,9 +42,9 @@ export default function LearningHub() {
       {/* Main Content Container */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         
-        {/* Personalized Dashboard for users */}
+        {/* Personalized command center for users */}
         <section className="mb-16">
-          <RealDataLearningDashboard userId={user?.id} />
+          <RealDataLearningCommandCenter userId={user?.id} />
         </section>
 
         <Separator className="mb-16" />
@@ -90,3 +90,4 @@ export default function LearningHub() {
     </div>
   );
 }
+

@@ -47,7 +47,7 @@ export const PredictiveSEOInsights: React.FC = () => {
       trend: 'rising',
       confidence: 89,
       seasonality: 'Peak in Q1 (hiring season)',
-      opportunity: 'Create AI-powered resume tools content'
+      opportunity: 'Create Performance resume tools content'
     },
     {
       keyword: 'remote work jobs',

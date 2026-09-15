@@ -46,7 +46,7 @@ export class AISearchService {
 
   static async searchJobs(query: string) {
     try {
-      console.log('🔍 Using AI-powered job search for:', query);
+      console.log('🔍 Using Performance job search for:', query);
       
       // Use the new AI job search edge function
       const { data, error } = await supabase.functions.invoke('ai-job-search', {
@@ -306,3 +306,4 @@ export class AISearchService {
     return suggestions[searchType] || suggestions.jobs;
   }
 }
+

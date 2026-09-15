@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 import { UnifiedAdminLayout } from '@/components/admin/UnifiedAdminLayout';
-import { SecurityDashboard } from '@/components/admin/security/SecurityDashboard';
+import { SecurityCommandCenter } from '@/components/admin/security/SecurityDashboard';
 import { SecurityEventsTable } from '@/components/admin/security/SecurityEventsTable';
 import { SecurityAlertsPanel } from '@/components/admin/security/SecurityAlertsPanel';
 import { AccountSuspensionPanel } from '@/components/admin/security/AccountSuspensionPanel';
 import { IPManagementPanel } from '@/components/admin/security/IPManagementPanel';
 import { SessionManagementPanel } from '@/components/admin/security/SessionManagementPanel';
-import { SecurityMonitoringDashboard } from '@/components/admin/security/SecurityMonitoringDashboard';
+import { SecurityMonitoringCommandCenter } from '@/components/admin/security/SecurityMonitoringDashboard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Shield, AlertTriangle, Ban, Monitor, Users, Globe, Activity, Rocket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
 const SecurityCenter = () => {
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('CommandCenter');
   const navigate = useNavigate();
 
   return (
@@ -30,15 +30,15 @@ const SecurityCenter = () => {
             variant="outline"
           >
             <Rocket className="w-4 h-4" />
-            Phase 1 Dashboard
+            Phase 1 CommandCenter
           </Button>
         </div>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-7">
-            <TabsTrigger value="dashboard" className="flex items-center gap-2">
+            <TabsTrigger value="CommandCenter" className="flex items-center gap-2">
               <Shield className="w-4 h-4" />
-              Dashboard
+              CommandCenter
             </TabsTrigger>
             <TabsTrigger value="monitoring" className="flex items-center gap-2">
               <Activity className="w-4 h-4" />
@@ -66,12 +66,12 @@ const SecurityCenter = () => {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="dashboard">
-            <SecurityDashboard />
+          <TabsContent value="CommandCenter">
+            <SecurityCommandCenter />
           </TabsContent>
 
           <TabsContent value="monitoring">
-            <SecurityMonitoringDashboard />
+            <SecurityMonitoringCommandCenter />
           </TabsContent>
 
           <TabsContent value="events">
@@ -100,3 +100,4 @@ const SecurityCenter = () => {
 };
 
 export default SecurityCenter;
+

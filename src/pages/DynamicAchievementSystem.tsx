@@ -113,7 +113,7 @@ export default function DynamicAchievementSystem() {
           </div>
         </div>
 
-        {/* Quick Stats Dashboard */}
+        {/* Quick Stats CommandCenter */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           <Card>
             <CardContent className="p-4 text-center">
@@ -319,7 +319,7 @@ export default function DynamicAchievementSystem() {
                   
                   <div className="p-3 bg-green-50 rounded-lg border border-green-200">
                     <p className="font-medium text-green-800">🎯 Next Goal</p>
-                    <p className="text-green-700">You're 2 connections away from the "Network Builder" achievement!</p>
+                    <p className="text-green-700">You're 2 TalentNetwork away from the "Network Builder" achievement!</p>
                   </div>
                   
                   <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
@@ -335,3 +335,5 @@ export default function DynamicAchievementSystem() {
     </div>
   );
 }
+
+

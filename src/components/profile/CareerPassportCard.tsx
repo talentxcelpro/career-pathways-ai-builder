@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
@@ -32,7 +33,7 @@ export function CareerPassportCard({ showFullView = false }: CareerPassportCardP
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Trophy className="h-5 w-5" />
-            TalentXcel Career Passport
+            TalentXcel Evolution Hub
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -51,12 +52,12 @@ export function CareerPassportCard({ showFullView = false }: CareerPassportCardP
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Trophy className="h-5 w-5" />
-            TalentXcel Career Passport
+            TalentXcel Evolution Hub
           </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground">
-            Your career passport is being set up. Please refresh the page.
+            Your Evolution Hub is being set up. Please refresh the page.
           </p>
         </CardContent>
       </Card>
@@ -73,7 +74,7 @@ export function CareerPassportCard({ showFullView = false }: CareerPassportCardP
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Trophy className="h-5 w-5 text-primary" />
-          TalentXcel Career Passport
+          TalentXcel Evolution Hub
           <Badge variant="outline" className="ml-auto">
             ID: {user?.user_metadata?.talentxcel_id || 'TXL000000'}
           </Badge>
@@ -183,13 +184,17 @@ export function CareerPassportCard({ showFullView = false }: CareerPassportCardP
         {/* Action Buttons */}
         {!showFullView && (
           <div className="flex gap-2 pt-2">
-            <Button variant="default" size="sm" className="flex-1">
-              <TrendingUp className="h-4 w-4 mr-1" />
-              Improve Score
+            <Button asChild variant="default" size="sm" className="flex-1">
+              <Link to="/talent-score">
+                <TrendingUp className="h-4 w-4 mr-1" />
+                Performance Index
+              </Link>
             </Button>
-            <Button variant="outline" size="sm" className="flex-1">
-              <FileText className="h-4 w-4 mr-1" />
-              View Details
+            <Button asChild variant="outline" size="sm" className="flex-1">
+              <Link to="/passport">
+                <FileText className="h-4 w-4 mr-1" />
+                Evolution Hub
+              </Link>
             </Button>
           </div>
         )}

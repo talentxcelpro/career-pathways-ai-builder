@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Eye, EyeOff, Mail, Lock, User, Loader2, Check, Shield, Zap, Users, Target } from 'lucide-react';
 import { SocialLogin } from './SocialLogin';
+import { getEmailRedirectUrl } from '@/utils/authRedirect';
 
 // Restored full register form functionality
 export const MinimalRegisterForm = () => {
@@ -51,7 +52,7 @@ export const MinimalRegisterForm = () => {
           data: {
             full_name: fullName.trim(),
           },
-          emailRedirectTo: `${window.location.origin}/`
+          emailRedirectTo: getEmailRedirectUrl('/career-os')
         }
       });
 
@@ -62,7 +63,7 @@ export const MinimalRegisterForm = () => {
 
       if (data.user) {
         toast.success('Account created successfully! 🎉');
-        navigate('/network');
+        navigate('/career-os');
       }
     } catch (error: any) {
       toast.error('An unexpected error occurred');
@@ -242,7 +243,7 @@ export const MinimalRegisterForm = () => {
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-xs text-slate-600">AI-powered job matching</span>
+                <span className="text-xs text-slate-600">Performance job matching</span>
               </div>
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
@@ -297,3 +298,4 @@ export const MinimalRegisterForm = () => {
     </Card>
   );
 };
+

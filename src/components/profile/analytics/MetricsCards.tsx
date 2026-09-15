@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Eye, TrendingUp, Users, MessageSquare, Download, BarChart3 } from "lucide-react";
 
 interface MetricsCardsProps {
-  analyticsData: {
+  CareerAnalyticsData: {
     totalViews: number;
     weeklyViews: number;
     connectionRequests: number;
@@ -13,46 +13,46 @@ interface MetricsCardsProps {
   };
 }
 
-export const MetricsCards = ({ analyticsData }: MetricsCardsProps) => {
+export const MetricsCards = ({ CareerAnalyticsData }: MetricsCardsProps) => {
   const metrics = [
     {
       icon: Eye,
-      value: analyticsData.totalViews,
+      value: CareerAnalyticsData.totalViews,
       label: "Total Views",
       change: "+12% this month",
       color: "text-blue-600"
     },
     {
       icon: TrendingUp,
-      value: analyticsData.weeklyViews,
+      value: CareerAnalyticsData.weeklyViews,
       label: "Weekly Views",
       change: "+8% vs last week",
       color: "text-green-600"
     },
     {
       icon: Users,
-      value: analyticsData.connectionRequests,
+      value: CareerAnalyticsData.connectionRequests,
       label: "Connection Requests",
       change: "+15% this month",
       color: "text-purple-600"
     },
     {
       icon: MessageSquare,
-      value: analyticsData.messagesSent,
+      value: CareerAnalyticsData.messagesSent,
       label: "Messages Received",
       change: "+3% this month",
       color: "text-orange-600"
     },
     {
       icon: Download,
-      value: analyticsData.resumeDownloads,
+      value: CareerAnalyticsData.resumeDownloads,
       label: "Resume Downloads",
       change: "+22% this month",
       color: "text-red-600"
     },
     {
       icon: BarChart3,
-      value: analyticsData.searchAppearances,
+      value: CareerAnalyticsData.searchAppearances,
       label: "Search Appearances",
       change: "+18% this month",
       color: "text-indigo-600"
@@ -77,3 +77,7 @@ export const MetricsCards = ({ analyticsData }: MetricsCardsProps) => {
     </div>
   );
 };
+
+
+
+

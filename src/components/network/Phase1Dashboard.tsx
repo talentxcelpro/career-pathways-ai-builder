@@ -18,7 +18,7 @@ import {
 import { useBulkUpload } from '@/hooks/useBulkUpload';
 import { useSearchCache } from '@/utils/searchCache';
 
-export const Phase1Dashboard = () => {
+export const Phase1CommandCenter = () => {
   const { getTalentStats } = useBulkUpload();
   const { data: stats } = getTalentStats;
   const { getStats } = useSearchCache();
@@ -302,4 +302,5 @@ export const Phase1Dashboard = () => {
   );
 }
 
-export default Phase1Dashboard;
+export default Phase1CommandCenter;
+

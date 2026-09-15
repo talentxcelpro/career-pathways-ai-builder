@@ -101,8 +101,8 @@ export const useReelComments = (reelId: string) => {
         newComment
       ]);
 
-      // Update the comments count in the reels feed
-      queryClient.setQueryData(['reels-feed', user?.id], (oldData: any) => {
+      // Update the comments count in the reels Pulse
+      queryClient.setQueryData(['reels-Pulse', user?.id], (oldData: any) => {
         if (!oldData?.pages) return oldData;
         
         return {

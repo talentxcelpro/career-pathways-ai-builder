@@ -1,12 +1,13 @@
 import React from 'react';
-import { AIManagementDashboard } from '@/components/admin/AIManagementDashboard';
+import { AIManagementCommandCenter } from '@/components/admin/AIManagementDashboard';
 
 const AdminAIManagement: React.FC = () => {
   return (
     <div className="min-h-screen bg-background">
-      <AIManagementDashboard />
+      <AIManagementCommandCenter />
     </div>
   );
 };
 
 export default AdminAIManagement;
+

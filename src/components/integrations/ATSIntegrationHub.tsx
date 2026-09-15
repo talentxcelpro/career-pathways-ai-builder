@@ -74,7 +74,7 @@ export const ATSIntegrationHub: React.FC = () => {
       logo: '/api/placeholder/40/40',
       description: 'Modern ATS for structured hiring processes',
       status: 'connected',
-      features: ['Job Posting', 'Resume Parsing', 'Interview Scheduling', 'Analytics'],
+      features: ['Job Posting', 'Resume Parsing', 'Interview Scheduling', 'CareerAnalytics'],
       lastSync: '2024-01-15T08:45:00Z',
       jobsImported: 89,
       applicationsImported: 750
@@ -106,7 +106,7 @@ export const ATSIntegrationHub: React.FC = () => {
       logo: '/api/placeholder/40/40',
       description: 'Talent Acquisition Suite for enterprises',
       status: 'disconnected',
-      features: ['Global Hiring', 'AI Matching', 'Compliance', 'Reporting'],
+      features: ['Global Hiring', 'Precision Match', 'Compliance', 'Reporting'],
       jobsImported: 0,
       applicationsImported: 0
     }
@@ -294,7 +294,7 @@ export const ATSIntegrationHub: React.FC = () => {
           <TabsTrigger value="integrations">Integrations</TabsTrigger>
           <TabsTrigger value="sync-jobs">Sync Jobs</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
         </TabsList>
 
         {/* Integrations Tab */}
@@ -572,8 +572,8 @@ export const ATSIntegrationHub: React.FC = () => {
           </div>
         </TabsContent>
 
-        {/* Analytics Tab */}
-        <TabsContent value="analytics" className="space-y-6">
+        {/* CareerAnalytics Tab */}
+        <TabsContent value="CareerAnalytics" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
@@ -682,3 +682,6 @@ export const ATSIntegrationHub: React.FC = () => {
     </div>
   );
 };
+
+
+

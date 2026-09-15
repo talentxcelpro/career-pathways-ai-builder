@@ -41,7 +41,7 @@ export const MobilePassport = () => {
     careerLevel: 'Senior',
     verificationStatus: 'Verified',
     skillsCount: 12,
-    connectionsCount: 156,
+    TalentNetworkCount: 156,
     recommendationsCount: 8,
     achievementsCount: 5
   };
@@ -51,7 +51,7 @@ export const MobilePassport = () => {
       {/* Header */}
       <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border">
         <div className="flex items-center justify-between p-4">
-          <h1 className="text-xl font-bold text-foreground">Career Passport</h1>
+          <h1 className="text-xl font-bold text-foreground">Evolution Hub</h1>
           <div className="flex items-center space-x-2">
             <Button variant="ghost" size="icon">
               <QrCode className="h-5 w-5" />
@@ -137,8 +137,8 @@ export const MobilePassport = () => {
             <div className="flex items-center justify-center mb-2">
               <User className="h-5 w-5 text-blue-500" />
             </div>
-            <p className="text-lg font-bold text-foreground">{profileData.connectionsCount}</p>
-            <p className="text-xs text-muted-foreground">Connections</p>
+            <p className="text-lg font-bold text-foreground">{profileData.TalentNetworkCount}</p>
+            <p className="text-xs text-muted-foreground">TalentNetwork</p>
           </Card>
           
           <Card className="p-4 text-center">
@@ -256,3 +256,4 @@ export const MobilePassport = () => {
     </div>
   );
 };
+

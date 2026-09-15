@@ -71,7 +71,7 @@ export const EmailTrackingFixer: React.FC<EmailTrackingFixerProps> = ({ onComple
 
   const setupWebhookTracking = () => {
     // Open Supabase functions page in new tab
-    window.open('https://supabase.com/dashboard/project/dthlgsnakhoftinssokm/functions', '_blank');
+    window.open('https://supabase.com/CommandCenter/project/dthlgsnakhoftinssokm/functions', '_blank');
   };
 
   return (
@@ -100,7 +100,7 @@ export const EmailTrackingFixer: React.FC<EmailTrackingFixerProps> = ({ onComple
             <CardHeader className="pb-3">
               <CardTitle className="text-sm">Quick Fix: Simulate Delivery Data</CardTitle>
               <CardDescription className="text-xs">
-                Generate realistic delivery events for your 65 sent emails to see immediate analytics.
+                Generate realistic delivery events for your 65 sent emails to see immediate CareerAnalytics.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -188,3 +188,6 @@ export const EmailTrackingFixer: React.FC<EmailTrackingFixerProps> = ({ onComple
     </Card>
   );
 };
+
+
+

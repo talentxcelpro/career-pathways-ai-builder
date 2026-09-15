@@ -1,8 +1,8 @@
-// Real-time analytics service - production ready
+// Real-time CareerAnalytics service - production ready
 import { supabase } from '@/integrations/supabase/client';
 import { fetchProductionData } from '@/utils/productionCleanup';
 
-export interface PlatformAnalytics {
+export interface PlatformCareerAnalytics {
   totalUsers: number;
   newUsers: number;
   totalJobs: number;
@@ -34,15 +34,15 @@ export interface TopPerformingJob {
   };
 }
 
-// Real-time platform analytics
-export const getPlatformAnalytics = async (dateRange: '7d' | '30d' | '90d' = '7d'): Promise<PlatformAnalytics> => {
+// Real-time platform CareerAnalytics
+export const getPlatformCareerAnalytics = async (dateRange: '7d' | '30d' | '90d' = '7d'): Promise<PlatformCareerAnalytics> => {
   return fetchProductionData(async () => {
     const daysBack = dateRange === '7d' ? 7 : dateRange === '30d' ? 30 : 90;
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - daysBack);
 
-    // Use unified analytics function for consistent data
-    const { data: unifiedJobData } = await supabase.rpc('get_unified_analytics');
+    // Use unified CareerAnalytics function for consistent data
+    const { data: unifiedJobData } = await supabase.rpc('get_unified_CareerAnalytics');
     
     const [
       { count: totalUsers },
@@ -134,7 +134,7 @@ export const getUserGrowthData = async (dateRange: '7d' | '30d' | '90d' = '7d'):
 // Real-time top performing jobs
 export const getTopPerformingJobs = async (limit: number = 10): Promise<TopPerformingJob[]> => {
   return fetchProductionData(async () => {
-    const { data, error } = await supabase.rpc('get_unified_analytics');
+    const { data, error } = await supabase.rpc('get_unified_CareerAnalytics');
     
     if (error) throw error;
     
@@ -158,13 +158,13 @@ export const getTopPerformingJobs = async (limit: number = 10): Promise<TopPerfo
   }, []);
 };
 
-// Real-time subscription for analytics updates
-export const subscribeToAnalyticsUpdates = (callback: (analytics: PlatformAnalytics) => void) => {
+// Real-time subscription for CareerAnalytics updates
+export const subscribeToCareerAnalyticsUpdates = (callback: (CareerAnalytics: PlatformCareerAnalytics) => void) => {
   const tables = ['profiles', 'jobs', 'job_applications', 'companies', 'posts'];
   
   const channels = tables.map(table => {
     return supabase
-      .channel(`analytics-${table}`)
+      .channel(`CareerAnalytics-${table}`)
       .on(
         'postgres_changes',
         {
@@ -173,8 +173,8 @@ export const subscribeToAnalyticsUpdates = (callback: (analytics: PlatformAnalyt
           table
         },
         async () => {
-          const analytics = await getPlatformAnalytics();
-          callback(analytics);
+          const CareerAnalytics = await getPlatformCareerAnalytics();
+          callback(CareerAnalytics);
         }
       )
       .subscribe();
@@ -185,8 +185,8 @@ export const subscribeToAnalyticsUpdates = (callback: (analytics: PlatformAnalyt
   };
 };
 
-// Export analytics data for admin reports
-export const exportAnalyticsData = async (
+// Export CareerAnalytics data for admin reports
+export const exportCareerAnalyticsData = async (
   startDate: string, 
   endDate: string
 ): Promise<{ [key: string]: any }> => {
@@ -224,3 +224,6 @@ export const exportAnalyticsData = async (
     date_range: { startDate: '', endDate: '' }
   });
 };
+
+
+

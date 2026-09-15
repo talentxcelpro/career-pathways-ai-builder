@@ -409,7 +409,7 @@ class AIService {
   }
 
   /**
-   * Get all AI features status for admin dashboard
+   * Get all AI features status for admin CommandCenter
    */
   async getAllFeaturesStatus(): Promise<AIFeatureStatus[]> {
     try {
@@ -431,9 +431,9 @@ class AIService {
   }
 
   /**
-   * Get AI usage analytics
+   * Get AI usage CareerAnalytics
    */
-  async getUsageAnalytics(timeframe: 'day' | 'week' | 'month' = 'week') {
+  async getUsageCareerAnalytics(timeframe: 'day' | 'week' | 'month' = 'week') {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       let dateFilter = new Date();
@@ -474,7 +474,7 @@ class AIService {
         recentActivity: data.slice(0, 10)
       };
     } catch (error) {
-      console.error('Failed to get usage analytics:', error);
+      console.error('Failed to get usage CareerAnalytics:', error);
       return null;
     }
   }
@@ -674,7 +674,7 @@ class AIService {
   async askCollegeQuestion(question: string, context?: any) {
     return this.call({
       module: 'Colleges',
-      feature: 'college_qa_assistant',
+      feature: 'college_qa_Navigator',
       input: {
         question: question,
         context: context ? JSON.stringify(context) : null
@@ -712,3 +712,7 @@ export async function isAIFeatureAvailable(module: string, featureKey: string): 
   const status = await aiService.checkFeatureStatus(module, featureKey);
   return status ? status.enabled : false;
 }
+
+
+
+

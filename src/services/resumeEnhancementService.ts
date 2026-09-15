@@ -20,7 +20,7 @@ export interface EnhanceResumeResponse {
 }
 
 /**
- * Call the enhance-resume edge function to get AI-powered resume enhancements
+ * Call the enhance-resume edge function to get Performance resume enhancements
  */
 export const enhanceResume = async (
   request: EnhanceResumeRequest
@@ -93,3 +93,4 @@ export const suggestBullets = async (jobInfo: string): Promise<string> => {
   });
   return response.enhanced;
 };
+

@@ -32,7 +32,7 @@ const SmartPageBuilder = () => {
             type: 'hero',
             content: {
               title: 'Welcome to TalentXcel',
-              subtitle: 'Build your career with AI-powered tools',
+              subtitle: 'Build your career with Performance tools',
               cta: 'Get Started',
               background: 'gradient'
             }
@@ -229,7 +229,7 @@ const SmartPageBuilder = () => {
             <TabsTrigger value="pages">Pages</TabsTrigger>
             <TabsTrigger value="editor">Page Editor</TabsTrigger>
             <TabsTrigger value="templates">Templates</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
           </TabsList>
 
           <TabsContent value="pages" className="space-y-4">
@@ -372,7 +372,7 @@ const SmartPageBuilder = () => {
                     {/* Hero Section Example */}
                     <div className="text-center py-12 border-b border-dashed">
                       <h1 className="text-3xl font-bold mb-4">Welcome to TalentXcel</h1>
-                      <p className="text-gray-600 mb-6">Build your career with AI-powered tools</p>
+                      <p className="text-gray-600 mb-6">Build your career with Performance tools</p>
                       <Button>Get Started</Button>
                     </div>
                     
@@ -485,7 +485,7 @@ const SmartPageBuilder = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="analytics" className="space-y-4">
+          <TabsContent value="CareerAnalytics" className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Card>
                 <CardHeader>
@@ -531,7 +531,7 @@ const SmartPageBuilder = () => {
             <Card>
               <CardHeader>
                 <CardTitle>Page Performance</CardTitle>
-                <CardDescription>Detailed analytics for each page</CardDescription>
+                <CardDescription>Detailed CareerAnalytics for each page</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
@@ -570,3 +570,6 @@ const SmartPageBuilder = () => {
 };
 
 export default SmartPageBuilder;
+
+
+

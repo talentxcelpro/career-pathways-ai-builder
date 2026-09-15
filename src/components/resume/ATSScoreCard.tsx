@@ -6,7 +6,7 @@ import { TrendingUp, AlertTriangle, CheckCircle, Info } from 'lucide-react';
 
 interface ATSScoreCardProps {
   score: number;
-  feedback?: {
+  Feedback?: {
     strengths: string[];
     improvements: string[];
     keywords: string[];
@@ -15,7 +15,7 @@ interface ATSScoreCardProps {
 
 export const ATSScoreCard: React.FC<ATSScoreCardProps> = ({ 
   score, 
-  feedback 
+  Feedback 
 }) => {
   const getScoreColor = (score: number) => {
     if (score >= 80) return 'text-green-600';
@@ -59,16 +59,16 @@ export const ATSScoreCard: React.FC<ATSScoreCardProps> = ({
         
         <Progress value={score} className="w-full" />
         
-        {feedback && (
+        {Feedback && (
           <div className="space-y-3 mt-4">
-            {feedback.strengths.length > 0 && (
+            {Feedback.strengths.length > 0 && (
               <div>
                 <h4 className="text-sm font-medium flex items-center gap-1 mb-2">
                   <CheckCircle className="h-4 w-4 text-green-600" />
                   Strengths
                 </h4>
                 <ul className="text-sm text-muted-foreground space-y-1">
-                  {feedback.strengths.map((strength, index) => (
+                  {Feedback.strengths.map((strength, index) => (
                     <li key={index} className="flex items-start gap-1">
                       <span className="text-green-600">•</span>
                       {strength}
@@ -78,14 +78,14 @@ export const ATSScoreCard: React.FC<ATSScoreCardProps> = ({
               </div>
             )}
             
-            {feedback.improvements.length > 0 && (
+            {Feedback.improvements.length > 0 && (
               <div>
                 <h4 className="text-sm font-medium flex items-center gap-1 mb-2">
                   <Info className="h-4 w-4 text-blue-600" />
                   Improvements
                 </h4>
                 <ul className="text-sm text-muted-foreground space-y-1">
-                  {feedback.improvements.map((improvement, index) => (
+                  {Feedback.improvements.map((improvement, index) => (
                     <li key={index} className="flex items-start gap-1">
                       <span className="text-blue-600">•</span>
                       {improvement}
@@ -95,11 +95,11 @@ export const ATSScoreCard: React.FC<ATSScoreCardProps> = ({
               </div>
             )}
             
-            {feedback.keywords.length > 0 && (
+            {Feedback.keywords.length > 0 && (
               <div>
                 <h4 className="text-sm font-medium mb-2">Suggested Keywords</h4>
                 <div className="flex flex-wrap gap-1">
-                  {feedback.keywords.map((keyword, index) => (
+                  {Feedback.keywords.map((keyword, index) => (
                     <Badge key={index} variant="outline" className="text-xs">
                       {keyword}
                     </Badge>
@@ -113,3 +113,4 @@ export const ATSScoreCard: React.FC<ATSScoreCardProps> = ({
     </Card>
   );
 };
+

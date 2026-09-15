@@ -385,11 +385,11 @@ export const SkillGapAnalysis: React.FC = () => {
         <TabsContent value="tracking">
           <Card>
             <CardHeader>
-              <CardTitle>Progress Tracking</CardTitle>
+              <CardTitle>Growth Path</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-center py-8 text-muted-foreground">
-                Progress tracking dashboard coming soon...
+                Growth Path CommandCenter coming soon...
               </div>
             </CardContent>
           </Card>
@@ -398,3 +398,4 @@ export const SkillGapAnalysis: React.FC = () => {
     </div>
   );
 };
+

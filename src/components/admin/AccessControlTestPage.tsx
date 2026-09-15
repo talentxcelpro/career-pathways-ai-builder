@@ -29,7 +29,7 @@ export const AccessControlTestPage: React.FC = () => {
   ];
 
   const mockAdminRoutes = [
-    { title: "Admin Dashboard", to: "/admin", requiresAdminAccess: true },
+    { title: "Admin CommandCenter", to: "/admin", requiresAdminAccess: true },
     { title: "SEO Admin", to: "/admin/seo", requiresAdminAccess: true },
     { title: "Tools", to: "/tools", requiresAdminAccess: true },
     { title: "Learning", to: "/learning", requiresAdminAccess: true },
@@ -43,7 +43,7 @@ export const AccessControlTestPage: React.FC = () => {
   return (
     <div className="container mx-auto p-6 space-y-8">
       <div className="text-center space-y-4">
-        <h1 className="text-3xl font-bold">Access Control Test Dashboard</h1>
+        <h1 className="text-3xl font-bold">Access Control Test CommandCenter</h1>
         <div className="flex gap-2 justify-center">
           <Badge variant={user ? "default" : "secondary"}>
             {user ? "Authenticated" : "Not Authenticated"}
@@ -215,3 +215,4 @@ export const AccessControlTestPage: React.FC = () => {
     </div>
   );
 };
+

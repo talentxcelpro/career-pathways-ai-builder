@@ -1,30 +1,16 @@
 import React, { useState, useMemo } from 'react';
-import { useInfiniteNetworkFeed } from '@/hooks/useInfiniteNetworkFeed';
-import { useAuth } from '@/contexts/AuthContext';
+import { useInfiniteNetworkPulse } from '@/components/Pulse/useInfiniteNetworkPulse';
 import { MobileNavWrapper } from '@/components/layout/MobileNavWrapper';
 import { useToast } from '@/hooks/use-toast';
-import { StoryBubbles } from '@/components/mobile/StoryBubbles';
-import { NetworkPost } from '@/components/mobile/NetworkPost';
-import { PeopleYouMayKnow } from '@/components/mobile/PeopleYouMayKnow';
-import { ConnectionSuggestions } from '@/components/mobile/ConnectionSuggestions';
-import { MobileNetworkingStats } from '@/components/mobile/MobileNetworkingStats';
-import { MobilePostCreation } from '@/components/mobile/MobilePostCreation';
-import { TrendingCarousel } from '@/components/network/TrendingCarousel';
-import { JobWorldDigest } from '@/components/network/JobWorldDigest';
-import { EngagementPoll } from '@/components/network/EngagementPoll';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Plus, RefreshCw, Heart, MessageCircle } from 'lucide-react';
+import { Heart, MessageCircle } from 'lucide-react';
 
 export const MobileNetwork = () => {
-  const { user } = useAuth();
   const { toast } = useToast();
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  // Use the existing infinite network feed hook
+  // Use the existing infinite network Pulse hook
   const {
     data,
     fetchNextPage,
@@ -32,7 +18,7 @@ export const MobileNetwork = () => {
     isFetchingNextPage,
     isLoading,
     refetch
-  } = useInfiniteNetworkFeed({ type: 'all' });
+  } = useInfiniteNetworkPulse({ type: 'all' });
 
   // Transform network posts to mobile format
   const allPosts = useMemo(() => {
@@ -87,13 +73,13 @@ export const MobileNetwork = () => {
     try {
       await refetch();
       toast({
-        title: "Feed refreshed",
-        description: "Your network feed has been updated with the latest content."
+        title: "Pulse refreshed",
+        description: "Your network Pulse has been updated with the latest content."
       });
     } catch (error) {
       toast({
         title: "Refresh failed",
-        description: "Unable to refresh feed. Please try again.",
+        description: "Unable to refresh Pulse. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -149,12 +135,12 @@ export const MobileNetwork = () => {
           </div>
         </div>
 
-        {/* Main Feed */}
+        {/* Main Pulse */}
         <div className="space-y-1">
           {data?.pages.map((page, pageIndex) => (
             <React.Fragment key={pageIndex}>
               {page.data.map((post: any, index: number) => (
-                <div key={post.id} className="native-card mx-4 my-3 touch-feedback">
+                <div key={post.id} className="native-card mx-4 my-3 touch-Feedback">
                   <div className="p-4">
                     <div className="flex items-center gap-3 mb-3">
                       <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
@@ -188,7 +174,7 @@ export const MobileNetwork = () => {
                 onClick={() => fetchNextPage()}
                 disabled={isFetchingNextPage}
                 variant="outline"
-                className="w-full touch-feedback"
+                className="w-full touch-Feedback"
               >
                 {isFetchingNextPage ? (
                   <>
@@ -202,10 +188,10 @@ export const MobileNetwork = () => {
             </div>
           )}
 
-          {/* End of feed indicator */}
+          {/* End of Pulse indicator */}
           {!hasNextPage && data && data.pages.length > 0 && (
             <div className="text-center py-8 text-sm text-muted-foreground">
-              You've reached the end of your feed
+              You've reached the end of your Pulse
             </div>
           )}
         </div>
@@ -213,3 +199,5 @@ export const MobileNetwork = () => {
     </MobileNavWrapper>
   );
 };
+
+

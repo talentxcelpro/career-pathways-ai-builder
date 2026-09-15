@@ -136,7 +136,7 @@ export const MentorMatchingCard: React.FC = () => {
             <div className="space-y-4">
               <div className="text-center py-4">
                 <p className="text-sm text-muted-foreground mb-4">
-                  AI-powered mentor recommendations based on your career stage and goals
+                  Performance mentor recommendations based on your career stage and goals
                 </p>
                 {isLoadingMentors && (
                   <div className="flex items-center justify-center gap-2">

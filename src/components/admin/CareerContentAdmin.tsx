@@ -309,7 +309,7 @@ export function CareerContentAdmin() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Career Content Management</h1>
-          <p className="text-muted-foreground">Manage and generate AI-powered career content</p>
+          <p className="text-muted-foreground">Manage and generate Performance career content</p>
         </div>
         <div className="flex gap-2">
           <Dialog open={isGenerateDialogOpen} onOpenChange={setIsGenerateDialogOpen}>

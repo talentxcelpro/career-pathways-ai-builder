@@ -94,7 +94,7 @@ export const CorporatePortal: React.FC = () => {
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <BarChart3 className="h-5 w-5 text-primary" />
-                <span className="font-medium">Advanced Analytics</span>
+                <span className="font-medium">Advanced CareerAnalytics</span>
               </div>
               <p className="text-sm text-muted-foreground">Detailed reports and insights</p>
             </div>
@@ -104,3 +104,6 @@ export const CorporatePortal: React.FC = () => {
     </div>
   );
 };
+
+
+

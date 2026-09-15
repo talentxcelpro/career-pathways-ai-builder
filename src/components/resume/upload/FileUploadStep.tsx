@@ -78,7 +78,7 @@ export const FileUploadStep: React.FC<FileUploadStepProps> = ({
           Upload Your Resume
         </h2>
         <p className="text-gray-600">
-          Choose your resume file to get started with AI-powered enhancement
+          Choose your resume file to get started with Performance enhancement
         </p>
       </div>
 
@@ -211,3 +211,4 @@ export const FileUploadStep: React.FC<FileUploadStepProps> = ({
     </div>
   );
 };
+

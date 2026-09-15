@@ -217,7 +217,7 @@ export const VoiceSearchOptimizer: React.FC<VoiceSearchOptimizerProps> = ({
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Voice Search Analytics */}
+          {/* Voice Search CareerAnalytics */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card>
               <CardContent className="p-4">
@@ -361,3 +361,6 @@ export const VoiceSearchOptimizer: React.FC<VoiceSearchOptimizerProps> = ({
     </div>
   );
 };
+
+
+

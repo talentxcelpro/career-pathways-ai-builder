@@ -171,7 +171,7 @@ const UXUIAssessment = () => {
 
   const missingFeatures: MissingFeature[] = [
     {
-      name: 'AI-Powered Learning Path Generator',
+      name: 'Performance Learning Path Generator',
       description: 'Automatically creates personalized learning paths based on career goals, current skills, and market demands',
       impact: 'high',
       effort: 'high',
@@ -181,7 +181,7 @@ const UXUIAssessment = () => {
         'Machine learning algorithms for skill gap analysis',
         'Integration with job market data',
         'Dynamic curriculum generation',
-        'Progress tracking and adaptation'
+        'Growth Path and adaptation'
       ],
       aiPowered: true
     },
@@ -195,18 +195,18 @@ const UXUIAssessment = () => {
       technicalRequirements: [
         'Adaptive testing algorithms',
         'Real-time difficulty adjustment',
-        'Detailed analytics and reporting',
+        'Detailed CareerAnalytics and reporting',
         'Skill mapping and gap analysis'
       ],
       aiPowered: true
     },
     {
       name: 'AI Career Coach Chatbot',
-      description: 'Intelligent conversational assistant providing 24/7 career guidance, interview prep, and skill recommendations',
+      description: 'Intelligent conversational Navigator providing 24/7 career guidance, interview prep, and skill recommendations',
       impact: 'high',
       effort: 'medium',
-      category: 'AI Assistant',
-      userStory: 'As a user, I want to chat with an AI coach that understands my career goals and provides personalized advice',
+      category: 'TalentXcel Navigator',
+      userStory: 'As a user, I want to chat with an TalentXcel Navigator that understands my career goals and provides personalized advice',
       technicalRequirements: [
         'Natural language processing',
         'Career knowledge base',
@@ -216,12 +216,12 @@ const UXUIAssessment = () => {
       aiPowered: true
     },
     {
-      name: 'Video Interview Practice with AI Feedback',
-      description: 'AI-powered mock interviews with facial expression analysis, speech patterns, and content evaluation',
+      name: 'Video Interview Practice with AI Pulseback',
+      description: 'Performance mock interviews with facial expression analysis, speech patterns, and content evaluation',
       impact: 'high',
       effort: 'high',
       category: 'Interview Preparation',
-      userStory: 'As a user, I want to practice interviews with AI feedback on my body language, speech, and answers',
+      userStory: 'As a user, I want to practice interviews with AI Pulseback on my body language, speech, and answers',
       technicalRequirements: [
         'Video recording and analysis',
         'Speech-to-text and sentiment analysis',
@@ -232,11 +232,11 @@ const UXUIAssessment = () => {
     },
     {
       name: 'Smart Networking Recommendations',
-      description: 'AI suggests networking opportunities, events, and connections based on career goals and location',
+      description: 'AI suggests networking opportunities, events, and TalentNetwork based on career goals and location',
       impact: 'medium',
       effort: 'medium',
       category: 'Networking',
-      userStory: 'As a user, I want AI to suggest relevant networking opportunities and connections in my field',
+      userStory: 'As a user, I want AI to suggest relevant networking opportunities and TalentNetwork in my field',
       technicalRequirements: [
         'Event data aggregation',
         'Professional network analysis',
@@ -276,22 +276,22 @@ const UXUIAssessment = () => {
       aiPowered: false
     },
     {
-      name: 'Advanced Analytics Dashboard',
+      name: 'Advanced CareerAnalytics CommandCenter',
       description: 'Comprehensive insights into learning progress, skill development, and career advancement metrics',
       impact: 'medium',
       effort: 'medium',
-      category: 'Analytics',
-      userStory: 'As a user, I want detailed analytics about my learning progress and skill development trends',
+      category: 'CareerAnalytics',
+      userStory: 'As a user, I want detailed CareerAnalytics about my learning progress and skill development trends',
       technicalRequirements: [
         'Advanced data visualization',
-        'Predictive analytics',
+        'Predictive CareerAnalytics',
         'Comparative benchmarking',
         'Export and sharing capabilities'
       ],
       aiPowered: true
     },
     {
-      name: 'Voice-Activated Learning Assistant',
+      name: 'Voice-Activated Learning Navigator',
       description: 'Hands-free learning experience with voice commands for accessibility and convenience',
       impact: 'low',
       effort: 'high',
@@ -335,13 +335,13 @@ const UXUIAssessment = () => {
       currentState: 'partial',
       importance: 'important',
       description: 'Helpful messages and actions when content is empty or loading',
-      examples: ['No jobs found screens', 'Empty learning dashboard', 'First-time user guidance']
+      examples: ['No jobs found screens', 'Empty learning CommandCenter', 'First-time user guidance']
     },
     {
       name: 'Microinteractions',
       currentState: 'missing',
       importance: 'important',
-      description: 'Small animations that provide feedback and enhance user experience',
+      description: 'Small animations that provide Pulseback and enhance user experience',
       examples: ['Button hover effects', 'Loading animations', 'Success confirmations']
     },
     {
@@ -403,7 +403,7 @@ const UXUIAssessment = () => {
       <div className="text-center space-y-4">
         <h1 className="text-3xl font-bold text-foreground">TalentXcel UX/UI Assessment</h1>
         <p className="text-muted-foreground max-w-3xl mx-auto">
-          Comprehensive analysis of user experience, interface design, and missing AI-powered features
+          Comprehensive analysis of user experience, interface design, and missing Performance features
         </p>
         <div className="flex items-center justify-center gap-4">
           <div className="text-center">
@@ -532,7 +532,7 @@ const UXUIAssessment = () => {
                   <div className="absolute top-3 right-3">
                     <Badge className="bg-primary">
                       <Brain className="h-3 w-3 mr-1" />
-                      AI-Powered
+                      Performance
                     </Badge>
                   </div>
                 )}
@@ -617,7 +617,7 @@ const UXUIAssessment = () => {
                 <CardHeader>
                   <div className="flex items-center gap-2 mb-2">
                     <Brain className="h-5 w-5 text-primary" />
-                    <Badge className="bg-primary">AI-Powered</Badge>
+                    <Badge className="bg-primary">Performance</Badge>
                   </div>
                   <CardTitle className="text-lg">{feature.name}</CardTitle>
                   <p className="text-sm text-muted-foreground">{feature.description}</p>
@@ -699,7 +699,7 @@ const UXUIAssessment = () => {
                     </li>
                     <li className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-yellow-600" />
-                      <span className="text-sm">Voice-activated assistant</span>
+                      <span className="text-sm">Voice-activated Navigator</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-yellow-600" />
@@ -752,9 +752,9 @@ const UXUIAssessment = () => {
                     <div className="space-y-2">
                       <h4 className="font-semibold">Learning Platform</h4>
                       <ul className="text-sm space-y-1">
-                        <li>• AI-powered learning path generator</li>
+                        <li>• Performance learning path generator</li>
                         <li>• Gamification system</li>
-                        <li>• Progress analytics dashboard</li>
+                        <li>• Progress CareerAnalytics CommandCenter</li>
                       </ul>
                     </div>
                     <div className="space-y-2">
@@ -776,9 +776,9 @@ const UXUIAssessment = () => {
                     <div className="space-y-2">
                       <h4 className="font-semibold">AI Enhancements</h4>
                       <ul className="text-sm space-y-1">
-                        <li>• Video interview practice with AI feedback</li>
+                        <li>• Video interview practice with AI Pulseback</li>
                         <li>• Advanced networking recommendations</li>
-                        <li>• Predictive career analytics</li>
+                        <li>• Predictive career CareerAnalytics</li>
                       </ul>
                     </div>
                     <div className="space-y-2">
@@ -800,7 +800,7 @@ const UXUIAssessment = () => {
                     <div className="space-y-2">
                       <h4 className="font-semibold">Innovation</h4>
                       <ul className="text-sm space-y-1">
-                        <li>• Voice-activated learning assistant</li>
+                        <li>• Voice-activated learning Navigator</li>
                         <li>• AR skill visualization (pilot)</li>
                         <li>• Advanced personalization engine</li>
                       </ul>
@@ -866,3 +866,7 @@ const UXUIAssessment = () => {
 };
 
 export default UXUIAssessment;
+
+
+
+

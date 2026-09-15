@@ -31,7 +31,7 @@ const AIContentSubcategories = () => {
       id: 'meta-optimization',
       title: 'Meta Tag Optimization',
       icon: Tags,
-      description: 'AI-powered meta titles and descriptions',
+      description: 'Performance meta titles and descriptions',
       status: 'active'
     },
     {
@@ -45,7 +45,7 @@ const AIContentSubcategories = () => {
       id: 'content-rewriting',
       title: 'Content Rewriting & Enhancement',
       icon: RefreshCw,
-      description: 'Improve existing content with AI suggestions',
+      description: 'Improve existing content with Smart Moves',
       status: 'active'
     },
     {

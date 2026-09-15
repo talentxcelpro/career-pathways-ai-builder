@@ -135,7 +135,7 @@ const Learning = () => {
             {/* Typing Animation Subtitle */}
             <p className="text-body-large opacity-90 mb-8 max-w-2xl mx-auto animate-fade-in delay-300">
               Join <span className="font-bold text-cyan-300">50,000+</span> professionals advancing their careers with our 
-              <span className="font-semibold text-ai-violet-light"> AI-powered learning engine</span> and expert-crafted courses.
+              <span className="font-semibold text-ai-violet-light"> Performance learning engine</span> and expert-crafted courses.
             </p>
             
             {/* Real-time Learning Stats */}
@@ -216,7 +216,7 @@ const Learning = () => {
             <div className="flex items-center justify-between">
               <Badge className="text-caption bg-ai-violet/10 text-ai-violet-dark border-ai-violet/20">
                 <Sparkles className="card-icon-sm mr-1 animate-spin-slow" />
-                AI-Powered
+                Performance
               </Badge>
               <div className="text-xs text-muted-foreground">94% match rate</div>
             </div>
@@ -303,7 +303,7 @@ const Learning = () => {
             
             <CardContent className="relative z-10 space-y-4">
               <div className="flex flex-wrap gap-2">
-                {['Skill Assessment', 'Career Roadmap', 'Progress Tracking'].map((feature, index) => (
+                {['Skill Assessment', 'Career Roadmap', 'Growth Path'].map((feature, index) => (
                   <Badge key={index} variant="secondary" className="text-xs animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
                     {feature}
                   </Badge>
@@ -345,7 +345,7 @@ const Learning = () => {
                 Employment Bridge
               </CardTitle>
               <p className="text-muted-foreground">
-                Job-focused training with direct employer connections
+                Job-focused training with direct employer TalentNetwork
               </p>
             </CardHeader>
             
@@ -399,7 +399,7 @@ const Learning = () => {
             
             <CardContent className="relative z-10 space-y-4">
               <div className="flex flex-wrap gap-2">
-                {['Team Training', 'Analytics', 'Custom Content'].map((feature, index) => (
+                {['Team Training', 'CareerAnalytics', 'Custom Content'].map((feature, index) => (
                   <Badge key={index} variant="secondary" className="text-xs animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
                     {feature}
                   </Badge>
@@ -454,7 +454,7 @@ const Learning = () => {
               <span className="text-caption font-medium text-muted-foreground uppercase tracking-wider">Learning Engine Active</span>
             </div>
             <h2 className="text-title font-heading text-foreground mb-2">Take Your Learning Further</h2>
-            <p className="text-body text-muted-foreground">Explore specialized AI-powered tools and resources designed for your success</p>
+            <p className="text-body text-muted-foreground">Explore specialized Performance tools and resources designed for your success</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -523,11 +523,11 @@ const Learning = () => {
             <div className="flex flex-wrap items-center justify-center gap-4">
               <Button className="bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 group">
                 <Sparkles className="w-4 h-4 mr-2 group-hover:animate-spin" />
-                AI Recommendations
+                Career Moves
               </Button>
               <Button variant="outline" className="group">
                 <TrendingUp className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
-                Learning Analytics
+                Learning CareerAnalytics
               </Button>
               <Button variant="outline" className="group">
                 <Users className="w-4 h-4 mr-2 group-hover:animate-bounce" />
@@ -542,3 +542,8 @@ const Learning = () => {
 };
 
 export default Learning;
+
+
+
+
+

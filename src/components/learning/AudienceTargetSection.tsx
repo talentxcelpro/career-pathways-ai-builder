@@ -22,7 +22,7 @@ export const AudienceTargetSection: React.FC = () => {
     {
       title: 'For Businesses',
       subtitle: 'Corporate training programs',
-      description: 'Upskill your workforce with scalable enterprise solutions, custom learning paths, and comprehensive analytics for business growth.',
+      description: 'Upskill your workforce with scalable enterprise solutions, custom learning paths, and comprehensive CareerAnalytics for business growth.',
       image: businessImage,
       link: '/learning/businesses',
       icon: Building2,
@@ -128,3 +128,6 @@ export const AudienceTargetSection: React.FC = () => {
     </section>
   );
 };
+
+
+

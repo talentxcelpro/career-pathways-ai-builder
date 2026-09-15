@@ -93,7 +93,7 @@ export const EnhancedVideoPlayer: React.FC<EnhancedVideoPlayerProps> = ({
     preloadNext: true
   });
 
-  // Video analytics tracking
+  // Video CareerAnalytics tracking
   const { trackVideoView, trackVideoEngagement } = useVideoViewTracking();
 
   // Swipe gesture handling
@@ -326,3 +326,6 @@ export const EnhancedVideoPlayer: React.FC<EnhancedVideoPlayerProps> = ({
     </div>
   );
 };
+
+
+

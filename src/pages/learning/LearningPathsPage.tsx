@@ -190,7 +190,7 @@ const LearningPathsPage = () => {
             <Card className="border-0 shadow-sm">
               <CardContent className="p-4 text-center">
                 <div className="text-lg font-semibold text-green-600 mb-2">Data Science</div>
-                <div className="text-sm text-gray-600">Analytics & Machine Learning</div>
+                <div className="text-sm text-gray-600">CareerAnalytics & Machine Learning</div>
               </CardContent>
             </Card>
             <Card className="border-0 shadow-sm">
@@ -207,3 +207,6 @@ const LearningPathsPage = () => {
 };
 
 export default LearningPathsPage;
+
+
+

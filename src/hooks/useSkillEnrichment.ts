@@ -78,7 +78,7 @@ export const getFallbackSkills = (jobTitle: string): string[] => {
     
     // Business roles
     'sales': ['CRM Software', 'Cold Calling', 'Lead Generation', 'Negotiation', 'Salesforce', 'Pipeline Management'],
-    'marketing': ['Digital Marketing', 'SEO', 'Google Analytics', 'Content Marketing', 'Social Media', 'Campaign Management'],
+    'marketing': ['Digital Marketing', 'SEO', 'Google CareerAnalytics', 'Content Marketing', 'Social Media', 'Campaign Management'],
     'finance': ['Excel', 'Financial Analysis', 'Accounting', 'SAP', 'Financial Modeling', 'Budgeting'],
     'hr': ['HRIS', 'Recruitment', 'Performance Management', 'Employee Relations', 'Payroll', 'Compliance'],
     
@@ -102,3 +102,6 @@ export const getFallbackSkills = (jobTitle: string): string[] => {
   // Generic fallback
   return ['Industry Knowledge', 'Analytical Skills', 'Problem Solving', 'Communication', 'Teamwork'];
 };
+
+
+

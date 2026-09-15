@@ -34,7 +34,7 @@ interface PerformanceMetrics {
   improvementSuggestions: string[];
 }
 
-export function UserAnalyticsDashboard() {
+export function UserCareerAnalyticsCommandCenter() {
   const [timeRange, setTimeRange] = useState('7d');
   const [metrics, setMetrics] = useState<UsageMetrics | null>(null);
   const [performance, setPerformance] = useState<PerformanceMetrics | null>(null);
@@ -43,10 +43,10 @@ export function UserAnalyticsDashboard() {
   const { toast } = useToast();
 
   useEffect(() => {
-    fetchAnalytics();
+    fetchCareerAnalytics();
   }, [timeRange]);
 
-  const fetchAnalytics = async () => {
+  const fetchCareerAnalytics = async () => {
     setLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -77,10 +77,10 @@ export function UserAnalyticsDashboard() {
       setMetrics(processedMetrics);
       setPerformance(performanceMetrics);
     } catch (error) {
-      console.error('Error fetching analytics:', error);
+      console.error('Error fetching CareerAnalytics:', error);
       toast({
         title: "Error",
-        description: "Failed to fetch analytics data",
+        description: "Failed to fetch CareerAnalytics data",
         variant: "destructive",
       });
     } finally {
@@ -239,7 +239,7 @@ export function UserAnalyticsDashboard() {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `ai-analytics-${format(new Date(), 'yyyy-MM-dd')}.csv`;
+    a.download = `ai-CareerAnalytics-${format(new Date(), 'yyyy-MM-dd')}.csv`;
     a.click();
     window.URL.revokeObjectURL(url);
   };
@@ -255,14 +255,14 @@ export function UserAnalyticsDashboard() {
   };
 
   if (loading) {
-    return <div className="flex items-center justify-center p-8">Loading analytics...</div>;
+    return <div className="flex items-center justify-center p-8">Loading CareerAnalytics...</div>;
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">AI Usage Analytics</h2>
+          <h2 className="text-2xl font-bold">AI Usage CareerAnalytics</h2>
           <p className="text-muted-foreground">Track your AI tool performance and costs</p>
         </div>
         <div className="flex items-center gap-4">
@@ -661,3 +661,6 @@ export function UserAnalyticsDashboard() {
     </div>
   );
 }
+
+
+

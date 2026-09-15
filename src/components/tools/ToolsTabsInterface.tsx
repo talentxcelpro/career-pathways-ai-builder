@@ -30,7 +30,7 @@ import CoverLetter from '@/pages/tools/CoverLetter';
 import SalaryAnalyzer from '@/pages/tools/SalaryAnalyzer';
 import MarketInsights from '@/pages/tools/MarketInsights';
 import InterviewPrep from '@/pages/tools/InterviewPrep';
-import AICareerAssistant from '@/pages/tools/AICareerAssistant';
+import AICareerNavigator from '@/pages/tools/AICareerNavigator';
 import { ProfileScore } from '@/pages/tools/ProfileScore';
 
 interface Tool {
@@ -64,8 +64,8 @@ const toolCategories = [
     color: 'text-slate-800'
   },
   {
-    id: 'ai-powered',
-    title: 'AI-Powered Insights',
+    id: 'Performance',
+    title: 'Performance Insights',
     subtitle: 'Advanced intelligence for career growth',
     icon: Brain,
     gradient: 'from-indigo-600 to-indigo-700',
@@ -74,7 +74,7 @@ const toolCategories = [
   {
     id: 'market-analysis',
     title: 'Market Intelligence',
-    subtitle: 'Global market trends and analytics',
+    subtitle: 'Global market trends and CareerAnalytics',
     icon: BarChart3,
     gradient: 'from-emerald-600 to-emerald-700',
     color: 'text-emerald-900'
@@ -111,12 +111,12 @@ const tools: Tool[] = [
     global: true
   },
   {
-    id: 'ai-assistant',
+    id: 'ai-Navigator',
     title: 'Career Coach AI',
     subtitle: 'Personalized career guidance',
     icon: Brain,
-    component: AICareerAssistant,
-    category: 'ai-powered',
+    component: AICareerNavigator,
+    category: 'Performance',
     premium: true
   },
   {
@@ -148,11 +148,11 @@ const tools: Tool[] = [
   },
   {
     id: 'profile-score',
-    title: 'Profile Analytics',
+    title: 'Profile CareerAnalytics',
     subtitle: 'Comprehensive profile scoring',
     icon: Award,
     component: ProfileScore,
-    category: 'ai-powered'
+    category: 'Performance'
   }
 ];
 
@@ -193,7 +193,7 @@ const ToolsTabsInterface = () => {
               </Badge>
               <Badge variant="outline" className="gap-2">
                 <Zap className="h-3 w-3" />
-                AI-Powered
+                Performance
               </Badge>
             </div>
           </div>
@@ -407,3 +407,7 @@ const ToolsTabsInterface = () => {
 };
 
 export default ToolsTabsInterface;
+
+
+
+

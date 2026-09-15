@@ -3,73 +3,83 @@ import TalentXcelAIChat from '@/components/ai/TalentXcelAIChat';
 import { EnhancedAICareerIntelligence } from '@/components/ai/EnhancedAICareerIntelligence';
 import { ProactiveNotificationSystem } from '@/components/ai/ProactiveNotificationSystem';
 import { AdvancedAIPersonalization } from '@/components/ai/AdvancedAIPersonalization';
-import { EnhancedAnalyticsDashboard } from '@/components/analytics/EnhancedAnalyticsDashboard';
+import EnhancedCareerAnalyticsCommandCenter from '@/components/ai/EnhancedCareerAnalytics';
 import { PremiumNetworkingFeatures } from '@/components/social/PremiumNetworkingFeatures';
-import { AICareerCopilot } from '@/components/ai/AICareerCopilot';
+import { TalentXcelNavigatorWidget } from '@/components/ai/AICareerNavigator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { updateMetaTags } from '@/utils/metaTags';
-import { Brain, MessageSquare, TrendingUp, Zap, Users } from 'lucide-react';
+import { MessageSquare, TrendingUp, Zap, Users, Sparkles, Brain, Activity, Shield } from 'lucide-react';
 
-const AIAgentDashboard: React.FC = () => {
+const AIAgentCommandCenter: React.FC = () => {
   const [activeTab, setActiveTab] = useState('chat');
 
   React.useEffect(() => {
     updateMetaTags({
-      title: 'TalentXcel AI - Your AI-Powered Career Assistant | TalentXcel',
-      description: 'Advanced AI assistant for career growth, intelligent job matching, resume optimization, interview prep, and personalized career insights.'
+      title: 'TalentXcel AI Hub - Strategic Professional Intelligence | TalentXcel',
+      description: 'Advanced TalentXcel AI Hub for career growth, Strategic Matching, performance optimization, and personalized Professional Intelligence signals.'
     });
   }, []);
 
   return (
-    <div className="h-screen bg-background overflow-hidden">
+    <div className="h-screen bg-slate-50 overflow-hidden flex flex-col edge-to-edge">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
-        {/* Enhanced Tab Navigation */}
-        <div className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-          <TabsList className="grid w-full grid-cols-5 h-14 bg-transparent">
-            <TabsTrigger value="chat" className="flex items-center gap-2 data-[state=active]:bg-primary/10">
+        {/* Premium Tab Navigation */}
+        <div className="bg-white/80 backdrop-blur-2xl border-b border-slate-200/50 sticky top-0 z-50 px-6">
+          <TabsList className="flex items-center justify-start h-20 bg-transparent gap-8">
+            <TabsTrigger value="chat" className="h-12 px-6 rounded-2xl font-apple-heavy text-xs uppercase tracking-widest data-[state=active]:bg-slate-950 data-[state=active]:text-white data-[state=active]:shadow-xl transition-all flex items-center gap-2">
               <MessageSquare className="w-4 h-4" />
-              <span className="hidden sm:inline">AI Chat</span>
+              <span>Navigator</span>
             </TabsTrigger>
-            <TabsTrigger value="intelligence" className="flex items-center gap-2 data-[state=active]:bg-primary/10">
-              <Brain className="w-4 h-4" />
-              <span className="hidden sm:inline">Intelligence</span>
+            <TabsTrigger value="intelligence" className="h-12 px-6 rounded-2xl font-apple-heavy text-xs uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-xl transition-all flex items-center gap-2">
+              <Sparkles className="w-4 h-4" />
+              <span>Intelligence Engine</span>
             </TabsTrigger>
-            <TabsTrigger value="personalization" className="flex items-center gap-2 data-[state=active]:bg-primary/10">
+            <TabsTrigger value="personalization" className="h-12 px-6 rounded-2xl font-apple-heavy text-xs uppercase tracking-widest data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=active]:shadow-xl transition-all flex items-center gap-2">
               <Zap className="w-4 h-4" />
-              <span className="hidden sm:inline">AI Insights</span>
+              <span>Performance Signals</span>
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center gap-2 data-[state=active]:bg-primary/10">
-              <TrendingUp className="w-4 h-4" />
-              <span className="hidden sm:inline">Analytics</span>
+            <TabsTrigger value="career-analytics" className="h-12 px-6 rounded-2xl font-apple-heavy text-xs uppercase tracking-widest data-[state=active]:bg-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-xl transition-all flex items-center gap-2">
+              <Activity className="w-4 h-4" />
+              <span>Analytics Hub</span>
             </TabsTrigger>
-            <TabsTrigger value="networking" className="flex items-center gap-2 data-[state=active]:bg-primary/10">
-              <Users className="w-4 h-4" />
-              <span className="hidden sm:inline">Network</span>
+            <TabsTrigger value="networking" className="h-12 px-6 rounded-2xl font-apple-heavy text-xs uppercase tracking-widest data-[state=active]:bg-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-xl transition-all flex items-center gap-2">
+              <Shield className="w-4 h-4" />
+              <span>Ecosystem Hub</span>
             </TabsTrigger>
           </TabsList>
         </div>
 
-        {/* Tab Content */}
-        <div className="flex-1 overflow-hidden">
-          <TabsContent value="chat" className="h-full m-0">
+        {/* Intelligence Content */}
+        <div className="flex-1 overflow-hidden relative">
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-50 to-white pointer-events-none" />
+          
+          <TabsContent value="chat" className="h-full m-0 relative z-10">
             <TalentXcelAIChat />
           </TabsContent>
           
-          <TabsContent value="intelligence" className="h-full m-0 overflow-y-auto">
-            <EnhancedAICareerIntelligence />
+          <TabsContent value="intelligence" className="h-full m-0 overflow-y-auto relative z-10 pb-32">
+            <div className="max-w-7xl mx-auto px-6 py-12">
+              <EnhancedAICareerIntelligence />
+            </div>
           </TabsContent>
           
-          <TabsContent value="personalization" className="h-full m-0 overflow-y-auto p-6">
-            <AdvancedAIPersonalization />
+          <TabsContent value="personalization" className="h-full m-0 overflow-y-auto relative z-10 pb-32">
+            <div className="max-w-7xl mx-auto px-6 py-12">
+              <AdvancedAIPersonalization />
+            </div>
           </TabsContent>
           
-          <TabsContent value="analytics" className="h-full m-0 overflow-y-auto p-6">
-            <EnhancedAnalyticsDashboard />
+          <TabsContent value="career-analytics" className="h-full m-0 overflow-y-auto relative z-10 pb-32">
+            <div className="max-w-7xl mx-auto px-6 py-12">
+              <EnhancedCareerAnalyticsCommandCenter />
+            </div>
           </TabsContent>
           
-          <TabsContent value="networking" className="h-full m-0 overflow-y-auto p-6">
-            <PremiumNetworkingFeatures />
+          <TabsContent value="networking" className="h-full m-0 overflow-y-auto relative z-10 pb-32">
+            <div className="max-w-7xl mx-auto px-6 py-12">
+              <PremiumNetworkingFeatures />
+            </div>
           </TabsContent>
         </div>
       </Tabs>
@@ -77,10 +87,10 @@ const AIAgentDashboard: React.FC = () => {
       {/* Proactive notification system */}
       <ProactiveNotificationSystem />
       
-      {/* AI Career Copilot */}
-      <AICareerCopilot />
+      {/* Strategic AI Navigator */}
+      <TalentXcelNavigatorWidget />
     </div>
   );
 };
 
-export default AIAgentDashboard;
+export default AIAgentCommandCenter;

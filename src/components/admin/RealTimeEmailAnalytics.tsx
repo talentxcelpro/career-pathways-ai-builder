@@ -49,7 +49,7 @@ interface TopPerformingTemplate {
   clickRate: number;
 }
 
-export const RealTimeEmailAnalytics = () => {
+export const RealTimeEmailCareerAnalytics = () => {
   const [metrics, setMetrics] = useState<RealTimeMetrics>({
     emailsSentToday: 0,
     emailsDelivered: 0,
@@ -80,9 +80,9 @@ export const RealTimeEmailAnalytics = () => {
 
     // Set up real-time subscription for email events
     const subscription = supabase
-      .channel('email_analytics')
+      .channel('email_CareerAnalytics')
       .on('postgres_changes', 
-        { event: '*', schema: 'public', table: 'email_analytics' },
+        { event: '*', schema: 'public', table: 'email_CareerAnalytics' },
         () => {
           loadRealTimeMetrics();
           loadRecentActivity();
@@ -98,7 +98,7 @@ export const RealTimeEmailAnalytics = () => {
 
   const loadRealTimeMetrics = async () => {
     try {
-      // Mock real-time metrics - in real implementation, this would come from email_analytics table
+      // Mock real-time metrics - in real implementation, this would come from email_CareerAnalytics table
       const mockMetrics: RealTimeMetrics = {
         emailsSentToday: 12456,
         emailsDelivered: 12100,
@@ -250,7 +250,7 @@ export const RealTimeEmailAnalytics = () => {
   };
 
   if (loading) {
-    return <div className="flex items-center justify-center p-8">Loading analytics...</div>;
+    return <div className="flex items-center justify-center p-8">Loading CareerAnalytics...</div>;
   }
 
   return (
@@ -328,7 +328,7 @@ export const RealTimeEmailAnalytics = () => {
                 Real-time Email Activity
               </CardTitle>
               <CardDescription>
-                Live feed of email interactions as they happen
+                Live Pulse of email interactions as they happen
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -458,7 +458,7 @@ export const RealTimeEmailAnalytics = () => {
           
           <Card>
             <CardHeader>
-              <CardTitle>AI-Powered Recommendations</CardTitle>
+              <CardTitle>Performance Recommendations</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
@@ -488,3 +488,6 @@ export const RealTimeEmailAnalytics = () => {
     </div>
   );
 };
+
+
+

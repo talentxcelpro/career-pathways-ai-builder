@@ -96,7 +96,7 @@ export const EnhancedJobFilters: React.FC<EnhancedJobFiltersProps> = ({
     (filters.salary_min > 0 || filters.salary_max > 0 ? 1 : 0);
 
   return (
-    <Card className={className}>
+    <Card className={`${className} rounded-3xl border-slate-100 shadow-sm overflow-hidden`}>
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">

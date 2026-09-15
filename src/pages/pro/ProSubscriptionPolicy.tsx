@@ -78,7 +78,7 @@ const ProSubscriptionPolicy = () => {
                   <li>• Up to 3 service listings</li>
                   <li>• Basic CRM and lead management</li>
                   <li>• Portfolio upload</li>
-                  <li>• Basic analytics</li>
+                  <li>• Basic CareerAnalytics</li>
                 </ul>
               </div>
               
@@ -207,3 +207,6 @@ const ProSubscriptionPolicy = () => {
 };
 
 export default ProSubscriptionPolicy;
+
+
+

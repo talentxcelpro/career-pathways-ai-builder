@@ -172,7 +172,7 @@ export const CourseGraphenerator: React.FC = () => {
           </div>
           
           <div className="space-y-2">
-            <Label>Progress Tracking</Label>
+            <Label>Growth Path</Label>
             <div className="text-sm text-muted-foreground">
               Total courses created: {batches.reduce((sum, b) => sum + (b.courses_created || 0), 0)}
             </div>

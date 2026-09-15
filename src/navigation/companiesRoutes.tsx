@@ -1,6 +1,7 @@
-
-import Companies from "../pages/Companies";
+import { lazy } from "react";
+const Companies = lazy(() => import("../pages/Companies"));
 import { CompanyDetailPage } from "../components/performance/LazyRoutes";
+
 
 export const companiesRoutes = [
   {

@@ -1,82 +1,83 @@
 import { lazy } from "react";
-import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag, Bot, Globe, AlertTriangle, Link, Newspaper, Coins, Upload, Database, Rocket, Eye } from "lucide-react";
+import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Crown, MessageSquare, Search, Megaphone, Layout, Flag, Globe, AlertTriangle, Link, Newspaper, Coins, Upload, Database, Rocket, Eye } from "lucide-react";
+const TXCTokenManagement = lazy(() => import("../pages/admin/TXCTokenManagement"));
+const TXCAwardsAndBonuses = lazy(() => import("../pages/admin/TXCAwardsAndBonuses"));
+const TXCCareerAnalytics = lazy(() => import("../pages/admin/TXCAnalytics"));
+const TXCBackfill = lazy(() => import("../pages/admin/TXCBackfill"));
+const TXCStore = lazy(() => import("../pages/admin/TXCStore"));
+const TXCSpendingHistory = lazy(() => import("../pages/admin/TXCSpendingHistory"));
+const LinkedInBulkUpload = lazy(() => import("../pages/admin/LinkedInBulkUpload"));
+const LinkedInJobScraper = lazy(() => import("../pages/admin/LinkedInJobScraper"));
+const LinkedInCareerAnalytics = lazy(() => import("../pages/admin/LinkedInAnalytics"));
+const EnterpriseSolutions = lazy(() => import("../pages/admin/EnterpriseSolutions"));
+const EnterpriseCareerAnalytics = lazy(() => import("../pages/admin/EnterpriseAnalytics"));
+const EnterpriseClients = lazy(() => import("../pages/admin/EnterpriseClients"));
+const EnterpriseBilling = lazy(() => import("../pages/admin/EnterpriseBilling"));
+const SEOSuite = lazy(() => import("../pages/admin/SEOSuite"));
+const TalentDatabase = lazy(() => import("../pages/admin/TalentDatabase"));
+const CareerPlatform = lazy(() => import("../pages/admin/CareerPlatform"));
+const EmployerRequestsAdmin = lazy(() => import("../pages/admin/EmployerRequestsAdmin"));
+const AdminCommandCenter = lazy(() => import("../pages/admin/AdminDashboard"));
+const AdminManagement = lazy(() => import("../pages/admin/AdminManagement"));
+const UserManagement = lazy(() => import("../pages/admin/UserManagement"));
+const HomeManagement = lazy(() => import("../pages/admin/HomeManagement"));
+const NetworkManagement = lazy(() => import("../pages/admin/NetworkManagement"));
+const JobsManagement = lazy(() => import("../pages/admin/JobsManagement"));
+const ResumeManagement = lazy(() => import("../pages/admin/ResumeManagement"));
+const ToolsManagement = lazy(() => import("../pages/admin/ToolsManagement"));
+const CompaniesManagement = lazy(() => import("../pages/admin/CompaniesManagement"));
+const LearningManagement = lazy(() => import("../pages/admin/LearningManagement"));
+const CareerMapManagement = lazy(() => import("../pages/admin/CareerMapManagement"));
+const CareerAnalyticsReports = lazy(() => import("../pages/admin/AnalyticsReports"));
+const SecurityLogs = lazy(() => import("../pages/admin/SecurityLogs"));
+const CreateCourse = lazy(() => import("../pages/admin/learning/CreateCourse"));
+const EmailAutomationPage = lazy(() => import("../pages/admin/EmailAutomation"));
+const AIMLTrainingCenter = lazy(() => import("../pages/admin/AIMLTrainingCenter"));
+const AdminAIManagement = lazy(() => import("../pages/AdminAIManagement"));
+const BotManagement = lazy(() => import("../pages/admin/BotManagement"));
+const CollegesManagement = lazy(() => import("../pages/admin/CollegesManagement"));
+const SEOManagement = lazy(() => import("../pages/admin/SEOManagement"));
+const AdvancedSEOManager = lazy(() => import("../pages/admin/AdvancedSEOManager"));
+const AdCampaignManager = lazy(() => import("../pages/admin/AdCampaignManager"));
+const SmartPageBuilder = lazy(() => import("../pages/admin/SmartPageBuilder"));
+const AINavigatorPanel = lazy(() => import("../pages/admin/AINavigatorPanel"));
+const AdvancedContentHub = lazy(() => import("../pages/admin/AdvancedContentHub"));
+const FeatureFlagsManager = lazy(() => import("../pages/admin/FeatureFlagsManager"));
+const AdvancedCareerAnalyticsCommandCenter = lazy(() => import("../pages/admin/AdvancedAnalyticsDashboard"));
+const PerformanceMonitoring = lazy(() => import("../pages/admin/PerformanceMonitoring"));
+const IntegrationHub = lazy(() => import("../pages/admin/IntegrationHub"));
+const BacklinkCommandCenter = lazy(() => import("../pages/admin/BacklinkDashboard"));
+const LinkBuildingCommandCenter = lazy(() => import("../pages/admin/LinkBuildingDashboard"));
+const AgentOperationsPage = lazy(() => import("../pages/admin/AgentOperations"));
+const NewsAutomationPage = lazy(() => import("../pages/admin/NewsAutomationPage"));
+const ProductRequirementDocument = lazy(() => import("../pages/admin/ProductRequirementDocument"));
+const NewsManagement = lazy(() => import("../pages/admin/NewsManagement"));
+const EdgeFunctionsMonitor = lazy(() => import("../pages/admin/EdgeFunctionsMonitor"));
+const LinkedInImporter = lazy(() => import("../pages/admin/LinkedInImporter"));
+const EnterpriseOverview = lazy(() => import("../pages/admin/EnterpriseOverview"));
+const BulkUserImports = lazy(() => import("../pages/admin/BulkUserImports"));
+
+// Static component imports (small components or wrappers stay static if needed, but pages must be lazy)
 import { LinkedInImportManager } from "../components/admin/LinkedInImportManager";
 import { TokenWallet } from "../components/blockchain/TokenWallet";
 import { BotPostManager } from "../components/admin/BotPostManager";
-import TXCTokenManagement from "../pages/admin/TXCTokenManagement";
-import TXCAwardsAndBonuses from "../pages/admin/TXCAwardsAndBonuses";
-import TXCAnalytics from "../pages/admin/TXCAnalytics";
-import TXCBackfill from "../pages/admin/TXCBackfill";
-import TXCStore from "../pages/admin/TXCStore";
-import TXCSpendingHistory from "../pages/admin/TXCSpendingHistory";
-import LinkedInBulkUpload from "../pages/admin/LinkedInBulkUpload";
-import LinkedInJobScraper from "../pages/admin/LinkedInJobScraper";
-import LinkedInAnalytics from "../pages/admin/LinkedInAnalytics";
-import EnterpriseSolutions from "../pages/admin/EnterpriseSolutions";
-import EnterpriseAnalytics from "../pages/admin/EnterpriseAnalytics";
-import EnterpriseClients from "../pages/admin/EnterpriseClients";
-import EnterpriseBilling from "../pages/admin/EnterpriseBilling";
-import SEOSuite from "../pages/admin/SEOSuite";
-import TalentDatabase from "../pages/admin/TalentDatabase";
-import CareerPlatform from "../pages/admin/CareerPlatform";
 import { BotIdentityManager } from "../components/admin/BotIdentityManager";
 import { TestimonialsManagement } from "../components/admin/TestimonialsManagement";
 import { VerificationManagement } from "../components/admin/VerificationManagement";
-import EmployerRequestsAdmin from "../pages/admin/EmployerRequestsAdmin";
-import AdminDashboard from "../pages/admin/AdminDashboard";
-import AdminManagement from "../pages/admin/AdminManagement";
-import UserManagement from "../pages/admin/UserManagement";
-import HomeManagement from "../pages/admin/HomeManagement";
-import NetworkManagement from "../pages/admin/NetworkManagement";
-import JobsManagement from "../pages/admin/JobsManagement";
-import ResumeManagement from "../pages/admin/ResumeManagement";
-import ToolsManagement from "../pages/admin/ToolsManagement";
-import CompaniesManagement from "../pages/admin/CompaniesManagement";
-import LearningManagement from "../pages/admin/LearningManagement";
-import CareerMapManagement from "../pages/admin/CareerMapManagement";
-// Removed traditional pricing - using TXC only
-import AnalyticsReports from "../pages/admin/AnalyticsReports";
-import SecurityLogs from "../pages/admin/SecurityLogs";
-import SecurityMonitoring from "../components/admin/SecurityMonitoring";
-import CreateCourse from "../pages/admin/learning/CreateCourse";
-// Removed traditional pricing plans - using TXC only
-import EmailAutomationPage from "../pages/admin/EmailAutomation";
-import AIMLTrainingCenter from "../pages/admin/AIMLTrainingCenter";
-import AdminAIManagement from "../pages/AdminAIManagement";
-import BotManagement from "../pages/admin/BotManagement";
-import CollegesManagement from "../pages/admin/CollegesManagement";
+import { SecurityMonitoring } from "../components/admin/SecurityMonitoring";
 import { ProUsersPage } from "../components/admin/ProUsersPage";
-import SEOManagement from "../pages/admin/SEOManagement";
-import AdvancedSEOManager from "../pages/admin/AdvancedSEOManager";
-import AdCampaignManager from "../pages/admin/AdCampaignManager";
-import SmartPageBuilder from "../pages/admin/SmartPageBuilder";
-import AIAssistantPanel from "../pages/admin/AIAssistantPanel";
-import AdvancedContentHub from "../pages/admin/AdvancedContentHub";
-import FeatureFlagsManager from "../pages/admin/FeatureFlagsManager";
-import AdvancedAnalyticsDashboard from "../pages/admin/AdvancedAnalyticsDashboard";
-import PerformanceMonitoring from "../pages/admin/PerformanceMonitoring";
-import IntegrationHub from "../pages/admin/IntegrationHub";
-import BacklinkDashboard from "../pages/admin/BacklinkDashboard";
-import { SEODashboard } from "../components/admin/SEODashboard";
-import { SEODashboardNew } from "../components/admin/SEODashboardNew";
+import { SEOCommandCenter } from "../components/admin/SEODashboard";
+import { SEOCommandCenterNew } from "../components/admin/SEODashboardNew";
 import { JobDataManager } from "../components/admin/JobDataManager";
-import LinkBuildingDashboard from "../pages/admin/LinkBuildingDashboard";
-import AgentOperationsPage from "../pages/admin/AgentOperations";
-import NewsAutomationPage from "../pages/admin/NewsAutomationPage";
-import ProductRequirementDocument from "../pages/admin/ProductRequirementDocument";
-import NewsManagement from "../pages/admin/NewsManagement";
-import EdgeFunctionsMonitor from "../pages/admin/EdgeFunctionsMonitor";
-import LinkedInImporter from "../pages/admin/LinkedInImporter";
-import EnterpriseOverview from "../pages/admin/EnterpriseOverview";
-import Phase1Dashboard from "../components/network/Phase1Dashboard";
-import BulkUserImports from "../pages/admin/BulkUserImports";
+import Phase1CommandCenter from "../components/network/Phase1Dashboard";
+
 
 export const adminRoutes = [
   {
-    title: "Admin Dashboard",
+    title: "Admin Command Center",
     to: "/admin",
     icon: <Shield className="h-4 w-4" />,
-    page: <AdminDashboard />,
+    page: <AdminCommandCenter />,
     isPublic: true,
   },
   {
@@ -90,7 +91,7 @@ export const adminRoutes = [
     title: "Phase 1",
     to: "/admin/phase1",
     icon: <Rocket className="h-4 w-4" />,
-    page: <Phase1Dashboard />,
+    page: <Phase1CommandCenter />,
     isPublic: true,
   },
   {
@@ -199,10 +200,10 @@ export const adminRoutes = [
     isPublic: true,
   },
   {
-    title: "Analytics & Reports",
-    to: "/admin/analytics",
+    title: "Career Analytics & Reports",
+    to: "/admin/career-analytics",
     icon: <BarChart3 className="h-4 w-4" />,
-    page: <AnalyticsReports />,
+    page: <CareerAnalyticsReports />,
     isPublic: true,
   },
   // Removed traditional pricing & payments - using TXC only
@@ -228,44 +229,44 @@ export const adminRoutes = [
     isPublic: true,
   },
   {
-    title: "AI/ML Training Center",
-    to: "/admin/ai-ml-training",
-    icon: <Brain className="h-4 w-4" />,
+    title: "Talent Engine Training Center",
+    to: "/admin/talent-engine-training",
+    icon: <Wrench className="h-4 w-4" />,
     page: <AIMLTrainingCenter />,
     isPublic: true,
   },
   {
-    title: "AI Management",
-    to: "/admin/ai-management",
-    icon: <Brain className="h-4 w-4" />,
+    title: "Talent Engine Management",
+    to: "/admin/talent-engine-management",
+    icon: <Wrench className="h-4 w-4" />,
     page: <AdminAIManagement />,
     isPublic: true,
   },
   {
-    title: "Bot Management",
-    to: "/admin/bots",
-    icon: <Bot className="h-4 w-4" />,
+    title: "Automation Management",
+    to: "/admin/automation",
+    icon: <Wrench className="h-4 w-4" />,
     page: <BotManagement />,
     isPublic: true,
   },
   {
-    title: "Bot Post Manager",
-    to: "/admin/bot-posts",
-    icon: <Bot className="h-4 w-4" />,
+    title: "Automation Post Manager",
+    to: "/admin/automation-posts",
+    icon: <Wrench className="h-4 w-4" />,
     page: <BotPostManager />,
     isPublic: true,
   },
   {
-    title: "Bot Identity Manager",
-    to: "/admin/bot-identity",
-    icon: <Bot className="h-4 w-4" />,
+    title: "Automation Identity Manager",
+    to: "/admin/automation-identity",
+    icon: <Wrench className="h-4 w-4" />,
     page: <BotIdentityManager />,
     isPublic: true,
   },
   {
-    title: "AI Agent Operations",
+    title: "Navigator Operations",
     to: "/admin/agent-operations",
-    icon: <Bot className="h-4 w-4" />,
+    icon: <Wrench className="h-4 w-4" />,
     page: <AgentOperationsPage />,
     isPublic: true,
   },
@@ -299,23 +300,23 @@ export const adminRoutes = [
     isPublic: true,
   },
   {
-    title: "SEO Sitemap Dashboard",
+    title: "SEO Sitemap Command Center",
     to: "/admin/seo-sitemap",
     icon: <Globe className="h-4 w-4" />,
-    page: <SEODashboard />,
+    page: <SEOCommandCenter />,
     isPublic: true,
   },
   {
-    title: "SEO Enhancement Dashboard",
+    title: "SEO Enhancement Command Center",
     to: "/admin/seo-enhancement",
     icon: <Search className="h-4 w-4" />,
-    page: <SEODashboardNew />,
+    page: <SEOCommandCenterNew />,
     isPublic: true,
   },
   {
-    title: "AI Content Generator",
+    title: "Content Generator",
     to: "/admin/content",
-    icon: <Brain className="h-4 w-4" />,
+    icon: <FileText className="h-4 w-4" />,
     page: lazy(() => import('@/components/admin/ContentManagement').then(m => ({ default: m.ContentManagement }))),
     isPublic: true,
   },
@@ -334,10 +335,10 @@ export const adminRoutes = [
     isPublic: true,
   },
   {
-    title: "AI Assistant Panel",
-    to: "/admin/ai-assistant",
-    icon: <Brain className="h-4 w-4" />,
-    page: <AIAssistantPanel />,
+    title: "TalentXcel Navigator Panel",
+    to: "/admin/navigator",
+    icon: <Wrench className="h-4 w-4" />,
+    page: <AINavigatorPanel />,
     isPublic: true,
   },
   {
@@ -355,10 +356,10 @@ export const adminRoutes = [
     isPublic: true,
   },
   {
-    title: "Analytics Dashboard",
-    to: "/admin/analytics-dashboard",
+    title: "Career Analytics Command Center",
+    to: "/admin/career-analytics-command-center",
     icon: <BarChart3 className="h-4 w-4" />,
-    page: <AdvancedAnalyticsDashboard />,
+    page: <AdvancedCareerAnalyticsCommandCenter />,
     isPublic: true,
   },
   {
@@ -379,14 +380,14 @@ export const adminRoutes = [
     title: "Link Building Command Center",
     to: "/admin/link-building",
     icon: <Link className="h-4 w-4" />,
-    page: <LinkBuildingDashboard />,
+    page: <LinkBuildingCommandCenter />,
     isPublic: true,
   },
   {
     title: "Backlink System",
     to: "/admin/backlinks",
     icon: <Network className="h-4 w-4" />,
-    page: <BacklinkDashboard />,
+    page: <BacklinkCommandCenter />,
     isPublic: true,
   },
   {
@@ -439,10 +440,10 @@ export const adminRoutes = [
     isPublic: true,
   },
   {
-    title: "TXC Analytics",
-    to: "/admin/txc-analytics",
+    title: "TXC Career Analytics",
+    to: "/admin/txc-career-analytics",
     icon: <BarChart3 className="h-4 w-4" />,
-    page: <TXCAnalytics />,
+    page: <TXCCareerAnalytics />,
     isPublic: true,
   },
   {
@@ -469,15 +470,15 @@ export const adminRoutes = [
   {
     title: "LinkedIn Job Scraper",
     to: "/admin/linkedin-scraper",
-    icon: <Bot className="h-4 w-4" />,
+    icon: <Wrench className="h-4 w-4" />,
     page: <LinkedInJobScraper />,
     isPublic: true,
   },
   {
-    title: "LinkedIn Analytics",
-    to: "/admin/linkedin-analytics",
+    title: "LinkedIn Career Analytics",
+    to: "/admin/linkedin-career-analytics",
     icon: <BarChart3 className="h-4 w-4" />,
-    page: <LinkedInAnalytics />,
+    page: <LinkedInCareerAnalytics />,
     isPublic: true,
   },
   {
@@ -488,10 +489,10 @@ export const adminRoutes = [
     isPublic: true,
   },
   {
-    title: "Enterprise Analytics",
-    to: "/admin/enterprise/analytics",
+    title: "Enterprise Career Analytics",
+    to: "/admin/enterprise/career-analytics",
     icon: <BarChart3 className="h-4 w-4" />,
-    page: <EnterpriseAnalytics />,
+    page: <EnterpriseCareerAnalytics />,
     isPublic: true,
   },
   {
@@ -516,8 +517,8 @@ export const adminRoutes = [
     isPublic: true,
   },
   {
-    title: "SEO Automation Dashboard",
-    to: "/admin/seo-dashboard",
+    title: "SEO Automation Command Center",
+    to: "/admin/seo-command-center",
     icon: <Rocket className="h-4 w-4" />,
     page: lazy(() => import('../pages/SEODashboard').then(m => ({ default: m.default }))),
     requiresAdminAccess: true,
@@ -566,3 +567,7 @@ export const adminRoutes = [
     isPublic: true,
   }
 ];
+
+
+
+

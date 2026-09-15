@@ -1,8 +1,8 @@
-// Real-time dashboard data service
+// Real-time CommandCenter data service
 import { supabase } from '@/integrations/supabase/client';
 import { fetchProductionData } from '@/utils/productionCleanup';
 
-export interface DashboardStats {
+export interface CommandCenterStats {
   coursesCompleted: number;
   resumeViews: number;
   appliedJobs: number;
@@ -56,8 +56,8 @@ export interface PopularCourse {
   thumbnail_url?: string;
 }
 
-// Real-time user dashboard stats
-export const getDashboardStats = async (userId?: string): Promise<DashboardStats> => {
+// Real-time user CommandCenter stats
+export const getCommandCenterStats = async (userId?: string): Promise<CommandCenterStats> => {
   if (!userId) {
     return {
       coursesCompleted: 0,
@@ -122,7 +122,7 @@ export const getDashboardStats = async (userId?: string): Promise<DashboardStats
 // Real-time featured jobs
 export const getFeaturedJobs = async (): Promise<FeaturedJob[]> => {
   return fetchProductionData(async () => {
-    console.log('🔍 DashboardService: Fetching featured jobs...');
+    console.log('🔍 CommandCenterService: Fetching featured jobs...');
     const { data, error } = await supabase
       .from('jobs')
       .select(`
@@ -145,7 +145,7 @@ export const getFeaturedJobs = async (): Promise<FeaturedJob[]> => {
       .order('created_at', { ascending: false })
       .limit(6);
 
-    console.log('🔍 DashboardService: Featured jobs result:', { data, error, count: data?.length });
+    console.log('🔍 CommandCenterService: Featured jobs result:', { data, error, count: data?.length });
     if (error) throw error;
     return (data || []).map(job => ({
       ...job,
@@ -338,3 +338,5 @@ export const getUserCourseProgress = async (userId?: string) => {
     return data || [];
   }, []);
 };
+
+

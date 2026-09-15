@@ -2,8 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 export const useRealDataService = () => {
-  const getDashboardStats = useQuery({
-    queryKey: ['dashboard-stats'],
+  const getCommandCenterStats = useQuery({
+    queryKey: ['CommandCenter-stats'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
@@ -15,7 +15,7 @@ export const useRealDataService = () => {
       ]);
 
       return {
-        coursesCompleted: Math.floor(Math.random() * 5) + 1, // Will implement course progress tracking
+        coursesCompleted: Math.floor(Math.random() * 5) + 1, // Will implement course Growth Path
         resumeViews: Math.floor(Math.random() * 50) + 10,
         appliedJobs: applicationsRes.count || 0,
         profileViews: profileViewsRes.count || 0,
@@ -80,10 +80,11 @@ export const useRealDataService = () => {
   });
 
   return {
-    getDashboardStats,
+    getCommandCenterStats,
     getFeaturedJobs,
     getPopularCourses,
     getAllCourses,
     getAllLearningPaths,
   };
 };
+

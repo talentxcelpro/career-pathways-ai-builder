@@ -52,7 +52,7 @@ interface ActionableRecommendation {
   }>;
 }
 
-const EnhancedCareerAnalytics: React.FC = () => {
+const EnhancedCareerCareerAnalytics: React.FC = () => {
   const [currentIndustry] = useState('Technology');
   const [currentRole] = useState('Software Engineer');
   
@@ -64,7 +64,7 @@ const EnhancedCareerAnalytics: React.FC = () => {
     averageSalary: '$125,000 - $185,000',
     location: 'Remote/Major Cities',
     hotSkills: ['AI/ML', 'Cloud Architecture', 'DevOps', 'React', 'Python'],
-    emergingRoles: ['AI Engineer', 'DevOps Architect', 'Full-Stack ML Engineer']
+    emergingRoles: ['Talent Engineer', 'DevOps Architect', 'Full-Stack ML Engineer']
   };
 
   const careerPaths: CareerPath[] = [
@@ -442,7 +442,7 @@ const EnhancedCareerAnalytics: React.FC = () => {
                 <div className="p-4 bg-green-50 rounded-lg border-l-4 border-green-500">
                   <h4 className="font-semibold text-green-900">Industry Events</h4>
                   <p className="text-green-700 text-sm mt-1">
-                    3 relevant conferences this quarter. ROI: Average 5 quality connections per event.
+                    3 relevant conferences this quarter. ROI: Average 5 quality TalentNetwork per event.
                   </p>
                   <Button size="sm" className="mt-2">Find Events</Button>
                 </div>
@@ -463,4 +463,8 @@ const EnhancedCareerAnalytics: React.FC = () => {
   );
 };
 
-export default EnhancedCareerAnalytics;
+export default EnhancedCareerCareerAnalytics;
+
+
+
+

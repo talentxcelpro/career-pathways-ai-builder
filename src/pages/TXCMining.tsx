@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
-import { TXCMiningDashboard } from '@/components/txc/TXCMiningDashboard';
+import { TXCMiningCommandCenter } from '@/components/txc/TXCMiningDashboard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Coins, Zap, Trophy, Target, Gift, Sparkles, BarChart3, ArrowLeft } from 'lucide-react';
@@ -9,7 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useTokenBalance } from '@/hooks/useTokenBalance';
 import { useTXCMining } from '@/hooks/useTXCMining';
 import { formatTXC } from '@/types/txc-pricing';
-import txcMascot from '@/assets/txc-mascot.jpg';
+import { TalentXcelLogo } from '@/components/brand/TalentXcelLogo';
 import { RetroactiveTXCAdmin } from '@/components/admin/RetroactiveTXCAdmin';
 import { ComprehensiveTXCDistribution } from '@/components/admin/ComprehensiveTXCDistribution';
 
@@ -57,7 +57,7 @@ const TXCMining: React.FC = () => {
               className="flex items-center gap-2"
             >
               <ArrowLeft className="h-4 w-4" />
-              Back to Dashboard
+              Back to Command Center
             </Button>
             <Button 
               variant="outline" 
@@ -66,7 +66,7 @@ const TXCMining: React.FC = () => {
               className="flex items-center gap-2"
             >
               <BarChart3 className="h-4 w-4" />
-              View Progress
+              View Growth Path
             </Button>
           </div>
         </div>
@@ -75,11 +75,9 @@ const TXCMining: React.FC = () => {
         <div className="text-center mb-8">
           <div className="flex justify-center mb-6">
             <div className="relative">
-              <img 
-                src={txcMascot} 
-                alt="TXC Mining Mascot" 
-                className="w-24 h-24 rounded-full shadow-lg border-4 border-primary/20"
-              />
+              <div className="w-24 h-24 rounded-full shadow-lg border-4 border-primary/20 bg-white flex items-center justify-center">
+                <TalentXcelLogo className="h-14 w-14" />
+              </div>
               <div className="absolute -top-2 -right-2">
                 <div className="bg-gradient-to-r from-primary to-secondary text-white text-xs px-2 py-1 rounded-full font-bold animate-bounce">
                   <Sparkles className="h-3 w-3 inline mr-1" />
@@ -90,7 +88,7 @@ const TXCMining: React.FC = () => {
           </div>
           
           <h1 className="text-4xl font-bold bg-gradient-to-r from-primary via-purple-600 to-primary/60 bg-clip-text text-transparent mb-4">
-            Welcome to TXC Mining! 🎉
+            Welcome to TXC Mining
           </h1>
           
           {/* Personal Greeting */}
@@ -101,7 +99,7 @@ const TXCMining: React.FC = () => {
             </div>
             <p className="text-lg text-muted-foreground mb-4">
               Your current TXC balance: <span className="font-bold text-primary">{formatTXC(availableBalance)}</span> TXC tokens! 
-              {availableBalance > 0 && " Keep earning more by completing activities! 🎁"}
+              {availableBalance > 0 && " Keep earning more by completing activities."}
             </p>
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-primary/10 to-secondary/10 px-4 py-2 rounded-lg">
               <Coins className="h-5 w-5 text-primary" />
@@ -133,7 +131,7 @@ const TXCMining: React.FC = () => {
               
               {/* Title */}
               <h3 className="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">
-                ⛏️ Active Mining Session
+                Active Mining Session
               </h3>
               
               {/* Subtitle */}
@@ -205,8 +203,8 @@ const TXCMining: React.FC = () => {
           </div>
         </div>
 
-        {/* Mining Dashboard */}
-        <TXCMiningDashboard />
+        {/* Mining command center */}
+        <TXCMiningCommandCenter />
 
         {/* Tips */}
         <Card className="mt-8">
@@ -239,7 +237,7 @@ const TXCMining: React.FC = () => {
               <div className="border-l-4 border-purple-500 pl-4">
                 <h4 className="font-semibold">Network Building</h4>
                 <p className="text-sm text-muted-foreground">
-                  Connect with professionals and give recommendations to grow your network and earnings.
+                  Connect with professionals and give referrals to grow your Talent Network and earnings.
                 </p>
               </div>
             </div>
@@ -251,3 +249,4 @@ const TXCMining: React.FC = () => {
 };
 
 export default TXCMining;
+

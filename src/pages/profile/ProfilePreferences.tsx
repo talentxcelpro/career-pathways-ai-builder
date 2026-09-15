@@ -11,8 +11,8 @@ import { SalaryExpectationsSection } from "@/components/profile/preferences/Sala
 import { PreferredIndustriesSection } from "@/components/profile/preferences/PreferredIndustriesSection";
 import { DesiredBenefitsSection } from "@/components/profile/preferences/DesiredBenefitsSection";
 import { AdditionalNotesSection } from "@/components/profile/preferences/AdditionalNotesSection";
-import { SmartFeedPreferences } from "@/components/profile/preferences/SmartFeedPreferences";
-import { useSmartFeedPreferences } from "@/hooks/useSmartFeedPreferences";
+import { SmartPulsePreferences } from "@/components/Pulse/SmartPulsePreferences";
+import { useSmartPulsePreferences } from "@/components/Pulse/useSmartPulsePreferences";
 import { Settings, Zap, Briefcase } from "lucide-react";
 
 const ProfilePreferences = () => {
@@ -31,12 +31,12 @@ const ProfilePreferences = () => {
   });
 
   const { 
-    preferences: smartFeedPreferences, 
-    loading: smartFeedLoading, 
-    saving: smartFeedSaving,
-    updatePreferences: updateSmartFeedPreferences,
-    savePreferences: saveSmartFeedPreferences
-  } = useSmartFeedPreferences();
+    preferences: smartPulsePreferences, 
+    loading: smartPulseLoading, 
+    saving: smartPulseSaving,
+    updatePreferences: updateSmartPulsePreferences,
+    savePreferences: saveSmartPulsePreferences
+  } = useSmartPulsePreferences();
 
   const handleJobPreferencesSave = () => {
     toast({
@@ -45,8 +45,8 @@ const ProfilePreferences = () => {
     });
   };
 
-  const handleSmartFeedSave = async () => {
-    const success = await saveSmartFeedPreferences(smartFeedPreferences);
+  const handleSmartPulseSave = async () => {
+    const success = await saveSmartPulsePreferences(smartPulsePreferences);
     if (success) {
       // Toast is already shown in the hook
     }
@@ -55,7 +55,7 @@ const ProfilePreferences = () => {
   return (
     <ProfileLayout 
       title="Preferences" 
-      description="Manage your job search and smart feed preferences"
+      description="Manage your job search and smart Pulse preferences"
     >
       <Tabs defaultValue="job-preferences" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
@@ -63,9 +63,9 @@ const ProfilePreferences = () => {
             <Briefcase className="h-4 w-4" />
             Job Preferences
           </TabsTrigger>
-          <TabsTrigger value="smart-feed" className="flex items-center gap-2">
+          <TabsTrigger value="smart-Pulse" className="flex items-center gap-2">
             <Zap className="h-4 w-4" />
-            Smart Feed
+            Smart Pulse
           </TabsTrigger>
         </TabsList>
         
@@ -124,28 +124,28 @@ const ProfilePreferences = () => {
           </div>
         </TabsContent>
         
-        <TabsContent value="smart-feed" className="mt-6">
+        <TabsContent value="smart-Pulse" className="mt-6">
           <div className="space-y-6">
-            {smartFeedLoading ? (
+            {smartPulseLoading ? (
               <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
                 <p className="mt-2 text-sm text-muted-foreground">Loading preferences...</p>
               </div>
             ) : (
               <>
-                <SmartFeedPreferences
-                  preferences={smartFeedPreferences}
-                  onPreferencesChange={updateSmartFeedPreferences}
+                <SmartPulsePreferences
+                  preferences={smartPulsePreferences}
+                  onPreferencesChange={updateSmartPulsePreferences}
                 />
                 
                 {/* Save Button */}
                 <div className="flex justify-end">
                   <Button 
-                    onClick={handleSmartFeedSave} 
-                    disabled={smartFeedSaving}
+                    onClick={handleSmartPulseSave} 
+                    disabled={smartPulseSaving}
                     className="bg-gradient-to-r from-purple-600 to-blue-600"
                   >
-                    {smartFeedSaving ? "Saving..." : "Save Smart Feed Preferences"}
+                    {smartPulseSaving ? "Saving..." : "Save Smart Pulse Preferences"}
                   </Button>
                 </div>
               </>
@@ -158,3 +158,4 @@ const ProfilePreferences = () => {
 };
 
 export default ProfilePreferences;
+

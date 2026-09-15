@@ -39,7 +39,7 @@ export default function PublicJobSearch() {
       location: 'Mumbai, India',
       salary: '₹20-30 LPA',
       type: 'Full-time',
-      skills: ['Product Strategy', 'Analytics', 'Leadership'],
+      skills: ['Product Strategy', 'CareerAnalytics', 'Leadership'],
       posted: '1 day ago'
     },
     {
@@ -75,7 +75,7 @@ export default function PublicJobSearch() {
     <>
       <Helmet>
         <title>Jobs in India 2025 | Latest IT Jobs, Fresher Jobs, Remote Jobs - TalentXcel</title>
-        <meta name="description" content="Find latest jobs in India 2025. Browse 15,000+ IT jobs, fresher positions, remote work opportunities. AI-powered job matching with top companies." />
+        <meta name="description" content="Find latest jobs in India 2025. Browse 15,000+ IT jobs, fresher positions, remote work opportunities. Performance job matching with top companies." />
         <meta name="keywords" content="jobs in India 2025, latest IT jobs, fresher jobs, remote jobs India, job search, software engineer jobs, product manager jobs" />
         <link rel="canonical" href="https://talentxcel.in/public/jobs" />
         <meta property="og:title" content="Jobs in India 2025 | Latest IT Jobs, Fresher Jobs, Remote Jobs - TalentXcel" />
@@ -87,7 +87,7 @@ export default function PublicJobSearch() {
             "@context": "https://schema.org",
             "@type": "JobBoard",
             "name": "TalentXcel Jobs",
-            "description": "Find latest jobs in India with AI-powered matching",
+            "description": "Find latest jobs in India with Performance matching",
             "url": "https://talentxcel.in/public/jobs",
             "hiringOrganization": {
               "@type": "Organization",
@@ -116,7 +116,7 @@ export default function PublicJobSearch() {
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
               <Sparkles className="h-4 w-4" />
-              AI-Powered Job Matching
+              Performance Job Matching
             </div>
             <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
               Find Your Perfect Job
@@ -336,3 +336,6 @@ export default function PublicJobSearch() {
     </>
   );
 }
+
+
+

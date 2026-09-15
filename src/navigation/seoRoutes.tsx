@@ -1,14 +1,16 @@
-
+import { lazy } from "react";
 import { Briefcase, MapPin, GraduationCap, Building, Code, DollarSign, Users, FileText } from "lucide-react";
-import JobsByLocation from "../pages/seo/JobsByLocation";
-import JobsByRole from "../pages/seo/JobsByRole";
-import JobsBySkill from "../pages/seo/JobsBySkill";
-import CoursesByCategory from "../pages/seo/CoursesByCategory";
-import CompaniesByLocation from "../pages/seo/CompaniesByLocation";
-import SalaryGuide from "../pages/seo/SalaryGuide";
-import SalaryGuidePage from "../pages/seo/SalaryGuidePage";
-import IndustryJobs from "../pages/seo/IndustryJobs";
-import { ComprehensiveSEOGenerator } from "../components/seo/ComprehensiveSEOGenerator";
+
+const JobsByLocation = lazy(() => import("../pages/seo/JobsByLocation"));
+const JobsByRole = lazy(() => import("../pages/seo/JobsByRole"));
+const JobsBySkill = lazy(() => import("../pages/seo/JobsBySkill"));
+const CoursesByCategory = lazy(() => import("../pages/seo/CoursesByCategory"));
+const CompaniesByLocation = lazy(() => import("../pages/seo/CompaniesByLocation"));
+const SalaryGuide = lazy(() => import("../pages/seo/SalaryGuide"));
+const SalaryGuidePage = lazy(() => import("../pages/seo/SalaryGuidePage"));
+const IndustryJobs = lazy(() => import("../pages/seo/IndustryJobs"));
+const ComprehensiveSEOGenerator = lazy(() => import("../components/seo/ComprehensiveSEOGenerator").then(m => ({ default: m.ComprehensiveSEOGenerator })));
+
 
 export const seoRoutes = [
   // Location-based job pages

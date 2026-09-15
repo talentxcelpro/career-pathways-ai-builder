@@ -46,7 +46,7 @@ const lmsPlatforms: LMSPlatform[] = [
     name: 'Canvas LMS',
     logo: '🎨',
     description: 'Modern, user-friendly learning management system',
-    features: ['Mobile Learning', 'Video Conferencing', 'Analytics', 'Gradebook'],
+    features: ['Mobile Learning', 'Video Conferencing', 'CareerAnalytics', 'Gradebook'],
     status: 'available',
   },
   {
@@ -128,7 +128,7 @@ export const LMSIntegration: React.FC = () => {
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="platforms">Platforms</TabsTrigger>
           <TabsTrigger value="import-export">Import/Export</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
 
@@ -304,7 +304,7 @@ export const LMSIntegration: React.FC = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="analytics" className="space-y-6">
+        <TabsContent value="CareerAnalytics" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card>
               <CardHeader>
@@ -315,7 +315,7 @@ export const LMSIntegration: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-primary">5</div>
-                <p className="text-sm text-muted-foreground">Active LMS connections</p>
+                <p className="text-sm text-muted-foreground">Active LMS TalentNetwork</p>
               </CardContent>
             </Card>
 
@@ -409,3 +409,7 @@ export const LMSIntegration: React.FC = () => {
     </div>
   );
 };
+
+
+
+

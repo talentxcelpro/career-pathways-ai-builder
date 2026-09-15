@@ -145,7 +145,7 @@ export const useGamification = () => {
         'application': ['first_job_application', 'application_streak_5'],
         'profile_complete': ['profile_complete'],
         'resume_created': ['resume_created'],
-        'connection_made': ['connections_10', 'connections_50'],
+        'connection_made': ['TalentNetwork_10', 'TalentNetwork_50'],
         'txc_earned': ['txc_earner_1000', 'txc_earner_10000']
       };
 
@@ -255,3 +255,4 @@ export const useGamification = () => {
     updateStreak: checkAchievements
   };
 };
+

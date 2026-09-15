@@ -75,7 +75,7 @@ export const ConversionRateWidget = () => {
         <div className="pt-2 border-t border-slate-100">
           <div 
             className="flex items-center justify-center gap-2 p-2 bg-teal-50 rounded-lg hover:bg-teal-100 transition-colors cursor-pointer"
-            onClick={() => navigate('/employer/analytics')}
+            onClick={() => navigate('/employer/CareerAnalytics')}
           >
             <span className="text-sm font-semibold text-teal-700">View Conversion Funnel</span>
             <Target className="h-3 w-3 text-teal-700" />
@@ -85,3 +85,7 @@ export const ConversionRateWidget = () => {
     </Card>
   );
 };
+
+
+
+

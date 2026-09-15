@@ -62,7 +62,7 @@ export const NotificationPreferencesPanel: React.FC = () => {
           <CardTitle className="flex items-center gap-2">
             <Settings className="h-5 w-5" />
             Notification Preferences
-            <Badge variant="outline" className="ml-auto">Smart AI</Badge>
+            <Badge variant="outline" className="ml-auto">Talent Engine</Badge>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -210,16 +210,16 @@ export const NotificationPreferencesPanel: React.FC = () => {
 
           <Separator />
 
-          {/* AI Optimization */}
+          {/* Signal Tuning */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-semibold flex items-center gap-2">
                   <Sparkles className="h-4 w-4" />
-                  AI Smart Filtering
+                  Signal Filtering
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  Let AI learn your preferences and optimize notification timing
+                  Let TalentXcel learn your preferences and tune notification timing
                 </p>
               </div>
               <Switch

@@ -129,7 +129,7 @@ class AdvancedPerformanceMonitor {
       console.log(`${emoji} ${name}: ${value.toFixed(2)}ms (${rating})`);
     }
 
-    // Send to analytics in production (throttled)
+    // Send to CareerAnalytics in production (throttled)
     if (!import.meta.env.DEV && window.gtag && Math.random() < 0.1) { // 10% sample rate
       window.gtag('event', 'performance_metric', {
         metric_name: name,
@@ -199,3 +199,7 @@ export const advancedPerformanceMonitor = new AdvancedPerformanceMonitor();
 if (typeof window !== 'undefined') {
   window.addEventListener('beforeunload', () => advancedPerformanceMonitor.cleanup());
 }
+
+
+
+

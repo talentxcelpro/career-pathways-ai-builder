@@ -1,31 +1,39 @@
-
 import React, { useState } from 'react';
+import { Browser } from '@capacitor/browser';
+import { Capacitor } from '@capacitor/core';
+import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-import { LogIn, Loader2 } from 'lucide-react';
+import { getAuthCallbackUrl } from '@/utils/authRedirect';
 
 interface SocialLoginProps {
   variant?: 'default' | 'prominent';
   showText?: boolean;
+  mode?: 'sign-in' | 'sign-up';
 }
 
-export const SocialLogin: React.FC<SocialLoginProps> = ({ 
+export const SocialLogin: React.FC<SocialLoginProps> = ({
   variant = 'default',
-  showText = true 
+  showText = true,
+  mode = 'sign-in',
 }) => {
   const [loading, setLoading] = useState(false);
+  const isNative = Capacitor.isNativePlatform();
+  const helperText = mode === 'sign-up' ? 'Sign up with one click' : 'Sign in with one click';
+  const loadingLabel = isNative ? 'Opening Google...' : mode === 'sign-up' ? 'Signing up...' : 'Signing in...';
 
   const handleGoogleLogin = async () => {
+    if (loading) return;
+
     setLoading(true);
 
     try {
-      console.log('Starting Google OAuth flow...');
-      
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: getAuthCallbackUrl('/career-os'),
+          skipBrowserRedirect: isNative,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -35,47 +43,62 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
 
       if (error) {
         console.error('Google OAuth error:', error);
-        toast.error('Failed to sign in with Google. Please try again.');
+        toast.error('Failed to sign in with Google. Please use email login or try again.');
         setLoading(false);
         return;
       }
 
-      console.log('Google OAuth initiated successfully');
-      // The redirect will handle the loading state
-    } catch (error: any) {
+      if (isNative) {
+        if (!data?.url) {
+          toast.error('Google sign in could not start. Please use email login.');
+          setLoading(false);
+          return;
+        }
+
+        await Browser.open({
+          url: data.url,
+          windowName: '_self',
+        });
+
+        toast.info('Complete Google sign in in the browser.');
+        setTimeout(() => setLoading(false), 1000);
+      }
+    } catch (error) {
       console.error('Google login error:', error);
-      toast.error('Google sign in failed. Please try again.');
+      toast.error('Google sign in failed. Please use email login or try again.');
       setLoading(false);
     }
   };
 
-  const buttonClass = variant === 'prominent' 
-    ? "h-9 text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
-    : "h-8";
+  const buttonClass = variant === 'prominent'
+    ? 'h-9 text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]'
+    : 'h-8';
 
   return (
     <div className="space-y-3">
       {variant === 'prominent' && (
         <div className="text-center mb-4">
           <p className="text-sm font-semibold text-foreground flex items-center justify-center gap-2">
-            ⚡ Fast Login
+            Fast Login
           </p>
-          <p className="text-xs text-muted-foreground">Sign up with one click</p>
+          <p className="text-xs text-muted-foreground">{helperText}</p>
         </div>
       )}
-      
+
       <Button
+        type="button"
         onClick={handleGoogleLogin}
         disabled={loading}
-        className={`w-full ${buttonClass} ${variant === 'prominent' 
-          ? 'bg-white border-2 border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 shadow-md' 
-          : 'border border-gray-300 hover:bg-gray-50'
+        className={`w-full ${buttonClass} ${
+          variant === 'prominent'
+            ? 'bg-white border-2 border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 shadow-md'
+            : 'border border-gray-300 hover:bg-gray-50'
         } transition-colors duration-200 flex items-center justify-center gap-3 py-3`}
       >
         {loading ? (
           <Loader2 className="h-4 w-4 animate-spin text-gray-600" />
         ) : (
-          <svg className="h-5 w-5" viewBox="0 0 24 24">
+          <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
             <path
               fill="#4285F4"
               d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -96,7 +119,7 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
         )}
         {showText && (
           <span className="font-semibold">
-            {loading ? 'Signing up...' : 'Continue with Google'}
+            {loading ? loadingLabel : 'Continue with Google'}
           </span>
         )}
       </Button>

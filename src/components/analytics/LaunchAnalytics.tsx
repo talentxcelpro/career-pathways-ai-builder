@@ -7,9 +7,9 @@ declare global {
   }
 }
 
-export const LaunchAnalytics: React.FC = () => {
+export const LaunchCareerAnalytics: React.FC = () => {
   useEffect(() => {
-    // Initialize Google Analytics 4
+    // Initialize Google CareerAnalytics 4
     if (!import.meta.env.DEV) {
       // Load GA4 script
       const script = document.createElement('script');
@@ -46,16 +46,19 @@ export const LaunchAnalytics: React.FC = () => {
       });
     }
 
-    // Development analytics
+    // Development CareerAnalytics
     if (import.meta.env.DEV) {
-      console.log('🎯 Analytics initialized for development');
+      console.log('🎯 CareerAnalytics initialized for development');
       
-      // Mock analytics for development
+      // Mock CareerAnalytics for development
       window.gtag = (command: string, targetId: string, config?: any) => {
-        console.log('📊 Analytics Event:', { command, targetId, config });
+        console.log('📊 CareerAnalytics Event:', { command, targetId, config });
       };
     }
   }, []);
 
   return null; // This component doesn't render anything
 };
+
+
+

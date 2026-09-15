@@ -84,10 +84,10 @@ export const LearningHeroNav = () => {
       badge: 'New'
     },
     {
-      title: 'Analytics',
+      title: 'CareerAnalytics',
       subtitle: null,
       icon: BarChart3,
-      link: '/learning/analytics',
+      link: '/learning/CareerAnalytics',
       badge: null
     },
     {
@@ -199,3 +199,6 @@ export const LearningHeroNav = () => {
     </section>
   );
 };
+
+
+

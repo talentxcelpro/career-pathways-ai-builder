@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { BarChart3, ArrowLeft } from "lucide-react";
 import { useNavigate, useParams } from 'react-router-dom';
 
-const JobAnalytics = () => {
+const JobCareerAnalytics = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -17,20 +17,20 @@ const JobAnalytics = () => {
         </Button>
         <BarChart3 className="h-8 w-8 text-blue-600" />
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Job Analytics</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Job CareerAnalytics</h1>
           <p className="text-gray-600">Track your job posting performance</p>
         </div>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Performance Analytics</CardTitle>
+          <CardTitle>Performance CareerAnalytics</CardTitle>
           <CardDescription>Detailed insights into your job posting performance</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
             <BarChart3 className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-            <p className="text-gray-600">Advanced analytics feature coming soon</p>
+            <p className="text-gray-600">Advanced CareerAnalytics feature coming soon</p>
           </div>
         </CardContent>
       </Card>
@@ -38,4 +38,8 @@ const JobAnalytics = () => {
   );
 };
 
-export default JobAnalytics;
+export default JobCareerAnalytics;
+
+
+
+

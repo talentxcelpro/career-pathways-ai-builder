@@ -25,7 +25,7 @@ interface NotificationMetrics {
   };
 }
 
-export const useNotificationAnalytics = () => {
+export const useNotificationCareerAnalytics = () => {
   const { user } = useAuth();
   const [metrics, setMetrics] = useState<NotificationMetrics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -193,3 +193,6 @@ export const useNotificationAnalytics = () => {
     refreshMetrics: calculateMetrics
   };
 };
+
+
+

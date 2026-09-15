@@ -52,7 +52,7 @@ export const WelcomeExperience: React.FC<WelcomeExperienceProps> = ({ onComplete
   const steps = [
     {
       title: "Welcome to TalentXcel! 🎉",
-      subtitle: "Your AI-Powered Career Journey Starts Here",
+      subtitle: "Your Performance Career Journey Starts Here",
       content: (
         <div className="text-center space-y-6">
           <div className="relative">
@@ -65,10 +65,10 @@ export const WelcomeExperience: React.FC<WelcomeExperienceProps> = ({ onComplete
           </div>
           <div className="space-y-4">
             <h3 className="text-2xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-              Meet Your Career Assistant!
+              Meet Your Career Navigator!
             </h3>
             <p className="text-muted-foreground max-w-md mx-auto">
-              I'm here to help you unlock career opportunities, earn TXC tokens, and build meaningful connections in your professional journey.
+              I'm here to help you unlock career opportunities, earn TXC tokens, and build meaningful TalentNetwork in your professional journey.
             </p>
             <div className="flex items-center justify-center gap-2 text-secondary font-semibold">
               <Gift className="h-5 w-5" />
@@ -130,7 +130,7 @@ export const WelcomeExperience: React.FC<WelcomeExperienceProps> = ({ onComplete
       )
     },
     {
-      title: "Your Career Dashboard Awaits",
+      title: "Your Career CommandCenter Awaits",
       subtitle: "Everything you need to accelerate your career growth",
       content: (
         <div className="space-y-6">
@@ -139,7 +139,7 @@ export const WelcomeExperience: React.FC<WelcomeExperienceProps> = ({ onComplete
               <div className="p-4 bg-gradient-to-br from-primary/20 to-primary/10 rounded-2xl w-fit mx-auto">
                 <Sparkles className="h-8 w-8 text-primary" />
               </div>
-              <h4 className="font-bold">AI-Powered Tools</h4>
+              <h4 className="font-bold">Performance Tools</h4>
               <p className="text-sm text-muted-foreground">Resume builder, job matching, and career insights</p>
             </div>
             
@@ -168,7 +168,7 @@ export const WelcomeExperience: React.FC<WelcomeExperienceProps> = ({ onComplete
                 <span className="text-lg font-bold">You're all set!</span>
               </div>
               <p className="text-muted-foreground mb-6">
-                Start exploring your dashboard and complete your first tasks to earn more TXC tokens.
+                Start exploring your CommandCenter and complete your first tasks to earn more TXC tokens.
               </p>
               <div className="flex items-center justify-center gap-4">
                 <div className="text-center">
@@ -241,3 +241,6 @@ export const WelcomeExperience: React.FC<WelcomeExperienceProps> = ({ onComplete
     </div>
   );
 };
+
+
+

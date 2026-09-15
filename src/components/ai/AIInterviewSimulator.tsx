@@ -100,7 +100,7 @@ const AIInterviewSimulator: React.FC = () => {
           </div>
           <div>
             <h2 className="text-2xl font-bold">AI Interview Simulator</h2>
-            <p className="text-muted-foreground">Practice interviews with AI-powered feedback and coaching</p>
+            <p className="text-muted-foreground">Practice interviews with Performance Feedback and coaching</p>
           </div>
         </div>
 
@@ -421,3 +421,4 @@ const AIInterviewSimulator: React.FC = () => {
 };
 
 export default AIInterviewSimulator;
+

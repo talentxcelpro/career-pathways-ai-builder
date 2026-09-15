@@ -33,7 +33,7 @@ export const LearningNavigation: React.FC = memo(() => {
       title: 'Learning Hub',
       href: '/learning',
       icon: Home,
-      description: 'Your learning dashboard',
+      description: 'Your learning CommandCenter',
       badge: 'Home',
       category: 'core'
     },
@@ -87,8 +87,8 @@ export const LearningNavigation: React.FC = memo(() => {
       category: 'tools'
     },
     {
-      title: 'Analytics',
-      href: '/learning/analytics',
+      title: 'CareerAnalytics',
+      href: '/learning/CareerAnalytics',
       icon: BarChart3,
       description: 'Learning insights',
       category: 'tools'
@@ -259,3 +259,6 @@ export const LearningNavigation: React.FC = memo(() => {
     </div>
   );
 });
+
+
+

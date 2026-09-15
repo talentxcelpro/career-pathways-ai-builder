@@ -4,13 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Mail, Eye, MousePointer, TrendingUp, Users } from 'lucide-react';
 
-interface CampaignAnalyticsDialogProps {
+interface CampaignCareerAnalyticsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   campaign: any;
 }
 
-export const CampaignAnalyticsDialog = ({ open, onOpenChange, campaign }: CampaignAnalyticsDialogProps) => {
+export const CampaignCareerAnalyticsDialog = ({ open, onOpenChange, campaign }: CampaignCareerAnalyticsDialogProps) => {
   if (!campaign) return null;
 
   const openRate = campaign.emails_delivered > 0 
@@ -33,7 +33,7 @@ export const CampaignAnalyticsDialog = ({ open, onOpenChange, campaign }: Campai
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Campaign Analytics: {campaign.campaign_name}</DialogTitle>
+          <DialogTitle>Campaign Career Analytics: {campaign.campaign_name}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
@@ -198,3 +198,6 @@ export const CampaignAnalyticsDialog = ({ open, onOpenChange, campaign }: Campai
     </Dialog>
   );
 };
+
+
+

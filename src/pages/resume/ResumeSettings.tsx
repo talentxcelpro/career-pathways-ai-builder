@@ -62,7 +62,7 @@ const ResumeSettings = () => {
               className="flex items-center mr-4"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Dashboard
+              Back to CommandCenter
             </Button>
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Resume Settings</h1>
@@ -197,3 +197,5 @@ const ResumeSettings = () => {
 };
 
 export default ResumeSettings;
+
+

@@ -44,7 +44,7 @@ import { AIContentGenerator } from '@/components/seo/phase3/AIContentGenerator';
 import { MLRankPredictor } from '@/components/seo/phase3/MLRankPredictor';
 import { SEOAutomationEngine } from '@/components/seo/phase3/SEOAutomationEngine';
 import { WhiteLabelReports } from '@/components/seo/phase3/WhiteLabelReports';
-import { EnterpriseAnalyticsDashboard } from '@/components/seo/phase4/EnterpriseAnalyticsDashboard';
+import { EnterpriseCareerAnalyticsCommandCenter } from '@/components/seo/phase4/EnterpriseAnalyticsDashboard';
 import { AIProviderStatus } from '@/components/seo/phase4/AIProviderStatus';
 import { TestSEOSuite } from '@/components/seo/TestSEOSuite';
 import { LiveRankTracker } from '@/components/seo/real-time/LiveRankTracker';
@@ -57,12 +57,12 @@ import { DeploymentDiagnostics } from '@/components/admin/DeploymentDiagnostics'
 import { VoiceSearchOptimizer } from '@/components/seo/VoiceSearchOptimizer';
 import { FeaturedSnippetsTargeting } from '@/components/seo/FeaturedSnippetsTargeting';
 import { AIContentScaler } from '@/components/seo/AIContentScaler';
-import { PredictiveAnalytics } from '@/components/seo/PredictiveAnalytics';
+import { PredictiveCareerAnalytics } from '@/components/seo/PredictiveAnalytics';
 import { InternationalSEO } from '@/components/seo/advanced-features/InternationalSEO';
 import { toast } from 'sonner';
 
 const SEOSuite = () => {
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('CommandCenter');
   const [seoScore, setSeoScore] = useState(0);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [websiteUrl, setWebsiteUrl] = useState('');
@@ -116,7 +116,7 @@ const SEOSuite = () => {
     setIsAnalyzing(true);
     
     try {
-      // Show immediate feedback
+      // Show immediate Feedback
       toast.info('Analyzing website metadata...');
       
       // Try to fetch metadata via edge function with timeout
@@ -231,8 +231,8 @@ const SEOSuite = () => {
   return (
     <div className="container mx-auto py-8 space-y-8">
       <Helmet>
-        <title>TalentXcel SEO Suite - AI-Powered SEO Platform</title>
-        <meta name="description" content="Complete AI-powered SEO platform with keyword research, site audits, rank tracking, and competitor analysis" />
+        <title>TalentXcel SEO Suite - Performance SEO Platform</title>
+        <meta name="description" content="Complete Performance SEO platform with keyword research, site audits, rank tracking, and competitor analysis" />
       </Helmet>
 
       {/* Header */}
@@ -241,7 +241,7 @@ const SEOSuite = () => {
           <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
             TalentXcel SEO Suite
           </h1>
-          <p className="text-muted-foreground mt-2">AI-powered SEO platform that outperforms industry leaders</p>
+          <p className="text-muted-foreground mt-2">Performance SEO platform that outperforms industry leaders</p>
         </div>
         <Badge variant="secondary" className="bg-gradient-to-r from-green-500 to-emerald-500 text-white">
           <Zap className="h-3 w-3 mr-1" />
@@ -256,7 +256,7 @@ const SEOSuite = () => {
             <Brain className="h-5 w-5 text-primary" />
             Quick SEO Analysis
           </CardTitle>
-          <CardDescription>Get instant AI-powered SEO insights for any website</CardDescription>
+          <CardDescription>Get instant Performance SEO insights for any website</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex gap-4 items-end">
@@ -355,7 +355,7 @@ const SEOSuite = () => {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-6 lg:grid-cols-12 bg-muted/50">
-          <TabsTrigger value="dashboard" className="text-xs">Dashboard</TabsTrigger>
+          <TabsTrigger value="CommandCenter" className="text-xs">CommandCenter</TabsTrigger>
           <TabsTrigger value="voice-search" className="text-xs">Voice Search</TabsTrigger>
           <TabsTrigger value="snippets" className="text-xs">Snippets</TabsTrigger>
           <TabsTrigger value="ai-scaler" className="text-xs">AI Scaler</TabsTrigger>
@@ -378,10 +378,10 @@ const SEOSuite = () => {
           <TabsTrigger value="ml-predict" className="text-xs">ML Predict</TabsTrigger>
           <TabsTrigger value="automation" className="text-xs">Automation</TabsTrigger>
           <TabsTrigger value="white-label" className="text-xs">White Label</TabsTrigger>
-          <TabsTrigger value="analytics" className="text-xs">Analytics</TabsTrigger>
+          <TabsTrigger value="CareerAnalytics" className="text-xs">CareerAnalytics</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="dashboard" className="space-y-6">
+        <TabsContent value="CommandCenter" className="space-y-6">
           <SEOIssueManager />
         </TabsContent>
 
@@ -398,7 +398,7 @@ const SEOSuite = () => {
         </TabsContent>
 
         <TabsContent value="predictive">
-          <PredictiveAnalytics />
+          <PredictiveCareerAnalytics />
         </TabsContent>
 
         <TabsContent value="international">
@@ -478,8 +478,8 @@ const SEOSuite = () => {
           <WhiteLabelReports />
         </TabsContent>
 
-        <TabsContent value="analytics">
-          <EnterpriseAnalyticsDashboard />
+        <TabsContent value="CareerAnalytics">
+          <EnterpriseCareerAnalyticsCommandCenter />
         </TabsContent>
 
         <TabsContent value="ai-status">
@@ -531,3 +531,7 @@ const ConnectProviderCard = ({
 );
 
 export default SEOSuite;
+
+
+
+

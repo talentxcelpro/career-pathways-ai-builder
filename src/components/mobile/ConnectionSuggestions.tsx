@@ -9,17 +9,17 @@ import { useToast } from '@/hooks/use-toast';
 import { UserPlus, X } from 'lucide-react';
 import { useConnectionRequests } from '@/hooks/useConnectionRequests';
 
-interface ConnectionSuggestion {
+interface TalentNetworkuggestion {
   id: string;
   full_name: string;
   profile_picture_url?: string;
   headline?: string;
   current_company?: string;
   location?: string;
-  mutual_connections: number;
+  mutual_TalentNetwork: number;
 }
 
-export const ConnectionSuggestions: React.FC = () => {
+export const TalentNetworkuggestions: React.FC = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -32,18 +32,18 @@ export const ConnectionSuggestions: React.FC = () => {
     queryFn: async () => {
       if (!user?.id) return [];
 
-      // Get current connections to exclude them
-      const { data: connections } = await supabase
+      // Get current TalentNetwork to exclude them
+      const { data: TalentNetwork } = await supabase
         .from('connections')
         .select('requester_id, recipient_id')
         .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
         .eq('status', 'accepted');
 
-      const connectedUserIds = connections?.map(conn => 
+      const connectedUserIds = TalentNetwork?.map(conn => 
         conn.requester_id === user.id ? conn.recipient_id : conn.requester_id
       ) || [];
 
-      // Get suggested profiles (excluding current connections)
+      // Get suggested profiles (excluding current TalentNetwork)
       const { data: profiles, error } = await supabase
         .from('profiles')
         .select('id, full_name, profile_picture_url, headline, current_company, location')
@@ -53,16 +53,16 @@ export const ConnectionSuggestions: React.FC = () => {
 
       if (error) throw error;
 
-      // Add mock mutual connections count for demo
+      // Add mock mutual TalentNetwork count for demo
       return (profiles || []).map(profile => ({
         ...profile,
-        mutual_connections: Math.floor(Math.random() * 15) + 1
-      })) as ConnectionSuggestion[];
+        mutual_TalentNetwork: Math.floor(Math.random() * 15) + 1
+      })) as TalentNetworkuggestion[];
     },
     enabled: !!user?.id
   });
 
-  const handleConnect = async (suggestion: ConnectionSuggestion) => {
+  const handleConnect = async (suggestion: TalentNetworkuggestion) => {
     try {
       await sendConnectionRequest.mutateAsync(suggestion.id);
       setDismissedSuggestions(prev => [...prev, suggestion.id]);
@@ -109,7 +109,7 @@ export const ConnectionSuggestions: React.FC = () => {
                   {suggestion.headline || suggestion.current_company || 'Professional'}
                 </p>
                 <p className="text-xs text-gray-500">
-                  {suggestion.mutual_connections} mutual connections
+                  {suggestion.mutual_TalentNetwork} mutual TalentNetwork
                 </p>
               </div>
               
@@ -149,3 +149,4 @@ export const ConnectionSuggestions: React.FC = () => {
     </div>
   );
 };
+

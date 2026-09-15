@@ -1,6 +1,6 @@
 /**
  * Optimistic UI Utilities
- * Instant feedback with automatic rollback on failure
+ * Instant Feedback with automatic rollback on failure
  */
 
 import { QueryClient } from '@tanstack/react-query';
@@ -166,3 +166,5 @@ export const optimisticHelpers = {
     );
   },
 };
+
+

@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Phase2LaunchOptimizer } from './Phase2LaunchOptimizer';
-import { ProductionMonitoringDashboard } from '@/components/monitoring/ProductionMonitoringDashboard';
+import { ProductionMonitoringCommandCenter } from '@/components/monitoring/ProductionMonitoringCommandCenter';
 import { FinalLaunchChecklist } from '@/components/deployment/FinalLaunchChecklist';
 import { 
   Rocket, 
@@ -24,7 +24,7 @@ export const ComprehensiveLaunchCenter: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Rocket className="w-6 h-6" />
-            CareerCatalyst Launch Center
+            TalentXcel Launch Center
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -75,7 +75,7 @@ export const ComprehensiveLaunchCenter: React.FC = () => {
       {/* Content */}
       <div className="min-h-[600px]">
         {activePhase === 'optimizer' && <Phase2LaunchOptimizer />}
-        {activePhase === 'monitoring' && <ProductionMonitoringDashboard />}
+        {activePhase === 'monitoring' && <ProductionMonitoringCommandCenter />}
         {activePhase === 'checklist' && <FinalLaunchChecklist />}
       </div>
 
@@ -105,3 +105,4 @@ export const ComprehensiveLaunchCenter: React.FC = () => {
     </div>
   );
 };
+

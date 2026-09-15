@@ -11,32 +11,32 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Link } from 'react-router-dom';
-import { useRealtimeConnections } from '@/hooks/useRealtimeConnections';
+import { useRealtimeTalentNetwork } from '@/hooks/useRealtimeTalentNetwork';
 
-const Connections = () => {
+const TalentNetwork = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('recent');
   const [filterBy, setFilterBy] = useState('all');
   const queryClient = useQueryClient();
 
-  // Use the enhanced realtime connections hook
+  // Use the enhanced realtime TalentNetwork hook
   const { 
-    users: connections, 
-    loading: connectionsLoading, 
+    users: TalentNetwork, 
+    loading: TalentNetworkLoading, 
     stats,
     showOnlineOnly,
     setShowOnlineOnly,
     getLastSeenText 
-  } = useRealtimeConnections();
+  } = useRealtimeTalentNetwork();
 
-  // Fetch user's actual connections
-  const { data: userConnections, isLoading: userConnectionsLoading } = useQuery({
-    queryKey: ['userConnections'],
+  // Fetch user's actual TalentNetwork
+  const { data: userTalentNetwork, isLoading: userTalentNetworkLoading } = useQuery({
+    queryKey: ['userTalentNetwork'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
 
-      const { data: connectionsData, error } = await supabase
+      const { data: TalentNetworkData, error } = await supabase
         .from('connections')
         .select(`
           id,
@@ -54,7 +54,7 @@ const Connections = () => {
       if (error) throw error;
 
       // Get other user IDs and fetch their profiles
-      const otherUserIds = connectionsData.map(conn => 
+      const otherUserIds = TalentNetworkData.map(conn => 
         conn.requester_id === user.id ? conn.recipient_id : conn.requester_id
       ).filter(Boolean);
 
@@ -80,7 +80,7 @@ const Connections = () => {
 
       const profilesMap = new Map(profiles?.map(p => [p.id, p]) || []);
 
-      return connectionsData.map(conn => {
+      return TalentNetworkData.map(conn => {
         const otherUserId = conn.requester_id === user.id ? conn.recipient_id : conn.requester_id;
         return {
           ...conn,
@@ -112,8 +112,8 @@ const Connections = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['userConnections'] });
-      queryClient.invalidateQueries({ queryKey: ['connectionStats'] });
+      queryClient.invalidateQueries({ queryKey: ['userTalentNetwork'] });
+      queryClient.invalidateQueries({ queryKey: ['TalentNetworktats'] });
       toast.success('Connection removed successfully');
     },
     onError: (error) => {
@@ -145,7 +145,7 @@ const Connections = () => {
   };
 
   // Enhanced filtering and sorting
-  const filteredAndSortedConnections = userConnections
+  const filteredAndSortedTalentNetwork = userTalentNetwork
     ?.filter(conn => {
       if (!searchTerm && filterBy === 'all' && !showOnlineOnly) return true;
       
@@ -164,7 +164,7 @@ const Connections = () => {
       
       const matchesFilter = filterBy === 'all' || 
         (filterBy === 'recent' && new Date(conn.connected_at) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)) ||
-        (filterBy === 'same_company' && user.current_company === userConnections?.[0]?.otherUser?.current_company);
+        (filterBy === 'same_company' && user.current_company === userTalentNetwork?.[0]?.otherUser?.current_company);
       
       const matchesOnline = !showOnlineOnly || user.is_online;
       
@@ -188,7 +188,7 @@ const Connections = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">My Connections</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">My TalentNetwork</h1>
           <p className="text-gray-600">Manage and explore your professional network</p>
         </div>
 
@@ -200,7 +200,7 @@ const Connections = () => {
                 <Users className="h-8 w-8 text-blue-600" />
                 <div className="ml-3">
                   <p className="text-sm font-medium text-gray-600">Total</p>
-                  <p className="text-2xl font-bold text-gray-900">{userConnections?.length || 0}</p>
+                  <p className="text-2xl font-bold text-gray-900">{userTalentNetwork?.length || 0}</p>
                 </div>
               </div>
             </CardContent>
@@ -213,7 +213,7 @@ const Connections = () => {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Online Now</p>
                   <p className="text-2xl font-bold text-gray-900">
-                    {userConnections?.filter(c => c.otherUser.is_online).length || 0}
+                    {userTalentNetwork?.filter(c => c.otherUser.is_online).length || 0}
                   </p>
                 </div>
               </div>
@@ -227,7 +227,7 @@ const Connections = () => {
                 <div className="ml-3">
                   <p className="text-sm font-medium text-gray-600">This Month</p>
                   <p className="text-2xl font-bold text-gray-900">
-                    {userConnections?.filter(c => 
+                    {userTalentNetwork?.filter(c => 
                       new Date(c.connected_at) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
                     ).length || 0}
                   </p>
@@ -256,7 +256,7 @@ const Connections = () => {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input
-                  placeholder="Search connections by name, title, company..."
+                  placeholder="Search TalentNetwork by name, title, company..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -280,7 +280,7 @@ const Connections = () => {
                     <SelectValue placeholder="Filter by" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Connections</SelectItem>
+                    <SelectItem value="all">All TalentNetwork</SelectItem>
                     <SelectItem value="recent">Recent (30 days)</SelectItem>
                     <SelectItem value="same_company">Same Company</SelectItem>
                   </SelectContent>
@@ -299,16 +299,16 @@ const Connections = () => {
           </CardContent>
         </Card>
 
-        {/* Connections List */}
+        {/* TalentNetwork List */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <UserCheck className="h-5 w-5" />
-              Your Network ({filteredAndSortedConnections?.length || 0})
+              Your Network ({filteredAndSortedTalentNetwork?.length || 0})
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {userConnectionsLoading ? (
+            {userTalentNetworkLoading ? (
               <div className="space-y-4">
                 {[...Array(5)].map((_, i) => (
                   <div key={i} className="flex items-center space-x-4 animate-pulse">
@@ -320,11 +320,11 @@ const Connections = () => {
                   </div>
                 ))}
               </div>
-            ) : filteredAndSortedConnections?.length === 0 ? (
+            ) : filteredAndSortedTalentNetwork?.length === 0 ? (
               <div className="text-center py-12">
                 <Users className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {searchTerm || filterBy !== 'all' || showOnlineOnly ? 'No matching connections' : 'No connections yet'}
+                  {searchTerm || filterBy !== 'all' || showOnlineOnly ? 'No matching TalentNetwork' : 'No TalentNetwork yet'}
                 </h3>
                 <p className="text-gray-600 mb-6">
                   {searchTerm || filterBy !== 'all' || showOnlineOnly
@@ -341,7 +341,7 @@ const Connections = () => {
               </div>
             ) : (
               <div className="space-y-4">
-                {filteredAndSortedConnections?.map((connection) => (
+                {filteredAndSortedTalentNetwork?.map((connection) => (
                   <div key={connection.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50/50 transition-colors group">
                     <div className="flex items-center space-x-4">
                       <div className="relative">
@@ -420,4 +420,5 @@ const Connections = () => {
   );
 };
 
-export default Connections;
+export default TalentNetwork;
+

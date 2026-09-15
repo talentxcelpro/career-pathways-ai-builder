@@ -1,7 +1,15 @@
-// Service Worker Registration with update handling
+import { Capacitor } from '@capacitor/core';
 
 export function registerServiceWorker() {
-  if ('serviceWorker' in navigator && import.meta.env.PROD) {
+  // Disable SW on native platforms to avoid conflicts with Capacitor asset handling and custom origin
+  const isNative = Capacitor.isNativePlatform();
+  const canUseServiceWorkers = 'serviceWorker' in navigator;
+  const isLocalHost =
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1' ||
+    window.location.hostname === '[::1]';
+
+  if (canUseServiceWorkers && import.meta.env.PROD && !isNative) {
     window.addEventListener('load', async () => {
       try {
         const registration = await navigator.serviceWorker.register('/sw.js', {
@@ -46,17 +54,28 @@ export function registerServiceWorker() {
         window.location.reload();
       }
     });
+  } else if (canUseServiceWorkers && (isNative || import.meta.env.DEV || isLocalHost)) {
+    console.log('Ensuring Service Worker is unregistered for this runtime');
+    unregisterServiceWorker();
   }
 }
 
-export function unregisterServiceWorker() {
+export async function unregisterServiceWorker() {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.ready
-      .then((registration) => {
-        registration.unregister();
-      })
-      .catch((error) => {
-        console.error('Service Worker unregistration failed:', error);
-      });
+    try {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(registrations.map((registration) => registration.unregister()));
+    } catch (error) {
+      console.error('Service Worker unregistration failed:', error);
+    }
+  }
+
+  if ('caches' in window) {
+    try {
+      const keys = await caches.keys();
+      await Promise.all(keys.map((key) => caches.delete(key)));
+    } catch (error) {
+      console.error('Service Worker cache cleanup failed:', error);
+    }
   }
 }

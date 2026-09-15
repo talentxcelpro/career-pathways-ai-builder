@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useOptimizedAuth } from '@/contexts/OptimizedAuthContext';
 import { toast } from 'sonner';
 import { Capacitor } from '@capacitor/core';
-import { PushNotifications } from '@capacitor/push-notifications';
+import { getNativePushNotifications, isNativePushEnabled, warnNativePushDisabled } from '@/utils/nativePushConfig';
 
 interface NotificationContextType {
   notifications: Notification[];
@@ -139,6 +139,10 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
   const initializePushNotifications = async () => {
     try {
       if (Capacitor.isNativePlatform()) {
+        if (!isNativePushEnabled()) {
+          warnNativePushDisabled();
+          return;
+        }
         await initializeNativePush();
       } else {
         await initializeWebPush();
@@ -201,32 +205,40 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
 
   const initializeNativePush = async () => {
     try {
-      let permStatus = await PushNotifications.checkPermissions();
+      if (!isNativePushEnabled()) {
+        warnNativePushDisabled();
+        return;
+      }
+
+      const pushNotifications = getNativePushNotifications();
+      if (!pushNotifications) return;
+
+      let permStatus = await pushNotifications.checkPermissions();
       
       if (permStatus.receive === 'prompt') {
-        permStatus = await PushNotifications.requestPermissions();
+        permStatus = await pushNotifications.requestPermissions();
       }
       
       if (permStatus.receive === 'granted') {
-        await PushNotifications.register();
+        await pushNotifications.register();
         setIsSubscribed(true);
         setPermission('granted');
       }
 
       // Listen for registration token
-      PushNotifications.addListener('registration', async (token) => {
+      pushNotifications.addListener('registration', async (token) => {
         console.log('Push registration success, token: ' + token.value);
         await registerPushToken(token.value, 'mobile');
       });
 
       // Listen for push notifications
-      PushNotifications.addListener('pushNotificationReceived', (notification) => {
+      pushNotifications.addListener('pushNotificationReceived', (notification) => {
         console.log('Push received: ' + JSON.stringify(notification));
         handleNewNotification(notification);
       });
 
       // Handle notification tap
-      PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
+      pushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
         console.log('Push action performed: ' + JSON.stringify(notification));
       });
 
@@ -301,7 +313,14 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
 
       if (permissionResult === 'granted') {
         if (Capacitor.isNativePlatform()) {
-          await PushNotifications.register();
+          if (!isNativePushEnabled()) {
+            warnNativePushDisabled();
+            toast.error('Push notifications are not configured for this build');
+            return;
+          }
+          const pushNotifications = getNativePushNotifications();
+          if (!pushNotifications) return;
+          await pushNotifications.register();
           setIsSubscribed(true);
         } else {
           const registration = await navigator.serviceWorker.ready;
@@ -345,7 +364,8 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
     setIsLoading(true);
     try {
       if (Capacitor.isNativePlatform()) {
-        await PushNotifications.removeAllListeners();
+        const pushNotifications = getNativePushNotifications();
+        await pushNotifications?.removeAllListeners();
       } else {
         const registration = await navigator.serviceWorker.ready;
         const subscription = await registration.pushManager.getSubscription();

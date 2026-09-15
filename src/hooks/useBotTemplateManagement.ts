@@ -332,7 +332,7 @@ export const useTriggerContentGeneration = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['bot-generated-content'] });
       queryClient.invalidateQueries({ queryKey: ['profile-posts'] });
-      queryClient.invalidateQueries({ queryKey: ['global-feed-posts'] });
+      queryClient.invalidateQueries({ queryKey: ['global-Pulse-posts'] });
       toast.success(data.message);
     },
     onError: (error) => {

@@ -20,15 +20,15 @@ import {
   Star
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import ComprehensiveCareerDashboard from '@/components/dashboard/ComprehensiveCareerDashboard';
+import ComprehensiveCareerCommandCenter from '@/components/CommandCenter/ComprehensiveCareerCommandCenter';
 import CareerRoadmapGenerator from '@/components/career/CareerRoadmapGenerator';
 import { updateMetaTags } from '@/utils/metaTags';
 
 const CareerHomepage: React.FC = () => {
   React.useEffect(() => {
     updateMetaTags({
-      title: 'TalentXcel - AI-Powered Career Development Platform | Professional Growth & Success',
-      description: 'Transform your career with AI-powered coaching, interview simulation, skill assessment, and personalized roadmaps. Join thousands of professionals achieving their career goals.'
+      title: 'TalentXcel - Performance Career Development Platform | Professional Growth & Success',
+      description: 'Transform your career with Performance coaching, interview simulation, skill assessment, and personalized roadmaps. Join thousands of professionals achieving their career goals.'
     });
   }, []);
 
@@ -44,7 +44,7 @@ const CareerHomepage: React.FC = () => {
     {
       icon: <MessageSquare className="h-8 w-8" />,
       title: 'Interview Simulator',
-      description: 'Practice with AI-powered interview scenarios',
+      description: 'Practice with Performance interview scenarios',
       link: '/ai/advanced-hub',
       badge: 'Real-time Feedback',
       color: 'bg-green-500/10 text-green-600'
@@ -59,7 +59,7 @@ const CareerHomepage: React.FC = () => {
     },
     {
       icon: <TrendingUp className="h-8 w-8" />,
-      title: 'Career Analytics',
+      title: 'Career CareerAnalytics',
       description: 'Predictive insights and market intelligence',
       link: '/ai/advanced-hub',
       badge: 'Predictive',
@@ -100,7 +100,7 @@ const CareerHomepage: React.FC = () => {
 
   return (
     <Routes>
-      <Route path="/dashboard" element={<ComprehensiveCareerDashboard />} />
+      <Route path="/CommandCenter" element={<ComprehensiveCareerCommandCenter />} />
       <Route path="/roadmap" element={<CareerRoadmapGenerator />} />
       <Route path="/" element={
         <div className="min-h-screen bg-background">
@@ -110,7 +110,7 @@ const CareerHomepage: React.FC = () => {
               <div className="flex items-center justify-center gap-2 mb-4">
                 <Badge variant="secondary" className="gap-1">
                   <Zap className="h-3 w-3" />
-                  AI-Powered
+                  Performance
                 </Badge>
                 <Badge variant="outline">
                   New: WebRTC Voice Chat
@@ -122,21 +122,21 @@ const CareerHomepage: React.FC = () => {
               </h1>
               
               <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-                Experience the future of career development with our comprehensive AI-powered platform. 
+                Experience the future of career development with our comprehensive Performance platform. 
                 Get personalized coaching, practice interviews, and accelerate your professional growth.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link to="/dashboard">
+                <Link to="/CommandCenter">
                   <Button size="lg" className="gap-2">
                     <Brain className="h-5 w-5" />
-                    Launch Career Dashboard
+                    Launch Career CommandCenter
                   </Button>
                 </Link>
                 <Link to="/ai/advanced-hub">
                   <Button size="lg" variant="outline" className="gap-2">
                     <MessageSquare className="h-5 w-5" />
-                    Try AI Coach
+                    Try TalentXcel Navigator
                   </Button>
                 </Link>
               </div>
@@ -237,7 +237,7 @@ const CareerHomepage: React.FC = () => {
                 </div>
                 <div>
                   <div className="text-4xl font-bold text-primary mb-2">24/7</div>
-                  <div className="text-muted-foreground">AI Coach Availability</div>
+                  <div className="text-muted-foreground">TalentXcel Navigator Availability</div>
                 </div>
               </div>
             </div>
@@ -250,10 +250,10 @@ const CareerHomepage: React.FC = () => {
                 Ready to Accelerate Your Career?
               </h2>
               <p className="text-xl opacity-90 mb-8">
-                Join thousands of professionals who have transformed their careers with our AI-powered platform.
+                Join thousands of professionals who have transformed their careers with our Performance platform.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link to="/dashboard">
+                <Link to="/CommandCenter">
                   <Button size="lg" variant="secondary" className="gap-2">
                     <Star className="h-5 w-5" />
                     Start Your Journey
@@ -262,7 +262,7 @@ const CareerHomepage: React.FC = () => {
                 <Link to="/ai/advanced-hub">
                   <Button size="lg" variant="outline" className="gap-2 bg-transparent border-white text-white hover:bg-white hover:text-primary">
                     <Brain className="h-5 w-5" />
-                    Experience AI Coaching
+                    Experience TalentXcel Navigatoring
                   </Button>
                 </Link>
               </div>
@@ -275,3 +275,7 @@ const CareerHomepage: React.FC = () => {
 };
 
 export default CareerHomepage;
+
+
+
+

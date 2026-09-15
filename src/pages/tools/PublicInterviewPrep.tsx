@@ -38,7 +38,7 @@ export default function PublicInterviewPrep() {
       topics: ['Leadership', 'Strategy', 'Problem Solving']
     },
     {
-      title: 'Data Scientist - Analytics',
+      title: 'Data Scientist - CareerAnalytics',
       duration: '60 mins',
       questions: 20,
       difficulty: 'advanced',
@@ -155,14 +155,14 @@ export default function PublicInterviewPrep() {
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 bg-orange-100 text-orange-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
               <Sparkles className="h-4 w-4" />
-              AI-Powered Interview Prep
+              Performance Interview Prep
             </div>
             <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
               Ace Your Next Interview
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
               Practice with AI mock interviews, master the STAR method, and get personalized 
-              feedback to boost your confidence.
+              Feedback to boost your confidence.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -186,7 +186,7 @@ export default function PublicInterviewPrep() {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Practice with AI interviewer that adapts to your responses and provides real-time feedback.
+                  Practice with AI interviewer that adapts to your responses and provides real-time Feedback.
                 </p>
               </CardContent>
             </Card>
@@ -391,3 +391,7 @@ export default function PublicInterviewPrep() {
     </>
   );
 }
+
+
+
+

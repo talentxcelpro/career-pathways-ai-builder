@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
-interface EmailAnalytics {
+interface EmailCareerAnalytics {
   totalSent: number;
   delivered: number;
   opened: number;
@@ -43,10 +43,10 @@ interface EmailDetails {
   };
 }
 
-export class EmailAnalyticsEngine {
+export class EmailCareerAnalyticsEngine {
   
-  static async fetchCorrectAnalytics(timeRange: '7' | '30' | '90'): Promise<{
-    analytics: EmailAnalytics;
+  static async fetchCorrectCareerAnalytics(timeRange: '7' | '30' | '90'): Promise<{
+    CareerAnalytics: EmailCareerAnalytics;
     dailyStats: DailyStats[];
     emailDetails: EmailDetails[];
   }> {
@@ -71,9 +71,9 @@ export class EmailAnalyticsEngine {
 
       if (eventsError) throw eventsError;
 
-      // Get daily analytics for trends
+      // Get daily CareerAnalytics for trends
       const { data: dailyData, error: dailyError } = await supabase
-        .from('email_analytics_daily')
+        .from('email_CareerAnalytics_daily')
         .select('*')
         .gte('date', timeRangeDate.toISOString().split('T')[0])
         .order('date', { ascending: false });
@@ -81,31 +81,31 @@ export class EmailAnalyticsEngine {
       if (dailyError) throw dailyError;
 
       // Process the data correctly
-      const analytics = this.calculateCorrectAnalytics(queueData || [], eventsData || []);
+      const CareerAnalytics = this.calculateCorrectCareerAnalytics(queueData || [], eventsData || []);
       const dailyStats = this.processDailyStats(dailyData || []);
       const emailDetails = this.correlateEmailsWithEvents(queueData || [], eventsData || []);
 
-      return { analytics, dailyStats, emailDetails };
+      return { CareerAnalytics, dailyStats, emailDetails };
       
     } catch (error) {
-      console.error('Error fetching analytics:', error);
+      console.error('Error fetching CareerAnalytics:', error);
       throw error;
     }
   }
 
-  private static calculateCorrectAnalytics(
+  private static calculateCorrectCareerAnalytics(
     queueData: any[], 
     eventsData: any[]
-  ): EmailAnalytics {
-    console.log('Analytics Engine - Queue data length:', queueData.length);
-    console.log('Analytics Engine - Events data length:', eventsData.length);
+  ): EmailCareerAnalytics {
+    console.log('CareerAnalytics Engine - Queue data length:', queueData.length);
+    console.log('CareerAnalytics Engine - Events data length:', eventsData.length);
     
     // Count queue statuses
     const totalSent = queueData.filter(q => q.status === 'sent').length;
     const pending = queueData.filter(q => q.status === 'pending').length;
     const failed = queueData.filter(q => q.status === 'failed').length;
 
-    console.log('Analytics Engine - Queue status counts:', { totalSent, pending, failed });
+    console.log('CareerAnalytics Engine - Queue status counts:', { totalSent, pending, failed });
 
     // **FIXED CORRELATION LOGIC**
     // Group events by recipient email to correlate with queue data
@@ -120,7 +120,7 @@ export class EmailAnalyticsEngine {
       return acc;
     }, {} as Record<string, any[]>);
 
-    console.log('Analytics Engine - Events grouped by email:', Object.keys(eventsByEmail).length);
+    console.log('CareerAnalytics Engine - Events grouped by email:', Object.keys(eventsByEmail).length);
 
     // Instead of using delivery events for delivered count, use the queue data
     // since emails marked as 'sent' in queue are actually delivered
@@ -157,7 +157,7 @@ export class EmailAnalyticsEngine {
     clicked = uniqueClickers.size;
     bounced = uniqueBouncers.size;
 
-    console.log('Analytics Engine - Final counts:', { 
+    console.log('CareerAnalytics Engine - Final counts:', { 
       totalSent, delivered, opened, clicked, bounced 
     });
 
@@ -228,32 +228,35 @@ export class EmailAnalyticsEngine {
     });
   }
 
-  static async refreshAnalytics(): Promise<void> {
+  static async refreshCareerAnalytics(): Promise<void> {
     try {
       toast({
-        title: "Refreshing Analytics",
+        title: "Refreshing CareerAnalytics",
         description: "Recalculating email metrics...",
       });
 
-      // Force recalculation of analytics (this function may not exist yet)
+      // Force recalculation of CareerAnalytics (this function may not exist yet)
       try {
-        await supabase.rpc('recalculate_email_analytics' as any);
+        await supabase.rpc('recalculate_email_CareerAnalytics' as any);
       } catch (rpcError) {
         console.log('RPC function not available, skipping recalculation');
       }
 
       toast({
-        title: "Analytics Refreshed",
+        title: "CareerAnalytics Refreshed",
         description: "Email metrics have been updated with the latest data.",
       });
       
     } catch (error) {
-      console.error('Error refreshing analytics:', error);
+      console.error('Error refreshing CareerAnalytics:', error);
       toast({
         title: "Refresh Failed", 
-        description: "Could not refresh analytics, but data should still be current.",
+        description: "Could not refresh CareerAnalytics, but data should still be current.",
         variant: "destructive",
       });
     }
   }
 }
+
+
+

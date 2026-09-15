@@ -20,7 +20,7 @@ import {
 import * as Icons from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const ToolsDashboard = () => {
+const ToolsCommandCenter = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { displayName, loading: profileLoading } = useCurrentUserProfile();
@@ -58,7 +58,7 @@ const ToolsDashboard = () => {
     { value: 'Skills', label: 'Skills Development', icon: Icons.Brain },
     { value: 'Networking', label: 'Professional Network', icon: Icons.Users },
     { value: 'Profile', label: 'Profile Enhancement', icon: Icons.User },
-    { value: 'Analytics', label: 'Career Analytics', icon: Icons.BarChart3 }
+    { value: 'CareerAnalytics', label: 'Career CareerAnalytics', icon: Icons.BarChart3 }
   ];
 
   const getIconComponent = (iconName: string) => {
@@ -105,12 +105,12 @@ const ToolsDashboard = () => {
               <Sparkles className="h-4 w-4 text-primary" />
             </div>
             <h1 className="text-lg font-bold text-slate-900">
-              {user && firstName ? `Welcome back, ${firstName}! 👋` : 'TalentXcel AI-Powered Career Tools'}
+              {user && firstName ? `Welcome back, ${firstName}! 👋` : 'TalentXcel Performance Career Tools'}
             </h1>
           </div>
           <p className="text-xs text-slate-600 max-w-lg mx-auto">
             {user && firstName 
-              ? 'Ready to accelerate your career with our AI-powered tools?' 
+              ? 'Ready to accelerate your career with our Performance tools?' 
               : 'Transform your career with TalentXcel intelligent tools designed to accelerate professional growth'
             }
           </p>
@@ -294,4 +294,8 @@ const ToolsDashboard = () => {
   );
 };
 
-export default ToolsDashboard;
+export default ToolsCommandCenter;
+
+
+
+

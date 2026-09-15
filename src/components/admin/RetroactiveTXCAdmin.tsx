@@ -30,8 +30,8 @@ export const RetroactiveTXCAdmin = () => {
         <Alert>
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            This will award TXC to users based on their existing posts, connections, and profile completion.
-            Rewards include: +500 TXC joining bonus, up to 10 posts (+150 each), up to 10 connections (+75 each), and +300 for completed profiles.
+            This will award TXC to users based on their existing posts, TalentNetwork, and profile completion.
+            Rewards include: +500 TXC joining bonus, up to 10 posts (+150 each), up to 10 TalentNetwork (+75 each), and +300 for completed profiles.
           </AlertDescription>
         </Alert>
         
@@ -46,3 +46,4 @@ export const RetroactiveTXCAdmin = () => {
     </Card>
   );
 };
+

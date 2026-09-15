@@ -15,7 +15,8 @@ import {
   Compass,
   LogOut,
   Settings,
-  User
+  User,
+  Gauge
 } from "lucide-react";
 import { useAuth } from '@/contexts/AuthContext';
 import { useQuery } from '@tanstack/react-query';
@@ -59,15 +60,16 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose })
   };
 
   const primaryNavItems = [
+    { to: '/talent-score', icon: Gauge, label: 'Performance Index', description: 'Professional performance metric' },
     { to: '/network', icon: HomeIcon, label: 'Network', description: 'Connect & share' },
     { to: '/jobs', icon: Briefcase, label: 'Jobs', description: 'Find opportunities' },
-    { to: '/passport', icon: Users, label: 'Career Passport', description: 'Track progress' },
+    { to: '/passport', icon: Users, label: 'Evolution Hub', description: 'Track progress' },
     { to: '/companies', icon: Building2, label: 'Companies', description: 'Explore companies' },
   ];
 
   const toolsNavItems = [
     { to: '/resume', icon: FileText, label: 'TalentXcel Resume Builder', description: 'Create resume' },
-    { to: '/tools', icon: Wrench, label: 'Career Tools', description: 'AI-powered career tools' },
+    { to: '/tools', icon: Wrench, label: 'Career Tools', description: 'Performance career tools' },
     { to: '/learning', icon: GraduationCap, label: 'Learning', description: 'Skill development' },
     { to: '/career-map', icon: Compass, label: 'Career Map', description: 'Plan your path' },
   ];
@@ -216,3 +218,4 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose })
     </>
   );
 };
+

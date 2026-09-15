@@ -121,7 +121,7 @@ export const SmartUserSegmentation: React.FC = () => {
     { value: 'account_age', label: 'Account Age (days)' },
     { value: 'location', label: 'Location' },
     { value: 'skills_count', label: 'Skills Count' },
-    { value: 'connections_count', label: 'Connections Count' },
+    { value: 'connections_count', label: 'TalentNetwork Count' },
     { value: 'premium_status', label: 'Premium Status' }
   ];
 
@@ -259,7 +259,7 @@ export const SmartUserSegmentation: React.FC = () => {
             Smart User Segmentation
           </CardTitle>
           <CardDescription>
-            AI-powered user segmentation for targeted email campaigns and personalization
+            Performance user segmentation for targeted email campaigns and personalization
           </CardDescription>
         </CardHeader>
       </Card>
@@ -269,7 +269,7 @@ export const SmartUserSegmentation: React.FC = () => {
           <TabsTrigger value="segments">Active Segments</TabsTrigger>
           <TabsTrigger value="create">Create Segment</TabsTrigger>
           <TabsTrigger value="templates">Smart Templates</TabsTrigger>
-          <TabsTrigger value="analytics">Segment Analytics</TabsTrigger>
+          <TabsTrigger value="CareerAnalytics">Segment CareerAnalytics</TabsTrigger>
         </TabsList>
 
         {/* Active Segments Tab */}
@@ -332,7 +332,7 @@ export const SmartUserSegmentation: React.FC = () => {
                     </Button>
                     <Button size="sm" variant="outline" className="flex items-center gap-1">
                       <BarChart3 className="h-3 w-3" />
-                      Analytics
+                      CareerAnalytics
                     </Button>
                   </div>
                 </CardContent>
@@ -585,8 +585,8 @@ export const SmartUserSegmentation: React.FC = () => {
           </div>
         </TabsContent>
 
-        {/* Analytics Tab */}
-        <TabsContent value="analytics" className="space-y-4">
+        {/* CareerAnalytics Tab */}
+        <TabsContent value="CareerAnalytics" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Card>
               <CardContent className="p-4">
@@ -657,3 +657,7 @@ export const SmartUserSegmentation: React.FC = () => {
     </div>
   );
 };
+
+
+
+

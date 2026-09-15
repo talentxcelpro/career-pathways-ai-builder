@@ -102,7 +102,7 @@ export function FollowingFollowersList() {
       console.error('Error loading follow data:', error);
       toast({
         title: "Error",
-        description: "Failed to load connections",
+        description: "Failed to load TalentNetwork",
         variant: "destructive",
       });
     } finally {
@@ -199,7 +199,7 @@ export function FollowingFollowersList() {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search your connections..."
+            placeholder="Search your TalentNetwork..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
@@ -224,7 +224,7 @@ export function FollowingFollowersList() {
               <div className="text-center py-8">
                 <UserPlus className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-semibold mb-2">
-                  {searchTerm ? 'No matching connections' : 'Not following anyone yet'}
+                  {searchTerm ? 'No matching TalentNetwork' : 'Not following anyone yet'}
                 </h3>
                 <p className="text-muted-foreground">
                   {searchTerm 
@@ -265,3 +265,4 @@ export function FollowingFollowersList() {
     </Card>
   );
 }
+

@@ -173,7 +173,7 @@ export const SocialGameHub: React.FC = () => {
       <LevelProgress />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Activity Feed */}
+        {/* Activity Pulse */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-3">

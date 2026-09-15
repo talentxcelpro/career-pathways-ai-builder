@@ -105,7 +105,7 @@ export const RealTimelineVisualization: React.FC = () => {
       achievements: ['Leadership role', 'Increased responsibility', 'Higher compensation']
     });
 
-    // AI recommendations as timeline events
+    // Career Moves as timeline events
     if (data.aiRecommendations?.length) {
       data.aiRecommendations.slice(0, 2).forEach((rec, index) => {
         events.push({

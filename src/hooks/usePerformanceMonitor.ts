@@ -37,7 +37,7 @@ export const usePerformanceMonitor = () => {
 
     logMetrics(metrics);
     
-    // Track performance in production for analytics
+    // Track performance in production for CareerAnalytics
     if (!import.meta.env.DEV && window.gtag) {
       window.gtag('event', 'page_performance', {
         load_time: metrics.loadTime,
@@ -75,3 +75,6 @@ export const usePerformanceMonitor = () => {
     trackUserAction
   };
 };
+
+
+

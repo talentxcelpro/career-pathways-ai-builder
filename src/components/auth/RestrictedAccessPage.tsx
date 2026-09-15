@@ -63,9 +63,9 @@ export const RestrictedAccessPage: React.FC<RestrictedAccessPageProps> = ({
               <h3 className="font-semibold">What you can do instead:</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <Button asChild variant="default">
-                  <Link to="/dashboard">
+                  <Link to="/CommandCenter">
                     <Shield className="h-4 w-4 mr-2" />
-                    Dashboard
+                    CommandCenter
                   </Link>
                 </Button>
                 <Button asChild variant="outline">
@@ -83,7 +83,7 @@ export const RestrictedAccessPage: React.FC<RestrictedAccessPageProps> = ({
                 <Button asChild variant="outline">
                   <Link to="/passport">
                     <Shield className="h-4 w-4 mr-2" />
-                    Career Passport
+                    Evolution Hub
                   </Link>
                 </Button>
               </div>
@@ -104,3 +104,4 @@ export const RestrictedAccessPage: React.FC<RestrictedAccessPageProps> = ({
     </div>
   );
 };
+

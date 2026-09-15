@@ -27,9 +27,9 @@ const Terms = () => {
     },
     {
       title: "AI Tools & Accuracy Disclaimer",
-      content: `• Our AI-powered tools provide suggestions and recommendations
+      content: `• Our Performance tools provide suggestions and recommendations
       • Results are based on algorithms and may not always be accurate
-      • AI recommendations should be used as guidance, not definitive advice
+      • Career Moves should be used as guidance, not definitive advice
       • We do not guarantee job placement or career success
       • Users should verify all information and make independent decisions`
     },
@@ -143,3 +143,4 @@ const Terms = () => {
 };
 
 export default Terms;
+

@@ -26,9 +26,9 @@ const ResumeNew: React.FC = () => {
     {
       title: "Upload & Parse",
       description: "Upload your existing resume and let AI extract and improve the content",
-      badge: "AI Powered",
+      badge: "Performance",
       badgeColor: "bg-blue-500",
-      stat: "AI Powered",
+      stat: "Performance",
       icon: <Upload className="h-5 w-5" />,
       href: "/resume-builder/upload-enhanced"
     },
@@ -61,7 +61,7 @@ const ResumeNew: React.FC = () => {
     },
     {
       title: "Interview Prep",
-      description: "Practice with AI-powered mock interviews tailored to your industry",
+      description: "Practice with Performance mock interviews tailored to your industry",
       badge: "AI Trainer",
       badgeColor: "bg-cyan-500",
       stat: "Mock Interviews",
@@ -97,7 +97,7 @@ const ResumeNew: React.FC = () => {
     },
     {
       title: "Job Matcher AI",
-      description: "Get AI-powered job recommendations based on your profile and preferences",
+      description: "Get Performance job recommendations based on your profile and preferences",
       badge: "Smart Match",
       badgeColor: "bg-violet-500",
       stat: "Perfect Matches",
@@ -105,17 +105,17 @@ const ResumeNew: React.FC = () => {
       href: "/tools/job-matcher"
     },
     {
-      title: "Career Analytics",
+      title: "Career CareerAnalytics",
       description: "Track your job search progress and get actionable insights",
-      badge: "Analytics",
+      badge: "CareerAnalytics",
       badgeColor: "bg-indigo-500",
       stat: "Success Metrics",
       icon: <BarChart3 className="h-5 w-5" />,
       href: "/career-goals"
     },
     {
-      title: "Networking Assistant",
-      description: "Build professional relationships with AI-powered networking strategies",
+      title: "Networking Navigator",
+      description: "Build professional relationships with Performance networking strategies",
       badge: "Smart Connect",
       badgeColor: "bg-pink-500",
       stat: "Network Growth",
@@ -127,7 +127,7 @@ const ResumeNew: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-primary/5">
       <Helmet>
-        <title>Resume Builder - Complete TalentXcel Career Toolkit | AI-Powered Resume Creation</title>
+        <title>Resume Builder - Complete TalentXcel Career Toolkit | Performance Resume Creation</title>
         <meta name="description" content="Everything you need to build, optimize, and land your next role with AI. Create professional resumes with our intelligent resume builder." />
         <meta name="keywords" content="resume builder, AI resume, career toolkit, job application, professional resume, ATS optimized" />
         <link rel="canonical" href="https://talentxcel.in/resume" />
@@ -213,7 +213,7 @@ const ResumeNew: React.FC = () => {
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-              <span>AI-Powered</span>
+              <span>Performance</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
@@ -233,7 +233,7 @@ const ResumeNew: React.FC = () => {
               Complete Career Toolkit
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Everything you need to accelerate your career journey with AI-powered tools
+              Everything you need to accelerate your career journey with Performance tools
             </p>
           </div>
 
@@ -277,3 +277,6 @@ const ResumeNew: React.FC = () => {
 };
 
 export default ResumeNew;
+
+
+

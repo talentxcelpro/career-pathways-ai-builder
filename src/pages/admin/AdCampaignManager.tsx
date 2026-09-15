@@ -167,7 +167,7 @@ const AdCampaignManager = () => {
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="overview">Campaign Overview</TabsTrigger>
           <TabsTrigger value="create">Create Campaign</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -283,15 +283,15 @@ const AdCampaignManager = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="analytics" className="space-y-6">
+        <TabsContent value="CareerAnalytics" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Campaign Analytics</CardTitle>
+              <CardTitle>Campaign CareerAnalytics</CardTitle>
               <CardDescription>Performance metrics and insights</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-center py-8 text-muted-foreground">
-                Analytics dashboard will be available once campaigns are running.
+                CareerAnalytics CommandCenter will be available once campaigns are running.
               </div>
             </CardContent>
           </Card>
@@ -302,3 +302,6 @@ const AdCampaignManager = () => {
 };
 
 export default AdCampaignManager;
+
+
+

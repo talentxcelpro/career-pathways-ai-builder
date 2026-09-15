@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useConnectionSuggestions } from '@/hooks/useConnectionSuggestions';
+import { useTalentNetworkuggestions } from '@/hooks/useTalentNetworkuggestions';
 import { 
   Users, 
   UserPlus, 
@@ -15,7 +15,7 @@ import {
   TrendingUp
 } from 'lucide-react';
 
-export const ConnectionSuggestions: React.FC = () => {
+export const TalentNetworkuggestions: React.FC = () => {
   const { 
     suggestions, 
     isLoading, 
@@ -25,14 +25,14 @@ export const ConnectionSuggestions: React.FC = () => {
     isSendingConnection,
     isDismissing,
     isGenerating
-  } = useConnectionSuggestions();
+  } = useTalentNetworkuggestions();
 
   const getSuggestionTypeLabel = (type: string) => {
     switch (type) {
       case 'skills_match': return 'Similar Skills';
       case 'company_match': return 'Same Company';
       case 'education_match': return 'Same Education';
-      case 'mutual_connections': return 'Mutual Connections';
+      case 'mutual_TalentNetwork': return 'Mutual TalentNetwork';
       default: return 'Suggested';
     }
   };
@@ -42,7 +42,7 @@ export const ConnectionSuggestions: React.FC = () => {
       case 'skills_match': return 'bg-blue-100 text-blue-800';
       case 'company_match': return 'bg-green-100 text-green-800';
       case 'education_match': return 'bg-purple-100 text-purple-800';
-      case 'mutual_connections': return 'bg-orange-100 text-orange-800';
+      case 'mutual_TalentNetwork': return 'bg-orange-100 text-orange-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -196,3 +196,4 @@ export const ConnectionSuggestions: React.FC = () => {
     </Card>
   );
 };
+

@@ -33,7 +33,7 @@ interface CompetitorPrediction {
   trend: 'rising' | 'falling' | 'stable';
 }
 
-export const PredictiveAnalytics = () => {
+export const PredictiveCareerAnalytics = () => {
   const [predictions, setPredictions] = useState<PredictionMetrics[]>([]);
   const [trafficForecast, setTrafficForecast] = useState<TrafficForecast[]>([]);
   const [competitorPredictions, setCompetitorPredictions] = useState<CompetitorPrediction[]>([]);
@@ -155,10 +155,10 @@ export const PredictiveAnalytics = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Brain className="h-5 w-5" />
-            Predictive SEO Analytics
+            Predictive SEO CareerAnalytics
           </CardTitle>
           <CardDescription>
-            AI-powered predictions for rankings, traffic, and market share
+            Performance predictions for rankings, traffic, and market share
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -398,3 +398,6 @@ export const PredictiveAnalytics = () => {
     </div>
   );
 };
+
+
+

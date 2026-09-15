@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useTXCIntegration } from './useTXCIntegration';
@@ -43,7 +43,7 @@ export const useJobApplications = (userId?: string) => {
       }
 
       return data as any[];
-    }
+    },
   });
 };
 
@@ -62,12 +62,11 @@ export const useCreateJobApplication = () => {
         throw new Error('User not authenticated');
       }
 
-      // Insert the job application
       const { data, error } = await supabase
         .from('job_applications')
         .insert({
           ...applicationData,
-          user_id: userData.user.id
+          user_id: userData.user.id,
         })
         .select()
         .single();
@@ -76,26 +75,24 @@ export const useCreateJobApplication = () => {
         throw new Error(error.message);
       }
 
-      // Forward application to publisher immediately after successful insert
       try {
         const forwardingResult = await supabase.functions.invoke('forward-application-to-publisher', {
           body: {
             job_id: applicationData.job_id,
             applicant_data: {
               ...applicationData.application_data,
-              resume_url: applicationData.resume_url
-            }
-          }
+              resume_url: applicationData.resume_url,
+            },
+          },
         });
 
         if (forwardingResult.error) {
           console.error('Application forwarding failed:', forwardingResult.error);
         } else {
-          console.log('✅ Application forwarded to publisher:', forwardingResult.data);
+          console.log('Application forwarded to publisher:', forwardingResult.data);
         }
       } catch (forwardingError) {
         console.error('Error forwarding application:', forwardingError);
-        // Don't fail the entire process if forwarding fails
       }
 
       return data;
@@ -103,12 +100,11 @@ export const useCreateJobApplication = () => {
     onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ['job-applications'] });
       queryClient.invalidateQueries({ queryKey: ['token-balance'] });
-      
-      // Trigger TXC mining for job application with real-time updates
+
       try {
         const success = await triggerJobApplied();
         if (success) {
-          toast.success('🎉 Application submitted! +90 TXC earned!');
+          toast.success('Application submitted. +90 TXC earned.');
         } else {
           toast.success('Application submitted successfully');
         }
@@ -120,7 +116,7 @@ export const useCreateJobApplication = () => {
     onError: (error) => {
       console.error('Application failed:', error);
       toast.error('Failed to submit application');
-    }
+    },
   });
 };
 
@@ -150,9 +146,9 @@ export const useJobApplicationStats = () => {
         statusBreakdown: data.reduce((acc, app) => {
           acc[app.status] = (acc[app.status] || 0) + 1;
           return acc;
-        }, {} as Record<string, number>)
+        }, {} as Record<string, number>),
       };
-    }
+    },
   });
 };
 
@@ -177,6 +173,6 @@ export const useDeleteJobApplication = () => {
     onError: (error) => {
       console.error('Failed to delete application:', error);
       toast.error('Failed to delete application');
-    }
+    },
   });
 };

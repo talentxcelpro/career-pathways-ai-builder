@@ -1,12 +1,14 @@
+import { lazy } from "react";
 
-import EnhancedColleges from "../pages/enhanced/Colleges";
-import CollegeDetail from "../pages/colleges/CollegeDetail";
-import CollegeCreationRequest from "../pages/colleges/CollegeCreationRequest";
-import CollegeAdminDashboard from "../pages/colleges/CollegeAdminDashboard";
-import CollegeChatAI from "../pages/colleges/CollegeChatAI";
-import CollegeCompare from "../pages/colleges/CollegeCompare";
-import CollegeApply from "../pages/colleges/CollegeApply";
-import EnhancedCollegeCreation from "../pages/colleges/EnhancedCollegeCreation";
+const EnhancedColleges = lazy(() => import("../pages/enhanced/Colleges"));
+const CollegeDetail = lazy(() => import("../pages/colleges/CollegeDetail"));
+const CollegeCreationRequest = lazy(() => import("../pages/colleges/CollegeCreationRequest"));
+const CollegeAdminCommandCenter = lazy(() => import("../pages/colleges/CollegeAdminDashboard"));
+const CollegeChatAI = lazy(() => import("../pages/colleges/CollegeChatAI"));
+const CollegeCompare = lazy(() => import("../pages/colleges/CollegeCompare"));
+const CollegeApply = lazy(() => import("../pages/colleges/CollegeApply"));
+const EnhancedCollegeCreation = lazy(() => import("../pages/colleges/EnhancedCollegeCreation"));
+
 
 export const collegesRoutes = [
   {
@@ -47,8 +49,10 @@ export const collegesRoutes = [
     page: <EnhancedCollegeCreation />,
   },
   {
-    title: "College Admin Dashboard",
-    to: "/colleges/admin-dashboard",
-    page: <CollegeAdminDashboard />,
+    title: "College Admin CommandCenter",
+    to: "/colleges/admin-CommandCenter",
+    page: <CollegeAdminCommandCenter />,
   },
 ];
+
+

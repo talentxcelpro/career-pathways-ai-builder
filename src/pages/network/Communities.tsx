@@ -102,7 +102,7 @@ const Communities: React.FC = () => {
     {
       id: 'sample-2',
       name: 'UI/UX Designers',
-      description: 'Connect with fellow designers, share portfolios, get feedback, and stay updated with design trends.',
+      description: 'Connect with fellow designers, share portfolios, get Feedback, and stay updated with design trends.',
       category: 'Design',
       member_count: 892,
       is_private: false,
@@ -429,3 +429,4 @@ const Communities: React.FC = () => {
 };
 
 export default Communities;
+

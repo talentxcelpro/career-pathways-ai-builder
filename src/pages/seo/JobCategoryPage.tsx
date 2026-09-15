@@ -353,10 +353,10 @@ function getCategoryData(category: string) {
       description: 'Discover marketing fresher jobs in digital marketing, sales, brand management, and communications. Join dynamic teams and build your marketing career.',
       h1: 'Marketing Fresher Jobs & Career Opportunities',
       keywords: ['marketing jobs', 'digital marketing jobs', 'sales jobs', 'brand management', 'marketing fresher', 'advertising jobs'],
-      relatedSkills: ['Digital Marketing', 'SEO', 'Social Media', 'Content Writing', 'Google Analytics', 'PPC'],
+      relatedSkills: ['Digital Marketing', 'SEO', 'Social Media', 'Content Writing', 'Google CareerAnalytics', 'PPC'],
       content: `
         <div class="space-y-6">
-          <p>Marketing is an exciting field that combines creativity with analytics. Fresh graduates can explore roles in digital marketing, traditional advertising, brand management, and sales across various industries.</p>
+          <p>Marketing is an exciting field that combines creativity with CareerAnalytics. Fresh graduates can explore roles in digital marketing, traditional advertising, brand management, and sales across various industries.</p>
           
           <h2 class="text-2xl font-semibold mt-8 mb-4">Marketing Job Roles for Freshers</h2>
           <ul class="list-disc list-inside space-y-2 text-muted-foreground">
@@ -364,14 +364,14 @@ function getCategoryData(category: string) {
             <li>Social Media Coordinator</li>
             <li>Content Marketing Specialist</li>
             <li>Sales Executive / Business Development</li>
-            <li>Brand Assistant</li>
+            <li>Brand Navigator</li>
             <li>Market Research Analyst</li>
             <li>Public Relations Coordinator</li>
             <li>Event Management Executive</li>
           </ul>
           
           <h2 class="text-2xl font-semibold mt-8 mb-4">Digital Marketing Focus</h2>
-          <p>Digital marketing dominates modern marketing strategies. Skills in SEO, SEM, social media marketing, email marketing, and analytics tools are highly valued by employers across all industries.</p>
+          <p>Digital marketing dominates modern marketing strategies. Skills in SEO, SEM, social media marketing, email marketing, and CareerAnalytics tools are highly valued by employers across all industries.</p>
           
           <h2 class="text-2xl font-semibold mt-8 mb-4">Career Growth in Marketing</h2>
           <p>Marketing offers rapid career progression for talented individuals. You can advance to specialist roles (SEO Expert, Social Media Manager) or management positions (Marketing Manager, Brand Manager) within 3-5 years.</p>
@@ -413,3 +413,6 @@ function getCategoryData(category: string) {
 }
 
 export default JobCategoryPage;
+
+
+

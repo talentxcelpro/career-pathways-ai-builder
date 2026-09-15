@@ -267,7 +267,7 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
           media_urls: mediaFiles.map(file => file.url),
           location: location || null,
           visibility: privacy,
-          origin: 'feed',
+          origin: 'Pulse',
           tags: tags,
           link_previews: linkPreviews.length > 0 ? linkPreviews : null
         })
@@ -281,7 +281,7 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
 
       console.log('Post created successfully:', postData);
 
-      // AI score analysis complete - stored in component state for display
+      // TalentScore analysis complete - stored in component state for display
       console.log('AI analysis completed:', aiScore);
 
       onPostCreate?.(postData);
@@ -546,7 +546,7 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
                 className="text-sm border-0 bg-transparent"
               >
                 <option value="public">Public</option>
-                <option value="connections">Connections</option>
+                <option value="connections">TalentNetwork</option>
                 <option value="private">Private</option>
               </select>
             </div>
@@ -576,3 +576,5 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
 };
 
 export default EnhancedCreatePost;
+
+

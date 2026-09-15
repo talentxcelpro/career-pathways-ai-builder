@@ -255,7 +255,7 @@ export function CareerContentHub() {
 
       if (articleError) throw articleError;
 
-      // Create a post in the feed for this shared experience
+      // Create a post in the Pulse for this shared experience
       const { error: postError } = await supabase
         .from('posts')
         .insert({
@@ -267,12 +267,12 @@ export function CareerContentHub() {
         });
 
       if (postError) {
-        console.error('Error creating feed post:', postError);
+        console.error('Error creating Pulse post:', postError);
       }
 
       toast({
         title: "Article Submitted Successfully! 🎉",
-        description: "Your article has been submitted for admin review at https://talentxcel.in/admin/home and will be published once approved. It will also appear in the professional feed!",
+        description: "Your article has been submitted for admin review at https://talentxcel.in/admin/home and will be published once approved. It will also appear in the professional Pulse!",
       });
 
       setIsCreateDialogOpen(false);
@@ -353,7 +353,7 @@ export function CareerContentHub() {
             </div>
             <div className="flex items-center gap-2 bg-card/50 backdrop-blur-sm px-4 py-2 rounded-full border border-accent/20">
               <Zap className="w-4 h-4 text-accent" />
-              <span className="font-semibold">AI-Powered</span>
+              <span className="font-semibold">Performance</span>
             </div>
           </div>
         </div>
@@ -753,7 +753,7 @@ export function CareerContentHub() {
           <div className="max-w-4xl mx-auto space-y-4">
             <h3 className="text-xl font-semibold text-foreground">Join the TalentXcel Community</h3>
             <p className="text-muted-foreground">
-              Share your expertise, learn from others, and grow your career with AI-powered insights.
+              Share your expertise, learn from others, and grow your career with Performance insights.
             </p>
             <div className="flex items-center justify-center gap-6 mt-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
@@ -766,7 +766,7 @@ export function CareerContentHub() {
               </div>
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-primary" />
-                <span className="font-medium">AI-Powered Content</span>
+                <span className="font-medium">Performance Content</span>
               </div>
             </div>
             <div className="text-xs text-muted-foreground mt-4">

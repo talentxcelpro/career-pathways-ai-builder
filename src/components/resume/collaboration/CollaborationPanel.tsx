@@ -218,7 +218,7 @@ export const CollaborationPanel: React.FC<CollaborationPanelProps> = ({
                     { version: 'v2.1', date: '2 hours ago', author: 'You', changes: 'Updated experience section' },
                     { version: 'v2.0', date: '1 day ago', author: 'Sarah Chen', changes: 'Added projects section' },
                     { version: 'v1.9', date: '3 days ago', author: 'You', changes: 'Refined skills layout' },
-                    { version: 'v1.8', date: '1 week ago', author: 'Mike Johnson', changes: 'Initial feedback round' }
+                    { version: 'v1.8', date: '1 week ago', author: 'Mike Johnson', changes: 'Initial Feedback round' }
                   ].map((version, index) => (
                     <div key={version.version} className="flex items-center justify-between p-3 border rounded-lg">
                       <div className="flex items-center gap-3">
@@ -286,7 +286,7 @@ export const CollaborationPanel: React.FC<CollaborationPanelProps> = ({
                     </label>
                     <label className="flex items-center gap-2">
                       <input type="checkbox" className="rounded" />
-                      <span className="text-sm">Allow anonymous feedback</span>
+                      <span className="text-sm">Allow anonymous Feedback</span>
                     </label>
                   </div>
                 </div>
@@ -298,3 +298,4 @@ export const CollaborationPanel: React.FC<CollaborationPanelProps> = ({
     </div>
   );
 };
+

@@ -14,7 +14,7 @@ import { ActivityMonitor } from "@/components/employer/ActivityMonitor";
 import { useTeamPermissions } from "@/hooks/useTeamPermissions";
 import { PendingAccessRequests } from "@/components/employer/PendingAccessRequests";
 
-function DashboardContent() {
+function CommandCenterContent() {
   const navigate = useNavigate();
 
   // Get company ID from team membership
@@ -47,7 +47,7 @@ function DashboardContent() {
   const companyId = teamData?.company_id;
   const { hasPermission, role, isLoading: permissionsLoading } = useTeamPermissions(companyId);
 
-  console.log('Dashboard state:', { companyId, role, teamData });
+  console.log('CommandCenter state:', { companyId, role, teamData });
 
   const { data: stats, isLoading } = useQuery({
     queryKey: ['employer-stats'],
@@ -119,8 +119,8 @@ function DashboardContent() {
             className="h-12 w-12 rounded-lg"
           />
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">TalentXcel AI Employer Dashboard</h1>
-            <p className="text-gray-600 mt-1">AI-powered hiring management that finds the perfect candidates – Driven by TalentXcel AI</p>
+            <h1 className="text-3xl font-bold text-gray-900">TalentXcel AI Employer CommandCenter</h1>
+            <p className="text-gray-600 mt-1">Performance hiring management that finds the perfect candidates – Driven by TalentXcel AI</p>
             <div className="flex items-center gap-2 mt-2">
               <Badge variant="outline">Role: {role?.toUpperCase()}</Badge>
               {companyId && <Badge variant="secondary">Company Access Active</Badge>}
@@ -186,14 +186,14 @@ function DashboardContent() {
           </CardContent>
         </Card>
 
-        <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate('/employer/analytics')}>
+        <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate('/employer/CareerAnalytics')}>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-orange-100 rounded-lg">
                 <BarChart3 className="h-5 w-5 text-orange-600" />
               </div>
               <div>
-                <h3 className="font-semibold">Analytics</h3>
+                <h3 className="font-semibold">CareerAnalytics</h3>
                 <p className="text-sm text-gray-600">View performance metrics</p>
               </div>
             </div>
@@ -233,7 +233,7 @@ function DashboardContent() {
 
         <Card 
           className="cursor-pointer hover:shadow-lg transition-all duration-200 hover-scale"
-          onClick={() => navigate('/employer/analytics?tab=views')}
+          onClick={() => navigate('/employer/CareerAnalytics?tab=views')}
         >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Views</CardTitle>
@@ -369,15 +369,15 @@ function DashboardContent() {
         </RoleBasedAccess>
 
         <RoleBasedAccess 
-          requiredPermission="view_analytics" 
+          requiredPermission="view_CareerAnalytics" 
           companyId={companyId || ''}
-          fallbackMessage="You need analytics permission to view performance data."
+          fallbackMessage="You need CareerAnalytics permission to view performance data."
         >
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/employer/analytics')}>
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/employer/CareerAnalytics')}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5 text-blue-600" />
-                Analytics
+                CareerAnalytics
               </CardTitle>
               <CardDescription>Track your hiring performance</CardDescription>
             </CardHeader>
@@ -393,6 +393,10 @@ function DashboardContent() {
   );
 }
 
-export default function EmployerDashboard() {
-  return <DashboardContent />;
+export default function EmployerCommandCenter() {
+  return <CommandCenterContent />;
 }
+
+
+
+

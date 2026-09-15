@@ -15,14 +15,14 @@ import LinkPreview from "@/components/shared/LinkPreview";
 import { ProfileCompletionPrompt } from "@/components/profile/ProfileCompletionPrompt";
 import { LinkedInStyleBanner } from "@/components/profile/LinkedInStyleBanner";
 import { NetworkStats } from "@/components/network/NetworkStats";
-import { AIPostAssistant } from "@/components/network/AIPostAssistant";
+import { AIPostNavigator } from "@/components/network/AIPostNavigator";
 import { ConnectionRequests } from "@/components/network/ConnectionRequests";
 import { SmartConnectAI } from "@/components/network/SmartConnectAI";
 import { CompanyNetworkActivity } from "@/components/network/CompanyNetworkActivity";
 import { OptimizedConnectionSuggestions } from "@/components/performance/OptimizedConnectionSuggestions";
 import { LiveNotificationSystem } from "@/components/realtime/LiveNotificationSystem";
 import { AdvertisingSidebar } from "@/components/network/AdvertisingSidebar";
-import { useRealtimeConnections } from "@/hooks/useRealtimeConnections";
+import { useRealtimeTalentNetwork } from "@/hooks/useRealtimeConnections";
 import { useRealtimeActivity } from "@/hooks/useRealtimeActivity";
 import { useNetworkRealtime, useAutoRefreshPosts } from "@/hooks/useRealtimeData";
 import { useProfileStats } from "@/hooks/useProfileStats";
@@ -35,16 +35,16 @@ import ProBanner from "@/components/network/ProBanner";
 import ProBadge from "@/components/network/ProBadge";
 import ProPostCTA from "@/components/network/ProPostCTA";
 import { useEmployerAccess } from "@/hooks/useEmployerAccess";
-import { useSmartFeedPreferences } from "@/hooks/useSmartFeedPreferences";
-import { EnhancedNetworkPostsFeed } from "@/components/network/EnhancedNetworkPostsFeed";
+import { useSmartPulsePreferences } from "@/components/Pulse/useSmartPulsePreferences";
+import { EnhancedNetworkPostsPulse } from "@/components/Pulse/EnhancedNetworkPostsPulse";
 import { GlobalSearch } from "@/components/ui/global-search";
 import { TrendingHashtags } from "@/components/network/TrendingHashtags";
 
 
-const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trending' }) => {
+const Posts = ({ PulseType = 'all' }: { PulseType?: 'all' | 'connections' | 'trending' }) => {
   const [openComments, setOpenComments] = useState<string | null>(null);
-  const [showAIAssistant, setShowAIAssistant] = useState(false);
-  const feedFilter = feedType; // Use the prop instead of state
+  const [showAINavigator, setShowAINavigator] = useState(false);
+  const PulseFilter = PulseType; // Use the prop instead of state
   const [showCommentGenerator, setShowCommentGenerator] = useState<string | null>(null);
   const [activePost, setActivePost] = useState<any>(null);
   const [dismissedBanners, setDismissedBanners] = useState<string[]>([]);
@@ -66,12 +66,12 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
   );
 
   // Use real-time hooks
-  const { connections, stats, isLoading: connectionsLoading } = useRealtimeConnections();
+  const { TalentNetwork, stats, isLoading: TalentNetworkLoading } = useRealtimeTalentNetwork();
   const { recentActivity, isLoading: activityLoading } = useRealtimeActivity();
   const { hasEmployerAccess } = useEmployerAccess();
-  const { preferences: smartFeedPreferences } = useSmartFeedPreferences();
+  const { preferences: smartPulsePreferences } = useSmartPulsePreferences();
 
-  // Get current user profile first for Smart Feed filtering
+  // Get current user profile first for Smart Pulse filtering
   const { data: currentUserProfile } = useQuery({
     queryKey: ['currentUserProfile'],
     queryFn: async () => {
@@ -174,7 +174,7 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100/80 font-system text-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
-        {/* Feed Content */}
+        {/* Pulse Content */}
 
         {/* Three Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -185,7 +185,7 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
               profile={currentUserProfile}
               isOwnProfile={true}
               stats={{
-                connections: profileStats?.connections || 0,
+                TalentNetwork: profileStats?.TalentNetwork || 0,
                 profileViews: profileStats?.profileViews || 0
               }}
             />
@@ -200,10 +200,10 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
                     Verified
                   </Button>
                 </Link>
-                <Link to="/network/connections" className="block">
+                <Link to="/network/talent-network" className="block">
                   <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
                     <Users className="h-3.5 w-3.5 mr-3" />
-                    My Network
+                    Talent Network
                   </Button>
                 </Link>
                 <Link to="/network/skill-swap" className="block">
@@ -218,10 +218,10 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
                     Communities
                   </Button>
                 </Link>
-                <Link to="/dashboard" className="block">
+                <Link to="/command-center" className="block">
                   <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
                     <Sparkles className="h-3.5 w-3.5 mr-3" />
-                    Dashboard
+                    Command Center
                   </Button>
                 </Link>
                 {hasEmployerAccess ? (
@@ -277,7 +277,7 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
                     Edit Profile
                   </Button>
                 </Link>
-                <Link to="/profile/analytics" className="block">
+                <Link to="/profile/career-analytics" className="block">
                   <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
                     <Eye className="h-3.5 w-3.5 mr-3" />
                     Edit Views
@@ -295,7 +295,7 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
             {/* Network Stats */}
             <NetworkStats
               stats={{
-                connections: profileStats?.connections || 0,
+                TalentNetwork: profileStats?.TalentNetwork || 0,
                 messages: 0,
                 profileViews: profileStats?.profileViews || 0,
                 events: 0
@@ -303,7 +303,7 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
             />
           </div>
 
-          {/* Main Feed */}
+          {/* Main Pulse */}
           <div className="lg:col-span-6 space-y-6">
             {/* Profile Completion Prompt */}
             {missingFields.length > 0 && !isProUser && (
@@ -315,7 +315,7 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
             {/* Pro Banner */}
             {!isProUser && !dismissedBanners.includes('pro-upgrade') && (
               <ProBanner 
-                variant="feed"
+                variant="Pulse"
                 onDismiss={() => setDismissedBanners(prev => [...prev, 'pro-upgrade'])}
               />
             )}
@@ -331,9 +331,9 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
             {/* Create Post */}
             <EnhancedCreatePost onPostCreate={handlePostCreate} />
 
-{/* Enhanced Network Posts Feed with Real-time, Infinite Scroll */}
+{/* Enhanced Network Posts Pulse with Real-time, Infinite Scroll */}
             <div className="space-y-6">
-              <EnhancedNetworkPostsFeed feedType={feedFilter} searchTerm={searchTerm} />
+              <EnhancedNetworkPostsPulse PulseType={PulseFilter} searchTerm={searchTerm} />
             </div>
           </div>
 
@@ -357,10 +357,10 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
                     variant="ghost" 
                     size="sm" 
                     className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200"
-                    onClick={() => setShowAIAssistant(!showAIAssistant)}
+                    onClick={() => setShowAINavigator(!showAINavigator)}
                   >
                     <Sparkles className="h-3.5 w-3.5 mr-3" />
-                    AI Assistant
+                    TalentXcel Navigator
                   </Button>
                   <Link to="/network/people" className="block">
                     <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
@@ -405,12 +405,12 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
               </div>
             </Card>
 
-            {/* Recent Connections */}
+            {/* Recent Talent Network */}
             <Card className="bg-white/95 backdrop-blur-md border border-gray-200/60 shadow-xl rounded-2xl overflow-hidden">
               <div className="p-4">
-                <h3 className="font-bold text-gray-900 text-sm mb-4 tracking-tight">Recent Connections</h3>
+                <h3 className="font-bold text-gray-900 text-sm mb-4 tracking-tight">Recent Talent Network</h3>
                 <div className="space-y-3">
-                  {connectionsLoading ? (
+                  {TalentNetworkLoading ? (
                     [...Array(2)].map((_, index) => (
                       <div key={index} className="flex items-center space-x-3 animate-pulse">
                         <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
@@ -420,8 +420,8 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
                         </div>
                       </div>
                     ))
-                  ) : connections && connections.length > 0 ? (
-                    connections.slice(0, 2).map((connection, index) => (
+                  ) : TalentNetwork && TalentNetwork.length > 0 ? (
+                    TalentNetwork.slice(0, 2).map((connection, index) => (
                       <div key={`connection-${connection.id}-${index}`} className="flex items-center space-x-3">
                         <Avatar className="w-8 h-8">
                           <AvatarImage src={connection.otherUser?.profile_picture_url} />
@@ -440,7 +440,7 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
                       </div>
                     ))
                   ) : (
-                    <p className="text-xs text-gray-600 text-center py-2 font-medium">No connections yet</p>
+                    <p className="text-xs text-gray-600 text-center py-2 font-medium">No Talent Network yet</p>
                   )}
                 </div>
                 <Link to="/network/people" className="block mt-3">
@@ -510,3 +510,7 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
 };
 
 export default Posts;
+
+
+
+

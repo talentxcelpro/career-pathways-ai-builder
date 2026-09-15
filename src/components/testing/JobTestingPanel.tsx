@@ -117,8 +117,8 @@ export const JobTestingPanel = () => {
       },
       {
         title: "Data Science Manager",
-        description: "Lead our data science team in developing machine learning models and analytics solutions. Ideal candidate has experience with Python, SQL, and cloud platforms like AWS or Azure.",
-        company_name: "DataFlow Analytics",
+        description: "Lead our data science team in developing machine learning models and CareerAnalytics solutions. Ideal candidate has experience with Python, SQL, and cloud platforms like AWS or Azure.",
+        company_name: "DataFlow CareerAnalytics",
         location: "Mumbai, India",
         employment_type: "full-time",
         experience_level: "senior-level",
@@ -403,3 +403,6 @@ export const JobTestingPanel = () => {
     </div>
   );
 };
+
+
+

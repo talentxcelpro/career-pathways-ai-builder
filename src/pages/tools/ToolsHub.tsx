@@ -30,7 +30,7 @@ const categoryIcons = {
   JobSearch: Briefcase,
   Skills: BookOpen,
   Career: TrendingUp,
-  Analytics: BarChart3,
+  CareerAnalytics: BarChart3,
   Networking: Network
 };
 
@@ -41,7 +41,7 @@ const categoryColors = {
   JobSearch: 'bg-orange-500/10 text-orange-700 border-orange-200',
   Skills: 'bg-cyan-500/10 text-cyan-700 border-cyan-200',
   Career: 'bg-indigo-500/10 text-indigo-700 border-indigo-200',
-  Analytics: 'bg-pink-500/10 text-pink-700 border-pink-200',
+  CareerAnalytics: 'bg-pink-500/10 text-pink-700 border-pink-200',
   Networking: 'bg-emerald-500/10 text-emerald-700 border-emerald-200'
 };
 
@@ -77,8 +77,8 @@ export default function ToolsHub() {
   return (
     <>
       <Helmet>
-        <title>Career Tools Hub | TalentXcel - AI-Powered Career Tools</title>
-        <meta name="description" content="Access 24+ AI-powered career tools including resume builder, interview prep, job matching, skill gap analysis, and career pathfinding tools." />
+        <title>Career Tools Hub | TalentXcel - Performance Career Tools</title>
+        <meta name="description" content="Access 24+ Performance career tools including resume builder, interview prep, job matching, skill gap analysis, and career pathfinding tools." />
         <meta name="keywords" content="career tools, resume builder, interview prep, job search, AI career tools, skill development" />
         <link rel="canonical" href="https://talentxcel.in/tools" />
       </Helmet>
@@ -90,7 +90,7 @@ export default function ToolsHub() {
             <div>
               <h1 className="text-3xl font-bold mb-2">Career Tools Hub</h1>
               <p className="text-muted-foreground text-lg">
-                24+ AI-powered tools to accelerate your career growth
+                24+ Performance tools to accelerate your career growth
               </p>
             </div>
             
@@ -250,3 +250,6 @@ function ToolsGrid({ tools }: { tools: any[] }) {
     </div>
   );
 }
+
+
+

@@ -40,23 +40,9 @@ export const useCriticalRenderingPath = (options: CriticalRenderingOptions = {})
   const optimizeFontLoading = useCallback(() => {
     if (!optimizeWebFonts) return;
 
-    // Preload critical fonts
-    const fontPreloads = [
-      { href: '/fonts/inter-var.woff2', type: 'font/woff2' },
-      { href: '/fonts/inter-var-latin.woff2', type: 'font/woff2' }
-    ];
-
-    fontPreloads.forEach(({ href, type }) => {
-      const link = document.createElement('link');
-      link.rel = 'preload';
-      link.href = href;
-      link.as = 'font';
-      link.type = type;
-      link.crossOrigin = 'anonymous';
-      document.head.appendChild(link);
-    });
-
-    // Use font-display: swap for non-critical fonts
+    // Use font-display: swap for faster rendering
+    // Local font files (/fonts/inter-var.woff2) don't exist in the dist bundle.
+    // Inter is served via Google Fonts with font-display:swap declared in index.html.
     const style = document.createElement('style');
     style.textContent = `
       @font-face {
@@ -64,7 +50,7 @@ export const useCriticalRenderingPath = (options: CriticalRenderingOptions = {})
         font-style: normal;
         font-weight: 100 900;
         font-display: swap;
-        src: url('/fonts/inter-var.woff2') format('woff2');
+        src: local('Inter');
       }
     `;
     document.head.appendChild(style);
@@ -74,10 +60,10 @@ export const useCriticalRenderingPath = (options: CriticalRenderingOptions = {})
   const deferNonCriticalResources = useCallback(() => {
     if (!deferNonCritical) return;
 
-    // Defer analytics and tracking scripts
+    // Defer CareerAnalytics and tracking scripts
     const deferredScripts = [
       'gtag',
-      'analytics',
+      'CareerAnalytics',
       'tracking',
       'social-media'
     ];
@@ -214,3 +200,6 @@ export const useCriticalRenderingPath = (options: CriticalRenderingOptions = {})
     criticalResourcesLoaded: criticalResourcesLoaded.current
   };
 };
+
+
+

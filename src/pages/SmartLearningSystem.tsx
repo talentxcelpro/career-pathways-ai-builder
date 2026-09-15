@@ -70,7 +70,7 @@ export const SmartLearningSystem: React.FC = () => {
         {
           id: '2',
           title: 'Data Science with Python',
-          description: 'Learn data science, machine learning, and analytics using Python.',
+          description: 'Learn data science, machine learning, and CareerAnalytics using Python.',
           category: 'Data Science',
           difficulty_level: 'beginner',
           skills_taught: ['Python', 'Pandas', 'NumPy', 'Machine Learning'],
@@ -411,7 +411,7 @@ export const SmartLearningSystem: React.FC = () => {
         <TabsContent value="recommended" className="space-y-6">
           <div className="text-center py-12">
             <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">AI Recommendations Coming Soon</h3>
+            <h3 className="text-lg font-semibold mb-2">Career Moves Coming Soon</h3>
             <p className="text-muted-foreground">
               Personalized course recommendations based on your career goals and skill gaps.
             </p>
@@ -421,3 +421,6 @@ export const SmartLearningSystem: React.FC = () => {
     </div>
   );
 };
+
+
+

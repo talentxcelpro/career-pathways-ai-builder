@@ -3,7 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { GamificationWidget } from './GamificationWidget';
 import { NotificationCenter } from './NotificationCenter';
 import { JobAlertsManager } from './JobAlertsManager';
-import { ConnectionSuggestions } from './ConnectionSuggestions';
+import { TalentNetworkuggestions } from './TalentNetworkuggestions';
 import { LearningProgress } from './LearningProgress';
 import { 
   Bell, 
@@ -14,7 +14,7 @@ import {
   Zap
 } from 'lucide-react';
 
-export const EngagementDashboard: React.FC = () => {
+export const EngagementCommandCenter: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2 mb-6">
@@ -56,7 +56,7 @@ export const EngagementDashboard: React.FC = () => {
             </div>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <ConnectionSuggestions />
+            <TalentNetworkuggestions />
             <JobAlertsManager />
           </div>
         </TabsContent>
@@ -70,7 +70,7 @@ export const EngagementDashboard: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="network">
-          <ConnectionSuggestions />
+          <TalentNetworkuggestions />
         </TabsContent>
 
         <TabsContent value="learning">
@@ -80,3 +80,5 @@ export const EngagementDashboard: React.FC = () => {
     </div>
   );
 };
+
+

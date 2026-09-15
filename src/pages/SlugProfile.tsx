@@ -166,9 +166,9 @@ const SlugProfile = () => {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <Users className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm">Connections</span>
+                          <span className="text-sm">TalentNetwork</span>
                         </div>
-                        <span className="font-semibold">{stats?.connections || 0}</span>
+                        <span className="font-semibold">{stats?.TalentNetwork || 0}</span>
                       </div>
                     </CardContent>
                   </Card>
@@ -324,3 +324,4 @@ const SlugProfile = () => {
 };
 
 export default SlugProfile;
+

@@ -16,14 +16,14 @@ interface RecentActivityProps {
 
 interface ActivityItem {
   id: string;
-  type: 'profile_update' | 'post' | 'profile_view' | 'analytics_insight';
+  type: 'profile_update' | 'post' | 'profile_view' | 'CareerAnalytics_insight';
   title: string;
   description?: string;
   timestamp: string;
   icon: React.ComponentType<any>;
   color: string;
   bgColor: string;
-  analyticsData?: {
+  CareerAnalyticsData?: {
     metric: string;
     value: number;
     trend?: 'up' | 'down' | 'stable';
@@ -113,9 +113,9 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
     enabled: !!userId,
   });
 
-  // Fetch analytics data for insights
+  // Fetch CareerAnalytics data for insights
   const { data: profileViews } = useQuery({
-    queryKey: ['profile-views-analytics', userId],
+    queryKey: ['profile-views-CareerAnalytics', userId],
     queryFn: async (): Promise<ProfileViewData[]> => {
       if (!userId) return [];
       
@@ -229,7 +229,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
       });
     }
 
-    // Analytics insights (glimpse for /profile/analytics)
+    // CareerAnalytics insights (glimpse for /profile/CareerAnalytics)
     if (profileViews && Array.isArray(profileViews) && profileViews.length > 0) {
       // Recent profile view trend
       const recentViews = profileViews.filter(view => {
@@ -243,15 +243,15 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
 
       if (recentViews.length > 0) {
         items.push({
-          id: `analytics-trend-${Date.now()}`,
-          type: 'analytics_insight',
-          title: '📊 Analytics Insight',
+          id: `CareerAnalytics-trend-${Date.now()}`,
+          type: 'CareerAnalytics_insight',
+          title: '📊 CareerAnalytics Insight',
           description: `${recentViews.length} profile views this week • Growing visibility`,
           timestamp: recentViews[0].viewed_at,
           icon: TrendingUp,
           color: 'text-orange-500',
           bgColor: 'bg-orange-50',
-          analyticsData: {
+          CareerAnalyticsData: {
             metric: 'Weekly Views',
             value: recentViews.length,
             trend: recentViews.length > 2 ? 'up' : 'stable'
@@ -259,19 +259,19 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
         });
       }
 
-      // Unique viewers analytics
+      // Unique viewers CareerAnalytics
       const uniqueViewers = new Set(profileViews.filter(v => v && v.viewer_id).map(v => v.viewer_id)).size;
       if (uniqueViewers > 1) {
         items.push({
-          id: `analytics-unique-${Date.now()}`,
-          type: 'analytics_insight',
+          id: `CareerAnalytics-unique-${Date.now()}`,
+          type: 'CareerAnalytics_insight',
           title: '👥 Audience Reach',
           description: `Reached ${uniqueViewers} unique ${uniqueViewers === 1 ? 'visitor' : 'visitors'} • Expanding network`,
           timestamp: profileViews[0].viewed_at,
           icon: BarChart3,
           color: 'text-cyan-500',
           bgColor: 'bg-cyan-50',
-          analyticsData: {
+          CareerAnalyticsData: {
             metric: 'Unique Viewers',
             value: uniqueViewers,
             trend: uniqueViewers > 3 ? 'up' : 'stable'
@@ -280,7 +280,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
       }
     }
 
-    // Engagement analytics from posts
+    // Engagement CareerAnalytics from posts
     if (posts && Array.isArray(posts) && posts.length > 0) {
       const totalEngagement = posts.reduce((sum, post) => {
         if (post && typeof post.likes_count === 'number' && typeof post.comments_count === 'number') {
@@ -291,15 +291,15 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
       
       if (totalEngagement > 0) {
         items.push({
-          id: `analytics-engagement-${Date.now()}`,
-          type: 'analytics_insight',
+          id: `CareerAnalytics-engagement-${Date.now()}`,
+          type: 'CareerAnalytics_insight',
           title: '💬 Content Performance',
           description: `${totalEngagement} total interactions across ${posts.length} ${posts.length === 1 ? 'post' : 'posts'}`,
           timestamp: posts[0].created_at,
           icon: Eye,
           color: 'text-pink-500',
           bgColor: 'bg-pink-50',
-          analyticsData: {
+          CareerAnalyticsData: {
             metric: 'Engagement Rate',
             value: Math.round(totalEngagement / posts.length),
             trend: totalEngagement > posts.length ? 'up' : 'stable'
@@ -412,12 +412,12 @@ const ActivityItemComponent: React.FC<ActivityItemComponentProps> = ({
                   <Badge variant="outline" className="text-xs">
                     {activity.type.replace('_', ' ')}
                   </Badge>
-                  {activity.analyticsData && (
+                  {activity.CareerAnalyticsData && (
                     <Badge variant="secondary" className="text-xs">
-                      {activity.analyticsData.metric}: {activity.analyticsData.value}
-                      {activity.analyticsData.trend === 'up' && ' ↗️'}
-                      {activity.analyticsData.trend === 'down' && ' ↘️'}
-                      {activity.analyticsData.trend === 'stable' && ' →'}
+                      {activity.CareerAnalyticsData.metric}: {activity.CareerAnalyticsData.value}
+                      {activity.CareerAnalyticsData.trend === 'up' && ' ↗️'}
+                      {activity.CareerAnalyticsData.trend === 'down' && ' ↘️'}
+                      {activity.CareerAnalyticsData.trend === 'stable' && ' →'}
                     </Badge>
                   )}
                 </div>
@@ -433,3 +433,6 @@ const ActivityItemComponent: React.FC<ActivityItemComponentProps> = ({
     </div>
   );
 };
+
+
+

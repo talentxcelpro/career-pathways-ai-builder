@@ -58,7 +58,7 @@ export const CAREER_INTENTS: CareerIntent[] = [
   {
     id: 'networking',
     label: 'Networking',
-    description: 'Building professional connections',
+    description: 'Building professional TalentNetwork',
     icon: Users,
     color: 'text-indigo-600',
     bgColor: 'bg-indigo-50 hover:bg-indigo-100'
@@ -176,3 +176,4 @@ export const CareerIntentBadge: React.FC<{ intentId: string; size?: 'sm' | 'md' 
     </Badge>
   );
 };
+

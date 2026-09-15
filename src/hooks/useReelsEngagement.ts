@@ -37,7 +37,7 @@ export const useReelsEngagement = () => {
     },
     onSuccess: (newLikeState, variables) => {
       // Update cache optimistically
-      queryClient.setQueryData(['reels-feed', user?.id], (oldData: any) => {
+      queryClient.setQueryData(['reels-Pulse', user?.id], (oldData: any) => {
         if (!oldData?.pages) return oldData;
         
         return {
@@ -97,7 +97,7 @@ export const useReelsEngagement = () => {
     },
     onSuccess: (_, variables) => {
       // Update share count
-      queryClient.setQueryData(['reels-feed', user?.id], (oldData: any) => {
+      queryClient.setQueryData(['reels-Pulse', user?.id], (oldData: any) => {
         if (!oldData?.pages) return oldData;
         
         return {
@@ -121,3 +121,4 @@ export const useReelsEngagement = () => {
     isSharing: shareMutation.isPending
   };
 };
+

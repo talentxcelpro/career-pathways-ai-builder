@@ -45,7 +45,7 @@ const TalentXcelServices = () => {
       'Behavioral Interviewing',
       'Diversity, Equity & Inclusion (DEI)',
       'Campus Hiring & Early Careers Programs',
-      'HR Analytics & Insights',
+      'HR CareerAnalytics & Insights',
       'Candidate Experience Design',
       'Learning & Development (L&D)',
       'Performance Management Systems',
@@ -155,7 +155,7 @@ const TalentXcelServices = () => {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <Users className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm">Connections</span>
+                          <span className="text-sm">TalentNetwork</span>
                         </div>
                         <span className="font-semibold">0</span>
                       </div>
@@ -279,3 +279,7 @@ const TalentXcelServices = () => {
 };
 
 export default TalentXcelServices;
+
+
+
+

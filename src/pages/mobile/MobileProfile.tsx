@@ -150,7 +150,7 @@ export const MobileProfile = () => {
               <Button
                 size="sm"
                 onClick={() => navigate('/profile?edit=true')}
-                className="touch-feedback"
+                className="touch-Feedback"
               >
                 <Edit className="w-4 h-4 mr-2" />
                 Edit Profile
@@ -159,7 +159,7 @@ export const MobileProfile = () => {
                 size="sm"
                 variant="outline"
                 onClick={() => navigate('/profile?tab=settings')}
-                className="touch-feedback"
+                className="touch-Feedback"
               >
                 <Settings className="w-4 h-4 mr-2" />
                 Settings
@@ -169,11 +169,11 @@ export const MobileProfile = () => {
 
           {/* Quick Actions */}
           <div className="grid grid-cols-2 gap-3">
-            <div className="native-card p-4 text-center touch-feedback" onClick={() => navigate('/jobs')}>
+            <div className="native-card p-4 text-center touch-Feedback" onClick={() => navigate('/jobs')}>
               <Briefcase className="w-6 h-6 mx-auto mb-2 text-primary" />
               <p className="text-sm font-medium">Find Jobs</p>
             </div>
-            <div className="native-card p-4 text-center touch-feedback" onClick={() => navigate('/network')}>
+            <div className="native-card p-4 text-center touch-Feedback" onClick={() => navigate('/network')}>
               <Users className="w-6 h-6 mx-auto mb-2 text-primary" />
               <p className="text-sm font-medium">Network</p>
             </div>
@@ -185,7 +185,7 @@ export const MobileProfile = () => {
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
                 <div className="text-lg font-bold text-primary">24</div>
-                <div className="text-xs text-gray-600">Connections</div>
+                <div className="text-xs text-gray-600">TalentNetwork</div>
               </div>
               <div>
                 <div className="text-lg font-bold text-primary">12</div>
@@ -236,3 +236,5 @@ export const MobileProfile = () => {
     </MobileNavWrapper>
   );
 };
+
+

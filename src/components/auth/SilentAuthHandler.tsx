@@ -37,7 +37,7 @@ export const SilentAuthHandler: React.FC<SilentAuthHandlerProps> = ({ children }
         localStorage.removeItem('secure_session');
         
         // Only redirect if on protected route and no valid user session
-        const isOnProtectedRoute = window.location.pathname.includes('/dashboard') || 
+        const isOnProtectedRoute = window.location.pathname.includes('/CommandCenter') || 
                                  window.location.pathname.includes('/profile') ||
                                  window.location.pathname.includes('/admin');
         
@@ -62,3 +62,4 @@ export const SilentAuthHandler: React.FC<SilentAuthHandlerProps> = ({ children }
 
   return <>{children}</>;
 };
+

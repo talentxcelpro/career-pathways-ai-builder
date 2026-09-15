@@ -192,7 +192,7 @@ export const SEOBulkOperations: React.FC = () => {
         )
       );
 
-      toast.success('AI suggestions generated for all pages!');
+      toast.success('Smart Moves generated for all pages!');
     } catch (error) {
       toast.error('Failed to generate AI content');
     } finally {

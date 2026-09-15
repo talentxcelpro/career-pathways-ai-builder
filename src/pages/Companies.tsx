@@ -73,7 +73,7 @@ const Companies = () => {
         "@type": "Organization",
         "name": "TalentXcel",
         "url": "https://talentxcel.in",
-        "description": "India's AI-powered career platform connecting talent with opportunities"
+        "description": "India's Performance career platform connecting talent with opportunities"
       }
     };
 
@@ -115,7 +115,7 @@ const Companies = () => {
           </div>
         </div>
 
-        {/* AI-Powered Company Search with glassmorphism - more compact */}
+        {/* Performance Company Search with glassmorphism - more compact */}
         <div className="max-w-2xl mx-auto mb-8">
           <div className="bg-white/80 backdrop-blur-apple rounded-2xl shadow-apple-light p-4 border border-gray-100">
             <UniversalSearchBar
@@ -134,7 +134,7 @@ const Companies = () => {
             Looking for Enterprise Solutions?
           </h2>
           <p className="text-lg mb-6 opacity-90">
-            Discover our B2B services for internal mobility, skill gap analysis, talent analytics, and specialized recruitment
+            Discover our B2B services for internal mobility, skill gap analysis, talent CareerAnalytics, and specialized recruitment
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
@@ -151,7 +151,7 @@ const Companies = () => {
               className="border-white text-white hover:bg-white hover:text-primary"
               onClick={() => window.location.href = '/enterprise'}
             >
-              Enterprise Dashboard
+              Enterprise CommandCenter
             </Button>
           </div>
         </div>
@@ -302,3 +302,7 @@ const Companies = () => {
 };
 
 export default Companies;
+
+
+
+

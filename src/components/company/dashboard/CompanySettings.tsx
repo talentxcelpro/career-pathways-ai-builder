@@ -71,7 +71,7 @@ export const CompanySettings: React.FC<CompanySettingsProps> = ({ company, userR
           privacy_settings: {
             public_metrics: false,
             show_team: true,
-            analytics_sharing: false
+            CareerAnalytics_sharing: false
           }
         };
 
@@ -140,7 +140,7 @@ export const CompanySettings: React.FC<CompanySettingsProps> = ({ company, userR
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['user-companies-dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['user-companies-CommandCenter'] });
       toast.success('Company profile updated successfully');
       setIsUpdating(false);
     },
@@ -485,7 +485,7 @@ export const CompanySettings: React.FC<CompanySettingsProps> = ({ company, userR
                 <div className="flex items-center justify-between py-2">
                   <div>
                     <Label className="text-xs font-medium text-foreground">Weekly Reports</Label>
-                    <p className="text-xs text-muted-foreground">Receive weekly performance and analytics reports</p>
+                    <p className="text-xs text-muted-foreground">Receive weekly performance and CareerAnalytics reports</p>
                   </div>
                   <Switch 
                     checked={(() => {
@@ -593,20 +593,20 @@ export const CompanySettings: React.FC<CompanySettingsProps> = ({ company, userR
                   <Shield className="h-3 w-3 text-primary" />
                   TalentXcel Services
                 </CardTitle>
-                <CardDescription className="text-xs">Premium features and advanced analytics</CardDescription>
+                <CardDescription className="text-xs">Premium features and advanced CareerAnalytics</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors">
                     <div>
-                      <h4 className="font-medium text-xs text-foreground">AI-Powered Candidate Screening</h4>
+                      <h4 className="font-medium text-xs text-foreground">Performance Candidate Screening</h4>
                       <p className="text-xs text-muted-foreground">Automatically screen and rank candidates</p>
                     </div>
                     <Badge variant="secondary" className="text-xs h-4 px-1">Coming Soon</Badge>
                   </div>
                   <div className="flex items-center justify-between p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors">
                     <div>
-                      <h4 className="font-medium text-xs text-foreground">Advanced Analytics</h4>
+                      <h4 className="font-medium text-xs text-foreground">Advanced CareerAnalytics</h4>
                       <p className="text-xs text-muted-foreground">Deep insights into your hiring performance</p>
                     </div>
                     <Badge variant="secondary" className="text-xs h-4 px-1">Coming Soon</Badge>
@@ -627,3 +627,6 @@ export const CompanySettings: React.FC<CompanySettingsProps> = ({ company, userR
     </div>
   );
 };
+
+
+

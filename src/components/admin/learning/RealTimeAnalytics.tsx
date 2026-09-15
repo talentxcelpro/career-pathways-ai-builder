@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useLearningAnalytics } from "@/hooks/useLearningAnalytics";
+import { useLearningCareerAnalytics } from "@/hooks/useLearningAnalytics";
 import { 
   TrendingUp, 
   Users, 
@@ -13,8 +13,8 @@ import {
 } from 'lucide-react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar } from 'recharts';
 
-export const RealTimeAnalytics: React.FC = () => {
-  const { data: analytics, isLoading } = useLearningAnalytics();
+export const RealTimeCareerAnalytics: React.FC = () => {
+  const { data: CareerAnalytics, isLoading } = useLearningCareerAnalytics();
 
   if (isLoading) {
     return (
@@ -36,28 +36,28 @@ export const RealTimeAnalytics: React.FC = () => {
   const stats = [
     {
       title: "Total Students",
-      value: analytics?.totalStudents || 0,
+      value: CareerAnalytics?.totalStudents || 0,
       icon: Users,
       change: "+12%",
       changeType: "positive" as const
     },
     {
       title: "Active Courses",
-      value: analytics?.totalCourses || 0,
+      value: CareerAnalytics?.totalCourses || 0,
       icon: BookOpen,
       change: "+3",
       changeType: "positive" as const
     },
     {
       title: "Total Enrollments",
-      value: analytics?.totalEnrollments || 0,
+      value: CareerAnalytics?.totalEnrollments || 0,
       icon: TrendingUp,
       change: "+23%",
       changeType: "positive" as const
     },
     {
       title: "Completion Rate",
-      value: `${analytics?.completionRate || 0}%`,
+      value: `${CareerAnalytics?.completionRate || 0}%`,
       icon: Award,
       change: "+5%",
       changeType: "positive" as const
@@ -107,7 +107,7 @@ export const RealTimeAnalytics: React.FC = () => {
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={analytics?.monthlyStats || []}>
+              <LineChart data={CareerAnalytics?.monthlyStats || []}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
                 <YAxis />
@@ -139,7 +139,7 @@ export const RealTimeAnalytics: React.FC = () => {
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={analytics?.topCourses || []}>
+              <BarChart data={CareerAnalytics?.topCourses || []}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="title" />
                 <YAxis />
@@ -161,7 +161,7 @@ export const RealTimeAnalytics: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {analytics?.recentActivity?.map((activity, index) => (
+            {CareerAnalytics?.recentActivity?.map((activity, index) => (
               <div key={index} className="flex items-center gap-4 p-3 rounded-lg bg-muted/50">
                 <div className="flex-shrink-0">
                   {activity.type === 'enrollment' && <Users className="h-4 w-4 text-blue-500" />}
@@ -189,7 +189,7 @@ export const RealTimeAnalytics: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-primary">
-              {analytics?.averageProgress || 0}%
+              {CareerAnalytics?.averageProgress || 0}%
             </div>
             <p className="text-sm text-muted-foreground mt-1">
               Across all courses
@@ -203,7 +203,7 @@ export const RealTimeAnalytics: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-green-600">
-              {analytics?.completionRate || 0}%
+              {CareerAnalytics?.completionRate || 0}%
             </div>
             <p className="text-sm text-muted-foreground mt-1">
               Students completing courses
@@ -217,7 +217,7 @@ export const RealTimeAnalytics: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-blue-600">
-              {Math.round((analytics?.totalStudents || 0) * 0.7)}
+              {Math.round((CareerAnalytics?.totalStudents || 0) * 0.7)}
             </div>
             <p className="text-sm text-muted-foreground mt-1">
               Active in last 7 days
@@ -228,3 +228,6 @@ export const RealTimeAnalytics: React.FC = () => {
     </div>
   );
 };
+
+
+

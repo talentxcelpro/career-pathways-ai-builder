@@ -18,7 +18,7 @@ const InterviewNotes = () => {
         <FileText className="h-8 w-8 text-blue-600" />
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Interview Notes</h1>
-          <p className="text-gray-600">Record interview feedback and evaluations</p>
+          <p className="text-gray-600">Record interview Feedback and evaluations</p>
         </div>
       </div>
 
@@ -39,3 +39,5 @@ const InterviewNotes = () => {
 };
 
 export default InterviewNotes;
+
+

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-interface Analytics {
+interface CareerAnalytics {
   totalViews: number;
   totalFollowers: number;
   engagementRate: number;
@@ -28,8 +28,8 @@ interface Analytics {
   }>;
 }
 
-export const useAnalyticsDashboard = () => {
-  const [analytics, setAnalytics] = useState<Analytics>({
+export const useCareerAnalyticsCommandCenter = () => {
+  const [CareerAnalytics, setCareerAnalytics] = useState<CareerAnalytics>({
     totalViews: 0,
     totalFollowers: 0,
     engagementRate: 0,
@@ -45,9 +45,9 @@ export const useAnalyticsDashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Mock analytics data
+    // Mock CareerAnalytics data
     setTimeout(() => {
-      setAnalytics({
+      setCareerAnalytics({
         totalViews: 15420,
         totalFollowers: 1250,
         engagementRate: 4.2,
@@ -105,7 +105,10 @@ export const useAnalyticsDashboard = () => {
   }, []);
 
   return {
-    analytics,
+    CareerAnalytics,
     isLoading
   };
 };
+
+
+

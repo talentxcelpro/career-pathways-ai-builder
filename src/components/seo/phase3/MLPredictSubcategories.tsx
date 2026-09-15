@@ -95,7 +95,7 @@ const MLPredictSubcategories = () => {
             <Card>
               <CardHeader>
                 <CardTitle>Ranking Predictions</CardTitle>
-                <CardDescription>AI-powered ranking forecasts for next 3 months</CardDescription>
+                <CardDescription>Performance ranking forecasts for next 3 months</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -248,7 +248,7 @@ const MLPredictSubcategories = () => {
           <Card>
             <CardHeader>
               <CardTitle>ML Keyword Opportunity Scores</CardTitle>
-              <CardDescription>AI-powered keyword difficulty and opportunity analysis</CardDescription>
+              <CardDescription>Performance keyword difficulty and opportunity analysis</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">

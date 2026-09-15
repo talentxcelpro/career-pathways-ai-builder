@@ -9,7 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { RealDataEmailTester } from './RealDataEmailTester';
 import { EndToEndEmailTester } from './EndToEndEmailTester';
-import { EmailMonitoringDashboard } from './EmailMonitoringDashboard';
+import { EmailMonitoringCommandCenter } from './EmailMonitoringCommandCenter';
 import { EmailPerformanceOptimizer } from './EmailPerformanceOptimizer';
 import { 
   CheckCircle, 
@@ -50,7 +50,7 @@ interface EmailSystemHealth {
   };
 }
 
-export const EmailSystemHealthDashboard = () => {
+export const EmailSystemHealthCommandCenter = () => {
   const [health, setHealth] = useState<EmailSystemHealth | null>(null);
   const [loading, setLoading] = useState(false);
   const [autoFixing, setAutoFixing] = useState(false);
@@ -608,7 +608,7 @@ export const EmailSystemHealthDashboard = () => {
         </TabsContent>
 
         <TabsContent value="monitoring" className="space-y-4">
-          <EmailMonitoringDashboard />
+          <EmailMonitoringCommandCenter />
         </TabsContent>
 
         <TabsContent value="performance" className="space-y-4">
@@ -618,3 +618,4 @@ export const EmailSystemHealthDashboard = () => {
     </div>
   );
 };
+

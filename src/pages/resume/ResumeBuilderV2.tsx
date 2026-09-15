@@ -26,7 +26,7 @@ import { ResumePreview } from '@/components/resume/preview/ResumePreview';
 import { AIEnhancer } from '@/components/resume/ai/AIEnhancer';
 import { ExportOptions } from '@/components/resume/export/ExportOptions';
 import { CollaborationPanel } from '@/components/resume/collaboration/CollaborationPanel';
-import { AnalyticsDashboard } from '@/components/resume/analytics/AnalyticsDashboard';
+import { CareerAnalyticsCommandCenter } from '@/components/resume/CareerAnalytics/CareerAnalyticsCommandCenter';
 import { CareerIntelligence } from '@/components/resume/career/CareerIntelligence';
 import { IntegrationHub } from '@/components/resume/integrations/IntegrationHub';
 import type { ResumeData } from '@/components/resume/preview/ResumePreview';
@@ -59,7 +59,7 @@ const ResumeBuilderV2: React.FC = () => {
   const [activePanel, setActivePanel] = useState<'editor' | 'ai' | 'export'>('editor');
   const [savedResumeId, setSavedResumeId] = useState<string | null>(null);
   const [collaborationOpen, setCollaborationOpen] = useState(false);
-  const [analyticsOpen, setAnalyticsOpen] = useState(false);
+  const [CareerAnalyticsOpen, setCareerAnalyticsOpen] = useState(false);
   const [careerOpen, setCareerOpen] = useState(false);
   const [integrationsOpen, setIntegrationsOpen] = useState(false);
   const { user } = useAuth();
@@ -163,7 +163,7 @@ const ResumeBuilderV2: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <Helmet>
         <title>Resume Builder V2 - Real-time Preview | TalentXcel</title>
-        <meta name="description" content="Build your professional resume with real-time preview, multiple templates, and instant feedback." />
+        <meta name="description" content="Build your professional resume with real-time preview, multiple templates, and instant Feedback." />
         <link rel="canonical" href="https://talentxcel.in/resume/builder" />
       </Helmet>
 
@@ -275,7 +275,7 @@ const ResumeBuilderV2: React.FC = () => {
                 </Button>
                 
                 <Button 
-                  onClick={() => setAnalyticsOpen(true)}
+                  onClick={() => setCareerAnalyticsOpen(true)}
                   variant="outline"
                   size="sm"
                 >
@@ -345,7 +345,7 @@ const ResumeBuilderV2: React.FC = () => {
                 </h2>
                 <Badge variant="secondary" className="text-xs">
                   {activePanel === 'editor' && 'Auto-saves every second'}
-                  {activePanel === 'ai' && 'AI-powered optimization'}
+                  {activePanel === 'ai' && 'Performance optimization'}
                   {activePanel === 'export' && 'Multiple formats available'}
                 </Badge>
               </div>
@@ -487,10 +487,10 @@ const ResumeBuilderV2: React.FC = () => {
         onClose={() => setCollaborationOpen(false)}
       />
 
-      <AnalyticsDashboard
+      <CareerAnalyticsCommandCenter
         resumeId={savedResumeId || 'new'}
-        isOpen={analyticsOpen}
-        onClose={() => setAnalyticsOpen(false)}
+        isOpen={CareerAnalyticsOpen}
+        onClose={() => setCareerAnalyticsOpen(false)}
       />
 
       <CareerIntelligence
@@ -508,3 +508,7 @@ const ResumeBuilderV2: React.FC = () => {
 };
 
 export default ResumeBuilderV2;
+
+
+
+

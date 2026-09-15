@@ -136,7 +136,7 @@ export function useUltraFastRefresh<T>(
     }
   }, [processBatch, options.batchSize, options.maxBatchTime]);
 
-  // Setup WebSocket connections for each table
+  // Setup WebSocket TalentNetwork for each table
   useEffect(() => {
     if (!options.enabled || !user?.id) return;
 
@@ -256,3 +256,4 @@ export function useRefreshPerformance() {
 
   return { metrics, updateMetrics };
 }
+

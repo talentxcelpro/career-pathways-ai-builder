@@ -145,7 +145,7 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
                     <div className="text-sm text-gray-500 space-y-1">
                       <p>✓ Supports PDF, DOC, DOCX, and TXT files</p>
                       <p>✓ Maximum file size: 10MB</p>
-                      <p>✓ AI-powered content extraction</p>
+                      <p>✓ Performance content extraction</p>
                     </div>
                   </>
                 )}

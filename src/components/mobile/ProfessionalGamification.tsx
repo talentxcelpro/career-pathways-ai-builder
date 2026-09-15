@@ -59,7 +59,7 @@ export const ProfessionalGamification: React.FC<ProfessionalGamificationProps> =
     levelProgress: 67,
     nextLevelPoints: 3000,
     rank: 24,
-    connections: 156,
+    TalentNetwork: 156,
     endorsements: 89,
     postsShared: 34,
     eventsAttended: 12
@@ -228,8 +228,8 @@ export const ProfessionalGamification: React.FC<ProfessionalGamificationProps> =
       <div className="grid grid-cols-2 gap-3">
         <Card className="p-3 text-center">
           <Users className="w-6 h-6 text-primary mx-auto mb-1" />
-          <p className="text-lg font-bold text-foreground">{userStats.connections}</p>
-          <p className="text-xs text-muted-foreground">Connections</p>
+          <p className="text-lg font-bold text-foreground">{userStats.TalentNetwork}</p>
+          <p className="text-xs text-muted-foreground">TalentNetwork</p>
         </Card>
         <Card className="p-3 text-center">
           <Award className="w-6 h-6 text-green-600 mx-auto mb-1" />
@@ -392,7 +392,7 @@ export const ProfessionalGamification: React.FC<ProfessionalGamificationProps> =
           <h2 className="text-lg font-semibold text-foreground">Professional Growth</h2>
         </div>
         <p className="text-sm text-muted-foreground">
-          Level up your career through meaningful connections and achievements
+          Level up your career through meaningful TalentNetwork and achievements
         </p>
         <div className="flex items-center space-x-4 mt-3">
           <div className="flex items-center space-x-1">
@@ -454,3 +454,5 @@ export const ProfessionalGamification: React.FC<ProfessionalGamificationProps> =
     </div>
   );
 };
+
+

@@ -362,7 +362,7 @@ export const DeploymentDiagnostics = () => {
                 Check your Vercel token configuration:
               </p>
               <ol className="text-sm space-y-1 ml-4 list-decimal">
-                <li>Go to Vercel Dashboard → Settings → Tokens</li>
+                <li>Go to Vercel CommandCenter → Settings → Tokens</li>
                 <li>Create a new token with appropriate permissions</li>
                 <li>Add it as VERCEL_TOKEN in your Lovable secrets</li>
               </ol>
@@ -398,3 +398,4 @@ export const DeploymentDiagnostics = () => {
     </div>
   );
 };
+

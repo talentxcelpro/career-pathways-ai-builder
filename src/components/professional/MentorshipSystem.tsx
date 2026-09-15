@@ -360,7 +360,7 @@ export const MentorshipSystem: React.FC = () => {
     req.mentee_id === 'current-user-id'
   );
 
-  const activeConnections = requests.filter((req: MentorshipRequest) => 
+  const activeTalentNetwork = requests.filter((req: MentorshipRequest) => 
     req.status === 'accepted' && 
     (req.mentor_id === 'current-user-id' || req.mentee_id === 'current-user-id')
   );
@@ -382,7 +382,7 @@ export const MentorshipSystem: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Active Mentorships</p>
-                <p className="text-2xl font-bold">{activeConnections.length}</p>
+                <p className="text-2xl font-bold">{activeTalentNetwork.length}</p>
               </div>
               <Users className="w-5 h-5 text-blue-600" />
             </div>
@@ -467,13 +467,13 @@ export const MentorshipSystem: React.FC = () => {
               </div>
             </div>
 
-            {/* Active Connections */}
+            {/* Active TalentNetwork */}
             <div>
               <h3 className="text-lg font-medium mb-4">
-                Active Mentorships ({activeConnections.length})
+                Active Mentorships ({activeTalentNetwork.length})
               </h3>
               <div className="space-y-4">
-                {activeConnections.map((request: MentorshipRequest) => (
+                {activeTalentNetwork.map((request: MentorshipRequest) => (
                   <MentorshipRequestCard
                     key={request.id}
                     request={request}
@@ -481,7 +481,7 @@ export const MentorshipSystem: React.FC = () => {
                     onAction={handleRequestAction}
                   />
                 ))}
-                {activeConnections.length === 0 && (
+                {activeTalentNetwork.length === 0 && (
                   <Card>
                     <CardContent className="p-8 text-center">
                       <MessageSquare className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
@@ -538,3 +538,4 @@ export const MentorshipSystem: React.FC = () => {
     </div>
   );
 };
+

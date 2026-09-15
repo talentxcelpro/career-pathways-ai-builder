@@ -1,40 +1,44 @@
+import { lazy } from "react";
 import { HomeIcon, Settings, BarChart3 } from "lucide-react";
-import Index from "../pages/Index";
-import RealtimeDemoPage from "../pages/RealtimeDemo";
-import TalentXcelResumeBuilder from "../pages/resume/TalentXcelResumeBuilder";
-import About from "../pages/About";
-import Contact from "../pages/Contact";
-import Help from "../pages/Help";
-import PrivacyPolicy from "../pages/PrivacyPolicy";
-import Terms from "../pages/Terms";
-import { ReturnRefundPolicy } from "../pages/ReturnRefundPolicy";
-import Blog from "../pages/Blog";
-import NotFound from "../pages/NotFound";
-import Dashboard from "../pages/Dashboard";
-import SEOAdmin from "../pages/admin/SEOAdmin";
-import AdvancedSEOAdmin from "../pages/admin/AdvancedSEOAdmin";
-import Phase5SEOAdmin from "../pages/admin/Phase5SEOAdmin";
-import AdminDashboard from "../pages/admin/AdminDashboard";
-import InvitationFlow from "../pages/InvitationFlow";
-import MobileDemoPage from "../pages/mobile/MobileDemoPage";
-import { MobileAuth } from "../pages/auth/MobileAuth";
-import { MobileResumeBuilder } from "../components/mobile/MobileResumeBuilder";
-import { MobileNotifications } from "../components/mobile/MobileNotifications";
-import { MobileAIMatching } from "../components/mobile/MobileAIMatching";
-import { MobileVideoInterview } from "../components/mobile/MobileVideoInterview";
-import { MobileAnalytics } from "../components/mobile/MobileAnalytics";
-import { MobileSocialNetwork } from "../components/mobile/MobileSocialNetwork";
-import PublicServiceProfile from "../pages/PublicServiceProfile";
-import MyApplications from "../pages/MyApplications";
-import { AccessControlTestPage } from "../components/admin/AccessControlTestPage";
-import Careers from "../pages/Careers";
-import Security from "../pages/Security"; 
-import Api from "../pages/Api";
-import ResumeTemplates from "../pages/ResumeTemplates";
+
+const Index = lazy(() => import("../pages/Index"));
+const TalentXcelCore = lazy(() => import("../pages/TalentXcelCore"));
+const RealtimeDemoPage = lazy(() => import("../pages/RealtimeDemo"));
+const TalentXcelResumeBuilder = lazy(() => import("../pages/resume/TalentXcelResumeBuilder"));
+const About = lazy(() => import("../pages/About"));
+const Contact = lazy(() => import("../pages/Contact"));
+const Help = lazy(() => import("../pages/Help"));
+const PrivacyPolicy = lazy(() => import("../pages/PrivacyPolicy"));
+const Terms = lazy(() => import("../pages/Terms"));
+const ReturnRefundPolicy = lazy(() => import("../pages/ReturnRefundPolicy").then(m => ({ default: m.ReturnRefundPolicy })));
+const Blog = lazy(() => import("../pages/Blog"));
+const NotFound = lazy(() => import("../pages/NotFound"));
+const CommandCenter = lazy(() => import("../pages/CommandCenter"));
+const SEOAdmin = lazy(() => import("../pages/admin/SEOAdmin"));
+const AdvancedSEOAdmin = lazy(() => import("../pages/admin/AdvancedSEOAdmin"));
+const Phase5SEOAdmin = lazy(() => import("../pages/admin/Phase5SEOAdmin"));
+const AdminCommandCenter = lazy(() => import("../pages/admin/AdminDashboard"));
+const InvitationFlow = lazy(() => import("../pages/InvitationFlow"));
+const MobileDemoPage = lazy(() => import("../pages/mobile/MobileDemoPage"));
+const MobileAuth = lazy(() => import("../pages/auth/MobileAuth").then(m => ({ default: m.MobileAuth })));
+const MobileResumeBuilder = lazy(() => import("../components/mobile/MobileResumeBuilder").then(m => ({ default: m.MobileResumeBuilder })));
+const MobileNotifications = lazy(() => import("../components/mobile/MobileNotifications").then(m => ({ default: m.MobileNotifications })));
+const MobileAIMatching = lazy(() => import("../components/mobile/MobileAIMatching").then(m => ({ default: m.MobileAIMatching })));
+const MobileVideoInterview = lazy(() => import("../components/mobile/MobileVideoInterview").then(m => ({ default: m.MobileVideoInterview })));
+const MobileCareerAnalytics = lazy(() => import("../components/mobile/MobileAnalytics").then(m => ({ default: m.MobileCareerAnalytics })));
+const MobileSocialNetwork = lazy(() => import("../components/mobile/MobileSocialNetwork").then(m => ({ default: m.MobileSocialNetwork })));
+const PublicServiceProfile = lazy(() => import("../pages/PublicServiceProfile"));
+const MyApplications = lazy(() => import("../pages/MyApplications"));
+const AccessControlTestPage = lazy(() => import("../components/admin/AccessControlTestPage").then(m => ({ default: m.AccessControlTestPage })));
+const Careers = lazy(() => import("../pages/Careers"));
+const Security = lazy(() => import("../pages/Security")); 
+const Api = lazy(() => import("../pages/Api"));
+const ResumeTemplates = lazy(() => import("../pages/ResumeTemplates"));
+
 
 export const coreRoutes = [
   {
-    title: "Resume Builder",
+    title: "Home",
     to: "/",
     icon: <HomeIcon className="h-4 w-4" />,
     page: <Index />,
@@ -42,10 +46,18 @@ export const coreRoutes = [
     requiresAuth: false,
   },
   {
-    title: "Dashboard",
-    to: "/dashboard",
+    title: "TalentXcel Core",
+    to: "/career-os",
     icon: <BarChart3 className="h-4 w-4" />,
-    page: <Dashboard />,
+    page: <TalentXcelCore />,
+    isPublic: false,
+    requiresAuth: true,
+  },
+  {
+    title: "Intelligence Hub",
+    to: "/CommandCenter",
+    icon: <BarChart3 className="h-4 w-4" />,
+    page: <CommandCenter />,
     isPublic: true,
   },
   {
@@ -54,10 +66,10 @@ export const coreRoutes = [
     page: <MyApplications />,
   },
   {
-    title: "Admin Dashboard",
+    title: "Admin Intelligence Hub",
     to: "/admin",
     icon: <Settings className="h-4 w-4" />,
-    page: <AdminDashboard />,
+    page: <AdminCommandCenter />,
   },
   {
     title: "About",
@@ -156,7 +168,7 @@ export const coreRoutes = [
     page: <div className="p-4"><MobileNotifications /></div>,
   },
   {
-    title: "AI Matching",
+    title: "Precision Match",
     to: "/mobile-ai-matching", 
     page: <div className="p-4"><MobileAIMatching /></div>,
   },
@@ -166,12 +178,12 @@ export const coreRoutes = [
     page: <div className="p-4"><MobileVideoInterview /></div>,
   },
   {
-    title: "Analytics",
-    to: "/mobile-analytics",
-    page: <div className="p-4"><MobileAnalytics /></div>,
+    title: "Intelligence Matrix",
+    to: "/mobile-CareerAnalytics",
+    page: <div className="p-4"><MobileCareerAnalytics /></div>,
   },
   {
-    title: "Social Network", 
+    title: "Ecosystem Sync", 
     to: "/mobile-social-network",
     page: <div className="p-4"><MobileSocialNetwork /></div>,
   },

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Brain, TrendingUp, Target, Lightbulb, MessageSquare, FileText } from "lucide-react";
 
-const AICareerDashboard = () => {
+const AICareerCommandCenter = () => {
   const recommendations = [
     {
       id: 1,
@@ -79,7 +79,7 @@ const AICareerDashboard = () => {
           <Brain className="h-6 w-6 text-primary" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold">AI Career Intelligence</h2>
+          <h2 className="text-2xl font-bold">AI CareerIntelligence</h2>
           <p className="text-muted-foreground">Personalized insights powered by AI</p>
         </div>
       </div>
@@ -94,7 +94,7 @@ const AICareerDashboard = () => {
         <Button variant="outline" className="h-auto p-4 flex flex-col gap-2">
           <FileText className="h-6 w-6" />
           <span>Resume Analysis</span>
-          <span className="text-xs text-muted-foreground">Get AI feedback</span>
+          <span className="text-xs text-muted-foreground">Get AI Feedback</span>
         </Button>
         <Button variant="outline" className="h-auto p-4 flex flex-col gap-2">
           <Target className="h-6 w-6" />
@@ -103,12 +103,12 @@ const AICareerDashboard = () => {
         </Button>
       </div>
 
-      {/* AI Recommendations */}
+      {/* Career Moves */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Brain className="h-5 w-5" />
-            AI Recommendations
+            Career Moves
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -163,4 +163,6 @@ const AICareerDashboard = () => {
   );
 };
 
-export default AICareerDashboard;
+export default AICareerCommandCenter;
+
+

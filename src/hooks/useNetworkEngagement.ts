@@ -17,7 +17,7 @@ export function useNetworkEngagement() {
     setEvents(prev => [...prev, event]);
     
     try {
-      // Track engagement in analytics
+      // Track engagement in CareerAnalytics
       await supabase.from('user_activities').insert({
         activity_type: event.type,
         activity_data: {
@@ -77,3 +77,6 @@ export function useNetworkEngagement() {
     trackEvent
   };
 }
+
+
+

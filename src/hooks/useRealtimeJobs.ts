@@ -88,8 +88,14 @@ export const useRealtimeJobs = (filters: JobFilters = {}, sortBy: string = 'crea
           refetch();
         }
       )
-      .subscribe((status) => {
+      .subscribe((status, err) => {
         console.log('📡 Real-time subscription status:', status);
+        if (err) {
+          console.error('📡 Real-time subscription error:', err.message);
+          if (err.message.includes('mismatch between server and client bindings')) {
+            console.warn('⚠️ Realtime binding mismatch for jobs. Falling back to polling.');
+          }
+        }
         setIsConnected(status === 'SUBSCRIBED');
       });
 

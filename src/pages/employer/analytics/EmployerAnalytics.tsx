@@ -8,14 +8,14 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { EmployerAccessGuard } from "@/components/employer/EmployerAccessGuard";
 
-function AnalyticsContent() {
-  const { data: analytics, isLoading } = useQuery({
-    queryKey: ['employer-analytics'],
+function CareerAnalyticsContent() {
+  const { data: CareerAnalytics, isLoading } = useQuery({
+    queryKey: ['employer-CareerAnalytics'],
     queryFn: async () => {
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) throw new Error('Not authenticated');
 
-      // Get user's company jobs with analytics
+      // Get user's company jobs with CareerAnalytics
       const { data: jobs, error: jobsError } = await supabase
         .from('jobs')
         .select(`
@@ -33,7 +33,7 @@ function AnalyticsContent() {
 
       if (jobsError) throw jobsError;
 
-      // Calculate analytics
+      // Calculate CareerAnalytics
       const totalJobs = jobs?.length || 0;
       const activeJobs = jobs?.filter(job => job.is_active).length || 0;
       const totalViews = jobs?.reduce((sum, job) => sum + (job.views_count || 0), 0) || 0;
@@ -99,7 +99,7 @@ function AnalyticsContent() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Analytics Dashboard</h1>
+          <h1 className="text-3xl font-bold text-gray-900">CareerAnalytics CommandCenter</h1>
           <p className="text-gray-600 mt-1">Track your hiring performance and job metrics</p>
         </div>
         <div className="flex space-x-2">
@@ -122,7 +122,7 @@ function AnalyticsContent() {
             <Briefcase className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{analytics?.totalJobs || 0}</div>
+            <div className="text-2xl font-bold">{CareerAnalytics?.totalJobs || 0}</div>
             <p className="text-xs text-muted-foreground">All time</p>
           </CardContent>
         </Card>
@@ -133,7 +133,7 @@ function AnalyticsContent() {
             <Eye className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{analytics?.totalViews || 0}</div>
+            <div className="text-2xl font-bold">{CareerAnalytics?.totalViews || 0}</div>
             <p className="text-xs text-muted-foreground">Job impressions</p>
           </CardContent>
         </Card>
@@ -144,7 +144,7 @@ function AnalyticsContent() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{analytics?.totalApplications || 0}</div>
+            <div className="text-2xl font-bold">{CareerAnalytics?.totalApplications || 0}</div>
             <p className="text-xs text-muted-foreground">Total received</p>
           </CardContent>
         </Card>
@@ -155,7 +155,7 @@ function AnalyticsContent() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{analytics?.conversionRate}%</div>
+            <div className="text-2xl font-bold">{CareerAnalytics?.conversionRate}%</div>
             <p className="text-xs text-muted-foreground">Views to applications</p>
           </CardContent>
         </Card>
@@ -172,26 +172,26 @@ function AnalyticsContent() {
             <dl className="space-y-4">
               <div className="flex justify-between">
                 <dt className="text-sm font-medium text-gray-500">Active Jobs</dt>
-                <dd className="text-sm font-semibold">{analytics?.activeJobs || 0}</dd>
+                <dd className="text-sm font-semibold">{CareerAnalytics?.activeJobs || 0}</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-sm font-medium text-gray-500">Top Performing Job</dt>
                 <dd className="text-sm font-semibold">
-                  {analytics?.topJob?.title || 'N/A'} 
-                  {analytics?.topJob && (
+                  {CareerAnalytics?.topJob?.title || 'N/A'} 
+                  {CareerAnalytics?.topJob && (
                     <span className="text-xs text-gray-500 ml-1">
-                      ({analytics.topJob.applications_count} applications)
+                      ({CareerAnalytics.topJob.applications_count} applications)
                     </span>
                   )}
                 </dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-sm font-medium text-gray-500">Avg Time to First Application</dt>
-                <dd className="text-sm font-semibold">{analytics?.avgTimeToFirstApp}</dd>
+                <dd className="text-sm font-semibold">{CareerAnalytics?.avgTimeToFirstApp}</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-sm font-medium text-gray-500">Recent Activity (7 days)</dt>
-                <dd className="text-sm font-semibold">{analytics?.recentActivity} new jobs</dd>
+                <dd className="text-sm font-semibold">{CareerAnalytics?.recentActivity} new jobs</dd>
               </div>
             </dl>
           </CardContent>
@@ -204,7 +204,7 @@ function AnalyticsContent() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {Object.entries(analytics?.sourceBreakdown || {}).map(([source, percentage]) => (
+              {Object.entries(CareerAnalytics?.sourceBreakdown || {}).map(([source, percentage]) => (
                 <div key={source} className="flex justify-between items-center">
                   <span className="text-sm font-medium">{source}</span>
                   <div className="flex items-center space-x-2">
@@ -233,7 +233,7 @@ function AnalyticsContent() {
           <CardDescription>Individual job metrics and performance</CardDescription>
         </CardHeader>
         <CardContent>
-          {analytics?.jobs && analytics.jobs.length > 0 ? (
+          {CareerAnalytics?.jobs && CareerAnalytics.jobs.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
@@ -247,7 +247,7 @@ function AnalyticsContent() {
                   </tr>
                 </thead>
                 <tbody>
-                  {analytics.jobs.map((job: any) => {
+                  {CareerAnalytics.jobs.map((job: any) => {
                     const conversion = job.views_count > 0 
                       ? ((job.applications_count / job.views_count) * 100).toFixed(1) 
                       : '0.0';
@@ -276,7 +276,7 @@ function AnalyticsContent() {
             <div className="text-center py-8">
               <Target className="h-16 w-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No jobs to analyze</h3>
-              <p className="text-gray-600">Post your first job to start seeing analytics</p>
+              <p className="text-gray-600">Post your first job to start seeing CareerAnalytics</p>
             </div>
           )}
         </CardContent>
@@ -285,6 +285,10 @@ function AnalyticsContent() {
   );
 }
 
-export default function EmployerAnalytics() {
-  return <AnalyticsContent />;
+export default function EmployerCareerAnalytics() {
+  return <CareerAnalyticsContent />;
 }
+
+
+
+

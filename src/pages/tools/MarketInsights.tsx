@@ -100,7 +100,7 @@ const MarketInsights = () => {
         forecast: {
           nextQuarter: 'Market analysis coming soon',
           yearEnd: 'Real-time data integration in progress',
-          longTerm: 'Enhanced analytics will be available soon'
+          longTerm: 'Enhanced CareerAnalytics will be available soon'
         },
         insights: []
       };
@@ -242,7 +242,7 @@ const MarketInsights = () => {
                 <div className="flex items-start gap-3">
                   <DollarSign className="h-5 w-5 text-blue-600 mt-1" />
                   <div>
-                    <h4 className="font-medium">Salary Analytics</h4>
+                    <h4 className="font-medium">Salary CareerAnalytics</h4>
                     <p className="text-sm text-gray-600">Comprehensive salary data and trends</p>
                   </div>
                 </div>
@@ -250,7 +250,7 @@ const MarketInsights = () => {
                   <Target className="h-5 w-5 text-purple-600 mt-1" />
                   <div>
                     <h4 className="font-medium">Demand Forecasting</h4>
-                    <p className="text-sm text-gray-600">AI-powered predictions for future market trends</p>
+                    <p className="text-sm text-gray-600">Performance predictions for future market trends</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -473,3 +473,7 @@ const MarketInsights = () => {
 };
 
 export default MarketInsights;
+
+
+
+

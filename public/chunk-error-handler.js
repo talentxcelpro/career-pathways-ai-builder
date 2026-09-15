@@ -4,66 +4,75 @@
   
   let reloadAttempted = false;
   
-  // Handle chunk loading errors globally
+  function recoverFromError(reason) {
+    if (reloadAttempted) return;
+    reloadAttempted = true;
+    
+    console.error('Critical loading error detected:', reason);
+    
+    const cleanup = [];
+    
+    // Clear all caches
+    if ('caches' in window) {
+      cleanup.push(
+        caches.keys().then(function(names) {
+          return Promise.all(names.map(function(name) {
+            return caches.delete(name);
+          }));
+        }).catch(function(err) {
+          console.error('Cache cleanup failed:', err);
+        })
+      );
+    }
+    
+    // Unregister all service workers
+    if ('serviceWorker' in navigator) {
+      cleanup.push(
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          return Promise.all(registrations.map(function(registration) {
+            return registration.unregister();
+          }));
+        }).catch(function(err) {
+          console.error('SW unregistration failed:', err);
+        })
+      );
+    }
+    
+    // Perform cleanup then reload
+    Promise.all(cleanup).finally(function() {
+      console.log('Cleanup complete, reloading application...');
+      setTimeout(function() {
+        window.location.reload();
+      }, 500);
+    });
+  }
+
+  // Handle chunk loading errors globally - ONLY catch actual chunk/module loading failures
   window.addEventListener('unhandledrejection', function(event) {
     const error = event.reason;
-    
-    // Check if it's actually a chunk loading error
-    if (error && !reloadAttempted && (
+    if (error && (
       error.name === 'ChunkLoadError' || 
       (error.message && error.message.includes('Loading chunk')) ||
       (error.message && error.message.includes('Loading CSS chunk')) ||
-      (error.message && error.message.includes('Failed to fetch dynamically imported module'))
+      (error.message && error.message.includes('Failed to fetch dynamically imported module')) ||
+      (error.message && error.message.includes('Importing a module script failed'))
     )) {
-      console.warn('Chunk loading error detected, attempting recovery...');
-      reloadAttempted = true;
-      
-      // Prevent the error from propagating
       event.preventDefault();
-      
-      // Clear caches and reload with a slight delay
-      if ('caches' in window) {
-        caches.keys().then(function(names) {
-          names.forEach(function(name) {
-            caches.delete(name);
-          });
-        }).finally(function() {
-          setTimeout(function() {
-            window.location.reload();
-          }, 500);
-        });
-      } else {
-        setTimeout(function() {
-          window.location.reload();
-        }, 500);
-      }
+      recoverFromError(error.message || 'Chunk load failure');
     }
+    // NOTE: Generic "Failed to fetch" from Service Worker (e.g. /passport) is intentionally
+    // NOT caught here to avoid reload loops.
   });
   
-  // Handle script loading errors
+  // Handle script loading errors (missing hashed JS chunks)
   window.addEventListener('error', function(event) {
     const target = event.target;
-    
-    // Check if it's a script or link tag that failed to load
     if (target && (target.tagName === 'SCRIPT' || target.tagName === 'LINK')) {
-      console.warn('Resource loading error detected:', target.src || target.href);
-      
-      // If it's a chunk-related resource, clear cache and reload
-      if (target.src && target.src.includes('assets/')) {
-        if ('caches' in window) {
-          caches.keys().then(function(names) {
-            names.forEach(function(name) {
-              caches.delete(name);
-            });
-          }).finally(function() {
-            window.location.reload();
-          });
-        } else {
-          window.location.reload();
-        }
+      if (target.src && target.src.includes('/assets/')) {
+        recoverFromError('Script error: ' + target.src);
       }
     }
-  });
+  }, true);
   
   // Simplified cache management - clean very old caches only
   if ('caches' in window) {

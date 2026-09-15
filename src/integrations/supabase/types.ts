@@ -969,7 +969,7 @@ export type Database = {
         }
         Relationships: []
       }
-      college_analytics: {
+      college_CareerAnalytics: {
         Row: {
           application_completions: number | null
           application_starts: number | null
@@ -1288,7 +1288,7 @@ export type Database = {
         }
         Relationships: []
       }
-      company_analytics_sessions: {
+      company_CareerAnalytics_sessions: {
         Row: {
           application_completions: number | null
           application_starts: number | null
@@ -1598,7 +1598,7 @@ export type Database = {
           interaction_count: number
           interaction_types: Json
           last_interaction_at: string
-          mutual_connections: number
+          mutual_TalentNetwork: number
           updated_at: string
           user1_id: string
           user2_id: string
@@ -1611,7 +1611,7 @@ export type Database = {
           interaction_count?: number
           interaction_types?: Json
           last_interaction_at?: string
-          mutual_connections?: number
+          mutual_TalentNetwork?: number
           updated_at?: string
           user1_id: string
           user2_id: string
@@ -1624,7 +1624,7 @@ export type Database = {
           interaction_count?: number
           interaction_types?: Json
           last_interaction_at?: string
-          mutual_connections?: number
+          mutual_TalentNetwork?: number
           updated_at?: string
           user1_id?: string
           user2_id?: string
@@ -1635,7 +1635,7 @@ export type Database = {
         Row: {
           common_colleges: string[] | null
           common_companies: string[] | null
-          common_connections: number | null
+          common_TalentNetwork: number | null
           common_skills: string[] | null
           created_at: string | null
           id: string
@@ -1648,7 +1648,7 @@ export type Database = {
         Insert: {
           common_colleges?: string[] | null
           common_companies?: string[] | null
-          common_connections?: number | null
+          common_TalentNetwork?: number | null
           common_skills?: string[] | null
           created_at?: string | null
           id?: string
@@ -1661,7 +1661,7 @@ export type Database = {
         Update: {
           common_colleges?: string[] | null
           common_companies?: string[] | null
-          common_connections?: number | null
+          common_TalentNetwork?: number | null
           common_skills?: string[] | null
           created_at?: string | null
           id?: string
@@ -1673,7 +1673,7 @@ export type Database = {
         }
         Relationships: []
       }
-      connections: {
+      TalentNetwork: {
         Row: {
           connected_at: string | null
           created_at: string | null
@@ -1778,7 +1778,7 @@ export type Database = {
         }
         Relationships: []
       }
-      content_analytics: {
+      content_CareerAnalytics: {
         Row: {
           content_id: string | null
           created_at: string | null
@@ -1979,7 +1979,7 @@ export type Database = {
         }
         Relationships: []
       }
-      content_performance_analytics: {
+      content_performance_CareerAnalytics: {
         Row: {
           avg_position: number | null
           bounce_rate: number | null
@@ -3157,7 +3157,7 @@ export type Database = {
         }
         Relationships: []
       }
-      email_analytics_daily: {
+      email_CareerAnalytics_daily: {
         Row: {
           created_at: string
           date: string
@@ -5596,7 +5596,7 @@ export type Database = {
         }
         Relationships: []
       }
-      hiring_analytics: {
+      hiring_CareerAnalytics: {
         Row: {
           benchmark_value: number | null
           company_id: string | null
@@ -5671,7 +5671,7 @@ export type Database = {
         }
         Relationships: []
       }
-      hub_analytics: {
+      hub_CareerAnalytics: {
         Row: {
           created_at: string | null
           hub_id: string
@@ -5704,7 +5704,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "hub_analytics_hub_id_fkey"
+            foreignKeyName: "hub_CareerAnalytics_hub_id_fkey"
             columns: ["hub_id"]
             isOneToOne: false
             referencedRelation: "organization_hubs"
@@ -6023,7 +6023,7 @@ export type Database = {
         }
         Relationships: []
       }
-      job_external_analytics: {
+      job_external_CareerAnalytics: {
         Row: {
           created_at: string | null
           id: string
@@ -6053,7 +6053,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "job_external_analytics_job_id_fkey"
+            foreignKeyName: "job_external_CareerAnalytics_job_id_fkey"
             columns: ["job_id"]
             isOneToOne: true
             referencedRelation: "jobs"
@@ -6640,7 +6640,7 @@ export type Database = {
         }
         Relationships: []
       }
-      learning_analytics: {
+      learning_CareerAnalytics: {
         Row: {
           additional_data: Json | null
           course_id: string | null
@@ -6676,7 +6676,7 @@ export type Database = {
         }
         Relationships: []
       }
-      learning_progress_analytics: {
+      learning_progress_CareerAnalytics: {
         Row: {
           completion_rate: number | null
           course_id: string | null
@@ -6745,7 +6745,7 @@ export type Database = {
         }
         Relationships: []
       }
-      linkedin_analytics: {
+      linkedin_CareerAnalytics: {
         Row: {
           created_at: string
           id: string
@@ -7162,7 +7162,7 @@ export type Database = {
         }
         Relationships: []
       }
-      mentorship_connections: {
+      mentorship_TalentNetwork: {
         Row: {
           created_at: string | null
           expertise_areas: Json | null
@@ -7275,8 +7275,8 @@ export type Database = {
           completed_at: string | null
           created_at: string | null
           duration_minutes: number
-          feedback_mentee: Json | null
-          feedback_mentor: Json | null
+          Feedback_mentee: Json | null
+          Feedback_mentor: Json | null
           id: string
           meeting_link: string | null
           mentee_credits: number | null
@@ -7292,8 +7292,8 @@ export type Database = {
           completed_at?: string | null
           created_at?: string | null
           duration_minutes?: number
-          feedback_mentee?: Json | null
-          feedback_mentor?: Json | null
+          Feedback_mentee?: Json | null
+          Feedback_mentor?: Json | null
           id?: string
           meeting_link?: string | null
           mentee_credits?: number | null
@@ -7309,8 +7309,8 @@ export type Database = {
           completed_at?: string | null
           created_at?: string | null
           duration_minutes?: number
-          feedback_mentee?: Json | null
-          feedback_mentor?: Json | null
+          Feedback_mentee?: Json | null
+          Feedback_mentor?: Json | null
           id?: string
           meeting_link?: string | null
           mentee_credits?: number | null
@@ -7808,7 +7808,7 @@ export type Database = {
           created_by: string | null
           custom_css: string | null
           custom_fonts: Json | null
-          dashboard_layout: Json | null
+          CommandCenter_layout: Json | null
           email_footer_text: string | null
           email_header_logo: string | null
           favicon_url: string | null
@@ -7827,7 +7827,7 @@ export type Database = {
           created_by?: string | null
           custom_css?: string | null
           custom_fonts?: Json | null
-          dashboard_layout?: Json | null
+          CommandCenter_layout?: Json | null
           email_footer_text?: string | null
           email_header_logo?: string | null
           favicon_url?: string | null
@@ -7846,7 +7846,7 @@ export type Database = {
           created_by?: string | null
           custom_css?: string | null
           custom_fonts?: Json | null
-          dashboard_layout?: Json | null
+          CommandCenter_layout?: Json | null
           email_footer_text?: string | null
           email_header_logo?: string | null
           favicon_url?: string | null
@@ -7948,7 +7948,7 @@ export type Database = {
           name: string
           settings: Json | null
           slug: string
-          social_feeds: Json | null
+          social_Pulses: Json | null
           updated_at: string | null
           verification_status: string | null
           website_url: string | null
@@ -7971,7 +7971,7 @@ export type Database = {
           name: string
           settings?: Json | null
           slug: string
-          social_feeds?: Json | null
+          social_Pulses?: Json | null
           updated_at?: string | null
           verification_status?: string | null
           website_url?: string | null
@@ -7994,7 +7994,7 @@ export type Database = {
           name?: string
           settings?: Json | null
           slug?: string
-          social_feeds?: Json | null
+          social_Pulses?: Json | null
           updated_at?: string | null
           verification_status?: string | null
           website_url?: string | null
@@ -8467,7 +8467,7 @@ export type Database = {
           company_id: string | null
           course_id: string | null
           created_at: string | null
-          feedback_rating: number | null
+          Feedback_rating: number | null
           id: string
           placement_date: string
           position_title: string
@@ -8481,7 +8481,7 @@ export type Database = {
           company_id?: string | null
           course_id?: string | null
           created_at?: string | null
-          feedback_rating?: number | null
+          Feedback_rating?: number | null
           id?: string
           placement_date: string
           position_title: string
@@ -8495,7 +8495,7 @@ export type Database = {
           company_id?: string | null
           course_id?: string | null
           created_at?: string | null
-          feedback_rating?: number | null
+          Feedback_rating?: number | null
           id?: string
           placement_date?: string
           position_title?: string
@@ -8507,7 +8507,7 @@ export type Database = {
         }
         Relationships: []
       }
-      plan_analytics: {
+      plan_CareerAnalytics: {
         Row: {
           active_subscribers: number | null
           created_at: string | null
@@ -8540,7 +8540,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "plan_analytics_plan_id_fkey"
+            foreignKeyName: "plan_CareerAnalytics_plan_id_fkey"
             columns: ["plan_id"]
             isOneToOne: false
             referencedRelation: "pricing_plans"
@@ -8548,7 +8548,7 @@ export type Database = {
           },
         ]
       }
-      platform_analytics: {
+      platform_CareerAnalytics: {
         Row: {
           created_at: string | null
           event_data: Json | null
@@ -8709,7 +8709,7 @@ export type Database = {
       }
       portfolio_websites: {
         Row: {
-          analytics_data: Json | null
+          CareerAnalytics_data: Json | null
           content: Json
           created_at: string | null
           custom_domain: string | null
@@ -8723,7 +8723,7 @@ export type Database = {
           visit_count: number | null
         }
         Insert: {
-          analytics_data?: Json | null
+          CareerAnalytics_data?: Json | null
           content?: Json
           created_at?: string | null
           custom_domain?: string | null
@@ -8737,7 +8737,7 @@ export type Database = {
           visit_count?: number | null
         }
         Update: {
-          analytics_data?: Json | null
+          CareerAnalytics_data?: Json | null
           content?: Json
           created_at?: string | null
           custom_domain?: string | null
@@ -9160,7 +9160,7 @@ export type Database = {
         }
         Relationships: []
       }
-      pro_analytics: {
+      pro_CareerAnalytics: {
         Row: {
           avg_response_time_hours: number | null
           bookings_count: number | null
@@ -9229,14 +9229,14 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "pro_analytics_profile_id_fkey"
+            foreignKeyName: "pro_CareerAnalytics_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "pro_service_profiles"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "pro_analytics_service_id_fkey"
+            foreignKeyName: "pro_CareerAnalytics_service_id_fkey"
             columns: ["service_id"]
             isOneToOne: false
             referencedRelation: "pro_services"
@@ -9244,7 +9244,7 @@ export type Database = {
           },
         ]
       }
-      pro_client_feedback: {
+      pro_client_Feedback: {
         Row: {
           client_id: string | null
           communication_rating: number | null
@@ -9298,28 +9298,28 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "pro_client_feedback_client_id_fkey"
+            foreignKeyName: "pro_client_Feedback_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "employer_cv_database"
             referencedColumns: ["profile_id"]
           },
           {
-            foreignKeyName: "pro_client_feedback_client_id_fkey"
+            foreignKeyName: "pro_client_Feedback_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "pro_client_feedback_contract_id_fkey"
+            foreignKeyName: "pro_client_Feedback_contract_id_fkey"
             columns: ["contract_id"]
             isOneToOne: false
             referencedRelation: "pro_contracts"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "pro_client_feedback_profile_id_fkey"
+            foreignKeyName: "pro_client_Feedback_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "pro_service_profiles"
@@ -10156,7 +10156,7 @@ export type Database = {
           created_at: string
           features: Json
           has_ai_tools: boolean | null
-          has_analytics: boolean | null
+          has_CareerAnalytics: boolean | null
           has_branding: boolean | null
           has_contracts: boolean | null
           has_crm: boolean | null
@@ -10173,7 +10173,7 @@ export type Database = {
           created_at?: string
           features?: Json
           has_ai_tools?: boolean | null
-          has_analytics?: boolean | null
+          has_CareerAnalytics?: boolean | null
           has_branding?: boolean | null
           has_contracts?: boolean | null
           has_crm?: boolean | null
@@ -10190,7 +10190,7 @@ export type Database = {
           created_at?: string
           features?: Json
           has_ai_tools?: boolean | null
-          has_analytics?: boolean | null
+          has_CareerAnalytics?: boolean | null
           has_branding?: boolean | null
           has_contracts?: boolean | null
           has_crm?: boolean | null
@@ -11544,7 +11544,7 @@ export type Database = {
           },
         ]
       }
-      resume_analytics: {
+      resume_CareerAnalytics: {
         Row: {
           created_at: string | null
           event_data: Json | null
@@ -11592,7 +11592,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "resume_analytics_resume_id_fkey"
+            foreignKeyName: "resume_CareerAnalytics_resume_id_fkey"
             columns: ["resume_id"]
             isOneToOne: false
             referencedRelation: "resumes"
@@ -12918,7 +12918,7 @@ export type Database = {
         }
         Relationships: []
       }
-      revenue_analytics: {
+      revenue_CareerAnalytics: {
         Row: {
           cancelled_subscribers: number | null
           created_at: string | null
@@ -13073,7 +13073,7 @@ export type Database = {
         }
         Relationships: []
       }
-      roi_dashboard_metrics: {
+      roi_CommandCenter_metrics: {
         Row: {
           calculation_date: string | null
           company_id: string | null
@@ -13677,7 +13677,7 @@ export type Database = {
         }
         Relationships: []
       }
-      section_analytics: {
+      section_CareerAnalytics: {
         Row: {
           completion_percentage: number | null
           created_at: string | null
@@ -13716,7 +13716,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "section_analytics_resume_id_fkey"
+            foreignKeyName: "section_CareerAnalytics_resume_id_fkey"
             columns: ["resume_id"]
             isOneToOne: false
             referencedRelation: "ai_resumes"
@@ -13945,7 +13945,7 @@ export type Database = {
         }
         Relationships: []
       }
-      seo_analytics: {
+      seo_CareerAnalytics: {
         Row: {
           avg_session_duration: number | null
           bounce_rate: number | null
@@ -15257,7 +15257,7 @@ export type Database = {
         }
         Relationships: []
       }
-      service_analytics: {
+      service_CareerAnalytics: {
         Row: {
           created_at: string | null
           event_type: string
@@ -15284,7 +15284,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "service_analytics_service_id_fkey"
+            foreignKeyName: "service_CareerAnalytics_service_id_fkey"
             columns: ["service_id"]
             isOneToOne: false
             referencedRelation: "services"
@@ -15474,7 +15474,7 @@ export type Database = {
       }
       service_orders: {
         Row: {
-          client_feedback: string | null
+          client_Feedback: string | null
           client_id: string
           created_at: string
           delivery_date: string | null
@@ -15491,7 +15491,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          client_feedback?: string | null
+          client_Feedback?: string | null
           client_id: string
           created_at?: string
           delivery_date?: string | null
@@ -15508,7 +15508,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          client_feedback?: string | null
+          client_Feedback?: string | null
           client_id?: string
           created_at?: string
           delivery_date?: string | null
@@ -16200,7 +16200,7 @@ export type Database = {
         }
         Relationships: []
       }
-      sharing_analytics: {
+      sharing_CareerAnalytics: {
         Row: {
           clicked_count: number | null
           content_id: string
@@ -16674,7 +16674,7 @@ export type Database = {
           },
         ]
       }
-      skill_progression_analytics: {
+      skill_progression_CareerAnalytics: {
         Row: {
           assessment_scores: Json | null
           created_at: string | null
@@ -17046,7 +17046,7 @@ export type Database = {
         }
         Relationships: []
       }
-      smart_feed_preferences: {
+      smart_Pulse_preferences: {
         Row: {
           blocked_keywords: string[] | null
           blocked_users: string[] | null
@@ -17060,7 +17060,7 @@ export type Database = {
           include_tags: string[] | null
           preferred_industries: string[] | null
           preferred_roles: string[] | null
-          prioritize_connections: boolean | null
+          prioritize_TalentNetwork: boolean | null
           relevance_weight: number | null
           show_trending_content: boolean | null
           updated_at: string | null
@@ -17079,7 +17079,7 @@ export type Database = {
           include_tags?: string[] | null
           preferred_industries?: string[] | null
           preferred_roles?: string[] | null
-          prioritize_connections?: boolean | null
+          prioritize_TalentNetwork?: boolean | null
           relevance_weight?: number | null
           show_trending_content?: boolean | null
           updated_at?: string | null
@@ -17098,7 +17098,7 @@ export type Database = {
           include_tags?: string[] | null
           preferred_industries?: string[] | null
           preferred_roles?: string[] | null
-          prioritize_connections?: boolean | null
+          prioritize_TalentNetwork?: boolean | null
           relevance_weight?: number | null
           show_trending_content?: boolean | null
           updated_at?: string | null
@@ -17189,7 +17189,7 @@ export type Database = {
       }
       sop_drafts: {
         Row: {
-          ai_feedback: string | null
+          ai_Feedback: string | null
           ai_generated: boolean | null
           ai_prompt: string | null
           ai_score: number | null
@@ -17210,7 +17210,7 @@ export type Database = {
           word_count: number | null
         }
         Insert: {
-          ai_feedback?: string | null
+          ai_Feedback?: string | null
           ai_generated?: boolean | null
           ai_prompt?: string | null
           ai_score?: number | null
@@ -17231,7 +17231,7 @@ export type Database = {
           word_count?: number | null
         }
         Update: {
-          ai_feedback?: string | null
+          ai_Feedback?: string | null
           ai_generated?: boolean | null
           ai_prompt?: string | null
           ai_score?: number | null
@@ -17994,7 +17994,7 @@ export type Database = {
         }
         Relationships: []
       }
-      template_usage_analytics: {
+      template_usage_CareerAnalytics: {
         Row: {
           action_type: string
           id: string
@@ -18021,7 +18021,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "template_usage_analytics_template_id_fkey"
+            foreignKeyName: "template_usage_CareerAnalytics_template_id_fkey"
             columns: ["template_id"]
             isOneToOne: false
             referencedRelation: "resume_templates"
@@ -18366,8 +18366,8 @@ export type Database = {
           completion_status: string | null
           created_at: string | null
           duration_seconds: number | null
-          feedback_rating: number | null
-          feedback_text: string | null
+          Feedback_rating: number | null
+          Feedback_text: string | null
           id: string
           input_data: Json | null
           output_data: Json | null
@@ -18381,8 +18381,8 @@ export type Database = {
           completion_status?: string | null
           created_at?: string | null
           duration_seconds?: number | null
-          feedback_rating?: number | null
-          feedback_text?: string | null
+          Feedback_rating?: number | null
+          Feedback_text?: string | null
           id?: string
           input_data?: Json | null
           output_data?: Json | null
@@ -18396,8 +18396,8 @@ export type Database = {
           completion_status?: string | null
           created_at?: string | null
           duration_seconds?: number | null
-          feedback_rating?: number | null
-          feedback_text?: string | null
+          Feedback_rating?: number | null
+          Feedback_text?: string | null
           id?: string
           input_data?: Json | null
           output_data?: Json | null
@@ -18417,7 +18417,7 @@ export type Database = {
           employee_id: string | null
           enrolled_at: string | null
           enrollment_type: string | null
-          feedback: string | null
+          Feedback: string | null
           id: string
           program_id: string | null
           progress_percentage: number | null
@@ -18433,7 +18433,7 @@ export type Database = {
           employee_id?: string | null
           enrolled_at?: string | null
           enrollment_type?: string | null
-          feedback?: string | null
+          Feedback?: string | null
           id?: string
           program_id?: string | null
           progress_percentage?: number | null
@@ -18449,7 +18449,7 @@ export type Database = {
           employee_id?: string | null
           enrolled_at?: string | null
           enrollment_type?: string | null
-          feedback?: string | null
+          Feedback?: string | null
           id?: string
           program_id?: string | null
           progress_percentage?: number | null
@@ -18642,7 +18642,7 @@ export type Database = {
         }
         Relationships: []
       }
-      txc_analytics: {
+      txc_CareerAnalytics: {
         Row: {
           created_at: string | null
           event_data: Json | null
@@ -19273,7 +19273,7 @@ export type Database = {
           answers: Json | null
           assessment_id: string
           attempt_number: number | null
-          feedback: string | null
+          Feedback: string | null
           graded_at: string | null
           id: string
           score: number | null
@@ -19286,7 +19286,7 @@ export type Database = {
           answers?: Json | null
           assessment_id: string
           attempt_number?: number | null
-          feedback?: string | null
+          Feedback?: string | null
           graded_at?: string | null
           id?: string
           score?: number | null
@@ -19299,7 +19299,7 @@ export type Database = {
           answers?: Json | null
           assessment_id?: string
           attempt_number?: number | null
-          feedback?: string | null
+          Feedback?: string | null
           graded_at?: string | null
           id?: string
           score?: number | null
@@ -19310,7 +19310,7 @@ export type Database = {
         }
         Relationships: []
       }
-      user_behavior_analytics: {
+      user_behavior_CareerAnalytics: {
         Row: {
           element_selector: string | null
           event_data: Json | null
@@ -19685,7 +19685,7 @@ export type Database = {
           },
         ]
       }
-      user_engagement_analytics: {
+      user_engagement_CareerAnalytics: {
         Row: {
           action_type: string
           created_at: string | null
@@ -19760,7 +19760,7 @@ export type Database = {
         }
         Relationships: []
       }
-      user_feed_preferences: {
+      user_Pulse_preferences: {
         Row: {
           created_at: string
           id: string
@@ -19976,7 +19976,7 @@ export type Database = {
         }
         Relationships: []
       }
-      user_learning_analytics: {
+      user_learning_CareerAnalytics: {
         Row: {
           course_id: string | null
           created_at: string
@@ -20458,7 +20458,7 @@ export type Database = {
       user_progress: {
         Row: {
           communities_joined: number | null
-          connections_made: number | null
+          TalentNetwork_made: number | null
           current_streak: number | null
           id: string
           last_activity_at: string | null
@@ -20470,7 +20470,7 @@ export type Database = {
         }
         Insert: {
           communities_joined?: number | null
-          connections_made?: number | null
+          TalentNetwork_made?: number | null
           current_streak?: number | null
           id?: string
           last_activity_at?: string | null
@@ -20482,7 +20482,7 @@ export type Database = {
         }
         Update: {
           communities_joined?: number | null
-          connections_made?: number | null
+          TalentNetwork_made?: number | null
           current_streak?: number | null
           id?: string
           last_activity_at?: string | null
@@ -21057,7 +21057,7 @@ export type Database = {
         }
         Relationships: []
       }
-      video_analytics: {
+      video_CareerAnalytics: {
         Row: {
           completion_rate: number
           content_id: string
@@ -21145,7 +21145,7 @@ export type Database = {
           created_at: string
           description: string | null
           duration_minutes: number
-          feedback: string | null
+          Feedback: string | null
           id: string
           meeting_id: string | null
           meeting_url: string | null
@@ -21164,7 +21164,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           duration_minutes?: number
-          feedback?: string | null
+          Feedback?: string | null
           id?: string
           meeting_id?: string | null
           meeting_url?: string | null
@@ -21183,7 +21183,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           duration_minutes?: number
-          feedback?: string | null
+          Feedback?: string | null
           id?: string
           meeting_id?: string | null
           meeting_url?: string | null
@@ -21620,7 +21620,7 @@ export type Database = {
         }
         Relationships: []
       }
-      workforce_analytics: {
+      workforce_CareerAnalytics: {
         Row: {
           benchmark_value: number | null
           company_id: string | null
@@ -21692,7 +21692,7 @@ export type Database = {
         }
         Relationships: []
       }
-      youtube_connections: {
+      youtube_TalentNetwork: {
         Row: {
           access_token: string | null
           created_at: string | null
@@ -21976,7 +21976,7 @@ export type Database = {
             }
             Returns: undefined
           }
-      backfill_admin_connections: { Args: never; Returns: number }
+      backfill_admin_TalentNetwork: { Args: never; Returns: number }
       batch_refresh_career_passports: { Args: never; Returns: Json }
       calculate_assessment_score: {
         Args: { attempt_uuid: string }
@@ -22132,7 +22132,7 @@ export type Database = {
         }[]
       }
       count_words: { Args: { content_text: string }; Returns: number }
-      create_admin_connections: {
+      create_admin_TalentNetwork: {
         Args: { target_user_id: string }
         Returns: undefined
       }
@@ -22361,7 +22361,7 @@ export type Database = {
           tone: string
         }[]
       }
-      get_backlink_dashboard_stats: { Args: never; Returns: Json }
+      get_backlink_CommandCenter_stats: { Args: never; Returns: Json }
       get_batch_progress: {
         Args: never
         Returns: {
@@ -22388,7 +22388,7 @@ export type Database = {
         Returns: {
           company_name: string
           full_name: string
-          mutual_connections: number
+          mutual_TalentNetwork: number
           profile_picture_url: string
           suggested_user_id: string
           title: string
@@ -22548,7 +22548,7 @@ export type Database = {
           updated_at: string
         }[]
       }
-      get_reel_feed:
+      get_reel_Pulse:
         | {
             Args: { p_limit?: number; p_offset?: number }
             Returns: {
@@ -22670,8 +22670,8 @@ export type Database = {
               user_name: string
             }[]
           }
-      get_txc_user_analytics: { Args: { user_uuid: string }; Returns: Json }
-      get_unified_analytics:
+      get_txc_user_CareerAnalytics: { Args: { user_uuid: string }; Returns: Json }
+      get_unified_CareerAnalytics:
         | {
             Args: never
             Returns: {
@@ -23168,7 +23168,7 @@ export type Database = {
         }
         Returns: string
       }
-      track_share_analytics: {
+      track_share_CareerAnalytics: {
         Args: {
           p_content_id: string
           p_content_type: string
@@ -23329,7 +23329,7 @@ export type Database = {
         Args: { coin_change: number; reason?: string; user_uuid: string }
         Returns: number
       }
-      upsert_daily_analytics: {
+      upsert_daily_CareerAnalytics: {
         Args: { p_date: string; p_field: string; p_increment?: number }
         Returns: undefined
       }
@@ -23648,3 +23648,9 @@ export const Constants = {
     },
   },
 } as const
+
+
+
+
+
+

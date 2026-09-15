@@ -19,7 +19,7 @@ export function CacheMonitor() {
     await Promise.all([
       cacheManager.invalidateJobsCache(),
       cacheManager.invalidateSearchCache(),
-      cacheManager.invalidateAnalyticsCache()
+      cacheManager.invalidateCareerAnalyticsCache()
     ]);
     refresh();
   };
@@ -160,9 +160,9 @@ export function CacheMonitor() {
             <Button 
               variant="outline" 
               size="sm" 
-              onClick={() => cacheManager.invalidateAnalyticsCache()}
+              onClick={() => cacheManager.invalidateCareerAnalyticsCache()}
             >
-              Clear Analytics
+              Clear CareerAnalytics
             </Button>
             <Button 
               variant="outline" 
@@ -177,3 +177,6 @@ export function CacheMonitor() {
     </div>
   );
 }
+
+
+

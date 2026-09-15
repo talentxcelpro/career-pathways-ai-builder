@@ -72,7 +72,7 @@ const securityFixes: SecurityStatus[] = [
   }
 ];
 
-const SecurityDashboard: React.FC = () => {
+const SecurityCommandCenter: React.FC = () => {
   const getStatusIcon = (status: SecurityStatus['status']) => {
     switch (status) {
       case 'fixed':
@@ -120,7 +120,7 @@ const SecurityDashboard: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Shield className="h-6 w-6 text-blue-600" />
-            Security Enhancement Dashboard
+            Security Enhancement CommandCenter
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -219,4 +219,5 @@ const SecurityDashboard: React.FC = () => {
   );
 };
 
-export default SecurityDashboard;
+export default SecurityCommandCenter;
+

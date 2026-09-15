@@ -33,14 +33,14 @@ interface Post {
 }
 
 export const MobileSocialNetwork = () => {
-  const [connections, setConnections] = useState<Connection[]>([]);
+  const [TalentNetwork, setTalentNetwork] = useState<Connection[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
-  const [activeTab, setActiveTab] = useState<'feed' | 'connections' | 'suggestions'>('feed');
+  const [activeTab, setActiveTab] = useState<'Pulse' | 'connections' | 'suggestions'>('Pulse');
   const { toast } = useToast();
 
   useEffect(() => {
     // Mock data
-    const mockConnections: Connection[] = [
+    const mockTalentNetwork: Connection[] = [
       {
         id: '1',
         name: 'Sarah Johnson',
@@ -103,12 +103,12 @@ export const MobileSocialNetwork = () => {
       }
     ];
 
-    setConnections(mockConnections);
+    setTalentNetwork(mockTalentNetwork);
     setPosts(mockPosts);
   }, []);
 
   const handleConnect = (connectionId: string) => {
-    setConnections(prev =>
+    setTalentNetwork(prev =>
       prev.map(conn =>
         conn.id === connectionId
           ? { ...conn, status: conn.status === 'suggested' ? 'pending' : 'connected' }
@@ -167,7 +167,7 @@ export const MobileSocialNetwork = () => {
 
       {/* Tabs */}
       <div className="flex space-x-1 bg-muted p-1 rounded-lg">
-        {['feed', 'connections', 'suggestions'].map((tab) => (
+        {['Pulse', 'connections', 'suggestions'].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab as any)}
@@ -182,8 +182,8 @@ export const MobileSocialNetwork = () => {
         ))}
       </div>
 
-      {/* Feed Tab */}
-      {activeTab === 'feed' && (
+      {/* Pulse Tab */}
+      {activeTab === 'Pulse' && (
         <div className="space-y-4">
           {posts.map((post) => (
             <Card key={post.id} className="p-4">
@@ -234,14 +234,14 @@ export const MobileSocialNetwork = () => {
         </div>
       )}
 
-      {/* Connections Tab */}
+      {/* TalentNetwork Tab */}
       {activeTab === 'connections' && (
         <div className="space-y-3">
           <div className="flex justify-between items-center">
-            <span className="text-sm font-medium">Your Connections</span>
-            <Badge variant="outline">{connections.filter(c => c.status === 'connected').length}</Badge>
+            <span className="text-sm font-medium">Your TalentNetwork</span>
+            <Badge variant="outline">{TalentNetwork.filter(c => c.status === 'connected').length}</Badge>
           </div>
-          {connections.filter(c => c.status === 'connected').map((connection) => (
+          {TalentNetwork.filter(c => c.status === 'connected').map((connection) => (
             <Card key={connection.id} className="p-3">
               <div className="flex items-center gap-3">
                 <Avatar className="w-12 h-12">
@@ -269,9 +269,9 @@ export const MobileSocialNetwork = () => {
         <div className="space-y-3">
           <div className="flex justify-between items-center">
             <span className="text-sm font-medium">People You May Know</span>
-            <Badge variant="outline">{connections.filter(c => c.status === 'suggested').length}</Badge>
+            <Badge variant="outline">{TalentNetwork.filter(c => c.status === 'suggested').length}</Badge>
           </div>
-          {connections.filter(c => c.status === 'suggested').map((connection) => (
+          {TalentNetwork.filter(c => c.status === 'suggested').map((connection) => (
             <Card key={connection.id} className="p-3">
               <div className="flex items-center gap-3">
                 <Avatar className="w-12 h-12">
@@ -285,7 +285,7 @@ export const MobileSocialNetwork = () => {
                   <p className="text-xs text-muted-foreground">{connection.title}</p>
                   <p className="text-xs text-muted-foreground">{connection.company}</p>
                   <p className="text-xs text-muted-foreground">
-                    {connection.mutualConnections} mutual connections
+                    {connection.mutualConnections} mutual TalentNetwork
                   </p>
                 </div>
                 <Button 
@@ -303,3 +303,4 @@ export const MobileSocialNetwork = () => {
     </div>
   );
 };
+

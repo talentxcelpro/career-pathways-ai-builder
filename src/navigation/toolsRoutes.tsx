@@ -1,55 +1,59 @@
-import { Brain, Calculator, MessageSquare, Target, FileText, Users, BookOpen, Briefcase, User, TrendingUp, BarChart3, PieChart, Award, Shield, Search, ArrowRightLeft, Video, Star, Send, DollarSign, Network, UserCheck, Mail, Edit3, Scissors } from "lucide-react";
-import RoleFitEvaluator from "../pages/tools/RoleFitEvaluator";
-import MockInterviewSimulator from "../pages/tools/MockInterviewSimulator";
-import AIOutreachGenerator from "../pages/tools/AIOutreachGenerator";
-import ResumeTailorTool from "../pages/tools/ResumeTailorTool";
-import SkillGapAnalyzer from "../pages/tools/SkillGapAnalyzer";
-import InterviewQABank from "../pages/tools/InterviewQABank";  
-import STARAnswerGenerator from "../pages/tools/STARAnswerGenerator";
-import AIJobMatchGPT from "../pages/tools/AIJobMatchGPT";
-import NetworkGrowthTracker from "../pages/tools/NetworkGrowthTracker";
-import AILearningPathGenerator from "../pages/tools/AILearningPathGenerator";
-import CareerChangeNavigator from "../pages/tools/CareerChangeNavigator";
-import InterviewReadinessScore from "../pages/tools/InterviewReadinessScore";
-import SmartApplyTool from "../pages/tools/SmartApplyTool";
-import SalaryBenchmarkTool from "../pages/tools/SalaryBenchmarkTool";
-import CoverLetterGenerator from "../pages/tools/CoverLetterGenerator";
-import SkillAssessmentEngine from "../pages/tools/SkillAssessmentEngine";
-import ToolsDashboard from "../pages/tools/ToolsDashboard";
-import AICareerPathfinder from "../pages/tools/AICareerPathfinder";
-import JobApplicationFunnel from "../pages/tools/JobApplicationFunnel";
-import ResumePerformanceInsights from "../pages/tools/ResumePerformanceInsights";  
-import CareerGrowthScore from "../pages/tools/CareerGrowthScore";
-import CareerSWOTAnalysis from "../pages/tools/CareerSWOTAnalysis";
-import SalaryAnalyzer from "../pages/tools/SalaryAnalyzer";
-import InterviewPrep from "../pages/tools/InterviewPrep";
-import CareerPathfinder from "../pages/tools/CareerPathfinder";
-import ResumeOptimizer from "../pages/tools/ResumeOptimizer";
-import ResumeBuilder from "../pages/tools/ResumeBuilder";
-import NetworkBuilder from "../pages/tools/NetworkBuilder";
-import SkillAssessor from "../pages/tools/SkillAssessor";
-import JobMatcher from "../pages/tools/JobMatcher";
-import { ProfileScore } from "../pages/tools/ProfileScore";
-import MarketInsights from "../pages/tools/MarketInsights";
-import ProfessionalBioWriter from "../pages/tools/ProfessionalBioWriter";
-import { ProfileOptimizer } from "../pages/tools/ProfileOptimizer";
-import MentorConnectTool from "../pages/tools/MentorConnectTool";
-import { ResumeGapAnalyzer } from "../pages/tools/ResumeGapAnalyzer";
-import AIResumeBuilder from "../pages/tools/AIResumeBuilder";
-import ResumeAnalysis from "../pages/tools/ResumeAnalysis";
+import { lazy } from "react";
+import { Calculator, MessageSquare, Target, FileText, Users, BookOpen, Briefcase, User, TrendingUp, BarChart3, PieChart, Award, Shield, Search, ArrowRightLeft, Video, Star, Send, DollarSign, Network, Edit3, Scissors } from "lucide-react";
+
+const RoleFitEvaluator = lazy(() => import("../pages/tools/RoleFitEvaluator"));
+const MockInterviewSimulator = lazy(() => import("../pages/tools/MockInterviewSimulator"));
+const AIOutreachGenerator = lazy(() => import("../pages/tools/AIOutreachGenerator"));
+const ResumeTailorTool = lazy(() => import("../pages/tools/ResumeTailorTool"));
+const SkillGapAnalyzer = lazy(() => import("../pages/tools/SkillGapAnalyzer"));
+const InterviewQABank = lazy(() => import("../pages/tools/InterviewQABank"));  
+const STARAnswerGenerator = lazy(() => import("../pages/tools/STARAnswerGenerator"));
+const AIJobMatchGPT = lazy(() => import("../pages/tools/AIJobMatchGPT"));
+const NetworkGrowthTracker = lazy(() => import("../pages/tools/NetworkGrowthTracker"));
+const AILearningPathGenerator = lazy(() => import("../pages/tools/AILearningPathGenerator"));
+const CareerChangeNavigator = lazy(() => import("../pages/tools/CareerChangeNavigator"));
+const InterviewReadinessScore = lazy(() => import("../pages/tools/InterviewReadinessScore"));
+const SmartApplyTool = lazy(() => import("../pages/tools/SmartApplyTool"));
+const SalaryBenchmarkTool = lazy(() => import("../pages/tools/SalaryBenchmarkTool"));
+const CoverLetterGenerator = lazy(() => import("../pages/tools/CoverLetterGenerator"));
+const SkillAssessmentEngine = lazy(() => import("../pages/tools/SkillAssessmentEngine"));
+const ToolsCommandCenter = lazy(() => import("../pages/tools/ToolsDashboard"));
+const AICareerPathfinder = lazy(() => import("../pages/tools/AICareerPathfinder"));
+const JobApplicationFunnel = lazy(() => import("../pages/tools/JobApplicationFunnel"));
+const ResumePerformanceInsights = lazy(() => import("../pages/tools/ResumePerformanceInsights"));  
+const CareerGrowthScore = lazy(() => import("../pages/tools/CareerGrowthScore"));
+const CareerSWOTAnalysis = lazy(() => import("../pages/tools/CareerSWOTAnalysis"));
+const SalaryAnalyzer = lazy(() => import("../pages/tools/SalaryAnalyzer"));
+const InterviewPrep = lazy(() => import("../pages/tools/InterviewPrep"));
+const CareerPathfinder = lazy(() => import("../pages/tools/CareerPathfinder"));
+const ResumeOptimizer = lazy(() => import("../pages/tools/ResumeOptimizer"));
+const ResumeBuilder = lazy(() => import("../pages/tools/ResumeBuilder"));
+const NetworkBuilder = lazy(() => import("../pages/tools/NetworkBuilder"));
+const SkillAssessor = lazy(() => import("../pages/tools/SkillAssessor"));
+const JobMatcher = lazy(() => import("../pages/tools/JobMatcher"));
+const ProfileScore = lazy(() => import("../pages/tools/ProfileScore").then(m => ({ default: m.ProfileScore })));
+const MarketInsights = lazy(() => import("../pages/tools/MarketInsights"));
+const ProfessionalBioWriter = lazy(() => import("../pages/tools/ProfessionalBioWriter"));
+const ProfileOptimizer = lazy(() => import("../pages/tools/ProfileOptimizer").then(m => ({ default: m.ProfileOptimizer })));
+const MentorConnectTool = lazy(() => import("../pages/tools/MentorConnectTool"));
+const ResumeGapAnalyzer = lazy(() => import("../pages/tools/ResumeGapAnalyzer").then(m => ({ default: m.ResumeGapAnalyzer })));
+const AIResumeBuilder = lazy(() => import("../pages/tools/AIResumeBuilder"));
+const ResumeAnalysis = lazy(() => import("../pages/tools/ResumeAnalysis"));
+
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+
 
 export const toolsRoutes = [
   {
     title: "Tools",
     to: "/tools",
-    icon: <Brain className="h-4 w-4" />,
-    page: <div>This should not be used - check App.tsx</div>,
+    icon: <Target className="h-4 w-4" />,
+    page: <ToolsCommandCenter />,
     isPublic: true,
   },
   {
-    title: "AI Career Pathfinder",
-    to: "/tools/ai-career-pathfinder",
+    title: "Navigator Pathfinder",
+    to: "/tools/navigator-pathfinder",
     icon: <Target className="h-4 w-4" />,
     page: <AICareerPathfinder />,
     isPublic: true,
@@ -128,8 +132,8 @@ export const toolsRoutes = [
   },
   // Job Search Tools
   {
-    title: "AI Job Match GPT",
-    to: "/tools/ai-job-match-gpt", 
+    title: "Precision Match Lab",
+    to: "/tools/precision-match-lab", 
     icon: <Briefcase className="h-4 w-4" />,
     page: <AIJobMatchGPT />,
     isPublic: true,
@@ -219,8 +223,8 @@ export const toolsRoutes = [
     isPublic: true,
   },
   {
-    title: "AI Learning Path Generator",
-    to: "/tools/ai-learning-path-generator",
+    title: "Growth Path Builder",
+    to: "/tools/growth-path-builder",
     icon: <BookOpen className="h-4 w-4" />,
     page: <AILearningPathGenerator />,
     isPublic: true,
@@ -247,8 +251,8 @@ export const toolsRoutes = [
     isPublic: true,
   },
   {
-    title: "AI Profile Optimizer", 
-    to: "/tools/ai-profile-optimizer",
+    title: "Profile Optimizer", 
+    to: "/tools/profile-optimizer",
     icon: <User className="h-4 w-4" />,
     page: <ProfileOptimizer />,
     isPublic: true,
@@ -268,8 +272,8 @@ export const toolsRoutes = [
     isPublic: true,
   },
   {
-    title: "AI Resume Builder",
-    to: "/tools/ai-resume-builder",
+    title: "Resume Builder Pro",
+    to: "/tools/resume-builder-pro",
     icon: <FileText className="h-4 w-4" />,
     page: <AIResumeBuilder />,
     isPublic: true,
@@ -289,15 +293,15 @@ export const toolsRoutes = [
     isPublic: true,
   },
   {
-    title: "Network Growth Tracker",
-    to: "/tools/network-growth-tracker",
+    title: "Talent Network Growth",
+    to: "/tools/talent-network-growth",
     icon: <Network className="h-4 w-4" />,
     page: <NetworkGrowthTracker />,
     isPublic: true,
   },
   {
-    title: "AI Outreach Generator",
-    to: "/tools/ai-outreach-generator",
+    title: "Outreach Builder",
+    to: "/tools/outreach-builder",
     icon: <Send className="h-4 w-4" />,
     page: <AIOutreachGenerator />,
     isPublic: true,

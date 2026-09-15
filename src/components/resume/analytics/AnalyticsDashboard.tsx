@@ -13,20 +13,20 @@ import {
   Target, Clock, MapPin, Briefcase, Award, Users 
 } from 'lucide-react';
 
-interface AnalyticsDashboardProps {
+interface CareerAnalyticsCommandCenterProps {
   resumeId: string;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
+export const CareerAnalyticsCommandCenter: React.FC<CareerAnalyticsCommandCenterProps> = ({
   resumeId,
   isOpen,
   onClose
 }) => {
   const [timeRange, setTimeRange] = useState('30d');
 
-  // Mock analytics data - would come from Supabase in real implementation
+  // Mock CareerAnalytics data - would come from Supabase in real implementation
   const overviewStats = {
     totalViews: 1247,
     downloads: 89,
@@ -77,7 +77,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
         <CardHeader className="flex flex-row items-center justify-between border-b">
           <CardTitle className="flex items-center gap-2">
             <BarChart className="h-5 w-5" />
-            Resume Analytics & Insights
+            Resume CareerAnalytics & Insights
           </CardTitle>
           <div className="flex items-center gap-2">
             <select 
@@ -101,7 +101,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
               <TabsTrigger value="traffic">Traffic & Views</TabsTrigger>
               <TabsTrigger value="applications">Applications</TabsTrigger>
               <TabsTrigger value="performance">Performance</TabsTrigger>
-              <TabsTrigger value="insights">AI Insights</TabsTrigger>
+              <TabsTrigger value="insights">Intelligence Metrics</TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview" className="space-y-6 mt-6">
@@ -301,7 +301,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Award className="h-5 w-5" />
-                      AI Recommendations
+                      Career Moves
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -364,3 +364,6 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
     </div>
   );
 };
+
+
+

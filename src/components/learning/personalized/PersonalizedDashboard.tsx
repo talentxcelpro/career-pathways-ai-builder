@@ -19,7 +19,7 @@ import {
   BarChart3
 } from 'lucide-react';
 
-interface PersonalizedDashboardProps {
+interface PersonalizedCommandCenterProps {
   userData: {
     name: string;
     currentStreak: number;
@@ -51,7 +51,7 @@ interface PersonalizedDashboardProps {
   };
 }
 
-export const PersonalizedDashboard: React.FC<PersonalizedDashboardProps> = ({ userData }) => {
+export const PersonalizedCommandCenter: React.FC<PersonalizedCommandCenterProps> = ({ userData }) => {
   const [reminderSettings, setReminderSettings] = useState({
     daily: true,
     weekly: true,
@@ -105,7 +105,7 @@ export const PersonalizedDashboard: React.FC<PersonalizedDashboardProps> = ({ us
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="goals">Goals & Progress</TabsTrigger>
           <TabsTrigger value="skills">Skill Gaps</TabsTrigger>
-          <TabsTrigger value="recommendations">AI Recommendations</TabsTrigger>
+          <TabsTrigger value="recommendations">Career Moves</TabsTrigger>
           <TabsTrigger value="activity">Recent Activity</TabsTrigger>
         </TabsList>
 
@@ -242,7 +242,7 @@ export const PersonalizedDashboard: React.FC<PersonalizedDashboardProps> = ({ us
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Lightbulb className="h-5 w-5 text-yellow-500" />
-                AI-Powered Recommendations
+                Performance Recommendations
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -308,3 +308,4 @@ export const PersonalizedDashboard: React.FC<PersonalizedDashboardProps> = ({ us
     </div>
   );
 };
+

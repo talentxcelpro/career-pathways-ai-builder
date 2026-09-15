@@ -1,7 +1,9 @@
+import { lazy } from "react";
 import { NavItem } from "../types/nav-item";
-import AssessmentsPage from "../pages/assessments/index";
-import AssessmentTaking from "../pages/assessments/AssessmentTaking";
-import AssessmentResults from "../pages/assessments/AssessmentResults";
+const AssessmentsPage = lazy(() => import("../pages/assessments/index"));
+const AssessmentTaking = lazy(() => import("../pages/assessments/AssessmentTaking"));
+const AssessmentResults = lazy(() => import("../pages/assessments/AssessmentResults"));
+
 
 export const assessmentRoutes: NavItem[] = [
   {

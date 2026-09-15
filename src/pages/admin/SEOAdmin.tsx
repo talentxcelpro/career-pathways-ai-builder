@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { SEODashboard } from '@/components/seo/SEODashboard';
+import { SEOCommandCenter } from '@/components/seo/SEODashboard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Search, TrendingUp, Globe, Users } from 'lucide-react';
@@ -19,7 +19,7 @@ const SEOAdmin = () => {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">SEO Administration</h1>
           <p className="text-gray-600">
-            Comprehensive SEO management dashboard for TalentXcel platform
+            Comprehensive SEO management CommandCenter for TalentXcel platform
           </p>
         </div>
 
@@ -40,8 +40,8 @@ const SEOAdmin = () => {
           ))}
         </div>
 
-        {/* Main SEO Dashboard */}
-        <SEODashboard />
+        {/* Main SEO CommandCenter */}
+        <SEOCommandCenter />
 
         {/* SEO Strategy Overview */}
         <Card className="mt-8">
@@ -117,3 +117,5 @@ const SEOAdmin = () => {
 };
 
 export default SEOAdmin;
+
+

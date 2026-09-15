@@ -1,8 +1,11 @@
+import { lazy } from "react";
 import { TrendingUp, Users, Star, BarChart3 } from "lucide-react";
-import UserAcquisitionPage from "../pages/growth/UserAcquisitionPage";
-import ContentStudioPage from "../pages/growth/ContentStudioPage";
-import EnhancedCompanyPage from "../pages/growth/EnhancedCompanyPage";
-import AdvancedAnalyticsPage from "../pages/growth/AdvancedAnalyticsPage";
+
+const UserAcquisitionPage = lazy(() => import("../pages/growth/UserAcquisitionPage"));
+const ContentStudioPage = lazy(() => import("../pages/growth/ContentStudioPage"));
+const EnhancedCompanyPage = lazy(() => import("../pages/growth/EnhancedCompanyPage"));
+const AdvancedCareerAnalyticsPage = lazy(() => import("../pages/growth/AdvancedAnalyticsPage"));
+
 
 export const growthRoutes = [
   {
@@ -18,7 +21,7 @@ export const growthRoutes = [
     to: "/growth/content-studio",
     icon: <Star className="h-4 w-4" />,
     page: <ContentStudioPage />,
-    description: "AI-powered content creation and scheduling",
+    description: "Performance content creation and scheduling",
     isPublic: true,
   },
   {
@@ -26,15 +29,18 @@ export const growthRoutes = [
     to: "/growth/company-profiles",
     icon: <TrendingUp className="h-4 w-4" />,
     page: <EnhancedCompanyPage />,
-    description: "Rich company pages with media and analytics",
+    description: "Rich company pages with media and Career Analytics",
     isPublic: true,
   },
   {
-    title: "Advanced Analytics",
-    to: "/growth/analytics",
+    title: "Advanced Career Analytics",
+    to: "/growth/career-analytics",
     icon: <BarChart3 className="h-4 w-4" />,
-    page: <AdvancedAnalyticsPage />,
+    page: <AdvancedCareerAnalyticsPage />,
     description: "Deep hiring insights and competitor analysis",
     isPublic: true,
   },
 ];
+
+
+

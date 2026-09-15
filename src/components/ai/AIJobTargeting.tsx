@@ -1,7 +1,7 @@
 // ============================================
 // AI JOB TARGETING SYSTEM - PHASE 3 INTEGRATION
 // ============================================
-// Advanced job targeting with AI matching and optimization
+// Advanced job targeting with Precision Match and optimization
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { useAIService } from '@/hooks/useAIService';
@@ -46,7 +46,7 @@ export const AIJobTargeting: React.FC<AIJobTargetingProps> = ({
     progress,
     currentOperation,
     submitFeedback
-  } = useAIService({ enableFeedback: true, enableAnalytics: true });
+  } = useAIService({ enableFeedback: true, enableCareerAnalytics: true });
 
   const [state, setState] = useState<JobTargetingState>({
     targetJobDescription: '',
@@ -203,7 +203,7 @@ export const AIJobTargeting: React.FC<AIJobTargetingProps> = ({
           <h2 className="text-2xl font-bold">AI Job Targeting</h2>
         </div>
         <p className="text-muted-foreground">
-          Analyze job compatibility and optimize your resume with AI-powered insights
+          Analyze job compatibility and optimize your resume with Performance insights
         </p>
       </div>
 
@@ -362,7 +362,7 @@ export const AIJobTargeting: React.FC<AIJobTargetingProps> = ({
               {state.selectedMatch.recommendations.length > 0 && (
                 <Card>
                   <CardHeader>
-                    <CardTitle>AI Recommendations</CardTitle>
+                    <CardTitle>Career Moves</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
@@ -469,7 +469,7 @@ export const AIJobTargeting: React.FC<AIJobTargetingProps> = ({
           <Card>
             <CardHeader>
               <CardTitle>How was this analysis?</CardTitle>
-              <CardDescription>Your feedback helps improve our AI targeting system</CardDescription>
+              <CardDescription>Your Feedback helps improve our AI targeting system</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex gap-2">
@@ -491,3 +491,7 @@ export const AIJobTargeting: React.FC<AIJobTargetingProps> = ({
     </div>
   );
 };
+
+
+
+

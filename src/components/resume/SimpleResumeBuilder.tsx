@@ -318,7 +318,7 @@ export const SimpleResumeBuilder = () => {
         if (expText.includes(inst.name) || expText.includes(inst.period)) {
           const [startYear, endYear] = inst.period.split('–');
           experience.push({
-            title: 'Assistant Professor',
+            title: 'Navigator Professor',
             company: inst.name,
             startDate: startYear,
             endDate: endYear,
@@ -631,7 +631,7 @@ export const SimpleResumeBuilder = () => {
               </span>
             )}
             <Button variant="outline" onClick={() => navigate('/resume-builder')}>
-              Back to Dashboard
+              Back to CommandCenter
             </Button>
           </div>
         </div>
@@ -957,3 +957,6 @@ export const SimpleResumeBuilder = () => {
     </div>
   );
 };
+
+
+

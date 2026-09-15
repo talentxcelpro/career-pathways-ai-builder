@@ -43,7 +43,7 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({ children
             device_memory: deviceMemory
           });
 
-        // Send to Google Analytics
+        // Send to Google CareerAnalytics
         if (typeof window !== 'undefined' && window.gtag) {
           window.gtag('event', 'web_vitals', {
             custom_parameter_1: 'performance',
@@ -65,3 +65,6 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({ children
 
   return <>{children}</>;
 };
+
+
+

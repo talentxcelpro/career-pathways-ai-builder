@@ -259,6 +259,47 @@ const ResumeTemplates = () => {
       description: 'Modern corporate design with strategic focus',
       ats_score: 89,
       colors: ['#1e40af', '#2563eb', '#3b82f6']
+    },
+    // Premium AI & Modern Templates
+    {
+      id: 'prem-1',
+      name: 'AI Innovator',
+      category: 'modern',
+      description: 'Futuristic design with glowing accents and tech-focused layout',
+      ats_score: 91,
+      colors: ['#06b6d4', '#4f46e5', '#1e1b4b']
+    },
+    {
+      id: 'prem-2',
+      name: 'Executive Glass',
+      category: 'executive',
+      description: 'Premium glassmorphism design with elegant transparencies',
+      ats_score: 94,
+      colors: ['#111827', '#374151', '#9ca3af']
+    },
+    {
+      id: 'prem-3',
+      name: 'Minimalist Zen',
+      category: 'minimal',
+      description: 'Ultra-clean minimalist approach for high readability',
+      ats_score: 99,
+      colors: ['#18181b', '#27272a', '#a1a1aa']
+    },
+    {
+      id: 'prem-4',
+      name: 'Creative Flow',
+      category: 'creative',
+      description: 'Dynamic gradient-based design for creative expression',
+      ats_score: 82,
+      colors: ['#db2777', '#7c3aed', '#2563eb']
+    },
+    {
+      id: 'prem-5',
+      name: 'Technical Master',
+      category: 'technical',
+      description: 'Highly structured grid-based layout for developers',
+      ats_score: 96,
+      colors: ['#059669', '#10b981', '#064e3b']
     }
   ];
 
@@ -471,7 +512,7 @@ const ResumeTemplates = () => {
               className="flex items-center mr-4"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Dashboard
+              Back to CommandCenter
             </Button>
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Resume Templates</h1>
@@ -667,3 +708,5 @@ const ResumeTemplates = () => {
 };
 
 export default ResumeTemplates;
+
+

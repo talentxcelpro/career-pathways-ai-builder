@@ -3,13 +3,13 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { SitemapManager } from '@/components/admin/SitemapManager';
 import { SEOCronManager } from '@/components/seo/SEOCronManager';
-import { MegaSEODashboard } from '@/components/admin/MegaSEODashboard';
+import { MegaSEOCommandCenter } from '@/components/admin/MegaSEODashboard';
 import { DomainConnectionGuide } from '@/components/seo/DomainConnectionGuide';
-import { SEORecoveryDashboard } from '@/components/seo/SEORecoveryDashboard';
+import { SEORecoveryCommandCenter } from '@/components/seo/SEORecoveryDashboard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Search, Globe, Bot, TrendingUp, AlertTriangle } from 'lucide-react';
+import { Search, Globe, TrendingUp, AlertTriangle } from 'lucide-react';
 
 const SEOManagement = () => {
   const isCustomDomain = window.location.hostname === 'talentxcel.in';
@@ -54,7 +54,7 @@ const SEOManagement = () => {
         <Card className="border-yellow-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Domain Status</CardTitle>
-            <Bot className="h-4 w-4 text-yellow-600" />
+            <Globe className="h-4 w-4 text-yellow-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-yellow-600">
@@ -85,7 +85,7 @@ const SEOManagement = () => {
         </TabsList>
 
         <TabsContent value="recovery">
-          <SEORecoveryDashboard />
+          <SEORecoveryCommandCenter />
         </TabsContent>
 
         <TabsContent value="domain">
@@ -94,7 +94,7 @@ const SEOManagement = () => {
 
         <TabsContent value="infrastructure">
           <div className="space-y-6">
-            <MegaSEODashboard />
+            <MegaSEOCommandCenter />
             <SitemapManager />
             <SEOCronManager />
           </div>
@@ -111,7 +111,7 @@ const SEOManagement = () => {
             <CardContent>
               <div className="text-center py-8 text-muted-foreground">
                 <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Monitoring dashboard will activate after domain connection</p>
+                <p>Monitoring Command Center will activate after domain connection</p>
               </div>
             </CardContent>
           </Card>
@@ -121,32 +121,32 @@ const SEOManagement = () => {
       <Card>
         <CardHeader>
           <CardTitle>Implementation Overview</CardTitle>
-          <CardDescription>Current SEO and AI indexing implementation status</CardDescription>
+          <CardDescription>Current SEO and search discovery implementation status</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div>
-              <h4 className="font-semibold text-green-600 mb-2">✅ Phase 1: Completed</h4>
+              <h4 className="font-semibold text-green-600 mb-2">Phase 1: Completed</h4>
               <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
-                <li>Enhanced robots.txt with AI crawler support</li>
+                <li>Enhanced robots.txt with crawler support</li>
                 <li>Comprehensive sitemap system with multiple specialized sitemaps</li>
-                <li>AI discovery endpoint (/.well-known/ai-index.json)</li>
+                <li>TalentXcel discovery endpoint (/.well-known/talentxcel-index.json)</li>
                 <li>Advanced structured data implementation</li>
               </ul>
             </div>
             
             <div>
-              <h4 className="font-semibold text-blue-600 mb-2">🔄 Phase 2: In Progress</h4>
+              <h4 className="font-semibold text-blue-600 mb-2">Phase 2: In Progress</h4>
               <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
                 <li>Automated search engine submission</li>
                 <li>Performance optimization with preload hints</li>
                 <li>Enhanced internal linking strategy</li>
-                <li>SEO monitoring and analytics dashboard</li>
+                <li>SEO monitoring and Career Analytics Command Center</li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-semibold text-gray-600 mb-2">📋 Phase 3: Planned</h4>
+              <h4 className="font-semibold text-gray-600 mb-2">Phase 3: Planned</h4>
               <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
                 <li>Real-time SEO score monitoring</li>
                 <li>Competitive SEO analysis</li>
@@ -162,3 +162,7 @@ const SEOManagement = () => {
 };
 
 export default SEOManagement;
+
+
+
+

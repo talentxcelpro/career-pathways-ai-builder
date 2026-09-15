@@ -67,7 +67,7 @@ export default function TalentXcelProfile() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">TalentXcel Career Passport</h1>
+          <h1 className="text-3xl font-bold">TalentXcel Evolution Hub</h1>
           <p className="text-muted-foreground">
             Your unified career identity and professional journey
           </p>
@@ -96,7 +96,7 @@ export default function TalentXcelProfile() {
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="journey">Journey</TabsTrigger>
               <TabsTrigger value="achievements">Achievements</TabsTrigger>
-              <TabsTrigger value="analytics">Analytics</TabsTrigger>
+              <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview" className="space-y-6">
@@ -320,18 +320,18 @@ export default function TalentXcelProfile() {
               </Card>
             </TabsContent>
 
-            <TabsContent value="analytics" className="space-y-6">
+            <TabsContent value="CareerAnalytics" className="space-y-6">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <TrendingUp className="h-5 w-5" />
-                    Career Analytics
+                    Career CareerAnalytics
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="text-center py-8">
                     <TrendingUp className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                    <p className="text-muted-foreground">Analytics dashboard coming soon</p>
+                    <p className="text-muted-foreground">CareerAnalytics CommandCenter coming soon</p>
                   </div>
                 </CardContent>
               </Card>
@@ -372,3 +372,6 @@ export default function TalentXcelProfile() {
     </div>
   );
 }
+
+
+

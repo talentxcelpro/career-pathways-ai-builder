@@ -113,7 +113,7 @@ export const OFFICIAL_TXC_MINING_POLICY: Record<string, TXCReward> = {
     category: 'networking'
   },
 
-  // LEARNING & FEEDBACK
+  // LEARNING & Feedback
   'course_completed': {
     action: 'course_completed',
     amount: 600,
@@ -121,10 +121,10 @@ export const OFFICIAL_TXC_MINING_POLICY: Record<string, TXCReward> = {
     cooldownMinutes: 60, // 1h
     category: 'learning'
   },
-  'feedback_given': {
-    action: 'feedback_given',
+  'Feedback_given': {
+    action: 'Feedback_given',
     amount: 45,
-    description: 'Provide feedback',
+    description: 'Provide Feedback',
     cooldownMinutes: 60, // 1h
     category: 'learning'
   },
@@ -201,15 +201,15 @@ export function getTXCRewardsByCategory(category: TXCReward['category']): TXCRew
  * This function ensures the policy hasn't been tampered with
  */
 export function verifyPolicyIntegrity(): boolean {
-  const expectedActionCount = 15; // Total number of actions in policy
+  const expectedActionCount = 16; // Total number of actions in policy
   const actualActionCount = Object.keys(OFFICIAL_TXC_MINING_POLICY).length;
   
   // Check if all required actions exist
   const requiredActions = [
     'daily_login', 'post_created', 'connection_made', 'profile_completed',
     'resume_created', 'job_applied', 'recommendation_given', 'skill_added',
-    'course_completed', 'feedback_given', 'joining_bonus', 'referral_made',
-    'post_liked', 'comment_made', 'article_posted'
+    'course_completed', 'Feedback_given', 'joining_bonus', 'referral_made',
+    'post_liked', 'comment_made', 'article_posted', 'social_activity_bonus'
   ];
   
   const hasAllRequired = requiredActions.every(action => 
@@ -225,3 +225,4 @@ if (!verifyPolicyIntegrity()) {
   console.error('The TXC mining policy has been tampered with or is incomplete.');
   console.error('This is a critical security issue that must be addressed immediately.');
 }
+

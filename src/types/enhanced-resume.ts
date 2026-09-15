@@ -143,7 +143,7 @@ export interface Training {
 export interface ToolsSection {
   development: string[];
   design: string[];
-  analytics: string[];
+  CareerAnalytics: string[];
   productivity: string[];
   other: string[];
 }
@@ -464,3 +464,7 @@ export interface ProcessedResumeData {
   certifications: Certification[];
   awards: Award[];
 }
+
+
+
+

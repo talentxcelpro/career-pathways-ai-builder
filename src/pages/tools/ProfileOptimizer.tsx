@@ -200,7 +200,7 @@ export const ProfileOptimizer: React.FC = () => {
   return (
     <ToolLayout
       title="AI Profile Optimizer"
-      description="Transform your professional profile with AI-powered optimization for maximum impact"
+      description="Transform your professional profile with Performance optimization for maximum impact"
       category="Profile"
       estimatedTime="8-12 min"
       popularity={92}

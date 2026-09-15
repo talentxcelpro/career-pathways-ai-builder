@@ -47,7 +47,7 @@ export const Phase2LaunchOptimizer: React.FC = () => {
     'Bundle Optimization', 
     'Cache Configuration',
     'SEO Enhancement',
-    'Analytics Setup',
+    'CareerAnalytics Setup',
     'Monitoring Deployment'
   ];
 
@@ -118,11 +118,11 @@ export const Phase2LaunchOptimizer: React.FC = () => {
     return results;
   };
 
-  const setupAnalytics = async () => {
-    // Simulate analytics setup
+  const setupCareerAnalytics = async () => {
+    // Simulate CareerAnalytics setup
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Initialize Google Analytics 4
+    // Initialize Google CareerAnalytics 4
     if (typeof window !== 'undefined' && !window.gtag) {
       const script = document.createElement('script');
       script.async = true;
@@ -137,7 +137,7 @@ export const Phase2LaunchOptimizer: React.FC = () => {
 
       gtag('js', new Date());
       gtag('config', 'G-MEASUREMENT_ID', {
-        page_title: 'CareerCatalyst',
+        page_title: 'TalentXcel',
         page_location: window.location.href,
         send_page_view: true
       });
@@ -151,9 +151,9 @@ export const Phase2LaunchOptimizer: React.FC = () => {
     const structuredData = {
       "@context": "https://schema.org",
       "@type": "WebApplication",
-      "name": "CareerCatalyst",
-      "description": "AI-Powered Career Growth Platform",
-      "url": "https://careercatalyst.com",
+      "name": "TalentXcel",
+      "description": "Performance Career Growth Platform",
+      "url": "https://talentxcel.in",
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web",
       "offers": {
@@ -196,10 +196,10 @@ export const Phase2LaunchOptimizer: React.FC = () => {
       toast.info('🔍 Enhancing SEO...');
       await enhanceSEO();
 
-      // Step 5: Analytics Setup
+      // Step 5: CareerAnalytics Setup
       setCurrentStep(5);
-      toast.info('📈 Setting up analytics...');
-      await setupAnalytics();
+      toast.info('📈 Setting up CareerAnalytics...');
+      await setupCareerAnalytics();
 
       // Step 6: Final optimizations
       setCurrentStep(6);
@@ -280,7 +280,7 @@ export const Phase2LaunchOptimizer: React.FC = () => {
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="performance">Performance</TabsTrigger>
             <TabsTrigger value="optimizations">Optimizations</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
             <TabsTrigger value="deployment">Deployment</TabsTrigger>
           </TabsList>
 
@@ -360,19 +360,19 @@ export const Phase2LaunchOptimizer: React.FC = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="analytics">
+          <TabsContent value="CareerAnalytics">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Monitor className="w-5 h-5" />
-                  Analytics & Monitoring
+                  CareerAnalytics & Monitoring
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <Alert>
                   <CheckCircle className="h-4 w-4" />
                   <AlertDescription>
-                    Google Analytics 4 configured and tracking page views, user interactions, and conversion events.
+                    Google CareerAnalytics 4 configured and tracking page views, user interactions, and conversion events.
                   </AlertDescription>
                 </Alert>
                 
@@ -441,7 +441,7 @@ export const Phase2LaunchOptimizer: React.FC = () => {
                     </li>
                     <li className="flex items-center gap-2">
                       <CheckCircle className="w-4 h-4 text-green-500" />
-                      Analytics and monitoring active
+                      CareerAnalytics and monitoring active
                     </li>
                   </ul>
                 </div>
@@ -453,3 +453,6 @@ export const Phase2LaunchOptimizer: React.FC = () => {
     </div>
   );
 };
+
+
+

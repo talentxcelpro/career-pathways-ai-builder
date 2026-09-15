@@ -187,12 +187,12 @@ const SkillAssessmentEngine = () => {
           {
             id: 11,
             category: 'Communication',
-            question: 'How well do you handle constructive criticism and feedback?',
+            question: 'How well do you handle constructive criticism and Feedback?',
             options: [
               'I find it difficult and take it personally',
               'I accept it but don\'t always act on it',
-              'I welcome feedback and use it to improve',
-              'I actively seek feedback and help others give better feedback'
+              'I welcome Feedback and use it to improve',
+              'I actively seek Feedback and help others give better Feedback'
             ]
           },
           {
@@ -314,7 +314,7 @@ const SkillAssessmentEngine = () => {
           'Enroll in a public speaking course or join Toastmasters',
           'Volunteer to lead a small project or initiative',
           'Find opportunities to present to stakeholders',
-          'Seek feedback from peers and supervisors',
+          'Seek Feedback from peers and supervisors',
           'Set specific, measurable goals for skill development'
         ]
       };
@@ -713,3 +713,4 @@ const SkillAssessmentEngine = () => {
 };
 
 export default SkillAssessmentEngine;
+

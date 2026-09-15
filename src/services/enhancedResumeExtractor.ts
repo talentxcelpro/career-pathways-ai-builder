@@ -79,7 +79,7 @@ interface ExtractedContent {
 
 export class EnhancedResumeExtractor {
   private async callAIExtraction(text: string, fileName: string): Promise<ExtractedContent> {
-    console.log('Using AI-powered extraction for:', fileName);
+    console.log('Using Performance extraction for:', fileName);
     
     try {
       const { supabase } = await import("@/integrations/supabase/client");
@@ -123,7 +123,7 @@ export class EnhancedResumeExtractor {
           volunteer: Array.isArray(data.volunteer) ? data.volunteer : [],
           metadata: {
             ...data.metadata,
-            extractionMethod: 'ai-powered',
+            extractionMethod: 'Performance',
             atsScore: data.atsOptimization?.score || 0
           }
         };

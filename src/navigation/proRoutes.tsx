@@ -1,23 +1,25 @@
+import { lazy } from "react";
 import { NavItem } from "../types/nav-item";
-import { ProDashboard } from "../pages/pro/ProDashboard";
-import { ProSubscription } from "../pages/pro/ProSubscription";
-import ServiceManagement from "../pages/pro/ServiceManagement";
-import AIBusinessToolkit from "../pages/pro/AIBusinessToolkit";
-import AdvancedAnalytics from "../pages/pro/AdvancedAnalytics";
-import CRMDashboard from "../pages/pro/CRMDashboard";
-import { ProProfile } from "../pages/pro/ProProfile";
-import ProSubscriptionPolicy from "../pages/pro/ProSubscriptionPolicy";
-import ProSetup from "../pages/pro/ProSetup";
-import ProLeads from "../pages/pro/ProLeads";
-import ProAITools from "../pages/pro/ProAITools";
-import { TXCDiagnostics } from "../pages/pro/TXCDiagnostics";
+const ProCommandCenter = lazy(() => import("../pages/pro/ProDashboard").then(m => ({ default: m.ProCommandCenter })));
+const ProSubscription = lazy(() => import("../pages/pro/ProSubscription").then(m => ({ default: m.ProSubscription })));
+const ServiceManagement = lazy(() => import("../pages/pro/ServiceManagement"));
+const AIBusinessToolkit = lazy(() => import("../pages/pro/AIBusinessToolkit"));
+const AdvancedCareerAnalytics = lazy(() => import("../pages/pro/AdvancedAnalytics"));
+const CRMCommandCenter = lazy(() => import("../pages/pro/CRMDashboard"));
+const ProProfile = lazy(() => import("../pages/pro/ProProfile").then(m => ({ default: m.ProProfile })));
+const ProSubscriptionPolicy = lazy(() => import("../pages/pro/ProSubscriptionPolicy"));
+const ProSetup = lazy(() => import("../pages/pro/ProSetup"));
+const ProLeads = lazy(() => import("../pages/pro/ProLeads"));
+const ProAITools = lazy(() => import("../pages/pro/ProAITools"));
+const TXCDiagnostics = lazy(() => import("../pages/pro/TXCDiagnostics").then(m => ({ default: m.TXCDiagnostics })));
+
 import { Settings, Activity } from "lucide-react";
 
 export const proRoutes: NavItem[] = [
   {
-    title: "Pro Dashboard",
+    title: "Pro Command Center",
     to: "/pro",
-    page: <ProDashboard />,
+    page: <ProCommandCenter />,
     isPublic: true
   },
   {
@@ -34,21 +36,21 @@ export const proRoutes: NavItem[] = [
     isPublic: true
   },
   {
-    title: "AI Business Toolkit",
-    to: "/pro/ai-toolkit",
+    title: "Talent Engine Toolkit",
+    to: "/pro/talent-engine-toolkit",
     page: <AIBusinessToolkit />,
     isPublic: true
   },
   {
-    title: "Advanced Analytics",
-    to: "/pro/analytics",
-    page: <AdvancedAnalytics />,
+    title: "Advanced Career Analytics",
+    to: "/pro/career-analytics",
+    page: <AdvancedCareerAnalytics />,
     isPublic: true
   },
   {
-    title: "CRM Dashboard",
+    title: "CRM Command Center",
     to: "/pro/crm",
-    page: <CRMDashboard />,
+    page: <CRMCommandCenter />,
     isPublic: true
   },
   {
@@ -58,8 +60,8 @@ export const proRoutes: NavItem[] = [
     isPublic: true
   },
   {
-    title: "AI Tools",
-    to: "/pro/ai-tools",
+    title: "Navigator Tools",
+    to: "/pro/navigator-tools",
     page: <ProAITools />,
     isPublic: true
   },
@@ -89,3 +91,6 @@ export const proRoutes: NavItem[] = [
     isPublic: true
   }
 ];
+
+
+

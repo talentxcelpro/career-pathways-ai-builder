@@ -32,7 +32,7 @@ export const LandingFooter: React.FC = () => {
               <span className="font-bold text-xl">TalentXcel</span>
             </div>
             <p className="text-background/70 mb-4">
-              Empowering professionals with AI-powered tools for career growth, job discovery, and skill development.
+              Empowering professionals with Performance tools for career growth, job discovery, and skill development.
             </p>
             <p className="text-background/50 text-sm">
               © 2026 TalentXcel Technologies Pvt Ltd. All rights reserved.
@@ -99,3 +99,4 @@ export const LandingFooter: React.FC = () => {
     </footer>
   );
 };
+

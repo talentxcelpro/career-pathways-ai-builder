@@ -5,11 +5,11 @@ import { Badge } from '@/components/ui/badge';
 import { Clock, TrendingUp, Award, Target, Brain, Calendar } from 'lucide-react';
 import { useUserLearningStats } from '@/hooks/useLearningAnalytics';
 
-interface LearningAnalyticsCardProps {
+interface LearningCareerAnalyticsCardProps {
   userId?: string;
 }
 
-export const LearningAnalyticsCard: React.FC<LearningAnalyticsCardProps> = ({ userId }) => {
+export const LearningCareerAnalyticsCard: React.FC<LearningCareerAnalyticsCardProps> = ({ userId }) => {
   const { data: stats, isLoading } = useUserLearningStats(userId);
 
   if (isLoading) {
@@ -34,7 +34,7 @@ export const LearningAnalyticsCard: React.FC<LearningAnalyticsCardProps> = ({ us
         <CardContent className="p-6">
           <div className="text-center">
             <Brain className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">Start learning to see your analytics</p>
+            <p className="text-muted-foreground">Start learning to see your CareerAnalytics</p>
           </div>
         </CardContent>
       </Card>
@@ -189,3 +189,6 @@ export const LearningAnalyticsCard: React.FC<LearningAnalyticsCardProps> = ({ us
     </div>
   );
 };
+
+
+

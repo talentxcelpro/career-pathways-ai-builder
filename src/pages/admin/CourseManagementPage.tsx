@@ -157,7 +157,7 @@ export default function CourseManagementPage() {
           <TabsTrigger value="enhancement">Enhancement</TabsTrigger>
           <TabsTrigger value="video-integration">Video Integration</TabsTrigger>
           <TabsTrigger value="population">Mass Population</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
         </TabsList>
 
         <TabsContent value="batch-creator" className="space-y-6">
@@ -342,7 +342,7 @@ export default function CourseManagementPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="analytics" className="space-y-6">
+        <TabsContent value="CareerAnalytics" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -385,7 +385,7 @@ export default function CourseManagementPage() {
             <CardContent>
               <div className="text-center py-8 text-muted-foreground">
                 <BarChart3 className="h-8 w-8 mx-auto mb-2" />
-                <p>Analytics dashboard coming soon</p>
+                <p>CareerAnalytics CommandCenter coming soon</p>
               </div>
             </CardContent>
           </Card>
@@ -394,3 +394,6 @@ export default function CourseManagementPage() {
     </div>
   );
 }
+
+
+

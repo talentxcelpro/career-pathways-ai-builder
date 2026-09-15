@@ -26,7 +26,7 @@ export const ToolsSection: React.FC<ToolsSectionProps> = ({
   const toolCategories = [
     { key: 'development' as const, label: 'Development Tools', placeholder: 'e.g., VS Code, Git, Docker, AWS' },
     { key: 'design' as const, label: 'Design Tools', placeholder: 'e.g., Figma, Adobe Creative Suite, Sketch' },
-    { key: 'analytics' as const, label: 'Analytics Tools', placeholder: 'e.g., Google Analytics, Tableau, Power BI' },
+    { key: 'CareerAnalytics' as const, label: 'CareerAnalytics Tools', placeholder: 'e.g., Google CareerAnalytics, Tableau, Power BI' },
     { key: 'productivity' as const, label: 'Productivity Tools', placeholder: 'e.g., Slack, Notion, Trello, Jira' },
     { key: 'other' as const, label: 'Other Tools', placeholder: 'e.g., Salesforce, HubSpot, Zapier' }
   ];
@@ -84,3 +84,6 @@ export const ToolsSection: React.FC<ToolsSectionProps> = ({
     </div>
   );
 };
+
+
+

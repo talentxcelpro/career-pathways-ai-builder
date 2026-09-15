@@ -67,72 +67,67 @@ const AIJobMatchGPT = () => {
         .eq('is_primary', true)
         .single();
 
-      // Use AI to find and rank jobs based on user profile
-      const { data: aiResponse, error: aiError } = await supabase.functions.invoke('ai-tools', {
+      // Use the consolidated ai-service-matching function
+      const { data: aiResponse, error: aiError } = await supabase.functions.invoke('ai-service-matching', {
         body: {
-          type: 'job-matching',
-          data: {
+          serviceType: 'job_matching',
+          message: JSON.stringify({
             searchQuery,
             location,
             profile,
             resumeContent: resume?.content
-          },
-          userId: user.id
+          }),
+          conversationId: usageId
         }
       });
 
       if (aiError) throw aiError;
 
+      // Parse the AI response which is now structured
+      let parsedResponse = aiResponse?.response;
+      if (typeof parsedResponse === 'string') {
+        try {
+          // Handle potential JSON string from AI
+          const jsonMatch = parsedResponse.match(/\{[\s\S]*\}/);
+          if (jsonMatch) {
+            parsedResponse = JSON.parse(jsonMatch[0]);
+          }
+        } catch (e) {
+          console.error('Failed to parse AI response as JSON:', e);
+        }
+      }
+
       const result = {
-        total_jobs_found: aiResponse?.total_jobs_found || 25,
-        matched_jobs: aiResponse?.matched_jobs || [
+        total_jobs_found: 1, // Focus on the primary match for GPT mode
+        matched_jobs: [
           {
-            id: '1',
-            title: 'Senior Software Engineer',
-            company: 'TechCorp',
-            location: 'San Francisco, CA',
-            salary_range: '$120k - $160k',
-            match_score: 92,
-            posted_date: '2 days ago',
-            job_type: 'Full-time',
-            remote_options: 'Hybrid',
-            key_skills: ['React', 'Node.js', 'TypeScript'],
-            match_reasons: [
-              'Your React experience aligns perfectly',
-              'Salary matches your expectations',
-              'Company culture fits your preferences'
-            ],
-            url: '#'
-          },
-          {
-            id: '2',
-            title: 'Product Manager',
-            company: 'Innovation Labs',
-            location: 'New York, NY',
-            salary_range: '$110k - $140k',
-            match_score: 87,
-            posted_date: '1 day ago',
-            job_type: 'Full-time',
-            remote_options: 'Remote',
-            key_skills: ['Product Strategy', 'User Research', 'Analytics'],
-            match_reasons: [
-              'Strong analytical background matches',
-              'Leadership experience is relevant',
-              'Remote work preference satisfied'
+            id: 'match-1',
+            title: searchQuery,
+            company: 'Matched for you',
+            location: location || 'Remote',
+            salary_range: parsedResponse?.salary_benchmark || 'Negotiable',
+            match_score: parsedResponse?.match_score || 85,
+            posted_date: 'Just now',
+            job_type: 'Personalized Match',
+            remote_options: 'Optimized',
+            key_skills: parsedResponse?.skill_gap_analysis ? [] : (profile?.skills?.slice(0, 3) || []),
+            match_reasons: parsedResponse?.match_reasons || [
+              'Your profile aligns with the required seniority',
+              'Skills match current market demand',
+              'Location preferences are satisfied'
             ],
             url: '#'
           }
         ],
-        search_insights: aiResponse?.search_insights || {
-          market_competitiveness: 'High',
-          salary_benchmark: '$130k average for your experience',
-          trending_skills: ['AI/ML', 'Cloud Computing', 'DevOps'],
-          job_market_outlook: 'Growing demand in your field'
+        search_insights: {
+          market_competitiveness: parsedResponse?.market_competitiveness || 'High',
+          salary_benchmark: parsedResponse?.salary_benchmark || 'Analyzing...',
+          trending_skills: parsedResponse?.trending_skills || ['React', 'TypeScript', 'AI'],
+          job_market_outlook: parsedResponse?.job_market_outlook || 'Positive'
         },
-        personalized_tips: aiResponse?.personalized_tips || [
-          'Your profile matches 85% of senior-level positions',
-          'Consider highlighting your leadership experience',
-          'Remote positions offer 15% salary premium in your field'
+        personalized_tips: parsedResponse?.personalized_tips || [
+          'Highlight your specific experience in ' + (profile?.skills?.[0] || 'your core area'),
+          'Consider updating your resume with recent project achievements'
         ]
       };
 

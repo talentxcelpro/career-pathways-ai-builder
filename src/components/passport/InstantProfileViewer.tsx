@@ -91,7 +91,7 @@ const InstantProfileViewer: React.FC<InstantProfileViewerProps> = ({
               </div>
               <div>
                 <h1 className="text-xl font-bold">TalentXcel</h1>
-                <p className="text-primary-foreground/80 text-sm">Professional Career Passport</p>
+                <p className="text-primary-foreground/80 text-sm">Professional Evolution Hub</p>
               </div>
             </div>
             
@@ -196,7 +196,7 @@ const InstantProfileViewer: React.FC<InstantProfileViewerProps> = ({
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <TrendingUp className="h-5 w-5 text-primary" />
-                    Career Analytics
+                    Career CareerAnalytics
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -338,7 +338,7 @@ const InstantProfileViewer: React.FC<InstantProfileViewerProps> = ({
               <CardContent className="p-6 text-center space-y-4">
                 <h3 className="font-semibold text-primary">Join TalentXcel</h3>
                 <p className="text-sm text-muted-foreground">
-                  Create your own professional career passport and connect with {profile.full_name}
+                  Create your own Professional Evolution Hub and connect with {profile.full_name}
                 </p>
                 <Button className="w-full" asChild>
                   <a href="/auth/signup">Get Started</a>
@@ -353,3 +353,7 @@ const InstantProfileViewer: React.FC<InstantProfileViewerProps> = ({
 };
 
 export default InstantProfileViewer;
+
+
+
+

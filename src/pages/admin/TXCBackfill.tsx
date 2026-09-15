@@ -20,7 +20,7 @@ interface BackfillResult {
     full_name: string;
     total_txc: number;
     posts_txc: number;
-    connections_txc: number;
+    TalentNetwork_txc: number;
   }>;
 }
 
@@ -260,7 +260,7 @@ const TXCBackfill = () => {
             <ul className="text-sm text-blue-700 space-y-1">
               <li>• <strong>Phase 1:</strong> 500 TXC welcome bonus to ALL users</li>
               <li>• <strong>Phase 2:</strong> 150 TXC bonus to active users (last 30 days)</li>
-              <li>• <strong>Phase 3:</strong> Retroactive rewards from 01-09-2025 (posts, connections, profile completion, job applications)</li>
+              <li>• <strong>Phase 3:</strong> Retroactive rewards from 01-09-2025 (posts, TalentNetwork, profile completion, job applications)</li>
             </ul>
           </div>
 
@@ -331,11 +331,11 @@ const TXCBackfill = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-            <h4 className="font-semibold text-green-800 mb-2">This will award TXC to users based on their existing posts, connections, and profile completion. Rewards include:</h4>
+            <h4 className="font-semibold text-green-800 mb-2">This will award TXC to users based on their existing posts, TalentNetwork, and profile completion. Rewards include:</h4>
             <ul className="text-sm text-green-700 space-y-1">
               <li>• +500 TXC joining bonus</li>
               <li>• Up to 10 posts (+150 each)</li>
-              <li>• Up to 10 connections (+75 each)</li>
+              <li>• Up to 10 TalentNetwork (+75 each)</li>
               <li>• +300 for completed profiles</li>
             </ul>
           </div>
@@ -401,7 +401,7 @@ const TXCBackfill = () => {
             <ul className="text-sm text-amber-700 space-y-1">
               <li>• Awards 500 TXC joining bonus</li>
               <li>• Awards 150 TXC for each post created (up to 10 posts)</li>
-              <li>• Awards 75 TXC for each connection made (up to 10 connections)</li>
+              <li>• Awards 75 TXC for each connection made (up to 10 TalentNetwork)</li>
               <li>• Awards 300 TXC for completed profiles (name, title, about, photo)</li>
             </ul>
           </div>
@@ -458,7 +458,7 @@ const TXCBackfill = () => {
                           <div className="font-medium">{calc.full_name} ({calc.email})</div>
                           <div className="text-muted-foreground">
                             Total TXC: {calc.total_txc.toLocaleString()} 
-                            (Posts: {calc.posts_txc}, Connections: {calc.connections_txc})
+                            (Posts: {calc.posts_txc}, TalentNetwork: {calc.TalentNetwork_txc})
                           </div>
                         </div>
                       ))}
@@ -483,3 +483,4 @@ const TXCBackfill = () => {
 };
 
 export default TXCBackfill;
+

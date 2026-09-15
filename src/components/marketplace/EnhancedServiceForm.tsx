@@ -339,7 +339,7 @@ const getCategorySpecificSuggestions = (category: ServiceCategory | null) => {
       pricing: { min: 999, max: 4999, suggested: 1999 }
     },
     'Coaching & Mentorship': {
-      whatsIncluded: ['1-on-1 Session', 'Action Plan', 'Follow-up Support', 'Resource Materials', 'Progress Tracking'],
+      whatsIncluded: ['1-on-1 Session', 'Action Plan', 'Follow-up Support', 'Resource Materials', 'Growth Path'],
       tags: ['coaching', 'mentorship', 'career guidance', 'personal development'],
       pricing: { min: 1999, max: 9999, suggested: 3999 }
     },
@@ -1033,7 +1033,7 @@ export default function EnhancedServiceForm({ serviceId, onCancel, onSaved }: En
               </h4>
               <p className="text-sm text-muted-foreground">
                 Your service will be {formData.status === 'published' ? 'immediately live' : 'saved as ' + formData.status} on the marketplace. 
-                You can always edit it later from your provider dashboard.
+                You can always edit it later from your provider CommandCenter.
               </p>
             </div>
           </div>
@@ -1145,3 +1145,4 @@ export default function EnhancedServiceForm({ serviceId, onCancel, onSaved }: En
     </div>
   );
 }
+

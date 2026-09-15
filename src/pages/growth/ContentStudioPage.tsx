@@ -6,9 +6,9 @@ const ContentStudioPage = () => {
     <div className="container mx-auto p-6 max-w-7xl">
       <div className="space-y-6">
         <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight">Content Creation Studio</h1>
+          <h1 className="text-3xl font-bold tracking-tight">TalentXcel Creator Studio</h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            AI-powered content creation with templates, scheduling, and performance analytics
+            High-velocity content creation with AI templates, precision scheduling, and engagement CareerAnalytics.
           </p>
         </div>
         
@@ -29,3 +29,6 @@ const ContentStudioPage = () => {
 };
 
 export default ContentStudioPage;
+
+
+

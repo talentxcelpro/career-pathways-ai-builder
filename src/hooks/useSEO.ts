@@ -31,7 +31,7 @@ export const useSEO = (config: SEOConfig = {}) => {
 
   useEffect(() => {
     const {
-      title = 'TalentXcel - AI-Powered Career Platform',
+      title = 'TalentXcel - Performance Career Platform',
       description,
       keywords = [],
       image = '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png',
@@ -90,7 +90,7 @@ export const useSEO = (config: SEOConfig = {}) => {
       injectStructuredData(breadcrumbData);
     }
 
-    // Google Analytics page view tracking
+    // Google CareerAnalytics page view tracking
     if (window.gtag) {
       window.gtag('config', 'GA_MEASUREMENT_ID', {
         page_path: location.pathname,
@@ -117,8 +117,8 @@ export const usePageSEO = (pageType: string, data?: any) => {
     switch (pageType) {
       case 'home':
         return {
-          title: 'TalentXcel - AI-Powered Career Platform | Find Jobs, Learn Skills, Network',
-          description: 'Accelerate your career with TalentXcel. Find dream jobs, learn new skills, network with professionals, and get AI-powered career guidance. Join 50,000+ professionals.',
+          title: 'TalentXcel - Performance Career Platform | Find Jobs, Learn Skills, Network',
+          description: 'Accelerate your career with TalentXcel. Find dream jobs, learn new skills, network with professionals, and get Performance career guidance. Join 50,000+ professionals.',
           keywords: ['jobs', 'careers', 'learning', 'networking', 'AI career guidance', 'skill development', 'job search', 'professional networking'],
           breadcrumbs: [{ name: 'Home', url: '/' }]
         };
@@ -165,8 +165,8 @@ export const usePageSEO = (pageType: string, data?: any) => {
       case 'network':
         return {
           title: 'Professional Network | Connect with Industry Experts | TalentXcel',
-          description: 'Build your professional network. Connect with industry experts, join professional groups, attend virtual events, and advance your career through meaningful connections.',
-          keywords: ['professional networking', 'industry experts', 'career networking', 'professional connections', 'industry events'],
+          description: 'Build your professional network. Connect with industry experts, join professional groups, attend virtual events, and advance your career through meaningful TalentNetwork.',
+          keywords: ['professional networking', 'industry experts', 'Ecosystem Networking', 'professional TalentNetwork', 'industry events'],
           breadcrumbs: [
             { name: 'Home', url: '/' },
             { name: 'Network', url: '/network' }
@@ -175,8 +175,8 @@ export const usePageSEO = (pageType: string, data?: any) => {
 
       default:
         return {
-          title: 'TalentXcel - AI-Powered Career Platform',
-          description: 'Accelerate your career with AI-powered tools and comprehensive career resources.',
+          title: 'TalentXcel - Performance Career Platform',
+          description: 'Accelerate your career with Performance tools and comprehensive career resources.',
           keywords: ['careers', 'jobs', 'professional development']
         };
     }
@@ -184,3 +184,8 @@ export const usePageSEO = (pageType: string, data?: any) => {
 
   useSEO(getSEOConfig());
 };
+
+
+
+
+

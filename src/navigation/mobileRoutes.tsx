@@ -1,22 +1,24 @@
-import React from "react";
+import React, { lazy } from "react";
 import { NavItem } from "../types/nav-item";
-import MobileJobs from "../pages/mobile/MobileJobs";
-import MobileReelsPage from "../pages/MobileReelsPage";
-import { MobileNetwork } from "../pages/mobile/MobileNetwork";
-import { MobileProfile } from "../pages/mobile/MobileProfile";
-import { MobileNotifications } from "../components/mobile/MobileNotifications";
-import { MobilePendingConnections } from "../pages/mobile/MobilePendingConnections";
-import { MobileQRScanner } from "../pages/mobile/MobileQRScanner";
-import { MobileSearch } from "../pages/mobile/MobileSearch";
-import { MobilePassport } from "../pages/mobile/MobilePassport";
-import GamificationCenter from "../pages/GamificationCenter";
-import ReferAndEarn from "../pages/ReferAndEarn";
-import { MobileHubs } from "../pages/mobile/MobileHubs";
-import { MobileHub } from "../pages/mobile/MobileHub";
-import { MobileHome } from "../pages/mobile/MobileHome";
-import { MobileNearby } from "../pages/mobile/MobileNearby";
-import { TrendingPage } from "../pages/TrendingPage";
-import { ModulesShowcase } from "../pages/ModulesShowcase";
+
+const MobileJobs = lazy(() => import("../pages/mobile/MobileJobs"));
+const MobileReelsPage = lazy(() => import("../pages/MobileReelsPage"));
+const MobileNetwork = lazy(() => import("../pages/mobile/MobileNetwork").then(m => ({ default: m.MobileNetwork })));
+const MobileProfile = lazy(() => import("../pages/mobile/MobileProfile").then(m => ({ default: m.MobileProfile })));
+const MobileNotifications = lazy(() => import("../components/mobile/MobileNotifications").then(m => ({ default: m.MobileNotifications })));
+const MobilePendingTalentNetwork = lazy(() => import("../pages/mobile/MobilePendingConnections").then(m => ({ default: m.MobilePendingTalentNetwork })));
+const MobileQRScanner = lazy(() => import("../pages/mobile/MobileQRScanner").then(m => ({ default: m.MobileQRScanner })));
+const MobileSearch = lazy(() => import("../pages/mobile/MobileSearch").then(m => ({ default: m.MobileSearch })));
+const MobilePassport = lazy(() => import("../pages/mobile/MobilePassport").then(m => ({ default: m.MobilePassport })));
+const GamificationCenter = lazy(() => import("../pages/GamificationCenter"));
+const ReferAndEarn = lazy(() => import("../pages/ReferAndEarn"));
+const MobileHubs = lazy(() => import("../pages/mobile/MobileHubs").then(m => ({ default: m.MobileHubs })));
+const MobileHub = lazy(() => import("../pages/mobile/MobileHub").then(m => ({ default: m.MobileHub })));
+const MobileHome = lazy(() => import("../pages/mobile/MobileHome").then(m => ({ default: m.MobileHome })));
+const MobileNearby = lazy(() => import("../pages/mobile/MobileNearby").then(m => ({ default: m.MobileNearby })));
+const TrendingPage = lazy(() => import("../pages/TrendingPage").then(m => ({ default: m.TrendingPage })));
+const ModulesShowcase = lazy(() => import("../pages/ModulesShowcase").then(m => ({ default: m.ModulesShowcase })));
+
 
 export const mobileRoutes: NavItem[] = [
   { title: "Mobile Home", to: "/mobile", page: <MobileHome /> },
@@ -25,7 +27,7 @@ export const mobileRoutes: NavItem[] = [
   { title: "Mobile Network", to: "/network/people", page: <MobileNetwork /> },
   { title: "Mobile Profile", to: "/mobile/profile", page: <MobileProfile /> },
   { title: "Mobile Notifications", to: "/mobile/notifications", page: <MobileNotifications /> },
-  { title: "Pending Connections", to: "/mobile/pending-connections", page: <MobilePendingConnections /> },
+  { title: "Pending Talent Network", to: "/mobile/pending-talent-network", page: <MobilePendingTalentNetwork /> },
   { title: "QR Scanner", to: "/mobile/qr-scanner", page: <MobileQRScanner /> },
   // Alias path to fix 404s reported at /mobile/qr-code
   { title: "QR Scanner (Alias)", to: "/mobile/qr-code", page: <MobileQRScanner /> },
@@ -40,3 +42,5 @@ export const mobileRoutes: NavItem[] = [
   { title: "Trending", to: "/trending", page: <TrendingPage /> },
   { title: "Modules Showcase", to: "/modules", page: <ModulesShowcase /> },
 ];
+
+

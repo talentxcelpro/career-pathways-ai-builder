@@ -7,7 +7,7 @@ import { Crown, Sparkles, TrendingUp, X, ArrowRight } from "lucide-react";
 import ProSubscriptionModal from './ProSubscriptionModal';
 
 interface ProBannerProps {
-  variant: 'top' | 'sidebar' | 'feed';
+  variant: 'top' | 'sidebar' | 'Pulse';
   onDismiss?: () => void;
 }
 
@@ -118,7 +118,7 @@ const ProBanner: React.FC<ProBannerProps> = ({ variant, onDismiss }) => {
     );
   }
 
-  if (variant === 'feed') {
+  if (variant === 'Pulse') {
     return (
       <>
         <Card className="mb-2 bg-gradient-to-r from-slate-50/95 via-gray-50/95 to-zinc-50/95 border border-gray-200/60 shadow-xl rounded-2xl backdrop-blur-md overflow-hidden">

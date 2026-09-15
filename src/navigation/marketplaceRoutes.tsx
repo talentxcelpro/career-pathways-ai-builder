@@ -1,13 +1,15 @@
+import { lazy } from "react";
 
-import Marketplace from "../pages/Marketplace";
-import ServiceDetail from "../pages/marketplace/ServiceDetail";
-import PostService from "../pages/marketplace/PostService";
-import LearningHub from "../pages/LearningHub";
-import ServicesMarketplace from "../pages/marketplace/ServicesMarketplace";
-import ServicesIntegration from "../pages/marketplace/ServicesIntegration";
-import TestingOptimization from "../pages/marketplace/TestingOptimization";
-import ServiceBookingForm from "../pages/marketplace/ServiceBookingForm";
-import BusinessModelsHub from "../components/business-models/BusinessModelsHub";
+const Marketplace = lazy(() => import("../pages/Marketplace"));
+const ServiceDetail = lazy(() => import("../pages/marketplace/ServiceDetail"));
+const PostService = lazy(() => import("../pages/marketplace/PostService"));
+const LearningHub = lazy(() => import("../pages/LearningHub"));
+const ServicesMarketplace = lazy(() => import("../pages/marketplace/ServicesMarketplace"));
+const ServicesIntegration = lazy(() => import("../pages/marketplace/ServicesIntegration"));
+const TestingOptimization = lazy(() => import("../pages/marketplace/TestingOptimization"));
+const ServiceBookingForm = lazy(() => import("../pages/marketplace/ServiceBookingForm"));
+const BusinessModelsHub = lazy(() => import("../components/business-models/BusinessModelsHub"));
+
 
 export const marketplaceRoutes = [
   {

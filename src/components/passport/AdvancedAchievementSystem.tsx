@@ -140,7 +140,7 @@ export function AdvancedAchievementSystem({
     {
       id: 'networking',
       name: 'Networking',
-      description: 'Building professional connections',
+      description: 'Building professional TalentNetwork',
       icon: <Users className="w-5 h-5" />,
       color: 'bg-green-100 text-green-800',
       achievements: achievements.filter(a => a.achievement_type.includes('network')),
@@ -476,3 +476,4 @@ function AchievementLeaderboard() {
     </Card>
   );
 }
+

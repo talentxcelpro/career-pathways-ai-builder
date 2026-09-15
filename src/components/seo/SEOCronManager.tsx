@@ -138,7 +138,7 @@ export const SEOCronManager = () => {
             SEO Content Generation
           </CardTitle>
           <CardDescription>
-            Automatically generate AI-powered content for all SEO pages. This process runs in batches of 50 pages.
+            Automatically generate Performance content for all SEO pages. This process runs in batches of 50 pages.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

@@ -7,10 +7,10 @@ import { EnterpriseDataService } from '@/services/enterpriseDataService';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { DepartmentManagement } from './DepartmentManagement';
-import { MarketingDashboard } from './MarketingDashboard';
+import { MarketingCommandCenter } from './MarketingDashboard';
 import { LiveReporting } from './LiveReporting';
 
-interface DashboardMetrics {
+interface CommandCenterMetrics {
   totalUsers: number;
   departmentCount: number;
   securityScore: number;
@@ -26,11 +26,11 @@ interface RecentActivity {
   type: 'user' | 'security' | 'system' | 'import';
 }
 
-export const EnterpriseDashboard: React.FC = () => {
+export const EnterpriseCommandCenter: React.FC = () => {
   const navigate = useNavigate();
   const { currentOrganization, loading: orgLoading } = useOrganizationData();
   const [activeTab, setActiveTab] = useState<'overview' | 'departments' | 'marketing' | 'reporting'>('overview');
-  const [metrics, setMetrics] = useState<DashboardMetrics>({
+  const [metrics, setMetrics] = useState<CommandCenterMetrics>({
     totalUsers: 0,
     departmentCount: 0,
     securityScore: 0,
@@ -46,7 +46,7 @@ export const EnterpriseDashboard: React.FC = () => {
       await EnterpriseDataService.createSampleData();
       
       if (currentOrganization?.id) {
-        await fetchDashboardData();
+        await fetchCommandCenterData();
       } else {
         // Show fallback data while loading
         setLoading(false);
@@ -56,21 +56,21 @@ export const EnterpriseDashboard: React.FC = () => {
     initializeData();
   }, [currentOrganization?.id]);
 
-  const fetchDashboardData = async () => {
+  const fetchCommandCenterData = async () => {
     if (!currentOrganization?.id) return;
 
     try {
       setLoading(true);
       const [metricsData, activityData] = await Promise.all([
-        EnterpriseDataService.getDashboardMetrics(currentOrganization.id),
+        EnterpriseDataService.getCommandCenterMetrics(currentOrganization.id),
         EnterpriseDataService.getRecentActivity(currentOrganization.id, 5)
       ]);
 
       setMetrics(metricsData);
       setRecentActivity(activityData);
     } catch (error) {
-      console.error('Error fetching dashboard data:', error);
-      toast.error('Failed to load dashboard data');
+      console.error('Error fetching CommandCenter data:', error);
+      toast.error('Failed to load CommandCenter data');
     } finally {
       setLoading(false);
     }
@@ -120,7 +120,7 @@ export const EnterpriseDashboard: React.FC = () => {
     return (
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-bold">Enterprise Dashboard</h1>
+          <h1 className="text-3xl font-bold">Enterprise CommandCenter</h1>
           <p className="text-muted-foreground mt-2">
             Manage your organization's settings, users, and security.
           </p>
@@ -215,7 +215,7 @@ export const EnterpriseDashboard: React.FC = () => {
               onClick={() => setActiveTab('marketing')}
             >
               <div className="text-left">
-                <h3 className="font-medium">Marketing Dashboard</h3>
+                <h3 className="font-medium">Marketing CommandCenter</h3>
                 <p className="text-sm text-muted-foreground">Track campaigns and engagement</p>
               </div>
               <Megaphone className="h-5 w-5 text-muted-foreground" />
@@ -269,7 +269,7 @@ export const EnterpriseDashboard: React.FC = () => {
     <div className="space-y-8">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Enterprise Dashboard</h1>
+          <h1 className="text-3xl font-bold">Enterprise CommandCenter</h1>
           <p className="text-muted-foreground mt-2">
             {currentOrganization?.name || 'Manage your organization'}
           </p>
@@ -319,8 +319,9 @@ export const EnterpriseDashboard: React.FC = () => {
       {/* Tab Content */}
       {activeTab === 'overview' && renderOverview()}
       {activeTab === 'departments' && <DepartmentManagement organizationId={currentOrganization?.id || ''} />}
-      {activeTab === 'marketing' && <MarketingDashboard />}
+      {activeTab === 'marketing' && <MarketingCommandCenter />}
       {activeTab === 'reporting' && <LiveReporting />}
     </div>
   );
 };
+

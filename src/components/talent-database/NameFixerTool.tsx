@@ -40,7 +40,7 @@ const NameFixerTool = () => {
         .select('id, full_name, email, created_at', { count: 'exact' })
         .or(
           'full_name.ilike.%Executive%,' +
-          'full_name.ilike.%Assistant%,' +
+          'full_name.ilike.%Navigator%,' +
           'full_name.ilike.%Experience%,' +
           'full_name.ilike.%Summary%,' +
           'full_name.ilike.%Professional%,' +
@@ -263,7 +263,7 @@ const NameFixerTool = () => {
           .select('id, full_name, email, created_at')
           .or(
             'full_name.ilike.%Executive%,' +
-            'full_name.ilike.%Assistant%,' +
+            'full_name.ilike.%Navigator%,' +
             'full_name.ilike.%Experience%,' +
             'full_name.ilike.%Summary%,' +
             'full_name.ilike.%Professional%,' +

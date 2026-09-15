@@ -590,7 +590,7 @@ export const RealDataEmailTester = () => {
               <Alert>
                 <Mail className="h-4 w-4" />
                 <AlertDescription>
-                  Monitor email delivery in real-time. Check SES dashboard for bounce and complaint handling.
+                  Monitor email delivery in real-time. Check SES CommandCenter for bounce and complaint handling.
                 </AlertDescription>
               </Alert>
               
@@ -608,3 +608,4 @@ export const RealDataEmailTester = () => {
     </div>
   );
 };
+

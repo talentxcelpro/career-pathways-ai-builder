@@ -18,7 +18,7 @@ export const AIStatusIndicator: React.FC<AIStatusIndicatorProps> = ({
         <span className="text-white text-xs">🧠</span>
       </div>
       <div className="absolute hidden group-hover:block bg-black text-white text-xs rounded px-2 py-1 -top-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-10">
-        AI-Powered by TalentXcel
+        Performance by TalentXcel
         <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-2 border-transparent border-t-black"></div>
       </div>
     </div>

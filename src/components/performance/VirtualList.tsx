@@ -68,7 +68,7 @@ export function VirtualList<T>({
   );
 }
 
-// Optimized virtual grid for feeds
+// Optimized virtual grid for Pulses
 interface VirtualGridProps<T> {
   items: T[];
   columns: number;
@@ -151,3 +151,4 @@ export function VirtualGrid<T>({
     </div>
   );
 }
+

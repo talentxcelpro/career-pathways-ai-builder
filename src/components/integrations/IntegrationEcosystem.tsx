@@ -22,7 +22,7 @@ import { Label } from '@/components/ui/label';
 interface Integration {
   id: string;
   name: string;
-  category: 'social' | 'hr' | 'ats' | 'verification' | 'storage' | 'analytics';
+  category: 'social' | 'hr' | 'ats' | 'verification' | 'storage' | 'CareerAnalytics';
   description: string;
   status: 'connected' | 'disconnected' | 'error' | 'pending';
   icon: React.ReactNode;
@@ -133,7 +133,7 @@ export const IntegrationEcosystem: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Link className="h-5 w-5 text-primary" />
-            Integration Dashboard
+            Integration CommandCenter
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -177,10 +177,10 @@ export const IntegrationEcosystem: React.FC = () => {
               <TabsTrigger value="ats">ATS</TabsTrigger>
               <TabsTrigger value="verification">Verify</TabsTrigger>
               <TabsTrigger value="storage">Storage</TabsTrigger>
-              <TabsTrigger value="analytics">Analytics</TabsTrigger>
+              <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
             </TabsList>
 
-            {['social', 'hr', 'ats', 'verification', 'storage', 'analytics'].map(category => (
+            {['social', 'hr', 'ats', 'verification', 'storage', 'CareerAnalytics'].map(category => (
               <TabsContent key={category} value={category} className="space-y-4 mt-4">
                 {getCategoryIntegrations(category).map((integration) => (
                   <div key={integration.id} className="border rounded-lg p-4 space-y-3">
@@ -248,3 +248,7 @@ export const IntegrationEcosystem: React.FC = () => {
     </div>
   );
 };
+
+
+
+

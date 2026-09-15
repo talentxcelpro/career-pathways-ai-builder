@@ -62,17 +62,17 @@ export class CacheManager {
     return redisCache.get(cacheKey);
   }
 
-  // Analytics cache
-  async cacheAnalytics(type: string, data: any) {
-    const cacheKey = `analytics:${type}`;
+  // CareerAnalytics cache
+  async cacheCareerAnalytics(type: string, data: any) {
+    const cacheKey = `CareerAnalytics:${type}`;
     await redisCache.set(cacheKey, data, {
       ttl: 3600, // 1 hour
-      tags: ['analytics']
+      tags: ['CareerAnalytics']
     });
   }
 
-  async getCachedAnalytics(type: string) {
-    const cacheKey = `analytics:${type}`;
+  async getCachedCareerAnalytics(type: string) {
+    const cacheKey = `CareerAnalytics:${type}`;
     return redisCache.get(cacheKey);
   }
 
@@ -89,8 +89,8 @@ export class CacheManager {
     await redisCache.invalidateByTag('search');
   }
 
-  async invalidateAnalyticsCache() {
-    await redisCache.invalidateByTag('analytics');
+  async invalidateCareerAnalyticsCache() {
+    await redisCache.invalidateByTag('CareerAnalytics');
   }
 
   // Performance metrics
@@ -161,3 +161,6 @@ export class CacheManager {
 }
 
 export const cacheManager = CacheManager.getInstance();
+
+
+

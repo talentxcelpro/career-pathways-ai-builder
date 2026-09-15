@@ -1,10 +1,13 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { AuthDialog } from '../auth/AuthDialog';
 import { ChevronRight } from 'lucide-react';
 import careerPassportPreview from '@/assets/career-passport-preview.png';
 
 export const AppleHeroSection = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-background via-muted/30 to-muted/50">
       {/* Floating geometric elements with semantic colors */}
@@ -31,15 +34,15 @@ export const AppleHeroSection = () => {
                 </div>
               </div>
               
-              <h1 className="text-display font-heading tracking-tight text-foreground leading-[1.1]">
+              <h1 className="text-display font-heading tracking-tight text-foreground leading-[1.1] animate-in fade-in slide-in-from-bottom-8 duration-1000">
                 Powering Global
-                <span className="block font-medium bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                  Career Growth
+                <span className="block font-medium bg-gradient-to-r from-primary via-purple-500 to-accent bg-clip-text text-transparent animate-gradient-x">
+                  CareerIntelligence
                 </span>
               </h1>
               
-              <p className="text-body-large text-muted-foreground font-light leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                Your all-in-one platform for networking, skill-building, and discovering career opportunities tailored to your unique journey.
+              <p className="text-body-large text-muted-foreground font-light leading-relaxed max-w-2xl mx-auto lg:mx-0 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-200">
+                The FAANG-tier CommandCenter for elite professionals. Network, build with AI, and land high-impact opportunities tailored to your unique trajectory.
               </p>
             </div>
 
@@ -50,10 +53,18 @@ export const AppleHeroSection = () => {
                   size="lg" 
                   className="bg-primary hover:bg-primary/90 text-primary-foreground apple-rounded-xl apple-padding-lg text-body font-semibold shadow-lg hover:shadow-xl transition-all duration-300 group"
                 >
-                  Get Started Free
+                  Get Started with Pro
                   <ChevronRight className="ml-2 icon-sm group-hover:translate-x-1 transition-transform" />
                 </Button>
               </AuthDialog>
+              <Button 
+                variant="outline"
+                size="lg" 
+                className="apple-rounded-xl apple-padding-lg text-body font-medium border-border/50 hover:bg-white/5 transition-all duration-300"
+                onClick={() => navigate('/ai-career-hub')}
+              >
+                Explore AI Hub
+              </Button>
             </div>
 
             {/* Social Proof */}
@@ -78,14 +89,14 @@ export const AppleHeroSection = () => {
             </div>
           </div>
 
-          {/* Right Side - Career Passport Preview */}
+          {/* Right Side - Evolution Hub Preview */}
           <div className="relative">
             <div className="absolute -inset-4 bg-gradient-to-tr from-primary/20 via-secondary/15 to-accent/20 rounded-[2rem] blur-2xl" aria-hidden="true"></div>
             <div className="relative rounded-[2rem] overflow-hidden shadow-2xl ring-1 ring-border/50">
               <a href="/passport" className="block transition-transform hover:scale-105">
                 <img
                   src={careerPassportPreview}
-                  alt="TalentXcel Career Passport - Professional dashboard for tracking career progress"
+                  alt="TalentXcel Evolution Hub - Professional CommandCenter for tracking career progress"
                   loading="lazy"
                   decoding="async"
                   width="600"
@@ -100,3 +111,5 @@ export const AppleHeroSection = () => {
     </div>
   );
 };
+
+

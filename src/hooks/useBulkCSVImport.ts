@@ -26,7 +26,7 @@ interface UserRecord {
 export const useBulkCSVImport = () => {
   const [isImporting, setIsImporting] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState<'testing' | 'healthy' | 'unhealthy'>('unhealthy');
+  const [connectionStatus, setconnectionStatus] = useState<'testing' | 'healthy' | 'unhealthy'>('unhealthy');
   const [progress, setProgress] = useState<ImportProgress>({
     total: 0,
     processed: 0,
@@ -38,7 +38,7 @@ export const useBulkCSVImport = () => {
 
   const testConnection = async (): Promise<boolean> => {
     try {
-      setConnectionStatus('testing');
+      setconnectionStatus('testing');
       console.log('Testing connection to bulk-csv-import function...');
       
       // Get current session for authorization
@@ -60,26 +60,26 @@ export const useBulkCSVImport = () => {
 
       if (error) {
         console.error('Connection test failed:', error);
-        setConnectionStatus('unhealthy');
+        setconnectionStatus('unhealthy');
         toast.error('Connection test failed. Please check the Edge Function deployment.');
         return false;
       }
 
       if (data?.success) {
         console.log('✅ Connection test successful:', data);
-        setConnectionStatus('healthy');
+        setconnectionStatus('healthy');
         toast.success('Connection test successful!');
         return true;
       } else {
         console.error('Unexpected response:', data);
-        setConnectionStatus('unhealthy');
+        setconnectionStatus('unhealthy');
         toast.error('Unexpected response from edge function');
         return false;
       }
 
     } catch (error: any) {
       console.error('❌ Connection test failed:', error);
-      setConnectionStatus('unhealthy');
+      setconnectionStatus('unhealthy');
       toast.error('Connection test failed. Please check the Edge Function deployment.');
       return false;
     }
@@ -257,3 +257,5 @@ export const useBulkCSVImport = () => {
     cancelImport
   };
 };
+
+

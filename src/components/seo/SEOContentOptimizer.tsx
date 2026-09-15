@@ -79,7 +79,7 @@ export const SEOContentOptimizer = () => {
         setTitle('Ultimate AI Resume Builder: Create Professional Resumes in Minutes');
         break;
       case 'meta':
-        setMetaDescription('Create stunning professional resumes with our AI-powered builder. 50+ templates, ATS-friendly formats. Start building your dream career today!');
+        setMetaDescription('Create stunning professional resumes with our Performance builder. 50+ templates, ATS-friendly formats. Start building your dream career today!');
         break;
       case 'outline':
         setContent(`# Ultimate AI Resume Builder Guide
@@ -285,7 +285,7 @@ export const SEOContentOptimizer = () => {
           <Tabs defaultValue="issues" className="space-y-6">
             <TabsList>
               <TabsTrigger value="issues">Issues & Fixes</TabsTrigger>
-              <TabsTrigger value="suggestions">AI Suggestions</TabsTrigger>
+              <TabsTrigger value="suggestions">Smart Moves</TabsTrigger>
               <TabsTrigger value="keywords">Keyword Analysis</TabsTrigger>
               <TabsTrigger value="competitors">Competitor Content</TabsTrigger>
             </TabsList>
@@ -322,9 +322,9 @@ export const SEOContentOptimizer = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Lightbulb className="h-5 w-5" />
-                    AI-Powered Suggestions
+                    Performance Suggestions
                   </CardTitle>
-                  <CardDescription>Improve your content with these AI recommendations</CardDescription>
+                  <CardDescription>Improve your content with these Career Moves</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">

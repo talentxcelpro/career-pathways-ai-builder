@@ -108,8 +108,8 @@ export const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = ({ profileData })
     try {
       if (navigator.share) {
         await navigator.share({
-          title: `${profileData?.full_name || 'Professional'}'s Career Passport`,
-          text: `Check out my career passport on TalentXcel`,
+          title: `${profileData?.full_name || 'Professional'}'s Evolution Hub`,
+          text: `Check out my Evolution Hub on TalentXcel`,
           url: passportUrl
         });
       } else {
@@ -147,14 +147,14 @@ export const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = ({ profileData })
             <div className="bg-white p-4 rounded-lg border inline-block">
               <img 
                 src={qrCodeUrl} 
-                alt="Career Passport QR Code"
+                alt="Evolution Hub QR Code"
                 className="w-48 h-48 mx-auto"
               />
             </div>
             
             <div className="space-y-2">
               <p className="text-sm text-muted-foreground">
-                Scan to view career passport instantly
+                Scan to view Evolution Hub instantly
               </p>
               <div className="flex gap-2 justify-center">
                 <Button

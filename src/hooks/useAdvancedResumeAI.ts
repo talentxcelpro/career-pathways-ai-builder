@@ -65,7 +65,7 @@ export const useAdvancedResumeAI = () => {
 - Grammar & tone
 - Formatting
 
-Give short feedback for each.`,
+Give short Feedback for each.`,
 
     CAREER_GROWTH: `Based on this resume, suggest 2–3 career progression paths for the candidate. Include potential next roles, required skills or certifications, and projected salary growth.`
   };
@@ -315,3 +315,4 @@ Give short feedback for each.`,
     AI_PROMPTS
   };
 };
+

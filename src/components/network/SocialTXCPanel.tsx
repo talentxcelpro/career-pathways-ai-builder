@@ -35,7 +35,7 @@ const SocialTXCPanel: React.FC = () => {
                 Award TXC based on social activity
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                Posts: 5 TXC • Connections: 2 TXC • Comments: 1 TXC
+                Posts: 5 TXC • TalentNetwork: 2 TXC • Comments: 1 TXC
               </p>
             </div>
             <Button 
@@ -70,7 +70,7 @@ const SocialTXCPanel: React.FC = () => {
                       <div>
                         <p className="text-sm font-medium">{result.name || 'User'}</p>
                         <p className="text-xs text-muted-foreground">
-                          {result.posts} posts • {result.connections} connections
+                          {result.posts} posts • {result.TalentNetwork} TalentNetwork
                         </p>
                       </div>
                     </div>
@@ -122,3 +122,4 @@ const SocialTXCPanel: React.FC = () => {
 };
 
 export default SocialTXCPanel;
+

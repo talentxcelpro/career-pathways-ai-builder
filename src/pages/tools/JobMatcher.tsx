@@ -161,7 +161,7 @@ const JobMatcher = () => {
                 {isMatching ? (
                   <div className="text-center py-12">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-                    <h3 className="text-lg font-medium mb-2">AI Matching in Progress</h3>
+                    <h3 className="text-lg font-medium mb-2">Precision Match in Progress</h3>
                     <p className="text-gray-600 mb-4">Analyzing your profile against thousands of job opportunities...</p>
                     <Progress value={75} className="w-full" />
                   </div>
@@ -242,7 +242,7 @@ const JobMatcher = () => {
             {/* Features */}
             <Card>
               <CardHeader>
-                <CardTitle>AI Matching Features</CardTitle>
+                <CardTitle>Precision Match Features</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-start gap-3">
@@ -282,7 +282,7 @@ const JobMatcher = () => {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">Your Job Matches</h2>
-                <p className="text-gray-600">AI-powered job recommendations based on your profile</p>
+                <p className="text-gray-600">Performance job recommendations based on your profile</p>
               </div>
               <Button variant="outline" onClick={() => setMatches([])}>
                 New Search
@@ -388,3 +388,4 @@ const JobMatcher = () => {
 };
 
 export default JobMatcher;
+

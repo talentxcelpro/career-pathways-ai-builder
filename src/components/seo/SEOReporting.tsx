@@ -26,7 +26,7 @@ export const SEOReporting = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5 text-primary" />
-            SEO Reports & Analytics
+            SEO Reports & CareerAnalytics
           </CardTitle>
           <CardDescription>Generate comprehensive SEO reports for stakeholders</CardDescription>
         </CardHeader>
@@ -102,3 +102,6 @@ export const SEOReporting = () => {
     </div>
   );
 };
+
+
+

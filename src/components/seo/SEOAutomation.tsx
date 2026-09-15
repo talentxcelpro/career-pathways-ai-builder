@@ -98,7 +98,7 @@ export const SEOAutomation = () => {
     {
       id: 'content-optimization',
       name: 'Content Optimization',
-      description: 'AI-powered content suggestions for better SEO performance',
+      description: 'Performance content suggestions for better SEO performance',
       status: 'paused',
       lastRun: '2 days ago',
       nextRun: 'Paused',
@@ -167,7 +167,7 @@ export const SEOAutomation = () => {
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="tasks">Automation Tasks</TabsTrigger>
           <TabsTrigger value="rules">Rules & Settings</TabsTrigger>
-          <TabsTrigger value="suggestions">AI Suggestions</TabsTrigger>
+          <TabsTrigger value="suggestions">Smart Moves</TabsTrigger>
           <TabsTrigger value="schedule">Schedule</TabsTrigger>
         </TabsList>
 
@@ -232,7 +232,7 @@ export const SEOAutomation = () => {
                       {key === 'metaTags' && 'Automatically optimize meta titles and descriptions'}
                       {key === 'sitemaps' && 'Auto-generate XML sitemaps for new content'}
                       {key === 'schemaMarkup' && 'Dynamic structured data generation'}
-                      {key === 'contentOptimization' && 'AI-powered content optimization suggestions'}
+                      {key === 'contentOptimization' && 'Performance content optimization suggestions'}
                       {key === 'keywordTracking' && 'Monitor keyword rankings and opportunities'}
                       {key === 'competitorMonitoring' && 'Track competitor SEO performance'}
                       {key === 'performanceAlerts' && 'Send alerts for SEO issues'}
@@ -252,7 +252,7 @@ export const SEOAutomation = () => {
         <TabsContent value="suggestions" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>AI-Powered SEO Suggestions</CardTitle>
+              <CardTitle>Performance SEO Suggestions</CardTitle>
               <CardDescription>Smart recommendations to improve your SEO performance</CardDescription>
             </CardHeader>
             <CardContent>
@@ -351,3 +351,4 @@ export const SEOAutomation = () => {
     </div>
   );
 };
+

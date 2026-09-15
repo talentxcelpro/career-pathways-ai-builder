@@ -95,117 +95,135 @@ const OptimizedJobCard: React.FC<OptimizedJobCardProps> = memo(({
   }
 
   return (
-    <Card className={`transition-all hover:shadow-lg ${job.is_featured ? 'ring-2 ring-primary/20' : ''}`}>
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
+    <Card className={cn(
+      "glass-pro border-white/20 shadow-sm hover:shadow-2xl transition-all duration-500 group overflow-hidden relative",
+      job.is_featured && "ring-2 ring-primary/20"
+    )}>
+      {job.is_featured && (
+        <div className="absolute top-0 right-0 px-3 py-1 bg-primary text-white text-[10px] font-apple-heavy uppercase tracking-widest rounded-bl-xl z-20">
+          Featured
+        </div>
+      )}
+      
+      <CardHeader className="p-6 pb-4">
+        <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              {job.is_featured && (
-                <Badge variant="secondary" className="text-xs">
-                  <Star className="h-3 w-3 mr-1" />
-                  Featured
-                </Badge>
-              )}
+            <div className="flex items-center gap-2 mb-3">
               {job.is_remote && (
-                <Badge variant="outline" className="text-xs">
+                <Badge variant="outline" className="rounded-lg border-primary/20 bg-primary/5 text-primary text-[10px] font-apple-bold uppercase tracking-wider px-2 py-0.5">
                   Remote
                 </Badge>
               )}
+              <Badge variant="outline" className="rounded-lg border-slate-200 text-slate-500 text-[10px] font-apple-bold uppercase tracking-wider px-2 py-0.5">
+                {job.employment_type}
+              </Badge>
             </div>
             
-            <h3 className="font-semibold text-lg leading-tight truncate">
+            <h3 className="font-apple-heavy text-xl leading-tight tracking-tight text-slate-950 group-hover:text-primary transition-colors truncate">
               {job.title}
             </h3>
             
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+            <div className="flex items-center gap-2 text-sm font-apple-medium text-slate-500 mt-2">
               <span className="truncate">
                 {job.companies?.name || job.company_name}
               </span>
               {job.companies?.is_verified && (
-                <Badge variant="outline" className="text-xs px-1 py-0">
-                  ✓
+                <Badge className="bg-blue-500/10 text-blue-500 hover:bg-blue-500/10 border-none px-1.5 py-0">
+                  <Shield className="h-3 w-3 fill-current" />
                 </Badge>
               )}
             </div>
           </div>
           
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleSave}
-            className={`ml-2 ${isSaved ? 'text-red-500' : ''}`}
-          >
-            <Heart className={`h-4 w-4 ${isSaved ? 'fill-current' : ''}`} />
-          </Button>
+          <div className="flex flex-col gap-2">
+            <button
+              onClick={handleSave}
+              className={cn(
+                "h-10 w-10 flex items-center justify-center rounded-2xl transition-all duration-300",
+                isSaved 
+                  ? "bg-red-50 text-red-500 shadow-inner" 
+                  : "bg-white border border-slate-100 text-slate-400 hover:text-red-500 hover:bg-red-50"
+              )}
+            >
+              <Heart className={cn("h-5 w-5", isSaved && "fill-current")} />
+            </button>
+            <button
+              onClick={() => window.open(`https://gemini.google.com/app?prompt=Analyze my fit for this job: ${job.title} at ${job.company_name}. Location: ${job.location}. Skills required: ${job.skills_required?.join(', ')}. My TalentScore is available in my profile.`)}
+              className="h-10 w-10 flex items-center justify-center rounded-2xl bg-blue-50 text-blue-600 border border-blue-100 hover:bg-blue-600 hover:text-white transition-all duration-300 shadow-sm"
+              title="Match with AI"
+            >
+              <Sparkles className="h-5 w-5" />
+            </button>
+          </div>
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-3">
-        <div className="flex items-center justify-between text-sm">
-          <div className="flex items-center gap-1 text-muted-foreground">
-            <MapPin className="h-3 w-3" />
-            <span className="truncate">{job.location}</span>
+      <CardContent className="p-6 pt-0 space-y-6">
+        <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-100">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1.5 text-xs font-apple-bold text-slate-400">
+              <MapPin className="h-3.5 w-3.5" />
+              <span>{job.location}</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-xs font-apple-bold text-slate-400">
+              <Clock className="h-3.5 w-3.5" />
+              <span>{formatTimeAgo(job.posted_at)}</span>
+            </div>
           </div>
-          <div className="flex items-center gap-1 text-muted-foreground">
-            <Clock className="h-3 w-3" />
-            <span>{formatTimeAgo(job.posted_at)}</span>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div className="font-semibold text-primary">
+          <div className="text-lg font-apple-heavy text-primary tracking-tighter">
             {formatSalary(job.salary_min, job.salary_max)}
           </div>
-          <Badge variant="outline" className="text-xs">
-            {job.employment_type}
-          </Badge>
         </div>
 
         {job.skills_required && job.skills_required.length > 0 && (
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-2">
             {job.skills_required.slice(0, 3).map((skill, index) => (
-              <Badge key={index} variant="secondary" className="text-xs">
+              <Badge key={index} variant="secondary" className="rounded-lg bg-slate-50 text-[10px] font-apple-bold text-slate-500 border-slate-100 uppercase tracking-tighter px-2.5 py-1">
                 {skill}
               </Badge>
             ))}
             {job.skills_required.length > 3 && (
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="secondary" className="rounded-lg bg-white border border-slate-100 text-[10px] font-apple-heavy text-slate-400 px-2.5 py-1">
                 +{job.skills_required.length - 3}
               </Badge>
             )}
           </div>
         )}
 
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between pt-2">
+          <div className="flex items-center gap-4 text-[10px] font-apple-heavy uppercase tracking-widest text-slate-400">
             {job.views_count && (
-              <div className="flex items-center gap-1">
-                <Eye className="h-3 w-3" />
-                <span>{job.views_count}</span>
+              <div className="flex items-center gap-1.5">
+                <Eye className="h-3.5 w-3.5" />
+                <span>{job.views_count.toLocaleString()}</span>
               </div>
             )}
             {job.applications_count && (
-              <div className="flex items-center gap-1">
-                <Users className="h-3 w-3" />
-                <span>{job.applications_count} applied</span>
+              <div className="flex items-center gap-1.5">
+                <Users className="h-3.5 w-3.5" />
+                <span>{job.applications_count.toLocaleString()} Applied</span>
               </div>
             )}
+          </div>
+          
+          <div className="flex items-center gap-1">
+            <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-[10px] font-apple-heavy uppercase tracking-widest text-emerald-600">Active Now</span>
           </div>
         </div>
 
         <Button 
           onClick={handleApply}
-          className="w-full"
-          size="sm"
+          className="w-full h-12 rounded-2xl bg-slate-950 text-white font-apple-bold hover:bg-slate-800 transition-all duration-300 shadow-xl"
           disabled={!job.id}
         >
           {job.external_url ? (
             <>
-              <ExternalLink className="h-4 w-4 mr-1" />
-              Apply on Site
+              <ExternalLink className="h-4 w-4 mr-2" />
+              Apply on Partner Site
             </>
           ) : (
-            'Apply Now'
+            'Execute Application'
           )}
         </Button>
       </CardContent>

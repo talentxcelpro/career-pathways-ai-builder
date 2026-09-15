@@ -8,7 +8,7 @@ const NewsAutomationPage = () => {
   return (
     <UnifiedAdminLayout 
       title="News Automation" 
-      description="Test and manage automated news feed system"
+      description="Test and manage automated news Pulse system"
     >
       <div className="space-y-6">
         {/* Status Overview */}
@@ -58,11 +58,11 @@ const NewsAutomationPage = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Newspaper className="h-5 w-5" />
-              Manual News Feed Trigger
+              Manual News Pulse Trigger
             </CardTitle>
             <CardDescription>
               Manually trigger the news automation system to fetch latest career and job-related articles.
-              This will fetch news from NewsAPI and create posts in the feed.
+              This will fetch news from NewsAPI and create posts in the Pulse.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -92,7 +92,7 @@ const NewsAutomationPage = () => {
               <div className="space-y-2">
                 <h4 className="font-medium">3. Create Posts</h4>
                 <p className="text-sm text-muted-foreground">
-                  Generates social media posts using bot accounts for sharing in the network feed.
+                  Generates social media posts using bot accounts for sharing in the network Pulse.
                 </p>
               </div>
               <div className="space-y-2">

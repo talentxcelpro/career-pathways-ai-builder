@@ -19,14 +19,14 @@ import {
   ChevronRight
 } from "lucide-react";
 
-interface PersonalCareerDashboardProps {
+interface PersonalCareerCommandCenterProps {
   user?: any;
   savedJobsCount?: number;
   appliedJobsCount?: number;
   profileViews?: number;
 }
 
-export const PersonalCareerDashboard: React.FC<PersonalCareerDashboardProps> = ({
+export const PersonalCareerCommandCenter: React.FC<PersonalCareerCommandCenterProps> = ({
   user: propUser,
   savedJobsCount = 0,
   appliedJobsCount = 0,
@@ -56,14 +56,14 @@ export const PersonalCareerDashboard: React.FC<PersonalCareerDashboardProps> = (
   }, []);
 
   const user = userProfile || propUser || currentUser;
-  const { getDashboardStats } = useRealDataService();
-  const { data: dashboardStats, isLoading } = getDashboardStats;
+  const { getCommandCenterStats } = useRealDataService();
+  const { data: CommandCenterStats, isLoading } = getCommandCenterStats;
 
   // Use real data when available, fallback to props
-  const realSavedJobs = dashboardStats?.profileViews || savedJobsCount;
-  const realAppliedJobs = dashboardStats?.appliedJobs || appliedJobsCount;
-  const realProfileViews = dashboardStats?.resumeViews || profileViews;
-  const realCoursesCompleted = dashboardStats?.coursesCompleted || 0;
+  const realSavedJobs = CommandCenterStats?.profileViews || savedJobsCount;
+  const realAppliedJobs = CommandCenterStats?.appliedJobs || appliedJobsCount;
+  const realProfileViews = CommandCenterStats?.resumeViews || profileViews;
+  const realCoursesCompleted = CommandCenterStats?.coursesCompleted || 0;
 
   const careerProgress = Math.min(
     ((realAppliedJobs * 10) + (realProfileViews * 2) + (realCoursesCompleted * 15)) / 2,
@@ -112,7 +112,7 @@ export const PersonalCareerDashboard: React.FC<PersonalCareerDashboardProps> = (
                 Welcome back, {user?.full_name || user?.name || 'Job Seeker'}! 👋
               </h1>
               <p className="text-gray-600 mt-1">
-                Your AI Career Assistant found {Math.floor(Math.random() * 15) + 5} new matches today
+                Your AI Career Navigator found {Math.floor(Math.random() * 15) + 5} new matches today
               </p>
             </div>
             <div className="text-right">
@@ -166,7 +166,7 @@ export const PersonalCareerDashboard: React.FC<PersonalCareerDashboardProps> = (
               </div>
             </div>
 
-            {/* AI Recommendations */}
+            {/* Career Moves */}
             <div>
               <h4 className="font-medium text-sm mb-3 flex items-center gap-2">
                 <Brain className="h-4 w-4 text-purple-500" />
@@ -269,7 +269,7 @@ export const PersonalCareerDashboard: React.FC<PersonalCareerDashboardProps> = (
             <CardContent className="space-y-2">
               <Button size="sm" className="w-full justify-start" variant="ghost">
                 <Brain className="h-4 w-4 mr-2" />
-                Ask AI Career Assistant
+                Ask AI Career Navigator
               </Button>
               <Button size="sm" className="w-full justify-start" variant="ghost">
                 <Target className="h-4 w-4 mr-2" />
@@ -286,3 +286,5 @@ export const PersonalCareerDashboard: React.FC<PersonalCareerDashboardProps> = (
     </div>
   );
 };
+
+

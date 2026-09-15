@@ -29,7 +29,7 @@ export const useAdminStats = () => {
           .gte('last_login_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
       ]);
 
-      // Get additional analytics
+      // Get additional CareerAnalytics
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
       const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
       
@@ -68,3 +68,7 @@ export const useAdminStats = () => {
     refetchInterval: 30000 // Refetch every 30 seconds for real-time updates
   });
 };
+
+
+
+

@@ -216,7 +216,7 @@ const AIRoadmapBuilder = () => {
             <Brain className="h-5 w-5" />
             AI Analysis
           </CardTitle>
-          <CardDescription>AI-powered insights for your career path</CardDescription>
+          <CardDescription>Performance insights for your career path</CardDescription>
         </CardHeader>
       </Card>
       
@@ -329,7 +329,7 @@ const AIRoadmapBuilder = () => {
           ) : (
             <>
               <Brain className="h-4 w-4 mr-2" />
-              Generate AI-Powered Roadmap
+              Generate Performance Roadmap
             </>
           )}
         </Button>
@@ -372,7 +372,7 @@ const AIRoadmapBuilder = () => {
       <Tabs defaultValue="timeline" className="space-y-4">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="timeline">Interactive Timeline</TabsTrigger>
-          <TabsTrigger value="insights">AI Insights</TabsTrigger>
+          <TabsTrigger value="insights">Intelligence Metrics</TabsTrigger>
           <TabsTrigger value="skills">Skills Analysis</TabsTrigger>
           <TabsTrigger value="network">Networking</TabsTrigger>
         </TabsList>
@@ -502,3 +502,4 @@ const AIRoadmapBuilder = () => {
 };
 
 export default AIRoadmapBuilder;
+

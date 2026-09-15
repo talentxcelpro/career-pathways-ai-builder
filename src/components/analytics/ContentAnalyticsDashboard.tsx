@@ -39,8 +39,8 @@ interface ContentMetrics {
   }>;
 }
 
-export const ContentAnalyticsDashboard: React.FC = () => {
-  // Mock analytics data - in production, this would come from your analytics service
+export const ContentCareerAnalyticsCommandCenter: React.FC = () => {
+  // Mock CareerAnalytics data - in production, this would come from your CareerAnalytics service
   const metrics: ContentMetrics = {
     totalViews: 12547,
     totalShares: 892,
@@ -302,3 +302,6 @@ export const ContentAnalyticsDashboard: React.FC = () => {
     </div>
   );
 };
+
+
+

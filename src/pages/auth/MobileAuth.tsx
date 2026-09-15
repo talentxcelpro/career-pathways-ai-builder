@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/card';
 import { Eye, EyeOff, Mail, Lock, User, Briefcase } from 'lucide-react';
 import { toast } from 'sonner';
 import { useMobileDetection } from '@/hooks/useMobileDetection';
+import { getEmailRedirectUrl } from '@/utils/authRedirect';
 
 export const MobileAuth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -22,7 +23,7 @@ export const MobileAuth = () => {
 
   useEffect(() => {
     if (user) {
-      navigate('/network', { replace: true });
+      navigate('/career-os', { replace: true });
     }
   }, [user, navigate]);
 
@@ -43,7 +44,7 @@ export const MobileAuth = () => {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/`,
+            emailRedirectTo: getEmailRedirectUrl('/career-os'),
             data: {
               full_name: fullName,
             }
@@ -86,7 +87,7 @@ export const MobileAuth = () => {
           />
         </div>
         <h1 className="text-2xl font-bold text-gray-900 mb-2">TalentXcel</h1>
-        <p className="text-gray-600">Your AI-powered career companion</p>
+        <p className="text-gray-600">Your Performance career companion</p>
       </div>
 
       {/* Auth Form */}
@@ -176,7 +177,7 @@ export const MobileAuth = () => {
         <div className="space-y-3">
           <div className="flex items-center gap-3 text-sm text-gray-600">
             <div className="w-2 h-2 bg-primary rounded-full"></div>
-            <span>AI-powered job matching</span>
+            <span>Performance job matching</span>
           </div>
           <div className="flex items-center gap-3 text-sm text-gray-600">
             <div className="w-2 h-2 bg-primary rounded-full"></div>
@@ -191,3 +192,4 @@ export const MobileAuth = () => {
     </div>
   );
 };
+

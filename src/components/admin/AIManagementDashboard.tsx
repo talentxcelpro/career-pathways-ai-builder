@@ -16,12 +16,12 @@ import {
 } from 'lucide-react';
 import { AISystemTester } from './AISystemTester';
 import { AIToolsConfiguration } from './AIToolsConfiguration';
-import { AIUsageAnalytics } from './AIUsageAnalytics';
+import { AIUsageCareerAnalytics } from './AIUsageAnalytics';
 import { AIPerformanceMonitor } from './AIPerformanceMonitor';
 import { AIAgentsManager } from './AIAgentsManager';
 import { useAIManagementStats } from '@/hooks/useAIManagementStats';
 
-export const AIManagementDashboard = () => {
+export const AIManagementCommandCenter = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const { stats, isLoading } = useAIManagementStats();
 
@@ -61,7 +61,7 @@ export const AIManagementDashboard = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">AI Management Dashboard</h1>
+          <h1 className="text-3xl font-bold">AI Management CommandCenter</h1>
           <p className="text-muted-foreground">
             Monitor and manage AI features across the platform
           </p>
@@ -100,7 +100,7 @@ export const AIManagementDashboard = () => {
           <TabsTrigger value="agents">AI Agents</TabsTrigger>
           <TabsTrigger value="tools">Tools Config</TabsTrigger>
           <TabsTrigger value="testing">Testing</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
           <TabsTrigger value="monitoring">Monitoring</TabsTrigger>
         </TabsList>
 
@@ -176,8 +176,8 @@ export const AIManagementDashboard = () => {
           <AISystemTester />
         </TabsContent>
 
-        <TabsContent value="analytics">
-          <AIUsageAnalytics />
+        <TabsContent value="CareerAnalytics">
+          <AIUsageCareerAnalytics />
         </TabsContent>
 
         <TabsContent value="monitoring">
@@ -187,3 +187,7 @@ export const AIManagementDashboard = () => {
     </div>
   );
 };
+
+
+
+

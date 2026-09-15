@@ -8,7 +8,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/co
 import { Coins, Zap, TrendingUp, Award, Menu, Smartphone } from 'lucide-react';
 import { useTokenBalance } from '@/hooks/useTokenBalance';
 import { useTXCMining } from '@/hooks/useTXCMining';
-import { TXCMiningDashboard } from './TXCMiningDashboard';
+import { TXCMiningCommandCenter } from './TXCMiningDashboard';
 import { TXCLeaderboard } from './TXCLeaderboard';
 import { TXCLiveActivity } from './TXCLiveActivity';
 
@@ -64,7 +64,7 @@ const TXCMobileOptimized: React.FC = () => {
           </TabsContent>
           
           <TabsContent value="mining">
-            <TXCMiningDashboard />
+            <TXCMiningCommandCenter />
           </TabsContent>
           
           <TabsContent value="leaderboard">
@@ -125,10 +125,10 @@ const TXCMobileOptimized: React.FC = () => {
           <div className="space-y-4">
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Mining Dashboard</CardTitle>
+                <CardTitle className="text-lg">Mining CommandCenter</CardTitle>
               </CardHeader>
               <CardContent>
-                <TXCMiningDashboard />
+                <TXCMiningCommandCenter />
               </CardContent>
             </Card>
           </div>
@@ -308,3 +308,4 @@ const MobileMenu: React.FC<{
 };
 
 export default TXCMobileOptimized;
+

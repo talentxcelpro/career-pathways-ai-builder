@@ -248,7 +248,7 @@ export function coreToEnhanced(core: CoreResumeData): EnhancedResumeData {
     tools: {
       development: core.skills.filter(s => s.category === 'tool').map(s => s.name),
       design: [],
-      analytics: [],
+      CareerAnalytics: [],
       productivity: [],
       other: [],
     },
@@ -677,3 +677,6 @@ export function mergeResumeData(base: CoreResumeData, updates: Partial<CoreResum
     metadata: { ...base.metadata, ...updates.metadata, updatedAt: new Date().toISOString() },
   };
 }
+
+
+

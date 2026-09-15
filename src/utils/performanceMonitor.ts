@@ -97,7 +97,7 @@ class PerformanceMonitor {
       console.log(`📊 ${name}:`, `${value.toFixed(2)}ms`);
     }
 
-    // Send to analytics if available
+    // Send to CareerAnalytics if available
     if (typeof window !== 'undefined' && (window as any).gtag) {
       (window as any).gtag('event', 'web_vitals', {
         metric_name: name,
@@ -152,3 +152,7 @@ export const useWebVitals = () => {
 
   return { getMetrics };
 };
+
+
+
+

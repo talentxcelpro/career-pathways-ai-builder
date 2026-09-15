@@ -246,7 +246,7 @@ export default function Services() {
             <Button asChild size="lg" className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600">
               <Link to="/txc/mining" className="flex items-center gap-2">
                 <Pickaxe className="h-5 w-5" />
-                Access Mining Dashboard
+                Access Mining CommandCenter
                 <ArrowRight className="h-5 w-5" />
               </Link>
             </Button>
@@ -284,3 +284,4 @@ export default function Services() {
     </div>
   );
 }
+

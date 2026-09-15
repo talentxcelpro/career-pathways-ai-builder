@@ -243,11 +243,11 @@ const IntelligentCareerCoach: React.FC = () => {
               <Bot className="h-6 w-6 text-primary" />
               Intelligent Career Coach
             </h2>
-            <p className="text-muted-foreground">Your AI-powered personal career development assistant</p>
+            <p className="text-muted-foreground">Your Performance personal career development Navigator</p>
           </div>
         </div>
 
-        <UsageMeter type="dailyAIRequests" currentUsage={8} label="AI Coach Sessions" />
+        <UsageMeter type="dailyAIRequests" currentUsage={8} label="TalentXcel Navigator Sessions" />
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Chat Interface */}
@@ -473,3 +473,4 @@ const IntelligentCareerCoach: React.FC = () => {
 };
 
 export default IntelligentCareerCoach;
+

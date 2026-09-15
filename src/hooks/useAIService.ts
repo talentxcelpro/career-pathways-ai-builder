@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 
 export interface UseAIServiceOptions {
   enableFeedback?: boolean;
-  enableAnalytics?: boolean;
+  enableCareerAnalytics?: boolean;
   autoRetry?: boolean;
   maxRetries?: number;
 }
@@ -26,7 +26,7 @@ export interface AIOperationState {
 export function useAIService(options: UseAIServiceOptions = {}) {
   const {
     enableFeedback = true,
-    enableAnalytics = true,
+    enableCareerAnalytics = true,
     autoRetry = true,
     maxRetries = 2
   } = options;
@@ -244,24 +244,24 @@ export function useAIService(options: UseAIServiceOptions = {}) {
   const submitFeedback = useCallback(async (
     operationId: string,
     rating: 1 | 2 | 3 | 4 | 5,
-    feedback?: {
+    Feedback?: {
       text?: string;
       improvements?: string[];
     }
   ) => {
     if (!enableFeedback) return;
 
-    const feedbackData: AIFeedback = {
+    const FeedbackData: AIFeedback = {
       operation_id: operationId,
       rating,
-      feedback_text: feedback?.text,
-      improvement_suggestions: feedback?.improvements
+      Feedback_text: Feedback?.text,
+      improvement_suggestions: Feedback?.improvements
     };
 
     try {
-      await aiServiceManager.submitFeedback(feedbackData);
+      await aiServiceManager.submitFeedback(FeedbackData);
     } catch (error) {
-      console.error('Failed to submit feedback:', error);
+      console.error('Failed to submit Feedback:', error);
     }
   }, [enableFeedback]);
 
@@ -279,18 +279,18 @@ export function useAIService(options: UseAIServiceOptions = {}) {
     }
   }, []);
 
-  // Get usage analytics
-  const getUsageAnalytics = useCallback(async (timeframe: 'day' | 'week' | 'month' = 'week') => {
-    if (!enableAnalytics) return null;
+  // Get usage CareerAnalytics
+  const getUsageCareerAnalytics = useCallback(async (timeframe: 'day' | 'week' | 'month' = 'week') => {
+    if (!enableCareerAnalytics) return null;
 
     try {
-      const analytics = await aiServiceManager.getUsageAnalytics(timeframe);
-      return analytics;
+      const CareerAnalytics = await aiServiceManager.getUsageCareerAnalytics(timeframe);
+      return CareerAnalytics;
     } catch (error) {
-      console.error('Failed to get usage analytics:', error);
+      console.error('Failed to get usage CareerAnalytics:', error);
       return null;
     }
-  }, [enableAnalytics]);
+  }, [enableCareerAnalytics]);
 
   // Cancel operation
   const cancelOperation = useCallback(() => {
@@ -433,7 +433,7 @@ export function useAIService(options: UseAIServiceOptions = {}) {
     // Utility operations
     submitFeedback,
     checkServiceHealth,
-    getUsageAnalytics,
+    getUsageCareerAnalytics,
     cancelOperation,
     batchProcess,
 
@@ -441,3 +441,7 @@ export function useAIService(options: UseAIServiceOptions = {}) {
     serviceManager: aiServiceManager
   };
 }
+
+
+
+

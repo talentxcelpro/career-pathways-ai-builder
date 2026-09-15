@@ -66,10 +66,10 @@ import { useAdminStats } from '@/hooks/useAdminStats';
 
 const coreAdminItems = [
   {
-    title: 'Dashboard',
+    title: 'CommandCenter',
     url: '/admin',
     icon: Shield,
-    description: 'Overview and analytics'
+    description: 'Overview and CareerAnalytics'
   },
   {
     title: 'User Management',
@@ -106,7 +106,7 @@ const businessItems = [
     badge: 'dynamic'
   },
   {
-    title: 'Employer Dashboard',
+    title: 'Employer CommandCenter',
     url: '/employer',
     icon: Building2,
     description: 'Access employer features'
@@ -145,10 +145,10 @@ const txcTokenItems = [
     description: 'Social bonuses, joining bonuses & rewards'
   },
   {
-    title: 'TXC Analytics',
-    url: '/admin/txc-analytics',
+    title: 'TXC CareerAnalytics',
+    url: '/admin/txc-CareerAnalytics',
     icon: BarChart3,
-    description: 'Token economics & usage analytics'
+    description: 'Token economics & usage CareerAnalytics'
   },
   {
     title: 'TXC Store',
@@ -160,7 +160,7 @@ const txcTokenItems = [
     title: 'TXC Spending History',
     url: '/admin/txc-spending',
     icon: Receipt,
-    description: 'Purchase analytics & spending patterns'
+    description: 'Purchase CareerAnalytics & spending patterns'
   }
 ];
 
@@ -184,10 +184,10 @@ const linkedinToolsItems = [
     description: 'Automated job scraping from LinkedIn'
   },
   {
-    title: 'LinkedIn Analytics',
-    url: '/admin/linkedin-analytics',
+    title: 'LinkedIn CareerAnalytics',
+    url: '/admin/linkedin-CareerAnalytics',
     icon: TrendingUp,
-    description: 'LinkedIn import analytics & insights'
+    description: 'LinkedIn import CareerAnalytics & insights'
   }
 ];
 
@@ -196,17 +196,17 @@ const enterpriseItems = [
     title: 'Enterprise Overview',
     url: '/admin/enterprise-overview',
     icon: Factory,
-    description: 'Complete enterprise management dashboard'
+    description: 'Complete enterprise management CommandCenter'
   },
   {
     title: 'Enterprise Solutions',
     url: '/admin/enterprise',
     icon: Factory,
-    description: 'Enterprise AI solutions dashboard'
+    description: 'Enterprise AI solutions CommandCenter'
   },
   {
-    title: 'Enterprise Analytics',
-    url: '/admin/enterprise/analytics',
+    title: 'Enterprise CareerAnalytics',
+    url: '/admin/enterprise/CareerAnalytics',
     icon: BarChart3,
     description: 'Enterprise performance metrics'
   },
@@ -286,13 +286,13 @@ const contentManagementItems = [
     title: 'News Automation',
     url: '/admin/news-automation',
     icon: Newspaper,
-    description: 'Test and manage news feed automation'
+    description: 'Test and manage news Pulse automation'
   },
   {
     title: 'Advanced Content Hub',
     url: '/admin/content-hub',
     icon: Star,
-    description: 'AI-powered content creation'
+    description: 'Performance content creation'
   },
   {
     title: 'Email Automation',
@@ -364,7 +364,7 @@ const marketingGrowthItems = [
     title: 'SEO Suite',
     url: '/admin/seo-suite',
     icon: Search,
-    description: 'Advanced SEO tools & analytics'
+    description: 'Advanced SEO tools & CareerAnalytics'
   },
   {
     title: 'Backlink System',
@@ -386,10 +386,10 @@ const marketingGrowthItems = [
   }
 ];
 
-const analyticsReportsItems = [
+const CareerAnalyticsReportsItems = [
   {
-    title: 'Analytics',
-    url: '/admin/analytics',
+    title: 'CareerAnalytics',
+    url: '/admin/CareerAnalytics',
     icon: BarChart3,
     description: 'Reports & insights'
   },
@@ -433,17 +433,17 @@ const growthMenuItems = [
     title: 'Content Creation Studio',
     url: '/growth/content-studio',
     icon: Star,
-    description: 'AI-powered content creation and scheduling'
+    description: 'Performance content creation and scheduling'
   },
   {
     title: 'Enhanced Company Profiles',
     url: '/growth/company-profiles',
     icon: TrendingUp,
-    description: 'Rich company pages with media and analytics'
+    description: 'Rich company pages with media and CareerAnalytics'
   },
   {
-    title: 'Advanced Analytics',
-    url: '/growth/analytics',
+    title: 'Advanced CareerAnalytics',
+    url: '/growth/CareerAnalytics',
     icon: BarChart3,
     description: 'Deep hiring insights and competitor analysis'
   }
@@ -739,11 +739,11 @@ export const AdminSidebar: React.FC = () => {
 
         <SidebarGroup>
           <SidebarGroupLabel className={isCollapsed ? 'sr-only' : ''}>
-            Analytics & Reports
+            CareerAnalytics & Reports
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {analyticsReportsItems.map((item) => (
+              {CareerAnalyticsReportsItems.map((item) => (
                 <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton asChild>
                     <NavLink to={item.url} className={getNavClasses(item.url)}>
@@ -794,3 +794,7 @@ export const AdminSidebar: React.FC = () => {
     </Sidebar>
   );
 };
+
+
+
+

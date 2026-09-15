@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 export interface CareerMetrics {
   profileCompletion: number;
   jobApplications: number;
-  connections: number;
+  TalentNetwork: number;
   skillsAdded: number;
   coursesCompleted: number;
   postsCreated: number;
@@ -72,7 +72,7 @@ export function useRealCareerData() {
           achievementsResponse,
           txcBalanceResponse,
           jobApplicationsResponse,
-          connectionsResponse,
+          TalentNetworkResponse,
           postsResponse,
           courseCompletionsResponse,
           loginStreakResponse
@@ -181,7 +181,7 @@ export function useRealCareerData() {
         const metrics: CareerMetrics = {
           profileCompletion,
           jobApplications: jobApplicationsResponse.data?.length || 0,
-          connections: connectionsResponse.data?.length || 0,
+          TalentNetwork: TalentNetworkResponse.data?.length || 0,
           skillsAdded: (profile?.skills?.length || 0),
           coursesCompleted: courseCompletionsResponse.data?.tests_completed_count || 0,
           postsCreated: postsResponse.data?.length || 0,
@@ -221,9 +221,9 @@ export function useRealCareerData() {
       title: 'First Connection',
       description: 'Make your first professional connection',
       requirement: 1,
-      progress: metrics?.connections || 0,
+      progress: metrics?.TalentNetwork || 0,
       points: 200,
-      earned: (metrics?.connections || 0) >= 1
+      earned: (metrics?.TalentNetwork || 0) >= 1
     },
     {
       id: 'network_builder',
@@ -231,9 +231,9 @@ export function useRealCareerData() {
       title: 'Network Builder',
       description: 'Connect with 10 professionals',
       requirement: 10,
-      progress: metrics?.connections || 0,
+      progress: metrics?.TalentNetwork || 0,
       points: 1000,
-      earned: (metrics?.connections || 0) >= 10
+      earned: (metrics?.TalentNetwork || 0) >= 10
     },
     {
       id: 'job_hunter',
@@ -315,3 +315,4 @@ export function useRealCareerData() {
     refreshMetrics: refetch
   };
 }
+

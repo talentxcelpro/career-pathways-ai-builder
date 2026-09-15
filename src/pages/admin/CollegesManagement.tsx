@@ -1,9 +1,9 @@
 import React from 'react';
 import { UnifiedAdminLayout } from '@/components/admin/UnifiedAdminLayout';
-import { CollegesDashboard } from '@/components/admin/colleges/CollegesDashboard';
+import { CollegesCommandCenter } from '@/components/admin/colleges/CollegesDashboard';
 import { CollegesDirectory } from '@/components/admin/colleges/CollegesDirectory';
 import { VerificationManagement } from '@/components/admin/colleges/VerificationManagement';
-import { CollegeAnalytics } from '@/components/admin/colleges/CollegeAnalytics';
+import { CollegeCareerAnalytics } from '@/components/admin/colleges/CollegeAnalytics';
 import { StudentInquiries } from '@/components/admin/colleges/StudentInquiries';
 import { CollegeEvents } from '@/components/admin/colleges/CollegeEvents';
 import { MonetizationSettings } from '@/components/admin/colleges/MonetizationSettings';
@@ -19,13 +19,13 @@ import {
 } from 'lucide-react';
 
 const CollegesManagement = () => {
-  const [activeTab, setActiveTab] = React.useState('dashboard');
+  const [activeTab, setActiveTab] = React.useState('command-center');
 
   const tabs = [
-    { id: 'dashboard', label: 'Dashboard', icon: Home, component: CollegesDashboard },
+    { id: 'command-center', label: 'Command Center', icon: Home, component: CollegesCommandCenter },
     { id: 'directory', label: 'Directory', icon: School, component: CollegesDirectory },
     { id: 'verification', label: 'Verification', icon: Shield, component: VerificationManagement },
-    { id: 'analytics', label: 'Analytics', icon: BarChart3, component: CollegeAnalytics },
+    { id: 'career-analytics', label: 'Career Analytics', icon: BarChart3, component: CollegeCareerAnalytics },
     { id: 'inquiries', label: 'Inquiries', icon: MessageSquare, component: StudentInquiries },
     { id: 'events', label: 'Events', icon: Calendar, component: CollegeEvents },
     { id: 'monetization', label: 'Monetization', icon: Settings, component: MonetizationSettings }
@@ -34,15 +34,15 @@ const CollegesManagement = () => {
   return (
     <UnifiedAdminLayout 
       title="Colleges Management Hub" 
-      description="India's Most Trusted Interactive College Directory & Analytics Platform"
+      description="India's Most Trusted Interactive College Directory & Career Analytics Platform"
     >
       <div className="space-y-6">
         <div className="bg-gradient-to-r from-primary/10 via-purple-500/10 to-blue-500/10 border border-primary/20 rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-primary mb-2">🎓 Premium Colleges Hub</h2>
+              <h2 className="text-2xl font-bold text-primary mb-2">Premium Colleges Hub</h2>
               <p className="text-muted-foreground">
-                Complete college directory with verification, analytics, student engagement, and monetization features
+                Complete college directory with verification, Career Analytics, student engagement, and monetization features
               </p>
             </div>
             <div className="text-right">
@@ -84,3 +84,6 @@ const CollegesManagement = () => {
 };
 
 export default CollegesManagement;
+
+
+

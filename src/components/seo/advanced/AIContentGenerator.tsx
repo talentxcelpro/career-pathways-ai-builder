@@ -30,7 +30,7 @@ export const AIContentGenerator: React.FC = () => {
         title: `Ultimate Guide to ${targetKeyword}: Expert Strategies for 2024`,
         metaDescription: `Discover proven ${targetKeyword} strategies that drive results. Expert tips, case studies, and actionable insights to boost your success.`,
         outline: `1. Introduction to ${targetKeyword}\n2. Current Market Trends\n3. Best Practices & Strategies\n4. Case Studies\n5. Tools & Resources\n6. Future Outlook\n7. Conclusion & Next Steps`,
-        content: `# Ultimate Guide to ${targetKeyword}\n\n## Introduction\n\nIn today's competitive digital landscape, understanding ${targetKeyword} is crucial for business success...\n\n## Key Strategies\n\n1. **Data-Driven Approach**: Leverage analytics to make informed decisions\n2. **User-Centric Design**: Focus on user experience and satisfaction\n3. **Continuous Optimization**: Regular testing and improvement`,
+        content: `# Ultimate Guide to ${targetKeyword}\n\n## Introduction\n\nIn today's competitive digital landscape, understanding ${targetKeyword} is crucial for business success...\n\n## Key Strategies\n\n1. **Data-Driven Approach**: Leverage CareerAnalytics to make informed decisions\n2. **User-Centric Design**: Focus on user experience and satisfaction\n3. **Continuous Optimization**: Regular testing and improvement`,
         schema: `{
   "@context": "https://schema.org",
   "@type": "Article",
@@ -215,3 +215,6 @@ export const AIContentGenerator: React.FC = () => {
     </div>
   );
 };
+
+
+

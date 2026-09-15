@@ -44,10 +44,10 @@ export const AdminNavigationPanel = () => {
       color: 'text-orange-600'
     },
     {
-      title: 'Analytics',
-      description: 'Platform analytics & reports',
+      title: 'CareerAnalytics',
+      description: 'Platform CareerAnalytics & reports',
       icon: BarChart3,
-      href: '/admin/analytics',
+      href: '/admin/CareerAnalytics',
       color: 'text-indigo-600'
     },
     {
@@ -109,3 +109,6 @@ export const AdminNavigationPanel = () => {
     </Card>
   );
 };
+
+
+

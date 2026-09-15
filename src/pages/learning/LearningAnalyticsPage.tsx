@@ -1,15 +1,15 @@
 import React from 'react';
 import { updateMetaTags } from '@/utils/metaTags';
-import { LearningAnalyticsCard } from '@/components/learning/LearningAnalyticsCard';
+import { LearningCareerAnalyticsCard } from '@/components/learning/LearningAnalyticsCard';
 import { supabase } from '@/integrations/supabase/client';
 import { TrendingUp } from 'lucide-react';
 
-const LearningAnalyticsPage = () => {
+const LearningCareerAnalyticsPage = () => {
   const [user, setUser] = React.useState<any>(null);
 
   React.useEffect(() => {
     updateMetaTags({
-      title: 'Learning Analytics | TalentXcel Learning',
+      title: 'Learning CareerAnalytics | TalentXcel Learning',
       description: 'Track your learning progress, analyze your performance, and optimize your study habits.'
     });
     
@@ -23,18 +23,21 @@ const LearningAnalyticsPage = () => {
         <div className="flex items-center gap-3 mb-8">
           <TrendingUp className="h-8 w-8 text-blue-600" />
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Learning Analytics</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Learning CareerAnalytics</h1>
             <p className="text-gray-600">
               Track your progress and optimize your learning journey
             </p>
           </div>
         </div>
 
-        {/* Analytics Cards */}
-        <LearningAnalyticsCard userId={user?.id} />
+        {/* CareerAnalytics Cards */}
+        <LearningCareerAnalyticsCard userId={user?.id} />
       </div>
     </div>
   );
 };
 
-export default LearningAnalyticsPage;
+export default LearningCareerAnalyticsPage;
+
+
+

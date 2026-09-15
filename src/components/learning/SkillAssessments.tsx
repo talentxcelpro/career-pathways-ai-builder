@@ -93,7 +93,7 @@ export default function SkillAssessments() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold mb-2">Skill Assessments</h2>
-        <p className="text-muted-foreground">Test and validate your skills with AI-powered assessments</p>
+        <p className="text-muted-foreground">Test and validate your skills with Performance assessments</p>
       </div>
 
       {/* Category Filter */}

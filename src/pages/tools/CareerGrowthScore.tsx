@@ -47,7 +47,7 @@ const CareerGrowthScore = () => {
 
     try {
       // Fetch user profile and related data
-      const [profileRes, resumesRes, connectionsRes, applicationsRes, toolUsageRes] = await Promise.all([
+      const [profileRes, resumesRes, TalentNetworkRes, applicationsRes, toolUsageRes] = await Promise.all([
         supabase.from('profiles').select('*').eq('id', user.id).single(),
         supabase.from('ai_resumes').select('*').eq('user_id', user.id),
         supabase.from('connections').select('*').or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`),
@@ -57,14 +57,14 @@ const CareerGrowthScore = () => {
 
       const profile = profileRes.data;
       const resumes = resumesRes.data || [];
-      const connections = connectionsRes.data || [];
+      const TalentNetwork = TalentNetworkRes.data || [];
       const applications = applicationsRes.data || [];
       const toolUsage = toolUsageRes.data || [];
 
       // Calculate component scores based on real data
       const resumeStrength = Math.min(100, (resumes.length * 20) + (resumes.reduce((sum, r) => sum + (r.ats_score || 0), 0) / Math.max(resumes.length, 1)));
       const skillsScore = profile?.profile_completed ? 85 : 50;
-      const networkActivity = Math.min(100, connections.length * 5 + toolUsage.length * 2);
+      const networkActivity = Math.min(100, TalentNetwork.length * 5 + toolUsage.length * 2);
       const careerProgression = applications.length > 0 ? Math.min(100, 60 + applications.filter(a => a.status === 'hired').length * 20) : 40;
 
       const components = [
@@ -89,8 +89,8 @@ const CareerGrowthScore = () => {
           score: Math.round(networkActivity),
           weight: 20,
           icon: 'Users',
-          details: `${connections.length} connections, ${toolUsage.length} tool uses`,
-          improvements: connections.length < 10 ? ['Build more connections', 'Use networking tools'] : ['Engage more actively', 'Share knowledge']
+          details: `${TalentNetwork.length} TalentNetwork, ${toolUsage.length} tool uses`,
+          improvements: TalentNetwork.length < 10 ? ['Build more TalentNetwork', 'Use networking tools'] : ['Engage more actively', 'Share knowledge']
         },
         {
           category: 'Career Progression',
@@ -113,7 +113,7 @@ const CareerGrowthScore = () => {
           data: {
             profile,
             resumesCount: resumes.length,
-            connectionsCount: connections.length,
+            TalentNetworkCount: TalentNetwork.length,
             applicationsCount: applications.length,
             scores: { resumeStrength, skillsScore, networkActivity, careerProgression }
           },
@@ -128,13 +128,13 @@ const CareerGrowthScore = () => {
         components,
         strengths: aiResponse?.strengths || [
           resumeStrength > 70 ? 'Strong resume foundation' : null,
-          connections.length > 10 ? 'Good professional network' : null,
+          TalentNetwork.length > 10 ? 'Good professional network' : null,
           applications.length > 5 ? 'Active job seeker' : null,
           profile?.profile_completed ? 'Complete professional profile' : null
         ].filter(Boolean),
         growth_opportunities: aiResponse?.growth_opportunities || [
           resumeStrength < 70 ? 'Improve resume quality and ATS optimization' : null,
-          connections.length < 10 ? 'Expand professional network' : null,
+          TalentNetwork.length < 10 ? 'Expand professional network' : null,
           applications.length === 0 ? 'Start applying for suitable positions' : null,
           !profile?.profile_completed ? 'Complete your professional profile' : null
         ].filter(Boolean),
@@ -445,3 +445,4 @@ const CareerGrowthScore = () => {
 };
 
 export default CareerGrowthScore;
+

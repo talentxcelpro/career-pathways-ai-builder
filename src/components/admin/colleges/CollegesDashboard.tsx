@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { Progress } from "@/components/ui/progress";
 
-export const CollegesDashboard: React.FC = () => {
+export const CollegesCommandCenter: React.FC = () => {
   const { collegeStats, isLoading } = useCollegesManagement();
 
   if (isLoading) {
@@ -186,7 +186,7 @@ export const CollegesDashboard: React.FC = () => {
             </button>
             <button className="p-4 bg-orange-100 hover:bg-orange-200 rounded-lg text-center transition-colors">
               <TrendingUp className="h-6 w-6 mx-auto mb-2 text-orange-600" />
-              <span className="text-sm font-medium">View Analytics</span>
+              <span className="text-sm font-medium">View CareerAnalytics</span>
             </button>
           </div>
         </CardContent>
@@ -210,7 +210,7 @@ export const CollegesDashboard: React.FC = () => {
               <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• Verified badge & premium listing</li>
                 <li>• Student inquiry management</li>
-                <li>• Analytics & insights dashboard</li>
+                <li>• CareerAnalytics & insights CommandCenter</li>
                 <li>• Virtual tours & media hosting</li>
               </ul>
             </div>
@@ -229,7 +229,7 @@ export const CollegesDashboard: React.FC = () => {
                 <li>• Alumni database access</li>
                 <li>• Campus recruitment events</li>
                 <li>• Graduate skill mapping</li>
-                <li>• Placement analytics</li>
+                <li>• Placement CareerAnalytics</li>
               </ul>
             </div>
           </div>
@@ -238,3 +238,6 @@ export const CollegesDashboard: React.FC = () => {
     </div>
   );
 };
+
+
+

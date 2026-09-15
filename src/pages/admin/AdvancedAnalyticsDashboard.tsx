@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { TrendingUp, TrendingDown, Users, Eye, MousePointer, Zap, Activity, Globe, Download, Filter } from 'lucide-react';
 
-const AdvancedAnalyticsDashboard = () => {
+const AdvancedCareerAnalyticsCommandCenter = () => {
   const [timeRange, setTimeRange] = useState('7d');
   const [selectedMetric, setSelectedMetric] = useState('all');
 
@@ -54,7 +54,7 @@ const AdvancedAnalyticsDashboard = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Advanced Analytics</h1>
+          <h1 className="text-3xl font-bold">Advanced CareerAnalytics</h1>
           <p className="text-muted-foreground">Comprehensive platform performance insights</p>
         </div>
         <div className="flex gap-2">
@@ -291,7 +291,7 @@ const AdvancedAnalyticsDashboard = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>Live Activity Feed</CardTitle>
+              <CardTitle>Live Activity Pulse</CardTitle>
               <CardDescription>Real-time user actions</CardDescription>
             </CardHeader>
             <CardContent>
@@ -312,4 +312,7 @@ const AdvancedAnalyticsDashboard = () => {
   );
 };
 
-export default AdvancedAnalyticsDashboard;
+export default AdvancedCareerAnalyticsCommandCenter;
+
+
+

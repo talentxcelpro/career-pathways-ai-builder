@@ -1,8 +1,9 @@
 import React from 'react';
-import { TalentXcelAgentDashboard } from '@/components/admin/TalentXcelAgentDashboard';
+import { TalentXcelAgentCommandCenter } from '@/components/admin/TalentXcelAgentDashboard';
 
 const AgentOperations: React.FC = () => {
-  return <TalentXcelAgentDashboard />;
+  return <TalentXcelAgentCommandCenter />;
 };
 
 export default AgentOperations;
+

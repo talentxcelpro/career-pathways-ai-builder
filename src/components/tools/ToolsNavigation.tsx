@@ -58,10 +58,10 @@ const ToolsNavigation = () => {
       popular: true
     },
     {
-      id: 'ai-assistant',
-      title: 'AI Assistant',
+      id: 'ai-Navigator',
+      title: 'TalentXcel Navigator',
       icon: Brain,
-      path: '/tools/ai-assistant',
+      path: '/tools/ai-Navigator',
       color: 'text-indigo-600',
       popular: false
     },
@@ -110,3 +110,5 @@ const ToolsNavigation = () => {
 };
 
 export default ToolsNavigation;
+
+

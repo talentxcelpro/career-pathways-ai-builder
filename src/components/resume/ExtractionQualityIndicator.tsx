@@ -89,7 +89,7 @@ export const ExtractionQualityIndicator = ({
             <span className="text-muted-foreground">Method:</span>
             <Badge variant="outline">
               {metadata.extractionMethod === 'OCR + AI' ? 'OCR Enhanced' : 
-               metadata.extractionMethod === 'ai-powered' ? 'AI Direct' : 
+               metadata.extractionMethod === 'Performance' ? 'AI Direct' : 
                'Basic Extraction'}
             </Badge>
           </div>

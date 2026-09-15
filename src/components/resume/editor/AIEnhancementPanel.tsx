@@ -24,7 +24,7 @@ export function AIEnhancementPanel({ resumeData, onUpdate }: AIEnhancementPanelP
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       if (section === 'summary') {
-        const enhanced = `${resumeData.personalInfo.summary}\n\nEnhanced with AI-powered keywords and industry-specific terminology to improve ATS compatibility.`;
+        const enhanced = `${resumeData.personalInfo.summary}\n\nEnhanced with Performance keywords and industry-specific terminology to improve ATS compatibility.`;
         onUpdate({
           personalInfo: { ...resumeData.personalInfo, summary: enhanced }
         });
@@ -76,7 +76,7 @@ export function AIEnhancementPanel({ resumeData, onUpdate }: AIEnhancementPanelP
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-primary" />
-            AI-Powered Enhancement
+            Performance Enhancement
           </CardTitle>
           <CardDescription>
             Use AI to optimize your resume content for better ATS scores and readability
@@ -164,3 +164,4 @@ export function AIEnhancementPanel({ resumeData, onUpdate }: AIEnhancementPanelP
     </div>
   );
 }
+

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { SEOPerformanceDashboard } from '@/components/seo/SEOPerformanceDashboard';
+import { SEOPerformanceCommandCenter } from '@/components/seo/SEOPerformanceDashboard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -27,7 +27,7 @@ const AdvancedSEOAdmin = () => {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Advanced SEO Administration</h1>
           <p className="text-gray-600">
-            Phase 4: Performance optimization and advanced SEO features dashboard
+            Phase 4: Performance optimization and advanced SEO features CommandCenter
           </p>
         </div>
 
@@ -85,8 +85,8 @@ const AdvancedSEOAdmin = () => {
           </CardContent>
         </Card>
 
-        {/* Main Performance Dashboard */}
-        <SEOPerformanceDashboard />
+        {/* Main Performance CommandCenter */}
+        <SEOPerformanceCommandCenter />
 
         {/* Phase 4 Features Summary */}
         <Card className="mt-8">
@@ -124,7 +124,7 @@ const AdvancedSEOAdmin = () => {
                 <h3 className="text-lg font-semibold mb-4">Advanced SEO Features</h3>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span>RSS Feed Generation</span>
+                    <span>RSS Pulse Generation</span>
                     <Badge variant="default">✓ Active</Badge>
                   </div>
                   <div className="flex items-center justify-between">
@@ -150,3 +150,5 @@ const AdvancedSEOAdmin = () => {
 };
 
 export default AdvancedSEOAdmin;
+
+

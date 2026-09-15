@@ -18,22 +18,22 @@ import { useQuery } from '@tanstack/react-query';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell } from 'recharts';
 import { supabase } from '@/integrations/supabase/client';
 
-const TXCAnalytics = () => {
-  const { data: analyticsData, isLoading } = useQuery({
-    queryKey: ['txc-analytics'],
+const TXCCareerAnalytics = () => {
+  const { data: CareerAnalyticsData, isLoading } = useQuery({
+    queryKey: ['txc-CareerAnalytics'],
     queryFn: async () => {
-      const { data, error } = await supabase.functions.invoke('txc-analytics');
+      const { data, error } = await supabase.functions.invoke('txc-CareerAnalytics');
       if (error) throw error;
       return data;
     },
     refetchInterval: 30000 // Refresh every 30 seconds
   });
 
-  const tokenEconomics = analyticsData?.tokenEconomics;
-  const usageAnalytics = analyticsData?.usageAnalytics;
-  const earningsChart = analyticsData?.earningsChart;
-  const distributionData = analyticsData?.distributionData;
-  const roi_metrics = analyticsData?.roiMetrics;
+  const tokenEconomics = CareerAnalyticsData?.tokenEconomics;
+  const usageCareerAnalytics = CareerAnalyticsData?.usageCareerAnalytics;
+  const earningsChart = CareerAnalyticsData?.earningsChart;
+  const distributionData = CareerAnalyticsData?.distributionData;
+  const roi_metrics = CareerAnalyticsData?.roiMetrics;
 
   if (isLoading) {
     return (
@@ -48,7 +48,7 @@ const TXCAnalytics = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">TXC Analytics</h1>
+        <h1 className="text-3xl font-bold tracking-tight">TXC CareerAnalytics</h1>
         <p className="text-muted-foreground">
           Comprehensive token economics analysis and usage insights
         </p>
@@ -90,10 +90,10 @@ const TXCAnalytics = () => {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{usageAnalytics?.dailyActiveEarners?.toLocaleString() || '0'}</div>
+            <div className="text-2xl font-bold">{usageCareerAnalytics?.dailyActiveEarners?.toLocaleString() || '0'}</div>
             <div className="flex items-center text-xs text-green-600">
               <ArrowUp className="h-3 w-3 mr-1" />
-              +{usageAnalytics?.weeklyGrowth || 0}% this week
+              +{usageCareerAnalytics?.weeklyGrowth || 0}% this week
             </div>
           </CardContent>
         </Card>
@@ -220,7 +220,7 @@ const TXCAnalytics = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {usageAnalytics?.topActivities?.map((activity, index) => (
+                  {usageCareerAnalytics?.topActivities?.map((activity, index) => (
                     <div key={index} className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium">{activity.activity}</p>
@@ -247,7 +247,7 @@ const TXCAnalytics = () => {
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={400}>
-                <BarChart data={usageAnalytics?.topActivities}>
+                <BarChart data={usageCareerAnalytics?.topActivities}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="activity" />
                   <YAxis />
@@ -296,4 +296,7 @@ const TXCAnalytics = () => {
   );
 };
 
-export default TXCAnalytics;
+export default TXCCareerAnalytics;
+
+
+

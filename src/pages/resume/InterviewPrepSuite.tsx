@@ -91,7 +91,7 @@ const mockAnalysis = {
     content: 82,
     pacing: 70
   },
-  feedback: [
+  Feedback: [
     'Good use of specific examples',
     'Consider slowing down your pace slightly',
     'Excellent eye contact and body language',
@@ -163,7 +163,7 @@ const InterviewPrepSuite = () => {
         <title>AI Interview Practice | Mock Interviews & Prep | TalentXcel</title>
         <meta 
           name="description" 
-          content="Practice interviews with AI feedback. Role-specific questions, mock interviews, salary negotiation, and performance analysis." 
+          content="Practice interviews with AI Feedback. Role-specific questions, mock interviews, salary negotiation, and performance analysis." 
         />
         <link rel="canonical" href="https://talentxcel.in/interview-prep" />
       </Helmet>
@@ -176,7 +176,7 @@ const InterviewPrepSuite = () => {
               AI Interview Prep Suite
             </h1>
             <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-              Practice interviews with AI feedback, master common questions, and negotiate salary with confidence.
+              Practice interviews with AI Feedback, master common questions, and negotiate salary with confidence.
             </p>
             
             <div className="flex justify-center gap-8 text-sm text-muted-foreground">
@@ -352,7 +352,7 @@ const InterviewPrepSuite = () => {
                         <div>
                           <h4 className="font-medium mb-2">Feedback</h4>
                           <div className="space-y-1">
-                            {mockAnalysis.feedback.map((item, index) => (
+                            {mockAnalysis.Feedback.map((item, index) => (
                               <p key={index} className="text-xs text-muted-foreground">
                                 • {item}
                               </p>
@@ -420,7 +420,7 @@ const InterviewPrepSuite = () => {
                     <Alert>
                       <Target className="h-4 w-4" />
                       <AlertDescription>
-                        Practice common salary negotiation scenarios with AI feedback
+                        Practice common salary negotiation scenarios with AI Feedback
                       </AlertDescription>
                     </Alert>
                     
@@ -475,3 +475,4 @@ const InterviewPrepSuite = () => {
 };
 
 export default InterviewPrepSuite;
+

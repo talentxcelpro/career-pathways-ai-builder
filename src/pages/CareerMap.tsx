@@ -125,9 +125,9 @@ const CareerMap = () => {
                 </Link>
               </div>
             </div>
-            <h1 className="text-3xl font-bold mb-3 font-display">TalentXcel AI-Powered Career Roadmaps Designed for You</h1>
+            <h1 className="text-3xl font-bold mb-3 font-display">TalentXcel Performance Career Roadmaps Designed for You</h1>
             <p className="text-base text-purple-100 mb-6">
-              Get personalized career roadmaps with TalentXcel AI-powered insights and smart recommendations
+              Get personalized career roadmaps with TalentXcel Performance insights and smart recommendations
             </p>
             
             <div className="flex gap-3 justify-center">
@@ -149,7 +149,7 @@ const CareerMap = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* AI-Powered Career Tools - Ultra-Compact Design */}
+        {/* Performance Career Tools - Ultra-Compact Design */}
         <div className="mb-8">
           <div className="text-center mb-4">
             <h2 className="text-lg font-bold text-text-primary mb-1 font-display">TalentXcel AI Career Tools</h2>
@@ -262,8 +262,8 @@ const CareerMap = () => {
                       <Users className="h-4 w-4 text-white" />
                     </div>
                     <h3 className="font-bold text-xs text-text-primary mb-1">Network</h3>
-                    <p className="text-lg font-bold text-text-primary">{currentMetrics.connections}</p>
-                    <p className="text-xs text-text-secondary">Connections</p>
+                    <p className="text-lg font-bold text-text-primary">{currentMetrics.TalentNetwork}</p>
+                    <p className="text-xs text-text-secondary">TalentNetwork</p>
                   </CardContent>
                 </Card>
               </Link>
@@ -316,10 +316,10 @@ const CareerMap = () => {
                             window.location.href = '/wallet/txc';
                             break;
                           case 'streaks':
-                            window.location.href = '/dashboard/streaks';
+                            window.location.href = '/CommandCenter/streaks';
                             break;
                           default:
-                            window.location.href = '/dashboard';
+                            window.location.href = '/CommandCenter';
                         }
                       };
                       
@@ -459,3 +459,5 @@ const CareerMap = () => {
 };
 
 export default CareerMap;
+
+

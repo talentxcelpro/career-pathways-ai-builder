@@ -24,7 +24,7 @@ export const TXC_PROFILE_UPGRADES: TXCPricingTier[] = [
     features: [
       'Premium badge',
       'Enhanced visibility',
-      'Advanced analytics',
+      'Advanced CareerAnalytics',
       'Priority in search results',
       'Custom profile themes'
     ],
@@ -38,7 +38,7 @@ export const TXC_PROFILE_UPGRADES: TXCPricingTier[] = [
     features: [
       'Elite badge',
       'Top search positioning',
-      'Detailed analytics dashboard',
+      'Detailed CareerAnalytics CommandCenter',
       'Personal branding tools',
       'Direct recruiter messaging',
       'Portfolio showcase'
@@ -80,7 +80,7 @@ export const TXC_JOB_POSTING: TXCPricingTier[] = [
       'Featured placement',
       'Enhanced visibility',
       'Priority in search',
-      'Advanced analytics'
+      'Advanced CareerAnalytics'
     ],
     popular: true
   },
@@ -93,8 +93,8 @@ export const TXC_JOB_POSTING: TXCPricingTier[] = [
       '60-day listing',
       'Top placement',
       'Maximum visibility',
-      'AI-powered candidate matching',
-      'Detailed analytics',
+      'Performance candidate matching',
+      'Detailed CareerAnalytics',
       'Direct messaging to candidates'
     ]
   }
@@ -105,7 +105,7 @@ export const TXC_TOOLS_PRICING: TXCFeaturePricing[] = [
   {
     feature: 'ai_resume_builder',
     cost: 2000,
-    description: 'AI-powered resume generation',
+    description: 'Performance resume generation',
     category: 'tools'
   },
   {
@@ -135,9 +135,9 @@ export const TXC_TOOLS_PRICING: TXCFeaturePricing[] = [
   
   // Premium Features
   {
-    feature: 'premium_analytics',
+    feature: 'premium_CareerAnalytics',
     cost: 5000,
-    description: 'Advanced profile and job analytics',
+    description: 'Advanced profile and job CareerAnalytics',
     category: 'premium'
   },
   {
@@ -188,7 +188,7 @@ export const TXC_SUBSCRIPTION_TIERS: TXCPricingTier[] = [
     duration: 'monthly',
     features: [
       'AI Resume Builder',
-      'Basic Analytics',
+      'Basic CareerAnalytics',
       'Standard Support',
       'Profile Enhancement',
       'Community Access'
@@ -202,7 +202,7 @@ export const TXC_SUBSCRIPTION_TIERS: TXCPricingTier[] = [
     features: [
       'Everything in Pro Starter',
       'AI Cover Letter Generator',
-      'Advanced Analytics',
+      'Advanced CareerAnalytics',
       'Priority Support',
       'Direct Recruiter Messaging',
       'Premium Profile Features',
@@ -260,3 +260,6 @@ export const getAllPricingOptions = () => {
     subscriptions: TXC_SUBSCRIPTION_TIERS
   };
 };
+
+
+

@@ -251,11 +251,11 @@ export const ToolUnlockModal: React.FC<ToolUnlockModalProps> = ({
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3 h-3 text-green-500" />
-                  Advanced AI-powered features
+                  Advanced Performance features
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3 h-3 text-green-500" />
-                  Progress tracking & analytics
+                  Growth Path & CareerAnalytics
                 </li>
               </ul>
             </CardContent>
@@ -265,3 +265,6 @@ export const ToolUnlockModal: React.FC<ToolUnlockModalProps> = ({
     </Dialog>
   );
 };
+
+
+

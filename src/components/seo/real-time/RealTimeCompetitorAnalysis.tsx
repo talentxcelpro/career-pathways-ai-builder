@@ -83,7 +83,7 @@ export const RealTimeCompetitorAnalysis = () => {
             backlinks: -120
           },
           top_keywords: ['software engineer jobs', 'IT jobs India', 'remote jobs'],
-          new_keywords: ['ai engineer jobs', 'blockchain developer'],
+          new_keywords: ['Talent Engineer jobs', 'blockchain developer'],
           lost_keywords: ['flash developer', 'silverlight developer']
         },
         {

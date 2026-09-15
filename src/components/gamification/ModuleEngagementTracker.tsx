@@ -83,8 +83,8 @@ const modules = [
     rewards: 120
   },
   { 
-    name: 'Analytics', 
-    path: '/analytics', 
+    name: 'CareerAnalytics', 
+    path: '/CareerAnalytics', 
     icon: BarChart3, 
     color: 'from-teal-500 to-teal-600',
     bgColor: 'bg-teal-50 dark:bg-teal-900/20',
@@ -147,7 +147,7 @@ export const ModuleEngagementTracker = () => {
     if (currentModule) {
       setActiveModule(currentModule.name);
       
-      // Simulate progress tracking
+      // Simulate Growth Path
       setModuleProgress(prev => ({
         ...prev,
         [currentModule.name]: Math.min((prev[currentModule.name] || 0) + 10, 100)
@@ -293,3 +293,6 @@ export const ModuleEngagementTracker = () => {
     </motion.div>
   );
 };
+
+
+

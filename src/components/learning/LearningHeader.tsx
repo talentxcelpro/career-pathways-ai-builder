@@ -168,9 +168,9 @@ export const LearningHeader: React.FC = () => {
                 </div>
               </div>
               <div className="mt-4 md:mt-0">
-                <Link to="/learning/analytics">
+                <Link to="/learning/CareerAnalytics">
                   <Button size="sm" className="bg-cyan-500 hover:bg-cyan-600 text-white">
-                    View Analytics
+                    View CareerAnalytics
                     <TrendingUp className="h-4 w-4 ml-2" />
                   </Button>
                 </Link>
@@ -185,3 +185,6 @@ export const LearningHeader: React.FC = () => {
     </>
   );
 };
+
+
+

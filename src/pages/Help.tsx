@@ -106,7 +106,7 @@ const Help = () => {
               <p>Yes. After upload, you can:</p>
               <ul className="list-disc list-inside space-y-1 ml-4">
                 <li>Edit content section-wise (Experience, Skills, etc.)</li>
-                <li>Use AI suggestions to enhance it</li>
+                <li>Use Smart Moves to enhance it</li>
                 <li>Apply ATS optimizations</li>
               </ul>
             </div>
@@ -220,7 +220,7 @@ const Help = () => {
       icon: <GraduationCap className="h-8 w-8 text-red-600" />,
       title: "Learning Hub",
       color: "red",
-      subtitle: "Upskilling and progress tracking",
+      subtitle: "Upskilling and Growth Path",
       faqs: [
         {
           question: "How do I enroll in a course?",

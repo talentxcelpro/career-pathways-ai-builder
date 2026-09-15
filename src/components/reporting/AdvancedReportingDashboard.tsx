@@ -38,7 +38,7 @@ interface Report {
   subscribers: number;
 }
 
-interface DashboardWidget {
+interface CommandCenterWidget {
   id: string;
   title: string;
   type: 'metric' | 'chart' | 'table' | 'progress';
@@ -47,9 +47,9 @@ interface DashboardWidget {
   position: { x: number; y: number };
 }
 
-const AdvancedReportingDashboard: React.FC = () => {
+const AdvancedReportingCommandCenter: React.FC = () => {
   const [reports, setReports] = useState<Report[]>([]);
-  const [widgets, setWidgets] = useState<DashboardWidget[]>([]);
+  const [widgets, setWidgets] = useState<CommandCenterWidget[]>([]);
   const [selectedPeriod, setSelectedPeriod] = useState<'7d' | '30d' | '90d' | '1y'>('30d');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -83,7 +83,7 @@ const AdvancedReportingDashboard: React.FC = () => {
         description: 'Track your professional network expansion',
         category: 'network',
         metrics: [
-          { name: 'New Connections', value: 28, change: 15, trend: 'up', format: 'number' },
+          { name: 'New TalentNetwork', value: 28, change: 15, trend: 'up', format: 'number' },
           { name: 'Engagement Rate', value: 34, change: 7, trend: 'up', format: 'percentage' },
           { name: 'Quality Score', value: 85, change: 3, trend: 'up', format: 'number' },
           { name: 'Network Value', value: 12500, change: 2100, trend: 'up', format: 'currency' }
@@ -95,7 +95,7 @@ const AdvancedReportingDashboard: React.FC = () => {
       },
       {
         id: '3',
-        name: 'Performance Analytics',
+        name: 'Performance CareerAnalytics',
         description: 'Detailed performance metrics and trends',
         category: 'performance',
         metrics: [
@@ -114,7 +114,7 @@ const AdvancedReportingDashboard: React.FC = () => {
   };
 
   const loadWidgets = () => {
-    const mockWidgets: DashboardWidget[] = [
+    const mockWidgets: CommandCenterWidget[] = [
       {
         id: '1',
         title: 'Application Success Rate',
@@ -215,7 +215,7 @@ const AdvancedReportingDashboard: React.FC = () => {
     }
   };
 
-  const renderWidget = (widget: DashboardWidget) => {
+  const renderWidget = (widget: CommandCenterWidget) => {
     switch (widget.type) {
       case 'metric':
         return (
@@ -289,9 +289,9 @@ const AdvancedReportingDashboard: React.FC = () => {
           <div>
             <h2 className="text-2xl font-bold flex items-center gap-2">
               <BarChart3 className="h-6 w-6 text-primary" />
-              Advanced Reporting Dashboard
+              Advanced Reporting CommandCenter
             </h2>
-            <p className="text-muted-foreground">Comprehensive analytics and insights for your career journey</p>
+            <p className="text-muted-foreground">Comprehensive CareerAnalytics and insights for your career journey</p>
           </div>
           <div className="flex gap-2">
             <Select value={selectedPeriod} onValueChange={(value: any) => setSelectedPeriod(value)}>
@@ -314,14 +314,14 @@ const AdvancedReportingDashboard: React.FC = () => {
 
         <UsageMeter type="dailyAIRequests" currentUsage={8} label="Report Generations" />
 
-        <Tabs defaultValue="dashboard" className="w-full">
+        <Tabs defaultValue="CommandCenter" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+            <TabsTrigger value="CommandCenter">CommandCenter</TabsTrigger>
             <TabsTrigger value="reports">Reports</TabsTrigger>
-            <TabsTrigger value="analytics">Deep Analytics</TabsTrigger>
+            <TabsTrigger value="CareerAnalytics">Deep CareerAnalytics</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="dashboard" className="space-y-6">
+          <TabsContent value="CommandCenter" className="space-y-6">
             {/* Key Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <Card>
@@ -363,7 +363,7 @@ const AdvancedReportingDashboard: React.FC = () => {
                     <div>
                       <p className="text-sm text-muted-foreground">Network Size</p>
                       <p className="font-bold text-xl">156</p>
-                      <p className="text-xs text-green-600">+28 connections</p>
+                      <p className="text-xs text-green-600">+28 TalentNetwork</p>
                     </div>
                   </div>
                 </CardContent>
@@ -385,7 +385,7 @@ const AdvancedReportingDashboard: React.FC = () => {
               </Card>
             </div>
 
-            {/* Dashboard Widgets */}
+            {/* CommandCenter Widgets */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {widgets.map((widget) => (
                 <Card key={widget.id} className={`${
@@ -474,12 +474,12 @@ const AdvancedReportingDashboard: React.FC = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="analytics" className="space-y-6">
+          <TabsContent value="CareerAnalytics" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Deep Analytics Engine</CardTitle>
+                <CardTitle>Deep CareerAnalytics Engine</CardTitle>
                 <p className="text-muted-foreground">
-                  Advanced AI-powered insights and predictive analytics for your career data
+                  Advanced Performance insights and predictive CareerAnalytics for your career data
                 </p>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -539,4 +539,8 @@ const AdvancedReportingDashboard: React.FC = () => {
   );
 };
 
-export default AdvancedReportingDashboard;
+export default AdvancedReportingCommandCenter;
+
+
+
+

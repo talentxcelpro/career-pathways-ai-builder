@@ -1,14 +1,17 @@
+import { lazy } from "react";
 
-import Login from "../pages/auth/Login";
-import Register from "../pages/auth/Register";
-import ForgotPassword from "../pages/auth/ForgotPassword";
-import ResetPassword from "../pages/auth/ResetPassword";
-import OAuthCallback from "../pages/auth/OAuthCallback";
-import Terms from "../pages/auth/Terms";
-import PrivacyPolicy from "../pages/auth/PrivacyPolicy";
-import { AuthPage } from "../pages/auth/AuthPage";
+const Login = lazy(() => import("../pages/auth/Login"));
+const Register = lazy(() => import("../pages/auth/Register"));
+const ForgotPassword = lazy(() => import("../pages/auth/ForgotPassword"));
+const ResetPassword = lazy(() => import("../pages/auth/ResetPassword"));
+const OAuthCallback = lazy(() => import("../pages/auth/OAuthCallback"));
+const Terms = lazy(() => import("../pages/auth/Terms"));
+const PrivacyPolicy = lazy(() => import("../pages/auth/PrivacyPolicy"));
+const AuthPage = lazy(() => import("../pages/auth/AuthPage").then(m => ({ default: m.AuthPage })));
+const OnboardingFlow = lazy(() => import("../pages/auth/OnboardingFlow").then(m => ({ default: m.OnboardingFlow })));
+
 import { AuthErrorBoundaryWrapper } from "../components/auth/AuthErrorBoundaryWrapper";
-import { OnboardingFlow } from "../pages/auth/OnboardingFlow";
+
 
 export const authRoutes = [
   {

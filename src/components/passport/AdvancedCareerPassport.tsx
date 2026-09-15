@@ -77,7 +77,7 @@ export const AdvancedCareerPassport: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [editMode, setEditMode] = useState(false);
 
-  // Mock enhanced career passport data
+  // Mock enhanced Evolution Hub data
   const careerMetrics: CareerMetrics = {
     careerScore: 847,
     profileCompletion: 89,
@@ -104,7 +104,7 @@ export const AdvancedCareerPassport: React.FC = () => {
     {
       id: '2',
       type: 'project',
-      title: 'AI-Powered Resume Builder',
+      title: 'Performance Resume Builder',
       description: 'Built and deployed a full-stack application with 10k+ users',
       date: new Date('2023-12-01'),
       points: 200,
@@ -272,7 +272,7 @@ export const AdvancedCareerPassport: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-1">
                     <Users className="h-4 w-4" />
-                    1.2k connections
+                    1.2k TalentNetwork
                   </div>
                   <div className="flex items-center gap-1">
                     <Eye className="h-4 w-4" />
@@ -349,7 +349,7 @@ export const AdvancedCareerPassport: React.FC = () => {
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="achievements">Achievements</TabsTrigger>
             <TabsTrigger value="skills">Skills</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
             <TabsTrigger value="goals">Goals</TabsTrigger>
           </TabsList>
 
@@ -462,7 +462,7 @@ export const AdvancedCareerPassport: React.FC = () => {
                     <div className="flex-1">
                       <h4 className="font-medium">Project Launch</h4>
                       <p className="text-sm text-muted-foreground">
-                        Successfully launched AI-powered resume builder with 10k+ users
+                        Successfully launched Performance resume builder with 10k+ users
                       </p>
                       <span className="text-xs text-muted-foreground">December 1, 2023</span>
                     </div>
@@ -630,7 +630,7 @@ export const AdvancedCareerPassport: React.FC = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="analytics" className="space-y-6">
+          <TabsContent value="CareerAnalytics" className="space-y-6">
             <div className="grid md:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
@@ -684,7 +684,7 @@ export const AdvancedCareerPassport: React.FC = () => {
                       <Badge>2</Badge>
                     </div>
                     <div className="flex items-center justify-between p-2 border rounded">
-                      <span className="text-sm">New Connections</span>
+                      <span className="text-sm">New TalentNetwork</span>
                       <Badge>12</Badge>
                     </div>
                     <div className="flex items-center justify-between p-2 border rounded">
@@ -761,3 +761,7 @@ export const AdvancedCareerPassport: React.FC = () => {
     </TieredAccessGuard>
   );
 };
+
+
+
+

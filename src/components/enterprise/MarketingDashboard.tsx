@@ -63,7 +63,7 @@ const mockCampaigns: CampaignMetrics[] = [
   }
 ];
 
-export const MarketingDashboard: React.FC = () => {
+export const MarketingCommandCenter: React.FC = () => {
   const [campaigns] = useState<CampaignMetrics[]>(mockCampaigns);
 
   const totalMetrics = campaigns.reduce((acc, campaign) => ({
@@ -86,7 +86,7 @@ export const MarketingDashboard: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Marketing Dashboard</h2>
+          <h2 className="text-2xl font-bold">Marketing CommandCenter</h2>
           <p className="text-muted-foreground">Track campaign performance and engagement metrics</p>
         </div>
         <div className="flex gap-2">
@@ -272,3 +272,4 @@ export const MarketingDashboard: React.FC = () => {
     </div>
   );
 };
+

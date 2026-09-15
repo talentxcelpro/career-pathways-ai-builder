@@ -182,13 +182,13 @@ const RealTimeCareerIntelligence: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Real-Time Dashboard Header */}
+      {/* Real-Time CommandCenter Header */}
       <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="h-6 w-6 text-primary" />
-              Real-Time Career Intelligence
+              Real-Time CareerIntelligence
             </CardTitle>
             <div className="flex items-center gap-2">
               <Badge variant="secondary" className="bg-green-50 text-green-700">
@@ -459,3 +459,4 @@ const RealTimeCareerIntelligence: React.FC = () => {
 };
 
 export default RealTimeCareerIntelligence;
+

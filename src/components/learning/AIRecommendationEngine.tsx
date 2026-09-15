@@ -64,7 +64,7 @@ export const AIRecommendationEngine: React.FC = () => {
         </div>
       </div>
 
-      {/* AI Insights Summary */}
+      {/* Intelligence Metrics Summary */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="relative overflow-hidden border-l-4 border-l-primary">
           <CardHeader>
@@ -275,7 +275,7 @@ export const AIRecommendationEngine: React.FC = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Target className="h-5 w-5 text-accent" />
-                AI-Powered Career Paths
+                Performance Career Paths
               </CardTitle>
               <CardDescription>
                 Personalized career progression recommendations

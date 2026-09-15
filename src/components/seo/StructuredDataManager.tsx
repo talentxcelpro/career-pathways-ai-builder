@@ -99,7 +99,7 @@ export const StructuredDataManager: React.FC<StructuredDataManagerProps> = ({
         structuredDataArray.push({
           data: generateOrganizationStructuredData({
             name: 'TalentXcel',
-            description: 'AI-powered career platform helping professionals advance their careers through intelligent job matching, resume optimization, and skill development.',
+            description: 'Performance career platform helping professionals advance their careers through intelligent job matching, resume optimization, and skill development.',
             website: 'https://talentxcel.in',
             logo_url: 'https://talentxcel.in/logo.png',
             location: 'India',

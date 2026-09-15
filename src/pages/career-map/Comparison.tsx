@@ -45,7 +45,7 @@ const Comparison = () => {
       demandLevel: 'High',
       skills: ['Node.js', 'Python', 'Databases', 'API Design', 'Cloud Services'],
       pros: ['High salaries', 'System thinking', 'Infrastructure focus', 'Scalability challenges'],
-      cons: ['Less visual feedback', 'Complex debugging', 'Performance pressure'],
+      cons: ['Less visual Feedback', 'Complex debugging', 'Performance pressure'],
       companies: ['Big Tech', 'Fintech', 'Enterprise companies'],
       growth: 'Path to architecture roles'
     }
@@ -323,3 +323,5 @@ const Comparison = () => {
 };
 
 export default Comparison;
+
+

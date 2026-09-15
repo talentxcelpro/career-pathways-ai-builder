@@ -8,16 +8,16 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
-import { EnhancedCareerDashboard } from "@/components/profile/analytics/EnhancedCareerDashboard";
+import { EnhancedCareerCommandCenter } from "@/components/profile/analytics/EnhancedCareerDashboard";
 
-const ProfileAnalytics = () => {
+const ProfileCareerAnalytics = () => {
   const { user } = useAuth();
   const [timePeriod, setTimePeriod] = useState("30");
   const [viewMode, setViewMode] = useState<'enhanced' | 'legacy'>('enhanced');
 
-  // Fetch real-time analytics data
-  const { data: analyticsData, isLoading } = useQuery({
-    queryKey: ['profile-analytics', user?.id, timePeriod],
+  // Fetch real-time CareerAnalytics data
+  const { data: CareerAnalyticsData, isLoading } = useQuery({
+    queryKey: ['profile-CareerAnalytics', user?.id, timePeriod],
     queryFn: async () => {
       if (!user?.id) return null;
 
@@ -32,8 +32,8 @@ const ProfileAnalytics = () => {
         .eq('profile_id', user.id)
         .gte('viewed_at', startDate.toISOString());
 
-      // Fetch connections
-      const { data: connections } = await supabase
+      // Fetch TalentNetwork
+      const { data: TalentNetwork } = await supabase
         .from('connections')
         .select('*')
         .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
@@ -64,14 +64,14 @@ const ProfileAnalytics = () => {
       return {
         totalViews: profile?.profile_views_count || 0,
         weeklyViews,
-        connectionRequests: connections?.filter(conn => 
+        connectionRequests: TalentNetwork?.filter(conn => 
           conn.recipient_id === user.id && conn.status === 'pending'
         ).length || 0,
         messagesSent: messages?.length || 0,
         resumeDownloads: 0, // This would need a separate table to track
-        searchAppearances: 0, // This would need search analytics
+        searchAppearances: 0, // This would need search CareerAnalytics
         recentViews: profileViews || [],
-        recentConnections: connections || []
+        recentTalentNetwork: TalentNetwork || []
       };
     },
     enabled: !!user?.id,
@@ -113,11 +113,11 @@ const ProfileAnalytics = () => {
 
   return (
     <ProfileLayout 
-      title="Profile Analytics" 
+      title="Profile CareerAnalytics" 
       description="Track your profile performance and engagement metrics"
     >
       <div className="space-y-6">
-        {/* Enhanced Dashboard Toggle */}
+        {/* Enhanced CommandCenter Toggle */}
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-4">
             <Select value={timePeriod} onValueChange={setTimePeriod}>
@@ -137,7 +137,7 @@ const ProfileAnalytics = () => {
               className="flex items-center gap-2"
             >
               <Sparkles className="h-4 w-4" />
-              Enhanced Dashboard
+              Enhanced CommandCenter
             </Button>
             <Button 
               variant={viewMode === 'legacy' ? 'default' : 'outline'}
@@ -152,9 +152,9 @@ const ProfileAnalytics = () => {
           </Button>
         </div>
 
-        {/* Conditional Dashboard Rendering */}
+        {/* Conditional CommandCenter Rendering */}
         {viewMode === 'enhanced' ? (
-          <EnhancedCareerDashboard />
+          <EnhancedCareerCommandCenter />
         ) : (
           <div className="space-y-6">
 
@@ -164,11 +164,11 @@ const ProfileAnalytics = () => {
             <CardContent className="p-6 text-center">
               <Eye className="h-8 w-8 text-blue-600 mx-auto mb-2" />
               <div className="text-2xl font-bold text-gray-900">
-                {isLoading ? "..." : analyticsData?.totalViews || 0}
+                {isLoading ? "..." : CareerAnalyticsData?.totalViews || 0}
               </div>
               <div className="text-sm text-gray-600">Total Views</div>
               <div className="text-xs text-gray-500 mt-1">
-                {analyticsData?.totalViews > 0 ? "All time" : "No data yet"}
+                {CareerAnalyticsData?.totalViews > 0 ? "All time" : "No data yet"}
               </div>
             </CardContent>
           </Card>
@@ -177,11 +177,11 @@ const ProfileAnalytics = () => {
             <CardContent className="p-6 text-center">
               <TrendingUp className="h-8 w-8 text-green-600 mx-auto mb-2" />
               <div className="text-2xl font-bold text-gray-900">
-                {isLoading ? "..." : analyticsData?.weeklyViews || 0}
+                {isLoading ? "..." : CareerAnalyticsData?.weeklyViews || 0}
               </div>
               <div className="text-sm text-gray-600">Weekly Views</div>
               <div className="text-xs text-gray-500 mt-1">
-                {analyticsData?.weeklyViews > 0 ? "Last 7 days" : "No data yet"}
+                {CareerAnalyticsData?.weeklyViews > 0 ? "Last 7 days" : "No data yet"}
               </div>
             </CardContent>
           </Card>
@@ -190,11 +190,11 @@ const ProfileAnalytics = () => {
             <CardContent className="p-6 text-center">
               <Users className="h-8 w-8 text-purple-600 mx-auto mb-2" />
               <div className="text-2xl font-bold text-gray-900">
-                {isLoading ? "..." : analyticsData?.connectionRequests || 0}
+                {isLoading ? "..." : CareerAnalyticsData?.connectionRequests || 0}
               </div>
               <div className="text-sm text-gray-600">Connection Requests</div>
               <div className="text-xs text-gray-500 mt-1">
-                {analyticsData?.connectionRequests > 0 ? "Pending" : "No data yet"}
+                {CareerAnalyticsData?.connectionRequests > 0 ? "Pending" : "No data yet"}
               </div>
             </CardContent>
           </Card>
@@ -203,11 +203,11 @@ const ProfileAnalytics = () => {
             <CardContent className="p-6 text-center">
               <MessageSquare className="h-8 w-8 text-orange-600 mx-auto mb-2" />
               <div className="text-2xl font-bold text-gray-900">
-                {isLoading ? "..." : analyticsData?.messagesSent || 0}
+                {isLoading ? "..." : CareerAnalyticsData?.messagesSent || 0}
               </div>
               <div className="text-sm text-gray-600">Messages Received</div>
               <div className="text-xs text-gray-500 mt-1">
-                {analyticsData?.messagesSent > 0 ? `Last ${timePeriod} days` : "No data yet"}
+                {CareerAnalyticsData?.messagesSent > 0 ? `Last ${timePeriod} days` : "No data yet"}
               </div>
             </CardContent>
           </Card>
@@ -216,7 +216,7 @@ const ProfileAnalytics = () => {
             <CardContent className="p-6 text-center">
               <Download className="h-8 w-8 text-red-600 mx-auto mb-2" />
               <div className="text-2xl font-bold text-gray-900">
-                {isLoading ? "..." : analyticsData?.resumeDownloads || 0}
+                {isLoading ? "..." : CareerAnalyticsData?.resumeDownloads || 0}
               </div>
               <div className="text-sm text-gray-600">Resume Downloads</div>
               <div className="text-xs text-gray-500 mt-1">Coming soon</div>
@@ -227,7 +227,7 @@ const ProfileAnalytics = () => {
             <CardContent className="p-6 text-center">
               <BarChart3 className="h-8 w-8 text-indigo-600 mx-auto mb-2" />
               <div className="text-2xl font-bold text-gray-900">
-                {isLoading ? "..." : analyticsData?.searchAppearances || 0}
+                {isLoading ? "..." : CareerAnalyticsData?.searchAppearances || 0}
               </div>
               <div className="text-sm text-gray-600">Search Appearances</div>
               <div className="text-xs text-gray-500 mt-1">Coming soon</div>
@@ -276,8 +276,8 @@ const ProfileAnalytics = () => {
                 <div className="flex items-center justify-center h-full">
                   <div className="text-center">
                     <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No Analytics Data Yet</h3>
-                    <p className="text-gray-600">Your profile analytics will appear here once you start getting views</p>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No CareerAnalytics Data Yet</h3>
+                    <p className="text-gray-600">Your profile CareerAnalytics will appear here once you start getting views</p>
                   </div>
                 </div>
               )}
@@ -389,4 +389,9 @@ const ProfileAnalytics = () => {
   );
 };
 
-export default ProfileAnalytics;
+export default ProfileCareerAnalytics;
+
+
+
+
+

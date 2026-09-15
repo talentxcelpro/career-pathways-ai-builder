@@ -98,7 +98,7 @@ export const PushNotificationToggle: React.FC = () => {
         </div>
 
         <p className="text-xs text-muted-foreground">
-          Get notified about new job matches, connection requests, and important updates.
+          Get notified about Precision Match roles, Talent Network requests, and important updates.
         </p>
       </CardContent>
     </Card>

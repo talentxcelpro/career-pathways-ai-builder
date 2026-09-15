@@ -85,9 +85,9 @@ const RecommendationCard: React.FC<RecommendationProps> = ({
             </div>
             
             <p className="text-sm">
-              Just launched our new AI-powered analytics dashboard! 
+              Just launched our new Performance CareerAnalytics CommandCenter! 
               The insights we're getting are incredible. 
-              #AI #Analytics #ProductLaunch
+              #AI #CareerAnalytics #ProductLaunch
             </p>
 
             <div className="flex items-center justify-between pt-2">
@@ -140,7 +140,7 @@ const RecommendationCard: React.FC<RecommendationProps> = ({
                   Senior Data Scientist at TechCorp
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  500+ connections • 2nd degree
+                  500+ TalentNetwork • 2nd degree
                 </p>
               </div>
             </div>
@@ -220,7 +220,7 @@ export const ContentRecommendationEngine: React.FC = () => {
   });
 
   const handleInteraction = async (type: string, contentId: string) => {
-    // Track user interaction for ML feedback
+    // Track user interaction for ML Pulseback
     try {
       await supabase
         .from('user_content_signals')
@@ -240,7 +240,7 @@ export const ContentRecommendationEngine: React.FC = () => {
       <div>
         <h2 className="text-2xl font-bold mb-2">Recommended for You</h2>
         <p className="text-muted-foreground">
-          AI-powered content recommendations based on your interests and network
+          Performance content recommendations based on your interests and network
         </p>
       </div>
 
@@ -319,3 +319,7 @@ export const ContentRecommendationEngine: React.FC = () => {
     </div>
   );
 };
+
+
+
+

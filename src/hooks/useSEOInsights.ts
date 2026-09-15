@@ -32,7 +32,7 @@ export const useSEOInsights = () => {
         .from('companies')
         .select('*');
 
-      // Generate AI-powered insights based on data
+      // Generate Performance insights based on data
       const generatedInsights: SEOInsight[] = [
         {
           id: '1',
@@ -43,7 +43,7 @@ export const useSEOInsights = () => {
           effort: 'medium',
           category: 'Keywords',
           data: {
-            keywords: ['remote software engineer', 'ai engineer jobs', 'blockchain developer'],
+            keywords: ['remote software engineer', 'Talent Engineer jobs', 'blockchain developer'],
             estimatedTraffic: 25000,
             difficulty: 35
           },
@@ -144,3 +144,4 @@ export const useSEOInsights = () => {
     getInsightsByImpact
   };
 };
+

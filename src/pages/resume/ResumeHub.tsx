@@ -39,7 +39,7 @@ const ResumeHub = () => {
       description: 'Upload your existing resume and let AI extract and improve the content',
       icon: Upload,
       path: '/resume/upload',
-      badge: 'AI Powered'
+      badge: 'Performance'
     },
     {
       id: 'builder',
@@ -69,10 +69,10 @@ const ResumeHub = () => {
     {
       id: 'interview',
       title: 'Interview Prep Suite',
-      description: 'Practice interviews with AI and get personalized feedback',
+      description: 'Practice interviews with AI and get personalized Feedback',
       icon: MessageCircle,
       path: '/resume/interview-prep',
-      badge: 'AI Coach',
+      badge: 'TalentXcel Navigator',
       isNew: true
     },
     {
@@ -85,18 +85,18 @@ const ResumeHub = () => {
     },
     {
       id: 'intelligence',
-      title: 'Career Intelligence',
+      title: 'CareerIntelligence',
       description: 'Get market insights, salary data, and career recommendations',
       icon: TrendingUp,
       path: '/resume/career-intelligence',
       badge: 'Live Data'
     },
     {
-      id: 'dashboard',
-      title: 'Dashboard',
+      id: 'CommandCenter',
+      title: 'CommandCenter',
       description: 'Manage all your resumes, cover letters, and applications in one place',
       icon: BarChart3,
-      path: '/resume/dashboard',
+      path: '/resume/CommandCenter',
       badge: 'Centralized'
     },
     {
@@ -116,11 +116,11 @@ const ResumeHub = () => {
       badge: 'Skill Growth'
     },
     {
-      id: 'analytics',
-      title: 'Success Analytics',
+      id: 'CareerAnalytics',
+      title: 'Success CareerAnalytics',
       description: 'Track your application success rate and get improvement insights',
       icon: Eye,
-      path: '/resume/analytics',
+      path: '/resume/CareerAnalytics',
       badge: 'Data Driven'
     }
   ];
@@ -163,7 +163,7 @@ const ResumeHub = () => {
         <title>AI Resume Builder | Create Professional Resumes | TalentXcel</title>
         <meta 
           name="description" 
-          content="Build professional resumes with AI. ATS-optimized templates, interview prep, portfolio builder, and career intelligence. Join 2M+ successful job seekers." 
+          content="Build professional resumes with AI. ATS-optimized templates, interview prep, portfolio builder, and CareerIntelligence. Join 2M+ successful job seekers." 
         />
         <meta name="keywords" content="resume builder, AI resume, ATS optimization, cover letter, interview prep, portfolio builder, career tools" />
         <link rel="canonical" href="https://talentxcel.in/resume" />
@@ -181,7 +181,7 @@ const ResumeHub = () => {
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 backdrop-blur-sm text-cyan-300 px-6 py-3 rounded-full text-sm font-medium mb-8 border border-cyan-500/30">
               <Zap className="h-4 w-4 text-cyan-400" />
               <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent font-semibold">TalentXcel</span>
-              AI-Powered Career Platform
+              Performance Career Platform
             </div>
             
             <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white drop-shadow-2xl">
@@ -192,7 +192,7 @@ const ResumeHub = () => {
             </h1>
             
             <p className="text-xl md:text-2xl text-gray-200 mb-8 max-w-3xl mx-auto leading-relaxed">
-              From AI-powered resume building to interview prep and career intelligence. 
+              From Performance resume building to interview prep and CareerIntelligence. 
               <span className="text-cyan-300 font-semibold">Everything you need to land your dream job</span> in one powerful platform.
             </p>
 
@@ -304,7 +304,7 @@ const ResumeHub = () => {
                 <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">TalentXcel</span> Success Stories
               </h2>
               <p className="text-xl text-purple-200">
-                Join thousands who landed their dream jobs with our AI-powered platform
+                Join thousands who landed their dream jobs with our Performance platform
               </p>
             </div>
 
@@ -456,3 +456,7 @@ const ResumeHub = () => {
 };
 
 export default ResumeHub;
+
+
+
+

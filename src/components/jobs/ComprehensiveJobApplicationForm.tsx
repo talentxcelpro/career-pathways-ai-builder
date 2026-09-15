@@ -222,7 +222,7 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
 
     setIsSubmitting(true);
     
-    // Show immediate feedback
+    // Show immediate Feedback
     toast.loading('Submitting your application...', { id: 'application-submit' });
 
     try {
@@ -625,3 +625,5 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
     </>
   );
 }
+
+

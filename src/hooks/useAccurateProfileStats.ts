@@ -6,7 +6,7 @@ export function useAccurateProfileStats(userId?: string) {
     queryKey: ['accurate-profile-stats', userId],
     queryFn: async () => {
       if (!userId) return {
-        connections: 0,
+        TalentNetwork: 0,
         profileViews: 0,
         uniqueViewers: 0,
         todayViews: 0,
@@ -15,15 +15,15 @@ export function useAccurateProfileStats(userId?: string) {
         avgViewDuration: 0
       };
 
-      // Get connections count (both sent and received accepted connections)
-      const { count: connectionsCount, error: connectionsError } = await supabase
+      // Get TalentNetwork count (both sent and received accepted TalentNetwork)
+      const { count: TalentNetworkCount, error: TalentNetworkError } = await supabase
         .from('connections')
         .select('*', { count: 'exact', head: true })
         .or(`requester_id.eq.${userId},recipient_id.eq.${userId}`)
         .eq('status', 'accepted');
 
-      if (connectionsError) {
-        console.error('Error fetching connections:', connectionsError);
+      if (TalentNetworkError) {
+        console.error('Error fetching TalentNetwork:', TalentNetworkError);
       }
 
       // Get enhanced profile view stats using the new function
@@ -43,7 +43,7 @@ export function useAccurateProfileStats(userId?: string) {
         }
 
         return {
-          connections: connectionsCount || 0,
+          TalentNetwork: TalentNetworkCount || 0,
           profileViews: profileViewsCount || 0,
           uniqueViewers: 0,
           todayViews: 0,
@@ -54,7 +54,7 @@ export function useAccurateProfileStats(userId?: string) {
       }
 
       return {
-        connections: connectionsCount || 0,
+        TalentNetwork: TalentNetworkCount || 0,
         profileViews: viewStats?.total_views || 0,
         uniqueViewers: viewStats?.unique_viewers || 0,
         todayViews: viewStats?.today_views || 0,
@@ -68,3 +68,4 @@ export function useAccurateProfileStats(userId?: string) {
     staleTime: 10000, // Consider data stale after 10 seconds
   });
 }
+

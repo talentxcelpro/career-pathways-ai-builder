@@ -49,7 +49,7 @@ const templates = {
     <h1 style="color:#333;">Welcome to TalentXcel, ${data.name || '[First Name]'}</h1>
     <p style="color:#555; font-size:16px;">We're excited to have you onboard! Explore jobs, build your resume, and grow your network.</p>
     <div style="margin:24px 0;">
-      <a href="https://talentxcel.in/dashboard" style="background:#007BFF;color:#fff;padding:12px 24px;text-decoration:none;border-radius:6px;">Go to Dashboard</a>
+      <a href="https://talentxcel.in/CommandCenter" style="background:#007BFF;color:#fff;padding:12px 24px;text-decoration:none;border-radius:6px;">Go to CommandCenter</a>
     </div>
     
     <div style="background:#f1f8ff; padding:20px; margin-top:30px; border-left:4px solid #007BFF; border-radius:6px;">
@@ -155,7 +155,7 @@ const templates = {
     <p style="color:#555; font-size:16px; line-height:1.6;">Your employer account is ready! Start posting jobs and finding great candidates for your company.</p>
     
     <div style="text-align:center; margin:30px 0;">
-      <a href="https://talentxcel.in/employer/dashboard" style="background:#28a745;color:#fff;padding:15px 30px;text-decoration:none;border-radius:8px;font-weight:600;font-size:16px;display:inline-block;">Get Started</a>
+      <a href="https://talentxcel.in/employer/CommandCenter" style="background:#28a745;color:#fff;padding:15px 30px;text-decoration:none;border-radius:8px;font-weight:600;font-size:16px;display:inline-block;">Get Started</a>
     </div>
   `),
 
@@ -180,7 +180,7 @@ const templates = {
       ${data.requester_bio ? `<p style="color:#666; margin:10px 0 0 0; font-size:14px;">${data.requester_bio}</p>` : ''}
     </div>
     
-    <p style="color:#555; font-size:16px; line-height:1.6;">Building professional connections opens doors to new opportunities and collaborations. Expand your network and grow your career!</p>
+    <p style="color:#555; font-size:16px; line-height:1.6;">Building professional TalentNetwork opens doors to new opportunities and collaborations. Expand your network and grow your career!</p>
     <div style="text-align:center; margin:30px 0;">
       <a href="https://talentxcel.in/network/requests" style="background:#667eea;color:#fff;padding:15px 30px;text-decoration:none;border-radius:8px;font-weight:600;font-size:16px;display:inline-block;">View Connection Request</a>
     </div>
@@ -261,7 +261,7 @@ const templates = {
     <h3 style="color:#333; margin:25px 0 15px 0; font-size:18px;">As a team member, you'll be able to:</h3>
     <ul style="color:#555; font-size:15px; line-height:1.8; padding-left:20px;">
       <li style="margin:8px 0;">Manage job postings and applications</li>
-      <li style="margin:8px 0;">Access company analytics and insights</li>
+      <li style="margin:8px 0;">Access company CareerAnalytics and insights</li>
       <li style="margin:8px 0;">Collaborate with your team members</li>
       <li style="margin:8px 0;">Build and enhance your employer brand</li>
       <li style="margin:8px 0;">Track recruitment performance</li>
@@ -356,8 +356,8 @@ const templates = {
           <p style="color:#555; margin:5px 0 0 0; font-size:14px;">Applications Sent</p>
         </div>
         <div style="text-align:center; padding:15px; background:#fff; border-radius:8px;">
-          <h3 style="color:#f59e0b; margin:0; font-size:24px; font-weight:700;">${data.new_connections || 0}</h3>
-          <p style="color:#555; margin:5px 0 0 0; font-size:14px;">New Connections</p>
+          <h3 style="color:#f59e0b; margin:0; font-size:24px; font-weight:700;">${data.new_connection || 0}</h3>
+          <p style="color:#555; margin:5px 0 0 0; font-size:14px;">New TalentNetwork</p>
         </div>
         <div style="text-align:center; padding:15px; background:#fff; border-radius:8px;">
           <h3 style="color:#ef4444; margin:0; font-size:24px; font-weight:700;">${data.interviews || 0}</h3>
@@ -394,7 +394,7 @@ const templates = {
     <p style="color:#555; font-size:16px; line-height:1.6;"><strong>${data.user_name || '[User]'}</strong> is now following your company page. Build your employer brand!</p>
     
     <div style="text-align:center; margin:30px 0;">
-      <a href="https://talentxcel.in/employer/analytics" style="background:#667eea;color:#fff;padding:15px 30px;text-decoration:none;border-radius:8px;font-weight:600;font-size:16px;display:inline-block;">View Analytics</a>
+      <a href="https://talentxcel.in/employer/CareerAnalytics" style="background:#667eea;color:#fff;padding:15px 30px;text-decoration:none;border-radius:8px;font-weight:600;font-size:16px;display:inline-block;">View CareerAnalytics</a>
     </div>
   `),
 
@@ -424,7 +424,7 @@ const templates = {
     </div>
     
     <div style="text-align:center; margin:30px 0;">
-      <a href="https://talentxcel.in/employer/brand-analytics" style="background:#8b5cf6;color:#fff;padding:15px 30px;text-decoration:none;border-radius:8px;font-weight:600;font-size:16px;display:inline-block;">View Brand Analytics</a>
+      <a href="https://talentxcel.in/employer/brand-CareerAnalytics" style="background:#8b5cf6;color:#fff;padding:15px 30px;text-decoration:none;border-radius:8px;font-weight:600;font-size:16px;display:inline-block;">View Brand CareerAnalytics</a>
     </div>
   `),
 
@@ -500,13 +500,13 @@ const templates = {
     </div>
   `),
 
-  resume_feedback: (data: TemplateData) => getBaseTemplate(`
+  resume_Feedback: (data: TemplateData) => getBaseTemplate(`
     <h1 style="color:#333; margin:0 0 20px 0; font-size:24px;">Resume Feedback Ready! ✨</h1>
     <p style="color:#555; font-size:16px; line-height:1.6;">Hi ${data.name || '[Name]'},</p>
     <p style="color:#555; font-size:16px; line-height:1.6;">Your professional resume review is complete. See how to improve your chances!</p>
     
     <div style="text-align:center; margin:30px 0;">
-      <a href="https://talentxcel.in/resume/feedback" style="background:#f59e0b;color:#fff;padding:15px 30px;text-decoration:none;border-radius:8px;font-weight:600;font-size:16px;display:inline-block;">View Feedback</a>
+      <a href="https://talentxcel.in/resume/Feedback" style="background:#f59e0b;color:#fff;padding:15px 30px;text-decoration:none;border-radius:8px;font-weight:600;font-size:16px;display:inline-block;">View Feedback</a>
     </div>
   `),
 
@@ -599,7 +599,7 @@ const templates = {
     <p style="color:#555; font-size:16px; line-height:1.6;">Here's your activity summary and achievements from this week on TalentXcel!</p>
     
     <div style="text-align:center; margin:30px 0;">
-      <a href="https://talentxcel.in/dashboard" style="background:#667eea;color:#fff;padding:15px 30px;text-decoration:none;border-radius:8px;font-weight:600;font-size:16px;display:inline-block;">View Dashboard</a>
+      <a href="https://talentxcel.in/CommandCenter" style="background:#667eea;color:#fff;padding:15px 30px;text-decoration:none;border-radius:8px;font-weight:600;font-size:16px;display:inline-block;">View CommandCenter</a>
     </div>
   `),
 
@@ -619,7 +619,7 @@ const templates = {
     <p style="color:#555; font-size:16px; line-height:1.6;">Come back and see the new opportunities and features waiting for you!</p>
     
     <div style="text-align:center; margin:30px 0;">
-      <a href="https://talentxcel.in/dashboard" style="background:#667eea;color:#fff;padding:15px 30px;text-decoration:none;border-radius:8px;font-weight:600;font-size:16px;display:inline-block;">Welcome Back</a>
+      <a href="https://talentxcel.in/CommandCenter" style="background:#667eea;color:#fff;padding:15px 30px;text-decoration:none;border-radius:8px;font-weight:600;font-size:16px;display:inline-block;">Welcome Back</a>
     </div>
   `),
 
@@ -636,3 +636,8 @@ const templates = {
 
 export { templates };
 export default templates;
+
+
+
+
+

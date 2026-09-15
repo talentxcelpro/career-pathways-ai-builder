@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useAdvancedFeedAlgorithm } from '@/hooks/useAdvancedFeedAlgorithm';
+import { useAdvancedPulseAlgorithm } from '@/hooks/useAdvancedPulseAlgorithm';
 import { useProfileLinking } from '@/hooks/useProfileLinking';
 import { cn } from '@/lib/utils';
 import {
@@ -32,7 +32,7 @@ export const ContentRecommendations: React.FC<ContentRecommendationsProps> = ({
   maxItems = 5
 }) => {
   const navigate = useNavigate();
-  const { personalizedFeed, isLoading, trackBehavior } = useAdvancedFeedAlgorithm(module);
+  const { personalizedPulse, isLoading, trackBehavior } = useAdvancedPulseAlgorithm(module);
   const { goToProfile } = useProfileLinking();
 
   const handleItemClick = (item: any) => {
@@ -74,7 +74,7 @@ export const ContentRecommendations: React.FC<ContentRecommendationsProps> = ({
     return 'text-gray-500';
   };
 
-  const displayItems = personalizedFeed.slice(0, maxItems);
+  const displayItems = personalizedPulse.slice(0, maxItems);
 
   if (isLoading) {
     return (
@@ -131,7 +131,7 @@ export const ContentRecommendations: React.FC<ContentRecommendationsProps> = ({
             Recommended for You
           </div>
           <Badge variant="secondary" className="text-xs">
-            AI Powered
+            Performance
           </Badge>
         </CardTitle>
       </CardHeader>

@@ -3,7 +3,7 @@ import { Star, Quote } from 'lucide-react';
 
 const testimonials = [
   {
-    quote: "TalentXcel helped me land a job in 2 weeks! The AI-powered job matching is incredible.",
+    quote: "TalentXcel helped me land a job in 2 weeks! The Performance job matching is incredible.",
     author: "Ayesha Khan",
     role: "Full Stack Developer",
     company: "Tech Innovators Inc.",
@@ -11,7 +11,7 @@ const testimonials = [
     rating: 5
   },
   {
-    quote: "The AI-powered resume builder and career map features are absolutely next level. Game changer!",
+    quote: "The Performance resume builder and career map features are absolutely next level. Game changer!",
     author: "Rohan Sharma",
     role: "Product Manager",
     company: "Digital Solutions Ltd.",
@@ -19,7 +19,7 @@ const testimonials = [
     rating: 5
   },
   {
-    quote: "The networking opportunities and mentorship connections have been invaluable for my career growth.",
+    quote: "The networking opportunities and mentorship TalentNetwork have been invaluable for my career growth.",
     author: "Priya Patel",
     role: "UX Designer",
     company: "Creative Agency Pro",
@@ -30,7 +30,7 @@ const testimonials = [
     quote: "From skill assessment to job placement, TalentXcel guided me through every step of my career transition.",
     author: "Arjun Reddy",
     role: "Data Scientist",
-    company: "Analytics Corp",
+    company: "CareerAnalytics Corp",
     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80",
     rating: 5
   }
@@ -150,3 +150,7 @@ export const TestimonialsSection = () => {
     </section>
   );
 };
+
+
+
+

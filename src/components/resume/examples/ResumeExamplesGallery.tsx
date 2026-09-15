@@ -67,7 +67,7 @@ export const ResumeExamplesGallery: React.FC<ResumeExamplesGalleryProps> = ({
       rating: 4.8,
       views: 12850,
       description: 'Transitioned from startup to Fortune 500 company. Focus on growth metrics and ROI.',
-      tags: ['Growth Marketing', 'Analytics', 'Campaign Management', 'ROI'],
+      tags: ['Growth Marketing', 'CareerAnalytics', 'Campaign Management', 'ROI'],
       template: 'modern-minimal',
       salary: '$85,000 - $110,000',
       beforeAfter: true,
@@ -86,7 +86,7 @@ export const ResumeExamplesGallery: React.FC<ResumeExamplesGalleryProps> = ({
       rating: 4.7,
       views: 9630,
       description: 'Career pivot from consulting to product management. Excellent for career changers.',
-      tags: ['Product Strategy', 'User Research', 'Agile', 'Analytics'],
+      tags: ['Product Strategy', 'User Research', 'Agile', 'CareerAnalytics'],
       template: 'creative-modern',
       salary: '$95,000 - $125,000',
       improvements: [
@@ -307,7 +307,7 @@ export const ResumeExamplesGallery: React.FC<ResumeExamplesGalleryProps> = ({
               <div className="text-center py-8">
                 <h3 className="text-lg font-semibold mb-2">Before & After Transformations</h3>
                 <p className="text-muted-foreground mb-4">
-                  See how our AI-powered improvements transformed these resumes
+                  See how our Performance improvements transformed these resumes
                 </p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -382,3 +382,6 @@ export const ResumeExamplesGallery: React.FC<ResumeExamplesGalleryProps> = ({
     </div>
   );
 };
+
+
+

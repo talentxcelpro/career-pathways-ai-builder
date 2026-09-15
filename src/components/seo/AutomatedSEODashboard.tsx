@@ -34,7 +34,7 @@ interface SEOStatus {
   topPerformers: any[];
 }
 
-export const AutomatedSEODashboard = () => {
+export const AutomatedSEOCommandCenter = () => {
   const [stats, setStats] = useState<SEOStats | null>(null);
   const [status, setStatus] = useState<SEOStatus | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -43,10 +43,10 @@ export const AutomatedSEODashboard = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    loadDashboardData();
+    loadCommandCenterData();
   }, []);
 
-  const loadDashboardData = async () => {
+  const loadCommandCenterData = async () => {
     try {
       const [performanceRes, statusRes] = await Promise.all([
         supabase.functions.invoke('seo-automation-engine', {
@@ -65,10 +65,10 @@ export const AutomatedSEODashboard = () => {
         setStatus(statusRes.data.status);
       }
     } catch (error) {
-      console.error('Error loading dashboard data:', error);
+      console.error('Error loading CommandCenter data:', error);
       toast({
         title: "Error",
-        description: "Failed to load dashboard data",
+        description: "Failed to load CommandCenter data",
         variant: "destructive"
       });
     }
@@ -184,8 +184,8 @@ export const AutomatedSEODashboard = () => {
         description: `Generated ${totalGenerated} SEO pages successfully`,
       });
 
-      // Reload dashboard data
-      await loadDashboardData();
+      // Reload CommandCenter data
+      await loadCommandCenterData();
 
     } catch (error) {
       console.error('Error generating SEO pages:', error);
@@ -290,7 +290,7 @@ export const AutomatedSEODashboard = () => {
       <Tabs defaultValue="generate" className="w-full">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="generate">Generate Pages</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
           <TabsTrigger value="sitemaps">Sitemaps</TabsTrigger>
           <TabsTrigger value="monitoring">Monitoring</TabsTrigger>
         </TabsList>
@@ -353,7 +353,7 @@ export const AutomatedSEODashboard = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="analytics" className="space-y-4">
+        <TabsContent value="CareerAnalytics" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
               <CardHeader>
@@ -443,3 +443,6 @@ export const AutomatedSEODashboard = () => {
     </div>
   );
 };
+
+
+

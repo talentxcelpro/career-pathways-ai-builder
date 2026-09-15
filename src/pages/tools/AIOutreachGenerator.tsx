@@ -95,7 +95,7 @@ const AIOutreachGenerator = () => {
         ],
         personalization_tips: aiResponse?.personalization_tips || [
           `Mention ${recipientCompany}'s recent achievements`,
-          'Reference mutual connections if any',
+          'Reference mutual TalentNetwork if any',
           'Be specific about the value you can provide'
         ],
         response_rate_tips: aiResponse?.response_rate_tips || [
@@ -381,3 +381,4 @@ const AIOutreachGenerator = () => {
 };
 
 export default AIOutreachGenerator;
+

@@ -462,7 +462,7 @@ export const RegisterForm = () => {
             <div className="grid grid-cols-1 gap-2 text-xs text-slate-600 dark:text-slate-300">
               <div className="flex items-center gap-2">
                 <Shield className="w-3 h-3 text-green-600" />
-                <span>AI-powered job matching</span>
+                <span>Performance job matching</span>
               </div>
               <div className="flex items-center gap-2">
                 <Shield className="w-3 h-3 text-green-600" />
@@ -515,3 +515,4 @@ export const RegisterForm = () => {
     </Card>
   );
 };
+

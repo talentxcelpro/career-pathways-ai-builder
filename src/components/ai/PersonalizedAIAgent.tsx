@@ -53,7 +53,7 @@ export const PersonalizedAIAgent: React.FC = () => {
         <CardContent className="flex items-center justify-center h-64">
           <div className="flex items-center gap-2">
             <Brain className="h-6 w-6 animate-pulse text-primary" />
-            <span>Initializing your AI assistant...</span>
+            <span>Initializing your TalentXcel Navigator...</span>
           </div>
         </CardContent>
       </Card>
@@ -66,7 +66,7 @@ export const PersonalizedAIAgent: React.FC = () => {
         <CardContent className="flex items-center justify-center h-64">
           <div className="text-center">
             <Brain className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-lg font-semibold mb-2">AI Assistant Unavailable</h3>
+            <h3 className="text-lg font-semibold mb-2">TalentXcel Navigator Unavailable</h3>
             <p className="text-muted-foreground">Please try refreshing the page</p>
           </div>
         </CardContent>

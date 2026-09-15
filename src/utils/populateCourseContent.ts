@@ -218,7 +218,7 @@ const getCourseModules = (courseTitle: string) => {
           { title: 'Matplotlib Fundamentals', content: 'Figure and axes objects, basic plots, customization, and styling.', type: 'video', video_url: 'https://example.com/matplotlib', duration: 60, order: 1, isFree: false },
           { title: 'Advanced Matplotlib Techniques', content: 'Subplots, multiple axes, 3D plots, and complex visualizations.', type: 'video', video_url: 'https://example.com/advanced-mpl', duration: 55, order: 2, isFree: false },
           { title: 'Seaborn for Statistical Visualization', content: 'Statistical plots, distribution plots, categorical plots, and themes.', type: 'video', video_url: 'https://example.com/seaborn', duration: 60, order: 3, isFree: false },
-          { title: 'Interactive Visualizations with Plotly', content: 'Creating interactive charts, dashboards, and web-based visualizations.', type: 'video', video_url: 'https://example.com/plotly', duration: 55, order: 4, isFree: false },
+          { title: 'Interactive Visualizations with Plotly', content: 'Creating interactive charts, CommandCenters, and web-based visualizations.', type: 'video', video_url: 'https://example.com/plotly', duration: 55, order: 4, isFree: false },
           { title: 'Visualization Best Practices', content: 'Color theory, accessibility, storytelling with data, and chart selection.', type: 'text', video_url: null, duration: 50, order: 5, isFree: false }
         ]
       },
@@ -331,3 +331,5 @@ const getCourseAssessment = (courseTitle: string) => {
     ]
   };
 };
+
+

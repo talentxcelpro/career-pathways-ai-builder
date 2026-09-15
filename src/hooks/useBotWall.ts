@@ -73,7 +73,7 @@ export const useCreateWallPost = () => {
       
       if (error) throw error;
       
-      // Also insert into posts table for network feed visibility
+      // Also insert into posts table for network Pulse visibility
       if (!postData.is_draft) {
         try {
           await supabase.from('posts').insert({

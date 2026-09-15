@@ -32,7 +32,14 @@ import {
   CreditCard,
   FileText,
   Grid3X3,
-  Layers
+  Layers,
+  Radio,
+  Activity,
+  Cpu,
+  Mail,
+  Newspaper,
+  Layout,
+  Globe
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useOptimizedAuth } from '@/contexts/OptimizedAuthContext';
@@ -43,7 +50,7 @@ interface ModuleItem {
   description: string;
   icon: React.ComponentType<{ className?: string }>;
   route: string;
-  category: 'core' | 'career' | 'social' | 'tools' | 'business' | 'mobile';
+  category: 'core' | 'career' | 'social' | 'tools' | 'business' | 'mobile' | 'admin';
   requiresAuth?: boolean;
   isNew?: boolean;
   isPro?: boolean;
@@ -53,171 +60,121 @@ const modules: ModuleItem[] = [
   // Core Modules
   {
     id: 'jobs',
-    name: 'Jobs',
+    name: 'TalentXcel Jobs',
     description: 'Find your next career opportunity',
     icon: Briefcase,
     route: '/jobs',
     category: 'core'
   },
   {
-    id: 'network',
-    name: 'Network',
-    description: 'Connect with professionals',
-    icon: Users,
-    route: '/network',
-    category: 'core'
-  },
-  {
-    id: 'profile',
-    name: 'Profile',
-    description: 'Manage your professional profile',
-    icon: User,
-    route: '/profile',
+    id: 'talent-score',
+    name: 'Performance Index',
+    description: 'Track your career performance index',
+    icon: BarChart3,
+    route: '/talent-score',
     category: 'core',
-    requiresAuth: true
-  },
-
-  // Career Modules
-  {
-    id: 'learning',
-    name: 'Learning',
-    description: 'Courses and skill development',
-    icon: BookOpen,
-    route: '/learning',
-    category: 'career'
-  },
-  {
-    id: 'career-dashboard',
-    name: 'Career Dashboard',
-    description: 'Track your career progress',
-    icon: TrendingUp,
-    route: '/career-dashboard',
-    category: 'career',
-    requiresAuth: true
-  },
-  {
-    id: 'skills-assessment',
-    name: 'Skills Assessment',
-    description: 'Evaluate your skills',
-    icon: Target,
-    route: '/skills-assessment',
-    category: 'career'
-  },
-  {
-    id: 'passport',
-    name: 'Career Passport',
-    description: 'Your professional journey',
-    icon: CreditCard,
-    route: '/passport',
-    category: 'career',
-    requiresAuth: true
-  },
-
-  // Tools Modules
-  {
-    id: 'resume-builder',
-    name: 'Resume Builder',
-    description: 'Create professional resumes',
-    icon: FileText,
-    route: '/tools/resume-builder',
-    category: 'tools'
-  },
-  {
-    id: 'tools',
-    name: 'Career Tools',
-    description: 'Professional development tools',
-    icon: PenTool,
-    route: '/tools',
-    category: 'tools'
-  },
-  {
-    id: 'ai-career-hub',
-    name: 'AI Career Hub',
-    description: 'AI-powered career assistance',
-    icon: Zap,
-    route: '/ai-career-hub',
-    category: 'tools',
+    requiresAuth: true,
     isNew: true
   },
+  {
+    id: 'navigator',
+    name: 'TalentXcel Navigator',
+    description: 'Personalized professional strategist',
+    icon: Lightbulb,
+    route: '/navigator',
+    category: 'core',
+    requiresAuth: true,
+    isNew: true
+  },
+  {
+    id: 'network',
+    name: 'Network Pulse',
+    description: 'Connect with elite professionals',
+    icon: Users,
+    route: '/network',
+    category: 'social'
+  },
 
-  // Business Modules
+  // Growth & Tools
+  {
+    id: 'messages',
+    name: 'Talent Messages',
+    description: 'Secure professional communication',
+    icon: MessageSquare,
+    route: '/communication/messages',
+    category: 'social'
+  },
+  {
+    id: 'referral',
+    name: 'TalentXcel Growth Engine',
+    description: 'Invite and earn professional rewards',
+    icon: Gift,
+    route: '/refer-and-earn',
+    category: 'social'
+  },
+  {
+    id: 'creator-studio',
+    name: 'TalentXcel Creator Studio',
+    description: 'AI-assisted professional content',
+    icon: PenTool,
+    route: '/content-studio',
+    category: 'tools'
+  },
+
+  // Performance & Admin
+  {
+    id: 'linkedin-pro',
+    name: 'LinkedIn Pro Hub',
+    description: 'Advanced networking automation',
+    icon: Shield,
+    route: '/admin/linkedin-tools',
+    category: 'tools',
+    isPro: true
+  },
+  {
+    id: 'resume-analytics',
+    name: 'Resume Insights',
+    description: 'Real-time performance tracking',
+    icon: Activity,
+    route: '/resume/analytics',
+    category: 'career'
+  },
+  {
+    id: 'ats-check',
+    name: 'ATS Optimizer',
+    description: 'Algorithm-ready resume verification',
+    icon: Cpu,
+    route: '/resume/ats-check',
+    category: 'career'
+  },
+
+  // Business & Edu
   {
     id: 'companies',
-    name: 'Companies',
-    description: 'Explore organizations',
+    name: 'TalentXcel Organizations',
+    description: 'Explore high-velocity companies',
     icon: Building2,
     route: '/companies',
     category: 'business'
   },
   {
     id: 'colleges',
-    name: 'Colleges',
-    description: 'Educational institutions',
+    name: 'TalentXcel Institutions',
+    description: 'Top-tier educational partners',
     icon: GraduationCap,
     route: '/colleges',
     category: 'business'
-  },
-
-  // Social & Engagement
-  {
-    id: 'gamification',
-    name: 'Rewards',
-    description: 'Earn points and achievements',
-    icon: Trophy,
-    route: '/gamification',
-    category: 'social'
-  },
-  {
-    id: 'refer-earn',
-    name: 'Refer & Earn',
-    description: 'Invite friends and earn rewards',
-    icon: Gift,
-    route: '/refer-and-earn',
-    category: 'social'
-  },
-  {
-    id: 'reels',
-    name: 'Career Reels',
-    description: 'Short-form career content',
-    icon: Play,
-    route: '/mobile/reels',
-    category: 'social'
-  },
-
-  // Mobile Features
-  {
-    id: 'qr-scanner',
-    name: 'QR Networking',
-    description: 'Quick connect via QR codes',
-    icon: QrCode,
-    route: '/mobile/qr-scanner',
-    category: 'mobile'
-  },
-  {
-    id: 'nearby',
-    name: 'Nearby',
-    description: 'Find professionals nearby',
-    icon: MapPin,
-    route: '/mobile/nearby',
-    category: 'mobile'
-  },
-  {
-    id: 'hubs',
-    name: 'TalentXcel Hubs',
-    description: 'Organization communities',
-    icon: Layers,
-    route: '/mobile/hubs',
-    category: 'mobile'
   }
 ];
 
 const categoryLabels = {
-  core: 'Core Features',
-  career: 'Career Development',
-  tools: 'Professional Tools',
-  business: 'Organizations',
-  social: 'Social & Engagement',
-  mobile: 'Mobile Features'
+  core: 'Core OS',
+  career: 'Performance Hub',
+  social: 'Talent Network',
+  tools: 'Pro Tools',
+  business: 'Ecosystem',
+  mobile: 'Mobile Features',
+  admin: 'System Ops'
 };
 
 const categoryColors = {
@@ -226,7 +183,8 @@ const categoryColors = {
   tools: 'from-purple-500 to-purple-600',
   business: 'from-orange-500 to-orange-600',
   social: 'from-pink-500 to-pink-600',
-  mobile: 'from-indigo-500 to-indigo-600'
+  mobile: 'from-indigo-500 to-indigo-600',
+  admin: 'from-slate-700 to-slate-900'
 };
 
 interface ModulesLauncherProps {
@@ -243,73 +201,58 @@ export const ModulesLauncher: React.FC<ModulesLauncherProps> = ({
   const navigate = useNavigate();
   const { user } = useOptimizedAuth();
 
-  // Filter modules based on search and auth
   const filteredModules = modules.filter(module => {
     const matchesSearch = module.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          module.description.toLowerCase().includes(searchTerm.toLowerCase());
-    
     const matchesCategory = selectedCategory ? module.category === selectedCategory : true;
-    
     const hasAccess = module.requiresAuth ? !!user : true;
-    
     return matchesSearch && matchesCategory && hasAccess;
   });
 
-  // Group modules by category
   const groupedModules = filteredModules.reduce((acc, module) => {
-    if (!acc[module.category]) {
-      acc[module.category] = [];
-    }
+    if (!acc[module.category]) acc[module.category] = [];
     acc[module.category].push(module);
     return acc;
   }, {} as Record<string, ModuleItem[]>);
-
-  const handleModuleClick = (module: ModuleItem) => {
-    navigate(module.route);
-    onClose();
-  };
 
   const categories = Object.keys(categoryLabels) as Array<keyof typeof categoryLabels>;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] p-0">
-        <DialogHeader className="p-6 pb-4">
+      <DialogContent className="max-w-4xl max-h-[90vh] p-0 overflow-hidden rounded-[32px] border-white/20 bg-slate-50/90 backdrop-blur-2xl">
+        <DialogHeader className="p-8 pb-4">
           <div className="flex items-center justify-between">
             <div>
-              <DialogTitle className="text-2xl font-bold">All Modules</DialogTitle>
-              <p className="text-muted-foreground mt-1">
-                Access all TalentXcel features and tools
+              <DialogTitle className="text-3xl font-apple-heavy text-slate-950">TalentXcel Hub</DialogTitle>
+              <p className="text-slate-500 mt-1 font-apple-medium">
+                Access all high-performance professional modules
               </p>
             </div>
-            <Button variant="ghost" size="icon" onClick={onClose}>
-              <X className="h-5 w-5" />
+            <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full hover:bg-slate-200">
+              <X className="h-6 w-6" />
             </Button>
           </div>
         </DialogHeader>
 
-        <div className="px-6 pb-4">
-          {/* Search Bar */}
-          <div className="relative mb-4">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <div className="px-8 pb-4">
+          <div className="relative mb-6">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
             <Input
-              placeholder="Search modules..."
+              placeholder="Search TalentXcel modules..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 h-12"
+              className="pl-12 h-14 bg-white/50 border-slate-200 rounded-2xl font-apple-medium text-lg focus:ring-2 focus:ring-blue-500/20"
             />
           </div>
 
-          {/* Category Filter */}
-          <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+          <div className="flex gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide">
             <Button
               variant={selectedCategory === null ? "default" : "outline"}
               size="sm"
               onClick={() => setSelectedCategory(null)}
-              className="whitespace-nowrap"
+              className={cn("whitespace-nowrap rounded-xl px-6", selectedCategory === null ? "bg-slate-950" : "bg-white/50")}
             >
-              <Grid3X3 className="h-4 w-4 mr-2" />
-              All
+              All TalentXcel
             </Button>
             {categories.map((category) => (
               <Button
@@ -317,7 +260,7 @@ export const ModulesLauncher: React.FC<ModulesLauncherProps> = ({
                 variant={selectedCategory === category ? "default" : "outline"}
                 size="sm"
                 onClick={() => setSelectedCategory(category)}
-                className="whitespace-nowrap"
+                className={cn("whitespace-nowrap rounded-xl px-6", selectedCategory === category ? "bg-slate-950" : "bg-white/50")}
               >
                 {categoryLabels[category]}
               </Button>
@@ -325,59 +268,57 @@ export const ModulesLauncher: React.FC<ModulesLauncherProps> = ({
           </div>
         </div>
 
-        <ScrollArea className="flex-1 px-6 pb-6">
-          <div className="space-y-8">
+        <ScrollArea className="flex-1 px-8 pb-8 h-[50vh]">
+          <div className="space-y-10">
             {Object.entries(groupedModules).map(([category, categoryModules]) => (
               <div key={category}>
-                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                  <div className={cn(
-                    "w-3 h-3 rounded-full bg-gradient-to-r",
-                    categoryColors[category as keyof typeof categoryColors]
-                  )} />
+                <h3 className="text-sm font-apple-heavy text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
                   {categoryLabels[category as keyof typeof categoryLabels]}
-                  <Badge variant="secondary" className="ml-2">
+                  <Badge variant="secondary" className="ml-2 bg-slate-200 text-slate-600">
                     {categoryModules.length}
                   </Badge>
                 </h3>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {categoryModules.map((module) => {
                     const Icon = module.icon;
                     return (
                       <Button
                         key={module.id}
                         variant="outline"
-                        className="h-auto p-4 flex flex-col items-start text-left hover:shadow-md transition-all duration-200 group"
-                        onClick={() => handleModuleClick(module)}
+                        className="h-auto p-6 flex flex-col items-start text-left bg-white/60 border-slate-100 hover:border-blue-300 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-500 rounded-[24px] group relative overflow-hidden"
+                        onClick={() => {
+                          navigate(module.route);
+                          onClose();
+                        }}
                       >
-                        <div className="flex items-center justify-between w-full mb-2">
+                        <div className="flex items-center justify-between w-full mb-4">
                           <div className={cn(
-                            "p-2 rounded-lg bg-gradient-to-r group-hover:scale-110 transition-transform",
+                            "p-3 rounded-2xl bg-gradient-to-br shadow-lg group-hover:scale-110 transition-transform duration-500",
                             categoryColors[module.category]
                           )}>
-                            <Icon className="h-5 w-5 text-white" />
+                            <Icon className="h-6 w-6 text-white" />
                           </div>
                           <div className="flex gap-1">
                             {module.isNew && (
-                              <Badge variant="default" className="text-xs">
-                                New
-                              </Badge>
+                              <Badge className="bg-blue-500 text-white border-0 text-[10px] rounded-lg">NEW</Badge>
                             )}
                             {module.isPro && (
-                              <Badge variant="secondary" className="text-xs">
-                                Pro
-                              </Badge>
+                              <Badge className="bg-slate-900 text-white border-0 text-[10px] rounded-lg">PRO</Badge>
                             )}
                           </div>
                         </div>
                         
-                        <div className="w-full">
-                          <h4 className="font-medium text-sm mb-1 group-hover:text-primary transition-colors">
+                        <div className="w-full relative z-10">
+                          <h4 className="font-apple-heavy text-slate-900 mb-1 group-hover:text-blue-600 transition-colors">
                             {module.name}
                           </h4>
-                          <p className="text-xs text-muted-foreground line-clamp-2">
+                          <p className="text-xs text-slate-500 line-clamp-2 font-apple-medium">
                             {module.description}
                           </p>
+                        </div>
+                        <div className="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Zap className="h-4 w-4 text-blue-500/30" />
                         </div>
                       </Button>
                     );
@@ -386,18 +327,6 @@ export const ModulesLauncher: React.FC<ModulesLauncherProps> = ({
               </div>
             ))}
           </div>
-
-          {filteredModules.length === 0 && (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                <Search className="h-8 w-8 text-muted-foreground" />
-              </div>
-              <h3 className="text-lg font-medium mb-2">No modules found</h3>
-              <p className="text-muted-foreground">
-                Try adjusting your search or filter criteria
-              </p>
-            </div>
-          )}
         </ScrollArea>
       </DialogContent>
     </Dialog>

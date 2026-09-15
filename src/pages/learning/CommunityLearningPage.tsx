@@ -83,7 +83,7 @@ const CommunityLearningPage = () => {
         {
           id: '4',
           name: 'UI/UX Design Workshop',
-          description: 'Improve design skills through peer feedback',
+          description: 'Improve design skills through peer Feedback',
           members: 203,
           category: 'Design',
           level: 'Intermediate',
@@ -334,3 +334,4 @@ const CommunityLearningPage = () => {
 };
 
 export default CommunityLearningPage;
+

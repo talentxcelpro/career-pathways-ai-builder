@@ -84,7 +84,7 @@ export const ManualWallPostEditor: React.FC<ManualWallPostEditorProps> = ({ bot,
               ✍️ Create Wall Post for {bot.name}
             </CardTitle>
             <CardDescription>
-              Create manual content for {bot.name}'s wall feed
+              Create manual content for {bot.name}'s wall Pulse
             </CardDescription>
           </div>
           <Button variant="ghost" size="sm" onClick={onClose}>

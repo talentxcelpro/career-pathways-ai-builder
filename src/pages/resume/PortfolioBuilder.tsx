@@ -510,7 +510,7 @@ const PortfolioBuilder = () => {
 
                       <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="font-medium">Analytics</h4>
+                          <h4 className="font-medium">CareerAnalytics</h4>
                           <p className="text-sm text-muted-foreground">
                             Track portfolio views and engagement
                           </p>
@@ -540,3 +540,6 @@ const PortfolioBuilder = () => {
 };
 
 export default PortfolioBuilder;
+
+
+

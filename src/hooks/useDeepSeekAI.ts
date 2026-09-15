@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 interface DeepSeekMessage {
-  role: 'system' | 'user' | 'assistant';
+  role: 'system' | 'user' | 'Navigator';
   content: string;
 }
 

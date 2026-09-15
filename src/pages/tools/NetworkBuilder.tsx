@@ -29,7 +29,7 @@ interface NetworkConnection {
   company: string;
   location: string;
   industry: string;
-  connectionScore: number;
+  TalentNetworkcore: number;
   mutualConnections: number;
   avatar: string;
   canConnect: boolean;
@@ -42,9 +42,9 @@ const NetworkBuilder = () => {
   const [role, setRole] = useState('');
   const [location, setLocation] = useState('');
   const [isSearching, setIsSearching] = useState(false);
-  const [connections, setConnections] = useState<NetworkConnection[]>([]);
+  const [TalentNetwork, setTalentNetwork] = useState<NetworkConnection[]>([]);
 
-  const findConnections = async () => {
+  const findTalentNetwork = async () => {
     if (!industry || !role) {
       toast.error('Please fill in required fields');
       return;
@@ -52,9 +52,9 @@ const NetworkBuilder = () => {
 
     setIsSearching(true);
     
-    // Simulate AI-powered connection discovery
+    // Simulate Performance connection discovery
     setTimeout(() => {
-      const mockConnections: NetworkConnection[] = [
+      const mockTalentNetwork: NetworkConnection[] = [
         {
           id: '1',
           name: 'Sarah Chen',
@@ -62,7 +62,7 @@ const NetworkBuilder = () => {
           company: 'Google',
           location: 'San Francisco, CA',
           industry: 'Technology',
-          connectionScore: 95,
+          TalentNetworkcore: 95,
           mutualConnections: 12,
           avatar: '/api/placeholder/40/40',
           canConnect: true,
@@ -75,7 +75,7 @@ const NetworkBuilder = () => {
           company: 'Stripe',
           location: 'New York, NY',
           industry: 'Fintech',
-          connectionScore: 88,
+          TalentNetworkcore: 88,
           mutualConnections: 8,
           avatar: '/api/placeholder/40/40',
           canConnect: true,
@@ -88,7 +88,7 @@ const NetworkBuilder = () => {
           company: 'Airbnb',
           location: 'Austin, TX',
           industry: 'Technology',
-          connectionScore: 92,
+          TalentNetworkcore: 92,
           mutualConnections: 15,
           avatar: '/api/placeholder/40/40',
           canConnect: true,
@@ -101,7 +101,7 @@ const NetworkBuilder = () => {
           company: 'Microsoft',
           location: 'Seattle, WA',
           industry: 'Technology',
-          connectionScore: 85,
+          TalentNetworkcore: 85,
           mutualConnections: 6,
           avatar: '/api/placeholder/40/40',
           canConnect: true,
@@ -114,7 +114,7 @@ const NetworkBuilder = () => {
           company: 'Shopify',
           location: 'Toronto, ON',
           industry: 'E-commerce',
-          connectionScore: 90,
+          TalentNetworkcore: 90,
           mutualConnections: 10,
           avatar: '/api/placeholder/40/40',
           canConnect: true,
@@ -122,7 +122,7 @@ const NetworkBuilder = () => {
         }
       ];
 
-      setConnections(mockConnections);
+      setTalentNetwork(mockTalentNetwork);
       setIsSearching(false);
       toast.success('Found strategic networking opportunities!');
     }, 2500);
@@ -130,7 +130,7 @@ const NetworkBuilder = () => {
 
   const handleConnect = (connectionId: string) => {
     toast.success('Connection request sent!');
-    setConnections(prev => 
+    setTalentNetwork(prev => 
       prev.map(conn => 
         conn.id === connectionId 
           ? { ...conn, canConnect: false }
@@ -180,12 +180,12 @@ const NetworkBuilder = () => {
             </div>
             <div>
               <h1 className="text-3xl font-bold text-gray-900">AI Network Builder</h1>
-              <p className="text-gray-600">Build strategic professional connections with AI-powered recommendations</p>
+              <p className="text-gray-600">Build strategic professional TalentNetwork with Performance recommendations</p>
             </div>
           </div>
         </div>
 
-        {connections.length === 0 ? (
+        {TalentNetwork.length === 0 ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Search Form */}
             <Card>
@@ -196,7 +196,7 @@ const NetworkBuilder = () => {
                 {isSearching ? (
                   <div className="text-center py-12">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-                    <h3 className="text-lg font-medium mb-2">Finding Connections</h3>
+                    <h3 className="text-lg font-medium mb-2">Finding TalentNetwork</h3>
                     <p className="text-gray-600">AI is discovering strategic networking opportunities...</p>
                   </div>
                 ) : (
@@ -239,11 +239,11 @@ const NetworkBuilder = () => {
                     </div>
 
                     <Button 
-                      onClick={findConnections}
+                      onClick={findTalentNetwork}
                       className="w-full"
                       disabled={!industry || !role}
                     >
-                      Find Strategic Connections
+                      Find Strategic TalentNetwork
                     </Button>
                   </>
                 )}
@@ -259,8 +259,8 @@ const NetworkBuilder = () => {
                 <div className="flex items-start gap-3">
                   <UserPlus className="h-5 w-5 text-green-600 mt-1" />
                   <div>
-                    <h4 className="font-medium">Quality Connections</h4>
-                    <p className="text-sm text-gray-600">AI identifies high-value connections in your field</p>
+                    <h4 className="font-medium">Quality TalentNetwork</h4>
+                    <p className="text-sm text-gray-600">AI identifies high-value TalentNetwork in your field</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -292,16 +292,16 @@ const NetworkBuilder = () => {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">Strategic Connections Found</h2>
+                <h2 className="text-2xl font-bold text-gray-900">Strategic TalentNetwork Found</h2>
                 <p className="text-gray-600">AI-recommended professionals for your network</p>
               </div>
-              <Button variant="outline" onClick={() => setConnections([])}>
+              <Button variant="outline" onClick={() => setTalentNetwork([])}>
                 New Search
               </Button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {connections.map((connection) => (
+              {TalentNetwork.map((connection) => (
                 <Card key={connection.id} className="hover:shadow-lg transition-shadow">
                   <CardContent className="p-6">
                     <div className="flex items-start gap-4">
@@ -313,8 +313,8 @@ const NetworkBuilder = () => {
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-2">
                           <h3 className="font-semibold text-gray-900">{connection.name}</h3>
-                          <Badge className={getScoreBadgeColor(connection.connectionScore)}>
-                            {connection.connectionScore}% Match
+                          <Badge className={getScoreBadgeColor(connection.TalentNetworkcore)}>
+                            {connection.TalentNetworkcore}% Match
                           </Badge>
                         </div>
                         
@@ -330,7 +330,7 @@ const NetworkBuilder = () => {
                         
                         <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
                           <Users className="h-4 w-4" />
-                          <span>{connection.mutualConnections} mutual connections</span>
+                          <span>{connection.mutualConnections} mutual TalentNetwork</span>
                         </div>
                         
                         <div className="flex items-center gap-2 mb-4">
@@ -377,3 +377,5 @@ const NetworkBuilder = () => {
 };
 
 export default NetworkBuilder;
+
+

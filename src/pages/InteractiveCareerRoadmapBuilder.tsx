@@ -115,7 +115,7 @@ export default function InteractiveCareerRoadmapBuilder() {
           </div>
         </div>
 
-        {/* Quick Stats Dashboard */}
+        {/* Quick Stats CommandCenter */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           <Card>
             <CardContent className="p-4 text-center">
@@ -145,7 +145,7 @@ export default function InteractiveCareerRoadmapBuilder() {
             <CardContent className="p-4 text-center">
               <Brain className="h-8 w-8 text-purple-600 mx-auto mb-2" />
               <p className="text-2xl font-bold">{quickStats.aiSuggestions}</p>
-              <p className="text-sm text-muted-foreground">AI Suggestions</p>
+              <p className="text-sm text-muted-foreground">Smart Moves</p>
             </CardContent>
           </Card>
 
@@ -177,15 +177,15 @@ export default function InteractiveCareerRoadmapBuilder() {
                 </TabsTrigger>
                 <TabsTrigger value="ai-suggestions" className="flex items-center gap-2">
                   <Brain className="h-4 w-4" />
-                  <span className="hidden sm:inline">AI Suggestions</span>
+                  <span className="hidden sm:inline">Smart Moves</span>
                 </TabsTrigger>
                 <TabsTrigger value="goals" className="flex items-center gap-2">
                   <Target className="h-4 w-4" />
                   <span className="hidden sm:inline">Goal Tracking</span>
                 </TabsTrigger>
-                <TabsTrigger value="analytics" className="flex items-center gap-2">
+                <TabsTrigger value="CareerAnalytics" className="flex items-center gap-2">
                   <TrendingUp className="h-4 w-4" />
-                  <span className="hidden sm:inline">Analytics</span>
+                  <span className="hidden sm:inline">CareerAnalytics</span>
                 </TabsTrigger>
               </TabsList>
 
@@ -201,11 +201,11 @@ export default function InteractiveCareerRoadmapBuilder() {
                 <GoalTracking />
               </TabsContent>
 
-              <TabsContent value="analytics" className="space-y-6">
+              <TabsContent value="CareerAnalytics" className="space-y-6">
                 <div className="grid gap-6">
                   <Card>
                     <CardHeader>
-                      <CardTitle>Career Progress Analytics</CardTitle>
+                      <CardTitle>Career Progress CareerAnalytics</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
@@ -243,7 +243,7 @@ export default function InteractiveCareerRoadmapBuilder() {
                       <div className="space-y-4">
                         <div className="text-center text-muted-foreground">
                           <TrendingUp className="h-12 w-12 mx-auto mb-2" />
-                          <p>Detailed analytics coming soon...</p>
+                          <p>Detailed CareerAnalytics coming soon...</p>
                           <p className="text-sm">Track your skill progression over time</p>
                         </div>
                       </div>
@@ -309,7 +309,7 @@ export default function InteractiveCareerRoadmapBuilder() {
                 </Button>
                 <Button className="w-full justify-start" variant="outline">
                   <Brain className="h-4 w-4 mr-2" />
-                  Get AI Recommendations
+                  Get Career Moves
                 </Button>
                 <Button className="w-full justify-start" variant="outline">
                   <Target className="h-4 w-4 mr-2" />
@@ -403,3 +403,6 @@ export default function InteractiveCareerRoadmapBuilder() {
     </div>
   );
 }
+
+
+

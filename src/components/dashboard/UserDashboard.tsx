@@ -7,7 +7,7 @@ import { ArrowRight, Briefcase, GraduationCap, FileText, TrendingUp, Users, Star
 import { useNavigate, Link } from 'react-router-dom';
 import { ProfileCompletionPrompt } from "@/components/profile/ProfileCompletionPrompt";
 
-interface UserDashboardProps {
+interface UserCommandCenterProps {
   currentUserProfile: any;
   userData: {
     name: string;
@@ -16,7 +16,7 @@ interface UserDashboardProps {
   missingFields: string[];
 }
 
-export const UserDashboard: React.FC<UserDashboardProps> = ({ 
+export const UserCommandCenter: React.FC<UserCommandCenterProps> = ({ 
   currentUserProfile, 
   userData, 
   missingFields 
@@ -63,7 +63,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
           </CardContent>
         </Card>
 
-        <Link to="/network/profile/analytics">
+        <Link to="/network/profile/CareerAnalytics">
           <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white border-0 cursor-pointer hover:from-green-600 hover:to-green-700 transition-all">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -216,3 +216,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
     </div>
   );
 };
+
+
+
+

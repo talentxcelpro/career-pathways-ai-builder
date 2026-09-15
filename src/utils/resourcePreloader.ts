@@ -54,14 +54,15 @@ export class ResourcePreloader {
     this.preloadedResources.add(`dns-${domain}`);
   }
 
-  // Preload critical API routes
+  // Preload critical API routes - disabled as these routes don't exist or use Supabase
   static preloadCriticalAPI() {
+    /*
     if (typeof window === 'undefined') return;
     
     const criticalRoutes = [
       '/api/user/profile',
       '/api/jobs/trending',
-      '/api/network/feed'
+      '/api/network/Pulse'
     ];
 
     criticalRoutes.forEach(route => {
@@ -69,6 +70,7 @@ export class ResourcePreloader {
         // Silently fail - this is just for preloading
       });
     });
+    */
   }
 
   // Intelligent route prefetching

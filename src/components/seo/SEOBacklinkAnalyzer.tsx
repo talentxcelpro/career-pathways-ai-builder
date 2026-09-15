@@ -347,7 +347,7 @@ export const SEOBacklinkAnalyzer = () => {
                     <div className="text-center py-8">
                       <Target className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
                       <p className="text-muted-foreground mb-4">
-                        AI-powered link prospecting will identify high-quality opportunities
+                        Performance link prospecting will identify high-quality opportunities
                       </p>
                       <div className="space-y-2">
                         <p className="text-sm text-muted-foreground">• Competitor gap analysis</p>

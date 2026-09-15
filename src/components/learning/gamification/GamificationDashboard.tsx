@@ -16,7 +16,7 @@ import {
   Sparkles
 } from 'lucide-react';
 
-interface GamificationDashboardProps {
+interface GamificationCommandCenterProps {
   userStats: {
     level: number;
     xp: number;
@@ -39,7 +39,7 @@ interface GamificationDashboardProps {
   };
 }
 
-export const GamificationDashboard: React.FC<GamificationDashboardProps> = ({ userStats }) => {
+export const GamificationCommandCenter: React.FC<GamificationCommandCenterProps> = ({ userStats }) => {
   const getBadgeIcon = (icon: string) => {
     const icons: { [key: string]: React.ComponentType<any> } = {
       trophy: Trophy,
@@ -191,3 +191,4 @@ export const GamificationDashboard: React.FC<GamificationDashboardProps> = ({ us
     </div>
   );
 };
+

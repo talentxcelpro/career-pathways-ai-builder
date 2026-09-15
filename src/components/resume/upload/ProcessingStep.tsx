@@ -35,7 +35,7 @@ export const ProcessingStep: React.FC<ProcessingStepProps> = ({
     'Validating file...',
     'Extracting text content...',
     'Advanced text extraction...',
-    'AI-powered parsing with NLP...',
+    'Performance parsing with NLP...',
     'Structure analysis & validation...',
     'ATS optimization & scoring...',
     'Generating enhancement suggestions...',
@@ -55,7 +55,7 @@ export const ProcessingStep: React.FC<ProcessingStepProps> = ({
       setProcessingError(null);
       console.log('🚀 Starting enhanced resume parsing...');
       
-      // Use the new enhanced parser with progress tracking
+      // Use the new enhanced parser with Growth Path
       const result: EnhancedParsingResult = await EnhancedResumeExtractor.parseResumeWithFallbacks(
         uploadedFile,
         (step: string, progress: number) => {
@@ -277,7 +277,7 @@ export const ProcessingStep: React.FC<ProcessingStepProps> = ({
     );
   }
 
-  // Show feedback form after successful parsing
+  // Show Feedback form after successful parsing
   if (processingComplete && !processingError && !showEmptyDataGuidance && showFeedback && parsedData) {
     return (
       <div className="space-y-6">
@@ -290,7 +290,7 @@ export const ProcessingStep: React.FC<ProcessingStepProps> = ({
               Resume Processed Successfully!
             </h3>
             <p className="text-gray-600 mb-4">
-              Your resume has been parsed using advanced AI. Help us improve by providing feedback.
+              Your resume has been parsed using advanced AI. Help us improve by providing Feedback.
             </p>
           </div>
         </div>
@@ -375,3 +375,4 @@ export const ProcessingStep: React.FC<ProcessingStepProps> = ({
     </div>
   );
 };
+

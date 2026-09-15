@@ -107,8 +107,8 @@ const MessageSettings = () => {
             <CardContent className="space-y-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <Label htmlFor="auto-accept">Auto-accept from connections</Label>
-                  <p className="text-sm text-gray-600">Automatically accept messages from your connections</p>
+                  <Label htmlFor="auto-accept">Auto-accept from TalentNetwork</Label>
+                  <p className="text-sm text-gray-600">Automatically accept messages from your TalentNetwork</p>
                 </div>
                 <Switch id="auto-accept" defaultChecked />
               </div>
@@ -133,3 +133,5 @@ const MessageSettings = () => {
 };
 
 export default MessageSettings;
+
+

@@ -72,74 +72,59 @@ export const OnlineUsersWidget: React.FC<OnlineUsersWidgetProps> = ({
   };
 
   if (displayUsers.length === 0) {
-    return (
-      <Card className={cn("w-full", className)}>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm flex items-center gap-2">
-            <Users className="h-4 w-4" />
-            {currentModule ? `Online in ${getModuleLabel(currentModule)}` : 'Online Users'}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center text-muted-foreground text-sm py-4">
-            <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
-            <p>No users online {currentModule ? `in ${getModuleLabel(currentModule)}` : ''}</p>
-          </div>
-        </CardContent>
-      </Card>
-    );
+    return null; // Auto-hide when empty as requested
   }
 
   return (
-    <Card className={cn("w-full", className)}>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-sm flex items-center justify-between">
+    <Card className={cn(
+      "glass-pro border-white/20 shadow-2xl overflow-hidden rounded-[32px] transition-all duration-500 animate-in fade-in slide-in-from-right-8",
+      className
+    )}>
+      <CardHeader className="p-6 pb-2">
+        <CardTitle className="text-[10px] font-apple-heavy uppercase tracking-[0.2em] text-slate-400 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Users className="h-4 w-4" />
-            {currentModule ? `Online in ${getModuleLabel(currentModule)}` : 'Online Users'}
+            <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+            {currentModule ? `Syncing in ${getModuleLabel(currentModule)}` : 'Live Signals'}
           </div>
-          <Badge variant="secondary" className="text-xs">
+          <Badge className="bg-primary/10 text-primary hover:bg-primary/10 border-none px-2 py-0.5 rounded-lg font-apple-bold">
             {currentModule ? displayUsers.length : onlineCount}
           </Badge>
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <ScrollArea className="h-64">
-          <div className="space-y-3">
+      <CardContent className="p-4 pt-0">
+        <ScrollArea className="h-64 pr-4">
+          <div className="space-y-2">
             {displayUsers.map((user) => (
               <div
                 key={user.user_id}
-                className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+                className="group flex items-center gap-3 p-3 rounded-2xl hover:bg-white/50 border border-transparent hover:border-white/50 transition-all duration-300 cursor-pointer"
                 onClick={() => goToProfile(user.user_id, user.username)}
               >
                 <div className="relative">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={user.profile_picture_url} />
-                    <AvatarFallback className="text-xs">
+                  <Avatar className="h-10 w-10 rounded-xl border-2 border-white shadow-sm group-hover:shadow-md transition-all">
+                    <AvatarImage src={user.profile_picture_url} className="object-cover" />
+                    <AvatarFallback className="bg-slate-100 text-slate-400 font-apple-bold text-xs">
                       {formatUserName(user).slice(0, 2).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <Circle 
-                    className={cn(
-                      "absolute -bottom-0.5 -right-0.5 h-3 w-3 fill-current",
-                      getActivityColor(user.activity_status)
-                    )}
-                  />
+                  <div className={cn(
+                    "absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full border-2 border-white shadow-sm",
+                    user.activity_status === 'active' ? 'bg-emerald-500' : 'bg-slate-300'
+                  )} />
                 </div>
                 
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">
+                  <p className="text-sm font-apple-bold text-slate-900 truncate group-hover:text-primary transition-colors">
                     {formatUserName(user)}
                   </p>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span className="capitalize">{user.activity_status || 'active'}</span>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-[10px] font-apple-heavy uppercase tracking-widest text-slate-400">
+                      {user.activity_status || 'Active'}
+                    </span>
                     {showModule && user.current_module && (
-                      <>
-                        <span>•</span>
-                        <Badge variant="outline" className="text-xs py-0 px-1">
-                          {getModuleLabel(user.current_module)}
-                        </Badge>
-                      </>
+                      <Badge variant="outline" className="text-[9px] font-apple-bold px-1.5 py-0 rounded-md border-slate-200 text-slate-400 uppercase tracking-tighter">
+                        {getModuleLabel(user.current_module)}
+                      </Badge>
                     )}
                   </div>
                 </div>
@@ -147,15 +132,7 @@ export const OnlineUsersWidget: React.FC<OnlineUsersWidgetProps> = ({
             ))}
           </div>
         </ScrollArea>
-
-        {!currentModule && onlineCount > maxUsers && (
-          <div className="mt-3 pt-3 border-t text-center">
-            <p className="text-xs text-muted-foreground">
-              +{onlineCount - maxUsers} more users online
-            </p>
-          </div>
-        )}
       </CardContent>
     </Card>
   );
-};
+};

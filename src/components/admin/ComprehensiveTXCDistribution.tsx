@@ -44,7 +44,7 @@ export const ComprehensiveTXCDistribution = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <Calendar className="h-3 w-3" />
-                  <span><strong>Phase 3:</strong> Retroactive rewards from 01-09-2025 (posts, connections, profile completion, job applications)</span>
+                  <span><strong>Phase 3:</strong> Retroactive rewards from 01-09-2025 (posts, TalentNetwork, profile completion, job applications)</span>
                 </div>
               </div>
             </div>
@@ -90,3 +90,4 @@ export const ComprehensiveTXCDistribution = () => {
     </Card>
   );
 };
+

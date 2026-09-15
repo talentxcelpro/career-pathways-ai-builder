@@ -268,11 +268,11 @@ export const SalaryInsights: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <AIStatusIndicator module="Analytics" feature="Real-time Salary Intelligence">
+          <AIStatusIndicator module="CareerAnalytics" feature="Real-time Salary Intelligence">
             <h1 className="text-3xl font-bold text-foreground">Comprehensive Salary Insights</h1>
           </AIStatusIndicator>
           <p className="text-muted-foreground mt-1">
-            AI-powered salary analytics with real-time market data
+            Performance salary CareerAnalytics with real-time market data
           </p>
         </div>
         
@@ -599,7 +599,7 @@ export const SalaryInsights: React.FC = () => {
                 <div className="pt-4 border-t">
                   <h4 className="font-semibold mb-2">2025 Predictions</h4>
                   <p className="text-sm text-muted-foreground">
-                    AI-powered forecast suggests 15-18% growth for tech roles,
+                    Performance forecast suggests 15-18% growth for tech roles,
                     driven by increased demand for AI/ML and cloud expertise.
                   </p>
                 </div>
@@ -652,3 +652,6 @@ export const SalaryInsights: React.FC = () => {
     </div>
   );
 };
+
+
+

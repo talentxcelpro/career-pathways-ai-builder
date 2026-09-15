@@ -22,24 +22,24 @@ const PREFETCH_RULES: PrefetchRule[] = [
     priority: 'high',
   },
   
-  // Network page -> Prefetch connections and suggestions
+  // Network page -> Prefetch TalentNetwork and suggestions
   {
     trigger: '/network',
     prefetch: ['connections', 'connection-suggestions', 'online-users'],
     priority: 'high',
   },
 
-  // Feed page -> Prefetch posts and notifications
+  // Pulse page -> Prefetch posts and notifications
   {
-    trigger: '/feed',
+    trigger: '/Pulse',
     prefetch: ['posts', 'notifications', 'trending'],
     priority: 'high',
   },
 
-  // Profile page -> Prefetch user data and connections
+  // Profile page -> Prefetch user data and TalentNetwork
   {
     trigger: '/network/people/',
-    prefetch: ['profile-connections', 'profile-posts', 'mutual-connections'],
+    prefetch: ['profile-TalentNetwork', 'profile-posts', 'mutual-TalentNetwork'],
     priority: 'medium',
   },
 
@@ -213,3 +213,5 @@ export function useSmartPrefetching(currentRoute: string) {
 }
 
 export { smartPrefetcher };
+
+

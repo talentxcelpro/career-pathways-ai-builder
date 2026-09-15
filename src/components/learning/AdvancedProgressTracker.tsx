@@ -148,7 +148,7 @@ export const AdvancedProgressTracker: React.FC<AdvancedProgressTrackerProps> = (
     <div className={cn("space-y-6 animate-fade-in", className)}>
       {/* Header with Timeframe Selector */}
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-foreground">Learning Analytics</h2>
+        <h2 className="text-2xl font-bold text-foreground">Learning CareerAnalytics</h2>
         <div className="flex gap-2">
           {(['week', 'month', 'year'] as const).map((timeframe) => (
             <Button
@@ -376,3 +376,6 @@ export const AdvancedProgressTracker: React.FC<AdvancedProgressTrackerProps> = (
     </div>
   );
 };
+
+
+

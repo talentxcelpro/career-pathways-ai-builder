@@ -59,7 +59,7 @@ export const BulkModerationPanel: React.FC<BulkModerationPanelProps> = ({
       icon: XCircle,
       color: 'text-red-600',
       bgColor: 'bg-red-100',
-      description: 'Reject posts and hide from public feed'
+      description: 'Reject posts and hide from public Pulse'
     },
     {
       value: 'flag' as const,

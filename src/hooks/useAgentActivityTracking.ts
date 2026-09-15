@@ -168,7 +168,7 @@ export const useAgentActivityTracking = () => {
     });
   };
 
-  // Fetch agent metrics for dashboard
+  // Fetch agent metrics for CommandCenter
   const getAgentMetrics = async (agentId?: string): Promise<AgentMetrics[]> => {
     try {
       let agentsQuery = supabase.from('ai_agents').select('*');
@@ -242,3 +242,4 @@ export const useAgentActivityTracking = () => {
     getAgentMetrics
   };
 };
+

@@ -148,7 +148,7 @@ export const ReferralNetworkAd: React.FC<ReferralNetworkAdProps> = ({
               >
                 <Link to="/refer-and-earn">
                   <Zap className="w-4 h-4 mr-2" />
-                  {isNewUser ? 'Start Referring' : 'View Dashboard'}
+                  {isNewUser ? 'Start Referring' : 'View CommandCenter'}
                 </Link>
               </Button>
               
@@ -170,3 +170,4 @@ export const ReferralNetworkAd: React.FC<ReferralNetworkAdProps> = ({
     </Card>
   );
 };
+

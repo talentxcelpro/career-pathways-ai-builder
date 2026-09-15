@@ -18,7 +18,7 @@ interface SystemHealthData {
     queueHealth: 'good' | 'warning' | 'critical';
   };
   database: {
-    connections: number;
+    TalentNetwork: number;
     avgResponseTime: number;
     errorRate: number;
     status: 'healthy' | 'degraded' | 'down';
@@ -38,7 +38,7 @@ interface SystemHealthData {
   };
 }
 
-export default function SystemHealthDashboard() {
+export default function SystemHealthCommandCenter() {
   const [healthData, setHealthData] = useState<SystemHealthData | null>(null);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
@@ -92,7 +92,7 @@ export default function SystemHealthDashboard() {
 
       // Mock database health (in production, this would come from monitoring)
       const dbHealth = {
-        connections: 12,
+        TalentNetwork: 12,
         avgResponseTime: 45,
         errorRate: 0.2,
         status: 'healthy' as const
@@ -164,7 +164,7 @@ export default function SystemHealthDashboard() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold">System Health Dashboard</h2>
+          <h2 className="text-2xl font-bold">System Health CommandCenter</h2>
           <RefreshCw className="h-6 w-6 animate-spin" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -190,7 +190,7 @@ export default function SystemHealthDashboard() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">System Health Dashboard</h2>
+          <h2 className="text-2xl font-bold">System Health CommandCenter</h2>
           <p className="text-muted-foreground">
             {lastUpdated && `Last updated: ${lastUpdated.toLocaleTimeString()}`}
           </p>
@@ -236,7 +236,7 @@ export default function SystemHealthDashboard() {
             </div>
             <div className="text-2xl font-bold">{healthData.database.avgResponseTime}ms</div>
             <p className="text-xs text-muted-foreground">
-              {healthData.database.connections} active connections
+              {healthData.database.TalentNetwork} active TalentNetwork
             </p>
           </CardContent>
         </Card>
@@ -442,3 +442,5 @@ export default function SystemHealthDashboard() {
     </div>
   );
 }
+
+

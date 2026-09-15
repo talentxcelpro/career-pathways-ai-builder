@@ -217,7 +217,7 @@ const EnterpriseSolutions = () => {
             </Button>
             <Button variant="outline" className="h-20 flex-col gap-2">
               <BarChart3 className="h-6 w-6" />
-              <span>View Analytics</span>
+              <span>View CareerAnalytics</span>
             </Button>
             <Button variant="outline" className="h-20 flex-col gap-2">
               <DollarSign className="h-6 w-6" />
@@ -231,3 +231,6 @@ const EnterpriseSolutions = () => {
 };
 
 export default EnterpriseSolutions;
+
+
+

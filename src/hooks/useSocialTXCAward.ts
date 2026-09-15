@@ -7,7 +7,7 @@ interface SocialTXCResult {
   name: string | null;
   email: string | null;
   posts: number;
-  connections: number;
+  TalentNetwork: number;
   awarded: number;
   new_balance: number;
   error?: string;
@@ -46,8 +46,8 @@ export const useSocialTXCAward = () => {
       for (const user of activeUsers || []) {
         // Calculate TXC awards based on activity
         const postsCount = Math.floor(Math.random() * 5); // Mock post count
-        const connectionsCount = Math.floor(Math.random() * 10); // Mock connections
-        const awardAmount = (postsCount * 5) + (connectionsCount * 2); // 5 TXC per post, 2 per connection
+        const TalentNetworkCount = Math.floor(Math.random() * 10); // Mock TalentNetwork
+        const awardAmount = (postsCount * 5) + (TalentNetworkCount * 2); // 5 TXC per post, 2 per connection
         
         if (awardAmount > 0) {
           // Award credits
@@ -69,7 +69,7 @@ export const useSocialTXCAward = () => {
               name: user.full_name,
               email: user.email,
               posts: postsCount,
-              connections: connectionsCount,
+              TalentNetwork: TalentNetworkCount,
               awarded: 0,
               new_balance: 0,
               error: creditError.message
@@ -82,10 +82,10 @@ export const useSocialTXCAward = () => {
                 user_id: user.id,
                 transaction_type: 'earned',
                 amount: awardAmount,
-                description: `Social activity reward: ${postsCount} posts, ${connectionsCount} connections`,
+                description: `Social activity reward: ${postsCount} posts, ${TalentNetworkCount} TalentNetwork`,
                 metadata: {
                   posts: postsCount,
-                  connections: connectionsCount,
+                  TalentNetwork: TalentNetworkCount,
                   award_date: currentTime
                 }
               });
@@ -95,7 +95,7 @@ export const useSocialTXCAward = () => {
               name: user.full_name,
               email: user.email,
               posts: postsCount,
-              connections: connectionsCount,
+              TalentNetwork: TalentNetworkCount,
               awarded: awardAmount,
               new_balance: awardAmount,
               error: undefined
@@ -133,3 +133,4 @@ export const useSocialTXCAward = () => {
     lastResults
   };
 };
+

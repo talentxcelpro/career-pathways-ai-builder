@@ -265,7 +265,7 @@ export const AIRoadmapSuggestions: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState<string>('all');
   const [selectedRecommendation, setSelectedRecommendation] = useState<AIRecommendation | null>(null);
   const [implementedItems, setImplementedItems] = useState<Set<string>>(new Set());
-  const [showAnalytics, setShowAnalytics] = useState(false);
+  const [showCareerAnalytics, setShowCareerAnalytics] = useState(false);
 
   const filteredRecommendations = aiRecommendations.filter(rec => {
     if (selectedFilter === 'all') return true;
@@ -287,7 +287,7 @@ export const AIRoadmapSuggestions: React.FC = () => {
     return Math.min(score, 100);
   };
 
-  const analytics = {
+  const CareerAnalytics = {
     totalRecommendations: aiRecommendations.length,
     implemented: implementedItems.size,
     averageScore: Math.round(aiRecommendations.reduce((sum, rec) => sum + getRecommendationScore(rec), 0) / aiRecommendations.length),
@@ -307,14 +307,14 @@ export const AIRoadmapSuggestions: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header with AI Insights */}
+      {/* Header with Intelligence Metrics */}
       <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
         <CardHeader>
           <CardTitle className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 rounded-full">
               <Brain className="h-6 w-6 text-blue-600" />
             </div>
-            AI Career Intelligence
+            AI CareerIntelligence
           </CardTitle>
           <p className="text-muted-foreground">
             Personalized recommendations based on your career goals, market trends, and skill analysis
@@ -323,20 +323,20 @@ export const AIRoadmapSuggestions: React.FC = () => {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="text-center">
-              <p className="text-2xl font-bold text-blue-600">{analytics.totalRecommendations}</p>
+              <p className="text-2xl font-bold text-blue-600">{CareerAnalytics.totalRecommendations}</p>
               <p className="text-sm text-muted-foreground">Total Recommendations</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-green-600">{analytics.averageScore}</p>
+              <p className="text-2xl font-bold text-green-600">{CareerAnalytics.averageScore}</p>
               <p className="text-sm text-muted-foreground">Avg Relevance Score</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-orange-600">{analytics.highPriority}</p>
+              <p className="text-2xl font-bold text-orange-600">{CareerAnalytics.highPriority}</p>
               <p className="text-sm text-muted-foreground">High Priority</p>
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-purple-600">
-                ${(analytics.estimatedSalaryIncrease / 1000).toFixed(0)}K+
+                ${(CareerAnalytics.estimatedSalaryIncrease / 1000).toFixed(0)}K+
               </p>
               <p className="text-sm text-muted-foreground">Potential Salary Boost</p>
             </div>
@@ -609,3 +609,6 @@ export const AIRoadmapSuggestions: React.FC = () => {
     </div>
   );
 };
+
+
+

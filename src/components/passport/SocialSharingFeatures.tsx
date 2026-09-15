@@ -114,7 +114,7 @@ export function SocialSharingFeatures({
     {
       id: '2',
       title: 'Networking Ninja',
-      description: 'Made 10 professional connections',
+      description: 'Made 10 professional TalentNetwork',
       points: 250,
       isPublic: true
     }
@@ -179,7 +179,7 @@ export function SocialSharingFeatures({
   const shareContent: ShareableContent[] = [
     {
       type: 'passport',
-      title: `${userProfile?.full_name}'s Career Passport`,
+      title: `${userProfile?.full_name}'s Evolution Hub`,
       description: `Check out my professional journey and achievements on TalentXcel`,
       url: generateShareUrl('passport')
     },
@@ -317,7 +317,7 @@ export function SocialSharingFeatures({
                     <DialogHeader>
                       <DialogTitle>Share Your Profile</DialogTitle>
                       <DialogDescription>
-                        Choose how you want to share your career passport
+                        Choose how you want to share your Evolution Hub
                       </DialogDescription>
                     </DialogHeader>
                     <ShareContentDialog 
@@ -601,7 +601,7 @@ function ShareableAchievements({
     {
       id: '2',
       title: 'Networking Ninja',
-      description: 'Made 10 professional connections',
+      description: 'Made 10 professional TalentNetwork',
       points: 250,
       isPublic: true
     }
@@ -632,3 +632,4 @@ function ShareableAchievements({
     </div>
   );
 }
+

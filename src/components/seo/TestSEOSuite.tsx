@@ -96,8 +96,8 @@ export const TestSEOSuite: React.FC = () => {
       }
     },
     {
-      name: 'Google Analytics Integration',
-      function: 'google-analytics-integration',
+      name: 'Google CareerAnalytics Integration',
+      function: 'google-CareerAnalytics-integration',
       payload: {
         propertyId: 'demo',
         dateRange: { startDate: '30daysAgo', endDate: 'today' },
@@ -409,3 +409,6 @@ export const TestSEOSuite: React.FC = () => {
     </Card>
   );
 };
+
+
+

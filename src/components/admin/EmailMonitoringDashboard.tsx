@@ -25,7 +25,7 @@ interface EmailAlert {
   severity: 'low' | 'medium' | 'high' | 'critical';
 }
 
-export const EmailMonitoringDashboard = () => {
+export const EmailMonitoringCommandCenter = () => {
   const [stats, setStats] = useState<EmailStats>({
     totalSent: 0,
     totalFailed: 0,
@@ -346,3 +346,4 @@ export const EmailMonitoringDashboard = () => {
     </div>
   );
 };
+

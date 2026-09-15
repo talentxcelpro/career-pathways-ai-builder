@@ -387,7 +387,7 @@ export const EmailPerformanceOptimizer = () => {
           <Card>
             <CardHeader>
               <CardTitle>Automatic Optimization</CardTitle>
-              <CardDescription>AI-powered email performance optimization recommendations</CardDescription>
+              <CardDescription>Performance email performance optimization recommendations</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="p-4 border rounded-lg space-y-2">

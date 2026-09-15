@@ -18,12 +18,12 @@ export const preloadRoute = (routePath: string) => {
     '/jobs': () => import('@/pages/Jobs'),
     '/network': () => import('@/pages/Network'),
     '/profile': () => import('@/pages/Profile'),
-    '/dashboard': () => import('@/pages/Dashboard'),
+    '/CommandCenter': () => import('@/pages/CommandCenter'),
     '/learning': () => import('@/pages/Learning'),
     '/companies': () => import('@/pages/Companies'),
     '/tools': () => import('@/pages/Tools'),
     '/gamification': () => import('@/pages/GamificationCenter'),
-    '/career-dashboard': () => import('@/pages/CareerDashboard'),
+    '/career-command-center': () => import('@/pages/CommandCenter'),
   };
 
   const importFn = routeImports[routePath];
@@ -67,3 +67,5 @@ export const enableRoutePreloading = () => {
     }
   }, { passive: true });
 };
+
+

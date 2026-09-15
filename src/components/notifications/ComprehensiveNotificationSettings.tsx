@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -47,28 +47,28 @@ const NOTIFICATION_CATEGORIES: CategoryConfig[] = [
   {
     key: 'job_opportunities',
     label: 'Job Opportunities',
-    description: 'Job matches, application updates, salary insights',
+    description: 'Precision Match roles, application updates, salary signals',
     icon: <Sparkles className="h-4 w-4" />,
     priority: 'high'
   },
   {
     key: 'social_interactions',
     label: 'Social & Networking',
-    description: 'Connection requests, profile views, network updates',
+    description: 'Talent Network requests, profile views, network updates',
     icon: <Users className="h-4 w-4" />,
     priority: 'medium'
   },
   {
     key: 'tool_engagement',
-    label: 'Tool Suggestions',
-    description: 'Resume tips, AI assistant recommendations',
+    label: 'Tool Smart Moves',
+    description: 'Resume tips and TalentXcel Navigator career moves',
     icon: <Settings className="h-4 w-4" />,
     priority: 'medium'
   },
   {
     key: 'skill_development',
     label: 'Skill Development',
-    description: 'Learning paths, industry trends, course recommendations',
+    description: 'Learning paths, industry trends, and course moves',
     icon: <BookOpen className="h-4 w-4" />,
     priority: 'medium'
   },
@@ -105,6 +105,10 @@ export const ComprehensiveNotificationSettings: React.FC = () => {
   } = useComprehensivePushNotifications();
 
   const [localPreferences, setLocalPreferences] = useState(preferences);
+
+  useEffect(() => {
+    setLocalPreferences(preferences);
+  }, [preferences]);
 
   const updateCategoryPreference = (category: string, enabled: boolean) => {
     if (!localPreferences) return;
@@ -195,6 +199,16 @@ export const ComprehensiveNotificationSettings: React.FC = () => {
     }
   };
 
+  const getPersonalizationLabel = (key: string) => {
+    switch (key) {
+      case 'use_ai_optimization': return 'TalentXcel Timing';
+      case 'location_based': return 'Location Based';
+      case 'skill_based': return 'Skill Based';
+      case 'activity_based': return 'Activity Based';
+      default: return key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    }
+  };
+
   if (!localPreferences) {
     return (
       <Card>
@@ -226,7 +240,7 @@ export const ComprehensiveNotificationSettings: React.FC = () => {
           <TabsTrigger value="channels">Channels</TabsTrigger>
           <TabsTrigger value="timing">Timing</TabsTrigger>
           <TabsTrigger value="frequency">Frequency</TabsTrigger>
-          <TabsTrigger value="personalization">AI & Personal</TabsTrigger>
+          <TabsTrigger value="personalization">Signal Tuning</TabsTrigger>
         </TabsList>
 
         <TabsContent value="categories" className="space-y-4">
@@ -380,7 +394,7 @@ export const ComprehensiveNotificationSettings: React.FC = () => {
                 <div>
                   <Label className="font-medium">Optimal Time Delivery</Label>
                   <p className="text-sm text-muted-foreground">
-                    AI will choose the best time to send notifications based on your activity
+                    TalentXcel will choose the best time to send notifications based on your activity
                   </p>
                 </div>
                 <Switch
@@ -459,10 +473,10 @@ export const ComprehensiveNotificationSettings: React.FC = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4" />
-                AI & Personalization
+                Signal Personalization
               </CardTitle>
               <p className="text-sm text-muted-foreground">
-                Let AI optimize your notification experience
+                Let TalentXcel tune your notification experience
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -470,10 +484,10 @@ export const ComprehensiveNotificationSettings: React.FC = () => {
                 <div key={key} className="flex items-center justify-between p-4 border rounded-lg">
                   <div>
                     <Label className="font-medium">
-                      {key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                      {getPersonalizationLabel(key)}
                     </Label>
                     <p className="text-sm text-muted-foreground">
-                      {key === 'use_ai_optimization' && 'AI learns your preferences and optimizes delivery timing'}
+                      {key === 'use_ai_optimization' && 'TalentXcel learns your preferences and tunes delivery timing'}
                       {key === 'location_based' && 'Customize notifications based on your location and timezone'}
                       {key === 'skill_based' && 'Personalize content based on your skills and interests'}
                       {key === 'activity_based' && 'Adapt frequency based on your app usage patterns'}

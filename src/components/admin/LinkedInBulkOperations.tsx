@@ -34,7 +34,7 @@ export default function LinkedInBulkOperations() {
   const handleCreateBulkOperation = async (type: string) => {
     setIsCreating(true);
     try {
-      const { data, error } = await supabase.functions.invoke('linkedin-analytics-processor', {
+      const { data, error } = await supabase.functions.invoke('linkedin-CareerAnalytics-processor', {
         body: {
           action: 'create_bulk_operation',
           operation_type: type,
@@ -85,7 +85,7 @@ export default function LinkedInBulkOperations() {
 
   const handlePauseOperation = async (operationId: string) => {
     try {
-      const { error } = await supabase.functions.invoke('linkedin-analytics-processor', {
+      const { error } = await supabase.functions.invoke('linkedin-CareerAnalytics-processor', {
         body: {
           action: 'pause_operation',
           operation_id: operationId
@@ -102,7 +102,7 @@ export default function LinkedInBulkOperations() {
 
   const handleResumeOperation = async (operationId: string) => {
     try {
-      const { error } = await supabase.functions.invoke('linkedin-analytics-processor', {
+      const { error } = await supabase.functions.invoke('linkedin-CareerAnalytics-processor', {
         body: {
           action: 'resume_operation',
           operation_id: operationId
@@ -269,3 +269,6 @@ export default function LinkedInBulkOperations() {
     </div>
   );
 }
+
+
+

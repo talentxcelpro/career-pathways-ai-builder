@@ -41,7 +41,7 @@ const EmployerLanding = () => {
     {
       icon: BarChart3,
       title: 'Manage Applications in Real Time',
-      description: 'Track and manage all applications from one dashboard'
+      description: 'Track and manage all applications from one CommandCenter'
     },
     {
       icon: Bot,
@@ -64,7 +64,7 @@ const EmployerLanding = () => {
     },
     {
       icon: Bot,
-      title: 'AI-Powered Job Post Creation',
+      title: 'Performance Job Post Creation',
       description: 'Just enter the role title — we\'ll generate the perfect JD.',
       image: aiMatching
     },
@@ -124,14 +124,14 @@ const EmployerLanding = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
               <Button 
                 onClick={() => {
-                  navigate('/employer/dashboard');
-                  toast.success('Navigating to Employer Dashboard');
+                  navigate('/employer/CommandCenter');
+                  toast.success('Navigating to Employer CommandCenter');
                 }} 
                 className="bg-green-600 hover:bg-green-700 transition-all duration-200 shadow-md hover:shadow-lg"
                 size="lg"
               >
                 <CheckCircle className="h-4 w-4 mr-2" />
-                Employer Dashboard
+                Employer CommandCenter
               </Button>
               <Button 
                 onClick={() => {
@@ -248,7 +248,7 @@ const EmployerLanding = () => {
                 </div>
               </div>
               <p className="text-xl text-gray-600 mb-8">
-                AI-powered hiring that connects you with top talent instantly — Driven by TalentXcel AI intelligence
+                Performance hiring that connects you with top talent instantly — Driven by TalentXcel AI intelligence
               </p>
               
               {/* Features Grid */}
@@ -284,7 +284,7 @@ const EmployerLanding = () => {
             <div className="relative">
               <img 
                 src={employerHero} 
-                alt="Professional employer dashboard" 
+                alt="Professional employer CommandCenter" 
                 className="rounded-2xl shadow-2xl"
               />
               <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-lg">
@@ -433,3 +433,4 @@ const EmployerLanding = () => {
 };
 
 export default EmployerLanding;
+

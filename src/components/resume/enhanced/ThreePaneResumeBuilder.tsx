@@ -18,7 +18,7 @@ import { ATSCheckDialog } from './three-pane/ATSCheckDialog';
 import { ImproveSectionDialog } from './three-pane/ImproveSectionDialog';
 import { useAutoSave } from '@/hooks/useAutoSave';
 import { VoiceInput } from '../voice/VoiceInput';
-import { ResumeAnalytics } from '../analytics/ResumeAnalytics';
+import { ResumeCareerAnalytics } from '../analytics/ResumeAnalytics';
 import { RealtimeCollaboration } from '../collaboration/RealtimeCollaboration';
 
 interface ThreePaneResumeBuilderProps {
@@ -117,7 +117,7 @@ export const ThreePaneResumeBuilder: React.FC<ThreePaneResumeBuilderProps> = ({
   const [atsOpen, setAtsOpen] = useState(false);
   const [improveOpen, setImproveOpen] = useState(false);
   const [showVoiceInput, setShowVoiceInput] = useState(false);
-  const [showAnalytics, setShowAnalytics] = useState(false);
+  const [showCareerAnalytics, setShowCareerAnalytics] = useState(false);
   const [showCollaboration, setShowCollaboration] = useState(false);
 
   const sensors = useSensors(
@@ -419,7 +419,7 @@ export const ThreePaneResumeBuilder: React.FC<ThreePaneResumeBuilderProps> = ({
           </div>
         </div>
         <div className="mt-2 text-xs text-muted-foreground">
-          Real-time ATS optimization • Smart suggestions • Multiple templates
+          Real-time ATS optimization - Smart Moves - Multiple templates
         </div>
       </div>
 
@@ -435,10 +435,10 @@ export const ThreePaneResumeBuilder: React.FC<ThreePaneResumeBuilderProps> = ({
           saveStatus={saveStatus}
           lastSaved={lastSaved}
           onToggleVoice={() => setShowVoiceInput(!showVoiceInput)}
-          onToggleAnalytics={() => setShowAnalytics(!showAnalytics)}
+          onToggleCareerAnalytics={() => setShowCareerAnalytics(!showCareerAnalytics)}
           onToggleCollaboration={() => setShowCollaboration(!showCollaboration)}
           showVoice={showVoiceInput}
-          showAnalytics={showAnalytics}
+          showCareerAnalytics={showCareerAnalytics}
           showCollaboration={showCollaboration}
         />
       </div>
@@ -453,7 +453,7 @@ export const ThreePaneResumeBuilder: React.FC<ThreePaneResumeBuilderProps> = ({
             Freestyle
           </button>
           <button className="flex-1 py-3 px-4 text-sm font-medium text-center text-muted-foreground">
-            AI Chat
+            Navigator
           </button>
         </div>
       </div>
@@ -469,10 +469,10 @@ export const ThreePaneResumeBuilder: React.FC<ThreePaneResumeBuilderProps> = ({
         </div>
       )}
 
-      {/* Analytics Panel */}
-      {showAnalytics && (
+      {/* CareerAnalytics Panel */}
+      {showCareerAnalytics && (
         <div className="border-t border-border bg-card p-4 max-h-96 overflow-y-auto">
-          <ResumeAnalytics resume={data} />
+          <ResumeCareerAnalytics resume={data} />
         </div>
       )}
 
@@ -493,7 +493,7 @@ export const ThreePaneResumeBuilder: React.FC<ThreePaneResumeBuilderProps> = ({
         <div className="p-4 border-b bg-card">
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-medium">Template:</span>
-            <span className="text-xs text-muted-foreground">4 suggestions available</span>
+            <span className="text-xs text-muted-foreground">4 Smart Moves available</span>
           </div>
           <select className="w-full p-2 border rounded-md text-sm bg-background">
             <option>Select a template...</option>
@@ -509,14 +509,14 @@ export const ThreePaneResumeBuilder: React.FC<ThreePaneResumeBuilderProps> = ({
             onClick={handleUploadResume}
             className="w-full py-3 px-4 border-2 border-dashed border-primary/30 rounded-lg text-sm text-primary font-medium hover:bg-primary/5 transition-colors"
           >
-            📄 Upload Resume (0/3)
+            Upload Resume (0/3)
           </button>
         </div>
 
-        {/* ATS Insights */}
+        {/* ATS signals */}
         <div className="p-4 bg-card">
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-sm font-medium">⚡ ATS Insights</span>
+            <span className="text-sm font-medium">ATS Signals</span>
           </div>
           
           <div className="space-y-3">
@@ -590,10 +590,10 @@ export const ThreePaneResumeBuilder: React.FC<ThreePaneResumeBuilderProps> = ({
             {activeId ? (
               <div className="opacity-90 scale-105 shadow-2xl border-2 border-primary/50 rounded-lg overflow-hidden">
                 <div className="bg-background p-4 text-center font-medium">
-                  {activeId === 'templates' && '📄 Templates'}
-                  {activeId === 'sections' && '📝 Resume Sections'}
-                  {activeId === 'editor' && '✏️ Editor'}
-                  {activeId === 'preview' && '👁️ Live Preview'}
+                  {activeId === 'templates' && 'Templates'}
+                  {activeId === 'sections' && 'Resume Sections'}
+                  {activeId === 'editor' && 'Editor'}
+                  {activeId === 'preview' && 'Live Preview'}
                 </div>
               </div>
             ) : null}
@@ -631,3 +631,6 @@ export const ThreePaneResumeBuilder: React.FC<ThreePaneResumeBuilderProps> = ({
     </div>
   );
 };
+
+
+

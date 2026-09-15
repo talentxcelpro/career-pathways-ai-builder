@@ -158,7 +158,7 @@ export const useAdvancedLearningData = (config: AdvancedLearningConfig) => {
       { href: '/api/learning/categories', as: 'fetch' }
     ],
     lazyLoadComponents: config.pageType === 'hub' ? [
-      'PersonalizedDashboard',
+      'PersonalizedCommandCenter',
       'LearningSearchHub',
       'SmartLearningNav'
     ] : []
@@ -171,3 +171,4 @@ export const useAdvancedLearningData = (config: AdvancedLearningConfig) => {
     isPersonalized: !!config.userContext?.isAuthenticated
   };
 };
+

@@ -161,7 +161,7 @@ const ResumeOptimizer = () => {
           }
         },
         keywords: {
-          missing: ['Machine Learning', 'Data Analytics', 'Python', 'SQL', 'Agile', 'Scrum', 'DevOps', 'Cloud Computing'],
+          missing: ['Machine Learning', 'Data CareerAnalytics', 'Python', 'SQL', 'Agile', 'Scrum', 'DevOps', 'Cloud Computing'],
           present: ['JavaScript', 'React', 'Node.js', 'Team Leadership', 'Project Management', 'Web Development'],
           recommended: ['API Development', 'Microservices', 'Docker', 'Kubernetes', 'CI/CD', 'Database Design']
         },
@@ -254,7 +254,7 @@ ${Object.entries(results?.sections || {}).map(([section, data]) =>
             </div>
             <div>
               <h1 className="text-3xl font-bold text-gray-900">AI Resume Optimizer</h1>
-              <p className="text-gray-600">Upload and optimize your resume with AI-powered analysis</p>
+              <p className="text-gray-600">Upload and optimize your resume with Performance analysis</p>
             </div>
           </div>
         </div>
@@ -393,7 +393,7 @@ ${Object.entries(results?.sections || {}).map(([section, data]) =>
                   <TrendingUp className="h-5 w-5 text-green-600 mt-1" />
                   <div>
                     <h4 className="font-medium">Section-by-Section Analysis</h4>
-                    <p className="text-sm text-gray-600">Detailed feedback on each resume section with specific improvements</p>
+                    <p className="text-sm text-gray-600">Detailed Feedback on each resume section with specific improvements</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -419,7 +419,7 @@ ${Object.entries(results?.sections || {}).map(([section, data]) =>
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">Resume Analysis Results</h2>
-                <p className="text-gray-600">AI-powered optimization recommendations for "{jobTitle}"</p>
+                <p className="text-gray-600">Performance optimization recommendations for "{jobTitle}"</p>
               </div>
               <div className="flex gap-2">
                 <Button variant="outline" onClick={() => setResults(null)}>
@@ -594,3 +594,8 @@ ${Object.entries(results?.sections || {}).map(([section, data]) =>
 };
 
 export default ResumeOptimizer;
+
+
+
+
+

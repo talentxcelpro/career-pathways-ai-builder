@@ -39,7 +39,7 @@ interface ComplianceCheck {
   last_audit: string;
 }
 
-export const SecurityAuditDashboard = () => {
+export const SecurityAuditCommandCenter = () => {
   const [securityIssues] = useState<SecurityIssue[]>([
     {
       id: '1',
@@ -146,7 +146,7 @@ export const SecurityAuditDashboard = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Security Audit Dashboard</h2>
+          <h2 className="text-2xl font-bold">Security Audit CommandCenter</h2>
           <p className="text-muted-foreground">Security monitoring and compliance management</p>
         </div>
         <Button>
@@ -487,3 +487,4 @@ export const SecurityAuditDashboard = () => {
     </div>
   );
 };
+

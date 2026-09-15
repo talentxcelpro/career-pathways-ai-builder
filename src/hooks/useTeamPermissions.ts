@@ -57,7 +57,7 @@ export const useTeamPermissions = (companyId?: string) => {
     const permissionHierarchies: Record<string, string[]> = {
       'access_crm_basic': ['access_crm_full'],
       'manage_jobs_basic': ['manage_jobs', 'manage_jobs_full'],
-      'view_analytics_basic': ['view_analytics', 'view_analytics_full'],
+      'view_CareerAnalytics_basic': ['view_CareerAnalytics', 'view_CareerAnalytics_full'],
     };
     
     const higherPermissions = permissionHierarchies[permissionType];
@@ -245,3 +245,6 @@ export const useActivityLogs = (companyId?: string) => {
     isLoading,
   };
 };
+
+
+

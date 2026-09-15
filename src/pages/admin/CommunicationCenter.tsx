@@ -240,7 +240,7 @@ const CommunicationCenter = () => {
           <TabsTrigger value="broadcast">Broadcast Messages</TabsTrigger>
           <TabsTrigger value="notifications">Recent Notifications</TabsTrigger>
           <TabsTrigger value="templates">Templates</TabsTrigger>
-          <TabsTrigger value="analytics">Communication Analytics</TabsTrigger>
+          <TabsTrigger value="CareerAnalytics">Communication CareerAnalytics</TabsTrigger>
         </TabsList>
 
         <TabsContent value="broadcast" className="space-y-4">
@@ -565,3 +565,6 @@ const CommunicationCenter = () => {
 };
 
 export default CommunicationCenter;
+
+
+

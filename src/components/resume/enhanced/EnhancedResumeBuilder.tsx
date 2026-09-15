@@ -9,7 +9,7 @@ import { JobTargetingPanel } from './JobTargetingPanel';
 import { LinkedInSyncPanel } from './LinkedInSyncPanel';
 import { CoverLetterPanel } from './CoverLetterPanel';
 import { InterviewPrepPanel } from './InterviewPrepPanel';
-import { NewAnalyticsDashboard } from '../analytics/NewAnalyticsDashboard';
+import { NewCareerAnalyticsCommandCenter } from '../CareerAnalytics/NewCareerAnalyticsCommandCenter';
 import { coreToEditor, editorToCore } from '@/utils/resume-adapters';
 
 interface EnhancedResumeBuilderProps {
@@ -29,7 +29,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
     refreshData 
   } = useResumeData();
   const [isTargetingOpen, setTargetingOpen] = useState(false);
-  const [showAnalytics, setShowAnalytics] = useState(false);
+  const [showCareerAnalytics, setShowCareerAnalytics] = useState(false);
   const [showLinkedIn, setShowLinkedIn] = useState(false);
   const [showCoverLetter, setShowCoverLetter] = useState(false);
   const [showInterviewPrep, setShowInterviewPrep] = useState(false);
@@ -81,7 +81,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
               onClick={() => window.location.href = '/resume-builder'}
               className="w-full"
             >
-              Back to Dashboard
+              Back to CommandCenter
             </Button>
           </div>
         </div>
@@ -100,7 +100,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
             Unable to initialize resume data
           </p>
           <Button onClick={() => window.location.href = '/resume-builder'}>
-            Back to Dashboard
+            Back to CommandCenter
           </Button>
         </div>
       </div>
@@ -118,12 +118,12 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
       {/* Action Buttons */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-2">
         <Button 
-          onClick={() => setShowAnalytics(true)} 
+          onClick={() => setShowCareerAnalytics(true)} 
           variant="outline"
           size="sm"
-          aria-label="View analytics"
+          aria-label="View CareerAnalytics"
         >
-          📊 Analytics
+          📊 CareerAnalytics
         </Button>
         <Button 
           onClick={() => setShowInterviewPrep(true)} 
@@ -196,22 +196,22 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
         resumeData={resumeData}
       />
 
-      {/* Analytics Dashboard */}
-      {showAnalytics && resumeId && (
+      {/* CareerAnalytics CommandCenter */}
+      {showCareerAnalytics && resumeId && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="w-full max-w-4xl bg-background rounded-lg">
             <div className="p-4 border-b flex justify-between items-center">
-              <h2 className="text-lg font-semibold">Resume Analytics</h2>
+              <h2 className="text-lg font-semibold">Resume CareerAnalytics</h2>
               <Button 
                 variant="ghost" 
                 size="sm"
-                onClick={() => setShowAnalytics(false)}
+                onClick={() => setShowCareerAnalytics(false)}
               >
                 ✕
               </Button>
             </div>
             <div className="p-4 max-h-[80vh] overflow-y-auto">
-              <NewAnalyticsDashboard resumeId={resumeId} />
+              <NewCareerAnalyticsCommandCenter resumeId={resumeId} />
             </div>
           </div>
         </div>
@@ -219,3 +219,7 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
     </div>
   );
 };
+
+
+
+

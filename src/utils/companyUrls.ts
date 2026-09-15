@@ -65,7 +65,7 @@ export const extractSlugFromPath = (pathname: string): string | null => {
   const knownRoutes = [
     'jobs', 'companies', 'profile', 'auth', 'admin', 'employer', 
     'network', 'learning', 'tools', 'career-map', 'resume-builder',
-    'dashboard', 'marketplace'
+    'CommandCenter', 'marketplace'
   ];
   
   if (knownRoutes.includes(slug) || slug.includes('/')) {
@@ -74,3 +74,4 @@ export const extractSlugFromPath = (pathname: string): string | null => {
   
   return slug || null;
 };
+

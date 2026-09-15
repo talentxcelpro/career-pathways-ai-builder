@@ -54,7 +54,7 @@ export const CTABanner = () => {
 
           {/* Description */}
           <p className="text-xl text-slate-300 max-w-2xl mx-auto font-light leading-relaxed">
-            Transform your career journey with AI-powered insights, meaningful connections, and opportunities tailored just for you.
+            Transform your career journey with Performance insights, meaningful TalentNetwork, and opportunities tailored just for you.
           </p>
 
           {/* CTA Button */}
@@ -93,3 +93,4 @@ export const CTABanner = () => {
     </section>
   );
 };
+

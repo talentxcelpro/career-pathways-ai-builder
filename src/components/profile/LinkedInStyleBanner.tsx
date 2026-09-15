@@ -12,7 +12,7 @@ interface LinkedInStyleBannerProps {
   profile: any;
   isOwnProfile?: boolean;
   stats?: {
-    connections: number;
+    TalentNetwork: number;
     profileViews: number;
   };
 }
@@ -20,7 +20,7 @@ interface LinkedInStyleBannerProps {
 export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
   profile,
   isOwnProfile = false,
-  stats = { connections: 0, profileViews: 0 }
+  stats = { TalentNetwork: 0, profileViews: 0 }
 }) => {
   const [uploading, setUploading] = useState<'banner' | 'avatar' | null>(null);
   
@@ -197,3 +197,4 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
     </div>
   );
 };
+

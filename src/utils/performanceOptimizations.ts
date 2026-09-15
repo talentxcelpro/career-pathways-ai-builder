@@ -98,8 +98,8 @@ export const preloadRouteComponent = async (routePath: string) => {
       case '/auth/login':
         // await import('@/pages/auth/Login');
         break;
-      case '/dashboard':
-        // await import('@/pages/Dashboard');
+      case '/CommandCenter':
+        // await import('@/pages/CommandCenter');
         break;
       default:
         break;
@@ -215,14 +215,6 @@ export const initializePerformanceOptimizations = () => {
   // Preload critical chunks
   preloadCriticalChunks();
   
-  // Setup font optimization with performance hints
-  const fontLink = document.createElement('link');
-  fontLink.rel = 'preload';
-  fontLink.as = 'font';
-  fontLink.type = 'font/woff2';
-  fontLink.crossOrigin = 'anonymous';
-  document.head.appendChild(fontLink);
-
   // Add performance monitoring
   if ('performance' in window && 'observe' in window.PerformanceObserver.prototype) {
     const observer = new PerformanceObserver((list) => {
@@ -240,3 +232,4 @@ export const initializePerformanceOptimizations = () => {
     observer.observe({ entryTypes: ['largest-contentful-paint', 'first-input'] });
   }
 };
+

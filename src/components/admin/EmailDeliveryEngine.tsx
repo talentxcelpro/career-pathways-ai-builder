@@ -306,7 +306,7 @@ export const EmailDeliveryEngine = () => {
       <Tabs defaultValue="jobs" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="jobs">Active Jobs</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
 
@@ -357,7 +357,7 @@ export const EmailDeliveryEngine = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="analytics" className="space-y-4">
+        <TabsContent value="CareerAnalytics" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card>
               <CardHeader className="pb-2">
@@ -484,3 +484,6 @@ export const EmailDeliveryEngine = () => {
     </div>
   );
 };
+
+
+

@@ -20,7 +20,7 @@ interface NetworkingContact {
   location: string;
   avatar: string;
   matchScore: number;
-  commonConnections: number;
+  commonTalentNetwork: number;
   isPremium: boolean;
   availability: 'available' | 'busy' | 'away';
   skills: string[];
@@ -42,7 +42,7 @@ export const PremiumNetworkingFeatures: React.FC = () => {
       location: 'San Francisco, CA',
       avatar: '/api/placeholder/40/40',
       matchScore: 95,
-      commonConnections: 12,
+      commonTalentNetwork: 12,
       isPremium: true,
       availability: 'available',
       skills: ['Product Strategy', 'AI/ML', 'Growth'],
@@ -56,7 +56,7 @@ export const PremiumNetworkingFeatures: React.FC = () => {
       location: 'Austin, TX',
       avatar: '/api/placeholder/40/40',
       matchScore: 88,
-      commonConnections: 8,
+      commonTalentNetwork: 8,
       isPremium: true,
       availability: 'busy',
       skills: ['Leadership', 'React', 'Team Building'],
@@ -70,10 +70,10 @@ export const PremiumNetworkingFeatures: React.FC = () => {
       location: 'New York, NY',
       avatar: '/api/placeholder/40/40',
       matchScore: 82,
-      commonConnections: 15,
+      commonTalentNetwork: 15,
       isPremium: false,
       availability: 'available',
-      skills: ['User Research', 'Design Systems', 'Analytics'],
+      skills: ['User Research', 'Design Systems', 'CareerAnalytics'],
       lastActive: '30 minutes ago'
     }
   ];
@@ -143,7 +143,7 @@ export const PremiumNetworkingFeatures: React.FC = () => {
               {contact.matchScore}% Match
             </Badge>
             <p className="text-xs text-muted-foreground">
-              {contact.commonConnections} mutual connections
+              {contact.commonTalentNetwork} mutual TalentNetwork
             </p>
           </div>
         </div>
@@ -200,7 +200,7 @@ export const PremiumNetworkingFeatures: React.FC = () => {
         </div>
         <Button variant="outline" className="flex items-center gap-2">
           <TrendingUp className="w-4 h-4" />
-          View Analytics
+          View CareerAnalytics
         </Button>
       </div>
 
@@ -233,11 +233,11 @@ export const PremiumNetworkingFeatures: React.FC = () => {
             </CardContent>
           </Card>
 
-          {/* AI-Powered Matches */}
+          {/* Performance Matches */}
           <div>
             <div className="flex items-center gap-2 mb-4">
               <Zap className="w-5 h-5 text-yellow-500" />
-              <h3 className="text-lg font-semibold">AI-Powered Matches</h3>
+              <h3 className="text-lg font-semibold">Performance Matches</h3>
               <Badge variant="outline">Updated daily</Badge>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -292,7 +292,7 @@ export const PremiumNetworkingFeatures: React.FC = () => {
                 </div>
                 <div className="text-center p-4 bg-muted rounded-lg">
                   <div className="text-2xl font-bold text-purple-500">156</div>
-                  <div className="text-sm text-muted-foreground">New Connections</div>
+                  <div className="text-sm text-muted-foreground">New TalentNetwork</div>
                 </div>
                 <div className="text-center p-4 bg-muted rounded-lg">
                   <div className="text-2xl font-bold text-orange-500">4.8</div>
@@ -368,3 +368,7 @@ export const PremiumNetworkingFeatures: React.FC = () => {
     </div>
   );
 };
+
+
+
+

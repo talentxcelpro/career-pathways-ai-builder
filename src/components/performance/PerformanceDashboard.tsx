@@ -5,7 +5,7 @@ import { advancedPerformanceMonitor } from '@/utils/advancedPerformanceMonitor';
 import { multiLevelCache } from '@/utils/multiLevelCache';
 import { Activity, Zap, Database, TrendingUp } from 'lucide-react';
 
-export function PerformanceDashboard() {
+export function PerformanceCommandCenter() {
   const [metrics, setMetrics] = useState<any>({});
   const [cacheStats, setCacheStats] = useState<any>({});
 
@@ -101,3 +101,5 @@ export function PerformanceDashboard() {
     </div>
   );
 }
+
+

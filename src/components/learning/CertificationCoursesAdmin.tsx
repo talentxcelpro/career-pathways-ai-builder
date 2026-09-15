@@ -129,7 +129,7 @@ export const CertificationCoursesAdmin: React.FC = () => {
               <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• Free certification courses (2-10 hours)</li>
                 <li>• Interactive lessons and projects</li>
-                <li>• Progress tracking and certificates</li>
+                <li>• Growth Path and certificates</li>
                 <li>• Skills-based learning paths</li>
               </ul>
             </div>
@@ -139,7 +139,7 @@ export const CertificationCoursesAdmin: React.FC = () => {
                 <li>• Corporate training programs</li>
                 <li>• Bulk enrollment options</li>
                 <li>• Custom learning paths</li>
-                <li>• Analytics and reporting</li>
+                <li>• CareerAnalytics and reporting</li>
               </ul>
             </div>
           </div>
@@ -148,3 +148,6 @@ export const CertificationCoursesAdmin: React.FC = () => {
     </div>
   );
 };
+
+
+

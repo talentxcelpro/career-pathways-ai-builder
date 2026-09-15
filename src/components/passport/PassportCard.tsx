@@ -56,7 +56,7 @@ export function PassportCard({ userProfile, metrics, insights, userId }: Passpor
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start space-y-2 sm:space-y-0 mb-4">
           <div>
             <h2 className="text-lg sm:text-xl font-bold !text-white mb-1">
-              TalentXcel Career Passport
+              TalentXcel Evolution Hub
             </h2>
             <div className="flex items-center !text-white text-sm">
               <div className="w-2 h-2 bg-red-400 rounded-full mr-2"></div>
@@ -157,7 +157,7 @@ export function PassportCard({ userProfile, metrics, insights, userId }: Passpor
             <div className="text-lg sm:text-2xl font-bold text-orange-400">
               {metrics.connections_count}
             </div>
-            <div className="text-white text-xs !important">Connections</div>
+            <div className="text-white text-xs !important">TalentNetwork</div>
           </div>
         </div>
 
@@ -173,3 +173,4 @@ export function PassportCard({ userProfile, metrics, insights, userId }: Passpor
     </Card>
   );
 }
+

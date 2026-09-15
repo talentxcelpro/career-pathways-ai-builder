@@ -37,7 +37,7 @@ const SkillMarketTrends = () => {
       avgSalary: '$95,000',
       jobOpenings: 15600,
       growth: 'up',
-      category: 'Analytics'
+      category: 'CareerAnalytics'
     },
     {
       skill: 'Cybersecurity',
@@ -87,7 +87,7 @@ const SkillMarketTrends = () => {
     {
       industry: 'E-commerce',
       growth: 38,
-      topSkills: ['Digital Marketing', 'UX Design', 'Analytics'],
+      topSkills: ['Digital Marketing', 'UX Design', 'CareerAnalytics'],
       avgSalary: '$72K'
     }
   ];
@@ -299,3 +299,6 @@ const SkillMarketTrends = () => {
 };
 
 export default SkillMarketTrends;
+
+
+

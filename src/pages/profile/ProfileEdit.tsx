@@ -71,7 +71,7 @@ const ProfileEdit = () => {
     experience_years: 0,
     profile_picture_url: '',
     social_links: {} as Record<string, string>,
-    profile_visibility: 'public' as 'public' | 'private' | 'connections_only',
+    profile_visibility: 'public' as 'public' | 'private' | 'TalentNetwork_only',
     allow_profile_sharing: true,
     custom_profile_url: '',
     resume_url: '',
@@ -111,7 +111,7 @@ const ProfileEdit = () => {
         social_links: (profile.social_links && typeof profile.social_links === 'object' && !Array.isArray(profile.social_links)) 
           ? profile.social_links as Record<string, string> 
           : {},
-        profile_visibility: (profile.profile_visibility === 'public' || profile.profile_visibility === 'private' || profile.profile_visibility === 'connections_only') 
+        profile_visibility: (profile.profile_visibility === 'public' || profile.profile_visibility === 'private' || profile.profile_visibility === 'TalentNetwork_only') 
           ? profile.profile_visibility 
           : 'public',
         allow_profile_sharing: profile.allow_profile_sharing ?? true,
@@ -368,3 +368,5 @@ const ProfileEdit = () => {
 };
 
 export default ProfileEdit;
+
+

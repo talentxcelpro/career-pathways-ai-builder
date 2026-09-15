@@ -168,7 +168,7 @@ export interface SOPDraft {
   
   ai_generated?: boolean;
   ai_prompt?: string;
-  ai_feedback?: string;
+  ai_Feedback?: string;
   ai_score?: number;
   ai_suggestions?: string[];
   
@@ -232,3 +232,4 @@ export interface CollegeSearchParams {
   page?: number;
   limit?: number;
 }
+

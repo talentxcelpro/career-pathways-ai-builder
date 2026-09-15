@@ -26,8 +26,8 @@ export interface ToolUsage {
   output_data: any;
   completion_status: string;
   duration_seconds: number;
-  feedback_rating?: number;
-  feedback_text?: string;
+  Feedback_rating?: number;
+  Feedback_text?: string;
   created_at: string;
   updated_at: string;
 }
@@ -253,3 +253,4 @@ export const useToolsData = () => {
     refetch: () => Promise.all([fetchTools(), fetchToolUsage(), fetchSavedResults()])
   };
 };
+

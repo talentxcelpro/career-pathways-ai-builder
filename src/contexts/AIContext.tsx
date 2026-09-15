@@ -54,7 +54,7 @@ const moduleMap: Record<string, string> = {
   '/learning': 'learning',
   '/colleges': 'colleges',
   '/career-map': 'career_map',
-  '/ai-assistant': 'ai_assistant',
+  '/ai-Navigator': 'ai_Navigator',
   '/ai-career': 'ai_career'
 };
 

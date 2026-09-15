@@ -8,7 +8,7 @@ const About = () => {
     {
       icon: <Users className="h-8 w-8 text-blue-600" />,
       title: "Smart Resume Builder & Cover Letters",
-      description: "AI-powered tools to create compelling resumes and cover letters"
+      description: "Performance tools to create compelling resumes and cover letters"
     },
     {
       icon: <Target className="h-8 w-8 text-purple-600" />,
@@ -46,7 +46,7 @@ const About = () => {
           </div>
           <h1 className="text-3xl sm:text-5xl font-bold mb-4 sm:mb-6">Empowering Talent. Elevating Careers.</h1>
           <p className="text-lg sm:text-xl text-blue-100 max-w-2xl mx-auto">
-            Transforming the way professionals connect, learn, and grow with AI-powered career solutions.
+            Transforming the way professionals connect, learn, and grow with Performance career solutions.
           </p>
           <p className="text-sm text-blue-200 mt-4">
             <strong>Effective:</strong> July 01, 2025
@@ -60,7 +60,7 @@ const About = () => {
           <CardContent className="p-4 sm:p-8">
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 sm:mb-6">Who We Are</h2>
             <p className="text-base sm:text-lg text-gray-600 leading-relaxed">
-              TalentXcel is an all-in-one AI-powered platform built to transform the way professionals connect, learn, and grow. 
+              TalentXcel is an all-in-one Performance platform built to transform the way professionals connect, learn, and grow. 
               From job discovery and resume building to networking, mentorship, and career planning — we're here for your entire journey.
             </p>
           </CardContent>
@@ -110,3 +110,4 @@ const About = () => {
 };
 
 export default About;
+

@@ -34,12 +34,12 @@ export const useFeatureGating = () => {
     return availableBalance > 50000 ? '24/7' : availableBalance > 25000 ? 'priority' : 'email';
   };
 
-  const hasAnalyticsAccess = (): boolean => {
-    // Analytics available through TXC purchase
+  const hasCareerAnalyticsAccess = (): boolean => {
+    // CareerAnalytics available through TXC purchase
     return true;
   };
 
-  const getAnalyticsLevel = (): 'basic' | 'advanced' | 'full' => {
+  const getCareerAnalyticsLevel = (): 'basic' | 'advanced' | 'full' => {
     // All levels available through TXC
     return availableBalance > 50000 ? 'full' : availableBalance > 25000 ? 'advanced' : 'basic';
   };
@@ -73,8 +73,8 @@ export const useFeatureGating = () => {
     getServiceLimit,
     canAddService,
     getSupportLevel,
-    hasAnalyticsAccess,
-    getAnalyticsLevel,
+    hasCareerAnalyticsAccess,
+    getCareerAnalyticsLevel,
     hasCustomBranding,
     hasVanityURL,
     hasVideoBio,
@@ -86,3 +86,6 @@ export const useFeatureGating = () => {
     isActive: true // Always active with TXC system
   };
 };
+
+
+

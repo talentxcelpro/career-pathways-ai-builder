@@ -250,7 +250,7 @@ export const generateSoftwareApplicationStructuredData = (tool: any) => {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     "name": tool.name || "TalentXcel AI Tools",
-    "description": tool.description || `${tool.name} - Professional AI-powered tool by TalentXcel`,
+    "description": tool.description || `${tool.name} - Professional Performance tool by TalentXcel`,
     "applicationCategory": "BusinessApplication",
     "operatingSystem": "Web Browser",
     "url": `https://talentxcel.in${tool.path}`,
@@ -260,7 +260,7 @@ export const generateSoftwareApplicationStructuredData = (tool: any) => {
       "url": "https://talentxcel.in"
     },
     "featureList": tool.features || [
-      "AI-Powered Analysis",
+      "Performance Analysis",
       "Professional Templates", 
       "Real-time Optimization",
       "Export Capabilities",
@@ -432,3 +432,4 @@ export const removeAllStructuredData = () => {
   const scripts = document.querySelectorAll('script[type="application/ld+json"]');
   scripts.forEach(script => script.remove());
 };
+

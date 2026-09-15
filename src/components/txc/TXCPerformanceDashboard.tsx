@@ -98,7 +98,7 @@ const PerformanceMetric: React.FC<PerformanceMetricProps> = ({
   );
 };
 
-export const TXCPerformanceDashboard: React.FC = () => {
+export const TXCPerformanceCommandCenter: React.FC = () => {
   const { 
     metrics, 
     clearCache, 
@@ -112,7 +112,7 @@ export const TXCPerformanceDashboard: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Activity className="w-5 h-5" />
-            TXC Performance Dashboard
+            TXC Performance CommandCenter
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -219,3 +219,4 @@ export const TXCPerformanceDashboard: React.FC = () => {
     </div>
   );
 };
+

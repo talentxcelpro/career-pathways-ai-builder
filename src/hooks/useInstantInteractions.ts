@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 export function useInstantInteractions() {
   const queryClient = useQueryClient();
 
-  // Like/Unlike post with instant feedback
+  // Like/Unlike post with instant Feedback
   const likePost = useOptimisticMutation({
     mutationFn: async ({ postId, isLiked }: { postId: string; isLiked: boolean }) => {
       if (isLiked) {
@@ -55,7 +55,7 @@ export function useInstantInteractions() {
     },
   });
 
-  // Add comment with instant feedback
+  // Add comment with instant Feedback
   const addComment = useOptimisticMutation({
     mutationFn: async ({ postId, content }: { postId: string; content: string }) => {
       const { data, error } = await supabase
@@ -86,7 +86,7 @@ export function useInstantInteractions() {
     successMessage: 'Comment added',
   });
 
-  // Send connection request with instant feedback
+  // Send connection request with instant Feedback
   const sendConnectionRequest = useOptimisticMutation({
     mutationFn: async ({ userId }: { userId: string }) => {
       const { data, error } = await supabase
@@ -116,7 +116,7 @@ export function useInstantInteractions() {
     successMessage: 'Connection request sent',
   });
 
-  // Accept connection request with instant feedback
+  // Accept connection request with instant Feedback
   const acceptConnection = useOptimisticMutation({
     mutationFn: async ({ connectionId }: { connectionId: string }) => {
       const { data, error } = await supabase
@@ -139,7 +139,7 @@ export function useInstantInteractions() {
     successMessage: 'Connection accepted',
   });
 
-  // Apply to job with instant feedback
+  // Apply to job with instant Feedback
   const applyToJob = useOptimisticMutation({
     mutationFn: async ({ jobId, applicationData }: { jobId: string; applicationData: any }) => {
       const { data, error } = await supabase
@@ -166,7 +166,7 @@ export function useInstantInteractions() {
     successMessage: 'Application submitted successfully',
   });
 
-  // Share post with instant feedback
+  // Share post with instant Feedback
   const sharePost = useOptimisticMutation({
     mutationFn: async ({ postId, content }: { postId: string; content?: string }) => {
       const { data, error } = await supabase
@@ -209,3 +209,6 @@ export function useInstantInteractions() {
     sharePost,
   };
 }
+
+
+

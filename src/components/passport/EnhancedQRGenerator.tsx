@@ -129,7 +129,7 @@ const EnhancedQRGenerator: React.FC<EnhancedQRGeneratorProps> = ({ profileData }
       
       ctx.fillStyle = '#4a5568';
       ctx.font = '16px Arial';
-      ctx.fillText('Professional Career Passport', canvas.width / 2, size + 55);
+      ctx.fillText('Professional Evolution Hub', canvas.width / 2, size + 55);
       
       ctx.fillStyle = '#718096';
       ctx.font = '14px Arial';

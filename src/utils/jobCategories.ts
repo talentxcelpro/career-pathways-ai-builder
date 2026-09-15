@@ -10,7 +10,7 @@ export const JOB_CATEGORIES = {
       'DevOps Engineer',
       'Data Scientist',
       'Machine Learning Engineer',
-      'AI Engineer',
+      'Talent Engineer',
       'Cybersecurity Specialist',
       'Cloud Architect',
       'Product Manager',
@@ -34,7 +34,7 @@ export const JOB_CATEGORIES = {
     roles: [
       'Doctor',
       'Nurse',
-      'Medical Assistant',
+      'Medical Navigator',
       'Healthcare Administrator',
       'Pharmacist',
       'Physical Therapist',
@@ -51,7 +51,7 @@ export const JOB_CATEGORIES = {
     skills: [
       'Medical Knowledge', 'Patient Care', 'Healthcare Regulations', 'HIPAA Compliance',
       'Medical Devices', 'Electronic Health Records', 'Clinical Documentation',
-      'Healthcare Analytics', 'Medical Coding', 'Patient Safety'
+      'Healthcare CareerAnalytics', 'Medical Coding', 'Patient Safety'
     ]
   },
   FINANCE: {
@@ -99,7 +99,7 @@ export const JOB_CATEGORIES = {
       'Marketing Operations Manager'
     ],
     skills: [
-      'Google Analytics', 'SEO', 'SEM', 'Social Media Marketing', 'Content Marketing',
+      'Google CareerAnalytics', 'SEO', 'SEM', 'Social Media Marketing', 'Content Marketing',
       'Email Marketing', 'Adobe Creative Suite', 'Copywriting', 'Brand Management',
       'Marketing Automation', 'A/B Testing', 'CRM Software'
     ]
@@ -225,7 +225,7 @@ export const JOB_CATEGORIES = {
     ],
     skills: [
       'Customer Service', 'Point of Sale Systems', 'Inventory Management', 'Visual Merchandising',
-      'Retail Analytics', 'E-commerce Platforms', 'Supply Chain', 'Product Knowledge',
+      'Retail CareerAnalytics', 'E-commerce Platforms', 'Supply Chain', 'Product Knowledge',
       'Sales Techniques', 'Loss Prevention', 'Team Leadership'
     ]
   },
@@ -361,3 +361,6 @@ export function validateJobData(jobData: any): { isValid: boolean; errors: strin
     errors
   };
 }
+
+
+

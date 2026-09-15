@@ -344,7 +344,7 @@ export const ProProfile = () => {
                 <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg">
                   <TrendingUp className="h-5 w-5 text-green-500" />
                   <div>
-                    <h4 className="font-medium">Advanced Analytics</h4>
+                    <h4 className="font-medium">Advanced CareerAnalytics</h4>
                     <p className="text-sm text-muted-foreground">Detailed insights & reports</p>
                   </div>
                 </div>
@@ -413,7 +413,7 @@ export const ProProfile = () => {
                 <Badge variant="outline">89</Badge>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm">Network Connections</span>
+                <span className="text-sm">Network TalentNetwork</span>
                 <Badge variant="outline">156</Badge>
               </div>
               <div className="flex items-center justify-between">
@@ -483,3 +483,7 @@ export const ProProfile = () => {
     </div>
   );
 };
+
+
+
+

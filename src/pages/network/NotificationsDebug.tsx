@@ -253,7 +253,7 @@ const NotificationsDebug = () => {
             Notifications Center
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-6 font-apple-medium">
-            Stay updated with all your professional activity and connections
+            Stay updated with all your professional activity and TalentNetwork
           </p>
           {unreadCount > 0 && (
             <Badge className="bg-red-100 text-red-700 border-red-200">
@@ -297,7 +297,7 @@ const NotificationsDebug = () => {
                 className="apple-input"
               >
                 <option value="all">All Types</option>
-                <option value="connection">Connections</option>
+                <option value="connection">TalentNetwork</option>
                 <option value="message">Messages</option>
                 <option value="job">Jobs</option>
                 <option value="like">Likes</option>
@@ -404,3 +404,4 @@ const NotificationsDebug = () => {
 };
 
 export default NotificationsDebug;
+

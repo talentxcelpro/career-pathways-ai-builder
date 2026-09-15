@@ -30,7 +30,7 @@ interface AssessmentResult {
       color: string;
     };
   };
-  analytics?: {
+  CareerAnalytics?: {
     skill_scores: any;
     strengths: string[];
     weaknesses: string[];
@@ -74,9 +74,9 @@ export default function AssessmentResults() {
 
       if (attemptError) throw attemptError;
 
-      // Load analytics if available
-      const { data: analyticsData } = await supabase
-        .from('assessment_analytics')
+      // Load CareerAnalytics if available
+      const { data: CareerAnalyticsData } = await supabase
+        .from('assessment_CareerAnalytics')
         .select('*')
         .eq('user_id', attemptData.user_id)
         .eq('assessment_id', assessmentId)
@@ -92,7 +92,7 @@ export default function AssessmentResults() {
       setResult({
         attempt: attemptData,
         assessment: attemptData.assessment,
-        analytics: analyticsData,
+        CareerAnalytics: CareerAnalyticsData,
         certificate: certificateData
       });
 
@@ -251,11 +251,11 @@ export default function AssessmentResults() {
         </CardContent>
       </Card>
 
-      {/* Analytics */}
-      {result.analytics && (
+      {/* CareerAnalytics */}
+      {result.CareerAnalytics && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Strengths */}
-          {result.analytics.strengths?.length > 0 && (
+          {result.CareerAnalytics.strengths?.length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -265,7 +265,7 @@ export default function AssessmentResults() {
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2">
-                  {result.analytics.strengths.map((strength, index) => (
+                  {result.CareerAnalytics.strengths.map((strength, index) => (
                     <li key={index} className="flex items-center gap-2">
                       <CheckCircle className="h-4 w-4 text-green-600" />
                       <span>{strength}</span>
@@ -277,7 +277,7 @@ export default function AssessmentResults() {
           )}
 
           {/* Areas for Improvement */}
-          {result.analytics.weaknesses?.length > 0 && (
+          {result.CareerAnalytics.weaknesses?.length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -287,7 +287,7 @@ export default function AssessmentResults() {
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2">
-                  {result.analytics.weaknesses.map((weakness, index) => (
+                  {result.CareerAnalytics.weaknesses.map((weakness, index) => (
                     <li key={index} className="flex items-center gap-2">
                       <Brain className="h-4 w-4 text-orange-600" />
                       <span>{weakness}</span>
@@ -301,7 +301,7 @@ export default function AssessmentResults() {
       )}
 
       {/* Recommendations */}
-      {result.analytics?.recommendations?.length > 0 && (
+      {result.CareerAnalytics?.recommendations?.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle>Personalized Recommendations</CardTitle>
@@ -311,7 +311,7 @@ export default function AssessmentResults() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {result.analytics.recommendations.map((recommendation, index) => (
+              {result.CareerAnalytics.recommendations.map((recommendation, index) => (
                 <div key={index} className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
                   <div className="bg-blue-100 p-1 rounded">
                     <Brain className="h-4 w-4 text-blue-600" />
@@ -384,8 +384,8 @@ export default function AssessmentResults() {
         <Button onClick={() => navigate('/assessments')} variant="outline">
           Take Another Assessment
         </Button>
-        <Button onClick={() => navigate('/dashboard')}>
-          Back to Dashboard
+        <Button onClick={() => navigate('/CommandCenter')}>
+          Back to CommandCenter
         </Button>
         {!result.attempt.passed && (
           <Button onClick={() => navigate(`/assessments/${assessmentId}`)}>
@@ -396,3 +396,6 @@ export default function AssessmentResults() {
     </div>
   );
 }
+
+
+

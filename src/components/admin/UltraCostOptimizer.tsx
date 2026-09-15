@@ -157,7 +157,7 @@ export const UltraCostOptimizer = () => {
                 <Badge variant="destructive">40%</Badge>
               </div>
               <div className="text-sm text-muted-foreground">
-                Disables realtime updates for security logs, analytics, and other non-critical data
+                Disables realtime updates for security logs, CareerAnalytics, and other non-critical data
               </div>
             </div>
           </CardContent>
@@ -317,3 +317,6 @@ export const UltraCostOptimizer = () => {
     </div>
   );
 };
+
+
+

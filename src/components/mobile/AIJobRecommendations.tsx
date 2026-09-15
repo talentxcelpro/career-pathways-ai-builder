@@ -54,9 +54,9 @@ export const AIJobRecommendations: React.FC<AIJobRecommendationsProps> = ({ clas
       location: 'San Francisco, CA',
       type: 'full-time',
       salary: { min: 140000, max: 180000, currency: 'USD' },
-      description: 'Lead product strategy for our AI-powered platform serving millions of users...',
+      description: 'Lead product strategy for our Performance platform serving millions of users...',
       requirements: ['5+ years PM experience', 'AI/ML product experience', 'Technical background'],
-      skills: ['Product Strategy', 'AI/ML', 'Leadership', 'Analytics', 'Agile'],
+      skills: ['Product Strategy', 'AI/ML', 'Leadership', 'CareerAnalytics', 'Agile'],
       posted: '2 days ago',
       applicants: 47,
       matchScore: 92,
@@ -67,7 +67,7 @@ export const AIJobRecommendations: React.FC<AIJobRecommendationsProps> = ({ clas
         skillGap: ['Machine Learning', 'Data Science'],
         recommendations: [
           'Consider completing an ML certification',
-          'Highlight your analytics experience',
+          'Highlight your CareerAnalytics experience',
           'Emphasize leadership achievements'
         ]
       },
@@ -112,7 +112,7 @@ export const AIJobRecommendations: React.FC<AIJobRecommendationsProps> = ({ clas
   ]);
 
   const [filter, setFilter] = useState<'all' | 'recommended' | 'saved' | 'applied'>('recommended');
-  const [userSkills] = useState(['Product Management', 'Analytics', 'Leadership', 'React', 'JavaScript']);
+  const [userSkills] = useState(['Product Management', 'CareerAnalytics', 'Leadership', 'React', 'JavaScript']);
   const { triggerHaptic } = useHapticFeedback();
   const { sync, isOnline } = useRealtimeSync();
 
@@ -178,11 +178,11 @@ export const AIJobRecommendations: React.FC<AIJobRecommendationsProps> = ({ clas
 
   return (
     <div className={`${className}`}>
-      {/* AI Insights Header */}
+      {/* Intelligence Metrics Header */}
       <div className="bg-gradient-to-r from-primary/10 to-purple-500/10 p-4 mb-4">
         <div className="flex items-center space-x-2 mb-2">
           <Zap className="w-5 h-5 text-primary" />
-          <h2 className="text-lg font-semibold text-foreground">AI-Powered Job Recommendations</h2>
+          <h2 className="text-lg font-semibold text-foreground">Performance Job Recommendations</h2>
         </div>
         <p className="text-sm text-muted-foreground">
           Personalized matches based on your skills, experience, and career goals
@@ -327,11 +327,11 @@ export const AIJobRecommendations: React.FC<AIJobRecommendationsProps> = ({ clas
                 </div>
               </div>
 
-              {/* AI Insights */}
+              {/* Intelligence Metrics */}
               <div className="bg-muted/30 rounded-lg p-3 mb-4">
                 <div className="flex items-center space-x-2 mb-2">
                   <Zap className="w-4 h-4 text-primary" />
-                  <p className="text-xs font-medium text-foreground">AI Insights</p>
+                  <p className="text-xs font-medium text-foreground">Intelligence Metrics</p>
                 </div>
                 
                 <div className="grid grid-cols-2 gap-3 mb-3">
@@ -444,3 +444,7 @@ export const AIJobRecommendations: React.FC<AIJobRecommendationsProps> = ({ clas
     </div>
   );
 };
+
+
+
+

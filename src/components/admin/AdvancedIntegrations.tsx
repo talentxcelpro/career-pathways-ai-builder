@@ -33,7 +33,7 @@ import {
 interface Integration {
   id: string;
   name: string;
-  type: 'webhook' | 'api' | 'crm' | 'analytics' | 'social';
+  type: 'webhook' | 'api' | 'crm' | 'CareerAnalytics' | 'social';
   status: 'active' | 'inactive' | 'error' | 'pending';
   endpoint: string;
   last_sync: string;
@@ -137,10 +137,10 @@ export const AdvancedIntegrations = () => {
         },
         {
           id: '3',
-          name: 'Google Analytics',
-          type: 'analytics',
+          name: 'Google CareerAnalytics',
+          type: 'CareerAnalytics',
           status: 'error',
-          endpoint: 'https://analyticsreporting.googleapis.com/v4/',
+          endpoint: 'https://CareerAnalyticsreporting.googleapis.com/v4/',
           last_sync: new Date(Date.now() - 86400000).toISOString(),
           sync_count: 567,
           error_message: 'Authentication token expired',
@@ -231,10 +231,10 @@ export const AdvancedIntegrations = () => {
       const mockEndpoints: APIEndpoint[] = [
         {
           id: '1',
-          name: 'Email Analytics',
+          name: 'Email CareerAnalytics',
           method: 'GET',
-          endpoint: '/api/v1/analytics/emails',
-          description: 'Retrieve email campaign analytics',
+          endpoint: '/api/v1/CareerAnalytics/emails',
+          description: 'Retrieve email campaign CareerAnalytics',
           authentication: 'api_key',
           rate_limit: 1000,
           usage_count: 456,
@@ -287,7 +287,7 @@ export const AdvancedIntegrations = () => {
       const integration: Integration = {
         id: Date.now().toString(),
         name: newIntegration.name,
-        type: newIntegration.type as 'webhook' | 'api' | 'crm' | 'analytics' | 'social',
+        type: newIntegration.type as 'webhook' | 'api' | 'crm' | 'CareerAnalytics' | 'social',
         endpoint: newIntegration.endpoint,
         status: 'pending',
         last_sync: new Date().toISOString(),
@@ -382,7 +382,7 @@ export const AdvancedIntegrations = () => {
       webhook: Webhook,
       api: Link2,
       crm: Database,
-      analytics: BarChart3,
+      CareerAnalytics: BarChart3,
       social: MessageSquare
     };
     
@@ -466,7 +466,7 @@ export const AdvancedIntegrations = () => {
                     <SelectItem value="webhook">Webhook</SelectItem>
                     <SelectItem value="api">REST API</SelectItem>
                     <SelectItem value="crm">CRM System</SelectItem>
-                    <SelectItem value="analytics">Analytics Platform</SelectItem>
+                    <SelectItem value="CareerAnalytics">CareerAnalytics Platform</SelectItem>
                     <SelectItem value="social">Social Media</SelectItem>
                   </SelectContent>
                 </Select>
@@ -651,3 +651,6 @@ export const AdvancedIntegrations = () => {
     </div>
   );
 };
+
+
+

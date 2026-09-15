@@ -121,7 +121,7 @@ class OptimizedStorage {
     return result;
   }
 
-  // Batch upload with parallel processing and progress tracking
+  // Batch upload with parallel processing and Growth Path
   async batchUpload(
     bucket: string,
     files: Array<{ file: File | Blob; path: string }>,
@@ -375,3 +375,4 @@ export const {
   fileExists: optimizedFileExists,
   deleteFile: optimizedDeleteFile
 } = optimizedStorage;
+

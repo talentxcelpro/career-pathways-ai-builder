@@ -15,7 +15,7 @@ import {
   Award
 } from 'lucide-react';
 
-export default function Phase3Dashboard() {
+export default function Phase3CommandCenter() {
   const [isTraining, setIsTraining] = useState(false);
 
   const handleTrainAI = async () => {
@@ -84,7 +84,7 @@ export default function Phase3Dashboard() {
     {
       feature: 'Real-time Quality Scoring',
       performance: 91,
-      description: 'Instant CV quality assessment and feedback',
+      description: 'Instant CV quality assessment and Feedback',
       improvement: '25% faster processing'
     }
   ];
@@ -138,7 +138,7 @@ export default function Phase3Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-blue-600">47,382</div>
-            <p className="text-xs text-muted-foreground">AI-powered matches made</p>
+            <p className="text-xs text-muted-foreground">Performance matches made</p>
           </CardContent>
         </Card>
 
@@ -174,7 +174,7 @@ export default function Phase3Dashboard() {
               AI Model Performance
             </CardTitle>
             <CardDescription>
-              Real-time performance metrics of AI engines
+              Real-time performance metrics of Talent Engines
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -246,10 +246,10 @@ export default function Phase3Dashboard() {
         </Card>
       </div>
 
-      {/* AI Insights & Analytics */}
+      {/* Intelligence Metrics & CareerAnalytics */}
       <Card>
         <CardHeader>
-          <CardTitle>AI-Powered Insights & Analytics</CardTitle>
+          <CardTitle>Performance Insights & CareerAnalytics</CardTitle>
           <CardDescription>
             Real-time intelligence driving platform optimization
           </CardDescription>
@@ -332,3 +332,7 @@ export default function Phase3Dashboard() {
     </div>
   );
 }
+
+
+
+

@@ -243,7 +243,7 @@ export const BotPostManager: React.FC = () => {
                           {selectedBotInfo.tone_style}
                         </Badge>
                         <Badge variant="outline" className="text-xs">
-                          AI Assistant
+                          TalentXcel Navigator
                         </Badge>
                       </div>
                     </div>
@@ -325,7 +325,7 @@ export const BotPostManager: React.FC = () => {
                           <div className="flex items-center gap-2 mb-1">
                             <span className="font-medium text-sm">{post.bot?.name}</span>
                             <Badge variant="secondary" className="text-xs">
-                              AI Assistant
+                              TalentXcel Navigator
                             </Badge>
                             <Badge variant={post.origin === 'manual' ? 'default' : 'outline'} className="text-xs">
                               {post.origin === 'manual' ? 'Manual' : 'AI Generated'}

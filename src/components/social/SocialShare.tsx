@@ -23,8 +23,8 @@ interface SocialShareProps {
 
 export const SocialShare: React.FC<SocialShareProps> = ({
   url,
-  title = 'TalentXcel - AI-Powered Career Platform',
-  description = 'Discover your dream job and advance your career with AI-powered tools',
+  title = 'TalentXcel - Performance Career Platform',
+  description = 'Discover your dream job and advance your career with Performance tools',
   hashtags = ['TalentXcel', 'CareerGrowth', 'JobSearch', 'AI'],
   showTitle = true
 }) => {

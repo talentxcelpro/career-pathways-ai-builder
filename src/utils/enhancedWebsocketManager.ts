@@ -214,7 +214,7 @@ export class EnhancedWebSocketManager {
     return channel?.state === 'joined';
   }
 
-  getConnectionState(): string {
+  getconnectionState(): string {
     return this.connectionState;
   }
 
@@ -265,3 +265,4 @@ if (typeof window !== 'undefined') {
     enhancedWebsocketManager.destroy();
   });
 }
+

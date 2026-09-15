@@ -24,28 +24,28 @@ import { referralRoutes } from "./navigation/referralRoutes";
 import { passportRoutes } from "./navigation/passportRoutes";
 import { mobileRoutes } from "./navigation/mobileRoutes";
 import { aiRoutes } from "./navigation/aiRoutes";
-import { analyticsRoutes } from "./navigation/analyticsRoutes";
+import { IntelligenceMatrixRoutes } from "./navigation/analyticsRoutes";
 import { growthRoutes } from "./navigation/growthRoutes";
 import { gamificationRoutes } from "./navigation/gamificationRoutes";
 import { publicRoutes } from "./navigation/publicRoutes";
-import AIAgentDashboard from "./pages/ai/AIAgentDashboard";
+import AIAgentCommandCenter from "./pages/ai/AIAgentDashboard";
 import CampaignManager from "./pages/CampaignManager";
 import MobileSearch from "./pages/mobile/MobileSearch";
 import NotificationsPage from "./pages/NotificationsPage";
 import TalentXcelServices from "./pages/TalentXcelServices";
-import FeedEmbeds from "./pages/FeedEmbeds";
+import PulseEmbeds from "./pages/SocialHub";
 import LinkedInToolsHub from "./pages/admin/LinkedInToolsHub";
-import { TestingDashboard } from "./pages/TestingDashboard";
+import { TestingCommandCenter } from "./pages/TestingDashboard";
 import { SavedJobsPage } from "./pages/SavedJobs";
 
-// AI Agent routes
-export const aiAgentRoutes = [
+// Navigator routes
+export const navigatorRoutes = [
   {
-    title: "AI Career Agent",
-    to: "/ai-agent",
-    icon: "brain",
-    page: <AIAgentDashboard />,
-    description: "Your personalized AI career companion",
+    title: "TalentXcel Navigator",
+    to: "/navigator",
+    icon: "sparkles",
+    page: <AIAgentCommandCenter />,
+    description: "Your personalized professional navigator",
     isPublic: true
   }
 ];
@@ -62,13 +62,13 @@ export const campaignRoutes = [
   }
 ];
 
-// Feed Embeds routes
+// Pulse Embeds routes
 export const embedRoutes = [
   {
-    title: "Feed Embeds",
-    to: "/feed-embeds",
+    title: "Ecosystem Sync Embeds",
+    to: "/Pulse-embeds",
     icon: "link",
-    page: <FeedEmbeds />,
+    page: <PulseEmbeds />,
     description: "Native-looking embeds for external content",
     isPublic: true
   }
@@ -122,13 +122,13 @@ export const linkedInToolsRoutes = [
   }
 ];
 
-// Testing Dashboard route
+// Testing CommandCenter route
 export const testingRoutes = [
   {
-    title: "Testing Dashboard",
+    title: "Testing CommandCenter",
     to: "/testing",
     icon: "flask",
-    page: <TestingDashboard />,
+    page: <TestingCommandCenter />,
     description: "Test all notification and automation features",
     isPublic: true
   }
@@ -172,10 +172,10 @@ export const navItems = [
   ...mobileSearchRoutes,
   ...notificationRoutes,
   ...servicesRoutes,
-  ...analyticsRoutes,
+  ...IntelligenceMatrixRoutes,
   ...growthRoutes,
   ...aiRoutes,
-  ...aiAgentRoutes,
+  ...navigatorRoutes,
   ...campaignRoutes,
   ...embedRoutes,
   ...savedJobsRoutes,
@@ -185,3 +185,7 @@ export const navItems = [
   ...adminRoutes,
   ...enterpriseRoutes,
 ];
+
+
+
+

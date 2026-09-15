@@ -52,7 +52,7 @@ interface TopCandidate {
   experience: string;
 }
 
-export const RecruiterDashboard: React.FC = () => {
+export const RecruiterCommandCenter: React.FC = () => {
   const [timeRange, setTimeRange] = useState('30d');
   const [selectedMetric, setSelectedMetric] = useState('applications');
 
@@ -156,11 +156,11 @@ export const RecruiterDashboard: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <AIStatusIndicator module="Recruiter" feature="AI-Powered Analytics">
-            <h1 className="text-3xl font-bold text-foreground">Recruiter Dashboard</h1>
+          <AIStatusIndicator module="Recruiter" feature="Performance CareerAnalytics">
+            <h1 className="text-3xl font-bold text-foreground">Recruiter CommandCenter</h1>
           </AIStatusIndicator>
           <p className="text-muted-foreground mt-1">
-            AI-powered recruitment analytics and candidate management
+            Performance recruitment CareerAnalytics and candidate management
           </p>
         </div>
         
@@ -251,7 +251,7 @@ export const RecruiterDashboard: React.FC = () => {
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="pipeline">Recruitment Pipeline</TabsTrigger>
           <TabsTrigger value="candidates">Top Candidates</TabsTrigger>
-          <TabsTrigger value="analytics">AI Analytics</TabsTrigger>
+          <TabsTrigger value="CareerAnalytics">AI CareerAnalytics</TabsTrigger>
           <TabsTrigger value="insights">Market Insights</TabsTrigger>
         </TabsList>
 
@@ -347,8 +347,8 @@ export const RecruiterDashboard: React.FC = () => {
           </Card>
         </TabsContent>
 
-        {/* AI Analytics */}
-        <TabsContent value="analytics" className="space-y-6">
+        {/* AI CareerAnalytics */}
+        <TabsContent value="CareerAnalytics" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
@@ -497,3 +497,6 @@ export const RecruiterDashboard: React.FC = () => {
     </div>
   );
 };
+
+
+

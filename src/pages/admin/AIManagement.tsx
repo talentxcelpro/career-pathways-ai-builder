@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AIToolsManager } from '@/components/admin/AIToolsManager';
-import { AIUsageAnalytics } from '@/components/admin/AIUsageAnalytics';
+import { AIUsageCareerAnalytics } from '@/components/admin/AIUsageAnalytics';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
@@ -41,7 +41,7 @@ import { toast } from 'sonner';
 const AIManagement = () => {
   const [features, setFeatures] = useState<AIFeatureStatus[]>([]);
   const [loading, setLoading] = useState(true);
-  const [analytics, setAnalytics] = useState<any>(null);
+  const [CareerAnalytics, setCareerAnalytics] = useState<any>(null);
   const [selectedTimeframe, setSelectedTimeframe] = useState<'day' | 'week' | 'month'>('week');
 
   useEffect(() => {
@@ -51,13 +51,13 @@ const AIManagement = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [featuresData, analyticsData] = await Promise.all([
+      const [featuresData, CareerAnalyticsData] = await Promise.all([
         aiService.getAllFeaturesStatus(),
-        aiService.getUsageAnalytics(selectedTimeframe)
+        aiService.getUsageCareerAnalytics(selectedTimeframe)
       ]);
       
       setFeatures(featuresData);
-      setAnalytics(analyticsData);
+      setCareerAnalytics(CareerAnalyticsData);
     } catch (error) {
       console.error('Failed to load AI management data:', error);
       toast.error('Failed to load AI management data');
@@ -150,7 +150,7 @@ const AIManagement = () => {
           <div>
             <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
               <Brain className="h-8 w-8 text-blue-600" />
-              AI Management Dashboard
+              AI Management CommandCenter
             </h1>
             <p className="text-gray-600 mt-2">Monitor and manage AI features across TalentXcel platform</p>
           </div>
@@ -206,7 +206,7 @@ const AIManagement = () => {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Est. Monthly Cost</p>
                   <p className="text-2xl font-bold text-purple-600">
-                    ${analytics?.totalCost ? (analytics.totalCost * 30).toFixed(2) : '0.00'}
+                    ${CareerAnalytics?.totalCost ? (CareerAnalytics.totalCost * 30).toFixed(2) : '0.00'}
                   </p>
                 </div>
                 <DollarSign className="h-8 w-8 text-purple-600" />
@@ -219,7 +219,7 @@ const AIManagement = () => {
           <TabsList>
             <TabsTrigger value="features">AI Features</TabsTrigger>
             <TabsTrigger value="tools">AI Tools</TabsTrigger>
-            <TabsTrigger value="analytics">Usage Analytics</TabsTrigger>
+            <TabsTrigger value="CareerAnalytics">Usage CareerAnalytics</TabsTrigger>
             <TabsTrigger value="logs">Activity Logs</TabsTrigger>
           </TabsList>
 
@@ -302,11 +302,11 @@ const AIManagement = () => {
             <AIToolsManager />
           </TabsContent>
 
-          <TabsContent value="analytics">
-            <AIUsageAnalytics />
+          <TabsContent value="CareerAnalytics">
+            <AIUsageCareerAnalytics />
           </TabsContent>
 
-          <TabsContent value="analytics" className="space-y-6">
+          <TabsContent value="CareerAnalytics" className="space-y-6">
             <div className="flex gap-2 mb-4">
               {(['day', 'week', 'month'] as const).map((timeframe) => (
                 <Button
@@ -320,7 +320,7 @@ const AIManagement = () => {
               ))}
             </div>
 
-            {analytics && (
+            {CareerAnalytics && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <Card>
                   <CardHeader>
@@ -329,21 +329,21 @@ const AIManagement = () => {
                   <CardContent className="space-y-3">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Total Calls:</span>
-                      <span className="font-medium">{analytics.totalCalls}</span>
+                      <span className="font-medium">{CareerAnalytics.totalCalls}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Successful:</span>
-                      <span className="font-medium text-green-600">{analytics.successfulCalls}</span>
+                      <span className="font-medium text-green-600">{CareerAnalytics.successfulCalls}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Failed:</span>
-                      <span className="font-medium text-red-600">{analytics.failedCalls}</span>
+                      <span className="font-medium text-red-600">{CareerAnalytics.failedCalls}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Success Rate:</span>
                       <span className="font-medium">
-                        {analytics.totalCalls > 0 
-                          ? `${((analytics.successfulCalls / analytics.totalCalls) * 100).toFixed(1)}%`
+                        {CareerAnalytics.totalCalls > 0 
+                          ? `${((CareerAnalytics.successfulCalls / CareerAnalytics.totalCalls) * 100).toFixed(1)}%`
                           : 'N/A'
                         }
                       </span>
@@ -358,15 +358,15 @@ const AIManagement = () => {
                   <CardContent className="space-y-3">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Total Tokens:</span>
-                      <span className="font-medium">{analytics.totalTokens.toLocaleString()}</span>
+                      <span className="font-medium">{CareerAnalytics.totalTokens.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Avg Response Time:</span>
-                      <span className="font-medium">{formatResponseTime(analytics.averageResponseTime)}</span>
+                      <span className="font-medium">{formatResponseTime(CareerAnalytics.averageResponseTime)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Total Cost:</span>
-                      <span className="font-medium">${analytics.totalCost.toFixed(4)}</span>
+                      <span className="font-medium">${CareerAnalytics.totalCost.toFixed(4)}</span>
                     </div>
                   </CardContent>
                 </Card>
@@ -376,7 +376,7 @@ const AIManagement = () => {
                     <CardTitle className="text-lg">Module Usage</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    {Object.entries(analytics.usageByModule).map(([module, stats]: [string, any]) => (
+                    {Object.entries(CareerAnalytics.usageByModule).map(([module, stats]: [string, any]) => (
                       <div key={module} className="space-y-1">
                         <div className="flex justify-between">
                           <span className="text-sm font-medium">{module}</span>
@@ -385,7 +385,7 @@ const AIManagement = () => {
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div 
                             className="bg-blue-600 h-2 rounded-full" 
-                            style={{ width: `${(stats.calls / analytics.totalCalls) * 100}%` }}
+                            style={{ width: `${(stats.calls / CareerAnalytics.totalCalls) * 100}%` }}
                           ></div>
                         </div>
                       </div>
@@ -403,9 +403,9 @@ const AIManagement = () => {
                 <CardDescription>Latest AI feature usage and system events</CardDescription>
               </CardHeader>
               <CardContent>
-                {analytics?.recentActivity?.length > 0 ? (
+                {CareerAnalytics?.recentActivity?.length > 0 ? (
                   <div className="space-y-3">
-                    {analytics.recentActivity.map((log: any, index: number) => (
+                    {CareerAnalytics.recentActivity.map((log: any, index: number) => (
                       <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                         <div className="flex items-center gap-3">
                           {log.success ? (
@@ -444,3 +444,6 @@ const AIManagement = () => {
 };
 
 export default AIManagement;
+
+
+

@@ -58,7 +58,7 @@ export const generateReviewStructuredData = (reviews: any[]): string => {
     "@context": "https://schema.org",
     "@type": "Product",
     "name": "TalentXcel Platform",
-    "description": "AI-powered career platform",
+    "description": "Performance career platform",
     "brand": {
       "@type": "Brand",
       "name": "TalentXcel"
@@ -181,7 +181,7 @@ export const generateWebsiteStructuredData = (): string => {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "TalentXcel",
-    "description": "AI-powered career platform helping professionals advance their careers through intelligent job matching, resume optimization, and skill development.",
+    "description": "Performance career platform helping professionals advance their careers through intelligent job matching, resume optimization, and skill development.",
     "url": "https://talentxcel.in",
     "potentialAction": {
       "@type": "SearchAction",

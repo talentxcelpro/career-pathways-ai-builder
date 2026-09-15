@@ -1,7 +1,9 @@
+import { lazy } from "react";
 import { NavItem } from "../types/nav-item";
 import { Navigate } from "react-router-dom";
-import PersonalizedReferral from "../pages/PersonalizedReferral";
-import ReferralCenter from "../pages/ReferralCenter";
+const PersonalizedReferral = lazy(() => import("../pages/PersonalizedReferral"));
+const ReferralCenter = lazy(() => import("../pages/ReferralCenter"));
+
 
 export const referralRoutes: NavItem[] = [
   {

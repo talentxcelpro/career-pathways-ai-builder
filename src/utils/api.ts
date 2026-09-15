@@ -84,7 +84,7 @@ class APIClient {
       console.log(`[API] ${method} ${endpoint} - ${success ? 'SUCCESS' : 'FAILED'} (${responseTime}ms)`);
     }
 
-    // Could also send to analytics service
+    // Could also send to CareerAnalytics service
     try {
       localStorage.setItem(
         'api_logs',
@@ -98,7 +98,7 @@ class APIClient {
     }
   }
 
-  // Career Passport APIs
+  // Evolution Hub APIs
   async getCareerPassport(userId: string) {
     return this.request<any>('career-passport-api', {
       body: { action: 'get', userId }
@@ -137,14 +137,14 @@ class APIClient {
     });
   }
 
-  // Analytics APIs
-  async getPlatformAnalytics(userId: string) {
-    return this.request<any>('platform-analytics', {
+  // CareerAnalytics APIs
+  async getPlatformCareerAnalytics(userId: string) {
+    return this.request<any>('platform-CareerAnalytics', {
       body: { userId }
     });
   }
 
-  // AI-powered APIs
+  // Performance APIs
   async generatePrefill(module: string, context: any) {
     return this.request<any>('ai-prefill-generator', {
       body: { module, ...context }
@@ -218,3 +218,6 @@ export const safeApiCall = async <T>(
 };
 
 export default apiClient;
+
+
+

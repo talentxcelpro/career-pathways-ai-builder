@@ -4,160 +4,76 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useCareerPassport } from '@/hooks/useCareerPassport';
 import { useProfile } from '@/hooks/useProfile';
 import { useUserScores } from '@/hooks/useUserScores';
-import { useRealCareerData } from '@/hooks/useRealCareerData';
 import { useUsernameRouting } from '@/hooks/useUsernameRouting';
 import { EnhancedCareerPassport } from '@/components/passport/EnhancedCareerPassport';
 import { CareerPassportCard } from '@/components/passport/CareerPassportCard';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Helmet } from 'react-helmet-async';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { AuthDialog } from '@/components/auth/AuthDialog';
-import { CareerReadinessCard } from '@/components/gamification/CareerReadinessCard';
-import { UserBadges } from '@/components/gamification/UserBadges';
-import { QRCodeGenerator } from '@/components/passport/QRCodeGenerator';
 import EnhancedQRGenerator from '@/components/passport/EnhancedQRGenerator';
 import ProfessionalCard from '@/components/passport/ProfessionalCard';
-import { CareerQRCard } from '@/components/qr/CareerQRCard';
-import { QRScanner } from '@/components/qr/QRScanner';
 import { NetworkGrowthCard } from '@/components/passport/NetworkGrowthCard';
 import { 
-  QrCode, 
-  Share2, 
-  Download, 
-  ExternalLink, 
-  Copy,
-  CheckCircle,
-  AlertTriangle,
-  Zap,
-  TrendingUp,
-  Users,
-  Award,
-  Briefcase,
-  FileText,
-  Shield,
-  ArrowRight,
-  Plus,
-  Trophy,
-  Target,
-  MoreHorizontal,
-  UserPlus,
-  MessageCircle
+  QrCode, Share2, Download, ExternalLink, Copy, CheckCircle, 
+  AlertTriangle, Zap, TrendingUp, Users, Award, Briefcase, 
+  Shield, ArrowRight, Trophy, Target, Sparkles, Layout,
+  CreditCard, Globe, Fingerprint
 } from 'lucide-react';
 import { toast } from 'sonner';
-import QRCode from 'qrcode';
+import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
-interface CareerPassportData {
-  profile?: any;
-  passport?: any;
-  completion?: any;
-  publicProfile?: any;
-  analytics?: any;
-}
-
-export function CareerPassportDashboard() {
+export function CareerPassportCommandCenter() {
   const { userId, username } = useParams<{ userId?: string; username?: string }>();
   const { user } = useAuth();
   const { profile } = useProfile();
-  
-  // Use username routing hook for username-based URLs
   const { userId: resolvedUserId, isLoading: usernameLoading, error: usernameError } = useUsernameRouting();
-  
-  // Determine the actual user ID to use
   const targetUserId = userId || resolvedUserId || user?.id;
   
-  const { careerPassport, achievements, isLoading, error, hasAuthError, getCompletionBreakdown, getNextMilestone, trackJourneyEvent, updateCareerPassport } = useCareerPassport();
-  const { data: userScores } = useUserScores(targetUserId);
+  const { careerPassport, achievements, isLoading, trackJourneyEvent } = useCareerPassport();
   const navigate = useNavigate();
-  const [isGeneratingQR, setIsGeneratingQR] = useState(false);
-  const [publicProfile, setPublicProfile] = useState<any>(null);
   const [publicPassportData, setPublicPassportData] = useState<any>(null);
   const [isPublicView, setIsPublicView] = useState(false);
   const [publicLoading, setPublicLoading] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState<'none' | 'pending' | 'connected'>('none');
-  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
+  const [activeView, setActiveView] = useState<'card' | 'detailed'>('card');
 
   useEffect(() => {
     const initializeView = async () => {
-      // Handle username error
       if (username && usernameError) {
         navigate('/404');
         return;
       }
       
-      // Check if viewing someone else's passport (public view)
       if (targetUserId && targetUserId !== user?.id) {
         setIsPublicView(true);
         await loadPublicPassportData(targetUserId);
-        if (user?.id) {
-          await checkConnectionStatus(targetUserId);
-        }
       } else if (user?.id) {
-        // Load own profile data
         setIsPublicView(false);
-        await loadPublicProfile();
-      }
-    };
-
-    const checkConnectionStatus = async (targetUserId: string) => {
-      if (!user?.id) return;
-      
-      try {
-        const { data } = await supabase
-          .from('connections')
-          .select('status')
-          .or(`and(requester_id.eq.${user.id},recipient_id.eq.${targetUserId}),and(requester_id.eq.${targetUserId},recipient_id.eq.${user.id})`)
-          .single();
-        
-        if (data) {
-          setConnectionStatus(data.status);
-        }
-      } catch (error) {
-        console.error('Error checking connection status:', error);
-      }
-    };
-
-    const loadPublicProfile = async () => {
-      try {
-        const { data } = await supabase
-          .from('public_profiles')
-          .select('*')
-          .eq('user_id', user.id)
-          .maybeSingle();
-        
-        if (data) {
-          setPublicProfile(data);
-        }
-      } catch (error) {
-        console.error('Error loading public profile:', error);
       }
     };
 
     const loadPublicPassportData = async (targetUserId: string) => {
       setPublicLoading(true);
       try {
-        // Fetch public profile data
         const { data: profileData } = await supabase
           .from('profiles')
           .select('id, full_name, headline, location, profile_picture_url, talentxcel_id')
           .eq('id', targetUserId)
           .single();
 
-        // Fetch public career passport data
         const { data: passportData } = await supabase
           .from('career_passport')
-          .select('completion_percentage, career_readiness_score, market_competitiveness_score, resumes_count, jobs_applied_count, certifications_count, connections_count')
+          .select('*')
           .eq('user_id', targetUserId)
           .single();
 
-        // Fetch public achievements
         const { data: achievementsData } = await supabase
           .from('career_achievements')
-          .select('achievement_type, achievement_title, achievement_description, points_awarded, earned_at')
+          .select('*')
           .eq('user_id', targetUserId)
           .eq('is_public', true)
           .limit(5);
@@ -177,342 +93,192 @@ export function CareerPassportDashboard() {
     initializeView();
   }, [targetUserId, user?.id, username, usernameError, navigate]);
 
-  // Set QR code URL when public profile is updated
-  useEffect(() => {
-    if (publicProfile?.qr_code_data) {
-      setQrCodeUrl(publicProfile.qr_code_data);
-    }
-  }, [publicProfile]);
-
-  const generateQRCode = async () => {
-    if (!user?.id) return;
-
-    setIsGeneratingQR(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('qr-generator', {
-        body: { 
-          userId: user.id
-        }
-      });
-
-      if (error) throw error;
-
-      if (data?.qrCodeData) {
-        setPublicProfile({
-          qr_code_data: data.qrCodeData,
-          public_url: data.publicUrl,
-          is_active: true
-        });
-        toast.success('QR code generated successfully!');
-      } else if (data?.publicUrl) {
-        // Fallback: generate QR on client if function returned URL but no image
-        const fallbackDataUrl = await QRCode.toDataURL(data.publicUrl, { width: 320, margin: 2 });
-        setPublicProfile({
-          qr_code_data: fallbackDataUrl,
-          public_url: data.publicUrl,
-          is_active: true
-        });
-        toast.success('QR code generated (client)');
-      } else if (data?.success) {
-        // Edge case success with no data
-        const publicUrl = `https://talentxcel.in/passport/${encodeURIComponent(user.id)}`;
-        const fallbackDataUrl = await QRCode.toDataURL(publicUrl, { width: 320, margin: 2 });
-        setPublicProfile({
-          qr_code_data: fallbackDataUrl,
-          public_url: publicUrl,
-          is_active: true
-        });
-        toast.success('QR code generated (client)');
-      } else {
-        // Try client-side as final fallback
-        const publicUrl = `https://talentxcel.in/passport/${encodeURIComponent(user.id)}`;
-        const fallbackDataUrl = await QRCode.toDataURL(publicUrl, { width: 320, margin: 2 });
-        setPublicProfile({
-          qr_code_data: fallbackDataUrl,
-          public_url: publicUrl,
-          is_active: true
-        });
-        toast.success('QR code generated (client)');
-      }
-    } catch (error) {
-      console.error('QR generation error:', error);
-      try {
-        const publicUrl = `https://talentxcel.in/passport/${encodeURIComponent(user.id)}`;
-        const fallbackDataUrl = await QRCode.toDataURL(publicUrl, { width: 320, margin: 2 });
-        setPublicProfile({
-          qr_code_data: fallbackDataUrl,
-          public_url: publicUrl,
-          is_active: true
-        });
-        toast.success('QR code generated (client fallback)');
-      } catch (clientErr) {
-        console.error('Client QR fallback failed:', clientErr);
-        toast.error('Failed to generate QR code');
-      }
-    } finally {
-      setIsGeneratingQR(false);
-    }
+  const displayData = {
+    profile: isPublicView ? publicPassportData?.profile : { 
+      full_name: user?.user_metadata?.full_name || profile?.full_name,
+      headline: profile?.headline,
+      location: profile?.location,
+      profile_picture_url: user?.user_metadata?.avatar_url || profile?.profile_picture_url,
+      talentxcel_id: profile?.talentxcel_id
+    },
+    passport: isPublicView ? publicPassportData?.passport : careerPassport,
+    achievements: isPublicView ? publicPassportData?.achievements : achievements,
+    isOwner: !isPublicView
   };
-
-  const copyPublicUrl = () => {
-    if (publicProfile?.public_url) {
-      navigator.clipboard.writeText(publicProfile.public_url);
-      toast.success('Public URL copied to clipboard!');
-    }
-  };
-
-  // Quick Action Handlers
-  const handleCompleteProfile = async () => {
-    if (!isPublicView) {
-      try {
-        trackJourneyEvent.mutate({
-          eventType: 'profile_action',
-          eventModule: 'complete_profile',
-          eventData: { current_completion: 0 }
-        });
-        navigate('/profile/edit');
-        toast.success('Redirecting to complete profile...');
-      } catch (error) {
-        console.error('Error tracking profile completion:', error);
-        navigate('/profile/edit');
-      }
-    }
-  };
-
-  const handleSendConnectionRequest = async () => {
-    if (!targetUserId || targetUserId === user?.id) return;
-    
-    try {
-      const { error } = await supabase
-        .from('connections')
-        .insert([{
-          requester_id: user?.id,
-          recipient_id: targetUserId,
-          status: 'pending'
-        }]);
-
-      if (error) throw error;
-      
-      toast.success('Connection request sent!');
-    } catch (error) {
-      console.error('Error sending connection request:', error);
-      toast.error('Failed to send connection request');
-    }
-  };
-
-  const handleShareProfile = () => {
-    // Generate username-based URL if available
-    const shareUrl = username 
-      ? `https://talentxcel.in/passport/${username}`
-      : `https://talentxcel.in/passport/user/${targetUserId}`;
-    
-    navigator.clipboard.writeText(shareUrl);
-    toast.success('Profile link copied to clipboard!');
-  };
-
-  // Get user data for display (public or private)
-  const getDisplayData = () => {
-    if (isPublicView && publicPassportData) {
-      return {
-        profile: publicPassportData.profile,
-        passport: publicPassportData.passport,
-        achievements: publicPassportData.achievements,
-        isOwner: false
-      };
-    }
-    return {
-      profile: { 
-        full_name: user?.user_metadata?.full_name || profile?.full_name,
-        headline: profile?.headline,
-        location: profile?.location,
-        profile_picture_url: user?.user_metadata?.avatar_url || profile?.profile_picture_url,
-        talentxcel_id: profile?.talentxcel_id
-      },
-      passport: careerPassport,
-      achievements: achievements,
-      isOwner: true
-    };
-  };
-
-  const displayData = getDisplayData();
-
-  const [activeView, setActiveView] = useState<'card' | 'detailed'>('card');
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-6xl mx-auto px-4 py-4">
-        {/* View Toggle */}
-        {!hasAuthError && (
-          <div className="flex justify-center mb-6">
-            <div className="bg-card border rounded-lg p-1 flex">
+    <div className="min-h-screen bg-slate-50/50 backdrop-blur-xl edge-to-edge">
+      <Helmet>
+        <title>{displayData.profile?.full_name ? `${displayData.profile.full_name} | TalentXcel Passport` : 'TalentXcel Passport'}</title>
+      </Helmet>
+
+      {/* Premium Header */}
+      <div className="relative pt-20 pb-12 px-6 overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+          <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-blue-500/5 rounded-full blur-[100px]" />
+          <div className="absolute bottom-[-10%] left-[-5%] w-[30%] h-[30%] bg-purple-500/5 rounded-full blur-[80px]" />
+        </div>
+
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+            <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
+              <div className="flex items-center gap-2 mb-4">
+                <Badge className="bg-slate-950 text-white border-0 rounded-lg px-3 py-1 font-apple-bold text-[10px] tracking-widest uppercase">TALENT IDENTITY</Badge>
+                <div className="h-1 w-1 bg-slate-300 rounded-full" />
+                <span className="text-[10px] font-apple-heavy text-slate-500 uppercase tracking-widest flex items-center gap-1">
+                  <Shield className="h-3 w-3" /> Verified Profile
+                </span>
+              </div>
+              <h1 className="text-4xl md:text-6xl font-apple-heavy text-slate-950 tracking-tighter">
+                Professional <span className="text-blue-600">Passport</span>
+              </h1>
+              <p className="text-lg text-slate-500 max-w-xl font-apple-medium mt-4">
+                Your high-fidelity professional identity. Verified profile data, 
+                performance milestones, and secure networking credentials.
+              </p>
+            </motion.div>
+
+            <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="flex bg-white/40 backdrop-blur-md p-1.5 rounded-[24px] border border-slate-200/50 shadow-sm">
               <Button
                 variant={activeView === 'card' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setActiveView('card')}
-                className="px-6"
+                className={cn("rounded-2xl px-8 font-apple-bold", activeView === 'card' ? "bg-slate-950 shadow-lg" : "text-slate-500")}
               >
-                Card View
+                <CreditCard className="w-4 h-4 mr-2" /> View Card
               </Button>
               <Button
                 variant={activeView === 'detailed' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setActiveView('detailed')}
-                className="px-6"
+                className={cn("rounded-2xl px-8 font-apple-bold", activeView === 'detailed' ? "bg-slate-950 shadow-lg" : "text-slate-500")}
               >
-                Detailed View
+                <Layout className="w-4 h-4 mr-2" /> View Matrix
               </Button>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+
+      <div className="px-6 pb-32">
+        <div className="max-w-7xl mx-auto">
+          {(isLoading || publicLoading || usernameLoading) ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-64 rounded-[40px]" />)}
             </div>
-          </div>
-        )}
-        {/* Authentication Error */}
-        {hasAuthError && (
-          <div className="text-center py-12">
-            <Alert className="mb-6 max-w-md mx-auto">
-              <AlertTriangle className="h-4 w-4" />
-              <AlertDescription>
-                We encountered an authentication error. This usually happens when your session has expired or there's a cache issue.
-              </AlertDescription>
-            </Alert>
-            <div className="space-y-4">
-              <Button 
-                onClick={async () => {
-                  try {
-                    // Try to refresh session first
-                    const { data: { session }, error } = await supabase.auth.refreshSession();
-                    if (session && !error) {
-                      // Session refreshed successfully, reload the page
-                      toast.success('Session refreshed successfully');
-                      window.location.reload();
-                      return;
-                    }
-                  } catch (refreshError) {
-                    console.error('Session refresh failed:', refreshError);
-                  }
-                  
-                  // If refresh fails, clear all auth data and redirect to auth
-                  try {
-                    // Clear local storage and session storage
-                    localStorage.clear();
-                    sessionStorage.clear();
+          ) : displayData.profile ? (
+            <div className="space-y-12">
+              {/* Top Row: Verification & Status */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2">
+                  <AnimatePresence mode="wait">
+                    {activeView === 'card' ? (
+                      <motion.div 
+                        key="card" 
+                        initial={{ scale: 0.95, opacity: 0 }} 
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.95, opacity: 0 }}
+                        className="flex justify-center md:justify-start"
+                      >
+                        <CareerPassportCard 
+                          userProfile={displayData.profile}
+                          isOwner={displayData.isOwner}
+                          publicPassport={isPublicView ? publicPassportData : undefined}
+                        />
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="detailed"
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: 20, opacity: 0 }}
+                      >
+                        <EnhancedCareerPassport 
+                          userId={targetUserId || user?.id}
+                          userProfile={displayData.profile}
+                          isOwner={displayData.isOwner}
+                          publicPassport={isPublicView ? publicPassportData : undefined}
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Bio Verification */}
+                  <Card className="rounded-[32px] border-white/20 bg-white/60 backdrop-blur-xl p-8 shadow-xl shadow-slate-200/50">
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center">
+                        <Fingerprint className="h-6 w-6 text-blue-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-apple-heavy text-slate-900 text-lg">Talent Profile</h3>
+                        <p className="text-xs font-apple-bold text-slate-400 uppercase">Hardware Verified</p>
+                      </div>
+                    </div>
                     
-                    // Sign out from Supabase
-                    await supabase.auth.signOut();
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                        <div className="flex items-center gap-3">
+                          <Globe className="h-4 w-4 text-slate-400" />
+                          <span className="text-sm font-apple-medium text-slate-600">Global Visibility</span>
+                        </div>
+                        <Badge className="bg-green-100 text-green-700 border-0 rounded-lg text-[10px]">ACTIVE</Badge>
+                      </div>
+                      <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                        <div className="flex items-center gap-3">
+                          <Zap className="h-4 w-4 text-slate-400" />
+                          <span className="text-sm font-apple-medium text-slate-600">Response Rating</span>
+                        </div>
+                        <span className="text-sm font-apple-heavy text-slate-950">Sub-2h</span>
+                      </div>
+                    </div>
                     
-                    // Force redirect to auth page
-                    window.location.href = '/auth';
-                  } catch (signOutError) {
-                    console.error('Sign out error:', signOutError);
-                    // Force redirect even if sign out fails
-                    window.location.href = '/auth';
-                  }
-                }}
-                className="mr-4"
-              >
-                Try Again
-              </Button>
-              <Button 
-                variant="outline" 
-                onClick={() => navigate('/auth')}
-              >
-                Sign In
-              </Button>
+                    <Button className="w-full mt-6 rounded-2xl bg-blue-600 text-white font-apple-bold py-6 hover:bg-blue-700 transition-colors">
+                      <Share2 className="w-4 h-4 mr-2" /> Share Profile
+                    </Button>
+                  </Card>
+
+                  {displayData.isOwner && <NetworkGrowthCard />}
+                </div>
+              </div>
+
+              {/* QR & Professional Matrix */}
+              {displayData.isOwner && (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <motion.div initial={{ y: 20, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true }}>
+                    <EnhancedQRGenerator profileData={displayData.profile} />
+                  </motion.div>
+                  <motion.div initial={{ y: 20, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.1 }}>
+                    <ProfessionalCard 
+                      profile={displayData.profile} 
+                      careerPassport={displayData.passport}
+                      isOwner={true}
+                    />
+                  </motion.div>
+                </div>
+              )}
             </div>
-          </div>
-        )}
-
-        {/* Show sign-in prompt for unauthenticated users */}
-        {!user && !hasAuthError && (
-          <div className="text-center py-12">
-            <h2 className="text-2xl font-bold text-muted-foreground mb-4">
-              Sign In Required
-            </h2>
-            <p className="text-muted-foreground mb-6">
-              Please sign in to view your career passport.
-            </p>
-            <Button onClick={() => navigate('/auth')}>
-              Sign In
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          </div>
-        )}
-
-        {(isLoading || publicLoading || usernameLoading) && !hasAuthError ? (
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center space-x-3">
-                  <Skeleton className="w-16 h-16 rounded-full" />
-                  <div className="space-y-2">
-                    <Skeleton className="h-6 w-48" />
-                    <Skeleton className="h-4 w-32" />
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {[1, 2, 3, 4].map((i) => (
-                    <Skeleton key={i} className="h-24" />
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        ) : displayData.profile && !hasAuthError ? (
-          <div className="space-y-4">{/* Reduced spacing from space-y-8 to space-y-4 */}
-            {/* Network Growth Card - Only for passport owners */}
-            {!isPublicView && displayData.isOwner && (
-              <NetworkGrowthCard />
-            )}
-
-            {/* Enhanced QR Generator for own profile */}
-            {!isPublicView && displayData.isOwner && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{/* Reduced gap from gap-6 to gap-4 */}
-                <EnhancedQRGenerator profileData={displayData.profile} />
-                <ProfessionalCard 
-                  profile={displayData.profile} 
-                  careerPassport={displayData.passport}
-                  isOwner={true}
-                />
+          ) : (
+            <div className="text-center py-20">
+              <div className="w-24 h-24 bg-slate-100 rounded-[32px] flex items-center justify-center mx-auto mb-6">
+                <Target className="h-12 w-12 text-slate-300" />
               </div>
-            )}
-
-            {/* Content based on active view */}
-            {activeView === 'card' ? (
-              <div className="flex justify-center">
-                <CareerPassportCard 
-                  userProfile={displayData.profile}
-                  isOwner={displayData.isOwner}
-                  publicPassport={isPublicView ? publicPassportData : undefined}
-                />
-              </div>
-            ) : (
-              <EnhancedCareerPassport 
-                userId={targetUserId || user?.id}
-                userProfile={displayData.profile}
-                isOwner={displayData.isOwner}
-                publicPassport={isPublicView ? publicPassportData : undefined}
-              />
-            )}
-          </div>
-        ) : !hasAuthError ? (
-          <div className="text-center py-12">
-            <h2 className="text-2xl font-bold text-muted-foreground mb-4">
-              Career Passport Not Found
-            </h2>
-            <p className="text-muted-foreground mb-6">
-              This user hasn't set up their career passport yet.
-            </p>
-            {displayData.isOwner && (
-              <Button onClick={handleCompleteProfile}>
-                Complete Your Profile
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            )}
-          </div>
-        ) : null}
+              <h2 className="text-3xl font-apple-heavy text-slate-950 mb-2">Identity Not Configured</h2>
+              <p className="text-slate-500 font-apple-medium mb-8 max-w-sm mx-auto">
+                This user hasn't activated their TalentXcel Passport matrix yet.
+              </p>
+              {displayData.isOwner && (
+                <Button onClick={() => navigate('/profile/edit')} className="rounded-2xl bg-slate-950 px-8 py-6 font-apple-bold">
+                  Activate TalentXcel Passport <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
 }
 
-export default CareerPassportDashboard;
+export default CareerPassportCommandCenter;

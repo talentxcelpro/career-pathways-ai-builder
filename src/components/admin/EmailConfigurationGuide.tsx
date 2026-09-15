@@ -37,7 +37,7 @@ export const EmailConfigurationGuide: React.FC = () => {
         'Sign up for AWS account or login to AWS Console',
         'Navigate to Amazon SES service',
         'Verify your sender domain (admin@talentxcel.in)',
-        'Create SMTP credentials in "Account Dashboard"'
+        'Create SMTP credentials in "Account CommandCenter"'
       ]
     },
     {
@@ -45,10 +45,10 @@ export const EmailConfigurationGuide: React.FC = () => {
       title: 'Open Supabase Edge Functions',
       description: 'Navigate to your project\'s Edge Function secrets',
       action: 'Open Edge Functions',
-      url: `https://supabase.com/dashboard/project/dthlgsnakhoftinssokm/settings/functions`,
+      url: `https://supabase.com/CommandCenter/project/dthlgsnakhoftinssokm/settings/functions`,
       copyText: null,
       details: [
-        'Go to your Supabase project dashboard',
+        'Go to your Supabase project CommandCenter',
         'Click on "Edge Functions" in the sidebar',
         'Navigate to the "Settings" tab'
       ]
@@ -196,3 +196,4 @@ export const EmailConfigurationGuide: React.FC = () => {
     </Card>
   );
 };
+

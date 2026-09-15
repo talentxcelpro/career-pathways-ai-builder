@@ -49,13 +49,13 @@ interface MockInterview {
   duration_minutes: number;
   questions: InterviewQuestion[];
   user_responses: Record<string, string>;
-  ai_feedback: Record<string, any>;
+  ai_Feedback: Record<string, any>;
   overall_score: number;
   completed_at?: string;
   status: 'draft' | 'in_progress' | 'completed';
 }
 
-interface InterviewAnalytics {
+interface InterviewCareerAnalytics {
   total_sessions: number;
   average_score: number;
   strong_areas: string[];
@@ -169,9 +169,9 @@ export const InterviewPreparationSystem: React.FC = () => {
     enabled: !!user?.id
   });
 
-  // Fetch interview analytics
-  const { data: analytics } = useQuery({
-    queryKey: ['interview-analytics', user?.id],
+  // Fetch interview CareerAnalytics
+  const { data: CareerAnalytics } = useQuery({
+    queryKey: ['interview-CareerAnalytics', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
       
@@ -187,7 +187,7 @@ export const InterviewPreparationSystem: React.FC = () => {
         strong_areas: ['Communication', 'Technical Knowledge'],
         improvement_areas: ['Confidence', 'Storytelling'],
         progress_trend: completed.slice(-5).map(i => i.overall_score)
-      } as InterviewAnalytics;
+      } as InterviewCareerAnalytics;
     },
     enabled: !!user?.id && mockInterviews.length > 0
   });
@@ -212,7 +212,7 @@ export const InterviewPreparationSystem: React.FC = () => {
           duration_minutes: 30,
           questions: selectedQuestions,
           user_responses: {},
-          ai_feedback: {},
+          ai_Feedback: {},
           overall_score: 0,
           status: 'in_progress'
         })
@@ -288,12 +288,12 @@ export const InterviewPreparationSystem: React.FC = () => {
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold">Interview Preparation System</h1>
         <p className="text-muted-foreground">
-          Practice with AI-powered mock interviews and get personalized feedback
+          Practice with Performance mock interviews and get personalized Feedback
         </p>
       </div>
 
       {/* Stats Overview */}
-      {analytics && (
+      {CareerAnalytics && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card>
             <CardContent className="p-4">
@@ -301,7 +301,7 @@ export const InterviewPreparationSystem: React.FC = () => {
                 <Video className="h-8 w-8 text-primary" />
                 <div>
                   <p className="text-sm text-muted-foreground">Total Sessions</p>
-                  <p className="text-2xl font-bold">{analytics.total_sessions}</p>
+                  <p className="text-2xl font-bold">{CareerAnalytics.total_sessions}</p>
                 </div>
               </div>
             </CardContent>
@@ -313,7 +313,7 @@ export const InterviewPreparationSystem: React.FC = () => {
                 <Star className="h-8 w-8 text-yellow-600" />
                 <div>
                   <p className="text-sm text-muted-foreground">Average Score</p>
-                  <p className="text-2xl font-bold">{analytics.average_score.toFixed(1)}/10</p>
+                  <p className="text-2xl font-bold">{CareerAnalytics.average_score.toFixed(1)}/10</p>
                 </div>
               </div>
             </CardContent>
@@ -349,7 +349,7 @@ export const InterviewPreparationSystem: React.FC = () => {
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="practice">Practice</TabsTrigger>
           <TabsTrigger value="mock-interview">Mock Interview</TabsTrigger>
-          <TabsTrigger value="feedback">Feedback</TabsTrigger>
+          <TabsTrigger value="Feedback">Feedback</TabsTrigger>
           <TabsTrigger value="resources">Resources</TabsTrigger>
         </TabsList>
 
@@ -529,7 +529,7 @@ export const InterviewPreparationSystem: React.FC = () => {
                     <ul className="text-sm text-muted-foreground space-y-1">
                       <li>• 5-7 questions based on your selected type</li>
                       <li>• 30-45 minute session with timing</li>
-                      <li>• AI-powered feedback and scoring</li>
+                      <li>• Performance Feedback and scoring</li>
                       <li>• Personalized improvement recommendations</li>
                     </ul>
                   </div>
@@ -601,7 +601,7 @@ export const InterviewPreparationSystem: React.FC = () => {
         </TabsContent>
 
         {/* Feedback Tab */}
-        <TabsContent value="feedback" className="space-y-6">
+        <TabsContent value="Feedback" className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Recent Interview Performance</CardTitle>
@@ -611,7 +611,7 @@ export const InterviewPreparationSystem: React.FC = () => {
                 <div className="text-center py-8">
                   <Brain className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
                   <h3 className="font-semibold mb-2">No completed interviews yet</h3>
-                  <p className="text-muted-foreground">Complete a mock interview to see detailed feedback</p>
+                  <p className="text-muted-foreground">Complete a mock interview to see detailed Feedback</p>
                 </div>
               ) : (
                 <div className="space-y-6">
@@ -620,7 +620,7 @@ export const InterviewPreparationSystem: React.FC = () => {
                     <Card>
                       <CardContent className="p-4 text-center">
                         <Star className="h-8 w-8 mx-auto mb-2 text-yellow-500" />
-                        <div className="text-2xl font-bold">{analytics?.average_score.toFixed(1)}</div>
+                        <div className="text-2xl font-bold">{CareerAnalytics?.average_score.toFixed(1)}</div>
                         <p className="text-sm text-muted-foreground">Average Score</p>
                       </CardContent>
                     </Card>
@@ -650,7 +650,7 @@ export const InterviewPreparationSystem: React.FC = () => {
                       </CardHeader>
                       <CardContent>
                         <div className="space-y-3">
-                          {analytics?.strong_areas.map((area, index) => (
+                          {CareerAnalytics?.strong_areas.map((area, index) => (
                             <div key={index} className="flex items-center gap-3">
                               <CheckCircle className="h-5 w-5 text-green-600" />
                               <span className="font-medium">{area}</span>
@@ -666,7 +666,7 @@ export const InterviewPreparationSystem: React.FC = () => {
                       </CardHeader>
                       <CardContent>
                         <div className="space-y-3">
-                          {analytics?.improvement_areas.map((area, index) => (
+                          {CareerAnalytics?.improvement_areas.map((area, index) => (
                             <div key={index} className="flex items-center gap-3">
                               <Target className="h-5 w-5 text-orange-600" />
                               <span className="font-medium">{area}</span>
@@ -786,3 +786,7 @@ export const InterviewPreparationSystem: React.FC = () => {
     </div>
   );
 };
+
+
+
+

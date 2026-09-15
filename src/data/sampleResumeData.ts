@@ -31,7 +31,7 @@ export const sampleResumeData: EnhancedResumeData = {
         "Managed product roadmap for 3 engineering teams (12 developers)"
       ],
       skills: ["Product Strategy", "Agile/Scrum", "Team Leadership"],
-      technologies: ["Jira", "Figma", "SQL", "Analytics"]
+      technologies: ["Jira", "Figma", "SQL", "CareerAnalytics"]
     },
     {
       id: "exp-2",
@@ -83,7 +83,7 @@ export const sampleResumeData: EnhancedResumeData = {
   projects: [
     {
       id: "proj-1",
-      title: "AI-Powered Recommendation Engine",
+      title: "Performance Recommendation Engine",
       description: "Led development of machine learning recommendation system that increased user engagement by 45%",
       technologies: ["Python", "TensorFlow", "AWS", "PostgreSQL"],
       startDate: "2022",
@@ -161,3 +161,7 @@ export const colorSchemes = {
     isDefault: false
   }
 };
+
+
+
+

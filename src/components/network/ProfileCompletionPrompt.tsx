@@ -64,7 +64,7 @@ export const ProfileCompletionPrompt: React.FC<ProfileCompletionPromptProps> = (
 
         <div className="space-y-3">
           <p className="text-sm text-orange-700">
-            Complete your profile to get better AI-powered connection recommendations:
+            Complete your profile to get better Performance connection recommendations:
           </p>
           
           <div className="space-y-2">
@@ -114,7 +114,7 @@ export const ProfileCompletionPrompt: React.FC<ProfileCompletionPromptProps> = (
               <span className="text-sm font-medium">Good progress!</span>
             </div>
             <p className="text-xs text-green-600 mt-1">
-              You're on track. Complete a few more sections to unlock advanced AI matching.
+              You're on track. Complete a few more sections to unlock advanced Precision Match.
             </p>
           </div>
         )}

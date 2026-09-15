@@ -43,7 +43,7 @@ interface SEOMetrics {
   organicTraffic: number;
 }
 
-export const SEORecoveryDashboard: React.FC = () => {
+export const SEORecoveryCommandCenter: React.FC = () => {
   const [tasks, setTasks] = useState<RecoveryTask[]>([]);
   const [metrics, setMetrics] = useState<SEOMetrics>({
     indexedPages: 0,
@@ -160,14 +160,14 @@ export const SEORecoveryDashboard: React.FC = () => {
 
       // Phase 4: Monitoring & Optimization
       {
-        id: 'analytics-setup',
+        id: 'CareerAnalytics-setup',
         phase: 'Phase 4',
-        title: 'Advanced Analytics Setup',
+        title: 'Advanced CareerAnalytics Setup',
         description: 'Configure GA4, Search Console monitoring, and SEO tracking',
         status: 'pending',
         priority: 'low',
         estimatedTime: '2-3 hours',
-        action: setupAdvancedAnalytics
+        action: setupAdvancedCareerAnalytics
       },
       {
         id: 'performance-optimization',
@@ -235,9 +235,9 @@ export const SEORecoveryDashboard: React.FC = () => {
     toast.info('SEO content creation initiated');
   }
 
-  function setupAdvancedAnalytics() {
-    updateTaskStatus('analytics-setup', 'in-progress');
-    toast.info('Analytics setup in progress');
+  function setupAdvancedCareerAnalytics() {
+    updateTaskStatus('CareerAnalytics-setup', 'in-progress');
+    toast.info('CareerAnalytics setup in progress');
   }
 
   function optimizePerformance() {
@@ -261,7 +261,7 @@ export const SEORecoveryDashboard: React.FC = () => {
   };
 
   if (loading) {
-    return <div>Loading SEO Recovery Dashboard...</div>;
+    return <div>Loading SEO Recovery CommandCenter...</div>;
   }
 
   return (
@@ -526,3 +526,6 @@ export const SEORecoveryDashboard: React.FC = () => {
     </div>
   );
 };
+
+
+

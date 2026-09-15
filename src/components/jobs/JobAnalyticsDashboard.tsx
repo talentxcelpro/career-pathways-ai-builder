@@ -16,7 +16,7 @@ import {
   Clock, DollarSign, Share2, Bookmark, ThumbsUp
 } from 'lucide-react';
 
-interface JobAnalytics {
+interface JobCareerAnalytics {
   job_id: string;
   job_title: string;
   company_name: string;
@@ -35,9 +35,9 @@ interface JobAnalytics {
   }>;
 }
 
-export const JobAnalyticsDashboard = () => {
+export const JobCareerAnalyticsCommandCenter = () => {
   const [user, setUser] = useState<any>(null);
-  const [analytics, setAnalytics] = useState<JobAnalytics[]>([]);
+  const [CareerAnalytics, setCareerAnalytics] = useState<JobCareerAnalytics[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedJob, setSelectedJob] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState('7d');
@@ -47,7 +47,7 @@ export const JobAnalyticsDashboard = () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
       if (user) {
-        fetchJobAnalytics();
+        fetchJobCareerAnalytics();
       } else {
         setLoading(false);
       }
@@ -55,7 +55,7 @@ export const JobAnalyticsDashboard = () => {
     getCurrentUser();
   }, [dateRange]);
 
-  const fetchJobAnalytics = async () => {
+  const fetchJobCareerAnalytics = async () => {
     try {
       // Get user's jobs
       const { data: jobs, error: jobsError } = await supabase
@@ -65,7 +65,7 @@ export const JobAnalyticsDashboard = () => {
           title,
           company_name,
           created_at,
-          job_analytics (
+          job_CareerAnalytics (
             views_count,
             applications_count,
             unique_visitors,
@@ -77,12 +77,12 @@ export const JobAnalyticsDashboard = () => {
 
       if (jobsError) throw jobsError;
 
-      // Process analytics data
-      const processedAnalytics = jobs?.map(job => {
-        const analytics = job.job_analytics || [];
-        const totalViews = analytics.reduce((sum, a) => sum + (a.views_count || 0), 0);
-        const totalUniqueViews = analytics.reduce((sum, a) => sum + (a.unique_visitors || 0), 0);
-        const totalApplications = analytics.reduce((sum, a) => sum + (a.applications_count || 0), 0);
+      // Process CareerAnalytics data
+      const processedCareerAnalytics = jobs?.map(job => {
+        const CareerAnalytics = job.job_CareerAnalytics || [];
+        const totalViews = CareerAnalytics.reduce((sum, a) => sum + (a.views_count || 0), 0);
+        const totalUniqueViews = CareerAnalytics.reduce((sum, a) => sum + (a.unique_visitors || 0), 0);
+        const totalApplications = CareerAnalytics.reduce((sum, a) => sum + (a.applications_count || 0), 0);
         
         return {
           job_id: job.id,
@@ -96,7 +96,7 @@ export const JobAnalyticsDashboard = () => {
           avg_time_on_page: 0, // Not available in current schema
           bounce_rate: 0, // Not available in current schema
           conversion_rate: totalViews > 0 ? (totalApplications / totalViews) * 100 : 0,
-          daily_stats: analytics.map(a => ({
+          daily_stats: CareerAnalytics.map(a => ({
             date: a.date,
             views: a.views_count || 0,
             applications: a.applications_count || 0
@@ -104,27 +104,27 @@ export const JobAnalyticsDashboard = () => {
         };
       }) || [];
 
-      setAnalytics(processedAnalytics);
+      setCareerAnalytics(processedCareerAnalytics);
     } catch (error) {
-      console.error('Error fetching job analytics:', error);
-      toast.error('Failed to fetch job analytics');
+      console.error('Error fetching job CareerAnalytics:', error);
+      toast.error('Failed to fetch job CareerAnalytics');
     } finally {
       setLoading(false);
     }
   };
 
-  const totalStats = analytics.reduce((acc, job) => ({
+  const totalStats = CareerAnalytics.reduce((acc, job) => ({
     views: acc.views + job.total_views,
     applications: acc.applications + job.applications,
     saves: acc.saves + job.saves,
     shares: acc.shares + job.shares
   }), { views: 0, applications: 0, saves: 0, shares: 0 });
 
-  const avgConversionRate = analytics.length > 0 
-    ? analytics.reduce((sum, job) => sum + job.conversion_rate, 0) / analytics.length 
+  const avgConversionRate = CareerAnalytics.length > 0 
+    ? CareerAnalytics.reduce((sum, job) => sum + job.conversion_rate, 0) / CareerAnalytics.length 
     : 0;
 
-  const chartData = analytics.slice(0, 5).map(job => ({
+  const chartData = CareerAnalytics.slice(0, 5).map(job => ({
     name: job.job_title.substring(0, 20) + '...',
     views: job.total_views,
     applications: job.applications,
@@ -158,7 +158,7 @@ export const JobAnalyticsDashboard = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Job Analytics Dashboard</h1>
+          <h1 className="text-3xl font-bold">Job CareerAnalytics CommandCenter</h1>
           <p className="text-muted-foreground">Track performance of your job postings</p>
         </div>
         <div className="flex gap-2">
@@ -196,7 +196,7 @@ export const JobAnalyticsDashboard = () => {
           <CardContent>
             <div className="text-2xl font-bold">{totalStats.views.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">
-              {analytics.length} active job{analytics.length !== 1 ? 's' : ''}
+              {CareerAnalytics.length} active job{CareerAnalytics.length !== 1 ? 's' : ''}
             </p>
           </CardContent>
         </Card>
@@ -307,7 +307,7 @@ export const JobAnalyticsDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {analytics.slice(0, 10).map((job) => (
+                {CareerAnalytics.slice(0, 10).map((job) => (
                   <div key={job.job_id} className="flex items-center space-x-4">
                     <div className="flex-1">
                       <p className="font-medium">{job.job_title}</p>
@@ -331,11 +331,11 @@ export const JobAnalyticsDashboard = () => {
           <Card>
             <CardHeader>
               <CardTitle>Individual Job Performance</CardTitle>
-              <CardDescription>Detailed analytics for each job posting</CardDescription>
+              <CardDescription>Detailed CareerAnalytics for each job posting</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {analytics.map((job) => (
+                {CareerAnalytics.map((job) => (
                   <Card key={job.job_id} className="p-4">
                     <div className="flex justify-between items-start mb-4">
                       <div>
@@ -374,3 +374,6 @@ export const JobAnalyticsDashboard = () => {
     </div>
   );
 };
+
+
+

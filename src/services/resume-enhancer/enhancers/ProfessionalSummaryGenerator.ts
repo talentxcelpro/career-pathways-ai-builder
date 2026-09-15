@@ -59,7 +59,7 @@ export class ProfessionalSummaryGenerator {
     },
     'marketing_manager': {
       roles: ['Marketing Manager', 'Digital Marketing Manager', 'Brand Manager', 'Marketing Lead'],
-      skills: ['Digital Marketing', 'SEO', 'Content Strategy', 'Analytics', 'Social Media', 'Campaign Management'],
+      skills: ['Digital Marketing', 'SEO', 'Content Strategy', 'CareerAnalytics', 'Social Media', 'Campaign Management'],
       achievements: ['increasing brand awareness', 'driving lead generation', 'improving ROI'],
       goals: ['building strong brand presence', 'engaging target audiences', 'driving growth'],
       objectives: ['expand market reach', 'boost conversion rates', 'enhance brand loyalty']
@@ -129,7 +129,7 @@ export class ProfessionalSummaryGenerator {
     // Check for role keywords
     const roleKeywords = {
       'software_engineer': ['software', 'developer', 'engineer', 'programming', 'coding'],
-      'data_scientist': ['data', 'analytics', 'machine learning', 'statistics', 'python'],
+      'data_scientist': ['data', 'CareerAnalytics', 'machine learning', 'statistics', 'python'],
       'product_manager': ['product', 'manager', 'strategy', 'roadmap', 'stakeholder'],
       'marketing_manager': ['marketing', 'brand', 'campaign', 'digital', 'social media'],
       'designer': ['design', 'ui', 'ux', 'figma', 'adobe', 'creative']
@@ -326,3 +326,6 @@ export class ProfessionalSummaryGenerator {
     return Math.min(maxScore, Math.round(score));
   }
 }
+
+
+

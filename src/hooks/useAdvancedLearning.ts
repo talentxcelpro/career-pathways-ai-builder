@@ -413,15 +413,15 @@ export const useTextToSpeech = () => {
   };
 };
 
-// Learning Analytics
-export const useLearningAnalytics = (userId?: string) => {
+// Learning CareerAnalytics
+export const useLearningCareerAnalytics = (userId?: string) => {
   return useQuery({
-    queryKey: ['learning-analytics', userId],
+    queryKey: ['learning-CareerAnalytics', userId],
     queryFn: async () => {
       if (!userId) return [];
       
       const { data, error } = await supabase
-        .from('user_learning_analytics')
+        .from('user_learning_CareerAnalytics')
         .select('*')
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
@@ -433,3 +433,6 @@ export const useLearningAnalytics = (userId?: string) => {
     enabled: !!userId
   });
 };
+
+
+

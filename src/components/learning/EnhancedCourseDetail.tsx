@@ -166,7 +166,7 @@ export const EnhancedCourseDetail: React.FC = () => {
   const isLoading = courseLoading || modulesLoading;
 
   const totalLessons = modules.reduce((acc, module) => acc + (module.course_lessons?.length || 0), 0);
-  const completedLessons = 0; // TODO: Implement progress tracking
+  const completedLessons = 0; // TODO: Implement Growth Path
   const progressPercentage = totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0;
 
   const handleEnroll = () => {
@@ -454,3 +454,4 @@ export const EnhancedCourseDetail: React.FC = () => {
     </div>
   );
 };
+

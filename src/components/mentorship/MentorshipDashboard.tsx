@@ -51,7 +51,7 @@ interface MentorshipSession {
   status: 'scheduled' | 'completed' | 'cancelled';
   notes?: string;
   rating?: number;
-  feedback?: string;
+  Feedback?: string;
 }
 
 interface MentorshipGoal {
@@ -65,7 +65,7 @@ interface MentorshipGoal {
   mentor_id?: string;
 }
 
-export const MentorshipDashboard: React.FC = () => {
+export const MentorshipCommandCenter: React.FC = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('find-mentors');
@@ -573,3 +573,5 @@ export const MentorshipDashboard: React.FC = () => {
     </div>
   );
 };
+
+

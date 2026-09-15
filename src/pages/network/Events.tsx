@@ -10,12 +10,12 @@ import { Calendar, Clock, MapPin, Users, Plus, Search, Video, Sparkles } from "l
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { AIEventAssistant } from "@/components/network/AIEventAssistant";
+import { AIEventNavigator } from "@/components/network/AIEventNavigator";
 
 const Events = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [showAIAssistant, setShowAIAssistant] = useState(false);
+  const [showAINavigator, setShowAINavigator] = useState(false);
   const [newEvent, setNewEvent] = useState({
     title: '',
     description: '',
@@ -166,19 +166,19 @@ const Events = () => {
                 <DialogTitle className="flex items-center justify-between">
                   Create New Event
                   <Button
-                    variant={showAIAssistant ? "default" : "outline"}
+                    variant={showAINavigator ? "default" : "outline"}
                     size="sm"
-                    onClick={() => setShowAIAssistant(!showAIAssistant)}
+                    onClick={() => setShowAINavigator(!showAINavigator)}
                   >
                     <Sparkles className="h-4 w-4 mr-1" />
-                    AI Assistant
+                    TalentXcel Navigator
                   </Button>
                 </DialogTitle>
               </DialogHeader>
               
-              {/* AI Event Assistant */}
-              {showAIAssistant && (
-                <AIEventAssistant onEventDataApply={handleAIEventDataApply} />
+              {/* AI Event Navigator */}
+              {showAINavigator && (
+                <AIEventNavigator onEventDataApply={handleAIEventDataApply} />
               )}
               
               <div className="space-y-4">
@@ -400,3 +400,5 @@ const Events = () => {
 };
 
 export default Events;
+
+

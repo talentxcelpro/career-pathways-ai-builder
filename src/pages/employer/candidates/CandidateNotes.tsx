@@ -19,7 +19,7 @@ const CandidateNotes = () => {
         <FileText className="h-8 w-8 text-blue-600" />
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Candidate Notes</h1>
-          <p className="text-gray-600">Add notes and feedback for this candidate</p>
+          <p className="text-gray-600">Add notes and Feedback for this candidate</p>
         </div>
       </div>
 
@@ -32,7 +32,7 @@ const CandidateNotes = () => {
               Add Note
             </Button>
           </CardTitle>
-          <CardDescription>Track your thoughts and team feedback</CardDescription>
+          <CardDescription>Track your thoughts and team Feedback</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <Textarea placeholder="Add your notes about this candidate..." rows={6} />
@@ -47,3 +47,5 @@ const CandidateNotes = () => {
 };
 
 export default CandidateNotes;
+
+

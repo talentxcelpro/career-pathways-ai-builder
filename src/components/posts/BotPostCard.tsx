@@ -53,7 +53,7 @@ export const BotPostCard: React.FC<BotPostCardProps> = ({ post, showActions = tr
                 {isLoading ? 'Loading...' : (botInfo?.display_name || 'AI Bot')}
               </h3>
               <Badge variant="secondary" className="text-xs">
-                {botInfo?.bot_tag || 'AI Assistant'}
+                {botInfo?.bot_tag || 'TalentXcel Navigator'}
               </Badge>
               {post.origin && (
                 <Badge variant={post.origin === 'manual' ? 'default' : 'outline'} className="text-xs">
@@ -62,7 +62,7 @@ export const BotPostCard: React.FC<BotPostCardProps> = ({ post, showActions = tr
               )}
             </div>
             <p className="text-sm text-muted-foreground">
-              {isLoading ? 'Loading role...' : (botInfo?.display_role || 'AI Assistant')}
+              {isLoading ? 'Loading role...' : (botInfo?.display_role || 'TalentXcel Navigator')}
             </p>
             <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
               <Calendar className="h-3 w-3" />
@@ -114,7 +114,7 @@ export const BotPostCard: React.FC<BotPostCardProps> = ({ post, showActions = tr
             {/* Bot Identifier */}
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <Bot className="h-3 w-3" />
-              <span>AI Assistant</span>
+              <span>TalentXcel Navigator</span>
             </div>
           </div>
         )}

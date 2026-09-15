@@ -22,12 +22,12 @@ import {
   Briefcase
 } from 'lucide-react';
 
-interface MobileLearningDashboardProps {
+interface MobileLearningCommandCenterProps {
   userId?: string;
   className?: string;
 }
 
-export const MobileLearningDashboard: React.FC<MobileLearningDashboardProps> = ({ 
+export const MobileLearningCommandCenter: React.FC<MobileLearningCommandCenterProps> = ({ 
   userId, 
   className 
 }) => {
@@ -264,3 +264,4 @@ export const MobileLearningDashboard: React.FC<MobileLearningDashboardProps> = (
     </div>
   );
 };
+

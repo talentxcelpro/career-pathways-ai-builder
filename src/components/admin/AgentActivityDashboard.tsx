@@ -48,7 +48,7 @@ interface AgentActivity {
   emails_sent: number;
 }
 
-export const AgentActivityDashboard: React.FC = () => {
+export const AgentActivityCommandCenter: React.FC = () => {
   const [logs, setLogs] = useState<AgentLog[]>([]);
   const [activities, setActivities] = useState<AgentActivity[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -213,7 +213,7 @@ export const AgentActivityDashboard: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Agent Activity Dashboard</h2>
+          <h2 className="text-2xl font-bold text-foreground">Agent Activity CommandCenter</h2>
           <p className="text-muted-foreground">Monitor detailed AI agent activities and performance</p>
         </div>
         <Button onClick={() => { fetchAgentLogs(); fetchAgentActivities(); }} disabled={isLoading}>
@@ -227,7 +227,7 @@ export const AgentActivityDashboard: React.FC = () => {
           <TabsTrigger value="logs">System Logs</TabsTrigger>
           <TabsTrigger value="business">Business Tasks</TabsTrigger>
           <TabsTrigger value="performance">Agent Performance</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
         </TabsList>
 
         <TabsContent value="logs" className="space-y-4">
@@ -434,12 +434,12 @@ export const AgentActivityDashboard: React.FC = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="analytics" className="space-y-4">
+        <TabsContent value="CareerAnalytics" className="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BarChart3 className="h-5 w-5" />
-                System Analytics
+                System CareerAnalytics
               </CardTitle>
               <CardDescription>Overall system performance metrics</CardDescription>
             </CardHeader>
@@ -498,3 +498,6 @@ export const AgentActivityDashboard: React.FC = () => {
     </div>
   );
 };
+
+
+

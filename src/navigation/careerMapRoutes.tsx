@@ -1,23 +1,25 @@
-
+import { lazy } from "react";
 import { Compass, TrendingUp, Users, Shield, Target } from "lucide-react";
-import CareerMap from "../pages/CareerMap";
-import Generate from "../pages/career-map/Generate";
-import SkillsGap from "../pages/career-map/SkillsGap";
-import Recommendations from "../pages/career-map/Recommendations";
-import Comparison from "../pages/career-map/Comparison";
-import AIRoadmapBuilder from "../pages/career-map/AIRoadmapBuilder";
-import MyRoadmaps from "../pages/career-map/MyRoadmaps";
-import RoadmapDetail from "../pages/career-map/RoadmapDetail";
-import CareerSwitch from "../pages/career-map/CareerSwitch";
-import EnhancedCareerAnalytics from "../components/ai/EnhancedCareerAnalytics";
-import IndustryBenchmarking from "../components/ai/IndustryBenchmarking";
-import CareerCredibilityScore from "../components/ai/CareerCredibilityScore";
-import NetworkingIntelligence from "../components/ai/NetworkingIntelligence";
-import ComprehensiveCareerIntelligence from "../pages/ComprehensiveCareerIntelligence";
+
+const CareerMap = lazy(() => import("../pages/CareerMap"));
+const Generate = lazy(() => import("../pages/career-map/Generate"));
+const SkillsGap = lazy(() => import("../pages/career-map/SkillsGap"));
+const Recommendations = lazy(() => import("../pages/career-map/Recommendations"));
+const Comparison = lazy(() => import("../pages/career-map/Comparison"));
+const AIRoadmapBuilder = lazy(() => import("../pages/career-map/AIRoadmapBuilder"));
+const MyRoadmaps = lazy(() => import("../pages/career-map/MyRoadmaps"));
+const RoadmapDetail = lazy(() => import("../pages/career-map/RoadmapDetail"));
+const CareerSwitch = lazy(() => import("../pages/career-map/CareerSwitch"));
+const EnhancedCareerCareerAnalytics = lazy(() => import("../components/ai/EnhancedCareerAnalytics"));
+const IndustryBenchmarking = lazy(() => import("../components/ai/IndustryBenchmarking"));
+const CareerCredibilityScore = lazy(() => import("../components/ai/CareerCredibilityScore"));
+const NetworkingIntelligence = lazy(() => import("../components/ai/NetworkingIntelligence"));
+const ComprehensiveCareerIntelligence = lazy(() => import("../pages/ComprehensiveCareerIntelligence"));
+
 
 export const careerMapRoutes = [
   {
-    title: "Comprehensive Career Intelligence",
+    title: "Comprehensive CareerIntelligence",
     to: "/career-map/comprehensive-intelligence",
     icon: <Compass className="h-4 w-4" />,
     page: <ComprehensiveCareerIntelligence />,
@@ -79,10 +81,10 @@ export const careerMapRoutes = [
     isPublic: true,
   },
   {
-    title: "Enhanced Career Analytics",
-    to: "/career-map/enhanced-analytics",
+    title: "Enhanced Career CareerAnalytics",
+    to: "/career-map/enhanced-CareerAnalytics",
     icon: <TrendingUp className="h-4 w-4" />,
-    page: <EnhancedCareerAnalytics />,
+    page: <EnhancedCareerCareerAnalytics />,
     isPublic: true,
   },
   {
@@ -107,3 +109,7 @@ export const careerMapRoutes = [
     isPublic: true,
   },
 ];
+
+
+
+

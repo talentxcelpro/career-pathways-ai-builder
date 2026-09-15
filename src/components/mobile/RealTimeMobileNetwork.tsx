@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRealtimeSync } from '@/hooks/useRealtimeSync';
-import { useInfiniteNetworkFeed } from '@/hooks/useInfiniteNetworkFeed';
+import { useInfiniteNetworkPulse } from '@/hooks/useInfiniteNetworkPulse';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';
 import { supabase } from '@/integrations/supabase/client';
 import { MobileLayout } from '@/components/mobile/MobileLayout';
@@ -62,7 +62,7 @@ export const RealTimeMobileNetwork: React.FC = () => {
     hasNextPage,
     isFetchingNextPage,
     refetch
-  } = useInfiniteNetworkFeed({ type: 'all' });
+  } = useInfiniteNetworkPulse({ type: 'all' });
 
   // Flatten all pages into a single array
   const posts = data?.pages.flatMap(page => page.data) || [];
@@ -248,7 +248,7 @@ export const RealTimeMobileNetwork: React.FC = () => {
             </div>
           </div>
 
-          {/* Network Feed */}
+          {/* Network Pulse */}
           <div className="space-y-0">
             {isLoading && mobilePosts.length === 0 ? (
               <div className="space-y-4 p-4">
@@ -399,7 +399,7 @@ export const RealTimeMobileNetwork: React.FC = () => {
             
             {!hasNextPage && mobilePosts.length > 0 && (
               <div className="text-center py-6 border-t">
-                <p className="text-sm text-muted-foreground">You've reached the end of your feed</p>
+                <p className="text-sm text-muted-foreground">You've reached the end of your Pulse</p>
               </div>
             )}
 
@@ -487,3 +487,4 @@ export const RealTimeMobileNetwork: React.FC = () => {
     </MobileLayout>
   );
 };
+

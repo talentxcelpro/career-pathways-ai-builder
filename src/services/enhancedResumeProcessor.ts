@@ -185,7 +185,7 @@ export class EnhancedResumeProcessor {
       // Step 1: Advanced text extraction with file type detection
       const extractedText = await this.performAdvancedTextExtraction(file);
       
-      // Step 2: AI-powered parsing with NLP techniques
+      // Step 2: Performance parsing with NLP techniques
       const parsedData = await this.performAIExtraction(extractedText, file.name, file.type);
       
       // Step 3: Post-processing and validation
@@ -365,7 +365,7 @@ Create a comprehensive professional profile suitable for the implied field/exper
   }
 
   protected async performAIExtraction(text: string, fileName: string, fileType: string): Promise<any> {
-    console.log('Performing AI-powered extraction with', text.length, 'characters of text...');
+    console.log('Performing Performance extraction with', text.length, 'characters of text...');
     
     // Enhanced text validation and preprocessing
     let processedText = text;
@@ -888,7 +888,7 @@ Please provide comprehensive extraction with contextual enhancements.
 
   private generateRealisticCompanyName(field: string, index: number): string {
     const techCompanies = ['TechCorp Solutions', 'InnovateTech Inc', 'Digital Dynamics', 'NextGen Systems', 'CloudFirst Technologies'];
-    const dataCompanies = ['DataInsights Corp', 'Analytics Pro Ltd', 'Intelligence Systems', 'BigData Solutions', 'Metrics Technologies'];
+    const dataCompanies = ['DataInsights Corp', 'CareerAnalytics Pro Ltd', 'Intelligence Systems', 'BigData Solutions', 'Metrics Technologies'];
     const designCompanies = ['Creative Studios', 'Design Excellence', 'Visual Impact Agency', 'Brand Dynamics', 'User Experience Co'];
     const generalCompanies = ['Professional Services Inc', 'Enterprise Solutions Ltd', 'Business Dynamics Corp', 'Strategic Partners', 'Global Enterprises'];
     
@@ -902,7 +902,7 @@ Please provide comprehensive extraction with contextual enhancements.
 
   private generateRealisticJobTitle(level: string, field: string, index: number): string {
     const titles: Record<string, string[]> = {
-      'Entry-level': ['Junior Developer', 'Associate Analyst', 'Assistant Designer', 'Trainee Engineer'],
+      'Entry-level': ['Junior Developer', 'Associate Analyst', 'Navigator Designer', 'Trainee Engineer'],
       'Mid-level': ['Software Developer', 'Data Analyst', 'UX Designer', 'Systems Engineer'],
       'Senior': ['Senior Developer', 'Senior Analyst', 'Lead Designer', 'Principal Engineer'],
       'Executive': ['Engineering Manager', 'Data Science Director', 'Design Lead', 'Technical Director']
@@ -1361,7 +1361,7 @@ Please provide comprehensive extraction with contextual enhancements.
   private generateFallbackCertifications(fileInfo: { field: string }): any[] {
     const certsByField = {
       'Software Engineering': ['AWS Certified Developer', 'Google Cloud Professional'],
-      'Data Science': ['Google Data Analytics Certificate', 'Microsoft Azure Data Scientist'],
+      'Data Science': ['Google Data CareerAnalytics Certificate', 'Microsoft Azure Data Scientist'],
       'Design': ['Adobe Certified Expert', 'Google UX Design Certificate'],
       'Technology': ['CompTIA Security+', 'Certified Scrum Master']
     };
@@ -1388,7 +1388,7 @@ Please provide comprehensive extraction with contextual enhancements.
       ],
       'Data Science': [
         'Analyzed complex datasets to derive actionable business insights',
-        'Built predictive models and data visualization dashboards',
+        'Built predictive models and data visualization CommandCenters',
         'Led data strategy initiatives and statistical analysis projects'
       ],
       'Design': [
@@ -1437,7 +1437,7 @@ Please provide comprehensive extraction with contextual enhancements.
   private generateKeywords(field: string): string[] {
     const keywords = {
       'Software Engineering': ['full-stack', 'agile', 'microservices', 'API', 'DevOps'],
-      'Data Science': ['machine learning', 'analytics', 'visualization', 'statistics', 'big data'],
+      'Data Science': ['machine learning', 'CareerAnalytics', 'visualization', 'statistics', 'big data'],
       'Design': ['user experience', 'interface design', 'prototyping', 'user research', 'wireframing']
     };
     
@@ -1523,3 +1523,6 @@ Please provide comprehensive extraction with contextual enhancements.
     };
   }
 }
+
+
+

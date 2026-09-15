@@ -37,7 +37,7 @@ const ATSChecker = () => {
               <CardHeader>
                 <CardTitle>Upload Resume for ATS Analysis</CardTitle>
                 <CardDescription>
-                  We'll analyze your resume and provide detailed feedback on ATS compatibility
+                  We'll analyze your resume and provide detailed Feedback on ATS compatibility
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -128,3 +128,4 @@ const ATSChecker = () => {
 };
 
 export default ATSChecker;
+

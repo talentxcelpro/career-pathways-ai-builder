@@ -1,11 +1,14 @@
+import { lazy } from "react";
 import { FileText, Briefcase, TrendingUp, Building2, MessageSquare, Search } from "lucide-react";
 import { TieredAccessGuard } from "@/components/access/TieredAccessGuard";
-import ResumeBuilder from "../pages/tools/ResumeBuilder";
-import Jobs from "../pages/Jobs";
-import MarketInsights from "../pages/tools/MarketInsights";
-import Companies from "../pages/Companies";
-import InterviewPrep from "../pages/tools/InterviewPrep";
-import AIJobMatchGPT from "../pages/tools/AIJobMatchGPT";
+
+const ResumeBuilder = lazy(() => import("../pages/tools/ResumeBuilder"));
+const Jobs = lazy(() => import("../pages/Jobs"));
+const MarketInsights = lazy(() => import("../pages/tools/MarketInsights"));
+const Companies = lazy(() => import("../pages/Companies"));
+const InterviewPrep = lazy(() => import("../pages/tools/InterviewPrep"));
+const AIJobMatchGPT = lazy(() => import("../pages/tools/AIJobMatchGPT"));
+
 
 export const publicRoutes = [
   {

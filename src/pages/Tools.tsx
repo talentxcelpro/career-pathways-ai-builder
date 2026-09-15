@@ -293,7 +293,7 @@ const ToolsContent = ({ tools, toolsByCategory, userStats, userName, userTXCBala
 const Tools = () => {
   React.useEffect(() => {
     updateMetaTags({
-      title: "AI-Powered Career Tools | Transform Your Professional Journey",
+      title: "Performance Career Tools | Transform Your Professional Journey",
       description: "Access 26+ AI tools for career development, resume building, interview prep, and job matching. Unlock premium features with TXC tokens.",
       keywords: ["AI career tools", "resume builder", "interview simulator", "job matching", "career development", "professional skills"]
     });

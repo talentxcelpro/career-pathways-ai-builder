@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { LogIn, Zap, Shield, Clock, Users } from 'lucide-react';
 import { toast } from 'sonner';
+import { getAuthCallbackUrl } from '@/utils/authRedirect';
 
 interface GoogleOneTapStatusProps {
   className?: string;
@@ -47,7 +48,7 @@ export const GoogleOneTapStatus: React.FC<GoogleOneTapStatusProps> = ({
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/network`,
+          redirectTo: getAuthCallbackUrl('/career-os'),
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',

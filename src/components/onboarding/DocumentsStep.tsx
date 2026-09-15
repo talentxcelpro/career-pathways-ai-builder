@@ -45,7 +45,7 @@ export const DocumentsStep: React.FC<DocumentsStepProps> = ({ data, updateData }
       <div>
         <Label>Upload Resume (Optional)</Label>
         <p className="text-sm text-muted-foreground mb-4">
-          Upload your resume to get AI-powered insights and personalized recommendations
+          Upload your resume to get Performance insights and personalized recommendations
         </p>
         
         {data.resumeUrl ? (
@@ -94,3 +94,4 @@ export const DocumentsStep: React.FC<DocumentsStepProps> = ({ data, updateData }
     </div>
   );
 };
+

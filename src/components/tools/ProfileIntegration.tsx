@@ -119,7 +119,7 @@ const ProfileIntegration = () => {
         setJobApplications(enrichedApplications);
       }
 
-      // Fetch tool usage analytics
+      // Fetch tool usage CareerAnalytics
       const { data: usage, error: usageError } = await supabase
         .from('tool_usage')
         .select('tool_name, created_at, results')
@@ -408,12 +408,12 @@ const ProfileIntegration = () => {
         </CardContent>
       </Card>
 
-      {/* Tool Usage Analytics */}
+      {/* Tool Usage CareerAnalytics */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <TrendingUp className="h-5 w-5" />
-            <span>Tool Usage Analytics</span>
+            <span>Tool Usage CareerAnalytics</span>
           </CardTitle>
           <CardDescription>How you've been using our AI career tools</CardDescription>
         </CardHeader>
@@ -479,7 +479,7 @@ const ProfileIntegration = () => {
               <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
               <div className="flex-1">
                 <h4 className="font-medium text-sm">Complete Profile for Better Results</h4>
-                <p className="text-xs text-gray-600 mt-1">Add more details to your profile to get more accurate AI recommendations.</p>
+                <p className="text-xs text-gray-600 mt-1">Add more details to your profile to get more accurate Career Moves.</p>
               </div>
               <Button variant="outline" size="sm">
                 Update Profile
@@ -501,3 +501,7 @@ const ProfileIntegration = () => {
 };
 
 export default ProfileIntegration;
+
+
+
+

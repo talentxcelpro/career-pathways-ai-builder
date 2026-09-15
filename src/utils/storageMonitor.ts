@@ -68,7 +68,7 @@ class StorageMonitor {
     return { ...this.metrics };
   }
 
-  // Persist metrics to cache for dashboard
+  // Persist metrics to cache for CommandCenter
   private async persistMetrics() {
     await redisCache.set('storage_metrics', this.metrics, {
       ttl: 3600, // 1 hour
@@ -155,3 +155,4 @@ export const monitoredStorage = {
   clearUploadCache: optimizedStorage.clearUploadCache.bind(optimizedStorage),
   getStorageStats: optimizedStorage.getStorageStats.bind(optimizedStorage)
 };
+

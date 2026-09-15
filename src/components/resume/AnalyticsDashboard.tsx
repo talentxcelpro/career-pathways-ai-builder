@@ -16,11 +16,11 @@ import {
   Target,
   Filter
 } from "lucide-react";
-import { useResumeAnalytics } from '@/hooks/useResumeAnalytics';
+import { useResumeCareerAnalytics } from '@/hooks/useResumeAnalytics';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import { formatDistanceToNow } from 'date-fns';
 
-interface AnalyticsDashboardProps {
+interface CareerAnalyticsCommandCenterProps {
   resumeId: string;
 }
 
@@ -62,9 +62,9 @@ const MetricCard = ({
   </Card>
 );
 
-export const AnalyticsDashboard = ({ resumeId }: AnalyticsDashboardProps) => {
+export const CareerAnalyticsCommandCenter = ({ resumeId }: CareerAnalyticsCommandCenterProps) => {
   const [timeRange, setTimeRange] = useState('7d');
-  const { metrics, events, isLoading } = useResumeAnalytics(resumeId);
+  const { metrics, events, isLoading } = useResumeCareerAnalytics(resumeId);
 
   if (isLoading) {
     return (
@@ -89,7 +89,7 @@ export const AnalyticsDashboard = ({ resumeId }: AnalyticsDashboardProps) => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Resume Analytics</h2>
+          <h2 className="text-2xl font-bold">Resume CareerAnalytics</h2>
           <p className="text-muted-foreground">
             Track your resume's performance and engagement
           </p>
@@ -367,3 +367,6 @@ export const AnalyticsDashboard = ({ resumeId }: AnalyticsDashboardProps) => {
     </div>
   );
 };
+
+
+

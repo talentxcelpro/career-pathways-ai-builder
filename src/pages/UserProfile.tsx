@@ -50,14 +50,14 @@ const UserProfile = () => {
   const { availableBalance, isLoading: balanceLoading } = useTokenBalance();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [connectionStatus, setConnectionStatus] = useState<'none' | 'pending' | 'connected'>('none');
+  const [connectionStatus, setconnectionStatus] = useState<'none' | 'pending' | 'connected'>('none');
   const [profileStrength, setProfileStrength] = useState(0);
 
   useEffect(() => {
     if (username) {
       fetchUserProfile();
       if (currentUser) {
-        checkConnectionStatus();
+        checkconnectionStatus();
       }
     }
   }, [username, currentUser]);
@@ -123,7 +123,7 @@ const UserProfile = () => {
     setProfileStrength(Math.round(score));
   };
 
-  const checkConnectionStatus = async () => {
+  const checkconnectionStatus = async () => {
     if (!currentUser?.id || !profile?.id) return;
 
     try {
@@ -134,11 +134,11 @@ const UserProfile = () => {
         .single();
 
       if (data) {
-        setConnectionStatus(data.status);
+        setconnectionStatus(data.status);
       }
     } catch (error) {
       // No connection exists
-      setConnectionStatus('none');
+      setconnectionStatus('none');
     }
   };
 
@@ -156,7 +156,7 @@ const UserProfile = () => {
 
       if (error) throw error;
 
-      setConnectionStatus('pending');
+      setconnectionStatus('pending');
       toast.success('Connection request sent!');
     } catch (error) {
       console.error('Error sending connection request:', error);
@@ -373,3 +373,4 @@ const UserProfile = () => {
 };
 
 export default UserProfile;
+

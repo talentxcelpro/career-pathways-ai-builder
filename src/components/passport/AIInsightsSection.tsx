@@ -34,7 +34,7 @@ export function AIInsightsSection({
   const [isGenerating, setIsGenerating] = useState(false);
   const navigate = useNavigate();
 
-  // Sample AI insights - in real app, this would come from AI analysis
+  // Sample Intelligence Metrics - in real app, this would come from AI analysis
   const aiInsights = {
     careerStrengths: [
       {
@@ -120,7 +120,7 @@ export function AIInsightsSection({
     try {
       // Simulate AI insight generation
       await new Promise(resolve => setTimeout(resolve, 2000));
-      toast.success('New AI insights generated!');
+      toast.success('New Intelligence Metrics generated!');
     } catch (error) {
       toast.error('Failed to generate insights');
     } finally {
@@ -145,13 +145,13 @@ export function AIInsightsSection({
 
   return (
     <div className="space-y-6">
-      {/* AI Insights Header */}
+      {/* Intelligence Metrics Header */}
       <Card className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2 text-purple-800">
               <Brain className="w-5 h-5" />
-              AI-Powered Career Insights
+              Performance Career Insights
               <Sparkles className="w-4 h-4" />
             </CardTitle>
             {isOwner && (

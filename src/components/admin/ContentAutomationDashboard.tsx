@@ -17,7 +17,7 @@ interface ContentStats {
   newsletters: number;
 }
 
-export const ContentAutomationDashboard: React.FC = () => {
+export const ContentAutomationCommandCenter: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [stats, setStats] = useState<ContentStats>({
     total_generated: 0,
@@ -162,7 +162,7 @@ export const ContentAutomationDashboard: React.FC = () => {
         <div>
           <h2 className="text-2xl font-bold">Content Automation</h2>
           <p className="text-muted-foreground">
-            AI-powered content generation system producing 400-600 pieces daily
+            Performance content generation system producing 400-600 pieces daily
           </p>
         </div>
         <div className="flex gap-2">
@@ -249,7 +249,7 @@ export const ContentAutomationDashboard: React.FC = () => {
         <TabsList>
           <TabsTrigger value="breakdown">Content Breakdown</TabsTrigger>
           <TabsTrigger value="schedule">Schedule</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
         </TabsList>
 
         <TabsContent value="breakdown" className="space-y-4">
@@ -259,7 +259,7 @@ export const ContentAutomationDashboard: React.FC = () => {
               count={stats.posts}
               todayCount={Math.floor(stats.today_generated * 0.6)}
               color="text-blue-600"
-              description="150-200 words • Network feed"
+              description="150-200 words • Network Pulse"
             />
             <ContentTypeCard
               type="Articles"
@@ -309,7 +309,7 @@ export const ContentAutomationDashboard: React.FC = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="analytics">
+        <TabsContent value="CareerAnalytics">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
@@ -368,3 +368,6 @@ export const ContentAutomationDashboard: React.FC = () => {
     </div>
   );
 };
+
+
+

@@ -84,18 +84,18 @@ export const NotificationPreferences: React.FC = () => {
       subcategories: [
         { id: 'job_match', name: 'Job Matches', enabled: true },
         { id: 'application_status', name: 'Application Status', enabled: true },
-        { id: 'job_recommendations', name: 'Job Recommendations', enabled: true }
+        { id: 'job_recommendations', name: 'Career Moves', enabled: true }
       ]
     },
     {
       id: 'network',
-      name: 'Network & Connections',
+      name: 'Talent Network',
       icon: <Users className="h-4 w-4" />,
       enabled: true,
       frequency: 'instant',
-      description: 'Connection requests and network updates',
+      description: 'Talent Network requests and network updates',
       subcategories: [
-        { id: 'connection_request', name: 'Connection Requests', enabled: true },
+        { id: 'connection_request', name: 'Talent Network Requests', enabled: true },
         { id: 'profile_view', name: 'Profile Views', enabled: false },
         { id: 'network_updates', name: 'Network Updates', enabled: true }
       ]
@@ -188,7 +188,7 @@ export const NotificationPreferences: React.FC = () => {
         resume: categories.find(c => c.id === 'resume')?.enabled || false,
         tools: categories.find(c => c.id === 'tools')?.enabled || false,
         colleges: categories.find(c => c.id === 'colleges')?.enabled || false,
-        career_feed: categories.find(c => c.id === 'career_feed')?.enabled || false,
+        career_Pulse: categories.find(c => c.id === 'career_Pulse')?.enabled || false,
         discover: categories.find(c => c.id === 'discover')?.enabled || false,
       }
     };
@@ -485,3 +485,4 @@ export const NotificationPreferences: React.FC = () => {
     </div>
   );
 };
+

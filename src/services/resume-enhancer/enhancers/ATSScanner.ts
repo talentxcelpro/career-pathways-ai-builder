@@ -34,19 +34,19 @@ export class ATSScanner {
     'data_scientist': {
       technical: ['Python', 'R', 'SQL', 'Machine Learning', 'TensorFlow', 'PyTorch', 'Pandas', 'NumPy', 'Scikit-learn'],
       soft: ['Analytical Thinking', 'Problem Solving', 'Communication', 'Attention to Detail'],
-      tools: ['Jupyter', 'Tableau', 'Power BI', 'Excel', 'Google Analytics', 'Apache Spark'],
+      tools: ['Jupyter', 'Tableau', 'Power BI', 'Excel', 'Google CareerAnalytics', 'Apache Spark'],
       methodologies: ['Statistical Analysis', 'Data Mining', 'Predictive Modeling', 'A/B Testing']
     },
     'product_manager': {
       technical: ['Product Strategy', 'Roadmap Planning', 'User Research', 'Data Analysis', 'A/B Testing'],
       soft: ['Leadership', 'Communication', 'Strategic Thinking', 'Stakeholder Management'],
-      tools: ['JIRA', 'Confluence', 'Figma', 'Miro', 'Google Analytics', 'Mixpanel'],
+      tools: ['JIRA', 'Confluence', 'Figma', 'Miro', 'Google CareerAnalytics', 'Mixpanel'],
       methodologies: ['Agile', 'Scrum', 'Lean', 'Design Thinking', 'User-Centered Design']
     },
     'marketing_manager': {
       technical: ['Digital Marketing', 'SEO', 'SEM', 'Content Marketing', 'Social Media', 'Email Marketing'],
       soft: ['Creativity', 'Communication', 'Strategic Thinking', 'Brand Management'],
-      tools: ['Google Ads', 'Facebook Ads', 'HubSpot', 'Mailchimp', 'Hootsuite', 'Google Analytics'],
+      tools: ['Google Ads', 'Facebook Ads', 'HubSpot', 'Mailchimp', 'Hootsuite', 'Google CareerAnalytics'],
       methodologies: ['Inbound Marketing', 'Growth Hacking', 'Content Strategy', 'Campaign Management']
     },
     'designer': {
@@ -594,3 +594,6 @@ export class ATSScanner {
     return count;
   }
 }
+
+
+

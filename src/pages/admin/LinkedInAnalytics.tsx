@@ -17,23 +17,23 @@ import {
   Download,
   RefreshCw
 } from 'lucide-react';
-import { useLinkedInAnalytics } from '@/hooks/useLinkedInAnalytics';
+import { useLinkedInCareerAnalytics } from '@/hooks/useLinkedInAnalytics';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 
-const LinkedInAnalytics = () => {
-  const { data: analyticsData, isLoading } = useLinkedInAnalytics();
+const LinkedInCareerAnalytics = () => {
+  const { data: CareerAnalyticsData, isLoading } = useLinkedInCareerAnalytics();
 
-  const importStats = analyticsData ? {
-    totalImports: analyticsData.totalImports,
-    successfulImports: analyticsData.successfulImports,
-    failedImports: analyticsData.failedImports,
-    successRate: analyticsData.successRate,
-    avgImportTime: analyticsData.avgImportTime,
-    weeklyGrowth: analyticsData.weeklyGrowth
+  const importStats = CareerAnalyticsData ? {
+    totalImports: CareerAnalyticsData.totalImports,
+    successfulImports: CareerAnalyticsData.successfulImports,
+    failedImports: CareerAnalyticsData.failedImports,
+    successRate: CareerAnalyticsData.successRate,
+    avgImportTime: CareerAnalyticsData.avgImportTime,
+    weeklyGrowth: CareerAnalyticsData.weeklyGrowth
   } : null;
 
-  const dataQualityMetrics = analyticsData?.dataQualityMetrics;
-  const importTrends = analyticsData?.importTrends || [];
+  const dataQualityMetrics = CareerAnalyticsData?.dataQualityMetrics;
+  const importTrends = CareerAnalyticsData?.importTrends || [];
 
   const sourceTracking = [
     { source: 'Bulk LinkedIn Import', count: Math.floor((importStats?.totalImports || 0) * 0.45), percentage: 45 },
@@ -76,7 +76,7 @@ const LinkedInAnalytics = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">LinkedIn Analytics</h1>
+        <h1 className="text-3xl font-bold tracking-tight">LinkedIn CareerAnalytics</h1>
         <p className="text-muted-foreground">
           Comprehensive insights into LinkedIn import performance, data quality, and integration metrics
         </p>
@@ -507,4 +507,7 @@ const LinkedInAnalytics = () => {
   );
 };
 
-export default LinkedInAnalytics;
+export default LinkedInCareerAnalytics;
+
+
+

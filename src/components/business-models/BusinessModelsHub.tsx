@@ -135,7 +135,7 @@ const BusinessModelsHub: React.FC = () => {
         'Showcase → Add certificates to your profile to attract jobs'
       ],
       trending: 'Growth +67% as more learners join',
-      useCase: 'A fresher completes a Data Analytics learning path, earns rewards worth ₹7,500, and uses their new certificate to secure an internship.'
+      useCase: 'A fresher completes a Data CareerAnalytics learning path, earns rewards worth ₹7,500, and uses their new certificate to secure an internship.'
     }
   ];
 
@@ -144,21 +144,21 @@ const BusinessModelsHub: React.FC = () => {
       icon: Wallet,
       title: 'Unified Wallet',
       description: 'Credits, rewards, and payouts managed in one place',
-      link: '/dashboard',
+      link: '/CommandCenter',
       gradient: 'from-blue-500 to-blue-600'
     },
     {
       icon: Brain,
-      title: 'AI-Powered Recommendations',
+      title: 'Performance Recommendations',
       description: 'Suggests gigs, mentors, or skills based on your profile',
-      link: '/dashboard',
+      link: '/CommandCenter',
       gradient: 'from-green-500 to-green-600'
     },
     {
       icon: Award,
       title: 'Gamified Growth',
       description: 'Leader boards, streak rewards, and community badges',
-      link: '/dashboard',
+      link: '/CommandCenter',
       gradient: 'from-purple-500 to-purple-600'
     },
     {
@@ -468,3 +468,6 @@ const BusinessModelsHub: React.FC = () => {
 };
 
 export default BusinessModelsHub;
+
+
+

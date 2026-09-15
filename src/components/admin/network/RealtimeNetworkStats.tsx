@@ -111,7 +111,7 @@ export const RealtimeNetworkStats: React.FC<RealtimeNetworkStatsProps> = ({
         ))}
       </div>
 
-      {/* Real-time Activity Feed */}
+      {/* Real-time Activity Pulse */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center gap-2">

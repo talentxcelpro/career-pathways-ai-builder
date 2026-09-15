@@ -40,7 +40,7 @@ interface NetworkOpportunity {
   type: 'introduction' | 'referral' | 'collaboration' | 'mentorship';
   title: string;
   description: string;
-  connections: NetworkConnection[];
+  TalentNetwork: NetworkConnection[];
   successProbability: number;
   potentialImpact: 'high' | 'medium' | 'low';
 }
@@ -52,7 +52,7 @@ interface NetworkMetric {
   trend: 'up' | 'down' | 'stable';
 }
 
-export const SmartNetworkAnalytics: React.FC = () => {
+export const SmartNetworkCareerAnalytics: React.FC = () => {
   const [activeView, setActiveView] = useState<'overview' | 'opportunities' | 'growth'>('overview');
 
   const { data: currentUser } = useQuery({
@@ -113,7 +113,7 @@ export const SmartNetworkAnalytics: React.FC = () => {
       type: 'referral',
       title: 'Senior Developer Role at Google',
       description: 'Arjun Mehta can refer you to his team at Google for a senior developer position',
-      connections: [topConnections[0]],
+      TalentNetwork: [topConnections[0]],
       successProbability: 78,
       potentialImpact: 'high'
     },
@@ -121,15 +121,15 @@ export const SmartNetworkAnalytics: React.FC = () => {
       type: 'mentorship',
       title: 'Leadership Mentorship',
       description: 'Priya Sharma offers mentorship for transitioning to leadership roles',
-      connections: [topConnections[1]],
+      TalentNetwork: [topConnections[1]],
       successProbability: 85,
       potentialImpact: 'high'
     },
     {
       type: 'collaboration',
       title: 'Open Source Project',
-      description: 'Join a React project with 3 of your connections',
-      connections: topConnections.slice(0, 3),
+      description: 'Join a React project with 3 of your TalentNetwork',
+      TalentNetwork: topConnections.slice(0, 3),
       successProbability: 92,
       potentialImpact: 'medium'
     }
@@ -185,9 +185,9 @@ export const SmartNetworkAnalytics: React.FC = () => {
       <Card>
         <CardContent className="p-6 text-center">
           <Network className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Smart Network Analytics</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Smart Network CareerAnalytics</h3>
           <p className="text-gray-600 mb-4">
-            Login to get AI-powered insights about your professional network
+            Login to get Performance insights about your professional network
           </p>
         </CardContent>
       </Card>
@@ -204,8 +204,8 @@ export const SmartNetworkAnalytics: React.FC = () => {
               <Network className="h-6 w-6 text-green-600" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-green-900">Smart Network Analytics</h2>
-              <p className="text-sm text-green-700">AI-powered network intelligence and growth insights</p>
+              <h2 className="text-xl font-bold text-green-900">Smart Network CareerAnalytics</h2>
+              <p className="text-sm text-green-700">Performance network intelligence and growth insights</p>
             </div>
           </div>
           
@@ -261,10 +261,10 @@ export const SmartNetworkAnalytics: React.FC = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Users className="h-5 w-5 text-blue-600" />
-                Top Network Connections
+                Top Network TalentNetwork
               </CardTitle>
               <p className="text-sm text-muted-foreground">
-                Your most influential and valuable professional connections
+                Your most influential and valuable professional TalentNetwork
               </p>
             </CardHeader>
             <CardContent>
@@ -297,7 +297,7 @@ export const SmartNetworkAnalytics: React.FC = () => {
                           </div>
                           <div className="text-center">
                             <div className="text-sm font-medium text-gray-900">{connection.mutualConnections}</div>
-                            <div className="text-xs text-gray-600">Mutual Connections</div>
+                            <div className="text-xs text-gray-600">Mutual TalentNetwork</div>
                           </div>
                           <div className="text-center">
                             <div className="text-sm font-medium text-gray-900">{connection.lastInteraction}</div>
@@ -361,7 +361,7 @@ export const SmartNetworkAnalytics: React.FC = () => {
                       
                       <div className="flex items-center gap-4 mb-3">
                         <div className="flex -space-x-2">
-                          {opportunity.connections.slice(0, 3).map((connection, idx) => (
+                          {opportunity.TalentNetwork.slice(0, 3).map((connection, idx) => (
                             <Avatar key={idx} className="h-8 w-8 border-2 border-white">
                               <AvatarImage src={connection.avatar} />
                               <AvatarFallback className="text-xs">
@@ -371,7 +371,7 @@ export const SmartNetworkAnalytics: React.FC = () => {
                           ))}
                         </div>
                         <div className="text-sm text-gray-600">
-                          {opportunity.connections.length} connection{opportunity.connections.length > 1 ? 's' : ''} involved
+                          {opportunity.TalentNetwork.length} connection{opportunity.TalentNetwork.length > 1 ? 's' : ''} involved
                         </div>
                       </div>
                     </div>
@@ -417,7 +417,7 @@ export const SmartNetworkAnalytics: React.FC = () => {
                   Network Optimization Plan
                 </h4>
                 <p className="text-sm text-purple-800 mb-3">
-                  Your network is well-connected but could benefit from more senior-level connections
+                  Your network is well-connected but could benefit from more senior-level TalentNetwork
                   in your target companies. Focus on quality over quantity.
                 </p>
                 <div className="grid grid-cols-2 gap-4">
@@ -439,7 +439,7 @@ export const SmartNetworkAnalytics: React.FC = () => {
                     Connect with 5 senior leaders in your target companies. Focus on engineering directors and VPs.
                   </p>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline">Target: 5 connections</Badge>
+                    <Badge variant="outline">Target: 5 TalentNetwork</Badge>
                     <Badge className="bg-green-100 text-green-800">High Impact</Badge>
                   </div>
                 </div>
@@ -458,7 +458,7 @@ export const SmartNetworkAnalytics: React.FC = () => {
                 <div className="border rounded-lg p-4">
                   <h5 className="font-medium text-gray-900 mb-2">Ongoing: Engagement</h5>
                   <p className="text-sm text-gray-600 mb-3">
-                    Maintain regular interaction with top 20 connections through meaningful comments and shares.
+                    Maintain regular interaction with top 20 TalentNetwork through meaningful comments and shares.
                   </p>
                   <div className="flex items-center gap-2">
                     <Badge variant="outline">Target: 3 interactions/week</Badge>
@@ -478,3 +478,7 @@ export const SmartNetworkAnalytics: React.FC = () => {
     </div>
   );
 };
+
+
+
+

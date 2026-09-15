@@ -28,10 +28,10 @@ const JobPostSuccess = () => {
       color: "text-green-600"
     },
     {
-      title: "View Analytics",
+      title: "View CareerAnalytics",
       description: "Track job performance and applications",
       icon: BarChart3,
-      action: () => navigate('/jobs/manage/job-123/analytics'),
+      action: () => navigate('/jobs/manage/job-123/CareerAnalytics'),
       color: "text-purple-600"
     },
     {
@@ -142,7 +142,7 @@ const JobPostSuccess = () => {
             View All Jobs
           </Button>
           <Button onClick={() => navigate('/employer')} className="bg-blue-600 hover:bg-blue-700">
-            Back to Dashboard
+            Back to CommandCenter
           </Button>
         </div>
       </div>
@@ -151,3 +151,7 @@ const JobPostSuccess = () => {
 };
 
 export default JobPostSuccess;
+
+
+
+

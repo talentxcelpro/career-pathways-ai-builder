@@ -71,7 +71,7 @@ export const LiveEngagementChart = ({ period, userId }: LiveEngagementChartProps
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <TrendingUp className="h-5 w-5" />
-            Live Engagement Analytics
+            Live Engagement CareerAnalytics
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -99,7 +99,7 @@ export const LiveEngagementChart = ({ period, userId }: LiveEngagementChartProps
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <TrendingUp className="h-5 w-5" />
-            Live Engagement Analytics
+            Live Engagement CareerAnalytics
           </CardTitle>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Calendar className="h-4 w-4" />
@@ -269,3 +269,6 @@ export const LiveEngagementChart = ({ period, userId }: LiveEngagementChartProps
     </Card>
   );
 };
+
+
+

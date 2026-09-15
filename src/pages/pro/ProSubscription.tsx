@@ -29,7 +29,7 @@ export const ProSubscription: React.FC = () => {
             className="hover:bg-white/80 text-gray-600 hover:text-gray-900"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Dashboard
+            Back to CommandCenter
           </Button>
           <div className="text-right">
             <Link 
@@ -59,3 +59,4 @@ export const ProSubscription: React.FC = () => {
     </div>
   );
 };
+

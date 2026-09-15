@@ -206,7 +206,7 @@ const PerformanceMonitoringCenter: React.FC = () => {
       {
         id: '4',
         name: 'Database Connection Pool',
-        metric: 'db_connections',
+        metric: 'db_TalentNetwork',
         condition: 'greater_than',
         threshold: 80,
         severity: 'medium',
@@ -569,3 +569,4 @@ const PerformanceMonitoringCenter: React.FC = () => {
 };
 
 export default PerformanceMonitoringCenter;
+

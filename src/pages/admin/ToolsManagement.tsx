@@ -190,7 +190,7 @@ const ToolsManagement = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>Usage Analytics</CardTitle>
+              <CardTitle>Usage CareerAnalytics</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
@@ -233,3 +233,7 @@ const ToolsManagement = () => {
 };
 
 export default ToolsManagement;
+
+
+
+

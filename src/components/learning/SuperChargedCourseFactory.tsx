@@ -45,7 +45,7 @@ export const SuperChargedCourseFactory: React.FC = () => {
     'DevOps & Cloud',
     'Cybersecurity',
     'UI/UX Design',
-    'Business Analytics',
+    'Business CareerAnalytics',
     'Digital Marketing',
     'Project Management',
     'Software Engineering',
@@ -71,7 +71,7 @@ export const SuperChargedCourseFactory: React.FC = () => {
     setProgress(0);
     
     try {
-      // Enhanced progress updates with more detailed feedback
+      // Enhanced progress updates with more detailed Feedback
       const progressInterval = setInterval(() => {
         setProgress(prev => {
           if (prev >= 95) {
@@ -275,7 +275,7 @@ export const SuperChargedCourseFactory: React.FC = () => {
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="complete">Complete Existing</TabsTrigger>
           <TabsTrigger value="generate">Mass Generation</TabsTrigger>
-          <TabsTrigger value="results">Results & Analytics</TabsTrigger>
+          <TabsTrigger value="results">Results & CareerAnalytics</TabsTrigger>
         </TabsList>
 
         <TabsContent value="complete" className="space-y-6">
@@ -518,7 +518,7 @@ export const SuperChargedCourseFactory: React.FC = () => {
                 <div className="text-center">
                   <AlertCircle className="h-8 w-8 mx-auto mb-4 opacity-50" />
                   <p className="text-muted-foreground">
-                    No completion results yet. Run the course completion process to see analytics here.
+                    No completion results yet. Run the course completion process to see CareerAnalytics here.
                   </p>
                 </div>
               </CardContent>
@@ -529,3 +529,7 @@ export const SuperChargedCourseFactory: React.FC = () => {
     </div>
   );
 };
+
+
+
+

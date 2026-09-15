@@ -69,7 +69,7 @@ export function EnrichmentSettings() {
 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>AI-Powered Enrichment</Label>
+              <Label>Performance Enrichment</Label>
               <p className="text-sm text-muted-foreground">
                 Use AI to fill in missing profile fields
               </p>
@@ -231,3 +231,4 @@ export function EnrichmentSettings() {
     </div>
   );
 }
+

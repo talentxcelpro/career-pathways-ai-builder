@@ -26,8 +26,8 @@ const AIStatusSubcategories = () => {
       status: 'active'
     },
     {
-      id: 'usage-analytics',
-      title: 'API Usage Analytics',
+      id: 'usage-CareerAnalytics',
+      title: 'API Usage CareerAnalytics',
       icon: BarChart3,
       description: 'Track API calls, usage patterns, and limits',
       status: 'active'
@@ -48,7 +48,7 @@ const AIStatusSubcategories = () => {
     },
     {
       id: 'processing-time',
-      title: 'Processing Time Analytics',
+      title: 'Processing Time CareerAnalytics',
       icon: Clock,
       description: 'Monitor AI processing times and latency',
       status: 'active'
@@ -69,7 +69,7 @@ const AIStatusSubcategories = () => {
     },
     {
       id: 'system-health',
-      title: 'System Health Dashboard',
+      title: 'System Health CommandCenter',
       icon: Monitor,
       description: 'Overall system health and uptime monitoring',
       status: 'active'
@@ -177,7 +177,7 @@ const AIStatusSubcategories = () => {
           </div>
         )}
 
-        {activeSubcategory === 'usage-analytics' && (
+        {activeSubcategory === 'usage-CareerAnalytics' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
@@ -279,7 +279,7 @@ const AIStatusSubcategories = () => {
         {activeSubcategory === 'cost-tracking' && (
           <Card>
             <CardHeader>
-              <CardTitle>AI Cost Analytics</CardTitle>
+              <CardTitle>AI Cost CareerAnalytics</CardTitle>
               <CardDescription>Track and optimize AI spending across all services</CardDescription>
             </CardHeader>
             <CardContent>
@@ -369,3 +369,6 @@ const AIStatusSubcategories = () => {
 };
 
 export default AIStatusSubcategories;
+
+
+

@@ -305,7 +305,7 @@ export const PremiumJobCard: React.FC<PremiumJobCardProps> = ({
           <div className="bg-gradient-to-r from-muted/50 to-muted/30 rounded-2xl p-4 space-y-4">
             <div className="flex items-center gap-2 mb-3">
               <Brain className="h-5 w-5 text-purple-600" />
-              <span className="font-semibold text-purple-900">AI Insights</span>
+              <span className="font-semibold text-purple-900">Intelligence Metrics</span>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

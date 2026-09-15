@@ -106,7 +106,7 @@ export const LiveSearchVolumeTracker = () => {
           trend: 'stable',
           difficulty: 81,
           opportunity_score: 45,
-          related_keywords: ['machine learning jobs', 'AI careers', 'analytics jobs'],
+          related_keywords: ['machine learning jobs', 'AI careers', 'CareerAnalytics jobs'],
           volume_history: generateVolumeHistory(15600),
           last_updated: new Date().toISOString()
         }
@@ -124,7 +124,7 @@ export const LiveSearchVolumeTracker = () => {
   const loadTrendingKeywords = async () => {
     try {
       const mockTrending: TrendingKeyword[] = [
-        { keyword: 'ai engineer jobs', volume: 5600, growth: 245, category: 'Technology' },
+        { keyword: 'Talent Engineer jobs', volume: 5600, growth: 245, category: 'Technology' },
         { keyword: 'blockchain developer', volume: 3400, growth: 189, category: 'Technology' },
         { keyword: 'sustainability careers', volume: 4200, growth: 156, category: 'Environment' },
         { keyword: 'mental health jobs', volume: 2800, growth: 134, category: 'Healthcare' },
@@ -441,3 +441,6 @@ export const LiveSearchVolumeTracker = () => {
     </div>
   );
 };
+
+
+

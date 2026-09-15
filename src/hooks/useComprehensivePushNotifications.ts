@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { Capacitor } from '@capacitor/core';
-import { PushNotifications } from '@capacitor/push-notifications';
+import { getNativePushNotifications, isNativePushEnabled, warnNativePushDisabled } from '@/utils/nativePushConfig';
 
 export interface NotificationTemplate {
   type: string;
@@ -92,7 +92,7 @@ const DEFAULT_NOTIFICATION_TEMPLATES: NotificationTemplate[] = [
   {
     type: 'career_milestone_achieved',
     category: 'achievement_milestones',
-    title: 'Congratulations! 🎉',
+    title: 'Career Milestone',
     message: 'You\'ve achieved a new career milestone: {{milestone}}',
     priority: 'high',
     channels: ['push', 'in_app'],
@@ -103,7 +103,7 @@ const DEFAULT_NOTIFICATION_TEMPLATES: NotificationTemplate[] = [
   {
     type: 'perfect_job_match',
     category: 'job_opportunities',
-    title: 'Perfect Job Match Found!',
+    title: 'Precision Match Found',
     message: 'We found a {{job_title}} role that matches your skills perfectly',
     priority: 'high',
     channels: ['push', 'email', 'in_app'],
@@ -123,7 +123,7 @@ const DEFAULT_NOTIFICATION_TEMPLATES: NotificationTemplate[] = [
   {
     type: 'salary_insights_available',
     category: 'job_opportunities',
-    title: 'Salary Insights for Your Role',
+    title: 'Salary Signals for Your Role',
     message: 'New salary data available for {{role}} in {{location}}',
     priority: 'medium',
     channels: ['push', 'in_app'],
@@ -134,8 +134,8 @@ const DEFAULT_NOTIFICATION_TEMPLATES: NotificationTemplate[] = [
   {
     type: 'connection_request',
     category: 'social_interactions',
-    title: 'New Connection Request',
-    message: '{{sender_name}} wants to connect with you',
+    title: 'New Talent Network Request',
+    message: '{{sender_name}} wants to join your Talent Network',
     priority: 'medium',
     channels: ['push', 'in_app'],
     schedule: { immediate: true },
@@ -153,8 +153,8 @@ const DEFAULT_NOTIFICATION_TEMPLATES: NotificationTemplate[] = [
   {
     type: 'network_milestone',
     category: 'achievement_milestones',
-    title: 'Network Milestone! 🌟',
-    message: 'You now have {{count}} professional connections',
+    title: 'Talent Network Milestone',
+    message: 'You now have {{count}} professionals in your Talent Network',
     priority: 'medium',
     channels: ['push', 'in_app']
   },
@@ -171,9 +171,9 @@ const DEFAULT_NOTIFICATION_TEMPLATES: NotificationTemplate[] = [
     actions: [{ label: 'Improve Resume', action: 'navigate', url: '/tools/resume-builder' }]
   },
   {
-    type: 'ai_assistant_suggestion',
+    type: 'navigator_smart_move',
     category: 'tool_engagement',
-    title: 'AI Assistant Suggestion',
+    title: 'TalentXcel Navigator Smart Move',
     message: 'Based on your profile, try our {{tool_name}} tool',
     priority: 'low',
     channels: ['in_app'],
@@ -241,7 +241,11 @@ export const useComprehensivePushNotifications = () => {
       
       // Setup push notifications
       if (Capacitor.isNativePlatform()) {
-        await setupNativePush();
+        if (isNativePushEnabled()) {
+          await setupNativePush();
+        } else {
+          warnNativePushDisabled();
+        }
       } else {
         await setupWebPush();
       }
@@ -370,24 +374,30 @@ export const useComprehensivePushNotifications = () => {
   // Setup native push notifications
   const setupNativePush = async () => {
     try {
-      let permStatus = await PushNotifications.checkPermissions();
-      
-      if (permStatus.receive === 'prompt') {
-        permStatus = await PushNotifications.requestPermissions();
+      if (!isNativePushEnabled()) {
+        warnNativePushDisabled();
+        return;
       }
-      
+
+      const pushNotifications = getNativePushNotifications();
+      if (!pushNotifications) return;
+
+      const permStatus = await pushNotifications.checkPermissions();
+
       if (permStatus.receive === 'granted') {
-        await PushNotifications.register();
+        await pushNotifications.register();
         setPermission('granted');
+      } else {
+        setPermission(permStatus.receive === 'denied' ? 'denied' : 'default');
       }
 
       // Setup listeners
-      PushNotifications.addListener('registration', async (token) => {
+      pushNotifications.addListener('registration', async (token) => {
         console.log('Push registration success, token: ' + token.value);
         await registerPushToken(token.value, 'mobile');
       });
 
-      PushNotifications.addListener('pushNotificationReceived', (notification) => {
+      pushNotifications.addListener('pushNotificationReceived', (notification) => {
         console.log('Push received: ' + JSON.stringify(notification));
       });
 
@@ -457,17 +467,31 @@ export const useComprehensivePushNotifications = () => {
     setIsLoading(true);
     
     try {
-      const permissionResult = await Notification.requestPermission();
-      setPermission(permissionResult);
-
-      if (permissionResult !== 'granted') {
-        toast.error('Permission denied for notifications');
-        return;
-      }
-
       if (Capacitor.isNativePlatform()) {
-        await PushNotifications.register();
+        if (!isNativePushEnabled()) {
+          warnNativePushDisabled();
+          toast.error('Notifications are not configured for this build');
+          return;
+        }
+        const pushNotifications = getNativePushNotifications();
+        if (!pushNotifications) return;
+        const permissionResult = await pushNotifications.requestPermissions();
+        if (permissionResult.receive !== 'granted') {
+          setPermission(permissionResult.receive === 'denied' ? 'denied' : 'default');
+          toast.error('Permission denied for notifications');
+          return;
+        }
+        await pushNotifications.register();
+        setPermission('granted');
       } else {
+        const permissionResult = await Notification.requestPermission();
+        setPermission(permissionResult);
+
+        if (permissionResult !== 'granted') {
+          toast.error('Permission denied for notifications');
+          return;
+        }
+
         const registration = await navigator.serviceWorker.ready;
         const subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
@@ -480,10 +504,10 @@ export const useComprehensivePushNotifications = () => {
         await registerPushToken(JSON.stringify(subscription), 'web');
       }
 
-      toast.success('Push notifications enabled!');
+      toast.success('Notifications enabled');
     } catch (error) {
       console.error('Subscribe failed:', error);
-      toast.error('Failed to enable push notifications');
+      toast.error('Could not enable notifications');
     } finally {
       setIsLoading(false);
     }
@@ -606,3 +630,6 @@ export const useComprehensivePushNotifications = () => {
     templates: DEFAULT_NOTIFICATION_TEMPLATES
   };
 };
+
+
+

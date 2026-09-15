@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { subDays, format } from 'date-fns';
 
-export interface JobApplicationAnalytics {
+export interface JobApplicationCareerAnalytics {
   total: number;
   pending: number;
   inReview: number;
@@ -15,12 +15,12 @@ export interface JobApplicationAnalytics {
   interviewRate: number;
 }
 
-export const useJobAnalytics = (dateRange: number = 90) => {
+export const useJobCareerAnalytics = (dateRange: number = 90) => {
   const { user } = useAuth();
 
-  // Fetch application analytics
-  const { data: applicationAnalytics, isLoading } = useQuery({
-    queryKey: ['job-analytics-applications', user?.id, dateRange],
+  // Fetch application CareerAnalytics
+  const { data: applicationCareerAnalytics, isLoading } = useQuery({
+    queryKey: ['job-CareerAnalytics-applications', user?.id, dateRange],
     queryFn: async () => {
       if (!user) return null;
 
@@ -80,17 +80,21 @@ export const useJobAnalytics = (dateRange: number = 90) => {
         responseRate,
         averageResponseTime,
         interviewRate
-      } as JobApplicationAnalytics;
+      } as JobApplicationCareerAnalytics;
     },
     enabled: !!user,
     staleTime: 5 * 60 * 1000
   });
 
   return {
-    applicationAnalytics,
+    applicationCareerAnalytics,
     timeline: [],
     topCompanies: [],
     skillDemand: [],
     isLoading
   };
 };
+
+
+
+

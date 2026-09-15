@@ -24,7 +24,7 @@ export class JobDataValidator {
     'developer': ['JavaScript', 'Python', 'React', 'Node.js', 'SQL', 'Git'],
     'designer': ['Figma', 'Adobe', 'Sketch', 'UI/UX', 'Prototyping'],
     'sales': ['CRM', 'Negotiation', 'Lead Generation', 'Communication'],
-    'marketing': ['SEO', 'SEM', 'Analytics', 'Content Marketing', 'Social Media'],
+    'marketing': ['SEO', 'SEM', 'CareerAnalytics', 'Content Marketing', 'Social Media'],
     'hr': ['Talent Acquisition', 'ATS', 'HR Policies', 'Recruitment'],
     'manager': ['Leadership', 'Project Management', 'Team Management', 'Strategy']
   };
@@ -470,3 +470,6 @@ export const validateJobField = (fieldName: string, value: any, jobData: any) =>
     )
   };
 };
+
+
+

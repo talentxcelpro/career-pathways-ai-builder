@@ -18,7 +18,7 @@ export const AppleFooter = () => {
               <span className="text-xl font-semibold text-slate-900">TalentXcel</span>
             </div>
             <p className="text-slate-600 font-light leading-relaxed">
-              Empowering professionals worldwide to achieve their career goals through AI-powered insights and meaningful connections.
+              Empowering professionals worldwide to achieve their career goals through Performance insights and meaningful TalentNetwork.
             </p>
           </div>
 
@@ -153,3 +153,4 @@ export const AppleFooter = () => {
     </footer>
   );
 };
+

@@ -353,7 +353,7 @@ export class TemplateEngine {
     });
   }
 
-  // Analytics and Recommendations
+  // CareerAnalytics and Recommendations
   getTemplateStats(): {
     total: number;
     byCategory: Record<string, number>;
@@ -418,3 +418,6 @@ export class TemplateEngine {
 
 // Export singleton instance
 export const templateEngine = new TemplateEngine();
+
+
+

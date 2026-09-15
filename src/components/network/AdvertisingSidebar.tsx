@@ -72,7 +72,7 @@ export const AdvertisingSidebar: React.FC<AdvertisingSidebarProps> = ({
         {
           id: '3',
           title: 'Skill Assessment',
-          description: 'Take our AI-powered skill assessment and get personalized recommendations.',
+          description: 'Take our Performance skill assessment and get personalized recommendations.',
           link_url: '/assessments',
           cta_text: 'Start Assessment',
           background_color: 'bg-gradient-to-r from-orange-500 to-red-500',

@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useEnterpriseAnalytics } from '@/hooks/useEnterpriseAnalytics';
+import { useEnterpriseCareerAnalytics } from '@/hooks/useEnterpriseCareerAnalytics';
 import {
   BarChart,
   Bar,
@@ -36,7 +36,7 @@ import {
   Globe
 } from 'lucide-react';
 
-export const EnterpriseAnalyticsDashboard: React.FC = () => {
+export const EnterpriseCareerAnalyticsCommandCenter: React.FC = () => {
   const [timeRange, setTimeRange] = useState('30d');
   const [selectedMetrics, setSelectedMetrics] = useState('all');
   const { 
@@ -45,7 +45,7 @@ export const EnterpriseAnalyticsDashboard: React.FC = () => {
     realTimeData, 
     exportData,
     isLoading 
-  } = useEnterpriseAnalytics(timeRange);
+  } = useEnterpriseCareerAnalytics(timeRange);
 
   const COLORS = ['hsl(var(--primary))', 'hsl(var(--secondary))', 'hsl(var(--accent))', 'hsl(var(--muted))'];
 
@@ -63,7 +63,7 @@ export const EnterpriseAnalyticsDashboard: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-            Enterprise Analytics
+            Enterprise CareerAnalytics
           </h1>
           <p className="text-muted-foreground mt-2">
             Comprehensive insights into learning performance and ROI
@@ -169,7 +169,7 @@ export const EnterpriseAnalyticsDashboard: React.FC = () => {
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="engagement">Engagement</TabsTrigger>
           <TabsTrigger value="performance">Performance</TabsTrigger>
-          <TabsTrigger value="skills">Skills Analytics</TabsTrigger>
+          <TabsTrigger value="skills">Skills CareerAnalytics</TabsTrigger>
           <TabsTrigger value="roi">ROI Analysis</TabsTrigger>
           <TabsTrigger value="realtime">Real-time</TabsTrigger>
         </TabsList>
@@ -472,7 +472,7 @@ export const EnterpriseAnalyticsDashboard: React.FC = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                  Live Activity Feed
+                  Live Activity Pulse
                 </CardTitle>
                 <CardDescription>Real-time learning activities</CardDescription>
               </CardHeader>
@@ -508,8 +508,8 @@ export const EnterpriseAnalyticsDashboard: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm">Active Connections</span>
-                  <span className="text-sm font-medium">{realTimeData?.activeConnections}</span>
+                  <span className="text-sm">Active TalentNetwork</span>
+                  <span className="text-sm font-medium">{realTimeData?.activeTalentNetwork}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm">Current Load</span>
@@ -532,3 +532,7 @@ export const EnterpriseAnalyticsDashboard: React.FC = () => {
     </div>
   );
 };
+
+
+
+

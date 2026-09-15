@@ -71,7 +71,7 @@ Best regards,
             className="flex items-center mr-4"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Dashboard
+            Back to CommandCenter
           </Button>
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Cover Letter Generator</h1>
@@ -192,3 +192,5 @@ Best regards,
 };
 
 export default CoverLetterGenerator;
+
+

@@ -22,7 +22,7 @@ const mockLearningPaths = [
   {
     id: "2",
     title: "Data Science Fundamentals",
-    description: "Learn the basics of data science, machine learning, and analytics",
+    description: "Learn the basics of data science, machine learning, and CareerAnalytics",
     target_role: "Data Scientist",
     difficulty_level: "beginner" as const,
     estimated_duration_hours: 80,
@@ -43,7 +43,7 @@ export default function PersonalizedLearningPaths() {
       target_role: "Product Manager",
       difficulty_level: "intermediate" as const,
       estimated_duration_hours: 100,
-      skills_covered: ["Product Strategy", "User Research", "Analytics", "Agile", "Leadership"],
+      skills_covered: ["Product Strategy", "User Research", "CareerAnalytics", "Agile", "Leadership"],
       completion_percentage: 0,
       ai_generated: true
     };
@@ -149,3 +149,6 @@ export default function PersonalizedLearningPaths() {
     </div>
   );
 }
+
+
+

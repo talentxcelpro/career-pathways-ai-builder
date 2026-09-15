@@ -229,7 +229,7 @@ export const EmailAutomationFixer = () => {
           <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
             <li>Click "Fix Failed Emails" to reset and retry all failed emails</li>
             <li>Use "Process Queue" to manually trigger immediate email processing</li>
-            <li>Check the dashboard stats to verify the fix worked</li>
+            <li>Check the CommandCenter stats to verify the fix worked</li>
             <li>Monitor the logs for any remaining issues</li>
           </ol>
         </div>
@@ -237,3 +237,4 @@ export const EmailAutomationFixer = () => {
     </Card>
   );
 };
+

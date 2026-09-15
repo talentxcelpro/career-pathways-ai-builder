@@ -211,7 +211,7 @@ export const StreamlinedResumeCreator: React.FC = () => {
                 </div>
                 <CardTitle className="text-xl">Start from Scratch</CardTitle>
                 <CardDescription>
-                  Build your resume step by step with AI-powered suggestions and templates
+                  Build your resume step by step with Performance suggestions and templates
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-0">
@@ -285,7 +285,7 @@ export const StreamlinedResumeCreator: React.FC = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-primary" />
-              AI-Powered Resume Enhancement
+              Performance Resume Enhancement
             </CardTitle>
             <CardDescription>
               Copy your existing resume text from any document and paste it below. 
@@ -338,3 +338,4 @@ export const StreamlinedResumeCreator: React.FC = () => {
     </div>
   );
 };
+

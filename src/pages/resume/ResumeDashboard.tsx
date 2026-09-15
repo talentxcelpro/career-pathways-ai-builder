@@ -26,18 +26,18 @@ interface Resume {
   content: any;
 }
 
-interface DashboardStats {
+interface CommandCenterStats {
   totalResumes: number;
   averageAtsScore: number;
   totalViews: number;
   totalDownloads: number;
 }
 
-const ResumeDashboard = () => {
+const ResumeCommandCenter = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [resumes, setResumes] = useState<Resume[]>([]);
-  const [stats, setStats] = useState<DashboardStats>({
+  const [stats, setStats] = useState<CommandCenterStats>({
     totalResumes: 0,
     averageAtsScore: 0,
     totalViews: 0,
@@ -70,7 +70,7 @@ const ResumeDashboard = () => {
 
   const fetchStats = async () => {
     try {
-      // In a real implementation, these would be separate analytics queries
+      // In a real implementation, these would be separate CareerAnalytics queries
       const totalResumes = resumes.length;
       const averageAtsScore = resumes.length > 0 
         ? resumes.reduce((sum, resume) => sum + (resume.ats_score || 0), 0) / resumes.length 
@@ -114,7 +114,7 @@ const ResumeDashboard = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-slate-900">Resume Dashboard</h1>
+              <h1 className="text-3xl font-bold text-slate-900">Resume CommandCenter</h1>
               <p className="text-slate-600 mt-1">Manage and optimize your professional resumes</p>
             </div>
             <div className="flex gap-3">
@@ -192,7 +192,7 @@ const ResumeDashboard = () => {
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="resumes">Resumes</TabsTrigger>
             <TabsTrigger value="optimization">AI Tools</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
@@ -257,7 +257,7 @@ const ResumeDashboard = () => {
               </Card>
             </div>
 
-            {/* AI-Powered Features */}
+            {/* Performance Features */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <SmartProfileOptimizer userProfile={{}} />
               <SmartJobMatcher userProfile={{}} />
@@ -270,7 +270,7 @@ const ResumeDashboard = () => {
                 <CardContent className="p-12 text-center">
                   <FileText className="w-16 h-16 mx-auto mb-4 text-gray-400" />
                   <h3 className="text-lg font-semibold mb-2">No resumes yet</h3>
-                  <p className="text-gray-600 mb-4">Create your first professional resume with our AI-powered builder</p>
+                  <p className="text-gray-600 mb-4">Create your first professional resume with our Performance builder</p>
                   <Button onClick={createNewResume}>
                     <Plus className="w-4 h-4 mr-2" />
                     Create Your First Resume
@@ -344,7 +344,7 @@ const ResumeDashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-gray-600 mb-4">
-                    Improve your resume content with AI-powered suggestions
+                    Improve your resume content with Performance suggestions
                   </p>
                   <Button className="w-full">
                     Enhance Resume
@@ -388,19 +388,19 @@ const ResumeDashboard = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="analytics" className="space-y-6">
+          <TabsContent value="CareerAnalytics" className="space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="w-5 h-5" />
-                  Performance Analytics
+                  Performance CareerAnalytics
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-center py-8 text-gray-500">
                   <BarChart3 className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-                  <h3 className="text-lg font-semibold mb-2">Analytics Coming Soon</h3>
-                  <p>Detailed analytics and insights about your resume performance</p>
+                  <h3 className="text-lg font-semibold mb-2">CareerAnalytics Coming Soon</h3>
+                  <p>Detailed CareerAnalytics and insights about your resume performance</p>
                 </div>
               </CardContent>
             </Card>
@@ -411,4 +411,8 @@ const ResumeDashboard = () => {
   );
 };
 
-export default ResumeDashboard;
+export default ResumeCommandCenter;
+
+
+
+

@@ -179,7 +179,7 @@ export function AIToolsManager() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">AI Tools Management</h2>
-          <p className="text-muted-foreground">Configure and manage AI-powered tools</p>
+          <p className="text-muted-foreground">Configure and manage Performance tools</p>
         </div>
         <Button>
           <Plus className="w-4 h-4 mr-2" />

@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { Capacitor } from '@capacitor/core';
 
 interface PerformanceMetrics {
   cacheHitRate: number;
   avgResponseTime: number;
   errorRate: number;
-  activeConnections: number;
+  activeTalentNetwork: number;
   memoryUsage: number;
 }
 
@@ -80,7 +81,7 @@ export const useTXCPerformance = () => {
     cacheHitRate: 0,
     avgResponseTime: 0,
     errorRate: 0,
-    activeConnections: 0,
+    activeTalentNetwork: 0,
     memoryUsage: 0
   });
   const [isOptimizing, setIsOptimizing] = useState(false);
@@ -187,7 +188,7 @@ export const useTXCPerformance = () => {
       cacheHitRate: cacheStats.hitRate,
       avgResponseTime: Math.random() * 200 + 50, // 50-250ms
       errorRate: Math.random() * 5, // 0-5%
-      activeConnections: Math.floor(Math.random() * 100) + 50,
+      activeTalentNetwork: Math.floor(Math.random() * 100) + 50,
       memoryUsage: (performance as any)?.memory?.usedJSHeapSize || 0
     });
   }, []);
@@ -283,6 +284,10 @@ export const useTXCPerformance = () => {
 
   // Service Worker for background tasks
   const registerServiceWorker = useCallback(async () => {
+    if (Capacitor.isNativePlatform()) {
+      return;
+    }
+
     if ('serviceWorker' in navigator) {
       try {
         const registration = await navigator.serviceWorker.register('/sw.js');
@@ -339,3 +344,5 @@ export const useTXCPerformance = () => {
     cacheStats: performanceCache.getCacheStats()
   };
 };
+
+

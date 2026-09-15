@@ -1,6 +1,10 @@
+import { Capacitor } from '@capacitor/core';
+import { unregisterServiceWorker } from './serviceWorkerRegistration';
+
 // Production optimization utilities
 export const optimizeForProduction = () => {
-  // Remove console logs in production
+  // Remove console logs in production - DISABLED FOR DEBUGGING
+  /*
   if (!import.meta.env.DEV) {
     console.log = () => {};
     console.warn = () => {};
@@ -8,6 +12,7 @@ export const optimizeForProduction = () => {
     console.debug = () => {};
     console.info = () => {};
   }
+  */
 
   // Disable React DevTools in production
   if (!import.meta.env.DEV && typeof window !== 'undefined') {
@@ -44,33 +49,18 @@ export const optimizeImageUrl = (url: string, options: {
   return url;
 };
 
-// Critical resource preloader
+// Critical resource preloader removed as it used hardcoded paths incompatible with hashed Vite assets
 export const preloadCriticalResources = () => {
-  const criticalUrls = [
-    '/assets/fonts/inter.woff2',
-    '/assets/images/hero-bg.webp',
-    '/assets/images/logo.svg'
-  ];
-
-  criticalUrls.forEach(url => {
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.href = url;
-    
-    if (url.includes('.woff2')) {
-      link.as = 'font';
-      link.type = 'font/woff2';
-      link.crossOrigin = 'anonymous';
-    } else if (url.includes('.webp')) {
-      link.as = 'image';
-    }
-    
-    document.head.appendChild(link);
-  });
+  // Relying on Vite's native preloading and CSS-based font loading
 };
 
 // Service Worker registration
 export const registerServiceWorker = async () => {
+  if (Capacitor.isNativePlatform()) {
+    await unregisterServiceWorker();
+    return;
+  }
+
   if ('serviceWorker' in navigator && !import.meta.env.DEV) {
     try {
       const registration = await navigator.serviceWorker.register('/sw.js');

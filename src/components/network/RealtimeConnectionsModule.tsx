@@ -6,11 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { MessageCircle, UserPlus, MapPin, Building2, Clock, Wifi, WifiOff } from 'lucide-react';
-import { useRealtimeConnections } from '@/hooks/useRealtimeConnections';
+import { useRealtimeTalentNetwork } from '@/hooks/useRealtimeTalentNetwork';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 
-export const RealtimeConnectionsModule: React.FC = () => {
+export const RealtimeTalentNetworkModule: React.FC = () => {
   const {
     users,
     loading,
@@ -18,7 +18,7 @@ export const RealtimeConnectionsModule: React.FC = () => {
     setShowOnlineOnly,
     sendConnectionRequest,
     getLastSeenText
-  } = useRealtimeConnections();
+  } = useRealtimeTalentNetwork();
 
   const handleConnect = async (userId: string, userName: string) => {
     const result = await sendConnectionRequest(userId);
@@ -102,7 +102,7 @@ export const RealtimeConnectionsModule: React.FC = () => {
               <UserPlus className="w-8 h-8 text-gray-400" />
             </div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">
-              {showOnlineOnly ? 'No one online right now' : 'No new connections available'}
+              {showOnlineOnly ? 'No one online right now' : 'No new TalentNetwork available'}
             </h3>
             <p className="text-gray-500">
               {showOnlineOnly 
@@ -224,7 +224,7 @@ export const RealtimeConnectionsModule: React.FC = () => {
             </div>
             <p className="text-sm text-blue-600">
               {users.filter(u => u.is_online).length} professionals are online right now - 
-              perfect time to make new connections and expand your network!
+              perfect time to make new TalentNetwork and expand your network!
             </p>
           </div>
         )}
@@ -232,3 +232,4 @@ export const RealtimeConnectionsModule: React.FC = () => {
     </Card>
   );
 };
+

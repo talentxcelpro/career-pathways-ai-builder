@@ -92,7 +92,7 @@ export const SkillDemandTrends = ({ trends }: SkillDemandTrendsProps) => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Brain className="h-5 w-5" />
-            Skill Intelligence Dashboard
+            Skill Intelligence CommandCenter
           </CardTitle>
           <p className="text-muted-foreground">
             Real-time market trends, demand forecasts, and salary insights for in-demand skills
@@ -178,7 +178,7 @@ export const SkillDemandTrends = ({ trends }: SkillDemandTrendsProps) => {
           <TabsTrigger value="overview">Market Overview</TabsTrigger>
           <TabsTrigger value="demand">Demand Analysis</TabsTrigger>
           <TabsTrigger value="salary">Salary Trends</TabsTrigger>
-          <TabsTrigger value="recommendations">AI Recommendations</TabsTrigger>
+          <TabsTrigger value="recommendations">Career Moves</TabsTrigger>
         </TabsList>
 
         {/* Market Overview */}
@@ -366,13 +366,13 @@ export const SkillDemandTrends = ({ trends }: SkillDemandTrendsProps) => {
           </Card>
         </TabsContent>
 
-        {/* AI Recommendations */}
+        {/* Career Moves */}
         <TabsContent value="recommendations" className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Zap className="h-5 w-5" />
-                AI-Powered Skill Recommendations
+                Performance Skill Recommendations
               </CardTitle>
               <p className="text-muted-foreground">
                 Based on market trends and your profile, here are skills to focus on:
@@ -425,3 +425,4 @@ export const SkillDemandTrends = ({ trends }: SkillDemandTrendsProps) => {
     </div>
   );
 };
+

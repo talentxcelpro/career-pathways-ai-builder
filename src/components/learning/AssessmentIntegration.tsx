@@ -107,7 +107,7 @@ export const AssessmentIntegration: React.FC = () => {
         </p>
       </div>
 
-      {/* User Stats Dashboard */}
+      {/* User Stats CommandCenter */}
       <Card className="bg-gradient-to-br from-primary/5 to-secondary/5 border border-primary/20">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -259,3 +259,4 @@ export const AssessmentIntegration: React.FC = () => {
     </div>
   );
 };
+

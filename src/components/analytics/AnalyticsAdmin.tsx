@@ -5,53 +5,53 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
 import { Calendar, Download, TrendingUp, Users, Eye, MessageSquare, Briefcase, Building } from 'lucide-react';
-import { useAnalyticsReports } from '@/hooks/useAnalyticsReports';
+import { useCareerAnalyticsReports } from '@/hooks/useCareerAnalyticsReports';
 
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--secondary))', 'hsl(var(--accent))', 'hsl(var(--muted))'];
 
-export const AnalyticsAdmin = () => {
+export const CareerAnalyticsAdmin = () => {
   const { 
-    platformAnalytics, 
+    platformCareerAnalytics, 
     userGrowthData, 
     topPerformingJobs,
     dateRange,
     setDateRange 
-  } = useAnalyticsReports();
+  } = useCareerAnalyticsReports();
 
   const platformStats = [
     { 
       title: 'Total Users', 
-      value: platformAnalytics?.totalUsers?.toLocaleString() || '0', 
+      value: platformCareerAnalytics?.totalUsers?.toLocaleString() || '0', 
       change: '+12.5%',
       icon: Users 
     },
     { 
       title: 'New Users (Period)', 
-      value: platformAnalytics?.newUsers?.toLocaleString() || '0', 
+      value: platformCareerAnalytics?.newUsers?.toLocaleString() || '0', 
       change: '+8.2%',
       icon: Users 
     },
     { 
       title: 'Active Jobs', 
-      value: platformAnalytics?.totalJobs?.toLocaleString() || '0', 
+      value: platformCareerAnalytics?.totalJobs?.toLocaleString() || '0', 
       change: '+15.3%',
       icon: Briefcase 
     },
     { 
       title: 'Total Applications', 
-      value: platformAnalytics?.totalApplications?.toLocaleString() || '0', 
+      value: platformCareerAnalytics?.totalApplications?.toLocaleString() || '0', 
       change: '+22.1%',
       icon: MessageSquare 
     },
     { 
       title: 'Companies', 
-      value: platformAnalytics?.totalCompanies?.toLocaleString() || '0', 
+      value: platformCareerAnalytics?.totalCompanies?.toLocaleString() || '0', 
       change: '+5.7%',
       icon: Building 
     },
     { 
       title: 'Community Posts', 
-      value: platformAnalytics?.totalPosts?.toLocaleString() || '0', 
+      value: platformCareerAnalytics?.totalPosts?.toLocaleString() || '0', 
       change: '+18.9%',
       icon: MessageSquare 
     }
@@ -61,7 +61,7 @@ export const AnalyticsAdmin = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Platform Analytics</h2>
+          <h2 className="text-2xl font-bold">Platform CareerAnalytics</h2>
           <p className="text-muted-foreground">Comprehensive insights into platform performance</p>
         </div>
         <div className="flex gap-2">
@@ -105,7 +105,7 @@ export const AnalyticsAdmin = () => {
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="users">User Analytics</TabsTrigger>
+          <TabsTrigger value="users">User CareerAnalytics</TabsTrigger>
           <TabsTrigger value="engagement">Engagement</TabsTrigger>
         </TabsList>
 
@@ -179,3 +179,6 @@ export const AnalyticsAdmin = () => {
     </div>
   );
 };
+
+
+

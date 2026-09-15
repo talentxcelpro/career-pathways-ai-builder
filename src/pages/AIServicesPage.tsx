@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AIServiceMatcher } from '@/components/ai/AIServiceMatcher';
-import { AIServiceDashboard } from '@/components/ai/AIServiceDashboard';
+import { AIServiceCommandCenter } from '@/components/ai/AIServiceDashboard';
 import { AIServiceHistory } from '@/components/ai/AIServiceHistory';
 import { Brain, MessageSquare, History } from 'lucide-react';
 
@@ -14,10 +14,10 @@ const AIServicesPage = () => {
         {/* Header */}
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
-            AI Career Services
+            Core Intelligence Services
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Get personalized AI-powered assistance for career coaching, resume optimization, 
+            Get personalized Performance assistance for guidance, resume optimization, 
             interview preparation, and more.
           </p>
         </div>
@@ -27,11 +27,11 @@ const AIServicesPage = () => {
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="chat" className="flex items-center gap-2">
               <MessageSquare className="w-4 h-4" />
-              AI Chat
+              Navigator Chat
             </TabsTrigger>
-            <TabsTrigger value="dashboard" className="flex items-center gap-2">
+            <TabsTrigger value="CommandCenter" className="flex items-center gap-2">
               <Brain className="w-4 h-4" />
-              Dashboard
+              CommandCenter
             </TabsTrigger>
             <TabsTrigger value="history" className="flex items-center gap-2">
               <History className="w-4 h-4" />
@@ -43,8 +43,8 @@ const AIServicesPage = () => {
             <AIServiceMatcher />
           </TabsContent>
 
-          <TabsContent value="dashboard" className="mt-6">
-            <AIServiceDashboard />
+          <TabsContent value="CommandCenter" className="mt-6">
+            <AIServiceCommandCenter />
           </TabsContent>
 
           <TabsContent value="history" className="mt-6">
@@ -57,3 +57,4 @@ const AIServicesPage = () => {
 };
 
 export default AIServicesPage;
+

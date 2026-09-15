@@ -20,7 +20,7 @@ interface ProfileUpdateData {
   current_company?: string;
   experience_years?: number;
   social_links?: Record<string, string>;
-  profile_visibility?: 'public' | 'private' | 'connections_only';
+  profile_visibility?: 'public' | 'private' | 'TalentNetwork_only';
   allow_profile_sharing?: boolean;
   custom_profile_url?: string;
   resume_url?: string;
@@ -140,3 +140,4 @@ export function useProfileUpdate() {
     isUpdating: updateProfile.isPending || updateProfilePicture.isPending
   };
 }
+

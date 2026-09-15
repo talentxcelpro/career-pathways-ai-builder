@@ -27,7 +27,7 @@ export interface InterviewEvaluation {
 }
 
 export interface ConversationMessage {
-  role: 'user' | 'assistant';
+  role: 'user' | 'Navigator';
   content: string;
   timestamp: Date;
   evaluation?: InterviewEvaluation;

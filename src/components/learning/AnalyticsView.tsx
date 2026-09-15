@@ -15,11 +15,11 @@ interface LearningAnalytic {
   created_at: string;
 }
 
-export const AnalyticsView: React.FC = () => {
+export const CareerAnalyticsView: React.FC = () => {
   const { userProgress, isLoading } = useLearningJobIntegration();
 
-  // Calculate analytics from user progress
-  const analytics: LearningAnalytic[] = [
+  // Calculate CareerAnalytics from user progress
+  const CareerAnalytics: LearningAnalytic[] = [
     {
       id: '1',
       metric_name: 'Course Completion Rate',
@@ -136,12 +136,12 @@ export const AnalyticsView: React.FC = () => {
       {/* Header */}
       <div className="flex items-center gap-2 mb-6">
         <BarChart3 className="h-6 w-6 text-blue-600" />
-        <h2 className="text-2xl font-semibold">Learning Analytics</h2>
+        <h2 className="text-2xl font-semibold">Learning CareerAnalytics</h2>
       </div>
 
-      {/* Analytics Grid */}
+      {/* CareerAnalytics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {analytics.map((analytic) => {
+        {CareerAnalytics.map((analytic) => {
           const IconComponent = getMetricIcon(analytic.metric_name);
           return (
             <Card key={analytic.id} className="hover:shadow-md transition-shadow">
@@ -194,7 +194,7 @@ export const AnalyticsView: React.FC = () => {
             
             {userProgress.length > 0 && (
               <>
-                {analytics[0].metric_value > 80 && (
+                {CareerAnalytics[0].metric_value > 80 && (
                   <div className="flex items-start gap-3 p-3 bg-green-50 rounded-lg">
                     <Award className="h-5 w-5 text-green-600 mt-0.5" />
                     <div>
@@ -206,25 +206,25 @@ export const AnalyticsView: React.FC = () => {
                   </div>
                 )}
                 
-                {analytics[4].metric_value >= 3 && (
+                {CareerAnalytics[4].metric_value >= 3 && (
                   <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg">
                     <Target className="h-5 w-5 text-purple-600 mt-0.5" />
                     <div>
                       <p className="font-medium text-purple-800">Skill Builder</p>
                       <p className="text-sm text-purple-700">
-                        You've earned {analytics[4].metric_value} certificates! Your skills are growing rapidly.
+                        You've earned {CareerAnalytics[4].metric_value} certificates! Your skills are growing rapidly.
                       </p>
                     </div>
                   </div>
                 )}
                 
-                {analytics[2].metric_value >= 50 && (
+                {CareerAnalytics[2].metric_value >= 50 && (
                   <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
                     <Clock className="h-5 w-5 text-blue-600 mt-0.5" />
                     <div>
                       <p className="font-medium text-blue-800">Dedicated Learner</p>
                       <p className="text-sm text-blue-700">
-                        You've invested {analytics[2].metric_value.toFixed(0)} hours in learning. 
+                        You've invested {CareerAnalytics[2].metric_value.toFixed(0)} hours in learning. 
                         That's serious commitment!
                       </p>
                     </div>
@@ -238,3 +238,6 @@ export const AnalyticsView: React.FC = () => {
     </div>
   );
 };
+
+
+

@@ -136,7 +136,7 @@ const CareerChangeNavigator = () => {
             duration: '2-4 months',
             tasks: [
               'Apply to target positions',
-              'Leverage network connections',
+              'Leverage network TalentNetwork',
               'Practice industry interviews',
               'Negotiate offers strategically'
             ]
@@ -527,3 +527,4 @@ const CareerChangeNavigator = () => {
 };
 
 export default CareerChangeNavigator;
+

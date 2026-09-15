@@ -1,12 +1,12 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useConnectionStatus } from '@/hooks/useConnectionStatus';
+import { useconnectionStatus as useConnectionStatus } from '@/hooks/useConnectionStatus';
 import { Wifi, WifiOff, RefreshCw, Signal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function ConnectionStatusIndicator() {
-  const { status, latency, isHealthy, forceReconnect } = useConnectionStatus();
+  const { status, latency, forceReconnect } = useConnectionStatus();
 
   const getStatusConfig = () => {
     switch (status) {
@@ -71,3 +71,5 @@ export function ConnectionStatusIndicator() {
     </div>
   );
 }
+
+

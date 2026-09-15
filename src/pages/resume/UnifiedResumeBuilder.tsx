@@ -185,7 +185,7 @@ const UnifiedResumeBuilder = () => {
           <aside className="w-64 border-r border-border bg-card flex flex-col">
             <div className="p-4 border-b border-border">
               <h2 className="font-semibold text-lg">Resume Builder</h2>
-              <p className="text-xs text-muted-foreground mt-1">AI-Powered Editor</p>
+              <p className="text-xs text-muted-foreground mt-1">Performance Editor</p>
             </div>
 
             <TabsList className="grid grid-cols-1 gap-2 p-4 bg-transparent flex-none">
@@ -326,7 +326,7 @@ const UnifiedResumeBuilder = () => {
                 <div>
                   <h3 className="text-2xl font-bold mb-2">AI Enhancement</h3>
                   <p className="text-muted-foreground mb-6">
-                    Get AI-powered suggestions to improve your resume impact and clarity.
+                    Get Performance suggestions to improve your resume impact and clarity.
                   </p>
                 </div>
                 
@@ -661,3 +661,4 @@ const UnifiedResumeBuilder = () => {
 };
 
 export default UnifiedResumeBuilder;
+

@@ -98,7 +98,7 @@ export const MobileResumeBuilder = () => {
     toast.success('AI enhancement started!');
     // Simulate AI generation
     setTimeout(() => {
-      toast.success('Resume enhanced with AI suggestions!');
+      toast.success('Resume enhanced with Smart Moves!');
       setCompletionScore(Math.min(completionScore + 20, 100));
     }, 2000);
   };

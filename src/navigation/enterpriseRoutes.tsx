@@ -1,15 +1,18 @@
+import { lazy } from "react";
 import { NavItem } from "@/types/nav-item";
-import { Building2, Settings, Users, Shield, Plug, FileText, Database, Download, TrendingUp, Brain, BarChart3, UserPlus } from "lucide-react";
-import { Enterprise } from "@/pages/Enterprise";
-import { EnterpriseSolutions } from "@/components/enterprise/EnterpriseSolutions";
-import { InternalMobility } from "@/pages/enterprise/InternalMobility";
-import { SkillGapAnalysis } from "@/pages/enterprise/SkillGapAnalysis";
-import { TalentAnalytics } from "@/pages/enterprise/TalentAnalytics";
-import { SpecializedRecruitment } from "@/pages/enterprise/SpecializedRecruitment";
+import { Building2, TrendingUp, Target, BarChart3, UserPlus } from "lucide-react";
+
+const Enterprise = lazy(() => import("@/pages/Enterprise").then(m => ({ default: m.Enterprise })));
+const EnterpriseSolutions = lazy(() => import("@/components/enterprise/EnterpriseSolutions").then(m => ({ default: m.EnterpriseSolutions })));
+const InternalMobility = lazy(() => import("@/pages/enterprise/InternalMobility").then(m => ({ default: m.InternalMobility })));
+const SkillGapAnalysis = lazy(() => import("@/pages/enterprise/SkillGapAnalysis").then(m => ({ default: m.SkillGapAnalysis })));
+const TalentCareerAnalytics = lazy(() => import("@/pages/enterprise/TalentAnalytics").then(m => ({ default: m.TalentCareerAnalytics })));
+const SpecializedRecruitment = lazy(() => import("@/pages/enterprise/SpecializedRecruitment").then(m => ({ default: m.SpecializedRecruitment })));
+
 
 export const enterpriseRoutes: NavItem[] = [
   {
-    title: "Enterprise Dashboard",
+    title: "Enterprise Command Center",
     to: "/enterprise",
     page: <Enterprise />,
     icon: <Building2 className="h-4 w-4" />,
@@ -33,13 +36,13 @@ export const enterpriseRoutes: NavItem[] = [
     title: "Skill Gap Analysis",
     to: "/enterprise/skill-gap",
     page: <SkillGapAnalysis />,
-    icon: <Brain className="h-4 w-4" />,
+    icon: <Target className="h-4 w-4" />,
     isPublic: true,
   },
   {
-    title: "Talent Analytics",
-    to: "/enterprise/analytics",
-    page: <TalentAnalytics />,
+    title: "Talent Career Analytics",
+    to: "/enterprise/career-analytics",
+    page: <TalentCareerAnalytics />,
     icon: <BarChart3 className="h-4 w-4" />,
     isPublic: true,
   },
@@ -51,3 +54,6 @@ export const enterpriseRoutes: NavItem[] = [
     isPublic: true,
   },
 ];
+
+
+

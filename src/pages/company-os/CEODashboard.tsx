@@ -18,7 +18,7 @@ function StatCard({ icon: Icon, label, value, hint }: { icon: any; label: string
   );
 }
 
-export default function CEODashboard() {
+export default function CEOCommandCenter() {
   const { data: pendingDecisions = 0 } = useQuery({
     queryKey: ["aios", "pending-decisions"],
     queryFn: async () => {
@@ -122,7 +122,7 @@ export default function CEODashboard() {
             <li>Department agents break goals into tasks</li>
             <li>Low-risk tasks execute autonomously</li>
             <li>High-risk decisions queue for your approval</li>
-            <li>Outcomes feed back to improve next plans</li>
+            <li>Outcomes Pulse back to improve next plans</li>
           </ol>
         </Card>
         <Card className="p-5">
@@ -138,3 +138,5 @@ export default function CEODashboard() {
     </div>
   );
 }
+
+

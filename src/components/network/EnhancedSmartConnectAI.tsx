@@ -22,7 +22,7 @@ import {
   Brain,
   Network
 } from 'lucide-react';
-import { useEnhancedConnectionSuggestions } from '@/hooks/useEnhancedConnectionSuggestions';
+import { useEnhancedTalentNetworkuggestions } from '@/hooks/useEnhancedTalentNetworkuggestions';
 import { Link } from 'react-router-dom';
 import { ProfileCompletionPrompt } from './ProfileCompletionPrompt';
 import { MentorMatchingCard } from './MentorMatchingCard';
@@ -41,7 +41,7 @@ export const EnhancedSmartConnectAI: React.FC = () => {
     isSendingConnection,
     refreshSuggestions,
     currentUserProfile
-  } = useEnhancedConnectionSuggestions();
+  } = useEnhancedTalentNetworkuggestions();
 
   const filteredSuggestions = suggestions
     .filter(suggestion => {
@@ -91,7 +91,7 @@ export const EnhancedSmartConnectAI: React.FC = () => {
           <Target className="h-16 w-16 text-primary mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-foreground mb-2">Complete Your Profile</h3>
           <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-            Add your career information, skills, and interests to get personalized AI-powered connection recommendations.
+            Add your career information, skills, and interests to get personalized Performance connection recommendations.
           </p>
           <Link to="/profile/edit">
             <Button size="lg" className="gap-2">
@@ -132,7 +132,7 @@ export const EnhancedSmartConnectAI: React.FC = () => {
                 </div>
               </div>
               <p className="text-muted-foreground">
-                Discover meaningful connections through AI-powered matching based on your career profile, skills, and goals.
+                Discover meaningful TalentNetwork through Performance matching based on your career profile, skills, and goals.
               </p>
             </div>
             <Button
@@ -193,7 +193,7 @@ export const EnhancedSmartConnectAI: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Users className="h-5 w-5" />
-            Suggested Connections
+            Suggested TalentNetwork
             {filteredSuggestions.length > 0 && (
               <Badge variant="secondary">{filteredSuggestions.length}</Badge>
             )}
@@ -352,3 +352,4 @@ export const EnhancedSmartConnectAI: React.FC = () => {
     </div>
   );
 };
+

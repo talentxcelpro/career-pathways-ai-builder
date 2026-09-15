@@ -26,7 +26,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 
-interface AnalyticsData {
+interface CareerAnalyticsData {
   profileViews: number;
   profileShares: number;
   endorsements: number;
@@ -38,7 +38,7 @@ interface AnalyticsData {
   careerProgress: {
     currentLevel: string;
     skillsGained: number;
-    connectionsGrown: number;
+    TalentNetworkGrown: number;
     articlesPublished: number;
   };
   skillTrends: Array<{
@@ -49,38 +49,38 @@ interface AnalyticsData {
   }>;
 }
 
-export const NetworkAnalytics = () => {
+export const NetworkCareerAnalytics = () => {
   const [selectedPeriod, setSelectedPeriod] = useState<'7d' | '30d' | '90d' | '1y'>('30d');
 
   const { data: currentUser } = useQuery({
-    queryKey: ['current-user-analytics'],
+    queryKey: ['current-user-CareerAnalytics'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       return user;
     }
   });
 
-  const { data: analyticsData, isLoading } = useQuery({
-    queryKey: ['network-analytics', currentUser?.id, selectedPeriod],
-    queryFn: async (): Promise<AnalyticsData> => {
+  const { data: CareerAnalyticsData, isLoading } = useQuery({
+    queryKey: ['network-CareerAnalytics', currentUser?.id, selectedPeriod],
+    queryFn: async (): Promise<CareerAnalyticsData> => {
       if (!currentUser?.id) throw new Error('User not authenticated');
 
-      // Fetch real analytics data from database
-      const [profileData, postsData, connectionsData] = await Promise.all([
-        // Get profile analytics
+      // Fetch real CareerAnalytics data from database
+      const [profileData, postsData, TalentNetworkData] = await Promise.all([
+        // Get profile CareerAnalytics
         supabase
           .from('profiles')
           .select('profile_views_count, skills, career_goals, career_interests')
           .eq('id', currentUser.id)
           .single(),
         
-        // Get user's posts analytics
+        // Get user's posts CareerAnalytics
         supabase
           .from('posts')
           .select('likes_count, comments_count, views_count')
           .eq('author_id', currentUser.id),
         
-        // Get connections count
+        // Get TalentNetwork count
         supabase
           .from('connections')
           .select('*', { count: 'exact' })
@@ -90,9 +90,9 @@ export const NetworkAnalytics = () => {
 
       const profile = profileData.data;
       const posts = postsData.data || [];
-      const connectionsCount = connectionsData.count || 0;
+      const TalentNetworkCount = TalentNetworkData.count || 0;
 
-      // Calculate analytics from real data
+      // Calculate CareerAnalytics from real data
       const totalArticleViews = posts.reduce((sum, post) => sum + (post.views_count || 0), 0);
       const totalArticleLikes = posts.reduce((sum, post) => sum + (post.likes_count || 0), 0);
       const totalArticleComments = posts.reduce((sum, post) => sum + (post.comments_count || 0), 0);
@@ -109,7 +109,7 @@ export const NetworkAnalytics = () => {
         careerProgress: {
           currentLevel: 'Professional', // Could be enhanced with more profile data
           skillsGained: (profile?.skills || []).length,
-          connectionsGrown: connectionsCount,
+          TalentNetworkGrown: TalentNetworkCount,
           articlesPublished: posts.length
         },
         skillTrends: [
@@ -154,14 +154,14 @@ export const NetworkAnalytics = () => {
     );
   }
 
-  if (!analyticsData) return null;
+  if (!CareerAnalyticsData) return null;
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Analytics Dashboard</h2>
+          <h2 className="text-2xl font-bold text-foreground">CareerAnalytics CommandCenter</h2>
           <p className="text-muted-foreground">
             Track your growth, insights, and influence within the community.
           </p>
@@ -184,7 +184,7 @@ export const NetworkAnalytics = () => {
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="profile" className="flex items-center gap-2">
             <Eye className="h-4 w-4" />
-            Profile Analytics
+            Profile CareerAnalytics
           </TabsTrigger>
           <TabsTrigger value="articles" className="flex items-center gap-2">
             <BookOpen className="h-4 w-4" />
@@ -200,7 +200,7 @@ export const NetworkAnalytics = () => {
           </TabsTrigger>
         </TabsList>
 
-        {/* Profile Analytics */}
+        {/* Profile CareerAnalytics */}
         <TabsContent value="profile" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Card>
@@ -208,7 +208,7 @@ export const NetworkAnalytics = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">Profile Views</p>
-                    <p className="text-2xl font-bold">{analyticsData.profileViews.toLocaleString()}</p>
+                    <p className="text-2xl font-bold">{CareerAnalyticsData.profileViews.toLocaleString()}</p>
                   </div>
                   <div className="p-2 bg-blue-100 rounded-lg">
                     <Eye className="h-5 w-5 text-blue-600" />
@@ -226,7 +226,7 @@ export const NetworkAnalytics = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">Profile Shares</p>
-                    <p className="text-2xl font-bold">{analyticsData.profileShares}</p>
+                    <p className="text-2xl font-bold">{CareerAnalyticsData.profileShares}</p>
                   </div>
                   <div className="p-2 bg-green-100 rounded-lg">
                     <Share2 className="h-5 w-5 text-green-600" />
@@ -244,7 +244,7 @@ export const NetworkAnalytics = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">Endorsements</p>
-                    <p className="text-2xl font-bold">{analyticsData.endorsements}</p>
+                    <p className="text-2xl font-bold">{CareerAnalyticsData.endorsements}</p>
                   </div>
                   <div className="p-2 bg-purple-100 rounded-lg">
                     <Award className="h-5 w-5 text-purple-600" />
@@ -262,7 +262,7 @@ export const NetworkAnalytics = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">Skill Interests</p>
-                    <p className="text-2xl font-bold">{analyticsData.skillInterests.length}</p>
+                    <p className="text-2xl font-bold">{CareerAnalyticsData.skillInterests.length}</p>
                   </div>
                   <div className="p-2 bg-orange-100 rounded-lg">
                     <Star className="h-5 w-5 text-orange-600" />
@@ -285,7 +285,7 @@ export const NetworkAnalytics = () => {
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
-                {analyticsData.skillInterests.map((skill, index) => (
+                {CareerAnalyticsData.skillInterests.map((skill, index) => (
                   <Badge key={skill} variant="secondary" className="text-sm">
                     {skill}
                   </Badge>
@@ -303,7 +303,7 @@ export const NetworkAnalytics = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">Article Views</p>
-                    <p className="text-2xl font-bold">{analyticsData.articleViews.toLocaleString()}</p>
+                    <p className="text-2xl font-bold">{CareerAnalyticsData.articleViews.toLocaleString()}</p>
                   </div>
                   <div className="p-2 bg-blue-100 rounded-lg">
                     <Eye className="h-5 w-5 text-blue-600" />
@@ -321,7 +321,7 @@ export const NetworkAnalytics = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">Likes</p>
-                    <p className="text-2xl font-bold">{analyticsData.articleLikes}</p>
+                    <p className="text-2xl font-bold">{CareerAnalyticsData.articleLikes}</p>
                   </div>
                   <div className="p-2 bg-red-100 rounded-lg">
                     <Heart className="h-5 w-5 text-red-600" />
@@ -339,7 +339,7 @@ export const NetworkAnalytics = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">Bookmarks</p>
-                    <p className="text-2xl font-bold">{analyticsData.articleBookmarks}</p>
+                    <p className="text-2xl font-bold">{CareerAnalyticsData.articleBookmarks}</p>
                   </div>
                   <div className="p-2 bg-yellow-100 rounded-lg">
                     <BookOpen className="h-5 w-5 text-yellow-600" />
@@ -357,7 +357,7 @@ export const NetworkAnalytics = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">Comments</p>
-                    <p className="text-2xl font-bold">{analyticsData.articleComments}</p>
+                    <p className="text-2xl font-bold">{CareerAnalyticsData.articleComments}</p>
                   </div>
                   <div className="p-2 bg-green-100 rounded-lg">
                     <MessageCircle className="h-5 w-5 text-green-600" />
@@ -404,19 +404,19 @@ export const NetworkAnalytics = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <div className="text-center p-4 bg-muted/20 rounded-lg">
                   <p className="text-sm text-muted-foreground">Current Level</p>
-                  <p className="text-lg font-semibold">{analyticsData.careerProgress.currentLevel}</p>
+                  <p className="text-lg font-semibold">{CareerAnalyticsData.careerProgress.currentLevel}</p>
                 </div>
                 <div className="text-center p-4 bg-blue-50 rounded-lg">
                   <p className="text-sm text-muted-foreground">Skills Gained</p>
-                  <p className="text-lg font-semibold text-blue-600">+{analyticsData.careerProgress.skillsGained}</p>
+                  <p className="text-lg font-semibold text-blue-600">+{CareerAnalyticsData.careerProgress.skillsGained}</p>
                 </div>
                 <div className="text-center p-4 bg-green-50 rounded-lg">
-                  <p className="text-sm text-muted-foreground">Connections</p>
-                  <p className="text-lg font-semibold text-green-600">+{analyticsData.careerProgress.connectionsGrown}</p>
+                  <p className="text-sm text-muted-foreground">TalentNetwork</p>
+                  <p className="text-lg font-semibold text-green-600">+{CareerAnalyticsData.careerProgress.TalentNetworkGrown}</p>
                 </div>
                 <div className="text-center p-4 bg-purple-50 rounded-lg">
                   <p className="text-sm text-muted-foreground">Articles Published</p>
-                  <p className="text-lg font-semibold text-purple-600">{analyticsData.careerProgress.articlesPublished}</p>
+                  <p className="text-lg font-semibold text-purple-600">{CareerAnalyticsData.careerProgress.articlesPublished}</p>
                 </div>
               </div>
 
@@ -443,7 +443,7 @@ export const NetworkAnalytics = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {analyticsData.skillTrends.map((skill, index) => (
+                {CareerAnalyticsData.skillTrends.map((skill, index) => (
                   <div key={skill.skill} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/20 transition-colors">
                     <div className="flex items-center gap-3">
                       <div className="w-2 h-8 bg-gradient-to-t from-primary/20 to-primary rounded" style={{ height: `${skill.demand}%` }}></div>
@@ -473,7 +473,7 @@ export const NetworkAnalytics = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Zap className="h-5 w-5" />
-                AI-Powered Insights
+                Performance Insights
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -501,3 +501,7 @@ export const NetworkAnalytics = () => {
     </div>
   );
 };
+
+
+
+

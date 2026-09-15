@@ -87,7 +87,7 @@ export interface MarketTrend {
 
 export interface ProactiveNotification {
   id: string;
-  type: 'job_deadline' | 'profile_view_spike' | 'new_connections' | 'learning_reminder' | 'market_opportunity';
+  type: 'job_deadline' | 'profile_view_spike' | 'new_connection' | 'learning_reminder' | 'market_opportunity';
   title: string;
   message: string;
   priority: 'high' | 'medium' | 'low';
@@ -245,3 +245,4 @@ class AIAgentService {
 }
 
 export const aiAgentService = AIAgentService.getInstance();
+

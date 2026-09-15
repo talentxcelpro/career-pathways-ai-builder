@@ -17,7 +17,7 @@ interface Connection {
   current_company?: string;
 }
 
-export const ConnectionSuggestions: React.FC = () => {
+export const TalentNetworkuggestions: React.FC = () => {
   const { sendConnectionRequest, isSending } = useConnectionRequests();
   const [sendingConnection, setSendingConnection] = useState<string | null>(null);
 
@@ -34,19 +34,19 @@ export const ConnectionSuggestions: React.FC = () => {
     queryFn: async () => {
       if (!currentUser) return [];
 
-      // Get existing connections to exclude
-      const { data: existingConnections } = await supabase
+      // Get existing TalentNetwork to exclude
+      const { data: existingTalentNetwork } = await supabase
         .from('connections')
         .select('recipient_id, requester_id')
         .or(`requester_id.eq.${currentUser.id},recipient_id.eq.${currentUser.id}`)
         .in('status', ['accepted', 'pending']);
 
       const connectedUserIds = new Set([
-        ...(existingConnections?.map(c => c.recipient_id) || []),
-        ...(existingConnections?.map(c => c.requester_id) || [])
+        ...(existingTalentNetwork?.map(c => c.recipient_id) || []),
+        ...(existingTalentNetwork?.map(c => c.requester_id) || [])
       ]);
 
-      // Get profiles excluding current user and existing connections
+      // Get profiles excluding current user and existing TalentNetwork
       const { data: profiles, error } = await supabase
         .from('profiles')
         .select('id, full_name, title, profile_picture_url, current_company')
@@ -56,7 +56,7 @@ export const ConnectionSuggestions: React.FC = () => {
 
       if (error) throw error;
 
-      // Filter out existing connections and return first 8
+      // Filter out existing TalentNetwork and return first 8
       const filteredProfiles = profiles
         .filter(profile => !connectedUserIds.has(profile.id))
         .slice(0, 8);
@@ -198,3 +198,4 @@ export const ConnectionSuggestions: React.FC = () => {
     </Card>
   );
 };
+

@@ -188,7 +188,7 @@ export const EnhancedNotificationCard: React.FC<EnhancedNotificationCardProps> =
             <div className="flex-1">
               <h4 className="font-medium text-green-900">{user.name}</h4>
               <p className="text-sm text-green-700">{user.title}</p>
-              <p className="text-xs text-green-600">{user.connections} mutual connections</p>
+              <p className="text-xs text-green-600">{user.TalentNetwork} mutual Talent Network</p>
             </div>
           </div>
         </div>
@@ -354,3 +354,4 @@ export const EnhancedNotificationCard: React.FC<EnhancedNotificationCardProps> =
     </motion.div>
   );
 };
+

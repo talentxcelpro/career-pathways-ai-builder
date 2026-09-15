@@ -17,12 +17,12 @@ import {
   School
 } from 'lucide-react';
 
-export function AdminDashboard() {
+export function AdminCommandCenter() {
   return (
     <div className="space-y-6">
       {/* Welcome Section */}
       <div className="bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-950/20 dark:to-pink-950/20 p-6 rounded-lg">
-        <h1 className="text-2xl font-bold mb-2">Admin Dashboard</h1>
+        <h1 className="text-2xl font-bold mb-2">Admin CommandCenter</h1>
         <p className="text-muted-foreground">
           Monitor platform health, manage users, and oversee system operations.
         </p>
@@ -80,7 +80,7 @@ export function AdminDashboard() {
                 </Button>
                 <Button variant="outline" className="h-20 flex-col gap-2">
                   <BarChart3 className="h-6 w-6" />
-                  <span className="text-sm">Analytics</span>
+                  <span className="text-sm">CareerAnalytics</span>
                 </Button>
                 <Button variant="outline" className="h-20 flex-col gap-2">
                   <Database className="h-6 w-6" />
@@ -231,3 +231,6 @@ export function AdminDashboard() {
     </div>
   );
 }
+
+
+

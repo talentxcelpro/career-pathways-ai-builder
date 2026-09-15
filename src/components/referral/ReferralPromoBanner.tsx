@@ -104,7 +104,7 @@ export const ReferralPromoBanner: React.FC<ReferralPromoBannerProps> = ({
           <div className="space-y-4">
             <p className="text-muted-foreground">
               Invite friends to TalentXcel and unlock exclusive benefits like Pro upgrades, 
-              advanced career tools, and AI-powered features.
+              advanced career tools, and Performance features.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <div className="flex items-center space-x-2 p-3 bg-background/50 rounded-lg">

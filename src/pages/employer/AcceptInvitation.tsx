@@ -117,7 +117,7 @@ const AcceptInvitation = () => {
             <div className="space-y-2">
               <Button onClick={() => navigate('/employer')} className="w-full">
                 <Building2 className="h-4 w-4 mr-2" />
-                Go to Employer Dashboard
+                Go to Employer CommandCenter
               </Button>
               <Button variant="outline" onClick={() => navigate('/employer/team')} className="w-full">
                 View Team
@@ -133,3 +133,4 @@ const AcceptInvitation = () => {
 };
 
 export default AcceptInvitation;
+

@@ -1,30 +1,36 @@
+import { lazy } from "react";
 import { Briefcase, FileText, Heart, Bell, BarChart3, Building2, FolderOpen, Zap, Brain } from "lucide-react";
+
+// Use existing LazyRoutes or convert others to lazy
 import { JobsPage } from "../components/performance/LazyRoutes";
-import JobDetails from "../pages/jobs/JobDetails";
-import JobDetail from "../pages/JobDetail";
+const JobDetails = lazy(() => import("../pages/jobs/JobDetails"));
+const JobDetail = lazy(() => import("../pages/JobDetail"));
+const JobPost = lazy(() => import("../pages/jobs/JobPost"));
+const SavedJobs = lazy(() => import("../pages/jobs/SavedJobs"));
+const MyApplications = lazy(() => import("../pages/jobs/MyApplications"));
+const JobApply = lazy(() => import("../pages/jobs/JobApply"));
+const JobAlerts = lazy(() => import("../pages/jobs/Alerts"));
+const JobCareerAnalytics = lazy(() => import("../pages/jobs/Analytics"));
+const JobCategories = lazy(() => import("../pages/jobs/JobCategories"));
+const CompaniesPage = lazy(() => import("../pages/jobs/Companies"));
+const JobRecommendations = lazy(() => import("../pages/jobs/Recommendations"));
+const SmartApply = lazy(() => import("../pages/jobs/SmartApply"));
+const JobManage = lazy(() => import("../pages/jobs/Manage"));
+const AppliedJobs = lazy(() => import("../pages/jobs/AppliedJobs"));
+const JobApplicants = lazy(() => import("../pages/jobs/JobApplicants"));
+const ApplicantDetail = lazy(() => import("../pages/jobs/ApplicantDetail"));
+const ComprehensiveJobs = lazy(() => import("../pages/ComprehensiveJobs"));
+const MobileJobs = lazy(() => import("../pages/mobile/MobileJobs"));
+const CareerCommandCenter = lazy(() => import("../pages/CommandCenter"));
+const TalentBeacon = lazy(() => import("../pages/jobs/TalentBeacon"));
+
 import { JobRedirectHandler } from "../components/jobs/JobRedirectHandler";
-import JobPost from "../pages/jobs/JobPost";
-import SavedJobs from "../pages/jobs/SavedJobs";
-import MyApplications from "../pages/jobs/MyApplications";
-import JobApply from "../pages/jobs/JobApply";
-import JobAlerts from "../pages/jobs/Alerts";
-import JobAnalytics from "../pages/jobs/Analytics";
-import JobCategories from "../pages/jobs/JobCategories";
-import CompaniesPage from "../pages/jobs/Companies";
-import JobRecommendations from "../pages/jobs/Recommendations";
-import SmartApply from "../pages/jobs/SmartApply";
-import JobManage from "../pages/jobs/Manage";
-import AppliedJobs from "../pages/jobs/AppliedJobs";
-import JobApplicants from "../pages/jobs/JobApplicants";
-import ApplicantDetail from "../pages/jobs/ApplicantDetail";
-import ComprehensiveJobs from "../pages/ComprehensiveJobs";
 import { JobUrlRedirect } from "../components/seo/JobUrlRedirect";
-import MobileJobs from "../pages/mobile/MobileJobs";
-import CareerDashboard from "../pages/CareerDashboard";
+
 
 export const jobRoutes = [
   {
-    title: "Jobs",
+    title: "Matches",
     to: "/jobs",
     icon: <Briefcase className="h-4 w-4" />,
     page: <JobsPage />,
@@ -32,28 +38,28 @@ export const jobRoutes = [
     requiresAuth: false,
   },
   {
-    title: "Mobile Jobs",
+    title: "Mobile Matches",
     to: "/jobs/mobile",
     icon: <Briefcase className="h-4 w-4" />,
-    page: <MobileJobs />,
+    page: <JobsPage />,
     isPublic: true,
     requiresAuth: false,
   },
   {
-    title: "Career Dashboard",
-    to: "/career-dashboard",
+    title: "Career CommandCenter",
+    to: "/career-CommandCenter",
     icon: <BarChart3 className="h-4 w-4" />,
-    page: <CareerDashboard />,
-    description: "AI-powered career intelligence and job matching dashboard",
+    page: <CareerCommandCenter />,
+    description: "Performance CareerIntelligence and job matching CommandCenter",
     isPublic: false,
     requiresAuth: true,
   },
   {
-    title: "AI Career Hub",
+    title: "AI Opportunity Hub",
     to: "/jobs/ai-hub",
     icon: <Brain className="h-4 w-4" />,
-    page: <CareerDashboard />,
-    description: "AI-powered job matching and career insights hub",
+    page: <CareerCommandCenter />,
+    description: "Performance job matching and career insights hub",
     isPublic: false,
     requiresAuth: true,
   },
@@ -98,10 +104,10 @@ export const jobRoutes = [
     page: <JobAlerts />,
   },
   {
-    title: "Job Analytics",
-    to: "/jobs/analytics",
+    title: "Job CareerAnalytics",
+    to: "/jobs/CareerAnalytics",
     icon: <BarChart3 className="h-4 w-4" />,
-    page: <JobAnalytics />,
+    page: <JobCareerAnalytics />,
   },
   {
     title: "Job Categories",
@@ -150,6 +156,19 @@ export const jobRoutes = [
   {
     title: "Comprehensive Jobs",
     to: "/jobs/comprehensive",
-    page: <ComprehensiveJobs />,
+    page: <JobsPage />,
+  },
+  {
+    title: "Talent Beacon",
+    to: "/talent-beacon",
+    icon: <Zap className="h-4 w-4" />,
+    page: <TalentBeacon />,
+    description: "Reverse Job Match: Companies looking for you",
+    isPublic: false,
+    requiresAuth: true,
   },
 ];
+
+
+
+

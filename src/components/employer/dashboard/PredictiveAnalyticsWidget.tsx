@@ -17,7 +17,7 @@ interface PredictiveInsight {
   actionable: boolean;
 }
 
-export const PredictiveAnalyticsWidget = () => {
+export const PredictiveCareerAnalyticsWidget = () => {
   const navigate = useNavigate();
   
   const insights: PredictiveInsight[] = [
@@ -108,7 +108,7 @@ export const PredictiveAnalyticsWidget = () => {
               <BarChart3 className="h-4 w-4 text-white" />
             </div>
             <div>
-              <CardTitle className="text-base font-bold text-slate-900">Predictive Analytics</CardTitle>
+              <CardTitle className="text-base font-bold text-slate-900">Predictive CareerAnalytics</CardTitle>
               <p className="text-xs text-slate-600 font-medium">
                 {actionableInsights} actionable insights • {averageConfidence}% avg. confidence
               </p>
@@ -118,7 +118,7 @@ export const PredictiveAnalyticsWidget = () => {
             variant="outline" 
             size="sm" 
             className="text-xs font-semibold"
-            onClick={() => navigate('/employer/analytics/predictive')}
+            onClick={() => navigate('/employer/CareerAnalytics/predictive')}
           >
             View Report
           </Button>
@@ -132,7 +132,7 @@ export const PredictiveAnalyticsWidget = () => {
             className={`flex items-start gap-3 p-3 rounded-lg hover:bg-slate-100/50 transition-colors cursor-pointer ${
               insight.actionable ? 'bg-blue-50/50 border border-blue-100' : 'bg-slate-50/50'
             }`}
-            onClick={() => navigate(`/employer/analytics/predictive/${insight.id}`)}
+            onClick={() => navigate(`/employer/CareerAnalytics/predictive/${insight.id}`)}
           >
             <div className="p-1.5 bg-rose-100 rounded-md">
               {getTypeIcon(insight.type)}
@@ -169,9 +169,9 @@ export const PredictiveAnalyticsWidget = () => {
         <div className="pt-2 border-t border-slate-100">
           <div 
             className="flex items-center justify-center gap-2 p-2 bg-rose-50 rounded-lg hover:bg-rose-100 transition-colors cursor-pointer"
-            onClick={() => navigate('/employer/analytics/predictive')}
+            onClick={() => navigate('/employer/CareerAnalytics/predictive')}
           >
-            <span className="text-sm font-semibold text-rose-700">Full Analytics Report</span>
+            <span className="text-sm font-semibold text-rose-700">Full CareerAnalytics Report</span>
             <BarChart3 className="h-3 w-3 text-rose-700" />
           </div>
         </div>
@@ -179,3 +179,7 @@ export const PredictiveAnalyticsWidget = () => {
     </Card>
   );
 };
+
+
+
+

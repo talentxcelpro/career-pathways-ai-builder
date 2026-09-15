@@ -63,7 +63,7 @@ const CompetitorSubcategories = () => {
       id: 'intelligence',
       title: 'Competitive Intelligence Reports',
       icon: Brain,
-      description: 'AI-powered competitor insights and recommendations',
+      description: 'Performance competitor insights and recommendations',
       status: 'coming-soon'
     },
     {

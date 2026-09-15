@@ -30,8 +30,8 @@ const InstantNetworkingSystem: React.FC = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('discover');
   
-  // Get real data from connections table
-  const { data: connections, loading } = useRealtimeTable('connections', {
+  // Get real data from TalentNetwork table
+  const { data: TalentNetwork, loading } = useRealtimeTable('connections', {
     filter: user ? { 
       requester_id: user.id,
       status: 'accepted' 
@@ -40,11 +40,11 @@ const InstantNetworkingSystem: React.FC = () => {
   
   // Calculate real network stats
   const networkStats = {
-    totalNetwork: connections?.length || 0,
+    totalNetwork: TalentNetwork?.length || 0,
     activeChats: 0, // Will be implemented with messaging system
-    aiMatches: Math.floor(connections?.length * 0.8) || 0, // 80% of connections are AI-matched
-    responseRate: connections?.length > 0 ? 94 : 0, // High success rate for demo
-    networkScore: Math.min(87, 50 + (connections?.length * 2)) // Score based on connections
+    aiMatches: Math.floor(TalentNetwork?.length * 0.8) || 0, // 80% of TalentNetwork are AI-matched
+    responseRate: TalentNetwork?.length > 0 ? 94 : 0, // High success rate for demo
+    networkScore: Math.min(87, 50 + (TalentNetwork?.length * 2)) // Score based on TalentNetwork
   };
 
   if (!user) {
@@ -66,10 +66,10 @@ const InstantNetworkingSystem: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Instant Networking System - Real-Time Professional Connections | TalentXcel</title>
+        <title>Instant Networking System - Real-Time Professional TalentNetwork | TalentXcel</title>
         <meta 
           name="description" 
-          content="Connect with professionals instantly using AI-powered matching, real-time chat, and smart networking recommendations for accelerated career growth." 
+          content="Connect with professionals instantly using Performance matching, real-time chat, and smart networking recommendations for accelerated career growth." 
         />
         <meta name="robots" content="noindex" />
       </Helmet>
@@ -87,14 +87,14 @@ const InstantNetworkingSystem: React.FC = () => {
                 Instant Networking System
               </h1>
               <p className="text-xl text-muted-foreground mt-2">
-                AI-powered professional connections in real-time
+                Performance professional TalentNetwork in real-time
               </p>
             </div>
 
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm">
                 <BarChart3 className="h-4 w-4 mr-2" />
-                Analytics
+                CareerAnalytics
               </Button>
               <Button variant="outline" size="sm">
                 <Settings className="h-4 w-4 mr-2" />
@@ -121,7 +121,7 @@ const InstantNetworkingSystem: React.FC = () => {
                     <div className="text-2xl font-bold text-blue-600">
                       {loading ? '...' : networkStats.totalNetwork}
                     </div>
-                    <Badge variant="secondary" className="mt-1">Connections</Badge>
+                    <Badge variant="secondary" className="mt-1">TalentNetwork</Badge>
                   </div>
                   
                   <div className="text-center">
@@ -192,7 +192,7 @@ const InstantNetworkingSystem: React.FC = () => {
                 </TabsTrigger>
                 <TabsTrigger value="ai-recommendations" className="flex items-center gap-2">
                   <Brain className="h-4 w-4" />
-                  AI Recommendations
+                  Career Moves
                 </TabsTrigger>
                 <TabsTrigger value="events" className="flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
@@ -210,7 +210,7 @@ const InstantNetworkingSystem: React.FC = () => {
                 <LiveChat />
               </TabsContent>
 
-              {/* AI Recommendations */}
+              {/* Career Moves */}
               <TabsContent value="ai-recommendations" className="space-y-6">
                 <SmartNetworkingRecommendations />
               </TabsContent>
@@ -287,7 +287,7 @@ const InstantNetworkingSystem: React.FC = () => {
                     onClick={() => setActiveTab('ai-recommendations')}
                   >
                     <Brain className="h-6 w-6" />
-                    <span className="text-sm">AI Suggestions</span>
+                    <span className="text-sm">Smart Moves</span>
                   </Button>
                   
                   <Button 
@@ -314,3 +314,7 @@ const InstantNetworkingSystem: React.FC = () => {
 };
 
 export default InstantNetworkingSystem;
+
+
+
+

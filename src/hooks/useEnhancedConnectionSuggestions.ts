@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 
-export interface EnhancedConnectionSuggestion {
+export interface EnhancedTalentNetworkuggestion {
   id: string;
   full_name: string;
   title?: string;
@@ -21,7 +21,7 @@ export interface EnhancedConnectionSuggestion {
   suggestionType: 'skill_match' | 'location_match' | 'industry_match' | 'title_match' | 'random';
 }
 
-export const useEnhancedConnectionSuggestions = () => {
+export const useEnhancedTalentNetworkuggestions = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
@@ -51,14 +51,14 @@ export const useEnhancedConnectionSuggestions = () => {
 
       console.log('Generating enhanced connection suggestions for:', currentUserProfile);
 
-      // Get existing connections to exclude
-      const { data: existingConnections } = await supabase
+      // Get existing TalentNetwork to exclude
+      const { data: existingTalentNetwork } = await supabase
         .from('connections')
         .select('requester_id, recipient_id')
         .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`);
 
       const connectedUserIds = new Set(
-        existingConnections?.flatMap(conn => 
+        existingTalentNetwork?.flatMap(conn => 
           [conn.requester_id, conn.recipient_id]
         ).filter(id => id !== user.id) || []
       );
@@ -73,7 +73,7 @@ export const useEnhancedConnectionSuggestions = () => {
 
       if (error) throw error;
 
-      const suggestions: EnhancedConnectionSuggestion[] = profiles
+      const suggestions: EnhancedTalentNetworkuggestion[] = profiles
         ?.filter(profile => !connectedUserIds.has(profile.id))
         .map(profile => {
           const matchData = calculateMatchScore(currentUserProfile, profile);
@@ -96,7 +96,7 @@ export const useEnhancedConnectionSuggestions = () => {
   const calculateMatchScore = (currentUser: any, targetUser: any) => {
     let score = 0;
     const reasons: string[] = [];
-    let suggestionType: EnhancedConnectionSuggestion['suggestionType'] = 'random';
+    let suggestionType: EnhancedTalentNetworkuggestion['suggestionType'] = 'random';
 
     // Title similarity (high weight)
     if (currentUser.title && targetUser.title) {
@@ -180,7 +180,7 @@ export const useEnhancedConnectionSuggestions = () => {
     // Random factor for discovery
     if (score === 0 && Math.random() > 0.7) {
       score = Math.floor(Math.random() * 15) + 5;
-      reasons.push('Discover new connections');
+      reasons.push('Discover new TalentNetwork');
     }
 
     return {
@@ -260,3 +260,4 @@ export const useEnhancedConnectionSuggestions = () => {
     currentUserProfile
   };
 };
+

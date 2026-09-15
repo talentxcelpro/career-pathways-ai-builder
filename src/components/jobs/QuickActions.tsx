@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Brain, Settings, DollarSign, Zap } from 'lucide-react';
-import { AICareerAssistantDialog } from './AICareerAssistantDialog';
+import { AICareerNavigatorDialog } from './AICareerNavigatorDialog';
 import { JobPreferencesDialog } from './JobPreferencesDialog';
 import { SalaryInsightsDialog } from './SalaryInsightsDialog';
 
@@ -11,18 +11,18 @@ interface QuickActionsProps {
 }
 
 export const QuickActions: React.FC<QuickActionsProps> = ({ currentUser }) => {
-  const [showAIAssistant, setShowAIAssistant] = useState(false);
+  const [showAINavigator, setShowAINavigator] = useState(false);
   const [showPreferences, setShowPreferences] = useState(false);
   const [showSalaryInsights, setShowSalaryInsights] = useState(false);
 
   const quickActions = [
     {
-      title: 'Ask AI Career Assistant',
+      title: 'Ask AI Career Navigator',
       description: 'Get personalized career advice',
       icon: Brain,
       color: 'text-purple-600',
       bgColor: 'bg-purple-50 hover:bg-purple-100',
-      onClick: () => setShowAIAssistant(true)
+      onClick: () => setShowAINavigator(true)
     },
     {
       title: 'Update Job Preferences',
@@ -75,9 +75,9 @@ export const QuickActions: React.FC<QuickActionsProps> = ({ currentUser }) => {
       </Card>
 
       {/* Dialogs */}
-      <AICareerAssistantDialog 
-        open={showAIAssistant} 
-        onOpenChange={setShowAIAssistant}
+      <AICareerNavigatorDialog 
+        open={showAINavigator} 
+        onOpenChange={setShowAINavigator}
         currentUser={currentUser}
       />
       

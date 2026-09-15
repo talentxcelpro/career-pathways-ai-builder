@@ -79,8 +79,8 @@ export const MonetizationSettings: React.FC = () => {
               <Switch id="featured-listings" defaultChecked />
             </div>
             <div className="flex items-center justify-between">
-              <Label htmlFor="analytics-access">Analytics dashboard</Label>
-              <Switch id="analytics-access" defaultChecked />
+              <Label htmlFor="CareerAnalytics-access">CareerAnalytics CommandCenter</Label>
+              <Switch id="CareerAnalytics-access" defaultChecked />
             </div>
             <div className="flex items-center justify-between">
               <Label htmlFor="priority-support">Priority support</Label>
@@ -128,7 +128,7 @@ export const MonetizationSettings: React.FC = () => {
               <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• Featured directory listings</li>
                 <li>• Enhanced profile visibility</li>
-                <li>• Advanced analytics access</li>
+                <li>• Advanced CareerAnalytics access</li>
                 <li>• Priority customer support</li>
               </ul>
             </div>
@@ -159,3 +159,6 @@ export const MonetizationSettings: React.FC = () => {
     </div>
   );
 };
+
+
+

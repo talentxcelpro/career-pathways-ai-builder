@@ -2,7 +2,7 @@
 export type AdminRole = 'super_admin' | 'content_admin' | 'job_admin' | 'support_admin' | 'moderator';
 
 export interface AdminPermissions {
-  canAccessDashboard: boolean;
+  canAccessCommandCenter: boolean;
   canAccessUsers: boolean;
   canAccessJobs: boolean;
   canAccessCompanies: boolean;
@@ -13,7 +13,7 @@ export interface AdminPermissions {
   canAccessCareerMap: boolean;
   canAccessEmployerRequests: boolean;
   canAccessAdmins: boolean;
-  canAccessAnalytics: boolean;
+  canAccessCareerAnalytics: boolean;
   canAccessSecurity: boolean;
   canExportData: boolean;
   canModerateContent: boolean;
@@ -32,7 +32,7 @@ export interface AdminPermissions {
 
 export const ROLE_PERMISSIONS: Record<AdminRole, AdminPermissions> = {
   super_admin: {
-    canAccessDashboard: true,
+    canAccessCommandCenter: true,
     canAccessUsers: true,
     canAccessJobs: true,
     canAccessCompanies: true,
@@ -43,7 +43,7 @@ export const ROLE_PERMISSIONS: Record<AdminRole, AdminPermissions> = {
     canAccessCareerMap: true,
     canAccessEmployerRequests: true,
     canAccessAdmins: true,
-    canAccessAnalytics: true,
+    canAccessCareerAnalytics: true,
     canAccessSecurity: true,
     canExportData: true,
     canModerateContent: true,
@@ -60,7 +60,7 @@ export const ROLE_PERMISSIONS: Record<AdminRole, AdminPermissions> = {
     canAccessEdgeFunctions: true,
   },
   content_admin: {
-    canAccessDashboard: true,
+    canAccessCommandCenter: true,
     canAccessUsers: false,
     canAccessJobs: true,
     canAccessCompanies: true,
@@ -71,7 +71,7 @@ export const ROLE_PERMISSIONS: Record<AdminRole, AdminPermissions> = {
     canAccessCareerMap: true,
     canAccessEmployerRequests: false,
     canAccessAdmins: false,
-    canAccessAnalytics: true,
+    canAccessCareerAnalytics: true,
     canAccessSecurity: false,
     canExportData: true,
     canModerateContent: true,
@@ -88,7 +88,7 @@ export const ROLE_PERMISSIONS: Record<AdminRole, AdminPermissions> = {
     canAccessEdgeFunctions: false,
   },
   job_admin: {
-    canAccessDashboard: true,
+    canAccessCommandCenter: true,
     canAccessUsers: false,
     canAccessJobs: true,
     canAccessCompanies: true,
@@ -99,7 +99,7 @@ export const ROLE_PERMISSIONS: Record<AdminRole, AdminPermissions> = {
     canAccessCareerMap: true,
     canAccessEmployerRequests: true,
     canAccessAdmins: false,
-    canAccessAnalytics: true,
+    canAccessCareerAnalytics: true,
     canAccessSecurity: false,
     canExportData: true,
     canModerateContent: false,
@@ -116,7 +116,7 @@ export const ROLE_PERMISSIONS: Record<AdminRole, AdminPermissions> = {
     canAccessEdgeFunctions: false,
   },
   support_admin: {
-    canAccessDashboard: true,
+    canAccessCommandCenter: true,
     canAccessUsers: true,
     canAccessJobs: false,
     canAccessCompanies: false,
@@ -127,7 +127,7 @@ export const ROLE_PERMISSIONS: Record<AdminRole, AdminPermissions> = {
     canAccessCareerMap: false,
     canAccessEmployerRequests: false,
     canAccessAdmins: false,
-    canAccessAnalytics: false,
+    canAccessCareerAnalytics: false,
     canAccessSecurity: false,
     canExportData: false,
     canModerateContent: true,
@@ -144,7 +144,7 @@ export const ROLE_PERMISSIONS: Record<AdminRole, AdminPermissions> = {
     canAccessEdgeFunctions: false,
   },
   moderator: {
-    canAccessDashboard: true,
+    canAccessCommandCenter: true,
     canAccessUsers: true,
     canAccessJobs: false,
     canAccessCompanies: false,
@@ -155,7 +155,7 @@ export const ROLE_PERMISSIONS: Record<AdminRole, AdminPermissions> = {
     canAccessCareerMap: false,
     canAccessEmployerRequests: false,
     canAccessAdmins: false,
-    canAccessAnalytics: false,
+    canAccessCareerAnalytics: false,
     canAccessSecurity: false,
     canExportData: false,
     canModerateContent: true,
@@ -172,3 +172,7 @@ export const ROLE_PERMISSIONS: Record<AdminRole, AdminPermissions> = {
     canAccessEdgeFunctions: false,
   },
 };
+
+
+
+

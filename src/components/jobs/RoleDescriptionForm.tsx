@@ -111,7 +111,7 @@ export default function RoleDescriptionForm({ formData, onInputChange }: RoleDes
       <CardContent className="space-y-4">
         {/* Auto-fill from Smart Template */}
         <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <h4 className="font-semibold text-blue-900 mb-2">Smart Template Assistant</h4>
+          <h4 className="font-semibold text-blue-900 mb-2">Smart Template Navigator</h4>
           <p className="text-sm text-blue-700 mb-3">
             Fill in basic details and we'll generate comprehensive job descriptions using AI
           </p>

@@ -1,24 +1,27 @@
-
+import { lazy } from "react";
 import { FileText, Sparkles, Upload, Zap, Search, Target, PenTool, Video, Globe, TrendingUp } from "lucide-react";
-import ResumeNew from "@/pages/resume/ResumeNew";
-import EditResume from "@/pages/resume/EditResume";
-import TalentXcelResumeBuilder from "@/pages/resume/TalentXcelResumeBuilder";
-import ResumeEditorV1 from "@/pages/resume/ResumeEditorV1";
-import ResumeHub from "@/pages/resume/ResumeHub";
-import TemplateGallery from "@/pages/resume/TemplateGallery";
-import UnifiedUploadPage from "@/pages/resume/UnifiedUploadPage";
-import AIResumeBuilder from "@/pages/resume/AIResumeBuilder";
-import ATSOptimizer from "@/pages/resume/ATSOptimizer";
-import CoverLetterStudio from "@/pages/resume/CoverLetterStudio";
-import InterviewPrepSuite from "@/pages/resume/InterviewPrepSuite";
-import PortfolioBuilder from "@/pages/resume/PortfolioBuilder";
-import CareerIntelligence from "@/pages/resume/CareerIntelligence";
-import Dashboard from "@/pages/Dashboard";
-import CompanyDashboard from "@/pages/companies/CompanyDashboard";
-import { AnalyticsDashboard } from "@/components/resume/AnalyticsDashboard";
-import LearningHub from "@/pages/LearningHub";
+
+const ResumeNew = lazy(() => import("@/pages/resume/ResumeNew"));
+const EditResume = lazy(() => import("@/pages/resume/EditResume"));
+const TalentXcelResumeBuilder = lazy(() => import("@/pages/resume/TalentXcelResumeBuilder"));
+const ResumeEditorV1 = lazy(() => import("@/pages/resume/ResumeEditorV1"));
+const ResumeHub = lazy(() => import("@/pages/resume/ResumeHub"));
+const TemplateGallery = lazy(() => import("@/pages/resume/TemplateGallery"));
+const UnifiedUploadPage = lazy(() => import("@/pages/resume/UnifiedUploadPage"));
+const AIResumeBuilder = lazy(() => import("@/pages/resume/AIResumeBuilder"));
+const ATSOptimizer = lazy(() => import("@/pages/resume/ATSOptimizer"));
+const CoverLetterStudio = lazy(() => import("@/pages/resume/CoverLetterStudio"));
+const InterviewPrepSuite = lazy(() => import("@/pages/resume/InterviewPrepSuite"));
+const PortfolioBuilder = lazy(() => import("@/pages/resume/PortfolioBuilder"));
+const CareerIntelligence = lazy(() => import("@/pages/resume/CareerIntelligence"));
+const CommandCenter = lazy(() => import("@/pages/CommandCenter"));
+const CompanyCommandCenter = lazy(() => import("@/pages/companies/CompanyDashboard"));
+const CareerAnalyticsCommandCenter = lazy(() => import("@/components/resume/AnalyticsDashboard").then(m => ({ default: m.CareerAnalyticsCommandCenter })));
+const LearningHub = lazy(() => import("@/pages/LearningHub"));
+const AIEnhancement = lazy(() => import("@/pages/resume/AIEnhancement"));
+
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import AIEnhancement from "@/pages/resume/AIEnhancement";
+
 
 export const resumeRoutes = [
   {
@@ -43,7 +46,7 @@ export const resumeRoutes = [
     isPublic: true,
   },
   {
-    title: "AI Resume Builder", 
+    title: "Resume Builder Pro", 
     to: "/resume/builder",
     icon: <Sparkles className="h-4 w-4" />,
     page: <AIResumeBuilder />,
@@ -71,15 +74,15 @@ export const resumeRoutes = [
     isPublic: true,
   },
   {
-    title: "Career Intelligence",
+    title: "Professional Intelligence",
     to: "/resume/career-intelligence",
     icon: <TrendingUp className="h-4 w-4" />,
     page: <CareerIntelligence />,
     isPublic: true,
   },
   {
-    title: "AI Enhancement",
-    to: "/resume/ai-enhancement",
+    title: "Resume Enhancement",
+    to: "/resume/enhancement",
     icon: <Sparkles className="h-4 w-4" />,
     page: <AIEnhancement />,
     isPublic: true,
@@ -92,24 +95,24 @@ export const resumeRoutes = [
     isPublic: true,
   },
   {
-    title: "Resume Dashboard",
-    to: "/resume/dashboard",
+    title: "Resume Command Center",
+    to: "/resume/command-center",
     icon: <Target className="h-4 w-4" />,
-    page: <Dashboard />,
+    page: <CommandCenter />,
     isPublic: true,
   },
   {
     title: "Company Tools",
     to: "/resume/company-tools",
     icon: <Target className="h-4 w-4" />,
-    page: <CompanyDashboard />,
+    page: <CompanyCommandCenter />,
     isPublic: true,
   },
   {
-    title: "Resume Analytics",
-    to: "/resume/analytics",
+    title: "Resume Career Analytics",
+    to: "/resume/career-analytics",
     icon: <Target className="h-4 w-4" />,
-    page: <AnalyticsDashboard resumeId="current" />,
+    page: <CareerAnalyticsCommandCenter resumeId="current" />,
     isPublic: true,
   },
   {
@@ -146,3 +149,7 @@ export const resumeRoutes = [
     isPublic: true,
   },
 ];
+
+
+
+

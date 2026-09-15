@@ -79,3 +79,4 @@ export const useConnectionRequests = () => {
     isAccepting: acceptConnectionRequest.isPending
   };
 };
+

@@ -24,7 +24,7 @@ interface ProfileBannerProps {
   isOwnProfile?: boolean;
   isCompact?: boolean;
   stats?: {
-    connections: number;
+    TalentNetwork: number;
     profileViews: number;
     postsCount: number;
   };
@@ -34,7 +34,7 @@ export const ProfileBanner: React.FC<ProfileBannerProps> = ({
   profile,
   isOwnProfile = false,
   isCompact = false,
-  stats = { connections: 0, profileViews: 0, postsCount: 0 }
+  stats = { TalentNetwork: 0, profileViews: 0, postsCount: 0 }
 }) => {
   const [uploading, setUploading] = useState<'banner' | 'avatar' | null>(null);
   
@@ -143,7 +143,7 @@ export const ProfileBanner: React.FC<ProfileBannerProps> = ({
                 <p className="text-xs text-gray-600 truncate">{profile.title}</p>
               )}
               <div className="flex gap-4 mt-2 text-xs text-gray-500">
-                <span>{stats.connections} connections</span>
+                <span>{stats.TalentNetwork} TalentNetwork</span>
                 <span>{stats.profileViews} views</span>
               </div>
             </div>
@@ -237,8 +237,8 @@ export const ProfileBanner: React.FC<ProfileBannerProps> = ({
             {/* Stats */}
             <div className="flex gap-6 text-center md:text-left">
               <div className="text-center">
-                <div className="text-2xl font-bold text-gray-900">{stats.connections}</div>
-                <div className="text-sm text-gray-600">Connections</div>
+                <div className="text-2xl font-bold text-gray-900">{stats.TalentNetwork}</div>
+                <div className="text-sm text-gray-600">TalentNetwork</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-gray-900">{stats.profileViews}</div>
@@ -360,3 +360,4 @@ export const ProfileBanner: React.FC<ProfileBannerProps> = ({
     </Card>
   );
 };
+

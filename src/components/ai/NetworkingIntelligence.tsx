@@ -116,7 +116,7 @@ const NetworkingIntelligence: React.FC = () => {
       targetContacts: ['Sarah Chen', 'David Kim'],
       successRate: 78,
       timeInvestment: '2 days',
-      expectedOutcome: '5-8 high-quality connections',
+      expectedOutcome: '5-8 high-quality TalentNetwork',
       actionSteps: [
         'Register for conference',
         'Review speaker list and attendees',
@@ -149,7 +149,7 @@ const NetworkingIntelligence: React.FC = () => {
       targetContacts: ['Industry influencers'],
       successRate: 65,
       timeInvestment: '4-6 hours',
-      expectedOutcome: 'Increased visibility, inbound connections',
+      expectedOutcome: 'Increased visibility, inbound TalentNetwork',
       actionSteps: [
         'Research trending DevOps topics',
         'Draft 1000-word article',
@@ -231,7 +231,7 @@ const NetworkingIntelligence: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Networking Dashboard Header */}
+      {/* Networking CommandCenter Header */}
       <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -243,7 +243,7 @@ const NetworkingIntelligence: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="text-center">
               <div className="text-2xl font-bold text-primary">127</div>
-              <div className="text-sm text-muted-foreground">Strategic Connections</div>
+              <div className="text-sm text-muted-foreground">Strategic TalentNetwork</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-green-600">73%</div>
@@ -251,7 +251,7 @@ const NetworkingIntelligence: React.FC = () => {
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-blue-600">15</div>
-              <div className="text-sm text-muted-foreground">This Month's Connections</div>
+              <div className="text-sm text-muted-foreground">This Month's TalentNetwork</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-purple-600">5</div>
@@ -367,7 +367,7 @@ const NetworkingIntelligence: React.FC = () => {
                           <div className="text-sm font-medium mb-1">Recent Activity</div>
                           <p className="text-sm text-muted-foreground">{contact.recentActivity}</p>
                           <div className="text-xs text-muted-foreground mt-1">
-                            {contact.mutualConnections} mutual connections
+                            {contact.mutualConnections} mutual TalentNetwork
                           </div>
                         </div>
                       </div>
@@ -554,3 +554,5 @@ const NetworkingIntelligence: React.FC = () => {
 };
 
 export default NetworkingIntelligence;
+
+

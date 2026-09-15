@@ -49,10 +49,10 @@ export const TestNewsAutomation: React.FC = () => {
         toast.success(`News automation (direct) completed! ${processed} articles processed`);
         console.log('News automation direct result:', payload);
       } catch (errDirect) {
-        console.warn('Direct trigger failed, trying direct news-feed-automation...', errDirect);
+        console.warn('Direct trigger failed, trying direct news-Pulse-automation...', errDirect);
         try {
           // Fallback 2: direct HTTP call to automation function
-          const res = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/news-feed-automation', {
+          const res = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/news-Pulse-automation', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -89,7 +89,7 @@ export const TestNewsAutomation: React.FC = () => {
           disabled={isLoading}
           className="w-full"
         >
-          {isLoading ? 'Running...' : '🗞️ Trigger News Feed'}
+          {isLoading ? 'Running...' : '🗞️ Trigger News Pulse'}
         </Button>
       </CardContent>
     </Card>

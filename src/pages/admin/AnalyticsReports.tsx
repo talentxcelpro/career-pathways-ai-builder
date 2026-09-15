@@ -23,29 +23,29 @@ import {
   Calendar,
   Activity
 } from 'lucide-react';
-import { useAnalyticsReports } from '@/hooks/useAnalyticsReports';
+import { useCareerAnalyticsReports } from '@/hooks/useAnalyticsReports';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-const AnalyticsReports = () => {
+const CareerAnalyticsReports = () => {
   const {
     dateRange,
     setDateRange,
-    platformAnalytics,
+    platformCareerAnalytics,
     userGrowthData,
     topPerformingJobs
-  } = useAnalyticsReports();
+  } = useCareerAnalyticsReports();
 
   const statsCards = [
-    { label: 'Total Users', value: platformAnalytics?.totalUsers || 0, change: `+${platformAnalytics?.newUsers || 0}`, icon: Users, color: 'text-blue-600' },
-    { label: 'Total Jobs', value: platformAnalytics?.totalJobs || 0, change: '+12%', icon: Briefcase, color: 'text-green-600' },
-    { label: 'Applications', value: platformAnalytics?.totalApplications || 0, change: '+8%', icon: Activity, color: 'text-purple-600' },
-    { label: 'Companies', value: platformAnalytics?.totalCompanies || 0, change: '+15%', icon: Building2, color: 'text-orange-600' }
+    { label: 'Total Users', value: platformCareerAnalytics?.totalUsers || 0, change: `+${platformCareerAnalytics?.newUsers || 0}`, icon: Users, color: 'text-blue-600' },
+    { label: 'Total Jobs', value: platformCareerAnalytics?.totalJobs || 0, change: '+12%', icon: Briefcase, color: 'text-green-600' },
+    { label: 'Applications', value: platformCareerAnalytics?.totalApplications || 0, change: '+8%', icon: Activity, color: 'text-purple-600' },
+    { label: 'Companies', value: platformCareerAnalytics?.totalCompanies || 0, change: '+15%', icon: Building2, color: 'text-orange-600' }
   ];
 
   return (
     <UnifiedAdminLayout 
-      title="Analytics & Reports" 
-      description="Platform analytics, insights, and performance metrics"
+      title="Career Analytics & Reports" 
+      description="Platform Career Analytics, Intelligence Metrics, and performance metrics"
     >
       <div className="space-y-8">
         {/* Controls */}
@@ -162,23 +162,23 @@ const AnalyticsReports = () => {
               <div className="space-y-4">
                 <div className="flex justify-between items-center py-2 border-b">
                   <span className="text-sm font-medium">New User Registrations</span>
-                  <Badge>{platformAnalytics?.newUsers || 0}</Badge>
+                  <Badge>{platformCareerAnalytics?.newUsers || 0}</Badge>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b">
                   <span className="text-sm font-medium">Jobs Posted</span>
-                  <Badge variant="outline">{platformAnalytics?.totalJobs || 0}</Badge>
+                  <Badge variant="outline">{platformCareerAnalytics?.totalJobs || 0}</Badge>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b">
                   <span className="text-sm font-medium">Applications Submitted</span>
-                  <Badge variant="secondary">{platformAnalytics?.totalApplications || 0}</Badge>
+                  <Badge variant="secondary">{platformCareerAnalytics?.totalApplications || 0}</Badge>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b">
                   <span className="text-sm font-medium">Network Posts</span>
-                  <Badge variant="outline">{platformAnalytics?.totalPosts || 0}</Badge>
+                  <Badge variant="outline">{platformCareerAnalytics?.totalPosts || 0}</Badge>
                 </div>
                 <div className="flex justify-between items-center py-2">
                   <span className="text-sm font-medium">Companies Registered</span>
-                  <Badge>{platformAnalytics?.totalCompanies || 0}</Badge>
+                  <Badge>{platformCareerAnalytics?.totalCompanies || 0}</Badge>
                 </div>
               </div>
             </CardContent>
@@ -189,4 +189,8 @@ const AnalyticsReports = () => {
   );
 };
 
-export default AnalyticsReports;
+export default CareerAnalyticsReports;
+
+
+
+

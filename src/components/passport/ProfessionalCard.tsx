@@ -44,7 +44,7 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({
         <div className="flex justify-between items-start">
           <div>
             <h3 className="text-lg font-bold tracking-wide">TalentXcel</h3>
-            <p className="text-primary-foreground/80 text-sm">Professional Career Passport</p>
+            <p className="text-primary-foreground/80 text-sm">Professional Evolution Hub</p>
           </div>
           <Badge variant="secondary" className="bg-white/20 text-primary-foreground border-white/30">
             ID: {uniqueId}
@@ -128,7 +128,7 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({
                 <Users className="h-4 w-4 text-blue-500" />
                 <span className="text-lg font-bold text-blue-600">{careerPassport.connections_count}</span>
               </div>
-              <p className="text-xs text-muted-foreground">Connections</p>
+              <p className="text-xs text-muted-foreground">TalentNetwork</p>
             </div>
           </div>
         )}
@@ -206,3 +206,4 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({
 };
 
 export default ProfessionalCard;
+

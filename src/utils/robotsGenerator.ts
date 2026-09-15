@@ -65,7 +65,7 @@ Sitemap: ${baseUrl}/companies-sitemap.xml
 Sitemap: ${baseUrl}/courses-sitemap.xml
 Sitemap: ${baseUrl}/seo-pages-sitemap.xml
 Sitemap: ${baseUrl}/news-sitemap.xml
-Sitemap: ${baseUrl}/rss-feed.xml
+Sitemap: ${baseUrl}/rss-Pulse.xml
 
 # High-priority pages for enhanced crawling
 Allow: /jobs/
@@ -160,3 +160,4 @@ export const generateSitemapIndex = (): string => {
   </sitemap>
 </sitemapindex>`;
 };
+

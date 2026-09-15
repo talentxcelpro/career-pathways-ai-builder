@@ -400,7 +400,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
                 className="text-sm border-0 bg-transparent"
               >
                 <option value="public">Public</option>
-                <option value="connections">Connections</option>
+                <option value="connections">TalentNetwork</option>
                 <option value="private">Private</option>
               </select>
             </div>
@@ -428,3 +428,5 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
 };
 
 export default CreatePost;
+
+

@@ -169,7 +169,7 @@ export const EnhancedTrendingTopics: React.FC<EnhancedTrendingTopicsProps> = ({
           </Button>
         </div>
         <p className="text-sm text-muted-foreground">
-          AI-powered trending topics personalized for your industry
+          Performance trending topics personalized for your industry
         </p>
         {lastUpdated && (
           <p className="text-xs text-muted-foreground">

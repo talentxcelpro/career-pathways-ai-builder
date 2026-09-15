@@ -30,7 +30,7 @@ const serviceLabels = {
   skill_development: 'Skill Development'
 };
 
-export const AIServiceDashboard = () => {
+export const AIServiceCommandCenter = () => {
   const { matches, matchesLoading, conversations } = useAIServiceMatching();
 
   if (matchesLoading) {
@@ -196,7 +196,7 @@ export const AIServiceDashboard = () => {
             <div className="text-center py-8">
               <MessageSquare className="w-12 h-12 mx-auto text-muted-foreground/50 mb-3" />
               <p className="text-muted-foreground">
-                No recent interactions. Start chatting with the AI assistant!
+                No recent interactions. Start chatting with the TalentXcel Navigator!
               </p>
             </div>
           ) : (
@@ -248,3 +248,4 @@ export const AIServiceDashboard = () => {
     </div>
   );
 };
+

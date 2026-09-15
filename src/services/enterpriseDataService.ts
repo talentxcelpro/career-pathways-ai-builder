@@ -1,7 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
 
 // Data interfaces
-interface DashboardMetrics {
+interface CommandCenterMetrics {
   totalUsers: number;
   departmentCount: number;
   securityScore: number;
@@ -73,7 +73,7 @@ interface SystemMetric {
 }
 
 export class EnterpriseDataService {
-  static async getDashboardMetrics(organizationId: string): Promise<DashboardMetrics> {
+  static async getCommandCenterMetrics(organizationId: string): Promise<CommandCenterMetrics> {
     try {
       // Get total users/members
       const { data: members, error: membersError } = await supabase
@@ -124,7 +124,7 @@ export class EnterpriseDataService {
         userGrowth
       };
     } catch (error) {
-      console.error('Error fetching dashboard metrics:', error);
+      console.error('Error fetching CommandCenter metrics:', error);
       return {
         totalUsers: 42,
         departmentCount: 8,
@@ -188,7 +188,7 @@ export class EnterpriseDataService {
       return [
         {
           id: 'demo-1',
-          action: 'Welcome to Enterprise Dashboard',
+          action: 'Welcome to Enterprise CommandCenter',
           timestamp: new Date().toISOString(),
           user: 'System',
           type: 'system'
@@ -517,3 +517,4 @@ export class EnterpriseDataService {
     }
   }
 }
+

@@ -73,7 +73,7 @@ const courseCategories = [
     name: 'Data Science', 
     icon: BarChart3, 
     color: 'bg-orange-500',
-    description: 'Analytics, Machine Learning, Statistics, Research',
+    description: 'CareerAnalytics, Machine Learning, Statistics, Research',
     courses: '1,500+',
     trending: true
   },
@@ -611,3 +611,6 @@ export default function ComprehensiveCoursesPage() {
     </LearningLayout>
   );
 }
+
+
+

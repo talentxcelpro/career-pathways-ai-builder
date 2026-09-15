@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 
 interface NetworkStatus {
   isOnline: boolean;
-  connectionSpeed: number | null; // Mbps
+  TalentNetworkpeed: number | null; // Mbps
   effectiveType: string | null; // '2g', '3g', '4g', etc.
   rtt: number | null; // Round trip time in ms
   downlink: number | null; // Downlink speed in Mbps
@@ -25,7 +25,7 @@ declare global {
 export const useNetworkStatus = () => {
   const [networkStatus, setNetworkStatus] = useState<NetworkStatus>({
     isOnline: navigator.onLine,
-    connectionSpeed: null,
+    TalentNetworkpeed: null,
     effectiveType: null,
     rtt: null,
     downlink: null,
@@ -39,7 +39,7 @@ export const useNetworkStatus = () => {
       ...prev,
       isOnline: navigator.onLine,
       effectiveType: connection?.effectiveType || null,
-      connectionSpeed: connection?.downlink || null,
+      TalentNetworkpeed: connection?.downlink || null,
       rtt: connection?.rtt || null,
       downlink: connection?.downlink || null,
       saveData: connection?.saveData || false
@@ -47,7 +47,7 @@ export const useNetworkStatus = () => {
   }, []);
 
   // Speed test function
-  const measureConnectionSpeed = useCallback(async (): Promise<number> => {
+  const measureTalentNetworkpeed = useCallback(async (): Promise<number> => {
     try {
       const imageUrl = `https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png?t=${Date.now()}`;
       const startTime = Date.now();
@@ -79,7 +79,7 @@ export const useNetworkStatus = () => {
     
     for (let i = 0; i < testCount; i++) {
       try {
-        const speed = await measureConnectionSpeed();
+        const speed = await measureTalentNetworkpeed();
         if (speed > 0) tests.push(speed);
       } catch (error) {
         console.warn(`Speed test ${i + 1} failed:`, error);
@@ -94,11 +94,11 @@ export const useNetworkStatus = () => {
     
     setNetworkStatus(prev => ({
       ...prev,
-      connectionSpeed: median
+      TalentNetworkpeed: median
     }));
     
     return median;
-  }, [measureConnectionSpeed]);
+  }, [measureTalentNetworkpeed]);
 
   // Get quality recommendation based on network
   const getQualityRecommendation = useCallback(() => {
@@ -189,9 +189,9 @@ export const useNetworkStatus = () => {
     
     // Perform initial speed test
     if (navigator.onLine) {
-      measureConnectionSpeed().then(speed => {
+      measureTalentNetworkpeed().then(speed => {
         if (speed > 0) {
-          setNetworkStatus(prev => ({ ...prev, connectionSpeed: speed }));
+          setNetworkStatus(prev => ({ ...prev, TalentNetworkpeed: speed }));
         }
       });
     }
@@ -204,7 +204,7 @@ export const useNetworkStatus = () => {
         navigator.connection.removeEventListener('change', handleConnectionChange);
       }
     };
-  }, [updateNetworkStatus, measureConnectionSpeed]);
+  }, [updateNetworkStatus, measureTalentNetworkpeed]);
 
   return {
     ...networkStatus,
@@ -214,3 +214,4 @@ export const useNetworkStatus = () => {
     getStreamingConfig
   };
 };
+

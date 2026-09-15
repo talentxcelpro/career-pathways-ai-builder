@@ -48,7 +48,7 @@ const SocialTXCAwardPanel: React.FC = () => {
             Social Activity TXC Awards
           </CardTitle>
           <CardDescription>
-            Award TXC tokens to all users based on their posts and connections activity.
+            Award TXC tokens to all users based on their posts and TalentNetwork activity.
             Base: 100 TXC + 10 TXC per post (max 50) + 5 TXC per connection (max 50)
           </CardDescription>
         </CardHeader>
@@ -68,7 +68,7 @@ const SocialTXCAwardPanel: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <UserPlus className="h-4 w-4 text-green-500" />
-                  <span>Connections: +5 TXC each (max 50)</span>
+                  <span>TalentNetwork: +5 TXC each (max 50)</span>
                 </div>
               </div>
             </div>
@@ -102,7 +102,7 @@ const SocialTXCAwardPanel: React.FC = () => {
                   </AlertDialogTitle>
                   <AlertDialogDescription>
                     This will award TXC tokens to ALL users on the platform based on their social activity 
-                    (posts and connections). This action cannot be undone. Are you sure you want to proceed?
+                    (posts and TalentNetwork). This action cannot be undone. Are you sure you want to proceed?
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -160,7 +160,7 @@ const SocialTXCAwardPanel: React.FC = () => {
                     <TableRow>
                       <TableHead>User</TableHead>
                       <TableHead>Posts</TableHead>
-                      <TableHead>Connections</TableHead>
+                      <TableHead>TalentNetwork</TableHead>
                       <TableHead>TXC Awarded</TableHead>
                       <TableHead>New Balance</TableHead>
                       <TableHead>Status</TableHead>
@@ -176,7 +176,7 @@ const SocialTXCAwardPanel: React.FC = () => {
                           </div>
                         </TableCell>
                         <TableCell>{result.posts || 0}</TableCell>
-                        <TableCell>{result.connections || 0}</TableCell>
+                        <TableCell>{result.TalentNetwork || 0}</TableCell>
                         <TableCell>
                           <Badge variant="secondary">
                             +{result.awarded || 0} TXC
@@ -210,3 +210,4 @@ const SocialTXCAwardPanel: React.FC = () => {
 };
 
 export default SocialTXCAwardPanel;
+

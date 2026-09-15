@@ -80,7 +80,7 @@ class RealtimeManager {
       this.callbacks.add(callback);
     }
 
-    this._setupRealtimeConnections(!!session);
+    this._setupRealtimeTalentNetwork(!!session);
   }
 
   /**
@@ -97,9 +97,9 @@ class RealtimeManager {
   }
   
   /**
-   * Setup realtime connections with single channel approach to prevent binding conflicts
+   * Setup realtime TalentNetwork with single channel approach to prevent binding conflicts
    */
-  private _setupRealtimeConnections(isAuthenticated: boolean) {
+  private _setupRealtimeTalentNetwork(isAuthenticated: boolean) {
     console.log('🎯 Setting up single realtime channel for production');
     console.log(`🔐 Authentication status: ${isAuthenticated ? 'authenticated' : 'unauthenticated'}`);
 
@@ -155,6 +155,17 @@ class RealtimeManager {
         console.warn(`⚠️ Production realtime channel error`);
         if (err) {
           console.warn('   - Error details:', err);
+          
+          // Check for binding mismatches - common in production when tables aren't in publication
+          if (err.message?.includes('mismatch between server and client bindings')) {
+            console.error('🚫 Realtime binding mismatch detected. This usually means tables are not added to the supabase_realtime publication.');
+            this.isInitialized = false;
+            // Mark tables as error but don't retry immediately to avoid console spam
+            TABLES_TO_WATCH.forEach(table => {
+              this.channelStatuses.set(table, 'BINDING_ERROR');
+            });
+            return;
+          }
         }
         // Mark all tables as error
         TABLES_TO_WATCH.forEach(table => {
@@ -514,8 +525,9 @@ export function initTalentXcelRealtime(callback?: RealtimeCallback) {
 }
 
 /**
- * Cleanup realtime connections
+ * Cleanup realtime TalentNetwork
  */
 export function cleanupRealtime() {
   realtimeManager.cleanup();
 }
+

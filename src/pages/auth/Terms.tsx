@@ -44,7 +44,7 @@ const Terms = () => {
                 TalentXcel is a professional networking and career development platform that provides:
               </p>
               <ul className="list-disc pl-6 space-y-2 text-slate-700">
-                <li>AI-powered job matching and career recommendations</li>
+                <li>Performance job matching and career recommendations</li>
                 <li>Professional networking tools and community features</li>
                 <li>Career coaching and development resources</li>
                 <li>Skills assessment and learning opportunities</li>

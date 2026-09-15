@@ -117,7 +117,7 @@ export function usePublicProfileStats(userId?: string) {
       if (!userId) return null;
       
       // Get various stats for the public profile
-      const [connectionsResult, postsResult, achievementsResult] = await Promise.allSettled([
+      const [TalentNetworkResult, postsResult, achievementsResult] = await Promise.allSettled([
         supabase
           .from('connections')
           .select('id', { count: 'exact', head: true })
@@ -137,7 +137,7 @@ export function usePublicProfileStats(userId?: string) {
       ]);
 
       return {
-        connections_count: connectionsResult.status === 'fulfilled' ? connectionsResult.value.count || 0 : 0,
+        connections_count: TalentNetworkResult.status === 'fulfilled' ? TalentNetworkResult.value.count || 0 : 0,
         posts_count: postsResult.status === 'fulfilled' ? postsResult.value.count || 0 : 0,
         achievements_count: achievementsResult.status === 'fulfilled' ? achievementsResult.value.count || 0 : 0,
       };
@@ -145,3 +145,4 @@ export function usePublicProfileStats(userId?: string) {
     enabled: !!userId,
   });
 }
+

@@ -30,7 +30,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-const CollegeAdminDashboard = () => {
+const CollegeAdminCommandCenter = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
 
@@ -56,14 +56,14 @@ const CollegeAdminDashboard = () => {
     enabled: !!user
   });
 
-  // Fetch college analytics
-  const { data: analytics } = useQuery({
-    queryKey: ['college-analytics', adminData?.college_id],
+  // Fetch college CareerAnalytics
+  const { data: CareerAnalytics } = useQuery({
+    queryKey: ['college-CareerAnalytics', adminData?.college_id],
     queryFn: async () => {
       if (!adminData?.college_id) return null;
       
       const { data, error } = await supabase
-        .from('college_analytics')
+        .from('college_CareerAnalytics')
         .select('*')
         .eq('college_id', adminData.college_id)
         .order('date', { ascending: false })
@@ -118,8 +118,8 @@ const CollegeAdminDashboard = () => {
   }
 
   const college = adminData.colleges;
-  const totalViews = analytics?.reduce((sum, day) => sum + (day.profile_views || 0), 0) || 0;
-  const totalApplications = analytics?.reduce((sum, day) => sum + (day.application_starts || 0), 0) || 0;
+  const totalViews = CareerAnalytics?.reduce((sum, day) => sum + (day.profile_views || 0), 0) || 0;
+  const totalApplications = CareerAnalytics?.reduce((sum, day) => sum + (day.application_starts || 0), 0) || 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -132,7 +132,7 @@ const CollegeAdminDashboard = () => {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">{college.name}</h1>
-              <p className="text-gray-600">Admin Dashboard</p>
+              <p className="text-gray-600">Admin CommandCenter</p>
             </div>
           </div>
           <div className="flex gap-2">
@@ -178,7 +178,7 @@ const CollegeAdminDashboard = () => {
             <TabsTrigger value="profile">Profile</TabsTrigger>
             <TabsTrigger value="courses">Courses</TabsTrigger>
             <TabsTrigger value="posts">Posts</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
@@ -198,7 +198,7 @@ const CollegeAdminDashboard = () => {
                     { label: 'Add New Course', icon: BookOpen, action: () => setActiveTab('courses') },
                     { label: 'Create Announcement', icon: MessageSquare, action: () => setActiveTab('posts') },
                     { label: 'Upload Media', icon: Upload, action: () => toast.info('Media upload coming soon') },
-                    { label: 'View Analytics', icon: BarChart3, action: () => setActiveTab('analytics') }
+                    { label: 'View CareerAnalytics', icon: BarChart3, action: () => setActiveTab('CareerAnalytics') }
                   ].map((action, index) => (
                     <Button
                       key={index}
@@ -328,12 +328,12 @@ const CollegeAdminDashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="analytics">
+          <TabsContent value="CareerAnalytics">
             <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <BarChart3 className="h-5 w-5" />
-                  Analytics Dashboard
+                  CareerAnalytics CommandCenter
                 </CardTitle>
                 <CardDescription>
                   Track your college's performance and engagement metrics
@@ -342,9 +342,9 @@ const CollegeAdminDashboard = () => {
               <CardContent>
                 <div className="text-center py-12">
                   <BarChart3 className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Detailed Analytics Coming Soon</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Detailed CareerAnalytics Coming Soon</h3>
                   <p className="text-gray-600 mb-4">
-                    We're building comprehensive analytics including visitor trends, application patterns, and engagement metrics.
+                    We're building comprehensive CareerAnalytics including visitor trends, application patterns, and engagement metrics.
                   </p>
                   <Button variant="outline">
                     Request Beta Access
@@ -392,4 +392,8 @@ const CollegeAdminDashboard = () => {
   );
 };
 
-export default CollegeAdminDashboard;
+export default CollegeAdminCommandCenter;
+
+
+
+

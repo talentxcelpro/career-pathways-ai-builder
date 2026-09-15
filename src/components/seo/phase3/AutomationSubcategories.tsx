@@ -159,7 +159,7 @@ const AutomationSubcategories = () => {
               <CardContent>
                 <div className="space-y-3">
                   {[
-                    { keyword: 'AI content writing assistant', volume: '2,900', difficulty: 42, discovered: '2 days ago' },
+                    { keyword: 'AI content writing Navigator', volume: '2,900', difficulty: 42, discovered: '2 days ago' },
                     { keyword: 'automated SEO tools', volume: '1,600', difficulty: 55, discovered: '3 days ago' },
                     { keyword: 'content optimization software', volume: '890', difficulty: 38, discovered: '5 days ago' },
                     { keyword: 'SEO automation platform', volume: '1,200', difficulty: 48, discovered: '1 week ago' }

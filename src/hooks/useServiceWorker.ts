@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { Capacitor } from '@capacitor/core';
+import { unregisterServiceWorker } from '@/utils/serviceWorkerRegistration';
 
 interface ServiceWorkerState {
   isSupported: boolean;
@@ -20,6 +22,12 @@ export const useServiceWorker = () => {
 
   const registerSW = async () => {
     try {
+      if (Capacitor.isNativePlatform()) {
+        await unregisterServiceWorker();
+        setState(prev => ({ ...prev, isRegistered: false }));
+        return;
+      }
+
       // Register service worker in production only
       if (import.meta.env.PROD) {
         const registration = await navigator.serviceWorker.register('/sw.js', {

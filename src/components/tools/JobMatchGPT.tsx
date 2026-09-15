@@ -134,7 +134,7 @@ export const JobMatchGPT: React.FC = () => {
           AI Job Match GPT
         </h1>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          Upload your resume and get AI-powered job recommendations with skill gap analysis and career suggestions
+          Upload your resume and get Performance job recommendations with skill gap analysis and career suggestions
         </p>
       </div>
 
@@ -313,7 +313,7 @@ export const JobMatchGPT: React.FC = () => {
               {results.recommendations.length > 0 && (
                 <Card>
                   <CardHeader>
-                    <CardTitle>AI Recommendations</CardTitle>
+                    <CardTitle>Career Moves</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-2">

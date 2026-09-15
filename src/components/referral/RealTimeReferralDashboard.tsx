@@ -22,7 +22,7 @@ import {
   Award
 } from 'lucide-react';
 
-export const RealTimeReferralDashboard: React.FC = () => {
+export const RealTimeReferralCommandCenter: React.FC = () => {
   const { 
     referralData, 
     loading: referralLoading,
@@ -63,13 +63,13 @@ export const RealTimeReferralDashboard: React.FC = () => {
     <div className="w-full space-y-4 md:space-y-6">
       {/* Mobile Header */}
       <div className="text-center block md:hidden">
-        <h2 className="text-lg font-bold text-foreground mb-1">Dashboard</h2>
+        <h2 className="text-lg font-bold text-foreground mb-1">CommandCenter</h2>
         <p className="text-sm text-muted-foreground">Track your progress</p>
       </div>
 
       {/* Desktop Header */}
       <div className="text-center hidden md:block">
-        <h2 className="text-3xl font-bold text-foreground mb-2">Your Referral Dashboard</h2>
+        <h2 className="text-3xl font-bold text-foreground mb-2">Your Referral CommandCenter</h2>
         <p className="text-muted-foreground">Track your progress and share your success</p>
       </div>
 
@@ -365,3 +365,4 @@ export const RealTimeReferralDashboard: React.FC = () => {
     </div>
   );
 };
+

@@ -25,7 +25,7 @@ interface SkillGap {
   learningPath: string[];
 }
 
-const PredictiveCareerAnalytics: React.FC = () => {
+const PredictiveCareerCareerAnalytics: React.FC = () => {
   const [predictions, setPredictions] = useState<CareerPrediction[]>([]);
   const [skillGaps, setSkillGaps] = useState<SkillGap[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -42,7 +42,7 @@ const PredictiveCareerAnalytics: React.FC = () => {
       const { useDeepSeekAI } = await import('@/hooks/useDeepSeekAI');
       const { chatWithDeepSeek } = useDeepSeekAI();
       
-      const prompt = `Generate predictive career analytics and skill gap analysis. Return JSON with this structure:
+      const prompt = `Generate predictive career CareerAnalytics and skill gap analysis. Return JSON with this structure:
       {
         "predictions": [
           {
@@ -120,22 +120,22 @@ const PredictiveCareerAnalytics: React.FC = () => {
   };
 
   return (
-    <TieredAccessGuard feature="predictive_analytics">
+    <TieredAccessGuard feature="predictive_CareerAnalytics">
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold flex items-center gap-2">
               <Brain className="h-6 w-6 text-primary" />
-              Predictive Career Analytics
+              Predictive Career CareerAnalytics
             </h2>
-            <p className="text-muted-foreground">AI-powered insights into your career trajectory</p>
+            <p className="text-muted-foreground">Performance insights into your career trajectory</p>
           </div>
           <Button onClick={generatePredictions} disabled={isAnalyzing}>
             {isAnalyzing ? 'Analyzing...' : 'Refresh Analysis'}
           </Button>
         </div>
 
-        <UsageMeter type="dailyAIRequests" currentUsage={5} label="AI Analytics Requests" />
+        <UsageMeter type="dailyAIRequests" currentUsage={5} label="AI CareerAnalytics Requests" />
 
         {/* Career Predictions */}
         <Card>
@@ -151,7 +151,7 @@ const PredictiveCareerAnalytics: React.FC = () => {
                 <Brain className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-muted-foreground mb-2">No Predictions Available</h3>
                 <p className="text-muted-foreground">
-                  Connect your API to generate AI-powered career predictions
+                  Connect your API to generate Performance career predictions
                 </p>
               </div>
             ) : (
@@ -264,7 +264,7 @@ const PredictiveCareerAnalytics: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* AI Insights */}
+        {/* Intelligence Metrics */}
         <Card>
           <CardHeader>
             <CardTitle>AI-Generated Insights</CardTitle>
@@ -302,4 +302,7 @@ const PredictiveCareerAnalytics: React.FC = () => {
   );
 };
 
-export default PredictiveCareerAnalytics;
+export default PredictiveCareerCareerAnalytics;
+
+
+

@@ -91,8 +91,8 @@ export const WebVitalsTracker: React.FC = () => {
 
     trackWebVitals();
 
-    // Send metrics to analytics (optional)
-    const sendToAnalytics = () => {
+    // Send metrics to CareerAnalytics (optional)
+    const sendToCareerAnalytics = () => {
       if (window.gtag && Object.values(metrics).some(v => v !== null)) {
         window.gtag('event', 'web_vitals', {
           custom_map: {
@@ -107,7 +107,7 @@ export const WebVitalsTracker: React.FC = () => {
       }
     };
 
-    const timer = setTimeout(sendToAnalytics, 5000);
+    const timer = setTimeout(sendToCareerAnalytics, 5000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -275,3 +275,6 @@ export const useWebVitals = () => {
 
   return vitals;
 };
+
+
+

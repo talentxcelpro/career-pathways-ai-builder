@@ -74,7 +74,7 @@ export const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
 
       if (error) throw error;
 
-      toast.success('🚀 Your AI-powered career roadmap has been created!', {
+      toast.success('🚀 Your Performance career roadmap has been created!', {
         description: 'Check your personalized visualizations above',
       });
 
@@ -104,7 +104,7 @@ export const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
             <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-apple-lg flex items-center justify-center">
               <Brain className="h-5 w-5 text-white" />
             </div>
-            Create AI-Powered Career Roadmap
+            Create Performance Career Roadmap
           </DialogTitle>
           <p className="text-text-secondary mt-2">
             Let our AI create a personalized career progression plan based on your goals and current position.
@@ -240,7 +240,7 @@ export const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
               <li>• Personalized visual roadmap with interactive nodes</li>
               <li>• Skills progression tree with learning recommendations</li>
               <li>• Timeline with milestones and success metrics</li>
-              <li>• Real-time progress tracking and AI insights</li>
+              <li>• Real-time Growth Path and Intelligence Metrics</li>
             </ul>
           </div>
         </div>

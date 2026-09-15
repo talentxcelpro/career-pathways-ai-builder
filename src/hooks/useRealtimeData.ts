@@ -318,3 +318,4 @@ export function useAutoRefreshJobs(refreshInterval: number = 60000) {
 
   return { jobs, lastRefresh };
 }
+

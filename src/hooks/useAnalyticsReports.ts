@@ -2,18 +2,18 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { 
-  getPlatformAnalytics, 
+  getPlatformCareerAnalytics, 
   getUserGrowthData, 
   getTopPerformingJobs,
-  subscribeToAnalyticsUpdates
+  subscribeToCareerAnalyticsUpdates
 } from '@/services/analyticsService';
 
-export const useAnalyticsReports = () => {
+export const useCareerAnalyticsReports = () => {
   const [dateRange, setDateRange] = useState<'7d' | '30d' | '90d'>('7d');
 
-  const { data: platformAnalytics, isLoading: analyticsLoading } = useQuery({
-    queryKey: ['platform-analytics', dateRange],
-    queryFn: () => getPlatformAnalytics(dateRange),
+  const { data: platformCareerAnalytics, isLoading: CareerAnalyticsLoading } = useQuery({
+    queryKey: ['platform-CareerAnalytics', dateRange],
+    queryFn: () => getPlatformCareerAnalytics(dateRange),
     refetchInterval: 30000, // Real-time updates every 30 seconds
   });
 
@@ -32,9 +32,13 @@ export const useAnalyticsReports = () => {
   return {
     dateRange,
     setDateRange: (value: string) => setDateRange(value as '7d' | '30d' | '90d'),
-    platformAnalytics,
+    platformCareerAnalytics,
     userGrowthData,
     topPerformingJobs,
-    isLoading: analyticsLoading || growthLoading || jobsLoading,
+    isLoading: CareerAnalyticsLoading || growthLoading || jobsLoading,
   };
 };
+
+
+
+

@@ -108,14 +108,14 @@ export const SourceAttributionWidget = () => {
           <div className="grid grid-cols-2 gap-2">
             <div 
               className="flex items-center justify-center gap-2 p-2 bg-violet-50 rounded-lg hover:bg-violet-100 transition-colors cursor-pointer"
-              onClick={() => navigate('/employer/analytics/sources')}
+              onClick={() => navigate('/employer/CareerAnalytics/sources')}
             >
               <span className="text-sm font-semibold text-violet-700">Source Analysis</span>
               <ExternalLink className="h-3 w-3 text-violet-700" />
             </div>
             <div 
               className="flex items-center justify-center gap-2 p-2 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
-              onClick={() => navigate('/employer/analytics/roi')}
+              onClick={() => navigate('/employer/CareerAnalytics/roi')}
             >
               <span className="text-sm font-semibold text-slate-700">ROI Report</span>
               <BarChart3 className="h-3 w-3 text-slate-700" />
@@ -126,3 +126,7 @@ export const SourceAttributionWidget = () => {
     </Card>
   );
 };
+
+
+
+

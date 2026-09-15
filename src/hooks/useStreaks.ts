@@ -54,8 +54,7 @@ export const useStreaks = () => {
 
   const updateStreakMutation = useMutation({
     mutationFn: async () => {
-      if (!user || !streakData) {
-        // Silently skip for unauthenticated users
+      if (!user || !streakData || !streakData.last_activity_date) {
         return null;
       }
 
@@ -85,9 +84,9 @@ export const useStreaks = () => {
         .from('user_streaks')
         .update({
           current_streak: newStreak,
-          longest_streak: Math.max(newStreak, streakData.longest_streak),
+          longest_streak: Math.max(newStreak, streakData.longest_streak || 0),
           last_activity_date: new Date().toISOString(),
-          total_days_active: streakData.total_days_active + 1
+          total_days_active: (streakData.total_days_active || 0) + 1
         })
         .eq('user_id', user.id)
         .select()
@@ -97,13 +96,15 @@ export const useStreaks = () => {
       return data as StreakData;
     },
     onSuccess: (data) => {
+      if (!data) return;
+
       queryClient.invalidateQueries({ queryKey: ['streaks'] });
 
       // Celebrate milestones
       const milestones = [3, 7, 14, 30, 60, 100, 365];
       if (milestones.includes(data.current_streak)) {
         toast.success(
-          `🔥 ${data.current_streak} Day Streak!`,
+          `${data.current_streak} Day Streak`,
           {
             description: 'Keep up the amazing work!'
           }
@@ -132,7 +133,7 @@ export const useStreaks = () => {
     }
 
     if (isStreakAtRisk()) {
-      return '⚠️ Your streak is at risk! Log in to save it.';
+      return 'Your streak needs an action today.';
     }
 
     if (streakData.current_streak < 3) {
@@ -143,7 +144,7 @@ export const useStreaks = () => {
       return `${streakData.current_streak} days strong! 🔥`;
     }
 
-    return `${streakData.current_streak} day streak! You're on fire! 🔥🔥🔥`;
+    return `${streakData.current_streak} day streak. Strong momentum.`;
   };
 
   // Get next milestone

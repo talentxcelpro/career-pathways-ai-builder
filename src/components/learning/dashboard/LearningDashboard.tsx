@@ -6,9 +6,9 @@ import { SkillBasedLearning } from './SkillBasedLearning';
 import { CommunityLearning } from './CommunityLearning';
 import { TrendingCourses } from './TrendingCourses';
 import { CourseCard } from './CourseCard';
-import { GamificationDashboard } from '../gamification/GamificationDashboard';
+import { GamificationCommandCenter } from '../gamification/GamificationCommandCenter';
 import { LearningPathVisualizer } from '../path-visualizer/LearningPathVisualizer';
-import { PersonalizedDashboard } from '../personalized/PersonalizedDashboard';
+import { PersonalizedCommandCenter } from '../personalized/PersonalizedCommandCenter';
 import { MicrolearningHub } from '../microlearning/MicrolearningHub';
 import { useLearningData } from '@/hooks/useLearningData';
 import { useCurrentUserProfile } from '@/hooks/useCurrentUserProfile';
@@ -26,7 +26,7 @@ import {
   Sparkles
 } from 'lucide-react';
 
-export const LearningDashboard = () => {
+export const LearningCommandCenter = () => {
   const [enrolledCourses, setEnrolledCourses] = useState<string[]>([]);
   const [wishlist, setWishlist] = useState<string[]>([]);
   
@@ -206,11 +206,11 @@ export const LearningDashboard = () => {
       <LearningHeader />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Tabs defaultValue="dashboard" className="space-y-6">
+        <Tabs defaultValue="CommandCenter" className="space-y-6">
           <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="dashboard" className="flex items-center gap-2">
+            <TabsTrigger value="CommandCenter" className="flex items-center gap-2">
               <User className="h-4 w-4" />
-              Dashboard
+              CommandCenter
             </TabsTrigger>
             <TabsTrigger value="paths" className="flex items-center gap-2">
               <Target className="h-4 w-4" />
@@ -231,8 +231,8 @@ export const LearningDashboard = () => {
           </TabsList>
 
 
-          <TabsContent value="dashboard">
-            <PersonalizedDashboard userData={mockUserData} />
+          <TabsContent value="CommandCenter">
+            <PersonalizedCommandCenter userData={mockUserData} />
           </TabsContent>
 
           <TabsContent value="paths">
@@ -240,7 +240,7 @@ export const LearningDashboard = () => {
           </TabsContent>
 
           <TabsContent value="gamification">
-            <GamificationDashboard userStats={mockUserStats} />
+            <GamificationCommandCenter userStats={mockUserStats} />
           </TabsContent>
 
           <TabsContent value="microlearning">
@@ -261,3 +261,4 @@ export const LearningDashboard = () => {
     </div>
   );
 };
+

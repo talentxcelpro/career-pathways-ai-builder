@@ -16,7 +16,7 @@ interface PipelineStage {
   avgTimeInStage: string;
 }
 
-export const CandidatePipelineAnalyticsWidget = () => {
+export const CandidatePipelineCareerAnalyticsWidget = () => {
   const navigate = useNavigate();
   
   const pipelineStages: PipelineStage[] = [
@@ -95,7 +95,7 @@ export const CandidatePipelineAnalyticsWidget = () => {
               <Users className="h-4 w-4 text-white" />
             </div>
             <div>
-              <CardTitle className="text-base font-bold text-slate-900">Pipeline Analytics</CardTitle>
+              <CardTitle className="text-base font-bold text-slate-900">Pipeline CareerAnalytics</CardTitle>
               <p className="text-xs text-slate-600 font-medium">
                 {overallConversionRate}% overall conversion • 245 in pipeline
               </p>
@@ -105,7 +105,7 @@ export const CandidatePipelineAnalyticsWidget = () => {
             variant="outline" 
             size="sm" 
             className="text-xs font-semibold"
-            onClick={() => navigate('/employer/analytics/pipeline')}
+            onClick={() => navigate('/employer/CareerAnalytics/pipeline')}
           >
             Deep Dive
           </Button>
@@ -146,7 +146,7 @@ export const CandidatePipelineAnalyticsWidget = () => {
         <div className="pt-2 border-t border-slate-100">
           <div 
             className="flex items-center justify-center gap-2 p-2 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors cursor-pointer"
-            onClick={() => navigate('/employer/analytics/pipeline')}
+            onClick={() => navigate('/employer/CareerAnalytics/pipeline')}
           >
             <span className="text-sm font-semibold text-blue-700">Optimize Pipeline</span>
             <Target className="h-3 w-3 text-blue-700" />
@@ -156,3 +156,7 @@ export const CandidatePipelineAnalyticsWidget = () => {
     </Card>
   );
 };
+
+
+
+

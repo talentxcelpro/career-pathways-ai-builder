@@ -1,46 +1,50 @@
 
 import React, { createContext, useContext, ReactNode } from 'react';
 
-interface AnalyticsContextType {
+interface CareerAnalyticsContextType {
   trackEvent: (eventName: string, properties?: Record<string, any>) => void;
   trackPageView: (pageName: string, properties?: Record<string, any>) => void;
 }
 
-const AnalyticsContext = createContext<AnalyticsContextType | undefined>(undefined);
+const CareerAnalyticsContext = createContext<CareerAnalyticsContextType | undefined>(undefined);
 
-interface AnalyticsProviderProps {
+interface CareerAnalyticsProviderProps {
   children: ReactNode;
 }
 
-export const AnalyticsProvider: React.FC<AnalyticsProviderProps> = ({ children }) => {
+export const CareerAnalyticsProvider: React.FC<CareerAnalyticsProviderProps> = ({ children }) => {
   // Safe environment variable check for browser
   const isDevelopment = import.meta.env?.DEV || false;
   
   const trackEvent = (eventName: string, properties?: Record<string, any>) => {
     if (isDevelopment) {
-      console.log('Analytics Event:', eventName, properties);
+      console.log('CareerAnalytics Event:', eventName, properties);
     }
-    // In production, this would integrate with actual analytics service
+    // In production, this would integrate with actual CareerAnalytics service
   };
 
   const trackPageView = (pageName: string, properties?: Record<string, any>) => {
     if (isDevelopment) {
-      console.log('Analytics Page View:', pageName, properties);
+      console.log('CareerAnalytics Page View:', pageName, properties);
     }
-    // In production, this would integrate with actual analytics service
+    // In production, this would integrate with actual CareerAnalytics service
   };
 
   return (
-    <AnalyticsContext.Provider value={{ trackEvent, trackPageView }}>
+    <CareerAnalyticsContext.Provider value={{ trackEvent, trackPageView }}>
       {children}
-    </AnalyticsContext.Provider>
+    </CareerAnalyticsContext.Provider>
   );
 };
 
-export const useAnalytics = () => {
-  const context = useContext(AnalyticsContext);
+export const useCareerAnalytics = () => {
+  const context = useContext(CareerAnalyticsContext);
   if (context === undefined) {
-    throw new Error('useAnalytics must be used within an AnalyticsProvider');
+    throw new Error('useCareerAnalytics must be used within an CareerAnalyticsProvider');
   }
   return context;
 };
+
+
+
+

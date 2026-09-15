@@ -1,19 +1,35 @@
-import AIServicesPage from '../pages/AIServicesPage';
-import JobMatchGPTPage from '../pages/JobMatchGPTPage';
+import { lazy } from 'react';
+
+const AIServicesPage = lazy(() => import('../pages/AIServicesPage'));
+const JobMatchGPTPage = lazy(() => import('../pages/JobMatchGPTPage'));
+const NavigatorPage = lazy(() => import('../pages/ai/NavigatorPage'));
+
 
 export const aiRoutes = [
   {
-    title: "AI Services",
-    to: "/ai-services",
+    title: "Core Services",
+    to: "/core-services",
     page: <AIServicesPage />,
     isPublic: false
   },
   {
-    title: "Job Match GPT",
-    to: "/job-match-gpt",
+    title: "Precision Match",
+    to: "/precision-match",
     page: <JobMatchGPTPage />,
     isPublic: true,
-    icon: "brain",
-    description: "AI-powered resume analysis and job matching"
+    icon: "sparkles",
+    description: "Advanced resume synthesis and alignment"
+  },
+  {
+    title: "TalentXcel Navigator",
+    to: "/navigator",
+    page: <NavigatorPage />,
+    isPublic: false
+  },
+  {
+    title: "TalentXcel Navigator",
+    to: "/intelligence-navigator",
+    page: <NavigatorPage />,
+    isPublic: false
   }
 ];

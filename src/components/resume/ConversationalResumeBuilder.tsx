@@ -144,7 +144,7 @@ const ConversationalResumeBuilder: React.FC = () => {
     references: [],
     volunteerWork: [],
     trainings: [],
-    tools: { development: [], design: [], analytics: [], productivity: [], other: [] },
+    tools: { development: [], design: [], CareerAnalytics: [], productivity: [], other: [] },
     careerObjectives: { statement: '', goals: [] },
     sectionOrder: ['personalInfo', 'professionalSummary', 'experience', 'education', 'skills'],
     selectedTemplate: selectedTemplate,
@@ -585,7 +585,7 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
               />
               <div>
                 <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">TalentXcel AI Resume Builder</h1>
-                <p className="text-sm text-gray-500 mt-0.5">AI-powered resume creation that lands you interviews – Powered by TalentXcel AI</p>
+                <p className="text-sm text-gray-500 mt-0.5">Performance resume creation that lands you interviews – Powered by TalentXcel AI</p>
               </div>
             </div>
             
@@ -1551,3 +1551,6 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
 };
 
 export default ConversationalResumeBuilder;
+
+
+

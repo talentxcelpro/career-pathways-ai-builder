@@ -1,12 +1,13 @@
-
+import { lazy } from "react";
 import { Building2, Users, Share2, Briefcase, Globe } from "lucide-react";
 
 // Company Profile & Promotion
-import CompanyProfileEdit from "../../pages/employer/profile/CompanyProfileEdit";
-import CompanyTeamManage from "../../pages/employer/profile/CompanyTeamManage";
-import CompanySocials from "../../pages/employer/profile/CompanySocials";
-import CompanyJobs from "../../pages/employer/profile/CompanyJobs";
-import CompanyDetail from "../../pages/companies/CompanyDetail";
+const CompanyProfileEdit = lazy(() => import("../../pages/employer/profile/CompanyProfileEdit"));
+const CompanyTeamManage = lazy(() => import("../../pages/employer/profile/CompanyTeamManage"));
+const CompanySocials = lazy(() => import("../../pages/employer/profile/CompanySocials"));
+const CompanyJobs = lazy(() => import("../../pages/employer/profile/CompanyJobs"));
+const CompanyDetail = lazy(() => import("../../pages/companies/CompanyDetail"));
+
 
 export const employerProfileRoutes = [
   // Company Profile & Promotion

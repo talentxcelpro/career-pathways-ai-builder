@@ -84,7 +84,7 @@ const audienceData = {
       },
       {
         icon: TrendingUp,
-        title: 'Analytics & insights',
+        title: 'CareerAnalytics & insights',
         description: 'Track progress and measure learning impact'
       }
     ],
@@ -121,7 +121,7 @@ const audienceData = {
       },
       {
         icon: TrendingUp,
-        title: 'Learning analytics',
+        title: 'Learning CareerAnalytics',
         description: 'Track student progress and improve outcomes'
       }
     ],
@@ -306,3 +306,6 @@ export const AudienceSpecificSections: React.FC<AudienceSectionProps> = ({ audie
     </div>
   );
 };
+
+
+

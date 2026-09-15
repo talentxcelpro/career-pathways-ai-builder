@@ -31,7 +31,7 @@ export const ReferralNetwork: React.FC<ReferralNetworkProps> = ({ companyId, tar
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<'all' | 'employee' | 'referrer' | 'mentor'>('all');
 
-  const { data: connections = [], isLoading } = useQuery({
+  const { data: TalentNetwork = [], isLoading } = useQuery({
     queryKey: ['referral-network', companyId, targetRole],
     queryFn: async () => {
       // Mock data for demonstration
@@ -82,7 +82,7 @@ export const ReferralNetwork: React.FC<ReferralNetworkProps> = ({ companyId, tar
     }
   });
 
-  const filteredConnections = connections.filter(connection => {
+  const filteredTalentNetwork = TalentNetwork.filter(connection => {
     const matchesSearch = connection.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          connection.job_title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          connection.skills.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase()));
@@ -135,7 +135,7 @@ export const ReferralNetwork: React.FC<ReferralNetworkProps> = ({ companyId, tar
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Users className="h-5 w-5 text-blue-600" />
-          Referral Network & Connections
+          Referral Network & TalentNetwork
         </CardTitle>
         <div className="space-y-4">
           <div className="relative">
@@ -164,14 +164,14 @@ export const ReferralNetwork: React.FC<ReferralNetworkProps> = ({ companyId, tar
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {filteredConnections.length === 0 ? (
+          {filteredTalentNetwork.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               <Users className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-              <div>No connections found matching your criteria</div>
+              <div>No TalentNetwork found matching your criteria</div>
               <div className="text-sm">Try adjusting your search or filters</div>
             </div>
           ) : (
-            filteredConnections.map((connection) => {
+            filteredTalentNetwork.map((connection) => {
               const typeBadge = getConnectionTypeBadge(connection.connection_type);
               return (
                 <div key={connection.id} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
@@ -251,3 +251,4 @@ export const ReferralNetwork: React.FC<ReferralNetworkProps> = ({ companyId, tar
     </Card>
   );
 };
+

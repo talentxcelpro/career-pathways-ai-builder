@@ -261,7 +261,7 @@ export const JobSpecificOptimizer: React.FC<JobSpecificOptimizerProps> = ({
               </TabsContent>
 
               <TabsContent value="recommendations" className="space-y-4">
-                <h3 className="text-lg font-semibold">AI Recommendations</h3>
+                <h3 className="text-lg font-semibold">Career Moves</h3>
                 <div className="space-y-3">
                   {analysis.recommendations.map((rec, index) => (
                     <div key={index} className="flex items-start gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">

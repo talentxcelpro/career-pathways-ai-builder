@@ -23,7 +23,7 @@ export const useResumeUpload = () => {
   const processingSteps = [
     'Uploading file...',
     'Advanced text extraction...',
-    'AI-powered parsing with NLP...',
+    'Performance parsing with NLP...',
     'Structure analysis & validation...',
     'ATS optimization & scoring...',
     'Generating enhancement suggestions...',
@@ -143,3 +143,4 @@ export const useResumeUpload = () => {
     resetUpload
   };
 };
+

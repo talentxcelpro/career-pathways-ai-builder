@@ -101,7 +101,7 @@ export const useProfileCompletion = () => {
       suggestions.push({
         field: 'career_goals',
         label: 'Career Goals',
-        description: 'Define your career aspirations to get better connections',
+        description: 'Define your career aspirations to get better TalentNetwork',
         priority: 'high',
         icon: 'target'
       });
@@ -181,3 +181,4 @@ export const useProfileCompletion = () => {
     refreshCompletion: checkProfileCompletion
   };
 };
+

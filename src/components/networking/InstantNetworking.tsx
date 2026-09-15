@@ -52,7 +52,7 @@ export const InstantNetworking: React.FC = () => {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<'all' | 'available' | 'high-match'>('all');
-  const { profiles, connections, pendingRequests, loading, sendConnectionRequest } = useNetworkData();
+  const { profiles, TalentNetwork, pendingRequests, loading, sendConnectionRequest } = useNetworkData();
   
   // Convert profiles to networking format with match scores
   const suggestedProfiles = profiles.map(profile => ({
@@ -64,14 +64,14 @@ export const InstantNetworking: React.FC = () => {
     avatar: profile.avatar_url,
     matchScore: Math.floor(Math.random() * 40) + 60, // Random match score 60-100
     commonSkills: ['Professional Growth', 'Networking', 'Career Development'], // Default skills
-    mutualConnections: Math.floor(Math.random() * 10), // Random mutual connections
+    mutualConnections: Math.floor(Math.random() * 10), // Random mutual TalentNetwork
     availability: profile.is_online ? 'available' : 'offline' as 'available' | 'busy' | 'offline',
     lastActive: profile.last_seen ? new Date(profile.last_seen).toLocaleTimeString() : '2 hours ago',
     verified: true
   }));
 
   // Filter out already connected profiles
-  const connectedProfileIds = connections.map(conn => conn.recipient_id);
+  const connectedProfileIds = TalentNetwork.map(conn => conn.recipient_id);
   const pendingProfileIds = pendingRequests.map(req => req.recipient_id);
   const availableProfiles = suggestedProfiles.filter(profile => 
     !connectedProfileIds.includes(profile.id) && 
@@ -232,7 +232,7 @@ export const InstantNetworking: React.FC = () => {
         </Card>
       )}
 
-      {/* Suggested Connections */}
+      {/* Suggested TalentNetwork */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredProfiles.map((profile, index) => (
           <motion.div
@@ -305,11 +305,11 @@ export const InstantNetworking: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Mutual Connections */}
+                {/* Mutual TalentNetwork */}
                 {profile.mutualConnections > 0 && (
                   <div className="flex items-center gap-1 mb-3 text-xs text-muted-foreground">
                     <Users className="h-3 w-3" />
-                    <span>{profile.mutualConnections} mutual connections</span>
+                    <span>{profile.mutualConnections} mutual TalentNetwork</span>
                   </div>
                 )}
 
@@ -361,3 +361,4 @@ export const InstantNetworking: React.FC = () => {
     </div>
   );
 };
+

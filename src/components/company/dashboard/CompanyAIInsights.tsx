@@ -55,13 +55,13 @@ export const CompanyAIInsights: React.FC<CompanyAIInsightsProps> = ({
         <div>
           <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
             <Brain className="h-5 w-5 text-primary" />
-            AI-Powered Insights
+            Performance Insights
           </h3>
           <p className="text-sm text-muted-foreground">Smart recommendations to boost performance</p>
         </div>
         <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
           <Sparkles className="h-3 w-3 mr-1" />
-          <span className="text-xs">AI Powered</span>
+          <span className="text-xs">Performance</span>
         </Badge>
       </div>
 

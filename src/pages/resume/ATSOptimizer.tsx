@@ -177,7 +177,7 @@ const ATSOptimizer = () => {
             </h1>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
               Free tool to check if your resume passes Applicant Tracking Systems. 
-              Get instant feedback and optimization suggestions.
+              Get instant Feedback and optimization suggestions.
             </p>
             
             {/* Quick Stats */}
@@ -444,7 +444,7 @@ const ATSOptimizer = () => {
                   <Zap className="h-10 w-10 text-primary mx-auto mb-4" />
                   <h3 className="font-semibold mb-2">Want to Fix These Issues?</h3>
                   <p className="text-sm text-muted-foreground mb-4">
-                    Use our AI-powered builder to automatically optimize your resume
+                    Use our Performance builder to automatically optimize your resume
                   </p>
                   <Button className="w-full">
                     Build Optimized Resume
@@ -460,3 +460,4 @@ const ATSOptimizer = () => {
 };
 
 export default ATSOptimizer;
+

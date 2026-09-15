@@ -103,7 +103,7 @@ Sitemap: https://talentxcel.in/sitemap-network.xml
 Disallow: /admin/
 Disallow: /api/
 Disallow: /auth/
-Disallow: /dashboard/
+Disallow: /CommandCenter/
 
 # Allow job pages
 Allow: /jobs/
@@ -241,3 +241,4 @@ Crawl-delay: 1
     </Card>
   );
 };
+

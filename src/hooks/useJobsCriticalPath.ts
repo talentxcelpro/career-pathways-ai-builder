@@ -29,18 +29,17 @@ interface JobFilters {
   is_remote: boolean;
   skills: string[];
 }
-
 export const useJobsCriticalPath = (filters: JobFilters, sortBy: string = 'created_at') => {
-  const queryClient = useQueryClient();
-  const [isEnhancementLoaded, setIsEnhancementLoaded] = useState(false);
+  const [page, setPage] = useState(0);
+  const [allJobs, setAllJobs] = useState<any[]>([]);
 
   // Step 1: Load critical job data only (minimal fields for fast rendering)
   const criticalQuery = useQuery({
-    queryKey: ['jobs-critical', filters, sortBy],
+    queryKey: ['jobs-critical', filters, sortBy, page],
     queryFn: async () => {
-      console.log('🚀 Loading critical job data...');
+      console.log('🚀 Loading critical job data with filters:', filters, 'page:', page);
       
-      const { data, error } = await supabase
+      let query = supabase
         .from('jobs')
         .select(`
           id,
@@ -55,96 +54,66 @@ export const useJobsCriticalPath = (filters: JobFilters, sortBy: string = 'creat
           is_remote
         `)
         .eq('is_active', true)
-        .eq('job_status', 'open')
-        .gt('expires_at', new Date().toISOString())
+        .gt('expires_at', new Date().toISOString());
+
+      // Apply filters server-side
+      if (filters.search) query = query.ilike('title', `%${filters.search}%`);
+      if (filters.location) query = query.ilike('location', `%${filters.location}%`);
+      if (filters.is_remote) query = query.eq('is_remote', true);
+      if (filters.employment_type?.length > 0) query = query.in('employment_type', filters.employment_type);
+      if (filters.experience_level?.length > 0) query = query.in('experience_level', filters.experience_level);
+      if (filters.salary_min > 0) query = query.gte('salary_min', filters.salary_min);
+      if (filters.salary_max > 0) query = query.lte('salary_max', filters.salary_max);
+
+      const { data, error } = await query
         .order(sortBy === 'created_at' ? 'posted_at' : sortBy, { ascending: false })
-        .limit(20); // Load only first page
+        .range(page * 20, (page + 1) * 20 - 1);
 
       if (error) throw error;
-      
-      console.log('✅ Critical job data loaded:', data?.length);
       return data || [];
     },
-    staleTime: 120000, // 2 minutes
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
+    staleTime: 120000,
   });
 
-  // Step 2: Load enhanced data progressively (after critical path)
-  const enhancedQuery = useQuery({
-    queryKey: ['jobs-enhanced', filters, sortBy],
-    queryFn: async () => {
-      console.log('🔄 Loading enhanced job data...');
-      
-      const { data, error } = await supabase
-        .from('jobs')
-        .select(`
-          *,
-          companies (
-            name,
-            logo_url,
-            industry,
-            is_verified
-          )
-        `)
-        .eq('is_active', true)
-        .eq('job_status', 'open')
-        .gt('expires_at', new Date().toISOString())
-        .order(sortBy === 'created_at' ? 'posted_at' : sortBy, { ascending: false })
-        .limit(20);
-
-      if (error) throw error;
-      
-      console.log('✅ Enhanced job data loaded:', data?.length);
-      setIsEnhancementLoaded(true);
-      return data || [];
-    },
-    enabled: criticalQuery.isSuccess && !criticalQuery.isLoading,
-    staleTime: 180000, // 3 minutes
-    refetchOnWindowFocus: false,
-  });
-
-  // Step 3: Prefetch next batch in background
+  // Accumulate jobs when new data arrives
   useEffect(() => {
-    if (enhancedQuery.isSuccess && !enhancedQuery.isFetching) {
-      // Prefetch page 2 after a delay
-      setTimeout(() => {
-        queryClient.prefetchQuery({
-          queryKey: ['jobs-critical-page-2', filters, sortBy],
-          queryFn: async () => {
-            const { data, error } = await supabase
-              .from('jobs')
-              .select('id, title, company_name, location, salary_min, salary_max, posted_at, is_featured, employment_type')
-              .eq('is_active', true)
-              .eq('job_status', 'open')
-              .gt('expires_at', new Date().toISOString())
-              .order(sortBy === 'created_at' ? 'posted_at' : sortBy, { ascending: false })
-              .range(20, 39); // Next 20 items
-
-            if (error) throw error;
-            return data || [];
-          },
-          staleTime: 300000, // 5 minutes
+    if (criticalQuery.data) {
+      if (page === 0) {
+        setAllJobs(criticalQuery.data);
+      } else {
+        setAllJobs(prev => {
+          const newJobs = criticalQuery.data || [];
+          const existingIds = new Set(prev.map(j => j.id));
+          return [...prev, ...newJobs.filter(j => !existingIds.has(j.id))];
         });
-      }, 2000); // 2 second delay to not block initial render
+      }
     }
-  }, [enhancedQuery.isSuccess, enhancedQuery.isFetching, queryClient, filters, sortBy]);
+  }, [criticalQuery.data, page]);
 
-  // Return critical data first, then enhanced when available
-  const jobs = enhancedQuery.data || criticalQuery.data || [];
-  const isLoading = criticalQuery.isLoading;
-  const isEnhancing = enhancedQuery.isFetching;
+  // Reset when filters or sortBy change
+  useEffect(() => {
+    setPage(0);
+    setAllJobs([]);
+  }, [filters, sortBy]);
+
+  const isLoading = criticalQuery.isLoading && page === 0;
+  const isFetchingMore = criticalQuery.isFetching && page > 0;
 
   return {
-    jobs,
+    jobs: allJobs,
     isLoading,
-    isEnhancing,
-    isEnhancementLoaded,
-    totalCount: jobs.length, // Simplified for critical path
-    hasMore: jobs.length >= 20,
+    isFetchingMore,
+    isEnhancementLoaded: true, // Simplified
+    totalCount: allJobs.length,
+    hasMore: (criticalQuery.data?.length || 0) >= 20,
+    loadMore: () => {
+      if (!criticalQuery.isFetching && (criticalQuery.data?.length || 0) >= 20) {
+        setPage(prev => prev + 1);
+      }
+    },
     refetch: () => {
+      setPage(0);
       criticalQuery.refetch();
-      enhancedQuery.refetch();
     }
   };
 };

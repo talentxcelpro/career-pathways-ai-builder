@@ -20,7 +20,7 @@ const rolePermissions: RolePermission[] = [
       "Company settings",
       "Billing & payments",
       "All CRM features",
-      "Full analytics access",
+      "Full CareerAnalytics access",
       "Permission management"
     ],
     color: "purple",
@@ -33,7 +33,7 @@ const rolePermissions: RolePermission[] = [
       "Manage team members",
       "Post & edit jobs",
       "View all applications",
-      "Analytics access",
+      "CareerAnalytics access",
       "Company profile updates",
       "Interview scheduling"
     ],
@@ -76,7 +76,7 @@ const rolePermissions: RolePermission[] = [
       "View applications",
       "Basic reporting",
       "Read-only access",
-      "Dashboard insights",
+      "CommandCenter insights",
       "Export basic reports"
     ],
     color: "gray",
@@ -140,7 +140,7 @@ export const RolePermissionsGuide: React.FC = () => {
           Team Role Permissions
         </CardTitle>
         <CardDescription>
-          Understanding what each role can do in your employer dashboard
+          Understanding what each role can do in your employer CommandCenter
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -190,3 +190,6 @@ export const RolePermissionsGuide: React.FC = () => {
     </Card>
   );
 };
+
+
+

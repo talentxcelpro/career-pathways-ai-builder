@@ -219,7 +219,7 @@ const ResumeAnalysis = () => {
                 <h1 className="text-3xl font-bold text-gray-900">AI Resume Analysis</h1>
               </div>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Get comprehensive insights about your resume with AI-powered analysis. 
+                Get comprehensive insights about your resume with Performance analysis. 
                 Improve your chances of landing your dream job.
               </p>
             </div>
@@ -351,7 +351,7 @@ const ResumeAnalysis = () => {
                 Your Resume Analysis Results
               </h1>
               <p className="text-gray-600">
-                Comprehensive AI-powered insights to optimize your resume
+                Comprehensive Performance insights to optimize your resume
               </p>
             </div>
 
@@ -394,3 +394,4 @@ const ResumeAnalysis = () => {
 };
 
 export default ResumeAnalysis;
+

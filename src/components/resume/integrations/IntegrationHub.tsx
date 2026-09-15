@@ -23,7 +23,7 @@ interface Integration {
   description: string;
   icon: React.ReactNode;
   status: 'connected' | 'available' | 'premium';
-  category: 'job-boards' | 'social' | 'ats' | 'analytics';
+  category: 'job-boards' | 'social' | 'ats' | 'CareerAnalytics';
   features: string[];
 }
 
@@ -81,12 +81,12 @@ export const IntegrationHub: React.FC<IntegrationHubProps> = ({
       features: ['ATS Preview', 'Score Analysis', 'Optimization Tips']
     },
     {
-      id: 'google-analytics',
-      name: 'Google Analytics',
+      id: 'google-CareerAnalytics',
+      name: 'Google CareerAnalytics',
       description: 'Track resume views and engagement',
       icon: <BarChart3 className="h-6 w-6 text-red-600" />,
       status: 'connected',
-      category: 'analytics',
+      category: 'CareerAnalytics',
       features: ['View Tracking', 'Engagement Metrics', 'Source Analysis']
     }
   ];
@@ -129,7 +129,7 @@ export const IntegrationHub: React.FC<IntegrationHubProps> = ({
               <TabsTrigger value="job-boards">Job Boards</TabsTrigger>
               <TabsTrigger value="social">Social & Profile</TabsTrigger>
               <TabsTrigger value="ats">ATS Systems</TabsTrigger>
-              <TabsTrigger value="analytics">Analytics & Tracking</TabsTrigger>
+              <TabsTrigger value="CareerAnalytics">CareerAnalytics & Tracking</TabsTrigger>
             </TabsList>
 
             <TabsContent value="job-boards" className="space-y-6 mt-6">
@@ -335,9 +335,9 @@ export const IntegrationHub: React.FC<IntegrationHubProps> = ({
               </div>
             </TabsContent>
 
-            <TabsContent value="analytics" className="space-y-6 mt-6">
+            <TabsContent value="CareerAnalytics" className="space-y-6 mt-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {integrations.filter(i => i.category === 'analytics').map((integration) => (
+                {integrations.filter(i => i.category === 'CareerAnalytics').map((integration) => (
                   <Card key={integration.id}>
                     <CardHeader>
                       <CardTitle className="flex items-center justify-between">
@@ -366,7 +366,7 @@ export const IntegrationHub: React.FC<IntegrationHubProps> = ({
                         <h4 className="font-medium mb-2">Notification Settings</h4>
                         <div className="space-y-2">
                           <label className="flex items-center justify-between">
-                            <span className="text-sm">Weekly analytics report</span>
+                            <span className="text-sm">Weekly CareerAnalytics report</span>
                             <Switch />
                           </label>
                           <label className="flex items-center justify-between">
@@ -378,7 +378,7 @@ export const IntegrationHub: React.FC<IntegrationHubProps> = ({
 
                       <Button variant="outline" className="w-full">
                         <BarChart3 className="h-4 w-4 mr-2" />
-                        View Detailed Analytics
+                        View Detailed CareerAnalytics
                       </Button>
                     </CardContent>
                   </Card>
@@ -391,3 +391,6 @@ export const IntegrationHub: React.FC<IntegrationHubProps> = ({
     </div>
   );
 };
+
+
+

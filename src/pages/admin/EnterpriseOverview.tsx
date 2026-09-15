@@ -34,7 +34,7 @@ const EnterpriseOverview = () => {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Enterprise Overview</h1>
         <p className="text-muted-foreground">
-          Comprehensive enterprise client management and analytics dashboard
+          Comprehensive enterprise client management and CareerAnalytics CommandCenter
         </p>
       </div>
 
@@ -97,7 +97,7 @@ const EnterpriseOverview = () => {
         <TabsList>
           <TabsTrigger value="clients">Client Management</TabsTrigger>
           <TabsTrigger value="billing">Billing & Revenue</TabsTrigger>
-          <TabsTrigger value="analytics">Performance Analytics</TabsTrigger>
+          <TabsTrigger value="CareerAnalytics">Performance CareerAnalytics</TabsTrigger>
           <TabsTrigger value="support">Support & Services</TabsTrigger>
         </TabsList>
 
@@ -244,12 +244,12 @@ const EnterpriseOverview = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="analytics" className="space-y-4">
+        <TabsContent value="CareerAnalytics" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Performance Analytics</CardTitle>
+              <CardTitle>Performance CareerAnalytics</CardTitle>
               <CardDescription>
-                Enterprise client performance and usage analytics
+                Enterprise client performance and usage CareerAnalytics
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -334,3 +334,6 @@ const WrappedEnterpriseOverview = () => (
 );
 
 export default WrappedEnterpriseOverview;
+
+
+

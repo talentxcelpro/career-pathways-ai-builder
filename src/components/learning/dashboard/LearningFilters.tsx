@@ -91,7 +91,7 @@ export const LearningFilters: React.FC<LearningFiltersProps> = ({
         </CardContent>
       </Card>
 
-      {/* AI Recommendations Toggle */}
+      {/* Career Moves Toggle */}
       <Card>
         <CardContent className="p-4">
           <div className="flex items-center justify-between">

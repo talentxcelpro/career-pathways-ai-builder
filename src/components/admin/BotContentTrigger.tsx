@@ -247,7 +247,7 @@ const BotContentTrigger: React.FC = () => {
         <Sparkles className="h-4 w-4" />
         <AlertDescription>
           <strong>Pro Tip:</strong> Generated content appears in the Content Queue and requires approval before publishing. 
-          Check the Bot Content Dashboard to review and approve posts.
+          Check the Bot Content CommandCenter to review and approve posts.
         </AlertDescription>
       </Alert>
     </div>
@@ -255,3 +255,4 @@ const BotContentTrigger: React.FC = () => {
 };
 
 export default BotContentTrigger;
+

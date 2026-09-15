@@ -20,7 +20,7 @@ import {
 import { VideoPlayer } from './VideoPlayer';
 import { QuizInterface } from './QuizInterface';
 import { CourseDiscussions } from './CourseDiscussions';
-import { LearningAnalyticsDashboard } from './LearningAnalyticsDashboard';
+import { LearningCareerAnalyticsCommandCenter } from './LearningCareerAnalyticsCommandCenter';
 import { useLearningProgressTracking } from '@/hooks/useLearningProgressTracking';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -68,7 +68,7 @@ export const CourseViewer: React.FC = () => {
   const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null);
   const [currentQuiz, setCurrentQuiz] = useState<Quiz | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'lesson' | 'quiz' | 'discussions' | 'analytics'>('lesson');
+  const [activeTab, setActiveTab] = useState<'lesson' | 'quiz' | 'discussions' | 'CareerAnalytics'>('lesson');
   const [showSidebar, setShowSidebar] = useState(true);
   const [isEnrolled, setIsEnrolled] = useState(false);
 
@@ -461,7 +461,7 @@ export const CourseViewer: React.FC = () => {
                 {activeTab === 'lesson' && currentLesson?.title}
                 {activeTab === 'quiz' && currentQuiz?.title}
                 {activeTab === 'discussions' && 'Discussions'}
-                {activeTab === 'analytics' && 'Analytics'}
+                {activeTab === 'CareerAnalytics' && 'CareerAnalytics'}
               </h1>
             </div>
           </div>
@@ -514,7 +514,7 @@ export const CourseViewer: React.FC = () => {
             <TabsTrigger value="lesson">Lesson</TabsTrigger>
             <TabsTrigger value="quiz">Quiz</TabsTrigger>
             <TabsTrigger value="discussions">Discussions</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
           </TabsList>
 
           {/* Content */}
@@ -584,9 +584,9 @@ export const CourseViewer: React.FC = () => {
               />
             </TabsContent>
 
-            <TabsContent value="analytics" className="p-6">
+            <TabsContent value="CareerAnalytics" className="p-6">
               <div className="max-w-6xl mx-auto">
-                <LearningAnalyticsDashboard />
+                <LearningCareerAnalyticsCommandCenter />
               </div>
             </TabsContent>
           </div>
@@ -595,3 +595,6 @@ export const CourseViewer: React.FC = () => {
     </div>
   );
 };
+
+
+

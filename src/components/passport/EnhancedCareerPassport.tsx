@@ -4,7 +4,7 @@ import { useRealCareerData } from '@/hooks/useRealCareerData';
 import { useRealTimeAchievements } from '@/hooks/useRealTimeAchievements';
 import { PassportCard } from './PassportCard';
 import { AdvancedAchievementSystem } from './AdvancedAchievementSystem';
-import { JourneyTrackingAnalytics } from './JourneyTrackingAnalytics';
+import { JourneyTrackingCareerAnalytics } from './JourneyTrackingAnalytics';
 import { AIRecommendationEngine } from './AIRecommendationEngine';
 import { SocialSharingFeatures } from './SocialSharingFeatures';
 import { QRCodeShareSection } from './QRCodeShareSection';
@@ -53,7 +53,7 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true, pu
   const viewMetrics = (!isOwner && publicPassport?.passport) ? {
     profileCompletion: publicPassport.passport.completion_percentage || 0,
     jobApplications: publicPassport.passport.jobs_applied_count || 0,
-    connections: publicPassport.passport.connections_count || 0,
+    TalentNetwork: publicPassport.passport.connections_count || 0,
     skillsAdded: 0,
     coursesCompleted: 0,
     postsCreated: 0,
@@ -74,7 +74,7 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true, pu
     ai_recommendations: [],
   } : {
     career_readiness_score: viewMetrics?.profileCompletion || 0,
-    market_competitiveness_score: Math.min((viewMetrics?.jobApplications || 0) * 10 + (viewMetrics?.connections || 0) * 5, 100),
+    market_competitiveness_score: Math.min((viewMetrics?.jobApplications || 0) * 10 + (viewMetrics?.TalentNetwork || 0) * 5, 100),
     industry_percentile: Math.min((viewMetrics?.skillsAdded || 0) * 20 + (viewMetrics?.coursesCompleted || 0) * 15, 95),
     strengths: viewMetrics?.profileCompletion > 80 ? ['Complete Profile', 'Active User'] : [],
     improvement_areas: viewMetrics?.profileCompletion < 50 ? ['Complete Profile'] : [],
@@ -201,8 +201,8 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true, pu
                     />
                     <MetricCard
                       icon={<Users className="w-4 h-4" />}
-                      label="Connections"
-                      value={viewMetrics?.connections || 0}
+                      label="connections"
+                      value={viewMetrics?.TalentNetwork || 0}
                       color="purple"
                       onClick={() => isOwner && navigate('/network')}
                     />
@@ -215,7 +215,7 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true, pu
                     />
                 </div>
 
-                {/* AI-Powered Scores */}
+                {/* Performance Scores */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in">
                     <ScoreCard
                       title="Career Readiness"
@@ -235,7 +235,7 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true, pu
           </div>
         </div>
 
-        {/* AI Insights & Recommendations */}
+        {/* Intelligence Metrics & Recommendations */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           {/* Strengths & Improvement Areas */}
           <Card>
@@ -280,7 +280,7 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true, pu
                 Recommended Actions
               </CardTitle>
               <CardDescription className="text-xs">
-                AI-powered suggestions to boost your career readiness
+                Performance suggestions to boost your career readiness
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
@@ -320,14 +320,14 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true, pu
                   <span className="hidden sm:inline">Achievements</span>
                   <span className="sm:hidden">Awards</span>
                 </TabsTrigger>
-                <TabsTrigger value="analytics" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-xs p-2 sm:p-3">
+                <TabsTrigger value="CareerAnalytics" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-xs p-2 sm:p-3">
                   <BarChart3 className="w-3 h-3" />
-                  <span className="hidden sm:inline">Analytics</span>
+                  <span className="hidden sm:inline">CareerAnalytics</span>
                   <span className="sm:hidden">Stats</span>
                 </TabsTrigger>
                 <TabsTrigger value="ai-insights" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-xs p-2 sm:p-3">
                   <Brain className="w-3 h-3" />
-                  <span className="hidden sm:inline">AI Insights</span>
+                  <span className="hidden sm:inline">Intelligence Metrics</span>
                   <span className="sm:hidden">AI</span>
                 </TabsTrigger>
                 <TabsTrigger value="social" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-xs p-2 sm:p-3">
@@ -347,8 +347,8 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true, pu
               />
             </TabsContent>
 
-            <TabsContent value="analytics" className="p-4">
-              <JourneyTrackingAnalytics
+            <TabsContent value="CareerAnalytics" className="p-4">
+              <JourneyTrackingCareerAnalytics
                 userId={userId}
                 metrics={viewMetrics}
                 insights={viewInsights}
@@ -512,3 +512,7 @@ function CareerPassportSkeleton() {
     </div>
   );
 }
+
+
+
+

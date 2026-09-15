@@ -164,7 +164,7 @@ export const AdvancedAIFeatures: React.FC<AdvancedAIFeaturesProps> = ({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <BrainCircuit className="h-5 w-5" />
-            Advanced AI Career Intelligence
+            Advanced AI CareerIntelligence
           </CardTitle>
         </CardHeader>
         <CardContent>

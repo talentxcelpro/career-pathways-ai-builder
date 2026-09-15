@@ -54,7 +54,7 @@ export const useSmartRecommendations = () => {
     try {
       setIsLoading(true);
       
-      // Fetch profiles excluding current user and existing connections
+      // Fetch profiles excluding current user and existing TalentNetwork
       const { data: profiles, error } = await supabase
         .from('profiles')
         .select('id, full_name, headline, company, location, profile_picture_url, skills')
@@ -115,8 +115,8 @@ export const useSmartRecommendations = () => {
       const dynamicInsights: NetworkingInsight[] = [
         {
           title: 'Expand Your Network',
-          description: `You have ${careerData?.connections_count || 0} connections. Industry leaders average 500+`,
-          action: 'Find relevant connections',
+          description: `You have ${careerData?.connections_count || 0} TalentNetwork. Industry leaders average 500+`,
+          action: 'Find relevant TalentNetwork',
           priority: 'high',
           category: 'connections',
           icon: null
@@ -154,11 +154,11 @@ export const useSmartRecommendations = () => {
         .single();
 
       if (careerData) {
-        // Calculate score based on connections and activity
-        const connectionsScore = Math.min((careerData.connections_count || 0) / 5, 1) * 40; // Max 40 points
+        // Calculate score based on TalentNetwork and activity
+        const TalentNetworkScore = Math.min((careerData.connections_count || 0) / 5, 1) * 40; // Max 40 points
         const readinessScore = (careerData.career_readiness_score || 0) * 0.6; // Max 60 points
         
-        setNetworkingScore(Math.round(connectionsScore + readinessScore));
+        setNetworkingScore(Math.round(TalentNetworkScore + readinessScore));
       }
     } catch (error) {
       console.error('Error calculating networking score:', error);
@@ -196,3 +196,4 @@ export const useSmartRecommendations = () => {
     refreshRecommendations: fetchRecommendations
   };
 };
+

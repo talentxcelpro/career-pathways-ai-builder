@@ -1,0 +1,162 @@
+/**
+ * TalentXcel TalentXcel Core — Design Token System
+ * Single source of truth for all design decisions.
+ * 
+ * Import order: this file → index.css → component styles
+ * Usage: var(--tx-*) in CSS, or via Tailwind extended config
+ *
+ * Categories:
+ *   Brand Colors · Semantic Colors · Surface Colors · Text Colors
+ *   Typography · Spacing (8pt grid) · Radius · Shadows · Animations
+ */
+
+:root {
+  /* ── Brand Colors ───────────────────────────────────────────────────────── */
+  --tx-blue:            hsl(220 100% 48%);   /* #0055FF — primary action */
+  --tx-blue-hover:      hsl(220 100% 42%);
+  --tx-blue-light:      hsl(220 100% 95%);   /* backgrounds on blue */
+  --tx-blue-border:     hsl(220 100% 85%);
+
+  --tx-violet:          hsl(258 89% 66%);    /* AI / intelligence accent */
+  --tx-violet-hover:    hsl(258 89% 58%);
+  --tx-violet-light:    hsl(258 89% 96%);
+  --tx-violet-border:   hsl(258 89% 82%);
+
+  --tx-gold:            hsl(38 92% 50%);     /* TXC coin / rewards */
+  --tx-gold-light:      hsl(38 92% 95%);
+
+  /* ── Semantic Colors ────────────────────────────────────────────────────── */
+  --tx-success:         hsl(142 71% 45%);
+  --tx-success-light:   hsl(142 71% 95%);
+  --tx-success-border:  hsl(142 71% 75%);
+
+  --tx-warning:         hsl(38 92% 50%);
+  --tx-warning-light:   hsl(38 92% 95%);
+
+  --tx-error:           hsl(0 72% 51%);
+  --tx-error-light:     hsl(0 72% 96%);
+  --tx-error-border:    hsl(0 72% 80%);
+
+  --tx-info:            hsl(200 98% 39%);
+  --tx-info-light:      hsl(200 98% 95%);
+
+  /* ── Surface Colors ─────────────────────────────────────────────────────── */
+  --tx-bg:              hsl(220 20% 98%);    /* page background */
+  --tx-bg-subtle:       hsl(220 15% 96%);    /* alternating rows, sidebars */
+  --tx-surface:         hsl(0 0% 100%);      /* cards, modals */
+  --tx-surface-raised:  hsl(220 14% 98%);    /* elevated cards */
+  --tx-surface-overlay: rgba(255,255,255,0.85); /* glassmorphism base */
+
+  --tx-border:          hsl(220 13% 91%);    /* standard border */
+  --tx-border-strong:   hsl(220 13% 82%);    /* emphasized border */
+  --tx-border-focus:    var(--tx-blue);      /* focus ring */
+
+  /* ── Text Colors ────────────────────────────────────────────────────────── */
+  --tx-text-primary:    hsl(220 15% 10%);    /* headings, primary content */
+  --tx-text-secondary:  hsl(220 10% 40%);    /* descriptions, subtext */
+  --tx-text-tertiary:   hsl(220 8% 60%);     /* timestamps, placeholders */
+  --tx-text-disabled:   hsl(220 5% 75%);
+  --tx-text-inverse:    hsl(0 0% 100%);      /* on dark backgrounds */
+  --tx-text-brand:      var(--tx-blue);      /* brand-colored labels */
+
+  /* ── Typography Scale (matches Tailwind extend) ─────────────────────────── */
+  --tx-text-xs:   0.75rem;    /* 12px — labels, badges */
+  --tx-text-sm:   0.875rem;   /* 14px — captions, helper text */
+  --tx-text-base: 1rem;       /* 16px — body */
+  --tx-text-lg:   1.125rem;   /* 18px — emphasized body */
+  --tx-text-xl:   1.25rem;    /* 20px — card titles */
+  --tx-text-2xl:  1.5rem;     /* 24px — section headers */
+  --tx-text-3xl:  1.875rem;   /* 30px — page titles */
+  --tx-text-4xl:  2.25rem;    /* 36px — hero titles */
+  --tx-text-5xl:  3rem;       /* 48px — display only */
+
+  /* ── Spacing (8pt grid) ─────────────────────────────────────────────────── */
+  --tx-space-1:   0.25rem;    /*  4px */
+  --tx-space-2:   0.5rem;     /*  8px */
+  --tx-space-3:   0.75rem;    /* 12px */
+  --tx-space-4:   1rem;       /* 16px */
+  --tx-space-5:   1.25rem;    /* 20px */
+  --tx-space-6:   1.5rem;     /* 24px */
+  --tx-space-8:   2rem;       /* 32px */
+  --tx-space-10:  2.5rem;     /* 40px */
+  --tx-space-12:  3rem;       /* 48px */
+  --tx-space-16:  4rem;       /* 64px */
+  --tx-space-20:  5rem;       /* 80px */
+
+  /* ── Border Radius System ───────────────────────────────────────────────── */
+  --tx-radius-sm:   0.5rem;     /*  8px — inputs, badges, chips */
+  --tx-radius-md:   0.75rem;    /* 12px — buttons, small cards */
+  --tx-radius-lg:   1rem;       /* 16px — standard cards */
+  --tx-radius-xl:   1.5rem;     /* 24px — large cards, panels */
+  --tx-radius-2xl:  2rem;       /* 32px — hero sections, feature blocks */
+  --tx-radius-3xl:  2.5rem;     /* 40px — modals, sheets */
+  --tx-radius-full: 9999px;     /* pills, avatars, tags */
+
+  /* ── Shadows ────────────────────────────────────────────────────────────── */
+  --tx-shadow-sm:   0 1px 2px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.1);
+  --tx-shadow-md:   0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+  --tx-shadow-lg:   0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+  --tx-shadow-xl:   0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+  --tx-shadow-2xl:  0 25px 50px -12px rgba(0,0,0,0.18);
+  --tx-shadow-brand:  0 4px 14px -2px rgba(0, 85, 255, 0.25);
+  --tx-shadow-violet: 0 4px 14px -2px rgba(109, 40, 217, 0.25);
+  --tx-shadow-glass:  0 8px 32px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.6);
+
+  /* ── Gradients ──────────────────────────────────────────────────────────── */
+  --tx-gradient-brand:      linear-gradient(135deg, hsl(220 100% 48%), hsl(258 89% 66%));
+  --tx-gradient-brand-soft: linear-gradient(135deg, hsl(220 100% 95%), hsl(258 89% 96%));
+  --tx-gradient-gold:       linear-gradient(135deg, hsl(38 92% 50%), hsl(35 91% 62%));
+  --tx-gradient-success:    linear-gradient(135deg, hsl(142 71% 45%), hsl(160 65% 50%));
+  --tx-gradient-page:       linear-gradient(180deg, hsl(220 20% 98%) 0%, hsl(220 20% 100%) 100%);
+  --tx-gradient-glass:      linear-gradient(135deg, rgba(255,255,255,0.7), rgba(255,255,255,0.3));
+  --tx-gradient-hero:       linear-gradient(135deg, hsl(220 100% 48% / 0.08), hsl(258 89% 66% / 0.05));
+
+  /* ── Animation Tokens ───────────────────────────────────────────────────── */
+  --tx-duration-fast:    150ms;
+  --tx-duration-base:    250ms;
+  --tx-duration-slow:    400ms;
+  --tx-duration-slower:  600ms;
+  --tx-ease-out:         cubic-bezier(0, 0, 0.2, 1);
+  --tx-ease-in-out:      cubic-bezier(0.4, 0, 0.2, 1);
+  --tx-ease-bounce:      cubic-bezier(0.34, 1.56, 0.64, 1);
+  --tx-transition-base:  all var(--tx-duration-base) var(--tx-ease-in-out);
+  --tx-transition-fast:  all var(--tx-duration-fast) var(--tx-ease-out);
+
+  /* ── TalentScore Tier Colors ────────────────────────────────────────────── */
+  --ts-tier-emerging-bg:  hsl(220 13% 95%);
+  --ts-tier-emerging-fg:  hsl(220 13% 40%);
+  --ts-tier-rising-bg:    hsl(220 100% 95%);
+  --ts-tier-rising-fg:    hsl(220 100% 40%);
+  --ts-tier-pro-bg:       hsl(258 89% 96%);
+  --ts-tier-pro-fg:       hsl(258 89% 45%);
+  --ts-tier-elite-bg:     hsl(38 92% 95%);
+  --ts-tier-elite-fg:     hsl(38 92% 35%);
+  --ts-tier-legend-bg:    linear-gradient(135deg, hsl(38 92% 50%), hsl(25 91% 55%));
+  --ts-tier-legend-fg:    hsl(0 0% 100%);
+
+  /* ── Z-Index Scale ──────────────────────────────────────────────────────── */
+  --tx-z-base:      0;
+  --tx-z-raised:    10;
+  --tx-z-dropdown:  100;
+  --tx-z-sticky:    200;
+  --tx-z-overlay:   300;
+  --tx-z-modal:     400;
+  --tx-z-toast:     500;
+  --tx-z-tooltip:   600;
+}
+
+/* ── Semantic utility aliases (map tokens → Tailwind var() patterns) ──────── */
+@layer base {
+  /* Page-level background — replaces hardcoded bg-[#f6f8fb] */
+  .tx-page-bg    { background-color: var(--tx-bg); }
+  .tx-surface    { background-color: var(--tx-surface); }
+  .tx-border     { border-color: var(--tx-border); }
+
+  /* TalentScore tier badges */
+  .ts-badge-emerging { background: var(--ts-tier-emerging-bg); color: var(--ts-tier-emerging-fg); }
+  .ts-badge-rising   { background: var(--ts-tier-rising-bg);   color: var(--ts-tier-rising-fg); }
+  .ts-badge-pro      { background: var(--ts-tier-pro-bg);      color: var(--ts-tier-pro-fg); }
+  .ts-badge-elite    { background: var(--ts-tier-elite-bg);    color: var(--ts-tier-elite-fg); }
+  .ts-badge-legend   { background: var(--ts-tier-legend-bg);   color: var(--ts-tier-legend-fg); }
+}
+

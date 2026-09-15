@@ -265,3 +265,4 @@ export const CandidateNotesPanel: React.FC<CandidateNotesPanelProps> = ({
     </Card>
   );
 };
+

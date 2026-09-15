@@ -106,7 +106,7 @@ export const CareerIntelligence: React.FC<CareerIntelligenceProps> = ({
         <CardHeader className="flex flex-row items-center justify-between border-b">
           <CardTitle className="flex items-center gap-2">
             <Brain className="h-5 w-5" />
-            AI Career Intelligence
+            AI CareerIntelligence
           </CardTitle>
           <Button variant="ghost" onClick={onClose}>×</Button>
         </CardHeader>
@@ -396,7 +396,7 @@ export const CareerIntelligence: React.FC<CareerIntelligenceProps> = ({
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-3">
-                      <h4 className="font-medium">Recommended Connections</h4>
+                      <h4 className="font-medium">Recommended TalentNetwork</h4>
                       {[
                         { name: 'Sarah Chen', role: 'Engineering Manager at Google', mutual: 5 },
                         { name: 'Mike Rodriguez', role: 'Tech Lead at Microsoft', mutual: 3 },
@@ -406,7 +406,7 @@ export const CareerIntelligence: React.FC<CareerIntelligenceProps> = ({
                           <div>
                             <h5 className="font-medium">{person.name}</h5>
                             <p className="text-sm text-muted-foreground">{person.role}</p>
-                            <p className="text-xs text-muted-foreground">{person.mutual} mutual connections</p>
+                            <p className="text-xs text-muted-foreground">{person.mutual} mutual TalentNetwork</p>
                           </div>
                           <Button variant="outline" size="sm">Connect</Button>
                         </div>
@@ -457,3 +457,5 @@ export const CareerIntelligence: React.FC<CareerIntelligenceProps> = ({
     </div>
   );
 };
+
+

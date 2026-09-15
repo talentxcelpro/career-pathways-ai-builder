@@ -84,7 +84,7 @@ const AIOptimizer = () => {
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-4">AI Content Optimizer</h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Transform your professional content with AI-powered optimization. 
+            Transform your professional content with Performance optimization. 
             Enhance posts, resume sections, and profiles for maximum impact.
           </p>
         </div>
@@ -99,7 +99,7 @@ const AIOptimizer = () => {
                   <span>Content Optimizer</span>
                 </CardTitle>
                 <CardDescription>
-                  Select content type and paste your text to get AI-powered improvements
+                  Select content type and paste your text to get Performance improvements
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -252,3 +252,4 @@ const AIOptimizer = () => {
 };
 
 export default AIOptimizer;
+

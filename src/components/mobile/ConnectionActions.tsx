@@ -21,7 +21,7 @@ export const ConnectionActions: React.FC<ConnectionActionsProps> = ({
   const { user } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = React.useState(false);
-  const [connectionStatus, setConnectionStatus] = React.useState(isConnected ? 'connected' : 'none');
+  const [connectionStatus, setconnectionStatus] = React.useState(isConnected ? 'connected' : 'none');
 
   const handleConnect = async () => {
     if (!user?.id || isLoading) return;
@@ -38,7 +38,7 @@ export const ConnectionActions: React.FC<ConnectionActionsProps> = ({
 
       if (error) throw error;
 
-      setConnectionStatus('pending');
+      setconnectionStatus('pending');
       toast({
         title: "Connection request sent",
         description: "Your connection request has been sent successfully."
@@ -111,3 +111,4 @@ export const ConnectionActions: React.FC<ConnectionActionsProps> = ({
     </Button>
   );
 };
+

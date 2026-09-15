@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { UnifiedAdminLayout } from '@/components/admin/UnifiedAdminLayout';
-import { BotManagerDashboard } from '@/components/admin/BotManagerDashboard';
+import { BotManagerCommandCenter } from '@/components/admin/BotManagerDashboard';
 import { BotContentGenerator } from '@/components/admin/BotContentGenerator';
-import { BotAnalytics } from '@/components/admin/BotAnalytics';
+import { BotCareerAnalytics } from '@/components/admin/BotAnalytics';
 import { BotAuthFixer } from '@/components/admin/BotAuthFixer';
 import { BotTemplateManager } from '@/components/admin/BotTemplateManager';
-import { ContentAutomationDashboard } from '@/components/admin/ContentAutomationDashboard';
+import { ContentAutomationCommandCenter } from '@/components/admin/ContentAutomationDashboard';
 import { BotWallManagement } from '@/components/admin/BotWallManagement';
-import { BotAutomationDashboard } from '@/components/admin/BotAutomationDashboard';
+import { BotAutomationCommandCenter } from '@/components/admin/BotAutomationDashboard';
 import { AIHealthMonitor } from '@/components/admin/AIHealthMonitor';
 import { ContentAutomationTester } from '@/components/admin/ContentAutomationTester';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -16,16 +16,16 @@ const BotManagement: React.FC = () => {
   return (
     <UnifiedAdminLayout
       title="AI Bot Management"
-      description="Manage AI bots, content generation, and analytics"
+      description="Manage AI bots, content generation, and CareerAnalytics"
     >
       <Tabs defaultValue="engine" className="space-y-6">
         <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="engine">Automation Engine</TabsTrigger>
-          <TabsTrigger value="dashboard">Bot Dashboard</TabsTrigger>
+          <TabsTrigger value="CommandCenter">Bot CommandCenter</TabsTrigger>
           <TabsTrigger value="wall">Wall Management</TabsTrigger>
           <TabsTrigger value="automation">Content Automation</TabsTrigger>
           <TabsTrigger value="generator">Manual Generation</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
           <TabsTrigger value="sources">Templates</TabsTrigger>
         </TabsList>
 
@@ -40,14 +40,14 @@ const BotManagement: React.FC = () => {
               <p className="text-sm">⚡ Ready for content generation</p>
             </div>
           </div>
-          {/* Temporarily comment out dashboard to isolate issue */}
-          {/* <BotAutomationDashboard /> */}
+          {/* Temporarily comment out CommandCenter to isolate issue */}
+          {/* <BotAutomationCommandCenter /> */}
         </TabsContent>
 
-        <TabsContent value="dashboard" className="space-y-6">
+        <TabsContent value="CommandCenter" className="space-y-6">
           <div className="grid gap-6">
             <BotAuthFixer />
-            <BotManagerDashboard />
+            <BotManagerCommandCenter />
           </div>
         </TabsContent>
 
@@ -57,7 +57,7 @@ const BotManagement: React.FC = () => {
 
         <TabsContent value="automation" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <ContentAutomationDashboard />
+            <ContentAutomationCommandCenter />
             <div className="space-y-6">
               <AIHealthMonitor />
               <ContentAutomationTester />
@@ -69,8 +69,8 @@ const BotManagement: React.FC = () => {
           <BotContentGenerator />
         </TabsContent>
 
-        <TabsContent value="analytics" className="space-y-6">
-          <BotAnalytics />
+        <TabsContent value="CareerAnalytics" className="space-y-6">
+          <BotCareerAnalytics />
         </TabsContent>
 
         <TabsContent value="sources" className="space-y-6">
@@ -82,3 +82,6 @@ const BotManagement: React.FC = () => {
 };
 
 export default BotManagement;
+
+
+

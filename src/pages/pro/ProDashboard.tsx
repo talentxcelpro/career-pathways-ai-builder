@@ -24,7 +24,7 @@ interface SubscriptionTier {
   price_monthly: number;
   features: any; // JSON array from database
   has_crm: boolean;
-  has_analytics: boolean;
+  has_CareerAnalytics: boolean;
   has_ai_tools: boolean;
   has_payments: boolean;
   has_contracts: boolean;
@@ -41,7 +41,7 @@ interface ServiceProfile {
   is_verified: boolean;
 }
 
-export const ProDashboard: React.FC = () => {
+export const ProCommandCenter: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
@@ -55,10 +55,10 @@ export const ProDashboard: React.FC = () => {
   });
 
   useEffect(() => {
-    loadDashboardData();
+    loadCommandCenterData();
   }, []);
 
-  const loadDashboardData = async () => {
+  const loadCommandCenterData = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -85,17 +85,17 @@ export const ProDashboard: React.FC = () => {
 
         setCurrentTier(tierData);
 
-        // Load analytics
-        const { data: analyticsData } = await supabase
-          .from('pro_analytics')
+        // Load CareerAnalytics
+        const { data: CareerAnalyticsData } = await supabase
+          .from('pro_CareerAnalytics')
           .select('*')
           .eq('profile_id', profileData.id)
           .gte('date', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]);
 
-        if (analyticsData) {
-          const totalViews = analyticsData.reduce((sum, day) => sum + (day.views_count || 0), 0);
-          const totalInquiries = analyticsData.reduce((sum, day) => sum + (day.inquiries_count || 0), 0);
-          const totalRevenue = analyticsData.reduce((sum, day) => sum + (day.revenue || 0), 0);
+        if (CareerAnalyticsData) {
+          const totalViews = CareerAnalyticsData.reduce((sum, day) => sum + (day.views_count || 0), 0);
+          const totalInquiries = CareerAnalyticsData.reduce((sum, day) => sum + (day.inquiries_count || 0), 0);
+          const totalRevenue = CareerAnalyticsData.reduce((sum, day) => sum + (day.revenue || 0), 0);
           
           setStats({
             totalViews,
@@ -106,10 +106,10 @@ export const ProDashboard: React.FC = () => {
         }
       }
     } catch (error) {
-      console.error('Error loading dashboard:', error);
+      console.error('Error loading CommandCenter:', error);
       toast({
         title: "Error",
-        description: "Failed to load dashboard data",
+        description: "Failed to load CommandCenter data",
         variant: "destructive"
       });
     } finally {
@@ -147,7 +147,7 @@ export const ProDashboard: React.FC = () => {
           <Crown className="h-16 w-16 text-primary mx-auto mb-6" />
           <h1 className="text-3xl font-bold mb-4">Welcome to TalentXcel Pro</h1>
           <p className="text-muted-foreground mb-8">
-            Create your professional service profile and start attracting clients with AI-powered tools.
+            Create your professional service profile and start attracting clients with Performance tools.
           </p>
           <Button onClick={handleCreateProfile} size="lg">
             <Plus className="h-5 w-5 mr-2" />
@@ -163,7 +163,7 @@ export const ProDashboard: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold">Pro Dashboard</h1>
+          <h1 className="text-3xl font-bold">Pro CommandCenter</h1>
           <p className="text-muted-foreground">
             Welcome back, {profile.business_name || 'Professional'}
           </p>
@@ -261,12 +261,12 @@ export const ProDashboard: React.FC = () => {
           </Card>
         )}
 
-        {currentTier?.has_analytics && (
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/pro/analytics')}>
+        {currentTier?.has_CareerAnalytics && (
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/pro/CareerAnalytics')}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-semibold mb-2">Analytics</h3>
+                  <h3 className="font-semibold mb-2">CareerAnalytics</h3>
                   <p className="text-sm text-muted-foreground">Track performance and growth metrics</p>
                 </div>
                 <ArrowRight className="h-5 w-5 text-muted-foreground" />
@@ -281,7 +281,7 @@ export const ProDashboard: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-semibold mb-2">AI Business Tools</h3>
-                  <p className="text-sm text-muted-foreground">Optimize with AI-powered suggestions</p>
+                  <p className="text-sm text-muted-foreground">Optimize with Performance suggestions</p>
                 </div>
                 <ArrowRight className="h-5 w-5 text-muted-foreground" />
               </div>
@@ -322,7 +322,7 @@ export const ProDashboard: React.FC = () => {
               <div>
                 <h3 className="font-semibold mb-2">Unlock More Features</h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Upgrade to Pro Business for CRM, Analytics, and AI Tools
+                  Upgrade to Pro Business for CRM, CareerAnalytics, and AI Tools
                 </p>
               </div>
               <Button onClick={handleUpgrade} className="bg-gradient-to-r from-purple-600 to-pink-600">
@@ -336,3 +336,6 @@ export const ProDashboard: React.FC = () => {
     </div>
   );
 };
+
+
+

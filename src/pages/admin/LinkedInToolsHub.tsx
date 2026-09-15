@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Users, Briefcase, TrendingUp, Database, Merge, BarChart3 } from 'lucide-react';
 import LinkedInBulkOperations from '@/components/admin/LinkedInBulkOperations';
 import LinkedInDuplicateManager from '@/components/admin/LinkedInDuplicateManager';
-import LinkedInAdvancedAnalytics from '@/components/admin/LinkedInAdvancedAnalytics';
+import LinkedInAdvancedCareerAnalytics from '@/components/admin/LinkedInAdvancedAnalytics';
 import { DataQualityManager } from '@/components/admin/DataQualityManager';
 import { SmartJobScrapingControls } from '@/components/admin/SmartJobScrapingControls';
 import { useLinkedInRealTime } from '@/hooks/useLinkedInRealTime';
@@ -88,7 +88,7 @@ export default function LinkedInToolsHub() {
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="bulk">Bulk Operations</TabsTrigger>
           <TabsTrigger value="duplicates">Duplicates</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="career-analytics">Career Analytics</TabsTrigger>
           <TabsTrigger value="quality">Data Quality</TabsTrigger>
           <TabsTrigger value="scraping">Smart Scraping</TabsTrigger>
         </TabsList>
@@ -101,8 +101,8 @@ export default function LinkedInToolsHub() {
           <LinkedInDuplicateManager />
         </TabsContent>
         
-        <TabsContent value="analytics" className="space-y-6">
-          <LinkedInAdvancedAnalytics />
+        <TabsContent value="career-analytics" className="space-y-6">
+          <LinkedInAdvancedCareerAnalytics />
         </TabsContent>
         
         <TabsContent value="quality" className="space-y-6">
@@ -144,3 +144,6 @@ export default function LinkedInToolsHub() {
     </div>
   );
 }
+
+
+

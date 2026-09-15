@@ -169,7 +169,7 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({ opportunity, onComple
   );
 };
 
-export const TXCSmartRecommendationsDashboard: React.FC = () => {
+export const TXCSmartRecommendationsCommandCenter: React.FC = () => {
   const {
     recommendations,
     earningOpportunities,
@@ -325,3 +325,4 @@ export const TXCSmartRecommendationsDashboard: React.FC = () => {
     </div>
   );
 };
+

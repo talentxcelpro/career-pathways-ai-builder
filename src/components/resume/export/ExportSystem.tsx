@@ -72,11 +72,11 @@ const exportFormats: ExportFormat[] = [
   {
     id: 'html',
     name: 'Web Portfolio',
-    description: 'Interactive web version with live links and analytics',
+    description: 'Interactive web version with live links and CareerAnalytics',
     icon: <Globe className="w-5 h-5" />,
     isPremium: true,
     fileExtension: 'html',
-    features: ['Interactive Links', 'Mobile Responsive', 'Analytics Tracking', 'SEO Optimized']
+    features: ['Interactive Links', 'Mobile Responsive', 'CareerAnalytics Tracking', 'SEO Optimized']
   }
 ];
 
@@ -493,3 +493,7 @@ export const ExportSystem: React.FC<ExportSystemProps> = ({
     </div>
   );
 };
+
+
+
+

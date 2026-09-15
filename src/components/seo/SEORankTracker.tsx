@@ -140,7 +140,7 @@ export const SEORankTracker = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Target className="h-5 w-5 text-primary" />
-            Rank Tracking Dashboard
+            Rank Tracking CommandCenter
           </CardTitle>
           <CardDescription>
             Monitor your keyword positions across search engines and locations
@@ -398,3 +398,4 @@ export const SEORankTracker = () => {
     </div>
   );
 };
+

@@ -211,7 +211,7 @@ export const GoogleSearchConsoleIntegration = () => {
         <TabsList>
           <TabsTrigger value="queries">Top Queries</TabsTrigger>
           <TabsTrigger value="pages">Top Pages</TabsTrigger>
-          <TabsTrigger value="insights">AI Insights</TabsTrigger>
+          <TabsTrigger value="insights">Intelligence Metrics</TabsTrigger>
           <TabsTrigger value="opportunities">Opportunities</TabsTrigger>
         </TabsList>
 
@@ -302,7 +302,7 @@ export const GoogleSearchConsoleIntegration = () => {
           <div className="grid gap-4">
             <Card>
               <CardHeader>
-                <CardTitle>AI-Powered Insights</CardTitle>
+                <CardTitle>Performance Insights</CardTitle>
                 <CardDescription>Automated analysis of your search performance</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">

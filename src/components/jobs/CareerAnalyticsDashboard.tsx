@@ -71,7 +71,7 @@ interface CompanyGrowth {
   industry: string;
 }
 
-export const CareerAnalyticsDashboard: React.FC = () => {
+export const CareerCareerAnalyticsCommandCenter: React.FC = () => {
   const [timeRange, setTimeRange] = useState('6m');
   const [selectedSkill, setSelectedSkill] = useState('all');
   const [activeTab, setActiveTab] = useState<'trends' | 'skills' | 'salary' | 'locations' | 'companies'>('trends');
@@ -138,7 +138,7 @@ export const CareerAnalyticsDashboard: React.FC = () => {
       return [
         { company: 'TechCorp', hiring: 245, trend: 'up' as const, industry: 'Technology' },
         { company: 'InnovateX', hiring: 189, trend: 'up' as const, industry: 'Fintech' },
-        { company: 'DataFlow', hiring: 156, trend: 'stable' as const, industry: 'Analytics' },
+        { company: 'DataFlow', hiring: 156, trend: 'stable' as const, industry: 'CareerAnalytics' },
         { company: 'CloudTech', hiring: 134, trend: 'up' as const, industry: 'Cloud Services' },
         { company: 'StartupY', hiring: 98, trend: 'down' as const, industry: 'E-commerce' }
       ];
@@ -167,7 +167,7 @@ export const CareerAnalyticsDashboard: React.FC = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <BarChart3 className="h-5 w-5 text-purple-600" />
-          Career Analytics & Market Intelligence
+          Career CareerAnalytics & Market Intelligence
         </CardTitle>
         <div className="flex flex-wrap gap-2">
           {['trends', 'skills', 'salary', 'locations', 'companies'].map((tab) => (
@@ -467,3 +467,6 @@ export const CareerAnalyticsDashboard: React.FC = () => {
     </Card>
   );
 };
+
+
+

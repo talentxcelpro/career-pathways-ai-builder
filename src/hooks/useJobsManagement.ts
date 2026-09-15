@@ -45,11 +45,11 @@ export const useJobsManagement = () => {
   const { data: jobStats } = useQuery({
     queryKey: ['job-stats'],
     queryFn: async () => {
-      // Use unified analytics function for consistent data
-      const { data: unifiedData, error } = await supabase.rpc('get_unified_analytics');
+      // Use unified CareerAnalytics function for consistent data
+      const { data: unifiedData, error } = await supabase.rpc('get_unified_CareerAnalytics');
       
       if (error) {
-        console.error('Unified analytics error:', error);
+        console.error('Unified CareerAnalytics error:', error);
         throw error;
       }
 
@@ -96,3 +96,7 @@ export const useJobsManagement = () => {
     filteredJobs
   };
 };
+
+
+
+

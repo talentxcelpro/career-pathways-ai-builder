@@ -39,7 +39,7 @@ const InterlinkingBacklinkStrategy = () => {
     score: 65,
     issues: [
       { severity: 'high', issue: 'Missing job-to-company cross-links', impact: 'Low page authority transfer' },
-      { severity: 'high', issue: 'No career path interconnections', impact: 'Poor user journey flow' },
+      { severity: 'high', issue: 'No career path interTalentNetwork', impact: 'Poor user journey flow' },
       { severity: 'medium', issue: 'Limited skill-to-job linking', impact: 'Missed keyword clustering' },
       { severity: 'medium', issue: 'Shallow profile-to-content links', impact: 'Low engagement depth' },
       { severity: 'low', issue: 'Inconsistent anchor text strategy', impact: 'Suboptimal keyword targeting' }
@@ -149,7 +149,7 @@ const InterlinkingBacklinkStrategy = () => {
         supporting_pages: [
           '/jobs/role/product-manager',
           '/learning/product-strategy',
-          '/tools/product-analytics',
+          '/tools/product-CareerAnalytics',
           '/companies/product-companies',
           '/skills/product-management'
         ],
@@ -174,7 +174,7 @@ const InterlinkingBacklinkStrategy = () => {
         'Audit existing internal links',
         'Create topical cluster mapping',
         'Implement contextual linking system',
-        'Set up link tracking analytics'
+        'Set up link tracking CareerAnalytics'
       ]
     },
     phase2: {
@@ -654,3 +654,7 @@ const InterlinkingBacklinkStrategy = () => {
 };
 
 export default InterlinkingBacklinkStrategy;
+
+
+
+

@@ -18,7 +18,7 @@ const modules = [
   { name: 'resume', label: 'Resume Templates', priority: 'low' },
   { name: 'colleges', label: 'Colleges', priority: 'low' },
   { name: 'career-map', label: 'Career Map', priority: 'low' },
-  { name: 'career-passport', label: 'Career Passport', priority: 'low' }
+  { name: 'career-passport', label: 'Evolution Hub', priority: 'low' }
 ];
 
 export const SitemapManager: React.FC = () => {

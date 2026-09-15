@@ -12,16 +12,16 @@ interface MetaTagsProps {
 }
 
 export const MetaTags: React.FC<MetaTagsProps> = ({
-  title = 'CareerCatalyst - AI-Powered Career Growth Platform',
-  description = 'Transform your career with AI-powered resume building, job matching, and professional networking. Join thousands of professionals advancing their careers.',
-  keywords = ['career', 'jobs', 'resume', 'AI', 'professional', 'networking', 'growth'],
+  title = 'TalentXcel Core - Performance Career Engine',
+  description = 'Transform your career with precision resume synthesis, job alignment, and professional networking. Join elite professionals advancing their careers.',
+  keywords = ['career', 'jobs', 'resume', 'CareerIntelligence', 'professional', 'networking', 'growth'],
   image = '/og-image.jpg',
-  url = 'https://careercatalyst.com',
+  url = 'https://talentxcel.in',
   type = 'website',
   noIndex = false
 }) => {
-  const fullTitle = title.includes('CareerCatalyst') ? title : `${title} | CareerCatalyst`;
-  const fullUrl = url.startsWith('http') ? url : `https://careercatalyst.com${url}`;
+  const fullTitle = title.includes('TalentXcel') ? title : `${title} | TalentXcel`;
+  const fullUrl = url.startsWith('http') ? url : `https://talentxcel.in${url}`;
   
   return (
     <Helmet>
@@ -36,7 +36,7 @@ export const MetaTags: React.FC<MetaTagsProps> = ({
       <meta property="og:description" content={description} />
       <meta property="og:image" content={image} />
       <meta property="og:url" content={fullUrl} />
-      <meta property="og:site_name" content="CareerCatalyst" />
+      <meta property="og:site_name" content="TalentXcel" />
       
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
@@ -57,12 +57,12 @@ export const MetaTags: React.FC<MetaTagsProps> = ({
         {JSON.stringify({
           "@context": "https://schema.org",
           "@type": "WebSite",
-          "name": "CareerCatalyst",
+          "name": "TalentXcel",
           "description": description,
-          "url": "https://careercatalyst.com",
+          "url": "https://talentxcel.in",
           "potentialAction": {
             "@type": "SearchAction",
-            "target": "https://careercatalyst.com/search?q={search_term_string}",
+            "target": "https://talentxcel.in/search?q={search_term_string}",
             "query-input": "required name=search_term_string"
           }
         })}

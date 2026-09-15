@@ -4,12 +4,12 @@ import { Badge } from '@/components/ui/badge';
 import { useBots, useBotGeneratedContent, useBotStats } from '@/hooks/useBotManagement';
 import { Activity, TrendingUp, DollarSign, Clock, Bot, FileText } from 'lucide-react';
 
-export const BotAnalytics: React.FC = () => {
+export const BotCareerAnalytics: React.FC = () => {
   const { data: bots = [] } = useBots();
   const { data: generatedContent = [] } = useBotGeneratedContent();
   const { data: stats } = useBotStats();
 
-  // Calculate analytics data
+  // Calculate CareerAnalytics data
   const contentByBot = generatedContent.reduce((acc, content) => {
     acc[content.bot_id] = (acc[content.bot_id] || 0) + 1;
     return acc;
@@ -238,3 +238,6 @@ export const BotAnalytics: React.FC = () => {
     </div>
   );
 };
+
+
+

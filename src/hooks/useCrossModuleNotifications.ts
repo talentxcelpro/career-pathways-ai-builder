@@ -260,7 +260,7 @@ export const useCrossModuleNotifications = () => {
       title: isRequest ? 'New Connection Request' : 'Connection Accepted',
       message: isRequest ? 'Someone wants to connect with you' : 'Someone accepted your connection request',
       source_module: 'network',
-      action_url: '/network/connections',
+      action_url: '/network/TalentNetwork',
       priority: 'medium',
       is_read: false,
       metadata: {
@@ -318,3 +318,4 @@ export const useCrossModuleNotifications = () => {
     notifyProfileVisit,
   };
 };
+

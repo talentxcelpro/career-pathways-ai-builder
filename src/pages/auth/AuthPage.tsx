@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 // import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Mail, Lock, User, Building, Chrome } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { getAuthCallbackUrl, getEmailRedirectUrl } from '@/utils/authRedirect';
 
 interface AuthPageProps {
   mode?: 'signin' | 'signup';
@@ -31,7 +32,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
 
   // Get flow from URL params or props
   const currentFlow = flow || searchParams.get('flow') || 'resume';
-  const redirectTo = searchParams.get('redirect') || location.state?.from || '/network';
+  const redirectTo = searchParams.get('redirect') || location.state?.from || '/career-os';
 
   useEffect(() => {
     const urlMode = searchParams.get('mode');
@@ -50,7 +51,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
       resume: {
         title: 'Build Your Professional Resume',
         subtitle: 'Free ATS scan + 1 download',
-        benefits: ['ATS-optimized templates', 'AI-powered suggestions', 'Free download in PDF/Word']
+        benefits: ['ATS-optimized templates', 'Performance suggestions', 'Free download in PDF/Word']
       },
       jobs: {
         title: 'Find Your Dream Job',
@@ -60,7 +61,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
       interview: {
         title: 'Ace Your Interviews',
         subtitle: '5 free practice questions',
-        benefits: ['Role-specific questions', 'AI feedback', 'Video practice']
+        benefits: ['Role-specific questions', 'AI Feedback', 'Video practice']
       },
       insights: {
         title: 'Get Market Insights',
@@ -83,9 +84,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
     setIsLoading(true);
 
     try {
-      // Use current domain for redirects
-      const baseUrl = window.location.origin;
-      const redirectUrl = `${baseUrl}/onboarding?flow=${currentFlow}&type=${userType}`;
+      const redirectPath = `/onboarding?flow=${encodeURIComponent(currentFlow)}&type=${encodeURIComponent(userType)}`;
+      const redirectUrl = getEmailRedirectUrl(redirectPath);
       
       console.log('Auth attempt:', { authMode, userType, redirectUrl });
 
@@ -144,9 +144,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
     try {
       setIsLoading(true);
       
-      // Use current domain for redirects
-      const baseUrl = window.location.origin;
-      const redirectUrl = `${baseUrl}/onboarding?flow=${currentFlow}&type=${userType}`;
+      const redirectPath = `/onboarding?flow=${encodeURIComponent(currentFlow)}&type=${encodeURIComponent(userType)}`;
+      const redirectUrl = getAuthCallbackUrl(redirectPath);
       
       console.log('Social auth attempt:', { provider, redirectUrl });
       
@@ -423,3 +422,5 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
     </div>
   );
 };
+
+

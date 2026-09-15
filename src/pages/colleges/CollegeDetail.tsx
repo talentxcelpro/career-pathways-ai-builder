@@ -27,7 +27,7 @@ import {
 } from 'lucide-react';
 import { VerificationBadge } from '@/components/colleges/enhanced/VerificationBadge';
 import { PremiumBadge } from '@/components/colleges/enhanced/PremiumBadge';
-import { CollegeAnalytics } from '@/components/colleges/enhanced/CollegeAnalytics';
+import { CollegeCareerAnalytics } from '@/components/colleges/enhanced/CollegeAnalytics';
 import { CollegeInquiry } from '@/components/colleges/enhanced/CollegeInquiry';
 import { CollegeEvents } from '@/components/colleges/enhanced/CollegeEvents';
 import { ProgramsCatalog } from '@/components/colleges/enhanced/ProgramsCatalog';
@@ -326,7 +326,7 @@ const CollegeDetail = () => {
           <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="programs">Programs</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
             <TabsTrigger value="inquiry">Ask College</TabsTrigger>
             <TabsTrigger value="events">Events</TabsTrigger>
             <TabsTrigger value="posts">Updates</TabsTrigger>
@@ -427,8 +427,8 @@ const CollegeDetail = () => {
             <ProgramsCatalog collegeId={college.id} collegeName={college.name} />
           </TabsContent>
 
-          <TabsContent value="analytics" className="space-y-6">
-            <CollegeAnalytics college={college} />
+          <TabsContent value="CareerAnalytics" className="space-y-6">
+            <CollegeCareerAnalytics college={college} />
           </TabsContent>
 
           <TabsContent value="inquiry" className="space-y-6">
@@ -574,3 +574,7 @@ const CollegeDetail = () => {
 };
 
 export default CollegeDetail;
+
+
+
+

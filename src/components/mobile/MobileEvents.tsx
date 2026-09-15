@@ -339,3 +339,4 @@ export const MobileEvents: React.FC<MobileEventsProps> = ({ className = '' }) =>
     </div>
   );
 };
+

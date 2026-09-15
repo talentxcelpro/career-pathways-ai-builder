@@ -502,7 +502,7 @@ const getCertificationCoursesData = () => [
   },
   {
     title: 'Power BI Complete Course',
-    description: 'Create stunning business intelligence dashboards with Power BI.',
+    description: 'Create stunning business intelligence CommandCenters with Power BI.',
     instructor_name: 'Rahul Khanna',
     category: 'Business Intelligence',
     difficulty_level: 'intermediate',
@@ -511,7 +511,7 @@ const getCertificationCoursesData = () => [
     enrolled_count: 950,
     price: 0,
     is_free: true,
-    skills_taught: ['Power BI', 'DAX', 'Data Modeling', 'Dashboard Design'],
+    skills_taught: ['Power BI', 'DAX', 'Data Modeling', 'CommandCenter Design'],
     thumbnail_url: '/course-thumbnails/power-bi.jpg',
     published: true
   },
@@ -532,7 +532,7 @@ const getCertificationCoursesData = () => [
   },
   {
     title: 'Tableau Data Visualization',
-    description: 'Create powerful data visualizations and dashboards with Tableau.',
+    description: 'Create powerful data visualizations and CommandCenters with Tableau.',
     instructor_name: 'Kiran Singh',
     category: 'Data Visualization',
     difficulty_level: 'beginner',
@@ -541,7 +541,7 @@ const getCertificationCoursesData = () => [
     enrolled_count: 870,
     price: 0,
     is_free: true,
-    skills_taught: ['Tableau', 'Data Visualization', 'Dashboard Design', 'Storytelling'],
+    skills_taught: ['Tableau', 'Data Visualization', 'CommandCenter Design', 'Storytelling'],
     thumbnail_url: '/course-thumbnails/tableau.jpg',
     published: true
   },
@@ -621,7 +621,7 @@ const getCertificationCoursesData = () => [
     published: true
   },
   {
-    title: 'Big Data Analytics with Hadoop',
+    title: 'Big Data CareerAnalytics with Hadoop',
     description: 'Process and analyze large datasets using Hadoop ecosystem.',
     instructor_name: 'Arun Mishra',
     category: 'Big Data',
@@ -979,7 +979,7 @@ const getCertificationCoursesData = () => [
     enrolled_count: 850,
     price: 0,
     is_free: true,
-    skills_taught: ['Google Ads', 'PPC', 'Campaign Optimization', 'Analytics'],
+    skills_taught: ['Google Ads', 'PPC', 'Campaign Optimization', 'CareerAnalytics'],
     thumbnail_url: '/course-thumbnails/google-ads.jpg',
     published: true
   },
@@ -1059,18 +1059,18 @@ const getCertificationCoursesData = () => [
     published: true
   },
   {
-    title: 'Google Analytics Certification',
-    description: 'Track and analyze website performance with Google Analytics.',
+    title: 'Google CareerAnalytics Certification',
+    description: 'Track and analyze website performance with Google CareerAnalytics.',
     instructor_name: 'Vikram Jain',
-    category: 'Analytics',
+    category: 'CareerAnalytics',
     difficulty_level: 'beginner',
     duration_hours: 4,
     rating: 4.6,
     enrolled_count: 890,
     price: 0,
     is_free: true,
-    skills_taught: ['Google Analytics', 'Goal Tracking', 'Conversion Analysis', 'Reporting'],
-    thumbnail_url: '/course-thumbnails/google-analytics.jpg',
+    skills_taught: ['Google CareerAnalytics', 'Goal Tracking', 'Conversion Analysis', 'Reporting'],
+    thumbnail_url: '/course-thumbnails/google-CareerAnalytics.jpg',
     published: true
   },
   {
@@ -1159,23 +1159,23 @@ const getCertificationCoursesData = () => [
     enrolled_count: 380,
     price: 2999,
     is_free: false,
-    skills_taught: ['A/B Testing', 'Landing Page Optimization', 'User Experience', 'Analytics'],
+    skills_taught: ['A/B Testing', 'Landing Page Optimization', 'User Experience', 'CareerAnalytics'],
     thumbnail_url: '/course-thumbnails/cro.jpg',
     published: true
   },
   {
-    title: 'Digital Marketing Analytics',
+    title: 'Digital Marketing CareerAnalytics',
     description: 'Measure and optimize digital marketing performance.',
     instructor_name: 'Meera Jain',
-    category: 'Marketing Analytics',
+    category: 'Marketing CareerAnalytics',
     difficulty_level: 'intermediate',
     duration_hours: 7,
     rating: 4.5,
     enrolled_count: 520,
     price: 2999,
     is_free: false,
-    skills_taught: ['Marketing Metrics', 'Attribution Modeling', 'ROI Analysis', 'Dashboard Creation'],
-    thumbnail_url: '/course-thumbnails/marketing-analytics.jpg',
+    skills_taught: ['Marketing Metrics', 'Attribution Modeling', 'ROI Analysis', 'CommandCenter Creation'],
+    thumbnail_url: '/course-thumbnails/marketing-CareerAnalytics.jpg',
     published: true
   },
 
@@ -1423,10 +1423,10 @@ const getCertificationCoursesData = () => [
     published: true
   },
   {
-    title: 'Business Analytics with Excel',
+    title: 'Business CareerAnalytics with Excel',
     description: 'Data-driven decision making using Excel and business intelligence.',
     instructor_name: 'Deepika Rani',
-    category: 'Business Analytics',
+    category: 'Business CareerAnalytics',
     difficulty_level: 'intermediate',
     duration_hours: 6,
     rating: 4.5,
@@ -1434,7 +1434,7 @@ const getCertificationCoursesData = () => [
     price: 0,
     is_free: true,
     skills_taught: ['Business Analysis', 'KPI Tracking', 'Financial Modeling'],
-    thumbnail_url: '/course-thumbnails/business-analytics.jpg',
+    thumbnail_url: '/course-thumbnails/business-CareerAnalytics.jpg',
     published: true
   },
   {
@@ -2457,3 +2457,6 @@ const getCourseAssessment = (courseTitle: string, category: string) => {
 
   return assessmentTemplates[category as keyof typeof assessmentTemplates] || assessmentTemplates['Programming'];
 };
+
+
+

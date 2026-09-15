@@ -59,7 +59,7 @@ export const FeaturesPreview: React.FC = () => {
   const aiFeatures = [
     {
       icon: <Brain className="h-4 w-4" />,
-      title: "AI-Powered Extraction",
+      title: "Performance Extraction",
       description: "Advanced AI analyzes and extracts all resume sections"
     },
     {

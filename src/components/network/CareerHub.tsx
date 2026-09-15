@@ -26,7 +26,7 @@ export const CareerHub = () => {
   const stats = [
     { label: '0+ Articles', icon: BookOpen },
     { label: 'Expert Community', icon: Users },
-    { label: 'AI-Powered', icon: TrendingUp },
+    { label: 'Performance', icon: TrendingUp },
   ];
 
   return (
@@ -116,7 +116,7 @@ export const CareerHub = () => {
             <h2 className="text-xl font-bold text-foreground">AI Spotlight</h2>
             <Badge variant="secondary" className="ml-auto">Top 3 Trending</Badge>
           </div>
-          <p className="text-muted-foreground mb-4">AI-powered trending articles based on community engagement</p>
+          <p className="text-muted-foreground mb-4">Performance trending articles based on community engagement</p>
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
               <div key={i} className="p-3 bg-background/60 rounded-lg border border-border/50">
@@ -161,7 +161,7 @@ export const CareerHub = () => {
               <TrendingUp className="w-5 h-5 text-primary" />
               Recommended for You
             </h3>
-            <p className="text-muted-foreground text-sm mb-4">Personalized article feed based on your interests</p>
+            <p className="text-muted-foreground text-sm mb-4">Personalized article Pulse based on your interests</p>
             <div className="space-y-2">
               <div className="p-2 bg-accent/30 rounded border-l-2 border-primary">
                 <p className="text-sm font-medium">Coming Soon</p>

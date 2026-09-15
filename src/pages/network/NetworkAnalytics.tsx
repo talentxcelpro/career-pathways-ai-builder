@@ -22,12 +22,12 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartsPieChart, Pie, Cell } from 'recharts';
 
-const NetworkAnalytics = () => {
+const NetworkCareerAnalytics = () => {
   const [timeRange, setTimeRange] = useState('7d');
   
-  // Fetch analytics data
-  const { data: analyticsData, isLoading } = useQuery({
-    queryKey: ['networkAnalytics', timeRange],
+  // Fetch CareerAnalytics data
+  const { data: CareerAnalyticsData, isLoading } = useQuery({
+    queryKey: ['networkCareerAnalytics', timeRange],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
@@ -43,8 +43,8 @@ const NetworkAnalytics = () => {
         .eq('id', user.id)
         .single();
 
-      // Fetch connections data
-      const { data: connections } = await supabase
+      // Fetch TalentNetwork data
+      const { data: TalentNetwork } = await supabase
         .from('connections')
         .select('created_at, connected_at, status')
         .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
@@ -58,8 +58,8 @@ const NetworkAnalytics = () => {
         .gte('created_at', startDate.toISOString());
 
       // Calculate metrics
-      const totalConnections = connections?.filter(c => c.status === 'accepted').length || 0;
-      const pendingRequests = connections?.filter(c => c.status === 'pending').length || 0;
+      const totalTalentNetwork = TalentNetwork?.filter(c => c.status === 'accepted').length || 0;
+      const pendingRequests = TalentNetwork?.filter(c => c.status === 'pending').length || 0;
       const totalPosts = posts?.length || 0;
       const totalLikes = posts?.reduce((sum, post) => sum + (post.likes_count || 0), 0) || 0;
       const totalComments = posts?.reduce((sum, post) => sum + (post.comments_count || 0), 0) || 0;
@@ -71,7 +71,7 @@ const NetworkAnalytics = () => {
         const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
         const dateStr = date.toISOString().split('T')[0];
         
-        const dayConnections = connections?.filter(c => 
+        const dayTalentNetwork = TalentNetwork?.filter(c => 
           c.connected_at && new Date(c.connected_at).toDateString() === date.toDateString()
         ).length || 0;
         
@@ -81,7 +81,7 @@ const NetworkAnalytics = () => {
 
         timeSeriesData.push({
           date: dateStr,
-          connections: dayConnections,
+          TalentNetwork: dayTalentNetwork,
           posts: dayPosts,
           views: Math.floor(Math.random() * 50) + 10, // Mock data
           profileViews: Math.floor(Math.random() * 20) + 5 // Mock data
@@ -91,7 +91,7 @@ const NetworkAnalytics = () => {
       return {
         profile,
         metrics: {
-          totalConnections,
+          totalTalentNetwork,
           pendingRequests,
           totalPosts,
           totalLikes,
@@ -101,24 +101,24 @@ const NetworkAnalytics = () => {
         },
         timeSeriesData,
         growthData: [
-          { period: 'This Week', connections: Math.floor(Math.random() * 10) + 2, change: '+12%' },
-          { period: 'This Month', connections: Math.floor(Math.random() * 30) + 10, change: '+8%' },
-          { period: 'This Quarter', connections: Math.floor(Math.random() * 80) + 30, change: '+15%' }
+          { period: 'This Week', TalentNetwork: Math.floor(Math.random() * 10) + 2, change: '+12%' },
+          { period: 'This Month', TalentNetwork: Math.floor(Math.random() * 30) + 10, change: '+8%' },
+          { period: 'This Quarter', TalentNetwork: Math.floor(Math.random() * 80) + 30, change: '+15%' }
         ]
       };
     }
   });
 
   const pieChartData = [
-    { name: 'Connections', value: analyticsData?.metrics.totalConnections || 0, color: '#3B82F6' },
-    { name: 'Pending', value: analyticsData?.metrics.pendingRequests || 0, color: '#F59E0B' },
-    { name: 'Posts', value: analyticsData?.metrics.totalPosts || 0, color: '#10B981' },
+    { name: 'connections', value: CareerAnalyticsData?.metrics.totalTalentNetwork || 0, color: '#3B82F6' },
+    { name: 'Pending', value: CareerAnalyticsData?.metrics.pendingRequests || 0, color: '#F59E0B' },
+    { name: 'Posts', value: CareerAnalyticsData?.metrics.totalPosts || 0, color: '#10B981' },
   ];
 
   const engagementData = [
-    { name: 'Likes', value: analyticsData?.metrics.totalLikes || 0 },
-    { name: 'Comments', value: analyticsData?.metrics.totalComments || 0 },
-    { name: 'Views', value: analyticsData?.metrics.totalViews || 0 },
+    { name: 'Likes', value: CareerAnalyticsData?.metrics.totalLikes || 0 },
+    { name: 'Comments', value: CareerAnalyticsData?.metrics.totalComments || 0 },
+    { name: 'Views', value: CareerAnalyticsData?.metrics.totalViews || 0 },
     { name: 'Shares', value: Math.floor(Math.random() * 50) },
   ];
 
@@ -147,7 +147,7 @@ const NetworkAnalytics = () => {
         <div className="mb-8">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Network Analytics</h1>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Network CareerAnalytics</h1>
               <p className="text-gray-600">Track your growth, insights, and influence within the community.</p>
             </div>
             <div className="mt-4 lg:mt-0">
@@ -174,7 +174,7 @@ const NetworkAnalytics = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Profile Views</p>
-                  <p className="text-3xl font-bold text-gray-900">{analyticsData?.metrics.profileViews || 254}</p>
+                  <p className="text-3xl font-bold text-gray-900">{CareerAnalyticsData?.metrics.profileViews || 254}</p>
                   <Badge variant="secondary" className="mt-2 text-green-700 bg-green-100">
                     +12% vs last period
                   </Badge>
@@ -189,8 +189,8 @@ const NetworkAnalytics = () => {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Connections</p>
-                  <p className="text-3xl font-bold text-gray-900">{analyticsData?.metrics.totalConnections || 433}</p>
+                  <p className="text-sm font-medium text-gray-600">TalentNetwork</p>
+                  <p className="text-3xl font-bold text-gray-900">{CareerAnalyticsData?.metrics.totalTalentNetwork || 433}</p>
                   <Badge variant="secondary" className="mt-2 text-green-700 bg-green-100">
                     +8% vs last period
                   </Badge>
@@ -232,7 +232,7 @@ const NetworkAnalytics = () => {
           </Card>
         </div>
 
-        {/* Analytics Tabs */}
+        {/* CareerAnalytics Tabs */}
         <Tabs defaultValue="growth" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4 lg:w-fit">
             <TabsTrigger value="growth" className="flex items-center gap-2">
@@ -253,7 +253,7 @@ const NetworkAnalytics = () => {
             </TabsTrigger>
           </TabsList>
 
-          {/* Growth Analytics */}
+          {/* Growth CareerAnalytics */}
           <TabsContent value="growth" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card>
@@ -265,7 +265,7 @@ const NetworkAnalytics = () => {
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
-                    <AreaChart data={analyticsData?.timeSeriesData || []}>
+                    <AreaChart data={CareerAnalyticsData?.timeSeriesData || []}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="date" />
                       <YAxis />
@@ -314,10 +314,10 @@ const NetworkAnalytics = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {analyticsData?.growthData.map((item, index) => (
+                  {CareerAnalyticsData?.growthData.map((item, index) => (
                     <div key={index} className="p-4 bg-gray-50 rounded-lg">
                       <h4 className="font-semibold text-gray-900">{item.period}</h4>
-                      <p className="text-2xl font-bold text-blue-600">{item.connections}</p>
+                      <p className="text-2xl font-bold text-blue-600">{item.TalentNetwork}</p>
                       <p className="text-sm text-green-600">{item.change}</p>
                     </div>
                   ))}
@@ -326,7 +326,7 @@ const NetworkAnalytics = () => {
             </Card>
           </TabsContent>
 
-          {/* Engagement Analytics */}
+          {/* Engagement CareerAnalytics */}
           <TabsContent value="engagement" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card>
@@ -359,7 +359,7 @@ const NetworkAnalytics = () => {
                       <Eye className="h-5 w-5 text-blue-600" />
                       <span className="font-medium">Post Views</span>
                     </div>
-                    <span className="text-xl font-bold text-blue-600">{analyticsData?.metrics.totalViews || 0}</span>
+                    <span className="text-xl font-bold text-blue-600">{CareerAnalyticsData?.metrics.totalViews || 0}</span>
                   </div>
                   
                   <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
@@ -367,7 +367,7 @@ const NetworkAnalytics = () => {
                       <MessageCircle className="h-5 w-5 text-green-600" />
                       <span className="font-medium">Comments</span>
                     </div>
-                    <span className="text-xl font-bold text-green-600">{analyticsData?.metrics.totalComments || 0}</span>
+                    <span className="text-xl font-bold text-green-600">{CareerAnalyticsData?.metrics.totalComments || 0}</span>
                   </div>
                   
                   <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
@@ -382,7 +382,7 @@ const NetworkAnalytics = () => {
             </div>
           </TabsContent>
 
-          {/* Network Analytics */}
+          {/* Network CareerAnalytics */}
           <TabsContent value="network" className="space-y-6">
             <Card>
               <CardHeader>
@@ -434,7 +434,7 @@ const NetworkAnalytics = () => {
             </Card>
           </TabsContent>
 
-          {/* Skills Analytics */}
+          {/* Skills CareerAnalytics */}
           <TabsContent value="skills" className="space-y-6">
             <Card>
               <CardHeader>
@@ -458,4 +458,8 @@ const NetworkAnalytics = () => {
   );
 };
 
-export default NetworkAnalytics;
+export default NetworkCareerAnalytics;
+
+
+
+

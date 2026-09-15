@@ -6,10 +6,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Eye, EyeOff, Mail, Lock, User, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, Loader2, AlertCircle } from 'lucide-react';
 import { SocialLogin } from './SocialLogin';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useNavigate } from 'react-router-dom';
 import talentxcelLogo from '@/assets/talentxcel-logo.png';
+import { getEmailRedirectUrl } from '@/utils/authRedirect';
+import { getUserFacingAuthError } from '@/utils/authErrors';
 
 interface UnifiedAuthFormProps {
   onSuccess?: () => void;
@@ -26,25 +29,57 @@ export const UnifiedAuthForm = ({ onSuccess }: UnifiedAuthFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (errorMessage) setErrorMessage('');
     setFormData(prev => ({
       ...prev,
       [e.target.name]: e.target.value
     }));
   };
 
+  const withAuthTimeout = async <T,>(operation: Promise<T>): Promise<T> => {
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    const timeout = new Promise<never>((_, reject) => {
+      timeoutId = setTimeout(() => {
+        reject(new Error('auth_timeout'));
+      }, 15000);
+    });
+
+    try {
+      return await Promise.race([operation, timeout]);
+    } finally {
+      if (timeoutId) clearTimeout(timeoutId);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage('');
+
+    const email = formData.email.trim().toLowerCase();
+    const password = formData.password;
+
+    if (!email || !password) {
+      const message = 'Enter your email and password to continue.';
+      setErrorMessage(message);
+      toast.error(message);
+      return;
+    }
     
     if (!isLogin) {
       if (formData.password !== formData.confirmPassword) {
-        toast.error('Passwords do not match');
+        const message = 'Passwords do not match.';
+        setErrorMessage(message);
+        toast.error(message);
         return;
       }
       if (formData.password.length < 6) {
-        toast.error('Password must be at least 6 characters');
+        const message = 'Password must be at least 6 characters.';
+        setErrorMessage(message);
+        toast.error(message);
         return;
       }
     }
@@ -54,49 +89,59 @@ export const UnifiedAuthForm = ({ onSuccess }: UnifiedAuthFormProps) => {
     try {
       if (isLogin) {
         // Sign In
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: formData.email,
-          password: formData.password,
-        });
+        const { data, error } = await withAuthTimeout(
+          supabase.auth.signInWithPassword({
+            email,
+            password,
+          })
+        );
 
         if (error) {
-          toast.error(error.message);
+          const message = getUserFacingAuthError(error);
+          setErrorMessage(message);
+          toast.error(message);
           return;
         }
 
         if (data.user) {
           // Login successful - no toast message
           onSuccess?.();
-          const redirectPath = window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/network';
+          const redirectPath = window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/career-os';
           navigate(redirectPath);
         }
       } else {
         // Sign Up
-        const { data, error } = await supabase.auth.signUp({
-          email: formData.email,
-          password: formData.password,
-          options: {
-            data: {
-              full_name: formData.fullName,
+        const { data, error } = await withAuthTimeout(
+          supabase.auth.signUp({
+            email,
+            password,
+            options: {
+              data: {
+                full_name: formData.fullName.trim(),
+              },
+              emailRedirectTo: getEmailRedirectUrl('/career-os')
             },
-            emailRedirectTo: `${window.location.origin}/`
-          }
-        });
+          })
+        );
 
         if (error) {
-          toast.error(error.message);
+          const message = getUserFacingAuthError(error);
+          setErrorMessage(message);
+          toast.error(message);
           return;
         }
 
         if (data.user) {
-          toast.success('Account created successfully! 🎉');
+          toast.success('TalentXcel profile created.');
           onSuccess?.();
-          const redirectPath = window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/network';
+          const redirectPath = window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/career-os';
           navigate(redirectPath);
         }
       }
     } catch (error: any) {
-      toast.error('An unexpected error occurred');
+      const message = getUserFacingAuthError(error);
+      setErrorMessage(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -117,7 +162,11 @@ export const UnifiedAuthForm = ({ onSuccess }: UnifiedAuthFormProps) => {
         {/* Compact Tab Toggle */}
         <div className="flex bg-slate-50 rounded-lg p-1 mb-4">
           <button
-            onClick={() => setIsLogin(true)}
+            type="button"
+            onClick={() => {
+              setIsLogin(true);
+              setErrorMessage('');
+            }}
             className={`flex-1 py-1.5 px-3 rounded-md text-sm font-medium transition-all ${
               isLogin
                 ? 'bg-white text-slate-900 shadow-sm'
@@ -127,7 +176,11 @@ export const UnifiedAuthForm = ({ onSuccess }: UnifiedAuthFormProps) => {
             Sign In
           </button>
           <button
-            onClick={() => setIsLogin(false)}
+            type="button"
+            onClick={() => {
+              setIsLogin(false);
+              setErrorMessage('');
+            }}
             className={`flex-1 py-1.5 px-3 rounded-md text-sm font-medium transition-all ${
               !isLogin
                 ? 'bg-white text-slate-900 shadow-sm'
@@ -140,7 +193,7 @@ export const UnifiedAuthForm = ({ onSuccess }: UnifiedAuthFormProps) => {
 
         {/* Compact Social Login */}
         <div className="space-y-2">
-          <SocialLogin variant="prominent" />
+          <SocialLogin variant="prominent" mode={isLogin ? 'sign-in' : 'sign-up'} />
         </div>
 
         <div className="relative">
@@ -153,6 +206,18 @@ export const UnifiedAuthForm = ({ onSuccess }: UnifiedAuthFormProps) => {
             </span>
           </div>
         </div>
+
+
+
+        {/* Inline Error Alert */}
+        {errorMessage && (
+          <Alert variant="destructive" className="py-2 px-3 border-red-200 bg-red-50 animate-in fade-in slide-in-from-top-1">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription className="text-xs font-medium ml-2">
+              {errorMessage}
+            </AlertDescription>
+          </Alert>
+        )}
 
         {/* Compact Form */}
         <form onSubmit={handleSubmit} className="space-y-3">
@@ -270,6 +335,7 @@ export const UnifiedAuthForm = ({ onSuccess }: UnifiedAuthFormProps) => {
           <div className="text-center">
             <button 
               type="button"
+              onClick={() => navigate('/auth/forgot-password')}
               className="text-xs text-blue-600 hover:text-blue-700 font-medium hover:underline"
             >
               Forgot password?

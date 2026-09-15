@@ -86,7 +86,7 @@ export const RealTimeCollaboration: React.FC<RealTimeCollaborationProps> = ({
       user: collaborators[2],
       action: 'commented',
       timestamp: new Date(Date.now() - 10 * 60 * 1000),
-      details: 'Added feedback on skills section'
+      details: 'Added Feedback on skills section'
     }
   ]);
 
@@ -323,7 +323,7 @@ export const RealTimeCollaboration: React.FC<RealTimeCollaborationProps> = ({
         </CardContent>
       </Card>
 
-      {/* Activity Feed */}
+      {/* Activity Pulse */}
       {showActivity && (
         <Card className="bg-white/80 backdrop-blur-sm border-white/20">
           <CardHeader>
@@ -381,3 +381,4 @@ export const RealTimeCollaboration: React.FC<RealTimeCollaborationProps> = ({
     </div>
   );
 };
+

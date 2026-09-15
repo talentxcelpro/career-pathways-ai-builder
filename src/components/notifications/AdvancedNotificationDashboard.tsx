@@ -23,7 +23,7 @@ import {
 import { motion } from 'framer-motion';
 import { useComprehensivePushNotifications } from '@/hooks/useComprehensivePushNotifications';
 
-interface NotificationAnalytics {
+interface NotificationCareerAnalytics {
   totalSent: number;
   openRate: number;
   clickRate: number;
@@ -33,7 +33,7 @@ interface NotificationAnalytics {
   deviceBreakdown: Array<{ device: string; percentage: number }>;
 }
 
-const mockAnalytics: NotificationAnalytics = {
+const mockCareerAnalytics: NotificationCareerAnalytics = {
   totalSent: 1247,
   openRate: 68.5,
   clickRate: 23.2,
@@ -61,14 +61,14 @@ const mockAnalytics: NotificationAnalytics = {
   ]
 };
 
-export const AdvancedNotificationDashboard: React.FC = () => {
+export const AdvancedNotificationCommandCenter: React.FC = () => {
   const { 
     preferences, 
     sendComprehensiveNotification, 
     templates 
   } = useComprehensivePushNotifications();
   
-  const [analytics] = useState<NotificationAnalytics>(mockAnalytics);
+  const [CareerAnalytics] = useState<NotificationCareerAnalytics>(mockCareerAnalytics);
   const [isTestSending, setIsTestSending] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState('');
 
@@ -88,12 +88,12 @@ export const AdvancedNotificationDashboard: React.FC = () => {
 
   return (
     <div className="space-y-8">
-      {/* Dashboard Header */}
+      {/* Command Center Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Notification Analytics</h2>
+          <h2 className="text-3xl font-bold tracking-tight">Notification Career Analytics</h2>
           <p className="text-muted-foreground">
-            Insights into your notification performance and user engagement
+            Signals on notification performance and user engagement
           </p>
         </div>
         <Button className="gap-2">
@@ -114,7 +114,7 @@ export const AdvancedNotificationDashboard: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Total Sent</p>
-                  <p className="text-2xl font-bold">{analytics.totalSent.toLocaleString()}</p>
+                  <p className="text-2xl font-bold">{CareerAnalytics.totalSent.toLocaleString()}</p>
                 </div>
                 <div className="p-3 bg-blue-50 rounded-full">
                   <Send className="h-6 w-6 text-blue-600" />
@@ -139,13 +139,13 @@ export const AdvancedNotificationDashboard: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Open Rate</p>
-                  <p className="text-2xl font-bold">{analytics.openRate}%</p>
+                  <p className="text-2xl font-bold">{CareerAnalytics.openRate}%</p>
                 </div>
                 <div className="p-3 bg-green-50 rounded-full">
                   <Target className="h-6 w-6 text-green-600" />
                 </div>
               </div>
-              <Progress value={analytics.openRate} className="mt-4" />
+              <Progress value={CareerAnalytics.openRate} className="mt-4" />
             </CardContent>
           </Card>
         </motion.div>
@@ -160,13 +160,13 @@ export const AdvancedNotificationDashboard: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Click Rate</p>
-                  <p className="text-2xl font-bold">{analytics.clickRate}%</p>
+                  <p className="text-2xl font-bold">{CareerAnalytics.clickRate}%</p>
                 </div>
                 <div className="p-3 bg-purple-50 rounded-full">
                   <Zap className="h-6 w-6 text-purple-600" />
                 </div>
               </div>
-              <Progress value={analytics.clickRate} className="mt-4" />
+              <Progress value={CareerAnalytics.clickRate} className="mt-4" />
             </CardContent>
           </Card>
         </motion.div>
@@ -181,7 +181,7 @@ export const AdvancedNotificationDashboard: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Best Time</p>
-                  <p className="text-2xl font-bold">{analytics.bestTimeToSend}</p>
+                  <p className="text-2xl font-bold">{CareerAnalytics.bestTimeToSend}</p>
                 </div>
                 <div className="p-3 bg-orange-50 rounded-full">
                   <Clock className="h-6 w-6 text-orange-600" />
@@ -195,15 +195,15 @@ export const AdvancedNotificationDashboard: React.FC = () => {
         </motion.div>
       </div>
 
-      <Tabs defaultValue="analytics" className="space-y-6">
+      <Tabs defaultValue="CareerAnalytics" className="space-y-6">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
           <TabsTrigger value="templates">Templates</TabsTrigger>
           <TabsTrigger value="testing">Testing</TabsTrigger>
           <TabsTrigger value="automation">Automation</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="analytics" className="space-y-6">
+        <TabsContent value="CareerAnalytics" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Category Performance */}
             <Card>
@@ -215,7 +215,7 @@ export const AdvancedNotificationDashboard: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {analytics.popularCategories.map((category, index) => (
+                  {CareerAnalytics.popularCategories.map((category, index) => (
                     <motion.div
                       key={category.name}
                       initial={{ opacity: 0, x: -20 }}
@@ -244,7 +244,7 @@ export const AdvancedNotificationDashboard: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {analytics.weeklyTrend.map((day, index) => (
+                  {CareerAnalytics.weeklyTrend.map((day, index) => (
                     <motion.div
                       key={day.day}
                       initial={{ opacity: 0, scale: 0.95 }}
@@ -279,7 +279,7 @@ export const AdvancedNotificationDashboard: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {analytics.deviceBreakdown.map((device, index) => (
+                  {CareerAnalytics.deviceBreakdown.map((device, index) => (
                     <motion.div
                       key={device.device}
                       initial={{ opacity: 0, y: 10 }}
@@ -298,12 +298,12 @@ export const AdvancedNotificationDashboard: React.FC = () => {
               </CardContent>
             </Card>
 
-            {/* AI Insights */}
+            {/* Intelligence Metrics */}
             <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Sparkles className="h-5 w-5 text-primary" />
-                  AI Insights
+                  Intelligence Metrics
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -316,7 +316,7 @@ export const AdvancedNotificationDashboard: React.FC = () => {
                     </p>
                   </div>
                   <div className="p-4 rounded-lg bg-green-50 border border-green-200">
-                    <p className="text-sm font-medium text-green-700 mb-2">✨ Success Pattern</p>
+                    <p className="text-sm font-medium text-green-700 mb-2">Success Pattern</p>
                     <p className="text-sm text-green-600">
                       Job opportunity notifications have a 34% higher click rate when sent 
                       with personalized skill matching.
@@ -486,7 +486,7 @@ export const AdvancedNotificationDashboard: React.FC = () => {
                 Smart Automation
               </CardTitle>
               <p className="text-sm text-muted-foreground">
-                AI-powered notification automation based on user behavior
+                Performance notification automation based on user behavior
               </p>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -547,7 +547,7 @@ export const AdvancedNotificationDashboard: React.FC = () => {
                     {[
                       'Profile Completion Reminder',
                       'Skill Assessment Follow-up',
-                      'Connection Request Series',
+                      'Talent Network Request Series',
                       'Career Milestone Celebration',
                       'Weekly Digest Summary'
                     ].map((automation) => (
@@ -570,3 +570,6 @@ export const AdvancedNotificationDashboard: React.FC = () => {
     </div>
   );
 };
+
+
+

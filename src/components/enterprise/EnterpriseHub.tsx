@@ -68,7 +68,7 @@ export const EnterpriseHub: React.FC = () => {
         <Card className="border-2 border-dashed border-muted/30 hover:border-muted/50 transition-colors">
           <CardContent className="p-6 text-center">
             <MessageSquare className="h-8 w-8 mx-auto mb-3 text-muted-foreground" />
-            <h3 className="font-semibold mb-2">AI Assistant</h3>
+            <h3 className="font-semibold mb-2">TalentXcel Navigator</h3>
             <Button 
               variant="outline"
               className="w-full"

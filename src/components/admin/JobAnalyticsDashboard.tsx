@@ -57,7 +57,7 @@ interface SystemAlert {
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
-export const JobAnalyticsDashboard: React.FC = () => {
+export const JobCareerAnalyticsCommandCenter: React.FC = () => {
   // Fetch scraper logs
   const { data: scrapedLogs, isLoading: logsLoading, refetch: refetchLogs } = useQuery({
     queryKey: ['scraper-logs'],
@@ -187,7 +187,7 @@ export const JobAnalyticsDashboard: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Job Analytics Dashboard</h2>
+          <h2 className="text-3xl font-bold tracking-tight">Job CareerAnalytics CommandCenter</h2>
           <p className="text-muted-foreground">
             Monitor scraping performance, quality metrics, and system health
           </p>
@@ -293,7 +293,7 @@ export const JobAnalyticsDashboard: React.FC = () => {
         <Card>
           <CardHeader>
             <CardTitle>Quality Assessment</CardTitle>
-            <CardDescription>AI-powered job quality distribution (last 7 days)</CardDescription>
+            <CardDescription>Performance job quality distribution (last 7 days)</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-80">
@@ -372,3 +372,6 @@ export const JobAnalyticsDashboard: React.FC = () => {
     </div>
   );
 };
+
+
+

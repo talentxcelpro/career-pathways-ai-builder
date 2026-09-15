@@ -4,25 +4,25 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import { Mail, Send, Eye, MousePointer, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { EmailAnalyticsEngine } from './EmailAnalyticsEngine';
+import { EmailCareerAnalyticsEngine } from './EmailCareerAnalyticsEngine';
 import { toast } from '@/hooks/use-toast';
 
-export const EmailAnalyticsDashboard: React.FC = () => {
-  const [analytics, setAnalytics] = useState<any>(null);
+export const EmailCareerAnalyticsCommandCenter: React.FC = () => {
+  const [CareerAnalytics, setCareerAnalytics] = useState<any>(null);
   const [dailyStats, setDailyStats] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const fetchAnalytics = async () => {
+  const fetchCareerAnalytics = async () => {
     try {
-      const data = await EmailAnalyticsEngine.fetchCorrectAnalytics('30');
-      setAnalytics(data.analytics);
+      const data = await EmailCareerAnalyticsEngine.fetchCorrectCareerAnalytics('30');
+      setCareerAnalytics(data.CareerAnalytics);
       setDailyStats(data.dailyStats.slice(0, 7)); // Last 7 days
     } catch (error) {
-      console.error('Error fetching analytics:', error);
+      console.error('Error fetching CareerAnalytics:', error);
       toast({
         title: "Error",
-        description: "Failed to load email analytics",
+        description: "Failed to load email CareerAnalytics",
         variant: "destructive",
       });
     } finally {
@@ -32,12 +32,12 @@ export const EmailAnalyticsDashboard: React.FC = () => {
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    await fetchAnalytics();
+    await fetchCareerAnalytics();
     setRefreshing(false);
   };
 
   useEffect(() => {
-    fetchAnalytics();
+    fetchCareerAnalytics();
   }, []);
 
   if (loading) {
@@ -48,15 +48,15 @@ export const EmailAnalyticsDashboard: React.FC = () => {
     );
   }
 
-  if (!analytics) {
-    return <div>No analytics data available</div>;
+  if (!CareerAnalytics) {
+    return <div>No CareerAnalytics data available</div>;
   }
 
   return (
     <div className="space-y-6">
       {/* Header with Refresh */}
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Email Analytics</h2>
+        <h2 className="text-2xl font-bold">Email CareerAnalytics</h2>
         <Button 
           onClick={handleRefresh} 
           disabled={refreshing}
@@ -76,7 +76,7 @@ export const EmailAnalyticsDashboard: React.FC = () => {
               <Mail className="h-8 w-8 text-blue-600" />
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Total Sent</p>
-                <p className="text-2xl font-bold text-gray-900">{analytics.totalSent.toLocaleString()}</p>
+                <p className="text-2xl font-bold text-gray-900">{CareerAnalytics.totalSent.toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
@@ -88,7 +88,7 @@ export const EmailAnalyticsDashboard: React.FC = () => {
               <Eye className="h-8 w-8 text-green-600" />
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Open Rate</p>
-                <p className="text-2xl font-bold text-gray-900">{analytics.openRate.toFixed(1)}%</p>
+                <p className="text-2xl font-bold text-gray-900">{CareerAnalytics.openRate.toFixed(1)}%</p>
               </div>
             </div>
           </CardContent>
@@ -100,7 +100,7 @@ export const EmailAnalyticsDashboard: React.FC = () => {
               <MousePointer className="h-8 w-8 text-purple-600" />
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Click Rate</p>
-                <p className="text-2xl font-bold text-gray-900">{analytics.clickRate.toFixed(1)}%</p>
+                <p className="text-2xl font-bold text-gray-900">{CareerAnalytics.clickRate.toFixed(1)}%</p>
               </div>
             </div>
           </CardContent>
@@ -112,7 +112,7 @@ export const EmailAnalyticsDashboard: React.FC = () => {
               <Send className="h-8 w-8 text-orange-600" />
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Delivery Rate</p>
-                <p className="text-2xl font-bold text-gray-900">{analytics.deliveryRate.toFixed(1)}%</p>
+                <p className="text-2xl font-bold text-gray-900">{CareerAnalytics.deliveryRate.toFixed(1)}%</p>
               </div>
             </div>
           </CardContent>
@@ -161,3 +161,7 @@ export const EmailAnalyticsDashboard: React.FC = () => {
     </div>
   );
 };
+
+
+
+

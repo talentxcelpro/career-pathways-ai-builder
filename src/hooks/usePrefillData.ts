@@ -74,7 +74,7 @@ export function usePrefillData(options: PrefillOptions) {
     enabled: !!user?.id && options.useCache !== false,
   });
 
-  // AI-powered prefill generation
+  // Performance prefill generation
   const generatePrefillMutation = useMutation({
     mutationFn: async (customContext?: Partial<PrefillContext>) => {
       const userContext: PrefillContext = {

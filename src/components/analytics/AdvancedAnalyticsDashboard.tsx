@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-interface AnalyticsData {
+interface CareerAnalyticsData {
   period: string;
   views: number;
   downloads: number;
@@ -57,13 +57,13 @@ interface TrafficSource {
   conversionRate: number;
 }
 
-export const AdvancedAnalyticsDashboard: React.FC = () => {
+export const AdvancedCareerAnalyticsCommandCenter: React.FC = () => {
   const [dateRange, setDateRange] = useState('30');
   const [selectedMetric, setSelectedMetric] = useState('views');
   const [isLoading, setIsLoading] = useState(false);
 
   // Mock data - in real app, fetch from API
-  const [analyticsData] = useState<AnalyticsData[]>([
+  const [CareerAnalyticsData] = useState<CareerAnalyticsData[]>([
     { period: 'Jan', views: 1200, downloads: 45, shares: 23, applications: 12, uniqueVisitors: 890, bounceRate: 45, avgTimeOnPage: 180 },
     { period: 'Feb', views: 1500, downloads: 62, shares: 31, applications: 18, uniqueVisitors: 1100, bounceRate: 42, avgTimeOnPage: 195 },
     { period: 'Mar', views: 1800, downloads: 78, shares: 41, applications: 25, uniqueVisitors: 1350, bounceRate: 38, avgTimeOnPage: 210 },
@@ -95,13 +95,13 @@ export const AdvancedAnalyticsDashboard: React.FC = () => {
     { source: 'Social Media', views: 700, percentage: 7, conversionRate: 5.3 }
   ]);
 
-  const totalViews = analyticsData.reduce((sum, data) => sum + data.views, 0);
-  const totalDownloads = analyticsData.reduce((sum, data) => sum + data.downloads, 0);
-  const totalShares = analyticsData.reduce((sum, data) => sum + data.shares, 0);
-  const totalApplications = analyticsData.reduce((sum, data) => sum + data.applications, 0);
+  const totalViews = CareerAnalyticsData.reduce((sum, data) => sum + data.views, 0);
+  const totalDownloads = CareerAnalyticsData.reduce((sum, data) => sum + data.downloads, 0);
+  const totalShares = CareerAnalyticsData.reduce((sum, data) => sum + data.shares, 0);
+  const totalApplications = CareerAnalyticsData.reduce((sum, data) => sum + data.applications, 0);
 
-  const currentMonth = analyticsData[analyticsData.length - 1];
-  const previousMonth = analyticsData[analyticsData.length - 2];
+  const currentMonth = CareerAnalyticsData[CareerAnalyticsData.length - 1];
+  const previousMonth = CareerAnalyticsData[CareerAnalyticsData.length - 2];
 
   const getChangePercentage = (current: number, previous: number) => {
     if (previous === 0) return 0;
@@ -128,7 +128,7 @@ export const AdvancedAnalyticsDashboard: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Analytics Dashboard</h1>
+          <h1 className="text-3xl font-bold text-gray-900">CareerAnalytics CommandCenter</h1>
           <p className="text-gray-600">Comprehensive insights into your resume performance</p>
         </div>
         <div className="flex items-center gap-3">
@@ -242,7 +242,7 @@ export const AdvancedAnalyticsDashboard: React.FC = () => {
         </Card>
       </div>
 
-      {/* Main Analytics */}
+      {/* Main CareerAnalytics */}
       <Tabs defaultValue="overview" className="space-y-6">
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -278,7 +278,7 @@ export const AdvancedAnalyticsDashboard: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
-                  <AreaChart data={analyticsData}>
+                  <AreaChart data={CareerAnalyticsData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="period" />
                     <YAxis />
@@ -379,7 +379,7 @@ export const AdvancedAnalyticsDashboard: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={200}>
-                  <BarChart data={analyticsData}>
+                  <BarChart data={CareerAnalyticsData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="period" />
                     <YAxis />
@@ -585,7 +585,7 @@ export const AdvancedAnalyticsDashboard: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={200}>
-                  <LineChart data={analyticsData}>
+                  <LineChart data={CareerAnalyticsData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="period" />
                     <YAxis />
@@ -637,3 +637,6 @@ export const AdvancedAnalyticsDashboard: React.FC = () => {
     </div>
   );
 };
+
+
+

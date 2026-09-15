@@ -57,23 +57,6 @@ class TurboCore {
    * Preload critical resources with highest priority
    */
   private preloadCritical() {
-    // Hero image preload
-    const heroLink = document.createElement('link');
-    heroLink.rel = 'preload';
-    heroLink.href = '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png';
-    heroLink.as = 'image';
-    (heroLink as any).fetchPriority = 'high';
-    document.head.appendChild(heroLink);
-
-    // Critical font preload
-    const fontLink = document.createElement('link');
-    fontLink.rel = 'preload';
-    fontLink.href = 'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfMZ.woff2';
-    fontLink.as = 'font';
-    fontLink.type = 'font/woff2';
-    fontLink.crossOrigin = 'anonymous';
-    document.head.appendChild(fontLink);
-
     // DNS prefetch critical domains
     ['//dthlgsnakhoftinssokm.supabase.co', '//fonts.gstatic.com'].forEach(domain => {
       const link = document.createElement('link');

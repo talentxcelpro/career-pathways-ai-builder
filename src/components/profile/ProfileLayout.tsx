@@ -21,7 +21,7 @@ const ProfileLayout = ({ children, title, description }: ProfileLayoutProps) => 
     { path: '/profile/cover-letter', label: 'Cover Letters', icon: MessageSquare },
     { path: '/profile/preferences', label: 'Job Preferences', icon: Heart },
     { path: '/profile/media', label: 'Media & Portfolio', icon: Camera },
-    { path: '/profile/analytics', label: 'Profile Analytics', icon: BarChart3 },
+    { path: '/profile/CareerAnalytics', label: 'Profile CareerAnalytics', icon: BarChart3 },
     { path: '/profile/documents', label: 'Documents', icon: FolderOpen },
     { path: '/profile/settings', label: 'Account Settings', icon: Bell },
   ];
@@ -34,7 +34,7 @@ const ProfileLayout = ({ children, title, description }: ProfileLayoutProps) => 
           <div className="flex items-center">
             <Link to="/" className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 mr-4">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Dashboard
+              Back to CommandCenter
             </Link>
             <div>
               <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
@@ -84,3 +84,7 @@ const ProfileLayout = ({ children, title, description }: ProfileLayoutProps) => 
 };
 
 export default ProfileLayout;
+
+
+
+

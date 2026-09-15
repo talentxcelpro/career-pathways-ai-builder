@@ -292,7 +292,7 @@ const JobMatch = () => {
               No Job Matches Yet
             </h3>
             <p className="text-gray-600 mb-4">
-              Complete your profile to get AI-powered job recommendations
+              Complete your profile to get Performance job recommendations
             </p>
             <Button asChild>
               <Link to="/profile/edit">Complete Profile</Link>
@@ -305,3 +305,4 @@ const JobMatch = () => {
 };
 
 export default JobMatch;
+

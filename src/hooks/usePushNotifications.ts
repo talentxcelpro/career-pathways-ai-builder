@@ -1,183 +1,103 @@
-import { useState, useEffect } from 'react';
-import { toast } from 'sonner';
+import { useEffect, useState } from 'react';
+import { PushNotifications, Token, ActionPerformed, PushNotificationSchema } from '@capacitor/push-notifications';
+import { Capacitor } from '@capacitor/core';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { Capacitor } from '@capacitor/core';
-import { PushNotifications } from '@capacitor/push-notifications';
+import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 export const usePushNotifications = () => {
   const { user } = useAuth();
-  const [isSupported] = useState('serviceWorker' in navigator && 'PushManager' in window);
-  const [isSubscribed, setIsSubscribed] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [permission, setPermission] = useState<NotificationPermission>('default');
-  const [pushToken, setPushToken] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isSupported) {
-      setPermission(Notification.permission);
-      checkExistingSubscription();
-    }
+    // We only register push notifications on Native platforms (Android/iOS)
+    if (!Capacitor.isNativePlatform() || !user) return;
 
-    // Initialize native push notifications on mobile
-    if (Capacitor.isNativePlatform()) {
-      initializeNativePush();
-    }
-  }, [isSupported, user]);
+    let isMounted = true;
 
-  const checkExistingSubscription = async () => {
-    try {
-      const registration = await navigator.serviceWorker.ready;
-      const subscription = await registration.pushManager.getSubscription();
-      setIsSubscribed(!!subscription);
-    } catch (error) {
-      console.error('Error checking subscription:', error);
-    }
-  };
+    const registerNotifications = async () => {
+      try {
+        let permStatus = await PushNotifications.checkPermissions();
 
-  const initializeNativePush = async () => {
-    try {
-      // Request permission
-      let permStatus = await PushNotifications.checkPermissions();
-      
-      if (permStatus.receive === 'prompt') {
-        permStatus = await PushNotifications.requestPermissions();
-      }
-      
-      if (permStatus.receive !== 'granted') {
-        throw new Error('User denied permissions!');
-      }
+        if (permStatus.receive === 'prompt') {
+          permStatus = await PushNotifications.requestPermissions();
+        }
 
-      // Register for push notifications
-      await PushNotifications.register();
+        if (permStatus.receive !== 'granted') {
+          console.log('Push notification permissions not granted');
+          return;
+        }
 
-      // Listen for registration token
-      PushNotifications.addListener('registration', (token) => {
-        console.log('Registration token: ', token.value);
-        setPushToken(token.value);
-        registerPushToken(token.value, 'mobile');
-      });
+        // Add listeners
+        await PushNotifications.addListener('registration', async (token: Token) => {
+          if (!isMounted) return;
+          console.log('Push registration success, token: ' + token.value);
+          setToken(token.value);
 
-      // Listen for push notifications
-      PushNotifications.addListener('pushNotificationReceived', (notification) => {
-        console.log('Push notification received: ', notification);
-      });
+          // Save token to backend using edge function
+          try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) return;
 
-      // Handle notification tap
-      PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
-        console.log('Push notification action performed', notification.actionId, notification.inputValue);
-      });
+            const platform = Capacitor.getPlatform();
+            
+            // Invoke the register-push-token edge function
+            await supabase.functions.invoke('register-push-token', {
+              body: {
+                token: token.value,
+                platform: platform === 'android' ? 'android' : (platform === 'ios' ? 'ios' : 'web'),
+                deviceInfo: { timestamp: new Date().toISOString() }
+              }
+            });
+            console.log('Token successfully registered to backend');
+          } catch (e) {
+            console.error('Error saving push token to backend', e);
+          }
+        });
 
-    } catch (error) {
-      console.error('Native push initialization error:', error);
-    }
-  };
+        await PushNotifications.addListener('registrationError', (error: any) => {
+          console.error('Error on registration: ', error);
+        });
 
-  const registerPushToken = async (token: string, platform: string) => {
-    if (!user) return;
-
-    try {
-      const { data, error } = await supabase.functions.invoke('register-push-token', {
-        body: { push_token: token, platform }
-      });
-      
-      if (error) throw error;
-      console.log('Push token registered successfully');
-    } catch (error) {
-      console.error('Failed to register push token:', error);
-    }
-  };
-
-  const subscribeToPush = async () => {
-    setIsLoading(true);
-    try {
-      const permission = await Notification.requestPermission();
-      setPermission(permission);
-      
-      if (permission === 'granted') {
-        if (Capacitor.isNativePlatform()) {
-          // Native mobile subscription handled in initializeNativePush
-          setIsSubscribed(true);
-        } else {
-          // Web push subscription
-          const registration = await navigator.serviceWorker.ready;
-          
-          // Generate VAPID keys or use existing ones
-          const vapidPublicKey = 'BEl62iUYgUivxIkv69yViEuiBIa40HI80NM9f40SawaN-F72YOFApNfUpVJ4LxoLHCkFCVRJfySpZ8_Q24eWBJA'; // Replace with your VAPID public key
-          
-          const subscription = await registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
+        await PushNotifications.addListener('pushNotificationReceived', (notification: PushNotificationSchema) => {
+          console.log('Push received: ', notification);
+          // Show local toast when app is in foreground
+          toast.message(notification.title || 'New Notification', {
+            description: notification.body,
+            action: notification.data?.url ? {
+              label: 'View',
+              onClick: () => navigate(notification.data.url)
+            } : undefined
           });
+        });
 
-          // Register subscription with backend
-          const subscriptionData = JSON.stringify(subscription);
-          await registerPushToken(subscriptionData, 'web');
+        await PushNotifications.addListener('pushNotificationActionPerformed', (notification: ActionPerformed) => {
+          console.log('Push action performed: ', notification);
+          const data = notification.notification.data;
           
-          setIsSubscribed(true);
-        }
-        toast.success('Push notifications enabled!');
+          if (data && data.url) {
+            navigate(data.url);
+          }
+        });
+
+        // Register with Apple/Google to receive token
+        await PushNotifications.register();
+      } catch (error) {
+        console.error('Error initializing push notifications:', error);
       }
-    } catch (error) {
-      console.error('Subscription error:', error);
-      toast.error('Failed to enable notifications');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
 
-  const urlBase64ToUint8Array = (base64String: string) => {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-    const rawData = window.atob(base64);
-    const outputArray = new Uint8Array(rawData.length);
-    for (let i = 0; i < rawData.length; ++i) {
-      outputArray[i] = rawData.charCodeAt(i);
-    }
-    return outputArray;
-  };
+    registerNotifications();
 
-  const unsubscribeFromPush = async () => {
-    setIsLoading(true);
-    try {
+    return () => {
+      isMounted = false;
       if (Capacitor.isNativePlatform()) {
-        // Unregister native push notifications
-        await PushNotifications.removeAllListeners();
-      } else {
-        // Unsubscribe web push
-        const registration = await navigator.serviceWorker.ready;
-        const subscription = await registration.pushManager.getSubscription();
-        if (subscription) {
-          await subscription.unsubscribe();
-        }
+        PushNotifications.removeAllListeners();
       }
-      setIsSubscribed(false);
-      toast.success('Push notifications disabled');
-    } catch (error) {
-      console.error('Unsubscribe error:', error);
-      toast.error('Failed to disable notifications');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
+  }, [user, navigate]);
 
-  const sendTestNotification = () => {
-    if (permission === 'granted') {
-      new Notification('Test Notification', {
-        body: 'This is a test from TalentXcel!',
-        icon: '/favicon.ico'
-      });
-    }
-  };
-
-  return {
-    isSupported,
-    isSubscribed,
-    isLoading,
-    permission,
-    pushToken,
-    subscribeToPush,
-    unsubscribeFromPush,
-    sendTestNotification
-  };
+  return { token };
 };

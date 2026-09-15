@@ -14,7 +14,7 @@ export const MobileNetworkingStats: React.FC = () => {
       if (!user?.id) return null;
 
       // Get connection count
-      const { data: connections } = await supabase
+      const { data: TalentNetwork } = await supabase
         .from('connections')
         .select('id')
         .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
@@ -37,7 +37,7 @@ export const MobileNetworkingStats: React.FC = () => {
       const totalComments = posts?.reduce((sum, post) => sum + (post.comments_count || 0), 0) || 0;
 
       return {
-        connections: connections?.length || 0,
+        TalentNetwork: TalentNetwork?.length || 0,
         profileViews: profile?.profile_views_count || 0,
         totalLikes,
         totalComments
@@ -54,8 +54,8 @@ export const MobileNetworkingStats: React.FC = () => {
   const statsData = [
     {
       icon: Users,
-      label: 'Connections',
-      value: stats.connections,
+      label: 'connections',
+      value: stats.TalentNetwork,
       color: 'text-blue-600'
     },
     {
@@ -104,7 +104,7 @@ export const MobileNetworkingStats: React.FC = () => {
           <p className="text-xs text-gray-600">
             Your networking activity is{' '}
             <span className="font-medium text-green-600">
-              {stats.connections > 10 ? 'excellent' : stats.connections > 5 ? 'good' : 'growing'}
+              {stats.TalentNetwork > 10 ? 'excellent' : stats.TalentNetwork > 5 ? 'good' : 'growing'}
             </span>
           </p>
         </div>
@@ -112,3 +112,4 @@ export const MobileNetworkingStats: React.FC = () => {
     </div>
   );
 };
+

@@ -55,7 +55,7 @@ interface BillingPlan {
 }
 
 export const EnterpriseFeatures: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('CommandCenter');
   const [selectedPlan, setSelectedPlan] = useState('enterprise');
 
   // Mock data
@@ -108,7 +108,7 @@ export const EnterpriseFeatures: React.FC = () => {
       name: 'Professional',
       description: 'For growing businesses',
       price: 149,
-      features: ['Advanced Templates', 'Team Collaboration', 'Priority Support', 'Basic Analytics'],
+      features: ['Advanced Templates', 'Team Collaboration', 'Priority Support', 'Basic CareerAnalytics'],
       limits: {
         users: 25,
         storage: 100,
@@ -121,7 +121,7 @@ export const EnterpriseFeatures: React.FC = () => {
       name: 'Enterprise',
       description: 'For large organizations',
       price: 499,
-      features: ['Custom Branding', 'Advanced Analytics', 'SSO Integration', 'Dedicated Support', 'Custom Integrations'],
+      features: ['Custom Branding', 'Advanced CareerAnalytics', 'SSO Integration', 'Dedicated Support', 'Custom Integrations'],
       limits: {
         users: 500,
         storage: 1000,
@@ -138,7 +138,7 @@ export const EnterpriseFeatures: React.FC = () => {
         <div>
           <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
             <Crown className="h-8 w-8 text-yellow-500" />
-            Enterprise Dashboard
+            Enterprise CommandCenter
           </h1>
           <p className="text-gray-600">Advanced features and controls for enterprise customers</p>
         </div>
@@ -205,16 +205,16 @@ export const EnterpriseFeatures: React.FC = () => {
       {/* Main Content */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+          <TabsTrigger value="CommandCenter">CommandCenter</TabsTrigger>
           <TabsTrigger value="team">Team</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="CareerAnalytics">CareerAnalytics</TabsTrigger>
           <TabsTrigger value="billing">Billing</TabsTrigger>
           <TabsTrigger value="integrations">Integrations</TabsTrigger>
         </TabsList>
 
-        {/* Dashboard Tab */}
-        <TabsContent value="dashboard" className="space-y-6">
+        {/* CommandCenter Tab */}
+        <TabsContent value="CommandCenter" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* System Health */}
             <Card>
@@ -317,7 +317,7 @@ export const EnterpriseFeatures: React.FC = () => {
                     </div>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm">Analytics Dashboard</span>
+                    <span className="text-sm">CareerAnalytics CommandCenter</span>
                     <div className="flex items-center gap-2">
                       <div className="bg-gray-200 rounded-full h-2 w-20">
                         <div className="bg-yellow-600 h-2 rounded-full w-[58%]" />
@@ -613,11 +613,11 @@ export const EnterpriseFeatures: React.FC = () => {
           </div>
         </TabsContent>
 
-        {/* Analytics Tab */}
-        <TabsContent value="analytics" className="space-y-6">
+        {/* CareerAnalytics Tab */}
+        <TabsContent value="CareerAnalytics" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Enterprise Analytics</CardTitle>
+              <CardTitle>Enterprise CareerAnalytics</CardTitle>
               <CardDescription>Advanced insights and reporting for your organization</CardDescription>
             </CardHeader>
             <CardContent>
@@ -759,3 +759,6 @@ export const EnterpriseFeatures: React.FC = () => {
     </div>
   );
 };
+
+
+

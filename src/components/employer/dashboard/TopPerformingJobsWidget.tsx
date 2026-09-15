@@ -85,7 +85,7 @@ export const TopPerformingJobsWidget = () => {
             variant="outline" 
             size="sm" 
             className="text-xs font-semibold"
-            onClick={() => navigate('/employer/analytics')}
+            onClick={() => navigate('/employer/CareerAnalytics')}
           >
             View All
           </Button>
@@ -135,12 +135,16 @@ export const TopPerformingJobsWidget = () => {
             variant="ghost" 
             size="sm" 
             className="w-full text-xs font-semibold"
-            onClick={() => navigate('/employer/analytics')}
+            onClick={() => navigate('/employer/CareerAnalytics')}
           >
-            View Detailed Analytics
+            View Detailed CareerAnalytics
           </Button>
         </div>
       </CardContent>
     </Card>
   );
 };
+
+
+
+

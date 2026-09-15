@@ -88,7 +88,7 @@ export class SEOTemplateEngine {
     'product-manager': { 
       title: 'Product Manager', 
       description: 'Lead product development and strategy',
-      skills: ['Strategy', 'Communication', 'Analytics'],
+      skills: ['Strategy', 'Communication', 'CareerAnalytics'],
       avgSalary: '15-30 LPA'
     },
     'frontend-developer': { 
@@ -353,3 +353,6 @@ export class SEOTemplateEngine {
     );
   }
 }
+
+
+

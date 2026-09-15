@@ -155,7 +155,7 @@ Best regards,
             <div className="flex justify-center gap-8 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-primary" />
-                AI-Powered
+                Performance
               </div>
               <div className="flex items-center gap-2">
                 <Target className="h-4 w-4 text-primary" />
@@ -202,7 +202,7 @@ Best regards,
                     <Label htmlFor="job-description">Job Description (Optional)</Label>
                     <Textarea
                       id="job-description"
-                      placeholder="Paste the job description here for better AI matching..."
+                      placeholder="Paste the job description here for better Precision Match..."
                       value={jobDescription}
                       onChange={(e) => setJobDescription(e.target.value)}
                       rows={6}

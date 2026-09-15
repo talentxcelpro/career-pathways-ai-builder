@@ -24,21 +24,21 @@ import {
   Lightbulb
 } from 'lucide-react';
 
-interface DetailedCollegeAnalyticsProps {
+interface DetailedCollegeCareerAnalyticsProps {
   college: any;
 }
 
-export const DetailedCollegeAnalytics: React.FC<DetailedCollegeAnalyticsProps> = ({
+export const DetailedCollegeCareerAnalytics: React.FC<DetailedCollegeCareerAnalyticsProps> = ({
   college
 }) => {
-  const { data: analytics, isLoading } = useQuery({
-    queryKey: ['college-analytics', college.id],
+  const { data: CareerAnalytics, isLoading } = useQuery({
+    queryKey: ['college-CareerAnalytics', college.id],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('college_analytics')
+        .from('college_CareerAnalytics')
         .select('*')
         .eq('college_id', college.id)
-        .order('analytics_date', { ascending: false })
+        .order('CareerAnalytics_date', { ascending: false })
         .limit(1)
         .maybeSingle();
       
@@ -87,8 +87,8 @@ export const DetailedCollegeAnalytics: React.FC<DetailedCollegeAnalyticsProps> =
     );
   }
 
-  // Default analytics if no data in database
-  const defaultAnalytics = {
+  // Default CareerAnalytics if no data in database
+  const defaultCareerAnalytics = {
     placement_rate: college.placement_percentage || 75,
     state_average_placement: stateComparison?.avgPlacement || 68,
     national_average_placement: 68.5,
@@ -111,7 +111,7 @@ export const DetailedCollegeAnalytics: React.FC<DetailedCollegeAnalyticsProps> =
     average_package_trend: 'increasing'
   };
 
-  const data = analytics || defaultAnalytics;
+  const data = CareerAnalytics || defaultCareerAnalytics;
   const placementComparison = data.placement_rate - data.state_average_placement;
   const isAboveAverage = placementComparison > 0;
 
@@ -229,7 +229,7 @@ export const DetailedCollegeAnalytics: React.FC<DetailedCollegeAnalyticsProps> =
         </div>
       </div>
 
-      {/* Detailed Analytics */}
+      {/* Detailed CareerAnalytics */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {detailedMetrics.map((category, categoryIndex) => (
           <Card key={categoryIndex}>
@@ -328,3 +328,6 @@ export const DetailedCollegeAnalytics: React.FC<DetailedCollegeAnalyticsProps> =
     </div>
   );
 };
+
+
+

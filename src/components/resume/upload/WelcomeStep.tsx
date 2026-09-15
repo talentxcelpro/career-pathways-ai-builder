@@ -38,7 +38,7 @@ export const WelcomeStep: React.FC<WelcomeStepProps> = ({ onNext, canGoNext }) =
           <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
             <Sparkles className="h-6 w-6 text-blue-600" />
           </div>
-          <h3 className="font-semibold text-gray-900 mb-2">AI-Powered Enhancement</h3>
+          <h3 className="font-semibold text-gray-900 mb-2">Performance Enhancement</h3>
           <p className="text-sm text-gray-600">Our AI analyzes your resume and suggests improvements for better ATS compatibility.</p>
         </div>
         
@@ -80,3 +80,4 @@ export const WelcomeStep: React.FC<WelcomeStepProps> = ({ onNext, canGoNext }) =
     </div>
   );
 };
+

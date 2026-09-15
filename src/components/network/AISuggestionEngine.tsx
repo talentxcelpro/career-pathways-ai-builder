@@ -28,25 +28,25 @@ export const AISuggestionEngine: React.FC<AISuggestionEngineProps> = ({
     }
   });
 
-  // Get people suggestions (similar to ConnectionSuggestions)
+  // Get people suggestions (similar to TalentNetworkuggestions)
   const { data: peopleSuggestions, isLoading: loadingPeople } = useQuery({
     queryKey: ['people-suggestions', currentUser?.id],
     queryFn: async () => {
       if (!currentUser) return [];
 
-      // Get existing connections to exclude
-      const { data: existingConnections } = await supabase
+      // Get existing TalentNetwork to exclude
+      const { data: existingTalentNetwork } = await supabase
         .from('connections')
         .select('recipient_id, requester_id')
         .or(`requester_id.eq.${currentUser.id},recipient_id.eq.${currentUser.id}`)
         .in('status', ['accepted', 'pending']);
 
       const connectedUserIds = new Set([
-        ...(existingConnections?.map(c => c.recipient_id) || []),
-        ...(existingConnections?.map(c => c.requester_id) || [])
+        ...(existingTalentNetwork?.map(c => c.recipient_id) || []),
+        ...(existingTalentNetwork?.map(c => c.requester_id) || [])
       ]);
 
-      // Get profiles excluding current user and existing connections
+      // Get profiles excluding current user and existing TalentNetwork
       const { data: profiles, error } = await supabase
         .from('profiles')
         .select('id, full_name, title, profile_picture_url, current_company, skills')
@@ -56,7 +56,7 @@ export const AISuggestionEngine: React.FC<AISuggestionEngineProps> = ({
 
       if (error) throw error;
 
-      // Filter out existing connections
+      // Filter out existing TalentNetwork
       const filteredProfiles = profiles
         .filter(profile => !connectedUserIds.has(profile.id))
         .slice(0, 6);
@@ -214,10 +214,10 @@ export const AISuggestionEngine: React.FC<AISuggestionEngineProps> = ({
         <CardHeader>
           <CardTitle className="flex items-center text-xl">
             <Brain className="h-6 w-6 mr-2 text-purple-600" />
-            AI-Powered Suggestions
+            Performance Suggestions
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Personalized recommendations based on your activity, connections, and interests
+            Personalized recommendations based on your activity, TalentNetwork, and interests
           </p>
         </CardHeader>
       </Card>
@@ -439,3 +439,5 @@ export const AISuggestionEngine: React.FC<AISuggestionEngineProps> = ({
     </div>
   );
 };
+
+

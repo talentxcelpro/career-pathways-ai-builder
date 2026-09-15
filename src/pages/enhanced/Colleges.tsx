@@ -42,7 +42,7 @@ import { EnhancedFilters } from '@/components/colleges/enhanced/EnhancedFilters'
 import { updateMetaTags } from '@/utils/metaTags';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { ImageWithFallback } from '@/components/common/ImageWithFallback';
-import { CollegeInsightsDashboard } from '@/components/colleges/enhanced/CollegeInsightsDashboard';
+import { CollegeInsightsCommandCenter } from '@/components/colleges/enhanced/CollegeInsightsDashboard';
 
 const EnhancedColleges = () => {
   const navigate = useNavigate();
@@ -181,7 +181,7 @@ const EnhancedColleges = () => {
             <h1 className="text-3xl font-bold text-foreground mb-3">Discover Your Perfect College</h1>
             <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
               Find verified colleges across India with comprehensive data on programs, placements, reviews, and direct admission guidance. 
-              Explore {colleges?.length || 0}+ colleges with detailed analytics and insights.
+              Explore {colleges?.length || 0}+ colleges with detailed CareerAnalytics and insights.
             </p>
             
             {/* Action Buttons */}
@@ -203,10 +203,10 @@ const EnhancedColleges = () => {
             </div>
           </div>
 
-          {/* Analytics Dashboard */}
+          {/* CareerAnalytics CommandCenter */}
           {colleges && colleges.length > 0 && (
             <div className="mb-8">
-              <CollegeInsightsDashboard colleges={colleges} />
+              <CollegeInsightsCommandCenter colleges={colleges} />
             </div>
           )}
         </div>
@@ -436,3 +436,6 @@ const EnhancedColleges = () => {
 };
 
 export default EnhancedColleges;
+
+
+

@@ -84,8 +84,8 @@ export const ApplicationTracker: React.FC<ApplicationTrackerProps> = ({
       status: 'rejected',
       stage: 'Final Round',
       progress: 80,
-      nextAction: 'Request feedback',
-      feedback: 'Looking for more experience in backend technologies',
+      nextAction: 'Request Feedback',
+      Feedback: 'Looking for more experience in backend technologies',
       salary: '₹6-9 LPA',
       location: 'Pune',
       priority: 'low'
@@ -306,13 +306,13 @@ export const ApplicationTracker: React.FC<ApplicationTrackerProps> = ({
               </div>
 
               {/* Feedback (for rejected applications) */}
-              {application.feedback && (
+              {application.Feedback && (
                 <div className="bg-red-50 p-3 rounded-lg mb-4">
                   <div className="flex items-center gap-2 mb-1">
                     <MessageSquare className="h-4 w-4 text-red-500" />
                     <span className="text-sm font-medium text-red-800">Feedback</span>
                   </div>
-                  <p className="text-sm text-red-700">{application.feedback}</p>
+                  <p className="text-sm text-red-700">{application.Feedback}</p>
                 </div>
               )}
 
@@ -369,3 +369,4 @@ export const ApplicationTracker: React.FC<ApplicationTrackerProps> = ({
     </div>
   );
 };
+

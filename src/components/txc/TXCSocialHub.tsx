@@ -3,8 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TXCLeaderboard } from './TXCLeaderboard';
 import { TXCLiveActivity } from './TXCLiveActivity';
-import { TXCMiningDashboard } from './TXCMiningDashboard';
-// import TXCAdvancedAnalytics from './TXCAdvancedAnalytics';
+import { TXCMiningCommandCenter } from './TXCMiningDashboard';
+// import TXCAdvancedCareerAnalytics from './TXCAdvancedCareerAnalytics';
 import TXCMobileOptimized from './TXCMobileOptimized';
 import TXCSecurityManager from './TXCSecurityManager';
 import TXCSystemStatus from './TXCSystemStatus';
@@ -38,9 +38,9 @@ export const TXCSocialHub: React.FC<TXCSocialHubProps> = ({ className = '' }) =>
             <Trophy className="h-4 w-4" />
             Leaderboard
           </TabsTrigger>
-          <TabsTrigger value="analytics" className="flex items-center gap-2">
+          <TabsTrigger value="CareerAnalytics" className="flex items-center gap-2">
             <BarChart3 className="h-4 w-4" />
-            Analytics
+            CareerAnalytics
           </TabsTrigger>
           <TabsTrigger value="security" className="flex items-center gap-2">
             <Shield className="h-4 w-4" />
@@ -138,9 +138,9 @@ export const TXCSocialHub: React.FC<TXCSocialHubProps> = ({ className = '' }) =>
           <TXCLeaderboard />
         </TabsContent>
         
-        <TabsContent value="analytics" className="space-y-6">
+        <TabsContent value="CareerAnalytics" className="space-y-6">
           <div className="text-center py-8 text-muted-foreground">
-            Advanced Analytics - Coming Soon
+            Advanced CareerAnalytics - Coming Soon
           </div>
         </TabsContent>
         
@@ -155,3 +155,6 @@ export const TXCSocialHub: React.FC<TXCSocialHubProps> = ({ className = '' }) =>
     </div>
   );
 };
+
+
+

@@ -59,7 +59,7 @@ const CreateResume = () => {
             className="flex items-center mr-4"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Dashboard
+            Back to CommandCenter
           </Button>
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Create New Resume</h1>
@@ -116,7 +116,7 @@ const CreateResume = () => {
             {/* AI Features Preview */}
             <Card className="mt-6">
               <CardHeader>
-                <CardTitle>AI-Powered Features</CardTitle>
+                <CardTitle>Performance Features</CardTitle>
                 <CardDescription>What you'll get with our AI resume builder</CardDescription>
               </CardHeader>
               <CardContent>
@@ -169,7 +169,7 @@ const CreateResume = () => {
                       <div>
                         <h3 className="font-medium text-gray-900">Resume Builder Interface</h3>
                         <p className="text-sm text-gray-600 mt-1">
-                          Interactive editor with AI-powered suggestions and real-time preview
+                          Interactive editor with Performance suggestions and real-time preview
                         </p>
                       </div>
                     </div>
@@ -200,3 +200,5 @@ const CreateResume = () => {
 };
 
 export default CreateResume;
+
+

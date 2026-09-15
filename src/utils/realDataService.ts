@@ -1,13 +1,13 @@
 
 // DEPRECATED: This file has been replaced by specialized services
 // Please use the following services instead:
-// - src/services/dashboardService.ts for dashboard data
+// - src/services/dashboardService.ts for command center data
 // - src/services/jobService.ts for job data
 // - src/services/courseService.ts for course data
-// - src/services/analyticsService.ts for analytics
+// - src/services/analyticsService.ts for Career Analytics
 
 import { 
-  getDashboardStats,
+  getCommandCenterStats,
   getFeaturedJobs,
   getPopularCourses,
   getAllCourses,
@@ -19,7 +19,7 @@ import {
 
 export const realDataService = {
   // Redirect to new service methods
-  getDashboardStats: (userId?: string) => getDashboardStats(userId),
+  getCommandCenterStats: (userId?: string) => getCommandCenterStats(userId),
   getFeaturedJobs: () => getFeaturedJobs(),
   getPopularCourses: () => getPopularCourses(),
   getAllCourses: () => getAllCourses(),
@@ -28,3 +28,7 @@ export const realDataService = {
   getSkillDemandTrends: (location?: string) => getSkillDemandTrends(location),
   getUserCourseProgress: (userId?: string) => getUserCourseProgress(userId)
 };
+
+
+
+

@@ -69,7 +69,7 @@ export function EnhancedAICareerIntelligence() {
         .order('created_at', { ascending: false })
         .limit(10);
 
-      // Load AI recommendations  
+      // Load Career Moves  
       const { data: recommendationsData } = await supabase
         .from('ai_career_recommendations')
         .select('*')
@@ -93,7 +93,7 @@ export function EnhancedAICareerIntelligence() {
       await loadMarketTrends();
 
     } catch (error) {
-      console.error('Error loading career intelligence:', error);
+      console.error('Error loading CareerIntelligence:', error);
       toast.error('Failed to load career insights');
     } finally {
       setIsLoading(false);
@@ -203,7 +203,7 @@ export function EnhancedAICareerIntelligence() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            AI Career Intelligence
+            AI CareerIntelligence
           </h1>
           <p className="text-muted-foreground mt-2">
             Personalized insights powered by advanced AI to accelerate your career
@@ -215,12 +215,12 @@ export function EnhancedAICareerIntelligence() {
         </Button>
       </div>
 
-      {/* Career Intelligence Score */}
+      {/* CareerIntelligence Score */}
       <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-blue-800">
             <Brain className="w-6 h-6" />
-            Career Intelligence Score
+            CareerIntelligence Score
           </CardTitle>
           <CardDescription>
             Your overall career readiness and market positioning
@@ -259,7 +259,7 @@ export function EnhancedAICareerIntelligence() {
 
       {/* Two Column Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* AI Insights */}
+        {/* Intelligence Metrics */}
         <div className="space-y-6">
           <Card>
             <CardHeader>
@@ -344,13 +344,13 @@ export function EnhancedAICareerIntelligence() {
           </Card>
         </div>
 
-        {/* AI Recommendations */}
+        {/* Career Moves */}
         <div className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Zap className="w-5 h-5 text-purple-500" />
-                AI Recommendations
+                Career Moves
               </CardTitle>
               <CardDescription>
                 Actionable steps to advance your career
@@ -406,7 +406,7 @@ export function EnhancedAICareerIntelligence() {
                 </Button>
                 <Button variant="outline" className="w-full justify-start">
                   <Users className="w-4 h-4 mr-2" />
-                  Find Strategic Connections
+                  Find Strategic TalentNetwork
                 </Button>
                 <Button variant="outline" className="w-full justify-start">
                   <Award className="w-4 h-4 mr-2" />
@@ -424,3 +424,5 @@ export function EnhancedAICareerIntelligence() {
     </div>
   );
 }
+
+

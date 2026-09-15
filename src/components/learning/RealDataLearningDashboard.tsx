@@ -18,12 +18,12 @@ import {
   Zap
 } from 'lucide-react';
 
-interface RealDataLearningDashboardProps {
+interface RealDataLearningCommandCenterProps {
   userId?: string;
   className?: string;
 }
 
-export const RealDataLearningDashboard: React.FC<RealDataLearningDashboardProps> = ({ 
+export const RealDataLearningCommandCenter: React.FC<RealDataLearningCommandCenterProps> = ({ 
   userId, 
   className 
 }) => {
@@ -272,3 +272,4 @@ export const RealDataLearningDashboard: React.FC<RealDataLearningDashboardProps>
     </div>
   );
 };
+

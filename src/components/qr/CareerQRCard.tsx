@@ -48,7 +48,7 @@ export const CareerQRCard: React.FC<CareerQRCardProps> = ({
             >
               <Sparkles className="h-5 w-5 text-primary" />
             </motion.div>
-            Digital Career Passport
+            Digital Evolution Hub
           </CardTitle>
           <p className="text-sm text-muted-foreground flex items-center gap-1">
             <Zap className="h-3 w-3" />

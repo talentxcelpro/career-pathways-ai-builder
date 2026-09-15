@@ -38,7 +38,7 @@ export const EnhancedEngagementActions: React.FC<EnhancedEngagementActionsProps>
       await toggleLike();
       await likeContent(postType, postId, authorId);
       
-      // Add haptic feedback for mobile
+      // Add haptic Feedback for mobile
       if ('vibrate' in navigator) {
         navigator.vibrate(50);
       }
@@ -257,3 +257,4 @@ export const EnhancedEngagementActions: React.FC<EnhancedEngagementActionsProps>
     </div>
   );
 };
+

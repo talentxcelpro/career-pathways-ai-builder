@@ -117,7 +117,7 @@ export const SmartNetworkingRecommendations: React.FC = () => {
             </div>
             <div className="text-right">
               <div className="text-3xl font-bold text-primary">{networkingScore}/100</div>
-              <Badge className="bg-green-100 text-green-800">AI Powered</Badge>
+              <Badge className="bg-green-100 text-green-800">Performance</Badge>
             </div>
           </div>
           
@@ -132,7 +132,7 @@ export const SmartNetworkingRecommendations: React.FC = () => {
             </div>
             <div className="text-center">
               <div className="text-lg font-semibold">{Math.floor(networkingScore * 2)}</div>
-              <div className="text-sm text-muted-foreground">Active Connections</div>
+              <div className="text-sm text-muted-foreground">Active TalentNetwork</div>
             </div>
             <div className="text-center">
               <div className="text-lg font-semibold">{(networkingScore / 10).toFixed(1)}</div>
@@ -147,7 +147,7 @@ export const SmartNetworkingRecommendations: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Brain className="h-5 w-5" />
-            AI-Powered Recommendations
+            Performance Recommendations
           </CardTitle>
           <p className="text-sm text-muted-foreground">
             Intelligent networking suggestions based on your career goals and behavior
@@ -297,7 +297,7 @@ export const SmartNetworkingRecommendations: React.FC = () => {
         <CardContent>
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium">New Quality Connections</span>
+              <span className="text-sm font-medium">New Quality TalentNetwork</span>
               <span className="text-sm text-muted-foreground">8/10</span>
             </div>
             <Progress value={80} className="h-2" />
@@ -319,3 +319,4 @@ export const SmartNetworkingRecommendations: React.FC = () => {
     </div>
   );
 };
+

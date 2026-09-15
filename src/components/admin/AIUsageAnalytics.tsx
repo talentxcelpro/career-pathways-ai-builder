@@ -52,7 +52,7 @@ const responseTimeData = [
   { name: '20:00', time: 1400 }
 ];
 
-export const AIUsageAnalytics = () => {
+export const AIUsageCareerAnalytics = () => {
   const [timeRange, setTimeRange] = useState('7d');
 
   const summaryCards = [
@@ -90,9 +90,9 @@ export const AIUsageAnalytics = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">AI Usage Analytics</h2>
+          <h2 className="text-2xl font-bold">AI Usage CareerAnalytics</h2>
           <p className="text-muted-foreground">
-            Comprehensive analytics for AI service usage and performance
+            Comprehensive CareerAnalytics for AI service usage and performance
           </p>
         </div>
         <div className="flex gap-2">
@@ -275,3 +275,7 @@ export const AIUsageAnalytics = () => {
     </div>
   );
 };
+
+
+
+

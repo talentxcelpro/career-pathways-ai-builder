@@ -154,11 +154,11 @@ export const expandedCourses = [
     category: 'Marketing & Sales',
     subcategory: 'Digital Marketing',
     thumbnail: 'https://images.unsplash.com/photo-1611605698335-8b1569810432?w=400&h=250&fit=crop&auto=format',
-    tags: ['Google Ads', 'PPC', 'Conversion Optimization', 'Analytics'],
+    tags: ['Google Ads', 'PPC', 'Conversion Optimization', 'CareerAnalytics'],
     certified: true,
     trending: true,
     description: 'Master advanced Google Ads strategies for maximum ROI',
-    whatYouLearn: ['Advanced Bidding Strategies', 'Audience Targeting', 'Landing Page Optimization', 'Campaign Analytics'],
+    whatYouLearn: ['Advanced Bidding Strategies', 'Audience Targeting', 'Landing Page Optimization', 'Campaign CareerAnalytics'],
     requirements: ['Basic Google Ads knowledge', 'Digital marketing fundamentals']
   },
 
@@ -192,8 +192,8 @@ export const generateAdditionalCourses = (count: number, startId: number = 190) 
     { name: 'Business & Finance', subcategories: ['Business Strategy', 'Project Management', 'Finance & Accounting', 'Leadership', 'Entrepreneurship', 'Operations', 'Supply Chain', 'Quality Management', 'Business Analysis', 'Risk Management'] },
     { name: 'Marketing & Sales', subcategories: ['Digital Marketing', 'Content Marketing', 'Social Media Marketing', 'SEO & SEM', 'Email Marketing', 'Brand Management', 'Sales Strategy', 'Market Research', 'Customer Experience', 'Growth Hacking'] },
     { name: 'Design & Creative', subcategories: ['UI/UX Design', 'Graphic Design', 'Web Design', 'Product Design', 'Photography', 'Video Production', 'Animation', 'Branding', 'Interior Design', 'Fashion Design'] },
-    { name: 'Healthcare & Medical', subcategories: ['Nursing', 'Medical Administration', 'Healthcare Management', 'Mental Health', 'Pharmacy', 'Medical Technology', 'Public Health', 'Healthcare Quality', 'Patient Care', 'Healthcare Analytics'] },
-    { name: 'Education & Training', subcategories: ['Teaching Methods', 'Educational Technology', 'Curriculum Development', 'Online Learning', 'Student Assessment', 'Special Education', 'Early Childhood', 'Adult Learning', 'Training Design', 'Learning Analytics'] },
+    { name: 'Healthcare & Medical', subcategories: ['Nursing', 'Medical Administration', 'Healthcare Management', 'Mental Health', 'Pharmacy', 'Medical Technology', 'Public Health', 'Healthcare Quality', 'Patient Care', 'Healthcare CareerAnalytics'] },
+    { name: 'Education & Training', subcategories: ['Teaching Methods', 'Educational Technology', 'Curriculum Development', 'Online Learning', 'Student Assessment', 'Special Education', 'Early Childhood', 'Adult Learning', 'Training Design', 'Learning CareerAnalytics'] },
     { name: 'Engineering & Manufacturing', subcategories: ['Mechanical Engineering', 'Electrical Engineering', 'Civil Engineering', 'Manufacturing', 'Quality Control', 'Industrial Engineering', 'Automation', 'CAD/CAM', 'Materials Science', 'Process Engineering'] },
     { name: 'Hospitality & Tourism', subcategories: ['Hotel Management', 'Restaurant Management', 'Tourism Planning', 'Event Management', 'Customer Service', 'Food & Beverage', 'Travel Industry', 'Hospitality Marketing', 'Revenue Management', 'Hospitality Technology'] }
   ];
@@ -212,7 +212,7 @@ export const generateAdditionalCourses = (count: number, startId: number = 190) 
     ['Technology', 'Digital Tools', 'Automation', 'Systems'],
     ['Management', 'Organization', 'Efficiency', 'Process'],
     ['Marketing', 'Sales', 'Customer Service', 'Growth'],
-    ['Finance', 'Budgeting', 'Analytics', 'Reporting'],
+    ['Finance', 'Budgeting', 'CareerAnalytics', 'Reporting'],
     ['Quality', 'Standards', 'Compliance', 'Excellence']
   ];
 
@@ -261,3 +261,6 @@ export const generateAdditionalCourses = (count: number, startId: number = 190) 
     };
   });
 };
+
+
+

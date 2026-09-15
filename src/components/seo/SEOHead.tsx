@@ -21,7 +21,7 @@ interface SEOHeadProps {
 
 export const SEOHead: React.FC<SEOHeadProps> = ({
   title = 'TalentXcel - Career Platform',
-  description = 'Find your dream job, grow your skills, and advance your career with AI-powered tools. Connect with professionals, learn new skills, and access exclusive opportunities.',
+  description = 'Find your dream job, grow your skills, and advance your career with Performance tools. Connect with professionals, learn new skills, and access exclusive opportunities.',
   image = '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png',
   url,
   type = 'website',
@@ -125,3 +125,4 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
 
   return null;
 };
+

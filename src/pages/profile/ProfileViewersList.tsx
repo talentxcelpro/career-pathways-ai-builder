@@ -174,7 +174,7 @@ export default function ProfileViewersList() {
                       Unlock {hiddenViewersCount} More {hiddenViewersCount === 1 ? 'Viewer' : 'Viewers'}
                     </h3>
                     <p className="text-sm text-muted-foreground mb-4">
-                      Upgrade to Premium to see everyone who's viewed your profile and gain access to advanced analytics
+                      Upgrade to Premium to see everyone who's viewed your profile and gain access to advanced CareerAnalytics
                     </p>
                     <Button 
                       className="gap-2"
@@ -193,3 +193,7 @@ export default function ProfileViewersList() {
     </div>
   );
 }
+
+
+
+

@@ -166,9 +166,9 @@ export const SmartJobOptimizationWidget = () => {
             </div>
             <div 
               className="flex items-center justify-center gap-2 p-2 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
-              onClick={() => navigate('/employer/analytics')}
+              onClick={() => navigate('/employer/CareerAnalytics')}
             >
-              <span className="text-sm font-semibold text-slate-700">Analytics</span>
+              <span className="text-sm font-semibold text-slate-700">CareerAnalytics</span>
               <TrendingUp className="h-3 w-3 text-slate-700" />
             </div>
           </div>
@@ -177,3 +177,7 @@ export const SmartJobOptimizationWidget = () => {
     </Card>
   );
 };
+
+
+
+

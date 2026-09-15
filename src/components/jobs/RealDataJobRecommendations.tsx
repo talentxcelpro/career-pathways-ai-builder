@@ -234,7 +234,7 @@ export const RealDataJobRecommendations = () => {
                 </div>
               )}
 
-              {/* AI Insights */}
+              {/* Intelligence Metrics */}
               <div className="bg-white/50 rounded-lg p-3 border border-purple-100">
                 <div className="flex items-center gap-2 mb-2">
                   <Zap className="h-4 w-4 text-purple-600" />
@@ -262,7 +262,7 @@ export const RealDataJobRecommendations = () => {
             Getting your recommendations ready...
           </h3>
           <p className="text-gray-600 mb-4">
-            Complete your profile to get personalized AI-powered job matches
+            Complete your profile to get personalized Performance job matches
           </p>
           <Button className="bg-gradient-to-r from-purple-500 to-blue-500">
             <Brain className="h-4 w-4 mr-2" />

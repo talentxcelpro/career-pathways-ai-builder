@@ -14,15 +14,15 @@ import {
   Filter 
 } from 'lucide-react';
 
-const AnalyticsSubcategories = () => {
-  const [activeSubcategory, setActiveSubcategory] = useState('google-analytics');
+const CareerAnalyticsSubcategories = () => {
+  const [activeSubcategory, setActiveSubcategory] = useState('google-CareerAnalytics');
 
   const subcategories = [
     {
-      id: 'google-analytics',
-      title: 'Google Analytics Integration',
+      id: 'google-CareerAnalytics',
+      title: 'Google CareerAnalytics Integration',
       icon: BarChart3,
-      description: 'Connect and analyze Google Analytics data',
+      description: 'Connect and analyze Google CareerAnalytics data',
       status: 'active'
     },
     {
@@ -33,10 +33,10 @@ const AnalyticsSubcategories = () => {
       status: 'active'
     },
     {
-      id: 'custom-dashboard',
-      title: 'Custom Analytics Dashboard',
+      id: 'custom-CommandCenter',
+      title: 'Custom CareerAnalytics CommandCenter',
       icon: PieChart,
-      description: 'Build custom analytics dashboards',
+      description: 'Build custom CareerAnalytics CommandCenters',
       status: 'beta'
     },
     {
@@ -54,8 +54,8 @@ const AnalyticsSubcategories = () => {
       status: 'active'
     },
     {
-      id: 'roi-analytics',
-      title: 'ROI Analytics',
+      id: 'roi-CareerAnalytics',
+      title: 'ROI CareerAnalytics',
       icon: DollarSign,
       description: 'Calculate return on investment for SEO efforts',
       status: 'coming-soon'
@@ -91,12 +91,12 @@ const AnalyticsSubcategories = () => {
           </Badge>
         </div>
 
-        {activeSubcategory === 'google-analytics' && (
+        {activeSubcategory === 'google-CareerAnalytics' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Google Analytics Connection</CardTitle>
-                <CardDescription>Connect your Google Analytics account for deeper insights</CardDescription>
+                <CardTitle>Google CareerAnalytics Connection</CardTitle>
+                <CardDescription>Connect your Google CareerAnalytics account for deeper insights</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between p-3 border rounded-lg">
@@ -108,7 +108,7 @@ const AnalyticsSubcategories = () => {
                 </div>
                 
                 <div>
-                  <label className="text-sm font-medium">Analytics Property</label>
+                  <label className="text-sm font-medium">CareerAnalytics Property</label>
                   <select className="w-full p-2 border rounded-md mt-2">
                     <option>www.yoursite.com - UA-123456789-1</option>
                     <option>blog.yoursite.com - UA-123456789-2</option>
@@ -135,8 +135,8 @@ const AnalyticsSubcategories = () => {
 
             <Card>
               <CardHeader>
-                <CardTitle>Analytics Overview</CardTitle>
-                <CardDescription>Key metrics from Google Analytics</CardDescription>
+                <CardTitle>CareerAnalytics Overview</CardTitle>
+                <CardDescription>Key metrics from Google CareerAnalytics</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 gap-4 mb-4">
@@ -267,7 +267,7 @@ const AnalyticsSubcategories = () => {
         {activeSubcategory === 'conversion-tracking' && (
           <Card>
             <CardHeader>
-              <CardTitle>Conversion Tracking Dashboard</CardTitle>
+              <CardTitle>Conversion Tracking CommandCenter</CardTitle>
               <CardDescription>Monitor conversion rates and goal completions</CardDescription>
             </CardHeader>
             <CardContent>
@@ -347,4 +347,7 @@ const AnalyticsSubcategories = () => {
   );
 };
 
-export default AnalyticsSubcategories;
+export default CareerAnalyticsSubcategories;
+
+
+

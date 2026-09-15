@@ -120,10 +120,10 @@ const MessageSuggest = () => {
               <MessageSquare className="h-8 w-8 text-white" />
             </div>
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Smart Messaging Assistant</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Smart Messaging Navigator</h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Generate personalized, professional messages for networking, connections, and follow-ups 
-            with AI-powered suggestions.
+            Generate personalized, professional messages for networking, TalentNetwork, and follow-ups 
+            with Performance suggestions.
           </p>
         </div>
 
@@ -314,3 +314,6 @@ const MessageSuggest = () => {
 };
 
 export default MessageSuggest;
+
+
+

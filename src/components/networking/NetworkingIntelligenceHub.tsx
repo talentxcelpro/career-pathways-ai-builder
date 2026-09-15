@@ -16,7 +16,7 @@ export const NetworkingIntelligenceHub: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* AI Insights Overview */}
+      {/* Intelligence Metrics Overview */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-6">
@@ -44,7 +44,7 @@ export const NetworkingIntelligenceHub: React.FC = () => {
               <Target className="h-8 w-8 text-purple-500" />
             </div>
             <div className="flex items-center mt-2">
-              <span className="text-sm text-muted-foreground">High-quality connections</span>
+              <span className="text-sm text-muted-foreground">High-quality TalentNetwork</span>
             </div>
           </CardContent>
         </Card>
@@ -85,7 +85,7 @@ export const NetworkingIntelligenceHub: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Brain className="h-5 w-5" />
-            AI-Powered Networking Matches
+            Performance Networking Matches
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -148,7 +148,7 @@ export const NetworkingIntelligenceHub: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Network Analytics</CardTitle>
+            <CardTitle>Network CareerAnalytics</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -262,3 +262,7 @@ export const NetworkingIntelligenceHub: React.FC = () => {
     </div>
   );
 };
+
+
+
+

@@ -197,9 +197,9 @@ export const BotProfileManager: React.FC<BotProfileManagerProps> = ({
               <Upload className="h-4 w-4" />
               <span className="hidden sm:inline">Media</span>
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center space-x-1">
+            <TabsTrigger value="CareerAnalytics" className="flex items-center space-x-1">
               <BarChart3 className="h-4 w-4" />
-              <span className="hidden sm:inline">Analytics</span>
+              <span className="hidden sm:inline">CareerAnalytics</span>
             </TabsTrigger>
             <TabsTrigger value="settings" className="flex items-center space-x-1">
               <Settings className="h-4 w-4" />
@@ -487,7 +487,7 @@ export const BotProfileManager: React.FC<BotProfileManagerProps> = ({
                     <div className="p-3 border rounded-md">
                       <h4 className="font-medium">{bot.role}</h4>
                       <p className="text-sm text-muted-foreground">TalentXcel</p>
-                      <p className="text-sm">AI-powered professional working in {bot.department?.join(', ')}</p>
+                      <p className="text-sm">Performance professional working in {bot.department?.join(', ')}</p>
                     </div>
                   </div>
                 </div>
@@ -640,10 +640,10 @@ export const BotProfileManager: React.FC<BotProfileManagerProps> = ({
             </Card>
           </TabsContent>
 
-          <TabsContent value="analytics" className="space-y-6">
+          <TabsContent value="CareerAnalytics" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Profile Analytics</CardTitle>
+                <CardTitle>Profile CareerAnalytics</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -906,3 +906,6 @@ export const BotProfileManager: React.FC<BotProfileManagerProps> = ({
     </Dialog>
   );
 };
+
+
+

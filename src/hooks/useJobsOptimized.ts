@@ -35,6 +35,14 @@ export const useJobsOptimized = (
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 15; // Reduced for faster loading
   const prefetchTimeoutRef = useRef<NodeJS.Timeout>();
+  const [cachedJobs, setCachedJobs] = useState<any[]>(() => {
+    try {
+      const saved = localStorage.getItem(`jobs_cache_${JSON.stringify(filters)}_${sortBy}`);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
 
   // For infinite scroll mode
   const infiniteQuery = useInfiniteQuery({
@@ -152,12 +160,20 @@ export const useJobsOptimized = (
     }
   }, [mode, currentPage, filters, sortBy, paginationQuery.data?.hasMore]);
 
-  // Auto-prefetch on successful load
+  // Auto-prefetch and cache results
   useEffect(() => {
     if (paginationQuery.isSuccess && !paginationQuery.isFetching) {
       prefetchNext();
+      
+      // Cache first page
+      if (currentPage === 1 && paginationQuery.data?.jobs) {
+        localStorage.setItem(
+          `jobs_cache_${JSON.stringify(filters)}_${sortBy}`, 
+          JSON.stringify(paginationQuery.data.jobs)
+        );
+      }
     }
-  }, [paginationQuery.isSuccess, paginationQuery.isFetching, prefetchNext]);
+  }, [paginationQuery.isSuccess, paginationQuery.isFetching, prefetchNext, currentPage, filters, sortBy, paginationQuery.data?.jobs]);
 
   // Reset page when filters change
   useEffect(() => {
@@ -197,10 +213,10 @@ export const useJobsOptimized = (
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return {
-    jobs,
+    jobs: jobs.length > 0 ? jobs : cachedJobs,
     totalCount,
     hasMore,
-    isLoading: activeQuery.isLoading,
+    isLoading: activeQuery.isLoading && (mode === 'infinite' ? jobs.length === 0 : cachedJobs.length === 0),
     isFetchingNextPage: mode === 'infinite' ? infiniteQuery.isFetchingNextPage : false,
     loadMore,
     refetch: activeQuery.refetch,
