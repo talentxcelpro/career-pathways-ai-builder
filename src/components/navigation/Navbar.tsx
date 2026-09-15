@@ -27,6 +27,7 @@ import { useMobileDetection } from '@/hooks/useMobileDetection';
 import { UniversalSearch } from './UniversalSearch';
 import { TalentXcelLogo } from '../brand/TalentXcelLogo';
 import { cn } from '@/lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
