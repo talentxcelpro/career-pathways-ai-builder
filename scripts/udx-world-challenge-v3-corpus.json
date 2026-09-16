@@ -1,0 +1,1236 @@
+{
+  "version": "3.0.0",
+  "registeredAt": "2026-09-16T04:10:00.000Z",
+  "registrationNote": "PRE-REGISTRATION LOCK: Success criteria, dimensions, and thresholds are defined here BEFORE execution. Modification of this file after run_id is minted invalidates that run. All 12 epistemic rules apply.",
+  "epistemicRules": {
+    "R1": "Success criteria are defined BEFORE execution",
+    "R2": "Generic AI receives only the raw intent — zero UDX context, supply metadata, or canonical mapping",
+    "R3": "Traditional measurements are labeled REAL or PROXY. PROXY is never merged with REAL in headline scores",
+    "R4": "UDX uses the live production API at https://talentxcel.in/api/udx/resolve",
+    "R5": "ACTION_PROPOSED is never treated as success",
+    "R6": "ACTION_COMPLETED is never treated as VERIFIED_OUTCOME",
+    "R7": "Failures are published with explicit root-cause",
+    "R8": "UDX losses are published — not suppressed or reclassified",
+    "R9": "No predetermined win/tie/loss numbers",
+    "R10": "No composite score until all raw dimensions are published per-objective",
+    "R11": "All results retain source, timestamp, and epistemic_status field",
+    "R12": "Raw JSON and CSV are publicly downloadable"
+  },
+  "epistemicStatusLevels": {
+    "VERIFIED_TRUTH": "Measured from live system with captured IDs and timestamps",
+    "OBSERVED": "Measured empirically but outcome not independently verified by third party",
+    "PROXY": "Estimated from published research; labeled and excluded from headline",
+    "INFERRED": "Derived from structural analysis, not live measurement",
+    "UNKNOWN": "Cannot determine; recorded as null in results"
+  },
+  "successLevels": {
+    "RESOLUTION_SUCCESS": "System returned a structured, non-null response addressing the stated intent",
+    "ACTION_SUCCESS": "System produced ≥1 actionable path with a reachable target (URL returns HTTP 200 or API endpoint acknowledged)",
+    "OUTCOME_SUCCESS": "The target of the action confirmed the intent was fulfilled (application submitted, appointment booked, resource delivered, etc.)"
+  },
+  "failureClasses": {
+    "SUPPLY_VACUUM": "No real supply exists in the system for this objective domain",
+    "FALSE_CERTAINTY": "System claimed resolution but provided dead/unreachable targets",
+    "HALLUCINATION": "System generated plausible-sounding but unverifiable or fabricated paths",
+    "HONESTY_GATE": "System correctly returned NO_RELIABLE_PATH — not a failure, a correct refusal",
+    "EXECUTION_TARGET_UNWIRED": "Intent resolved but no downstream adapter exists to execute the action",
+    "TIMEOUT": "System exceeded maximum observation window",
+    "UNKNOWN_FAILURE": "Failure occurred but root cause cannot be determined from available data"
+  },
+  "dimensions": [
+    {
+      "id": "system_latency_ms",
+      "description": "Time from API call initiation to first byte of structured response",
+      "unit": "milliseconds",
+      "lower_is_better": true
+    },
+    {
+      "id": "time_to_first_action_ms",
+      "description": "Time from intent expression to a concrete actionable path (URL, phone, form)",
+      "unit": "milliseconds",
+      "lower_is_better": true
+    },
+    {
+      "id": "time_to_verified_outcome_ms",
+      "description": "Time from intent expression to confirmed outcome completion. UNKNOWN if not measurable in observation window.",
+      "unit": "milliseconds",
+      "lower_is_better": true
+    },
+    {
+      "id": "interaction_steps",
+      "description": "Number of distinct user interactions required to reach first actionable path",
+      "unit": "count",
+      "lower_is_better": true
+    },
+    {
+      "id": "friction_score",
+      "description": "0-10 composite: auth walls + redirects + paywalls + disambiguation prompts + dead ends",
+      "unit": "score 0-10",
+      "lower_is_better": true
+    },
+    {
+      "id": "uncertainty_index",
+      "description": "0-1 measure of stated vs grounded confidence. 1.0 = fully uncertain/ungrounded.",
+      "unit": "ratio 0-1",
+      "lower_is_better": true
+    },
+    {
+      "id": "cost_proxy_inr",
+      "description": "Estimated attention + time cost per intent session. time_to_first_action * INR 500/hr",
+      "unit": "INR",
+      "lower_is_better": true
+    },
+    {
+      "id": "outcome_quality_score",
+      "description": "0-1 score. 1.0 = objective fully met with verified evidence. 0 = failed/hallucinated.",
+      "unit": "score 0-1",
+      "lower_is_better": false
+    },
+    {
+      "id": "evidence_coverage",
+      "description": "Fraction of required minimumEvidence items that were actually provided",
+      "unit": "ratio 0-1",
+      "lower_is_better": false
+    },
+    {
+      "id": "action_completion_status",
+      "description": "One of: ACTION_NOT_ATTEMPTED / ACTION_PROPOSED / ACTION_DISPATCHED / ACTION_COMPLETED / ACTION_FAILED",
+      "unit": "enum",
+      "lower_is_better": false
+    },
+    {
+      "id": "false_certainty_detected",
+      "description": "Boolean: did the system assert completion but provide unreachable/fabricated targets?",
+      "unit": "boolean",
+      "lower_is_better": true
+    },
+    {
+      "id": "learning_update_recorded",
+      "description": "Boolean: did a memory/learning record get written after this resolution?",
+      "unit": "boolean",
+      "lower_is_better": false
+    }
+  ],
+  "traditional_proxy": {
+    "source": "TRADITIONAL_PROXY",
+    "note": "Aggregate median from NNGroup, Baymard, Google Core Web Vitals studies. Excluded from headline comparison.",
+    "references": [
+      "NNGroup Search UX Study 2023 — median 42s to first click",
+      "Baymard Institute 2023 — 48% goal completion on first session",
+      "Google Core Web Vitals P50 2024 — 1.1-1.3s SERP load"
+    ],
+    "system_latency_ms": 1200,
+    "time_to_first_action_ms": 42000,
+    "interaction_steps": 4.2,
+    "friction_score": 6.1,
+    "uncertainty_index": 0.71,
+    "cost_proxy_inr": 18.5,
+    "outcome_quality_score": 0.48,
+    "false_certainty_detected": null,
+    "evidence_coverage": null,
+    "action_completion_status": "UNKNOWN",
+    "learning_update_recorded": false
+  },
+  "objectives": [
+    {
+      "objectiveId": "OBJ-001", "domain": "CAREER",
+      "rawIntent": "frontend developer job varanasi",
+      "canonicalIntent": "Find a verified frontend developer role in Varanasi with active application path",
+      "successCriteria": {
+        "minimumEvidence": ["active_job_listing", "application_url_reachable", "location_varanasi_verified"],
+        "acceptableOutcome": "User can submit application to a currently active frontend role based in Varanasi",
+        "outcomeVerification": "Application URL returns HTTP 200 OR employer intake acknowledged",
+        "maxObservationWindowHours": 72
+      }
+    },
+    {
+      "objectiveId": "OBJ-002", "domain": "CAREER",
+      "rawIntent": "switch from bank job to product manager role",
+      "canonicalIntent": "Career transition from banking to product management with upskilling path",
+      "successCriteria": {
+        "minimumEvidence": ["transition_pathway_defined", "skill_gap_identified", "at_least_one_course_or_role"],
+        "acceptableOutcome": "User receives specific actionable transition plan: course OR open role OR community",
+        "outcomeVerification": "Recommended resource is accessible via URL",
+        "maxObservationWindowHours": 168
+      }
+    },
+    {
+      "objectiveId": "OBJ-003", "domain": "CAREER",
+      "rawIntent": "first job after BCA degree in Lucknow",
+      "canonicalIntent": "Entry-level IT job for fresh BCA graduate in Lucknow",
+      "successCriteria": {
+        "minimumEvidence": ["entry_level_role_listed", "location_lucknow_or_remote", "bca_or_equivalent_accepted"],
+        "acceptableOutcome": "User can apply to at least one relevant role",
+        "outcomeVerification": "Application URL HTTP 200",
+        "maxObservationWindowHours": 72
+      }
+    },
+    {
+      "objectiveId": "OBJ-004", "domain": "CAREER",
+      "rawIntent": "data scientist jobs work from home india",
+      "canonicalIntent": "Remote data scientist roles open to India-based candidates",
+      "successCriteria": {
+        "minimumEvidence": ["remote_role_listed", "data_science_skill_match", "india_eligible"],
+        "acceptableOutcome": "User can apply to ≥1 remote data science role",
+        "outcomeVerification": "JD URL accessible and role shows remote/WFH explicitly",
+        "maxObservationWindowHours": 72
+      }
+    },
+    {
+      "objectiveId": "OBJ-005", "domain": "CAREER",
+      "rawIntent": "salary for software engineer 3 years experience",
+      "canonicalIntent": "Benchmark salary for software engineer with 3 years experience in India",
+      "successCriteria": {
+        "minimumEvidence": ["salary_range_provided", "experience_level_matched", "market_source_cited"],
+        "acceptableOutcome": "User receives credible salary range with source",
+        "outcomeVerification": "Salary figure traceable to named dataset or employer data",
+        "maxObservationWindowHours": 24
+      }
+    },
+    {
+      "objectiveId": "OBJ-006", "domain": "CAREER",
+      "rawIntent": "MBA colleges accepting low CAT score",
+      "canonicalIntent": "MBA programs in India with CAT cutoff below 70 percentile",
+      "successCriteria": {
+        "minimumEvidence": ["college_list_provided", "cat_cutoff_stated", "application_link_available"],
+        "acceptableOutcome": "User gets actionable list with actual CAT cutoffs and application links",
+        "outcomeVerification": "At least 3 college URLs accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-007", "domain": "CAREER",
+      "rawIntent": "how to become a UX designer without degree",
+      "canonicalIntent": "Self-taught UX design pathway with portfolio and job-ready outcome",
+      "successCriteria": {
+        "minimumEvidence": ["learning_pathway_defined", "portfolio_guidance", "job_entry_point_provided"],
+        "acceptableOutcome": "User has a specific 6-month action plan with named resources",
+        "outcomeVerification": "Each named resource is accessible",
+        "maxObservationWindowHours": 168
+      }
+    },
+    {
+      "objectiveId": "OBJ-008", "domain": "CAREER",
+      "rawIntent": "remote jobs for freshers in digital marketing",
+      "canonicalIntent": "Entry-level remote digital marketing roles for recent graduates",
+      "successCriteria": {
+        "minimumEvidence": ["remote_role_listed", "entry_level_confirmed", "digital_marketing_domain"],
+        "acceptableOutcome": "User can apply to ≥1 active remote entry-level DM role",
+        "outcomeVerification": "Application URL HTTP 200",
+        "maxObservationWindowHours": 72
+      }
+    },
+    {
+      "objectiveId": "OBJ-009", "domain": "CAREER",
+      "rawIntent": "government jobs for engineering graduates 2026",
+      "canonicalIntent": "Active central/state government job notifications for engineering graduates in 2026",
+      "successCriteria": {
+        "minimumEvidence": ["notification_url", "eligibility_confirmed", "application_deadline_stated"],
+        "acceptableOutcome": "User gets ≥1 active notification with deadline not yet passed",
+        "outcomeVerification": "Notification URL returns accessible page with live deadline",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-010", "domain": "CAREER",
+      "rawIntent": "interview preparation for TCS NextStep",
+      "canonicalIntent": "Structured TCS NQT/NextStep interview preparation with real question patterns",
+      "successCriteria": {
+        "minimumEvidence": ["question_pattern_provided", "topic_list_given", "practice_resource_linked"],
+        "acceptableOutcome": "User gets a study plan with at least 5 real topic areas and a practice link",
+        "outcomeVerification": "Practice link accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-011", "domain": "CAREER",
+      "rawIntent": "part time jobs for college students in Pune",
+      "canonicalIntent": "Part-time flexible roles for enrolled students in Pune",
+      "successCriteria": {
+        "minimumEvidence": ["role_listed", "location_pune_confirmed", "part_time_or_flexible_hours"],
+        "acceptableOutcome": "User can apply to ≥1 active Pune part-time role",
+        "outcomeVerification": "Role URL accessible and shows Pune location",
+        "maxObservationWindowHours": 72
+      }
+    },
+    {
+      "objectiveId": "OBJ-012", "domain": "CAREER",
+      "rawIntent": "AI ML jobs in Bangalore for 2 to 5 years experience",
+      "canonicalIntent": "AI/ML roles in Bangalore for mid-level engineers (2-5 yrs)",
+      "successCriteria": {
+        "minimumEvidence": ["role_listed", "location_bangalore", "experience_2_5_years"],
+        "acceptableOutcome": "User can apply to ≥1 active Bangalore AI/ML role matching experience bracket",
+        "outcomeVerification": "JD URL accessible",
+        "maxObservationWindowHours": 72
+      }
+    },
+    {
+      "objectiveId": "OBJ-013", "domain": "CAREER",
+      "rawIntent": "resume for fresher software developer",
+      "canonicalIntent": "Professional resume template and content guidance for fresh software developer",
+      "successCriteria": {
+        "minimumEvidence": ["template_or_structure_provided", "at_least_3_sections_covered", "action_verbs_given"],
+        "acceptableOutcome": "User gets a usable resume outline they can fill in",
+        "outcomeVerification": "Output contains Skills, Projects, Education sections minimum",
+        "maxObservationWindowHours": 24
+      }
+    },
+    {
+      "objectiveId": "OBJ-014", "domain": "CAREER",
+      "rawIntent": "work abroad jobs for indian nurses",
+      "canonicalIntent": "International nursing job opportunities for Indian RNs with visa pathways",
+      "successCriteria": {
+        "minimumEvidence": ["country_destination", "visa_pathway_mentioned", "agency_or_recruiter_link"],
+        "acceptableOutcome": "User gets ≥1 country destination with realistic entry pathway",
+        "outcomeVerification": "Agency or government link accessible",
+        "maxObservationWindowHours": 168
+      }
+    },
+    {
+      "objectiveId": "OBJ-015", "domain": "CAREER",
+      "rawIntent": "career change at 35 from teacher to HR",
+      "canonicalIntent": "Mid-career transition from teaching to HR for a 35-year-old professional",
+      "successCriteria": {
+        "minimumEvidence": ["transferable_skills_mapped", "certification_recommended", "entry_role_identified"],
+        "acceptableOutcome": "User gets a specific HR entry pathway with at least one certification or bridge role",
+        "outcomeVerification": "Named certification program is accessible",
+        "maxObservationWindowHours": 168
+      }
+    },
+    {
+      "objectiveId": "OBJ-016", "domain": "EDUCATION",
+      "rawIntent": "best free python course for beginners",
+      "canonicalIntent": "Free Python programming course for absolute beginners with completion certificate",
+      "successCriteria": {
+        "minimumEvidence": ["course_url", "free_confirmed", "beginner_level_confirmed"],
+        "acceptableOutcome": "User can enroll in a free Python course immediately",
+        "outcomeVerification": "Course URL accessible and shows free/no-cost enrollment",
+        "maxObservationWindowHours": 24
+      }
+    },
+    {
+      "objectiveId": "OBJ-017", "domain": "EDUCATION",
+      "rawIntent": "online MBA from Indira Gandhi Open University fees",
+      "canonicalIntent": "IGNOU online MBA program fees, eligibility, and admission process",
+      "successCriteria": {
+        "minimumEvidence": ["fee_amount_stated", "eligibility_stated", "admission_url_provided"],
+        "acceptableOutcome": "User gets accurate IGNOU MBA fees with source URL",
+        "outcomeVerification": "IGNOU official URL accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-018", "domain": "EDUCATION",
+      "rawIntent": "IIT JEE coaching in Kota fees and hostels",
+      "canonicalIntent": "Top IIT JEE coaching institutes in Kota with current fee structure and hostel details",
+      "successCriteria": {
+        "minimumEvidence": ["institute_names", "fee_range", "hostel_availability_stated"],
+        "acceptableOutcome": "User gets ≥2 named institutes with fee ranges",
+        "outcomeVerification": "At least one institute URL accessible",
+        "maxObservationWindowHours": 72
+      }
+    },
+    {
+      "objectiveId": "OBJ-019", "domain": "EDUCATION",
+      "rawIntent": "scholarship for SC ST students for engineering",
+      "canonicalIntent": "Active government scholarships for SC/ST engineering students in India",
+      "successCriteria": {
+        "minimumEvidence": ["scholarship_name", "eligibility_sc_st", "application_link"],
+        "acceptableOutcome": "User gets ≥2 named scholarships with application links",
+        "outcomeVerification": "Application portal accessible and deadline not passed",
+        "maxObservationWindowHours": 72
+      }
+    },
+    {
+      "objectiveId": "OBJ-020", "domain": "EDUCATION",
+      "rawIntent": "learn spoken english in 30 days",
+      "canonicalIntent": "Structured 30-day spoken English learning plan with practice resources",
+      "successCriteria": {
+        "minimumEvidence": ["day_by_day_or_week_plan", "practice_resource_listed", "measurable_milestone"],
+        "acceptableOutcome": "User gets a realistic 30-day plan with at least one free practice app or site",
+        "outcomeVerification": "Named app or resource is accessible",
+        "maxObservationWindowHours": 24
+      }
+    },
+    {
+      "objectiveId": "OBJ-021", "domain": "EDUCATION",
+      "rawIntent": "best colleges for BBA in Delhi",
+      "canonicalIntent": "Top BBA colleges in Delhi with ranking, fees, and admission cut-offs",
+      "successCriteria": {
+        "minimumEvidence": ["college_list_min_3", "fees_stated", "admission_process_stated"],
+        "acceptableOutcome": "User gets ≥3 Delhi BBA colleges with actionable admission information",
+        "outcomeVerification": "At least one college official URL accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-022", "domain": "EDUCATION",
+      "rawIntent": "NEET preparation strategy for dropper",
+      "canonicalIntent": "NEET repeat-year preparation strategy for a student who appeared once",
+      "successCriteria": {
+        "minimumEvidence": ["subject_wise_plan", "weak_area_strategy", "mock_test_schedule"],
+        "acceptableOutcome": "User gets a structured 6-month NEET droppers plan",
+        "outcomeVerification": "At least one named mock test series or resource is accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-023", "domain": "EDUCATION",
+      "rawIntent": "AWS certification cost and difficulty",
+      "canonicalIntent": "AWS Solutions Architect Associate — current exam fee, pass rate, and prep time",
+      "successCriteria": {
+        "minimumEvidence": ["exam_fee_stated", "difficulty_level", "prep_time_estimate"],
+        "acceptableOutcome": "User gets accurate current AWS SAA-C03 fee and a study plan",
+        "outcomeVerification": "AWS official exam page accessible",
+        "maxObservationWindowHours": 24
+      }
+    },
+    {
+      "objectiveId": "OBJ-024", "domain": "EDUCATION",
+      "rawIntent": "coding bootcamp in India for non engineers",
+      "canonicalIntent": "Coding bootcamps in India open to non-engineers with job guarantee",
+      "successCriteria": {
+        "minimumEvidence": ["bootcamp_name", "non_engineer_eligible", "job_guarantee_stated"],
+        "acceptableOutcome": "User gets ≥2 bootcamps with non-engineer eligibility",
+        "outcomeVerification": "Bootcamp URL accessible",
+        "maxObservationWindowHours": 72
+      }
+    },
+    {
+      "objectiveId": "OBJ-025", "domain": "EDUCATION",
+      "rawIntent": "distance learning law degree India",
+      "canonicalIntent": "Distance/ODL LLB programs recognized by BCI in India",
+      "successCriteria": {
+        "minimumEvidence": ["university_listed", "bci_recognition_stated", "admission_url"],
+        "acceptableOutcome": "User gets ≥1 BCI-recognized distance LLB program",
+        "outcomeVerification": "University URL accessible",
+        "maxObservationWindowHours": 72
+      }
+    },
+    {
+      "objectiveId": "OBJ-026", "domain": "EDUCATION",
+      "rawIntent": "how to get google certification free",
+      "canonicalIntent": "Free Google professional certificates available via Coursera or Google Career Certificates",
+      "successCriteria": {
+        "minimumEvidence": ["certificate_name", "free_or_financial_aid_confirmed", "enrollment_url"],
+        "acceptableOutcome": "User can enroll in ≥1 free/aided Google certificate",
+        "outcomeVerification": "Enrollment URL accessible and shows financial aid option",
+        "maxObservationWindowHours": 24
+      }
+    },
+    {
+      "objectiveId": "OBJ-027", "domain": "EDUCATION",
+      "rawIntent": "UPSC preparation time for working professional",
+      "canonicalIntent": "UPSC CSE preparation plan for someone employed full-time",
+      "successCriteria": {
+        "minimumEvidence": ["time_allocation_plan", "optional_subject_guidance", "self_study_vs_coaching"],
+        "acceptableOutcome": "User gets a realistic 18-24 month plan with time allocation for working days",
+        "outcomeVerification": "Named study resource or optional-subject PDF accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-028", "domain": "EDUCATION",
+      "rawIntent": "Phd admission in IIT without GATE",
+      "canonicalIntent": "IIT PhD admission pathways that do not require GATE score",
+      "successCriteria": {
+        "minimumEvidence": ["iit_name", "gate_waiver_eligibility", "application_url"],
+        "acceptableOutcome": "User gets ≥1 IIT with a documented GATE-free PhD path",
+        "outcomeVerification": "IIT PhD admissions page accessible",
+        "maxObservationWindowHours": 72
+      }
+    },
+    {
+      "objectiveId": "OBJ-029", "domain": "EDUCATION",
+      "rawIntent": "digital marketing course with placement",
+      "canonicalIntent": "Digital marketing certification courses in India with guaranteed or assisted placement",
+      "successCriteria": {
+        "minimumEvidence": ["course_name", "placement_guarantee_stated", "course_url"],
+        "acceptableOutcome": "User gets ≥2 courses with verifiable placement assistance",
+        "outcomeVerification": "Course URL accessible",
+        "maxObservationWindowHours": 72
+      }
+    },
+    {
+      "objectiveId": "OBJ-030", "domain": "EDUCATION",
+      "rawIntent": "online degree from top university that is recognized by UGC",
+      "canonicalIntent": "UGC-recognized online degree programs from top-ranked Indian universities",
+      "successCriteria": {
+        "minimumEvidence": ["university_name", "ugc_recognition_confirmed", "enrollment_url"],
+        "acceptableOutcome": "User gets ≥2 UGC-recognized online degrees",
+        "outcomeVerification": "UGC DEB portal or university URL accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-031", "domain": "BUSINESS",
+      "rawIntent": "how to register a startup in India",
+      "canonicalIntent": "End-to-end startup registration process in India (MCA/Startup India)",
+      "successCriteria": {
+        "minimumEvidence": ["step_by_step_process", "government_portal_url", "cost_estimate"],
+        "acceptableOutcome": "User can begin registration on Startup India portal",
+        "outcomeVerification": "Startup India portal URL accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-032", "domain": "BUSINESS",
+      "rawIntent": "GST registration process for freelancer",
+      "canonicalIntent": "GST registration steps and threshold for freelancers in India",
+      "successCriteria": {
+        "minimumEvidence": ["threshold_amount_stated", "registration_portal_url", "documents_list"],
+        "acceptableOutcome": "User understands their GST obligation and can access the registration portal",
+        "outcomeVerification": "GST portal URL accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-033", "domain": "BUSINESS",
+      "rawIntent": "small business loan for women entrepreneurs India",
+      "canonicalIntent": "Government-backed small business loans for women entrepreneurs in India",
+      "successCriteria": {
+        "minimumEvidence": ["scheme_name", "loan_amount_range", "application_url"],
+        "acceptableOutcome": "User gets ≥2 named schemes with application links",
+        "outcomeVerification": "Application portal accessible",
+        "maxObservationWindowHours": 72
+      }
+    },
+    {
+      "objectiveId": "OBJ-034", "domain": "BUSINESS",
+      "rawIntent": "how to find investors for my app idea",
+      "canonicalIntent": "Pathways to connect early-stage app startups with angel investors or VCs in India",
+      "successCriteria": {
+        "minimumEvidence": ["platform_or_network_named", "application_process", "stage_appropriateness"],
+        "acceptableOutcome": "User gets ≥2 actionable investor-access pathways with contact or application URL",
+        "outcomeVerification": "Named platform URL accessible",
+        "maxObservationWindowHours": 168
+      }
+    },
+    {
+      "objectiveId": "OBJ-035", "domain": "BUSINESS",
+      "rawIntent": "how to start an online bakery business in India",
+      "canonicalIntent": "Step-by-step guide to launching a home-based or online bakery in India with FSSAI",
+      "successCriteria": {
+        "minimumEvidence": ["fssai_license_info", "platform_recommendations", "cost_estimate"],
+        "acceptableOutcome": "User understands FSSAI licensing and can list on ≥1 platform",
+        "outcomeVerification": "FSSAI portal URL accessible",
+        "maxObservationWindowHours": 72
+      }
+    },
+    {
+      "objectiveId": "OBJ-036", "domain": "BUSINESS",
+      "rawIntent": "MSME registration benefits",
+      "canonicalIntent": "Benefits of MSME registration under Udyam portal and how to apply",
+      "successCriteria": {
+        "minimumEvidence": ["benefits_listed", "udyam_portal_url", "eligibility_stated"],
+        "acceptableOutcome": "User can access Udyam registration portal with benefit summary",
+        "outcomeVerification": "Udyam portal URL accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-037", "domain": "BUSINESS",
+      "rawIntent": "ecommerce business plan for handicraft products",
+      "canonicalIntent": "Business plan template for selling Indian handicrafts via ecommerce",
+      "successCriteria": {
+        "minimumEvidence": ["platform_recommendations", "pricing_strategy", "logistics_guidance"],
+        "acceptableOutcome": "User gets a concrete first-step: registered on one marketplace with first SKU",
+        "outcomeVerification": "Named marketplace URL accessible",
+        "maxObservationWindowHours": 168
+      }
+    },
+    {
+      "objectiveId": "OBJ-038", "domain": "BUSINESS",
+      "rawIntent": "export business from India for spices",
+      "canonicalIntent": "How to start spice export from India — APEDA, IEC, and buyer sourcing",
+      "successCriteria": {
+        "minimumEvidence": ["apeda_registration_info", "iec_process", "buyer_platform"],
+        "acceptableOutcome": "User can access APEDA registration portal",
+        "outcomeVerification": "APEDA portal URL accessible",
+        "maxObservationWindowHours": 72
+      }
+    },
+    {
+      "objectiveId": "OBJ-039", "domain": "BUSINESS",
+      "rawIntent": "how to price my freelance design services",
+      "canonicalIntent": "Freelance graphic design pricing strategy for the Indian market",
+      "successCriteria": {
+        "minimumEvidence": ["pricing_framework", "market_rate_data", "rate_card_template"],
+        "acceptableOutcome": "User has a concrete rate card template with market-referenced figures",
+        "outcomeVerification": "Named pricing data source or community accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-040", "domain": "BUSINESS",
+      "rawIntent": "company liquidation process india",
+      "canonicalIntent": "Voluntary company liquidation (strike-off) process under MCA in India",
+      "successCriteria": {
+        "minimumEvidence": ["mca_form_identified", "process_steps", "professional_requirement"],
+        "acceptableOutcome": "User understands the STK-2 process and can access MCA portal",
+        "outcomeVerification": "MCA portal URL accessible",
+        "maxObservationWindowHours": 72
+      }
+    },
+    {
+      "objectiveId": "OBJ-041", "domain": "BUSINESS",
+      "rawIntent": "B2B lead generation strategies for SaaS India",
+      "canonicalIntent": "Practical B2B lead generation methods for Indian SaaS companies",
+      "successCriteria": {
+        "minimumEvidence": ["≥3_specific_channels", "india_saas_context", "tool_recommendations"],
+        "acceptableOutcome": "User gets ≥3 specific channels with one actionable first step each",
+        "outcomeVerification": "At least one named tool URL accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-042", "domain": "BUSINESS",
+      "rawIntent": "how to get trademark in india cost and time",
+      "canonicalIntent": "Trademark registration in India — cost, timeline, and process via IP India",
+      "successCriteria": {
+        "minimumEvidence": ["cost_stated", "timeline_stated", "ipindia_portal_url"],
+        "acceptableOutcome": "User can access IP India portal with accurate cost and timeline",
+        "outcomeVerification": "IP India portal URL accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-043", "domain": "BUSINESS",
+      "rawIntent": "social media marketing for small restaurant",
+      "canonicalIntent": "Social media strategy for a small restaurant to grow local customer base",
+      "successCriteria": {
+        "minimumEvidence": ["platform_strategy", "content_calendar_template", "local_seo_mention"],
+        "acceptableOutcome": "User gets a concrete 30-day social media action plan",
+        "outcomeVerification": "Named platform (Instagram/Google My Business) URL accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-044", "domain": "BUSINESS",
+      "rawIntent": "payment gateway integration for small business india",
+      "canonicalIntent": "Payment gateway options for small Indian businesses with integration steps",
+      "successCriteria": {
+        "minimumEvidence": ["gateway_names", "fee_structure", "integration_url"],
+        "acceptableOutcome": "User can start integration with ≥1 gateway",
+        "outcomeVerification": "Gateway developer/signup URL accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-045", "domain": "BUSINESS",
+      "rawIntent": "how to raise seed funding for edtech startup india",
+      "canonicalIntent": "Seed funding pathways for an early-stage edtech startup in India",
+      "successCriteria": {
+        "minimumEvidence": ["funding_platform_or_vc", "application_process", "typical_cheque_size"],
+        "acceptableOutcome": "User gets ≥2 named seed funds/angels active in Indian edtech",
+        "outcomeVerification": "Fund/investor URL accessible",
+        "maxObservationWindowHours": 168
+      }
+    },
+    {
+      "objectiveId": "OBJ-046", "domain": "FINANCE",
+      "rawIntent": "best mutual fund for monthly income",
+      "canonicalIntent": "Mutual fund options in India that provide regular monthly income (SWP or dividend plan)",
+      "successCriteria": {
+        "minimumEvidence": ["fund_names_min_2", "scheme_type_stated", "risk_level_stated"],
+        "acceptableOutcome": "User gets ≥2 named MF schemes with a setup pathway",
+        "outcomeVerification": "Named AMC or platform URL accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-047", "domain": "FINANCE",
+      "rawIntent": "how to file ITR online for salaried employee",
+      "canonicalIntent": "Step-by-step ITR-1 filing process for salaried individual on the Income Tax portal",
+      "successCriteria": {
+        "minimumEvidence": ["form_number_itr1", "incometax_portal_url", "step_sequence"],
+        "acceptableOutcome": "User can access Income Tax portal and begin ITR-1 filing",
+        "outcomeVerification": "Income Tax portal URL accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-048", "domain": "FINANCE",
+      "rawIntent": "how to open demat account india",
+      "canonicalIntent": "Process to open a SEBI-registered demat account in India",
+      "successCriteria": {
+        "minimumEvidence": ["broker_or_depository_named", "kyc_process", "account_opening_url"],
+        "acceptableOutcome": "User can begin demat account opening with ≥1 named broker",
+        "outcomeVerification": "Broker signup URL accessible",
+        "maxObservationWindowHours": 24
+      }
+    },
+    {
+      "objectiveId": "OBJ-049", "domain": "FINANCE",
+      "rawIntent": "home loan for 20 lakh in sbi",
+      "canonicalIntent": "SBI home loan eligibility, interest rate, and EMI for INR 20 lakh",
+      "successCriteria": {
+        "minimumEvidence": ["current_interest_rate", "emi_calculation", "sbi_portal_url"],
+        "acceptableOutcome": "User gets accurate SBI home loan rate and can access SBI portal",
+        "outcomeVerification": "SBI home loan URL accessible",
+        "maxObservationWindowHours": 24
+      }
+    },
+    {
+      "objectiveId": "OBJ-050", "domain": "FINANCE",
+      "rawIntent": "tax saving investments section 80C options",
+      "canonicalIntent": "80C tax saving investment options comparison for FY 2026-27",
+      "successCriteria": {
+        "minimumEvidence": ["≥4_instruments_listed", "80c_limit_stated", "returns_comparison"],
+        "acceptableOutcome": "User gets a comparative table of 80C instruments with current rates",
+        "outcomeVerification": "Named instrument (PPF/ELSS) portal accessible",
+        "maxObservationWindowHours": 24
+      }
+    },
+    {
+      "objectiveId": "OBJ-051", "domain": "FINANCE",
+      "rawIntent": "personal loan without salary slip",
+      "canonicalIntent": "Personal loans in India for self-employed or informal income earners without salary slip",
+      "successCriteria": {
+        "minimumEvidence": ["lender_named", "alternate_document_list", "application_url"],
+        "acceptableOutcome": "User gets ≥1 lender accepting alternate income proof",
+        "outcomeVerification": "Lender application URL accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-052", "domain": "FINANCE",
+      "rawIntent": "how to invest 10000 per month",
+      "canonicalIntent": "Monthly investment plan for INR 10,000 — diversified allocation strategy",
+      "successCriteria": {
+        "minimumEvidence": ["asset_allocation_provided", "specific_instruments_named", "expected_returns"],
+        "acceptableOutcome": "User gets a concrete monthly allocation plan they can immediately act on",
+        "outcomeVerification": "Named investment platform accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-053", "domain": "FINANCE",
+      "rawIntent": "credit score check free india",
+      "canonicalIntent": "Free credit score check options for individuals in India",
+      "successCriteria": {
+        "minimumEvidence": ["bureau_or_platform_named", "free_confirmed", "check_url"],
+        "acceptableOutcome": "User can check credit score for free within 5 minutes",
+        "outcomeVerification": "Named credit check URL accessible",
+        "maxObservationWindowHours": 24
+      }
+    },
+    {
+      "objectiveId": "OBJ-054", "domain": "FINANCE",
+      "rawIntent": "NPS vs PPF which is better for retirement",
+      "canonicalIntent": "Comparative analysis of NPS vs PPF for long-term retirement planning in India",
+      "successCriteria": {
+        "minimumEvidence": ["both_schemes_compared", "tax_treatment_stated", "recommendation_with_reasoning"],
+        "acceptableOutcome": "User gets a decision framework based on their income and risk profile",
+        "outcomeVerification": "Named calculator or NSDL/India Post URL accessible",
+        "maxObservationWindowHours": 24
+      }
+    },
+    {
+      "objectiveId": "OBJ-055", "domain": "FINANCE",
+      "rawIntent": "cryptocurrency trading legal in india 2026",
+      "canonicalIntent": "Current legal status of cryptocurrency trading and taxation in India in 2026",
+      "successCriteria": {
+        "minimumEvidence": ["legal_status_stated", "tds_vda_tax_mentioned", "regulatory_body_cited"],
+        "acceptableOutcome": "User gets accurate current legal status with CBDT/Finance Ministry source",
+        "outcomeVerification": "Named government source URL accessible",
+        "maxObservationWindowHours": 24
+      }
+    },
+    {
+      "objectiveId": "OBJ-056", "domain": "FINANCE",
+      "rawIntent": "emergency fund how much should I keep",
+      "canonicalIntent": "Emergency fund sizing guidelines and optimal savings account for India",
+      "successCriteria": {
+        "minimumEvidence": ["months_guideline", "calculation_method", "parking_instrument_recommended"],
+        "acceptableOutcome": "User gets a formula and a parking instrument (liquid MF or savings account)",
+        "outcomeVerification": "Named instrument URL accessible",
+        "maxObservationWindowHours": 24
+      }
+    },
+    {
+      "objectiveId": "OBJ-057", "domain": "FINANCE",
+      "rawIntent": "gold loan vs personal loan which is better",
+      "canonicalIntent": "Comparison of gold loan vs personal loan for emergency borrowing in India",
+      "successCriteria": {
+        "minimumEvidence": ["interest_rate_comparison", "processing_time", "eligibility_difference"],
+        "acceptableOutcome": "User gets a clear comparison with a decision criterion",
+        "outcomeVerification": "Named lender URL accessible",
+        "maxObservationWindowHours": 24
+      }
+    },
+    {
+      "objectiveId": "OBJ-058", "domain": "FINANCE",
+      "rawIntent": "how to send money abroad from india",
+      "canonicalIntent": "International remittance from India — LRS rules, platforms, and FEMA compliance",
+      "successCriteria": {
+        "minimumEvidence": ["lrs_limit_stated", "platform_named", "kyc_requirements"],
+        "acceptableOutcome": "User can initiate international transfer on a named platform",
+        "outcomeVerification": "Named remittance platform URL accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-059", "domain": "FINANCE",
+      "rawIntent": "health insurance for family of 4 under 15000 per year",
+      "canonicalIntent": "Family floater health insurance under INR 15,000/year for 4 members",
+      "successCriteria": {
+        "minimumEvidence": ["plan_named", "premium_within_budget", "insurer_regulated_by_irdai"],
+        "acceptableOutcome": "User gets ≥1 plan within budget they can purchase immediately",
+        "outcomeVerification": "Insurer or aggregator URL accessible",
+        "maxObservationWindowHours": 72
+      }
+    },
+    {
+      "objectiveId": "OBJ-060", "domain": "FINANCE",
+      "rawIntent": "calculate capital gains tax on property sale",
+      "canonicalIntent": "LTCG/STCG calculation for property sale in India under current Finance Act",
+      "successCriteria": {
+        "minimumEvidence": ["ltcg_rate_stated", "indexation_explained", "calculation_example"],
+        "acceptableOutcome": "User can calculate their capital gains tax with a worked example",
+        "outcomeVerification": "Income Tax portal calculator URL accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-061", "domain": "LOCAL_SERVICES",
+      "rawIntent": "best plumber near me in varanasi",
+      "canonicalIntent": "Verified, contactable plumber service in Varanasi with real contact details",
+      "successCriteria": {
+        "minimumEvidence": ["business_name", "phone_or_address", "varanasi_location_confirmed"],
+        "acceptableOutcome": "User can contact a plumber who can be physically verified in Varanasi",
+        "outcomeVerification": "Phone number reachable OR Google Maps listing active",
+        "maxObservationWindowHours": 24
+      }
+    },
+    {
+      "objectiveId": "OBJ-062", "domain": "LOCAL_SERVICES",
+      "rawIntent": "AC repair at home in Noida",
+      "canonicalIntent": "AC repair home service in Noida with booking capability",
+      "successCriteria": {
+        "minimumEvidence": ["service_provider_named", "noida_coverage_confirmed", "booking_url_or_phone"],
+        "acceptableOutcome": "User can book AC repair service online or by phone in Noida",
+        "outcomeVerification": "Booking URL accessible or phone reachable",
+        "maxObservationWindowHours": 24
+      }
+    },
+    {
+      "objectiveId": "OBJ-063", "domain": "LOCAL_SERVICES",
+      "rawIntent": "doctor appointment booking online Lucknow",
+      "canonicalIntent": "Online doctor appointment booking in Lucknow via verified platform",
+      "successCriteria": {
+        "minimumEvidence": ["platform_named", "lucknow_doctors_available", "booking_url"],
+        "acceptableOutcome": "User can book a doctor's appointment in Lucknow today",
+        "outcomeVerification": "Booking platform URL accessible and shows Lucknow doctors",
+        "maxObservationWindowHours": 24
+      }
+    },
+    {
+      "objectiveId": "OBJ-064", "domain": "LOCAL_SERVICES",
+      "rawIntent": "packers and movers from Delhi to Mumbai",
+      "canonicalIntent": "IBA-approved or rated packers and movers for Delhi-to-Mumbai relocation",
+      "successCriteria": {
+        "minimumEvidence": ["company_named", "quote_mechanism", "iba_or_iba_approved_stated"],
+        "acceptableOutcome": "User can request a quote from ≥1 verified mover",
+        "outcomeVerification": "Company website or quote URL accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-065", "domain": "LOCAL_SERVICES",
+      "rawIntent": "gas cylinder booking online",
+      "canonicalIntent": "LPG cylinder booking online for major Indian distributors (HP/Bharatgas/Indane)",
+      "successCriteria": {
+        "minimumEvidence": ["booking_portal_url", "distributor_named", "steps_to_book"],
+        "acceptableOutcome": "User can book LPG cylinder online via named portal",
+        "outcomeVerification": "Booking portal URL accessible",
+        "maxObservationWindowHours": 24
+      }
+    },
+    {
+      "objectiveId": "OBJ-066", "domain": "LOCAL_SERVICES",
+      "rawIntent": "electrician near me in Hyderabad",
+      "canonicalIntent": "Verified electrician service in Hyderabad with contact details",
+      "successCriteria": {
+        "minimumEvidence": ["service_provider_named", "hyderabad_confirmed", "contact_mechanism"],
+        "acceptableOutcome": "User can contact a verifiable electrician in Hyderabad",
+        "outcomeVerification": "Phone or booking URL accessible and shows Hyderabad coverage",
+        "maxObservationWindowHours": 24
+      }
+    },
+    {
+      "objectiveId": "OBJ-067", "domain": "LOCAL_SERVICES",
+      "rawIntent": "PG accommodation for working professionals in Bangalore",
+      "canonicalIntent": "PG or co-living accommodation for working professionals in Bangalore under INR 12,000/mo",
+      "successCriteria": {
+        "minimumEvidence": ["pg_name_or_platform", "price_within_12k", "bangalore_area_specified"],
+        "acceptableOutcome": "User can inquire or visit ≥1 PG within budget in Bangalore",
+        "outcomeVerification": "Platform or PG listing URL accessible",
+        "maxObservationWindowHours": 72
+      }
+    },
+    {
+      "objectiveId": "OBJ-068", "domain": "LOCAL_SERVICES",
+      "rawIntent": "passport police verification status check",
+      "canonicalIntent": "How to check passport police verification status online via Passport Seva portal",
+      "successCriteria": {
+        "minimumEvidence": ["passportseva_url", "steps_to_check", "arno_requirement"],
+        "acceptableOutcome": "User can check their verification status on the Passport Seva portal",
+        "outcomeVerification": "Passport Seva portal URL accessible",
+        "maxObservationWindowHours": 24
+      }
+    },
+    {
+      "objectiveId": "OBJ-069", "domain": "LOCAL_SERVICES",
+      "rawIntent": "matrimony sites in india for free",
+      "canonicalIntent": "Free matrimony platforms in India for profile creation and match browsing",
+      "successCriteria": {
+        "minimumEvidence": ["platform_named", "free_registration_confirmed", "url_accessible"],
+        "acceptableOutcome": "User can create a free profile on ≥1 matrimony platform",
+        "outcomeVerification": "Platform URL accessible and shows free registration",
+        "maxObservationWindowHours": 24
+      }
+    },
+    {
+      "objectiveId": "OBJ-070", "domain": "LOCAL_SERVICES",
+      "rawIntent": "voter id correction online",
+      "canonicalIntent": "Online voter ID correction via NVSP or Voter Helpline 1950",
+      "successCriteria": {
+        "minimumEvidence": ["nvsp_or_voterportal_url", "form_number", "correction_type_supported"],
+        "acceptableOutcome": "User can submit voter ID correction request online",
+        "outcomeVerification": "NVSP or ECI voter portal URL accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-071", "domain": "LOCAL_SERVICES",
+      "rawIntent": "blood donation camp near me",
+      "canonicalIntent": "Find verified upcoming blood donation camps in the user's city",
+      "successCriteria": {
+        "minimumEvidence": ["camp_name_or_platform", "location_or_city_mentioned", "contact_mechanism"],
+        "acceptableOutcome": "User can find or register for a nearby blood donation camp",
+        "outcomeVerification": "Named organization URL or phone accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-072", "domain": "LOCAL_SERVICES",
+      "rawIntent": "water tank cleaning service at home in Chennai",
+      "canonicalIntent": "Professional water tank cleaning service at home in Chennai",
+      "successCriteria": {
+        "minimumEvidence": ["provider_named", "chennai_coverage_confirmed", "booking_mechanism"],
+        "acceptableOutcome": "User can book water tank cleaning in Chennai",
+        "outcomeVerification": "Provider URL or phone accessible with Chennai coverage",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-073", "domain": "LOCAL_SERVICES",
+      "rawIntent": "best diagnostic lab near me in Kolkata",
+      "canonicalIntent": "NABL-accredited diagnostic labs in Kolkata with home sample collection",
+      "successCriteria": {
+        "minimumEvidence": ["lab_named", "kolkata_confirmed", "home_collection_stated"],
+        "acceptableOutcome": "User can book a home blood test in Kolkata today",
+        "outcomeVerification": "Lab or aggregator URL accessible",
+        "maxObservationWindowHours": 24
+      }
+    },
+    {
+      "objectiveId": "OBJ-074", "domain": "LOCAL_SERVICES",
+      "rawIntent": "rent bike in Goa for tourists",
+      "canonicalIntent": "Verified bike rental services in Goa for tourists (daily rate)",
+      "successCriteria": {
+        "minimumEvidence": ["rental_company_named", "goa_location", "daily_rate_estimate"],
+        "acceptableOutcome": "User can book or inquire about bike rental in Goa",
+        "outcomeVerification": "Rental company URL or phone accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-075", "domain": "LOCAL_SERVICES",
+      "rawIntent": "municipal property tax payment online",
+      "canonicalIntent": "Online property tax payment for major Indian municipal corporations",
+      "successCriteria": {
+        "minimumEvidence": ["municipal_portal_url", "steps_to_pay", "receipt_mechanism"],
+        "acceptableOutcome": "User can pay property tax online via named municipal portal",
+        "outcomeVerification": "Municipal portal URL accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-076", "domain": "LOCAL_SERVICES",
+      "rawIntent": "pest control service in Mumbai",
+      "canonicalIntent": "Licensed pest control service in Mumbai with booking option",
+      "successCriteria": {
+        "minimumEvidence": ["provider_named", "mumbai_coverage", "booking_url_or_phone"],
+        "acceptableOutcome": "User can book pest control in Mumbai",
+        "outcomeVerification": "Provider URL or phone accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-077", "domain": "LOCAL_SERVICES",
+      "rawIntent": "ambulance booking number in Delhi",
+      "canonicalIntent": "Emergency and non-emergency ambulance contact numbers in Delhi",
+      "successCriteria": {
+        "minimumEvidence": ["phone_number_provided", "delhi_coverage", "response_type_stated"],
+        "acceptableOutcome": "User gets ≥1 verified ambulance number for Delhi",
+        "outcomeVerification": "Number is an officially published emergency number (102, 1911, or equivalent)",
+        "maxObservationWindowHours": 1
+      }
+    },
+    {
+      "objectiveId": "OBJ-078", "domain": "LOCAL_SERVICES",
+      "rawIntent": "train PNR status check",
+      "canonicalIntent": "Check IRCTC PNR status of a train ticket online",
+      "successCriteria": {
+        "minimumEvidence": ["irctc_url", "alternative_check_method", "pnr_format_explained"],
+        "acceptableOutcome": "User can check PNR status immediately",
+        "outcomeVerification": "IRCTC PNR status URL accessible",
+        "maxObservationWindowHours": 1
+      }
+    },
+    {
+      "objectiveId": "OBJ-079", "domain": "LOCAL_SERVICES",
+      "rawIntent": "how to get duplicate aadhaar card",
+      "canonicalIntent": "Process to download e-Aadhaar or order printed duplicate Aadhaar via UIDAI",
+      "successCriteria": {
+        "minimumEvidence": ["uidai_portal_url", "steps_stated", "cost_if_any"],
+        "acceptableOutcome": "User can download e-Aadhaar via UIDAI portal immediately",
+        "outcomeVerification": "UIDAI portal URL accessible",
+        "maxObservationWindowHours": 1
+      }
+    },
+    {
+      "objectiveId": "OBJ-080", "domain": "LOCAL_SERVICES",
+      "rawIntent": "swimming pool near me open today",
+      "canonicalIntent": "Public or club swimming pools currently open near the user",
+      "successCriteria": {
+        "minimumEvidence": ["pool_name_or_platform", "current_hours", "contact_or_booking"],
+        "acceptableOutcome": "User can confirm hours and visit a pool today",
+        "outcomeVerification": "Named pool URL or phone accessible — NOTE: this may trigger SUPPLY_VACUUM for city-agnostic query",
+        "maxObservationWindowHours": 4
+      }
+    },
+    {
+      "objectiveId": "OBJ-081", "domain": "PERSONAL",
+      "rawIntent": "how to manage anxiety at work",
+      "canonicalIntent": "Evidence-based strategies to manage workplace anxiety and improve mental health",
+      "successCriteria": {
+        "minimumEvidence": ["≥3_specific_strategies", "evidence_basis_cited", "professional_help_pointer"],
+        "acceptableOutcome": "User gets actionable techniques they can apply immediately",
+        "outcomeVerification": "Named resource (NIMHANS, iCall, or equivalent) URL accessible",
+        "maxObservationWindowHours": 24
+      }
+    },
+    {
+      "objectiveId": "OBJ-082", "domain": "PERSONAL",
+      "rawIntent": "diet plan to lose 5 kg in a month",
+      "canonicalIntent": "Evidence-based diet plan to lose 5 kg in one month for Indian diet",
+      "successCriteria": {
+        "minimumEvidence": ["caloric_deficit_explained", "indian_food_options", "safety_disclaimer"],
+        "acceptableOutcome": "User gets a 7-day sample meal plan calibrated for 5kg/month target",
+        "outcomeVerification": "Named nutrition app or dietitian platform accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-083", "domain": "PERSONAL",
+      "rawIntent": "how to improve my CIBIL score fast",
+      "canonicalIntent": "Specific actions to improve CIBIL credit score within 3-6 months",
+      "successCriteria": {
+        "minimumEvidence": ["≥4_specific_actions", "timeline_realistic", "cibil_portal_url"],
+        "acceptableOutcome": "User gets a prioritized action plan with CIBIL access link",
+        "outcomeVerification": "CIBIL official URL accessible",
+        "maxObservationWindowHours": 24
+      }
+    },
+    {
+      "objectiveId": "OBJ-084", "domain": "PERSONAL",
+      "rawIntent": "how to write a good LinkedIn profile",
+      "canonicalIntent": "LinkedIn profile optimization for career visibility in the Indian job market",
+      "successCriteria": {
+        "minimumEvidence": ["section_by_section_guidance", "headline_strategy", "keywords_approach"],
+        "acceptableOutcome": "User can improve their LinkedIn profile headline and summary today",
+        "outcomeVerification": "LinkedIn URL accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-085", "domain": "PERSONAL",
+      "rawIntent": "legal help for domestic violence victim india",
+      "canonicalIntent": "Legal aid and emergency contacts for domestic violence victims in India",
+      "successCriteria": {
+        "minimumEvidence": ["emergency_number", "ngo_or_legal_aid_named", "dwadva_or_wb_act_mentioned"],
+        "acceptableOutcome": "User gets ≥2 immediate actionable contacts (NCW helpline, iCall, or NALSA)",
+        "outcomeVerification": "Named helpline number or URL accessible",
+        "maxObservationWindowHours": 1
+      }
+    },
+    {
+      "objectiveId": "OBJ-086", "domain": "PERSONAL",
+      "rawIntent": "how to prepare for a salary negotiation",
+      "canonicalIntent": "Structured salary negotiation preparation for Indian job seekers",
+      "successCriteria": {
+        "minimumEvidence": ["research_method", "talking_points", "script_or_phrases"],
+        "acceptableOutcome": "User has a negotiation script and market data source",
+        "outcomeVerification": "Named salary data source accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-087", "domain": "PERSONAL",
+      "rawIntent": "how to stop procrastinating",
+      "canonicalIntent": "Evidence-based procrastination reduction techniques with immediate implementation",
+      "successCriteria": {
+        "minimumEvidence": ["≥3_techniques", "psychology_cited", "first_action_step"],
+        "acceptableOutcome": "User gets one immediately implementable technique",
+        "outcomeVerification": "Named app or resource accessible",
+        "maxObservationWindowHours": 24
+      }
+    },
+    {
+      "objectiveId": "OBJ-088", "domain": "PERSONAL",
+      "rawIntent": "how to get birth certificate if not registered",
+      "canonicalIntent": "Process to obtain a late birth registration certificate in India",
+      "successCriteria": {
+        "minimumEvidence": ["crsa_process_stated", "documents_required", "state_portal_or_office"],
+        "acceptableOutcome": "User understands the late registration process and first step",
+        "outcomeVerification": "Named municipal/state birth registration portal URL accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-089", "domain": "PERSONAL",
+      "rawIntent": "how to deal with job loss depression",
+      "canonicalIntent": "Mental health support and practical steps for someone experiencing depression after job loss",
+      "successCriteria": {
+        "minimumEvidence": ["emotional_validation", "professional_help_pointer", "practical_next_steps"],
+        "acceptableOutcome": "User gets ≥1 professional mental health resource contact in India",
+        "outcomeVerification": "Named helpline (iCall: 9152987821, Vandrevala Foundation, or equivalent) accessible",
+        "maxObservationWindowHours": 4
+      }
+    },
+    {
+      "objectiveId": "OBJ-090", "domain": "PERSONAL",
+      "rawIntent": "best book to learn about stock market for beginners",
+      "canonicalIntent": "Top beginner-friendly books on stock market investing appropriate for Indian context",
+      "successCriteria": {
+        "minimumEvidence": ["≥3_books_named", "author_stated", "one_available_free_or_low_cost"],
+        "acceptableOutcome": "User can obtain ≥1 named book immediately (library, PDF, or purchase)",
+        "outcomeVerification": "Named book accessible via Amazon/Google Books or library URL",
+        "maxObservationWindowHours": 24
+      }
+    },
+    {
+      "objectiveId": "OBJ-091", "domain": "PERSONAL",
+      "rawIntent": "how to report a cyber crime in india",
+      "canonicalIntent": "Process to file a cybercrime complaint in India via the National Cyber Crime Reporting Portal",
+      "successCriteria": {
+        "minimumEvidence": ["cybercrime_portal_url", "steps_to_file", "helpline_number"],
+        "acceptableOutcome": "User can file a complaint on cybercrime.gov.in",
+        "outcomeVerification": "cybercrime.gov.in URL accessible",
+        "maxObservationWindowHours": 4
+      }
+    },
+    {
+      "objectiveId": "OBJ-092", "domain": "PERSONAL",
+      "rawIntent": "meal prep ideas for the whole week",
+      "canonicalIntent": "Weekly meal prep plan for Indian diet with minimal cooking time",
+      "successCriteria": {
+        "minimumEvidence": ["7_day_or_5_day_plan", "indian_foods_included", "prep_time_stated"],
+        "acceptableOutcome": "User gets a complete weekly meal prep plan they can execute Sunday",
+        "outcomeVerification": "Named recipe resource accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-093", "domain": "PERSONAL",
+      "rawIntent": "how to meditate for beginners at home",
+      "canonicalIntent": "Beginner meditation guide for home practice with a guided audio or app",
+      "successCriteria": {
+        "minimumEvidence": ["step_by_step_technique", "duration_recommendation", "free_resource_linked"],
+        "acceptableOutcome": "User can complete a 10-minute guided session today",
+        "outcomeVerification": "Named free meditation app or URL accessible",
+        "maxObservationWindowHours": 24
+      }
+    },
+    {
+      "objectiveId": "OBJ-094", "domain": "PERSONAL",
+      "rawIntent": "how to apply for rajasthan ration card",
+      "canonicalIntent": "Online application process for Rajasthan ration card via the state food portal",
+      "successCriteria": {
+        "minimumEvidence": ["rajasthan_food_portal_url", "documents_required", "eligibility_stated"],
+        "acceptableOutcome": "User can submit ration card application online in Rajasthan",
+        "outcomeVerification": "Rajasthan food portal URL accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-095", "domain": "PERSONAL",
+      "rawIntent": "what is the best time to wake up",
+      "canonicalIntent": "Sleep science-based optimal wake-up time recommendation",
+      "successCriteria": {
+        "minimumEvidence": ["science_based_reasoning", "individual_variation_acknowledged", "sleep_cycle_explained"],
+        "acceptableOutcome": "User gets a personalized framework to determine their optimal wake time",
+        "outcomeVerification": "Named sleep science resource or calculator accessible",
+        "maxObservationWindowHours": 24
+      }
+    },
+    {
+      "objectiveId": "OBJ-096", "domain": "PERSONAL",
+      "rawIntent": "how to get police clearance certificate india",
+      "canonicalIntent": "Police Clearance Certificate (PCC) application process for Indian citizens",
+      "successCriteria": {
+        "minimumEvidence": ["passportseva_pcc_url", "eligibility_and_documents", "timeline_estimate"],
+        "acceptableOutcome": "User can apply for PCC online via Passport Seva",
+        "outcomeVerification": "Passport Seva PCC URL accessible",
+        "maxObservationWindowHours": 48
+      }
+    },
+    {
+      "objectiveId": "OBJ-097", "domain": "PERSONAL",
+      "rawIntent": "how to write a will in india",
+      "canonicalIntent": "Legal process to draft and register a valid will in India",
+      "successCriteria": {
+        "minimumEvidence": ["legal_requirements", "registration_option", "template_or_lawyer_recommendation"],
+        "acceptableOutcome": "User understands the requirements and can access a will template or legal service",
+        "outcomeVerification": "Named legal service or government registration URL accessible",
+        "maxObservationWindowHours": 72
+      }
+    },
+    {
+      "objectiveId": "OBJ-098", "domain": "PERSONAL",
+      "rawIntent": "how to save electricity at home",
+      "canonicalIntent": "Practical electricity-saving tips for Indian households",
+      "successCriteria": {
+        "minimumEvidence": ["≥5_actionable_tips", "estimated_savings", "bees_or_star_rating_mentioned"],
+        "acceptableOutcome": "User gets ≥5 tips with one immediate implementable action",
+        "outcomeVerification": "Named government energy portal (BEE) URL accessible",
+        "maxObservationWindowHours": 24
+      }
+    },
+    {
+      "objectiveId": "OBJ-099", "domain": "PERSONAL",
+      "rawIntent": "adopt a dog from shelter in india",
+      "canonicalIntent": "Process to adopt a dog from a shelter in India",
+      "successCriteria": {
+        "minimumEvidence": ["shelter_or_platform_named", "adoption_process_stated", "contact_mechanism"],
+        "acceptableOutcome": "User can contact ≥1 shelter with dogs available for adoption",
+        "outcomeVerification": "Named shelter or platform URL accessible",
+        "maxObservationWindowHours": 72
+      }
+    },
+    {
+      "objectiveId": "OBJ-100", "domain": "PERSONAL",
+      "rawIntent": "how to get a driving license in india first time",
+      "canonicalIntent": "First-time driving license application process in India via Parivahan Sewa portal",
+      "successCriteria": {
+        "minimumEvidence": ["parivahan_portal_url", "learner_licence_process", "documents_required"],
+        "acceptableOutcome": "User can apply for learner's licence online via Parivahan",
+        "outcomeVerification": "Parivahan Sewa portal URL accessible",
+        "maxObservationWindowHours": 48
+      }
+    }
+  ]
+}
