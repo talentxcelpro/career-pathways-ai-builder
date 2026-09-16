@@ -81,7 +81,8 @@ export class IntentEngine {
       : JSON.stringify(signal.content);
 
     const normalizedText = this.normalizeSignalText(rawText);
-    const detectedDomain = this.classifyDomain(normalizedText);
+    const domainResult = this.classifyDomainWithConfidence(normalizedText);
+    const detectedDomain = domainResult.domain;
     const entities = this.extractEntities(normalizedText);
     const constraints = this.extractConstraints(normalizedText);
     const timeframe = this.extractTimeframe(normalizedText);
@@ -101,6 +102,7 @@ export class IntentEngine {
     return {
       intentId: `intent-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
       domain: detectedDomain,
+      domainConfidence: domainResult.confidence,
       canonicalIntent: canonical,
       goal,
       currentState: { rawInputSample: rawText.slice(0, 100) },
@@ -119,52 +121,96 @@ export class IntentEngine {
   }
 
   /**
-   * Domain classification across the 9 universal UDX domains.
+   * Domain classification across all universal UDX domains with confidence & matched tokens.
+   */
+  public static classifyDomainWithConfidence(text: string): { domain: UDXDomain; confidence: number; matchedKeywords: string[] } {
+    const lower = this.normalizeSignalText(text);
+    const matches: { domain: UDXDomain; weight: number; keywords: string[] }[] = [];
+
+    // 1. Local Services (Trades, repair, home services) - Checked before Career
+    const localServicesRegex = /\b(plumber|plumbing|electrician|electrical|carpenter|mechanic|ac repair|appliance repair|technician|pest control|painter|handyman|cleaning service|maid|locksmith|ro repair|home repair)\b/g;
+    const localMatches = lower.match(localServicesRegex);
+    if (localMatches && localMatches.length > 0) {
+      matches.push({ domain: 'LOCAL_SERVICES', weight: localMatches.length * 3 + 2, keywords: localMatches });
+    }
+
+    // 2. Business (Incorporation, MSME, Startup, Compliance)
+    const businessRegex = /\b(msme|udyam|register business|register company|start a business|startup|incorporation|incorporate|gst registration|trademark|sole proprietorship|llp|market size|competitors|customer acquisition|saas|revenue model|venture capital|founder)\b/g;
+    const businessMatches = lower.match(businessRegex);
+    if (businessMatches && businessMatches.length > 0) {
+      matches.push({ domain: 'BUSINESS', weight: businessMatches.length * 3 + 2, keywords: businessMatches });
+    }
+
+    // 3. Finance (Budgeting, mutual funds, expenses, wealth, investing)
+    const financeRegex = /\b(invest|investing|mutual fund|mutual funds|sip|expense|expenses|reduce expenses|monthly expenses|portfolio|equity|mortgage|wealth|dividend|tax planning|credit score|underwriting|budget|saving|savings|fixed deposit|fd|index fund|emergency fund)\b/g;
+    const financeMatches = lower.match(financeRegex);
+    if (financeMatches && financeMatches.length > 0) {
+      matches.push({ domain: 'FINANCE', weight: financeMatches.length * 3 + 2, keywords: financeMatches });
+    }
+
+    // 4. Education (Degrees, courses, learning, colleges, admissions)
+    const eduRegex = /\b(learn|study|college|university|degree|course|master's|masters|b\.tech|m\.tech|mca|mba|phd|curriculum|exam|scholarship|admissions|syllabus|tuition)\b/g;
+    const eduMatches = lower.match(eduRegex);
+    if (eduMatches && eduMatches.length > 0) {
+      matches.push({ domain: 'EDUCATION', weight: eduMatches.length * 3 + 2, keywords: eduMatches });
+    }
+
+    // 5. Personal / Productivity (Habits, evening routine, life balance, wellness)
+    const personalRegex = /\b(life balance|habit|habits|wellness|fitness|mindfulness|personal goal|change my life|free hours|free time|evening|evenings|productive|productively|routine|sleep schedule|hobby)\b/g;
+    const personalMatches = lower.match(personalRegex);
+    if (personalMatches && personalMatches.length > 0) {
+      matches.push({ domain: 'PERSONAL', weight: personalMatches.length * 3 + 1, keywords: personalMatches });
+    }
+
+    // 6. Technology (Architecture, code, devops)
+    const techRegex = /\b(deploy|architecture|kubernetes|docker|react|typescript|python|neural network|llm|api integration|microservices|serverless)\b/g;
+    const techMatches = lower.match(techRegex);
+    if (techMatches && techMatches.length > 0) {
+      matches.push({ domain: 'TECHNOLOGY', weight: techMatches.length * 2, keywords: techMatches });
+    }
+
+    // 7. Travel
+    const travelRegex = /\b(flight|hotel|visa|relocate to|move to dubai|itinerary|residence permit)\b/g;
+    const travelMatches = lower.match(travelRegex);
+    if (travelMatches && travelMatches.length > 0) {
+      matches.push({ domain: 'TRAVEL', weight: travelMatches.length * 2, keywords: travelMatches });
+    }
+
+    // 8. Commerce
+    const commerceRegex = /\b(buy|purchase|supplier|wholesale|ecommerce|procurement|shipping)\b/g;
+    const commerceMatches = lower.match(commerceRegex);
+    if (commerceMatches && commerceMatches.length > 0) {
+      matches.push({ domain: 'COMMERCE', weight: commerceMatches.length * 2, keywords: commerceMatches });
+    }
+
+    // 9. Career (Jobs, hiring, resume, employment)
+    const careerRegex = /\b(job|jobs|hire|hiring|career|careers|salary|salaries|work|employment|resume|ats|interview|vacancy|developer|engineer|internship|stipend|ctc|lpa|naukri|rozgar)\b/g;
+    const careerMatches = lower.match(careerRegex);
+    if (careerMatches && careerMatches.length > 0) {
+      matches.push({ domain: 'CAREER', weight: careerMatches.length * 2, keywords: careerMatches });
+    }
+
+    if (matches.length === 0) {
+      return { domain: 'GENERAL', confidence: 0.70, matchedKeywords: [] };
+    }
+
+    // Sort by weight descending
+    matches.sort((a, b) => b.weight - a.weight);
+    const top = matches[0];
+    const confidence = Math.min(0.98, 0.85 + (top.weight * 0.03));
+
+    return {
+      domain: top.domain,
+      confidence: parseFloat(confidence.toFixed(2)),
+      matchedKeywords: top.keywords
+    };
+  }
+
+  /**
+   * Domain classification across the universal UDX domains.
    */
   public static classifyDomain(text: string): UDXDomain {
-    const lower = this.normalizeSignalText(text);
-
-    // 1. Education
-    if (/\b(learn|study|college|university|degree|course|curriculum|exam|phd|b\.tech|mca|mba|scholarship)\b/.test(lower)) {
-      return 'EDUCATION';
-    }
-
-    // 2. Business
-    if (/\b(start a business|startup|incorporation|market size|competitors|customer acquisition|saas|revenue model|venture capital)\b/.test(lower)) {
-      return 'BUSINESS';
-    }
-
-    // 3. Finance
-    if (/\b(invest|equity|crypto|portfolio|mortgage|wealth|dividend|tax planning|credit score|underwriting)\b/.test(lower)) {
-      return 'FINANCE';
-    }
-
-    // 4. Technology
-    if (/\b(deploy|architecture|kubernetes|docker|react|typescript|python|neural network|llm|api integration)\b/.test(lower)) {
-      return 'TECHNOLOGY';
-    }
-
-    // 5. Travel
-    if (/\b(flight|hotel|visa|relocate to|move to dubai|itinerary|residence permit)\b/.test(lower)) {
-      return 'TRAVEL';
-    }
-
-    // 6. Commerce
-    if (/\b(buy|purchase|supplier|wholesale|ecommerce|procurement|shipping)\b/.test(lower)) {
-      return 'COMMERCE';
-    }
-
-    // 7. Personal
-    if (/\b(life balance|habit|wellness|fitness|mindfulness|personal goal|change my life)\b/.test(lower)) {
-      return 'PERSONAL';
-    }
-
-    // 8. Career (Default for professional mobility and job ecosystem)
-    if (/\b(job|hire|career|salary|work|employment|resume|ats|interview|vacancy|developer|engineer|internship|stipend|ctc|lpa|naukri|rozgar)\b/.test(lower)) {
-      return 'CAREER';
-    }
-
-    return 'GENERAL';
+    return this.classifyDomainWithConfidence(text).domain;
   }
 
   /**

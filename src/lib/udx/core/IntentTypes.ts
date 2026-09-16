@@ -15,6 +15,7 @@ export type UDXDomain =
   | 'EDUCATION'
   | 'BUSINESS'
   | 'FINANCE'
+  | 'LOCAL_SERVICES'
   | 'TRAVEL'
   | 'COMMERCE'
   | 'TECHNOLOGY'
@@ -59,23 +60,29 @@ export interface Constraint {
   value?: unknown;
 }
 
-export interface Preference {
-  key: string;
-  weight: number; // 0 to 1
-  description: string;
-}
-
 export interface Timeframe {
-  targetDays?: number;
   horizon: 'IMMEDIATE' | 'SHORT_TERM' | 'MEDIUM_TERM' | 'LONG_TERM';
+  targetDate?: string;
+  durationDays?: number;
+  targetDays?: number;
   deadline?: string;
 }
 
 export interface LocationContext {
+  city?: string;
+  region?: string;
+  country?: string;
+  radiusKm?: number;
+  isRemote?: boolean;
   primaryLocation?: string;
   coordinates?: { lat: number; lng: number };
-  mobility: 'LOCAL_ONLY' | 'HYBRID' | 'REMOTE' | 'RELOCATION_OPEN' | 'GLOBAL';
-  radiusKm?: number;
+  mobility?: 'LOCAL_ONLY' | 'HYBRID' | 'REMOTE' | 'RELOCATION_OPEN' | 'GLOBAL';
+}
+
+export interface Preference {
+  key: string;
+  value: string | number | boolean;
+  weight: number; // 0 to 1
 }
 
 /**
@@ -85,6 +92,9 @@ export interface LocationContext {
 export interface UDXIntent {
   intentId: string;
   domain: UDXDomain;
+  domainConfidence?: number;
+  adapterId?: string;
+  domainEvidenceIds?: string[];
   canonicalIntent: string;
   goal: string;
   

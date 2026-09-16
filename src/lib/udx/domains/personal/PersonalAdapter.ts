@@ -9,46 +9,80 @@
  * without requiring the user to categorize themselves beforehand.
  */
 
-import { UDXIntent } from '../../core/IntentTypes';
+import { UDXIntent, UDXDomain, Constraint, EntityReference } from '../../core/IntentTypes';
 import { PossibilityPath } from '../../possibility/types';
 
 export class PersonalAdapter {
+  public static readonly adapterId = 'adapter-personal-v3';
+
+  public static canHandle(signal: string, domain?: UDXDomain): boolean {
+    if (domain === 'PERSONAL') return true;
+    const s = signal.toLowerCase();
+    return /\b(free hours|free time|evening|evenings|productive|productively|routine|habit|habits|wellness|personal goal|improve my life|life balance|burnout|cognitive)\b/i.test(s);
+  }
+
   public static toPersonalIntent(rawSignal: string): UDXIntent {
+    const goalDescription = 'Synthesize optimal high-leverage allocation of 3 daily evening hours to compound long-term agency and fulfillment';
+
+    const constraints: Constraint[] = [
+      {
+        id: 'c-pers-time-fixed',
+        type: 'TEMPORAL',
+        description: 'Daily availability fixed to 3 evening hours (18:00–21:00 or 19:00–22:00)',
+        strictness: 'HARD',
+        value: '3_HOURS_EVENING',
+      },
+      {
+        id: 'c-pers-no-burnout',
+        type: 'PREFERENCE',
+        description: 'Must not induce burnout or impair primary daytime focus',
+        strictness: 'HARD',
+      }
+    ];
+
+    const entities: EntityReference[] = [
+      {
+        entityId: 'ent-evening-protocol',
+        name: 'Deliberate Practice & Cognitive Energy Management',
+        type: 'BEHAVIORAL_FRAMEWORK',
+        confidence: 0.94,
+      }
+    ];
+
     return {
       intentId: `intent-pers-${Date.now()}`,
-      canonicalIntent: 'LIFE_CAPITAL: EVENING_ALLOCATION_OPTIMIZATION',
       domain: 'PERSONAL',
-      primaryGoal: 'Synthesize optimal high-leverage allocation of 3 daily evening hours to compound long-term agency and fulfillment',
+      domainConfidence: 0.95,
+      adapterId: PersonalAdapter.adapterId,
+      canonicalIntent: 'LIFE_CAPITAL: EVENING_ALLOCATION_OPTIMIZATION',
+      goal: goalDescription,
+      primaryGoal: goalDescription,
       sourceSignals: [
         {
           signalId: `sig-pers-${Date.now()}`,
           channel: 'CONVERSATION',
-          rawContent: rawSignal,
-          confidence: 0.94,
-          timestamp: new Date().toISOString(),
+          rawPayload: rawSignal,
+          confidence: 0.95,
+          detectedAt: new Date().toISOString(),
         }
       ],
-      constraints: [
-        {
-          type: 'TEMPORAL',
-          description: 'Daily availability fixed to 3 evening hours (18:00–21:00 or 19:00–22:00)',
-          strict: true,
-        },
-        {
-          type: 'OPERATIONAL',
-          description: 'Must not induce burnout or impair primary daytime focus',
-          strict: true,
-        }
-      ],
-      entities: [],
-      urgency: 'MEDIUM',
-      timeframe: 'NEXT_90_DAYS',
+      constraints,
+      entities,
+      urgency: 0.5,
+      timeframe: {
+        horizon: 'MEDIUM_TERM',
+        durationDays: 90,
+      },
       epistemicStatus: 'OBSERVED',
       confidence: 0.92,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
   }
 
-  public static generatePersonalPaths(intentId: string): PossibilityPath[] {
+  public static generatePersonalPaths(intentOrId: string | UDXIntent): PossibilityPath[] {
+    const intentId = typeof intentOrId === 'string' ? intentOrId : intentOrId.intentId;
+
     const pathCognitiveMastery: PossibilityPath = {
       pathId: 'path-pers-deep-mastery',
       intentId,
@@ -84,11 +118,11 @@ export class PersonalAdapter {
           toNode: 'node-pers-routine',
           action: 'Establish Distraction-Free Evening Shutdown Protocol',
           durationDays: 7.0,
-          frictionScore: 12,
+          frictionScore: 10,
           probability: 0.93,
           executable: true,
-          executionTarget: '/tools/routine-architect',
-          actionButtonText: 'Generate Routine Spec',
+          executionTarget: '/productivity/evening-time-audit',
+          actionButtonText: 'Initialize Evening Time Audit',
           advantageSummary: 'Protects 3 hours from passive feed consumption.',
         },
         {
@@ -97,15 +131,16 @@ export class PersonalAdapter {
           toNode: 'node-pers-compounded',
           action: 'Execute 90-Day Focused Production Sprint',
           durationDays: 83.0,
-          frictionScore: 22,
+          frictionScore: 20,
           probability: 0.86,
           executable: false,
+          executionTarget: '/productivity/deep-work-tracker',
           advantageSummary: 'Produces verifiable public portfolio asset or physical transformation.',
         }
       ],
       estimatedDurationDays: 90.0,
       successProbability: 0.89,
-      frictionScore: 18,
+      frictionScore: 15,
       expectedOutcome: 'Substantial boost in life agency, tangible project completion, and physical stamina',
       outcomeQualityScore: 96,
       isRecommended: true,

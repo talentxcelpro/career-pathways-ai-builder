@@ -30,6 +30,7 @@ import fs from 'fs';
 import path from 'path';
 import { createClient } from '@supabase/supabase-js';
 
+import '../src/lib/udx/domains';
 import { UDXAgentAPI } from '../src/lib/udx/agents/UDXAgentAPI';
 import { ActionLifecycle, DownstreamExecutionResult } from '../src/lib/udx/agents/ActionLifecycle';
 import { OutcomeEngine } from '../src/lib/udx/outcomes/OutcomeEngine';
@@ -270,7 +271,7 @@ async function runProductionCanary() {
     tenant_id: 'talentxcel',
     memory_type: 'LEARNED_PATTERN',
     query_cluster: 'tier2-emerging-hubs',
-    intent: res1.intent.canonicalIntent,
+    intent: (res1.intent.canonicalIntent || 'CAREER_SEARCH').slice(0, 32),
     audience: 'professional',
     content_pattern: 'direct_matching + ats_calibration + 48h_sla',
     outcome: 'SUCCESS',

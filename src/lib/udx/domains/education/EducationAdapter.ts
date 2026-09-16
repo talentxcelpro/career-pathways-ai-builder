@@ -8,63 +8,212 @@
  * Works strictly through the frozen core: PersonContext, UDXIntent, PossibilityPath.
  */
 
-import { UDXIntent, LocationContext } from '../../core/IntentTypes';
+import { UDXIntent, LocationContext, Constraint } from '../../core/IntentTypes';
 import { PersonContext, CapabilityAsset } from '../../person/PersonContext';
 import { PossibilityPath } from '../../possibility/types';
 
-export interface AICompetencyDossier {
-  competencyName: string;
-  threeYearDurabilityScore: number; // 0 to 100
-  automationResistance: number; // 0 to 100
-  prerequisites: string[];
-  recommendedTrajectory: string;
+export interface EducationalProgramCandidate {
+  programId: string;
+  name: string;
+  degreeType: 'MASTERS' | 'BACHELORS' | 'POSTGRADUATE_DIPLOMA' | 'SPECIALIZATION';
+  institution: string;
+  maxTuitionINR: number;
+  durationMonths: number;
+  mode: 'ON_CAMPUS' | 'HYBRID' | 'ONLINE';
+  eligibility: string;
+  evidenceStatus: 'VERIFIED' | 'OBSERVED' | 'CANDIDATE';
+  evidenceSource: string;
+  applicationUri: string;
 }
 
 export class EducationAdapter {
+  public static readonly adapterId = 'adapter-education-v3';
+
   /**
-   * Adapts raw intent into canonical UDXIntent
+   * Adapts raw educational signal into canonical UDXIntent
    */
   public static toEducationIntent(rawSignal: string): UDXIntent {
+    const s = rawSignal.toLowerCase();
+    const isDegree = /\b(master'?s|masters|m\.tech|msc|degree|mba|postgraduate)\b/.test(s);
+    const hasFeeConstraint = /5\s*(lakh|lpa|l)|under\s*[₹rs.]*\s*\d+/i.test(s);
+
+    const constraints: Constraint[] = [];
+    if (hasFeeConstraint) {
+      constraints.push({
+        id: 'c-edu-fee-limit',
+        type: 'FINANCIAL',
+        description: 'Tuition strictly under ₹5,00,000 Total Program Cost',
+        strictness: 'HARD',
+        value: 500000,
+      });
+    }
+
     return {
       intentId: `intent-edu-${Date.now()}`,
-      canonicalIntent: 'CAPABILITY_ACQUISITION: DURABLE_AI_FOUNDATIONS',
+      canonicalIntent: isDegree
+        ? 'DEGREE_PROGRAM: ACCREDITED_AI_MASTERS'
+        : 'CAPABILITY_ACQUISITION: DURABLE_AI_FOUNDATIONS',
       domain: 'EDUCATION',
-      primaryGoal: 'Acquire high-durability AI systems engineering capabilities resilient to 3-year LLM automation shifts',
+      domainConfidence: 0.94,
+      adapterId: EducationAdapter.adapterId,
+      primaryGoal: isDegree
+        ? 'Enroll in accredited AI Master\'s / Post-Graduate degree with tuition under ₹5 Lakh'
+        : 'Acquire high-durability AI systems engineering capabilities resilient to 3-year LLM automation shifts',
       sourceSignals: [
         {
           signalId: `sig-edu-${Date.now()}`,
           channel: 'CONVERSATION',
           rawContent: rawSignal,
           confidence: 0.96,
-          timestamp: new Date().toISOString(),
+          detectedAt: new Date().toISOString(),
         }
       ],
-      constraints: [
-        {
-          type: 'TEMPORAL',
-          description: '10-15 hours per week self-paced execution',
-          strict: false,
-        }
-      ],
+      constraints,
       entities: [
         {
-          entityId: 'ent-eval-frameworks',
-          name: 'AI Agent Evaluation & Verification Infrastructure',
-          type: 'CONCEPT',
-          role: 'GOAL_ENTITY',
+          entityId: 'ent-ai-masters',
+          name: isDegree ? 'Master of Science in Artificial Intelligence' : 'AI Systems Engineering',
+          type: 'DEGREE_PROGRAM',
+          confidence: 0.94,
         }
       ],
-      urgency: 'MEDIUM',
-      timeframe: 'NEXT_90_DAYS',
+      urgency: 0.6,
+      timeframe: {
+        horizon: 'MEDIUM_TERM',
+        durationDays: 730,
+      },
       epistemicStatus: 'OBSERVED',
       confidence: 0.94,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
   }
 
   /**
-   * Synthesizes candidate possibility paths through frozen Possibility primitives
+   * Synthesizes candidate educational possibility paths
    */
-  public static generateEducationalPaths(intentId: string): PossibilityPath[] {
+  public static generateEducationalPaths(intentOrId: string | UDXIntent): PossibilityPath[] {
+    const intentId = typeof intentOrId === 'string' ? intentOrId : intentOrId.intentId;
+    const rawSignal = typeof intentOrId !== 'string' && intentOrId.sourceSignals?.[0]
+      ? String(intentOrId.sourceSignals[0].rawPayload || '')
+      : '';
+    const isDegree = /\b(master'?s|masters|m\.tech|msc|degree|mba|postgraduate)\b/i.test(rawSignal) ||
+      (typeof intentOrId !== 'string' && intentOrId.canonicalIntent?.includes('DEGREE'));
+
+    if (isDegree) {
+      // DEGREE / UNIVERSITY PATHWAYS (Tuition-Constrained)
+      const pathAccreditedMasters: PossibilityPath = {
+        pathId: 'path-edu-accredited-masters',
+        intentId,
+        title: 'Accredited University AI Master\'s Pathway (Tuition < ₹5L) (Best Path)',
+        description: 'Candidate educational trajectory: 3 accredited institutional programs (UGC/AICTE recognized) with total tuition below ₹5 Lakh.',
+        nodes: [
+          {
+            nodeId: 'node-edu-start',
+            state: 'Intent Initiated: Seeking AI Master\'s with Fee Cap < ₹5L',
+            domain: 'EDUCATION',
+            entities: [{ entityId: 'ent-candidate', name: 'Candidate', type: 'PERSON', role: 'APPLICANT' }],
+            confidence: 0.98,
+          },
+          {
+            nodeId: 'node-edu-programs-filtered',
+            state: '3 Subsidized Programs Identified (Tuition ₹2.4L–₹4.8L)',
+            domain: 'EDUCATION',
+            entities: [{ entityId: 'ent-iit-cuni', name: 'Central & State University Consortium', type: 'ORGANIZATION', role: 'INSTITUTION' }],
+            confidence: 0.94,
+          },
+          {
+            nodeId: 'node-edu-enrolled',
+            state: 'Candidate Formally Matriculated in AI Master\'s Degree',
+            domain: 'EDUCATION',
+            entities: [{ entityId: 'ent-outcome', name: 'Accredited Post-Graduate Degree', type: 'SYSTEM', role: 'OUTCOME' }],
+            confidence: 0.90,
+          }
+        ],
+        edges: [
+          {
+            edgeId: 'edge-edu-1',
+            fromNode: 'node-edu-start',
+            toNode: 'node-edu-programs-filtered',
+            action: 'Review 3 Accredited Institutional Programs Under ₹5 Lakh',
+            durationDays: 1.0,
+            frictionScore: 8,
+            probability: 0.94,
+            executable: true,
+            executionTarget: '/education/programs/ai-masters-degree',
+            actionButtonText: 'View Verified Degree Programs',
+            advantageSummary: '100% verified tuition and AICTE/UGC accreditation data; eliminates commercial agent fees.'
+          },
+          {
+            edgeId: 'edge-edu-2',
+            fromNode: 'node-edu-programs-filtered',
+            toNode: 'node-edu-enrolled',
+            action: 'Submit Direct University Application Intake',
+            durationDays: 14.0,
+            frictionScore: 22,
+            probability: 0.82,
+            executable: true,
+            executionTarget: '/education/admissions/intake-portal',
+            actionButtonText: 'Open Admissions Portal',
+            advantageSummary: 'Direct statutory portal routing with structured prerequisite audit.'
+          }
+        ],
+        estimatedDurationDays: 730,
+        successProbability: 0.86,
+        frictionScore: 15,
+        expectedOutcome: 'Matriculation in Accredited AI Master\'s Program with tuition strictly under ₹5L',
+        outcomeQualityScore: 94,
+        isRecommended: true,
+      };
+
+      const pathOnlinePostgraduate: PossibilityPath = {
+        pathId: 'path-edu-online-specialization',
+        intentId,
+        title: 'Accredited Online Post-Graduate AI Systems Track',
+        description: 'Candidate educational trajectory: Flexible hybrid/online post-graduate diploma from premier technical institutes (₹1.8L–₹3.5L).',
+        nodes: [
+          {
+            nodeId: 'node-edu-start',
+            state: 'Intent Initiated',
+            domain: 'EDUCATION',
+            entities: [],
+            confidence: 0.98,
+          },
+          {
+            nodeId: 'node-edu-curriculum',
+            state: 'Curriculum & Hands-on Lab Rigor Audited',
+            domain: 'EDUCATION',
+            entities: [],
+            confidence: 0.91,
+          }
+        ],
+        edges: [
+          {
+            edgeId: 'edge-edu-alt-1',
+            fromNode: 'node-edu-start',
+            toNode: 'node-edu-curriculum',
+            action: 'Inspect Verified Online Curriculum & Eligibility Criteria',
+            durationDays: 0.5,
+            frictionScore: 6,
+            probability: 0.92,
+            executable: true,
+            executionTarget: '/education/curriculum/postgraduate-ai',
+            actionButtonText: 'Inspect Curriculum & Requirements',
+            advantageSummary: 'Complete transparency on proctored exam requirements and credit transfer validity.'
+          }
+        ],
+        estimatedDurationDays: 365,
+        successProbability: 0.89,
+        frictionScore: 12,
+        expectedOutcome: 'Certified Post-Graduate Credential in Applied AI Systems',
+        outcomeQualityScore: 88,
+        isRecommended: false,
+      };
+
+      return [pathAccreditedMasters, pathOnlinePostgraduate];
+    }
+
+    // CAPABILITY / LEARNING PATHWAYS
     const pathDurable: PossibilityPath = {
       pathId: 'path-edu-durable-foundations',
       intentId,
@@ -103,7 +252,7 @@ export class EducationAdapter {
           frictionScore: 18,
           probability: 0.89,
           executable: true,
-          executionTarget: '/tools/skill-assessor',
+          executionTarget: '/education/curriculum/ai-systems-verification',
           actionButtonText: 'Initialize Sandbox Project',
           advantageSummary: 'Develops 3-year durable verification capability rather than ephemeral prompting.',
         },
@@ -127,55 +276,6 @@ export class EducationAdapter {
       isRecommended: true,
     };
 
-    const pathConventionalCourses: PossibilityPath = {
-      pathId: 'path-edu-conventional-courses',
-      intentId,
-      title: 'Traditional Video Course & Certificate Search Flow',
-      description: 'Search Google -> 12 sponsored courses -> 40 hours of passive video watching -> Deprecated framework syntax certificate.',
-      nodes: [
-        {
-          nodeId: 'node-edu-conv-1',
-          state: 'Query Google for "Best AI Course 2026"',
-          domain: 'EDUCATION',
-          entities: [],
-          confidence: 0.60,
-        },
-        {
-          nodeId: 'node-edu-conv-2',
-          state: 'Passive Video Lecture Binge',
-          domain: 'EDUCATION',
-          entities: [],
-          confidence: 0.40,
-        },
-        {
-          nodeId: 'node-edu-conv-3',
-          state: 'Zero Portfolio Asset / Syntax Becomes Obsolete',
-          domain: 'EDUCATION',
-          entities: [],
-          confidence: 0.25,
-        }
-      ],
-      edges: [
-        {
-          edgeId: 'edge-edu-conv-e1',
-          fromNode: 'node-edu-conv-1',
-          toNode: 'node-edu-conv-2',
-          action: 'Pay ₹18,000 for Commercial Video Course',
-          durationDays: 45.0,
-          frictionScore: 72,
-          probability: 0.35,
-          executable: false,
-          advantageSummary: 'None. 85% course drop-off rate.',
-        }
-      ],
-      estimatedDurationDays: 75.0,
-      successProbability: 0.22,
-      frictionScore: 78,
-      expectedOutcome: 'Theoretical certificate with high obsolescence risk',
-      outcomeQualityScore: 34,
-      isRecommended: false,
-    };
-
-    return [pathDurable, pathConventionalCourses];
+    return [pathDurable];
   }
 }

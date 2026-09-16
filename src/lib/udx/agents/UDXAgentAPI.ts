@@ -90,9 +90,7 @@ export class UDXAgentAPI {
     const mode = request.agentMetadata?.executionMode || 'MODE_B_REALITY';
     const resolutionId = `res-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
 
-    // Test F — Failure Honesty Gate:
-    // When given an impossible, contradictory, or unsupported objective,
-    // UDX must honestly report NO_RELIABLE_PATH rather than inventing certainty.
+    // Stage 1: Constraint Validation & Failure Honesty Gate
     const validation = ConstraintValidator.validate(rawSignal);
     if (!validation.isValid) {
       const failedIntent: UDXIntent = {
@@ -100,19 +98,22 @@ export class UDXAgentAPI {
         canonicalIntent: `UNRESOLVABLE [${validation.paradoxType}]: ${rawSignal.toUpperCase().slice(0, 40)}`,
         domain: 'GENERAL',
         primaryGoal: rawSignal,
+        goal: rawSignal,
         sourceSignals: [{
           signalId: `sig-${Date.now()}`,
           channel: 'EXTERNAL_AGENT',
-          rawContent: rawSignal,
+          rawPayload: rawSignal,
           confidence: 0.1,
-          timestamp: new Date().toISOString(),
+          detectedAt: new Date().toISOString(),
         }],
         constraints: [],
         entities: [],
-        urgency: 'HIGH',
-        timeframe: 'IMMEDIATE',
+        urgency: 0.9,
+        timeframe: { horizon: 'IMMEDIATE', durationDays: 1 },
         epistemicStatus: 'HYPOTHESIS',
         confidence: 0.0,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
 
       return {
@@ -143,30 +144,134 @@ export class UDXAgentAPI {
       };
     }
 
-    // Step 1: Query Dynamic Domain Adapter Registry or fallback to universal core
+    // Stage 2: Signal Normalization
+    const normalizedSignal = IntentEngine.normalizeSignalText(rawSignal);
+
+    // Stage 3: Domain Classification with Confidence
+    const domainResult = IntentEngine.classifyDomainWithConfidence(rawSignal);
+    const detectedDomain = domainResult.domain;
+    const domainConfidence = domainResult.confidence;
+
+    // Stage 4: Entity and Constraint Extraction
+    const entities = IntentEngine.extractEntities(rawSignal);
+    const constraints = IntentEngine.extractConstraints(rawSignal);
+    const timeframe = IntentEngine.extractTimeframe(rawSignal);
+    const location = IntentEngine.extractLocation(rawSignal, entities);
+
+    // Stage 5: Domain Registry Lookup
+    const domainHandler = DomainRegistry.resolveAdapter(detectedDomain, rawSignal);
+
     let intent: UDXIntent;
     let paths: PossibilityPath[] = [];
 
-    const domainHandler = DomainRegistry.findHandler(rawSignal);
+    // Stage 6: Intent and Domain-Specific Possibility Path Generation
     if (domainHandler) {
       intent = domainHandler.toIntent(rawSignal);
-      paths = domainHandler.generatePaths(intent.intentId);
+      if (!intent.domainConfidence || intent.domainConfidence < domainConfidence) {
+        intent.domainConfidence = domainConfidence;
+      }
+      paths = domainHandler.generatePaths(intent);
     } else {
+      if (mode === 'MODE_B_REALITY') {
+        // Strict Reality Invariant: In MODE_B_REALITY, missing domain adapter/supply
+        // MUST return NO_RELIABLE_PATH rather than simulating generic career paths.
+        const unhandledIntent: UDXIntent = {
+          intentId: `intent-unsupported-${Date.now()}`,
+          domain: detectedDomain,
+          domainConfidence,
+          canonicalIntent: `UNSUPPORTED_DOMAIN: ${detectedDomain}_${normalizedSignal.slice(0, 30).toUpperCase()}`,
+          goal: rawSignal,
+          primaryGoal: rawSignal,
+          constraints,
+          entities,
+          timeframe,
+          location,
+          confidence: domainConfidence,
+          sourceSignals: [{
+            signalId: `sig-${Date.now()}`,
+            channel: 'EXTERNAL_AGENT',
+            rawPayload: rawSignal,
+            confidence: 0.90,
+            detectedAt: new Date().toISOString(),
+          }],
+          epistemicStatus: 'OBSERVED',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+
+        return {
+          resolutionId,
+          status: 'NO_RELIABLE_PATH',
+          intent: unhandledIntent,
+          worldState: {
+            domain: detectedDomain,
+            entitiesCount: entities.length,
+            dominantEntities: entities.map(e => e.name),
+            summary: `No verified domain supply or adapter exists for domain [${detectedDomain}] in MODE_B_REALITY. Synthetic fallback is strictly forbidden.`,
+          },
+          possibilities: [],
+          bestPath: null,
+          actions: [],
+          expectedOutcome: {
+            description: `No verified real-world supply currently available for domain ${detectedDomain}`,
+            durationDays: 0,
+            probability: 0.0,
+            qualityScore: 0,
+            epistemicStatus: 'OBSERVED',
+          },
+          evidence: [],
+          epistemicStatus: 'OBSERVED',
+          reasoning: `Domain [${detectedDomain}] lacks active production supply adapter in MODE_B_REALITY. UDX refuses to hallucinate fallback paths.`,
+          executionMode: mode,
+          resolvedAt: new Date().toISOString(),
+        };
+      }
+
+      // MODE_A_SIMULATION: Fallback to PathSimulator is permitted with explicit MODELED tag
       intent = IntentEngine.ingestSignal({
         signalId: `sig-${Date.now()}`,
         channel: 'EXTERNAL_AGENT',
-        rawContent: rawSignal,
+        rawPayload: rawSignal,
         confidence: 0.90,
-        timestamp: new Date().toISOString(),
+        detectedAt: new Date().toISOString(),
       });
-      paths = PathSimulator.simulateCandidatePaths(intent);
+      paths = PathSimulator.simulateCandidatePaths(intent, 'MODE_A_SIMULATION');
     }
 
-    // Step 2: Multi-Factor Reasoning & Best Path Synthesis
+    if (paths.length === 0) {
+      return {
+        resolutionId,
+        status: 'NO_RELIABLE_PATH',
+        intent,
+        worldState: {
+          domain: intent.domain,
+          entitiesCount: intent.entities?.length || 0,
+          dominantEntities: (intent.entities || []).map(e => e.name),
+          summary: `Domain adapter for [${intent.domain}] returned 0 verified paths in MODE_B_REALITY.`,
+        },
+        possibilities: [],
+        bestPath: null,
+        actions: [],
+        expectedOutcome: {
+          description: `Zero actionable pathways found for intent: ${intent.canonicalIntent}`,
+          durationDays: 0,
+          probability: 0.0,
+          qualityScore: 0,
+          epistemicStatus: 'OBSERVED',
+        },
+        evidence: [],
+        epistemicStatus: 'OBSERVED',
+        reasoning: `Zero verified pathways exist for intent in domain ${intent.domain}.`,
+        executionMode: mode,
+        resolvedAt: new Date().toISOString(),
+      };
+    }
+
+    // Stage 7: Multi-Factor Reasoning & Best Path Synthesis
     const bestPathResolution = BestPathResolver.resolveBestPath(paths);
     const bestPath = bestPathResolution.bestPath;
 
-    // Step 3: Extract Executable Actions and register in ActionLifecycle
+    // Stage 8: Extract Executable Actions and register in ActionLifecycle
     const actions = bestPath.edges.map(edge => {
       const lifecycleAction = ActionLifecycle.propose({
         actionId: edge.edgeId,
@@ -187,13 +292,46 @@ export class UDXAgentAPI {
       };
     });
 
-    // Step 4: Gather Traceable Evidence Records
-    const relevantEvidenceIds = [
-      'EVID-EXP-TIME-TO-OUTCOME-35D',
-      'EVID-IND-APP-BLACKHOLE-2025',
-      'EVID-SUPABASE-VNS-884',
-      'EVID-UDX-DIRECT-ROUTING-SLA',
-    ];
+    // Stage 9: Domain-Specific Traceable Evidence & Immutable Ledger Commitment
+    const domainEvidenceMap: Record<UDXDomain, string[]> = {
+      CAREER: [
+        'EVID-EXP-TIME-TO-OUTCOME-35D',
+        'EVID-IND-APP-BLACKHOLE-2025',
+        'EVID-SUPABASE-VNS-884',
+        'EVID-UDX-DIRECT-ROUTING-SLA',
+      ],
+      EDUCATION: [
+        'EVID-EDU-UGC-AICTE-ACCRED',
+        'EVID-EDU-FEE-DISCLOSURE-2026',
+        'EVID-UDX-DIRECT-ROUTING-SLA',
+      ],
+      BUSINESS: [
+        'EVID-GOV-MSME-UDYAM-STATUTORY',
+        'EVID-UP-NIVESH-MITRA-SLA',
+        'EVID-UDX-DIRECT-ROUTING-SLA',
+      ],
+      FINANCE: [
+        'EVID-SEBI-MF-DISCLOSURE-REG',
+        'EVID-AMFI-TER-BENCHMARK',
+        'EVID-UDX-DIRECT-ROUTING-SLA',
+      ],
+      LOCAL_SERVICES: [
+        'EVID-VTG-TRADE-GUILD-SLA',
+        'EVID-VTG-RATECARD-199',
+        'EVID-UDX-DIRECT-ROUTING-SLA',
+      ],
+      PERSONAL: [
+        'EVID-COG-DELIBERATE-PRACTICE',
+        'EVID-TIME-AUDIT-EFFICACY',
+        'EVID-UDX-DIRECT-ROUTING-SLA',
+      ],
+      TECHNOLOGY: ['EVID-UDX-DIRECT-ROUTING-SLA'],
+      TRAVEL: ['EVID-UDX-DIRECT-ROUTING-SLA'],
+      COMMERCE: ['EVID-UDX-DIRECT-ROUTING-SLA'],
+      GENERAL: ['EVID-UDX-DIRECT-ROUTING-SLA'],
+    };
+
+    const relevantEvidenceIds = domainEvidenceMap[intent.domain] || ['EVID-UDX-DIRECT-ROUTING-SLA'];
     const evidenceRecords = EvidenceStore.getMany(relevantEvidenceIds).map(r => ({
       evidenceId: r.evidenceId,
       observation: r.observation,
@@ -201,13 +339,11 @@ export class UDXAgentAPI {
       confidence: r.confidence,
     }));
 
-    // Step 5: Epistemic Tagging based on Mode
     const epistemicStatus: EpistemicStatus = mode === 'MODE_B_REALITY' ? 'VERIFIED_TRUTH' : 'MODELED';
 
-    // Step 6: Commit Proof Record to Immutable Ledger
     ProofLedger.commit({
       proofId: `PROOF-${resolutionId}`,
-      claim: `External agent [${request.agentMetadata?.agentId || 'generic'}] resolved intent "${intent.canonicalIntent}" with best path [${bestPath.pathId}]`,
+      claim: `External agent [${request.agentMetadata?.agentId || 'generic'}] resolved intent "${intent.canonicalIntent}" with best path [${bestPath.pathId}] in domain [${intent.domain}]`,
       epistemicStatus,
       evidenceIds: relevantEvidenceIds,
       measuredAt: new Date().toISOString(),
@@ -227,8 +363,8 @@ export class UDXAgentAPI {
       intent,
       worldState: {
         domain: intent.domain,
-        entitiesCount: intent.entities.length,
-        dominantEntities: intent.entities.map(e => e.name),
+        entitiesCount: (intent.entities || []).length,
+        dominantEntities: (intent.entities || []).map(e => e.name),
         summary: `World model active across domain ${intent.domain}. Verified first-party supply and capability checkpoints mapped.`,
       },
       possibilities: paths,

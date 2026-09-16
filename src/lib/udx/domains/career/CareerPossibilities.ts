@@ -8,32 +8,132 @@
  */
 
 import { PossibilityPath } from '../../possibility/types';
+import { UDXIntent } from '../../core/IntentTypes';
 
 export class CareerPossibilities {
   /**
    * Generates candidate paths for a verified localized tech job search (e.g. Varanasi / NCR / Remote).
    */
-  public static generateCareerPaths(intentId: string, location: string = 'Varanasi'): PossibilityPath[] {
+  public static generateCareerPaths(intentOrId: string | UDXIntent, defaultLocation: string = 'Varanasi'): PossibilityPath[] {
+    const intentId = typeof intentOrId === 'string' ? intentOrId : intentOrId.intentId;
+    let location = defaultLocation;
+    let roleTitle = 'Software Engineer';
+
+    if (typeof intentOrId !== 'string') {
+      const locEntity = intentOrId.entities?.find(e => e.type === 'LOCATION');
+      if (locEntity) {
+        location = locEntity.name;
+      } else if (intentOrId.location?.city) {
+        location = intentOrId.location.city;
+      }
+
+      const roleEntity = intentOrId.entities?.find(e => e.type === 'ROLE' || e.type === 'CAPABILITY');
+      if (roleEntity) {
+        roleTitle = roleEntity.name;
+      } else if (intentOrId.canonicalIntent) {
+        const match = intentOrId.canonicalIntent.match(/CAREER:\s*(.+)/i);
+        if (match) roleTitle = match[1].trim();
+      }
+    }
+
     const isVaranasi = location.toLowerCase().includes('varanasi');
+    const roleSlug = roleTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const targetJobUrl = isVaranasi
+      ? `/jobs?role=${encodeURIComponent(roleSlug)}&location=Varanasi&verified=true`
+      : `/jobs?role=${encodeURIComponent(roleSlug)}&verified=true`;
+
+    const rawSignal = typeof intentOrId !== 'string' && intentOrId.sourceSignals?.[0]
+      ? String(intentOrId.sourceSignals[0].rawPayload || '')
+      : '';
+    const isATS = /\b(ats|resume|cv|calibration|scan|rubric|checker)\b/i.test(rawSignal) ||
+      (typeof intentOrId !== 'string' && intentOrId.canonicalIntent?.toLowerCase().includes('ats'));
+
+    if (isATS) {
+      const pathATS: PossibilityPath = {
+        pathId: 'path-career-ats-calibration',
+        intentId,
+        title: `Deterministic ATS Resume Calibration for ${roleTitle} (Best Path)`,
+        description: `Analyze candidate resume against 40+ ATS parser rules and direct competency benchmarks for ${roleTitle}.`,
+        nodes: [
+          {
+            nodeId: 'node-ats-start',
+            state: `Intent Initiated: Resume Calibration for ${roleTitle}`,
+            domain: 'CAREER',
+            entities: [{ entityId: 'ent-candidate', name: 'Candidate', type: 'PERSON', role: 'ACTOR' }],
+            confidence: 0.98,
+          },
+          {
+            nodeId: 'node-ats-evaluated',
+            state: 'Competency Rubric & Semantic Parser Benchmarked',
+            domain: 'CAREER',
+            entities: [],
+            confidence: 0.95,
+          },
+          {
+            nodeId: 'node-ats-optimized',
+            state: 'Calibrated Resume Profile (ATS Score >= 85) Ready for Intake',
+            domain: 'CAREER',
+            entities: [],
+            confidence: 0.94,
+          }
+        ],
+        edges: [
+          {
+            edgeId: 'edge-ats-1',
+            fromNode: 'node-ats-start',
+            toNode: 'node-ats-evaluated',
+            action: 'Execute Deterministic ATS Resume Diagnostic',
+            durationDays: 0.05,
+            frictionScore: 3,
+            probability: 0.98,
+            executable: true,
+            executionTarget: '/tools/resume-checker',
+            actionButtonText: 'Run ATS Resume Calibration',
+            advantageSummary: 'Real deterministic scoring against 40+ parser engines; instant skill gap report.',
+          },
+          {
+            edgeId: 'edge-ats-2',
+            fromNode: 'node-ats-evaluated',
+            toNode: 'node-ats-optimized',
+            action: 'Apply to Verified Matching Openings with Calibrated Profile',
+            durationDays: 1.0,
+            frictionScore: 6,
+            probability: 0.92,
+            executable: true,
+            executionTarget: targetJobUrl,
+            actionButtonText: 'View Calibrated Job Matches',
+            advantageSummary: 'Direct intake routing with 48-hour interview SLA.',
+          }
+        ],
+        estimatedDurationDays: 1.1,
+        successProbability: 0.95,
+        frictionScore: 5,
+        expectedOutcome: 'Calibrated ATS Resume (Score 88/100) with Verified Direct Role Matches',
+        outcomeQualityScore: 96,
+        isRecommended: true,
+      };
+
+      return [pathATS];
+    }
 
     const pathDirect: PossibilityPath = {
       pathId: 'path-direct-verified-local',
       intentId,
-      title: isVaranasi ? 'Direct Verified Varanasi Match (Best Path)' : 'Direct Verified Regional Match (Best Path)',
-      description: 'Connect directly with verified local hiring teams with transparent compensation and guaranteed 48-hour interview response.',
+      title: isVaranasi ? `Direct Verified Varanasi ${roleTitle} Match (Best Path)` : `Direct Verified ${location} ${roleTitle} Match (Best Path)`,
+      description: `Connect directly with verified hiring teams for ${roleTitle} in ${location} with transparent compensation and guaranteed 48-hour SLA.`,
       nodes: [
         {
           nodeId: 'node-start',
-          state: 'Intent Initiated: Seeking Verified Role',
+          state: `Intent Initiated: Seeking Verified ${roleTitle} Role`,
           domain: 'CAREER',
           entities: [{ entityId: 'ent-candidate', name: 'Candidate', type: 'PERSON', role: 'ACTOR' }],
           confidence: 0.98,
         },
         {
           nodeId: 'node-profile-matched',
-          state: 'Verified Direct Matching to Active Local Role',
+          state: `Verified Direct Matching to Active ${location} Role`,
           domain: 'CAREER',
-          entities: [{ entityId: 'ent-tx-verified', name: 'Kashi FinTech Labs', type: 'ORGANIZATION', role: 'EMPLOYER' }],
+          entities: [{ entityId: 'ent-tx-verified', name: isVaranasi ? 'Kashi FinTech Labs' : 'Verified Employer', type: 'ORGANIZATION', role: 'EMPLOYER' }],
           confidence: 0.95,
         },
         {
@@ -56,13 +156,13 @@ export class CareerPossibilities {
           edgeId: 'edge-1',
           fromNode: 'node-start',
           toNode: 'node-profile-matched',
-          action: 'Match with 5 Verified Local Openings',
+          action: `Match with Verified ${location} Openings`,
           durationDays: 0.5,
           frictionScore: 5,
           probability: 0.96,
           executable: true,
-          executionTarget: '/jobs?location=Varanasi&verified=true',
-          actionButtonText: 'View 5 Verified Roles',
+          executionTarget: targetJobUrl,
+          actionButtonText: `View Verified ${roleTitle} Roles`,
           advantageSummary: 'Bypasses unverified aggregator scrapers; zero spam.',
         },
         {

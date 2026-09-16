@@ -13,8 +13,16 @@ import { PossibilityPath, PossibilityNode, PossibilityEdge } from './types';
 export class PathSimulator {
   public static simulateCandidatePaths(
     intent: UDXIntent,
-    person?: PersonContext
+    person?: PersonContext,
+    executionMode: 'MODE_A_SIMULATION' | 'MODE_B_REALITY' = 'MODE_A_SIMULATION'
   ): PossibilityPath[] {
+    if (executionMode === 'MODE_B_REALITY') {
+      throw new Error(
+        '[INVARIANT_VIOLATION] PathSimulator.simulateCandidatePaths() cannot be invoked under MODE_B_REALITY. ' +
+        'Production resolution must use genuine domain supply or return NO_RELIABLE_PATH.'
+      );
+    }
+
     const canonical = intent?.canonicalIntent ? intent.canonicalIntent.toLowerCase() : '';
     const locationStr = intent?.location?.primaryLocation ? intent.location.primaryLocation.toLowerCase() : '';
     const isVaranasi = canonical.includes('varanasi') || locationStr.includes('varanasi');
