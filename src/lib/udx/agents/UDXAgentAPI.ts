@@ -93,10 +93,13 @@ export class UDXAgentAPI {
     // Stage 1: Constraint Validation & Failure Honesty Gate
     const validation = ConstraintValidator.validate(rawSignal);
     if (!validation.isValid) {
+      const initialDomainResult = IntentEngine.classifyDomainWithConfidence(rawSignal);
+      const initialDomain = initialDomainResult.domain;
       const failedIntent: UDXIntent = {
         intentId: `intent-unresolved-${Date.now()}`,
         canonicalIntent: `UNRESOLVABLE [${validation.paradoxType}]: ${rawSignal.toUpperCase().slice(0, 40)}`,
-        domain: 'GENERAL',
+        domain: initialDomain,
+        domainConfidence: initialDomainResult.confidence,
         primaryGoal: rawSignal,
         goal: rawSignal,
         sourceSignals: [{
@@ -121,7 +124,7 @@ export class UDXAgentAPI {
         status: 'NO_RELIABLE_PATH',
         intent: failedIntent,
         worldState: {
-          domain: 'GENERAL',
+          domain: initialDomain,
           entitiesCount: 0,
           dominantEntities: [],
           summary: `No verified physical, institutional, or empirical pathways exist in the current world model. Detected violation: ${validation.violationReason}`,
@@ -297,17 +300,22 @@ export class UDXAgentAPI {
       CAREER: [
         'EVID-EXP-TIME-TO-OUTCOME-35D',
         'EVID-IND-APP-BLACKHOLE-2025',
-        'EVID-SUPABASE-VNS-884',
+        'EVID-FIRST-PARTY-VARANASI-JOBS',
         'EVID-UDX-DIRECT-ROUTING-SLA',
       ],
       EDUCATION: [
         'EVID-EDU-UGC-AICTE-ACCRED',
         'EVID-EDU-FEE-DISCLOSURE-2026',
+        'EVID-AKTU-UP-ADMISSIONS',
+        'EVID-UGC-PHD-REGULATIONS-2022',
         'EVID-UDX-DIRECT-ROUTING-SLA',
       ],
       BUSINESS: [
         'EVID-GOV-MSME-UDYAM-STATUTORY',
         'EVID-UP-NIVESH-MITRA-SLA',
+        'EVID-MCA-SPICE-STATUTORY',
+        'EVID-GST-PORTAL-ZERO-FEE',
+        'EVID-UP-STARTINUP-PORTAL',
         'EVID-UDX-DIRECT-ROUTING-SLA',
       ],
       FINANCE: [
@@ -318,11 +326,15 @@ export class UDXAgentAPI {
       LOCAL_SERVICES: [
         'EVID-VTG-TRADE-GUILD-SLA',
         'EVID-VTG-RATECARD-199',
+        'EVID-VTG-ELECTRICIAN-SLA',
+        'EVID-VTG-AC-REPAIR-SLA',
+        'EVID-VTG-CARPENTRY-SLA',
         'EVID-UDX-DIRECT-ROUTING-SLA',
       ],
       PERSONAL: [
         'EVID-COG-DELIBERATE-PRACTICE',
         'EVID-TIME-AUDIT-EFFICACY',
+        'EVID-BEHAVIORAL-DEEP-WORK',
         'EVID-UDX-DIRECT-ROUTING-SLA',
       ],
       TECHNOLOGY: ['EVID-UDX-DIRECT-ROUTING-SLA'],

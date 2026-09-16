@@ -34,7 +34,10 @@ export class EducationAdapter {
    */
   public static toEducationIntent(rawSignal: string): UDXIntent {
     const s = rawSignal.toLowerCase();
-    const isDegree = /\b(master'?s|masters|m\.tech|msc|degree|mba|postgraduate)\b/.test(s);
+    const isPhD = /\b(phd|doctoral|doctor of philosophy)\b/.test(s);
+    const isBachelor = /\b(bachelor|b\.tech|undergraduate|be)\b/.test(s);
+    const isDiploma = /\b(diploma|pg diploma|post graduate diploma)\b/.test(s);
+    const isMasters = /\b(master'?s|masters|m\.tech|msc|postgraduate)\b/.test(s) && !isDiploma;
     const hasFeeConstraint = /5\s*(lakh|lpa|l)|under\s*[₹rs.]*\s*\d+/i.test(s);
 
     const constraints: Constraint[] = [];
@@ -48,22 +51,78 @@ export class EducationAdapter {
       });
     }
 
+    let canonicalIntent = 'CAPABILITY_ACQUISITION: DURABLE_AI_FOUNDATIONS';
+    let primaryGoal = 'Acquire high-durability AI systems engineering capabilities resilient to 3-year LLM automation shifts';
+    let entityName = 'AI Systems Engineering';
+
+    if (isPhD) {
+      canonicalIntent = 'DOCTORAL_RESEARCH: AI_ELIGIBILITY_CRITERIA';
+      primaryGoal = 'Verify institutional eligibility and entrance requirements for PhD in Artificial Intelligence';
+      entityName = 'Doctor of Philosophy in Artificial Intelligence';
+      constraints.push({
+        id: 'c-edu-phd-eligibility',
+        type: 'OTHER',
+        description: 'UGC Minimum Standards Regulations 2022 Doctoral Eligibility & Supervisor Quota',
+        strictness: 'HARD',
+        value: 'UGC_REGULATIONS_2022',
+      });
+    } else if (isBachelor) {
+      canonicalIntent = 'UNDERGRADUATE_ADMISSIONS: CS_BACHELORS_UP';
+      primaryGoal = 'Apply for accredited Computer Science B.Tech admissions in Uttar Pradesh state universities';
+      entityName = 'Bachelor of Technology Computer Science';
+      constraints.push({
+        id: 'c-edu-up-state-admissions',
+        type: 'GEOGRAPHIC',
+        description: 'AKTU / Uttar Pradesh State University Centralized Admissions Quota',
+        strictness: 'HARD',
+        value: 'UP_STATE_UNIVERSITIES',
+      });
+    } else if (isDiploma) {
+      canonicalIntent = 'POSTGRADUATE_DIPLOMA: PART_TIME_DATA_ANALYTICS';
+      primaryGoal = 'Enroll in flexible part-time post graduate diploma in Data Analytics';
+      entityName = 'PG Diploma in Data Analytics';
+      constraints.push({
+        id: 'c-edu-diploma-format',
+        type: 'TEMPORAL',
+        description: 'Part-time professional hybrid executive learning format',
+        strictness: 'HARD',
+        value: 'PART_TIME',
+      });
+    } else if (isMasters) {
+      canonicalIntent = 'DEGREE_PROGRAM: ACCREDITED_AI_MASTERS';
+      primaryGoal = 'Enroll in accredited AI Master\'s degree with tuition under ₹5 Lakh';
+      entityName = 'Master of Science in Artificial Intelligence';
+      if (!hasFeeConstraint) {
+        constraints.push({
+          id: 'c-edu-accredited-degree',
+          type: 'LEGAL',
+          description: 'UGC/AICTE Statutory Degree Accreditation',
+          strictness: 'HARD',
+          value: 'UGC_AICTE_ACCREDITED',
+        });
+      }
+    } else {
+      constraints.push({
+        id: 'c-edu-systems-verification',
+        type: 'OTHER',
+        description: 'Empirical systems verification & evals curriculum standards',
+        strictness: 'HARD',
+        value: 'SYSTEMS_VERIFICATION',
+      });
+    }
+
     return {
       intentId: `intent-edu-${Date.now()}`,
-      canonicalIntent: isDegree
-        ? 'DEGREE_PROGRAM: ACCREDITED_AI_MASTERS'
-        : 'CAPABILITY_ACQUISITION: DURABLE_AI_FOUNDATIONS',
+      canonicalIntent,
       domain: 'EDUCATION',
-      domainConfidence: 0.94,
+      domainConfidence: 0.95,
       adapterId: EducationAdapter.adapterId,
-      primaryGoal: isDegree
-        ? 'Enroll in accredited AI Master\'s / Post-Graduate degree with tuition under ₹5 Lakh'
-        : 'Acquire high-durability AI systems engineering capabilities resilient to 3-year LLM automation shifts',
+      primaryGoal,
       sourceSignals: [
         {
           signalId: `sig-edu-${Date.now()}`,
           channel: 'CONVERSATION',
-          rawContent: rawSignal,
+          rawPayload: rawSignal,
           confidence: 0.96,
           detectedAt: new Date().toISOString(),
         }
@@ -71,8 +130,8 @@ export class EducationAdapter {
       constraints,
       entities: [
         {
-          entityId: 'ent-ai-masters',
-          name: isDegree ? 'Master of Science in Artificial Intelligence' : 'AI Systems Engineering',
+          entityId: `ent-edu-${Date.now()}`,
+          name: entityName,
           type: 'DEGREE_PROGRAM',
           confidence: 0.94,
         }
@@ -80,7 +139,7 @@ export class EducationAdapter {
       urgency: 0.6,
       timeframe: {
         horizon: 'MEDIUM_TERM',
-        durationDays: 730,
+        durationDays: isPhD ? 1460 : isBachelor ? 1460 : 730,
       },
       epistemicStatus: 'OBSERVED',
       confidence: 0.94,
@@ -95,12 +154,156 @@ export class EducationAdapter {
   public static generateEducationalPaths(intentOrId: string | UDXIntent): PossibilityPath[] {
     const intentId = typeof intentOrId === 'string' ? intentOrId : intentOrId.intentId;
     const rawSignal = typeof intentOrId !== 'string' && intentOrId.sourceSignals?.[0]
-      ? String(intentOrId.sourceSignals[0].rawPayload || '')
+      ? String(intentOrId.sourceSignals[0].rawPayload || intentOrId.primaryGoal || '')
       : '';
-    const isDegree = /\b(master'?s|masters|m\.tech|msc|degree|mba|postgraduate)\b/i.test(rawSignal) ||
-      (typeof intentOrId !== 'string' && intentOrId.canonicalIntent?.includes('DEGREE'));
+    const s = rawSignal.toLowerCase();
+    const isPhD = /\b(phd|doctoral|doctor of philosophy)\b/i.test(s);
+    const isBachelor = /\b(bachelor|b\.tech|undergraduate|be)\b/i.test(s);
+    const isDiploma = /\b(diploma|pg diploma|post graduate diploma)\b/i.test(s);
+    const isMasters = /\b(master'?s|masters|m\.tech|msc|postgraduate)\b/i.test(s) && !isDiploma;
 
-    if (isDegree) {
+    if (isPhD) {
+      const pathPhD: PossibilityPath = {
+        pathId: 'path-edu-phd-eligibility',
+        intentId,
+        title: 'Accredited PhD in AI Research Eligibility & Entrance Pathway (Best Path)',
+        description: 'Candidate academic trajectory: Direct UGC/AICTE research eligibility requirements, entrance schedules (UGC-NET/GATE), and supervisor quotas.',
+        nodes: [
+          {
+            nodeId: 'node-edu-phd-start',
+            state: 'Intent Initiated: Seeking PhD in AI Research Admissions',
+            domain: 'EDUCATION',
+            entities: [{ entityId: 'ent-researcher', name: 'Doctoral Candidate', type: 'PERSON', role: 'APPLICANT' }],
+            confidence: 0.98,
+          },
+          {
+            nodeId: 'node-edu-phd-verified',
+            state: 'Institutional Supervisor & Research Quota Verified',
+            domain: 'EDUCATION',
+            entities: [],
+            confidence: 0.94,
+          }
+        ],
+        edges: [
+          {
+            edgeId: 'edge-edu-phd-1',
+            fromNode: 'node-edu-phd-start',
+            toNode: 'node-edu-phd-verified',
+            action: 'Verify UGC Doctoral Standards & Entrance Prerequisite Checklist',
+            durationDays: 1.0,
+            frictionScore: 6,
+            probability: 0.96,
+            executable: true,
+            executionTarget: '/education/phd/ai-eligibility-criteria',
+            actionButtonText: 'View Doctoral Eligibility Criteria',
+            advantageSummary: 'Statutory compliance with UGC Minimum Standards Regulations 2022.',
+          }
+        ],
+        estimatedDurationDays: 1460,
+        successProbability: 0.88,
+        frictionScore: 18,
+        expectedOutcome: 'Doctoral Research Candidacy Formally Verified & Registered',
+        outcomeQualityScore: 95,
+        isRecommended: true,
+      };
+      return [pathPhD];
+    }
+
+    if (isBachelor) {
+      const pathBTech: PossibilityPath = {
+        pathId: 'path-edu-up-btech-cse',
+        intentId,
+        title: 'Accredited Computer Science B.Tech Admissions in Uttar Pradesh (Best Path)',
+        description: 'Candidate educational trajectory: AKTU / State Government University centralized counseling intake and seat matrix for B.Tech CSE.',
+        nodes: [
+          {
+            nodeId: 'node-edu-btech-start',
+            state: 'Intent Initiated: Seeking B.Tech CSE Admissions in UP',
+            domain: 'EDUCATION',
+            entities: [{ entityId: 'ent-student', name: 'Undergraduate Candidate', type: 'PERSON', role: 'APPLICANT' }],
+            confidence: 0.98,
+          },
+          {
+            nodeId: 'node-edu-btech-admitted',
+            state: 'State University Seat Allocation Finalized',
+            domain: 'EDUCATION',
+            entities: [],
+            confidence: 0.93,
+          }
+        ],
+        edges: [
+          {
+            edgeId: 'edge-edu-btech-1',
+            fromNode: 'node-edu-btech-start',
+            toNode: 'node-edu-btech-admitted',
+            action: 'Inspect UP State University Counseling Matrix & Seat Availability',
+            durationDays: 2.0,
+            frictionScore: 8,
+            probability: 0.95,
+            executable: true,
+            executionTarget: '/education/admissions/up-btech-cse',
+            actionButtonText: 'View UP B.Tech Admissions Matrix',
+            advantageSummary: 'Direct AKTU/UPTU centralized portal; zero donation or agent overhead.',
+          }
+        ],
+        estimatedDurationDays: 1460,
+        successProbability: 0.92,
+        frictionScore: 14,
+        expectedOutcome: 'Accredited B.Tech Computer Science Matriculation in Uttar Pradesh',
+        outcomeQualityScore: 94,
+        isRecommended: true,
+      };
+      return [pathBTech];
+    }
+
+    if (isDiploma) {
+      const pathDiploma: PossibilityPath = {
+        pathId: 'path-edu-pg-diploma-data-analytics',
+        intentId,
+        title: 'Part-Time Post Graduate Diploma in Data Analytics (Best Path)',
+        description: 'Candidate educational trajectory: Flexible hybrid PG Diploma with weekend cohorts, hands-on SQL/Python projects, and university certification.',
+        nodes: [
+          {
+            nodeId: 'node-edu-diploma-start',
+            state: 'Intent Initiated: Seeking Part-Time Data Analytics PG Diploma',
+            domain: 'EDUCATION',
+            entities: [{ entityId: 'ent-learner', name: 'Working Professional', type: 'PERSON', role: 'APPLICANT' }],
+            confidence: 0.98,
+          },
+          {
+            nodeId: 'node-edu-diploma-certified',
+            state: 'PG Diploma in Data Analytics Conferred',
+            domain: 'EDUCATION',
+            entities: [],
+            confidence: 0.92,
+          }
+        ],
+        edges: [
+          {
+            edgeId: 'edge-edu-diploma-1',
+            fromNode: 'node-edu-diploma-start',
+            toNode: 'node-edu-diploma-certified',
+            action: 'Inspect Verified Part-Time Data Analytics Diploma Programs',
+            durationDays: 1.0,
+            frictionScore: 6,
+            probability: 0.94,
+            executable: true,
+            executionTarget: '/education/programs/data-analytics-pg-diploma',
+            actionButtonText: 'View PG Diploma Programs',
+            advantageSummary: 'Verified university partner credential with structured weekend labs.',
+          }
+        ],
+        estimatedDurationDays: 365,
+        successProbability: 0.90,
+        frictionScore: 12,
+        expectedOutcome: 'Conferral of University Accredited PG Diploma in Data Analytics',
+        outcomeQualityScore: 92,
+        isRecommended: true,
+      };
+      return [pathDiploma];
+    }
+
+    if (isMasters) {
       // DEGREE / UNIVERSITY PATHWAYS (Tuition-Constrained)
       const pathAccreditedMasters: PossibilityPath = {
         pathId: 'path-edu-accredited-masters',
@@ -166,51 +369,7 @@ export class EducationAdapter {
         isRecommended: true,
       };
 
-      const pathOnlinePostgraduate: PossibilityPath = {
-        pathId: 'path-edu-online-specialization',
-        intentId,
-        title: 'Accredited Online Post-Graduate AI Systems Track',
-        description: 'Candidate educational trajectory: Flexible hybrid/online post-graduate diploma from premier technical institutes (₹1.8L–₹3.5L).',
-        nodes: [
-          {
-            nodeId: 'node-edu-start',
-            state: 'Intent Initiated',
-            domain: 'EDUCATION',
-            entities: [],
-            confidence: 0.98,
-          },
-          {
-            nodeId: 'node-edu-curriculum',
-            state: 'Curriculum & Hands-on Lab Rigor Audited',
-            domain: 'EDUCATION',
-            entities: [],
-            confidence: 0.91,
-          }
-        ],
-        edges: [
-          {
-            edgeId: 'edge-edu-alt-1',
-            fromNode: 'node-edu-start',
-            toNode: 'node-edu-curriculum',
-            action: 'Inspect Verified Online Curriculum & Eligibility Criteria',
-            durationDays: 0.5,
-            frictionScore: 6,
-            probability: 0.92,
-            executable: true,
-            executionTarget: '/education/curriculum/postgraduate-ai',
-            actionButtonText: 'Inspect Curriculum & Requirements',
-            advantageSummary: 'Complete transparency on proctored exam requirements and credit transfer validity.'
-          }
-        ],
-        estimatedDurationDays: 365,
-        successProbability: 0.89,
-        frictionScore: 12,
-        expectedOutcome: 'Certified Post-Graduate Credential in Applied AI Systems',
-        outcomeQualityScore: 88,
-        isRecommended: false,
-      };
-
-      return [pathAccreditedMasters, pathOnlinePostgraduate];
+      return [pathAccreditedMasters];
     }
 
     // CAPABILITY / LEARNING PATHWAYS

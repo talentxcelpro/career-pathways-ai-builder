@@ -20,14 +20,51 @@ export class FinanceAdapter {
 
   public static toFinanceIntent(rawSignal: string): UDXIntent {
     const s = rawSignal.toLowerCase();
-    const isExpenseReduction = /\b(expense|expenses|reduce|cut|save|burn|budget|spending)\b/i.test(s);
+    const isSaaSBurn = /\b(cloud|saas|subscription burn|burn rate)\b/i.test(s);
+    const isEmergencyFund = /\b(emergency fund|contingency fund|liquidity buffer)\b/i.test(s);
     const isMutualFund = /\b(mutual fund|mutual funds|invest|investing|sip|index fund|wealth)\b/i.test(s);
-    const isSpeculative = /\b(guarantee|guaranteed|30%|multibagger|crypto|get rich|hot tip|insider)\b/i.test(s);
+    const isExpenseReduction = /\b(expense|expenses|reduce|cut|save|budget|spending)\b/i.test(s) && !isSaaSBurn;
+    const isSpeculative = /\b(guarantee|guaranteed|40%|30%|multibagger|crypto|get rich|risk-free annual|risk-free return)\b/i.test(s);
 
     const constraints: Constraint[] = [];
     const entities: EntityReference[] = [];
 
-    if (isExpenseReduction) {
+    let canonicalIntent = 'FINANCIAL_PLANNING: LIQUIDITY_OPTIMIZATION';
+    let goalDescription = 'Optimize personal financial structure and liquidity reserves';
+
+    if (isSaaSBurn) {
+      canonicalIntent = 'FINANCIAL_AUDIT: SAAS_CLOUD_PROCUREMENT_OPTIMIZATION';
+      goalDescription = 'Audit and eliminate redundant recurring SaaS, cloud, and subscription burn rate';
+      entities.push({
+        entityId: 'ent-fin-saas-audit',
+        name: 'SaaS & Cloud Subscription Audit',
+        type: 'FINANCIAL_FRAMEWORK',
+        confidence: 0.96,
+      });
+      constraints.push({
+        id: 'c-fin-saas-audit',
+        type: 'FINANCIAL',
+        description: 'Elimination of unused and redundant SaaS licenses & cloud provisioned capacity',
+        strictness: 'HARD',
+        value: 'SUBSCRIPTION_REDUCTION',
+      });
+    } else if (isEmergencyFund) {
+      canonicalIntent = 'CAPITAL_PRESERVATION: EMERGENCY_FUND_ALLOCATION';
+      goalDescription = 'Structure liquid 6-month emergency reserve allocation across high-safety instruments';
+      entities.push({
+        entityId: 'ent-fin-emergency-fund',
+        name: 'Liquid Contingency Capital Allocation',
+        type: 'FINANCIAL_FRAMEWORK',
+        confidence: 0.95,
+      });
+      constraints.push({
+        id: 'c-fin-emergency-allocation',
+        type: 'FINANCIAL',
+        description: '6-month private sector living expense reserve in high-liquidity capital instruments',
+        strictness: 'HARD',
+        value: '6_MONTHS_LIQUIDITY',
+      });
+    } else if (isExpenseReduction) {
       constraints.push({
         id: 'c-fin-budget-target',
         type: 'FINANCIAL',
@@ -37,10 +74,12 @@ export class FinanceAdapter {
       });
       entities.push({
         entityId: 'ent-recurring-cost-audit',
-        name: 'Recurring Cost Audit & Subscription Arbitrage',
+        name: 'Recurring Cost Audit & Lifestyle Arbitrage',
         type: 'FINANCIAL_FRAMEWORK',
         confidence: 0.95,
       });
+      canonicalIntent = 'ECONOMIC_OPTIMIZATION: LIFESTYLE_EXPENSE_ARBITRAGE';
+      goalDescription = 'Reduce recurring monthly living expenditure by ₹20,000 through structured substitution and subscription arbitrage';
     } else if (isMutualFund) {
       constraints.push({
         id: 'c-fin-compliance-sebi',
@@ -55,19 +94,9 @@ export class FinanceAdapter {
         type: 'FINANCIAL_FRAMEWORK',
         confidence: 0.95,
       });
+      canonicalIntent = 'CAPITAL_ALLOCATION: REGULATED_DIVERSIFIED_INVESTMENT';
+      goalDescription = 'Allocate capital into low-cost, SEBI-regulated diversified index and mutual fund instruments';
     }
-
-    const canonicalIntent = isExpenseReduction
-      ? 'ECONOMIC_OPTIMIZATION: LIFESTYLE_EXPENSE_ARBITRAGE'
-      : isMutualFund
-        ? 'CAPITAL_ALLOCATION: REGULATED_DIVERSIFIED_INVESTMENT'
-        : 'FINANCIAL_PLANNING: LIQUIDITY_OPTIMIZATION';
-
-    const goalDescription = isExpenseReduction
-      ? 'Reduce recurring monthly living expenditure by ₹20,000 through structured substitution and utility/subscription arbitrage without living standard sacrifice'
-      : isMutualFund
-        ? 'Allocate capital into low-cost, SEBI-regulated diversified index and mutual fund instruments'
-        : 'Optimize personal financial structure and liquidity reserves';
 
     return {
       intentId: `intent-fin-${Date.now()}`,
@@ -94,7 +123,7 @@ export class FinanceAdapter {
         durationDays: 30,
       },
       epistemicStatus: isSpeculative ? 'INSUFFICIENT_EVIDENCE' : 'OBSERVED',
-      confidence: 0.94,
+      confidence: isSpeculative ? 0.0 : 0.94,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -103,66 +132,120 @@ export class FinanceAdapter {
   public static generateFinancePaths(intentOrId: string | UDXIntent): PossibilityPath[] {
     const intentId = typeof intentOrId === 'string' ? intentOrId : intentOrId.intentId;
     const rawSignal = typeof intentOrId !== 'string' && intentOrId.sourceSignals?.[0]
-      ? String(intentOrId.sourceSignals[0].rawPayload || '')
+      ? String(intentOrId.sourceSignals[0].rawPayload || intentOrId.primaryGoal || '')
       : '';
-    const canonical = typeof intentOrId !== 'string' ? (intentOrId.canonicalIntent || '') : '';
-    const isMutualFund = /\b(mutual fund|mutual funds|invest|investing|sip|index fund|portfolio)\b/i.test(rawSignal) ||
-      canonical.includes('CAPITAL_ALLOCATION');
-    const isSpeculative = /\b(guarantee|guaranteed|30%|multibagger|crypto|get rich)\b/i.test(rawSignal);
+    const s = rawSignal.toLowerCase();
 
+    const isSpeculative = /\b(guarantee|guaranteed|40%|30%|multibagger|crypto|get rich|risk-free annual|risk-free return)\b/i.test(s);
     if (isSpeculative) {
-      const pathProtection: PossibilityPath = {
-        pathId: 'path-fin-regulatory-disclosure',
+      // Reality Engine Invariant: Refuse speculative/impossible financial yield claims
+      // Return 0 paths so the resolution cleanly reports NO_RELIABLE_PATH
+      return [];
+    }
+
+    const isSaaSBurn = /\b(cloud|saas|subscription burn|burn rate)\b/i.test(s);
+    if (isSaaSBurn) {
+      const pathSaaSAudit: PossibilityPath = {
+        pathId: 'path-fin-saas-audit',
         intentId,
-        title: 'Statutory Risk Disclosure & Capital Preservation (Refusal Gate)',
-        description: 'UDX reality verification: Guaranteed high yields without market risk violate SEBI regulations and economic fundamentals. Capital preservation protocol recommended.',
+        title: 'Cloud & SaaS Recurring Burn Rate Audit (Best Path)',
+        description: 'Systematic inventory and cancellation of dormant subscriptions, cloud instance overprovisioning, and unused seat licenses.',
         nodes: [
           {
-            nodeId: 'node-fin-spec-start',
-            state: 'Intent Assessed: Unverifiable / Speculative Return Expectation',
+            nodeId: 'node-fin-saas-start',
+            state: 'Intent Initiated: Seeking SaaS Burn Rate Reduction',
             domain: 'FINANCE',
-            entities: [],
-            confidence: 0.99,
+            entities: [{ entityId: 'ent-auditor', name: 'Subscription Auditor', type: 'PERSON', role: 'AUDITOR' }],
+            confidence: 0.98,
           },
           {
-            nodeId: 'node-fin-spec-warning',
-            state: 'Statutory Investor Protection Guidelines Disclosed',
+            nodeId: 'node-fin-saas-cleared',
+            state: 'Dormant Subscriptions Terminated & Cloud Tier Downscaled',
             domain: 'FINANCE',
             entities: [],
-            confidence: 0.98,
+            confidence: 0.95,
           }
         ],
         edges: [
           {
-            edgeId: 'edge-fin-spec-1',
-            fromNode: 'node-fin-spec-start',
-            toNode: 'node-fin-spec-warning',
-            action: 'Review SEBI Statutory Investor Protection & Anti-Fraud Notice',
-            durationDays: 0.1,
-            frictionScore: 2,
-            probability: 0.99,
+            edgeId: 'edge-fin-saas-1',
+            fromNode: 'node-fin-saas-start',
+            toNode: 'node-fin-saas-cleared',
+            action: 'Execute Automated SaaS & Cloud Subscription Cost Diagnostic',
+            durationDays: 0.2,
+            frictionScore: 3,
+            probability: 0.98,
             executable: true,
-            executionTarget: '/finance/disclosures/sebi-investor-protection',
-            actionButtonText: 'View Investor Protection Notice',
-            advantageSummary: 'Prevents catastrophic principal loss from fraudulent guaranteed-return schemes.',
+            executionTarget: '/tools/expense-calculator?audit=saas',
+            actionButtonText: 'Run SaaS Cost Diagnostic',
+            advantageSummary: 'Identifies immediate 25%–40% recurring expenditure reduction from ghost subscriptions.',
           }
         ],
         estimatedDurationDays: 1.0,
-        successProbability: 0.99,
-        frictionScore: 2,
-        expectedOutcome: 'Capital Preserved; Diversified Regulated Allocation Recommended',
-        outcomeQualityScore: 99,
+        successProbability: 0.96,
+        frictionScore: 4,
+        expectedOutcome: 'Immediate 30% Reduction in Monthly Digital & Cloud Recurring Burn',
+        outcomeQualityScore: 96,
         isRecommended: true,
       };
-      return [pathProtection];
+      return [pathSaaSAudit];
     }
 
+    const isEmergencyFund = /\b(emergency fund|contingency fund|liquidity buffer)\b/i.test(s);
+    if (isEmergencyFund) {
+      const pathEmergencyFund: PossibilityPath = {
+        pathId: 'path-fin-emergency-fund',
+        intentId,
+        title: '6-Month Liquid Emergency Reserve Allocation Protocol (Best Path)',
+        description: 'Structure a capital preservation reserve: 3 months in high-yield liquid banking and 3 months in SEBI-regulated overnight/liquid funds.',
+        nodes: [
+          {
+            nodeId: 'node-fin-emg-start',
+            state: 'Intent Initiated: Structuring Emergency Fund',
+            domain: 'FINANCE',
+            entities: [{ entityId: 'ent-saver', name: 'Capital Custodian', type: 'PERSON', role: 'INVESTOR' }],
+            confidence: 0.98,
+          },
+          {
+            nodeId: 'node-fin-emg-funded',
+            state: '6-Month Runway Secured in High-Safety Capital Preservation Tier',
+            domain: 'FINANCE',
+            entities: [],
+            confidence: 0.94,
+          }
+        ],
+        edges: [
+          {
+            edgeId: 'edge-fin-emg-1',
+            fromNode: 'node-fin-emg-start',
+            toNode: 'node-fin-emg-funded',
+            action: 'Calculate Baseline 6-Month Living Expenditure & Asset Tiering',
+            durationDays: 0.5,
+            frictionScore: 4,
+            probability: 0.96,
+            executable: true,
+            executionTarget: '/finance/emergency-fund-allocator',
+            actionButtonText: 'Open Emergency Fund Allocator',
+            advantageSummary: 'Guarantees T+1 liquidity with statutory deposit insurance and AAA liquid sovereign paper.',
+          }
+        ],
+        estimatedDurationDays: 30.0,
+        successProbability: 0.94,
+        frictionScore: 6,
+        expectedOutcome: 'Complete 6-Month Liquid Safety Buffer Established',
+        outcomeQualityScore: 97,
+        isRecommended: true,
+      };
+      return [pathEmergencyFund];
+    }
+
+    const isMutualFund = /\b(mutual fund|mutual funds|invest|investing|sip|index fund|portfolio)\b/i.test(s);
     if (isMutualFund) {
       const pathIndexSIP: PossibilityPath = {
         pathId: 'path-fin-regulated-index-sip',
         intentId,
-        title: 'SEBI-Regulated Low-Cost Index & Diversified Allocation (Best Path)',
-        description: 'Candidate capital pathway: Direct systematic investment in low-expense broad market index funds (TER < 0.20%) via AMFI-registered platform.',
+        title: 'SEBI-Regulated Low-Cost Direct Index Mutual Fund SIP (Best Path)',
+        description: 'Candidate capital pathway: Direct systematic investment in low-expense broad market index funds (TER < 0.20%) via AMFI direct portal.',
         nodes: [
           {
             nodeId: 'node-fin-sip-start',
@@ -173,17 +256,10 @@ export class FinanceAdapter {
           },
           {
             nodeId: 'node-fin-sip-allocated',
-            state: 'Asset Allocation Plan Formulated (Equity Index 70% / Liquid 30%)',
+            state: 'Direct Low-TER Index Allocation Configured',
             domain: 'FINANCE',
             entities: [],
-            confidence: 0.94,
-          },
-          {
-            nodeId: 'node-fin-sip-active',
-            state: 'Automated Direct SIP Execution Mandate Operational',
-            domain: 'FINANCE',
-            entities: [],
-            confidence: 0.92,
+            confidence: 0.95,
           }
         ],
         edges: [
@@ -191,105 +267,70 @@ export class FinanceAdapter {
             edgeId: 'edge-fin-sip-1',
             fromNode: 'node-fin-sip-start',
             toNode: 'node-fin-sip-allocated',
-            action: 'Run Objective-Based SIP Calculator & Expense Ratio Audit',
+            action: 'Configure Direct Low-Expense Index SIP Mandate',
             durationDays: 0.5,
-            frictionScore: 6,
-            probability: 0.95,
+            frictionScore: 4,
+            probability: 0.96,
             executable: true,
-            executionTarget: '/finance/calculators/sip-planner',
-            actionButtonText: 'Open SIP Allocation Planner',
-            advantageSummary: 'Direct zero-commission scheme comparison; saves 1.0–1.5% annual distributor trail fees.',
-          },
-          {
-            edgeId: 'edge-fin-sip-2',
-            fromNode: 'node-fin-sip-allocated',
-            toNode: 'node-fin-sip-active',
-            action: 'Inspect AMFI Direct Scheme Performance & Factsheet Disclosures',
-            durationDays: 1.0,
-            frictionScore: 8,
-            probability: 0.92,
-            executable: true,
-            executionTarget: 'https://www.amfiindia.com/research-information/other-data/mf-scheme-performance-details',
-            actionButtonText: 'View Official AMFI Data',
-            advantageSummary: '100% verified regulatory data from the Association of Mutual Funds in India.',
+            executionTarget: '/finance/direct-index-sip',
+            actionButtonText: 'Configure Direct Index SIP',
+            advantageSummary: '0% distributor commission; 0.15% average TER direct index fund allocation.',
           }
         ],
-        estimatedDurationDays: 2.0,
-        successProbability: 0.93,
-        frictionScore: 7,
-        expectedOutcome: 'Disciplined Systematic Investment with Lowest-Quartile Management Expenses',
+        estimatedDurationDays: 30.0,
+        successProbability: 0.95,
+        frictionScore: 5,
+        expectedOutcome: 'Automated Monthly Direct Index Fund Investment Operational',
         outcomeQualityScore: 96,
         isRecommended: true,
       };
-
       return [pathIndexSIP];
     }
 
-    // Default: Expense Reduction & Budget Optimization
-    const pathArbitrage: PossibilityPath = {
-      pathId: 'path-fin-structural-arbitrage',
+    // Default expense reduction
+    const pathExpenseCalc: PossibilityPath = {
+      pathId: 'path-fin-expense-reduction-audit',
       intentId,
-      title: 'Structural Substitution & Recurring Cost Arbitrage (Best Path)',
-      description: 'Audit recurring subscriptions, re-contract broadband/utilities, and optimize procurement to recover ₹20,000/mo net cashflow without lifestyle sacrifice.',
+      title: 'Structural Living Expense Audit & Reduction (Target ₹20,000/mo) (Best Path)',
+      description: 'Candidate optimization trajectory: Deterministic audit of recurring utility tariffs, recurring subscriptions, and food/transport substitutions.',
       nodes: [
         {
           nodeId: 'node-fin-start',
-          state: 'Baseline Assessed: ₹65,000/mo Current Recurring Expenditure',
+          state: 'Intent Initiated: Seeking ₹20,000/mo Living Cost Reduction',
           domain: 'FINANCE',
-          entities: [],
+          entities: [{ entityId: 'ent-auditor', name: 'Household Budgeter', type: 'PERSON', role: 'AUDITOR' }],
           confidence: 0.98,
         },
         {
-          nodeId: 'node-fin-contracts',
-          state: 'Utility, Broadband & Subscription Redundancies Identified (-₹12,500/mo)',
+          nodeId: 'node-fin-audited',
+          state: 'Recurring Expense Arbitrage Plan Finalized',
           domain: 'FINANCE',
           entities: [],
-          confidence: 0.94,
-        },
-        {
-          nodeId: 'node-fin-target',
-          state: 'Target Achieved: ₹44,200/mo (-₹20,800/mo Net Monthly Savings)',
-          domain: 'FINANCE',
-          entities: [],
-          confidence: 0.92,
+          confidence: 0.95,
         }
       ],
       edges: [
         {
-          edgeId: 'edge-fin-1',
+          edgeId: 'edge-fin-calc-1',
           fromNode: 'node-fin-start',
-          toNode: 'node-fin-contracts',
-          action: 'Execute Automated Recurring Expense & Subscription Audit',
-          durationDays: 1.0,
-          frictionScore: 6,
-          probability: 0.96,
+          toNode: 'node-fin-audited',
+          action: 'Launch Deterministic Expense Arbitrage Diagnostic',
+          durationDays: 0.1,
+          frictionScore: 3,
+          probability: 0.98,
           executable: true,
           executionTarget: '/tools/expense-calculator',
-          actionButtonText: 'Run Expense Audit Calculator',
-          advantageSummary: 'Instantly surfaces zombie subscriptions and duplicate recurring vendor contracts.',
-        },
-        {
-          edgeId: 'edge-fin-2',
-          fromNode: 'node-fin-contracts',
-          toNode: 'node-fin-target',
-          action: 'Consolidate High-Friction Procurement & Insurance Plans',
-          durationDays: 7.0,
-          frictionScore: 16,
-          probability: 0.88,
-          executable: true,
-          executionTarget: '/finance/calculators/budget-allocator',
-          actionButtonText: 'Optimize Budget Allocation',
-          advantageSummary: 'Locks in permanent baseline cost reduction without austerity or living standard compromise.',
+          actionButtonText: 'Run Expense Audit Diagnostic',
+          advantageSummary: 'Pinpoints specific non-essential recurring charges without quality-of-life reduction.',
         }
       ],
-      estimatedDurationDays: 8.0,
-      successProbability: 0.92,
-      frictionScore: 11,
-      expectedOutcome: 'Net Monthly Recurring Savings of ₹20,800 Secured Permanently',
-      outcomeQualityScore: 95,
+      estimatedDurationDays: 14.0,
+      successProbability: 0.95,
+      frictionScore: 5,
+      expectedOutcome: 'Sustainable ₹20,000+ Monthly Expenditure Cut without Living Standard Sacrifice',
+      outcomeQualityScore: 96,
       isRecommended: true,
     };
-
-    return [pathArbitrage];
+    return [pathExpenseCalc];
   }
 }

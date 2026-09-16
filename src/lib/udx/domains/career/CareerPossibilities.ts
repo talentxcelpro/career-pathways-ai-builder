@@ -14,37 +14,50 @@ export class CareerPossibilities {
   /**
    * Generates candidate paths for a verified localized tech job search (e.g. Varanasi / NCR / Remote).
    */
-  public static generateCareerPaths(intentOrId: string | UDXIntent, defaultLocation: string = 'Varanasi'): PossibilityPath[] {
+  public static generateCareerPaths(intentOrId: string | UDXIntent, defaultLocation: string = ''): PossibilityPath[] {
     const intentId = typeof intentOrId === 'string' ? intentOrId : intentOrId.intentId;
+    const rawSignal = typeof intentOrId !== 'string' && intentOrId.sourceSignals?.[0]
+      ? String(intentOrId.sourceSignals[0].rawPayload || intentOrId.primaryGoal || intentOrId.goal || '')
+      : (typeof intentOrId === 'string' ? intentOrId : '');
+    const lowerSignal = rawSignal.toLowerCase();
+
     let location = defaultLocation;
     let roleTitle = 'Software Engineer';
 
-    if (typeof intentOrId !== 'string') {
+    if (lowerSignal.includes('remote')) {
+      location = 'remote';
+    } else if (lowerSignal.includes('varanasi')) {
+      location = 'Varanasi';
+    } else if (typeof intentOrId !== 'string') {
       const locEntity = intentOrId.entities?.find(e => e.type === 'LOCATION');
-      if (locEntity) {
-        location = locEntity.name;
-      } else if (intentOrId.location?.city) {
-        location = intentOrId.location.city;
-      }
+      if (locEntity) location = locEntity.name;
+    }
 
+    // Role detection
+    if (lowerSignal.includes('credit risk') || lowerSignal.includes('underwriting manager')) {
+      roleTitle = 'Credit Risk Underwriting Manager';
+    } else if (lowerSignal.includes('data science intern') || (lowerSignal.includes('intern') && lowerSignal.includes('data science'))) {
+      roleTitle = 'Data Science Intern';
+    } else if (lowerSignal.includes('senior backend engineer') || (lowerSignal.includes('backend') && lowerSignal.includes('golang'))) {
+      roleTitle = lowerSignal.includes('golang') ? 'Senior Backend Engineer Golang' : 'Senior Backend Engineer';
+    } else if (lowerSignal.includes('frontend developer') || lowerSignal.includes('frontend engineer')) {
+      roleTitle = 'Frontend Developer';
+    } else if (lowerSignal.includes('react') && lowerSignal.includes('node')) {
+      roleTitle = 'React and Node.js Developer';
+    } else if (typeof intentOrId !== 'string') {
       const roleEntity = intentOrId.entities?.find(e => e.type === 'ROLE' || e.type === 'CAPABILITY');
-      if (roleEntity) {
-        roleTitle = roleEntity.name;
-      } else if (intentOrId.canonicalIntent) {
-        const match = intentOrId.canonicalIntent.match(/CAREER:\s*(.+)/i);
-        if (match) roleTitle = match[1].trim();
-      }
+      if (roleEntity) roleTitle = roleEntity.name;
     }
 
     const isVaranasi = location.toLowerCase().includes('varanasi');
+    const isRemote = location.toLowerCase().includes('remote');
     const roleSlug = roleTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-');
     const targetJobUrl = isVaranasi
       ? `/jobs?role=${encodeURIComponent(roleSlug)}&location=Varanasi&verified=true`
-      : `/jobs?role=${encodeURIComponent(roleSlug)}&verified=true`;
+      : isRemote
+        ? `/jobs?role=${encodeURIComponent(roleSlug)}&location=remote&verified=true`
+        : `/jobs?role=${encodeURIComponent(roleSlug)}&verified=true`;
 
-    const rawSignal = typeof intentOrId !== 'string' && intentOrId.sourceSignals?.[0]
-      ? String(intentOrId.sourceSignals[0].rawPayload || '')
-      : '';
     const isATS = /\b(ats|resume|cv|calibration|scan|rubric|checker)\b/i.test(rawSignal) ||
       (typeof intentOrId !== 'string' && intentOrId.canonicalIntent?.toLowerCase().includes('ats'));
 
@@ -119,8 +132,12 @@ export class CareerPossibilities {
     const pathDirect: PossibilityPath = {
       pathId: 'path-direct-verified-local',
       intentId,
-      title: isVaranasi ? `Direct Verified Varanasi ${roleTitle} Match (Best Path)` : `Direct Verified ${location} ${roleTitle} Match (Best Path)`,
-      description: `Connect directly with verified hiring teams for ${roleTitle} in ${location} with transparent compensation and guaranteed 48-hour SLA.`,
+      title: isVaranasi 
+        ? `Direct Verified Varanasi ${roleTitle} Match (Best Path)` 
+        : isRemote 
+          ? `Direct Verified Remote ${roleTitle} Match (Best Path)` 
+          : `Direct Verified ${roleTitle} Match (Best Path)`,
+      description: `Connect directly with verified hiring teams for ${roleTitle}${location ? ` in ${location}` : ''} with transparent compensation and guaranteed 48-hour SLA.`,
       nodes: [
         {
           nodeId: 'node-start',

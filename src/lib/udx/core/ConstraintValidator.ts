@@ -32,16 +32,16 @@ export class ConstraintValidator {
     // e.g. Zero hours/effort demanding immense financial return, or guaranteed infinite return
     const hasZeroEffort = /\b(0 hours?|zero hours?|zero work|no work|no effort|without working|zero capital and zero effort)\b/i.test(lower);
     const hasExtremeYield = /\b(50 lakhs?|crores?|billions?|1000%|guaranteed wealth|get rich quick)\b/i.test(lower);
-    const hasImpossibleReturn = /\b(1000%\s*(daily|guaranteed)|perpetual\s*profit|infinite\s*money\s*glitch)\b/i.test(lower);
+    const hasImpossibleReturn = /\b(1000%\s*(daily|guaranteed)|perpetual\s*profit|infinite\s*money\s*glitch|guaranteed\s*(40%|\d{2,}%)\s*(risk-free|annual|return)|risk-free\s*(40%|\d{2,}%))\b/i.test(lower);
 
     if ((hasZeroEffort && hasExtremeYield) || hasImpossibleReturn) {
       return {
         isValid: false,
         paradoxType: 'ECONOMIC_PARADOX',
-        violationReason: 'Economic Paradox: Demands extreme capital return or wealth generation with mathematically zero labor or risk-free impossible yield, violating economic conservation principles.',
+        violationReason: 'Economic Paradox: Demands extreme capital return or guaranteed risk-free yield exceeding fundamental sovereign benchmarks, violating statutory regulations and financial equilibrium.',
         detectedContradictions: [
-          hasZeroEffort ? 'Zero labor / zero hours allocation' : 'Unrealistic risk profile',
-          hasExtremeYield ? 'Extreme capital generation' : 'Impossible guaranteed yield',
+          hasZeroEffort ? 'Zero labor / zero hours allocation' : 'Unrealistic risk-free return expectation',
+          hasExtremeYield ? 'Extreme capital generation' : 'Impossible guaranteed yield claim',
         ],
         epistemicConfidence: 0.0,
       };

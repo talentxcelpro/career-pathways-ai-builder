@@ -127,39 +127,39 @@ export class IntentEngine {
     const lower = this.normalizeSignalText(text);
     const matches: { domain: UDXDomain; weight: number; keywords: string[] }[] = [];
 
-    // 1. Local Services (Trades, repair, home services) - Checked before Career
-    const localServicesRegex = /\b(plumber|plumbing|electrician|electrical|carpenter|mechanic|ac repair|appliance repair|technician|pest control|painter|handyman|cleaning service|maid|locksmith|ro repair|home repair)\b/g;
+    // 1. Local Services (Trades, repair, home services) - Checked first
+    const localServicesRegex = /\b(plumber|plumbing|electrician|electrical|carpenter|carpentry|mechanic|ac repair|ac servicing|appliance repair|technician|pest control|painter|handyman|cleaning service|maid|locksmith|door lock|lock installation|gas refill|ro repair|home repair|trade service)\b/g;
     const localMatches = lower.match(localServicesRegex);
     if (localMatches && localMatches.length > 0) {
-      matches.push({ domain: 'LOCAL_SERVICES', weight: localMatches.length * 3 + 2, keywords: localMatches });
+      matches.push({ domain: 'LOCAL_SERVICES', weight: localMatches.length * 3 + 3, keywords: localMatches });
     }
 
     // 2. Business (Incorporation, MSME, Startup, Compliance)
-    const businessRegex = /\b(msme|udyam|register business|register company|start a business|startup|incorporation|incorporate|gst registration|trademark|sole proprietorship|llp|market size|competitors|customer acquisition|saas|revenue model|venture capital|founder)\b/g;
+    const businessRegex = /\b(msme|udyam|register business|register company|start a business|startup|incorporation|incorporate|private limited|private limited company|gst registration|trademark|sole proprietorship|llp|market size|competitors|customer acquisition|saas venture|revenue model|venture capital|founder|venture|subsidy|industrial incentives)\b/g;
     const businessMatches = lower.match(businessRegex);
     if (businessMatches && businessMatches.length > 0) {
-      matches.push({ domain: 'BUSINESS', weight: businessMatches.length * 3 + 2, keywords: businessMatches });
+      matches.push({ domain: 'BUSINESS', weight: businessMatches.length * 3 + 3, keywords: businessMatches });
     }
 
     // 3. Finance (Budgeting, mutual funds, expenses, wealth, investing)
-    const financeRegex = /\b(invest|investing|mutual fund|mutual funds|sip|expense|expenses|reduce expenses|monthly expenses|portfolio|equity|mortgage|wealth|dividend|tax planning|credit score|underwriting|budget|saving|savings|fixed deposit|fd|index fund|emergency fund)\b/g;
+    const financeRegex = /\b(invest|investing|investment|investments|mutual fund|mutual funds|sip|expense|expenses|reduce expenses|monthly expenses|portfolio|equity|mortgage|wealth|dividend|tax planning|credit score|budget|saving|savings|fixed deposit|fd|index fund|emergency fund|burn rate|subscription burn|cost audit|return|returns|yield|yields|risk-free|annual return)\b/g;
     const financeMatches = lower.match(financeRegex);
     if (financeMatches && financeMatches.length > 0) {
-      matches.push({ domain: 'FINANCE', weight: financeMatches.length * 3 + 2, keywords: financeMatches });
+      matches.push({ domain: 'FINANCE', weight: financeMatches.length * 3 + 3, keywords: financeMatches });
     }
 
     // 4. Education (Degrees, courses, learning, colleges, admissions)
-    const eduRegex = /\b(learn|study|college|university|degree|course|master's|masters|b\.tech|m\.tech|mca|mba|phd|curriculum|exam|scholarship|admissions|syllabus|tuition)\b/g;
+    const eduRegex = /\b(learn|study|college|university|degree|course|master's|masters|b\.tech|m\.tech|mca|mba|phd|curriculum|exam|scholarship|admissions|syllabus|tuition|diploma|pg diploma|post graduate diploma|bachelor|bachelor degree|doctoral|eligibility requirements)\b/g;
     const eduMatches = lower.match(eduRegex);
     if (eduMatches && eduMatches.length > 0) {
-      matches.push({ domain: 'EDUCATION', weight: eduMatches.length * 3 + 2, keywords: eduMatches });
+      matches.push({ domain: 'EDUCATION', weight: eduMatches.length * 3 + 3, keywords: eduMatches });
     }
 
-    // 5. Personal / Productivity (Habits, evening routine, life balance, wellness)
-    const personalRegex = /\b(life balance|habit|habits|wellness|fitness|mindfulness|personal goal|change my life|free hours|free time|evening|evenings|productive|productively|routine|sleep schedule|hobby)\b/g;
+    // 5. Personal / Productivity (Habits, routines, life balance, wellness)
+    const personalRegex = /\b(life balance|habit|habits|wellness|fitness|mindfulness|personal goal|change my life|free hours|free time|evening|evenings|morning|deep work|productive|productively|routine|sleep schedule|hobby|burnout|stamina|micro-project|side income|personal schedule|digital clutter|clutter)\b/g;
     const personalMatches = lower.match(personalRegex);
     if (personalMatches && personalMatches.length > 0) {
-      matches.push({ domain: 'PERSONAL', weight: personalMatches.length * 3 + 1, keywords: personalMatches });
+      matches.push({ domain: 'PERSONAL', weight: personalMatches.length * 3 + 3, keywords: personalMatches });
     }
 
     // 6. Technology (Architecture, code, devops)
@@ -183,11 +183,11 @@ export class IntentEngine {
       matches.push({ domain: 'COMMERCE', weight: commerceMatches.length * 2, keywords: commerceMatches });
     }
 
-    // 9. Career (Jobs, hiring, resume, employment)
-    const careerRegex = /\b(job|jobs|hire|hiring|career|careers|salary|salaries|work|employment|resume|ats|interview|vacancy|developer|engineer|internship|stipend|ctc|lpa|naukri|rozgar)\b/g;
+    // 9. Career (Jobs, hiring, resume, employment, roles)
+    const careerRegex = /\b(job|jobs|hire|hiring|career|careers|salary|salaries|work|employment|resume|ats|interview|vacancy|developer|engineer|internship|intern|stipend|ctc|lpa|naukri|rozgar|manager|underwriting manager|lead engineer|engineering manager|architect)\b/g;
     const careerMatches = lower.match(careerRegex);
     if (careerMatches && careerMatches.length > 0) {
-      matches.push({ domain: 'CAREER', weight: careerMatches.length * 2, keywords: careerMatches });
+      matches.push({ domain: 'CAREER', weight: careerMatches.length * 3 + 3, keywords: careerMatches });
     }
 
     if (matches.length === 0) {
@@ -307,6 +307,39 @@ export class IntentEngine {
         description: 'Internship / apprenticeship pathway constraint',
         strictness: 'HARD',
         value: 'INTERNSHIP',
+      });
+    }
+
+    // Education / Learning format constraint
+    if (lower.includes('part-time') || lower.includes('full-time') || lower.includes('hybrid') || lower.includes('diploma') || lower.includes('phd') || lower.includes('bachelor') || lower.includes('master') || lower.includes('evals') || lower.includes('systems engineering')) {
+      constraints.push({
+        id: `const-edu-format`,
+        type: 'OTHER',
+        description: 'Educational program delivery & credential constraint',
+        strictness: 'HARD',
+        value: lower.includes('part-time') ? 'PART_TIME' : 'ACADEMIC_CREDENTIAL',
+      });
+    }
+
+    // Business / Statutory compliance constraint
+    if (lower.includes('private limited') || lower.includes('msme') || lower.includes('gst') || lower.includes('subsidy') || lower.includes('incorporate') || lower.includes('venture')) {
+      constraints.push({
+        id: `const-biz-compliance`,
+        type: 'LEGAL',
+        description: 'Statutory compliance & legal incorporation framework',
+        strictness: 'HARD',
+        value: 'STATUTORY_REGISTRATION',
+      });
+    }
+
+    // Financial optimization / Budget constraint
+    if (lower.includes('emergency fund') || lower.includes('expense') || lower.includes('saas') || lower.includes('subscription') || lower.includes('sip') || lower.includes('index fund') || lower.includes('invest')) {
+      constraints.push({
+        id: `const-fin-capital`,
+        type: 'FINANCIAL',
+        description: 'Capital allocation & expenditure optimization constraint',
+        strictness: 'HARD',
+        value: 'CAPITAL_OPTIMIZATION',
       });
     }
 
