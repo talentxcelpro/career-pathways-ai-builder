@@ -1,0 +1,441 @@
+{
+  "version": "15.0.0",
+  "generated_at": "2026-08-26T06:20:00Z",
+  "extends": "SEO_PHASE14_ACQUISITION_GRAPH.json (v14.0.0)",
+  "new_in_v15": [
+    "two_layer_acquisition_model",
+    "per_surface_acquisition_funnel",
+    "ctr_opportunity_model",
+    "user_journey_map",
+    "attribution_layer"
+  ],
+  "two_layer_acquisition_model": {
+    "layer_1_seo": {
+      "description": "Organic search acquisition via Google. Driven by evidence lake -> quality gate -> canonical pages -> GSC impressions -> clicks -> signups",
+      "current_published_documents": 12592,
+      "opportunity_pipeline_size": "1M+ candidates under evaluation",
+      "gsc_total_impressions_monthly": "tracked via GSC API",
+      "gsc_total_clicks_monthly": "tracked via GSC API"
+    },
+    "layer_2_product": {
+      "description": "Product-driven acquisition operating independently of SEO",
+      "channels": [
+        {
+          "channel": "Jobs",
+          "acquisition_trigger": "Job application requires account creation",
+          "estimated_conversion_rate_pct": 8.5
+        },
+        {
+          "channel": "Resume/ATS",
+          "acquisition_trigger": "ATS scan or resume download requires account",
+          "estimated_conversion_rate_pct": 12.0
+        },
+        {
+          "channel": "Professional Network",
+          "acquisition_trigger": "Connection request requires account",
+          "estimated_conversion_rate_pct": 6.5
+        },
+        {
+          "channel": "Career Passport",
+          "acquisition_trigger": "Credential claim requires account",
+          "estimated_conversion_rate_pct": 15.0
+        },
+        {
+          "channel": "Colleges",
+          "acquisition_trigger": "Placement data access requires account",
+          "estimated_conversion_rate_pct": 4.0
+        },
+        {
+          "channel": "Rankings/Bidder",
+          "acquisition_trigger": "Bidding requires account",
+          "estimated_conversion_rate_pct": 18.0
+        },
+        {
+          "channel": "Referrals",
+          "acquisition_trigger": "Invite link",
+          "estimated_conversion_rate_pct": 35.0
+        },
+        {
+          "channel": "Social/Distribution",
+          "acquisition_trigger": "Viral content share",
+          "estimated_conversion_rate_pct": 2.5
+        },
+        {
+          "channel": "B2B Partnerships",
+          "acquisition_trigger": "Enterprise deal",
+          "estimated_conversion_rate_pct": 45.0
+        }
+      ],
+      "note": "Conversion rates are ASSUMPTIONS; must be replaced with real data from product instrumentation"
+    }
+  },
+  "surfaces_count": 14,
+  "surfaces": [
+    {
+      "surface_id": "JOBS",
+      "base_route": "/jobs",
+      "access_tier": "PUBLIC",
+      "theoretical_permutations": 180000000,
+      "normalized_intent_clusters": 2850000,
+      "evidenced_demand_opportunities": 165000,
+      "published_documents": 12000,
+      "acquisition_funnel": {
+        "primary_cta": "Apply for Job",
+        "signup_trigger": "Application requires account",
+        "typical_journey": [
+          "DISCOVERY",
+          "EVALUATION",
+          "APPLICATION"
+        ],
+        "estimated_signup_rate_pct": 8.5
+      },
+      "ctr_model": {
+        "target_position": 4,
+        "expected_ctr_at_target_pct": 8.0,
+        "current_avg_gsc_position": 12.4,
+        "current_avg_gsc_ctr_pct": 3.1,
+        "ctr_opportunity_score": 74,
+        "position_source": "GSC average position - not live SERP rank"
+      }
+    },
+    {
+      "surface_id": "PROFESSIONAL_NETWORK",
+      "base_route": "/network",
+      "access_tier": "PUBLIC",
+      "theoretical_permutations": 45000000,
+      "normalized_intent_clusters": 1200000,
+      "evidenced_demand_opportunities": 45000,
+      "published_documents": 100,
+      "acquisition_funnel": {
+        "primary_cta": "Connect with Peers",
+        "signup_trigger": "Connecting requires account",
+        "typical_journey": [
+          "DISCOVERY",
+          "EVALUATION"
+        ],
+        "estimated_signup_rate_pct": 6.5
+      },
+      "ctr_model": {
+        "target_position": 6,
+        "expected_ctr_at_target_pct": 5.0,
+        "current_avg_gsc_position": 22.5,
+        "current_avg_gsc_ctr_pct": 3.6,
+        "ctr_opportunity_score": 60,
+        "position_source": "GSC average position"
+      }
+    },
+    {
+      "surface_id": "RESUME_ATS",
+      "base_route": "/resume",
+      "access_tier": "PUBLIC",
+      "theoretical_permutations": 15000000,
+      "normalized_intent_clusters": 850000,
+      "evidenced_demand_opportunities": 85000,
+      "published_documents": 50,
+      "acquisition_funnel": {
+        "primary_cta": "Scan Resume Free",
+        "signup_trigger": "Download report requires account",
+        "typical_journey": [
+          "DISCOVERY",
+          "DECISION"
+        ],
+        "estimated_signup_rate_pct": 12.0
+      },
+      "ctr_model": {
+        "target_position": 3,
+        "expected_ctr_at_target_pct": 11.0,
+        "current_avg_gsc_position": 11.2,
+        "current_avg_gsc_ctr_pct": 5.0,
+        "ctr_opportunity_score": 82,
+        "position_source": "GSC average position"
+      }
+    },
+    {
+      "surface_id": "CAREER_PASSPORT",
+      "base_route": "/passport",
+      "access_tier": "PUBLIC",
+      "theoretical_permutations": 8000000,
+      "normalized_intent_clusters": 350000,
+      "evidenced_demand_opportunities": 12000,
+      "published_documents": 25,
+      "acquisition_funnel": {
+        "primary_cta": "Claim Verified Passport",
+        "signup_trigger": "Credential issuance requires account",
+        "typical_journey": [
+          "DISCOVERY",
+          "EVALUATION"
+        ],
+        "estimated_signup_rate_pct": 15.0
+      },
+      "ctr_model": {
+        "target_position": 2,
+        "expected_ctr_at_target_pct": 15.0,
+        "current_avg_gsc_position": null,
+        "current_avg_gsc_ctr_pct": null,
+        "ctr_opportunity_score": 78,
+        "position_source": "New surface"
+      }
+    },
+    {
+      "surface_id": "MO1_BUSINESS_OS",
+      "base_route": "/mo1",
+      "access_tier": "PUBLIC",
+      "theoretical_permutations": 5000000,
+      "normalized_intent_clusters": 280000,
+      "evidenced_demand_opportunities": 18000,
+      "published_documents": 40,
+      "acquisition_funnel": {
+        "primary_cta": "Request Enterprise Demo",
+        "signup_trigger": "Demo signup requires account",
+        "typical_journey": [
+          "DISCOVERY",
+          "EVALUATION"
+        ],
+        "estimated_signup_rate_pct": 5.0
+      },
+      "ctr_model": {
+        "target_position": 5,
+        "expected_ctr_at_target_pct": 7.0,
+        "current_avg_gsc_position": 8.8,
+        "current_avg_gsc_ctr_pct": 7.9,
+        "ctr_opportunity_score": 85,
+        "position_source": "GSC average position"
+      }
+    },
+    {
+      "surface_id": "BIDDER_RANKINGS",
+      "base_route": "/rankings",
+      "access_tier": "PUBLIC",
+      "theoretical_permutations": 6000000,
+      "normalized_intent_clusters": 420000,
+      "evidenced_demand_opportunities": 22000,
+      "published_documents": 30,
+      "acquisition_funnel": {
+        "primary_cta": "Vote & Bid on Product",
+        "signup_trigger": "Voting/bidding requires account",
+        "typical_journey": [
+          "DISCOVERY",
+          "EVALUATION"
+        ],
+        "estimated_signup_rate_pct": 18.0
+      },
+      "ctr_model": {
+        "target_position": 4,
+        "expected_ctr_at_target_pct": 8.0,
+        "current_avg_gsc_position": null,
+        "current_avg_gsc_ctr_pct": null,
+        "ctr_opportunity_score": 75,
+        "position_source": "New surface"
+      }
+    },
+    {
+      "surface_id": "COMPANIES",
+      "base_route": "/companies",
+      "access_tier": "PUBLIC",
+      "theoretical_permutations": 25000000,
+      "normalized_intent_clusters": 950000,
+      "evidenced_demand_opportunities": 65000,
+      "published_documents": 150,
+      "acquisition_funnel": {
+        "primary_cta": "View Open Jobs at Company",
+        "signup_trigger": "Job apply requires account",
+        "typical_journey": [
+          "DISCOVERY",
+          "EVALUATION",
+          "APPLICATION"
+        ],
+        "estimated_signup_rate_pct": 7.0
+      },
+      "ctr_model": {
+        "target_position": 5,
+        "expected_ctr_at_target_pct": 7.0,
+        "current_avg_gsc_position": null,
+        "current_avg_gsc_ctr_pct": null,
+        "ctr_opportunity_score": 60,
+        "position_source": "New surface"
+      }
+    },
+    {
+      "surface_id": "ROLE_GUIDES",
+      "base_route": "/roles",
+      "access_tier": "PUBLIC",
+      "theoretical_permutations": 35000000,
+      "normalized_intent_clusters": 1100000,
+      "evidenced_demand_opportunities": 80000,
+      "published_documents": 60,
+      "acquisition_funnel": {
+        "primary_cta": "Explore Career Roadmap",
+        "signup_trigger": "Skill assessment requires account",
+        "typical_journey": [
+          "DISCOVERY",
+          "EVALUATION"
+        ],
+        "estimated_signup_rate_pct": 6.0
+      },
+      "ctr_model": {
+        "target_position": 4,
+        "expected_ctr_at_target_pct": 8.0,
+        "current_avg_gsc_position": 18.2,
+        "current_avg_gsc_ctr_pct": 4.0,
+        "ctr_opportunity_score": 68,
+        "position_source": "GSC average position"
+      }
+    },
+    {
+      "surface_id": "LOCATIONS",
+      "base_route": "/jobs/locations",
+      "access_tier": "PUBLIC",
+      "theoretical_permutations": 20000000,
+      "normalized_intent_clusters": 750000,
+      "evidenced_demand_opportunities": 55000,
+      "published_documents": 50,
+      "acquisition_funnel": {
+        "primary_cta": "Browse City Jobs",
+        "signup_trigger": "Job apply requires account",
+        "typical_journey": [
+          "DISCOVERY",
+          "APPLICATION"
+        ],
+        "estimated_signup_rate_pct": 8.0
+      },
+      "ctr_model": {
+        "target_position": 3,
+        "expected_ctr_at_target_pct": 11.0,
+        "current_avg_gsc_position": null,
+        "current_avg_gsc_ctr_pct": null,
+        "ctr_opportunity_score": 80,
+        "position_source": "New surface"
+      }
+    },
+    {
+      "surface_id": "SKILLS",
+      "base_route": "/skills",
+      "access_tier": "PUBLIC",
+      "theoretical_permutations": 30000000,
+      "normalized_intent_clusters": 980000,
+      "evidenced_demand_opportunities": 70000,
+      "published_documents": 45,
+      "acquisition_funnel": {
+        "primary_cta": "Test Your Skill Level",
+        "signup_trigger": "Skill badge requires account",
+        "typical_journey": [
+          "DISCOVERY",
+          "EVALUATION"
+        ],
+        "estimated_signup_rate_pct": 10.0
+      },
+      "ctr_model": {
+        "target_position": 5,
+        "expected_ctr_at_target_pct": 7.0,
+        "current_avg_gsc_position": null,
+        "current_avg_gsc_ctr_pct": null,
+        "ctr_opportunity_score": 65,
+        "position_source": "New surface"
+      }
+    },
+    {
+      "surface_id": "COLLEGES",
+      "base_route": "/colleges",
+      "access_tier": "PUBLIC",
+      "theoretical_permutations": 18000000,
+      "normalized_intent_clusters": 650000,
+      "evidenced_demand_opportunities": 48000,
+      "published_documents": 25,
+      "acquisition_funnel": {
+        "primary_cta": "View College Placement Report",
+        "signup_trigger": "Report download requires account",
+        "typical_journey": [
+          "DISCOVERY",
+          "EVALUATION"
+        ],
+        "estimated_signup_rate_pct": 4.0
+      },
+      "ctr_model": {
+        "target_position": 4,
+        "expected_ctr_at_target_pct": 8.0,
+        "current_avg_gsc_position": 14.5,
+        "current_avg_gsc_ctr_pct": 4.2,
+        "ctr_opportunity_score": 76,
+        "position_source": "GSC average position"
+      }
+    },
+    {
+      "surface_id": "LEARNING_COURSES",
+      "base_route": "/learning",
+      "access_tier": "PUBLIC",
+      "theoretical_permutations": 12000000,
+      "normalized_intent_clusters": 480000,
+      "evidenced_demand_opportunities": 38000,
+      "published_documents": 15,
+      "acquisition_funnel": {
+        "primary_cta": "Enroll in Course",
+        "signup_trigger": "Enrollment requires account",
+        "typical_journey": [
+          "DISCOVERY",
+          "DECISION"
+        ],
+        "estimated_signup_rate_pct": 5.5
+      },
+      "ctr_model": {
+        "target_position": 5,
+        "expected_ctr_at_target_pct": 7.0,
+        "current_avg_gsc_position": 19.5,
+        "current_avg_gsc_ctr_pct": 4.2,
+        "ctr_opportunity_score": 62,
+        "position_source": "GSC average position"
+      }
+    },
+    {
+      "surface_id": "CAREER_MAP",
+      "base_route": "/career-map",
+      "access_tier": "PUBLIC",
+      "theoretical_permutations": 10000000,
+      "normalized_intent_clusters": 320000,
+      "evidenced_demand_opportunities": 24000,
+      "published_documents": 10,
+      "acquisition_funnel": {
+        "primary_cta": "Build Your Custom Career Path",
+        "signup_trigger": "Saving roadmap requires account",
+        "typical_journey": [
+          "DISCOVERY",
+          "EVALUATION"
+        ],
+        "estimated_signup_rate_pct": 7.5
+      },
+      "ctr_model": {
+        "target_position": 4,
+        "expected_ctr_at_target_pct": 8.0,
+        "current_avg_gsc_position": 28.0,
+        "current_avg_gsc_ctr_pct": 3.3,
+        "ctr_opportunity_score": 52,
+        "position_source": "GSC average position"
+      }
+    },
+    {
+      "surface_id": "CAREER_TOOLS",
+      "base_route": "/tools",
+      "access_tier": "PUBLIC",
+      "theoretical_permutations": 10000000,
+      "normalized_intent_clusters": 360000,
+      "evidenced_demand_opportunities": 32000,
+      "published_documents": 8,
+      "acquisition_funnel": {
+        "primary_cta": "Use Career Tool",
+        "signup_trigger": "Saving calculation requires account",
+        "typical_journey": [
+          "DISCOVERY",
+          "DECISION"
+        ],
+        "estimated_signup_rate_pct": 9.0
+      },
+      "ctr_model": {
+        "target_position": 3,
+        "expected_ctr_at_target_pct": 11.0,
+        "current_avg_gsc_position": 35.0,
+        "current_avg_gsc_ctr_pct": 2.5,
+        "ctr_opportunity_score": 80,
+        "position_source": "GSC average position"
+      }
+    }
+  ]
+}

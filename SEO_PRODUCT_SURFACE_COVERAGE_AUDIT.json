@@ -1,0 +1,38 @@
+{
+  "auditedAt": "2026-08-25T15:29:39.108Z",
+  "totalPreRenderedHtmlDocuments": 12243,
+  "surfaces": {
+    "coreHubs": 24,
+    "servicePages": 10,
+    "topicHubs": 11,
+    "databaseJobs": 6,
+    "publicPosts": 490,
+    "resourceGuides": 1711,
+    "canonicalRoles": 180,
+    "canonicalLocations": 32,
+    "collegesCatalog": 10250,
+    "globalPrograms": 100
+  },
+  "edgeCasesRepaired": [
+    {
+      "defect": "/roles/curriculum-developer returned app reload error",
+      "resolution": "Pre-rendered static HTML + expanded CANONICAL_JOB_ROLES"
+    },
+    {
+      "defect": "/resources/ats-resume-guide-2026 returned 404",
+      "resolution": "Pre-rendered full static HTML guide with sections and JSON-LD"
+    },
+    {
+      "defect": "/jobs/recruiter returned Job Not Found",
+      "resolution": "Pre-rendered /jobs/recruiter with career intelligence recovery layout"
+    },
+    {
+      "defect": "/locations/india empty state",
+      "resolution": "Pre-rendered /locations/india with comprehensive national tech hiring market analysis"
+    },
+    {
+      "defect": "Homepage limited internal linking",
+      "resolution": "Updated SEOLandingPageLinks with full canonical grid of locations, roles, skills, and tools"
+    }
+  ]
+}

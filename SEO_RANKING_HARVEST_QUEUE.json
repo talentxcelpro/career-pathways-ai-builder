@@ -1,0 +1,254 @@
+[
+  {
+    "priority": "P0_PAGE1_QUICK_WIN",
+    "query": "content writer jobs noida",
+    "intent": "JOB_SEARCH",
+    "cluster": "JOBS",
+    "current_position": 6.4,
+    "impressions": 180,
+    "clicks": 14,
+    "ctr": 7.8,
+    "landing_url": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "canonical_url": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "content_quality_score": 95,
+    "internal_link_score": 88,
+    "competitor_presence": [
+      "Naukri",
+      "Indeed",
+      "LinkedIn"
+    ],
+    "recommended_action": "Inject JobPosting rich snippet with explicit salary badge and add contextual links from /topics/careers to push into Top 3.",
+    "target_position": "Top 3"
+  },
+  {
+    "priority": "P0_PAGE1_QUICK_WIN",
+    "query": "marketing executive jobs noida",
+    "intent": "JOB_SEARCH",
+    "cluster": "JOBS",
+    "current_position": 7.2,
+    "impressions": 160,
+    "clicks": 12,
+    "ctr": 7.5,
+    "landing_url": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "canonical_url": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "content_quality_score": 94,
+    "internal_link_score": 86,
+    "competitor_presence": [
+      "Naukri",
+      "Foundit",
+      "Glassdoor"
+    ],
+    "recommended_action": "Enhance meta title CTR hook with [Hiring 2026] and add FAQ schema for Noida marketing compensation.",
+    "target_position": "Top 3"
+  },
+  {
+    "priority": "P0_PAGE1_QUICK_WIN",
+    "query": "ai recruitment platform india",
+    "intent": "COMMERCIAL_B2B",
+    "cluster": "SERVICES",
+    "current_position": 8.8,
+    "impressions": 140,
+    "clicks": 9,
+    "ctr": 6.4,
+    "landing_url": "https://talentxcel.in/services/ai-recruitment",
+    "canonical_url": "https://talentxcel.in/services/ai-recruitment",
+    "content_quality_score": 96,
+    "internal_link_score": 90,
+    "competitor_presence": [
+      "TurboHire",
+      "SenseHQ",
+      "Instahyre"
+    ],
+    "recommended_action": "Add enterprise comparison table vs traditional recruitment and customer ROI metrics to capture Top 5.",
+    "target_position": "Top 5"
+  },
+  {
+    "priority": "P0_PAGE1_QUICK_WIN",
+    "query": "rpo services india",
+    "intent": "COMMERCIAL_B2B",
+    "cluster": "SERVICES",
+    "current_position": 9.5,
+    "impressions": 110,
+    "clicks": 7,
+    "ctr": 6.3,
+    "landing_url": "https://talentxcel.in/services/rpo",
+    "canonical_url": "https://talentxcel.in/services/rpo",
+    "content_quality_score": 95,
+    "internal_link_score": 88,
+    "competitor_presence": [
+      "Korn Ferry",
+      "Randstad",
+      "ManpowerGroup"
+    ],
+    "recommended_action": "Inject 6-stage RPO delivery SLA framework with downloadable SLA PDF CTA to push into Top 5.",
+    "target_position": "Top 5"
+  },
+  {
+    "priority": "P1_PAGE1_BREAKTHROUGH",
+    "query": "ats resume builder for software engineers",
+    "intent": "TRANSACTIONAL_TOOL",
+    "cluster": "RESUME_ATS",
+    "current_position": 11.2,
+    "impressions": 95,
+    "clicks": 8,
+    "ctr": 8.4,
+    "landing_url": "https://talentxcel.in/resources/ats-resume-guide-2026",
+    "canonical_url": "https://talentxcel.in/resources/ats-resume-guide-2026",
+    "content_quality_score": 98,
+    "internal_link_score": 92,
+    "competitor_presence": [
+      "ResumeWorded",
+      "Zety",
+      "Novoresume"
+    ],
+    "recommended_action": "Add direct high-authority internal links from /resume and /roles/software-engineer to cross page 1 boundary.",
+    "target_position": "Positions 4–8"
+  },
+  {
+    "priority": "P1_PAGE1_BREAKTHROUGH",
+    "query": "iit madras placement ctc",
+    "intent": "INFORMATIONAL_EDUCATION",
+    "cluster": "COLLEGES",
+    "current_position": 12.4,
+    "impressions": 220,
+    "clicks": 11,
+    "ctr": 5,
+    "landing_url": "https://talentxcel.in/colleges/indian-institute-of-technology-madras",
+    "canonical_url": "https://talentxcel.in/colleges/indian-institute-of-technology-madras",
+    "content_quality_score": 92,
+    "internal_link_score": 85,
+    "competitor_presence": [
+      "Shiksha",
+      "CollegeDunia",
+      "Careers360"
+    ],
+    "recommended_action": "Inject forensic CTC branch-wise breakdown table (B.Tech CS vs EE vs Mech) to win Page 1 rankings.",
+    "target_position": "Positions 3–7"
+  },
+  {
+    "priority": "P1_PAGE1_BREAKTHROUGH",
+    "query": "how to become curriculum developer in india",
+    "intent": "CAREER_GUIDANCE",
+    "cluster": "ROLES",
+    "current_position": 14.8,
+    "impressions": 75,
+    "clicks": 5,
+    "ctr": 6.7,
+    "landing_url": "https://talentxcel.in/roles/curriculum-developer",
+    "canonical_url": "https://talentxcel.in/roles/curriculum-developer",
+    "content_quality_score": 94,
+    "internal_link_score": 80,
+    "competitor_presence": [
+      "Coursera",
+      "Indeed Career Guide",
+      "Naukri Learning"
+    ],
+    "recommended_action": "Add 5-step career progression roadmap linking into /colleges/pathway tool.",
+    "target_position": "Positions 5–10"
+  },
+  {
+    "priority": "P2_AUTHORITY_EXPANSION",
+    "query": "tech hiring trends bangalore 2026",
+    "intent": "INFORMATIONAL_MARKET",
+    "cluster": "LOCATIONS",
+    "current_position": 24.5,
+    "impressions": 130,
+    "clicks": 4,
+    "ctr": 3.1,
+    "landing_url": "https://talentxcel.in/locations/bangalore",
+    "canonical_url": "https://talentxcel.in/locations/bangalore",
+    "content_quality_score": 90,
+    "internal_link_score": 78,
+    "competitor_presence": [
+      "Economic Times",
+      "TechCircle",
+      "NASSCOM"
+    ],
+    "recommended_action": "Add quarterly salary benchmark charts and top hiring startup indices to /locations/bangalore.",
+    "target_position": "Positions 10–15"
+  },
+  {
+    "priority": "P2_AUTHORITY_EXPANSION",
+    "query": "ai prompt engineer roadmap",
+    "intent": "INFORMATIONAL_CAREER",
+    "cluster": "ROLES",
+    "current_position": 28.2,
+    "impressions": 190,
+    "clicks": 6,
+    "ctr": 3.2,
+    "landing_url": "https://talentxcel.in/roles/ai-prompt-engineer",
+    "canonical_url": "https://talentxcel.in/roles/ai-prompt-engineer",
+    "content_quality_score": 92,
+    "internal_link_score": 75,
+    "competitor_presence": [
+      "Roadmap.sh",
+      "DeepLearning.AI",
+      "Medium"
+    ],
+    "recommended_action": "Enrich with LangChain & LlamaIndex skill checklists and link to /careermap.",
+    "target_position": "Positions 10–15"
+  },
+  {
+    "priority": "P3_CONTENT_ENRICHMENT",
+    "query": "free global masters degree for indian students",
+    "intent": "INFORMATIONAL_EDUCATION",
+    "cluster": "COLLEGES",
+    "current_position": 56.4,
+    "impressions": 210,
+    "clicks": 3,
+    "ctr": 1.4,
+    "landing_url": "https://talentxcel.in/colleges/global-programs",
+    "canonical_url": "https://talentxcel.in/colleges/global-programs",
+    "content_quality_score": 91,
+    "internal_link_score": 70,
+    "competitor_presence": [
+      "DAAD",
+      "StudyInGermany",
+      "MastersPortal"
+    ],
+    "recommended_action": "Add country-by-country tuition-free filter guides (Germany, Norway, Iceland, Italy).",
+    "target_position": "Positions 15–25"
+  },
+  {
+    "priority": "P4_COMPETITOR_QUERY_GAP",
+    "query": "top ai products in india leaderboard",
+    "intent": "COMMERCIAL_DIRECTORY",
+    "cluster": "RANKINGS",
+    "current_position": 45,
+    "impressions": 80,
+    "clicks": 2,
+    "ctr": 2.5,
+    "landing_url": "https://talentxcel.in/rankings/ai-products",
+    "canonical_url": "https://talentxcel.in/rankings/ai-products",
+    "content_quality_score": 93,
+    "internal_link_score": 82,
+    "competitor_presence": [
+      "ProductHunt",
+      "G2",
+      "Capterra"
+    ],
+    "recommended_action": "Inject monthly verified ranking updates and badge embeds for ranked products.",
+    "target_position": "Positions 5–10"
+  },
+  {
+    "priority": "P5_ZERO_IMPRESSION_RECOVERY",
+    "query": "tier 3 college placement career transition",
+    "intent": "CAREER_GUIDANCE",
+    "cluster": "COLLEGES",
+    "current_position": 0,
+    "impressions": 0,
+    "clicks": 0,
+    "ctr": 0,
+    "landing_url": "https://talentxcel.in/colleges/pathway",
+    "canonical_url": "https://talentxcel.in/colleges/pathway",
+    "content_quality_score": 94,
+    "internal_link_score": 85,
+    "competitor_presence": [
+      "Unstop",
+      "Scaler",
+      "GeeksForGeeks"
+    ],
+    "recommended_action": "Enrich 6-step pathway page with case studies and contextual footer links from all 10,250 college pages.",
+    "target_position": "Generate First Impressions"
+  }
+]

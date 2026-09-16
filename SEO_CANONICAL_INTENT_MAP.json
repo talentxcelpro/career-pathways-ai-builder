@@ -1,0 +1,472 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2026-08-26T06:20:00Z",
+  "total_mapped_canonicals": 30,
+  "methodology": "Deterministic mapping of each canonical URL to its primary intent cluster. Enables cannibalization detection at scale.",
+  "cannibalization_summary": {
+    "unique": 28,
+    "at_risk": 2,
+    "confirmed_duplicate": 0
+  },
+  "mappings": [
+    {
+      "canonical_url": "https://talentxcel.in/jobs",
+      "surface": "JOBS",
+      "primary_cluster_id": "cls_jobs_root_hub",
+      "primary_intent": "find jobs in india",
+      "secondary_surfaces": [
+        "LOCATIONS",
+        "ROLE_GUIDES",
+        "SKILLS"
+      ],
+      "cannibalization_status": "UNIQUE",
+      "cannibalization_note": null,
+      "gsc_top_queries": [
+        "jobs india 2026",
+        "find jobs india"
+      ],
+      "opportunity_priority": "P1"
+    },
+    {
+      "canonical_url": "https://talentxcel.in/jobs/software-engineer/bangalore",
+      "surface": "JOBS",
+      "primary_cluster_id": "cls_soft_eng_blr",
+      "primary_intent": "software engineer jobs in bangalore",
+      "secondary_surfaces": [
+        "SKILLS",
+        "ROLE_GUIDES"
+      ],
+      "cannibalization_status": "UNIQUE",
+      "cannibalization_note": null,
+      "gsc_top_queries": [
+        "software engineer jobs bangalore",
+        "SE jobs bangalore"
+      ],
+      "opportunity_priority": "P1"
+    },
+    {
+      "canonical_url": "https://talentxcel.in/jobs/data-analyst/delhi",
+      "surface": "JOBS",
+      "primary_cluster_id": "cls_data_analyst_delhi",
+      "primary_intent": "data analyst jobs in delhi",
+      "secondary_surfaces": [
+        "SKILLS",
+        "ROLE_GUIDES"
+      ],
+      "cannibalization_status": "UNIQUE",
+      "cannibalization_note": null,
+      "gsc_top_queries": [
+        "data analyst jobs delhi"
+      ],
+      "opportunity_priority": "P1"
+    },
+    {
+      "canonical_url": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+      "surface": "JOBS",
+      "primary_cluster_id": "cls_content_writer_noida",
+      "primary_intent": "content writer jobs noida",
+      "secondary_surfaces": [
+        "LOCATIONS"
+      ],
+      "cannibalization_status": "UNIQUE",
+      "cannibalization_note": null,
+      "gsc_top_queries": [
+        "content writer jobs noida"
+      ],
+      "opportunity_priority": "P0"
+    },
+    {
+      "canonical_url": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+      "surface": "JOBS",
+      "primary_cluster_id": "cls_marketing_exec_noida",
+      "primary_intent": "marketing executive jobs noida",
+      "secondary_surfaces": [
+        "LOCATIONS"
+      ],
+      "cannibalization_status": "UNIQUE",
+      "cannibalization_note": null,
+      "gsc_top_queries": [
+        "marketing executive jobs noida"
+      ],
+      "opportunity_priority": "P0"
+    },
+    {
+      "canonical_url": "https://talentxcel.in/jobs/freshers",
+      "surface": "JOBS",
+      "primary_cluster_id": "cls_freshers_jobs_2026",
+      "primary_intent": "freshers jobs 2026 india",
+      "secondary_surfaces": [
+        "COLLEGES",
+        "ROLE_GUIDES"
+      ],
+      "cannibalization_status": "UNIQUE",
+      "cannibalization_note": null,
+      "gsc_top_queries": [],
+      "opportunity_priority": "P0"
+    },
+    {
+      "canonical_url": "https://talentxcel.in/jobs/remote",
+      "surface": "JOBS",
+      "primary_cluster_id": "cls_remote_wfh_jobs",
+      "primary_intent": "remote jobs india work from home 2026",
+      "secondary_surfaces": [
+        "ROLE_GUIDES",
+        "SKILLS"
+      ],
+      "cannibalization_status": "UNIQUE",
+      "cannibalization_note": null,
+      "gsc_top_queries": [],
+      "opportunity_priority": "P0"
+    },
+    {
+      "canonical_url": "https://talentxcel.in/jobs/internships",
+      "surface": "JOBS",
+      "primary_cluster_id": "cls_internships_bangalore",
+      "primary_intent": "engineering internship 2026 india",
+      "secondary_surfaces": [
+        "COLLEGES",
+        "SKILLS"
+      ],
+      "cannibalization_status": "UNIQUE",
+      "cannibalization_note": null,
+      "gsc_top_queries": [],
+      "opportunity_priority": "P1"
+    },
+    {
+      "canonical_url": "https://talentxcel.in/jobs/hyderabad",
+      "surface": "LOCATIONS",
+      "primary_cluster_id": "cls_it_jobs_hyderabad",
+      "primary_intent": "it jobs in hyderabad 2026",
+      "secondary_surfaces": [
+        "JOBS",
+        "ROLE_GUIDES"
+      ],
+      "cannibalization_status": "UNIQUE",
+      "cannibalization_note": null,
+      "gsc_top_queries": [],
+      "opportunity_priority": "P0"
+    },
+    {
+      "canonical_url": "https://talentxcel.in/jobs/software-engineer",
+      "surface": "JOBS",
+      "primary_cluster_id": "cls_soft_eng_role",
+      "primary_intent": "software engineer jobs india",
+      "secondary_surfaces": [
+        "ROLE_GUIDES",
+        "SKILLS"
+      ],
+      "cannibalization_status": "UNIQUE",
+      "cannibalization_note": null,
+      "gsc_top_queries": [],
+      "opportunity_priority": "P1"
+    },
+    {
+      "canonical_url": "https://talentxcel.in/jobs/data-analyst",
+      "surface": "JOBS",
+      "primary_cluster_id": "cls_data_analyst_role",
+      "primary_intent": "data analyst jobs india",
+      "secondary_surfaces": [
+        "ROLE_GUIDES",
+        "SKILLS"
+      ],
+      "cannibalization_status": "UNIQUE",
+      "cannibalization_note": null,
+      "gsc_top_queries": [],
+      "opportunity_priority": "P1"
+    },
+    {
+      "canonical_url": "https://talentxcel.in/jobs/golang-developer/pune",
+      "surface": "JOBS",
+      "primary_cluster_id": "cls_golang_pune",
+      "primary_intent": "senior golang developer jobs pune",
+      "secondary_surfaces": [
+        "SKILLS"
+      ],
+      "cannibalization_status": "UNIQUE",
+      "cannibalization_note": null,
+      "gsc_top_queries": [],
+      "opportunity_priority": "P4"
+    },
+    {
+      "canonical_url": "https://talentxcel.in/resume",
+      "surface": "RESUME_ATS",
+      "primary_cluster_id": "cls_ats_resume_scanner",
+      "primary_intent": "free ats resume scanner india",
+      "secondary_surfaces": [
+        "CAREER_TOOLS",
+        "JOBS"
+      ],
+      "cannibalization_status": "AT_RISK",
+      "cannibalization_note": "Both ats_resume_scanner and ats_resume_builder map to /resume root; monitor CTR split",
+      "gsc_top_queries": [
+        "ats resume builder for software engineers"
+      ],
+      "opportunity_priority": "P0"
+    },
+    {
+      "canonical_url": "https://talentxcel.in/network",
+      "surface": "PROFESSIONAL_NETWORK",
+      "primary_cluster_id": "cls_prof_network_india",
+      "primary_intent": "professional networking platform india",
+      "secondary_surfaces": [
+        "JOBS",
+        "COMPANIES"
+      ],
+      "cannibalization_status": "UNIQUE",
+      "cannibalization_note": null,
+      "gsc_top_queries": [
+        "professional networking platform india"
+      ],
+      "opportunity_priority": "P2"
+    },
+    {
+      "canonical_url": "https://talentxcel.in/network/profile-guide",
+      "surface": "PROFESSIONAL_NETWORK",
+      "primary_cluster_id": "cls_linkedin_profile_opt",
+      "primary_intent": "how to optimize linkedin profile india",
+      "secondary_surfaces": [
+        "ROLE_GUIDES",
+        "CAREER_MAP"
+      ],
+      "cannibalization_status": "UNIQUE",
+      "cannibalization_note": null,
+      "gsc_top_queries": [],
+      "opportunity_priority": "P3"
+    },
+    {
+      "canonical_url": "https://talentxcel.in/colleges",
+      "surface": "COLLEGES",
+      "primary_cluster_id": "cls_eng_colleges_placement",
+      "primary_intent": "top engineering colleges in india with placement",
+      "secondary_surfaces": [
+        "JOBS",
+        "LEARNING_COURSES"
+      ],
+      "cannibalization_status": "UNIQUE",
+      "cannibalization_note": null,
+      "gsc_top_queries": [
+        "top engineering colleges india placement"
+      ],
+      "opportunity_priority": "P1"
+    },
+    {
+      "canonical_url": "https://talentxcel.in/colleges/bangalore/mba",
+      "surface": "COLLEGES",
+      "primary_cluster_id": "cls_mba_colleges_bangalore",
+      "primary_intent": "top mba colleges bangalore fees",
+      "secondary_surfaces": [
+        "LOCATIONS"
+      ],
+      "cannibalization_status": "UNIQUE",
+      "cannibalization_note": null,
+      "gsc_top_queries": [],
+      "opportunity_priority": "P1"
+    },
+    {
+      "canonical_url": "https://talentxcel.in/colleges/bangalore",
+      "surface": "COLLEGES",
+      "primary_cluster_id": "cls_colleges_blr_hub",
+      "primary_intent": "top colleges in bangalore",
+      "secondary_surfaces": [
+        "LOCATIONS"
+      ],
+      "cannibalization_status": "UNIQUE",
+      "cannibalization_note": null,
+      "gsc_top_queries": [],
+      "opportunity_priority": "P2"
+    },
+    {
+      "canonical_url": "https://talentxcel.in/colleges/iit-bombay",
+      "surface": "COLLEGES",
+      "primary_cluster_id": "cls_iit_bombay",
+      "primary_intent": "iit bombay btech fees placement 2026",
+      "secondary_surfaces": [
+        "COMPANIES"
+      ],
+      "cannibalization_status": "UNIQUE",
+      "cannibalization_note": null,
+      "gsc_top_queries": [],
+      "opportunity_priority": "P4"
+    },
+    {
+      "canonical_url": "https://talentxcel.in/roles/data-scientist",
+      "surface": "ROLE_GUIDES",
+      "primary_cluster_id": "cls_become_data_scientist",
+      "primary_intent": "how to become a data scientist in india",
+      "secondary_surfaces": [
+        "SKILLS",
+        "LEARNING_COURSES",
+        "JOBS"
+      ],
+      "cannibalization_status": "UNIQUE",
+      "cannibalization_note": null,
+      "gsc_top_queries": [
+        "how to become a data scientist india"
+      ],
+      "opportunity_priority": "P1"
+    },
+    {
+      "canonical_url": "https://talentxcel.in/roles/product-manager",
+      "surface": "ROLE_GUIDES",
+      "primary_cluster_id": "cls_pm_salary_india",
+      "primary_intent": "product manager salary india",
+      "secondary_surfaces": [
+        "CAREER_TOOLS",
+        "CAREER_MAP"
+      ],
+      "cannibalization_status": "UNIQUE",
+      "cannibalization_note": null,
+      "gsc_top_queries": [
+        "product manager salary india"
+      ],
+      "opportunity_priority": "P2"
+    },
+    {
+      "canonical_url": "https://talentxcel.in/roles/software-engineer",
+      "surface": "ROLE_GUIDES",
+      "primary_cluster_id": "cls_soft_eng_career",
+      "primary_intent": "software engineer career path india",
+      "secondary_surfaces": [
+        "SKILLS",
+        "JOBS"
+      ],
+      "cannibalization_status": "UNIQUE",
+      "cannibalization_note": null,
+      "gsc_top_queries": [],
+      "opportunity_priority": "P2"
+    },
+    {
+      "canonical_url": "https://talentxcel.in/roles/interview-prep",
+      "surface": "ROLE_GUIDES",
+      "primary_cluster_id": "cls_interview_prep_common",
+      "primary_intent": "most common interview questions india 2026",
+      "secondary_surfaces": [
+        "COMPANIES",
+        "JOBS"
+      ],
+      "cannibalization_status": "UNIQUE",
+      "cannibalization_note": null,
+      "gsc_top_queries": [],
+      "opportunity_priority": "P1"
+    },
+    {
+      "canonical_url": "https://talentxcel.in/skills/python",
+      "surface": "SKILLS",
+      "primary_cluster_id": "cls_python_course_india",
+      "primary_intent": "python programming course free india",
+      "secondary_surfaces": [
+        "LEARNING_COURSES",
+        "ROLE_GUIDES"
+      ],
+      "cannibalization_status": "UNIQUE",
+      "cannibalization_note": null,
+      "gsc_top_queries": [],
+      "opportunity_priority": "P1"
+    },
+    {
+      "canonical_url": "https://talentxcel.in/companies/infosys",
+      "surface": "COMPANIES",
+      "primary_cluster_id": "cls_infosys_interview",
+      "primary_intent": "infosys interview questions 2026",
+      "secondary_surfaces": [
+        "JOBS",
+        "ROLE_GUIDES"
+      ],
+      "cannibalization_status": "UNIQUE",
+      "cannibalization_note": null,
+      "gsc_top_queries": [],
+      "opportunity_priority": "P2"
+    },
+    {
+      "canonical_url": "https://talentxcel.in/learning/digital-marketing",
+      "surface": "LEARNING_COURSES",
+      "primary_cluster_id": "cls_dig_marketing_course",
+      "primary_intent": "digital marketing course india with certification",
+      "secondary_surfaces": [
+        "ROLE_GUIDES",
+        "JOBS"
+      ],
+      "cannibalization_status": "UNIQUE",
+      "cannibalization_note": null,
+      "gsc_top_queries": [
+        "digital marketing course india certification"
+      ],
+      "opportunity_priority": "P2"
+    },
+    {
+      "canonical_url": "https://talentxcel.in/career-map",
+      "surface": "CAREER_MAP",
+      "primary_cluster_id": "cls_dev_to_pm_switch",
+      "primary_intent": "career transition developer to product manager india",
+      "secondary_surfaces": [
+        "ROLE_GUIDES",
+        "SKILLS"
+      ],
+      "cannibalization_status": "UNIQUE",
+      "cannibalization_note": null,
+      "gsc_top_queries": [
+        "career transition developer to product manager india"
+      ],
+      "opportunity_priority": "P2"
+    },
+    {
+      "canonical_url": "https://talentxcel.in/passport",
+      "surface": "CAREER_PASSPORT",
+      "primary_cluster_id": "cls_digital_portfolio_india",
+      "primary_intent": "verified digital portfolio for job seekers india",
+      "secondary_surfaces": [
+        "RESUME_ATS",
+        "PROFESSIONAL_NETWORK"
+      ],
+      "cannibalization_status": "UNIQUE",
+      "cannibalization_note": null,
+      "gsc_top_queries": [],
+      "opportunity_priority": "P1"
+    },
+    {
+      "canonical_url": "https://talentxcel.in/mo1",
+      "surface": "MO1_BUSINESS_OS",
+      "primary_cluster_id": "cls_ai_recruitment_b2b",
+      "primary_intent": "ai recruitment software for enterprise india",
+      "secondary_surfaces": [
+        "COMPANIES"
+      ],
+      "cannibalization_status": "UNIQUE",
+      "cannibalization_note": null,
+      "gsc_top_queries": [
+        "ai recruitment platform india"
+      ],
+      "opportunity_priority": "P0"
+    },
+    {
+      "canonical_url": "https://talentxcel.in/rankings",
+      "surface": "BIDDER_RANKINGS",
+      "primary_cluster_id": "cls_ai_products_leaderboard",
+      "primary_intent": "ai products leaderboard rankings india",
+      "secondary_surfaces": [
+        "COMPANIES",
+        "CAREER_TOOLS"
+      ],
+      "cannibalization_status": "UNIQUE",
+      "cannibalization_note": null,
+      "gsc_top_queries": [],
+      "opportunity_priority": "P1"
+    },
+    {
+      "canonical_url": "https://talentxcel.in/tools/salary-calculator",
+      "surface": "CAREER_TOOLS",
+      "primary_cluster_id": "cls_salary_calculator_india",
+      "primary_intent": "salary calculator india 2026",
+      "secondary_surfaces": [
+        "ROLE_GUIDES",
+        "JOBS"
+      ],
+      "cannibalization_status": "AT_RISK",
+      "cannibalization_note": "Competes with general tools hub /tools; dedicated URL requires distinct schema",
+      "gsc_top_queries": [
+        "salary calculator india 2026"
+      ],
+      "opportunity_priority": "P0"
+    }
+  ]
+}

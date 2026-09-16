@@ -1,0 +1,42 @@
+{
+  "generatedAt": "2026-08-25T15:06:16.642Z",
+  "totalClusters": 6,
+  "nodes": [
+    {
+      "id": "BRAND",
+      "name": "TalentXcel Entity",
+      "opportunities": 500,
+      "primaryHub": "/company/talentxcel"
+    },
+    {
+      "id": "JOB_SEARCH",
+      "name": "Active & Role Job Search",
+      "opportunities": 10087168,
+      "primaryHub": "/jobs"
+    },
+    {
+      "id": "EMPLOYER_B2B",
+      "name": "Employer Workforce & RPO Solutions",
+      "opportunities": 57600,
+      "primaryHub": "/services/staffing-recruitment"
+    },
+    {
+      "id": "CAREER_PATHWAYS",
+      "name": "Career Roadmaps & Intelligence",
+      "opportunities": 4364880,
+      "primaryHub": "/topics/careers"
+    },
+    {
+      "id": "HIGHER_EDUCATION",
+      "name": "Colleges & Global Degrees",
+      "opportunities": 528500,
+      "primaryHub": "/colleges"
+    },
+    {
+      "id": "RESUME_ATS",
+      "name": "ATS Resume Intelligence",
+      "opportunities": 88400,
+      "primaryHub": "/services/resume-building"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "day": 1,
+  "date_iso": "2026-08-26",
+  "daily_target_registrations": 33333,
+  "status": "ACTIVE_EXECUTION",
+  "engine_1_college_tpo_blitz": {
+    "target_tpos_contacted_today": 300,
+    "actual_tpos_contacted": 0,
+    "confirmed_partner_colleges": 0,
+    "projected_students_in_pipeline": 0
+  },
+  "engine_2_viral_hooks": {
+    "ats_roast_scans_today": 0,
+    "salary_calculator_runs_today": 0,
+    "viral_cards_shared": 0,
+    "viral_landing_visits": 0
+  },
+  "engine_3_referral_unlocks": {
+    "active_referrers": 0,
+    "total_invites_sent": 0,
+    "hr_directories_unlocked": 0,
+    "referral_signups_acquired": 0
+  },
+  "engine_4_community_channels": {
+    "telegram_whatsapp_channels_contacted": 50,
+    "pinned_posts_live": 0,
+    "reddit_posts_live": 0,
+    "linkedin_creator_posts_live": 0
+  },
+  "summary_metrics": {
+    "total_day1_signups": 0,
+    "total_day1_activations": 0,
+    "current_cumulative_users": 0
+  }
+}

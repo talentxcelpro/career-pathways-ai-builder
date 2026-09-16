@@ -1,0 +1,148 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-08-26T07:23:33.318Z",
+  "milestone": "M1_100K_EVIDENCE_GATE",
+  "status": "ACTIVE_EXECUTION",
+  "staged_gates": {
+    "current_stage": "M1",
+    "stages": [
+      {
+        "gate": "SEED",
+        "target_records": 30,
+        "current_records": 30,
+        "status": "COMPLETED",
+        "objective": "Schema & Engine Verification"
+      },
+      {
+        "gate": "GATE_1_1K",
+        "target_records": 1000,
+        "current_records": 503,
+        "status": "IN_PROGRESS",
+        "objective": "Validate Continuous Ingestion & Dedup Loop"
+      },
+      {
+        "gate": "GATE_2_10K",
+        "target_records": 10000,
+        "current_records": 0,
+        "status": "PLANNED",
+        "objective": "Validate Intent Clustering & Multi-Factor Scoring"
+      },
+      {
+        "gate": "GATE_3_100K",
+        "target_records": 100000,
+        "current_records": 0,
+        "status": "PLANNED",
+        "objective": "Substantial Ranking Opportunities & First Attribution Loop"
+      },
+      {
+        "gate": "GATE_4_1M",
+        "target_records": 1000000,
+        "current_records": 0,
+        "status": "PLANNED",
+        "objective": "Scale Search Acquisition Machine Across 14 Surfaces"
+      },
+      {
+        "gate": "GATE_5_100M",
+        "target_records": 100000000,
+        "current_records": 0,
+        "status": "PLANNED",
+        "objective": "Universal Search Intelligence Universe (Not 100M URLs)"
+      }
+    ]
+  },
+  "four_pillars_of_truth": {
+    "1_demand": {
+      "unique_evidenced_queries": 503,
+      "daily_new_unique_queries_rate": 525,
+      "semantic_intent_clusters": 25,
+      "product_surfaces_active": 14,
+      "countries_covered": [
+        "IN"
+      ],
+      "competitor_gaps_identified": 5
+    },
+    "2_seo": {
+      "indexed_canonical_pages": 12592,
+      "monthly_gsc_impressions": 1188,
+      "monthly_gsc_clicks": 71,
+      "average_ctr_pct": 5.97,
+      "gsc_average_position_core_clusters": 18.2,
+      "top_3_queries_count": 38,
+      "top_10_queries_count": 92,
+      "top_20_queries_count": 160
+    },
+    "3_acquisition": {
+      "organic_sessions_monthly": "instrumenting",
+      "registered_users_from_search": "instrumenting",
+      "search_to_signup_conversion_rate_pct": "instrumenting",
+      "signup_to_activation_rate_pct": "instrumenting",
+      "first_product_actions_completed": "instrumenting",
+      "retained_organic_users_30d": "instrumenting"
+    },
+    "4_quality": {
+      "doorway_candidates_rejected": 1,
+      "sub_threshold_pages_consolidated": 1,
+      "active_cannibalization_conflicts": 0,
+      "isolated_orphan_pages": 2,
+      "ci_gate_pass_rate_pct": 100,
+      "total_ci_checks": 128
+    }
+  },
+  "p0_quick_wins_queue": [
+    {
+      "query": "content writer jobs noida",
+      "current_gsc_pos": 6.4,
+      "target_pos": 3,
+      "status": "QUEUED_OPTIMIZATION"
+    },
+    {
+      "query": "marketing executive jobs noida",
+      "current_gsc_pos": 7.2,
+      "target_pos": 3,
+      "status": "QUEUED_OPTIMIZATION"
+    },
+    {
+      "query": "ats resume builder for software engineers",
+      "current_gsc_pos": 11.2,
+      "target_pos": 8,
+      "status": "QUEUED_OPTIMIZATION"
+    },
+    {
+      "query": "salary calculator india 2026",
+      "current_gsc_pos": 35,
+      "target_pos": 18,
+      "status": "QUEUED_LINK_AUTHORITY_BOOST"
+    },
+    {
+      "query": "infosys interview questions 2026",
+      "current_gsc_pos": null,
+      "target_pos": 25,
+      "status": "QUEUED_LINK_AUTHORITY_BOOST"
+    }
+  ],
+  "dimensional_breakdown": {
+    "1_raw_evidence_records": 503,
+    "2_unique_normalized_queries": 476,
+    "3_unique_canonical_landing_pages": 246,
+    "4_actionable_ranking_opportunities": 30,
+    "5_pages_requiring_immediate_optimization": 22
+  },
+  "surface_attribution_hypothesis": {
+    "JOBS": {
+      "expected_behavior": "High direct user registration upon job apply click",
+      "primary_milestone": "job_application_submitted"
+    },
+    "RESUME_ATS": {
+      "expected_behavior": "High immediate product activation and utility engagement",
+      "primary_milestone": "ats_resume_scan_completed"
+    },
+    "CAREER_TOOLS": {
+      "expected_behavior": "High organic search volume with lower immediate activation",
+      "primary_milestone": "salary_calculation_saved"
+    },
+    "CAREER_MAP": {
+      "expected_behavior": "Moderate top-of-funnel traffic with significantly higher 30-day user retention",
+      "primary_milestone": "career_roadmap_saved"
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "generatedAt": "2026-08-25T14:17:17.447Z",
+  "property": "sc-domain:talentxcel.in",
+  "authorizedServiceAccount": "indexing-api-publisher@talentxcel-indexing.iam.gserviceaccount.com",
+  "serviceAccountStatus": "OWNER (Verified in GSC)",
+  "schemaHealth": {
+    "JobPostings": {
+      "status": "PASS",
+      "invalidErrors": 0,
+      "validItemsDetected": 3,
+      "enhancementWarnings": "Optional non-critical location parameters only"
+    },
+    "Organization": {
+      "status": "PASS",
+      "target": "https://talentxcel.in/company/talentxcel",
+      "errors": 0
+    },
+    "Breadcrumbs": {
+      "status": "PASS",
+      "errors": 0
+    }
+  },
+  "crawlabilityHealth": {
+    "robotsTxt": "HTTP 200 OK (Clean directives)",
+    "masterSitemap": "HTTP 200 OK (17 sub-sitemaps / 12,744 URLs)",
+    "prerenderedDocuments": "10,429 Class A static HTML files"
+  }
+}

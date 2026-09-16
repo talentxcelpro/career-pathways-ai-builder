@@ -1,0 +1,84 @@
+{
+  "BRAND": {
+    "totalQueries": 176,
+    "primaryCanonicalRoutes": [
+      "/company/talentxcel"
+    ],
+    "subclusters": {
+      "Official Brand": 11,
+      "Location Brand": 165
+    }
+  },
+  "JOB_SEARCH": {
+    "totalQueries": 1126212,
+    "primaryCanonicalRoutes": [
+      "/jobs/software-engineer/india",
+      "/jobs/software-engineer/noida",
+      "/jobs/software-engineer/delhi",
+      "/jobs/software-engineer/delhi-ncr",
+      "/jobs/software-engineer/gurgaon",
+      "/jobs/software-engineer/gurugram",
+      "/jobs/software-engineer/bangalore",
+      "/jobs/software-engineer/bengaluru",
+      "/jobs/software-engineer/hyderabad",
+      "/jobs/software-engineer/pune"
+    ],
+    "subclusters": {
+      "Role Location": 3488,
+      "Role Vacancy": 3488,
+      "Hiring Query": 3488,
+      "Role Careers": 3488,
+      "Skill Role Location": 228900,
+      "Skill Developer": 2100,
+      "Experience Skill Role": 826000,
+      "Employment Type Role": 15260,
+      "Industry Role Location": 40000
+    }
+  },
+  "CAREER_INTENT": {
+    "totalQueries": 83385,
+    "primaryCanonicalRoutes": [
+      "/topics/careers"
+    ],
+    "subclusters": {
+      "Career Guide": 1635,
+      "Career How-To": 1635,
+      "Skill Career Guide": 80115
+    }
+  },
+  "EDUCATION": {
+    "totalQueries": 845,
+    "primaryCanonicalRoutes": [
+      "/colleges"
+    ],
+    "subclusters": {
+      "Location Education": 325,
+      "Career Education": 520
+    }
+  },
+  "EMPLOYER_B2B": {
+    "totalQueries": 4824,
+    "primaryCanonicalRoutes": [
+      "/services/staffing-recruitment",
+      "/services/ai-recruitment"
+    ],
+    "subclusters": {
+      "Service Location": 384,
+      "Service Industry": 240,
+      "Service Industry Location": 3600,
+      "Service Role": 600
+    }
+  },
+  "RESUME_ATS": {
+    "totalQueries": 3488,
+    "primaryCanonicalRoutes": [
+      "/services/resume-building"
+    ],
+    "subclusters": {
+      "ATS Resume Role": 109,
+      "Resume Keywords": 109,
+      "Resume Builder": 109,
+      "Skill Resume Template": 3161
+    }
+  }
+}

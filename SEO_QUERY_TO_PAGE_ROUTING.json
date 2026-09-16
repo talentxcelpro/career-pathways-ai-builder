@@ -1,0 +1,47 @@
+{
+  "generatedAt": "2026-08-25T15:12:10.280Z",
+  "totalOpportunitiesRouted": 31887500,
+  "routingAccuracy": "100.0%",
+  "routingPolicies": [
+    {
+      "cluster": "BRAND",
+      "canonicalTarget": "/company/talentxcel",
+      "type": "DIRECT"
+    },
+    {
+      "cluster": "EMPLOYER_B2B",
+      "canonicalTarget": "/services/*",
+      "type": "DIRECT"
+    },
+    {
+      "cluster": "COMPANIES",
+      "canonicalTarget": "/companies and /company/:slug",
+      "type": "DIRECT"
+    },
+    {
+      "cluster": "RANKINGS",
+      "canonicalTarget": "/rankings and /rankings/ai-products",
+      "type": "DIRECT"
+    },
+    {
+      "cluster": "RESUME_TOOLS",
+      "canonicalTarget": "/services/resume-building and /resume",
+      "type": "DIRECT"
+    },
+    {
+      "cluster": "JOB_SEARCH",
+      "canonicalTarget": "/jobs/:role/:location or /jobs",
+      "type": "PROGRAMMATIC_OR_CONSOLIDATED"
+    },
+    {
+      "cluster": "HIGHER_EDUCATION",
+      "canonicalTarget": "/colleges/:slug or /colleges",
+      "type": "PROGRAMMATIC_OR_CONSOLIDATED"
+    },
+    {
+      "cluster": "CAREER_MAP",
+      "canonicalTarget": "/careermap and /colleges/pathway",
+      "type": "DIRECT"
+    }
+  ]
+}

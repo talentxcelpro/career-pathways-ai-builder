@@ -1,0 +1,138 @@
+{
+  "reconciledAt": "2026-08-25T15:35:16.672Z",
+  "surfaces": [
+    {
+      "surface": "Jobs & Hiring Hubs",
+      "sitemapUrls": 480,
+      "prerenderedDocs": 480,
+      "gscDiscovered": 480,
+      "gscCrawled": 480,
+      "gscIndexed": 240,
+      "activeImpressions": 48,
+      "activeClicks": 18
+    },
+    {
+      "surface": "Role Career Guides (/roles/*)",
+      "sitemapUrls": 180,
+      "prerenderedDocs": 180,
+      "gscDiscovered": 180,
+      "gscCrawled": 180,
+      "gscIndexed": 120,
+      "activeImpressions": 34,
+      "activeClicks": 14
+    },
+    {
+      "surface": "Location Tech Hubs (/locations/*)",
+      "sitemapUrls": 32,
+      "prerenderedDocs": 32,
+      "gscDiscovered": 32,
+      "gscCrawled": 32,
+      "gscIndexed": 28,
+      "activeImpressions": 22,
+      "activeClicks": 8
+    },
+    {
+      "surface": "Skills & Tech Hubs (/skills/*)",
+      "sitemapUrls": 120,
+      "prerenderedDocs": 120,
+      "gscDiscovered": 120,
+      "gscCrawled": 120,
+      "gscIndexed": 85,
+      "activeImpressions": 16,
+      "activeClicks": 6
+    },
+    {
+      "surface": "Companies Directory (/companies)",
+      "sitemapUrls": 50,
+      "prerenderedDocs": 50,
+      "gscDiscovered": 50,
+      "gscCrawled": 50,
+      "gscIndexed": 35,
+      "activeImpressions": 12,
+      "activeClicks": 4
+    },
+    {
+      "surface": "TalentXcel Company Entity (/company/talentxcel)",
+      "sitemapUrls": 2,
+      "prerenderedDocs": 2,
+      "gscDiscovered": 2,
+      "gscCrawled": 2,
+      "gscIndexed": 2,
+      "activeImpressions": 2,
+      "activeClicks": 2
+    },
+    {
+      "surface": "Rankings & AI Products (/rankings/*)",
+      "sitemapUrls": 25,
+      "prerenderedDocs": 25,
+      "gscDiscovered": 25,
+      "gscCrawled": 25,
+      "gscIndexed": 20,
+      "activeImpressions": 14,
+      "activeClicks": 6
+    },
+    {
+      "surface": "Higher Ed Colleges (/colleges/*)",
+      "sitemapUrls": 10250,
+      "prerenderedDocs": 10250,
+      "gscDiscovered": 10250,
+      "gscCrawled": 10250,
+      "gscIndexed": 3100,
+      "activeImpressions": 110,
+      "activeClicks": 24
+    },
+    {
+      "surface": "Global Programs & Scholarships",
+      "sitemapUrls": 100,
+      "prerenderedDocs": 100,
+      "gscDiscovered": 100,
+      "gscCrawled": 100,
+      "gscIndexed": 65,
+      "activeImpressions": 18,
+      "activeClicks": 7
+    },
+    {
+      "surface": "Resource Guides (/resources/*)",
+      "sitemapUrls": 1711,
+      "prerenderedDocs": 1711,
+      "gscDiscovered": 1711,
+      "gscCrawled": 1711,
+      "gscIndexed": 850,
+      "activeImpressions": 42,
+      "activeClicks": 16
+    },
+    {
+      "surface": "Strategic Services (/services/*)",
+      "sitemapUrls": 10,
+      "prerenderedDocs": 10,
+      "gscDiscovered": 10,
+      "gscCrawled": 10,
+      "gscIndexed": 10,
+      "activeImpressions": 9,
+      "activeClicks": 5
+    },
+    {
+      "surface": "Topic Hubs (/topics/*)",
+      "sitemapUrls": 11,
+      "prerenderedDocs": 11,
+      "gscDiscovered": 11,
+      "gscCrawled": 11,
+      "gscIndexed": 11,
+      "activeImpressions": 8,
+      "activeClicks": 3
+    },
+    {
+      "surface": "Public Feed Posts (/posts/*)",
+      "sitemapUrls": 490,
+      "prerenderedDocs": 490,
+      "gscDiscovered": 490,
+      "gscCrawled": 490,
+      "gscIndexed": 180,
+      "activeImpressions": 15,
+      "activeClicks": 4
+    }
+  ],
+  "totalIndexedUrlsAcrossSurfaces": 4746,
+  "totalImpressionsAcrossSurfaces": 350,
+  "totalClicksAcrossSurfaces": 117
+}

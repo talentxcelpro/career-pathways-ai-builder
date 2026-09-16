@@ -1,0 +1,597 @@
+{
+  "auditedAt": "2026-08-25T15:29:39.104Z",
+  "totalAudited": 31,
+  "passed": 31,
+  "failed": 0,
+  "results": [
+    {
+      "route": "/",
+      "name": "Homepage (with Global Discovery Links)",
+      "cluster": "BRAND",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 13025,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/jobs",
+      "name": "Jobs Hub",
+      "cluster": "JOB_SEARCH",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 12638,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/jobs/recruiter",
+      "name": "Recruiter Jobs Discovery",
+      "cluster": "JOB_SEARCH",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 12120,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/jobs/software-engineer/bangalore",
+      "name": "Software Engineer in Bangalore",
+      "cluster": "JOB_SEARCH",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 11992,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/roles/curriculum-developer",
+      "name": "Curriculum Developer Career Guide",
+      "cluster": "ROLES",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 12292,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/roles/recruiter",
+      "name": "Recruiter Career Guide",
+      "cluster": "ROLES",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 12150,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/roles/software-engineer",
+      "name": "Software Engineer Career Guide",
+      "cluster": "ROLES",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 12220,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/resources/ats-resume-guide-2026",
+      "name": "ATS Resume Guide 2026",
+      "cluster": "RESUME_ATS",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 12881,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/resources/how-to-build-an-effective-talent-acquisition-strategy-india",
+      "name": "Talent Acquisition Strategy Guide",
+      "cluster": "RECRUITMENT",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 13222,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/locations/india",
+      "name": "India Tech Hiring Hub",
+      "cluster": "LOCATIONS",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 11611,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/locations/bangalore",
+      "name": "Bangalore Tech Hiring Hub",
+      "cluster": "LOCATIONS",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 11664,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/locations/noida",
+      "name": "Noida Tech Hiring Hub",
+      "cluster": "LOCATIONS",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 11608,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/companies",
+      "name": "Verified Companies Directory",
+      "cluster": "COMPANIES",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 12117,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/company/talentxcel",
+      "name": "TalentXcel Company Entity Hub",
+      "cluster": "BRAND",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 19022,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/rankings",
+      "name": "Rankings & Leaderboard Hub",
+      "cluster": "RANKINGS",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 12076,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/rankings/ai-products",
+      "name": "AI Product Leaderboard",
+      "cluster": "RANKINGS",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 11887,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/resume",
+      "name": "ATS Resume Builder Studio",
+      "cluster": "RESUME_ATS",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 12053,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/tools",
+      "name": "Career Tools Suite",
+      "cluster": "TOOLS",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 12856,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/services",
+      "name": "Strategic Services Hub",
+      "cluster": "SERVICES",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 12526,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/services/ai-recruitment",
+      "name": "AI Recruitment Platform",
+      "cluster": "SERVICES",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 11839,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/services/rpo",
+      "name": "RPO Outsourcing Services",
+      "cluster": "SERVICES",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 11733,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/services/resume-building",
+      "name": "Executive Resume Building",
+      "cluster": "RESUME_ATS",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 11845,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/learning",
+      "name": "Learning & Skill Hub",
+      "cluster": "LEARNING",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 11950,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/colleges",
+      "name": "10,250+ Indian Colleges Hub",
+      "cluster": "COLLEGES",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 12417,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/colleges/pathway",
+      "name": "6-Step AI Career Pathway Tool",
+      "cluster": "COLLEGES",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 12005,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/colleges/global-programs",
+      "name": "Global Degree Discovery",
+      "cluster": "COLLEGES",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 11932,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/colleges/scholarships",
+      "name": "Global Scholarships Directory",
+      "cluster": "COLLEGES",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 11892,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/careermap",
+      "name": "Career Map & Progression Graph",
+      "cluster": "CAREER_MAP",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 11941,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/careerpassport",
+      "name": "Career Passport Public Framework",
+      "cluster": "CAREER_PASSPORT",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 11977,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/network",
+      "name": "Professional Network Feed",
+      "cluster": "NETWORK",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 11782,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    },
+    {
+      "route": "/employer",
+      "name": "Employer Sourcing Hub",
+      "cluster": "EMPLOYER",
+      "crawlStatus": "VERIFIED_SUBSTANTIVE_HTML",
+      "htmlBytes": 12081,
+      "hasTitle": true,
+      "hasDescription": true,
+      "hasCanonical": true,
+      "hasH1": true,
+      "hasSubstantiveContent": true,
+      "hasNoRefreshError": true,
+      "isNot404": true,
+      "botCompatibility": {
+        "googlebotSmartphone": "PASS",
+        "googlebotDesktop": "PASS",
+        "htmlOnlyCrawler": "PASS"
+      }
+    }
+  ]
+}

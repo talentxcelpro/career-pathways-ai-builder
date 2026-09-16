@@ -1,0 +1,78 @@
+{
+  "generatedAt": "2026-08-25T15:16:52.508Z",
+  "rootNode": "https://talentxcel.in/",
+  "discoveryPaths": [
+    {
+      "from": "/",
+      "to": "/jobs",
+      "type": "PRIMARY_NAV",
+      "weight": 1
+    },
+    {
+      "from": "/",
+      "to": "/companies",
+      "type": "PRIMARY_NAV",
+      "weight": 1
+    },
+    {
+      "from": "/",
+      "to": "/rankings",
+      "type": "PRIMARY_NAV",
+      "weight": 1
+    },
+    {
+      "from": "/",
+      "to": "/resume",
+      "type": "PRIMARY_NAV",
+      "weight": 1
+    },
+    {
+      "from": "/",
+      "to": "/tools",
+      "type": "PRIMARY_NAV",
+      "weight": 1
+    },
+    {
+      "from": "/",
+      "to": "/services",
+      "type": "PRIMARY_NAV",
+      "weight": 1
+    },
+    {
+      "from": "/",
+      "to": "/learning",
+      "type": "PRIMARY_NAV",
+      "weight": 1
+    },
+    {
+      "from": "/",
+      "to": "/colleges",
+      "type": "PRIMARY_NAV",
+      "weight": 1
+    },
+    {
+      "from": "/",
+      "to": "/careermap",
+      "type": "PRIMARY_NAV",
+      "weight": 1
+    },
+    {
+      "from": "/",
+      "to": "/careerpassport",
+      "type": "PRIMARY_NAV",
+      "weight": 1
+    },
+    {
+      "from": "/",
+      "to": "/network",
+      "type": "PRIMARY_NAV",
+      "weight": 1
+    },
+    {
+      "from": "/",
+      "to": "/company/talentxcel",
+      "type": "FOOTER_AUTHORITY",
+      "weight": 1
+    }
+  ]
+}

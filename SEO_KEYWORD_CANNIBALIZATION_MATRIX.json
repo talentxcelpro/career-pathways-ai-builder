@@ -1,0 +1,12 @@
+{
+  "generatedAt": "2026-08-25T14:57:22.507Z",
+  "totalKeywordsAudited": 1218930,
+  "duplicateExactMatchCollisions": 0,
+  "policyEnforcement": {
+    "commercialKeywordRoute": "/services/*",
+    "informationalKeywordRoute": "/topics/* and /resources/*",
+    "transactionalJobRoute": "/jobs/:role/:location or /jobs/:slug",
+    "entityBrandRoute": "/company/talentxcel"
+  },
+  "status": "ZERO_CANNIBALIZATION_COLLISIONS_DETECTED"
+}

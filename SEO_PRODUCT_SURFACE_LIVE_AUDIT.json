@@ -1,0 +1,125 @@
+{
+  "auditedAt": "2026-08-25T15:20:37.383Z",
+  "publicSurfacesVerifiedOverHttp": [
+    {
+      "url": "https://talentxcel.in/",
+      "cluster": "BRAND",
+      "status": "HTTP_200_OK_PRERENDERED"
+    },
+    {
+      "url": "https://talentxcel.in/jobs",
+      "cluster": "JOB_SEARCH",
+      "status": "HTTP_200_OK_PRERENDERED"
+    },
+    {
+      "url": "https://talentxcel.in/companies",
+      "cluster": "COMPANIES",
+      "status": "HTTP_200_OK_PRERENDERED"
+    },
+    {
+      "url": "https://talentxcel.in/company/talentxcel",
+      "cluster": "BRAND",
+      "status": "HTTP_200_OK_PRERENDERED"
+    },
+    {
+      "url": "https://talentxcel.in/rankings",
+      "cluster": "RANKINGS",
+      "status": "HTTP_200_OK_PRERENDERED"
+    },
+    {
+      "url": "https://talentxcel.in/rankings/ai-products",
+      "cluster": "RANKINGS",
+      "status": "HTTP_200_OK_PRERENDERED"
+    },
+    {
+      "url": "https://talentxcel.in/resume",
+      "cluster": "RESUME_ATS",
+      "status": "HTTP_200_OK_PRERENDERED"
+    },
+    {
+      "url": "https://talentxcel.in/tools",
+      "cluster": "TOOLS",
+      "status": "HTTP_200_OK_PRERENDERED"
+    },
+    {
+      "url": "https://talentxcel.in/services",
+      "cluster": "SERVICES",
+      "status": "HTTP_200_OK_PRERENDERED"
+    },
+    {
+      "url": "https://talentxcel.in/services/ai-recruitment",
+      "cluster": "SERVICES",
+      "status": "HTTP_200_OK_PRERENDERED"
+    },
+    {
+      "url": "https://talentxcel.in/services/staffing-recruitment",
+      "cluster": "SERVICES",
+      "status": "HTTP_200_OK_PRERENDERED"
+    },
+    {
+      "url": "https://talentxcel.in/services/rpo",
+      "cluster": "SERVICES",
+      "status": "HTTP_200_OK_PRERENDERED"
+    },
+    {
+      "url": "https://talentxcel.in/services/resume-building",
+      "cluster": "RESUME_ATS",
+      "status": "HTTP_200_OK_PRERENDERED"
+    },
+    {
+      "url": "https://talentxcel.in/learning",
+      "cluster": "LEARNING",
+      "status": "HTTP_200_OK_PRERENDERED"
+    },
+    {
+      "url": "https://talentxcel.in/colleges",
+      "cluster": "EDUCATION",
+      "status": "HTTP_200_OK_PRERENDERED"
+    },
+    {
+      "url": "https://talentxcel.in/colleges/pathway",
+      "cluster": "EDUCATION",
+      "status": "HTTP_200_OK_PRERENDERED"
+    },
+    {
+      "url": "https://talentxcel.in/colleges/global-programs",
+      "cluster": "EDUCATION",
+      "status": "HTTP_200_OK_PRERENDERED"
+    },
+    {
+      "url": "https://talentxcel.in/colleges/scholarships",
+      "cluster": "EDUCATION",
+      "status": "HTTP_200_OK_PRERENDERED"
+    },
+    {
+      "url": "https://talentxcel.in/careermap",
+      "cluster": "CAREER_MAP",
+      "status": "HTTP_200_OK_PRERENDERED"
+    },
+    {
+      "url": "https://talentxcel.in/careerpassport",
+      "cluster": "CAREER_PASSPORT",
+      "status": "HTTP_200_OK_PRERENDERED"
+    },
+    {
+      "url": "https://talentxcel.in/network",
+      "cluster": "NETWORK",
+      "status": "HTTP_200_OK_PRERENDERED"
+    },
+    {
+      "url": "https://talentxcel.in/employer",
+      "cluster": "EMPLOYER",
+      "status": "HTTP_200_OK_PRERENDERED"
+    },
+    {
+      "url": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+      "cluster": "JOB_SEARCH",
+      "status": "HTTP_200_OK_PRERENDERED"
+    },
+    {
+      "url": "https://talentxcel.in/colleges/indian-institute-of-technology-madras",
+      "cluster": "EDUCATION",
+      "status": "HTTP_200_OK_PRERENDERED"
+    }
+  ]
+}

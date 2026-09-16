@@ -1,0 +1,166 @@
+{
+  "generatedAt": "2026-08-25T15:06:16.638Z",
+  "totalSearchOpportunities": 15127048,
+  "targetMilestoneMet": true,
+  "searchVolumeDesignation": "UNKNOWN (Zero fabricated numbers per Google Search Quality Policy)",
+  "clusterDistribution": {
+    "JOB_SEARCH": 10087168,
+    "CAREER_PATHWAYS": 4364880,
+    "HIGHER_EDUCATION": 528500,
+    "EMPLOYER_B2B": 57600,
+    "RESUME_ATS": 88400,
+    "BRAND_ENTITY": 500
+  },
+  "coveragePolicy": {
+    "canonicalDestinationMapping": "100% of queries resolve deterministically to controlled canonical hubs",
+    "indexablePageInventory": "12,744 published sitemap URLs (10,429 pre-rendered Class-A docs)",
+    "thinDoorwayPagesCreated": 0,
+    "consolidatedLongTailQueries": 15114304
+  },
+  "representativeExemplars": [
+    {
+      "query": "AI recruitment platform India",
+      "normalizedQuery": "ai recruitment platform india",
+      "intent": "INFORMATIONAL",
+      "canonicalUrl": "https://talentxcel.in/jobs",
+      "pageType": "JOB_PAGE",
+      "coverageStatus": "HUB",
+      "indexabilityDecision": "INDEX",
+      "opportunityScore": 95,
+      "commercialValue": "INFORMATIONAL",
+      "searchVolume": "UNKNOWN"
+    },
+    {
+      "query": "corporate staffing services Noida",
+      "normalizedQuery": "corporate staffing services noida",
+      "intent": "EMPLOYER",
+      "canonicalUrl": "https://talentxcel.in/services/rpo",
+      "pageType": "COMMERCIAL_SERVICE",
+      "coverageStatus": "DIRECT",
+      "indexabilityDecision": "INDEX",
+      "opportunityScore": 98,
+      "commercialValue": "HIGH",
+      "searchVolume": "UNKNOWN"
+    },
+    {
+      "query": "RPO services for fintech startups",
+      "normalizedQuery": "rpo services for fintech startups",
+      "intent": "EMPLOYER",
+      "canonicalUrl": "https://talentxcel.in/services/rpo",
+      "pageType": "COMMERCIAL_SERVICE",
+      "coverageStatus": "DIRECT",
+      "indexabilityDecision": "INDEX",
+      "opportunityScore": 98,
+      "commercialValue": "HIGH",
+      "searchVolume": "UNKNOWN"
+    },
+    {
+      "query": "software engineer jobs in Bangalore",
+      "normalizedQuery": "software engineer jobs in bangalore",
+      "intent": "JOB_SEARCH",
+      "canonicalUrl": "https://talentxcel.in/jobs",
+      "pageType": "JOB_PAGE",
+      "coverageStatus": "HUB",
+      "indexabilityDecision": "INDEX",
+      "opportunityScore": 95,
+      "commercialValue": "HIGH",
+      "searchVolume": "UNKNOWN"
+    },
+    {
+      "query": "entry level Python developer jobs in Noida",
+      "normalizedQuery": "entry level python developer jobs in noida",
+      "intent": "JOB_SEARCH",
+      "canonicalUrl": "https://talentxcel.in/jobs",
+      "pageType": "JOB_PAGE",
+      "coverageStatus": "HUB",
+      "indexabilityDecision": "INDEX",
+      "opportunityScore": 95,
+      "commercialValue": "HIGH",
+      "searchVolume": "UNKNOWN"
+    },
+    {
+      "query": "remote full stack developer jobs India",
+      "normalizedQuery": "remote full stack developer jobs india",
+      "intent": "JOB_SEARCH",
+      "canonicalUrl": "https://talentxcel.in/jobs",
+      "pageType": "JOB_PAGE",
+      "coverageStatus": "HUB",
+      "indexabilityDecision": "INDEX",
+      "opportunityScore": 95,
+      "commercialValue": "HIGH",
+      "searchVolume": "UNKNOWN"
+    },
+    {
+      "query": "ATS resume builder for software engineers",
+      "normalizedQuery": "ats resume builder for software engineers",
+      "intent": "TRANSACTIONAL",
+      "canonicalUrl": "https://talentxcel.in/services/resume-building",
+      "pageType": "TOOL_PAGE",
+      "coverageStatus": "DIRECT",
+      "indexabilityDecision": "INDEX",
+      "opportunityScore": 98,
+      "commercialValue": "HIGH",
+      "searchVolume": "UNKNOWN"
+    },
+    {
+      "query": "how to become an AI engineer in 2026",
+      "normalizedQuery": "how to become an ai engineer in 2026",
+      "intent": "CAREER",
+      "canonicalUrl": "https://talentxcel.in/jobs",
+      "pageType": "JOB_PAGE",
+      "coverageStatus": "HUB",
+      "indexabilityDecision": "INDEX",
+      "opportunityScore": 95,
+      "commercialValue": "MEDIUM",
+      "searchVolume": "UNKNOWN"
+    },
+    {
+      "query": "IIT Madras computer science placement CTC",
+      "normalizedQuery": "iit madras computer science placement ctc",
+      "intent": "SALARY",
+      "canonicalUrl": "https://talentxcel.in/jobs",
+      "pageType": "JOB_PAGE",
+      "coverageStatus": "HUB",
+      "indexabilityDecision": "INDEX",
+      "opportunityScore": 95,
+      "commercialValue": "MEDIUM",
+      "searchVolume": "UNKNOWN"
+    },
+    {
+      "query": "tuition free masters programs in Europe",
+      "normalizedQuery": "tuition free masters programs in europe",
+      "intent": "EDUCATION",
+      "canonicalUrl": "https://talentxcel.in/colleges/global-programs",
+      "pageType": "COLLEGE_PAGE",
+      "coverageStatus": "DIRECT",
+      "indexabilityDecision": "REVIEW",
+      "opportunityScore": 70,
+      "commercialValue": "MEDIUM",
+      "searchVolume": "UNKNOWN"
+    },
+    {
+      "query": "6-step AI career pathway generator",
+      "normalizedQuery": "6-step ai career pathway generator",
+      "intent": "CAREER",
+      "canonicalUrl": "https://talentxcel.in/jobs",
+      "pageType": "JOB_PAGE",
+      "coverageStatus": "HUB",
+      "indexabilityDecision": "INDEX",
+      "opportunityScore": 95,
+      "commercialValue": "MEDIUM",
+      "searchVolume": "UNKNOWN"
+    },
+    {
+      "query": "TalentXcel Services overview and leadership",
+      "normalizedQuery": "talentxcel services overview and leadership",
+      "intent": "BRAND",
+      "canonicalUrl": "https://talentxcel.in/company/talentxcel",
+      "pageType": "COMPANY_ENTITY",
+      "coverageStatus": "DIRECT",
+      "indexabilityDecision": "INDEX",
+      "opportunityScore": 98,
+      "commercialValue": "INFORMATIONAL",
+      "searchVolume": "UNKNOWN"
+    }
+  ]
+}

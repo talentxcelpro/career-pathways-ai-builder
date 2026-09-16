@@ -1,0 +1,27 @@
+{
+  "generatedAt": "2026-08-25T15:06:16.649Z",
+  "observedCrawlRequests": 187000,
+  "serverLatencyMs": 81,
+  "priorityHarvestQueue": [
+    {
+      "query": "ai recruitment platform",
+      "targetUrl": "https://talentxcel.in/services/ai-recruitment",
+      "intent": "Commercial"
+    },
+    {
+      "query": "corporate staffing solutions",
+      "targetUrl": "https://talentxcel.in/services/staffing-recruitment",
+      "intent": "Commercial"
+    },
+    {
+      "query": "ats resume builder",
+      "targetUrl": "https://talentxcel.in/services/resume-building",
+      "intent": "Transactional"
+    },
+    {
+      "query": "content writer jobs noida",
+      "targetUrl": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+      "intent": "Job Search"
+    }
+  ]
+}

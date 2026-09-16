@@ -23,12 +23,24 @@ dist-ssr
 *.sln
 *.sw?
 
-# Media assets (audio/video) - hosted externally
-*.mp4
-*.wav
+# Media assets (audio/video) - bulk renders hosted externally
 public/social-vault/videos/
 public/social-vault/audio/
+public/social-vault/carousels/
+public/social-vault/thumbnails/
+public/social-vault/ci-test/
+
+# Bulk batch date folders (keep 2026-09-05 CI reference package)
+public/social-vault/2026-09-0[6-9]*
+public/social-vault/2026-09-[1-9]*
+public/social-vault/2027-*
+
+# Ignore bulk media files except the CI reference package
+*.mp4
+!public/social-vault/2026-09-05/**/video_9x16.mp4
+*.wav
+!public/social-vault/2026-09-05/**/narration.wav
+
 gcp-key.json
 gsc-service-account.json
 *.json.key
-public/social-vault/

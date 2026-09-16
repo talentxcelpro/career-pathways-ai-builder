@@ -1,0 +1,15 @@
+{
+  "generatedAt": "2026-08-25T15:45:04.315Z",
+  "demandPipelineArchitecture": {
+    "gscQueryHarvester": "ACTIVE",
+    "gscPageHarvester": "ACTIVE",
+    "queryPageMapper": "ACTIVE",
+    "competitorGapHarvester": "ACTIVE",
+    "zeroImpressionAnalyzer": "ACTIVE",
+    "opportunityScorer": "ACTIVE",
+    "continuousFeedbackLoop": "ACTIVE"
+  },
+  "totalScoredQueries": 8,
+  "totalCompetitorGapsLogged": 5,
+  "totalZeroImpressionUrlsTriaged": 3071
+}

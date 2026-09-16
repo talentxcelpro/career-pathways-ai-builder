@@ -1,0 +1,231 @@
+{
+  "generatedAt": "2026-08-25T14:17:17.437Z",
+  "tier1PagesChecked": 28,
+  "orphansDetected": 0,
+  "evaluations": [
+    {
+      "url": "https://talentxcel.in",
+      "pageType": "CORE_PLATFORM",
+      "inboundLinksEstimated": 50,
+      "outboundLinks": 7,
+      "parentHub": "https://talentxcel.in/topics/careers",
+      "isOrphan": false
+    },
+    {
+      "url": "https://talentxcel.in/company/talentxcel",
+      "pageType": "CORE_PLATFORM",
+      "inboundLinksEstimated": 8,
+      "outboundLinks": 7,
+      "parentHub": "https://talentxcel.in/topics/careers",
+      "isOrphan": false
+    },
+    {
+      "url": "https://talentxcel.in/services/ai-recruitment",
+      "pageType": "COMMERCIAL_SERVICE",
+      "inboundLinksEstimated": 8,
+      "outboundLinks": 7,
+      "parentHub": "https://talentxcel.in/topics/artificial-intelligence",
+      "isOrphan": false
+    },
+    {
+      "url": "https://talentxcel.in/services/staffing-recruitment",
+      "pageType": "COMMERCIAL_SERVICE",
+      "inboundLinksEstimated": 8,
+      "outboundLinks": 7,
+      "parentHub": "https://talentxcel.in/topics/recruitment",
+      "isOrphan": false
+    },
+    {
+      "url": "https://talentxcel.in/services/rpo",
+      "pageType": "COMMERCIAL_SERVICE",
+      "inboundLinksEstimated": 8,
+      "outboundLinks": 7,
+      "parentHub": "https://talentxcel.in/topics/recruitment",
+      "isOrphan": false
+    },
+    {
+      "url": "https://talentxcel.in/services/it-services",
+      "pageType": "COMMERCIAL_SERVICE",
+      "inboundLinksEstimated": 8,
+      "outboundLinks": 7,
+      "parentHub": "https://talentxcel.in/topics/technology",
+      "isOrphan": false
+    },
+    {
+      "url": "https://talentxcel.in/services/ai-solutions",
+      "pageType": "COMMERCIAL_SERVICE",
+      "inboundLinksEstimated": 8,
+      "outboundLinks": 7,
+      "parentHub": "https://talentxcel.in/topics/artificial-intelligence",
+      "isOrphan": false
+    },
+    {
+      "url": "https://talentxcel.in/services/corporate-training",
+      "pageType": "COMMERCIAL_SERVICE",
+      "inboundLinksEstimated": 8,
+      "outboundLinks": 7,
+      "parentHub": "https://talentxcel.in/topics/artificial-intelligence",
+      "isOrphan": false
+    },
+    {
+      "url": "https://talentxcel.in/services/career-services",
+      "pageType": "COMMERCIAL_SERVICE",
+      "inboundLinksEstimated": 8,
+      "outboundLinks": 7,
+      "parentHub": "https://talentxcel.in/topics/careers",
+      "isOrphan": false
+    },
+    {
+      "url": "https://talentxcel.in/services/resume-building",
+      "pageType": "COMMERCIAL_SERVICE",
+      "inboundLinksEstimated": 8,
+      "outboundLinks": 7,
+      "parentHub": "https://talentxcel.in/topics/resume-writing",
+      "isOrphan": false
+    },
+    {
+      "url": "https://talentxcel.in/services/talent-management",
+      "pageType": "COMMERCIAL_SERVICE",
+      "inboundLinksEstimated": 8,
+      "outboundLinks": 7,
+      "parentHub": "https://talentxcel.in/topics/careers",
+      "isOrphan": false
+    },
+    {
+      "url": "https://talentxcel.in/services/job-placement",
+      "pageType": "COMMERCIAL_SERVICE",
+      "inboundLinksEstimated": 8,
+      "outboundLinks": 7,
+      "parentHub": "https://talentxcel.in/topics/careers",
+      "isOrphan": false
+    },
+    {
+      "url": "https://talentxcel.in/topics/artificial-intelligence",
+      "pageType": "TOPIC_HUB",
+      "inboundLinksEstimated": 8,
+      "outboundLinks": 7,
+      "parentHub": "https://talentxcel.in/topics/artificial-intelligence",
+      "isOrphan": false
+    },
+    {
+      "url": "https://talentxcel.in/topics/recruitment",
+      "pageType": "TOPIC_HUB",
+      "inboundLinksEstimated": 8,
+      "outboundLinks": 7,
+      "parentHub": "https://talentxcel.in/topics/recruitment",
+      "isOrphan": false
+    },
+    {
+      "url": "https://talentxcel.in/topics/careers",
+      "pageType": "TOPIC_HUB",
+      "inboundLinksEstimated": 8,
+      "outboundLinks": 7,
+      "parentHub": "https://talentxcel.in/topics/careers",
+      "isOrphan": false
+    },
+    {
+      "url": "https://talentxcel.in/topics/education",
+      "pageType": "TOPIC_HUB",
+      "inboundLinksEstimated": 8,
+      "outboundLinks": 7,
+      "parentHub": "https://talentxcel.in/topics/education",
+      "isOrphan": false
+    },
+    {
+      "url": "https://talentxcel.in/topics/technology",
+      "pageType": "TOPIC_HUB",
+      "inboundLinksEstimated": 8,
+      "outboundLinks": 7,
+      "parentHub": "https://talentxcel.in/topics/technology",
+      "isOrphan": false
+    },
+    {
+      "url": "https://talentxcel.in/topics/leadership",
+      "pageType": "TOPIC_HUB",
+      "inboundLinksEstimated": 8,
+      "outboundLinks": 7,
+      "parentHub": "https://talentxcel.in/topics/careers",
+      "isOrphan": false
+    },
+    {
+      "url": "https://talentxcel.in/topics/business",
+      "pageType": "TOPIC_HUB",
+      "inboundLinksEstimated": 8,
+      "outboundLinks": 7,
+      "parentHub": "https://talentxcel.in/topics/careers",
+      "isOrphan": false
+    },
+    {
+      "url": "https://talentxcel.in/topics/resume-writing",
+      "pageType": "TOPIC_HUB",
+      "inboundLinksEstimated": 8,
+      "outboundLinks": 7,
+      "parentHub": "https://talentxcel.in/topics/resume-writing",
+      "isOrphan": false
+    },
+    {
+      "url": "https://talentxcel.in/topics/job-search",
+      "pageType": "TOPIC_HUB",
+      "inboundLinksEstimated": 8,
+      "outboundLinks": 7,
+      "parentHub": "https://talentxcel.in/topics/careers",
+      "isOrphan": false
+    },
+    {
+      "url": "https://talentxcel.in/topics/interview-preparation",
+      "pageType": "TOPIC_HUB",
+      "inboundLinksEstimated": 8,
+      "outboundLinks": 7,
+      "parentHub": "https://talentxcel.in/topics/careers",
+      "isOrphan": false
+    },
+    {
+      "url": "https://talentxcel.in/topics/future-of-work",
+      "pageType": "TOPIC_HUB",
+      "inboundLinksEstimated": 8,
+      "outboundLinks": 7,
+      "parentHub": "https://talentxcel.in/topics/careers",
+      "isOrphan": false
+    },
+    {
+      "url": "https://talentxcel.in/jobs",
+      "pageType": "CORE_PLATFORM",
+      "inboundLinksEstimated": 8,
+      "outboundLinks": 7,
+      "parentHub": "https://talentxcel.in/topics/careers",
+      "isOrphan": false
+    },
+    {
+      "url": "https://talentxcel.in/colleges",
+      "pageType": "CORE_PLATFORM",
+      "inboundLinksEstimated": 8,
+      "outboundLinks": 7,
+      "parentHub": "https://talentxcel.in/topics/education",
+      "isOrphan": false
+    },
+    {
+      "url": "https://talentxcel.in/colleges/pathway",
+      "pageType": "CORE_PLATFORM",
+      "inboundLinksEstimated": 8,
+      "outboundLinks": 7,
+      "parentHub": "https://talentxcel.in/topics/education",
+      "isOrphan": false
+    },
+    {
+      "url": "https://talentxcel.in/colleges/global-programs",
+      "pageType": "CORE_PLATFORM",
+      "inboundLinksEstimated": 8,
+      "outboundLinks": 7,
+      "parentHub": "https://talentxcel.in/topics/education",
+      "isOrphan": false
+    },
+    {
+      "url": "https://talentxcel.in/colleges/scholarships",
+      "pageType": "CORE_PLATFORM",
+      "inboundLinksEstimated": 8,
+      "outboundLinks": 7,
+      "parentHub": "https://talentxcel.in/topics/education",
+      "isOrphan": false
+    }
+  ]
+}

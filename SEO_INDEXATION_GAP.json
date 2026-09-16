@@ -1,0 +1,37 @@
+{
+  "generatedAt": "2026-08-25T15:20:37.371Z",
+  "truthTable": {
+    "searchOpportunitiesUniverse": 31887500,
+    "totalPublishedSitemapUrls": 12744,
+    "totalPreRenderedHtmlDocs": 10446,
+    "googlebotObservedCrawlRequests": 187420,
+    "googleDiscoveredUrls": 12744,
+    "googleCrawledUrls": "Progressive Crawling Active (187K Requests Logged)",
+    "googleIndexedUrlsEstimate": "Ongoing Search Console Rollout (Core hubs & jobs indexed)",
+    "activeQueriesGeneratingImpressions": 85,
+    "queriesRankingPositions1to3": 8,
+    "queriesRankingPositions4to10": 24,
+    "queriesRankingPositions11to20": 38,
+    "queriesRankingPositions21plus": 15
+  },
+  "gapCategories": [
+    {
+      "category": "HIGH_PRIORITY_HARVEST (Positions 4–20)",
+      "urlCount": 62,
+      "action": "IMPROVE_SNIPPET_AND_INTERNAL_ANCHORS",
+      "rationale": "Queries already generating impressions on SERP page 1-2; optimize meta title/description for CTR uplift"
+    },
+    {
+      "category": "CRAWLED_ZERO_IMPRESSIONS",
+      "urlCount": 1500,
+      "action": "ADD_CONTEXTUAL_INBOUND_LINKS",
+      "rationale": "Pages crawled by Googlebot but awaiting first user impressions; increase internal link depth and topical cluster density"
+    },
+    {
+      "category": "LONG_TAIL_CONSOLIDATED_HUB_COVERAGE",
+      "urlCount": 31874756,
+      "action": "KEEP_CONSOLIDATED",
+      "rationale": "Millions of long-tail demand permutations consolidated into authoritative parent hubs to preserve crawl budget and prevent thin doorway penalties"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "auditedAt": "2026-08-25T15:38:55.110Z",
+  "truthMetrics": {
+    "searchOpportunityUniverseFrozen": 31887500,
+    "totalSubmittedSitemapUrls": 12744,
+    "totalPreRenderedHtmlDocs": 12592,
+    "googlebotTotalCrawlRequests": 187420,
+    "googlebotDownloadedBandwidthGB": 68.7,
+    "googlebotAverageResponseTimeMs": 81,
+    "googlebotPeakDailyCrawls": 70398,
+    "gscDiscoveredUrls": 12744,
+    "gscCrawledUrls": 12744,
+    "estimatedIndexedUrls": 3420,
+    "indexedUrlsWithImpressions": 349,
+    "urlsWithClicks": 110,
+    "queriesWithImpressions": 229,
+    "queriesWithClicks": 68,
+    "totalImpressions28Days": 4890,
+    "totalClicks28Days": 265,
+    "averageCtrPercent": 5.42,
+    "averageSerpPosition": 16.8
+  },
+  "serpPositionBreakdown": {
+    "top3Positions": 8,
+    "positions4to10": 24,
+    "positions11to20": 38,
+    "positions21to50": 64,
+    "positions51to100": 95,
+    "zeroImpressionIndexedUrls": 3071
+  }
+}

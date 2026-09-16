@@ -1,0 +1,17 @@
+{
+  "generatedAt": "2026-08-25T14:17:17.444Z",
+  "totalEntitiesAudited": 10278,
+  "gradeDistribution": {
+    "A+ (High Authority / NIRF / Placements)": 10,
+    "A (Verified Complete)": 919,
+    "B (Standard Indexable)": 9349,
+    "C (Needs Improvement)": 0,
+    "D (Thin / Excluded)": 0
+  },
+  "actionPolicy": {
+    "KEEP_INDEXED": 10278,
+    "IMPROVE": 0,
+    "NOINDEX": 0,
+    "CONSOLIDATE": 0
+  }
+}

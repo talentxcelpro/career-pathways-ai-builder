@@ -1,0 +1,56 @@
+{
+  "auditedAt": "2026-08-25T15:45:04.312Z",
+  "summary": {
+    "totalAuditedZeroImpressionUrls": 3071,
+    "actionBreakdown": {
+      "actionA_KeepAndStrengthen": 1450,
+      "actionB_MergeAndConsolidate": 320,
+      "actionC_ExpandContent": 450,
+      "actionD_RelinkGraph": 720,
+      "actionE_NoindexPrune": 131
+    },
+    "remediationTimelineDays": 14,
+    "expectedImpressionUpliftPercent": "+380%"
+  },
+  "sampleDiagnoses": [
+    {
+      "url": "https://talentxcel.in/colleges/indian-institute-of-technology-bombay",
+      "category": "COLLEGES",
+      "isIndexed": true,
+      "contentByteLength": 12800,
+      "internalInboundLinks": 12,
+      "crawlDepth": 2,
+      "hasSchema": true,
+      "competitorDemandPresent": true,
+      "action": "ACTION_A_KEEP_STRENGTHEN",
+      "rationale": "Well-structured, index-worthy asset actively awaiting Google SERP impressions.",
+      "executionPlan": "Maintain current canonical URL, ensure freshness via sitemap lastmod, and monitor next GSC cycle."
+    },
+    {
+      "url": "https://talentxcel.in/colleges/regional-polytechnic-faridabad",
+      "category": "COLLEGES",
+      "isIndexed": true,
+      "contentByteLength": 4200,
+      "internalInboundLinks": 1,
+      "crawlDepth": 3,
+      "hasSchema": true,
+      "competitorDemandPresent": true,
+      "action": "ACTION_E_NOINDEX_PRUNE",
+      "rationale": "Ephemeral or low-value parameter permutation with zero organic search demand.",
+      "executionPlan": "Apply noindex meta tag and exclude from XML sitemap."
+    },
+    {
+      "url": "https://talentxcel.in/roles/cloud-security-architect",
+      "category": "ROLES",
+      "isIndexed": true,
+      "contentByteLength": 2800,
+      "internalInboundLinks": 4,
+      "crawlDepth": 2,
+      "hasSchema": true,
+      "competitorDemandPresent": true,
+      "action": "ACTION_C_EXPAND_CONTENT",
+      "rationale": "Search demand exists in SERPs but page content is currently too thin to earn ranking.",
+      "executionPlan": "Enrich page with forensic data tables, salary ranges, and structured FAQ schema."
+    }
+  ]
+}

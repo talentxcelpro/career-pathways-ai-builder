@@ -1,0 +1,74 @@
+[
+  {
+    "query": "talentxcel",
+    "impressions": 420,
+    "clicks": 112,
+    "ctr": 26.7,
+    "position": 1.2,
+    "page": "https://talentxcel.in/company/talentxcel",
+    "intent": "Brand"
+  },
+  {
+    "query": "talentxcel services",
+    "impressions": 290,
+    "clicks": 68,
+    "ctr": 23.4,
+    "position": 1.1,
+    "page": "https://talentxcel.in/company/talentxcel",
+    "intent": "Brand"
+  },
+  {
+    "query": "content writer jobs noida",
+    "impressions": 180,
+    "clicks": 14,
+    "ctr": 7.8,
+    "position": 6.4,
+    "page": "https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "intent": "Job Search"
+  },
+  {
+    "query": "marketing executive jobs noida",
+    "impressions": 160,
+    "clicks": 12,
+    "ctr": 7.5,
+    "position": 7.2,
+    "page": "https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1",
+    "intent": "Job Search"
+  },
+  {
+    "query": "ai recruitment platform india",
+    "impressions": 140,
+    "clicks": 9,
+    "ctr": 6.4,
+    "position": 8.8,
+    "page": "https://talentxcel.in/services/ai-recruitment",
+    "intent": "Commercial"
+  },
+  {
+    "query": "rpo services india",
+    "impressions": 110,
+    "clicks": 7,
+    "ctr": 6.3,
+    "position": 9.5,
+    "page": "https://talentxcel.in/services/rpo",
+    "intent": "Commercial"
+  },
+  {
+    "query": "ats resume builder for software engineers",
+    "impressions": 95,
+    "clicks": 8,
+    "ctr": 8.4,
+    "position": 11.2,
+    "page": "https://talentxcel.in/services/resume-building",
+    "intent": "Transactional"
+  },
+  {
+    "query": "iit madras placement ctc",
+    "impressions": 220,
+    "clicks": 11,
+    "ctr": 5,
+    "position": 12.4,
+    "page": "https://talentxcel.in/colleges/indian-institute-of-technology-madras",
+    "intent": "Education"
+  }
+]
