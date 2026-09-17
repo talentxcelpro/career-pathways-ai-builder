@@ -188,6 +188,15 @@
       "source": "/api/optimized-sitemap",
       "destination": "https://dthlgsnakhoftinssokm.supabase.co/functions/v1/optimized-sitemap"
     },
+    {
+      "source": "/api/discovery/trigger-sync",
+      "destination": "/api/discovery/trigger-sync"
+    },
+    {
+      "source": "/api/discovery/save-gsc",
+      "destination": "/api/discovery/save-gsc"
+    },
     { "source": "/(.*)", "destination": "/index.html" }
+
   ]
 }
