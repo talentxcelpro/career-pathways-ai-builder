@@ -1,0 +1,1 @@
+﻿{"event_id":"init-0000","timestamp":"2026-09-17T11:25:00Z","type":"INITIALIZATION","reason":"Day-0 production telemetry freeze initiated. Zero exceptions permitted without audit entry.","actor":"SYSTEM_GOVERNOR","approved":true}

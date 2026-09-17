@@ -1,0 +1,70 @@
+﻿{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "UDX_v4.0_PRODUCTION_KPI_DEFINITIONS",
+  "version": "1.0.0-frozen",
+  "effective_date": "2026-09-17",
+  "kpis": {
+    "IRR": {
+      "name": "Intent Resolution Rate (Longitudinal)",
+      "variants": {
+        "IRR_observed": {
+          "formula": "verified_real_outcomes / eligible_intents_with_sufficient_observation_window",
+          "sufficient_observation_window_days": {
+            "CAREER": 14,
+            "EDUCATION": 7,
+            "BUSINESS": 5,
+            "FINANCE": 3,
+            "LOCAL_SERVICES": 1,
+            "PERSONAL": 3
+          },
+          "interpretation": "Rate of verified downstream success among intents that have had full time to mature."
+        },
+        "IRR_pending": {
+          "formula": "pending_intents_within_window / total_eligible_intents",
+          "interpretation": "Intents actively progressing along the possibility path whose outcome window remains open."
+        },
+        "IRR_closed": {
+          "formula": "(verified_real_outcomes + confirmed_unresolvable_refusals) / total_eligible_intents",
+          "interpretation": "Percentage of cohort intents whose outcome or epistemic closure is finalized."
+        }
+      },
+      "statistical_reporting": "Report proportion, numerator, denominator, and 95% Wilson score confidence interval."
+    },
+    "VOR": {
+      "name": "Verified Outcome Rate (Longitudinal)",
+      "formula": "verified_completed_actions / actions_dispatched_with_sufficient_observation_window",
+      "interpretation": "Fraction of dispatched execution actions that achieve verified completion.",
+      "statistical_reporting": "Report proportion, numerator, denominator, and 95% Wilson score confidence interval."
+    },
+    "SDR": {
+      "name": "Search Displacement Rate",
+      "formula": "(baseline_serp_steps - udx_steps) / baseline_serp_steps",
+      "baseline_definition_ref": "reports/udx_production_telemetry/SDR_BASELINE_PROTOCOL.md",
+      "interpretation": "Empirical reduction in manual navigation, scanning, and filtration steps."
+    },
+    "QIC": {
+      "name": "Qualified Intent Coverage",
+      "formula": "high_intent_signals_with_verified_resolution / total_high_intent_signals_discovered",
+      "threshold": "high_intent defined as intent_commerciality >= 0.70 OR outcome_criticality == 'HIGH'",
+      "statistical_reporting": "Report proportion and sample size N."
+    },
+    "T_lead": {
+      "name": "Intent Lead Time",
+      "formula": "T_mainstream - T_first_observed (in calendar days)",
+      "clock_rule_ref": "reports/udx_production_telemetry/FORESIGHT_CLOCK_RULE.md",
+      "null_policy": "Strictly NULL if no objective mainstream validation timestamp exists."
+    },
+    "False_Certainty_Rate": {
+      "name": "False-Certainty Rate",
+      "formula": "unsupported_or_fabricated_resolutions / total_resolutions",
+      "target": 0.0,
+      "audit_mechanism": "ProofLedger provenance matching; missing evidence triggers immediate policy violation."
+    },
+    "Supply_Resolution_Gap": {
+      "name": "Supply-Resolution Gap",
+      "formula": "SRG(domain, geography, period) = normalized_demand_units - normalized_supply_capacity_units",
+      "normalization_ref": "reports/udx_production_telemetry/SUPPLY_NORMALIZATION.md",
+      "unit": "Equivalent Transaction Capacity (ETC) units"
+    }
+  }
+}

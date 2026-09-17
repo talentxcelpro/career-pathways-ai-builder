@@ -1,0 +1,81 @@
+﻿{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "UDX_v4.0_COHORT_IDENTITY_SPECIFICATION",
+  "version": "1.0.0-frozen",
+  "cohort_partition": "DAILY_INGESTION_DATE",
+  "immutable_event_record": {
+    "required_fields": [
+      "intent_event_id",
+      "cohort_id",
+      "first_seen_at",
+      "domain",
+      "intent_type",
+      "geography",
+      "epistemic_state",
+      "resolution_state",
+      "action_state",
+      "outcome_state"
+    ],
+    "properties": {
+      "intent_event_id": {
+        "type": "string",
+        "format": "uuid",
+        "description": "Unique immutable identifier for each expressed human intent instance."
+      },
+      "cohort_id": {
+        "type": "string",
+        "pattern": "^cohort-[0-9]{4}-[0-9]{2}-[0-9]{2}-[A-Z_]+$",
+        "example": "cohort-2026-09-17-CAREER"
+      },
+      "first_seen_at": {
+        "type": "string",
+        "format": "date-time",
+        "description": "Immutable UTC timestamp when the intent was first ingested."
+      },
+      "domain": {
+        "type": "string",
+        "enum": ["CAREER", "EDUCATION", "BUSINESS", "FINANCE", "LOCAL_SERVICES", "PERSONAL"]
+      },
+      "intent_type": {
+        "type": "string",
+        "description": "Canonical intent class (e.g. JOB_SEARCH, ACCREDITED_DEGREE, MSME_REGISTRATION)."
+      },
+      "geography": {
+        "type": "string",
+        "description": "Standardized ISO-3166-1/2 or tier-1/2 metro name (e.g. IN-UP-Varanasi)."
+      },
+      "epistemic_state": {
+        "type": "string",
+        "enum": ["VERIFIED_TRUTH", "OBSERVED", "MODELED", "REFUSED"]
+      },
+      "resolution_state": {
+        "type": "string",
+        "enum": ["RESOLVED", "NO_RELIABLE_PATH", "AMBIGUOUS", "UNSUPPORTED"]
+      },
+      "action_state": {
+        "type": "string",
+        "enum": ["ACTION_PROPOSED", "ACTION_DISPATCHED", "ACTION_ACCEPTED", "ACTION_COMPLETED", "NONE"]
+      },
+      "outcome_state": {
+        "type": "string",
+        "enum": ["OUTCOME_PENDING", "OUTCOME_OBSERVED", "OUTCOME_VERIFIED", "OUTCOME_FAILED", "NOT_APPLICABLE"]
+      }
+    }
+  },
+  "dual_layer_boundary": {
+    "layer_a_resolution": [
+      "intent_event_id",
+      "first_seen_at",
+      "epistemic_state",
+      "resolution_state",
+      "action_state"
+    ],
+    "layer_b_outcome": [
+      "outcome_state",
+      "verified_at",
+      "evidence_id",
+      "time_to_outcome_hours",
+      "quality_score"
+    ]
+  }
+}
