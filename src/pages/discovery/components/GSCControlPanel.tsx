@@ -56,14 +56,32 @@ export const GSCControlPanel: React.FC<Props> = ({ gscStatus, totalQueries, onRe
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-      const data = await res.json();
-      if (data.success) {
+
+      const contentType = res.headers.get('content-type') || '';
+      const rawText = await res.text();
+
+      if (!contentType.includes('application/json')) {
+        addLog(`[HTTP ${res.status}] Invalid response type (${contentType || 'empty'}). Size: ${rawText.length} bytes.`);
+        alert(`Server returned HTTP ${res.status} non-JSON response.`);
+        return;
+      }
+
+      let data: any;
+      try {
+        data = JSON.parse(rawText);
+      } catch (parseErr: any) {
+        addLog(`Parse error: ${parseErr.message}. Raw: ${rawText.slice(0, 100)}`);
+        alert('Malformed response received from server.');
+        return;
+      }
+
+      if (res.ok && data.success) {
         addLog(`Credentials successfully stored: ${data.message}`);
         alert('GSC Credentials saved! Live sync is now enabled.');
         onRefresh();
       } else {
-        addLog(`Save error: ${data.error}`);
-        alert('Error: ' + data.error);
+        addLog(`Save error (HTTP ${res.status}): ${data.error || data.message || 'Unknown error'}`);
+        alert('Error: ' + (data.error || data.message || 'Failed'));
       }
     } catch (err: any) {
       addLog(`Network error: ${err.message}`);
@@ -78,15 +96,32 @@ export const GSCControlPanel: React.FC<Props> = ({ gscStatus, totalQueries, onRe
     addLog('Triggering live Google Search Console pull for https://talentxcel.in/...');
     try {
       const res = await fetch('/api/discovery/trigger-sync', { method: 'POST' });
-      const data = await res.json();
-      if (data.success) {
-        addLog(`Sync complete! Ingested: ${data.result.rowsInserted} rows, Updated: ${data.result.rowsUpdated} rows.`);
+      const contentType = res.headers.get('content-type') || '';
+      const rawText = await res.text();
+
+      addLog(`[TELEMETRY] HTTP: ${res.status} | Type: ${contentType || 'none'} | Size: ${rawText.length}B`);
+
+      if (!contentType.includes('application/json')) {
+        addLog(`Sync error: Upstream returned HTTP ${res.status} non-JSON content. Body: ${rawText.slice(0, 120)}`);
+        return;
+      }
+
+      let data: any;
+      try {
+        data = JSON.parse(rawText);
+      } catch (parseErr: any) {
+        addLog(`Sync error: JSON parse failed (${parseErr.message}). Size: ${rawText.length} bytes.`);
+        return;
+      }
+
+      if (res.ok && data.success) {
+        addLog(`Sync complete! Ingested: ${data.result?.rowsInserted ?? 0} rows | Property: ${data.result?.siteUrl || 'https://talentxcel.in/'}`);
         onRefresh();
       } else {
-        addLog(`Sync probe: ${data.message || data.error}`);
+        addLog(`Sync probe failed (HTTP ${res.status}): ${data.error || data.message || 'Operation failed'}`);
       }
     } catch (err: any) {
-      addLog(`Sync error: ${err.message}`);
+      addLog(`Sync network exception: ${err.message}`);
     } finally {
       setSyncing(false);
     }
