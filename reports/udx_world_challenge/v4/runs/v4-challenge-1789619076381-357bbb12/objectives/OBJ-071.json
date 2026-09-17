@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-071",
+  "domain": "LOCAL_SERVICES",
+  "rawIntent": "blood donation camp near me",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 66877,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "To find a blood donation camp near you, you can try the following methods:\n\n1. **Local Blood Banks**: Search for local blood banks or community health centers in your area. They often organize regular blood donation camps.\n\n2. **Online Platforms**: Websites like GiveBlood.org, RedCross.org (if available in your country), or other national blood donation websites usually have a search function to find the nearest blood donation center.\n\n3. **Social Media and Apps**: Check social media platforms for local groups dedicated to community service or health initiatives. There might be updates about upcoming blood donation camps. Additionally, apps like Donor App (if available in your region) can help you locate nearby blood donation centers.\n\n4. **Local Community Centers**: Sometimes, community centers, churches, and other non-profit organizations host blood drives as part of their community service activities.\n\n5. **Contact Local Hospitals**: Many hospitals organize or partner with local organizations to conduct regular blood donation camps. You can contact your nearest hospital for",
+    "truncated": true,
+    "timeToFirstActionMs": 66877,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1500000,
+    "interactionSteps": 5,
+    "userFrictionScore": 6,
+    "uncertaintyIndex": 0.85,
+    "costProxyInr": 8.8,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

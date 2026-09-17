@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-023",
+  "domain": "EDUCATION",
+  "rawIntent": "AWS certification cost and difficulty",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 89139,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "The AWS Certified Solutions Architect - Associate, AWS Certified Developer - Associate, and AWS Certified SysOps Administrator - Associate certifications are among the most popular in the AWS ecosystem. Here's an overview of their costs and relative difficulties:\n\n### Costs\n\n1. **Exam Fees:**\n   - The cost for each exam is typically around $150 USD as of my last update. However, this can vary based on your location.\n   - Some organizations offer discounts or bundle deals that might reduce the overall cost.\n\n2. **AWS Training and Preparation:**\n   - AWS offers a variety of free resources such as courses, labs, and documentation to help you prepare for these exams.\n   - Paid training options are also available through third-party providers like Udemy, Pluralsight, and others. These can range from $50 to several hundred dollars.\n\n3. **AWS Certification Bundle:**\n   - AWS occasionally offers certification bundles that include exam fees, study materials, and sometimes access to training courses",
+    "truncated": true,
+    "timeToFirstActionMs": 89139,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 5400000,
+    "interactionSteps": 10,
+    "userFrictionScore": 7.5,
+    "uncertaintyIndex": 0.8,
+    "costProxyInr": 31.5,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

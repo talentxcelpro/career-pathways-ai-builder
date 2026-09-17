@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-009",
+  "domain": "CAREER",
+  "rawIntent": "government jobs for engineering graduates 2026",
+  "systemResolutionLatencyMs": 1,
+  "modelLatencyMs": 59780,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/jobs?role=software-engineer&verified=true",
+    "timeToFirstActionMs": 1,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Government job opportunities for engineering graduates in 2026 will likely continue to be diverse and vary based on the specific field of engineering and the region or country you're interested in. Here are some general areas where engineering graduates can find employment:\n\n1. **Public Sector Engineering Roles:**\n   - **Civil Engineering:** Positions related to infrastructure development, urban planning, transportation systems (roads, bridges, airports), water supply, and sanitation.\n   - **Mechanical Engineering:** Roles in power generation, manufacturing industries, HVAC systems, and maintenance of public utilities.\n   - **Electrical/Electronic Engineering:** Jobs in energy distribution, telecommunications, smart grid technologies, and IT infrastructure for government departments.\n\n2. **Research and Development:**\n   - Many government agencies fund research projects across various engineering disciplines. Positions may be available at national laboratories or universities with government funding.\n\n3. **Defense Sector:**\n   - Opportunities in defense manufacturing, aerospace engineering, cybersecurity, and military logistics.\n   \n4.",
+    "truncated": true,
+    "timeToFirstActionMs": 59780,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.75
+  },
+  "traditional": {
+    "timeToFirstActionMs": 2700000,
+    "interactionSteps": 8,
+    "userFrictionScore": 6.8,
+    "uncertaintyIndex": 0.75,
+    "costProxyInr": 15.7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

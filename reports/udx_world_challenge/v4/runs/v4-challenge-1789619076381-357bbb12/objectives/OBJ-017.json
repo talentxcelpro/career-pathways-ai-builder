@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-017",
+  "domain": "EDUCATION",
+  "rawIntent": "online MBA from Indira Gandhi Open University fees",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 80408,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/education/curriculum/ai-systems-verification",
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "The fees for an online MBA program from Indira Gandhi National Open University (IGNOU) can vary and may change each year. As of the latest information available, the annual fee structure typically includes:\n\n1. **Course Fee**: This is the main component of the fee structure and varies depending on the course you choose. For an MBA program, it might range from approximately INR 30,000 to INR 50,000 per year.\n\n2. **Registration Fee**: A one-time registration fee that needs to be paid when you first enroll in the program. This can typically range from INR 1,000 to INR 2,000.\n\n3. **Supplementary Materials and Library Fees**: These are additional fees for study materials and access to library resources. They might add another INR 5,000-7,000 per year.\n\n4. **Exam Fee**: There may be a fee for each",
+    "truncated": true,
+    "timeToFirstActionMs": 80408,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 5400000,
+    "interactionSteps": 10,
+    "userFrictionScore": 7.5,
+    "uncertaintyIndex": 0.8,
+    "costProxyInr": 31.5,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

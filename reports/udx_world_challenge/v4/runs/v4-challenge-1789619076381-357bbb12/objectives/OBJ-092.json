@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-092",
+  "domain": "PERSONAL",
+  "rawIntent": "meal prep ideas for the whole week",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 72016,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Absolutely! Meal prepping can be a great way to save time and ensure you have healthy meals throughout the week. Here’s a simple weekly meal plan with different types of meals to keep things interesting:\n\n### Monday: Grilled Chicken and Veggie Bowl\n\n**Ingredients:**\n- 2 chicken breasts, marinated in olive oil, lemon juice, garlic, and herbs\n- Mixed vegetables (bell peppers, zucchini, broccoli)\n- Quinoa or brown rice\n\n**Preparation:**\n1. Grill the chicken until fully cooked.\n2. Roast the vegetables with a little olive oil, salt, and pepper.\n3. Serve over quinoa or rice.\n\n### Tuesday: Lentil Soup\n\n**Ingredients:**\n- 1 cup lentils\n- Carrots, celery, onions\n- Tomatoes (canned or fresh)\n- Vegetable broth\n- Herbs (thyme, bay leaf)\n\n**Preparation:**\n1. Soak the lentils if using dried.\n2",
+    "truncated": true,
+    "timeToFirstActionMs": 72016,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1200000,
+    "interactionSteps": 4,
+    "userFrictionScore": 4.5,
+    "uncertaintyIndex": 0.5,
+    "costProxyInr": 7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

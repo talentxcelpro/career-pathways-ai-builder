@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-010",
+  "domain": "CAREER",
+  "rawIntent": "interview preparation for TCS NextStep",
+  "systemResolutionLatencyMs": 1,
+  "modelLatencyMs": 62362,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/jobs?role=software-engineer&verified=true",
+    "timeToFirstActionMs": 1,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Preparing for an interview with TCS NextStep involves understanding the company's culture and values, as well as preparing for both technical and behavioral questions. Here’s a comprehensive guide to help you prepare:\n\n### 1. Understand TCS NextStep\n- **Company Overview**: Research about TCS NextStep, its mission, vision, and core values.\n- **Industry Positioning**: Learn about the IT services industry and how TCS NextStep fits into it.\n\n### 2. Technical Preparation\n#### a. Programming Skills\n- **Core Concepts**: Refresh your knowledge of data structures (arrays, linked lists, trees, graphs), algorithms (searching, sorting, dynamic programming), and object-oriented programming.\n- **Coding Platforms**: Practice coding problems on platforms like LeetCode, HackerRank, or CodeSignal to improve your problem-solving skills.\n\n#### b. Domain Knowledge\n- **Cloud Computing**: Familiarize yourself with cloud technologies such as AWS, Azure, Google Cloud Platform (GCP).\n-",
+    "truncated": true,
+    "timeToFirstActionMs": 62362,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 2700000,
+    "interactionSteps": 8,
+    "userFrictionScore": 6.8,
+    "uncertaintyIndex": 0.75,
+    "costProxyInr": 15.7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

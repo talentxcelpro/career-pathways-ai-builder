@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-003",
+  "domain": "CAREER",
+  "rawIntent": "first job after BCA degree in Lucknow",
+  "systemResolutionLatencyMs": 3,
+  "modelLatencyMs": 51899,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/education/curriculum/ai-systems-verification",
+    "timeToFirstActionMs": 3,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "After completing your Bachelor of Computer Applications (BCA) degree from Lucknow, there are several career paths you can consider for your first job. Here are some options:\n\n1. **Software Developer/Programmer**: Many companies hire fresh graduates to work on developing software applications or maintaining existing ones.\n\n2. **System Analyst**: This role involves analyzing and understanding the needs of a company's computer systems and suggesting solutions to improve them.\n\n3. **Web Developer**: If you have an interest in web technologies, you can start as a web developer working on front-end, back-end, or full-stack development.\n\n4. **Database Administrator (DBA)**: This role involves managing databases, ensuring data integrity, security, and performance.\n\n5. **Quality Assurance Tester**: You can work as a tester to ensure that software applications meet the required standards before they are released.\n\n6. **IT Support Specialist**: In this role, you would provide technical support for computer hardware and software issues within an organization.\n\n7",
+    "truncated": true,
+    "timeToFirstActionMs": 51899,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.75
+  },
+  "traditional": {
+    "timeToFirstActionMs": 2700000,
+    "interactionSteps": 8,
+    "userFrictionScore": 6.8,
+    "uncertaintyIndex": 0.75,
+    "costProxyInr": 15.7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

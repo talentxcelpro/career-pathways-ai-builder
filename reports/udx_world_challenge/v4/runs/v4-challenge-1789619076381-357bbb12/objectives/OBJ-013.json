@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-013",
+  "domain": "CAREER",
+  "rawIntent": "resume for fresher software developer",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 59298,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/tools/resume-checker",
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Certainly! Below is an example of a resume tailored for a fresh graduate in software development. Please customize it with your personal details and experiences.\n\n---\n\n**[Your Full Name]**\n[Your Address]\n[City, State, ZIP Code]\n[Your Email Address]\n[Your Phone Number]\n[LinkedIn Profile (optional)]\n\n---\n\n### **Objective**\n\nTo secure an entry-level position as a Software Developer where I can apply my technical skills, learn from experienced professionals, and contribute to the success of innovative projects.\n\n---\n\n### **Education**\n\n**Bachelor of Science in Computer Science**\n[University Name], [City, State]\n*Graduation Date: [Month Year]*\n- Relevant Courses: Data Structures & Algorithms, Programming Languages (Java, Python), Database Management Systems, Software Engineering\n- GPA: [Your GPA]\n\n---\n\n### **Technical Skills**\n\n- Programming Languages: Java, Python, C++, JavaScript\n- Web Technologies: HTML, CSS, React.js, Angular\n- Databases: MySQL,",
+    "truncated": true,
+    "timeToFirstActionMs": 59298,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 2700000,
+    "interactionSteps": 8,
+    "userFrictionScore": 6.8,
+    "uncertaintyIndex": 0.75,
+    "costProxyInr": 15.7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

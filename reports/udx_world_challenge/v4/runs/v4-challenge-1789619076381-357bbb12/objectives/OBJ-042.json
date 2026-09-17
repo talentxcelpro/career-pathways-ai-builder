@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-042",
+  "domain": "BUSINESS",
+  "rawIntent": "how to get trademark in india cost and time",
+  "systemResolutionLatencyMs": 1,
+  "modelLatencyMs": 78796,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/business/ventures/ai-agent-evaluation-brief",
+    "timeToFirstActionMs": 1,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Obtaining a trademark in India involves several steps, including conducting a search for existing trademarks, filing an application with the Indian Trademark Office (also known as the Controller General of Patents, Designs, Trade Marks), and potentially responding to any objections or oppositions. Here’s a general overview of the process, along with cost and time estimates:\n\n### Steps to Obtain a Trademark in India\n\n1. **Conduct a Trademark Search**\n   - This is crucial to ensure that your trademark does not conflict with existing trademarks.\n   - You can conduct this search through online databases or hire a professional.\n\n2. **Prepare the Application**\n   - Gather all necessary documents, such as the application form, specimen of use (if applicable), and proof of identity.\n   - Ensure you provide accurate information about the goods/services for which the trademark is being registered.\n\n3. **File the Application**\n   - File the application online through the Trademark Electronic Application System (TEAS) or submit it",
+    "truncated": true,
+    "timeToFirstActionMs": 78796,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.75
+  },
+  "traditional": {
+    "timeToFirstActionMs": 7200000,
+    "interactionSteps": 12,
+    "userFrictionScore": 8.2,
+    "uncertaintyIndex": 0.7,
+    "costProxyInr": 42,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

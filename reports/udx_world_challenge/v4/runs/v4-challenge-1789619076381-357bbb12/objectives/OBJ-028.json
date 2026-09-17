@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-028",
+  "domain": "EDUCATION",
+  "rawIntent": "Phd admission in IIT without GATE",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 76789,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/education/phd/ai-eligibility-criteria",
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Admission to the Indian Institutes of Technology (IITs) for a PhD typically requires passing the Graduate Aptitude Test in Engineering (GATE). However, there are some exceptions and alternative pathways that might allow you to apply for a PhD at an IIT without taking GATE. Here are a few options:\n\n1. **Direct Admission through Research Experience:**\n   - Some IITs have direct admission processes for candidates with significant research experience or publications in relevant fields.\n\n2. **Interview-Based Selection:**\n   - Certain IITs may consider applications based on an interview process, especially if you have exceptional qualifications and a strong background in your field of interest.\n\n3. **Special Quota Programs:**\n   - There might be special quota programs for candidates from certain categories or regions who do not meet the standard GATE criteria but still demonstrate high potential.\n\n4. **International Students:**\n   - International students may sometimes have alternative admission processes, which could include a combination of academic qualifications and",
+    "truncated": true,
+    "timeToFirstActionMs": 76789,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 5400000,
+    "interactionSteps": 10,
+    "userFrictionScore": 7.5,
+    "uncertaintyIndex": 0.8,
+    "costProxyInr": 31.5,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-040",
+  "domain": "BUSINESS",
+  "rawIntent": "company liquidation process india",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 79658,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "The company liquidation process in India is governed by the Companies Act, 2013 (the \"Act\"). The process can be broadly categorized into two types: voluntary liquidation and compulsory liquidation.\n\n### Voluntary Liquidation\n\nVoluntary liquidation occurs when a company decides to dissolve itself without any external intervention. This typically happens due to business failure or strategic reasons such as the completion of a project. Here are the key steps:\n\n1. **Passing of Resolution**: The board of directors must pass a resolution to wind up the company.\n2. **Appointment of Liquidator**: A liquidator is appointed by the shareholders, and in some cases, the court may appoint one if there's a dispute or if the company has debts that need to be settled.\n3. **Notices and Publications**: Notices are sent to all creditors and members, and public announcements are made in newspapers.\n4. **Preparation of Balance Sheet and Statement of Affairs**: The liquidator prepares these documents detailing",
+    "truncated": true,
+    "timeToFirstActionMs": 79658,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 7200000,
+    "interactionSteps": 12,
+    "userFrictionScore": 8.2,
+    "uncertaintyIndex": 0.7,
+    "costProxyInr": 42,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-086",
+  "domain": "PERSONAL",
+  "rawIntent": "how to prepare for a salary negotiation",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 74093,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/jobs?role=software-engineer&verified=true",
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Preparing for a salary negotiation is an important step in securing the compensation you deserve. Here’s how you can approach it:\n\n### 1. Research and Understand Market Rates\n- **Industry Standards:** Look up average salaries for your position and level of experience within your industry.\n- **Company Information:** Check Glassdoor, LinkedIn, or other professional networks to gather data on what similar roles are paying at the company you're interested in.\n- **Job Descriptions:** Review job postings for similar positions to see what salary ranges are being offered.\n\n### 2. Assess Your Value\n- **Skills and Experience:** List your skills, achievements, and experience that make you a valuable candidate.\n- **Contributions:** Think about how your work has positively impacted the company or team.\n- **Negotiation Points:** Identify specific points where you can justify higher compensation, such as unique skills, high performance, or additional responsibilities.\n\n### 3. Set Your Target Salary\n- **Research-Based:** Use the information",
+    "truncated": true,
+    "timeToFirstActionMs": 74093,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1200000,
+    "interactionSteps": 4,
+    "userFrictionScore": 4.5,
+    "uncertaintyIndex": 0.5,
+    "costProxyInr": 7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

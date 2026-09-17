@@ -86,8 +86,8 @@ export class UDXAgentAPI {
    * Resolves any human intent signal for any external agent.
    */
   public static async resolveIntent(request: AgentResolutionRequest): Promise<AgentResolutionResponse> {
-    const rawSignal = request.signal.trim();
-    const mode = request.agentMetadata?.executionMode || 'MODE_B_REALITY';
+    const rawSignal = (request.signal || (request as any).rawSignal || '').trim();
+    const mode = request.agentMetadata?.executionMode || (request as any).mode === 'B_REALITY' ? 'MODE_B_REALITY' : 'MODE_B_REALITY';
     const resolutionId = `res-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
 
     // Stage 1: Constraint Validation & Failure Honesty Gate

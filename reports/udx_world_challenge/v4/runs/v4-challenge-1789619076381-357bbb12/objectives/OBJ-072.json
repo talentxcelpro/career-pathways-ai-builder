@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-072",
+  "domain": "LOCAL_SERVICES",
+  "rawIntent": "water tank cleaning service at home in Chennai",
+  "systemResolutionLatencyMs": 1,
+  "modelLatencyMs": 64835,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/services/varanasi/plumbing",
+    "timeToFirstActionMs": 1,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "In Chennai, as in many other cities, regular maintenance and cleaning of water tanks is crucial to ensure the safety and quality of drinking water. Here’s how you can find or hire a reliable water tank cleaning service:\n\n### 1. **Online Search**\n   - Use search engines like Google to look for \"water tank cleaning services in Chennai.\" This will give you a list of companies that offer this service.\n   - Check reviews on platforms such as Google My Business, Yelp, or local review sites.\n\n### 2. **Local Classifieds and Social Media Groups**\n   - Look at local classified websites like OLX, Quikr, or Facebook Marketplace for water tank cleaning services in Chennai.\n   - Join local community groups on social media (e.g., Facebook) where residents often share recommendations for service providers.\n\n### 3. **Word of Mouth**\n   - Ask friends, family members, or neighbors who live in the area if they know any reliable water tank cleaning companies.\n   -",
+    "truncated": true,
+    "timeToFirstActionMs": 64835,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1500000,
+    "interactionSteps": 5,
+    "userFrictionScore": 6,
+    "uncertaintyIndex": 0.85,
+    "costProxyInr": 8.8,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

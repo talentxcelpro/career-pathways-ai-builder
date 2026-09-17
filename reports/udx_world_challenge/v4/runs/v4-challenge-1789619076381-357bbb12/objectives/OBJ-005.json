@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-005",
+  "domain": "CAREER",
+  "rawIntent": "salary for software engineer 3 years experience",
+  "systemResolutionLatencyMs": 4,
+  "modelLatencyMs": 60587,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/jobs?role=software-engineer&verified=true",
+    "timeToFirstActionMs": 4,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "The salary for a software engineer with three years of experience can vary significantly depending on several factors such as location, industry, company size, and specific job responsibilities. Here’s a general overview:\n\n### Global Perspective:\n1. **United States:**\n   - Entry-level to mid-level positions (3-5 years) typically range from $80,000 to $120,000 per year.\n   - In major tech hubs like San Francisco or New York, salaries can be higher.\n\n2. **Europe:**\n   - Salaries in countries like Germany, the UK, and France for a software engineer with 3 years of experience might range from €50,000 to €80,000 per year.\n   \n3. **Asia-Pacific:**\n   - In India, China, or other developing markets, salaries can be lower but still competitive. For example, in India, the salary could range from ₹4,000,",
+    "truncated": true,
+    "timeToFirstActionMs": 60587,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 2700000,
+    "interactionSteps": 8,
+    "userFrictionScore": 6.8,
+    "uncertaintyIndex": 0.75,
+    "costProxyInr": 15.7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

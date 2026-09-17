@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-050",
+  "domain": "FINANCE",
+  "rawIntent": "tax saving investments section 80C options",
+  "systemResolutionLatencyMs": 2,
+  "modelLatencyMs": 105606,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/tools/expense-calculator",
+    "timeToFirstActionMs": 2,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Section 80C of the Indian Income Tax Act, 1961, allows individuals to claim deductions from their taxable income for certain specified investments and expenses. This can help in reducing the amount of tax one has to pay. Here are some common Section 80C investment options:\n\n1. **Public Provident Fund (PPF):**\n   - PPF is a long-term savings scheme offered by the Government of India.\n   - Maximum annual contribution: ₹1,50,000 (as of 2023-24).\n   - Returns are tax-free on maturity and during the holding period.\n\n2. **Life Insurance Policies:**\n   - Premiums paid towards life insurance policies can be claimed under Section 80C.\n   - The maximum deduction is ₹1,50,000 per year (as of 2023-24).\n   - This includes term insurance and endowment plans.\n\n3. **",
+    "truncated": true,
+    "timeToFirstActionMs": 105606,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1800000,
+    "interactionSteps": 6,
+    "userFrictionScore": 5.5,
+    "uncertaintyIndex": 0.65,
+    "costProxyInr": 10.5,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

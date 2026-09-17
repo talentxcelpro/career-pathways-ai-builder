@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-016",
+  "domain": "EDUCATION",
+  "rawIntent": "best free python course for beginners",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 76341,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/education/curriculum/ai-systems-verification",
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "There are several excellent free Python courses available online that cater to beginners. Here are some of the best options:\n\n1. **Codecademy's Learn Python**:\n   - Codecademy offers an interactive and beginner-friendly introduction to Python.\n   - It covers basic syntax, data structures, functions, and more.\n\n2. **Coursera's Introduction to Interactive Programming in Python (Part 1)**:\n   - This course is part of a series offered by Rice University on Coursera.\n   - It focuses on the basics of programming using Python, including problem-solving techniques and basic algorithms.\n\n3. **edX’s Introduction to Computer Science and Programming Using Python**:\n   - Offered by Harvard University, this course provides a comprehensive introduction to computer science through the lens of Python programming.\n   - It covers fundamental concepts like variables, loops, conditionals, functions, and more.\n\n4. **Google's Python Class (PYC)**:\n   - This is a free online class that",
+    "truncated": true,
+    "timeToFirstActionMs": 76341,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 5400000,
+    "interactionSteps": 10,
+    "userFrictionScore": 7.5,
+    "uncertaintyIndex": 0.8,
+    "costProxyInr": 31.5,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

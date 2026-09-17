@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-029",
+  "domain": "EDUCATION",
+  "rawIntent": "digital marketing course with placement",
+  "systemResolutionLatencyMs": 1,
+  "modelLatencyMs": 74676,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/education/curriculum/ai-systems-verification",
+    "timeToFirstActionMs": 1,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "A digital marketing course with placement focuses on providing students with the skills and knowledge necessary to succeed in the rapidly evolving field of digital marketing. Such courses often cover various aspects of digital marketing, including but not limited to:\n\n1. **Basic Concepts**: Understanding what digital marketing is and its importance in today's business environment.\n\n2. **SEO (Search Engine Optimization)**: Techniques for improving website visibility on search engines like Google.\n\n3. **SEM (Search Engine Marketing)**: Strategies for promoting websites through paid advertising on search engines.\n\n4. **Content Marketing**: Creating valuable content to attract and engage audiences, and ultimately drive profitable customer action.\n\n5. **Social Media Marketing**: Using social platforms like Facebook, Instagram, Twitter, LinkedIn, etc., to promote brands and products.\n\n6. **Email Marketing**: Strategies for building email lists and sending targeted messages to customers.\n\n7. **PPC (Pay-Per-Click) Advertising**: Managing pay-per-click campaigns on platforms such as Google Ads or Bing Ads",
+    "truncated": true,
+    "timeToFirstActionMs": 74676,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 5400000,
+    "interactionSteps": 10,
+    "userFrictionScore": 7.5,
+    "uncertaintyIndex": 0.8,
+    "costProxyInr": 31.5,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

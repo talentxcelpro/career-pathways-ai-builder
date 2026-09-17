@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-008",
+  "domain": "CAREER",
+  "rawIntent": "remote jobs for freshers in digital marketing",
+  "systemResolutionLatencyMs": 1,
+  "modelLatencyMs": 60080,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/jobs?role=software-engineer&location=remote&verified=true",
+    "timeToFirstActionMs": 1,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Certainly! Remote jobs in digital marketing are becoming increasingly popular, especially for freshers who might be looking to gain experience from the comfort of their homes or while traveling. Here are some potential roles and companies where you can find such opportunities:\n\n### 1. **Content Marketing**\n   - **Job Title:** Content Writer / Copywriter\n   - **Responsibilities:**\n     - Create engaging content for blogs, social media, emails, etc.\n     - Conduct keyword research to optimize content for search engines.\n     - Collaborate with designers and developers to ensure content aligns with brand guidelines.\n\n### 2. **Social Media Management**\n   - **Job Title:** Social Media Manager\n   - **Responsibilities:**\n     - Manage social media accounts (Facebook, Instagram, Twitter, LinkedIn).\n     - Create and schedule posts.\n     - Analyze performance metrics and adjust strategies accordingly.\n     - Engage with followers through comments and direct messages.\n\n### 3. **SEO & SEM**\n   -",
+    "truncated": true,
+    "timeToFirstActionMs": 60080,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 2700000,
+    "interactionSteps": 8,
+    "userFrictionScore": 6.8,
+    "uncertaintyIndex": 0.75,
+    "costProxyInr": 15.7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

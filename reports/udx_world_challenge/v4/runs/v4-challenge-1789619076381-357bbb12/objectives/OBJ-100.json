@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-100",
+  "domain": "PERSONAL",
+  "rawIntent": "how to get a driving license in india first time",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 82947,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "To obtain a driving license for the first time in India, you need to follow these general steps:\n\n1. **Eligibility**: Ensure that you meet the eligibility criteria:\n   - Minimum age: 18 years (for two-wheeler) or 21 years (for four-wheelers).\n   - You should be medically fit and have a valid medical certificate from an authorized medical practitioner.\n\n2. **Enroll for Theory Test**:\n   - Visit the nearest Transport Department office to enroll for the theory test.\n   - Fill out the application form, which is usually available online or at the office.\n   - Pay the required fees.\n\n3. **Theory Exam**: \n   - Attend the theory exam, which tests your knowledge of traffic rules and regulations.\n   - You can prepare by studying the RTA (Road Transport Authority) manual or using other study materials.\n\n4. **Practical Training**:\n   - Enroll in a recognized driving school to get practical training.",
+    "truncated": true,
+    "timeToFirstActionMs": 82947,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1200000,
+    "interactionSteps": 4,
+    "userFrictionScore": 4.5,
+    "uncertaintyIndex": 0.5,
+    "costProxyInr": 7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-058",
+  "domain": "FINANCE",
+  "rawIntent": "how to send money abroad from india",
+  "systemResolutionLatencyMs": 1,
+  "modelLatencyMs": 157595,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 1,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Sending money abroad from India can be done through various methods depending on your needs and the amount of money you wish to transfer. Here are some common ways to do so:\n\n### 1. **Bank Transfers**\n   - **Online Banking:** Most banks in India offer online banking services where you can initiate international transfers.\n   - **Branch Transfer:** You can also visit a branch of your bank or another bank and complete the necessary paperwork for an international transfer.\n\n### 2. **Money Transfer Services (MTOs)**\n   - **Western Union:** A well-known service that allows you to send money via various channels including online, mobile apps, and in-person at Western Union locations.\n   - **Remitly:** An online platform that offers competitive rates for international transfers.\n   - **Ria Money Transfer:** Another popular option with a wide network of agents globally.\n   - **MoneyGram:** Similar to Western Union, it allows you to send money via various channels.\n\n### 3",
+    "truncated": true,
+    "timeToFirstActionMs": 157595,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1800000,
+    "interactionSteps": 6,
+    "userFrictionScore": 5.5,
+    "uncertaintyIndex": 0.65,
+    "costProxyInr": 10.5,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

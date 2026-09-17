@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-043",
+  "domain": "BUSINESS",
+  "rawIntent": "social media marketing for small restaurant",
+  "systemResolutionLatencyMs": 1,
+  "modelLatencyMs": 83515,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 1,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Social media marketing can be an effective way to boost visibility and attract customers to your small restaurant. Here are some strategies you can use:\n\n### 1. **Choose the Right Platforms**\n- **Instagram**: Great for visual content like food photos, behind-the-scenes looks, and customer testimonials.\n- **Facebook**: Useful for community building, promotions, and local events.\n- **Twitter**: Good for quick updates, engaging with customers, and responding to reviews.\n- **Yelp**: Important for online reviews and ratings.\n\n### 2. **Create Engaging Content**\n- **Food Photography**: High-quality images of your dishes can entice potential customers.\n- **Behind-the-Scenes**: Show the process of making food or the atmosphere in your restaurant.\n- **User-Generated Content**: Encourage customers to share photos of their meals and tag your business.\n- **Seasonal Promotions**: Highlight seasonal menu items with relevant content.\n\n### 3. **Consistent Posting Schedule**\n- Plan a",
+    "truncated": true,
+    "timeToFirstActionMs": 83515,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 7200000,
+    "interactionSteps": 12,
+    "userFrictionScore": 8.2,
+    "uncertaintyIndex": 0.7,
+    "costProxyInr": 42,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

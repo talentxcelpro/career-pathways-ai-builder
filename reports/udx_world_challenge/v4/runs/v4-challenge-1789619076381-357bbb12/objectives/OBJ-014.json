@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-014",
+  "domain": "CAREER",
+  "rawIntent": "work abroad jobs for indian nurses",
+  "systemResolutionLatencyMs": 2,
+  "modelLatencyMs": 87411,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/jobs?role=software-engineer&verified=true",
+    "timeToFirstActionMs": 2,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Working abroad as an Indian nurse can be a rewarding career choice, offering opportunities to gain international experience and earn competitive salaries. Here are some key points to consider when looking for work abroad as an Indian nurse:\n\n### 1. **Requirements**\n- **Professional Qualifications**: Ensure you have completed your nursing degree from an accredited institution.\n- **Registration**: You need to be registered with the Nursing Council of India (NCI) and hold a valid registration certificate.\n- **English Proficiency**: Many countries require proficiency in English, often demonstrated through tests like TOEFL or IELTS.\n\n### 2. **Popular Destinations**\n- **Saudi Arabia**: Known for its high demand for nurses, particularly in the healthcare sector.\n- **United Arab Emirates (UAE)**: Offers good job opportunities and a relatively stable work environment.\n- **Kuwait**: Another popular destination with numerous hospitals and clinics.\n- **Qatar**: Has been expanding its healthcare infrastructure and is looking to hire more international",
+    "truncated": true,
+    "timeToFirstActionMs": 87411,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 2700000,
+    "interactionSteps": 8,
+    "userFrictionScore": 6.8,
+    "uncertaintyIndex": 0.75,
+    "costProxyInr": 15.7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

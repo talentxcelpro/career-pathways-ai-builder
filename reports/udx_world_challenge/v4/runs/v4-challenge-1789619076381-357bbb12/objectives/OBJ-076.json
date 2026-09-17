@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-076",
+  "domain": "LOCAL_SERVICES",
+  "rawIntent": "pest control service in Mumbai",
+  "systemResolutionLatencyMs": 1,
+  "modelLatencyMs": 60388,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/services/varanasi/plumbing",
+    "timeToFirstActionMs": 1,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Pest control services in Mumbai can be quite effective and numerous companies offer these services to help residents and businesses manage various types of pests. Here are some steps you can take to find a reliable pest control service:\n\n1. **Identify the Pest**: Determine what kind of pests you're dealing with (e.g., ants, cockroaches, termites, rats). This will help in choosing the right type of treatment.\n\n2. **Research Companies**: Look for reputable pest control companies in Mumbai. You can find these through online search engines, local business directories, or recommendations from friends and family who have used such services.\n\n3. **Check Reviews**: Read reviews on platforms like Google, Yelp, or Trustpilot to get an idea of the quality of service provided by different companies. Pay attention to both positive and negative feedback.\n\n4. **Verify Licenses and Certifications**: Ensure that the company is licensed to operate in Mumbai and has any necessary certifications for pest control services.\n\n5. **",
+    "truncated": true,
+    "timeToFirstActionMs": 60388,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1500000,
+    "interactionSteps": 5,
+    "userFrictionScore": 6,
+    "uncertaintyIndex": 0.85,
+    "costProxyInr": 8.8,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

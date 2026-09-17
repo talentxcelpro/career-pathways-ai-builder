@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-034",
+  "domain": "BUSINESS",
+  "rawIntent": "how to find investors for my app idea",
+  "systemResolutionLatencyMs": 2,
+  "modelLatencyMs": 79586,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 2,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Finding investors for your app idea involves several steps and strategies. Here’s a comprehensive guide to help you through the process:\n\n### 1. **Define Your App Idea Clearly**\n   - **Value Proposition:** Clearly articulate what makes your app unique and how it solves a problem or meets a need.\n   - **Market Research:** Understand who your target users are, their pain points, and how your app can address them.\n\n### 2. **Create a Solid Business Plan**\n   - **Executive Summary:** Summarize the key aspects of your business plan in one page.\n   - **Market Analysis:** Include detailed market research to show demand for your product.\n   - **Business Model:** Explain how you will generate revenue and sustain your business.\n   - **Marketing Strategy:** Outline how you plan to promote and sell your app.\n\n### 3. **Develop a Minimum Viable Product (MVP)**\n   - **Prototype:** Create a basic version of your app that demonstrates the core functionality.",
+    "truncated": true,
+    "timeToFirstActionMs": 79586,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 7200000,
+    "interactionSteps": 12,
+    "userFrictionScore": 8.2,
+    "uncertaintyIndex": 0.7,
+    "costProxyInr": 42,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

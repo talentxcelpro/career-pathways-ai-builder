@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-056",
+  "domain": "FINANCE",
+  "rawIntent": "emergency fund how much should I keep",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 140149,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/finance/emergency-fund-allocator",
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "The amount you should keep in an emergency fund can vary depending on your personal circumstances and financial goals. However, a common recommendation is to have enough savings to cover 3 to 6 months of living expenses. This can help provide a safety net for unexpected situations such as job loss, medical emergencies, or other unforeseen events.\n\nHere are some factors to consider when determining how much you should keep in your emergency fund:\n\n1. **Living Expenses**: Calculate your monthly living expenses (rent/mortgage, utilities, groceries, transportation, etc.) and multiply that by the number of months you want to cover (3-6 months is a good starting point).\n\n2. **Job Stability**: If your job is stable with low risk of layoffs or if you have multiple sources of income, you might need less in your emergency fund.\n\n3. **Health Insurance Coverage**: Consider how much of your medical expenses are covered by insurance and any deductibles or copays that you would be responsible for.\n\n4.",
+    "truncated": true,
+    "timeToFirstActionMs": 140149,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.75
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1800000,
+    "interactionSteps": 6,
+    "userFrictionScore": 5.5,
+    "uncertaintyIndex": 0.65,
+    "costProxyInr": 10.5,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-046",
+  "domain": "FINANCE",
+  "rawIntent": "best mutual fund for monthly income",
+  "systemResolutionLatencyMs": 5,
+  "modelLatencyMs": 97224,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/finance/direct-index-sip",
+    "timeToFirstActionMs": 5,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "When looking for the best mutual fund for monthly income, it's important to consider several factors such as your risk tolerance, investment horizon, and specific goals. Here are some general guidelines and types of mutual funds that might be suitable:\n\n1. **Income Funds**: These funds are specifically designed to generate regular income through dividends, interest, or both. They often invest in bonds, preferred stocks, and high-yield securities.\n\n2. **Dividend-Focused Mutual Funds**: These funds focus on companies with a history of paying consistent dividends. They can be a good choice for those seeking regular monthly income.\n\n3. **Balanced Funds**: These typically have a mix of equity and debt investments, aiming to provide both growth and income. They might offer more stability than purely equity-focused funds but still aim to grow your capital over the long term.\n\n4. **Gilt Funds**: If you are looking for government securities as an investment, gilt funds can be considered. These funds invest in government bonds and typically",
+    "truncated": true,
+    "timeToFirstActionMs": 97224,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1800000,
+    "interactionSteps": 6,
+    "userFrictionScore": 5.5,
+    "uncertaintyIndex": 0.65,
+    "costProxyInr": 10.5,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

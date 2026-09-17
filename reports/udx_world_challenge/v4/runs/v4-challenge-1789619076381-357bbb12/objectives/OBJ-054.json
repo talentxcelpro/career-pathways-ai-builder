@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-054",
+  "domain": "FINANCE",
+  "rawIntent": "NPS vs PPF which is better for retirement",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 112588,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "When considering retirement planning, both Net Promoter Score (NPS) and Personal Pension Fund (PPF) can be relevant metrics or tools, but they serve different purposes and are used in different contexts.\n\n1. **Net Promoter Score (NPS):**\n   - NPS is a customer loyalty metric that measures the likelihood of customers to recommend a product or service.\n   - It's not directly related to retirement planning for individuals unless you're considering how satisfied your clients or employees are with their current retirement plans or financial services.\n\n2. **Personal Pension Fund (PPF):**\n   - PPF is typically used in the context of pension schemes, often provided by employers as part of an employee benefits package.\n   - It refers to a specific type of savings account that allows individuals to save for their retirement with certain tax advantages and guaranteed returns.\n\n### Which One Might Be Better for Retirement?\n\n- **If you are an individual planning your own retirement:**\n  - **PPF** would",
+    "truncated": true,
+    "timeToFirstActionMs": 112588,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1800000,
+    "interactionSteps": 6,
+    "userFrictionScore": 5.5,
+    "uncertaintyIndex": 0.65,
+    "costProxyInr": 10.5,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

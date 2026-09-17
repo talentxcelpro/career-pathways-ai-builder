@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-021",
+  "domain": "EDUCATION",
+  "rawIntent": "best colleges for BBA in Delhi",
+  "systemResolutionLatencyMs": 2,
+  "modelLatencyMs": 83974,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 2,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Delhi offers several reputable institutions that provide Bachelor of Business Administration (BBA) programs. Here are some of the top colleges and universities known for their BBA programs:\n\n1. **Amity University, Noida** - Amity University is well-regarded for its business management courses, including BBA.\n\n2. **Guru Gobind Singh Indraprastha University (GGPIU), New Delhi** - GGPIU offers a BBA program that is recognized and has a good reputation in the industry.\n\n3. **Delhi Technological University (DTU)** - DTU also provides a BBA program, which is known for its quality education and practical approach to business studies.\n\n4. **Netaji Subhas Institute of Technology (NSIT), New Delhi** - NSIT offers an integrated BBA-LLB program as well as standalone BBA courses.\n\n5. **Shri Ram College of Commerce (SRCC)** - SRCC is part of the",
+    "truncated": true,
+    "timeToFirstActionMs": 83974,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 5400000,
+    "interactionSteps": 10,
+    "userFrictionScore": 7.5,
+    "uncertaintyIndex": 0.8,
+    "costProxyInr": 31.5,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

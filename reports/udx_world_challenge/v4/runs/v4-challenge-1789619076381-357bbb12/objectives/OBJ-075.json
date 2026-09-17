@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-075",
+  "domain": "LOCAL_SERVICES",
+  "rawIntent": "municipal property tax payment online",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 61977,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "To make municipal property tax payments online, you can follow these general steps. The exact process may vary depending on your location and the specific requirements of your local municipality or county. Here’s how you can typically do it:\n\n1. **Visit Your Local Government Website:**\n   - Go to the official website of your city or town hall.\n   - Look for a section related to property taxes, real estate, or online services.\n\n2. **Login or Register:**\n   - You may need to create an account if you don’t already have one.\n   - Provide necessary personal and property information such as your address, property ID, and sometimes a PIN or tax-assessment number.\n\n3. **Search for Your Property:**\n   - Use the search function on the website to find your property by entering its address or other identifying details.\n\n4. **View Tax Information:**\n   - Once you locate your property, review the current tax information including due dates and any outstanding balances.\n\n5. **",
+    "truncated": true,
+    "timeToFirstActionMs": 61977,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1500000,
+    "interactionSteps": 5,
+    "userFrictionScore": 6,
+    "uncertaintyIndex": 0.85,
+    "costProxyInr": 8.8,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-084",
+  "domain": "PERSONAL",
+  "rawIntent": "how to write a good LinkedIn profile",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 63798,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Writing an effective LinkedIn profile is crucial for making a strong impression and standing out in your professional network. Here’s how you can craft a compelling LinkedIn profile:\n\n### 1. **Profile Picture**\n- Use a high-quality, professional headshot.\n- Ensure the photo shows your full face with a neutral expression.\n\n### 2. **Headline (Summary)**\n- Start with a strong headline that summarizes your current role and key skills.\n- Include keywords relevant to your industry to improve searchability.\n- Example: \"Digital Marketing Specialist | SEO & Content Strategy | Data-Driven Growth Hacker\"\n\n### 3. **Profile Summary**\n- Write a concise summary of who you are, what you do, and why you’re unique.\n- Highlight your professional background, key achievements, and career goals.\n- Use bullet points for easy reading.\n\n### 4. **Experience Section**\n- List your current and past roles in reverse chronological order.\n- For each role, include the company name, job title",
+    "truncated": true,
+    "timeToFirstActionMs": 63798,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1200000,
+    "interactionSteps": 4,
+    "userFrictionScore": 4.5,
+    "uncertaintyIndex": 0.5,
+    "costProxyInr": 7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

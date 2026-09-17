@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-041",
+  "domain": "BUSINESS",
+  "rawIntent": "B2B lead generation strategies for SaaS India",
+  "systemResolutionLatencyMs": 1,
+  "modelLatencyMs": 76509,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 1,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Generating leads in the B2B space for Software as a Service (SaaS) companies in India involves a combination of effective marketing and sales strategies tailored to the local market. Here are some key strategies that can help:\n\n### 1. **Understand Your Target Audience**\n   - **Market Research:** Conduct thorough research on your target industries, such as e-commerce, healthcare, finance, etc., to understand their specific needs.\n   - **Customer Personas:** Create detailed customer personas based on the insights gathered from market research.\n\n### 2. **Content Marketing**\n   - **Blog Posts and Articles:** Publish content that addresses common pain points and challenges faced by your target audience in the SaaS space.\n   - **Whitepapers and Ebooks:** Offer valuable resources that provide deep insights into industry trends, best practices, or case studies.\n   - **Webinars and Online Events:** Host webinars and participate in online events to educate potential customers about your solutions.\n\n### 3. **SEO",
+    "truncated": true,
+    "timeToFirstActionMs": 76509,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 7200000,
+    "interactionSteps": 12,
+    "userFrictionScore": 8.2,
+    "uncertaintyIndex": 0.7,
+    "costProxyInr": 42,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-096",
+  "domain": "PERSONAL",
+  "rawIntent": "how to get police clearance certificate india",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 77279,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "To obtain a Police Clearance Certificate in India, you need to follow these general steps:\n\n1. **Identify the Requirement**: Determine why you need the Police Clearance Certificate. This could be for employment, educational purposes, or other official requirements.\n\n2. **Choose the Appropriate Authority**: The process can vary depending on your specific needs and location. Typically, you would approach:\n   - **Local Police Station**: For most general clearance certificates.\n   - **State Police Headquarters**: For more comprehensive checks or special cases.\n   - **Central Bureau of Investigation (CBI)**: For national-level checks.\n\n3. **Gather Necessary Documents**:\n   - Identification proof (such as a passport, driving license, or voter ID).\n   - Address proof (such as a utility bill or bank statement showing your current address).\n\n4. **Fill Out the Application Form**: You can usually get an application form from the local police station or download it online if available.\n\n5. **Submit Your Application**:",
+    "truncated": true,
+    "timeToFirstActionMs": 77279,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1200000,
+    "interactionSteps": 4,
+    "userFrictionScore": 4.5,
+    "uncertaintyIndex": 0.5,
+    "costProxyInr": 7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

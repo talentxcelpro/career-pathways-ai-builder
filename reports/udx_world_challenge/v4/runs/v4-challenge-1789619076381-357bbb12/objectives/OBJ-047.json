@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-047",
+  "domain": "FINANCE",
+  "rawIntent": "how to file ITR online for salaried employee",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 96475,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Filing Income Tax Return (ITR) online as a salaried employee in India is straightforward and can be done through the official income tax portal of India, known as the Income Tax Department's e-filing website. Here’s a step-by-step guide to help you file your ITR:\n\n### Step 1: Gather Required Documents\nBefore you start filing, ensure that you have all the necessary documents:\n- PAN Card (Permanent Account Number)\n- Salary slips for the financial year (April 1 - March 31)\n- Details of any other income sources like interest from savings accounts, fixed deposits, etc.\n- Details of deductions under Section 80C, 80D, etc., if applicable\n- Any tax-saving investments made during the financial year\n\n### Step 2: Create an Account on Income Tax Department’s Website\n1. Go to the official website of the Income Tax Department in India (https://www.incometaxindiaefiling.gov",
+    "truncated": true,
+    "timeToFirstActionMs": 96475,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.75
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1800000,
+    "interactionSteps": 6,
+    "userFrictionScore": 5.5,
+    "uncertaintyIndex": 0.65,
+    "costProxyInr": 10.5,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

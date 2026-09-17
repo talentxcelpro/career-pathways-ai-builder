@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-007",
+  "domain": "CAREER",
+  "rawIntent": "how to become a UX designer without degree",
+  "systemResolutionLatencyMs": 1,
+  "modelLatencyMs": 58448,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/education/curriculum/ai-systems-verification",
+    "timeToFirstActionMs": 1,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Becoming a UX (User Experience) Designer without a formal degree is certainly possible, but it requires dedication and hard work. Here’s how you can pursue this career path:\n\n### 1. **Develop Core Skills**\n   - **User Research:** Learn about different research methods such as interviews, surveys, and usability testing.\n   - **Information Architecture (IA):** Understand how to organize content and structure information for easy navigation.\n   - **Interaction Design:** Study the principles of interaction design, including prototyping tools and user interface design.\n   - **Visual Design:** Familiarize yourself with basic visual design principles and learn to use design software like Sketch, Figma, Adobe XD, or Canva.\n\n### 2. **Build a Portfolio**\n   - Create a portfolio that showcases your best work. Include projects from school, freelance work, or personal projects.\n   - Start small by redesigning existing websites or apps, or working on hypothetical projects based on real-world problems.\n\n###",
+    "truncated": true,
+    "timeToFirstActionMs": 58448,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 2700000,
+    "interactionSteps": 8,
+    "userFrictionScore": 6.8,
+    "uncertaintyIndex": 0.75,
+    "costProxyInr": 15.7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

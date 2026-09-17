@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-002",
+  "domain": "CAREER",
+  "rawIntent": "switch from bank job to product manager role",
+  "systemResolutionLatencyMs": 2,
+  "modelLatencyMs": 59251,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/jobs?role=software-engineer&verified=true",
+    "timeToFirstActionMs": 2,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Switching from a banking or finance background to a product management role can be a significant career move, but it's definitely possible with the right approach and preparation. Here’s how you can make this transition:\n\n### 1. Understand Product Management\n- **Basics of Product Management**: Learn about the core responsibilities of a product manager, such as defining product strategy, managing the product roadmap, conducting market research, user testing, and collaborating with cross-functional teams.\n- **Product Lifecycle**: Familiarize yourself with the different stages of a product lifecycle (concept, development, launch, growth, maturity, decline) and how to manage each stage effectively.\n\n### 2. Gain Relevant Skills\n- **Technical Knowledge**: While you don’t need to be an expert in coding or technical details, having some understanding of technology can be beneficial.\n- **Business Acumen**: Develop a strong understanding of business fundamentals such as financial analysis, market trends, and competitive landscape.\n- **Soft Skills**: Enhance your",
+    "truncated": true,
+    "timeToFirstActionMs": 59251,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 2700000,
+    "interactionSteps": 8,
+    "userFrictionScore": 6.8,
+    "uncertaintyIndex": 0.75,
+    "costProxyInr": 15.7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

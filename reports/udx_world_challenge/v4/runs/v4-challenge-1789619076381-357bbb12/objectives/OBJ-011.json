@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-011",
+  "domain": "CAREER",
+  "rawIntent": "part time jobs for college students in Pune",
+  "systemResolutionLatencyMs": 1,
+  "modelLatencyMs": 59963,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/education/curriculum/ai-systems-verification",
+    "timeToFirstActionMs": 1,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Pune is a bustling city with numerous opportunities for part-time jobs for college students. Here are some common types of part-time jobs available:\n\n1. **Retail and Sales**: Many retail stores, both large and small, hire part-time employees to assist customers, stock shelves, and handle sales transactions.\n\n2. **Customer Service**: Companies often need customer service representatives who can answer calls, respond to emails, or help with in-person inquiries.\n\n3. **Tutoring and Teaching**: If you have expertise in a particular subject, you could offer tutoring services either online or at local libraries or community centers.\n\n4. **Food Services**: Restaurants, cafes, and food delivery companies are always looking for part-time workers to help prepare meals, serve customers, or deliver orders.\n\n5. **Administrative Support**: Many businesses need assistance with administrative tasks such as data entry, filing, answering phones, and organizing office supplies.\n\n6. **Event Management**: Events like weddings, corporate events, and social gatherings often",
+    "truncated": true,
+    "timeToFirstActionMs": 59963,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 2700000,
+    "interactionSteps": 8,
+    "userFrictionScore": 6.8,
+    "uncertaintyIndex": 0.75,
+    "costProxyInr": 15.7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

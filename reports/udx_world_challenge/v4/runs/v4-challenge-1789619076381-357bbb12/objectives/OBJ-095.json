@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-095",
+  "domain": "PERSONAL",
+  "rawIntent": "what is the best time to wake up",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 74515,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "The best time to wake up can vary from person to person based on individual sleep patterns, lifestyle, and personal preferences. However, there are some general guidelines that can help you determine an optimal wake-up time:\n\n1. **Consistency**: Try to wake up at the same time every day, including weekends. This helps regulate your body's internal clock (circadian rhythm) and can improve the quality of your sleep.\n\n2. **Natural Light Exposure**: Waking up with natural light exposure is beneficial as it helps reset your circadian rhythm. If possible, open the curtains or go outside shortly after waking up to get some sunlight.\n\n3. **Energy Levels**: Consider when you feel most energetic during the day. Some people are naturally \"morning larks\" and prefer to wake up early, while others are more \"night owls\" and perform better later in the day.\n\n4. **Sleep Duration**: Ensure you're getting enough sleep (7-9 hours for adults) so that you",
+    "truncated": true,
+    "timeToFirstActionMs": 74515,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1200000,
+    "interactionSteps": 4,
+    "userFrictionScore": 4.5,
+    "uncertaintyIndex": 0.5,
+    "costProxyInr": 7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

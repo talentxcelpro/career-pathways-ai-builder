@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-020",
+  "domain": "EDUCATION",
+  "rawIntent": "learn spoken english in 30 days",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 79697,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/education/curriculum/ai-systems-verification",
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Learning to speak English fluently in just 30 days is quite challenging, but with focused and consistent practice, you can make significant progress. Here’s a structured plan to help you improve your spoken English:\n\n### Day-by-Day Plan\n\n#### Days 1-5: Foundation Building\n**Objective:** Build basic vocabulary and pronunciation skills.\n\n1. **Day 1-2: Vocabulary**\n   - Learn 30 common words (e.g., family, food, travel).\n   - Practice pronouncing these words using a mirror or recording app.\n   \n2. **Day 3-4: Pronunciation**\n   - Focus on sounds that are different in English but similar to your native language.\n   - Use online resources like Forvo for pronunciation guides.\n\n3. **Day 5: Introduction to Conversations**\n   - Practice simple introductions and greetings with a friend or using an app.\n\n#### Days 6-10: Sentence Structure\n**Objective:** Understand basic sentence structures and",
+    "truncated": true,
+    "timeToFirstActionMs": 79697,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 5400000,
+    "interactionSteps": 10,
+    "userFrictionScore": 7.5,
+    "uncertaintyIndex": 0.8,
+    "costProxyInr": 31.5,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

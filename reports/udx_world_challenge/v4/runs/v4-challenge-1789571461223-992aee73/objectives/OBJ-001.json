@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-001",
+  "domain": "CAREER",
+  "rawIntent": "frontend developer job varanasi",
+  "systemResolutionLatencyMs": 9,
+  "modelLatencyMs": 62621,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/jobs?role=frontend-developer&location=Varanasi&verified=true",
+    "timeToFirstActionMs": 9,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Varanasi is a city in Uttar Pradesh, India, known for its rich cultural heritage and historical significance. While it might not be as well-known for tech jobs compared to larger cities like Bangalore or Hyderabad, there are still opportunities for frontend developers in Varanasi. Here are some steps you can take to find frontend developer job openings in Varanasi:\n\n1. **Online Job Portals:**\n   - **LinkedIn:** Search for frontend developer positions in Varanasi.\n   - **Indeed:** Use the search function to look for frontend developer jobs in Varanasi.\n   - **Naukri.com:** Another popular job portal where you can find frontend developer roles.\n\n2. **Local Recruitment Agencies:**\n   - Look for recruitment agencies that specialize in IT and software development positions. They often have a presence in smaller cities like Varanasi.\n\n3. **Company Websites:**\n   - Check the websites of companies with offices or branches in Varanasi to see if they are",
+    "truncated": true,
+    "timeToFirstActionMs": 62621,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 2700000,
+    "interactionSteps": 8,
+    "userFrictionScore": 6.8,
+    "uncertaintyIndex": 0.75,
+    "costProxyInr": 15.7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

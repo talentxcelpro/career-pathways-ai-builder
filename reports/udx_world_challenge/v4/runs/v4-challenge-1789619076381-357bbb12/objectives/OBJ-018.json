@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-018",
+  "domain": "EDUCATION",
+  "rawIntent": "IIT JEE coaching in Kota fees and hostels",
+  "systemResolutionLatencyMs": 4,
+  "modelLatencyMs": 78669,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 4,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Kota is renowned for its high-quality IIT JEE (Joint Entrance Examination) coaching institutes due to the presence of many top coaching centers like Allen Career Institute, Resonance, Vibrant Academy, etc. The cost structure for these institutions typically includes tuition fees, accommodation charges, and other miscellaneous expenses.\n\n### Tuition Fees:\n- **Allen Career Institute**: The annual fee can range from approximately INR 120,000 to INR 150,000.\n- **Resonance**: Annual fees are generally in the range of INR 130,000 to INR 160,000.\n- **Vibrant Academy**: Fees can vary but typically fall within a similar range.\n\n### Hostel Fees:\nHostels provided by these coaching institutes usually come with all-inclusive packages that cover accommodation, food, and sometimes even laundry services. The cost of hostel fees can be around INR 40",
+    "truncated": true,
+    "timeToFirstActionMs": 78669,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 5400000,
+    "interactionSteps": 10,
+    "userFrictionScore": 7.5,
+    "uncertaintyIndex": 0.8,
+    "costProxyInr": 31.5,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

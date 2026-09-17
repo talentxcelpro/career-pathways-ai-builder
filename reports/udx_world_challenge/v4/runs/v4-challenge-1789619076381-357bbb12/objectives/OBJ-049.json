@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-049",
+  "domain": "FINANCE",
+  "rawIntent": "home loan for 20 lakh in sbi",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 110241,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "To get a home loan of 20 lakhs (₹20,000,000) from SBI (State Bank of India), you'll need to follow these general steps:\n\n1. **Eligibility Check**: Ensure that you meet the eligibility criteria for a home loan. This typically includes factors such as age, income, employment status, and credit score.\n\n2. **Application**: You can apply for a home loan either online through SBI's official website or in person at any of their branches. You will need to provide necessary documents like identification proof, address proof, income proof, and other relevant papers.\n\n3. **Documents Required**:\n   - Proof of Identity (Aadhaar Card, Passport, Driving License)\n   - Proof of Address (Utility bills, bank statements, etc.)\n   - Income Proof (Salary slips, tax returns, employment letters, etc.)\n   - Property documents (Title deed, agreement for purchase, etc.)\n\n4. **",
+    "truncated": true,
+    "timeToFirstActionMs": 110241,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1800000,
+    "interactionSteps": 6,
+    "userFrictionScore": 5.5,
+    "uncertaintyIndex": 0.65,
+    "costProxyInr": 10.5,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

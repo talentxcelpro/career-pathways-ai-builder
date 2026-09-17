@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-002",
+  "domain": "CAREER",
+  "rawIntent": "switch from bank job to product manager role",
+  "systemResolutionLatencyMs": 1,
+  "modelLatencyMs": 62074,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": null,
+    "timeToFirstActionMs": 1,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Switching from a banking job to a product management role can be an exciting career move that leverages your analytical and strategic skills in a different context. Here’s a step-by-step guide to help you make this transition:\n\n### 1. Understand the Role of a Product Manager\n- **Product Management Basics**: Learn about the responsibilities, key skills, and day-to-day activities of a product manager.\n- **Industry Knowledge**: Familiarize yourself with the technology industry or specific sectors where you want to work.\n\n### 2. Assess Your Skills and Experience\n- **Transferable Skills**: Identify your banking experience that can be directly applied to product management (e.g., data analysis, project management, customer insights).\n- **Skill Gaps**: Determine what additional skills you need to acquire, such as market research, user experience design, or agile methodologies.\n\n### 3. Gain Relevant Experience\n- **Internships and Freelancing**: Look for opportunities to gain hands-on experience in product management.\n-",
+    "truncated": true,
+    "timeToFirstActionMs": 62074,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 2700000,
+    "interactionSteps": 8,
+    "userFrictionScore": 6.8,
+    "uncertaintyIndex": 0.75,
+    "costProxyInr": 15.7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_LOSS",
+  "verdictReason": "UDX failed to resolve actionable target while Generic AI provided helpful domain guidance"
+}

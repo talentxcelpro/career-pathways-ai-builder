@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-051",
+  "domain": "FINANCE",
+  "rawIntent": "personal loan without salary slip",
+  "systemResolutionLatencyMs": 2,
+  "modelLatencyMs": 105298,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/jobs?role=software-engineer&verified=true",
+    "timeToFirstActionMs": 2,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Securing a personal loan without providing a salary slip can be challenging but not impossible. Here are some steps and tips that might help you:\n\n1. **Provide Alternative Income Proof**: If you have other sources of income, such as rental income, dividends, or pension, you should provide documentation for these.\n\n2. **Bank Statements**: Regular bank statements showing consistent deposits from various sources can be used to demonstrate your financial stability.\n\n3. **Self-Employed Declaration**: If you are self-employed, you might need to submit business registration documents and tax returns as proof of income.\n\n4. **Credit Score**: A good credit score can sometimes compensate for the lack of a salary slip. Ensure that you have a positive credit history with no defaults or late payments.\n\n5. **Collateral**: Offering collateral (like property, vehicles, or valuable assets) can increase your chances of getting approved.\n\n6. **Guarantor**: Having a guarantor who has a stable income and good credit standing might help",
+    "truncated": true,
+    "timeToFirstActionMs": 105298,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1800000,
+    "interactionSteps": 6,
+    "userFrictionScore": 5.5,
+    "uncertaintyIndex": 0.65,
+    "costProxyInr": 10.5,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

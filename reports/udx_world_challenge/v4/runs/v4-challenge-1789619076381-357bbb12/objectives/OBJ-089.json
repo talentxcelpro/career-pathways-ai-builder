@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-089",
+  "domain": "PERSONAL",
+  "rawIntent": "how to deal with job loss depression",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 91254,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/jobs?role=software-engineer&verified=true",
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Dealing with job loss can be emotionally challenging and may lead to feelings of depression or anxiety. Here are some steps you can take to manage these emotions:\n\n1. **Acknowledge Your Feelings**: It's important to acknowledge that losing a job is a significant life event, and it's normal to feel upset, sad, or angry.\n\n2. **Seek Support**: Reach out to friends, family, or support groups who understand what you're going through. Sharing your feelings can help alleviate some of the emotional burden.\n\n3. **Maintain a Routine**: Try to maintain a regular routine as much as possible. This can provide structure and a sense of normalcy during an uncertain time.\n\n4. **Focus on Self-Care**: Take care of yourself physically by eating well, exercising, and getting enough sleep. Mental health is just as important, so consider activities that help you relax or feel good about yourself.\n\n5. **Explore New Opportunities**: Use this time to explore new career paths or skills",
+    "truncated": true,
+    "timeToFirstActionMs": 91254,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1200000,
+    "interactionSteps": 4,
+    "userFrictionScore": 4.5,
+    "uncertaintyIndex": 0.5,
+    "costProxyInr": 7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

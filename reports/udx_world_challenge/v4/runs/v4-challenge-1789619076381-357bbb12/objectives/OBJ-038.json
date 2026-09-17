@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-038",
+  "domain": "BUSINESS",
+  "rawIntent": "export business from India for spices",
+  "systemResolutionLatencyMs": 1,
+  "modelLatencyMs": 73751,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 1,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Exporting spices from India can be an exciting venture given the country's rich history and reputation in this sector. Here’s a step-by-step guide to help you get started:\n\n### 1. Market Research\n- **Identify Target Markets:** Determine which countries have a high demand for Indian spices, such as the United States, Europe, Middle East, Southeast Asia, etc.\n- **Understand Customer Preferences:** Learn about the specific preferences of your target market regarding spice types, quality standards, and packaging.\n\n### 2. Product Selection\n- **Choose High-Quality Spices:** Ensure that you source high-quality spices from reputable suppliers in India. Commonly exported spices include turmeric, cardamom, saffron, cumin, coriander, cinnamon, pepper, and cloves.\n- **Certifications:** Look for organic, fair trade, or other certifications if they are important to your target market.\n\n### 3. Packaging\n- **Customize Packaging:** Tailor packaging",
+    "truncated": true,
+    "timeToFirstActionMs": 73751,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 7200000,
+    "interactionSteps": 12,
+    "userFrictionScore": 8.2,
+    "uncertaintyIndex": 0.7,
+    "costProxyInr": 42,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

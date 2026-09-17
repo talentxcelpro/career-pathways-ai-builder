@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-006",
+  "domain": "CAREER",
+  "rawIntent": "MBA colleges accepting low CAT score",
+  "systemResolutionLatencyMs": 3,
+  "modelLatencyMs": 54520,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/education/curriculum/ai-systems-verification",
+    "timeToFirstActionMs": 3,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "While a high CAT (Common Admission Test) score is often preferred for admission to top MBA colleges in India, some institutions do accept candidates with lower scores or consider other factors such as work experience, extracurricular activities, and personal interviews. Here are a few strategies and options you might consider:\n\n1. **Tier 2 & Tier 3 Colleges**: Many colleges that fall under the second tier (like XLRI, IIFT, FMS) have more flexible admission criteria and may accept candidates with lower CAT scores.\n\n2. **Work Experience**: If you have significant work experience, some colleges will give weightage to this in their selection process. For example, IIMs do consider candidates with a minimum of 3-4 years of relevant work experience for the General Management program.\n\n3. **Personal Interview**: Some colleges place more emphasis on personal interviews and other aspects like leadership skills, problem-solving abilities, and communication skills. These can sometimes compensate for a lower CAT score.\n\n4.",
+    "truncated": true,
+    "timeToFirstActionMs": 54520,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 2700000,
+    "interactionSteps": 8,
+    "userFrictionScore": 6.8,
+    "uncertaintyIndex": 0.75,
+    "costProxyInr": 15.7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

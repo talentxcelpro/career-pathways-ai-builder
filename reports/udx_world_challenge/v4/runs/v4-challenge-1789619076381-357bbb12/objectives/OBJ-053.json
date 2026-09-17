@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-053",
+  "domain": "FINANCE",
+  "rawIntent": "credit score check free india",
+  "systemResolutionLatencyMs": 1,
+  "modelLatencyMs": 112612,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/tools/expense-calculator",
+    "timeToFirstActionMs": 1,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "In India, checking your credit score for free can be a bit challenging because most of the major credit bureaus offer limited or no free services. However, there are some options available:\n\n1. **Credit Information Bureau (India) Limited (CIBIL)**:\n   - CIBIL offers a free report once every year through its official website and mobile app.\n   - You can also get your free report by visiting their office in Mumbai.\n\n2. **Equifax**:\n   - Equifax provides a free credit report to you once every year, similar to CIBIL.\n   - You can access this service on their official website or through their mobile app.\n\n3. **Credit Monitor India (CMI)**:\n   - CMI offers a free credit score and report to individuals who are members of certain organizations like banks, NBFCs, or financial institutions.\n   - Membership is typically required for accessing the free services.\n\n4. **Bank Statements**:\n   - Some banks provide a",
+    "truncated": true,
+    "timeToFirstActionMs": 112612,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1800000,
+    "interactionSteps": 6,
+    "userFrictionScore": 5.5,
+    "uncertaintyIndex": 0.65,
+    "costProxyInr": 10.5,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

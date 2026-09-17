@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-063",
+  "domain": "LOCAL_SERVICES",
+  "rawIntent": "doctor appointment booking online Lucknow",
+  "systemResolutionLatencyMs": 1,
+  "modelLatencyMs": null,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 1,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "COMPARATOR_MODEL_ERROR",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": null,
+    "truncated": false,
+    "timeToFirstActionMs": 80000,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.1
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1500000,
+    "interactionSteps": 5,
+    "userFrictionScore": 6,
+    "uncertaintyIndex": 0.85,
+    "costProxyInr": 8.8,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-030",
+  "domain": "EDUCATION",
+  "rawIntent": "online degree from top university that is recognized by UGC",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 75802,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/education/curriculum/ai-systems-verification",
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "In India, the University Grants Commission (UGC) recognizes certain online degrees offered by institutions that meet its standards and guidelines. Here are some key points to consider when looking for an online degree from a top university that is recognized by the UGC:\n\n1. **Top Universities with Online Programs**: Several prestigious universities in India offer online programs that are recognized by the UGC. Some of these include:\n   - Indian Institute of Technology (IITs)\n   - National Institutes of Technology (NITs)\n   - Indian Institute of Management (IIMs)\n   - Indian Institute of Information Technology (IIITs)\n\n2. **Recognition**: Ensure that the online degree program is recognized by the UGC. You can check this on the UGC's official website or through their publications.\n\n3. **Quality Assurance**: Look for programs that are accredited and have a good reputation in both the online and traditional education sectors.\n\n4. **Curriculum and Faculty**: Check if the curriculum is comprehensive and up",
+    "truncated": true,
+    "timeToFirstActionMs": 75802,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 5400000,
+    "interactionSteps": 10,
+    "userFrictionScore": 7.5,
+    "uncertaintyIndex": 0.8,
+    "costProxyInr": 31.5,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

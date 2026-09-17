@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-074",
+  "domain": "LOCAL_SERVICES",
+  "rawIntent": "rent bike in Goa for tourists",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 62100,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Renting a bicycle is a great way to explore the beautiful landscapes of Goa! Here’s what you need to know about renting bikes as a tourist:\n\n### Where to Rent Bicycles\n\n1. **Local Bike Rentals**: Many local shops and rental companies offer bicycles for rent. You can find them in popular areas such as Panaji, Margao, and Calangute.\n\n2. **Online Booking Platforms**: Websites like Airbnb, TripAdvisor, or local bike rental websites allow you to book a bike directly online before your trip. This can be convenient if you prefer planning ahead.\n\n3. **Tourist Information Centers**: Check with the tourist information centers in major towns for recommendations on where to rent bikes.\n\n### What to Expect\n\n1. **Types of Bikes**: You might find different types of bicycles available, such as road bikes, mountain bikes, or hybrid bikes depending on your needs and the terrain you plan to cover.\n\n2. **Costs**: Rental prices can vary based on the type",
+    "truncated": true,
+    "timeToFirstActionMs": 62100,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1500000,
+    "interactionSteps": 5,
+    "userFrictionScore": 6,
+    "uncertaintyIndex": 0.85,
+    "costProxyInr": 8.8,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

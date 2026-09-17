@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-055",
+  "domain": "FINANCE",
+  "rawIntent": "cryptocurrency trading legal in india 2026",
+  "systemResolutionLatencyMs": 1,
+  "modelLatencyMs": 129391,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 1,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "As of now, cryptocurrency trading is not explicitly illegal in India; however, it has been heavily regulated. The Reserve Bank of India (RBI) had issued a notification in 2018 banning banks and payment entities from dealing with cryptocurrencies, which effectively halted most forms of trading and transactions involving cryptocurrencies within the country.\n\nIn 2023, the Supreme Court of India struck down the RBI's 2018 directive, allowing for some flexibility in the use of cryptocurrencies. However, this decision did not legalize cryptocurrency trading or mining but rather allowed the government to formulate its own regulatory framework.\n\nGiven these developments and considering the current trajectory, it is likely that by 2026, India will have a more defined legal framework around cryptocurrencies. This could include regulations on exchanges, wallet providers, and possibly even on individual traders and miners. The exact nature of these regulations would depend on how the government chooses to approach the issue.\n\nIt's important for individuals and businesses interested in cryptocurrency",
+    "truncated": true,
+    "timeToFirstActionMs": 129391,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1800000,
+    "interactionSteps": 6,
+    "userFrictionScore": 5.5,
+    "uncertaintyIndex": 0.65,
+    "costProxyInr": 10.5,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

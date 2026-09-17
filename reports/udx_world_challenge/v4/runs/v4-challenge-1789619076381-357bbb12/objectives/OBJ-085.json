@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-085",
+  "domain": "PERSONAL",
+  "rawIntent": "legal help for domestic violence victim india",
+  "systemResolutionLatencyMs": 1,
+  "modelLatencyMs": 67390,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 1,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "If you or someone you know is experiencing domestic violence in India, there are several steps that can be taken to seek legal help and support:\n\n1. **Seek Immediate Safety**: Ensure the safety of yourself and any children involved. If immediate danger exists, call the police by dialing 100.\n\n2. **Medical Attention**: Visit a hospital or healthcare provider for medical attention if necessary. Medical reports can serve as evidence in legal proceedings.\n\n3. **Local Women's Helpline**: Contact local women’s helplines such as the National Commission for Women (NCW) or other NGOs that provide support and guidance to victims of domestic violence.\n\n4. **Legal Aid**: Seek assistance from legal aid organizations, which are often available through non-governmental organizations (NGOs), law firms, or government bodies like the Legal Services Authority (LSA). They can offer free or low-cost legal advice and representation.\n\n5. **Domestic Violence Protection Orders**: Apply for a protection order under the Protection",
+    "truncated": true,
+    "timeToFirstActionMs": 67390,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1200000,
+    "interactionSteps": 4,
+    "userFrictionScore": 4.5,
+    "uncertaintyIndex": 0.5,
+    "costProxyInr": 7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

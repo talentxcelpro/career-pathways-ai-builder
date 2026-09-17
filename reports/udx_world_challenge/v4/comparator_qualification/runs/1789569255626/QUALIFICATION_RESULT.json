@@ -1,0 +1,13 @@
+{
+  "status": "COMPARATOR_QUALIFIED",
+  "runId": "1789569255626",
+  "model": "qwen2.5:7b-instruct-q8_0",
+  "modelDigest": "sha256:d6b4122d17c767406a6bfa9eefae4e9b9cf9b3f305c7423985bf4ff22ef1fbfa",
+  "quantizationLevel": "Q8_0",
+  "num_predict": 200,
+  "temperature": 0.3,
+  "phase2PassRate": 100.0,
+  "avgOllamaLatencyMs": 80338,
+  "timestamp": "2026-09-16T13:49:21.813Z",
+  "reportPath": "reports/udx_world_challenge/v4/comparator_qualification/COMPARATOR_QUALIFIED_1789569255626.md"
+}

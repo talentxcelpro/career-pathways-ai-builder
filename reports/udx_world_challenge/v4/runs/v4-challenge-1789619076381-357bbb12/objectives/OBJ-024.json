@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-024",
+  "domain": "EDUCATION",
+  "rawIntent": "coding bootcamp in India for non engineers",
+  "systemResolutionLatencyMs": 1,
+  "modelLatencyMs": 123368,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 1,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Coding bootcamps in India have become increasingly popular as more people seek to transition into tech careers or enhance their skills. While many bootcamps cater specifically to those with an engineering background, there are several options available for individuals who do not have a technical background but still wish to learn coding and related skills.\n\nHere are some popular coding bootcamps in India that cater to non-engineers:\n\n1. **Udacity**\n   - Udacity offers various nanodegrees that can be completed online or through partner institutions. They provide courses on web development, data science, artificial intelligence, and more.\n   - Website: [Udacity](https://www.udacity.com/)\n\n2. **Springboard**\n   - Springboard provides immersive online bootcamps in data science, software engineering, product management, and UX design. They offer personalized coaching and career support.\n   - Website: [Springboard](https://www.springboard.com/)\n\n3. **General Assembly (GA",
+    "truncated": true,
+    "timeToFirstActionMs": 123368,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.75
+  },
+  "traditional": {
+    "timeToFirstActionMs": 5400000,
+    "interactionSteps": 10,
+    "userFrictionScore": 7.5,
+    "uncertaintyIndex": 0.8,
+    "costProxyInr": 31.5,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

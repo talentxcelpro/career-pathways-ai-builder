@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-001",
+  "domain": "CAREER",
+  "rawIntent": "frontend developer job varanasi",
+  "systemResolutionLatencyMs": 10,
+  "modelLatencyMs": 60800,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": null,
+    "timeToFirstActionMs": 10,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "If you're looking for frontend developer jobs in Varanasi, here are some steps and tips that might help:\n\n1. **Job Portals**: Check popular job portals like Naukri, Indeed, LinkedIn, and Glassdoor. These sites often have a wide range of job listings from various companies.\n\n2. **Company Websites**: Many companies list their open positions on their official websites. Companies like Tech Mahindra, Wipro, Infosys, and others might have offices in Varanasi or nearby areas that offer frontend developer roles.\n\n3. **Local Job Fairs**: Attend any local job fairs or career expos if they are happening in Varanasi. These events can be a great way to meet potential employers face-to-face.\n\n4. **Networking**: Connect with professionals through LinkedIn, Facebook groups, and other professional networks related to IT and software development. Networking can often lead to job opportunities that aren't advertised publicly.\n\n5. **Freelance Platforms**: Consider platforms like",
+    "truncated": true,
+    "timeToFirstActionMs": 60800,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 2700000,
+    "interactionSteps": 8,
+    "userFrictionScore": 6.8,
+    "uncertaintyIndex": 0.75,
+    "costProxyInr": 15.7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_LOSS",
+  "verdictReason": "UDX failed to resolve actionable target while Generic AI provided helpful domain guidance"
+}

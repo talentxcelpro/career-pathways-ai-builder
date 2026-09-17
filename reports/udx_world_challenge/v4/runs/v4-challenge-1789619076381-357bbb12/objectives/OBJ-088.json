@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-088",
+  "domain": "PERSONAL",
+  "rawIntent": "how to get birth certificate if not registered",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 81120,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "If you were born in a country where registration was not mandatory or was not properly recorded at the time of your birth, obtaining a birth certificate can be challenging but is still possible through various steps and procedures. Here’s how you might go about it:\n\n### 1. **Contact Local Authorities**\n   - **Healthcare Providers:** If you were born in a hospital or healthcare facility, contact them to see if they have any records of your birth.\n   - **Community Health Centers:** Sometimes community health centers can provide information or assistance.\n\n### 2. **Visit the Registry Office**\n   - **Civil Registration Office:** In many countries, there is a civil registration office that handles births, deaths, and marriages. Visit this office to inquire about any records they might have.\n   - **Local Government Offices:** Check with local government offices in your area; they may be able to assist or direct you to the appropriate department.\n\n### 3. **Contact Non-Governmental Organizations (NGOs)",
+    "truncated": true,
+    "timeToFirstActionMs": 81120,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1200000,
+    "interactionSteps": 4,
+    "userFrictionScore": 4.5,
+    "uncertaintyIndex": 0.5,
+    "costProxyInr": 7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-033",
+  "domain": "BUSINESS",
+  "rawIntent": "small business loan for women entrepreneurs India",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 78660,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Small business loans for women entrepreneurs in India can be an excellent way to support their ventures and help them grow. Here are some options available:\n\n1. **Self-Employed Women's Association (SEWA) Bank**: SEWA Bank offers various financial products specifically tailored for women, including small business loans.\n\n2. **National Bank for Agriculture and Rural Development (NABARD)**: NABARD provides funding to banks and other financial institutions for schemes that support rural and agricultural entrepreneurs, which can include women.\n\n3. **Microfinance Institutions (MFIs)**: MFIs like SKS Microfinance, Kiva Zip, and others offer small loans to women entrepreneurs who might not qualify for traditional bank loans due to lack of collateral or credit history.\n\n4. **Government Schemes**: The Indian government has several schemes aimed at supporting women entrepreneurs:\n   - **Pradhan Mantri Mudra Yojana (PMMY)**: This scheme offers loans up to ₹10 lakh with zero",
+    "truncated": true,
+    "timeToFirstActionMs": 78660,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 7200000,
+    "interactionSteps": 12,
+    "userFrictionScore": 8.2,
+    "uncertaintyIndex": 0.7,
+    "costProxyInr": 42,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

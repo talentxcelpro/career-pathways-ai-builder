@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-026",
+  "domain": "EDUCATION",
+  "rawIntent": "how to get google certification free",
+  "systemResolutionLatencyMs": 1,
+  "modelLatencyMs": 80289,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 1,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Google offers various certifications through its Google Cloud Platform (GCP) and other services. While some certifications require payment, there are ways to obtain certain types of Google certifications for free or at a reduced cost:\n\n1. **Google IT Support Professional Certificate**: This is an entry-level certificate that can be obtained entirely online and is free of charge. It covers foundational knowledge in computer support roles.\n\n2. **Google Digital Garage Courses**: These courses provide training on digital marketing, web development, and other tech skills. While they don't directly lead to certifications, completing these courses can help you gain valuable skills and might make you eligible for certain certifications at a reduced cost or through promotional offers.\n\n3. **Google Cloud Training and Certification Promotions**: Google occasionally runs promotions where you can get certified at a discounted rate. Keep an eye on their official website and social media channels for such opportunities.\n\n4. **Scholarships and Grants**: Some organizations offer scholarships or grants that cover the cost of Google certifications. Check",
+    "truncated": true,
+    "timeToFirstActionMs": 80289,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 5400000,
+    "interactionSteps": 10,
+    "userFrictionScore": 7.5,
+    "uncertaintyIndex": 0.8,
+    "costProxyInr": 31.5,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

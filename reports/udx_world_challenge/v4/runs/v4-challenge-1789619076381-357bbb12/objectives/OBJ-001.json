@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-001",
+  "domain": "CAREER",
+  "rawIntent": "frontend developer job varanasi",
+  "systemResolutionLatencyMs": 5,
+  "modelLatencyMs": 53653,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/jobs?role=frontend-developer&location=Varanasi&verified=true",
+    "timeToFirstActionMs": 5,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Finding frontend developer jobs in Varanasi can be done through various channels. Here are some steps and resources you might consider:\n\n1. **Job Portals:**\n   - **Naukri.com**: One of the largest job portals in India, where you can search for frontend developer positions.\n   - **Indeed.in**: Another popular platform to find jobs across different sectors.\n   - **LinkedIn Jobs**: LinkedIn is a great place to not only apply for jobs but also connect with potential employers and learn about companies.\n\n2. **Local Job Portals:**\n   - **VaranasiJobs.com** or similar local job portals that cater specifically to the Varanasi region.\n\n3. **Company Websites:**\n   - Many companies list their open positions on their own websites. Check out well-known tech firms with offices in India, even if they don't have a specific office in Varanasi.\n\n4. **Networking:**\n   - Attend local meetups and events for frontend developers.",
+    "truncated": true,
+    "timeToFirstActionMs": 53653,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 2700000,
+    "interactionSteps": 8,
+    "userFrictionScore": 6.8,
+    "uncertaintyIndex": 0.75,
+    "costProxyInr": 15.7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

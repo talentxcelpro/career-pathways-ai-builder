@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-082",
+  "domain": "PERSONAL",
+  "rawIntent": "diet plan to lose 5 kg in a month",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 65479,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Losing 5 kilograms (about 11 pounds) in one month is achievable through a combination of dietary changes and increased physical activity. It's important to approach this goal with a balanced, sustainable diet that also ensures you're meeting your daily nutritional needs.\n\n### Diet Plan Overview:\n- **Calorie Deficit:** Aim for a moderate calorie deficit (around 500-750 calories per day) without compromising on essential nutrients.\n- **Balanced Nutrition:** Focus on whole foods and avoid processed items as much as possible.\n- **Hydration:** Drink plenty of water throughout the day.\n\n### Daily Calorie Intake:\n- For most adults, a daily calorie intake around 1200-1500 calories can be effective for weight loss while still providing sufficient nutrition. Adjust based on your current activity level and body size.\n\n### Sample Meal Plan:\n\n#### Breakfast\n- **Option A:** Greek yogurt (1 cup) with mixed berries and a handful of almonds",
+    "truncated": true,
+    "timeToFirstActionMs": 65479,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1200000,
+    "interactionSteps": 4,
+    "userFrictionScore": 4.5,
+    "uncertaintyIndex": 0.5,
+    "costProxyInr": 7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

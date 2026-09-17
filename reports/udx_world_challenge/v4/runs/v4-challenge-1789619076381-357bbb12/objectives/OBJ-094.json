@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-094",
+  "domain": "PERSONAL",
+  "rawIntent": "how to apply for rajasthan ration card",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 79763,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Applying for a Rajasthan Ration Card involves several steps and requirements. Here’s a general guide on how to apply:\n\n### 1. **Eligibility**\n   - Ensure you meet the eligibility criteria for a ration card in Rajasthan. Typically, this includes being a resident of Rajasthan, having an annual income below the specified limit (which varies), and meeting other socio-economic criteria.\n\n### 2. **Gather Required Documents**\n   - **Proof of Identity:** Aadhaar Card, PAN Card, Voter ID, Passport, or any other valid identity proof.\n   - **Proof of Residence:** Rent agreement, property tax receipt, utility bills (electricity, water), or a letter from the Gram Panchayat.\n   - **Income Proof:** Bank statements, salary slips, business registration documents, etc. (if applicable).\n   - **Family Details:** Birth certificates of family members, marriage certificate (for married couples).\n\n### 3. **Visit Your Local Sub-Divisional",
+    "truncated": true,
+    "timeToFirstActionMs": 79763,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1200000,
+    "interactionSteps": 4,
+    "userFrictionScore": 4.5,
+    "uncertaintyIndex": 0.5,
+    "costProxyInr": 7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

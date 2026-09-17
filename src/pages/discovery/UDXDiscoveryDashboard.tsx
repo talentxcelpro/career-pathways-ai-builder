@@ -39,10 +39,12 @@ import { NowView } from './components/NowView';
 import { ForesightRadarView } from './components/ForesightRadarView';
 import { PossibilityGraphView } from './components/PossibilityGraphView';
 import { RealityEngineView } from './components/RealityEngineView';
+import { OutcomeView } from './components/OutcomeView';
+import { SEOIntelligenceView } from './components/SEOIntelligenceView';
 import { WorldObservatoryPayload, IntentCollapseEngine } from '@/lib/discovery/world';
 import { UDXIntent } from '@/lib/udx/core/IntentTypes';
 
-export type UDXPillarMode = 'WORLD' | 'NOW' | 'FUTURE' | 'ACTION' | 'REALITY_ENGINE' | 'TELEMETRY';
+export type UDXPillarMode = 'WORLD' | 'NOW' | 'FUTURE' | 'ACTION' | 'OUTCOME' | 'SEO_INTELLIGENCE' | 'REALITY_ENGINE' | 'TELEMETRY';
 
 interface Opportunity {
   opportunity_id: string;
@@ -412,6 +414,42 @@ export default function UDXDiscoveryDashboard() {
               </Badge>
             </Button>
 
+            {/* PILLAR 5: OUTCOME */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setActivePillar('OUTCOME')}
+              className={`rounded-xl px-3.5 py-2 text-xs md:text-sm font-semibold transition-all flex items-center gap-2 ${
+                activePillar === 'OUTCOME'
+                  ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/20'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+              }`}
+            >
+              <Target className="w-4 h-4 text-emerald-300" />
+              <span>5. OUTCOME</span>
+              <Badge className="ml-1 bg-emerald-500/30 text-emerald-100 border-none text-2xs font-mono">
+                IRR & SDR
+              </Badge>
+            </Button>
+
+            {/* OPERATING LAYER: SEO INTELLIGENCE */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setActivePillar('SEO_INTELLIGENCE')}
+              className={`rounded-xl px-3.5 py-2 text-xs md:text-sm font-semibold transition-all flex items-center gap-2 ${
+                activePillar === 'SEO_INTELLIGENCE'
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 ring-1 ring-indigo-400/50'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+              }`}
+            >
+              <BrainCircuit className="w-4 h-4 text-indigo-300 animate-pulse" />
+              <span>SEO INTELLIGENCE</span>
+              <Badge className="ml-1 bg-indigo-500/30 text-indigo-100 border-none text-2xs font-mono">
+                12 ANSWERS
+              </Badge>
+            </Button>
+
             {/* REALITY ENGINE: PROOF */}
             <Button
               variant="ghost"
@@ -481,6 +519,14 @@ export default function UDXDiscoveryDashboard() {
 
         {activePillar === 'ACTION' && (
           <PossibilityGraphView initialLocation="Varanasi" />
+        )}
+
+        {activePillar === 'OUTCOME' && (
+          <OutcomeView totalEntitiesCount={totalEntitiesCount} />
+        )}
+
+        {activePillar === 'SEO_INTELLIGENCE' && (
+          <SEOIntelligenceView totalEntitiesCount={totalEntitiesCount} />
         )}
 
         {activePillar === 'REALITY_ENGINE' && (

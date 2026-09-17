@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-039",
+  "domain": "BUSINESS",
+  "rawIntent": "how to price my freelance design services",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 75193,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Pricing your freelance design services effectively involves several key steps and considerations. Here’s a comprehensive guide to help you determine the right prices for your services:\n\n### 1. Understand Your Value\n- **Skill Level**: Assess your experience, expertise, and unique skills.\n- **Market Demand**: Consider how in-demand your specific type of design is in your area or industry.\n\n### 2. Research Industry Standards\n- **Competitor Analysis**: Look at what other designers are charging for similar services.\n- **Industry Reports**: Use resources like the Freelancers Union or Design Industry reports to get a sense of average rates.\n\n### 3. Define Your Services\n- **Types of Projects**: Break down your services into categories (e.g., logo design, website design, social media graphics).\n- **Complexity and Time**: Estimate how much time each project will take and the level of complexity involved.\n\n### 4. Consider Cost Factors\n- **Overhead Costs**: Include any costs associated with running your",
+    "truncated": true,
+    "timeToFirstActionMs": 75193,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 7200000,
+    "interactionSteps": 12,
+    "userFrictionScore": 8.2,
+    "uncertaintyIndex": 0.7,
+    "costProxyInr": 42,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-048",
+  "domain": "FINANCE",
+  "rawIntent": "how to open demat account india",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 100293,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Opening a Demat (Dematerialized) account in India is an important step if you plan to invest in the stock market or other securities such as bonds and mutual funds. Here’s a general guide on how to do it:\n\n### Steps to Open a Demat Account\n\n1. **Choose a Stock Broker:**\n   - Select a reputable stock broker that offers Demat account services. Some popular ones include Kotak Securities, Angel Broking, ICICI Direct, Sharekhan, and others.\n   - Consider factors like fees, customer support, trading platforms, and the range of financial products they offer.\n\n2. **Visit Their Website:**\n   - Go to the website of your chosen stock broker and navigate to the Demat account section.\n\n3. **Fill Out Application Form:**\n   - Download or fill out an application form for opening a Demat account.\n   - Provide necessary personal details such as name, address, PAN (Permanent Account Number), and other required information.\n\n4",
+    "truncated": true,
+    "timeToFirstActionMs": 100293,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1800000,
+    "interactionSteps": 6,
+    "userFrictionScore": 5.5,
+    "uncertaintyIndex": 0.65,
+    "costProxyInr": 10.5,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

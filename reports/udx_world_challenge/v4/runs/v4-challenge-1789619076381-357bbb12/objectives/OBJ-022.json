@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-022",
+  "domain": "EDUCATION",
+  "rawIntent": "NEET preparation strategy for dropper",
+  "systemResolutionLatencyMs": 1,
+  "modelLatencyMs": 77470,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 1,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Preparing for the National Eligibility cum Entrance Test (NEET) as a drop-out student requires a well-structured and disciplined approach to ensure you cover all topics effectively within your available time frame. Here’s a comprehensive strategy:\n\n### 1. **Assessment of Current Knowledge**\n   - Take a diagnostic test or review previous years' question papers to understand the areas where you need improvement.\n   - Identify your strengths and weaknesses in each subject (Physics, Chemistry, Biology).\n\n### 2. **Time Management**\n   - Allocate specific hours for each subject based on their difficulty level and your performance.\n   - Use a planner to schedule study times, breaks, and revision periods.\n\n### 3. **Study Plan**\n   - Create a detailed timetable that includes:\n     - Daily study sessions\n     - Weekly reviews\n     - Monthly assessments\n   - Ensure you cover all topics in each subject evenly over the course of your preparation period.\n\n### 4. **Resource Collection**\n   - Gather books",
+    "truncated": true,
+    "timeToFirstActionMs": 77470,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 5400000,
+    "interactionSteps": 10,
+    "userFrictionScore": 7.5,
+    "uncertaintyIndex": 0.8,
+    "costProxyInr": 31.5,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

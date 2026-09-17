@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-083",
+  "domain": "PERSONAL",
+  "rawIntent": "how to improve my CIBIL score fast",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 62289,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Improving your CIBIL (Credit Information Bureau India Limited) score quickly can be challenging, but there are several steps you can take to boost it over time. Here’s how you can work on improving your credit score:\n\n1. **Check Your Credit Report**: Obtain a copy of your CIBIL report from the official website or through authorized agencies like CIBIL itself, Experian, or Equifax. Review it for any inaccuracies and dispute them if necessary.\n\n2. **Pay Bills on Time**: Late payments can significantly lower your credit score. Ensure that you pay all your bills—credit cards, loans, utilities, etc.—on time. Set up automatic payments to avoid missing due dates.\n\n3. **Reduce Credit Utilization Ratio**: Your credit utilization ratio is the amount of credit you’re using compared to your total available credit. Aim to keep it below 30%. For example, if your credit limit is Rs. 1,00,000,",
+    "truncated": true,
+    "timeToFirstActionMs": 62289,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1200000,
+    "interactionSteps": 4,
+    "userFrictionScore": 4.5,
+    "uncertaintyIndex": 0.5,
+    "costProxyInr": 7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

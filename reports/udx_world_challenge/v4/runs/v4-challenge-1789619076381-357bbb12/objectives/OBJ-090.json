@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-090",
+  "domain": "PERSONAL",
+  "rawIntent": "best book to learn about stock market for beginners",
+  "systemResolutionLatencyMs": 1,
+  "modelLatencyMs": 83630,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/education/curriculum/ai-systems-verification",
+    "timeToFirstActionMs": 1,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "For beginners looking to understand the stock market, there are several excellent books that provide a solid foundation in the basics of investing and trading stocks. Here are some highly recommended titles:\n\n1. **\"The Intelligent Investor\" by Benjamin Graham** - Often considered one of the most influential investment books ever written, this book is essential for anyone interested in value investing. It provides timeless advice on how to make smart investment decisions.\n\n2. **\"A Random Walk Down Wall Street\" by Burton G. Malkiel** - This book offers a more modern perspective on stock market investing and includes discussions on index funds, passive investing, and the efficient market hypothesis.\n\n3. **\"Stock Market Forever: The 10 Rules for Investing Success\" by Martin J. Fridson** - This book simplifies complex investment concepts into ten easy-to-follow rules, making it a great starting point for beginners.\n\n4. **\"The Little Book of Common Sense Investing\" by John C. Bogle** - Written by the",
+    "truncated": true,
+    "timeToFirstActionMs": 83630,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1200000,
+    "interactionSteps": 4,
+    "userFrictionScore": 4.5,
+    "uncertaintyIndex": 0.5,
+    "costProxyInr": 7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

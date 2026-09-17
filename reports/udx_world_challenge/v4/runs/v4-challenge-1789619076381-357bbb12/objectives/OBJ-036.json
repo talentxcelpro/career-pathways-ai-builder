@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-036",
+  "domain": "BUSINESS",
+  "rawIntent": "MSME registration benefits",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 74332,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "https://udyamregistration.gov.in",
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "MSME stands for Micro, Small and Medium Enterprises. Registering your business as an MSME can bring several benefits, including:\n\n1. **Tax Incentives**: Many countries offer tax exemptions or reduced rates to MSMEs to encourage entrepreneurship and small-scale businesses.\n\n2. **Access to Financing**: MSMEs may have better access to loans and other forms of financial assistance from banks and government agencies due to specific programs designed for these types of enterprises.\n\n3. **Government Support Programs**: Governments often provide various support programs, such as training, mentorship, and grants, specifically aimed at helping MSMEs grow and succeed.\n\n4. **Simplified Registration Process**: The registration process for MSMEs is usually simpler compared to larger corporations, which can save time and resources.\n\n5. **Protection from Competition**: In some cases, MSMEs may be protected from unfair competition by larger companies through regulations or policies that favor smaller businesses.\n\n6. **Subsidies and Grants**: Governments often",
+    "truncated": true,
+    "timeToFirstActionMs": 74332,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 7200000,
+    "interactionSteps": 12,
+    "userFrictionScore": 8.2,
+    "uncertaintyIndex": 0.7,
+    "costProxyInr": 42,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

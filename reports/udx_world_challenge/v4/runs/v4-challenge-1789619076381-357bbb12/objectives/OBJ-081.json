@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-081",
+  "domain": "PERSONAL",
+  "rawIntent": "how to manage anxiety at work",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 60894,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/jobs?role=software-engineer&verified=true",
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Managing anxiety in the workplace is crucial for maintaining both your mental health and productivity. Here are some strategies you can use:\n\n1. **Identify Triggers**: Recognize what specifically causes your anxiety. Is it a particular task, meeting, or colleague? Understanding these triggers can help you prepare better.\n\n2. **Prioritize Tasks**: Break down large tasks into smaller, manageable parts. Prioritizing and organizing your work can reduce the feeling of being overwhelmed.\n\n3. **Set Realistic Goals**: Set achievable goals for yourself. Unrealistically high expectations can lead to stress and anxiety.\n\n4. **Take Regular Breaks**: Short breaks throughout the day can help clear your mind and reduce tension. Even a few minutes away from your desk can be beneficial.\n\n5. **Practice Mindfulness or Meditation**: These techniques can help you stay present and calm, reducing feelings of anxiety. Apps like Headspace or Calm offer guided sessions that are easy to integrate into your routine.\n\n6. **Exercise Regularly",
+    "truncated": true,
+    "timeToFirstActionMs": 60894,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1200000,
+    "interactionSteps": 4,
+    "userFrictionScore": 4.5,
+    "uncertaintyIndex": 0.5,
+    "costProxyInr": 7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

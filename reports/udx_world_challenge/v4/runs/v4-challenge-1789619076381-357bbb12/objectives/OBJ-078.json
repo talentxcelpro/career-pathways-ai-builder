@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-078",
+  "domain": "LOCAL_SERVICES",
+  "rawIntent": "train PNR status check",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 60656,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "PNR stands for Passenger Name Record and is used in the airline industry to track passenger information and reservations. A PNR status check allows you to verify the current state of your reservation, such as whether it's confirmed, checked-in, or if there are any changes.\n\nTo train on how to perform a PNR status check, here’s what you need to know:\n\n1. **PNR Number**: You will need the PNR number, which is typically provided by the airline when you make your reservation. This unique identifier helps in locating your specific booking details.\n\n2. **Airlines’ Websites or Mobile Apps**: Most airlines have their own websites and mobile applications where you can check the status of your PNR. Simply log into your account with your username and password, then navigate to the section for checking flight statuses or reservations.\n\n3. **Customer Service**: If you prefer not to use online services, you can contact the airline’s customer service through phone or email. Provide them with your P",
+    "truncated": true,
+    "timeToFirstActionMs": 60656,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1500000,
+    "interactionSteps": 5,
+    "userFrictionScore": 6,
+    "uncertaintyIndex": 0.85,
+    "costProxyInr": 8.8,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-091",
+  "domain": "PERSONAL",
+  "rawIntent": "how to report a cyber crime in india",
+  "systemResolutionLatencyMs": 1,
+  "modelLatencyMs": 74951,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 1,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Reporting a cybercrime in India involves several steps and can be done through various channels. Here’s a step-by-step guide on how to report a cybercrime:\n\n### 1. **Identify the Type of Cybercrime**\n   - Determine what kind of cybercrime has occurred (e.g., phishing, hacking, identity theft, malware, etc.).\n\n### 2. **Gather Evidence**\n   - Collect all relevant evidence such as emails, screenshots, and any other digital files that can help prove the crime.\n   - Make sure to preserve all evidence without altering it.\n\n### 3. **Contact Your Internet Service Provider (ISP)**\n   - Inform your ISP about the cybercrime. They may be able to block access or take down malicious content.\n\n### 4. **Report to Local Police Station**\n   - Visit your local police station and file a report under Section 66E of the Information Technology Act, 2000 (IT Act), which deals with cybercr",
+    "truncated": true,
+    "timeToFirstActionMs": 74951,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1200000,
+    "interactionSteps": 4,
+    "userFrictionScore": 4.5,
+    "uncertaintyIndex": 0.5,
+    "costProxyInr": 7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

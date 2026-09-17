@@ -22,3 +22,7 @@ export * from './memory';
 
 // Proving Ground / Laboratory Adapters
 export * from './domains';
+
+// SEO Intelligence & Control Plane (v4.0)
+export * from './seo';
+export * from './UDXProductionConfig';

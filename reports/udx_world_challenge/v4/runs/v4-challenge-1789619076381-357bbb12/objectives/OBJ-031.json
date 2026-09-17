@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-031",
+  "domain": "BUSINESS",
+  "rawIntent": "how to register a startup in India",
+  "systemResolutionLatencyMs": 3,
+  "modelLatencyMs": 76228,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "https://udyamregistration.gov.in",
+    "timeToFirstActionMs": 3,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Registering a startup in India involves several steps and can vary depending on the type of business you plan to operate (e.g., a proprietary firm, partnership, company), the industry, and other factors. Here’s an overview of the general process:\n\n### 1. **Choose Your Business Structure**\n   - **Proprietary Firm**: Sole proprietorship.\n   - **Partnership Firm**: Two or more individuals who share profits and losses.\n   - **Company (Private Limited)**: A separate legal entity with shareholders.\n   - **One Person Company (OPC)**: A company owned by a single individual.\n\n### 2. **Name Approval**\n   - Choose a unique name for your startup that is not already registered or reserved in India.\n   - You can check the availability of the name through the Ministry of Corporate Affairs (MCA) website or visit their office.\n\n### 3. **Memorandum and Articles of Association (MOA & AOA)**\n   -",
+    "truncated": true,
+    "timeToFirstActionMs": 76228,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 7200000,
+    "interactionSteps": 12,
+    "userFrictionScore": 8.2,
+    "uncertaintyIndex": 0.7,
+    "costProxyInr": 42,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

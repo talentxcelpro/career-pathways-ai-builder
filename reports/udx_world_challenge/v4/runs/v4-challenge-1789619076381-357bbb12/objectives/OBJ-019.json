@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-019",
+  "domain": "EDUCATION",
+  "rawIntent": "scholarship for SC ST students for engineering",
+  "systemResolutionLatencyMs": 1,
+  "modelLatencyMs": 80887,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/education/curriculum/ai-systems-verification",
+    "timeToFirstActionMs": 1,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "In India, there are several scholarships available specifically for students from Scheduled Castes (SC) and Scheduled Tribes (ST) categories who wish to pursue engineering degrees. These scholarships aim to support underprivileged students in their academic pursuits and help bridge the gap in education access. Here are some of the key scholarship programs:\n\n1. **National Fellowship (NF):**\n   - This is a central government scheme that provides financial assistance to SC/ST students pursuing higher education, including engineering.\n   - The fellowship covers tuition fees, hostel charges, and a monthly stipend.\n\n2. **Kishor Shreemad Bharti Fellowship:**\n   - This fellowship is aimed at encouraging SC/ST students from economically weaker sections to pursue higher education in technical fields like engineering.\n   - It provides financial assistance for tuition fees, books, and other educational expenses.\n\n3. **Mahatma Phule Yuva Kalyan Yojana (MPYKY):**\n   - This scheme is designed to",
+    "truncated": true,
+    "timeToFirstActionMs": 80887,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.75
+  },
+  "traditional": {
+    "timeToFirstActionMs": 5400000,
+    "interactionSteps": 10,
+    "userFrictionScore": 7.5,
+    "uncertaintyIndex": 0.8,
+    "costProxyInr": 31.5,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

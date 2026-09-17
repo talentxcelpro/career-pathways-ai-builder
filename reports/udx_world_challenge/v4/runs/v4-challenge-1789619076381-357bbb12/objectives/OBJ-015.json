@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-015",
+  "domain": "CAREER",
+  "rawIntent": "career change at 35 from teacher to HR",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 78809,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/jobs?role=software-engineer&verified=true",
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Transitioning careers from teaching to Human Resources (HR) at the age of 35 is certainly possible and can be a rewarding move. Here are some steps you can take to make this transition smoother:\n\n### Research and Planning\n\n1. **Understand the Role**: Gain a thorough understanding of what HR professionals do, including areas like recruitment, employee relations, benefits administration, and compliance.\n2. **Education and Certifications**: Consider obtaining relevant certifications such as SHRM-CP (Society for Human Resource Management - Certified Professional) or PHR (Professional in Human Resources). These can enhance your credibility and knowledge base.\n\n### Skills Development\n\n1. **Soft Skills**: Enhance your communication, negotiation, and conflict resolution skills, which are crucial in HR.\n2. **Technical Skills**: Learn about employment laws, benefits management, and HR software tools like applicant tracking systems (ATS) and employee relationship management (ERM) systems.\n3. **Networking**: Connect with current HR professionals through LinkedIn or",
+    "truncated": true,
+    "timeToFirstActionMs": 78809,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 2700000,
+    "interactionSteps": 8,
+    "userFrictionScore": 6.8,
+    "uncertaintyIndex": 0.75,
+    "costProxyInr": 15.7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

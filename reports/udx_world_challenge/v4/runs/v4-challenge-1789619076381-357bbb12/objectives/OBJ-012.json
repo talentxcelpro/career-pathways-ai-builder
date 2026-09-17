@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-012",
+  "domain": "CAREER",
+  "rawIntent": "AI ML jobs in Bangalore for 2 to 5 years experience",
+  "systemResolutionLatencyMs": 1,
+  "modelLatencyMs": 61554,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/jobs?role=software-engineer&verified=true",
+    "timeToFirstActionMs": 1,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Bangalore, often referred to as the \"Silicon Valley of India,\" is a hub for technology and offers numerous opportunities for AI and Machine Learning (ML) professionals with 2 to 5 years of experience. Here are some job roles and companies where you might find suitable positions:\n\n### Job Roles:\n1. **Machine Learning Engineer**\n   - Responsible for designing, implementing, and deploying machine learning models.\n   \n2. **Data Scientist**\n   - Focuses on analyzing data to provide insights that can be used in decision-making processes.\n\n3. **AI Researcher/Scientist**\n   - Conducts research in AI and ML to develop new algorithms and techniques.\n\n4. **ML Engineer**\n   - Develops, implements, and maintains machine learning models for various applications.\n\n5. **Data Analyst (with a focus on AI/ML)**\n   - Uses statistical analysis and data visualization tools to interpret complex data sets.\n\n6. **AI Developer**\n   - Works on developing AI-driven solutions",
+    "truncated": true,
+    "timeToFirstActionMs": 61554,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.75
+  },
+  "traditional": {
+    "timeToFirstActionMs": 2700000,
+    "interactionSteps": 8,
+    "userFrictionScore": 6.8,
+    "uncertaintyIndex": 0.75,
+    "costProxyInr": 15.7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

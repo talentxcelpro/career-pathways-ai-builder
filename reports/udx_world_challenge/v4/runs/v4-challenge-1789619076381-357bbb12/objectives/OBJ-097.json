@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-097",
+  "domain": "PERSONAL",
+  "rawIntent": "how to write a will in india",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 81846,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Writing a will in India involves several important steps to ensure that your wishes are legally recognized and followed after your death. Here’s a general guide on how to create a valid will:\n\n### 1. **Understand the Requirements**\n   - **Capacity:** You must be of sound mind (legally termed as \"testamentary capacity\") when making a will.\n   - **Formalities:** A will in India can be either holographic, attested, or registered.\n\n### 2. **Draft Your Will**\n   - **Content:**\n     - Name and address of the testator (the person making the will).\n     - Details of the beneficiaries and how you wish to distribute your assets.\n     - Any specific gifts or legacies.\n     - Appointment of an executor (a person who will carry out the terms of the will).\n     - Any conditions, restrictions, or trusts you want to establish.\n   - **Language:** Use clear and unambiguous language. Avoid any ambiguity that",
+    "truncated": true,
+    "timeToFirstActionMs": 81846,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1200000,
+    "interactionSteps": 4,
+    "userFrictionScore": 4.5,
+    "uncertaintyIndex": 0.5,
+    "costProxyInr": 7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

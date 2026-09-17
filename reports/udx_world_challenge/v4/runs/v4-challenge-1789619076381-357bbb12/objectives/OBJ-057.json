@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-057",
+  "domain": "FINANCE",
+  "rawIntent": "gold loan vs personal loan which is better",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 152937,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "When deciding between a gold loan and a personal loan, it's important to consider several factors such as the purpose of borrowing, interest rates, collateral requirements, repayment terms, and overall flexibility. Here’s a comparison to help you make an informed decision:\n\n### Gold Loan\n\n**Pros:**\n1. **Collateral:** You can use your gold jewelry or bullion as collateral, which provides security for the lender.\n2. **Lower Interest Rates:** Generally, gold loans have lower interest rates compared to personal loans because they are secured by physical assets.\n3. **Faster Approval Process:** The approval process is often quicker since it involves fewer documentation requirements and a simpler verification of collateral value.\n\n**Cons:**\n1. **Depreciation Risk:** Gold values can fluctuate, which means the collateral might lose value over time if the loan term extends beyond a period of declining gold prices.\n2. **Limited Flexibility:** The amount you can borrow is often limited by the value of your gold collateral",
+    "truncated": true,
+    "timeToFirstActionMs": 152937,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1800000,
+    "interactionSteps": 6,
+    "userFrictionScore": 5.5,
+    "uncertaintyIndex": 0.65,
+    "costProxyInr": 10.5,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

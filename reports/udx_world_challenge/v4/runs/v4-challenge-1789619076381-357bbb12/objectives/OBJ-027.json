@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-027",
+  "domain": "EDUCATION",
+  "rawIntent": "UPSC preparation time for working professional",
+  "systemResolutionLatencyMs": 1,
+  "modelLatencyMs": 75597,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 1,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Preparing for the UPSC (Union Public Service Commission) exams as a working professional can be challenging but is certainly achievable with proper planning and discipline. Here’s a general guideline on how to allocate your time effectively:\n\n### 1. Assess Your Current Situation:\n- **Job Responsibilities:** Understand your current workload and identify peak times when you might have more free time.\n- **Family Obligations:** Consider any family commitments that may affect your study schedule.\n\n### 2. Set Clear Goals:\n- Define what you want to achieve (e.g., IAS, IPS, etc.).\n- Break down the syllabus into manageable parts and set specific goals for each subject or topic.\n\n### 3. Create a Study Plan:\n- **Daily Schedule:** Allocate at least 1-2 hours per day specifically for UPSC preparation.\n- **Weekly Review:** Set aside time to review what you have learned during the week.\n- **Monthly Assessments:** Conduct mock tests and assessments to gauge your progress.",
+    "truncated": true,
+    "timeToFirstActionMs": 75597,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 5400000,
+    "interactionSteps": 10,
+    "userFrictionScore": 7.5,
+    "uncertaintyIndex": 0.8,
+    "costProxyInr": 31.5,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

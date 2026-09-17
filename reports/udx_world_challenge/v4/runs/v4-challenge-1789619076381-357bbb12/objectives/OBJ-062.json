@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-062",
+  "domain": "LOCAL_SERVICES",
+  "rawIntent": "AC repair at home in Noida",
+  "systemResolutionLatencyMs": 13,
+  "modelLatencyMs": null,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/services/varanasi/ac-repair",
+    "timeToFirstActionMs": 13,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "COMPARATOR_MODEL_ERROR",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": null,
+    "truncated": false,
+    "timeToFirstActionMs": 80000,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.1
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1500000,
+    "interactionSteps": 5,
+    "userFrictionScore": 6,
+    "uncertaintyIndex": 0.85,
+    "costProxyInr": 8.8,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-080",
+  "domain": "LOCAL_SERVICES",
+  "rawIntent": "swimming pool near me open today",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 56452,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "To find a swimming pool near you that is open today, you can follow these steps:\n\n1. **Use an Online Search Engine**: Type in \"swimming pools near me\" or \"public swimming pools near [your location]\" into Google or another search engine. This will often give you a list of nearby pools along with their hours and sometimes whether they are open.\n\n2. **Check Local Recreation Centers or Parks Websites**: Many cities have websites for local parks and recreation centers that list all the facilities, including swimming pools, along with their operating hours.\n\n3. **Use Apps**: There are apps like SwimApp, PoolFinder, or Google Maps that can help you find nearby swimming pools and check if they are open today.\n\n4. **Call Local Pools Directly**: If you're not sure about the information available online, calling the pool directly is a good way to get up-to-date information on their operating hours for today.\n\n5. **Social Media and Community Forums**: Sometimes local community",
+    "truncated": true,
+    "timeToFirstActionMs": 56452,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1500000,
+    "interactionSteps": 5,
+    "userFrictionScore": 6,
+    "uncertaintyIndex": 0.85,
+    "costProxyInr": 8.8,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

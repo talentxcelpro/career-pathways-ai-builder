@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-037",
+  "domain": "BUSINESS",
+  "rawIntent": "ecommerce business plan for handicraft products",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 73656,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Creating an ecommerce business plan for selling handicraft products involves several key components to ensure your venture is well-thought-out and successful. Below is a structured outline that you can use as a guide:\n\n### Executive Summary\n- **Business Name:** [Your Business Name]\n- **Mission Statement:** A brief statement of what your business aims to achieve.\n- **Business Overview:** Description of the type of handicraft products, target market, unique selling proposition (USP), and key milestones.\n\n### Market Analysis\n- **Industry Overview:** Handicrafts as a sector, including current trends, growth potential, and challenges.\n- **Target Market:** Demographics, psychographics, and behaviors of your ideal customers.\n- **Competitive Analysis:** Key competitors, their strengths, weaknesses, and market share. Identify gaps in the market that you can exploit.\n\n### Product Line\n- **Product Description:** Detailed descriptions of each product type (e.g., pottery, textiles, woodwork).\n- **Sourcing",
+    "truncated": true,
+    "timeToFirstActionMs": 73656,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 7200000,
+    "interactionSteps": 12,
+    "userFrictionScore": 8.2,
+    "uncertaintyIndex": 0.7,
+    "costProxyInr": 42,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-093",
+  "domain": "PERSONAL",
+  "rawIntent": "how to meditate for beginners at home",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 75736,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Meditation is a great way to reduce stress, improve focus, and enhance overall well-being. Here’s a simple guide on how to start meditation at home as a beginner:\n\n### 1. Choose a Quiet Space\nFind a quiet place where you won’t be disturbed. This could be a corner of your bedroom, living room, or any other space that feels peaceful.\n\n### 2. Set a Time Limit\nStart with short sessions—5-10 minutes is ideal for beginners. As you get more comfortable, you can gradually increase the duration.\n\n### 3. Sit Comfortably\nYou don’t need to sit in a specific posture like cross-legged on the floor. You can sit in a chair or even lie down if that’s more comfortable. The key is to maintain an upright posture with your back straight but not stiff.\n\n### 4. Close Your Eyes\nClosing your eyes helps reduce distractions and allows you to focus inwardly. However, if you find it difficult to",
+    "truncated": true,
+    "timeToFirstActionMs": 75736,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1200000,
+    "interactionSteps": 4,
+    "userFrictionScore": 4.5,
+    "uncertaintyIndex": 0.5,
+    "costProxyInr": 7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

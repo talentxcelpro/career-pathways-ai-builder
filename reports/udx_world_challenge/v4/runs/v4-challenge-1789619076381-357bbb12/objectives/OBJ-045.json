@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-045",
+  "domain": "BUSINESS",
+  "rawIntent": "how to raise seed funding for edtech startup india",
+  "systemResolutionLatencyMs": 1,
+  "modelLatencyMs": 92162,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/business/ventures/ai-agent-evaluation-brief",
+    "timeToFirstActionMs": 1,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Raising seed funding for an EdTech startup in India can be a strategic and competitive process. Here’s a step-by-step guide to help you through the fundraising journey:\n\n### 1. Define Your Business Model and Value Proposition\n- **Clear Value Proposition:** Clearly define what problem your EdTech solution solves, who your target audience is, and how it stands out from competitors.\n- **Business Model:** Outline your revenue streams (e.g., subscription fees, advertising, partnerships).\n\n### 2. Prepare a Compelling Pitch Deck\n- **Executive Summary:** Briefly introduce the company, its mission, and key achievements.\n- **Problem Statement:** Clearly articulate the problem you are solving.\n- **Solution:** Describe how your product or service addresses this problem.\n- **Market Opportunity:** Provide market research to validate the size of the opportunity.\n- **Business Model:** Explain how you will generate revenue.\n- **Traction:** Include any metrics that show early success (e.g., user growth, partnerships",
+    "truncated": true,
+    "timeToFirstActionMs": 92162,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 7200000,
+    "interactionSteps": 12,
+    "userFrictionScore": 8.2,
+    "uncertaintyIndex": 0.7,
+    "costProxyInr": 42,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

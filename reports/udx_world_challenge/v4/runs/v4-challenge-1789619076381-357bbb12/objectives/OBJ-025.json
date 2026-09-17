@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-025",
+  "domain": "EDUCATION",
+  "rawIntent": "distance learning law degree India",
+  "systemResolutionLatencyMs": 1,
+  "modelLatencyMs": 78990,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "/education/curriculum/ai-systems-verification",
+    "timeToFirstActionMs": 1,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Distance learning for a law degree in India is an increasingly popular option due to its flexibility and convenience. Here’s some information on the legal framework, institutions offering distance education, and key points you should consider:\n\n### Legal Framework\n\n1. **University Grants Commission (UGC) Regulations**: The UGC has specific regulations regarding distance education programs, including eligibility criteria, course content, examination procedures, and quality assurance.\n\n2. **Distance Education Council (DEC)**: Established under the UGC, DEC oversees the regulation of distance education institutions in India. It ensures that these institutions meet certain standards before granting them recognition for their distance learning programs.\n\n3. **National Accreditation and Assessment Board (NAAB)**: NAAB accredits educational institutions offering distance education based on various parameters such as academic quality, infrastructure, faculty qualifications, etc.\n\n### Institutions Offering Distance Learning in Law\n\n1. **Symbiosis Centre for Distance Learning (SCDL), Pune**: Offers a Bachelor of Laws (LLB) degree through",
+    "truncated": true,
+    "timeToFirstActionMs": 78990,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 5400000,
+    "interactionSteps": 10,
+    "userFrictionScore": 7.5,
+    "uncertaintyIndex": 0.8,
+    "costProxyInr": 31.5,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

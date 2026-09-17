@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-077",
+  "domain": "LOCAL_SERVICES",
+  "rawIntent": "ambulance booking number in Delhi",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 60717,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "In Delhi, you can book an ambulance through the following numbers:\n\n1. **Delhi Ambulance Services (DAS)**: The primary emergency service for ambulances in Delhi is DAS. You can call them at:\n   - **911**: This is a general emergency number that connects to the Delhi Police, but they will dispatch an ambulance if needed.\n   - **+91 11 23380400 / +91 11 23380500**: These are dedicated numbers for booking ambulances through DAS.\n\n2. **Private Ambulance Services**: There are several private ambulance services operating in Delhi that you can book from, such as:\n   - **Zensar HealthCare**\n   - **Mediciti**\n   - **Apollo Emergency Ambulance**\n\nThese private services may have their own booking numbers or websites where you can make reservations. It's a good idea to have these numbers handy",
+    "truncated": true,
+    "timeToFirstActionMs": 60717,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1500000,
+    "interactionSteps": 5,
+    "userFrictionScore": 6,
+    "uncertaintyIndex": 0.85,
+    "costProxyInr": 8.8,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

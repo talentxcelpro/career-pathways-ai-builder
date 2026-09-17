@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-098",
+  "domain": "PERSONAL",
+  "rawIntent": "how to save electricity at home",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 89878,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Saving electricity at home can help reduce your energy bills and contribute to environmental sustainability. Here are some practical tips to help you conserve electricity:\n\n1. **Use Energy-Efficient Lighting:**\n   - Replace traditional incandescent bulbs with LED or CFL (compact fluorescent) bulbs, which use less energy and last longer.\n\n2. **Unplug Appliances When Not in Use:**\n   - Many appliances continue to draw power even when turned off. Unplugging them can save a significant amount of electricity over time.\n\n3. **Use Power Strips:**\n   - Plug multiple devices into a single power strip and turn it off when not in use, which helps manage standby power consumption.\n\n4. **Adjust Thermostat Settings:**\n   - Lower the thermostat by just a few degrees in winter and raise it slightly in summer to save energy without significantly impacting your comfort.\n\n5. **Use Energy-Efficient Appliances:**\n   - When purchasing new appliances, look for those with high ENERGY STAR ratings",
+    "truncated": true,
+    "timeToFirstActionMs": 89878,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1200000,
+    "interactionSteps": 4,
+    "userFrictionScore": 4.5,
+    "uncertaintyIndex": 0.5,
+    "costProxyInr": 7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

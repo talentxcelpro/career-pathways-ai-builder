@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-035",
+  "domain": "BUSINESS",
+  "rawIntent": "how to start an online bakery business in India",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 73087,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Starting an online bakery business in India can be both exciting and rewarding. Here’s a step-by-step guide to help you get started:\n\n### 1. Market Research\n- **Understand the Local Market**: Identify your target audience, their preferences, and any specific dietary requirements (e.g., gluten-free, vegan).\n- **Competitor Analysis**: Look at existing bakeries in your area or online to understand what they offer and how they market themselves.\n- **Trends**: Stay updated with current baking trends such as keto-friendly products, custom designs for events, etc.\n\n### 2. Business Plan\n- **Define Your Brand**: Decide on the name, logo, and brand identity of your bakery.\n- **Product Line**: Determine what types of baked goods you will offer (e.g., cakes, pastries, breads).\n- **Pricing Strategy**: Set competitive prices while ensuring profitability.\n\n### 3. Legal Requirements\n- **Register Your Business**: Register as a sole proprietorship",
+    "truncated": true,
+    "timeToFirstActionMs": 73087,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 7200000,
+    "interactionSteps": 12,
+    "userFrictionScore": 8.2,
+    "uncertaintyIndex": 0.7,
+    "costProxyInr": 42,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

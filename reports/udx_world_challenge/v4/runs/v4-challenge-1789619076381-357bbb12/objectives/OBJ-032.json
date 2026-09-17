@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-032",
+  "domain": "BUSINESS",
+  "rawIntent": "GST registration process for freelancer",
+  "systemResolutionLatencyMs": 1,
+  "modelLatencyMs": 76852,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "RESOLVED",
+    "targetUrl": "https://reg.gst.gov.in",
+    "timeToFirstActionMs": 1,
+    "interactionSteps": 2,
+    "userFrictionScore": 2,
+    "uncertaintyIndex": 0.05,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 0.95,
+    "hasProofEvidence": true
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "To register for Goods and Services Tax (GST) as a freelancer in India, you need to follow these general steps:\n\n### 1. Determine Your Eligibility\n- **Turnover**: Check if your annual turnover exceeds the threshold limit for GST registration. For most states, this is ₹20 lakh per year.\n- **Nature of Business**: Ensure that your business falls under a category that requires GST.\n\n### 2. Choose the Appropriate GST Structure\n- **Regular Scheme**: If you expect to generate more than ₹50 lakh in annual turnover or have interstate transactions.\n- **Simplified Scheme (composition scheme)**: For small businesses with an annual turnover up to ₹75 lakh and no interstate transactions.\n\n### 3. Obtain a PAN Card\nIf you don't already have one, apply for a Permanent Account Number (PAN) from the Income Tax Department.\n\n### 4. Get a Digital Signature Certificate (DSC)\nYou will need a DSC to file GST",
+    "truncated": true,
+    "timeToFirstActionMs": 76852,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 7200000,
+    "interactionSteps": 12,
+    "userFrictionScore": 8.2,
+    "uncertaintyIndex": 0.7,
+    "costProxyInr": 42,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX provided direct verified executable action target with zero search pogo-sticking"
+}

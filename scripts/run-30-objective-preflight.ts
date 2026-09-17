@@ -341,24 +341,42 @@ export const PRE_REGISTERED_30_OBJECTIVES: StratifiedObjective[] = [
   },
 ];
 
-export type ComparatorStatus = 'COMPARATOR_READY' | 'COMPARATOR_DEGRADED' | 'COMPARATOR_UNAVAILABLE';
+/**
+ * v3.3 Permitted comparator statuses (Ollama-only).
+ * COMPARATOR_DEGRADED is NOT permitted — Ollama is either ready or unavailable.
+ */
+export type ComparatorStatus =
+  | 'COMPARATOR_READY'
+  | 'COMPARATOR_UNAVAILABLE'
+  | 'COMPARATOR_MODEL_UNAVAILABLE'
+  | 'COMPARATOR_MODEL_ERROR'
+  | 'COMPARATOR_BLINDING_VIOLATION'
+  | 'COMPARATOR_QUALIFICATION_FAILED';
 
 export interface ComparatorProbeResult {
   status: ComparatorStatus;
   ollama: { reachable: boolean; latencyMs?: number; models?: string[]; error?: string };
-  gemini: { configured: boolean; reachable: boolean; error?: string };
   verdict: string;
 }
 
 export async function probeComparator(): Promise<ComparatorProbeResult> {
+  /**
+   * v3.3 POLICY (HARD):
+   *   - Ollama only at http://localhost:11434.
+   *   - DO NOT implement Gemini, OpenAI, or any cloud LLM fallback.
+   *   - COMPARATOR_UNAVAILABLE ≠ GENERIC_AI_SCORE = 0 ≠ UDX_WIN.
+   *   - Model priority: qwen2.5:7b → llama3:8b → phi3:mini.
+   *   - COMPARATOR_DEGRADED is NOT a permitted status.
+   */
+  const MODEL_PRIORITY_PREFIXES = ['qwen2.5', 'llama3', 'phi3'];
+
   const result: ComparatorProbeResult = {
     status: 'COMPARATOR_UNAVAILABLE',
     ollama: { reachable: false },
-    gemini: { configured: false, reachable: false },
     verdict: '',
   };
 
-  // 1. Probe Ollama daemon on localhost:11434
+  // Probe Ollama daemon on localhost:11434
   const startOllama = Date.now();
   try {
     const res = await fetch('http://localhost:11434/api/tags', {
@@ -376,36 +394,28 @@ export async function probeComparator(): Promise<ComparatorProbeResult> {
     result.ollama.error = err.message || 'Connection refused';
   }
 
-  // 2. Check Gemini Cloud API
-  const geminiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_AI_API_KEY;
-  if (geminiKey) {
-    result.gemini.configured = true;
-    try {
-      const gRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${geminiKey}`, {
-        signal: AbortSignal.timeout(4000),
-      });
-      if (gRes.ok) {
-        result.gemini.reachable = true;
-      } else {
-        result.gemini.error = `HTTP ${gRes.status}`;
-      }
-    } catch (err: any) {
-      result.gemini.error = err.message || 'Network error';
+  // Determine status using v3.3 model priority
+  if (result.ollama.reachable && result.ollama.models) {
+    const hasApprovedModel = result.ollama.models.some(m =>
+      MODEL_PRIORITY_PREFIXES.some(prefix => m.startsWith(prefix))
+    );
+    if (hasApprovedModel) {
+      result.status = 'COMPARATOR_READY';
+      const selectedModel = result.ollama.models.find(m =>
+        MODEL_PRIORITY_PREFIXES.some(prefix => m.startsWith(prefix))
+      );
+      result.verdict = `Ollama comparator READY with approved model: ${selectedModel}. Proceed to qualification suite.`;
+    } else {
+      result.status = 'COMPARATOR_MODEL_UNAVAILABLE';
+      result.verdict = `Ollama is reachable but none of [qwen2.5:7b, llama3:8b, phi3:mini] are installed. ` +
+        `Install an approved model to enable World Challenge v4. Available: [${result.ollama.models.join(', ')}]`;
     }
   } else {
-    result.gemini.error = 'API key not set in environment';
-  }
-
-  // Determine aggregate state
-  if (result.ollama.reachable && result.ollama.models?.some(m => m.includes('phi3') || m.includes('llama3'))) {
-    result.status = 'COMPARATOR_READY';
-    result.verdict = 'Local Ollama engine operational with required comparator model.';
-  } else if (result.ollama.reachable || result.gemini.reachable) {
-    result.status = 'COMPARATOR_DEGRADED';
-    result.verdict = 'Partial comparator connectivity detected; fallback available but degraded.';
-  } else {
     result.status = 'COMPARATOR_UNAVAILABLE';
-    result.verdict = 'Zero comparative AI engines reachable (Ollama offline & no Gemini key). 100-objective challenge must abort.';
+    result.verdict = 'Ollama is unreachable at http://localhost:11434. ' +
+      'Start Ollama and install an approved model. ' +
+      'COMPARATOR_UNAVAILABLE ≠ GENERIC_AI_SCORE = 0 ≠ UDX_WIN. ' +
+      'World Challenge v4 requires a live, qualified Ollama comparator.';
   }
 
   return result;
@@ -462,7 +472,6 @@ export async function run30ObjectivePreflight(): Promise<{
   const comparator = await probeComparator();
   console.log(`Comparator Status: [${comparator.status}]`);
   console.log(`  Ollama: ${comparator.ollama.reachable ? 'CONNECTED (' + comparator.ollama.latencyMs + 'ms)' : 'OFFLINE (' + comparator.ollama.error + ')'}`);
-  console.log(`  Gemini: ${comparator.gemini.reachable ? 'CONNECTED' : 'UNAVAILABLE (' + comparator.gemini.error + ')'}`);
   console.log(`  Verdict: ${comparator.verdict}\n`);
 
   const results: ObjectiveCheckResult[] = [];
@@ -666,7 +675,7 @@ export async function run30ObjectivePreflight(): Promise<{
   if (honestyGatePercent < 100.0) rejectionReasons.push(`Honesty Gate correctness must be 100.0% (observed: ${honestyGatePercent}%)`);
   if (targetCollisionCount > 0) rejectionReasons.push(`Unacceptable cross-domain collisions detected: ${targetCollisionCount}`);
   if (sIsrPercent < 95.0) rejectionReasons.push(`S-ISR must be >= 95.0% (observed: ${sIsrPercent}%)`);
-  if (comparator.status !== 'COMPARATOR_READY') rejectionReasons.push(`External Comparator must be COMPARATOR_READY to run 100-objective World Challenge (observed: ${comparator.status})`);
+  if (comparator.status !== 'COMPARATOR_READY') rejectionReasons.push(`Comparator must be COMPARATOR_READY (Ollama 7-stage handshake) AND COMPARATOR_QUALIFIED (30-objective blind suite) to run World Challenge v4 (observed: ${comparator.status}). COMPARATOR_UNAVAILABLE ≠ GENERIC_AI_SCORE = 0 ≠ UDX_WIN.`);
 
   const progressionPermitted = rejectionReasons.length === 0;
 
@@ -712,7 +721,17 @@ export async function run30ObjectivePreflight(): Promise<{
   };
 }
 
-run30ObjectivePreflight().catch(err => {
-  console.error('Fatal Preflight Error:', err);
-  process.exit(1);
-});
+// Only auto-run when this script is executed directly, not when imported as a module.
+// This prevents the preflight from firing when run-comparator-qualification.ts or
+// run-udx-world-challenge-v4.ts import PRE_REGISTERED_30_OBJECTIVES from here.
+const isDirectRun = process.argv[1] &&
+  (process.argv[1].includes('run-30-objective-preflight') ||
+   process.argv[1].includes('run-30-objective-preflight.cjs'));
+
+if (isDirectRun) {
+  run30ObjectivePreflight().catch(err => {
+    console.error('Fatal Preflight Error:', err);
+    process.exit(1);
+  });
+}
+

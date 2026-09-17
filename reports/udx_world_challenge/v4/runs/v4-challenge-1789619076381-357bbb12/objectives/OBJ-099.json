@@ -1,0 +1,41 @@
+{
+  "objectiveId": "OBJ-099",
+  "domain": "PERSONAL",
+  "rawIntent": "adopt a dog from shelter in india",
+  "systemResolutionLatencyMs": 0,
+  "modelLatencyMs": 77594,
+  "timeToVerifiedOutcome": null,
+  "udx": {
+    "status": "NO_RELIABLE_PATH",
+    "targetUrl": null,
+    "timeToFirstActionMs": 0,
+    "interactionSteps": 1,
+    "userFrictionScore": 1,
+    "uncertaintyIndex": 0,
+    "costProxyInr": 0.05,
+    "outcomeQualityScore": 1,
+    "hasProofEvidence": false
+  },
+  "genericAI": {
+    "status": "OBJECTIVE_PASSED",
+    "model": "qwen2.5:7b-instruct-q8_0",
+    "responseText": "Adopting a dog from an animal shelter in India can be a rewarding experience! Here’s a step-by-step guide to help you through the process:\n\n### 1. Research Shelters\n- **Online Search**: Look for reputable shelters or rescue organizations online. Websites like Shelter Animals Count, Petfinder, and local NGO websites often list available dogs.\n- **Social Media**: Follow animal welfare groups on platforms like Facebook, Instagram, and Twitter to stay updated about adoptable pets.\n\n### 2. Visit the Shelter\n- **Contact Information**: Once you find a shelter that interests you, contact them for an appointment or visit their website for visiting hours.\n- **Meet the Dogs**: Spend time with the dogs to understand their personalities and needs. Ask if they are good with children, other animals, and what kind of training they have received.\n\n### 3. Understand Requirements\n- **Adoption Process**: Each shelter has its own process. Some may require an application form, a home visit",
+    "truncated": true,
+    "timeToFirstActionMs": 77594,
+    "interactionSteps": 4,
+    "userFrictionScore": 5,
+    "uncertaintyIndex": 0.45,
+    "costProxyInr": 0.2,
+    "outcomeQualityScore": 0.6
+  },
+  "traditional": {
+    "timeToFirstActionMs": 1200000,
+    "interactionSteps": 4,
+    "userFrictionScore": 4.5,
+    "uncertaintyIndex": 0.5,
+    "costProxyInr": 7,
+    "outcomeQualityScore": 0.48
+  },
+  "verdict": "UDX_WIN",
+  "verdictReason": "UDX Honesty Gate correctly refused impossible/paradoxical intent with zero false-certainty"
+}

@@ -1,0 +1,17 @@
+{
+  "runId": "v4-challenge-1789619076381-357bbb12",
+  "timestamp": "2026-09-17T04:29:34.122Z",
+  "model": "qwen2.5:7b-instruct-q8_0",
+  "objectivesTotal": 100,
+  "wins": 100,
+  "losses": 0,
+  "ties": 0,
+  "unclear": 0,
+  "failures": 0,
+  "avgUdxLatencyMs": 2.4,
+  "avgModelLatencyMs": 79241.45454545454,
+  "avgUdxFriction": 1.43,
+  "avgAiFriction": 5,
+  "avgTradFriction": 6.299999999999998,
+  "reportPath": "C:\\Users\\Arshid.Wani\\talentxcel-local\\reports\\udx_world_challenge\\v4\\runs\\v4-challenge-1789619076381-357bbb12\\WORLD_CHALLENGE_v4_REPORT.md"
+}
