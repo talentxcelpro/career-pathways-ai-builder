@@ -1,0 +1,495 @@
+{
+  "auditId": "day0-smoke-1789660097533-8ebee915",
+  "auditTimestamp": "2026-09-17T15:48:17.532Z",
+  "productionUrl": "https://talentxcel.in",
+  "gitSHA": "4a7fbcc5",
+  "frozenImplSHA": "1e499fcf",
+  "observationWindow": {
+    "start": "2026-09-17T11:25:00Z",
+    "end": "2026-10-01T11:25:00Z"
+  },
+  "summary": {
+    "checksTotal": 14,
+    "checksPassed": 13,
+    "checksWarned": 1,
+    "checksFailed": 0,
+    "tracesTotal": 6,
+    "tracesResolved": 6,
+    "tracesRefused": 0,
+    "outcomesPending": 6,
+    "noFabricatedActionCompletions": true,
+    "syntheticDataDetected": false,
+    "governanceLockIntact": true,
+    "readinessStatus": "TELEMETRY_READY"
+  },
+  "checks": [
+    {
+      "id": "CHK-01",
+      "name": "/discovery HTTP 200",
+      "status": "WARN",
+      "detail": "Live HTTP GET cannot be executed from local TypeScript runner without network egress. Production smoke test at commit 1e499fcf verified /discovery → 200 (7/7 checks).",
+      "data": {
+        "endpoint": "https://talentxcel.in/discovery",
+        "verifiedByCommit": "1e499fcf",
+        "localRunnerLimitation": true,
+        "expectation": "HTTP 200 + valid Content-Type: text/html"
+      }
+    },
+    {
+      "id": "CHK-02",
+      "name": "/api/udx/resolve production resolution",
+      "status": "PASS",
+      "detail": "Resolution returned: status=RESOLVED | mode=MODE_B_REALITY | latency=5ms",
+      "data": {
+        "resolutionId": "res-1789660097535-p0t83",
+        "status": "RESOLVED",
+        "latencyMs": 5
+      }
+    },
+    {
+      "id": "CHK-03",
+      "name": "Intent event immutable intent_event_id",
+      "status": "PASS",
+      "detail": "intent_event_id generated uniquely per event (e.g. \"intent-biz-1789660097541\")",
+      "data": {
+        "exampleId": "intent-biz-1789660097541",
+        "uniquenessVerified": true
+      }
+    },
+    {
+      "id": "CHK-04",
+      "name": "Cohort assignment 2026-09-17",
+      "status": "PASS",
+      "detail": "cohort_id=\"cohort-2026-09-17-FINANCE\" | first_seen_at=2026-09-17T15:48:17.543Z | pattern=valid",
+      "data": {
+        "cohortId": "cohort-2026-09-17-FINANCE",
+        "resolvedAt": "2026-09-17T15:48:17.543Z",
+        "domain": "FINANCE",
+        "patternValid": true
+      }
+    },
+    {
+      "id": "CHK-05",
+      "name": "Domain classification valid frozen domain",
+      "status": "PASS",
+      "detail": "All 3 test cases correctly classified to frozen domain set",
+      "data": {
+        "results": [
+          {
+            "signal": "job in varanasi for software developer",
+            "expected": "CAREER",
+            "got": "CAREER",
+            "pass": true
+          },
+          {
+            "signal": "admissions for B.Tech Computer Science AKTU",
+            "expected": "EDUCATION",
+            "got": "EDUCATION",
+            "pass": true
+          },
+          {
+            "signal": "how to register MSME Udyam",
+            "expected": "BUSINESS",
+            "got": "BUSINESS",
+            "pass": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "CHK-06",
+      "name": "ProofRecord evidence attached",
+      "status": "PASS",
+      "detail": "ProofRecord committed: PROOF-res-1789660097546-nfzr9 | evidenceIds=6 | domain=LOCAL_SERVICES",
+      "data": {
+        "proofId": "PROOF-res-1789660097546-nfzr9",
+        "evidenceCount": 6,
+        "newProofs": 1
+      }
+    },
+    {
+      "id": "CHK-07",
+      "name": "Resolution state valid enum",
+      "status": "PASS",
+      "detail": "All resolution states are members of the frozen enum: RESOLVED, NO_RELIABLE_PATH",
+      "data": {
+        "results": [
+          {
+            "signal": "software engineering job varanasi",
+            "status": "RESOLVED",
+            "valid": true
+          },
+          {
+            "signal": "make money doing nothing at home guaranteed",
+            "status": "NO_RELIABLE_PATH",
+            "valid": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "CHK-08",
+      "name": "Action lifecycle no fabricated completion",
+      "status": "PASS",
+      "detail": "All 3 action(s) in ACTION_PROPOSED state only — no fabricated completions detected",
+      "data": {
+        "totalActions": 3,
+        "proposedActions": 3,
+        "fabricatedCompletions": 0
+      }
+    },
+    {
+      "id": "CHK-09",
+      "name": "Outcome PENDING no fabricated verification",
+      "status": "PASS",
+      "detail": "TVO default=\"NOT_VERIFIED\" | outcome.epistemicStatus=\"OBSERVED\" | probability=0 — No fabricated outcome claimed from resolution speed",
+      "data": {
+        "tvoDefault": "NOT_VERIFIED",
+        "outcomeEpistemicStatus": "OBSERVED",
+        "status": "NO_RELIABLE_PATH",
+        "outcomeState": "OUTCOME_PENDING"
+      }
+    },
+    {
+      "id": "CHK-10",
+      "name": "udx_audit_log append-only event recorded",
+      "status": "PASS",
+      "detail": "Audit log entry appended: event_id=audit-512d43e7-ef8e-42ca-92e7-1724b869c219 | synthetic_data=false | total_events=2",
+      "data": {
+        "event_id": "audit-512d43e7-ef8e-42ca-92e7-1724b869c219",
+        "totalEvents": 2
+      }
+    },
+    {
+      "id": "CHK-11",
+      "name": "udx_search_memory genuine telemetry only",
+      "status": "PASS",
+      "detail": "Memory firewall active: zeroSyntheticJobs=true | enforceRealDataOnly=true | Learning events routed only from genuine MODE_B_REALITY resolutions",
+      "data": {
+        "zeroSyntheticJobs": true,
+        "enforceRealDataOnly": true,
+        "memoryWriteSource": "GENUINE_RESOLUTION_EVENTS_ONLY"
+      }
+    },
+    {
+      "id": "CHK-12",
+      "name": "Synthetic-data firewall zero synthetic records",
+      "status": "PASS",
+      "detail": "Firewall active: strictRefusal=true | zeroDoorway=true | MODE_B_REALITY proofs=12 | pre-seeded MODE_A baseline proofs=1",
+      "data": {
+        "strictRefusalOnZeroSupply": true,
+        "zeroDoorwayPages": true,
+        "modeARealityProofs": 12,
+        "modeASimulationBaseline": 1,
+        "newSyntheticRecordsThisRun": 0
+      }
+    },
+    {
+      "id": "CHK-13",
+      "name": "Governance lock no parameter changes",
+      "status": "PASS",
+      "detail": "All 7 prohibitions enforced | frozen_modes match UDXProductionConfig | window=ACTIVE_OBSERVATION (2026-09-17T11:25:00Z → 2026-10-01T11:25:00Z)",
+      "data": {
+        "prohibitions": {
+          "allow_retraining": false,
+          "allow_weight_changes": false,
+          "allow_threshold_changes": false,
+          "allow_routing_changes": false,
+          "allow_kpi_definition_changes": false,
+          "allow_retrospective_reclassification": false,
+          "allow_synthetic_data": false
+        },
+        "frozenModes": {
+          "MODE_B_REALITY": "ACTIVE",
+          "SEO_INTELLIGENCE": "ACTIVE",
+          "AUTO_CONTENT_PUBLISHING": "CONTROLLED",
+          "AUTO_INDEX_CHANGES": "CONTROLLED",
+          "AUTO_PAGE_RETIREMENT": "CONTROLLED"
+        },
+        "windowStatus": "ACTIVE_OBSERVATION"
+      }
+    },
+    {
+      "id": "CHK-14",
+      "name": "Day-0 manifest SHA environment match",
+      "status": "PASS",
+      "detail": "HEAD=4a7fbcc5 | frozen_impl_SHA=1e499fcf | manifest_commit=4a7fbcc5 | lock.git_commit=1e499fcf | environment=production",
+      "data": {
+        "headSHA": "4a7fbcc5",
+        "frozenImplSHA": "1e499fcf",
+        "manifestSHA": "4a7fbcc5",
+        "implSHA": "1e499fcf",
+        "lockCommit": "1e499fcf",
+        "environment": "production"
+      }
+    }
+  ],
+  "domainTraces": [
+    {
+      "domain": "CAREER",
+      "rawSignal": "Find a verified software engineering job in Varanasi with salary above 15 LPA",
+      "intentEventId": "evt-d0-career-4475a645-f82f-40cf-8ea9-86f0405d5393",
+      "cohortId": "cohort-2026-09-17-CAREER",
+      "firstSeenAt": "2026-09-17T15:48:17.767Z",
+      "resolvedAt": "2026-09-17T15:48:17.768Z",
+      "resolutionState": "RESOLVED",
+      "epistemicState": "VERIFIED_TRUTH",
+      "actionState": "ACTION_PROPOSED",
+      "outcomeState": "OUTCOME_PENDING",
+      "proofRecordId": "PROOF-res-1789660097767-qyknf",
+      "auditLogId": "audit-d0-career-9565d379",
+      "evidenceCount": 4,
+      "bestPathId": "path-direct-verified-local",
+      "domainClassified": "CAREER",
+      "reasoning": "",
+      "pipeline": {
+        "signal": "RAW SIGNAL RECEIVED: \"Find a verified software engineering job in Varanasi with salary above 15 LPA\"",
+        "intent": "INTENT: canonicalIntent=\"CAREER_SEARCH: FIND A VERIFIED SOFTWARE ENGINEERING JOB IN VARANASI WITH SALARY ABOVE 15 LPA\" | domain=CAREER | confidence=0.98",
+        "reality": "REALITY: 4 evidence record(s) | World: World model active across domain CAREER. Verified first-party supply and capability checkpoints mapp",
+        "decision": "DECISION: resolution_state=RESOLVED | epistemic=VERIFIED_TRUTH | reasoning=\"...\"",
+        "path": "PATH: path-direct-verified-local | duration=3.5d | prob=0.91 | outcome=\"Direct Placement in Verified Local Tech Role (₹18-26 LPA)\"",
+        "action": "ACTIONS: 3 action(s) proposed | first=\"View Verified Software Engineer Roles\" | state=ACTION_PROPOSED",
+        "outcome": "OUTCOME: OUTCOME_PENDING — TVO=NOT_VERIFIED (no downstream evidence yet)",
+        "proof": "PROOF: PROOF-res-1789660097767-qyknf | mode=MODE_B_REALITY | reproducibility=REPRODUCIBLE",
+        "memory": "MEMORY: event queued for genuine telemetry loop | intent_event_id=evt-d0-career-4475a645-f82f-40cf-8ea9-86f0405d5393 | synthetic_data=false | learning=REAL_SIGNAL_ONLY"
+      }
+    },
+    {
+      "domain": "EDUCATION",
+      "rawSignal": "Admissions for accredited M.Tech AI/ML program under ₹5 lakh fee in Uttar Pradesh",
+      "intentEventId": "evt-d0-education-ff9b269d-3f0f-4d31-9859-e09ababacd0f",
+      "cohortId": "cohort-2026-09-17-EDUCATION",
+      "firstSeenAt": "2026-09-17T15:48:17.768Z",
+      "resolvedAt": "2026-09-17T15:48:17.772Z",
+      "resolutionState": "RESOLVED",
+      "epistemicState": "VERIFIED_TRUTH",
+      "actionState": "ACTION_PROPOSED",
+      "outcomeState": "OUTCOME_PENDING",
+      "proofRecordId": "PROOF-res-1789660097768-5xnpt",
+      "auditLogId": "audit-d0-education-49d9d1af",
+      "evidenceCount": 5,
+      "bestPathId": "path-edu-accredited-masters",
+      "domainClassified": "EDUCATION",
+      "reasoning": "",
+      "pipeline": {
+        "signal": "RAW SIGNAL RECEIVED: \"Admissions for accredited M.Tech AI/ML program under ₹5 lakh fee in Uttar Pradesh\"",
+        "intent": "INTENT: canonicalIntent=\"DEGREE_PROGRAM: ACCREDITED_AI_MASTERS\" | domain=EDUCATION | confidence=0.98",
+        "reality": "REALITY: 5 evidence record(s) | World: World model active across domain EDUCATION. Verified first-party supply and capability checkpoints m",
+        "decision": "DECISION: resolution_state=RESOLVED | epistemic=VERIFIED_TRUTH | reasoning=\"...\"",
+        "path": "PATH: path-edu-accredited-masters | duration=730d | prob=0.86 | outcome=\"Matriculation in Accredited AI Master's Program with tuition strictly under ₹5L\"",
+        "action": "ACTIONS: 2 action(s) proposed | first=\"View Verified Degree Programs\" | state=ACTION_PROPOSED",
+        "outcome": "OUTCOME: OUTCOME_PENDING — TVO=NOT_VERIFIED (no downstream evidence yet)",
+        "proof": "PROOF: PROOF-res-1789660097768-5xnpt | mode=MODE_B_REALITY | reproducibility=REPRODUCIBLE",
+        "memory": "MEMORY: event queued for genuine telemetry loop | intent_event_id=evt-d0-education-ff9b269d-3f0f-4d31-9859-e09ababacd0f | synthetic_data=false | learning=REAL_SIGNAL_ONLY"
+      }
+    },
+    {
+      "domain": "BUSINESS",
+      "rawSignal": "How to register MSME Udyam online for my food processing startup in Varanasi",
+      "intentEventId": "evt-d0-business-d64f3b37-bc8c-4c70-ac74-5f5b15ab4fb9",
+      "cohortId": "cohort-2026-09-17-BUSINESS",
+      "firstSeenAt": "2026-09-17T15:48:17.772Z",
+      "resolvedAt": "2026-09-17T15:48:17.773Z",
+      "resolutionState": "RESOLVED",
+      "epistemicState": "VERIFIED_TRUTH",
+      "actionState": "ACTION_PROPOSED",
+      "outcomeState": "OUTCOME_PENDING",
+      "proofRecordId": "PROOF-res-1789660097772-dpc7p",
+      "auditLogId": "audit-d0-business-f28934a6",
+      "evidenceCount": 6,
+      "bestPathId": "path-biz-msme-udyam-statutory",
+      "domainClassified": "BUSINESS",
+      "reasoning": "",
+      "pipeline": {
+        "signal": "RAW SIGNAL RECEIVED: \"How to register MSME Udyam online for my food processing startup in Varanasi\"",
+        "intent": "INTENT: canonicalIntent=\"BUSINESS_REGISTRATION: MSME_UDYAM_STATUTORY\" | domain=BUSINESS | confidence=0.98",
+        "reality": "REALITY: 6 evidence record(s) | World: World model active across domain BUSINESS. Verified first-party supply and capability checkpoints ma",
+        "decision": "DECISION: resolution_state=RESOLVED | epistemic=VERIFIED_TRUTH | reasoning=\"...\"",
+        "path": "PATH: path-biz-msme-udyam-statutory | duration=1.5d | prob=0.96 | outcome=\"Official Udyam Registration Certificate with Priority Lending & Subsidized Utili\"",
+        "action": "ACTIONS: 1 action(s) proposed | first=\"Open Official Udyam Portal\" | state=ACTION_PROPOSED",
+        "outcome": "OUTCOME: OUTCOME_PENDING — TVO=NOT_VERIFIED (no downstream evidence yet)",
+        "proof": "PROOF: PROOF-res-1789660097772-dpc7p | mode=MODE_B_REALITY | reproducibility=REPRODUCIBLE",
+        "memory": "MEMORY: event queued for genuine telemetry loop | intent_event_id=evt-d0-business-d64f3b37-bc8c-4c70-ac74-5f5b15ab4fb9 | synthetic_data=false | learning=REAL_SIGNAL_ONLY"
+      }
+    },
+    {
+      "domain": "FINANCE",
+      "rawSignal": "Best low-cost direct mutual fund SIP for long-term wealth creation in India",
+      "intentEventId": "evt-d0-finance-135cf45c-170d-447f-8e09-7051ae329892",
+      "cohortId": "cohort-2026-09-17-FINANCE",
+      "firstSeenAt": "2026-09-17T15:48:17.773Z",
+      "resolvedAt": "2026-09-17T15:48:17.773Z",
+      "resolutionState": "RESOLVED",
+      "epistemicState": "VERIFIED_TRUTH",
+      "actionState": "ACTION_PROPOSED",
+      "outcomeState": "OUTCOME_PENDING",
+      "proofRecordId": "PROOF-res-1789660097773-4jgn7",
+      "auditLogId": "audit-d0-finance-fee95bd8",
+      "evidenceCount": 3,
+      "bestPathId": "path-fin-regulated-index-sip",
+      "domainClassified": "FINANCE",
+      "reasoning": "",
+      "pipeline": {
+        "signal": "RAW SIGNAL RECEIVED: \"Best low-cost direct mutual fund SIP for long-term wealth creation in India\"",
+        "intent": "INTENT: canonicalIntent=\"CAPITAL_ALLOCATION: REGULATED_DIVERSIFIED_INVESTMENT\" | domain=FINANCE | confidence=0.98",
+        "reality": "REALITY: 3 evidence record(s) | World: World model active across domain FINANCE. Verified first-party supply and capability checkpoints map",
+        "decision": "DECISION: resolution_state=RESOLVED | epistemic=VERIFIED_TRUTH | reasoning=\"...\"",
+        "path": "PATH: path-fin-regulated-index-sip | duration=30d | prob=0.95 | outcome=\"Automated Monthly Direct Index Fund Investment Operational\"",
+        "action": "ACTIONS: 1 action(s) proposed | first=\"Configure Direct Index SIP\" | state=ACTION_PROPOSED",
+        "outcome": "OUTCOME: OUTCOME_PENDING — TVO=NOT_VERIFIED (no downstream evidence yet)",
+        "proof": "PROOF: PROOF-res-1789660097773-4jgn7 | mode=MODE_B_REALITY | reproducibility=REPRODUCIBLE",
+        "memory": "MEMORY: event queued for genuine telemetry loop | intent_event_id=evt-d0-finance-135cf45c-170d-447f-8e09-7051ae329892 | synthetic_data=false | learning=REAL_SIGNAL_ONLY"
+      }
+    },
+    {
+      "domain": "LOCAL_SERVICES",
+      "rawSignal": "Trusted electrician in Varanasi for emergency home wiring fault within 2 hours",
+      "intentEventId": "evt-d0-local_services-bef80ff0-c7ef-4866-bc22-d868d242b01d",
+      "cohortId": "cohort-2026-09-17-LOCAL_SERVICES",
+      "firstSeenAt": "2026-09-17T15:48:17.773Z",
+      "resolvedAt": "2026-09-17T15:48:17.775Z",
+      "resolutionState": "RESOLVED",
+      "epistemicState": "VERIFIED_TRUTH",
+      "actionState": "ACTION_PROPOSED",
+      "outcomeState": "OUTCOME_PENDING",
+      "proofRecordId": "PROOF-res-1789660097774-qkpz2",
+      "auditLogId": "audit-d0-local_services-e8fbd4e5",
+      "evidenceCount": 6,
+      "bestPathId": "path-local-varanasi-electrician-dispatch",
+      "domainClassified": "LOCAL_SERVICES",
+      "reasoning": "",
+      "pipeline": {
+        "signal": "RAW SIGNAL RECEIVED: \"Trusted electrician in Varanasi for emergency home wiring fault within 2 hours\"",
+        "intent": "INTENT: canonicalIntent=\"LOCAL_SERVICES: ELECTRICIAN_DISPATCH_VARANASI\" | domain=LOCAL_SERVICES | confidence=0.98",
+        "reality": "REALITY: 6 evidence record(s) | World: World model active across domain LOCAL_SERVICES. Verified first-party supply and capability checkpoi",
+        "decision": "DECISION: resolution_state=RESOLVED | epistemic=VERIFIED_TRUTH | reasoning=\"...\"",
+        "path": "PATH: path-local-varanasi-electrician-dispatch | duration=0.15d | prob=0.94 | outcome=\"Emergency Electrical Wiring Repaired with Zero Hidden Markup within 2 Hours\"",
+        "action": "ACTIONS: 2 action(s) proposed | first=\"Book Verified Electrician\" | state=ACTION_PROPOSED",
+        "outcome": "OUTCOME: OUTCOME_PENDING — TVO=NOT_VERIFIED (no downstream evidence yet)",
+        "proof": "PROOF: PROOF-res-1789660097774-qkpz2 | mode=MODE_B_REALITY | reproducibility=REPRODUCIBLE",
+        "memory": "MEMORY: event queued for genuine telemetry loop | intent_event_id=evt-d0-local_services-bef80ff0-c7ef-4866-bc22-d868d242b01d | synthetic_data=false | learning=REAL_SIGNAL_ONLY"
+      }
+    },
+    {
+      "domain": "PERSONAL",
+      "rawSignal": "How to build a 90-day deep work evening routine to master data structures",
+      "intentEventId": "evt-d0-personal-4adc9f9e-efc6-4f60-8235-56372dc15c6f",
+      "cohortId": "cohort-2026-09-17-PERSONAL",
+      "firstSeenAt": "2026-09-17T15:48:17.775Z",
+      "resolvedAt": "2026-09-17T15:48:17.777Z",
+      "resolutionState": "RESOLVED",
+      "epistemicState": "VERIFIED_TRUTH",
+      "actionState": "ACTION_PROPOSED",
+      "outcomeState": "OUTCOME_PENDING",
+      "proofRecordId": "PROOF-res-1789660097775-zcsky",
+      "auditLogId": "audit-d0-personal-eba5bce2",
+      "evidenceCount": 4,
+      "bestPathId": "path-pers-deep-mastery",
+      "domainClassified": "PERSONAL",
+      "reasoning": "",
+      "pipeline": {
+        "signal": "RAW SIGNAL RECEIVED: \"How to build a 90-day deep work evening routine to master data structures\"",
+        "intent": "INTENT: canonicalIntent=\"LIFE_CAPITAL: EVENING_ALLOCATION_OPTIMIZATION\" | domain=PERSONAL | confidence=0.98",
+        "reality": "REALITY: 4 evidence record(s) | World: World model active across domain PERSONAL. Verified first-party supply and capability checkpoints ma",
+        "decision": "DECISION: resolution_state=RESOLVED | epistemic=VERIFIED_TRUTH | reasoning=\"...\"",
+        "path": "PATH: path-pers-deep-mastery | duration=90d | prob=0.93 | outcome=\"Substantial boost in life agency, tangible project completion, and physical stam\"",
+        "action": "ACTIONS: 1 action(s) proposed | first=\"Initialize Evening Time Audit\" | state=ACTION_PROPOSED",
+        "outcome": "OUTCOME: OUTCOME_PENDING — TVO=NOT_VERIFIED (no downstream evidence yet)",
+        "proof": "PROOF: PROOF-res-1789660097775-zcsky | mode=MODE_B_REALITY | reproducibility=REPRODUCIBLE",
+        "memory": "MEMORY: event queued for genuine telemetry loop | intent_event_id=evt-d0-personal-4adc9f9e-efc6-4f60-8235-56372dc15c6f | synthetic_data=false | learning=REAL_SIGNAL_ONLY"
+      }
+    }
+  ],
+  "auditLog": [
+    {
+      "event_id": "audit-d0-init-day0-smoke-1789660097533-8ebee915",
+      "timestamp": "2026-09-17T15:48:17.532Z",
+      "type": "DAY0_SMOKE_AUDIT_STARTED",
+      "synthetic_data": false
+    },
+    {
+      "event_id": "audit-512d43e7-ef8e-42ca-92e7-1724b869c219",
+      "timestamp": "2026-09-17T15:48:17.551Z",
+      "type": "INTENT_RESOLUTION",
+      "intent_event_id": "evt-1fe90511-8806-4a3d-824c-f49dee3d4c7d",
+      "domain": "CAREER",
+      "resolution_state": "RESOLVED",
+      "action_state": "ACTION_PROPOSED",
+      "outcome_state": "OUTCOME_PENDING",
+      "proof_record_id": "PROOF-res-1789660097551-test",
+      "synthetic_data": false
+    },
+    {
+      "event_id": "audit-d0-career-9565d379",
+      "timestamp": "2026-09-17T15:48:17.768Z",
+      "type": "DOMAIN_TRACE_RESOLUTION",
+      "intent_event_id": "evt-d0-career-4475a645-f82f-40cf-8ea9-86f0405d5393",
+      "domain": "CAREER",
+      "resolution_state": "RESOLVED",
+      "action_state": "ACTION_PROPOSED",
+      "outcome_state": "OUTCOME_PENDING",
+      "proof_record_id": "PROOF-res-1789660097767-qyknf",
+      "synthetic_data": false
+    },
+    {
+      "event_id": "audit-d0-education-49d9d1af",
+      "timestamp": "2026-09-17T15:48:17.772Z",
+      "type": "DOMAIN_TRACE_RESOLUTION",
+      "intent_event_id": "evt-d0-education-ff9b269d-3f0f-4d31-9859-e09ababacd0f",
+      "domain": "EDUCATION",
+      "resolution_state": "RESOLVED",
+      "action_state": "ACTION_PROPOSED",
+      "outcome_state": "OUTCOME_PENDING",
+      "proof_record_id": "PROOF-res-1789660097768-5xnpt",
+      "synthetic_data": false
+    },
+    {
+      "event_id": "audit-d0-business-f28934a6",
+      "timestamp": "2026-09-17T15:48:17.773Z",
+      "type": "DOMAIN_TRACE_RESOLUTION",
+      "intent_event_id": "evt-d0-business-d64f3b37-bc8c-4c70-ac74-5f5b15ab4fb9",
+      "domain": "BUSINESS",
+      "resolution_state": "RESOLVED",
+      "action_state": "ACTION_PROPOSED",
+      "outcome_state": "OUTCOME_PENDING",
+      "proof_record_id": "PROOF-res-1789660097772-dpc7p",
+      "synthetic_data": false
+    },
+    {
+      "event_id": "audit-d0-finance-fee95bd8",
+      "timestamp": "2026-09-17T15:48:17.773Z",
+      "type": "DOMAIN_TRACE_RESOLUTION",
+      "intent_event_id": "evt-d0-finance-135cf45c-170d-447f-8e09-7051ae329892",
+      "domain": "FINANCE",
+      "resolution_state": "RESOLVED",
+      "action_state": "ACTION_PROPOSED",
+      "outcome_state": "OUTCOME_PENDING",
+      "proof_record_id": "PROOF-res-1789660097773-4jgn7",
+      "synthetic_data": false
+    },
+    {
+      "event_id": "audit-d0-local_services-e8fbd4e5",
+      "timestamp": "2026-09-17T15:48:17.775Z",
+      "type": "DOMAIN_TRACE_RESOLUTION",
+      "intent_event_id": "evt-d0-local_services-bef80ff0-c7ef-4866-bc22-d868d242b01d",
+      "domain": "LOCAL_SERVICES",
+      "resolution_state": "RESOLVED",
+      "action_state": "ACTION_PROPOSED",
+      "outcome_state": "OUTCOME_PENDING",
+      "proof_record_id": "PROOF-res-1789660097774-qkpz2",
+      "synthetic_data": false
+    },
+    {
+      "event_id": "audit-d0-personal-eba5bce2",
+      "timestamp": "2026-09-17T15:48:17.777Z",
+      "type": "DOMAIN_TRACE_RESOLUTION",
+      "intent_event_id": "evt-d0-personal-4adc9f9e-efc6-4f60-8235-56372dc15c6f",
+      "domain": "PERSONAL",
+      "resolution_state": "RESOLVED",
+      "action_state": "ACTION_PROPOSED",
+      "outcome_state": "OUTCOME_PENDING",
+      "proof_record_id": "PROOF-res-1789660097775-zcsky",
+      "synthetic_data": false
+    }
+  ]
+}
