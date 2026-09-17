@@ -18,7 +18,7 @@ export const config = { runtime: 'nodejs20.x' };
 const TX_SUPABASE_URL = process.env.TX_SUPABASE_URL || 'https://dthlgsnakhoftinssokm.supabase.co';
 const ROW_LIMIT = 25000;
 const STABILIZATION_DAYS = 3;
-const GSC_PROPERTY = 'sc-domain:talentxcel.in';
+const GSC_PROPERTY = 'https://talentxcel.in/';
 const TENANT_ID = 'talentxcel';
 
 interface GSCRow {
@@ -61,23 +61,38 @@ async function getServiceAccountToken(email: string, privateKey: string): Promis
   return d.access_token;
 }
 
-async function getAccessToken(): Promise<string> {
-  const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
-  const key   = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
-  if (email && key) return getServiceAccountToken(email, key);
+async function getAccessToken(body?: any): Promise<string> {
+  let email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+  let key   = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
+
+  if (body?.serviceAccountJson) {
+    try {
+      const sa = JSON.parse(body.serviceAccountJson);
+      email = sa.client_email;
+      key = sa.private_key;
+    } catch (_) {}
+  } else if (body?.serviceAccountEmail && body?.serviceAccountPrivateKey) {
+    email = body.serviceAccountEmail;
+    key = body.serviceAccountPrivateKey;
+  }
 
   // Fallback: local file (dev only)
-  try {
-    const fs   = await import('fs');
-    const path = await import('path');
-    const fp   = path.resolve(process.cwd(), 'gsc-service-account.json');
-    if (fs.existsSync(fp)) {
-      const sa = JSON.parse(fs.readFileSync(fp, 'utf8'));
-      return getServiceAccountToken(sa.client_email, sa.private_key);
-    }
-  } catch (_) {}
+  if (!email || !key) {
+    try {
+      const fs   = await import('fs');
+      const path = await import('path');
+      const fp   = path.resolve(process.cwd(), 'gsc-service-account.json');
+      if (fs.existsSync(fp)) {
+        const sa = JSON.parse(fs.readFileSync(fp, 'utf8'));
+        email = sa.client_email;
+        key = sa.private_key;
+      }
+    } catch (_) {}
+  }
 
-  throw new Error('No Google credentials configured. Set GOOGLE_SERVICE_ACCOUNT_EMAIL + GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY.');
+  if (email && key) return getServiceAccountToken(email, key);
+
+  throw new Error('No Google credentials configured. Set GOOGLE_SERVICE_ACCOUNT_EMAIL + GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY or provide in request body.');
 }
 
 // ── GSC fetch helpers ──────────────────────────────────────────────────────
@@ -138,10 +153,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const serviceKey = process.env.TALENTXCEL_SERVICE_ROLE_KEY;
-  if (!serviceKey) {
-    return res.status(500).json({ success: false, error: 'TALENTXCEL_SERVICE_ROLE_KEY not configured' });
-  }
+  const serviceKey = process.env.TALENTXCEL_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
   const runId = `gsc_sync_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
   const syncStartedAt = new Date().toISOString();
@@ -149,7 +161,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const errors: string[] = [];
 
   try {
-    const token = await getAccessToken();
+    const token = await getAccessToken(req.body);
 
     // Auto-detect exact property format
     let siteUrl = GSC_PROPERTY;

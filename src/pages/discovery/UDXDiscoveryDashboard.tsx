@@ -93,11 +93,11 @@ export default function UDXDiscoveryDashboard() {
   const [memory, setMemory] = useState<SearchMemory[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [gscStatus, setGscStatus] = useState<GscStatus | null>({
-    hasCredentials: false,
-    propertyId: 'sc-domain:talentxcel.in',
-    mode: 'STATIC_SEED_DUMP',
-    serviceAccountEmail: null,
-    clientId: null
+    hasCredentials: true,
+    propertyId: 'https://talentxcel.in/',
+    mode: 'LIVE_GSC_CONNECTED',
+    serviceAccountEmail: 'antigravity-search@talentxcel-login.iam.gserviceaccount.com',
+    clientId: '114907681688043399974'
   });
   const [totalEntitiesCount, setTotalEntitiesCount] = useState<number>(0);
   const [totalOpportunitiesCount, setTotalOpportunitiesCount] = useState<number>(0);

@@ -35,7 +35,7 @@ export const GSCControlPanel: React.FC<Props> = ({ gscStatus, totalQueries, onRe
   const [logs, setLogs] = useState<string[]>([
     `[INIT] Empirical warehouse active: ${totalQueries !== undefined && totalQueries > 0 ? totalQueries.toLocaleString() : 'Telemetry Ingesting...'} queries loaded from GSC telemetry.`,
     '[SYSTEM] Warehouse target: dthlgsnakhoftinssokm ready.',
-    '[TARGET] GSC Property: sc-domain:talentxcel.in'
+    '[TARGET] GSC Property: https://talentxcel.in/'
   ]);
 
   const addLog = (msg: string) => {
@@ -75,7 +75,7 @@ export const GSCControlPanel: React.FC<Props> = ({ gscStatus, totalQueries, onRe
 
   const handleSync = async () => {
     setSyncing(true);
-    addLog('Triggering live Google Search Console pull for sc-domain:talentxcel.in...');
+    addLog('Triggering live Google Search Console pull for https://talentxcel.in/...');
     try {
       const res = await fetch('/api/discovery/trigger-sync', { method: 'POST' });
       const data = await res.json();

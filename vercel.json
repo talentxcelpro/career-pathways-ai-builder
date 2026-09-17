@@ -196,6 +196,10 @@
       "source": "/api/discovery/save-gsc",
       "destination": "/api/discovery/save-gsc"
     },
+    {
+      "source": "/api/discovery/data",
+      "destination": "/api/discovery/data"
+    },
     { "source": "/(.*)", "destination": "/index.html" }
 
   ]
