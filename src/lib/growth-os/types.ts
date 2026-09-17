@@ -145,7 +145,6 @@ export interface CitationRecord {
   citingEntity: string;
   citingDomain: string;
   citationType: CitationType;
-  url?: string;
   firstObservedAt: string;
   corroborationStatus: 'OBSERVED' | 'VERIFIED_EXTERNAL' | 'DISPUTED';
 }
@@ -167,3 +166,24 @@ export interface GrowthScorecard {
   verifiedOutcomes: number;
   totalCitationsTracked: number;
 }
+
+// ── 8. Daily Executive Growth Record (Single Source of Truth for 1M Ladder) ──
+
+export interface DailyExecutiveGrowthRecord {
+  date: string;                     // YYYY-MM-DD
+  uniqueVisitors: number;           // Total distinct client entities
+  qualifiedVisitors: number;        // Visitors engaging with tool/search/intent
+  countries: number;                // Unique country origins
+  organicVisitors: number;          // Google + Bing search
+  aiVisitors: number;               // Bing Copilot, Perplexity, ChatGPT, Claude
+  toolCompletions: number;          // Diagnostic completions
+  newUsers: number;                 // New accounts created
+  activatedUsers: number;           // Profile completed / passport minted
+  returningUsers: number;           // Re-engagement
+  resolvedIntents: number;          // UDX intents resolved
+  actionsCompleted: number;         // Actions executed
+  verifiedOutcomes: number;         // Real-world verified outcomes (TVO verified)
+  newCitations: number;             // New external references tracked
+  newExternalEntities: number;      // New third-party entities reconciled
+}
+

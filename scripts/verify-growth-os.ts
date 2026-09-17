@@ -12,6 +12,7 @@ import {
   AIReferralTelemetry,
   CitationGraphEngine,
   GrowthLadderTracker,
+  GrowthControlPlane,
 } from '../src/lib/growth-os';
 
 console.log('══════════════════════════════════════════════════════════════');
@@ -82,7 +83,34 @@ const scorecard = GrowthLadderTracker.generateWeeklyScorecard('2026-09-17T00:00:
 console.log(`✓ Current Operating Milestone: [${scorecard.currentMilestone}]`);
 console.log(`✓ Total Monthly Uniques Observed: ${scorecard.totalMonthlyUniques.toLocaleString()}`);
 console.log(`✓ Active UDX Intents Resolved: ${scorecard.activeIntentsResolved.toLocaleString()}`);
-console.log(`✓ Tool Starts: ${scorecard.toolStarts.toLocaleString()} | Completions: ${scorecard.toolCompletions.toLocaleString()}`);
+console.log(`✓ Tool Starts: ${scorecard.toolStarts.toLocaleString()} | Completions: ${scorecard.toolCompletions.toLocaleString()}\n`);
+
+// 7. Verify Global Growth Control Plane Daily Executive Record
+console.log('── 7. GLOBAL GROWTH CONTROL PLANE DAILY EXECUTIVE RECORD ──');
+const today = new Date().toISOString().slice(0, 10);
+const dailyRecord = GrowthControlPlane.recordDailyTelemetry(today, {
+  uniqueVisitors: 1420,
+  qualifiedVisitors: 890,
+  countries: 12,
+  organicVisitors: 780,
+  aiVisitors: 110,
+  toolCompletions: 340,
+  newUsers: 145,
+  activatedUsers: 92,
+  returningUsers: 210,
+  resolvedIntents: 4656,
+  actionsCompleted: 120,
+  verifiedOutcomes: 0, // Invariant: 0 during 14-day observation
+  newCitations: 3,
+  newExternalEntities: 8,
+});
+
+console.log('✓ Daily Executive Record Schema Synthesized:');
+console.log(JSON.stringify(dailyRecord, null, 2));
+
+const summary = GrowthControlPlane.getExecutiveSummary();
+console.log(`✓ Executive Summary Milestone: [${summary.currentMilestone}] | Target Allocated: ${summary.targetUniquesAllocated.toLocaleString()}`);
+
 console.log('\n══════════════════════════════════════════════════════════════');
 console.log('  GLOBAL GROWTH OS VERIFICATION COMPLETE: ALL GATES PASS');
 console.log('══════════════════════════════════════════════════════════════');

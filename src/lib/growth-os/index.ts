@@ -12,3 +12,4 @@ export * from './PublicDatasetRegistry';
 export * from './AIReferralTelemetry';
 export * from './CitationGraphEngine';
 export * from './GrowthLadderTracker';
+export * from './GrowthControlPlane';
