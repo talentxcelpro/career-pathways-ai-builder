@@ -14,12 +14,17 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 export const config = { runtime: 'nodejs' };
 
 const TX_SUPABASE_URL = process.env.TX_SUPABASE_URL || 'https://dthlgsnakhoftinssokm.supabase.co';
+const TX_SUPABASE_ANON_KEY =
+  process.env.VITE_SUPABASE_ANON_KEY ||
+  process.env.SUPABASE_ANON_KEY ||
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
 
 function getSupabase(): SupabaseClient {
-  const serviceKey = process.env.TALENTXCEL_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!serviceKey) {
-    throw new Error('TALENTXCEL_SERVICE_ROLE_KEY environment variable is not configured.');
-  }
+  const serviceKey =
+    process.env.TALENTXCEL_SERVICE_ROLE_KEY ||
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    TX_SUPABASE_ANON_KEY;
+
   return createClient(TX_SUPABASE_URL, serviceKey, {
     auth: { persistSession: false },
   });
@@ -41,7 +46,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .eq('tenant_id', 'talentxcel');
 
     if (entCountErr) {
-      console.warn('[Discovery Data API] Entities count error:', entCountErr.message);
+      console.warn('[Discovery Data API] Entities count warning:', entCountErr.message);
     }
 
     const { data: entities, error: entErr } = await supabase
@@ -52,7 +57,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .limit(200);
 
     if (entErr) {
-      console.warn('[Discovery Data API] Entities list error:', entErr.message);
+      console.warn('[Discovery Data API] Entities list warning:', entErr.message);
     }
 
     // 2. Opportunities count & sample
@@ -62,7 +67,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .eq('tenant_id', 'talentxcel');
 
     if (oppCountErr) {
-      console.warn('[Discovery Data API] Opportunities count error:', oppCountErr.message);
+      console.warn('[Discovery Data API] Opportunities count warning:', oppCountErr.message);
     }
 
     const { data: opportunities, error: oppErr } = await supabase
@@ -85,7 +90,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .limit(100);
 
     if (oppErr) {
-      console.warn('[Discovery Data API] Opportunities list error:', oppErr.message);
+      console.warn('[Discovery Data API] Opportunities list warning:', oppErr.message);
     }
 
     // 3. Search Memory
