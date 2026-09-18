@@ -170,7 +170,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     message: persistNote,
     mode,
     serviceAccountEmail: email,
-    gscPropertyProbed: 'sc-domain:talentxcel.in',
+    gscPropertyProbed: 'https://talentxcel.in/',
     instructions: 'Click "Trigger Daily Sync Now" to pull live GSC data immediately.',
   });
 }
