@@ -526,7 +526,15 @@ export default function UDXDiscoveryDashboard() {
         )}
 
         {activePillar === 'SEO_INTELLIGENCE' && (
-          <SEOIntelligenceView totalEntitiesCount={totalEntitiesCount} />
+          <SEOIntelligenceView
+            totalEntitiesCount={totalEntitiesCount}
+            totalOpportunitiesCount={totalOpportunitiesCount}
+            entities={entities}
+            opportunities={opportunities}
+            memory={memory}
+            auditLogs={auditLogs}
+            loading={loading}
+          />
         )}
 
         {activePillar === 'REALITY_ENGINE' && (
