@@ -20,6 +20,7 @@ export const config = { runtime: 'nodejs' };
 const OBSERVATION_START_AT = "2026-09-17T11:25:00Z";
 const OBSERVATION_TOTAL_DAYS = 14;
 const DAY0_BASELINE_AUDIT_ID = "165cdfd2-91e3-48c0-ab6b-ddea4ef023b3";
+const DAY0_BASELINE_TIMESTAMP = "2026-09-18T14:45:07.639Z";
 
 function computeObservationClock(now = new Date()) {
   const start = new Date(OBSERVATION_START_AT);
@@ -37,10 +38,19 @@ function computeObservationClock(now = new Date()) {
   const remainingHours = Math.floor((remainingMs % 86400000) / (1000 * 60 * 60));
 
   let phase: "BASELINE" | "OBSERVATION" | "FINALIZATION" = "OBSERVATION";
-  if (observationDay === 0) phase = "BASELINE";
-  if (elapsedDays >= OBSERVATION_TOTAL_DAYS) phase = "FINALIZATION";
+  let status: "BASELINE" | "ACTIVE" | "COMPLETE" = "ACTIVE";
+
+  if (observationDay === 0) {
+    phase = "BASELINE";
+    status = "BASELINE";
+  } else if (elapsedDays >= OBSERVATION_TOTAL_DAYS) {
+    phase = "FINALIZATION";
+    status = "COMPLETE";
+  }
 
   return {
+    observationStartAt: start.toISOString(),
+    observationEndAt: end.toISOString(),
     startAt: start.toISOString(),
     endAt: end.toISOString(),
     now: now.toISOString(),
@@ -53,8 +63,10 @@ function computeObservationClock(now = new Date()) {
     totalDays: OBSERVATION_TOTAL_DAYS,
     remainingDays,
     remainingHours,
+    status,
     phase,
     baselineAuditId: DAY0_BASELINE_AUDIT_ID,
+    baselineTimestamp: DAY0_BASELINE_TIMESTAMP,
   };
 }
 
@@ -198,6 +210,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).json({
       success: true,
       observationClock: clock,
+      baselineObservation: {
+        auditId: DAY0_BASELINE_AUDIT_ID,
+        baseline: 'DAY 0',
+        timestamp: DAY0_BASELINE_TIMESTAMP,
+        status: 'HISTORICAL_BASELINE',
+      },
+      currentObservation: {
+        observationDay: clock.observationDay,
+        displayDay: clock.displayDay,
+        dayRatio: clock.dayRatio,
+        phase: clock.phase,
+        status: clock.status,
+      },
       geography: {
         currentLevel: geoLevel,
         countryFilter: countryParam || 'GLOBAL',
@@ -209,9 +234,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         globalCoverageSummary: {
           countriesWithObservedSignals: 34,
           continentsWithObservedSignals: 6,
+          countriesWithSufficientEvidence: 1,
           countriesWithVerifiedSupply: 0,
           countriesRequiringEvidence: 34,
           verificationState: 'NO_VERIFIED_GLOBAL_DATA',
+        },
+      },
+      traces: {
+        traceA_global: {
+          id: 'trace_global_ai_cert',
+          type: 'GLOBAL',
+          name: 'Trace A — Global Intent Flow',
+          decision: 'WAIT_FOR_EVIDENCE',
+        },
+        traceB_country: {
+          id: 'trace_country_usa_dev',
+          type: 'COUNTRY',
+          name: 'Trace B — Country Intent Flow (USA)',
+          decision: 'BUILD_COUNTRY_BENCHMARK',
+        },
+        traceC_local: {
+          id: 'trace_local_varanasi',
+          type: 'LOCAL',
+          name: 'Trace C — Local City Flow (Varanasi Baseline)',
+          decision: 'WAIT_FOR_EVIDENCE',
         },
       },
       totalEntities: finalEntityCount,

@@ -33,7 +33,7 @@ import {
   Globe
 } from 'lucide-react';
 import { DemandEntity } from './DemandQueriesTable';
-import { getObservationClock, getCountryMeta } from '@/lib/udx/observationClock';
+import { getObservationClock, getCountryMeta, CANONICAL_TRACES, GeographyLevel } from '@/lib/udx/observationClock';
 
 interface Opportunity {
   opportunity_id: string;
@@ -108,7 +108,12 @@ export const SEOIntelligenceView: React.FC<SEOIntelligenceViewProps> = ({
   activeCountry = 'GLOBAL'
 }) => {
   const [selectedCard, setSelectedCard] = useState<CoreQuestion | null>(null);
+  const [activeTraceType, setActiveTraceType] = useState<'GLOBAL' | 'COUNTRY' | 'LOCAL'>('GLOBAL');
+  const [selectedDomain, setSelectedDomain] = useState<string>('ALL');
+  const [selectedTimeHorizon, setSelectedTimeHorizon] = useState<string>('14D');
+  const [selectedNavGeo, setSelectedNavGeo] = useState<string>(geoLevel || 'GLOBAL');
   const clock = getObservationClock();
+  const currentTrace = CANONICAL_TRACES[activeTraceType];
 
   // Dynamic derivations from empirical telemetry
   const topEntities = entities.slice(0, 3).map(e => `"${e.query}" (${e.impressions.toLocaleString()} imp, ${e.country?.toUpperCase() || 'GLOBAL'})`).join(', ');
@@ -400,6 +405,180 @@ export const SEOIntelligenceView: React.FC<SEOIntelligenceViewProps> = ({
             <div className="text-sm font-bold font-mono text-slate-400">0</div>
             <div className="text-3xs text-slate-400 font-mono">OUTCOME_PENDING</div>
           </div>
+        </div>
+      </div>
+
+      {/* Tri-Axis Global Navigator (Sections 23 & 24) */}
+      <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl space-y-3">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-2xs font-mono text-slate-400 uppercase tracking-wider">GEOGRAPHY HIERARCHY:</span>
+            <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+              {(['GLOBAL', 'CONTINENTS', 'COUNTRIES', 'REGIONS', 'CITIES'] as const).map((lvl) => (
+                <button
+                  key={lvl}
+                  onClick={() => setSelectedNavGeo(lvl)}
+                  className={`px-2.5 py-1 rounded-lg text-2xs font-mono transition-all ${
+                    selectedNavGeo === lvl
+                      ? 'bg-indigo-600 text-white font-bold shadow'
+                      : 'text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  {lvl}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-2xs font-mono text-slate-400 uppercase tracking-wider">DOMAIN:</span>
+            <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 overflow-x-auto">
+              {['ALL', 'CAREER', 'EDUCATION', 'BUSINESS', 'FINANCE', 'LOCAL'].map((dom) => (
+                <button
+                  key={dom}
+                  onClick={() => setSelectedDomain(dom)}
+                  className={`px-2 py-0.5 rounded-lg text-2xs font-mono transition-all ${
+                    selectedDomain === dom
+                      ? 'bg-cyan-600 text-white font-bold'
+                      : 'text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  {dom}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-2xs font-mono text-slate-400 uppercase tracking-wider">HORIZON:</span>
+            <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+              {['24H', '7D', '14D', '30D'].map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setSelectedTimeHorizon(t)}
+                  className={`px-2 py-0.5 rounded-lg text-2xs font-mono transition-all ${
+                    selectedTimeHorizon === t
+                      ? 'bg-emerald-600 text-white font-bold'
+                      : 'text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Global Coverage Detail Bar (Section 15) */}
+        <div className="pt-2 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2 text-2xs font-mono text-slate-400">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-slate-300 font-semibold">GLOBAL COVERAGE:</span>
+            <span className="px-2 py-0.5 bg-slate-800 text-cyan-300 rounded">6 Continents</span>
+            <span className="px-2 py-0.5 bg-slate-800 text-indigo-300 rounded">34 Countries Observed</span>
+            <span className="px-2 py-0.5 bg-slate-800 text-amber-300 rounded">Verified Supply: 0 (NO_VERIFIED_GLOBAL_DATA)</span>
+            <span className="px-2 py-0.5 bg-slate-800 text-rose-300 rounded">Unresolved Demand: 34 Countries</span>
+          </div>
+          <div className="flex items-center gap-1 text-3xs text-slate-400">
+            <span>Top Observed:</span>
+            <span className="text-emerald-400">IND: 772</span>
+            <span>•</span>
+            <span className="text-cyan-400">USA: 35</span>
+            <span>•</span>
+            <span className="text-cyan-400">PHL: 30</span>
+            <span>•</span>
+            <span className="text-cyan-400">MEX: 17</span>
+            <span>•</span>
+            <span className="text-cyan-400">GBR: 13</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Section 8 & 27: Three Canonical End-to-End Traces */}
+      <div className="bg-slate-900/90 border border-indigo-500/30 p-5 rounded-2xl shadow-lg space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Badge variant="outline" className="text-3xs font-mono border-indigo-500/40 text-indigo-300 bg-indigo-500/10">
+                CLOSED-LOOP EVIDENCE TRACE
+              </Badge>
+              <span className="text-xs font-bold text-white">{currentTrace.name}</span>
+            </div>
+            <p className="text-2xs text-slate-400 font-mono">
+              {currentTrace.tagline}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800 flex-wrap">
+            <button
+              onClick={() => setActiveTraceType('GLOBAL')}
+              className={`px-3 py-1 rounded-lg text-2xs font-mono transition-all ${
+                activeTraceType === 'GLOBAL'
+                  ? 'bg-indigo-600 text-white font-bold shadow'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              Trace A: Global
+            </button>
+            <button
+              onClick={() => setActiveTraceType('COUNTRY')}
+              className={`px-3 py-1 rounded-lg text-2xs font-mono transition-all ${
+                activeTraceType === 'COUNTRY'
+                  ? 'bg-indigo-600 text-white font-bold shadow'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              Trace B: Country (USA)
+            </button>
+            <button
+              onClick={() => setActiveTraceType('LOCAL')}
+              className={`px-3 py-1 rounded-lg text-2xs font-mono transition-all ${
+                activeTraceType === 'LOCAL'
+                  ? 'bg-indigo-600 text-white font-bold shadow'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              Trace C: Local (Varanasi Baseline)
+            </button>
+          </div>
+        </div>
+
+        {/* 7-Step Evidence Pipeline */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-2.5">
+          {currentTrace.steps.map((step, idx) => {
+            const statusColor = 
+              step.status === 'VERIFIED' ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' :
+              step.status === 'OBSERVED' ? 'border-cyan-500/40 bg-cyan-500/10 text-cyan-300' :
+              step.status === 'REFUSED' ? 'border-rose-500/40 bg-rose-500/10 text-rose-300' :
+              'border-amber-500/40 bg-amber-500/10 text-amber-300';
+
+            return (
+              <div key={idx} className="p-2.5 bg-slate-950/80 border border-slate-800 rounded-xl flex flex-col justify-between space-y-1.5">
+                <div>
+                  <div className="flex items-center justify-between gap-1 mb-1">
+                    <span className="text-3xs font-mono text-slate-400 truncate">{step.label}</span>
+                    <span className={`text-4xs font-mono px-1 py-0.5 rounded border ${statusColor}`}>
+                      {step.status}
+                    </span>
+                  </div>
+                  <div className="text-xs font-mono font-bold text-white truncate" title={step.value}>
+                    {step.value}
+                  </div>
+                </div>
+                <p className="text-3xs text-slate-400 line-clamp-2 leading-tight">
+                  {step.detail}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Decision Summary */}
+        <div className="p-3 bg-slate-950/90 border border-slate-800/90 rounded-xl flex items-center justify-between gap-3 text-2xs font-mono flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-slate-400 font-bold uppercase">DECISION:</span>
+            <span className="text-emerald-300">{currentTrace.decisionSummary}</span>
+          </div>
+          <span className="text-slate-500 hidden md:inline">UDX Rule: Anti-Fabrication & Anti-Doorway Gate Enforced</span>
         </div>
       </div>
 
