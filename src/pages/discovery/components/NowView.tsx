@@ -53,7 +53,7 @@ export const NowView: React.FC<NowViewProps> = ({
   oppSearch,
   setOppSearch,
 }) => {
-  const [activeLocation, setActiveLocation] = useState<string>('Varanasi');
+  const [activeLocation, setActiveLocation] = useState<string>('GLOBAL');
   const supply: VerifiedLocationSupply = TalentXcelTruth.evaluateLocationSupply(activeLocation);
 
   const filteredOpps = opportunities.filter(o => {
@@ -88,7 +88,7 @@ export const NowView: React.FC<NowViewProps> = ({
 
         {/* Location Simulator */}
         <div className="flex items-center gap-1.5 bg-slate-900/90 border border-slate-800 p-1 rounded-xl self-start md:self-auto">
-          {['Varanasi', 'Gorakhpur', 'Lucknow'].map(loc => (
+          {['GLOBAL', 'India', 'United States', 'Varanasi'].map(loc => (
             <button
               key={loc}
               onClick={() => setActiveLocation(loc)}
@@ -98,7 +98,7 @@ export const NowView: React.FC<NowViewProps> = ({
                   : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
               }`}
             >
-              {loc} {loc === 'Varanasi' ? '(5 Verified)' : '(0 Local)'}
+              {loc} {loc === 'GLOBAL' ? '(34 Countries)' : loc === 'Varanasi' ? '(5 Local)' : '(0 Verified)'}
             </button>
           ))}
         </div>

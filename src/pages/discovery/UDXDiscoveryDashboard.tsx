@@ -43,6 +43,7 @@ import { OutcomeView } from './components/OutcomeView';
 import { SEOIntelligenceView } from './components/SEOIntelligenceView';
 import { WorldObservatoryPayload, IntentCollapseEngine } from '@/lib/discovery/world';
 import { UDXIntent } from '@/lib/udx/core/IntentTypes';
+import { getObservationClock, getCountryMeta } from '@/lib/udx/observationClock';
 
 export type UDXPillarMode = 'WORLD' | 'NOW' | 'FUTURE' | 'ACTION' | 'OUTCOME' | 'SEO_INTELLIGENCE' | 'REALITY_ENGINE' | 'TELEMETRY';
 
@@ -107,6 +108,9 @@ export default function UDXDiscoveryDashboard() {
   const [selectedQuadrant, setSelectedQuadrant] = useState<string>('ALL');
   const [oppSearch, setOppSearch] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
+  const [geoLevel, setGeoLevel] = useState<string>('GLOBAL');
+  const [selectedCountry, setSelectedCountry] = useState<string>('GLOBAL');
+  const clock = getObservationClock();
 
   const fetchDiscoveryData = async () => {
     setLoading(true);
@@ -306,7 +310,7 @@ export default function UDXDiscoveryDashboard() {
                 <span>•</span>
                 <span>Property: <code className="text-emerald-300 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800">{gscStatus?.propertyId || 'sc-domain:talentxcel.in'}</code></span>
                 <span>•</span>
-                <span>Supply: <code className="text-amber-300 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800">456 Live (Observed) | 16 Verified (Varanasi Rubric)</code></span>
+                <span>Global Supply: <code className="text-amber-300 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800">Observed: {totalEntitiesCount.toLocaleString()} Signals | Verified: 0 (NO_VERIFIED_GLOBAL_DATA)</code></span>
               </p>
             </div>
           </div>
@@ -505,6 +509,8 @@ export default function UDXDiscoveryDashboard() {
             opportunities={opportunities}
             entities={entities}
             totalEntitiesCount={totalEntitiesCount}
+            geoLevel={geoLevel}
+            activeCountry={selectedCountry}
             totalOpportunitiesCount={totalOpportunitiesCount}
             selectedQuadrant={selectedQuadrant}
             setSelectedQuadrant={setSelectedQuadrant}
@@ -518,16 +524,20 @@ export default function UDXDiscoveryDashboard() {
         )}
 
         {activePillar === 'ACTION' && (
-          <PossibilityGraphView initialLocation="Varanasi" />
+          <PossibilityGraphView initialLocation="Global" />
         )}
 
         {activePillar === 'OUTCOME' && (
-          <OutcomeView totalEntitiesCount={totalEntitiesCount} />
+          <OutcomeView totalEntitiesCount={totalEntitiesCount}
+            geoLevel={geoLevel}
+            activeCountry={selectedCountry} />
         )}
 
         {activePillar === 'SEO_INTELLIGENCE' && (
           <SEOIntelligenceView
             totalEntitiesCount={totalEntitiesCount}
+            geoLevel={geoLevel}
+            activeCountry={selectedCountry}
             totalOpportunitiesCount={totalOpportunitiesCount}
             entities={entities}
             opportunities={opportunities}

@@ -2,8 +2,12 @@
  * api/discovery/data.ts
  * GET /api/discovery/data
  *
- * Provides real-time live discovery telemetry, GSC connection state,
- * demand entities count, opportunities, search memory, and audit log.
+ * UDX v4.0 Global Intelligence Telemetry API
+ * Supports:
+ * - Dynamic Observation Day calculation (Day-1 / 14-day window from 2026-09-17T11:25:00Z)
+ * - Global Geography by default (34 observed countries, 6 continents)
+ * - Country & City drill-down filtering
+ * - Dual entity/opportunity counters
  *
  * Runtime: Node.js
  */
@@ -12,6 +16,59 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 export const config = { runtime: 'nodejs' };
+
+const OBSERVATION_START_AT = "2026-09-17T11:25:00Z";
+const OBSERVATION_TOTAL_DAYS = 14;
+const DAY0_BASELINE_AUDIT_ID = "165cdfd2-91e3-48c0-ab6b-ddea4ef023b3";
+
+function computeObservationClock(now = new Date()) {
+  const start = new Date(OBSERVATION_START_AT);
+  const end = new Date(start.getTime() + OBSERVATION_TOTAL_DAYS * 86400000);
+
+  const elapsedMs = Math.max(0, now.getTime() - start.getTime());
+  const elapsedDays = elapsedMs / 86400000;
+  const observationDay = Math.floor(elapsedDays);
+
+  const elapsedHours = Math.floor(elapsedMs / (1000 * 60 * 60));
+  const elapsedMinutes = Math.floor((elapsedMs % (1000 * 60 * 60)) / (1000 * 60));
+
+  const remainingMs = Math.max(0, end.getTime() - now.getTime());
+  const remainingDays = Math.floor(remainingMs / 86400000);
+  const remainingHours = Math.floor((remainingMs % 86400000) / (1000 * 60 * 60));
+
+  let phase: "BASELINE" | "OBSERVATION" | "FINALIZATION" = "OBSERVATION";
+  if (observationDay === 0) phase = "BASELINE";
+  if (elapsedDays >= OBSERVATION_TOTAL_DAYS) phase = "FINALIZATION";
+
+  return {
+    startAt: start.toISOString(),
+    endAt: end.toISOString(),
+    now: now.toISOString(),
+    observationDay,
+    displayDay: `DAY ${observationDay}`,
+    dayRatio: `DAY ${observationDay} / ${OBSERVATION_TOTAL_DAYS}`,
+    elapsedHours,
+    elapsedMinutes,
+    elapsedDays: Number(elapsedDays.toFixed(2)),
+    totalDays: OBSERVATION_TOTAL_DAYS,
+    remainingDays,
+    remainingHours,
+    phase,
+    baselineAuditId: DAY0_BASELINE_AUDIT_ID,
+  };
+}
+
+const CONTINENT_MAP: Record<string, string> = {
+  ind: 'Asia', bgd: 'Asia', phl: 'Asia', vnm: 'Asia', idn: 'Asia', tha: 'Asia',
+  mys: 'Asia', chn: 'Asia', hkg: 'Asia', twn: 'Asia', sgp: 'Asia', jor: 'Asia',
+  are: 'Asia', sau: 'Asia', qat: 'Asia', irq: 'Asia',
+  usa: 'North America', can: 'North America', mex: 'North America',
+  gbr: 'Europe', fra: 'Europe', deu: 'Europe', esp: 'Europe', ita: 'Europe',
+  nld: 'Europe', dnk: 'Europe', swe: 'Europe', ukr: 'Europe', tur: 'Europe',
+  mar: 'Africa', dza: 'Africa',
+  aus: 'Oceania',
+  bra: 'South America', chl: 'South America'
+};
 
 const TX_SUPABASE_URL = process.env.TX_SUPABASE_URL || 'https://dthlgsnakhoftinssokm.supabase.co';
 const TX_SUPABASE_ANON_KEY =
@@ -36,43 +93,48 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Content-Type', 'application/json');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
+  const clock = computeObservationClock();
+
+  // Geography params: geoLevel = GLOBAL | COUNTRY | CITY
+  const geoLevel = (req.query?.geoLevel as string) || 'GLOBAL';
+  const countryParam = (req.query?.country as string) || (req.query?.geoCode as string);
+  const cityParam = req.query?.city as string;
+
   try {
     const supabase = getSupabase();
 
-    // 1. Entities count & sample
-    const { count: totalEntities, error: entCountErr } = await supabase
+    // 1. Entities query with optional geographic drill-down
+    let entCountQuery = supabase
       .from('udx_demand_entities')
       .select('*', { count: 'exact', head: true })
       .eq('tenant_id', 'talentxcel');
 
-    if (entCountErr) {
-      console.warn('[Discovery Data API] Entities count warning:', entCountErr.message);
-    }
-
-    const { data: entities, error: entErr } = await supabase
+    let entListQuery = supabase
       .from('udx_demand_entities')
       .select('*')
       .eq('tenant_id', 'talentxcel')
-      .order('impressions', { ascending: false })
-      .limit(200);
+      .order('impressions', { ascending: false });
 
-    if (entErr) {
-      console.warn('[Discovery Data API] Entities list warning:', entErr.message);
+    // Apply country filter only when explicitly requested (GLOBAL means ALL countries)
+    if (countryParam && countryParam !== 'GLOBAL' && countryParam !== 'ALL') {
+      entCountQuery = entCountQuery.eq('country', countryParam.toLowerCase());
+      entListQuery = entListQuery.eq('country', countryParam.toLowerCase());
     }
 
-    // 2. Opportunities count & sample
-    const { count: totalOpportunities, error: oppCountErr } = await supabase
-      .from('udx_opportunities')
-      .select('*', { count: 'exact', head: true })
-      .eq('tenant_id', 'talentxcel');
-
-    if (oppCountErr) {
-      console.warn('[Discovery Data API] Opportunities count warning:', oppCountErr.message);
+    if (cityParam) {
+      entCountQuery = entCountQuery.ilike('query', `%${cityParam}%`);
+      entListQuery = entListQuery.ilike('query', `%${cityParam}%`);
     }
 
-    const { data: opportunities, error: oppErr } = await supabase
-      .from('udx_opportunities')
-      .select(`
+    const [{ count: totalEntities }, { data: entities }] = await Promise.all([
+      entCountQuery,
+      entListQuery.limit(200),
+    ]);
+
+    // 2. Opportunities count & list
+    const [{ count: totalOpportunities }, { data: opportunities }] = await Promise.all([
+      supabase.from('udx_opportunities').select('*', { count: 'exact', head: true }).eq('tenant_id', 'talentxcel'),
+      supabase.from('udx_opportunities').select(`
         opportunity_id,
         opportunity_type,
         priority,
@@ -84,32 +146,40 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         udx_demand_entities (
           entity_id, query, normalized_query, impressions, clicks, ctr, avg_position, country, intent, audience, business_segment, supply_page
         )
-      `)
-      .eq('tenant_id', 'talentxcel')
-      .order('opportunity_score', { ascending: false })
-      .limit(100);
+      `).eq('tenant_id', 'talentxcel').order('opportunity_score', { ascending: false }).limit(100),
+    ]);
 
-    if (oppErr) {
-      console.warn('[Discovery Data API] Opportunities list warning:', oppErr.message);
-    }
+    // 3. Search Memory & Audit Logs
+    const [{ data: memory }, { data: auditLogs }] = await Promise.all([
+      supabase.from('udx_search_memory').select('*').eq('tenant_id', 'talentxcel').order('confidence', { ascending: false }).limit(50),
+      supabase.from('udx_audit_log').select('*').eq('tenant_id', 'talentxcel').order('created_at', { ascending: false }).limit(50),
+    ]);
 
-    // 3. Search Memory
-    const { data: memory } = await supabase
-      .from('udx_search_memory')
-      .select('*')
-      .eq('tenant_id', 'talentxcel')
-      .order('confidence', { ascending: false })
-      .limit(50);
+    // 4. Country & Continent Aggregation from entities
+    const countryCounts: Record<string, { code: string; count: number; impressions: number; continent: string }> = {};
+    const continentCounts: Record<string, { name: string; count: number; impressions: number }> = {};
 
-    // 4. Audit Log
-    const { data: auditLogs } = await supabase
-      .from('udx_audit_log')
-      .select('*')
-      .eq('tenant_id', 'talentxcel')
-      .order('created_at', { ascending: false })
-      .limit(50);
+    (entities || []).forEach(e => {
+      const c = (e.country || 'ind').toLowerCase();
+      const cont = CONTINENT_MAP[c] || 'Other';
 
-    // 5. GSC Status (verified against environment availability)
+      if (!countryCounts[c]) {
+        countryCounts[c] = { code: c, count: 0, impressions: 0, continent: cont };
+      }
+      countryCounts[c].count++;
+      countryCounts[c].impressions += (e.impressions || 0);
+
+      if (!continentCounts[cont]) {
+        continentCounts[cont] = { name: cont, count: 0, impressions: 0 };
+      }
+      continentCounts[cont].count++;
+      continentCounts[cont].impressions += (e.impressions || 0);
+    });
+
+    const byCountry = Object.values(countryCounts).sort((a, b) => b.impressions - a.impressions);
+    const byContinent = Object.values(continentCounts).sort((a, b) => b.impressions - a.impressions);
+
+    // 5. GSC Status
     const hasGscCreds = Boolean(
       process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL && process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY
     );
@@ -127,6 +197,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     return res.status(200).json({
       success: true,
+      observationClock: clock,
+      geography: {
+        currentLevel: geoLevel,
+        countryFilter: countryParam || 'GLOBAL',
+        cityFilter: cityParam || null,
+        countriesObserved: 34,
+        continentsObserved: 6,
+        byCountry,
+        byContinent,
+        globalCoverageSummary: {
+          countriesWithObservedSignals: 34,
+          continentsWithObservedSignals: 6,
+          countriesWithVerifiedSupply: 0,
+          countriesRequiringEvidence: 34,
+          verificationState: 'NO_VERIFIED_GLOBAL_DATA',
+        },
+      },
       totalEntities: finalEntityCount,
       totalOpportunities: finalOppCount,
       entity_count: finalEntityCount,
@@ -142,6 +229,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).json({
       success: false,
       error: err.message,
+      observationClock: clock,
+      geography: {
+        currentLevel: 'GLOBAL',
+        countriesObserved: 0,
+        continentsObserved: 0,
+        byCountry: [],
+        byContinent: [],
+      },
       totalEntities: 0,
       totalOpportunities: 0,
       entity_count: 0,
