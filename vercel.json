@@ -185,6 +185,14 @@
       "destination": "/api/benchmark"
     },
     {
+      "source": "/api/udx/intelligence/health",
+      "destination": "/api/health"
+    },
+    {
+      "source": "/api/udx/intelligence/overview",
+      "destination": "/api/overview"
+    },
+    {
       "source": "/api/optimized-sitemap",
       "destination": "https://dthlgsnakhoftinssokm.supabase.co/functions/v1/optimized-sitemap"
     },
