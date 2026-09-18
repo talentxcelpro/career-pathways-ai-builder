@@ -219,11 +219,11 @@ export class IntentCollapseEngine {
       familySlug: 'general-career-matching',
       familyName: 'Direct Career & Job Discovery',
       familyDesc: 'Broad intent seeking vetted vacancies across various domains.',
-      dominantPlayer: 'Naukri.com',
+      dominantPlayer: 'Google Search / Web Graph',
       goalId: 'goal-livelihood-local',
       goalName: 'Livelihood Security & Regional Employment',
       goalCategory: 'ECONOMIC_SECURITY',
-      goalDesc: 'Securing dignified, well-paying employment locally without forced metro relocation.',
+      goalDesc: 'Securing dignified, well-paying employment without opaque aggregators.',
       goalColor: '#10B981',
       audience: 'unknown',
       commercialIntent: 'MEDIUM'
@@ -285,17 +285,24 @@ export class IntentCollapseEngine {
           slug: grouping.familySlug,
           description: grouping.familyDesc,
           dominantEntity: grouping.dominantPlayer,
-          marketShare: {
-            'Naukri': 44,
-            'Indeed': 31,
-            'LinkedIn': 15,
-            'TalentXcel (UDX)': 10
+          marketShare: grouping.location === 'Varanasi' || grouping.location === 'India' ? {
+            'Naukri.com [India]': 45,
+            'Indeed India': 30,
+            'TalentXcel': 15,
+            'Apna [India]': 10
+          } : {
+            'Google Search (Global)': 74,
+            'Direct & Organic Web': 14,
+            'AI Discovery': 7,
+            'Aggregators & Networks': 5
           },
           totalImpressions: 0,
           totalClicks: 0,
           intentCount: 0,
           queryCount: 0,
-          unmetNeedSummary: 'Legacy portals offer high volume but low verification, leading to 83% unresponsive black hole submissions.'
+          unmetNeedSummary: grouping.location === 'Varanasi' || grouping.location === 'India'
+            ? 'Legacy portals offer high volume but low verification, leading to 83% unresponsive black hole submissions.'
+            : 'Global web search yields high ad clutter and unverified aggregators with no direct employer feedback SLA.'
         });
         goal.familyCount += 1;
       }

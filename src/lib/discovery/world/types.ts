@@ -7,11 +7,32 @@
  * - HYPOTHESIS: UDX thesis being tested with defined evidence and testStatus.
  */
 
-export type EpistemicStatus = 'OBSERVED' | 'MODELED' | 'HYPOTHESIS';
+export type EvidenceType =
+  | "LIVE_TELEMETRY"
+  | "EXTERNAL_BENCHMARK"
+  | "HISTORICAL_DATASET"
+  | "DERIVED_METRIC"
+  | "MODELLED_ESTIMATE";
+
+export interface EvidenceMetadata {
+  evidenceType: EvidenceType;
+  source: string;
+  sourceUrl?: string;
+  observedAt?: string;
+  population?: number;
+  geography?: string;
+  methodology?: string;
+  confidence?: number;
+}
+
+export type EpistemicStatus = 'OBSERVED' | 'MODELED' | 'HYPOTHESIS' | 'BENCHMARK' | 'HISTORICAL' | 'DERIVED';
 
 export interface EpistemicValue<T = any> {
   value: T;
   status: EpistemicStatus;
+  evidenceType?: EvidenceType;
+  population?: number;
+  geography?: string;
   confidence: 'HIGH' | 'MEDIUM' | 'LOW';
   confidenceScore: number; // 0.0 - 1.0
   evidenceCount?: number;
@@ -138,6 +159,10 @@ export interface BetterPathHypothesis {
     totalFrictionScore: EpistemicValue<number>;
     avgTimeToOutcome: EpistemicValue<string>;
     satisfactionRate: EpistemicValue<number>;
+    registrationAbandonment?: EpistemicValue<number>;
+    applicationTime?: EpistemicValue<string>;
+    zeroResponseRate?: EpistemicValue<number>;
+    candidateLatency?: EpistemicValue<string>;
   };
   udxFlow: {
     steps: { order: number; label: string; description: string; advantage: string }[];
@@ -152,6 +177,29 @@ export interface BetterPathHypothesis {
     verifiedCount?: number;
     targetPath: string;
   };
+}
+
+export interface GlobalCoverageQuality {
+  countriesInRegistry: number; // 34 in active registry
+  countriesWithObservedSignals: number; // 32 in production DB
+  countriesWithSufficientEvidence: number; // 0
+  countriesWithVerifiedSupply: number; // 0 globally, 1 localized
+  countriesWithBenchmarkOnlyEvidence: number; // 2 (USA, GBR)
+  countriesWithNoEvidence: number; // 30
+  continentsRepresented: number; // 6
+  verificationState: string;
+}
+
+/**
+ * Hard Invariant Rule: Benchmark Evidence != Verified Job Supply
+ * External benchmarks (such as BLS wage models) may support a benchmark guide or calculator,
+ * but can NEVER increment verifiedSupply or convert into real available jobs.
+ */
+export function assertVerifiedSupplyIntegrity(supplyType: 'LIVE_JOB_SUPPLY' | 'BENCHMARK_DATA', count: number): number {
+  if (supplyType === 'BENCHMARK_DATA') {
+    return 0; // Hard type-level and logic clamp: benchmark data cannot increment verifiedSupply
+  }
+  return Math.max(0, count);
 }
 
 export interface WorldIntent {

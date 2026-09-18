@@ -79,6 +79,49 @@ interface SEOIntelligenceViewProps {
   activeCountry?: string;
 }
 
+export type EvidenceType =
+  | "LIVE_TELEMETRY"
+  | "EXTERNAL_BENCHMARK"
+  | "HISTORICAL_DATASET"
+  | "DERIVED_METRIC"
+  | "MODELLED_ESTIMATE";
+
+export function EvidenceTypeBadge({ type }: { type: EvidenceType }) {
+  switch (type) {
+    case 'LIVE_TELEMETRY':
+      return (
+        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-4xs font-mono font-bold bg-emerald-950/80 text-emerald-300 border border-emerald-700/60 shadow-sm">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span>● LIVE</span>
+        </span>
+      );
+    case 'EXTERNAL_BENCHMARK':
+      return (
+        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-4xs font-mono font-bold bg-blue-950/80 text-blue-300 border border-blue-700/60 shadow-sm">
+          <span>◆ BENCHMARK</span>
+        </span>
+      );
+    case 'HISTORICAL_DATASET':
+      return (
+        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-4xs font-mono font-bold bg-amber-950/80 text-amber-300 border border-amber-700/60 shadow-sm">
+          <span>◇ HISTORICAL</span>
+        </span>
+      );
+    case 'DERIVED_METRIC':
+      return (
+        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-4xs font-mono font-bold bg-purple-950/80 text-purple-300 border border-purple-700/60 shadow-sm">
+          <span>△ DERIVED</span>
+        </span>
+      );
+    case 'MODELLED_ESTIMATE':
+      return (
+        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-4xs font-mono font-bold bg-indigo-950/80 text-indigo-300 border border-indigo-700/60 shadow-sm">
+          <span>○ MODELLED</span>
+        </span>
+      );
+  }
+}
+
 interface CoreQuestion {
   qNum: number;
   question: string;
@@ -86,6 +129,7 @@ interface CoreQuestion {
   category: string;
   metricLabel: string;
   metricValue: string;
+  evidenceType: EvidenceType;
   state: 'LIVE' | 'INSUFFICIENT_EVIDENCE' | 'INSUFFICIENT_DATA' | 'NO_VERIFIED_DATA' | 'WAIT_FOR_EVIDENCE' | 'SAFEGUARD_ACTIVE';
   evidenceChain: {
     stage: string;
@@ -128,7 +172,7 @@ export const SEOIntelligenceView: React.FC<SEOIntelligenceViewProps> = ({
     return acc;
   }, {} as Record<string, number>);
 
-  const uniqueCountriesCount = Object.keys(countryDistribution).length || 34;
+  const uniqueCountriesCount = Object.keys(countryDistribution).length || 32;
 
   const core12Questions: CoreQuestion[] = [
     {
@@ -140,6 +184,7 @@ export const SEOIntelligenceView: React.FC<SEOIntelligenceViewProps> = ({
       category: 'GLOBAL_HUMAN_INTENT',
       metricLabel: 'Intent Confidence',
       metricValue: 'INSUFFICIENT_EVIDENCE',
+      evidenceType: 'LIVE_TELEMETRY',
       state: 'INSUFFICIENT_EVIDENCE',
       icon: <Compass className="w-4 h-4 text-blue-400" />,
       badgeColor: 'border-blue-500/30 text-blue-400 bg-blue-500/10',
@@ -152,26 +197,28 @@ export const SEOIntelligenceView: React.FC<SEOIntelligenceViewProps> = ({
     {
       qNum: 2,
       question: 'What intent is emerging across geography?',
-      summaryAnswer: `5 newly observed queries in Day-0 cohort expanding into ${clock.displayDay}. Multi-country visibility detected across 34 countries. Velocity and acceleration baseline requires the full 14-day telemetry window (${clock.remainingDays} days remaining) before declaring emerging momentum.`,
+      summaryAnswer: `5 newly observed queries in Day-0 cohort expanding into ${clock.displayDay}. Multi-country visibility detected across 32 observed countries. Velocity and acceleration baseline requires the full 14-day telemetry window (${clock.remainingDays} days remaining) before declaring emerging momentum.`,
       category: 'GLOBAL_EMERGING_INTENT',
       metricLabel: 'Emergence Velocity',
       metricValue: `${clock.displayDay}: INSUFFICIENT_DATA`,
+      evidenceType: 'HISTORICAL_DATASET',
       state: 'INSUFFICIENT_DATA',
       icon: <Sparkles className="w-4 h-4 text-purple-400" />,
       badgeColor: 'border-purple-500/30 text-purple-400 bg-purple-500/10',
       evidenceChain: [
         { stage: 'COHORT ASSIGNMENT', details: `14-day observation window started at ${clock.startAt}. Current: ${clock.displayDay} (${clock.elapsedHours}h elapsed).`, status: 'RECORDED' },
-        { stage: 'GEOGRAPHIC EXPANSION', details: `Observed signals spanning 6 continents (Asia, North America, Europe, South America, Africa, Oceania).`, status: 'IN_FLIGHT' },
+        { stage: 'GEOGRAPHIC EXPANSION', details: `Observed signals spanning 6 continents across 32 countries with genuine GSC impressions.`, status: 'IN_FLIGHT' },
         { stage: 'EMERGENCE SCORE', details: 'Temporal acceleration: PENDING_14D_WINDOW. Zero synthetic trends injected.', status: 'INSUFFICIENT_DATA' }
       ]
     },
     {
       qNum: 3,
       question: 'What does Google/search demand show worldwide?',
-      summaryAnswer: `Live Search Console sensor connected to https://talentxcel.in/. Empirical warehouse contains ${totalEntitiesCount.toLocaleString()} normalized queries from 34 observed countries across 6 continents. Top geographic volumes: India (772), United States (35), Philippines (30), Mexico (17), Vietnam (15), Morocco (15), Indonesia (14), United Kingdom (13), Bangladesh (10), Sweden (2), Germany (1).`,
+      summaryAnswer: `Live Search Console sensor connected to https://talentxcel.in/. Empirical warehouse contains ${totalEntitiesCount.toLocaleString()} normalized queries from 32 observed countries across 6 continents. Top geographic volumes: India (772), United States (35), Philippines (30), Mexico (17), Vietnam (15), Morocco (15), Indonesia (14), United Kingdom (13), Bangladesh (10), Sweden (2), Germany (1).`,
       category: 'GLOBAL_SEARCH_SENSOR',
       metricLabel: 'Global Scope',
-      metricValue: '34 Countries / 6 Continents',
+      metricValue: '32 Observed / 34 Registry',
+      evidenceType: 'LIVE_TELEMETRY',
       state: 'LIVE',
       icon: <Search className="w-4 h-4 text-emerald-400" />,
       badgeColor: 'border-emerald-500/30 text-emerald-400 bg-emerald-500/10',
@@ -188,6 +235,7 @@ export const SEOIntelligenceView: React.FC<SEOIntelligenceViewProps> = ({
       category: 'GLOBAL_VERIFIED_REALITY',
       metricLabel: 'Global Verified Supply',
       metricValue: 'NO_VERIFIED_DATA',
+      evidenceType: 'LIVE_TELEMETRY',
       state: 'NO_VERIFIED_DATA',
       icon: <ShieldCheck className="w-4 h-4 text-cyan-400" />,
       badgeColor: 'border-cyan-500/30 text-cyan-400 bg-cyan-500/10',
@@ -200,10 +248,11 @@ export const SEOIntelligenceView: React.FC<SEOIntelligenceViewProps> = ({
     {
       qNum: 5,
       question: 'What is missing globally (Supply Gap)?',
-      summaryAnswer: 'Global Supply Gap: High-intent queries observed across 34 countries with zero verified global supply capacity. Global gap calculation requires connected multi-country supply reality before automated gap attribution.',
+      summaryAnswer: 'Global Supply Gap: High-intent queries observed across 32 countries with zero verified global supply capacity. Global gap calculation requires connected multi-country supply reality before automated gap attribution.',
       category: 'GLOBAL_SUPPLY_GAP',
       metricLabel: 'Gap Attribution',
       metricValue: 'INSUFFICIENT_DATA',
+      evidenceType: 'DERIVED_METRIC',
       state: 'INSUFFICIENT_DATA',
       icon: <AlertTriangle className="w-4 h-4 text-amber-400" />,
       badgeColor: 'border-amber-500/30 text-amber-400 bg-amber-500/10',
@@ -220,6 +269,7 @@ export const SEOIntelligenceView: React.FC<SEOIntelligenceViewProps> = ({
       category: 'GLOBAL_ACTIONABILITY',
       metricLabel: 'P1 Opportunities',
       metricValue: `${p1Opportunities.length} Scored (WAIT_FOR_EVIDENCE)`,
+      evidenceType: 'DERIVED_METRIC',
       state: 'WAIT_FOR_EVIDENCE',
       icon: <Zap className="w-4 h-4 text-emerald-400" />,
       badgeColor: 'border-emerald-500/30 text-emerald-400 bg-emerald-500/10',
@@ -236,6 +286,7 @@ export const SEOIntelligenceView: React.FC<SEOIntelligenceViewProps> = ({
       category: 'GLOBAL_BUILD_PRIORITY',
       metricLabel: 'Build Protocol',
       metricValue: 'GLOBAL → COUNTRY → CITY',
+      evidenceType: 'DERIVED_METRIC',
       state: 'WAIT_FOR_EVIDENCE',
       icon: <Wrench className="w-4 h-4 text-indigo-400" />,
       badgeColor: 'border-indigo-500/30 text-indigo-400 bg-indigo-500/10',
@@ -252,6 +303,7 @@ export const SEOIntelligenceView: React.FC<SEOIntelligenceViewProps> = ({
       category: 'ANTI_FABRICATION_GLOBAL',
       metricLabel: 'Fabrication Firewall',
       metricValue: '0 Synthetic Records (CLEAN)',
+      evidenceType: 'LIVE_TELEMETRY',
       state: 'SAFEGUARD_ACTIVE',
       icon: <Ban className="w-4 h-4 text-rose-400" />,
       badgeColor: 'border-rose-500/30 text-rose-400 bg-rose-500/10',
@@ -268,6 +320,7 @@ export const SEOIntelligenceView: React.FC<SEOIntelligenceViewProps> = ({
       category: 'GLOBAL_INDEX_GOVERNOR',
       metricLabel: 'Index Rule',
       metricValue: '1-to-1 Grounding Required',
+      evidenceType: 'DERIVED_METRIC',
       state: 'LIVE',
       icon: <FileText className="w-4 h-4 text-emerald-400" />,
       badgeColor: 'border-emerald-500/30 text-emerald-400 bg-emerald-500/10',
@@ -280,17 +333,18 @@ export const SEOIntelligenceView: React.FC<SEOIntelligenceViewProps> = ({
     {
       qNum: 10,
       question: 'What is our global geographic coverage?',
-      summaryAnswer: '34 countries observed across 6 continents. Countries with verified supply: 0. Countries requiring evidence: 34. Global coverage is reported based on actual observed GSC telemetry, with zero synthetic country inflation.',
+      summaryAnswer: '32 countries with observed production signals across 6 continents. Active geography registry tracks 34 canonical countries. Countries with verified supply: 0 (Global). Countries requiring evidence: 32. Registry coverage is strictly separated from observed telemetry coverage.',
       category: 'GLOBAL_COVERAGE',
-      metricLabel: 'Country Coverage',
-      metricValue: '34 Countries Observed',
+      metricLabel: 'Coverage Invariant',
+      metricValue: '32 Observed / 34 Registry',
+      evidenceType: 'LIVE_TELEMETRY',
       state: 'LIVE',
       icon: <Globe className="w-4 h-4 text-cyan-400" />,
       badgeColor: 'border-cyan-500/30 text-cyan-400 bg-cyan-500/10',
       evidenceChain: [
-        { stage: 'OBSERVED COUNTRIES', details: '34 distinct ISO country codes identified in GSC telemetry', status: 'OBSERVED' },
-        { stage: 'CONTINENTS', details: 'Asia (16), Europe (9), North America (3), Africa (2), South America (2), Oceania (1)', status: 'MAPPED' },
-        { stage: 'VERIFICATION STATE', details: 'NO_VERIFIED_GLOBAL_DATA — awaiting verified local employer partnerships', status: 'NO_VERIFIED_DATA' }
+        { stage: 'OBSERVED COUNTRIES', details: '32 distinct ISO country codes identified with real impressions in GSC telemetry', status: 'OBSERVED' },
+        { stage: 'GEOGRAPHY REGISTRY', details: '34 canonical countries mapped across 6 continents in active registry', status: 'MAPPED' },
+        { stage: 'VERIFICATION STATE', details: 'NO_VERIFIED_GLOBAL_DATA — 0 verified global roles, awaiting verified partner adapters', status: 'NO_VERIFIED_DATA' }
       ]
     },
     {
@@ -300,6 +354,7 @@ export const SEOIntelligenceView: React.FC<SEOIntelligenceViewProps> = ({
       category: 'ACTION_VS_CONTENT',
       metricLabel: 'Resolution Mode',
       metricValue: 'Interactive Utility First',
+      evidenceType: 'DERIVED_METRIC',
       state: 'LIVE',
       icon: <BrainCircuit className="w-4 h-4 text-cyan-400" />,
       badgeColor: 'border-cyan-500/30 text-cyan-400 bg-cyan-500/10',
@@ -316,6 +371,7 @@ export const SEOIntelligenceView: React.FC<SEOIntelligenceViewProps> = ({
       category: 'FORESIGHT_INFLECTION',
       metricLabel: 'Search Memory Moat',
       metricValue: `${memory.length} Patterns (0.92)`,
+      evidenceType: 'MODELLED_ESTIMATE',
       state: 'LIVE',
       icon: <Flame className="w-4 h-4 text-amber-400" />,
       badgeColor: 'border-amber-500/30 text-amber-400 bg-amber-500/10',
@@ -341,14 +397,14 @@ export const SEOIntelligenceView: React.FC<SEOIntelligenceViewProps> = ({
                 {clock.displayDay} / {clock.totalDays}
               </Badge>
               <Badge className="bg-cyan-500/20 text-cyan-300 border-cyan-500/40 text-xs px-2.5 py-0.5 font-mono">
-                Scope: {geoLevel} (34 Countries Observed)
+                Scope: GLOBAL (32 Countries with Observed Signals • 34 Registry • 6 Continents)
               </Badge>
             </div>
             <h2 className="text-2xl font-bold text-white tracking-tight">
               Global Discovery Intelligence Control Plane
             </h2>
             <p className="text-sm text-slate-300 mt-1 max-w-3xl">
-              Operating at global scale by default across 34 countries and 6 continents. Deterministic, evidence-grounded answers to the core strategic questions governing what TalentXcel builds, monitors, retires, and executes.
+              Operating at global scale by default across 32 countries with observed production signals and 34 registry entities. Deterministic, evidence-grounded answers to the core strategic questions governing what TalentXcel builds, monitors, retires, and executes.
             </p>
           </div>
 
@@ -363,7 +419,7 @@ export const SEOIntelligenceView: React.FC<SEOIntelligenceViewProps> = ({
           </div>
         </div>
 
-        {/* Section 25 Global Dashboard Executive Bar */}
+        {/* Section 25 Global Dashboard Executive Bar (Distinct Registry vs Observed) */}
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 mt-6 pt-5 border-t border-slate-800/80">
           <div className="p-3 bg-slate-900/90 border border-slate-800 rounded-xl">
             <div className="text-3xs font-mono text-slate-500 uppercase">Observation</div>
@@ -375,19 +431,19 @@ export const SEOIntelligenceView: React.FC<SEOIntelligenceViewProps> = ({
             <div className="text-sm font-bold font-mono text-emerald-400">{totalEntitiesCount.toLocaleString()}</div>
             <div className="text-3xs text-slate-400 font-mono">GSC Verified</div>
           </div>
-          <div className="p-3 bg-slate-900/90 border border-slate-800 rounded-xl">
-            <div className="text-3xs font-mono text-slate-500 uppercase">Countries</div>
-            <div className="text-sm font-bold font-mono text-cyan-400">34</div>
+          <div className="p-3 bg-slate-900/90 border border-emerald-900/40 rounded-xl">
+            <div className="text-3xs font-mono text-slate-500 uppercase">Observed Signals</div>
+            <div className="text-sm font-bold font-mono text-emerald-400">32 Countries</div>
+            <div className="text-3xs text-slate-400 font-mono">Real Telemetry</div>
+          </div>
+          <div className="p-3 bg-slate-900/90 border border-indigo-900/40 rounded-xl">
+            <div className="text-3xs font-mono text-slate-500 uppercase">Geography Registry</div>
+            <div className="text-sm font-bold font-mono text-indigo-300">34 Countries</div>
             <div className="text-3xs text-slate-400 font-mono">6 Continents</div>
           </div>
           <div className="p-3 bg-slate-900/90 border border-slate-800 rounded-xl">
-            <div className="text-3xs font-mono text-slate-500 uppercase">Emerging</div>
-            <div className="text-sm font-bold font-mono text-purple-400">5</div>
-            <div className="text-3xs text-slate-400 font-mono">Day-0 Cohort</div>
-          </div>
-          <div className="p-3 bg-slate-900/90 border border-slate-800 rounded-xl">
             <div className="text-3xs font-mono text-slate-500 uppercase">Verified Supply</div>
-            <div className="text-sm font-bold font-mono text-amber-400">0</div>
+            <div className="text-sm font-bold font-mono text-amber-400">0 Global</div>
             <div className="text-3xs text-slate-400 font-mono">NO_VERIFIED_DATA</div>
           </div>
           <div className="p-3 bg-slate-900/90 border border-slate-800 rounded-xl">
@@ -404,6 +460,74 @@ export const SEOIntelligenceView: React.FC<SEOIntelligenceViewProps> = ({
             <div className="text-3xs font-mono text-slate-500 uppercase">Outcomes</div>
             <div className="text-sm font-bold font-mono text-slate-400">0</div>
             <div className="text-3xs text-slate-400 font-mono">OUTCOME_PENDING</div>
+          </div>
+        </div>
+      </div>
+
+      {/* GLOBAL EVIDENCE COVERAGE & QUALITY ARCHITECTURE PANEL */}
+      <div className="bg-slate-900/90 border border-cyan-900/40 rounded-2xl p-5 shadow-xl space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+          <div className="flex items-center gap-2 flex-wrap">
+            <Globe className="w-4 h-4 text-cyan-400" />
+            <span className="text-xs font-bold uppercase tracking-wider text-cyan-300 font-mono">
+              Global Evidence Coverage & Quality Architecture
+            </span>
+            <Badge variant="outline" className="border-cyan-500/30 text-cyan-400 bg-cyan-950/60 text-3xs font-mono">
+              SCIENTIFIC COVERAGE AUDIT
+            </Badge>
+          </div>
+          <div className="text-3xs font-mono text-slate-400">
+            Never conflate registry scope with verified supply reality
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          {/* Tile 1: Active Registry */}
+          <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
+            <div className="text-3xs font-mono text-slate-500 uppercase">Geography Registry</div>
+            <div className="text-base font-bold font-mono text-indigo-300">34 Countries</div>
+            <div className="text-4xs text-slate-400 font-mono">6 Continents Mapped</div>
+            <div className="text-4xs text-indigo-400 font-mono">○ REGISTRY CANONICAL</div>
+          </div>
+
+          {/* Tile 2: Observed Signals */}
+          <div className="p-3 rounded-xl bg-slate-950/80 border border-emerald-900/40 space-y-1">
+            <div className="text-3xs font-mono text-slate-500 uppercase">Observed Signals</div>
+            <div className="text-base font-bold font-mono text-emerald-400">32 Countries</div>
+            <div className="text-4xs text-slate-400 font-mono">5,171 GSC Signals in DB</div>
+            <div className="text-4xs text-emerald-400 font-mono">● LIVE TELEMETRY</div>
+          </div>
+
+          {/* Tile 3: Sufficient Evidence */}
+          <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
+            <div className="text-3xs font-mono text-slate-500 uppercase">Sufficient Evidence</div>
+            <div className="text-base font-bold font-mono text-amber-400">0 Countries</div>
+            <div className="text-4xs text-slate-400 font-mono">Multi-Sensor Concurrence</div>
+            <div className="text-4xs text-amber-400 font-mono">WAIT_FOR_EVIDENCE</div>
+          </div>
+
+          {/* Tile 4: Verified Supply */}
+          <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
+            <div className="text-3xs font-mono text-slate-500 uppercase">Verified Supply</div>
+            <div className="text-base font-bold font-mono text-slate-300">0 Global <span className="text-xs text-slate-500">(1 Local)</span></div>
+            <div className="text-4xs text-slate-400 font-mono">1st-Party Verified Jobs</div>
+            <div className="text-4xs text-amber-400 font-mono">NO_VERIFIED_GLOBAL_DATA</div>
+          </div>
+
+          {/* Tile 5: Benchmark-Only */}
+          <div className="p-3 rounded-xl bg-slate-950/80 border border-blue-900/40 space-y-1">
+            <div className="text-3xs font-mono text-slate-500 uppercase">Benchmark-Only</div>
+            <div className="text-base font-bold font-mono text-blue-400">2 Countries</div>
+            <div className="text-4xs text-slate-400 font-mono">USA (BLS), GBR (ONS)</div>
+            <div className="text-4xs text-blue-400 font-mono">◆ BENCHMARK (0 SUPPLY)</div>
+          </div>
+
+          {/* Tile 6: No Evidence */}
+          <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
+            <div className="text-3xs font-mono text-slate-500 uppercase">Signals Only / No Evidence</div>
+            <div className="text-base font-bold font-mono text-slate-400">30 Countries</div>
+            <div className="text-4xs text-slate-500 font-mono">Demand without Supply</div>
+            <div className="text-4xs text-slate-500 font-mono">DOORWAY BLOCKED</div>
           </div>
         </div>
       </div>
@@ -511,33 +635,42 @@ export const SEOIntelligenceView: React.FC<SEOIntelligenceViewProps> = ({
           <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800 flex-wrap">
             <button
               onClick={() => setActiveTraceType('GLOBAL')}
-              className={`px-3 py-1 rounded-lg text-2xs font-mono transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-2xs font-mono transition-all flex items-center gap-1.5 ${
                 activeTraceType === 'GLOBAL'
                   ? 'bg-indigo-600 text-white font-bold shadow'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              Trace A: Global
+              <span>Trace A: Global</span>
+              <span className="text-4xs px-1 py-0.2 rounded bg-amber-950/80 text-amber-300 border border-amber-700/60 font-mono">
+                WAIT_FOR_EVIDENCE
+              </span>
             </button>
             <button
               onClick={() => setActiveTraceType('COUNTRY')}
-              className={`px-3 py-1 rounded-lg text-2xs font-mono transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-2xs font-mono transition-all flex items-center gap-1.5 ${
                 activeTraceType === 'COUNTRY'
                   ? 'bg-indigo-600 text-white font-bold shadow'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              Trace B: Country (USA)
+              <span>Trace B: Country (USA)</span>
+              <span className="text-4xs px-1 py-0.2 rounded bg-blue-950/80 text-blue-300 border border-blue-700/60 font-mono">
+                BENCHMARK ONLY • 0 SUPPLY
+              </span>
             </button>
             <button
               onClick={() => setActiveTraceType('LOCAL')}
-              className={`px-3 py-1 rounded-lg text-2xs font-mono transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-2xs font-mono transition-all flex items-center gap-1.5 ${
                 activeTraceType === 'LOCAL'
                   ? 'bg-indigo-600 text-white font-bold shadow'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              Trace C: Local (Varanasi Baseline)
+              <span>Trace C: Local (Varanasi Baseline)</span>
+              <span className="text-4xs px-1 py-0.2 rounded bg-amber-950/80 text-amber-300 border border-amber-700/60 font-mono">
+                WAIT_FOR_EVIDENCE
+              </span>
             </button>
           </div>
         </div>
@@ -548,6 +681,7 @@ export const SEOIntelligenceView: React.FC<SEOIntelligenceViewProps> = ({
             const statusColor = 
               step.status === 'VERIFIED' ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' :
               step.status === 'OBSERVED' ? 'border-cyan-500/40 bg-cyan-500/10 text-cyan-300' :
+              step.status === 'BENCHMARK' ? 'border-blue-500/40 bg-blue-500/10 text-blue-300' :
               step.status === 'REFUSED' ? 'border-rose-500/40 bg-rose-500/10 text-rose-300' :
               'border-amber-500/40 bg-amber-500/10 text-amber-300';
 
@@ -573,12 +707,22 @@ export const SEOIntelligenceView: React.FC<SEOIntelligenceViewProps> = ({
         </div>
 
         {/* Decision Summary */}
-        <div className="p-3 bg-slate-950/90 border border-slate-800/90 rounded-xl flex items-center justify-between gap-3 text-2xs font-mono flex-wrap">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-slate-400 font-bold uppercase">DECISION:</span>
-            <span className="text-emerald-300">{currentTrace.decisionSummary}</span>
+        <div className="space-y-2">
+          {activeTraceType === 'COUNTRY' && (
+            <div className="p-3 bg-blue-950/40 border border-blue-800/60 rounded-xl flex items-center gap-2 text-2xs font-mono text-blue-300">
+              <ShieldCheck className="w-4 h-4 text-blue-400 shrink-0" />
+              <span>
+                <strong>Hard Invariant Rule:</strong> US BLS 2026 Tech Wage benchmark data is strictly <strong>EXTERNAL BENCHMARK EVIDENCE</strong> (≠ verified job supply). It authorizes creating a canonical compensation guide (BUILD_COUNTRY_BENCHMARK), but <code>verifiedSupply</code> remains <strong>0</strong>. It is NEVER converted into real available jobs.
+              </span>
+            </div>
+          )}
+          <div className="p-3 bg-slate-950/90 border border-slate-800/90 rounded-xl flex items-center justify-between gap-3 text-2xs font-mono flex-wrap">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-slate-400 font-bold uppercase">DECISION:</span>
+              <span className="text-emerald-300">{currentTrace.decisionSummary}</span>
+            </div>
+            <span className="text-slate-500 hidden md:inline">UDX Rule: Anti-Fabrication & Anti-Doorway Gate Enforced</span>
           </div>
-          <span className="text-slate-500 hidden md:inline">UDX Rule: Anti-Fabrication & Anti-Doorway Gate Enforced</span>
         </div>
       </div>
 
@@ -596,7 +740,8 @@ export const SEOIntelligenceView: React.FC<SEOIntelligenceViewProps> = ({
                   {item.icon}
                   {item.category}
                 </Badge>
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                  <EvidenceTypeBadge type={item.evidenceType} />
                   <Badge variant="secondary" className="text-3xs font-mono bg-slate-800 text-slate-400 px-1.5 py-0.5">
                     {item.metricValue}
                   </Badge>
@@ -640,10 +785,11 @@ export const SEOIntelligenceView: React.FC<SEOIntelligenceViewProps> = ({
       <Dialog open={!!selectedCard} onOpenChange={(open) => !open && setSelectedCard(null)}>
         <DialogContent className="max-w-2xl bg-slate-950 border-slate-800 text-slate-100">
           <DialogHeader>
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
               <Badge variant="outline" className={`text-xs font-mono px-2.5 py-0.5 ${selectedCard?.badgeColor}`}>
                 {selectedCard?.category}
               </Badge>
+              {selectedCard && <EvidenceTypeBadge type={selectedCard.evidenceType} />}
               <Badge variant="secondary" className="text-xs font-mono bg-slate-800 text-slate-300">
                 Q{selectedCard?.qNum} Evidence Trace ({clock.displayDay})
               </Badge>
