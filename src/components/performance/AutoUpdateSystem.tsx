@@ -80,7 +80,8 @@ export const AutoUpdateSystem: React.FC = () => {
         ]
       } as UpdateStatus;
     },
-    refetchInterval: 10000 // Refetch every 10 seconds
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false
   });
 
   // Fetch performance metrics
@@ -97,7 +98,8 @@ export const AutoUpdateSystem: React.FC = () => {
         accessibilityScore: 88
       } as PerformanceMetrics;
     },
-    refetchInterval: 30000 // Refetch every 30 seconds
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false
   });
 
   // Auto-update functionality

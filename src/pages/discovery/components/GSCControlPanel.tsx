@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Radio, Key, RefreshCw, Terminal, CheckCircle2, Copy, Check, ExternalLink } from 'lucide-react';
+import { Radio, Key, RefreshCw, Terminal, CheckCircle2, Copy, Check, ExternalLink, Globe, LogOut, ShieldCheck, Layers } from 'lucide-react';
+import { loadGoogleIdentityServices, GOOGLE_CLIENT_ID } from '@/config/googleAuth';
 
 interface GscStatus {
   hasCredentials: boolean;
@@ -21,8 +22,38 @@ interface Props {
   onRefresh: () => void;
 }
 
+const GoogleIcon = () => (
+  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+    <path
+      fill="#4285F4"
+      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+    />
+    <path
+      fill="#34A853"
+      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+    />
+    <path
+      fill="#FBBC05"
+      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+    />
+    <path
+      fill="#EA4335"
+      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+    />
+  </svg>
+);
+
 export const GSCControlPanel: React.FC<Props> = ({ gscStatus, totalQueries, onRefresh }) => {
-  const [authMethod, setAuthMethod] = useState<'service_account' | 'oauth'>('service_account');
+  const [authMethod, setAuthMethod] = useState<'google' | 'service_account' | 'oauth'>('google');
+  
+  // Google OAuth 1-Click State
+  const [googleUser, setGoogleUser] = useState<{ email: string; name?: string; picture?: string } | null>(null);
+  const [googleToken, setGoogleToken] = useState<string | null>(null);
+  const [gscProperties, setGscProperties] = useState<Array<{ siteUrl: string; permissionLevel?: string }>>([]);
+  const [selectedSite, setSelectedSite] = useState<string>('https://talentxcel.in/');
+  const [isAuthorizing, setIsAuthorizing] = useState(false);
+
+  // Manual fallback inputs
   const [saJson, setSaJson] = useState('');
   const [saEmail, setSaEmail] = useState('');
   const [saPrivateKey, setSaPrivateKey] = useState('');
@@ -41,6 +72,112 @@ export const GSCControlPanel: React.FC<Props> = ({ gscStatus, totalQueries, onRe
   const addLog = (msg: string) => {
     const time = new Date().toLocaleTimeString();
     setLogs(prev => [`[${time}] ${msg}`, ...prev.slice(0, 49)]);
+  };
+
+  // Rehydrate existing Google session if present
+  useEffect(() => {
+    try {
+      const storedToken = sessionStorage.getItem('tx_gsc_token');
+      const storedUser = sessionStorage.getItem('tx_gsc_user');
+      const storedSites = sessionStorage.getItem('tx_gsc_sites');
+      const storedSelected = sessionStorage.getItem('tx_gsc_selected_site');
+
+      if (storedToken) setGoogleToken(storedToken);
+      if (storedUser) setGoogleUser(JSON.parse(storedUser));
+      if (storedSites) setGscProperties(JSON.parse(storedSites));
+      if (storedSelected) setSelectedSite(storedSelected);
+    } catch (_) {}
+
+    // Pre-load Google SDK script
+    loadGoogleIdentityServices().catch(() => {});
+  }, []);
+
+  const handleGoogleSignIn = async () => {
+    setIsAuthorizing(true);
+    addLog('Initializing Google Identity Services OAuth 2.0 flow...');
+    try {
+      await loadGoogleIdentityServices();
+
+      if (!window.google?.accounts?.oauth2) {
+        throw new Error('Google Identity Services SDK is loading. Please try again in a few seconds.');
+      }
+
+      const client = window.google.accounts.oauth2.initTokenClient({
+        client_id: GOOGLE_CLIENT_ID,
+        scope: 'https://www.googleapis.com/auth/webmasters.readonly https://www.googleapis.com/auth/userinfo.email',
+        callback: async (tokenResponse: any) => {
+          if (tokenResponse.error) {
+            addLog(`Google OAuth error: ${tokenResponse.error_description || tokenResponse.error}`);
+            setIsAuthorizing(false);
+            return;
+          }
+
+          const accessToken = tokenResponse.access_token;
+          setGoogleToken(accessToken);
+          sessionStorage.setItem('tx_gsc_token', accessToken);
+          addLog(`Google OAuth access token successfully granted.`);
+
+          // 1. Fetch user profile
+          try {
+            const userRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+              headers: { Authorization: `Bearer ${accessToken}` }
+            });
+            if (userRes.ok) {
+              const userData = await userRes.json();
+              setGoogleUser({ email: userData.email, name: userData.name, picture: userData.picture });
+              sessionStorage.setItem('tx_gsc_user', JSON.stringify(userData));
+              addLog(`Authenticated as: ${userData.email}`);
+            }
+          } catch (_) {}
+
+          // 2. Fetch GSC verified properties (in-house + external sites)
+          addLog('Querying Google Search Console API for verified site properties...');
+          try {
+            const sitesRes = await fetch('/api/discovery/trigger-sync', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'list_sites', accessToken })
+            });
+            const sitesData = await sitesRes.json();
+            if (sitesData.success && Array.isArray(sitesData.sites) && sitesData.sites.length > 0) {
+              setGscProperties(sitesData.sites);
+              sessionStorage.setItem('tx_gsc_sites', JSON.stringify(sitesData.sites));
+              const matched = sitesData.sites.find((s: any) => s.siteUrl.includes('talentxcel.in')) || sitesData.sites[0];
+              setSelectedSite(matched.siteUrl);
+              sessionStorage.setItem('tx_gsc_selected_site', matched.siteUrl);
+              addLog(`Discovered ${sitesData.sites.length} Search Console properties. Target: ${matched.siteUrl}`);
+            } else {
+              setGscProperties([{ siteUrl: 'https://talentxcel.in/' }]);
+              setSelectedSite('https://talentxcel.in/');
+              addLog(`Connected with default property: https://talentxcel.in/`);
+            }
+          } catch (e: any) {
+            setGscProperties([{ siteUrl: 'https://talentxcel.in/' }]);
+            setSelectedSite('https://talentxcel.in/');
+            addLog(`Default property set: https://talentxcel.in/`);
+          }
+
+          setIsAuthorizing(false);
+        }
+      });
+
+      client.requestAccessToken({ prompt: 'consent' });
+    } catch (err: any) {
+      addLog(`Failed to launch Google sign-in: ${err.message}`);
+      setIsAuthorizing(false);
+    }
+  };
+
+  const handleDisconnectGoogle = () => {
+    setGoogleUser(null);
+    setGoogleToken(null);
+    setGscProperties([]);
+    setSelectedSite('https://talentxcel.in/');
+    sessionStorage.removeItem('tx_gsc_token');
+    sessionStorage.removeItem('tx_gsc_user');
+    sessionStorage.removeItem('tx_gsc_sites');
+    sessionStorage.removeItem('tx_gsc_selected_site');
+    addLog('Google Search Console session disconnected.');
   };
 
   const handleSave = async () => {
@@ -93,16 +230,31 @@ export const GSCControlPanel: React.FC<Props> = ({ gscStatus, totalQueries, onRe
 
   const handleSync = async () => {
     setSyncing(true);
-    addLog('Triggering live Google Search Console pull for https://talentxcel.in/...');
+    const targetSite = selectedSite || 'https://talentxcel.in/';
+    addLog(`Triggering live Google Search Console pull for ${targetSite}...`);
     try {
-      const payload = authMethod === 'service_account'
-        ? (saJson.trim() ? { serviceAccountJson: saJson.trim() } : (saEmail.trim() ? { serviceAccountEmail: saEmail.trim(), serviceAccountPrivateKey: saPrivateKey.trim() } : undefined))
-        : (oauthClientId.trim() ? { clientId: oauthClientId.trim(), clientSecret: oauthClientSecret.trim(), refreshToken: oauthRefreshToken.trim() } : undefined);
+      const payload: any = { siteUrl: targetSite };
+
+      if (googleToken) {
+        payload.accessToken = googleToken;
+      } else if (authMethod === 'service_account') {
+        if (saJson.trim()) payload.serviceAccountJson = saJson.trim();
+        else if (saEmail.trim()) {
+          payload.serviceAccountEmail = saEmail.trim();
+          payload.serviceAccountPrivateKey = saPrivateKey.trim();
+        }
+      } else if (authMethod === 'oauth') {
+        if (oauthClientId.trim()) {
+          payload.clientId = oauthClientId.trim();
+          payload.clientSecret = oauthClientSecret.trim();
+          payload.refreshToken = oauthRefreshToken.trim();
+        }
+      }
 
       const res = await fetch('/api/discovery/trigger-sync', {
         method: 'POST',
-        headers: payload ? { 'Content-Type': 'application/json' } : undefined,
-        body: payload ? JSON.stringify(payload) : undefined
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
       });
       const contentType = res.headers.get('content-type') || '';
       const rawText = await res.text();
@@ -123,7 +275,7 @@ export const GSCControlPanel: React.FC<Props> = ({ gscStatus, totalQueries, onRe
       }
 
       if (res.ok && data.success) {
-        addLog(`Sync complete! Ingested: ${data.result?.rowsInserted ?? 0} rows | Property: ${data.result?.siteUrl || 'https://talentxcel.in/'}`);
+        addLog(`Sync complete! Ingested: ${data.result?.rowsInserted ?? 0} rows | Property: ${data.result?.siteUrl || targetSite}`);
         onRefresh();
       } else {
         addLog(`Sync probe failed (HTTP ${res.status}): ${data.error || data.message || 'Operation failed'}`);
@@ -144,6 +296,7 @@ export const GSCControlPanel: React.FC<Props> = ({ gscStatus, totalQueries, onRe
 
   return (
     <div className="space-y-6">
+      {/* Top Banner with Active Target Property */}
       <div className="p-5 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-slate-900 to-indigo-950/40 border border-emerald-500/30 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-start gap-4">
           <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-xl">
@@ -151,13 +304,19 @@ export const GSCControlPanel: React.FC<Props> = ({ gscStatus, totalQueries, onRe
           </div>
           <div>
             <h3 className="text-lg font-bold text-white flex items-center gap-2 flex-wrap">
-              Google Search Console Live Wire: {gscStatus?.hasCredentials ? 'Live Sync Active' : 'Standby (Empirical Data)'}
+              Google Search Console Live Wire: {googleUser || gscStatus?.hasCredentials ? 'Live Sync Active' : 'Standby'}
               <Badge variant="outline" className="border-emerald-500/40 text-emerald-300 bg-emerald-500/10 font-mono text-xs">
-                {gscStatus?.propertyId || 'sc-domain:talentxcel.in'}
+                {selectedSite}
               </Badge>
+              {googleUser && (
+                <Badge variant="secondary" className="bg-blue-500/20 text-blue-300 border-blue-500/30 text-[11px] font-medium flex items-center gap-1">
+                  <ShieldCheck className="w-3 h-3 text-blue-400" />
+                  {googleUser.email}
+                </Badge>
+              )}
             </h3>
             <p className="text-xs text-slate-400 mt-1 max-w-2xl">
-              Currently running on <span className="text-emerald-400 font-semibold">{totalQueries !== undefined && totalQueries > 0 ? totalQueries.toLocaleString() : 'Loading...'} queries</span> from empirical GSC warehouse. Provide Google Cloud OAuth credentials below to activate daily automated background ingestion.
+              Currently running on <span className="text-emerald-400 font-semibold">{totalQueries !== undefined && totalQueries > 0 ? totalQueries.toLocaleString() : 'Loading...'} queries</span> from empirical GSC warehouse. Connect via Google Sign-In below to manage in-house & external properties.
             </p>
           </div>
         </div>
@@ -165,7 +324,7 @@ export const GSCControlPanel: React.FC<Props> = ({ gscStatus, totalQueries, onRe
         <Button
           onClick={handleSync}
           disabled={syncing}
-          className="bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs h-9 shrink-0"
+          className="bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs h-9 shrink-0 shadow-lg shadow-emerald-600/20"
         >
           <RefreshCw className={`w-3.5 h-3.5 mr-2 ${syncing ? 'animate-spin' : ''}`} />
           {syncing ? 'Syncing...' : 'Trigger Daily Sync Now'}
@@ -173,40 +332,171 @@ export const GSCControlPanel: React.FC<Props> = ({ gscStatus, totalQueries, onRe
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Left Column: Auth Options */}
         <div className="lg:col-span-7 space-y-4">
           <Card className="bg-slate-900/70 border-slate-800">
             <CardHeader>
               <CardTitle className="text-base text-white flex items-center gap-2">
                 <Key className="w-4 h-4 text-emerald-400" />
-                Provide GSC OAuth Access
+                Connect Search Console
               </CardTitle>
               <CardDescription className="text-xs text-slate-400">
-                Paste credentials here. They are saved directly into your local server environment and encrypted in memory.
+                Sign in with Google to authenticate in 1-click across in-house and external sites, or use manual credentials.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
+              {/* Tab Navigation */}
+              <div className="flex items-center gap-2 border-b border-slate-800 pb-3 overflow-x-auto">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setAuthMethod('google')}
+                  className={`text-xs font-semibold flex items-center gap-1.5 ${
+                    authMethod === 'google'
+                      ? 'bg-blue-600 text-white shadow-md'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <GoogleIcon />
+                  Sign In with Google (Recommended)
+                </Button>
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
                   onClick={() => setAuthMethod('service_account')}
-                  className={`text-xs font-mono ${authMethod === 'service_account' ? 'bg-indigo-600 text-white' : 'text-slate-400'}`}
+                  className={`text-xs font-mono ${
+                    authMethod === 'service_account'
+                      ? 'bg-slate-800 text-white border border-slate-700'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
                 >
-                  Service Account JSON (Recommended)
+                  Service Account
                 </Button>
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
                   onClick={() => setAuthMethod('oauth')}
-                  className={`text-xs font-mono ${authMethod === 'oauth' ? 'bg-indigo-600 text-white' : 'text-slate-400'}`}
+                  className={`text-xs font-mono ${
+                    authMethod === 'oauth'
+                      ? 'bg-slate-800 text-white border border-slate-700'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
                 >
-                  OAuth 2.0 Web Client
+                  Manual OAuth
                 </Button>
               </div>
 
-              {authMethod === 'service_account' ? (
+              {/* Tab 1: Google Sign-In (Primary & Recommended) */}
+              {authMethod === 'google' && (
+                <div className="space-y-4">
+                  {!googleUser ? (
+                    <div className="p-6 bg-slate-950/70 border border-slate-800 rounded-2xl text-center space-y-4">
+                      <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center mx-auto border border-white/20">
+                        <GoogleIcon />
+                      </div>
+                      <div className="space-y-1">
+                        <h4 className="text-base font-bold text-white">
+                          Sign In with Google to Connect Search Console
+                        </h4>
+                        <p className="text-xs text-slate-400 max-w-md mx-auto">
+                          Authorize read-only Search Console access (<code className="text-indigo-300 font-mono text-[11px]">webmasters.readonly</code>) in one click. Works for any in-house or external properties your Google account manages.
+                        </p>
+                      </div>
+
+                      <Button
+                        type="button"
+                        onClick={handleGoogleSignIn}
+                        disabled={isAuthorizing}
+                        className="bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs sm:text-sm px-6 py-2.5 rounded-xl shadow-lg inline-flex items-center gap-2.5 transition-all"
+                      >
+                        <GoogleIcon />
+                        <span>{isAuthorizing ? 'Connecting to Google...' : 'Sign in with Google (Search Console)'}</span>
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="p-5 bg-emerald-950/20 border border-emerald-500/30 rounded-2xl space-y-4">
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+                            <CheckCircle2 className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                              <span>Connected Google Account:</span>
+                              <span className="text-emerald-400 font-mono">{googleUser.email}</span>
+                            </div>
+                            <p className="text-[11px] text-slate-400">
+                              {gscProperties.length} Search Console {gscProperties.length === 1 ? 'property' : 'properties'} authorized
+                            </p>
+                          </div>
+                        </div>
+
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleDisconnectGoogle}
+                          className="text-xs h-7 border-slate-700 text-slate-400 hover:text-white flex items-center gap-1.5"
+                        >
+                          <LogOut className="w-3 h-3" />
+                          Switch Account
+                        </Button>
+                      </div>
+
+                      {/* Property Selector for In-house & External Sites */}
+                      <div className="space-y-1.5 pt-2 border-t border-slate-800">
+                        <div className="flex items-center justify-between">
+                          <Label className="text-xs text-slate-300 font-medium flex items-center gap-1.5">
+                            <Layers className="w-3.5 h-3.5 text-indigo-400" />
+                            Target Property (In-house & External)
+                          </Label>
+                          <span className="text-[10px] text-slate-500">
+                            Switch property to ingest its search analytics
+                          </span>
+                        </div>
+
+                        <select
+                          value={selectedSite}
+                          onChange={e => {
+                            setSelectedSite(e.target.value);
+                            sessionStorage.setItem('tx_gsc_selected_site', e.target.value);
+                            addLog(`Selected target property: ${e.target.value}`);
+                          }}
+                          className="w-full bg-slate-950 border border-slate-800 text-slate-200 text-xs rounded-lg px-3 py-2 font-mono focus:outline-none focus:border-emerald-500 cursor-pointer"
+                        >
+                          {gscProperties.map(p => (
+                            <option key={p.siteUrl} value={p.siteUrl}>
+                              {p.siteUrl} {p.permissionLevel ? `(${p.permissionLevel})` : ''}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Live Sync Action */}
+                      <div className="flex items-center justify-between pt-2">
+                        <Button
+                          onClick={handleSync}
+                          disabled={syncing}
+                          className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs h-9 px-4 rounded-xl shadow-lg flex items-center gap-2"
+                        >
+                          <RefreshCw className={`w-3.5 h-3.5 ${syncing ? 'animate-spin' : ''}`} />
+                          <span>{syncing ? 'Ingesting Real GSC Data...' : `Sync Telemetry for ${selectedSite}`}</span>
+                        </Button>
+
+                        <span className="text-[11px] text-emerald-400 flex items-center gap-1">
+                          <ShieldCheck className="w-3.5 h-3.5" />
+                          OAuth Session Active
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Tab 2: Service Account */}
+              {authMethod === 'service_account' && (
                 <div className="space-y-3">
                   <div className="space-y-1.5">
                     <Label className="text-xs text-slate-300">Paste Service Account Key (JSON)</Label>
@@ -214,7 +504,7 @@ export const GSCControlPanel: React.FC<Props> = ({ gscStatus, totalQueries, onRe
                       placeholder='{"type": "service_account", "project_id": "...", "private_key": "...", "client_email": "..."}'
                       value={saJson}
                       onChange={e => setSaJson(e.target.value)}
-                      rows={7}
+                      rows={6}
                       className="bg-slate-950 font-mono text-xs border-slate-800 text-slate-200"
                     />
                     <p className="text-xs text-slate-500">
@@ -244,20 +534,29 @@ export const GSCControlPanel: React.FC<Props> = ({ gscStatus, totalQueries, onRe
                     </div>
                   </div>
 
-                  <div className="p-3 bg-slate-950/80 border border-slate-800 rounded-xl text-xs space-y-1.5 text-slate-400">
-                    <div className="font-semibold text-slate-300 flex items-center gap-1.5">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                      Setup in Google Cloud & Search Console:
-                    </div>
-                    <ol className="list-decimal list-inside space-y-1 pl-1 text-slate-400">
-                      <li>Enable <strong>Search Console API</strong> in Google Cloud Console.</li>
-                      <li>In <strong>IAM & Admin &gt; Service Accounts</strong>, create a service account and export JSON key.</li>
-                      <li>In <a href="https://search.google.com/search-console/users" target="_blank" rel="noreferrer" className="text-indigo-400 underline inline-flex items-center gap-1">GSC Users & permissions <ExternalLink className="w-3 h-3" /></a>, add the service account email as <strong>Owner</strong> or <strong>Full</strong>.</li>
-                      <li>Paste JSON above and click Save.</li>
-                    </ol>
+                  <div className="flex items-center justify-between pt-2">
+                    <Button
+                      onClick={handleSave}
+                      disabled={saving}
+                      className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs h-9 font-medium"
+                    >
+                      {saving ? 'Validating & Saving...' : 'Save Service Account Credentials'}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleSync}
+                      disabled={syncing}
+                      className="text-slate-400 hover:text-white text-xs"
+                    >
+                      Test Connection
+                    </Button>
                   </div>
                 </div>
-              ) : (
+              )}
+
+              {/* Tab 3: Manual OAuth */}
+              {authMethod === 'oauth' && (
                 <div className="space-y-3">
                   <div className="space-y-1">
                     <Label className="text-xs text-slate-300">Google OAuth Client ID</Label>
@@ -288,31 +587,32 @@ export const GSCControlPanel: React.FC<Props> = ({ gscStatus, totalQueries, onRe
                       className="bg-slate-950 text-xs border-slate-800 h-8 font-mono"
                     />
                   </div>
+
+                  <div className="flex items-center justify-between pt-2">
+                    <Button
+                      onClick={handleSave}
+                      disabled={saving}
+                      className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs h-9 font-medium"
+                    >
+                      {saving ? 'Validating & Saving...' : 'Save OAuth Credentials'}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleSync}
+                      disabled={syncing}
+                      className="text-slate-400 hover:text-white text-xs"
+                    >
+                      Test Connection
+                    </Button>
+                  </div>
                 </div>
               )}
-
-              <div className="flex items-center justify-between pt-2">
-                <Button
-                  onClick={handleSave}
-                  disabled={saving}
-                  className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs h-9 font-medium"
-                >
-                  {saving ? 'Validating & Saving...' : 'Save & Enable Live GSC Access'}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleSync}
-                  disabled={syncing}
-                  className="text-slate-400 hover:text-white text-xs"
-                >
-                  Test Connection
-                </Button>
-              </div>
             </CardContent>
           </Card>
         </div>
 
+        {/* Right Column: Live Console & Supabase Snippet */}
         <div className="lg:col-span-5 space-y-4">
           <Card className="bg-slate-900/70 border-slate-800 h-full flex flex-col">
             <CardHeader className="p-4 pb-2">
@@ -328,10 +628,12 @@ export const GSCControlPanel: React.FC<Props> = ({ gscStatus, totalQueries, onRe
               <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 font-mono text-xs text-slate-300 space-y-1.5 h-64 overflow-y-auto">
                 {logs.map((log, i) => (
                   <div key={i} className="leading-relaxed">
-                    {log.includes('error') || log.includes('issue') ? (
+                    {log.includes('error') || log.includes('failed') ? (
                       <span className="text-rose-400">{log}</span>
-                    ) : log.includes('stored') || log.includes('complete') ? (
+                    ) : log.includes('stored') || log.includes('complete') || log.includes('granted') || log.includes('Discovered') ? (
                       <span className="text-emerald-400">{log}</span>
+                    ) : log.includes('Authenticated') || log.includes('Selected') ? (
+                      <span className="text-blue-400">{log}</span>
                     ) : (
                       <span className="text-slate-400">{log}</span>
                     )}

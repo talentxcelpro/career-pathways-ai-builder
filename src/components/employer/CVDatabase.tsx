@@ -50,7 +50,8 @@ export const CVDatabase: React.FC = () => {
       if (error) throw error;
       return data || [];
     },
-    refetchInterval: 30000 // Real-time updates every 30 seconds
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
   });
 
   const { data: outreachUsage } = useQuery({
@@ -104,7 +105,8 @@ export const CVDatabase: React.FC = () => {
         todayApplications: todayApplied || 0,
       };
     },
-    refetchInterval: 15000 // Real-time updates every 15 seconds
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
   });
 
   // Get selected candidates data for outreach

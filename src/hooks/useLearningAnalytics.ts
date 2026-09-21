@@ -148,7 +148,8 @@ export const useLearningAnalytics = () => {
         };
       }
     },
-    refetchInterval: 30000, // Refetch every 30 seconds for real-time data
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
   });
 };
 

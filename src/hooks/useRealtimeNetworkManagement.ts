@@ -214,7 +214,8 @@ export const useRealtimeNetworkManagement = () => {
         }
       }));
     },
-    refetchInterval: 30000, // Refetch every 30 seconds as backup
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
   });
 
   // Enhanced network stats with real-time metrics
@@ -308,7 +309,8 @@ export const useRealtimeNetworkManagement = () => {
 
       return trendingData;
     },
-    refetchInterval: 60000, // Refetch every minute
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
   });
 
   // Bulk moderation actions

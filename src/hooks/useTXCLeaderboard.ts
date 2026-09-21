@@ -54,7 +54,8 @@ export const useTXCLeaderboard = () => {
         return [];
       }
     },
-    refetchInterval: 60000,
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
   });
 
   // Fetch current user's rank info
@@ -100,7 +101,8 @@ export const useTXCLeaderboard = () => {
       } as UserRankInfo;
     },
     enabled: !!user?.id,
-    refetchInterval: 60000,
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
   });
 
   // Get top 5 for quick display

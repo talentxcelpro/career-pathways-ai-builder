@@ -217,8 +217,8 @@ export const useUnreadNotificationCount = () => {
       return count || 0;
     },
     enabled: !!user?.id,
-    staleTime: 60000, // 1 minute
-    refetchInterval: 30000, // Refetch every 30 seconds as fallback
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
   });
 
   return { unreadCount };

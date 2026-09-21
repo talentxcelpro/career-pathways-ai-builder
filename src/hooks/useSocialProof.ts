@@ -33,8 +33,8 @@ export const useSocialProof = () => {
       if (error) throw error;
       return data as TrendingContent[];
     },
-    staleTime: 2 * 60 * 1000, // 2 minutes
-    refetchInterval: 2 * 60 * 1000 // Auto-refresh every 2 minutes
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false
   });
 
   // Fetch real-time activity indicators
@@ -67,8 +67,8 @@ export const useSocialProof = () => {
         timestamp: data.latest
       })) as ActivityIndicator[];
     },
-    staleTime: 30 * 1000, // 30 seconds
-    refetchInterval: 30 * 1000
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false
   });
 
   // Get trending posts

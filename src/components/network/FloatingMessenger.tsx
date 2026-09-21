@@ -100,7 +100,7 @@ const FloatingMessenger: React.FC = () => {
       return data;
     },
     enabled: !!selectedConversationId,
-    refetchInterval: 3000
+    refetchInterval: false,
   });
 
   const sendMessageMutation = useMutation({

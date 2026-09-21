@@ -199,8 +199,8 @@ export function useRealCareerData() {
       }
     },
     enabled: !!user?.id,
-    staleTime: 30000,
-    refetchInterval: 60000
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false
   });
 
   // Calculate achievement triggers based on metrics

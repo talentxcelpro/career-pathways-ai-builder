@@ -25,7 +25,6 @@ import { initializeProductionOptimizations } from '@/utils/productionOptimizer';
 import { initializePerformanceOptimizations } from '@/utils/performanceOptimizations';
 import { initializeJobsOptimizations } from '@/utils/jobsPerformanceOptimizer';
 import { ReactErrorBoundary } from './components/error/ReactErrorBoundary';
-import { PlatformGlobalAutoRefresher } from "@/components/common/PlatformGlobalAutoRefresher";
 import { AsyncGoogleOneTap } from '@/components/performance/AsyncGoogleOneTap';
 import { InstallPrompt, InstallButton } from '@/components/pwa/InstallPrompt';
 import { IOSInstallPrompt } from '@/components/pwa/IOSInstallPrompt';
@@ -208,16 +207,17 @@ import { communicationRoutes } from "./navigation/communicationRoutes";
 import { claim1Routes } from "./navigation/claim1Routes";
 import { JobsPage } from "@/components/performance/LazyRoutes";
 
-// Create query client configured with 3-second platform-wide auto-refresh
+// Create query client configured for optimal performance & minimal Supabase egress
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 2500, // 2.5 seconds - keeps cache fresh
-      refetchInterval: 3000, // 3-second auto refresher across the entire platform
+      staleTime: 5 * 60 * 1000, // 5 minutes cache TTL - eliminates redundant API egress
+      refetchInterval: false, // No global auto-polling - prevents exceeding Supabase bandwidth
       refetchIntervalInBackground: false,
-      refetchOnWindowFocus: true,
+      refetchOnWindowFocus: false, // Don't burn egress on tab focus
+      refetchOnReconnect: 'always',
       retry: 1,
-      gcTime: 15 * 60 * 1000,
+      gcTime: 30 * 60 * 1000,
       networkMode: 'online',
     },
     mutations: {
@@ -306,7 +306,6 @@ const App = () => {
                   <SafeRealtimeProvider showToasts={false}>
                      <CopilotProvider>
                         <TooltipProvider>
-                          <PlatformGlobalAutoRefresher />
                           <PhaseInitializer />
                           <AsyncGoogleOneTap />
                           <GoogleOneTapLogin />

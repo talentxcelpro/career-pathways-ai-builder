@@ -23,7 +23,8 @@ export const QueueMonitor = () => {
       if (error) throw error;
       return data;
     },
-    refetchInterval: 10000, // Refresh every 10 seconds
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
   });
 
   // Real-time subscription for queue updates

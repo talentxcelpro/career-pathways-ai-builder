@@ -33,7 +33,8 @@ export const TXCSpendingHistory: React.FC = () => {
       return data;
     },
     enabled: !!user?.id,
-    refetchInterval: 60000
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false
   });
 
   if (isLoading) {

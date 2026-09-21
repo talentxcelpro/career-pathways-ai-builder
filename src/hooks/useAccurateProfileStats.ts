@@ -64,7 +64,7 @@ export function useAccurateProfileStats(userId?: string) {
       };
     },
     enabled: !!userId,
-    refetchInterval: 30000, // Refetch every 30 seconds
-    staleTime: 10000, // Consider data stale after 10 seconds
+    refetchInterval: false,
+    staleTime: 5 * 60 * 1000,
   });
 }

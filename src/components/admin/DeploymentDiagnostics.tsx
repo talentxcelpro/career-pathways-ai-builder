@@ -68,8 +68,8 @@ export const DeploymentDiagnostics = () => {
 
       return data.deployments || [];
     },
-    staleTime: 30000, // 30 seconds
-    refetchInterval: 60000, // 1 minute
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
   });
 
   // Fetch deployment errors

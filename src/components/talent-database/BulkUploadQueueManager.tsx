@@ -63,7 +63,8 @@ export const BulkUploadQueueManager = () => {
         processing_rate: 0
       };
     },
-    refetchInterval: 5000, // Refresh every 5 seconds
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
   });
 
   // Get processing batches
@@ -79,7 +80,8 @@ export const BulkUploadQueueManager = () => {
       if (error) throw error;
       return data || [];
     },
-    refetchInterval: 3000,
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
   });
 
   // Start queue processing

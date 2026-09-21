@@ -65,6 +65,7 @@ export const useAdminStats = () => {
         monthlyApplications: growthData?.length || 0
       };
     },
-    refetchInterval: 30000 // Refetch every 30 seconds for real-time updates
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
   });
 };

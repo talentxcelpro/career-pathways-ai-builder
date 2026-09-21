@@ -186,7 +186,8 @@ const SmartPulseAlgorithmComponent: React.FC<SmartPulseAlgorithmProps> = ({
       return rankedPosts.slice(0, 20); // Return top 20 smartly ranked posts
     },
     enabled: true,
-    refetchInterval: 60000, // Refresh every minute for real-time updates
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
   });
 
   // Track user engagement for algorithm improvement

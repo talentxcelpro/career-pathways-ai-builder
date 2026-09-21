@@ -85,7 +85,8 @@ export const RealTimeJobStats: React.FC = () => {
         remote_jobs_count: remoteJobs || 0
       };
     },
-    refetchInterval: 60000, // Refresh every minute
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
   });
 
   // Set up real-time subscriptions

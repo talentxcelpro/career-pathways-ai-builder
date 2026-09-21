@@ -94,8 +94,8 @@ export const useLiveEvents = (filters?: {
 
       return data as LiveEvent[];
     },
-    staleTime: 2 * 60 * 1000, // 2 minutes
-    refetchInterval: 30 * 1000, // 30 seconds for live updates
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
   });
 };
 

@@ -62,7 +62,8 @@ export const LiveEngagementChart = ({ period, userId }: LiveEngagementChartProps
       return dailyData;
     },
     enabled: !!userId,
-    refetchInterval: 60000 // Refresh every minute
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false
   });
 
   if (isLoading) {

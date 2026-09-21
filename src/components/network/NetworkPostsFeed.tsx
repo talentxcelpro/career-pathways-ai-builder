@@ -97,7 +97,7 @@ export const NetworkPostsFeed: React.FC<NetworkPostsFeedProps> = ({
       return data as NetworkPost[];
     },
     enabled: !!user,
-    refetchInterval: 30000, // Refresh every 30 seconds
+    refetchInterval: false,
   });
 
   // Listen for real-time engagement updates

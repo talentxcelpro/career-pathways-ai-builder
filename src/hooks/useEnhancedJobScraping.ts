@@ -303,7 +303,8 @@ export const useSystemPerformanceMetrics = (days = 7) => {
 
       return data as SystemPerformanceMetrics[];
     },
-    refetchInterval: 30000 // Refresh every 30 seconds
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false
   });
 };
 

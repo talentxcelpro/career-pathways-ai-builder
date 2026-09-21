@@ -48,7 +48,7 @@ export const useCollegesManagement = () => {
         query = query.eq('is_premium', false);
       }
 
-      const { data, error } = await query;
+      const { data, error } = await query.limit(50);
       if (error) throw error;
       return data;
     }
@@ -75,7 +75,7 @@ export const useCollegesManagement = () => {
         supabase.from('college_programs').select('*', { count: 'exact', head: true }),
         supabase.from('college_inquiries').select('*', { count: 'exact', head: true }),
         supabase.from('college_events').select('*', { count: 'exact', head: true }),
-        supabase.from('colleges').select('state').not('state', 'is', null)
+        supabase.from('colleges').select('state').not('state', 'is', null).limit(200)
       ]);
 
       const totalColleges = totalCollegesResult.count || 0;

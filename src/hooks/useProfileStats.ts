@@ -34,6 +34,7 @@ export function useProfileStats(userId?: string) {
       };
     },
     enabled: !!userId,
-    refetchInterval: 30000, // Refetch every 30 seconds
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
   });
 }

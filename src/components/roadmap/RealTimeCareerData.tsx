@@ -100,8 +100,8 @@ export const useRealTimeCareerData = () => {
       }
     },
     enabled: !!user?.id,
-    staleTime: 30000,
-    refetchInterval: 60000
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false
   });
 
   return { data, isLoading, error };

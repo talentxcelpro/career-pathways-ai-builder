@@ -1,20 +1,37 @@
 import { supabase } from '@/integrations/supabase/client';
 
+let cachedFilterOptions: { college_types: string[]; cities: string[]; states: string[]; disciplines: string[] } | null = null;
+
 export const collegeService = {
   getFilterOptions: async () => {
+    if (cachedFilterOptions) return cachedFilterOptions;
     try {
+      if (typeof window !== 'undefined') {
+        const stored = sessionStorage.getItem('tx_college_filters');
+        if (stored) {
+          cachedFilterOptions = JSON.parse(stored);
+          return cachedFilterOptions!;
+        }
+      }
+
       const { data: colleges, error } = await supabase
         .from('colleges')
         .select('college_type, city, state')
-        .eq('is_active', true);
+        .eq('is_active', true)
+        .limit(1000);
 
       if (error) throw error;
 
-      const college_types = [...new Set(colleges.map(c => c.college_type).filter(Boolean))];
-      const cities = [...new Set(colleges.map(c => c.city).filter(Boolean))];
-      const states = [...new Set(colleges.map(c => c.state).filter(Boolean))];
+      const college_types = [...new Set((colleges || []).map(c => c.college_type).filter(Boolean))];
+      const cities = [...new Set((colleges || []).map(c => c.city).filter(Boolean))];
+      const states = [...new Set((colleges || []).map(c => c.state).filter(Boolean))];
 
-      return { college_types, cities, states, disciplines: [] };
+      cachedFilterOptions = { college_types, cities, states, disciplines: [] };
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('tx_college_filters', JSON.stringify(cachedFilterOptions));
+      }
+
+      return cachedFilterOptions;
     } catch (error) {
       return { college_types: [], cities: [], states: [], disciplines: [] };
     }

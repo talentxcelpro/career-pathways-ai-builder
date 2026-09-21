@@ -158,7 +158,7 @@ const ModernMessenger: React.FC<ModernMessengerProps> = ({ isOpen, onClose }) =>
       return data;
     },
     enabled: !!selectedConversationId,
-    refetchInterval: 3000
+    refetchInterval: false,
   });
 
   const sendMessageMutation = useMutation({

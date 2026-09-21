@@ -411,7 +411,8 @@ export const EnhancedCareerDashboard = () => {
       };
     },
     enabled: !!user?.id,
-    refetchInterval: 60000 // Refresh every minute for live data
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false
   });
 
   const periodLabels = {

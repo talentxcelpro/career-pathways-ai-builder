@@ -44,8 +44,8 @@ export const useRealtimeJobs = (filters: JobFilters = {}, sortBy: string = 'crea
       if (error) throw error;
       return data;
     },
-    refetchInterval: 30000, // Refetch every 30 seconds
-    staleTime: 15000, // Consider data stale after 15 seconds
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
   });
 
   // Set up real-time subscription
@@ -172,7 +172,8 @@ export const useRealtimeJobStats = () => {
           .map(([company, count]) => ({ company, count }))
       };
     },
-    refetchInterval: 60000, // Update every minute
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
   });
 
   // Real-time stats subscription

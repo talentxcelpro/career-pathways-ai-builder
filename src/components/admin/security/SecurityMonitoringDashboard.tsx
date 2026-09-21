@@ -78,7 +78,8 @@ export const SecurityMonitoringDashboard = () => {
         roleChanges: roleChanges || 0
       };
     },
-    refetchInterval: 30000 // Refresh every 30 seconds
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
   });
 
   // Fetch recent security events
@@ -94,7 +95,8 @@ export const SecurityMonitoringDashboard = () => {
       if (error) throw error;
       return (data as any) || [];
     },
-    refetchInterval: 15000 // Refresh every 15 seconds
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
   });
 
   const getSeverityColor = (event: SecurityEvent) => {

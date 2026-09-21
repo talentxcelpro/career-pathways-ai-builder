@@ -98,7 +98,7 @@ export const JobsPulse: React.FC<JobsPulseProps> = ({
       if (error) throw error;
       return data || [];
     },
-    refetchInterval: 30000, // Refetch every 30 seconds
+    refetchInterval: false,
   });
 
   // Set up real-time subscriptions

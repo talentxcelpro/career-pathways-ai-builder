@@ -84,7 +84,8 @@ export const useScrapingStats = (timeframe: '24h' | '7d' | '30d' = '24h') => {
 
       return { stats, logs };
     },
-    refetchInterval: 30000 // Refresh every 30 seconds
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false
   });
 };
 
@@ -133,7 +134,8 @@ export const useJobSources = () => {
 
       return sources;
     },
-    refetchInterval: 60000 // Refresh every minute
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false
   });
 };
 
@@ -240,7 +242,8 @@ export const useJobQualityAnalysis = () => {
 
       return analysis;
     },
-    refetchInterval: 300000 // Refresh every 5 minutes
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false
   });
 };
 
@@ -284,7 +287,8 @@ export const useScrapingErrors = () => {
         recent_errors: recentErrors
       };
     },
-    refetchInterval: 60000 // Refresh every minute
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false
   });
 };
 
@@ -325,6 +329,7 @@ export const useScrapingSchedule = () => {
         recent_runs: data?.slice(0, 5) || []
       };
     },
-    refetchInterval: 60000
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false
   });
 };

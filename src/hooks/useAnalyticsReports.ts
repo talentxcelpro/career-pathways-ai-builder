@@ -14,19 +14,22 @@ export const useAnalyticsReports = () => {
   const { data: platformAnalytics, isLoading: analyticsLoading } = useQuery({
     queryKey: ['platform-analytics', dateRange],
     queryFn: () => getPlatformAnalytics(dateRange),
-    refetchInterval: 30000, // Real-time updates every 30 seconds
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
   });
 
   const { data: userGrowthData, isLoading: growthLoading } = useQuery({
     queryKey: ['user-growth-data', dateRange],
     queryFn: () => getUserGrowthData(dateRange),
-    refetchInterval: 60000, // Update every minute
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
   });
 
   const { data: topPerformingJobs, isLoading: jobsLoading } = useQuery({
     queryKey: ['top-performing-jobs'],
     queryFn: () => getTopPerformingJobs(10),
-    refetchInterval: 30000, // Real-time updates
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
   });
 
   return {

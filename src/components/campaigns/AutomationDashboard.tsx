@@ -67,7 +67,8 @@ export function AutomationDashboard() {
         recentTasks: tasks?.slice(0, 10) || []
       };
     },
-    refetchInterval: 30000, // Refresh every 30 seconds
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
   });
 
   // Scale campaigns automation

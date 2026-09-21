@@ -104,8 +104,8 @@ export function useActivityFeed(scopeId: string | undefined) {
     queryKey: claim1Keys.activity(scopeId ?? ''),
     queryFn:  () => getActivityFeed(scopeId!, 20),
     enabled:  !!scopeId,
-    staleTime: 15_000,
-    refetchInterval: 30_000,
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
   });
 }
 
@@ -116,8 +116,8 @@ export function useScopeStats(scopeId: string | undefined) {
     queryKey: claim1Keys.stats(scopeId ?? ''),
     queryFn:  () => getScopeStats(scopeId!),
     enabled:  !!scopeId,
-    staleTime: 60_000,
-    refetchInterval: 60_000,
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
   });
 }
 
