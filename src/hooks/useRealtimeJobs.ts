@@ -147,7 +147,8 @@ export const useRealtimeJobStats = () => {
       const { data, error } = await supabase
         .from('jobs')
         .select('id, is_featured, job_status, created_at, company_name')
-        .eq('is_active', true);
+        .eq('is_active', true)
+        .limit(200);
 
       if (error) throw error;
 
@@ -172,7 +173,7 @@ export const useRealtimeJobStats = () => {
           .map(([company, count]) => ({ company, count }))
       };
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 15 * 60 * 1000,
     refetchInterval: false,
   });
 

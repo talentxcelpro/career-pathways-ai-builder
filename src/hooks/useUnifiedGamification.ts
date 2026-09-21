@@ -53,7 +53,7 @@ export function useUnifiedGamification() {
       const { data: existingAchievements, error } = await supabase
         .from('career_achievements')
         .select('achievement_type, achievement_title, achievement_description, points_awarded')
-        .limit(1000);
+        .limit(100);
       
       if (error) throw error;
       
@@ -79,7 +79,8 @@ export function useUnifiedGamification() {
       });
       
       return Array.from(achievementMap.values()) as Achievement[];
-    }
+    },
+    staleTime: 60 * 60 * 1000
   });
 
   // Fetch user achievements from career_achievements
@@ -90,7 +91,7 @@ export function useUnifiedGamification() {
       
       const { data, error } = await supabase
         .from('career_achievements')
-        .select('*')
+        .select('id, user_id, achievement_type, achievement_title, achievement_description, points_awarded, earned_at')
         .eq('user_id', user.id)
         .order('earned_at', { ascending: false });
       
@@ -111,7 +112,8 @@ export function useUnifiedGamification() {
         }
       })) as UserAchievement[];
     },
-    enabled: !!user
+    enabled: !!user,
+    staleTime: 5 * 60 * 1000
   });
 
   // Fetch global rankings from txc_leaderboard

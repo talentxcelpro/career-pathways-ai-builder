@@ -29,18 +29,18 @@ const CareerPlatform = () => {
     queryKey: ['platform-overview'],
     queryFn: async () => {
       const [usersData, jobsData, aiUsageData, connectionsData] = await Promise.all([
-        supabase.from('user_profiles').select('id, created_at, user_type').limit(1000),
-        supabase.from('jobs').select('id, created_at, is_active, applications_count'),
-        supabase.from('ai_usage_logs').select('id, created_at, operation_type'),
-        supabase.from('connections').select('id, created_at, status')
+        supabase.from('user_profiles').select('id', { count: 'exact', head: true }),
+        supabase.from('jobs').select('is_active, applications_count', { count: 'exact' }).limit(500),
+        supabase.from('ai_usage_logs').select('id', { count: 'exact', head: true }),
+        supabase.from('connections').select('id', { count: 'exact', head: true }).eq('status', 'accepted')
       ]);
 
-      const totalUsers = usersData.data?.length || 0;
-      const totalJobs = jobsData.data?.length || 0;
+      const totalUsers = usersData.count || 0;
+      const totalJobs = jobsData.count || (jobsData.data?.length || 0);
       const activeJobs = jobsData.data?.filter(job => job.is_active).length || 0;
       const totalApplications = jobsData.data?.reduce((sum, job) => sum + (job.applications_count || 0), 0) || 0;
-      const aiOperations = aiUsageData.data?.length || 0;
-      const networkConnections = connectionsData.data?.filter(conn => conn.status === 'accepted').length || 0;
+      const aiOperations = aiUsageData.count || 0;
+      const networkConnections = connectionsData.count || 0;
 
       return {
         totalUsers,

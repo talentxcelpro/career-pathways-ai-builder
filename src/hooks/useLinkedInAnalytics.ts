@@ -15,8 +15,8 @@ export const useLinkedInAnalytics = () => {
         supabase.from('linkedin_import_jobs').select('*', { count: 'exact', head: true }),
         supabase.from('linkedin_import_jobs').select('*', { count: 'exact', head: true }).eq('status', 'completed'),
         supabase.from('linkedin_import_jobs').select('*', { count: 'exact', head: true }).eq('status', 'failed'),
-        supabase.from('linkedin_import_batches').select('*').order('created_at', { ascending: false }).limit(7),
-        supabase.from('profiles').select('full_name, email, linkedin_url, title, about, location').limit(1000)
+        supabase.from('linkedin_import_batches').select('id, created_at, total_profiles, processed_profiles').order('created_at', { ascending: false }).limit(7),
+        supabase.from('profiles').select('full_name, email, linkedin_url, title, about, location').limit(100)
       ]);
 
       // Calculate success rate
@@ -51,14 +51,15 @@ export const useLinkedInAnalytics = () => {
           skillsCompleteness: 82.3,
           experienceCompleteness: 91.7
         },
-        importTrends: recentBatches?.map((batch, index) => ({
+        importTrends: recentBatches?.map((batch: any) => ({
           date: batch.created_at?.split('T')[0] || new Date().toISOString().split('T')[0],
           imports: batch.total_profiles || Math.floor(Math.random() * 500) + 300,
           success: batch.processed_profiles || Math.floor(Math.random() * 450) + 280,
           failed: (batch.total_profiles || 300) - (batch.processed_profiles || 280)
         })) || []
       };
-    }
+    },
+    staleTime: 10 * 60 * 1000
   });
 };
 
@@ -74,8 +75,8 @@ export const useLinkedInScrapingAnalytics = () => {
       ] = await Promise.all([
         supabase.from('linkedin_scraping_jobs').select('*', { count: 'exact', head: true }),
         supabase.from('linkedin_scraping_jobs').select('*', { count: 'exact', head: true }).eq('status', 'running'),
-        supabase.from('linkedin_scraping_jobs').select('*').order('created_at', { ascending: false }).limit(10),
-        supabase.from('jobs').select('*').not('external_url', 'is', null).order('created_at', { ascending: false }).limit(10)
+        supabase.from('linkedin_scraping_jobs').select('id, job_title, search_query, status, progress_percentage, jobs_found, last_run_at, next_run_at').order('created_at', { ascending: false }).limit(10),
+        supabase.from('jobs').select('id, title, company_name, location, created_at, external_url').not('external_url', 'is', null).order('created_at', { ascending: false }).limit(10)
       ]);
 
       // Calculate success rate from actual data

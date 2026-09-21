@@ -49,7 +49,7 @@ export function useRealAchievements() {
       const { data, error } = await supabase
         .from('career_achievements')
         .select('achievement_type, achievement_title, achievement_description, points_awarded')
-        .limit(1000);
+        .limit(150);
 
       if (error) throw error;
 
@@ -67,7 +67,8 @@ export function useRealAchievements() {
       });
 
       return Array.from(uniqueTypes.values());
-    }
+    },
+    staleTime: 60 * 60 * 1000
   });
 
   const summary: AchievementSummary = {

@@ -45,10 +45,10 @@ export const useTXCRealtimeAnalytics = () => {
       // Get all transactions for analysis
       const { data: transactions, error } = await supabase
         .from('txc_transactions')
-        .select('*')
+        .select('created_at, transaction_type, amount, activity_type')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
-        .limit(1000); // Analyze last 1000 transactions
+        .limit(200);
 
       if (error) {
         console.error('Error fetching analytics data:', error);

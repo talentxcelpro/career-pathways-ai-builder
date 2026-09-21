@@ -9,6 +9,8 @@ const { url: SUPABASE_URL, anonKey: SUPABASE_PUBLISHABLE_KEY } = getSupabaseConf
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
+import { usageGuardFetch } from '@/utils/supabaseUsageGuard';
+
 export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
     storage: typeof window !== 'undefined' ? window.localStorage : undefined,
@@ -18,9 +20,7 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
     flowType: 'pkce'
   },
   global: {
-    headers: {
-      'cache-control': 'no-cache'
-    }
+    fetch: usageGuardFetch
   },
   // Add retry configuration for better reliability
   db: {
@@ -58,9 +58,7 @@ export const getSupabaseFunctions = () => {
           flowType: 'pkce'
         },
         global: {
-          headers: {
-            'cache-control': 'no-cache'
-          }
+          fetch: usageGuardFetch
         },
       }
     );

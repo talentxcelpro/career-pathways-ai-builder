@@ -82,12 +82,14 @@ export const getJobs = async (
   }, { jobs: [], total: 0, hasMore: false });
 };
 
+const JOB_CARD_COLUMNS = 'id, title, company_name, location, description, salary_min, salary_max, salary_range, employment_type, experience_level, skills_required, is_remote, is_featured, is_active, job_status, views_count, applications_count, external_url, posted_at, expires_at, created_at';
+
 export const getFeaturedJobs = async (limit: number = 6): Promise<Job[]> => {
   return fetchProductionData(async () => {
     console.log('🔍 Fetching featured jobs...');
     const { data, error } = await supabase
       .from('jobs')
-      .select('*')
+      .select(JOB_CARD_COLUMNS)
       .eq('is_active', true)
       .eq('is_featured', true)
       .eq('job_status', 'open')
@@ -97,7 +99,7 @@ export const getFeaturedJobs = async (limit: number = 6): Promise<Job[]> => {
 
     console.log('🔍 Featured jobs query result:', { data, error, count: data?.length });
     if (error) throw error;
-    return data || [];
+    return (data || []) as Job[];
   }, []);
 };
 
@@ -115,7 +117,7 @@ export const getJobById = async (id: string): Promise<Job | null> => {
       throw error;
     }
     
-    return data;
+    return data as Job;
   }, null);
 };
 
@@ -123,15 +125,16 @@ export const getJobsByCompany = async (companyId: string): Promise<Job[]> => {
   return fetchProductionData(async () => {
     const { data, error } = await supabase
       .from('jobs')
-      .select('*')
+      .select(JOB_CARD_COLUMNS)
       .eq('company_id', companyId)
       .eq('is_active', true)
       .eq('job_status', 'open')
       .gt('expires_at', new Date().toISOString())
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .limit(50);
 
     if (error) throw error;
-    return data || [];
+    return (data || []) as Job[];
   }, []);
 };
 
@@ -182,7 +185,7 @@ export const getRelatedJobs = async (jobId: string, skills: string[] = []): Prom
   return fetchProductionData(async () => {
     const { data, error } = await supabase
       .from('jobs')
-      .select('*')
+      .select(JOB_CARD_COLUMNS)
       .neq('id', jobId)
       .eq('is_active', true)
       .eq('job_status', 'open')
@@ -192,6 +195,6 @@ export const getRelatedJobs = async (jobId: string, skills: string[] = []): Prom
       .limit(5);
 
     if (error) throw error;
-    return data || [];
+    return (data || []) as Job[];
   }, []);
 };

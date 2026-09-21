@@ -35,22 +35,25 @@ export const SEOPerformanceDashboard: React.FC = () => {
   const fetchSEOData = async () => {
     try {
       const [jobsRes, companiesRes, postsRes] = await Promise.all([
-        supabase.from('jobs').select('id, meta_title, seo_slug').eq('is_active', true),
-        supabase.from('companies').select('id').limit(1000),
-        supabase.from('posts').select('id').eq('status', 'published').limit(1000)
+        supabase.from('jobs').select('id, meta_title, seo_slug', { count: 'exact' }).eq('is_active', true).limit(100),
+        supabase.from('companies').select('id', { count: 'exact', head: true }),
+        supabase.from('posts').select('id', { count: 'exact', head: true }).eq('status', 'published')
       ]);
 
       const jobs = jobsRes.data || [];
       const seoOptimizedJobs = jobs.filter(job => job.meta_title && job.seo_slug).length;
+      const totalJobs = jobsRes.count || jobs.length;
+      const totalCompanies = companiesRes.count || 0;
+      const totalBlogPosts = postsRes.count || 0;
 
       setContentMetrics({
-        total_jobs: jobs.length,
+        total_jobs: totalJobs,
         seo_optimized_jobs: seoOptimizedJobs,
-        total_companies: companiesRes.data?.length || 0,
-        total_blog_posts: postsRes.data?.length || 0
+        total_companies: totalCompanies,
+        total_blog_posts: totalBlogPosts
       });
 
-      const totalPages = jobs.length + (companiesRes.data?.length || 0) + (postsRes.data?.length || 0) + 50;
+      const totalPages = totalJobs + totalCompanies + totalBlogPosts + 50;
       setSeoMetrics({
         total_pages: totalPages,
         indexed_pages: Math.floor(totalPages * 0.85),

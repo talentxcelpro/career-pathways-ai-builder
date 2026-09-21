@@ -103,6 +103,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=300');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   const clock = computeObservationClock();
@@ -123,7 +124,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     let entListQuery = supabase
       .from('udx_demand_entities')
-      .select('*')
+      .select('entity_id, query, normalized_query, impressions, clicks, ctr, avg_position, country, intent, audience, business_segment, supply_page, created_at')
       .eq('tenant_id', 'talentxcel')
       .order('impressions', { ascending: false });
 
@@ -163,8 +164,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // 3. Search Memory & Audit Logs
     const [{ data: memory }, { data: auditLogs }] = await Promise.all([
-      supabase.from('udx_search_memory').select('*').eq('tenant_id', 'talentxcel').order('confidence', { ascending: false }).limit(50),
-      supabase.from('udx_audit_log').select('*').eq('tenant_id', 'talentxcel').order('created_at', { ascending: false }).limit(50),
+      supabase.from('udx_search_memory').select('query_pattern, frequency, last_observed, confidence, metadata').eq('tenant_id', 'talentxcel').order('confidence', { ascending: false }).limit(50),
+      supabase.from('udx_audit_log').select('audit_id, action, entity_id, changes, created_at, actor').eq('tenant_id', 'talentxcel').order('created_at', { ascending: false }).limit(50),
     ]);
 
     // 4. Country & Continent Aggregation from entities
