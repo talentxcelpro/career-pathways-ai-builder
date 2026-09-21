@@ -199,22 +199,10 @@ export const Navbar = () => {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-
-                {/* Mobile Menu Button */}
-                <div className="md:hidden">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                    className="p-1 text-slate-300 hover:text-white"
-                  >
-                    {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-                  </Button>
-                </div>
               </div>
             </>
           ) : (
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 sm:space-x-3">
               <a 
                 href="https://chatrchat.in" 
                 target="_blank" 
@@ -227,25 +215,38 @@ export const Navbar = () => {
                 onClick={() => navigate('/auth/login')}
                 variant="ghost" 
                 size="sm"
-                className="text-slate-300 hover:text-white text-xs font-bold"
+                className="text-slate-300 hover:text-white text-xs font-bold px-2.5"
               >
                 Log In
               </Button>
               <Button 
                 onClick={() => navigate('/auth/register')}
                 size="sm"
-                className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl"
+                className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl px-3"
               >
                 Sign Up
               </Button>
             </div>
           )}
 
+          {/* Mobile Menu Button - Visible to everyone on mobile */}
+          <div className="md:hidden flex items-center ml-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-1 text-slate-300 hover:text-white"
+              aria-label="Toggle Navigation Menu"
+            >
+              {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </Button>
+          </div>
+
         </div>
       </div>
 
       {/* Mobile Menu Drawer */}
-      {isMobileMenuOpen && user && (
+      {isMobileMenuOpen && (
         <div className="md:hidden border-t border-slate-800 bg-[#0b0f19] px-4 pt-2 pb-4 space-y-1">
           {mainNavItems.map((item) => (
             <Link
@@ -257,6 +258,25 @@ export const Navbar = () => {
               {item.label}
             </Link>
           ))}
+          {!user && (
+            <div className="pt-2 border-t border-slate-800/80 flex items-center gap-2">
+              <Button 
+                onClick={() => { setIsMobileMenuOpen(false); navigate('/auth/login'); }}
+                variant="outline" 
+                size="sm"
+                className="flex-1 text-xs font-bold border-slate-700 text-slate-200"
+              >
+                Log In
+              </Button>
+              <Button 
+                onClick={() => { setIsMobileMenuOpen(false); navigate('/auth/register'); }}
+                size="sm"
+                className="flex-1 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl"
+              >
+                Sign Up
+              </Button>
+            </div>
+          )}
         </div>
       )}
     </nav>

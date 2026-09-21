@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,6 +22,8 @@ export const MinimalRegisterForm = () => {
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [subscribeToUpdates, setSubscribeToUpdates] = useState(true);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const returnUrlParam = searchParams.get('returnUrl') || searchParams.get('redirect');
 
   // Password validation helpers
   const hasMinLength = password.length >= 8;
@@ -68,9 +70,23 @@ export const MinimalRegisterForm = () => {
 
       if (data.user) {
         // Ensure profile row has the clean first-middle-last / first-last slug immediately
-        await ensureUserProfileSlug(data.user.id, fullName.trim(), email.trim());
+        try {
+          await ensureUserProfileSlug(data.user.id, fullName.trim(), email.trim());
+        } catch (_) {}
+
+        // If email confirmation is required by Supabase, session is null
+        if (!data.session) {
+          toast.success('Verification link sent! Please check your email inbox.');
+          navigate(`/auth/login?registered=true&email=${encodeURIComponent(email.trim())}`);
+          return;
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectParam = urlParams.get('redirect') || urlParams.get('returnUrl');
+        const targetUrl = redirectParam ? decodeURIComponent(redirectParam) : '/network';
+
         toast.success('Account created successfully! 🎉');
-        navigate('/network');
+        navigate(targetUrl);
       }
     } catch (error: any) {
       toast.error('An unexpected error occurred');
@@ -197,7 +213,10 @@ export const MinimalRegisterForm = () => {
       <div className="text-center pt-1">
         <p className="text-xs text-slate-600">
           Already have an account?{' '}
-          <Link to="/auth/login" className="text-blue-600 hover:text-blue-700 font-semibold hover:underline">
+          <Link 
+            to={`/auth/login${returnUrlParam ? `?returnUrl=${encodeURIComponent(returnUrlParam)}` : ''}`} 
+            className="text-blue-600 hover:text-blue-700 font-semibold hover:underline"
+          >
             Sign in
           </Link>
         </p>

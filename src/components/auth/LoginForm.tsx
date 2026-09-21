@@ -199,7 +199,7 @@ const LoginForm = () => {
           <p className="text-xs text-slate-600">
             Don't have an account?{' '}
             <Link 
-              to={`/auth/register${returnUrl ? `?returnUrl=${encodeURIComponent(returnUrl)}` : ''}`}
+              to={`/auth/register${(returnUrl || redirectParam) ? `?returnUrl=${encodeURIComponent(returnUrl || redirectParam || '')}` : ''}`}
               className="text-blue-600 hover:text-blue-700 font-semibold hover:underline transition-colors"
             >
               Sign up for free

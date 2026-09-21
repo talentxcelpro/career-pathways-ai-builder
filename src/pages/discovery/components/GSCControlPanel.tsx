@@ -95,7 +95,15 @@ export const GSCControlPanel: React.FC<Props> = ({ gscStatus, totalQueries, onRe
     setSyncing(true);
     addLog('Triggering live Google Search Console pull for https://talentxcel.in/...');
     try {
-      const res = await fetch('/api/discovery/trigger-sync', { method: 'POST' });
+      const payload = authMethod === 'service_account'
+        ? (saJson.trim() ? { serviceAccountJson: saJson.trim() } : (saEmail.trim() ? { serviceAccountEmail: saEmail.trim(), serviceAccountPrivateKey: saPrivateKey.trim() } : undefined))
+        : (oauthClientId.trim() ? { clientId: oauthClientId.trim(), clientSecret: oauthClientSecret.trim(), refreshToken: oauthRefreshToken.trim() } : undefined);
+
+      const res = await fetch('/api/discovery/trigger-sync', {
+        method: 'POST',
+        headers: payload ? { 'Content-Type': 'application/json' } : undefined,
+        body: payload ? JSON.stringify(payload) : undefined
+      });
       const contentType = res.headers.get('content-type') || '';
       const rawText = await res.text();
 

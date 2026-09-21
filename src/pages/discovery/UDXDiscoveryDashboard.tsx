@@ -30,8 +30,10 @@ import {
   History, 
   ExternalLink,
   Target,
-  Sparkle
+  Sparkle,
+  Rocket
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { GSCControlPanel } from './components/GSCControlPanel';
 import { DemandQueriesTable, DemandEntity } from './components/DemandQueriesTable';
 import { WorldView } from './components/WorldView';
@@ -251,6 +253,7 @@ export default function UDXDiscoveryDashboard() {
   };
 
   useEffect(() => {
+    document.title = 'Discovery & Search Intelligence | TalentXcel';
     fetchDiscoveryData();
   }, []);
 
@@ -316,6 +319,17 @@ export default function UDXDiscoveryDashboard() {
           </div>
 
           <div className="flex items-center gap-2.5 flex-wrap">
+            <Link to="/growth">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-indigo-700/60 bg-indigo-950/60 hover:bg-indigo-900/80 text-indigo-300 font-semibold shadow-sm"
+              >
+                <Rocket className="w-4 h-4 mr-2 text-indigo-400" />
+                Acquisition Control Plane
+              </Button>
+            </Link>
+
             <Button 
               variant="outline" 
               size="sm" 

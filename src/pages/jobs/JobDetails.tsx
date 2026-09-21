@@ -275,6 +275,7 @@ export default function JobDetails() {
               <div className="flex items-center gap-3 w-full md:w-auto shrink-0">
                 <PublicJobApplyButton
                   jobId={job.id}
+                  job={job}
                   jobTitle={job.title}
                   companyName={companyName}
                 />

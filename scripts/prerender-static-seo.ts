@@ -1,4 +1,4 @@
-﻿import fs from 'fs';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { createClient } from '@supabase/supabase-js';
@@ -41,7 +41,7 @@ function escapeHtml(str: string): string {
 }
 
 async function prerender() {
-  console.log('ðŸš€ Starting Static SEO Pre-rendering Pipeline for Priority Class A URLs...\n');
+  console.log('🚀 Starting Static SEO Pre-rendering Pipeline for Priority Class A URLs...\n');
 
   if (!fs.existsSync(DIST_DIR)) {
     console.log('Dist directory not found. Creating dist directory...');
@@ -168,7 +168,7 @@ async function prerender() {
   const coreHubs = [
     {
       route: '/',
-      title: 'TalentXcel â€” AI Career Operating System & Corporate Recruitment',
+      title: 'TalentXcel — AI Career Operating System & Corporate Recruitment',
       desc: 'TalentXcel is an AI-powered career operating system and recruitment ecosystem connecting job seekers, verified employers, higher education institutions, and professional networks.',
       h1: 'AI-Powered Career & Recruitment Ecosystem',
       bodyHtml: `
@@ -195,7 +195,7 @@ async function prerender() {
     },
     {
       route: '/jobs',
-      title: 'Jobs in India â€” Software, Tech, Management & AI Vacancies | TalentXcel',
+      title: 'Jobs in India — Software, Tech, Management & AI Vacancies | TalentXcel',
       desc: 'Explore active job vacancies across software engineering, data science, AI, marketing, sales, and management in Noida, Bangalore, Hyderabad, Pune, and Remote.',
       h1: 'Verified Job Vacancies & Tech Openings',
       bodyHtml: `
@@ -227,7 +227,7 @@ async function prerender() {
     },
     {
       route: '/rankings',
-      title: 'Rankings & Leaderboards â€” Companies, AI Products & Careers | TalentXcel',
+      title: 'Rankings & Leaderboards — Companies, AI Products & Careers | TalentXcel',
       desc: 'Authoritative ranking leaderboards for AI products, emerging startups, tech employers, and career tools evaluated on verified capability benchmarks.',
       h1: 'Rankings & Industry Leaderboards',
       bodyHtml: `
@@ -252,7 +252,7 @@ async function prerender() {
     },
     {
       route: '/resume',
-      title: 'ATS Resume Builder & Studio â€” Create Free Recruiter-Ready CVs | TalentXcel',
+      title: 'ATS Resume Builder & Studio — Create Free Recruiter-Ready CVs | TalentXcel',
       desc: 'Build recruiter-approved ATS resumes online. Real-time ATS keyword optimization, formatting check, and tailored resume bullet generation.',
       h1: 'ATS Resume Builder & Career Optimization Studio',
       bodyHtml: `
@@ -290,7 +290,7 @@ async function prerender() {
     },
     {
       route: '/services',
-      title: 'TalentXcel Strategic Services â€” Recruitment, RPO & AI Solutions',
+      title: 'TalentXcel Strategic Services — Recruitment, RPO & AI Solutions',
       desc: 'Explore TalentXcel corporate staffing, Recruitment Process Outsourcing (RPO), executive search, AI talent matching, and corporate upskilling solutions.',
       h1: 'Strategic Human Capital & Recruitment Solutions',
       bodyHtml: `
@@ -308,7 +308,7 @@ async function prerender() {
     },
     {
       route: '/learning',
-      title: 'Learning & Skill Certifications â€” Tech, AI & Management Courses | TalentXcel',
+      title: 'Learning & Skill Certifications — Tech, AI & Management Courses | TalentXcel',
       desc: 'Discover verified courses, industry certifications, and skill bootcamps across Python, Machine Learning, AWS, Cyber Security, and Project Management.',
       h1: 'Learning, Courses & Skill Certification Hub',
       bodyHtml: `
@@ -320,7 +320,7 @@ async function prerender() {
     },
     {
       route: '/colleges',
-      title: 'Colleges in India â€” 10,250+ Universities, Fees, Placements & Cutoffs | TalentXcel',
+      title: 'Colleges in India — 10,250+ Universities, Fees, Placements & Cutoffs | TalentXcel',
       desc: 'Search 10,250 accredited colleges and universities in India. Compare annual fees, NIRF rankings, highest CTC, cutoff marks, and top recruiters.',
       h1: '10,250+ Indian Colleges & Higher Education Intelligence',
       bodyHtml: `
@@ -337,7 +337,7 @@ async function prerender() {
     },
     {
       route: '/colleges/pathway',
-      title: '6-Step AI Career Pathway Generator â€” Personalized Education Roadmap | TalentXcel',
+      title: '6-Step AI Career Pathway Generator — Personalized Education Roadmap | TalentXcel',
       desc: 'Generate a personalized 6-step education and skill roadmap from your current grade/level to your target career with transparent verified costs.',
       h1: '6-Step AI Career & Education Pathway Generator',
       bodyHtml: `
@@ -373,7 +373,7 @@ async function prerender() {
     },
     {
       route: '/careermap',
-      title: 'Career Map â€” Interactive Skill Graph & Role Progression | TalentXcel',
+      title: 'Career Map — Interactive Skill Graph & Role Progression | TalentXcel',
       desc: 'Explore interactive career progression roadmaps, salary bands, required skills, and transition pathways across software, AI, product, and business roles.',
       h1: 'Career Map & Role Progression Graph',
       bodyHtml: `
@@ -385,7 +385,7 @@ async function prerender() {
     },
     {
       route: '/careerpassport',
-      title: 'Career Passport â€” Verified Competency Credentialing Framework | TalentXcel',
+      title: 'Career Passport — Verified Competency Credentialing Framework | TalentXcel',
       desc: 'Learn about TalentXcel Career Passport, a tamper-proof competency verification framework connecting candidate skills with employer hiring requirements.',
       h1: 'Career Passport Competency Framework',
       bodyHtml: `
@@ -584,7 +584,7 @@ async function prerender() {
 
   for (const top of topics) {
     const canonical = `${BASE_URL}/topics/${top.slug}`;
-    const title = `${top.title} â€” Career Insights, Jobs & Guides | TalentXcel`;
+    const title = `${top.title} — Career Insights, Jobs & Guides | TalentXcel`;
     const topSchema = {
       '@context': 'https://schema.org',
       '@type': 'CollectionPage',
@@ -634,7 +634,7 @@ async function prerender() {
                 <p class="text-sm text-blue-400 font-medium mt-1">${escapeHtml(job.company_name)} &bull; ${escapeHtml(job.location || 'Noida, India')}</p>
                 <div class="flex items-center gap-3 mt-3 text-xs text-slate-400">
                   <span class="px-2.5 py-1 bg-slate-800 rounded-md text-slate-300">${escapeHtml(job.employment_type || 'Full-time')}</span>
-                  ${job.salary_min ? `<span class="text-emerald-400 font-semibold">â‚¹${(job.salary_min / 100000).toFixed(1)}L - â‚¹${((job.salary_max || job.salary_min) / 100000).toFixed(1)}L PA</span>` : ''}
+                  ${job.salary_min ? `<span class="text-emerald-400 font-semibold">₹${(job.salary_min / 100000).toFixed(1)}L - ₹${((job.salary_max || job.salary_min) / 100000).toFixed(1)}L PA</span>` : ''}
                 </div>
               </div>
               <a href="${canonical}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm rounded-xl">Apply for Role</a>
@@ -659,12 +659,12 @@ async function prerender() {
     console.warn('Jobs prerender warning:', err);
   }
 
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─────────────────────────────────────────────────────────────────────────
   // 5. Pre-render Dynamic /network Feed, Paginated Pages, Topic Hubs & Posts
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─────────────────────────────────────────────────────────────────────────
   console.log('Pre-rendering Dynamic /network Feed, Posts, Pagination & Topic Hubs...');
   try {
-    // Pull up to 300 posts â€” DB-level filtering and ordering only
+    // Pull up to 300 posts — DB-level filtering and ordering only
     const { data: dbPosts } = await supabase
       .from('posts')
       .select('*, author:profiles(id, full_name, username, title, profile_picture_url)')
@@ -675,7 +675,7 @@ async function prerender() {
     if (dbPosts && dbPosts.length > 0) {
       const networkCanonical = `${BASE_URL}/network`;
 
-      // â”€â”€ Helper: detect video / image URLs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── Helper: detect video / image URLs ─────────────────────────────────
       const VIDEO_EXTS = ['.mp4', '.webm', '.mov', '.m4v'];
       function isVideoUrl(url: string) {
         const clean = url.split('?')[0].toLowerCase();
@@ -683,15 +683,15 @@ async function prerender() {
       }
       function isImageUrl(url: string) { return !isVideoUrl(url); }
 
-      // â”€â”€ Helper: derive descriptive alt text from post content â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── Helper: derive descriptive alt text from post content ──────────────
       function buildAltText(content: string, authorName: string): string {
         const first = (content || '').trim().split(/[.!?\n]/)[0]?.trim().slice(0, 100) || '';
-        if (first.length > 8) return `${first} â€” shared by ${authorName} on TalentXcel`;
+        if (first.length > 8) return `${first} — shared by ${authorName} on TalentXcel`;
         return `Career insight shared by ${authorName} on TalentXcel Network`;
       }
 
-      // â”€â”€ Helper: fetch top 5 public comments for a single post â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-      // post_comments has no FK to profiles â€” join via separate query
+      // ── Helper: fetch top 5 public comments for a single post ─────────────
+      // post_comments has no FK to profiles — join via separate query
       async function fetchPublicComments(postId: string) {
         const { data: rawComments } = await supabase
           .from('post_comments')
@@ -702,7 +702,7 @@ async function prerender() {
 
         if (!rawComments || rawComments.length === 0) return [];
 
-        // Resolve author names in one extra query â€” DB level, not in-memory loop
+        // Resolve author names in one extra query — DB level, not in-memory loop
         const authorIds = [...new Set(rawComments.map((c: any) => c.author_id).filter(Boolean))];
         let authorMap: Record<string, string> = {};
         if (authorIds.length > 0) {
@@ -727,7 +727,7 @@ async function prerender() {
           }));
       }
 
-      // â”€â”€ Helper: render one <article> for the feed â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── Helper: render one <article> for the feed ─────────────────────────
       function renderFeedArticle(post: any, comments: any[]): string {
         const authorName = post.author?.full_name || 'TalentXcel Services';
         const authorTitle = post.author?.title || 'Verified Professional';
@@ -772,20 +772,20 @@ async function prerender() {
                 <span itemprop="interactionStatistic" itemscope itemtype="https://schema.org/InteractionCounter">
                   <meta itemprop="interactionType" content="https://schema.org/LikeAction" />
                   <meta itemprop="userInteractionCount" content="${post.likes_count || 0}" />
-                  <span aria-label="${post.likes_count || 0} likes">â¤ï¸ ${post.likes_count || 0} Likes</span>
+                  <span aria-label="${post.likes_count || 0} likes">❤️ ${post.likes_count || 0} Likes</span>
                 </span>
                 <span itemprop="interactionStatistic" itemscope itemtype="https://schema.org/InteractionCounter">
                   <meta itemprop="interactionType" content="https://schema.org/CommentAction" />
                   <meta itemprop="userInteractionCount" content="${post.comments_count || 0}" />
-                  <span aria-label="${post.comments_count || 0} comments">ðŸ’¬ ${post.comments_count || 0} Comments</span>
+                  <span aria-label="${post.comments_count || 0} comments">💬 ${post.comments_count || 0} Comments</span>
                 </span>
                 <span itemprop="interactionStatistic" itemscope itemtype="https://schema.org/InteractionCounter">
                   <meta itemprop="interactionType" content="https://schema.org/ShareAction" />
                   <meta itemprop="userInteractionCount" content="${post.shares_count || 0}" />
-                  <span aria-label="${post.shares_count || 0} shares">ðŸ” ${post.shares_count || 0} Shares</span>
+                  <span aria-label="${post.shares_count || 0} shares">🔁 ${post.shares_count || 0} Shares</span>
                 </span>
               </div>
-              <a href="/post/${post.id}" class="text-blue-400 hover:text-blue-300 font-bold">View Discussion â†’</a>
+              <a href="/post/${post.id}" class="text-blue-400 hover:text-blue-300 font-bold">View Discussion →</a>
             </div>
           </section>`;
 
@@ -798,7 +798,7 @@ async function prerender() {
                     <span itemprop="author" itemscope itemtype="https://schema.org/Person">
                       <span itemprop="name" class="font-semibold text-slate-300">${escapeHtml(c.authorName)}</span>
                     </span>
-                    <time itemprop="dateCreated" datetime="${escapeHtml(c.dateCreated)}" class="text-slate-500">Â· ${escapeHtml(c.dateLabel)}</time>
+                    <time itemprop="dateCreated" datetime="${escapeHtml(c.dateCreated)}" class="text-slate-500">· ${escapeHtml(c.dateLabel)}</time>
                   </div>
                   <p itemprop="text" class="text-xs text-slate-300 leading-relaxed">${escapeHtml(c.text.slice(0, 300))}</p>
                 </article>`).join('')}
@@ -819,19 +819,19 @@ async function prerender() {
                     </a>
                     <span class="inline-block w-2 h-2 rounded-full bg-blue-500" title="Verified"></span>
                   </h3>
-                  <p class="text-xs text-slate-400 font-medium">${escapeHtml(authorTitle)} â€¢
+                  <p class="text-xs text-slate-400 font-medium">${escapeHtml(authorTitle)} •
                     <time itemprop="datePublished" datetime="${escapeHtml(post.created_at)}">${escapeHtml(postDate)}</time>
                   </p>
                 </div>
               </div>
               <a href="/post/${post.id}" itemprop="url"
                 class="text-xs text-blue-400 hover:text-blue-300 font-semibold px-2.5 py-1 rounded-lg border border-slate-700 hover:bg-slate-800">
-                Permalink â†’
+                Permalink →
               </a>
             </div>
 
             <p itemprop="articleBody" class="text-slate-200 text-sm leading-relaxed whitespace-pre-line">
-              ${escapeHtml(cleanContent.slice(0, 400))}${cleanContent.length > 400 ? 'â€¦' : ''}
+              ${escapeHtml(cleanContent.slice(0, 400))}${cleanContent.length > 400 ? '…' : ''}
             </p>
 
             ${hashtagsHtml}
@@ -841,7 +841,7 @@ async function prerender() {
           </article>`;
       }
 
-      // â”€â”€ Helper: render full post page body HTML â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── Helper: render full post page body HTML ────────────────────────────
       function renderPostBody(post: any, comments: any[]): string {
         const authorName = post.author?.full_name || 'TalentXcel Services';
         const authorTitle = post.author?.title || 'Director';
@@ -894,17 +894,17 @@ async function prerender() {
               <span itemprop="interactionStatistic" itemscope itemtype="https://schema.org/InteractionCounter">
                 <meta itemprop="interactionType" content="https://schema.org/LikeAction" />
                 <meta itemprop="userInteractionCount" content="${post.likes_count || 0}" />
-                <span aria-label="${post.likes_count || 0} people liked this">â¤ï¸ ${post.likes_count || 0} Likes</span>
+                <span aria-label="${post.likes_count || 0} people liked this">❤️ ${post.likes_count || 0} Likes</span>
               </span>
               <span itemprop="interactionStatistic" itemscope itemtype="https://schema.org/InteractionCounter">
                 <meta itemprop="interactionType" content="https://schema.org/CommentAction" />
                 <meta itemprop="userInteractionCount" content="${post.comments_count || 0}" />
-                <span aria-label="${post.comments_count || 0} comments">ðŸ’¬ ${post.comments_count || 0} Comments</span>
+                <span aria-label="${post.comments_count || 0} comments">💬 ${post.comments_count || 0} Comments</span>
               </span>
               <span itemprop="interactionStatistic" itemscope itemtype="https://schema.org/InteractionCounter">
                 <meta itemprop="interactionType" content="https://schema.org/ShareAction" />
                 <meta itemprop="userInteractionCount" content="${post.shares_count || 0}" />
-                <span aria-label="${post.shares_count || 0} shares">ðŸ” ${post.shares_count || 0} Shares</span>
+                <span aria-label="${post.shares_count || 0} shares">🔁 ${post.shares_count || 0} Shares</span>
               </span>
             </div>
           </section>`;
@@ -919,7 +919,7 @@ async function prerender() {
                     <span itemprop="author" itemscope itemtype="https://schema.org/Person">
                       <span itemprop="name" class="font-semibold text-slate-200">${escapeHtml(c.authorName)}</span>
                     </span>
-                    <time itemprop="dateCreated" datetime="${escapeHtml(c.dateCreated)}" class="text-slate-500">Â· ${escapeHtml(c.dateLabel)}</time>
+                    <time itemprop="dateCreated" datetime="${escapeHtml(c.dateCreated)}" class="text-slate-500">· ${escapeHtml(c.dateLabel)}</time>
                   </div>
                   <p itemprop="text" class="text-sm text-slate-300 leading-relaxed">${escapeHtml(c.text.slice(0, 500))}</p>
                 </article>`).join('')}
@@ -941,13 +941,13 @@ async function prerender() {
                     </a>
                     <span class="inline-block w-2 h-2 rounded-full bg-blue-500" title="Verified"></span>
                   </h2>
-                  <p class="text-xs text-slate-400">${escapeHtml(authorTitle)} â€¢
+                  <p class="text-xs text-slate-400">${escapeHtml(authorTitle)} •
                     Published <time itemprop="datePublished" datetime="${escapeHtml(post.created_at)}">${escapeHtml(postDate)}</time>
                   </p>
                 </div>
               </div>
               <a href="/network" class="text-xs text-slate-400 hover:text-white px-3 py-1.5 rounded-xl border border-slate-700 hover:bg-slate-800 font-semibold">
-                â† Back to Network
+                ← Back to Network
               </a>
             </div>
 
@@ -965,13 +965,13 @@ async function prerender() {
             ${commentsHtml}
 
             <div class="pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400 font-semibold">
-              <a href="/network" class="text-blue-400 hover:text-blue-300 font-bold">View More Network Discussions â†’</a>
-              <a href="/jobs" class="text-slate-400 hover:text-white">Browse Open Roles â†’</a>
+              <a href="/network" class="text-blue-400 hover:text-blue-300 font-bold">View More Network Discussions →</a>
+              <a href="/jobs" class="text-slate-400 hover:text-white">Browse Open Roles →</a>
             </div>
           </article>`;
       }
 
-      // â”€â”€ 5A. /network feed â€” page 1 (posts 0-29) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── 5A. /network feed — page 1 (posts 0-29) ───────────────────────────
       const PAGE_SIZE = 30;
       const TOTAL_PAGES = Math.min(Math.ceil(dbPosts.length / PAGE_SIZE), 5); // cap at 5 pages
 
@@ -997,20 +997,20 @@ async function prerender() {
           <div class="space-y-8 max-w-4xl mx-auto py-4">
             <div class="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-3">
               <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold">
-                <span>ðŸŒ Universal Career Network${page > 1 ? ` â€” Page ${page}` : ''}</span>
+                <span>🌐 Universal Career Network${page > 1 ? ` — Page ${page}` : ''}</span>
               </div>
-              <h1 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">Professional Community &amp; Dynamic Feed${page > 1 ? ` â€” Page ${page}` : ''}</h1>
+              <h1 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">Professional Community &amp; Dynamic Feed${page > 1 ? ` — Page ${page}` : ''}</h1>
               <p class="text-slate-300 text-sm md:text-base leading-relaxed">
                 Connect with verified engineers, hiring managers, and founders. Real-time industry insights, video career roadmaps, and hiring opportunities on TalentXcel.
               </p>
               <div class="pt-2 flex flex-wrap gap-2 text-xs">
-                <a href="/network/jobs" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">ðŸ’¼ Jobs</a>
-                <a href="/network/careers" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">ðŸ“ˆ Careers</a>
-                <a href="/network/ai" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">ðŸ¤– AI</a>
-                <a href="/network/technology" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">ðŸ’» Technology</a>
-                <a href="/network/hr" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">ðŸ¢ HR</a>
-                <a href="/network/leadership" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">ðŸŽ¯ Leadership</a>
-                <a href="/jobs" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold">Browse 450+ Verified Jobs â†’</a>
+                <a href="/network/jobs" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">💼 Jobs</a>
+                <a href="/network/careers" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">📈 Careers</a>
+                <a href="/network/ai" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">🤖 AI</a>
+                <a href="/network/technology" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">💻 Technology</a>
+                <a href="/network/hr" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">🏢 HR</a>
+                <a href="/network/leadership" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">🎯 Leadership</a>
+                <a href="/jobs" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold">Browse 450+ Verified Jobs →</a>
               </div>
             </div>
 
@@ -1020,9 +1020,9 @@ async function prerender() {
 
             ${TOTAL_PAGES > 1 ? `
             <nav aria-label="Network feed pagination" class="flex justify-center gap-3 pt-4">
-              ${page > 1 ? `<a href="${prevHref}" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 text-sm font-semibold hover:bg-slate-700">â† Previous</a>` : ''}
+              ${page > 1 ? `<a href="${prevHref}" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 text-sm font-semibold hover:bg-slate-700">← Previous</a>` : ''}
               <span class="px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-semibold">Page ${page} of ${TOTAL_PAGES}</span>
-              ${page < TOTAL_PAGES ? `<a href="${nextHref}" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 text-sm font-semibold hover:bg-slate-700">Next â†’</a>` : ''}
+              ${page < TOTAL_PAGES ? `<a href="${nextHref}" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 text-sm font-semibold hover:bg-slate-700">Next →</a>` : ''}
             </nav>` : ''}
           </div>`;
 
@@ -1031,7 +1031,7 @@ async function prerender() {
           '@type': 'CollectionPage',
           name: page === 1
             ? 'Professional Network & Community Feed | TalentXcel'
-            : `TalentXcel Network â€” Page ${page} | Professional Community Feed`,
+            : `TalentXcel Network — Page ${page} | Professional Community Feed`,
           description: 'Connect with verified engineers, recruiters, and founders. Share career insights, video discussions, and hiring updates.',
           url: pageCanonical,
           publisher: { '@id': `${BASE_URL}/#organization` },
@@ -1058,28 +1058,28 @@ async function prerender() {
         writePrerenderedPage(routePath, {
           title: page === 1
             ? 'Professional Network & Community Feed | TalentXcel'
-            : `TalentXcel Network â€” Page ${page} | Career Community Feed`,
+            : `TalentXcel Network — Page ${page} | Career Community Feed`,
           description: `Discover ${pagePosts.length} recent posts from India's professional career network. Career insights, job discussions, and industry conversations on TalentXcel.`,
           canonical: pageCanonical,
-          h1: page === 1 ? 'Professional Community & Network Feed' : `Network Feed â€” Page ${page}`,
+          h1: page === 1 ? 'Professional Community & Network Feed' : `Network Feed — Page ${page}`,
           bodyContentHtml: networkBodyHtml,
           jsonLd: [networkCollectionSchema, networkBreadcrumb],
         });
       }
 
-      // â”€â”€ 5B. Topic Hub Pages â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── 5B. Topic Hub Pages ─────────────────────────────────────────────────
       const TOPIC_HUBS: Array<{ slug: string; label: string; keywords: string[]; emoji: string }> = [
-        { slug: 'jobs', label: 'Jobs & Hiring', keywords: ['job', 'hiring', 'openings', 'apply', 'recruitment', 'vacancy'], emoji: 'ðŸ’¼' },
-        { slug: 'careers', label: 'Career Growth', keywords: ['career', 'career path', 'promotion', 'growth', 'skill', 'fresher'], emoji: 'ðŸ“ˆ' },
-        { slug: 'technology', label: 'Technology', keywords: ['tech', 'software', 'developer', 'coding', 'engineering', 'product'], emoji: 'ðŸ’»' },
-        { slug: 'ai', label: 'Artificial Intelligence', keywords: ['ai', 'machine learning', 'llm', 'gpt', 'deep learning', 'genai', 'artificial intelligence'], emoji: 'ðŸ¤–' },
-        { slug: 'hr', label: 'Human Resources', keywords: ['hr', 'human resources', 'onboarding', 'payroll', 'talent', 'workforce'], emoji: 'ðŸ¢' },
-        { slug: 'leadership', label: 'Leadership & Management', keywords: ['leadership', 'management', 'manager', 'cxo', 'director', 'ceo', 'strategy'], emoji: 'ðŸŽ¯' },
+        { slug: 'jobs', label: 'Jobs & Hiring', keywords: ['job', 'hiring', 'openings', 'apply', 'recruitment', 'vacancy'], emoji: '💼' },
+        { slug: 'careers', label: 'Career Growth', keywords: ['career', 'career path', 'promotion', 'growth', 'skill', 'fresher'], emoji: '📈' },
+        { slug: 'technology', label: 'Technology', keywords: ['tech', 'software', 'developer', 'coding', 'engineering', 'product'], emoji: '💻' },
+        { slug: 'ai', label: 'Artificial Intelligence', keywords: ['ai', 'machine learning', 'llm', 'gpt', 'deep learning', 'genai', 'artificial intelligence'], emoji: '🤖' },
+        { slug: 'hr', label: 'Human Resources', keywords: ['hr', 'human resources', 'onboarding', 'payroll', 'talent', 'workforce'], emoji: '🏢' },
+        { slug: 'leadership', label: 'Leadership & Management', keywords: ['leadership', 'management', 'manager', 'cxo', 'director', 'ceo', 'strategy'], emoji: '🎯' },
       ];
 
       for (const hub of TOPIC_HUBS) {
         const hubCanonical = `${BASE_URL}/network/${hub.slug}`;
-        // Filter posts by keyword match in content or hashtags â€” DB ordering already done
+        // Filter posts by keyword match in content or hashtags — DB ordering already done
         const hubPosts = dbPosts
           .filter(p => {
             const text = ((p.content || '') + ' ' + (p.hashtags || []).join(' ')).toLowerCase();
@@ -1121,24 +1121,24 @@ async function prerender() {
           title: `${hub.label} Discussions | TalentXcel Professional Network`,
           description: `${hub.hubPosts?.length || hubPosts.length}+ posts on ${hub.label.toLowerCase()} from verified professionals. Career discussions, hiring insights, and industry news on TalentXcel.`,
           canonical: hubCanonical,
-          h1: `${hub.emoji} ${hub.label} â€” Professional Discussions`,
+          h1: `${hub.emoji} ${hub.label} — Professional Discussions`,
           bodyContentHtml: `
             <div class="space-y-8 max-w-4xl mx-auto py-4">
               <div class="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 border border-slate-800 rounded-3xl p-6 space-y-3">
-                <a href="/network" class="text-xs text-blue-400 hover:text-blue-300">â† Back to Network</a>
+                <a href="/network" class="text-xs text-blue-400 hover:text-blue-300">← Back to Network</a>
                 <h1 class="text-2xl md:text-3xl font-extrabold text-white">${hub.emoji} ${escapeHtml(hub.label)} Discussions</h1>
                 <p class="text-slate-300 text-sm">Explore the latest ${escapeHtml(hub.label.toLowerCase())} posts from India's verified professional community on TalentXcel.</p>
               </div>
               <div class="space-y-6">${hubArticlesHtml}</div>
               <div class="pt-4 text-center">
-                <a href="/network" class="text-sm text-blue-400 hover:text-blue-300 font-bold">View All Network Posts â†’</a>
+                <a href="/network" class="text-sm text-blue-400 hover:text-blue-300 font-bold">View All Network Posts →</a>
               </div>
             </div>`,
           jsonLd: [hubSchema, hubBreadcrumb],
         });
       }
 
-      // â”€â”€ 5C. Individual Post Pages: /post/:id and /network/posts/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // ── 5C. Individual Post Pages: /post/:id and /network/posts/:id ─────────
       // Process up to 300 posts with comments
       let postProcessCount = 0;
       for (const post of dbPosts) {
@@ -1230,9 +1230,9 @@ async function prerender() {
         postProcessCount++;
       }
 
-      console.log(`  âœ… /network feed: ${TOTAL_PAGES} paginated pages`);
-      console.log(`  âœ… Topic hubs: ${TOPIC_HUBS.length} topic pages`);
-      console.log(`  âœ… Individual posts: ${postProcessCount * 2} HTML pages (canonical + legacy)`);
+      console.log(`  ✅ /network feed: ${TOTAL_PAGES} paginated pages`);
+      console.log(`  ✅ Topic hubs: ${TOPIC_HUBS.length} topic pages`);
+      console.log(`  ✅ Individual posts: ${postProcessCount * 2} HTML pages (canonical + legacy)`);
     }
   } catch (err) {
     console.warn('Dynamic network & posts prerender warning:', err);
@@ -1246,8 +1246,8 @@ async function prerender() {
     const canonical = `${BASE_URL}/colleges/${slug}`;
     const feeMin = inst.annual_fee_min || 50000;
     const feeMax = inst.annual_fee_max || 250000;
-    const title = `${inst.name} â€” Fees, Courses, Cutoffs & Placement Intelligence | TalentXcel`;
-    const description = `Explore comprehensive admission intelligence for ${inst.name}, ${inst.city || 'India'}, ${inst.state || 'India'}. Average fee â‚¹${feeMin.toLocaleString()} - â‚¹${feeMax.toLocaleString()}, cutoff criteria, top recruiters, and placement benchmarks.`;
+    const title = `${inst.name} — Fees, Courses, Cutoffs & Placement Intelligence | TalentXcel`;
+    const description = `Explore comprehensive admission intelligence for ${inst.name}, ${inst.city || 'India'}, ${inst.state || 'India'}. Average fee ₹${feeMin.toLocaleString()} - ₹${feeMax.toLocaleString()}, cutoff criteria, top recruiters, and placement benchmarks.`;
 
     const bodyHtml = `
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -1269,7 +1269,7 @@ async function prerender() {
               </div>
               <div class="p-3 bg-slate-950/80 rounded-lg">
                 <span class="text-xs text-slate-400 block">Avg CTC</span>
-                <span class="font-semibold text-amber-400">â‚¹${(inst.placement_avg_lpa || 6.5).toFixed(1)} LPA</span>
+                <span class="font-semibold text-amber-400">₹${(inst.placement_avg_lpa || 6.5).toFixed(1)} LPA</span>
               </div>
             </div>
             <p class="mt-4 text-sm text-slate-300 leading-relaxed">${escapeHtml(inst.description || inst.name + ' is an accredited higher education institution in ' + (inst.state || 'India'))}</p>
@@ -1278,7 +1278,7 @@ async function prerender() {
         <div class="space-y-6">
           <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
             <h3 class="text-lg font-bold text-white mb-3">Annual Fee Range</h3>
-            <p class="text-2xl font-bold text-emerald-400 mb-2">â‚¹${(feeMin / 100000).toFixed(1)}L - â‚¹${(feeMax / 100000).toFixed(1)}L</p>
+            <p class="text-2xl font-bold text-emerald-400 mb-2">₹${(feeMin / 100000).toFixed(1)}L - ₹${(feeMax / 100000).toFixed(1)}L</p>
             <a href="${canonical}/pathway" class="inline-block w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-500 text-center text-white text-sm font-semibold rounded-lg">Generate Career Pathway &rarr;</a>
           </div>
         </div>
@@ -1300,7 +1300,7 @@ async function prerender() {
     const slug = (prog as any).slug || prog.program_title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
     const canonical = `${BASE_URL}/colleges/global-programs/${slug}`;
     const tuition = (prog as any).tuition_annual_display || (prog.tuition_cost_usd === 0 ? 'â‚¬0 Tuition' : `$${prog.tuition_cost_usd}`);
-    const title = `${prog.program_title} â€” ${prog.institution_name}, ${prog.country} | TalentXcel Global Intelligence`;
+    const title = `${prog.program_title} — ${prog.institution_name}, ${prog.country} | TalentXcel Global Intelligence`;
     const description = `Verified details for ${prog.program_title} at ${prog.institution_name} in ${prog.country}. Tuition: ${tuition}. Funding: ${prog.access_type}.`;
 
     writePrerenderedPage(`/colleges/global-programs/${slug}`, {
@@ -1473,13 +1473,13 @@ async function prerender() {
     for (const city of TOP_CITIES) {
       const cityCanonical = `${BASE_URL}/jobs/${slug}/${city.slug}`;
       const capitalizedRole = role.title.replace(/\b\w/g, (c) => c.toUpperCase());
-      const cityTitle = `${capitalizedRole} Jobs in ${city.name} [Hiring 2026] â€” Verified Vacancies | TalentXcel`;
-      const cityDesc = `Find verified ${capitalizedRole} vacancies in ${city.name}. View salary benchmarks (â‚¹3L - â‚¹12L PA), top hiring employers, required skills, and apply directly.`;
+      const cityTitle = `${capitalizedRole} Jobs in ${city.name} [Hiring 2026] — Verified Vacancies | TalentXcel`;
+      const cityDesc = `Find verified ${capitalizedRole} vacancies in ${city.name}. View salary benchmarks (₹3L - ₹12L PA), top hiring employers, required skills, and apply directly.`;
 
       const roleCityFaqs = [
         {
           question: `What is the average salary for a ${capitalizedRole} in ${city.name}?`,
-          answer: `The average salary for a ${capitalizedRole} in ${city.name} ranges from â‚¹3,00,000 to â‚¹8,50,000 per annum depending on experience, technical proficiency, and company scale.`,
+          answer: `The average salary for a ${capitalizedRole} in ${city.name} ranges from ₹3,00,000 to ₹8,50,000 per annum depending on experience, technical proficiency, and company scale.`,
         },
         {
           question: `Which companies are hiring ${capitalizedRole}s in ${city.name}?`,
@@ -1510,7 +1510,7 @@ async function prerender() {
             <h3 class="text-lg font-bold text-white mt-3">Marketing Executive - Chatr (char.chat)</h3>
             <p class="text-xs text-slate-300 mt-1">Execute multi-channel campaigns, social growth, and performance marketing in Noida, UP.</p>
             <div class="flex items-center gap-3 mt-3 text-xs text-slate-400">
-              <span class="text-emerald-400 font-semibold">â‚¹3.0L - â‚¹5.0L PA</span>
+              <span class="text-emerald-400 font-semibold">₹3.0L - ₹5.0L PA</span>
               <span>&bull;</span>
               <span>Full-time</span>
               <span>&bull;</span>
@@ -1529,7 +1529,7 @@ async function prerender() {
             <h3 class="text-lg font-bold text-white mt-3">Content Writer - Chatr (char.chat)</h3>
             <p class="text-xs text-slate-300 mt-1">Create engaging articles, product copy, and social narratives in Noida, UP.</p>
             <div class="flex items-center gap-3 mt-3 text-xs text-slate-400">
-              <span class="text-emerald-400 font-semibold">â‚¹3.0L - â‚¹4.5L PA</span>
+              <span class="text-emerald-400 font-semibold">₹3.0L - ₹4.5L PA</span>
               <span>&bull;</span>
               <span>Full-time</span>
               <span>&bull;</span>
@@ -1553,7 +1553,7 @@ async function prerender() {
           </div>
           ${featuredJobHtml}
           <div class="pt-6 border-t border-slate-800 space-y-4">
-            <h3 class="text-base font-bold text-white">Frequently Asked Questions â€” ${escapeHtml(capitalizedRole)} in ${escapeHtml(city.name)}</h3>
+            <h3 class="text-base font-bold text-white">Frequently Asked Questions — ${escapeHtml(capitalizedRole)} in ${escapeHtml(city.name)}</h3>
             <div class="space-y-3">
               ${roleCityFaqs.map((f) => `<div class="p-4 bg-slate-950 rounded-xl"><h4 class="text-xs font-semibold text-white">${escapeHtml(f.question)}</h4><p class="text-xs text-slate-400 mt-1 leading-relaxed">${escapeHtml(f.answer)}</p></div>`).join('')}
             </div>
@@ -1634,7 +1634,7 @@ async function prerender() {
   }
 
   console.log(`\n========================================`);
-  console.log(`âœ“ Pre-rendered ${generatedCount} Class A Static HTML Documents!`);
+  console.log(`✓ Pre-rendered ${generatedCount} Class A Static HTML Documents!`);
   console.log(`========================================\n`);
 }
 

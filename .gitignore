@@ -44,3 +44,5 @@ public/social-vault/2027-*
 gcp-key.json
 gsc-service-account.json
 *.json.key
+scratch/
+gsc-full-dump.json

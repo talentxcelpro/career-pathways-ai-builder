@@ -50,6 +50,7 @@ const SocialMarketingCalendar = lazy(() => import("@/pages/admin/SocialMarketing
 import UDXDiscoveryDashboard from "@/pages/discovery/UDXDiscoveryDashboard";
 import { UDXSuperAdminGuard } from "@/components/auth/UDXSuperAdminGuard";
 const BenchmarkResultsPage = lazy(() => import("@/pages/BenchmarkResultsPage"));
+const GrowthControlPlane = lazy(() => import("@/pages/growth/GrowthControlPlane"));
 
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
@@ -328,6 +329,8 @@ const App = () => {
                 <Route path="/discovery/benchmark" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 text-slate-400 p-8 flex items-center justify-center">Loading empirical benchmark...</div>}><BenchmarkResultsPage /></Suspense>} />
                 <Route path="/discovery" element={<UDXSuperAdminGuard><UDXDiscoveryDashboard /></UDXSuperAdminGuard>} />
                 <Route path="/admin/discovery" element={<UDXSuperAdminGuard><UDXDiscoveryDashboard /></UDXSuperAdminGuard>} />
+                <Route path="/growth" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 text-slate-400 p-8 flex items-center justify-center">Loading Growth Control Plane...</div>}><UDXSuperAdminGuard><GrowthControlPlane /></UDXSuperAdminGuard></Suspense>} />
+                <Route path="/admin/growth" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 text-slate-400 p-8 flex items-center justify-center">Loading Growth Control Plane...</div>}><UDXSuperAdminGuard><GrowthControlPlane /></UDXSuperAdminGuard></Suspense>} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/privacypolicy" element={<PrivacyPolicy />} />

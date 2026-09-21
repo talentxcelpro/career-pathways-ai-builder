@@ -73,8 +73,8 @@ export const PublicJobApplyButton: React.FC<PublicJobApplyButtonProps> = ({
           </>
         ) : (
           <>
-            <User className="h-4 w-4 mr-2" />
-            {job?.external_url ? 'Login to Apply' : 'Login to Apply'}
+            <Briefcase className="h-4 w-4 mr-2" />
+            {job?.external_url ? 'Apply on Company Site' : 'Apply Now'}
             <ArrowRight className="h-4 w-4 ml-2" />
           </>
         )}

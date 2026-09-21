@@ -60,7 +60,9 @@ const OAuthCallback = () => {
           if (!exchangeError && exchangeData?.session) {
             setStatus('success');
             toast.success('Signed in successfully!');
-            window.location.replace('/network');
+            const dest = localStorage.getItem('subdomain_redirect') || '/network';
+            try { localStorage.removeItem('subdomain_redirect'); } catch (_) {}
+            window.location.replace(dest);
             return;
           }
           if (exchangeError) {
@@ -80,7 +82,9 @@ const OAuthCallback = () => {
 
         if (data.session?.user) {
           setStatus('success');
-          window.location.replace('/network');
+          const dest = localStorage.getItem('subdomain_redirect') || '/network';
+          try { localStorage.removeItem('subdomain_redirect'); } catch (_) {}
+          window.location.replace(dest);
         } else {
           setStatus('error');
           toast.error('Sign in failed. Please try again.');
