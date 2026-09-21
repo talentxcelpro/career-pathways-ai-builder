@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Radio, Key, RefreshCw, Terminal, CheckCircle2, Copy, Check, ExternalLink, Globe, LogOut, ShieldCheck, Layers } from 'lucide-react';
+import { Radio, Key, RefreshCw, Terminal, CheckCircle2, Copy, Check, ExternalLink, Globe, LogOut, ShieldCheck, Layers, AlertCircle } from 'lucide-react';
 import { loadGoogleIdentityServices, GOOGLE_CLIENT_ID } from '@/config/googleAuth';
 
 interface GscStatus {
@@ -107,7 +107,12 @@ export const GSCControlPanel: React.FC<Props> = ({ gscStatus, totalQueries, onRe
         scope: 'https://www.googleapis.com/auth/webmasters.readonly https://www.googleapis.com/auth/userinfo.email',
         callback: async (tokenResponse: any) => {
           if (tokenResponse.error) {
-            addLog(`Google OAuth error: ${tokenResponse.error_description || tokenResponse.error}`);
+            const err = tokenResponse.error_description || tokenResponse.error;
+            if (tokenResponse.error === 'access_denied') {
+              addLog(`⚠️ Google OAuth access_denied (403): App is currently in Testing mode. To authenticate, add your email under 'Test users' in Google Cloud Console, or switch to the Service Account tab above.`);
+            } else {
+              addLog(`Google OAuth error: ${err}`);
+            }
             setIsAuthorizing(false);
             return;
           }
@@ -415,6 +420,29 @@ export const GSCControlPanel: React.FC<Props> = ({ gscStatus, totalQueries, onRe
                         <GoogleIcon />
                         <span>{isAuthorizing ? 'Connecting to Google...' : 'Sign in with Google (Search Console)'}</span>
                       </Button>
+
+                      {/* Google Testing Mode / Verification Notice */}
+                      <div className="p-3.5 bg-amber-950/20 border border-amber-500/30 rounded-xl text-left space-y-2 text-xs max-w-lg mx-auto">
+                        <div className="flex items-center gap-2 text-amber-400 font-semibold text-xs">
+                          <AlertCircle className="w-4 h-4 shrink-0" />
+                          <span>Seeing "Access blocked / Error 403: access_denied"?</span>
+                        </div>
+                        <p className="text-slate-300 text-[11px] leading-relaxed">
+                          Because Search Console access uses a sensitive scope (<code className="text-amber-300 font-mono">webmasters.readonly</code>), Google requires your Google account to be listed as an approved tester while the app is in Testing mode:
+                        </p>
+                        <div className="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800 space-y-1 text-[11px]">
+                          <p className="text-slate-200 font-medium">Quick 1-minute fix:</p>
+                          <ol className="list-decimal list-inside text-slate-300 space-y-1">
+                            <li>Open <a href="https://console.cloud.google.com/apis/credentials/consent" target="_blank" rel="noreferrer" className="text-blue-400 hover:text-blue-300 underline font-semibold inline-flex items-center gap-1">Google Cloud OAuth Consent Screen <ExternalLink className="w-2.5 h-2.5" /></a></li>
+                            <li>Under <strong>Test users</strong>, click <strong>+ ADD USERS</strong> and add <code className="text-emerald-300 font-mono">talentxcelpro@gmail.com</code></li>
+                            <li>Click <strong>Save</strong>, then click <strong>Sign in with Google</strong> above.</li>
+                          </ol>
+                        </div>
+                        <div className="pt-1 text-[11px] text-slate-400 flex items-center gap-1">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                          <span><strong>Automatic Alternative:</strong> Switch to the <strong>Service Account</strong> tab above (automated sync is already active with 2,377 queries).</span>
+                        </div>
+                      </div>
                     </div>
                   ) : (
                     <div className="p-5 bg-emerald-950/20 border border-emerald-500/30 rounded-2xl space-y-4">
