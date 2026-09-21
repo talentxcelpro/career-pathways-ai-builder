@@ -5,6 +5,12 @@ import { Button } from '@/components/ui/button';
 import { ShieldAlert, Lock, LogIn } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
+export const SUPER_ADMIN_EMAILS = [
+  'arsh.wani@gmail.com',
+  'talentxcelpro@gmail.com',
+  'talentxcelservices@gmail.com',
+  'chatr4661@gmail.com'
+];
 export const SUPER_ADMIN_EMAIL = 'arsh.wani@gmail.com';
 
 interface UDXSuperAdminGuardProps {
@@ -16,7 +22,7 @@ export const UDXSuperAdminGuard: React.FC<UDXSuperAdminGuardProps> = ({ children
   const navigate = useNavigate();
 
   const userEmail = user?.email?.toLowerCase().trim() || '';
-  const isSuperAdmin = userEmail === SUPER_ADMIN_EMAIL.toLowerCase();
+  const isSuperAdmin = SUPER_ADMIN_EMAILS.some(email => email.toLowerCase() === userEmail);
 
   // 1. Loading state
   if (loading) {
@@ -105,13 +111,13 @@ export const UDXSuperAdminGuard: React.FC<UDXSuperAdminGuardProps> = ({ children
                 <span className="font-mono text-slate-200">{userEmail}</span>
               </div>
               <div className="flex items-center justify-between text-slate-400 pt-1 border-t border-slate-800/80">
-                <span>Authorized Super Admin:</span>
-                <span className="font-mono text-indigo-400 font-semibold">{SUPER_ADMIN_EMAIL}</span>
+                <span>Authorized Super Admins:</span>
+                <span className="font-mono text-indigo-400 font-semibold text-[11px] text-right">{SUPER_ADMIN_EMAILS.join(', ')}</span>
               </div>
             </div>
 
             <p className="text-slate-400 text-center leading-relaxed">
-              Your account does not possess Super Admin clearance for the UDX Discovery Operating System. Please sign in as <strong className="text-white">{SUPER_ADMIN_EMAIL}</strong>.
+              Your account does not possess Super Admin clearance for the UDX Discovery Operating System. Please sign in with an authorized administrator account ({SUPER_ADMIN_EMAILS.join(', ')}).
             </p>
 
             <div className="space-y-2 pt-2">
