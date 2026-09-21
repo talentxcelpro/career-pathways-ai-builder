@@ -2,6 +2,7 @@ import { useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
 
 declare global {
   interface Window {
@@ -52,6 +53,8 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
 
       if (data.session) {
         console.log('✅ Google One Tap sign-in successful');
+        GrowthFunnelTracker.track('google_onetap_accepted');
+        GrowthFunnelTracker.track('auth_completed', { provider: 'google_onetap' });
         toast.success('Welcome back! Signed in with Google');
         onSuccess?.();
       }
@@ -67,10 +70,11 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
     const hostname = window.location.hostname;
     const isAllowedOrigin = 
       hostname === 'talentxcel.in' || 
-      hostname === 'www.talentxcel.in' ||
+      hostname === 'www.talentxcel.in' || 
       hostname === 'localhost' || 
       hostname === '127.0.0.1' ||
-      hostname.includes('lovableproject.com');
+      hostname.includes('lovableproject.com') ||
+      hostname.includes('vercel.app');
     
     if (!isAllowedOrigin) {
       console.warn('Google One Tap disabled on origin:', hostname);
@@ -94,9 +98,13 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
       // Show the One Tap prompt immediately
       window.google.accounts.id.prompt((notification: any) => {
         if (notification.isNotDisplayed()) {
-          console.log('Google One Tap not displayed - user may have dismissed it previously');
+          GrowthFunnelTracker.track('google_onetap_dismissed', { reason: 'not_displayed' });
         } else if (notification.isSkippedMoment()) {
-          console.log('Google One Tap skipped');
+          GrowthFunnelTracker.track('google_onetap_dismissed', { reason: 'skipped' });
+        } else if (notification.isDismissedMoment()) {
+          GrowthFunnelTracker.track('google_onetap_dismissed', { reason: 'dismissed' });
+        } else if (notification.isDisplayed()) {
+          GrowthFunnelTracker.track('google_onetap_shown');
         }
       });
 

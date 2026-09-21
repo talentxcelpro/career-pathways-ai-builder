@@ -1,23 +1,18 @@
 // middleware.ts
-// Place this at the ROOT of your Vercel project (same level as package.json).
+// Edge middleware running on Vercel Edge Network
 //
-// What it does:
-// - Runs on Vercel's Edge Network before your static SPA is served.
-// - Only activates for known bot/crawler User-Agents (WhatsApp, LinkedIn,
-//   Twitter/X, Slack, Facebook, iMessage, Googlebot, etc).
-// - Only intercepts /passport/public/:username routes.
-// - Fetches that user's name/title/photo from Supabase, then rewrites the
-//   <title> and og:*/twitter:* meta tags in the HTML response.
-// - Real human visitors are untouched — they get your normal React SPA,
-//   unchanged, at full speed.
+// Intercepts search crawlers and social bots (Googlebot, LinkedInBot, etc.)
+// Dynamically injects route-specific title, description, canonical link, and OpenGraph tags
+// Ensures search engines receive the exact canonical URL for /jobs/*, /colleges/*, /passport/*, and /company/*
+// Real human users pass through untouched at static CDN speed.
 
-const BOT_UA = /facebookexternalhit|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|Applebot|redditbot|Pinterest/i;
+const BOT_UA = /facebookexternalhit|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|Applebot|redditbot|Pinterest|bingbot|Baiduspider/i;
 
 const DEFAULT_SUPABASE_URL = "https://dthlgsnakhoftinssokm.supabase.co";
 const DEFAULT_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc";
 
 export const config = {
-  matcher: ['/passport/public/:username*', '/company/:slug*'],
+  matcher: ['/passport/public/:username*', '/company/:slug*', '/jobs/:path*', '/colleges/:path*'],
 };
 
 export default async function middleware(req: Request) {
@@ -33,22 +28,38 @@ export default async function middleware(req: Request) {
   const slug = pathParts[pathParts.length - 1];
   if (!slug) return;
 
-  let title = '';
-  let description = '';
+  let title = 'TalentXcel — AI Career Platform for Jobs, Skills & Hiring';
+  let description = 'Search verified jobs, build an ATS-ready resume, prepare for interviews and grow your skills on TalentXcel.';
   let image = 'https://talentxcel.in/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png';
 
-  if (section === 'company') {
+  if (section === 'jobs') {
+    const job = await fetchJobForMeta(slug);
+    if (job) {
+      title = `${job.title} at ${job.company_name || 'Hiring Employer'} | TalentXcel Jobs`;
+      description = job.description?.slice(0, 180) || `Apply now for ${job.title} on TalentXcel. Free 1-click application with instant ATS resume score.`;
+    } else {
+      const formattedTitle = slug.replace(/[-_]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+      title = `${formattedTitle} Jobs & Career Opportunities | TalentXcel`;
+      description = `Find high-paying ${formattedTitle} jobs with verified salary ranges, direct employer applications, and instant ATS resume matching.`;
+    }
+  } else if (section === 'colleges') {
+    const formattedCollege = slug.replace(/[-_]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+    title = `${formattedCollege} — Courses, Admissions, Fees & Placements | TalentXcel`;
+    description = `Comprehensive guide to ${formattedCollege}: courses, fee structures, cutoff scores, placements, and career pathways.`;
+  } else if (section === 'company') {
     const company = await fetchCompanyForMeta(slug);
-    if (!company) return;
-    title = `${company.name} — AI Product Leaderboard | TalentXcel Rankings`;
-    description = company.tagline || company.description || `${company.name} is ranked on the TalentXcel Global AI Product Leaderboard.`;
-    if (company.logo_url) image = company.logo_url;
-  } else {
+    if (company) {
+      title = `${company.name} — AI Product Leaderboard | TalentXcel Rankings`;
+      description = company.tagline || company.description || `${company.name} is ranked on the TalentXcel Global AI Product Leaderboard.`;
+      if (company.logo_url) image = company.logo_url;
+    }
+  } else if (section === 'passport') {
     const profile = await fetchProfileForMeta(slug);
-    if (!profile) return;
-    title = `${profile.name} — ${profile.headline || profile.title || 'Professional Career Passport'} | TalentXcel`;
-    description = profile.summary?.slice(0, 200) || `${profile.name}'s verified professional passport on TalentXcel.`;
-    if (profile.photoUrl) image = profile.photoUrl;
+    if (profile) {
+      title = `${profile.name} — ${profile.headline || profile.title || 'Professional Career Passport'} | TalentXcel`;
+      description = profile.summary?.slice(0, 200) || `${profile.name}'s verified professional passport on TalentXcel.`;
+      if (profile.photoUrl) image = profile.photoUrl;
+    }
   }
 
   // Fetch the real index.html Vercel would have served, then patch it.
@@ -56,21 +67,51 @@ export default async function middleware(req: Request) {
   if (!originRes.ok) return;
   let html = await originRes.text();
 
-  const pageUrl = url.toString();
+  const canonicalUrl = `https://talentxcel.in${url.pathname}`;
 
   html = html
-    .replace(/<title>.*?<\/title>/, `<title>${escapeHtml(title)}</title>`)
-    .replace(/(<meta property="og:title" content=")[^"]*(")/, `$1${escapeHtml(title)}$2`)
-    .replace(/(<meta property="og:description" content=")[^"]*(")/, `$1${escapeHtml(description)}$2`)
-    .replace(/(<meta property="og:image" content=")[^"]*(")/, `$1${image}$2`)
-    .replace(/(<meta property="og:url" content=")[^"]*(")/, `$1${pageUrl}$2`)
-    .replace(/(<meta name="twitter:title" content=")[^"]*(")/, `$1${escapeHtml(title)}$2`)
-    .replace(/(<meta name="twitter:description" content=")[^"]*(")/, `$1${escapeHtml(description)}$2`)
-    .replace(/(<meta name="twitter:image" content=")[^"]*(")/, `$1${image}$2`);
+    .replace(/<title>.*?<\/title>/i, `<title>${escapeHtml(title)}</title>`)
+    .replace(/(<meta\s+name=["']description["']\s+content=")[^"]*(")/i, `$1${escapeHtml(description)}$2`)
+    .replace(/(<meta\s+property=["']og:title["']\s+content=")[^"]*(")/i, `$1${escapeHtml(title)}$2`)
+    .replace(/(<meta\s+property=["']og:description["']\s+content=")[^"]*(")/i, `$1${escapeHtml(description)}$2`)
+    .replace(/(<meta\s+property=["']og:image["']\s+content=")[^"]*(")/i, `$1${image}$2`)
+    .replace(/(<meta\s+property=["']og:url["']\s+content=")[^"]*(")/i, `$1${canonicalUrl}$2`)
+    .replace(/(<meta\s+name=["']twitter:title["']\s+content=")[^"]*(")/i, `$1${escapeHtml(title)}$2`)
+    .replace(/(<meta\s+name=["']twitter:description["']\s+content=")[^"]*(")/i, `$1${escapeHtml(description)}$2`)
+    .replace(/(<meta\s+name=["']twitter:image["']\s+content=")[^"]*(")/i, `$1${image}$2`);
+
+  // Explicitly update or inject canonical tag so Googlebot indexes the exact route URL
+  if (/<link\s+rel=["']canonical["'][^>]*>/i.test(html)) {
+    html = html.replace(/<link\s+rel=["']canonical["'][^>]*>/i, `<link rel="canonical" href="${canonicalUrl}" />`);
+  } else {
+    html = html.replace('</head>', `<link rel="canonical" href="${canonicalUrl}" />\n</head>`);
+  }
 
   return new Response(html, {
     headers: { 'content-type': 'text/html; charset=utf-8' },
   });
+}
+
+async function fetchJobForMeta(slug: string) {
+  const SUPABASE_URL = process.env.SUPABASE_URL || DEFAULT_SUPABASE_URL;
+  const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY;
+
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/jobs?or=(seo_slug.eq.${encodeURIComponent(slug)},id.eq.${encodeURIComponent(slug)})&select=title,company_name,description,location&limit=1`,
+      {
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        },
+      }
+    );
+    if (!res.ok) return null;
+    const rows = await res.json();
+    return rows?.[0] || null;
+  } catch {
+    return null;
+  }
 }
 
 async function fetchCompanyForMeta(slug: string) {
@@ -89,8 +130,7 @@ async function fetchCompanyForMeta(slug: string) {
     );
     if (!res.ok) return null;
     const rows = await res.json();
-    if (!rows?.length) return null;
-    return rows[0];
+    return rows?.[0] || null;
   } catch {
     return null;
   }
@@ -124,7 +164,7 @@ async function fetchProfileForMeta(username: string) {
       summary: row.about || row.headline || '',
       photoUrl: row.profile_picture_url || '',
     };
-  } catch (err) {
+  } catch {
     return null;
   }
 }

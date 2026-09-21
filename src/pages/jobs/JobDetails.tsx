@@ -29,6 +29,7 @@ import { toast } from 'sonner';
 import { PublicJobApplyButton } from '@/components/jobs/PublicJobApplyButton';
 import { ReactJobStructuredData } from '@/components/seo/ReactJobStructuredData';
 import { getPublicJobUrl, getPublicCompanyUrl } from '@/lib/seo/canonicalUrls';
+import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
 
 export default function JobDetails() {
   const { slugOrId = '' } = useParams<{ slugOrId: string }>();
@@ -85,6 +86,19 @@ export default function JobDetails() {
     staleTime: 5 * 60 * 1000,
     retry: 1,
   });
+
+  useEffect(() => {
+    if (job) {
+      GrowthFunnelTracker.track('job_view', {
+        job_id: job.id,
+        job_title: job.title,
+        job_category: job.category,
+        location: job.location,
+        salary_min: job.salary_min,
+        salary_max: job.salary_max,
+      });
+    }
+  }, [job]);
 
   const handleShare = () => {
     const canonical = getPublicJobUrl(job?.seo_slug || slugOrId);

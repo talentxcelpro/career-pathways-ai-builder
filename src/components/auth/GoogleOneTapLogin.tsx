@@ -21,14 +21,18 @@ export const GoogleOneTapLogin: React.FC<GoogleOneTapLoginProps> = ({
   const handleSuccess = () => {
     console.log('🎉 Google One Tap login successful!');
     const urlParams = new URLSearchParams(window.location.search);
-    const redirectParam = urlParams.get('redirect');
+    const redirectParam = urlParams.get('redirect') || urlParams.get('returnUrl');
     const storedRedirect = localStorage.getItem('subdomain_redirect');
-    const redirectPath = redirectParam || storedRedirect || '/network';
     
-    // Clean up stored redirects
-    localStorage.removeItem('subdomain_redirect');
-    
-    navigate(redirectPath, { replace: true });
+    // If user signed in while on an auth/login page, route them to target or /network
+    if (window.location.pathname.startsWith('/auth') || window.location.pathname === '/') {
+      const redirectPath = redirectParam || storedRedirect || '/network';
+      localStorage.removeItem('subdomain_redirect');
+      navigate(redirectPath, { replace: true });
+    } else {
+      // Content page (job, college, tool): preserve page and clear transient storage
+      localStorage.removeItem('subdomain_redirect');
+    }
   };
 
   return (

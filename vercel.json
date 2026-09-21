@@ -208,6 +208,14 @@
       "source": "/api/discovery/data",
       "destination": "/api/discovery/data"
     },
+    {
+      "source": "/api/jobs/apply",
+      "destination": "/api/jobs/apply"
+    },
+    {
+      "source": "/api/growth/:path*",
+      "destination": "/api/growth/:path*"
+    },
     { "source": "/(.*)", "destination": "/index.html" }
 
   ]

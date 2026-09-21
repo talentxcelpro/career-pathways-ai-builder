@@ -1,0 +1,1479 @@
+{
+  "generated_at": "2026-09-21T07:18:00Z",
+  "total_analyzed": 161,
+  "classified_summary": {
+    "JOBS_EXACT": 63,
+    "COLLEGES": 67,
+    "LOCATIONS": 2,
+    "LEARNING": 1,
+    "PASSPORT": 0,
+    "TOOLS": 0,
+    "HOME_CORE": 1,
+    "INVALID_OR_THIN": 27
+  },
+  "entries": {
+    "JOBS_EXACT": [
+      {
+        "url": "https://talentxcel.in/jobs/quality-assurance-chemist-formulations-talentxcel-services-client-partner-pune-maharashtra-india-1",
+        "path": "/jobs/quality-assurance-chemist-formulations-talentxcel-services-client-partner-pune-maharashtra-india-1",
+        "clicks": 2.0,
+        "impressions": 6.0,
+        "ctr": 0.3333,
+        "position": 2.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/product-marketing-manager-pmm-tech-talentxcel-services-client-partner-bhubaneswar-odisha-india-1",
+        "path": "/jobs/product-marketing-manager-pmm-tech-talentxcel-services-client-partner-bhubaneswar-odisha-india-1",
+        "clicks": 1.0,
+        "impressions": 6.0,
+        "ctr": 0.16670000000000001,
+        "position": 4.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/fiber-optic-engineer/guwahati",
+        "path": "/jobs/fiber-optic-engineer/guwahati",
+        "clicks": 1.0,
+        "impressions": 2.0,
+        "ctr": 0.5,
+        "position": 9.5,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/content-writer/in/ahmedabad",
+        "path": "/jobs/content-writer/in/ahmedabad",
+        "clicks": 1.0,
+        "impressions": 1.0,
+        "ctr": 1.0,
+        "position": 11.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/quantitative-risk-portfolio-analyst-talentxcel-services-client-partner-kochi-kerala-india-1",
+        "path": "/jobs/quantitative-risk-portfolio-analyst-talentxcel-services-client-partner-kochi-kerala-india-1",
+        "clicks": 0.0,
+        "impressions": 3.0,
+        "ctr": 0.0,
+        "position": 3.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/company/netflix/in-agra",
+        "path": "/jobs/company/netflix/in-agra",
+        "clicks": 0.0,
+        "impressions": 2.0,
+        "ctr": 0.0,
+        "position": 2.5,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/human-resources-business-partner-hrbp-talentxcel-services-client-partner-coimbatore-tamil-nadu-india-1?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+        "path": "/jobs/human-resources-business-partner-hrbp-talentxcel-services-client-partner-coimbatore-tamil-nadu-india-1",
+        "clicks": 0.0,
+        "impressions": 2.0,
+        "ctr": 0.0,
+        "position": 3.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/hr-business-partner/tokyo-japan/remote-hybrid",
+        "path": "/jobs/hr-business-partner/tokyo-japan/remote-hybrid",
+        "clicks": 0.0,
+        "impressions": 2.0,
+        "ctr": 0.0,
+        "position": 8.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/sales-representative/jamshedpur/fresher",
+        "path": "/jobs/sales-representative/jamshedpur/fresher",
+        "clicks": 0.0,
+        "impressions": 2.0,
+        "ctr": 0.0,
+        "position": 11.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/instructional-designer-curriculum-developer-talentxcel-services-client-partner-chennai-tamil-nadu-in-1",
+        "path": "/jobs/instructional-designer-curriculum-developer-talentxcel-services-client-partner-chennai-tamil-nadu-in-1",
+        "clicks": 0.0,
+        "impressions": 2.0,
+        "ctr": 0.0,
+        "position": 16.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/data-engineer/in",
+        "path": "/jobs/data-engineer/in",
+        "clicks": 0.0,
+        "impressions": 2.0,
+        "ctr": 0.0,
+        "position": 44.5,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/senior-mobile-application-developer-flutter-react-native-talentxcel-services-client-partner-mumbai-m-1",
+        "path": "/jobs/senior-mobile-application-developer-flutter-react-native-talentxcel-services-client-partner-mumbai-m-1",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 1.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/lead-principal-wealth-management-private-banking-advisor-talentxcel-services-client-partner-bhubanes-1",
+        "path": "/jobs/lead-principal-wealth-management-private-banking-advisor-talentxcel-services-client-partner-bhubanes-1",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 3.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/performance-marketing-paid-growth-lead-talentxcel-services-client-partner-jaipur-rajasthan-india-1",
+        "path": "/jobs/performance-marketing-paid-growth-lead-talentxcel-services-client-partner-jaipur-rajasthan-india-1",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 3.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/lead-principal-seo-strategist-technical-content-lead-talentxcel-services-client-partner-remote-india-1",
+        "path": "/jobs/lead-principal-seo-strategist-technical-content-lead-talentxcel-services-client-partner-remote-india-1",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 4.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/experience/mid-level/bangalore/entry-level",
+        "path": "/jobs/experience/mid-level/bangalore/entry-level",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 5.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/junior-associate-performance-marketing-paid-growth-lead-talentxcel-services-client-partner-pune-maha-1",
+        "path": "/jobs/junior-associate-performance-marketing-paid-growth-lead-talentxcel-services-client-partner-pune-maha-1",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 5.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/electric-vehicle-engineer/patna",
+        "path": "/jobs/electric-vehicle-engineer/patna",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 6.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/blockchain-developer/nashik",
+        "path": "/jobs/blockchain-developer/nashik",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 8.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/experience/director/ai-engineer/bhubaneswar",
+        "path": "/jobs/experience/director/ai-engineer/bhubaneswar",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 8.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/skill/next-js/pune",
+        "path": "/jobs/skill/next-js/pune",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 8.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/electric-vehicle-engineer/nashik",
+        "path": "/jobs/electric-vehicle-engineer/nashik",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 9.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/email-marketing-specialist/tokyo-japan",
+        "path": "/jobs/email-marketing-specialist/tokyo-japan",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 9.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/company/cognizant/in-guwahati",
+        "path": "/jobs/company/cognizant/in-guwahati",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 10.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/electric-vehicle-engineer/berlin-germany/experienced",
+        "path": "/jobs/electric-vehicle-engineer/berlin-germany/experienced",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 10.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/experience/lead/copywriter/entry-level",
+        "path": "/jobs/experience/lead/copywriter/entry-level",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 10.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/full-stack-developer/tokyo-japan",
+        "path": "/jobs/full-stack-developer/tokyo-japan",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 10.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/performance-marketing-manager/dubai-uae/fresher",
+        "path": "/jobs/performance-marketing-manager/dubai-uae/fresher",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 10.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/school-principal/mysore",
+        "path": "/jobs/school-principal/mysore",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 10.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/company/savantis-solutions",
+        "path": "/jobs/company/savantis-solutions",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 11.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/junior-associate-credit-risk-underwriting-manager-talentxcel-services-client-partner-remote-india-1",
+        "path": "/jobs/junior-associate-credit-risk-underwriting-manager-talentxcel-services-client-partner-remote-india-1",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 11.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/medical-technologist/tokyo-japan/mumbai",
+        "path": "/jobs/medical-technologist/tokyo-japan/mumbai",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 11.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/tooling-engineer/canada",
+        "path": "/jobs/tooling-engineer/canada",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 11.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/medical-assistant/kochi",
+        "path": "/jobs/medical-assistant/kochi",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 12.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/senior-devops-cloud-platform-engineer-talentxcel-services-client-partner-visakhapatnam-andhra-prades-1",
+        "path": "/jobs/senior-devops-cloud-platform-engineer-talentxcel-services-client-partner-visakhapatnam-andhra-prades-1",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 13.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/ui-ux-designer/director/in/bhopal",
+        "path": "/jobs/ui-ux-designer/director/in/bhopal",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 15.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/biomedical-equipment-systems-engineer-talentxcel-services-client-partner-mumbai-maharashtra-india-1",
+        "path": "/jobs/biomedical-equipment-systems-engineer-talentxcel-services-client-partner-mumbai-maharashtra-india-1",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 19.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/experience/entry-level/data-analyst/vadodara",
+        "path": "/jobs/experience/entry-level/data-analyst/vadodara",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 21.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/wind-energy-engineer/mumbai",
+        "path": "/jobs/wind-energy-engineer/mumbai",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 25.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/company/zerodha/in-agra",
+        "path": "/jobs/company/zerodha/in-agra",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 27.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/change-management-consultant/chennai/career-growth",
+        "path": "/jobs/change-management-consultant/chennai/career-growth",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 30.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/company/intel/in-bangalore",
+        "path": "/jobs/company/intel/in-bangalore",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 33.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/company/wipro/in-kochi",
+        "path": "/jobs/company/wipro/in-kochi",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 37.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/hr-manager/freshers/in/trivandrum",
+        "path": "/jobs/hr-manager/freshers/in/trivandrum",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 38.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/python-developer/lead/in/mumbai",
+        "path": "/jobs/python-developer/lead/in/mumbai",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 38.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/company/airbnb/in-kochi",
+        "path": "/jobs/company/airbnb/in-kochi",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 39.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/devops-engineer/visakhapatnam",
+        "path": "/jobs/devops-engineer/visakhapatnam",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 42.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/company/cred/in-nagpur",
+        "path": "/jobs/company/cred/in-nagpur",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 44.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/mid-level-ai-engineer-in-visakhapatnam",
+        "path": "/jobs/mid-level-ai-engineer-in-visakhapatnam",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 49.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/skill/next-js/patna",
+        "path": "/jobs/skill/next-js/patna",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 50.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/java-developer/entry-level/in/hyderabad",
+        "path": "/jobs/java-developer/entry-level/in/hyderabad",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 61.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/entry-level-nlp-engineer-in-nashik",
+        "path": "/jobs/entry-level-nlp-engineer-in-nashik",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 62.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/skill/node-js/chennai",
+        "path": "/jobs/skill/node-js/chennai",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 62.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/ppc-specialist/amsterdam-netherlands/career-growth",
+        "path": "/jobs/ppc-specialist/amsterdam-netherlands/career-growth",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 65.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/experience/entry-level/embedded-systems-engineer",
+        "path": "/jobs/experience/entry-level/embedded-systems-engineer",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 69.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/data-analytics",
+        "path": "/jobs/data-analytics",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 74.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/full-stack-developer/senior-python-developer/mumbai",
+        "path": "/jobs/full-stack-developer/senior-python-developer/mumbai",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 74.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/ai-engineer/delhi-ncr/remote-hybrid",
+        "path": "/jobs/ai-engineer/delhi-ncr/remote-hybrid",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 84.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/it-consultant/nashik/salary-insights",
+        "path": "/jobs/it-consultant/nashik/salary-insights",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 85.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/skill/spring-boot/kolkata",
+        "path": "/jobs/skill/spring-boot/kolkata",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 88.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/skill/typescript",
+        "path": "/jobs/skill/typescript",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 89.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/ai-engineer/in/dehradun",
+        "path": "/jobs/ai-engineer/in/dehradun",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 92.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/jobs/warehouse-manager/visakhapatnam",
+        "path": "/jobs/warehouse-manager/visakhapatnam",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 116.0,
+        "disposition": "INDEX"
+      }
+    ],
+    "COLLEGES": [
+      {
+        "url": "https://talentxcel.in/colleges/cbit-college-of-pharmacy-health-sciences-hyderabad-2",
+        "path": "/colleges/cbit-college-of-pharmacy-health-sciences-hyderabad-2",
+        "clicks": 1.0,
+        "impressions": 12.0,
+        "ctr": 0.0833,
+        "position": 7.67,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/bansal-institute-bist-bhopal-engineering-college-indore-2",
+        "path": "/colleges/bansal-institute-bist-bhopal-engineering-college-indore-2",
+        "clicks": 1.0,
+        "impressions": 1.0,
+        "ctr": 1.0,
+        "position": 5.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/loyola-college-of-arts-science-guwahati-campus-3",
+        "path": "/colleges/loyola-college-of-arts-science-guwahati-campus-3",
+        "clicks": 0.0,
+        "impressions": 5.0,
+        "ctr": 0.0,
+        "position": 3.6,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/dr-a-p-j-abdul-kalam-technical-university-udaipur-west-campus",
+        "path": "/colleges/dr-a-p-j-abdul-kalam-technical-university-udaipur-west-campus",
+        "clicks": 0.0,
+        "impressions": 4.0,
+        "ctr": 0.0,
+        "position": 4.25,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/ashoka-university",
+        "path": "/colleges/ashoka-university",
+        "clicks": 0.0,
+        "impressions": 4.0,
+        "ctr": 0.0,
+        "position": 70.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/sambhram-institute-degree-pg-college-hubballi-2",
+        "path": "/colleges/sambhram-institute-degree-pg-college-hubballi-2",
+        "clicks": 0.0,
+        "impressions": 3.0,
+        "ctr": 0.0,
+        "position": 8.67,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/jaypee-institute-jiit-government-polytechnic-college-varanasi-2",
+        "path": "/colleges/jaypee-institute-jiit-government-polytechnic-college-varanasi-2",
+        "clicks": 0.0,
+        "impressions": 2.0,
+        "ctr": 0.0,
+        "position": 5.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/pes-institute-of-medical-kuppam-college-of-pharmacy-health-sciences-anantapur-2",
+        "path": "/colleges/pes-institute-of-medical-kuppam-college-of-pharmacy-health-sciences-anantapur-2",
+        "clicks": 0.0,
+        "impressions": 2.0,
+        "ctr": 0.0,
+        "position": 5.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/dr-vrk-women-medical-aziznagar-college-of-pharmacy-health-sciences-warangal-2",
+        "path": "/colleges/dr-vrk-women-medical-aziznagar-college-of-pharmacy-health-sciences-warangal-2",
+        "clicks": 0.0,
+        "impressions": 2.0,
+        "ctr": 0.0,
+        "position": 7.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/maturi-venkata-subba-rao-mvsr-college-of-pharmacy-health-sciences-khammam-2",
+        "path": "/colleges/maturi-venkata-subba-rao-mvsr-college-of-pharmacy-health-sciences-khammam-2",
+        "clicks": 0.0,
+        "impressions": 2.0,
+        "ctr": 0.0,
+        "position": 7.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/narula-institute-agarpara-government-polytechnic-college-kalyani-2",
+        "path": "/colleges/narula-institute-agarpara-government-polytechnic-college-kalyani-2",
+        "clicks": 0.0,
+        "impressions": 2.0,
+        "ctr": 0.0,
+        "position": 7.5,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/vidyasagar-institute-of-technology-science-chennai-2",
+        "path": "/colleges/vidyasagar-institute-of-technology-science-chennai-2",
+        "clicks": 0.0,
+        "impressions": 2.0,
+        "ctr": 0.0,
+        "position": 7.5,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/guru-nanak-khalsa-karnal-government-polytechnic-college-rohtak-2",
+        "path": "/colleges/guru-nanak-khalsa-karnal-government-polytechnic-college-rohtak-2",
+        "clicks": 0.0,
+        "impressions": 2.0,
+        "ctr": 0.0,
+        "position": 8.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/echelon-institute-faridabad-college-of-pharmacy-health-sciences-sonipat-2",
+        "path": "/colleges/echelon-institute-faridabad-college-of-pharmacy-health-sciences-sonipat-2",
+        "clicks": 0.0,
+        "impressions": 2.0,
+        "ctr": 0.0,
+        "position": 8.5,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/govindammal-aditanar-engineering-college-chennai-2",
+        "path": "/colleges/govindammal-aditanar-engineering-college-chennai-2",
+        "clicks": 0.0,
+        "impressions": 2.0,
+        "ctr": 0.0,
+        "position": 9.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/holkar-science-college-indore-government-polytechnic-college-indore-2",
+        "path": "/colleges/holkar-science-college-indore-government-polytechnic-college-indore-2",
+        "clicks": 0.0,
+        "impressions": 2.0,
+        "ctr": 0.0,
+        "position": 10.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/sree-ayyappa-college-of-pharmacy-health-sciences-chennai-2",
+        "path": "/colleges/sree-ayyappa-college-of-pharmacy-health-sciences-chennai-2",
+        "clicks": 0.0,
+        "impressions": 2.0,
+        "ctr": 0.0,
+        "position": 11.5,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/nri-institute-pothavarappadu-degree-pg-college-anantapur-2",
+        "path": "/colleges/nri-institute-pothavarappadu-degree-pg-college-anantapur-2",
+        "clicks": 0.0,
+        "impressions": 2.0,
+        "ctr": 0.0,
+        "position": 40.5,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/dronacharya-college-of-engineering-gurugram-institute-of-technology-science-gurugram-2",
+        "path": "/colleges/dronacharya-college-of-engineering-gurugram-institute-of-technology-science-gurugram-2",
+        "clicks": 0.0,
+        "impressions": 2.0,
+        "ctr": 0.0,
+        "position": 51.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/netaji-subhash-engineering-nsec-institute-of-technology-science-durgapur-2",
+        "path": "/colleges/netaji-subhash-engineering-nsec-institute-of-technology-science-durgapur-2",
+        "clicks": 0.0,
+        "impressions": 2.0,
+        "ctr": 0.0,
+        "position": 69.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/walchand-institute-of-technology-wit-college-of-arts-commerce-science-nashik-2",
+        "path": "/colleges/walchand-institute-of-technology-wit-college-of-arts-commerce-science-nashik-2",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 2.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/national-institute-of-fashion-technology-nift-kurnool",
+        "path": "/colleges/national-institute-of-fashion-technology-nift-kurnool",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 5.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/south-city-college-kolkata-degree-pg-college-howrah-2",
+        "path": "/colleges/south-city-college-kolkata-degree-pg-college-howrah-2",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 5.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/sri-venkateshwara-college-institute-of-management-research-bengaluru-2",
+        "path": "/colleges/sri-venkateshwara-college-institute-of-management-research-bengaluru-2",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 6.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/holy-cross-nagercoil-government-polytechnic-college-tirunelveli-2",
+        "path": "/colleges/holy-cross-nagercoil-government-polytechnic-college-tirunelveli-2",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 7.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/kmit-narayanguda-government-polytechnic-college-hyderabad-2",
+        "path": "/colleges/kmit-narayanguda-government-polytechnic-college-hyderabad-2",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 7.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/sinhgad-engineering-college-amravati-2",
+        "path": "/colleges/sinhgad-engineering-college-amravati-2",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 7.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/surendranath-heritage-government-polytechnic-college-burdwan-2",
+        "path": "/colleges/surendranath-heritage-government-polytechnic-college-burdwan-2",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 7.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/guru-nanak-khalsa-karnal-college-of-pharmacy-health-sciences-panipat-2",
+        "path": "/colleges/guru-nanak-khalsa-karnal-college-of-pharmacy-health-sciences-panipat-2",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 8.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/jayam-institute-of-technology-science-coimbatore-2",
+        "path": "/colleges/jayam-institute-of-technology-science-coimbatore-2",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 8.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/maharaja-agrasen-college-rajkot-campus-4",
+        "path": "/colleges/maharaja-agrasen-college-rajkot-campus-4",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 8.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/barak-valley-engineering-karimganj-college-of-pharmacy-health-sciences-guwahati-2",
+        "path": "/colleges/barak-valley-engineering-karimganj-college-of-pharmacy-health-sciences-guwahati-2",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 9.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/dream-institute-thakurpukur-government-polytechnic-college-kolkata-2",
+        "path": "/colleges/dream-institute-thakurpukur-government-polytechnic-college-kolkata-2",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 9.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/government-law-college-palakkad-campus-4",
+        "path": "/colleges/government-law-college-palakkad-campus-4",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 9.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/klm-college-for-women-kadapa-engineering-college-kakinada-2",
+        "path": "/colleges/klm-college-for-women-kadapa-engineering-college-kakinada-2",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 9.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/national-deemed-university-hubballi",
+        "path": "/colleges/national-deemed-university-hubballi",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 9.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/national-institute-of-electronics-information-technology-nielit-durgapur",
+        "path": "/colleges/national-institute-of-electronics-information-technology-nielit-durgapur",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 9.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/prabhu-jagatbandhu-andul-college-of-arts-commerce-science-kalyani-2",
+        "path": "/colleges/prabhu-jagatbandhu-andul-college-of-arts-commerce-science-kalyani-2",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 9.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/south-city-college-kolkata-degree-pg-college-kolkata-2",
+        "path": "/colleges/south-city-college-kolkata-degree-pg-college-kolkata-2",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 9.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/sumathi-reddy-institute-warangal-college-of-pharmacy-health-sciences-warangal-2",
+        "path": "/colleges/sumathi-reddy-institute-warangal-college-of-pharmacy-health-sciences-warangal-2",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 10.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/ashoka-institute-varanasi-college-of-arts-commerce-science-agra-2",
+        "path": "/colleges/ashoka-institute-varanasi-college-of-arts-commerce-science-agra-2",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 11.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/bit-raipur-college-of-arts-commerce-science-raipur-2",
+        "path": "/colleges/bit-raipur-college-of-arts-commerce-science-raipur-2",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 11.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/r-s-p-college-jharia-college-of-pharmacy-health-sciences-ranchi-4",
+        "path": "/colleges/r-s-p-college-jharia-college-of-pharmacy-health-sciences-ranchi-4",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 11.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/govt-engineering-college-gec-raipur-engineering-college-raipur-2",
+        "path": "/colleges/govt-engineering-college-gec-raipur-engineering-college-raipur-2",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 21.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/ram-krishna-dwarika-college-patna-government-polytechnic-college-gaya-2",
+        "path": "/colleges/ram-krishna-dwarika-college-patna-government-polytechnic-college-gaya-2",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 23.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/govt-engineering-college-gec-raipur-college-of-arts-commerce-science-bhilai-2/campus",
+        "path": "/colleges/govt-engineering-college-gec-raipur-college-of-arts-commerce-science-bhilai-2/campus",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 26.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/manav-rachna-international-campus-college-of-pharmacy-health-sciences-faridabad-2",
+        "path": "/colleges/manav-rachna-international-campus-college-of-pharmacy-health-sciences-faridabad-2",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 29.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/sathyabama-institute-of-science-and-technology",
+        "path": "/colleges/sathyabama-institute-of-science-and-technology",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 38.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/south-city-college-kolkata-institute-of-management-research-kolkata-2",
+        "path": "/colleges/south-city-college-kolkata-institute-of-management-research-kolkata-2",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 39.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/vignan-foundation-for-science-technology-and-research",
+        "path": "/colleges/vignan-foundation-for-science-technology-and-research",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 47.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/ladakh-university",
+        "path": "/colleges/ladakh-university",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 49.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/netaji-subhas-university-of-technology-nsut",
+        "path": "/colleges/netaji-subhas-university-of-technology-nsut",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 53.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/nri-institute-pothavarappadu-institute-of-management-research-tirupati-2",
+        "path": "/colleges/nri-institute-pothavarappadu-institute-of-management-research-tirupati-2",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 63.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/top-mca-colleges-in-toronto",
+        "path": "/colleges/top-mca-colleges-in-toronto",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 69.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/gmr-institute-gmrit-rajam-institute-of-technology-science-nellore-2",
+        "path": "/colleges/gmr-institute-gmrit-rajam-institute-of-technology-science-nellore-2",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 72.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/cochin-university-of-science-and-technology-cusat",
+        "path": "/colleges/cochin-university-of-science-and-technology-cusat",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 73.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/coimbatore-institute-of-technology-cit",
+        "path": "/colleges/coimbatore-institute-of-technology-cit",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 74.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/indian-institute-of-engineering-science-and-technology-shibpur-iiest",
+        "path": "/colleges/indian-institute-of-engineering-science-and-technology-shibpur-iiest",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 78.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/brindavan-college-engineering-college-bengaluru-2",
+        "path": "/colleges/brindavan-college-engineering-college-bengaluru-2",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 79.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/bca/in-lucknow",
+        "path": "/colleges/bca/in-lucknow",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 83.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/bba/in-lucknow",
+        "path": "/colleges/bba/in-lucknow",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 85.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/top-bca-colleges-in-chandigarh",
+        "path": "/colleges/top-bca-colleges-in-chandigarh",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 85.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/gmr-institute-gmrit-rajam-engineering-college-visakhapatnam-2",
+        "path": "/colleges/gmr-institute-gmrit-rajam-engineering-college-visakhapatnam-2",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 86.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/jadavpur-university/rankings",
+        "path": "/colleges/jadavpur-university/rankings",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 86.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/top-bca-colleges-in-lucknow",
+        "path": "/colleges/top-bca-colleges-in-lucknow",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 86.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/degree/bba-analytics/city/mumbai",
+        "path": "/colleges/degree/bba-analytics/city/mumbai",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 87.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/colleges/degree/bcom/state/karnataka",
+        "path": "/colleges/degree/bcom/state/karnataka",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 97.0,
+        "disposition": "INDEX"
+      }
+    ],
+    "LOCATIONS": [
+      {
+        "url": "https://talentxcel.in/skills/spark/salary-in-agra",
+        "path": "/skills/spark/salary-in-agra",
+        "clicks": 0.0,
+        "impressions": 3.0,
+        "ctr": 0.0,
+        "position": 8.0,
+        "disposition": "INDEX"
+      },
+      {
+        "url": "https://talentxcel.in/salaries/chartered-accountant-salary-in-delhi-ncr",
+        "path": "/salaries/chartered-accountant-salary-in-delhi-ncr",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 98.0,
+        "disposition": "INDEX"
+      }
+    ],
+    "LEARNING": [
+      {
+        "url": "https://talentxcel.in/learning/providers/mit-ocw",
+        "path": "/learning/providers/mit-ocw",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 6.0,
+        "disposition": "INDEX"
+      }
+    ],
+    "PASSPORT": [],
+    "TOOLS": [],
+    "HOME_CORE": [
+      {
+        "url": "https://talentxcel.in/",
+        "path": "",
+        "clicks": 0.0,
+        "impressions": 10.0,
+        "ctr": 0.0,
+        "position": 1.5,
+        "disposition": "INDEX"
+      }
+    ],
+    "INVALID_OR_THIN": [
+      {
+        "url": "https://talentxcel.in/about/talentxcel",
+        "path": "/about/talentxcel",
+        "clicks": 0.0,
+        "impressions": 7.0,
+        "ctr": 0.0,
+        "position": 1.0,
+        "disposition": "OBSERVE"
+      },
+      {
+        "url": "https://talentxcel.in/services/ai-solutions",
+        "path": "/services/ai-solutions",
+        "clicks": 0.0,
+        "impressions": 6.0,
+        "ctr": 0.0,
+        "position": 1.0,
+        "disposition": "OBSERVE"
+      },
+      {
+        "url": "https://talentxcel.in/services/career-counseling",
+        "path": "/services/career-counseling",
+        "clicks": 0.0,
+        "impressions": 3.0,
+        "ctr": 0.0,
+        "position": 1.0,
+        "disposition": "OBSERVE"
+      },
+      {
+        "url": "https://talentxcel.in/skills/c-plus-plus",
+        "path": "/skills/c-plus-plus",
+        "clicks": 0.0,
+        "impressions": 3.0,
+        "ctr": 0.0,
+        "position": 1.0,
+        "disposition": "OBSERVE"
+      },
+      {
+        "url": "https://talentxcel.in/career-guides/performance-marketing-manager",
+        "path": "/career-guides/performance-marketing-manager",
+        "clicks": 0.0,
+        "impressions": 3.0,
+        "ctr": 0.0,
+        "position": 73.67,
+        "disposition": "OBSERVE"
+      },
+      {
+        "url": "https://talentxcel.in/skills/html-css",
+        "path": "/skills/html-css",
+        "clicks": 0.0,
+        "impressions": 2.0,
+        "ctr": 0.0,
+        "position": 7.5,
+        "disposition": "OBSERVE"
+      },
+      {
+        "url": "https://talentxcel.in/resources/5g-skill-guide",
+        "path": "/resources/5g-skill-guide",
+        "clicks": 0.0,
+        "impressions": 2.0,
+        "ctr": 0.0,
+        "position": 10.5,
+        "disposition": "OBSERVE"
+      },
+      {
+        "url": "https://talentxcel.in/services/ai-recruitment",
+        "path": "/services/ai-recruitment",
+        "clicks": 0.0,
+        "impressions": 2.0,
+        "ctr": 0.0,
+        "position": 39.0,
+        "disposition": "OBSERVE"
+      },
+      {
+        "url": "https://talentxcel.in/company/talentxcel-services",
+        "path": "/company/talentxcel-services",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 1.0,
+        "disposition": "OBSERVE"
+      },
+      {
+        "url": "https://talentxcel.in/company/talentxcel-services-pvt-ltd",
+        "path": "/company/talentxcel-services-pvt-ltd",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 1.0,
+        "disposition": "OBSERVE"
+      },
+      {
+        "url": "https://talentxcel.in/recruitment",
+        "path": "/recruitment",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 1.0,
+        "disposition": "OBSERVE"
+      },
+      {
+        "url": "https://talentxcel.in/employers",
+        "path": "/employers",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 2.0,
+        "disposition": "OBSERVE"
+      },
+      {
+        "url": "https://talentxcel.in/salary/customer-success-manager/kochi",
+        "path": "/salary/customer-success-manager/kochi",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 4.0,
+        "disposition": "OBSERVE"
+      },
+      {
+        "url": "https://talentxcel.in/resources/how-to-become-a-energy-auditor",
+        "path": "/resources/how-to-become-a-energy-auditor",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 7.0,
+        "disposition": "OBSERVE"
+      },
+      {
+        "url": "https://talentxcel.in/resources/how-to-become-a-legal-analyst",
+        "path": "/resources/how-to-become-a-legal-analyst",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 7.0,
+        "disposition": "OBSERVE"
+      },
+      {
+        "url": "https://talentxcel.in/skills/adobe-creative-suite",
+        "path": "/skills/adobe-creative-suite",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 7.0,
+        "disposition": "OBSERVE"
+      },
+      {
+        "url": "https://talentxcel.in/post/4606c84c-6c51-4389-b30f-548c6fd3bd5b",
+        "path": "/post/4606c84c-6c51-4389-b30f-548c6fd3bd5b",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 8.0,
+        "disposition": "OBSERVE"
+      },
+      {
+        "url": "https://talentxcel.in/resources/git-skill-guide",
+        "path": "/resources/git-skill-guide",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 9.0,
+        "disposition": "OBSERVE"
+      },
+      {
+        "url": "https://talentxcel.in/resources/how-to-become-a-real-estate-agent",
+        "path": "/resources/how-to-become-a-real-estate-agent",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 9.0,
+        "disposition": "OBSERVE"
+      },
+      {
+        "url": "https://talentxcel.in/resources/real-estate-developer-salary-career-guide",
+        "path": "/resources/real-estate-developer-salary-career-guide",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 11.0,
+        "disposition": "OBSERVE"
+      },
+      {
+        "url": "https://talentxcel.in/skills/django",
+        "path": "/skills/django",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 28.0,
+        "disposition": "OBSERVE"
+      },
+      {
+        "url": "https://talentxcel.in/resources/voip-skill-guide",
+        "path": "/resources/voip-skill-guide",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 42.0,
+        "disposition": "OBSERVE"
+      },
+      {
+        "url": "https://talentxcel.in/topics/leadership",
+        "path": "/topics/leadership",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 44.0,
+        "disposition": "OBSERVE"
+      },
+      {
+        "url": "https://talentxcel.in/resources/executive-leadership-growth-action-plan-for-career-growth",
+        "path": "/resources/executive-leadership-growth-action-plan-for-career-growth",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 48.0,
+        "disposition": "OBSERVE"
+      },
+      {
+        "url": "https://talentxcel.in/salary/agile-coach/stockholm",
+        "path": "/salary/agile-coach/stockholm",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 69.0,
+        "disposition": "OBSERVE"
+      },
+      {
+        "url": "https://talentxcel.in/salaries/role/technical-recruiter/bhubaneswar",
+        "path": "/salaries/role/technical-recruiter/bhubaneswar",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 91.0,
+        "disposition": "OBSERVE"
+      },
+      {
+        "url": "https://talentxcel.in/resources/chartered-accountant-resume-guide",
+        "path": "/resources/chartered-accountant-resume-guide",
+        "clicks": 0.0,
+        "impressions": 1.0,
+        "ctr": 0.0,
+        "position": 98.0,
+        "disposition": "OBSERVE"
+      }
+    ]
+  }
+}

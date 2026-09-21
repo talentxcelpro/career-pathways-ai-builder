@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { updateMetaTags } from '@/utils/metaTags';
 import { injectStructuredData } from '@/utils/structuredData';
 import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, absoluteUrl, canonicalFor, isNoindexPath } from '@/config/seo';
+import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
 
 export interface SEOHeadProps {
   title?: string;
@@ -102,6 +103,12 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
     if (structuredData) {
       injectStructuredData(structuredData);
     }
+
+    // 7. Track SEO landing view
+    GrowthFunnelTracker.track('seo_landing_view', {
+      landing_page: window.location.pathname,
+      page_title: title,
+    });
   }, [
     title,
     description,

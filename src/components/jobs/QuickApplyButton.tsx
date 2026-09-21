@@ -6,6 +6,8 @@ import { useCreateJobApplication } from '@/hooks/useJobApplications';
 import { useTXCIntegration } from '@/hooks/useTXCIntegration';
 import { toast } from 'sonner';
 import { incrementJobApplications } from '@/utils/supabaseHelpers';
+import { GuestJobApplyModal } from './GuestJobApplyModal';
+import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
 
 interface QuickApplyButtonProps {
   job: {
@@ -137,24 +139,13 @@ export default function QuickApplyButton({ job, onApplicationSuccess, className 
     }
   };
 
-  const handleLogin = () => {
-    window.location.href = '/auth?redirect=' + encodeURIComponent(window.location.pathname);
-  };
+  const [showGuestModal, setShowGuestModal] = useState(false);
 
   if (isLoading) {
     return (
       <Button disabled variant="outline" className={className}>
         <Send className="h-4 w-4 mr-2" />
         Loading...
-      </Button>
-    );
-  }
-
-  if (!user) {
-    return (
-      <Button onClick={handleLogin} className={className}>
-        <Send className="h-4 w-4 mr-2" />
-        Login to Apply
       </Button>
     );
   }
@@ -168,23 +159,56 @@ export default function QuickApplyButton({ job, onApplicationSuccess, className 
     );
   }
 
-  if (!profile || !primaryResume) {
+  // If user is not logged in OR does not have a saved resume, allow 1-click apply modal
+  if (!user || !profile || !primaryResume) {
     return (
-      <Button disabled variant="outline" className={className}>
-        <Send className="h-4 w-4 mr-2" />
-        Complete Profile
-      </Button>
+      <>
+        <Button 
+          onClick={() => {
+            GrowthFunnelTracker.track('apply_cta_clicked', {
+              job_id: job.id,
+              job_title: job.title,
+              source_button: 'quick_apply',
+            });
+            setShowGuestModal(true);
+          }} 
+          className={`bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white ${className}`}
+        >
+          <Zap className="h-4 w-4 mr-2 text-amber-300 fill-amber-300" />
+          Quick Apply
+        </Button>
+        <GuestJobApplyModal
+          open={showGuestModal}
+          onOpenChange={setShowGuestModal}
+          job={job}
+          onSuccess={() => {
+            setHasApplied(true);
+            onApplicationSuccess?.();
+          }}
+        />
+      </>
     );
   }
 
   return (
-    <Button 
-      onClick={handleQuickApply}
-      disabled={createApplication.isPending}
-      className={className}
-    >
-      <Zap className="h-4 w-4 mr-2" />
-      Quick Apply
-    </Button>
+    <>
+      <Button 
+        onClick={handleQuickApply}
+        disabled={createApplication.isPending}
+        className={className}
+      >
+        <Zap className="h-4 w-4 mr-2" />
+        Quick Apply
+      </Button>
+      <GuestJobApplyModal
+        open={showGuestModal}
+        onOpenChange={setShowGuestModal}
+        job={job}
+        onSuccess={() => {
+          setHasApplied(true);
+          onApplicationSuccess?.();
+        }}
+      />
+    </>
   );
 }
