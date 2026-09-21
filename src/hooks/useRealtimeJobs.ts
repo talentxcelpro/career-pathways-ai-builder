@@ -29,7 +29,7 @@ export const useRealtimeJobs = (filters: JobFilters = {}, sortBy: string = 'crea
     queryFn: async () => {
       const { data, error } = await supabase.rpc('get_jobs_paginated_optimized', {
         p_page: 1,
-        p_limit: 50,
+        p_limit: 20,
         p_search: filters.search || '',
         p_location: filters.location || '',
         p_employment_types: filters.employment_types || [],

@@ -1,6 +1,7 @@
 // Real-time job data service - production ready
 import { supabase } from '@/integrations/supabase/client';
 import { fetchProductionData, validateProductionData } from '@/utils/productionCleanup';
+import { searchService } from '@/services/search/SearchService';
 
 export interface Job {
   id: string;
@@ -44,40 +45,31 @@ export interface JobFilters {
   skills?: string[];
 }
 
-// Real-time job fetching with production filters
+// Real-time job fetching with production filters via SearchService (with browser cache)
 export const getJobs = async (
   page: number = 1,
   limit: number = 20,
   filters: JobFilters = {}
 ): Promise<{ jobs: Job[]; total: number; hasMore: boolean }> => {
   return fetchProductionData(async () => {
-    const { data, error } = await supabase.rpc('get_jobs_paginated_optimized', {
-      p_page: page,
-      p_limit: limit,
-      p_search: filters.search || '',
-      p_location: filters.location || '',
-      p_employment_types: filters.employment_types || [],
-      p_experience_levels: filters.experience_levels || [],
-      p_min_salary: filters.min_salary || 0,
-      p_max_salary: filters.max_salary || 0,
-      p_is_remote: filters.is_remote || false,
-      p_skills: filters.skills || [],
-      p_sort_by: 'created_at'
+    const result = await searchService.searchJobs({
+      page,
+      limit: Math.min(50, Math.max(1, limit || 20)),
+      query: filters.search,
+      location: filters.location,
+      employment_types: filters.employment_types,
+      experience_levels: filters.experience_levels,
+      min_salary: filters.min_salary,
+      max_salary: filters.max_salary,
+      is_remote: filters.is_remote,
+      skills: filters.skills,
+      sortBy: 'created_at'
     });
 
-    if (error) throw error;
-    
-    // Filter jobs to ensure we only show valid, non-expired jobs
-    const validJobs = (data?.jobs || []).filter((job: Job) => {
-      const isNotExpired = new Date(job.expires_at) > new Date();
-      const hasValidData = job.id && job.title && job.company_name;
-      return isNotExpired && hasValidData;
-    });
-    
     return {
-      jobs: validJobs,
-      total: data?.total_count || 0,
-      hasMore: data?.has_more || false
+      jobs: result.jobs as Job[],
+      total: result.totalCount,
+      hasMore: result.hasMore
     };
   }, { jobs: [], total: 0, hasMore: false });
 };

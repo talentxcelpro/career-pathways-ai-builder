@@ -5,6 +5,7 @@
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { searchService } from '@/services/search/SearchService';
 import { useEffect, useState } from 'react';
 
 interface CriticalJobData {
@@ -127,118 +128,80 @@ export const useJobsCriticalPath = (filters: JobFilters, sortBy: string = 'poste
   const queryClient = useQueryClient();
   const [isEnhancementLoaded, setIsEnhancementLoaded] = useState(true);
 
-  // Step 1: Load real active jobs from Supabase
+  // Step 1: Load real active jobs via SearchService (₹0 Scale Provider with browser LRU cache)
   const criticalQuery = useQuery({
     queryKey: ['jobs-critical', filters, sortBy],
     queryFn: async () => {
-      console.log('🚀 Loading active database jobs from Supabase...');
-      
-      let query = supabase
-        .from('jobs')
-        .select('*', { count: 'exact' })
-        .eq('is_active', true)
-        .eq('job_status', 'open')
-        .eq('status', 'active');
+      console.log('🚀 Loading active database jobs via SearchService (20 limit)...');
 
-      // Search filter
-      if (filters.search && filters.search.trim().length > 0) {
-        const s = filters.search.trim();
-        query = query.or(`title.ilike.%${s}%,description.ilike.%${s}%,company_name.ilike.%${s}%`);
-      }
+      // Normalize experience levels to database enum representation
+      const mappedLevels = (filters.experience_level || []).map(lvl => {
+        const l = lvl.toLowerCase();
+        if (l.includes('entry') || l.includes('fresher') || l.includes('0-1')) return 'fresher';
+        if (l.includes('mid') || l.includes('1-3') || l.includes('2-5')) return 'mid-level';
+        if (l.includes('senior') || l.includes('3-5') || l.includes('5-10')) return 'senior-level';
+        if (l.includes('lead') || l.includes('exec') || l.includes('10+')) return 'executive';
+        return lvl;
+      });
 
-      // Location filter
-      if (filters.location && filters.location.trim().length > 0) {
-        query = query.ilike('location', `%${filters.location.trim()}%`);
-      }
-
-      // Remote filter
-      if (filters.is_remote) {
-        query = query.eq('is_remote', true);
-      }
-
-      // Employment type filter
-      if (filters.employment_type && filters.employment_type.length > 0) {
-        query = query.in('employment_type', filters.employment_type);
-      }
-
-      // Experience level filter (normalize frontend values to DB values)
-      if (filters.experience_level && filters.experience_level.length > 0) {
-        const mappedLevels = filters.experience_level.map(lvl => {
-          const l = lvl.toLowerCase();
-          if (l.includes('entry') || l.includes('fresher') || l.includes('0-1')) return 'fresher';
-          if (l.includes('mid') || l.includes('1-3') || l.includes('2-5')) return 'mid-level';
-          if (l.includes('senior') || l.includes('3-5') || l.includes('5-10')) return 'senior-level';
-          if (l.includes('lead') || l.includes('exec') || l.includes('10+')) return 'executive';
-          return lvl;
+      try {
+        const searchResult = await searchService.searchJobs({
+          query: filters.search,
+          location: filters.location,
+          employment_types: filters.employment_type,
+          experience_levels: mappedLevels,
+          min_salary: filters.salary_min,
+          max_salary: filters.salary_max,
+          is_remote: filters.is_remote,
+          skills: filters.skills,
+          page: 1,
+          limit: 20, // Strict 20 results max as required by ₹0 Scale rules
+          sortBy
         });
-        query = query.in('experience_level', mappedLevels);
-      }
 
-      // Salary filters
-      if (filters.salary_min && filters.salary_min > 0) {
-        query = query.gte('salary_max', filters.salary_min);
-      }
-      if (filters.salary_max && filters.salary_max > 0) {
-        query = query.lte('salary_min', filters.salary_max);
-      }
+        const data = searchResult.jobs || [];
+        const count = searchResult.totalCount || data.length;
 
-      // Sorting
-      if (sortBy === 'salary_max') {
-        query = query.order('salary_max', { ascending: false, nullsFirst: false });
-      } else if (sortBy === 'views_count') {
-        query = query.order('views_count', { ascending: false, nullsFirst: false });
-      } else if (sortBy === 'applications_count') {
-        query = query.order('applications_count', { ascending: true, nullsFirst: false });
-      } else {
-        query = query.order('posted_at', { ascending: false, nullsFirst: false });
-      }
+        if (!data || data.length === 0) {
+          // If filters yielded 0 matches, return empty array so UI shows "No jobs found" for that filter
+          const isFiltered = Boolean(
+            (filters.search && filters.search.trim()) ||
+            (filters.location && filters.location.trim()) ||
+            filters.is_remote ||
+            (filters.employment_type && filters.employment_type.length > 0) ||
+            (filters.experience_level && filters.experience_level.length > 0) ||
+            filters.salary_min > 0
+          );
+          return {
+            jobs: isFiltered ? [] : FALLBACK_JOBS,
+            totalCount: count || (isFiltered ? 0 : FALLBACK_JOBS.length)
+          };
+        }
 
-      // Fetch first 100 jobs
-      query = query.limit(100);
+        // Normalize each job with valid companies object & featured distribution
+        const isSearchActive = Boolean(filters.search || filters.location);
+        const normalizedJobs = data.map((job: any, index: number) => ({
+          ...job,
+          // Designate top 6 jobs as featured on default view so both Featured and All sections are populated
+          is_featured: job.is_featured || (!isSearchActive && index < 6),
+          companies: job.companies || {
+            name: job.company_name || 'TalentXcel Services (Client Partner)',
+            logo_url: job.organization_logo_url || '/talentxcel-official-logo.png',
+            industry: job.industry || 'Technology & Enterprise Services',
+            is_verified: true
+          }
+        }));
 
-      const { data, count, error } = await query;
-
-      if (error) {
-        console.warn("Jobs DB query warning:", error.message);
+        return {
+          jobs: normalizedJobs,
+          totalCount: count || normalizedJobs.length
+        };
+      } catch (error: any) {
+        console.warn("Jobs DB query warning:", error?.message || error);
         return { jobs: FALLBACK_JOBS, totalCount: FALLBACK_JOBS.length };
       }
-
-      if (!data || data.length === 0) {
-        // If filters yielded 0 matches, return empty array so UI shows "No jobs found" for that filter
-        const isFiltered = Boolean(
-          (filters.search && filters.search.trim()) ||
-          (filters.location && filters.location.trim()) ||
-          filters.is_remote ||
-          (filters.employment_type && filters.employment_type.length > 0) ||
-          (filters.experience_level && filters.experience_level.length > 0) ||
-          filters.salary_min > 0
-        );
-        return {
-          jobs: isFiltered ? [] : FALLBACK_JOBS,
-          totalCount: count || (isFiltered ? 0 : FALLBACK_JOBS.length)
-        };
-      }
-
-      // Normalize each job with valid companies object & featured distribution
-      const isSearchActive = Boolean(filters.search || filters.location);
-      const normalizedJobs = data.map((job: any, index: number) => ({
-        ...job,
-        // Designate top 6 jobs as featured on default view so both Featured and All sections are populated
-        is_featured: job.is_featured || (!isSearchActive && index < 6),
-        companies: {
-          name: job.company_name || 'TalentXcel Services (Client Partner)',
-          logo_url: job.organization_logo_url || '/talentxcel-official-logo.png',
-          industry: job.industry || 'Technology & Enterprise Services',
-          is_verified: true
-        }
-      }));
-
-      return {
-        jobs: normalizedJobs,
-        totalCount: count || normalizedJobs.length
-      };
     },
-    staleTime: 60000,
+    staleTime: 3 * 60 * 1000, // 3-minute browser cache
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
@@ -254,7 +217,7 @@ export const useJobsCriticalPath = (filters: JobFilters, sortBy: string = 'poste
     isEnhancing: false,
     isEnhancementLoaded: true,
     totalCount,
-    hasMore: jobs.length >= 100,
+    hasMore: (jobsData?.totalCount || 0) > jobs.length,
     refetch: () => criticalQuery.refetch()
   };
 };
@@ -266,13 +229,13 @@ export const useJobsMetadataPreload = () => {
     queryFn: async () => {
       const { count: totalJobs } = await supabase
         .from('jobs')
-        .select('*', { count: 'exact', head: true })
+        .select('id', { count: 'exact', head: true })
         .eq('is_active', true)
         .eq('job_status', 'open');
 
       const { count: featuredJobs } = await supabase
         .from('jobs')
-        .select('*', { count: 'exact', head: true })
+        .select('id', { count: 'exact', head: true })
         .eq('is_active', true)
         .eq('job_status', 'open')
         .eq('is_featured', true);

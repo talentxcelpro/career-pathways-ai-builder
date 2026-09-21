@@ -1,8 +1,8 @@
-import { useEffect, useState, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 /**
- * Debounce hook for performance optimization
- * Delays updating a value until after a specified delay
+ * Custom hook to debounce a value by a specified delay (default 300ms)
+ * Prevents rapid-fire database queries while a user is actively typing.
  */
 export function useDebounce<T>(value: T, delay: number = 300): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
@@ -47,3 +47,5 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
     }, delay);
   }) as T;
 }
+
+export default useDebounce;

@@ -22,6 +22,7 @@ import { useRealtimeJobs, useRealtimeJobStats } from '@/hooks/useRealtimeJobs';
 import { useStructuredData } from '@/hooks/useStructuredData';
 import { useTXCIntegration } from '@/hooks/useTXCIntegration';
 import { useTXCBalance } from '@/hooks/useTXCBalance';
+import { useDebounce } from '@/hooks/useDebounce';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -117,7 +118,17 @@ const Jobs = () => {
     getCurrentUser();
   }, []);
 
-  // Critical path loading for faster initial render
+  // 300ms Debounce on search and location inputs to prevent keystroke query storms
+  const debouncedSearch = useDebounce(filters.search, 300);
+  const debouncedLocation = useDebounce(filters.location, 300);
+
+  const effectiveFilters = useMemo(() => ({
+    ...filters,
+    search: debouncedSearch,
+    location: debouncedLocation
+  }), [filters, debouncedSearch, debouncedLocation]);
+
+  // Critical path loading for faster initial render via SearchService
   const { 
     jobs: allJobs, 
     totalCount,
@@ -125,7 +136,7 @@ const Jobs = () => {
     isLoading, 
     isEnhancing,
     refetch
-  } = useJobsCriticalPath(filters, sortBy);
+  } = useJobsCriticalPath(effectiveFilters, sortBy);
 
   // Real-time job statistics
   const { stats: jobStats } = useRealtimeJobStats();
