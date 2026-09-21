@@ -97,7 +97,11 @@ export class SupabaseSearchProvider implements SearchProvider {
         const isNotExpired = !job.expires_at || new Date(job.expires_at) > new Date();
         const hasValidData = job.id && job.title;
         return isNotExpired && hasValidData;
-      });
+      }).map((job: any) => ({
+        ...job,
+        description: job.description_snippet || (job.description && job.description.length > 200 ? job.description.substring(0, 200) : job.description || ''),
+        description_snippet: job.description_snippet || (job.description && job.description.length > 200 ? job.description.substring(0, 200) : job.description || '')
+      }));
 
       const result: SearchResult = {
         jobs: validJobs,
