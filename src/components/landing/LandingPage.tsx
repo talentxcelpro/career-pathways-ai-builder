@@ -3,6 +3,7 @@ import React, { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { AppleHeroSection } from './AppleHeroSection';
 import { FeaturesSection } from './FeaturesSection';
+import { ProductVideoSection } from './ProductVideoSection';
 import { WhyTalentXcel } from './WhyTalentXcel';
 import { CTABanner } from './CTABanner';
 import { SEOJobCategories } from '@/components/seo/SEOJobCategories';
@@ -34,6 +35,7 @@ export const LandingPage = () => {
       </Helmet>
       <AppleHeroSection />
       <FeaturesSection />
+      <ProductVideoSection />
       <ChatrServiceSection />
       <SEOJobCategories />
       <SEOLandingPageLinks />

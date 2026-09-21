@@ -35,9 +35,10 @@ public/social-vault/2026-09-0[6-9]*
 public/social-vault/2026-09-[1-9]*
 public/social-vault/2027-*
 
-# Ignore bulk media files except the CI reference package
+# Ignore bulk media files except the CI reference package and official videos
 *.mp4
 !public/social-vault/2026-09-05/**/video_9x16.mp4
+!public/videos/txc/*.mp4
 *.wav
 !public/social-vault/2026-09-05/**/narration.wav
 

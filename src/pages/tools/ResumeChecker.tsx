@@ -323,8 +323,36 @@ Responsibilities:
           </CardContent>
         </Card>
 
+        {/* ATS Video Demonstration Card */}
+        <div className="mt-10 max-w-2xl mx-auto rounded-2xl overflow-hidden bg-slate-900 border border-slate-800 shadow-xl">
+          <div className="relative aspect-video bg-black group">
+            <video
+              src="/videos/txc/ats-demo-2.mp4"
+              poster="/videos/txc/thumbnails/ats-demo-2.jpg"
+              controls
+              playsInline
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute top-3 left-3 bg-black/75 backdrop-blur-md px-2.5 py-1 rounded-full text-[11px] font-bold text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5 pointer-events-none">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              Watch Demo (0:42)
+            </div>
+          </div>
+          <div className="p-4 bg-slate-900 text-white">
+            <div className="flex items-center justify-between mb-1">
+              <h4 className="text-sm font-bold text-white">
+                How Applicant Tracking Systems Read Your Resume
+              </h4>
+              <span className="text-[11px] text-slate-400 font-mono">1080p HD</span>
+            </div>
+            <p className="text-xs text-slate-300">
+              See why 75% of resumes fail parsing before reaching human recruiters. Check formatting, keywords, and section structure above.
+            </p>
+          </div>
+        </div>
+
         {/* Features */}
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+        <div className="mt-14 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
           <div className="text-center">
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
               <FileCheck className="h-6 w-6 text-blue-600" />

@@ -440,18 +440,38 @@ export const ATSOptimizer: React.FC = () => {
                       </div>
                     </Card>
                   ) : (
-                    <Card className="border shadow-sm h-full flex flex-col items-center justify-center p-8 text-center bg-muted/10 min-h-[400px]">
-                      <div className="w-12 h-12 rounded-full bg-emerald-50 dark:bg-emerald-950/50 flex items-center justify-center mb-3 text-emerald-600">
-                        <Target className="h-6 w-6" />
+                    <Card className="border shadow-sm overflow-hidden bg-slate-950 text-white min-h-[400px]">
+                      <div className="relative aspect-video bg-black group">
+                        <video
+                          src="/videos/txc/ats-demo-2.mp4"
+                          poster="/videos/txc/thumbnails/ats-demo-2.jpg"
+                          controls
+                          playsInline
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute top-3 left-3 bg-black/75 backdrop-blur-md px-2.5 py-1 rounded-full text-[11px] font-bold text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5 pointer-events-none">
+                          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                          Enterprise ATS Demo (0:42)
+                        </div>
                       </div>
-                      <h3 className="text-sm font-bold text-foreground">Awaiting Resume for Scan</h3>
-                      <p className="text-xs text-muted-foreground max-w-sm mt-1 mb-4 leading-relaxed">
-                        Upload your PDF/Word resume or test our instant sample resume to inspect keyword coverage, parsing errors, and recruiter benchmarks.
-                      </p>
-                      <Button size="sm" onClick={handleRunDemo} className="text-xs h-8 gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white">
-                        <Wand2 className="h-3.5 w-3.5" />
-                        Run Instant Demo Audit
-                      </Button>
+                      <div className="p-5 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-sm font-bold text-white">
+                            Inside Look: How ATS Algorithms Scan & Reject Resumes
+                          </h4>
+                          <span className="text-[11px] text-slate-400 font-mono">1080p HD</span>
+                        </div>
+                        <p className="text-xs text-slate-300 leading-relaxed">
+                          Over 75% of qualified resumes are filtered out before reaching hiring managers due to parsing bottlenecks, missing keyword semantics, and complex multi-column formatting. Watch how enterprise ATS scanners digest candidate resumes in real time.
+                        </p>
+                        <div className="flex flex-wrap items-center gap-3 pt-2">
+                          <Button size="sm" onClick={handleRunDemo} className="text-xs h-8 gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold">
+                            <Wand2 className="h-3.5 w-3.5" />
+                            Run Instant Demo Audit
+                          </Button>
+                          <span className="text-[11px] text-slate-400">or drop your resume into the scanner on the left</span>
+                        </div>
+                      </div>
                     </Card>
                   )}
                 </div>

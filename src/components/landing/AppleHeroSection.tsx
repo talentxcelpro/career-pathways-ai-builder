@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { AuthDialog } from '../auth/AuthDialog';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Play } from 'lucide-react';
+import { TXCProductVideoModal } from '@/components/video/TXCProductVideoModal';
 import careerPassportPreview from '@/assets/career-passport-preview.png';
 
 export const AppleHeroSection = () => {
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [activeVideoId, setActiveVideoId] = useState('talentxcel-overview');
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-background via-muted/30 to-muted/50">
       {/* Floating geometric elements with semantic colors */}
@@ -53,12 +57,19 @@ export const AppleHeroSection = () => {
                 <ChevronRight className="ml-1.5 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </a>
 
-              <a 
-                href="/tools/salary-analyzer"
-                className="inline-flex items-center justify-center px-5 py-3.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:bg-slate-50 text-sm font-bold rounded-2xl shadow-sm transition-all"
+              <button 
+                type="button"
+                onClick={() => {
+                  setActiveVideoId('talentxcel-overview');
+                  setIsVideoModalOpen(true);
+                }}
+                className="inline-flex items-center justify-center px-5 py-3.5 bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-900 text-blue-600 dark:text-blue-400 hover:bg-blue-50/50 dark:hover:bg-slate-800 text-sm font-bold rounded-2xl shadow-sm transition-all gap-2 group"
               >
-                Salary Calculator
-              </a>
+                <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Play className="h-2.5 w-2.5 fill-white ml-0.5" />
+                </div>
+                Watch 24s Demo
+              </button>
 
               <a 
                 href="/colleges"
@@ -90,25 +101,62 @@ export const AppleHeroSection = () => {
             </div>
           </div>
 
-          {/* Right Side - Career Passport Preview */}
+          {/* Right Side - Interactive Platform Video & Career Passport Preview */}
           <div className="relative">
             <div className="absolute -inset-4 bg-gradient-to-tr from-primary/20 via-secondary/15 to-accent/20 rounded-[2rem] blur-2xl" aria-hidden="true"></div>
-            <div className="relative rounded-[2rem] overflow-hidden shadow-2xl ring-1 ring-border/50">
-              <a href="/passport" className="block transition-transform hover:scale-105">
-                <img
-                  src={careerPassportPreview}
-                  alt="TalentXcel Career Passport - Professional dashboard for tracking career progress"
-                  loading="lazy"
-                  decoding="async"
-                  width="600"
-                  height="400"
-                  className="block w-full h-auto object-cover"
-                />
-              </a>
+            <div 
+              className="relative rounded-[2rem] overflow-hidden shadow-2xl ring-1 ring-border/50 group bg-black cursor-pointer"
+              onClick={() => {
+                setActiveVideoId('talentxcel-overview');
+                setIsVideoModalOpen(true);
+              }}
+            >
+              <img
+                src="/videos/txc/thumbnails/talentxcel-overview.jpg"
+                alt="TalentXcel Platform Demo — Watch Live Video Overview"
+                loading="lazy"
+                decoding="async"
+                width="600"
+                height="400"
+                className="block w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100"
+              />
+              {/* Play trigger overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/40 flex flex-col justify-between p-5 sm:p-6">
+                <div className="flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-600 text-white text-xs font-bold shadow-md backdrop-blur-sm">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                    Live Tour • 0:24
+                  </span>
+                  <span className="px-2.5 py-1 rounded-full bg-black/60 text-slate-200 text-[11px] font-mono backdrop-blur-sm border border-white/10">
+                    1080p HD
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:bg-blue-500 transition-all flex-shrink-0">
+                    <Play className="h-5 w-5 fill-white ml-0.5" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-bold text-sm sm:text-base drop-shadow-sm group-hover:text-blue-200 transition-colors">
+                      Watch TalentXcel in Action
+                    </h4>
+                    <p className="text-slate-300 text-xs drop-shadow-sm">
+                      Click to watch 24s platform tour & live AI features
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Video Demo Modal */}
+      <TXCProductVideoModal
+        isOpen={isVideoModalOpen}
+        onClose={() => setIsVideoModalOpen(false)}
+        initialVideoId={activeVideoId}
+      />
     </div>
   );
-};
+};

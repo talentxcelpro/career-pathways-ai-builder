@@ -2,6 +2,7 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { OFFICIAL_TXC_VIDEOS } from '@/data/officialVideos';
 
 export interface ReelData {
   id: string;
@@ -165,8 +166,32 @@ export const useReelsData = () => {
           } as ReelData;
         });
 
-        console.log('Fetched reels (fallback):', mapped.length);
-        return mapped;
+        if (mapped.length > 0) {
+          console.log('Fetched reels (fallback):', mapped.length);
+          return mapped;
+        }
+
+        // Authoritative fallback: official TalentXcel HD product reels
+        console.log('Using official TalentXcel HD reels fallback:', OFFICIAL_TXC_VIDEOS.length);
+        return OFFICIAL_TXC_VIDEOS.map((v, i) => ({
+          id: `txc-official-${v.id}`,
+          title: v.title,
+          description: `${v.tagline} — ${v.description}`,
+          video_url: v.videoUrl,
+          thumbnail_url: v.thumbnailUrl,
+          duration_seconds: v.durationSeconds,
+          tags: ['TalentXcel', v.category, 'CareerGrowth'],
+          user_id: 'official-talentxcel',
+          created_at: new Date(Date.now() - i * 86400000).toISOString(),
+          views_count: 1420 + i * 280,
+          likes_count: 380 + i * 45,
+          comments_count: 42 + i * 8,
+          shares_count: 88 + i * 14,
+          is_following: true,
+          has_liked: false,
+          user_name: 'TalentXcel Official',
+          user_avatar: '/placeholder.svg'
+        } as ReelData));
       }
     },
     getNextPageParam: (lastPage, allPages) => {
