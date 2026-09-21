@@ -1,13 +1,9 @@
-﻿-- TALENTXCEL SUPABASE DATABASE SIZE OPTIMIZATION & CLEANUP
+-- TALENTXCEL SUPABASE DATABASE SIZE OPTIMIZATION & CLEANUP
 -- Safely cleans old temporary/audit logs and reclaims PostgreSQL disk space
-
-BEGIN;
 
 -- 1. Remove expired transient logs older than 30 days
 DELETE FROM udx_audit_log WHERE created_at < NOW() - INTERVAL '30 days';
 DELETE FROM admin_activity_log WHERE created_at < NOW() - INTERVAL '30 days';
-
-COMMIT;
 
 -- 2. VACUUM and ANALYZE to reclaim disk space from deleted/updated rows
 VACUUM (VERBOSE, ANALYZE) udx_demand_entities;
