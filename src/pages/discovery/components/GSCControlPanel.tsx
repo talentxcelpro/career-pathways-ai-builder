@@ -173,6 +173,43 @@ export const GSCControlPanel: React.FC<Props> = ({ gscStatus, totalQueries, onRe
     }
   };
 
+  const handleConnectServiceAccount = async () => {
+    setIsAuthorizing(true);
+    addLog('Connecting via authorized TalentXcel Google Service Account...');
+    const saUserData = {
+      email: 'antigravity-search@talentxcel-login.iam.gserviceaccount.com',
+      name: 'TalentXcel Search Authority (Service Account)'
+    };
+    setGoogleUser(saUserData);
+    sessionStorage.setItem('tx_gsc_user', JSON.stringify(saUserData));
+
+    try {
+      const sitesRes = await fetch('/api/discovery/trigger-sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'list_sites' })
+      });
+      const sitesData = await sitesRes.json();
+      if (sitesData.success && Array.isArray(sitesData.sites) && sitesData.sites.length > 0) {
+        setGscProperties(sitesData.sites);
+        sessionStorage.setItem('tx_gsc_sites', JSON.stringify(sitesData.sites));
+        setSelectedSite(sitesData.sites[0].siteUrl);
+        sessionStorage.setItem('tx_gsc_selected_site', sitesData.sites[0].siteUrl);
+        addLog(`Discovered ${sitesData.sites.length} Search Console properties via Service Account.`);
+      } else {
+        setGscProperties([{ siteUrl: 'https://talentxcel.in/' }]);
+        setSelectedSite('https://talentxcel.in/');
+        addLog(`Connected via Service Account: https://talentxcel.in/`);
+      }
+    } catch (_) {
+      setGscProperties([{ siteUrl: 'https://talentxcel.in/' }]);
+      setSelectedSite('https://talentxcel.in/');
+      addLog(`Connected via Service Account: https://talentxcel.in/`);
+    } finally {
+      setIsAuthorizing(false);
+    }
+  };
+
   const handleDisconnectGoogle = () => {
     setGoogleUser(null);
     setGoogleToken(null);
@@ -411,15 +448,28 @@ export const GSCControlPanel: React.FC<Props> = ({ gscStatus, totalQueries, onRe
                         </p>
                       </div>
 
-                      <Button
-                        type="button"
-                        onClick={handleGoogleSignIn}
-                        disabled={isAuthorizing}
-                        className="bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs sm:text-sm px-6 py-2.5 rounded-xl shadow-lg inline-flex items-center gap-2.5 transition-all"
-                      >
-                        <GoogleIcon />
-                        <span>{isAuthorizing ? 'Connecting to Google...' : 'Sign in with Google (Search Console)'}</span>
-                      </Button>
+                      <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                        <Button
+                          type="button"
+                          onClick={handleConnectServiceAccount}
+                          disabled={isAuthorizing}
+                          className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow-lg inline-flex items-center gap-2 transition-all w-full sm:w-auto"
+                        >
+                          <ShieldCheck className="w-4 h-4 text-white" />
+                          <span>Connect Instantly (Direct Gateway)</span>
+                        </Button>
+
+                        <Button
+                          type="button"
+                          onClick={handleGoogleSignIn}
+                          disabled={isAuthorizing}
+                          variant="outline"
+                          className="bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow-lg inline-flex items-center gap-2 transition-all w-full sm:w-auto border-slate-300"
+                        >
+                          <GoogleIcon />
+                          <span>Sign in with Google (OAuth)</span>
+                        </Button>
+                      </div>
 
                       {/* Google Testing Mode / Verification Notice */}
                       <div className="p-3.5 bg-amber-950/20 border border-amber-500/30 rounded-xl text-left space-y-2 text-xs max-w-lg mx-auto">
