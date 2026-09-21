@@ -45,13 +45,16 @@ class KernelEventBus {
       this.inMemoryHistory.pop();
     }
 
-    // Persist to Supabase telemetry table
+    // Persist to Supabase telemetry table if session exists
     try {
-      await supabase.from('claim1_growth_events' as any).insert({
-        event_type: type,
-        channel: `dept_${department}`,
-        metadata: { ...payload, sourceAgent, department, eventId: event.id },
-      });
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        await supabase.from('claim1_growth_events' as any).insert({
+          event_type: type,
+          channel: `dept_${department}`,
+          metadata: { ...payload, sourceAgent, department, eventId: event.id },
+        });
+      }
     } catch {
       // safe fallback
     }

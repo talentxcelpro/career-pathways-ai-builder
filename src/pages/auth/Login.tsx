@@ -8,6 +8,7 @@ import { useOptimizedAuth } from '@/contexts/OptimizedAuthContext';
 const Login = () => {
   const { user, loading } = useOptimizedAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const redirectParam = searchParams.get('redirect') || searchParams.get('returnUrl');
 
   useEffect(() => {

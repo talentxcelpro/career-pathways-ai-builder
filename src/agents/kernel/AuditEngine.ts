@@ -54,11 +54,14 @@ class KernelAuditEngine {
     }
 
     try {
-      await supabase.from('claim1_growth_events' as any).insert({
-        event_type: `AGENT_${agentId.toUpperCase()}_${action.toUpperCase()}`,
-        channel: `audit_${department}`,
-        metadata: { ...details, auditId: entry.id },
-      });
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        await supabase.from('claim1_growth_events' as any).insert({
+          event_type: `AGENT_${agentId.toUpperCase()}_${action.toUpperCase()}`,
+          channel: `audit_${department}`,
+          metadata: { ...details, auditId: entry.id },
+        });
+      }
     } catch {
       // safe fallback
     }
