@@ -23,7 +23,8 @@ import {
   Building2,
   Shield,
   ChevronDown,
-  Sparkles
+  Sparkles,
+  LayoutDashboard
 } from "lucide-react";
 import { useAdminAccess } from '@/hooks/useAdminAccess';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
@@ -63,6 +64,7 @@ export const Navbar = () => {
   };
 
   const mainNavItems = [
+    { to: "/dashboard",  label: "Dashboard" },
     { to: "/jobs",       label: "Jobs" },
     { to: "/employer",   label: "Employer" },
     { to: "/companies",  label: "Companies" },
@@ -77,6 +79,9 @@ export const Navbar = () => {
   ];
 
   const isCurrentPath = (path: string) => {
+    if (path === '/dashboard') {
+      return location.pathname === '/dashboard' || location.pathname === '/command-center';
+    }
     return location.pathname === path || location.pathname.startsWith(path + '/');
   };
 
@@ -163,6 +168,14 @@ export const Navbar = () => {
                       </div>
                     </div>
                     <DropdownMenuSeparator className="bg-slate-800" />
+                    <DropdownMenuItem 
+                      onClick={() => navigate('/dashboard')}
+                      className="text-xs font-bold hover:bg-slate-800 focus:bg-slate-800 text-slate-200 cursor-pointer"
+                    >
+                      <LayoutDashboard className="mr-2 h-4 w-4 text-sky-400" />
+                      <span>Dashboard</span>
+                    </DropdownMenuItem>
+
                     <DropdownMenuItem 
                       onClick={() => navigate('/passport')}
                       className="text-xs font-bold hover:bg-slate-800 focus:bg-slate-800 text-slate-200 cursor-pointer"
