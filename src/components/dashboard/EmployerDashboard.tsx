@@ -174,9 +174,9 @@ export function EmployerDashboard() {
                   </div>
                   <div className="text-right">
                     <p className="text-xs text-slate-400">Posted 2 days ago</p>
-                    <Button variant="outline" size="sm" className="mt-2 text-xs font-bold rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                    <span className="inline-flex items-center justify-center mt-2 px-3 py-1.5 text-xs font-bold rounded-lg border border-slate-200 bg-white group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 transition-colors">
                       Manage →
-                    </Button>
+                    </span>
                   </div>
                 </Link>
                 
@@ -191,9 +191,9 @@ export function EmployerDashboard() {
                   </div>
                   <div className="text-right">
                     <p className="text-xs text-slate-400">Posted 5 days ago</p>
-                    <Button variant="outline" size="sm" className="mt-2 text-xs font-bold rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                    <span className="inline-flex items-center justify-center mt-2 px-3 py-1.5 text-xs font-bold rounded-lg border border-slate-200 bg-white group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 transition-colors">
                       Manage →
-                    </Button>
+                    </span>
                   </div>
                 </Link>
 
@@ -208,9 +208,9 @@ export function EmployerDashboard() {
                   </div>
                   <div className="text-right">
                     <p className="text-xs text-slate-400">Posted 1 week ago</p>
-                    <Button variant="outline" size="sm" className="mt-2 text-xs font-bold rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                    <span className="inline-flex items-center justify-center mt-2 px-3 py-1.5 text-xs font-bold rounded-lg border border-slate-200 bg-white group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 transition-colors">
                       Manage →
-                    </Button>
+                    </span>
                   </div>
                 </Link>
               </div>

@@ -13,15 +13,16 @@ export default function UnifiedDashboard() {
   const { dashboardType, isLoading: roleLoading } = useUserRole();
   const [searchParams, setSearchParams] = useSearchParams();
 
+  const isPrivileged = Boolean(dashboardType && dashboardType !== 'student' && dashboardType !== 'default');
   const requestedView = searchParams.get('view');
   const [activeView, setActiveView] = useState<'role' | 'candidate'>(() => {
     if (requestedView === 'candidate') return 'candidate';
     if (requestedView === 'role') return 'role';
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('txc_dashboard_view_preference');
-      if (saved === 'candidate') return 'candidate';
+      if (saved === 'candidate' || saved === 'role') return saved;
     }
-    return 'role';
+    return isPrivileged ? 'role' : 'candidate';
   });
 
   const handleToggleView = (view: 'role' | 'candidate') => {
@@ -69,12 +70,6 @@ export default function UnifiedDashboard() {
   // Redirect to login if not authenticated
   if (!user) {
     return <Navigate to="/" replace />;
-  }
-
-  // Pure Candidate/Student role always renders CommandCenter directly
-  const hasPrivilegedRole = dashboardType && dashboardType !== 'student' && dashboardType !== 'default';
-  if (!hasPrivilegedRole) {
-    return <CommandCenter />;
   }
 
   // For multi-role users (Employer, Admin, College Admin): allow 1-click toggle between Role Portal and Candidate CommandCenter
@@ -143,12 +138,11 @@ export default function UnifiedDashboard() {
     switch (dashboardType) {
       case 'admin':
         return <AdminDashboard />;
-      case 'employer':
-        return <EmployerDashboard />;
       case 'college_admin':
         return <CollegeDashboard />;
+      case 'employer':
       default:
-        return <CommandCenter />;
+        return <EmployerDashboard />;
     }
   };
 

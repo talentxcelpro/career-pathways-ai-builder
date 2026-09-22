@@ -1,4 +1,5 @@
 
+import { Navigate } from "react-router-dom";
 import { Building2, Users, Settings, BarChart3 } from "lucide-react";
 
 // Main Employer Dashboard & Profile
@@ -19,7 +20,7 @@ export const employerCoreRoutes = [
     title: "Employer Dashboard",
     to: "/employer/dashboard",
     icon: <Building2 className="h-4 w-4" />,
-    page: <EmployerDashboard />,
+    page: <Navigate to="/dashboard?view=role" replace />,
     isPublic: true,
   },
   {
