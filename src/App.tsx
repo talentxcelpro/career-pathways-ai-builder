@@ -328,6 +328,15 @@ const App = () => {
                                 } />
                                 
                 {/* PRIORITY ROUTES - These must come BEFORE navItems.map to take precedence */}
+                <Route path="/dashboard" element={
+                  <Suspense fallback={
+                    <div className="min-h-screen flex items-center justify-center">
+                      <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    </div>
+                  }>
+                    <UnifiedDashboard />
+                  </Suspense>
+                } />
                 <Route path="/discovery/benchmark" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 text-slate-400 p-8 flex items-center justify-center">Loading empirical benchmark...</div>}><BenchmarkResultsPage /></Suspense>} />
                 <Route path="/discovery" element={<UDXSuperAdminGuard><UDXDiscoveryDashboard /></UDXSuperAdminGuard>} />
                 <Route path="/admin/discovery" element={<UDXSuperAdminGuard><UDXDiscoveryDashboard /></UDXSuperAdminGuard>} />
@@ -534,7 +543,6 @@ const App = () => {
                                 {/* New TalentSpark Jobs Discovery */}
                                 <Route path="/jobs1" element={<Suspense fallback={<div>Loading...</div>}><Jobs1 /></Suspense>} />
                                 
-                                <Route path="/dashboard" element={<UnifiedDashboard />} />
                                 <Route path="/command-center" element={
                                   <ProtectedRoute>
                                     <Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading CommandCenter...</div>}>

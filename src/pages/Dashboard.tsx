@@ -16,6 +16,7 @@ import { updateMetaTags } from '@/utils/metaTags';
 import { supabase } from '@/integrations/supabase/client';
 import { useJobApplicationsCount } from '@/hooks/useJobApplicationsCount';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { UserAvatar } from '@/components/common/UserAvatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -215,13 +216,13 @@ const Dashboard = () => {
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2 sm:py-3">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
-              <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-slate-900 flex items-center justify-center p-1 shadow-sm flex-shrink-0">
-                <img 
-                  src="/talentxcel-official-logo.png" 
-                  alt="TalentXcel" 
-                  className="h-full w-full object-contain"
+              <Link to="/profile" className="flex-shrink-0 hover:opacity-90 transition-opacity" title="View Profile">
+                <UserAvatar 
+                  profile={userProfile} 
+                  size="lg" 
+                  className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl shadow-sm ring-2 ring-white/80" 
                 />
-              </div>
+              </Link>
               <div className="min-w-0 flex-1">
                 <h1 className="text-base sm:text-lg font-bold text-slate-900 truncate">
                   {getCurrentGreeting()}{userProfile?.full_name ? `, ${userProfile.full_name.split(' ')[0]}` : ''}! 👋

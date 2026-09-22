@@ -13,7 +13,7 @@ const ReturnRefundPolicy = lazy(() => import("../pages/ReturnRefundPolicy").then
 const Blog = lazy(() => import("../pages/Blog"));
 const BlogPost = lazy(() => import("../pages/BlogPost"));
 const NotFound = lazy(() => import("../pages/NotFound"));
-const Dashboard = lazy(() => import("../pages/Dashboard"));
+const UnifiedDashboard = lazy(() => import("../pages/UnifiedDashboard"));
 const SEOAdmin = lazy(() => import("../pages/admin/SEOAdmin"));
 const AdvancedSEOAdmin = lazy(() => import("../pages/admin/AdvancedSEOAdmin"));
 const Phase5SEOAdmin = lazy(() => import("../pages/admin/Phase5SEOAdmin"));
@@ -51,7 +51,7 @@ export const coreRoutes = [
     title: "Dashboard",
     to: "/dashboard",
     icon: <BarChart3 className="h-4 w-4" />,
-    page: <S><Dashboard /></S>,
+    page: <S><UnifiedDashboard /></S>,
     isPublic: true,
   },
   {
