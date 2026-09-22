@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
-import { StudentDashboard } from '@/components/dashboard/StudentDashboard';
+import CommandCenter from '@/pages/CommandCenter';
 import { EmployerDashboard } from '@/components/dashboard/EmployerDashboard';
 import { CollegeDashboard } from '@/components/dashboard/CollegeDashboard';
 import { AdminDashboard } from '@/components/dashboard/AdminDashboard';
@@ -42,7 +42,12 @@ export default function UnifiedDashboard() {
     return <Navigate to="/" replace />;
   }
 
-  // Render appropriate dashboard based on user role
+  // Candidate/Student role renders CommandCenter (which provides its own full-bleed shell)
+  if (dashboardType === 'student' || !dashboardType) {
+    return <CommandCenter />;
+  }
+
+  // Render role-specific dashboards with standard container
   const renderDashboard = () => {
     switch (dashboardType) {
       case 'admin':
@@ -51,9 +56,8 @@ export default function UnifiedDashboard() {
         return <EmployerDashboard />;
       case 'college_admin':
         return <CollegeDashboard />;
-      case 'student':
       default:
-        return <StudentDashboard />;
+        return <CommandCenter />;
     }
   };
 

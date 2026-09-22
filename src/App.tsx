@@ -196,6 +196,8 @@ const RankingsHub = lazy(() => import('./pages/claim1/RankingsHub'));
 const LeaderboardPage = lazy(() => import('./pages/claim1/LeaderboardPage'));
 const CompanyRankingProfile = lazy(() => import('./pages/claim1/CompanyRankingProfile'));
 const WatchPage = lazy(() => import('./pages/claim1/WatchPage'));
+const CommandCenter = lazy(() => import('./pages/CommandCenter'));
+const TalentScorePage = lazy(() => import('./pages/TalentScorePage'));
 
 // ── Infrastructure imports (kept static — tiny, needed on every page) ─────
 import { turboCore } from "@/utils/turboCore";
@@ -533,6 +535,20 @@ const App = () => {
                                 <Route path="/jobs1" element={<Suspense fallback={<div>Loading...</div>}><Jobs1 /></Suspense>} />
                                 
                                 <Route path="/dashboard" element={<UnifiedDashboard />} />
+                                <Route path="/command-center" element={
+                                  <ProtectedRoute>
+                                    <Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading CommandCenter...</div>}>
+                                      <CommandCenter />
+                                    </Suspense>
+                                  </ProtectedRoute>
+                                } />
+                                <Route path="/talent-score" element={
+                                  <ProtectedRoute>
+                                    <Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading TalentScore...</div>}>
+                                      <TalentScorePage />
+                                    </Suspense>
+                                  </ProtectedRoute>
+                                } />
                                 <Route path="/mobile/reels" element={<Suspense fallback={<div>Loading...</div>}><MobileReelsPage /></Suspense>} />
                                  <Route path="/mobile/passport" element={<MobilePassport />} />
                                  
