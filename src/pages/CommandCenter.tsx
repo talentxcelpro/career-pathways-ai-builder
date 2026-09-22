@@ -45,11 +45,31 @@ const CommandCenter: React.FC = () => {
   const navigate = useNavigate();
   const { data, isLoading } = useCommandCenterData(user?.id);
 
-  const score = data?.profile?.talent_score ?? 0;
+  const rawDbScore = data?.profile?.talent_score ?? 0;
+  const connectionsCount = data?.stats?.TalentNetwork ?? 0;
+  const completion = data?.profile?.profile_completion ?? 0;
+  const candidateSkillsCount = (data?.profile?.skills ?? []).length;
+  const profileViews = data?.stats?.profileViews ?? 0;
+
+  // Active score: use DB score if established, otherwise calculate dynamic baseline signal
+  const score = rawDbScore > 0 
+    ? rawDbScore 
+    : Math.min(
+        950,
+        Math.max(
+          120,
+          Math.round(
+            120 + 
+            (completion > 0 ? completion * 2.5 : 0) +
+            Math.min(250, connectionsCount * 1.5) +
+            Math.min(180, candidateSkillsCount * 20) +
+            Math.min(100, profileViews * 1.5)
+          )
+        )
+      );
   const tier = getTier(score);
   const firstName = data?.profile?.full_name?.split(' ')[0] ?? user?.email?.split('@')[0] ?? 'there';
   const streak = data?.profile?.streak_days ?? 0;
-  const completion = data?.profile?.profile_completion ?? 0;
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
@@ -194,10 +214,13 @@ const CommandCenter: React.FC = () => {
                   </Link>
 
                   {data?.stats && (
-                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10">
+                    <Link to="/passport"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                      title="View Career Passport & TXC Rewards"
+                    >
                       <Zap className="h-3.5 w-3.5 text-yellow-400" />
                       <span className="text-xs font-bold text-white">{data.profile?.txc_coins ?? 0} TXC</span>
-                    </div>
+                    </Link>
                   )}
                 </div>
               </div>
@@ -435,12 +458,12 @@ const CommandCenter: React.FC = () => {
                     </Button>
                   </div>
                 ) : (data?.recentApplications ?? []).map((app) => (
-                  <div key={app.id} className="flex items-start gap-3 px-5 py-3.5">
+                  <Link key={app.id} to="/my-applications" className="flex items-start gap-3 px-5 py-3.5 hover:bg-slate-50 transition-colors group">
                     <div className="p-2 rounded-xl bg-violet-50 shrink-0">
                       <Briefcase className="h-3.5 w-3.5 text-violet-600" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-slate-800 truncate">
+                      <p className="text-sm font-bold text-slate-800 truncate group-hover:text-blue-600 transition-colors">
                         {(app.jobs as any)?.title ?? 'Job Application'}
                       </p>
                       <p className="text-xs text-slate-500 truncate">
@@ -453,7 +476,7 @@ const CommandCenter: React.FC = () => {
                     )}>
                       {app.status}
                     </span>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>
