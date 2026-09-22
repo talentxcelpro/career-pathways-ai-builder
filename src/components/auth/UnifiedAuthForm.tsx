@@ -8,15 +8,21 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Eye, EyeOff, Mail, Lock, User, Loader2 } from 'lucide-react';
 import { SocialLogin } from './SocialLogin';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import talentxcelLogo from '@/assets/talentxcel-logo.png';
+import { conversionTelemetry } from '@/utils/conversionTelemetry';
 
 interface UnifiedAuthFormProps {
   onSuccess?: () => void;
+  initialMode?: 'signin' | 'signup';
 }
 
-export const UnifiedAuthForm = ({ onSuccess }: UnifiedAuthFormProps) => {
-  const [isLogin, setIsLogin] = useState(true);
+export const UnifiedAuthForm = ({ onSuccess, initialMode }: UnifiedAuthFormProps) => {
+  const [searchParams] = useSearchParams();
+  const [isLogin, setIsLogin] = useState(() => {
+    if (initialMode) return initialMode !== 'signup';
+    return searchParams.get('mode') !== 'signup';
+  });
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -65,9 +71,11 @@ export const UnifiedAuthForm = ({ onSuccess }: UnifiedAuthFormProps) => {
         }
 
         if (data.user) {
-          // Login successful - no toast message
+          // Login successful
           onSuccess?.();
-          const redirectPath = window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/network';
+          const { returnUrl } = conversionTelemetry.consumeAcquisitionReturnUrl();
+          const defaultPath = window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/network';
+          const redirectPath = returnUrl || defaultPath;
           navigate(redirectPath);
         }
       } else {
@@ -91,7 +99,10 @@ export const UnifiedAuthForm = ({ onSuccess }: UnifiedAuthFormProps) => {
         if (data.user) {
           toast.success('Account created successfully! 🎉');
           onSuccess?.();
-          const redirectPath = window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/network';
+          const { source, returnUrl } = conversionTelemetry.consumeAcquisitionReturnUrl();
+          conversionTelemetry.track('signup_completed', { source: source || 'direct' });
+          const defaultPath = window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/network';
+          const redirectPath = returnUrl || defaultPath;
           navigate(redirectPath);
         }
       }
@@ -114,6 +125,23 @@ export const UnifiedAuthForm = ({ onSuccess }: UnifiedAuthFormProps) => {
             </h2>
           </div>
         </div>
+
+        {/* Contextual Value Proposition Banner */}
+        {!isLogin && (
+          <div className="bg-blue-50/90 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800/60 rounded-xl p-3 text-center space-y-0.5 shadow-sm">
+            <p className="text-xs font-bold text-blue-950 dark:text-blue-200">
+              {typeof window !== 'undefined' && sessionStorage.getItem('txc_acquisition_source') === 'ats_scanner'
+                ? 'Save your ATS score and unlock your personalized job matches.'
+                : typeof window !== 'undefined' && sessionStorage.getItem('txc_acquisition_source') === 'seo_job_page'
+                  ? 'Check ATS compatibility and apply directly to verified roles.'
+                  : 'Save your profile and unlock verified matching jobs.'}
+            </p>
+            <p className="text-[11px] text-blue-700 dark:text-blue-300 font-medium">
+              Free Candidate Account • 100% Free
+            </p>
+          </div>
+        )}
+
         {/* Compact Tab Toggle */}
         <div className="flex bg-slate-50 rounded-lg p-1 mb-4">
           <button
@@ -127,7 +155,10 @@ export const UnifiedAuthForm = ({ onSuccess }: UnifiedAuthFormProps) => {
             Sign In
           </button>
           <button
-            onClick={() => setIsLogin(false)}
+            onClick={() => {
+              setIsLogin(false);
+              conversionTelemetry.track('signup_started');
+            }}
             className={`flex-1 py-1.5 px-3 rounded-md text-sm font-medium transition-all ${
               !isLogin
                 ? 'bg-white text-slate-900 shadow-sm'

@@ -25,6 +25,7 @@ import { useTXCBalance } from '@/hooks/useTXCBalance';
 import { useDebounce } from '@/hooks/useDebounce';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { conversionTelemetry } from '@/utils/conversionTelemetry';
 
 // Industry Data
 import { COMPREHENSIVE_INDUSTRIES, INDUSTRY_CATEGORIES, TRENDING_INDUSTRIES, HIGH_GROWTH_INDUSTRIES } from '@/data/industries';
@@ -556,6 +557,36 @@ const Jobs = () => {
 
             {/* Right Main Content */}
             <div className="flex-1 min-w-0">
+              {/* ==================================================
+                  JOB MATCHING CONVERSION BRIDGE (VALUE BEFORE LOGIN)
+                  ================================================== */}
+              <div className="mb-6 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950/40 dark:via-indigo-950/30 dark:to-purple-950/30 border border-blue-200/80 dark:border-blue-800/60 rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300">
+                      Free ATS Tool
+                    </span>
+                    <h3 className="text-sm sm:text-base font-bold text-foreground">
+                      Applying for jobs? Check your resume before you apply.
+                    </h3>
+                  </div>
+                  <p className="text-xs sm:text-sm text-muted-foreground">
+                    Get your ATS compatibility score and discover jobs that match your skills.
+                  </p>
+                </div>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    conversionTelemetry.track('signup_cta_click', { source: 'jobs' });
+                    conversionTelemetry.setAcquisitionContext('jobs', '/jobs');
+                    navigate('/resume/ats-check?source=jobs');
+                  }}
+                  className="whitespace-nowrap font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-sm h-9 px-4 text-xs sm:text-sm self-start sm:self-auto"
+                >
+                  Check My Resume Free →
+                </Button>
+              </div>
+
               {/* Featured Jobs Section */}
               {featuredJobs.length > 0 && (
                 <div className="mb-8">

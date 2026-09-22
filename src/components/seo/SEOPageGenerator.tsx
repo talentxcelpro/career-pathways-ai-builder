@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { JobCard } from '@/components/jobs/JobCard';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, Globe, Sparkles, MapPin, Briefcase } from 'lucide-react';
+import { conversionTelemetry } from '@/utils/conversionTelemetry';
 
 
 interface SEOPage {
@@ -123,6 +124,48 @@ export const SEOPageGenerator: React.FC<SEOPageGeneratorProps> = ({
             <h1 className="text-4xl font-bold text-foreground mb-4">{page.h1}</h1>
             <p className="text-xl text-muted-foreground leading-relaxed">{page.description}</p>
           </header>
+
+          {/* ==================================================
+              DYNAMIC SEO CONVERSION BRIDGE (VALUE BEFORE LOGIN)
+              ================================================== */}
+          <div className="my-6 p-4 sm:p-5 rounded-xl border border-blue-200/80 dark:border-blue-900/60 bg-gradient-to-r from-blue-50/90 via-indigo-50/70 to-purple-50/80 dark:from-blue-950/40 dark:via-indigo-950/30 dark:to-purple-950/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300">
+                  Free ATS Audit
+                </span>
+                <h3 className="text-sm sm:text-base font-bold text-foreground">
+                  {role && location 
+                    ? `Applying for ${role} jobs in ${location}?` 
+                    : role 
+                      ? `Applying for ${role} roles?` 
+                      : location 
+                        ? `Applying for jobs in ${location}?` 
+                        : 'Applying for these positions?'}
+                </h3>
+              </div>
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                Check your resume compatibility before applying.
+              </p>
+            </div>
+            <Button
+              size="sm"
+              onClick={() => {
+                conversionTelemetry.track('signup_cta_click', { source: 'seo_job_page' });
+                const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/jobs';
+                conversionTelemetry.setAcquisitionContext('seo_job_page', currentPath);
+                const queryParams = new URLSearchParams({
+                  source: 'seo_job_page',
+                  ...(role && { role }),
+                  ...(location && { location })
+                }).toString();
+                navigate(`/resume/ats-check?${queryParams}`);
+              }}
+              className="whitespace-nowrap font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-sm h-9 px-4 text-xs sm:text-sm self-start sm:self-auto"
+            >
+              Check My Resume Free →
+            </Button>
+          </div>
 
           {/* P0 TRUTH LAYER — REAL LIVE JOBS INVENTORY */}
           <section className="my-8 pb-8 border-b border-border/80">

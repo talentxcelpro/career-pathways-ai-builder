@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useDropzone } from 'react-dropzone';
 import { Upload, Search, Zap, CheckCircle, AlertTriangle, Target, TrendingUp, FileText, ArrowRight, Sparkles, RefreshCw, Wand2, ShieldCheck, Check, Share2 } from 'lucide-react';
@@ -11,9 +11,11 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ViralShareModal } from '@/components/viral/ViralShareModal';
 import { GrowthEventTracker } from '@/lib/autonomous-os/growthEventTracker';
+import { useAuth } from '@/contexts/AuthContext';
+import { conversionTelemetry } from '@/utils/conversionTelemetry';
 
 interface ATSReport {
   score: number;
@@ -75,18 +77,38 @@ const SAMPLE_DEMO_REPORT: ATSReport = {
 
 export const ATSOptimizer: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'scanner' | 'job-match'>('scanner');
   const [isScanning, setIsScanning] = useState(false);
   const [report, setReport] = useState<ATSReport | null>(null);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   // Job Match state
-  const [targetRole, setTargetRole] = useState('Senior Full Stack Engineer');
+  const roleFromQuery = searchParams.get('role');
+  const locationFromQuery = searchParams.get('location');
+  const [targetRole, setTargetRole] = useState(roleFromQuery || 'Senior Full Stack Engineer');
   const [jobDescription, setJobDescription] = useState('');
   const [candidateResumeText, setCandidateResumeText] = useState('');
 
+  // Track landing view and restore previously completed scan if returning after signup
+  useEffect(() => {
+    conversionTelemetry.track('landing_view', { source: searchParams.get('source') || 'direct' });
+
+    try {
+      const savedReport = sessionStorage.getItem('txc_saved_ats_report');
+      if (savedReport) {
+        const parsed = JSON.parse(savedReport);
+        setReport(parsed);
+      }
+    } catch {
+      // Ignore parse errors
+    }
+  }, [searchParams]);
+
   const runAnalysisOnFile = (fileName: string, textSnippet?: string) => {
     setIsScanning(true);
+    conversionTelemetry.track('ats_started');
     toast.loading('Auditing resume with ATS diagnostic bot...', { id: 'ats-scan' });
 
     setTimeout(() => {
@@ -96,14 +118,21 @@ export const ATSOptimizer: React.FC = () => {
       if (lower.includes('fullstack') || lower.includes('software') || lower.includes('senior')) dynamicScore = 84;
       if (lower.includes('junior') || lower.includes('intern')) dynamicScore = 72;
 
-      setReport({
+      const generatedReport: ATSReport = {
         ...SAMPLE_DEMO_REPORT,
         fileName: fileName || 'Uploaded_Resume.pdf',
         score: dynamicScore,
         grade: dynamicScore >= 80 ? 'A' : 'B'
-      });
+      };
+
+      setReport(generatedReport);
+      try {
+        sessionStorage.setItem('txc_saved_ats_report', JSON.stringify(generatedReport));
+      } catch {}
 
       setIsScanning(false);
+      conversionTelemetry.track('ats_completed', { score: dynamicScore });
+      conversionTelemetry.track('signup_cta_view', { score: dynamicScore });
       GrowthEventTracker.getInstance().trackEvent('TOOL_COMPLETED', 'ATS_SCANNER', `ref_${dynamicScore}`);
       toast.success(`Audit Complete! ATS Compatibility Score: ${dynamicScore}/100`, { id: 'ats-scan' });
     }, 1200);
@@ -416,26 +445,77 @@ export const ATSOptimizer: React.FC = () => {
                         ))}
                       </div>
 
-                      {/* Action Buttons: Share Scorecard + Fix Issues */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 border-t pt-3">
+                      {/* ==================================================
+                          ATS SCANNER CONVERSION BRIDGE (VALUE BEFORE LOGIN)
+                          ================================================== */}
+                      <div className="mt-4 p-4 rounded-xl border border-blue-200 dark:border-blue-900/60 bg-gradient-to-br from-blue-50/90 via-indigo-50/60 to-purple-50/70 dark:from-blue-950/40 dark:via-indigo-950/30 dark:to-purple-950/30 shadow-sm space-y-3">
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300">
+                              {user ? "Active Profile" : "Free Candidate Unlock"}
+                            </span>
+                          </div>
+                          <h4 className="text-sm font-bold text-foreground">
+                            Your Resume Is Ready — Now See Where You Match
+                          </h4>
+                          <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                            {user 
+                              ? "Your diagnostic score is saved to your profile. Discover matching jobs based on your analyzed skills."
+                              : "Create your free TalentXcel profile to save this report and discover matching jobs."}
+                          </p>
+                        </div>
+
+                        {/* Primary & Secondary Conversion CTAs */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                          {user ? (
+                            <Button 
+                              onClick={() => {
+                                conversionTelemetry.track('matching_jobs_clicked', { score: report.score });
+                                const searchKeyword = report.foundKeywords[0] || targetRole || '';
+                                navigate(`/jobs?search=${encodeURIComponent(searchKeyword)}`);
+                              }}
+                              className="h-10 text-xs font-bold gap-2 bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
+                            >
+                              <Search className="h-4 w-4" />
+                              Discover Matching Jobs →
+                            </Button>
+                          ) : (
+                            <Button 
+                              onClick={() => {
+                                conversionTelemetry.track('signup_cta_click', { source: 'ats_scanner', score: report.score });
+                                conversionTelemetry.setAcquisitionContext('ats_scanner', '/resume/ats-check');
+                                navigate('/auth?mode=signup&flow=ats_scanner&redirect=/resume/ats-check');
+                              }}
+                              className="h-10 text-xs font-bold gap-2 bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
+                            >
+                              <Zap className="h-4 w-4" />
+                              Save Score & Unlock Matching Jobs
+                            </Button>
+                          )}
+
+                          <Button 
+                            variant="outline"
+                            onClick={() => navigate('/resume/build')}
+                            className="h-10 text-xs font-bold gap-2 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                          >
+                            <Sparkles className="h-4 w-4 text-emerald-600" />
+                            Improve My Resume
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Scorecard Share Action */}
+                      <div className="pt-2">
                         <Button 
-                          variant="outline"
+                          variant="ghost"
                           onClick={() => {
                             GrowthEventTracker.getInstance().trackEvent('SHARE_MODAL_OPENED', 'ATS_SCANNER', `ref_${report.score}`);
                             setIsShareModalOpen(true);
                           }}
-                          className="h-9 text-xs font-bold gap-2 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                          className="w-full h-8 text-xs font-medium gap-2 text-muted-foreground hover:text-foreground"
                         >
-                          <Share2 className="h-4 w-4 text-blue-600" />
-                          Share My ATS Scorecard
-                        </Button>
-
-                        <Button 
-                          onClick={() => navigate('/resume/build')}
-                          className="h-9 text-xs font-bold gap-2 bg-emerald-600 hover:bg-emerald-700 text-white"
-                        >
-                          <Sparkles className="h-4 w-4" />
-                          Fix in AI Resume Builder →
+                          <Share2 className="h-3.5 w-3.5 text-blue-600" />
+                          Share ATS Scorecard
                         </Button>
                       </div>
                     </Card>

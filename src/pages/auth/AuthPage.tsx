@@ -8,7 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 // import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Mail, Lock, User, Building, Chrome } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { conversionTelemetry } from '@/utils/conversionTelemetry';
 
 interface AuthPageProps {
   mode?: 'signin' | 'signup';
@@ -16,6 +17,7 @@ interface AuthPageProps {
 }
 
 export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => {
+  const navigate = useNavigate();
   const { user, loading } = useAuth();
   const [searchParams] = useSearchParams();
   const location = useLocation();
@@ -47,6 +49,16 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
 
   const getFlowConfig = () => {
     const configs = {
+      ats_scanner: {
+        title: 'Save Your ATS Score & Unlock Matching Jobs',
+        subtitle: 'Create your free account to save your report and discover matching jobs',
+        benefits: ['Preserve your ATS score & diagnostics', 'Unlock personalized matching jobs', '1-click resume optimization']
+      },
+      seo_job_page: {
+        title: 'Get Matched & Apply to Verified Openings',
+        subtitle: 'Create your free profile to check ATS compatibility and apply directly',
+        benefits: ['Direct apply to verified jobs', 'Instant ATS compatibility check', 'Personalized role notifications']
+      },
       resume: {
         title: 'Build Your Professional Resume',
         subtitle: 'Free ATS scan + 1 download',
@@ -107,7 +119,13 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
         if (error) throw error;
         
         console.log('Signup successful:', data);
-        toast.success('Check your email to verify your account!');
+        conversionTelemetry.track('signup_completed', { source: currentFlow });
+        const { returnUrl } = conversionTelemetry.consumeAcquisitionReturnUrl();
+        if (data.session && (returnUrl || redirectTo)) {
+          navigate(returnUrl || redirectTo);
+          return;
+        }
+        toast.success('Account created! Welcome to TalentXcel.');
       } else {
         const { data, error } = await supabase.auth.signInWithPassword({
           email: formData.email,
@@ -117,6 +135,11 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
         if (error) throw error;
         
         console.log('Signin successful:', data);
+        const { returnUrl } = conversionTelemetry.consumeAcquisitionReturnUrl();
+        if (returnUrl || redirectTo) {
+          navigate(returnUrl || redirectTo);
+          return;
+        }
         toast.success('Welcome back!');
       }
     } catch (error: any) {

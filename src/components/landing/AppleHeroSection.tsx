@@ -4,6 +4,7 @@ import { AuthDialog } from '../auth/AuthDialog';
 import { ChevronRight, Play } from 'lucide-react';
 import { TXCProductVideoModal } from '@/components/video/TXCProductVideoModal';
 import careerPassportPreview from '@/assets/career-passport-preview.png';
+import { conversionTelemetry } from '@/utils/conversionTelemetry';
 
 export const AppleHeroSection = () => {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
@@ -36,25 +37,36 @@ export const AppleHeroSection = () => {
               </div>
               
               <h1 className="text-display font-heading tracking-tight text-foreground leading-[1.1]">
-                AI-Powered Platform for
+                Get Job-Ready. Get Matched.
                 <span className="block font-medium bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                  Jobs, Skills & Higher Ed
+                  Get Hired.
                 </span>
               </h1>
               
               <p className="text-body-large text-muted-foreground font-light leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                Search verified jobs, build ATS-optimized resumes, explore 10,250+ Indian colleges, and fast-track your career with AI-guided learning and verified skill passports.
+                Check your resume, discover matching jobs, optimize your profile and apply with confidence.
               </p>
             </div>
 
-            {/* CTA Buttons - Direct Zero-Barrier Free Utility */}
+            {/* CTA Buttons - Acquisition & Value Before Login */}
             <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
               <a 
-                href="/resume"
+                href="/resume/ats-check?source=homepage"
+                onClick={() => {
+                  conversionTelemetry.track('signup_cta_click', { source: 'homepage' });
+                  conversionTelemetry.setAcquisitionContext('homepage', '/');
+                }}
                 className="inline-flex items-center justify-center px-6 py-3.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-black rounded-2xl shadow-lg hover:shadow-xl transition-all group"
               >
-                Check My Resume — Free ATS Scan
+                Check My Resume Free
                 <ChevronRight className="ml-1.5 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              </a>
+
+              <a 
+                href="/jobs"
+                className="inline-flex items-center justify-center px-5 py-3.5 bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-900 text-blue-600 dark:text-blue-400 hover:bg-blue-50/50 dark:hover:bg-slate-800 text-sm font-bold rounded-2xl shadow-sm transition-all"
+              >
+                Find Jobs
               </a>
 
               <button 
@@ -63,17 +75,17 @@ export const AppleHeroSection = () => {
                   setActiveVideoId('talentxcel-overview');
                   setIsVideoModalOpen(true);
                 }}
-                className="inline-flex items-center justify-center px-5 py-3.5 bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-900 text-blue-600 dark:text-blue-400 hover:bg-blue-50/50 dark:hover:bg-slate-800 text-sm font-bold rounded-2xl shadow-sm transition-all gap-2 group"
+                className="inline-flex items-center justify-center px-4 py-3.5 bg-slate-100 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 hover:bg-slate-200 text-sm font-bold rounded-2xl transition-all gap-1.5 group"
               >
-                <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Play className="h-2.5 w-2.5 fill-white ml-0.5" />
+                <div className="w-4 h-4 rounded-full bg-blue-600 text-white flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Play className="h-2 w-2 fill-white ml-0.5" />
                 </div>
-                Watch 24s Demo
+                24s Demo
               </button>
 
               <a 
                 href="/colleges"
-                className="inline-flex items-center justify-center px-5 py-3.5 bg-slate-100 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 hover:bg-slate-200 text-sm font-bold rounded-2xl transition-all"
+                className="inline-flex items-center justify-center px-4 py-3.5 bg-slate-100 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 hover:bg-slate-200 text-sm font-bold rounded-2xl transition-all"
               >
                 10,250+ Colleges
               </a>
