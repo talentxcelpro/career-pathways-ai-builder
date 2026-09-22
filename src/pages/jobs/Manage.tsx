@@ -48,11 +48,8 @@ const JobsManage = () => {
           applications_count,
           views_count,
           created_at,
-          company_id,
-          companies!left(
-            name,
-            logo_url
-          )
+          company_name,
+          organization_logo_url
         `)
         .eq('posted_by', user.user.id);
 
@@ -71,10 +68,12 @@ const JobsManage = () => {
         throw error;
       }
 
-      console.log('Fetched jobs:', data); // Debug log
       return (data || []).map((job: any) => ({
         ...job,
-        companies: Array.isArray(job.companies) ? job.companies[0] : job.companies
+        companies: {
+          name: job.company_name,
+          logo_url: job.organization_logo_url
+        }
       })) as Job[];
     }
   });

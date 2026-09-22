@@ -143,6 +143,18 @@ export const employerJobRoutes = [
   // Interview & Communication
   {
     title: "Interview Schedule",
+    to: "/employer/interview/schedule",
+    page: <InterviewSchedule />,
+    isPublic: true,
+  },
+  {
+    title: "Interview Schedule for Job",
+    to: "/employer/interview/schedule/:id",
+    page: <InterviewSchedule />,
+    isPublic: true,
+  },
+  {
+    title: "Interview Schedule (Legacy)",
     to: "/jobs/manage/:id/interview",
     page: <InterviewSchedule />,
     isPublic: true,

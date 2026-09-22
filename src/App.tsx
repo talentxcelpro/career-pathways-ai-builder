@@ -184,6 +184,7 @@ const JobLocationPage                 = lazy(() => import('@/pages/seo/JobLocati
 const GlobalEmployerAcquisition       = lazy(() => import('./pages/employers/GlobalEmployerAcquisition'));
 const MultiLocationJobComposer        = lazy(() => import('./components/jobs/MultiLocationJobComposer'));
 const AboutTalentXcelAI                = lazy(() => import('./pages/about/AboutTalentXcelAI'));
+const EmployerInterviewSchedule       = lazy(() => import('./pages/employer/interview/InterviewSchedule'));
 
 const CareerPlatformShowcasePage = lazy(() => import("./pages/CareerPlatformShowcase"));
 const Jobs1 = lazy(() => import("./pages/Jobs1"));
@@ -335,6 +336,16 @@ const App = () => {
                     </div>
                   }>
                     <UnifiedDashboard />
+                  </Suspense>
+                } />
+                <Route path="/employer/interview/schedule" element={
+                  <Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Interview Scheduler...</div>}>
+                    <EmployerInterviewSchedule />
+                  </Suspense>
+                } />
+                <Route path="/employer/interview/schedule/:id" element={
+                  <Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Interview Scheduler...</div>}>
+                    <EmployerInterviewSchedule />
                   </Suspense>
                 } />
                 <Route path="/discovery/benchmark" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 text-slate-400 p-8 flex items-center justify-center">Loading empirical benchmark...</div>}><BenchmarkResultsPage /></Suspense>} />

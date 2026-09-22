@@ -64,65 +64,103 @@ function ApplicationsContent() {
 
   const companyId = teamData?.company_id;
 
-  // Fetch applications data
+  // Fetch real applications data
   const { data: applications, isLoading } = useQuery({
     queryKey: ['employer-applications', companyId],
     queryFn: async () => {
-      if (!companyId) return [];
-      
       const { data: user } = await supabase.auth.getUser();
-      if (!user.user) throw new Error('Not authenticated');
+      if (!user.user) return [];
 
-      // Mock data for now - replace with actual Supabase query when job_applications table is ready
-      const mockApplications: Application[] = [
-        {
-          id: '1',
-          job_title: 'Senior Frontend Developer',
-          job_id: 'job-1',
-          candidate_name: 'John Smith',
-          candidate_email: 'john.smith@email.com',
-          candidate_phone: '+1 234 567 8900',
-          applied_at: '2025-01-08T10:00:00Z',
-          status: 'pending',
-          rating: 4,
-        },
-        {
-          id: '2',
-          job_title: 'UX Designer',
-          job_id: 'job-2',
-          candidate_name: 'Sarah Johnson',
-          candidate_email: 'sarah.j@email.com',
-          applied_at: '2025-01-07T14:30:00Z',
-          status: 'reviewed',
-          rating: 5,
-        },
-        {
-          id: '3',
-          job_title: 'Backend Engineer',
-          job_id: 'job-3',
-          candidate_name: 'Michael Chen',
-          candidate_email: 'michael.chen@email.com',
-          applied_at: '2025-01-06T09:15:00Z',
-          status: 'shortlisted',
-          rating: 4,
-        },
-      ];
+      // Get jobs posted by this user
+      const { data: userJobs } = await supabase
+        .from('jobs')
+        .select('id, title')
+        .eq('posted_by', user.user.id);
+      
+      let jobIds = (userJobs || []).map(j => j.id);
 
-      return mockApplications;
+      // If user is part of a company, also include company jobs
+      if (companyId) {
+        const { data: compJobs } = await supabase
+          .from('jobs')
+          .select('id, title')
+          .eq('company_id', companyId);
+        
+        if (compJobs) {
+          jobIds = Array.from(new Set([...jobIds, ...compJobs.map(j => j.id)]));
+        }
+      }
+
+      // If no jobs exist for this employer yet, return empty list
+      if (jobIds.length === 0) {
+        return [];
+      }
+
+      const { data: appsData, error } = await supabase
+        .from('job_applications')
+        .select(`
+          id,
+          job_id,
+          user_id,
+          status,
+          applied_at,
+          resume_url,
+          cover_letter,
+          ai_match_score,
+          jobs:jobs!fk_job_applications_job_id (
+            id,
+            title
+          ),
+          profiles:profiles!fk_job_applications_user_id (
+            id,
+            full_name,
+            email,
+            phone
+          )
+        `)
+        .in('job_id', jobIds)
+        .order('applied_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching real applications:', error);
+        return [];
+      }
+
+      return (appsData || []).map((app: any) => ({
+        id: app.id,
+        job_id: app.job_id,
+        job_title: app.jobs?.title || 'Position',
+        candidate_name: app.profiles?.full_name || 'Candidate',
+        candidate_email: app.profiles?.email || 'No email provided',
+        candidate_phone: app.profiles?.phone || undefined,
+        applied_at: app.applied_at || new Date().toISOString(),
+        status: (app.status?.toLowerCase() || 'pending') as Application['status'],
+        resume_url: app.resume_url || undefined,
+        cover_letter: app.cover_letter || undefined,
+        rating: app.ai_match_score ? Math.min(5, Math.max(1, Math.round(app.ai_match_score / 20))) : undefined,
+      }));
     },
-    enabled: !!companyId,
   });
 
   const statusCounts = React.useMemo(() => {
-    if (!applications) return {};
+    const defaultCounts: Record<string, number> = {
+      all: 0,
+      pending: 0,
+      reviewed: 0,
+      shortlisted: 0,
+      interviewed: 0,
+      hired: 0,
+      rejected: 0,
+    };
+    if (!applications) return defaultCounts;
     
-    const counts = applications.reduce((acc, app) => {
-      acc[app.status] = (acc[app.status] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    applications.forEach(app => {
+      const s = app.status || 'pending';
+      defaultCounts[s] = (defaultCounts[s] || 0) + 1;
+    });
     
-    counts.all = applications.length;
-    return counts;
+    defaultCounts.all = applications.length;
+    return defaultCounts;
   }, [applications]);
 
   const filteredApplications = React.useMemo(() => {
@@ -323,12 +361,17 @@ function ApplicationsContent() {
             <div className="text-center py-12">
               <Users className="h-16 w-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No applications found</h3>
-              <p className="text-gray-600">
+              <p className="text-gray-600 mb-6">
                 {searchQuery || selectedStatus !== 'all' 
                   ? "Try adjusting your search or filters"
-                  : "Applications will appear here when candidates apply to your jobs"
+                  : "Applications will appear here in real-time when candidates apply to your jobs"
                 }
               </p>
+              {!searchQuery && selectedStatus === 'all' && (
+                <Button onClick={() => navigate('/jobs/post')} className="bg-blue-600 hover:bg-blue-700 text-white font-bold">
+                  Post a Job to Receive Applications
+                </Button>
+              )}
             </div>
           )}
         </CardContent>
