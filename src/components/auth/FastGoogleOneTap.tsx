@@ -64,8 +64,35 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
     }
   }, [onSuccess]);
 
+  const hasActiveAuthSession = (): boolean => {
+    if (typeof window === 'undefined') return false;
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('sb-') && key.endsWith('-auth-token')) {
+          const item = localStorage.getItem(key);
+          if (item && (item.includes('"access_token"') || item.includes('"user"'))) {
+            return true;
+          }
+        }
+      }
+    } catch {}
+    return false;
+  };
+
   const initializeGoogleOneTap = useCallback(() => {
-    if (!window.google || disabled || user || initializedRef.current) return;
+    if (!window.google || disabled || user || hasActiveAuthSession() || initializedRef.current) {
+      if (user && window.google?.accounts?.id?.cancel) {
+        window.google.accounts.id.cancel();
+      }
+      return;
+    }
+
+    if (typeof window !== 'undefined') {
+      if (sessionStorage.getItem('txc_onetap_dismissed') === 'true' || sessionStorage.getItem('txc_onetap_shown') === 'true') {
+        return;
+      }
+    }
 
     const hostname = window.location.hostname;
     const isAllowedOrigin = 
@@ -83,6 +110,9 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
 
     try {
       initializedRef.current = true;
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('txc_onetap_shown', 'true');
+      }
       
       window.google.accounts.id.initialize({
         client_id: GOOGLE_CLIENT_ID,
@@ -101,8 +131,10 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
           GrowthFunnelTracker.track('google_onetap_dismissed', { reason: 'not_displayed' });
         } else if (notification.isSkippedMoment()) {
           GrowthFunnelTracker.track('google_onetap_dismissed', { reason: 'skipped' });
+          try { sessionStorage.setItem('txc_onetap_dismissed', 'true'); } catch {}
         } else if (notification.isDismissedMoment()) {
           GrowthFunnelTracker.track('google_onetap_dismissed', { reason: 'dismissed' });
+          try { sessionStorage.setItem('txc_onetap_dismissed', 'true'); } catch {}
         } else if (notification.isDisplayed()) {
           GrowthFunnelTracker.track('google_onetap_shown');
         }
@@ -116,7 +148,7 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
   }, [handleCredentialResponse, autoSelect, disabled, user]);
 
   const loadGoogleScript = useCallback(() => {
-    if (scriptLoadedRef.current || disabled) return;
+    if (scriptLoadedRef.current || disabled || user || hasActiveAuthSession()) return;
 
     const script = document.createElement('script');
     script.src = 'https://accounts.google.com/gsi/client';
@@ -134,11 +166,18 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
     };
 
     document.head.appendChild(script);
-  }, [initializeGoogleOneTap, disabled]);
+  }, [initializeGoogleOneTap, disabled, user]);
 
   useEffect(() => {
-    // Don't show if user is already logged in
-    if (disabled || user) return;
+    // If user is authenticated, cancel any active prompt immediately
+    if (user || hasActiveAuthSession()) {
+      if (window.google?.accounts?.id?.cancel) {
+        window.google.accounts.id.cancel();
+      }
+      return;
+    }
+
+    if (disabled) return;
 
     if (window.google) {
       initializeGoogleOneTap();
@@ -154,9 +193,9 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
     };
   }, [initializeGoogleOneTap, loadGoogleScript, disabled, user]);
 
-  // Reset initialization when user logs out
+  // Reset initialization only when user explicitly logs out
   useEffect(() => {
-    if (!user) {
+    if (!user && !hasActiveAuthSession()) {
       initializedRef.current = false;
     }
   }, [user]);

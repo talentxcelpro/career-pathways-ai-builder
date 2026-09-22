@@ -23,10 +23,33 @@ export const useOptimizedAuth = () => {
   return context;
 };
 
+const getStoredSession = (): { user: User | null; session: Session | null } => {
+  if (typeof window === 'undefined') return { user: null, session: null };
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('sb-') && key.endsWith('-auth-token')) {
+        const raw = localStorage.getItem(key);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed?.user) {
+            const now = Math.floor(Date.now() / 1000);
+            if (!parsed.expires_at || parsed.expires_at > now) {
+              return { user: parsed.user, session: parsed };
+            }
+          }
+        }
+      }
+    }
+  } catch {}
+  return { user: null, session: null };
+};
+
 export const OptimizedAuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+  const initial = getStoredSession();
+  const [user, setUser] = useState<User | null>(initial.user);
+  const [session, setSession] = useState<Session | null>(initial.session);
+  const [loading, setLoading] = useState<boolean>(!initial.user);
   const navigate = useNavigate();
 
   const refreshSession = async () => {
