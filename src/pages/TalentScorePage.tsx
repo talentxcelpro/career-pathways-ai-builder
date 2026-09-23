@@ -450,7 +450,7 @@ export default function TalentScorePage() {
         {/* ========================================================================= */}
         {/* HERO SECTION: Futuristic 3D Cyber Stage with Glowing Pedestal & Card     */}
         {/* ========================================================================= */}
-        <div className="relative w-full bg-gradient-to-b from-[#020717] via-[#040e29] to-[#0a1b42] pt-6 pb-6 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <div className="relative w-full bg-gradient-to-b from-[#020717] via-[#040e29] via-50% to-[#f3f7fd] pt-6 pb-0 px-4 sm:px-6 lg:px-8 overflow-hidden">
           {/* Subtle Ambient Cyber Lighting */}
           <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-blue-600/15 rounded-full blur-[130px] pointer-events-none" />
           <div className="absolute top-1/3 left-1/4 w-[300px] h-[300px] bg-cyan-500/10 rounded-full blur-[90px] pointer-events-none" />
@@ -603,7 +603,7 @@ export default function TalentScorePage() {
                 </div>
 
                 {/* 3D Cylindrical Vector Stage Pedestal with LEARN | GROW | EARN | ACHIEVE */}
-                <div className="w-full max-w-[620px] sm:max-w-[660px] md:max-w-[700px] relative -mt-10 sm:-mt-12 z-10">
+                <div className="w-full max-w-[680px] sm:max-w-[720px] md:max-w-[760px] relative -mt-10 sm:-mt-12 z-10">
                   <TalentScorePedestal onMottoClick={handleMottoClick} />
                 </div>
               </div>
@@ -629,7 +629,7 @@ export default function TalentScorePage() {
         {/* ========================================================================= */}
         {/* MIDDLE SECTION: Segmented Toggle Pill Bar (Image 1 Style)                 */}
         {/* ========================================================================= */}
-        <div ref={contentRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-2 relative z-30 flex justify-center">
+        <div ref={contentRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-2 pb-4 relative z-30 flex justify-center">
           <div className="inline-flex p-1.5 rounded-full bg-white dark:bg-slate-900 shadow-xl border border-slate-200/90 dark:border-slate-800">
             <button
               onClick={() => setActiveMainTab('breakdown')}
