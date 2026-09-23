@@ -22,6 +22,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { TalentScoreRing, getTier } from '@/components/talent-score/TalentScoreRing';
+import { GamingTalentScoreCard } from '@/components/talent-score/GamingTalentScoreCard';
 import { useTalentScore } from '@/hooks/useTalentScore';
 import { useUserScores } from '@/hooks/useUserScores';
 import { useRealLeaderboard } from '@/hooks/useRealLeaderboard';
@@ -56,9 +57,9 @@ export const GamificationDashboard: React.FC = () => {
     
     const { data } = await supabase
       .from('profiles')
-      .select('full_name, first_name')
+      .select('full_name, first_name, title, current_company')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
     
     setUserProfile(data);
   };
@@ -214,57 +215,18 @@ export const GamificationDashboard: React.FC = () => {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      {/* TalentScore in Gaming Hero Card (from Image 4) */}
-      <div className="relative rounded-3xl overflow-hidden bg-slate-950 p-6 sm:p-8 text-white shadow-2xl border border-slate-800">
-        <div 
-          className="absolute inset-0 opacity-20 pointer-events-none"
-          style={{ background: 'radial-gradient(circle at 50% 50%, #3b82f6, transparent 70%)' }} 
-        />
-        
-        <div className="relative z-10 flex flex-col items-center gap-5">
-          <div className="text-center">
-            <p className="text-blue-400 text-[10px] font-black uppercase tracking-[0.4em] mb-1.5">TALENTSCORE</p>
-            <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-              {candidateName}
-            </h2>
-          </div>
-
-          <div className="hover:scale-105 transition-transform duration-500 my-1">
-            <TalentScoreRing score={gamingScore} size="lg" animated highContrast />
-          </div>
-
-          <Badge className="bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs px-3.5 py-1 font-bold rounded-full">
-            {gamingTier.charAt(0).toUpperCase() + gamingTier.slice(1)} Tier
-          </Badge>
-
-          <div className="grid grid-cols-3 gap-3 w-full max-w-lg">
-            <div className="text-center bg-white/5 backdrop-blur-md rounded-2xl p-3 border border-white/5">
-              <Trophy className="h-4 w-4 text-blue-400 mx-auto mb-1" />
-              <p className="text-sm font-black text-white">#{Math.floor(4821 * (1 - gamingScore/1000))}</p>
-              <p className="text-[9px] uppercase tracking-wider text-slate-400 mt-0.5">Tier Rank</p>
-            </div>
-            <div className="text-center bg-white/5 backdrop-blur-md rounded-2xl p-3 border border-white/5">
-              <TrendingUp className="h-4 w-4 text-emerald-400 mx-auto mb-1" />
-              <p className="text-sm font-black text-emerald-400">+{Math.round(gamingScore * 0.08)}</p>
-              <p className="text-[9px] uppercase tracking-wider text-slate-400 mt-0.5">Velocity</p>
-            </div>
-            <div className="text-center bg-white/5 backdrop-blur-md rounded-2xl p-3 border border-white/5">
-              <ShieldCheck className="h-4 w-4 text-purple-400 mx-auto mb-1" />
-              <p className="text-sm font-black text-white">98%</p>
-              <p className="text-[9px] uppercase tracking-wider text-slate-400 mt-0.5">Fidelity</p>
-            </div>
-          </div>
-
-          <Button
-            onClick={() => navigate('/talent-score')}
-            variant="outline"
-            className="rounded-full bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 border border-blue-500/30 font-bold text-xs px-5 h-8 flex items-center gap-1.5"
-          >
-            View Full Career Signals
-            <ArrowRight className="h-3 w-3" />
-          </Button>
-        </div>
-      </div>
+      {/* Pixel-Perfect Gaming TalentScore Card */}
+      <GamingTalentScoreCard
+        score={gamingScore}
+        displayName={candidateName}
+        title={userProfile?.title || 'Director Operations'}
+        company={userProfile?.current_company || 'TalentXcel Services'}
+        actionText="View Full Career Signals"
+        actionRoute="/talent-score"
+        rankOverride={`#${Math.floor(4821 * (1 - gamingScore / 1000)) || 853}`}
+        growthDeltaOverride={`+${Math.round(gamingScore * 0.08) || 66}`}
+        syncFidelityOverride="98%"
+      />
 
       {/* Hero Stats */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary via-purple-600 to-pink-600 p-6 text-white">

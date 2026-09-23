@@ -16,6 +16,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { AuthDialog } from '@/components/auth/AuthDialog';
 import { TalentScoreRing, getTier } from '@/components/talent-score/TalentScoreRing';
 import { TalentScoreBreakdown } from '@/components/talent-score/TalentScoreBreakdown';
+import { GamingTalentScoreCard } from '@/components/talent-score/GamingTalentScoreCard';
 import { useTalentScore } from '@/hooks/useTalentScore';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
@@ -245,60 +246,18 @@ const TalentScorePage: React.FC = () => {
 
         <div className="max-w-4xl mx-auto px-4 md:px-8 pt-8 md:pt-16 space-y-10 md:space-y-16">
 
-          {/* Score Ring Hero */}
-          <div className="relative rounded-[40px] md:rounded-[64px] overflow-hidden bg-slate-950 p-6 sm:p-10 md:p-16 text-white shadow-2xl border border-slate-800">
-            <div className="absolute inset-0 opacity-20 pointer-events-none"
-              style={{ background: 'radial-gradient(circle at 50% 50%, #3b82f6, transparent 70%)' }} />
-
-            <div className="relative z-10 flex flex-col items-center gap-12">
-              <div className="text-center">
-                <p className="text-blue-500 text-xs font-apple-heavy uppercase tracking-[0.4em] mb-4">TALENTSCORE</p>
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-apple-heavy text-white tracking-tighter">
-                  {isScoreLoading ? '...' : displayName}
-                </h2>
-                {profile?.title && (
-                  <p className="text-slate-400 font-apple-medium text-base sm:text-lg md:text-xl mt-3">{profile.title}
-                    {profile.current_company ? ` at ${profile.current_company}` : ''}
-                  </p>
-                )}
-              </div>
-
-              {isScoreLoading ? (
-                <div className="w-72 h-72 rounded-full border-[16px] border-white/5 animate-pulse" />
-              ) : (
-                <div className="hover:scale-110 transition-transform duration-700">
-                  <TalentScoreRing score={score} size="xl" animated highContrast />
-                </div>
-              )}
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-8 w-full max-w-2xl">
-                {[
-                  { label: 'Ecosystem Tier', value: `#${Math.floor(4821 * (1 - score/1000))}`, icon: Trophy },
-                  { label: 'Growth Delta', value: `+${Math.round(score * 0.08)}`, icon: TrendingUp },
-                  { label: 'Sync Fidelity', value: '98%', icon: ShieldCheck },
-                ].map(({ label, value, icon: Icon }) => (
-                  <div key={label} className="text-center bg-white/5 backdrop-blur-xl rounded-[32px] p-8 border border-white/5 shadow-inner">
-                    <Icon className="h-6 w-6 text-blue-500 mx-auto mb-4" />
-                    <p className="text-3xl font-apple-heavy text-white tracking-tighter">{value}</p>
-                    <p className="text-[10px] font-apple-heavy uppercase tracking-widest text-slate-500 mt-2">{label}</p>
-                  </div>
-                ))}
-              </div>
-
-              {/* Gaming Hub Jump Button */}
-              <div className="pt-2">
-                <Button
-                  onClick={() => navigate('/gamification')}
-                  variant="outline"
-                  className="rounded-full bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 border border-blue-500/30 font-apple-heavy text-xs px-6 py-2 h-9 flex items-center gap-2"
-                >
-                  <Trophy className="h-4 w-4 text-amber-400" />
-                  View & Earn in Gaming Hub
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </Button>
-              </div>
-            </div>
-          </div>
+          {/* Pixel-Perfect Gaming TalentScore Card */}
+          <GamingTalentScoreCard
+            score={score}
+            displayName={isScoreLoading ? '...' : displayName}
+            title={profile?.title || 'Director Operations'}
+            company={profile?.current_company || 'TalentXcel Services'}
+            actionText="View & Earn in Gaming Hub"
+            actionRoute="/gamification"
+            rankOverride={`#${Math.floor(4821 * (1 - score / 1000)) || 853}`}
+            growthDeltaOverride={`+${Math.round(score * 0.08) || 66}`}
+            syncFidelityOverride="98%"
+          />
 
           {/* Action buttons */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
