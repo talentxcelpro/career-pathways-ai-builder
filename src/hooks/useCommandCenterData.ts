@@ -29,6 +29,7 @@ export interface CommandCenterData {
   profile: {
     id: string;
     full_name: string | null;
+    username: string | null;
     title: string | null;
     current_company: string | null;
     profile_picture_url: string | null;
@@ -94,17 +95,17 @@ async function fetchCommandCenterData(userId: string): Promise<CommandCenterData
   const savedAtsReport = getSessionAtsReport();
 
   const [profileRes, appsRes, savedRes, viewsRes, TalentNetworkRes, activeJobsRes] = await Promise.all([
-    // Profile + TalentScore + skills
+    // Profile + skills (using real existing columns in profiles table)
     supabase
       .from('profiles')
-      .select('id, full_name, title, current_company, profile_picture_url, talent_score, txc_coins, streak_days, profile_completion, skills')
+      .select('id, full_name, username, title, current_job_title, current_company, profile_picture_url, profile_photo_url, txc_coins, current_streak, achievement_score, skills, profile_completed')
       .eq('id', userId)
-      .single(),
+      .maybeSingle(),
 
     // Application count + recent applications
     supabase
       .from('enhanced_job_applications')
-      .select('id, status, created_at, jobs(title, companies(name))', { count: 'exact' })
+      .select('id, status, created_at, jobs(title, company_name)', { count: 'exact' })
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .limit(3),
@@ -137,9 +138,30 @@ async function fetchCommandCenterData(userId: string): Promise<CommandCenterData
       .limit(20),
   ]);
 
+  // Safely map profile data
+  const rawProfile = profileRes.data;
+  const mappedProfile = rawProfile ? {
+    id: rawProfile.id,
+    full_name: rawProfile.full_name || null,
+    username: rawProfile.username || null,
+    title: rawProfile.title || rawProfile.current_job_title || null,
+    current_company: rawProfile.current_company || null,
+    profile_picture_url: rawProfile.profile_picture_url || rawProfile.profile_photo_url || null,
+    talent_score: rawProfile.achievement_score || 0,
+    txc_coins: rawProfile.txc_coins ?? 0,
+    streak_days: rawProfile.current_streak ?? 0,
+    profile_completion: rawProfile.profile_completed ? 100 : (
+      (rawProfile.full_name ? 25 : 0) +
+      (rawProfile.skills && rawProfile.skills.length > 0 ? 30 : 0) +
+      (rawProfile.title || rawProfile.current_job_title ? 25 : 0) +
+      (rawProfile.profile_picture_url || rawProfile.profile_photo_url ? 20 : 0)
+    ),
+    skills: rawProfile.skills ?? []
+  } : null;
+
   // Aggregate candidate skills from profile + temporary ATS audit
   const rawCandidateSkills: string[] = [
-    ...(profileRes.data?.skills ?? []),
+    ...(mappedProfile?.skills ?? []),
     ...(savedAtsReport?.foundKeywords ?? [])
   ];
 
@@ -220,7 +242,7 @@ async function fetchCommandCenterData(userId: string): Promise<CommandCenterData
   });
 
   return {
-    profile: profileRes.data ?? null,
+    profile: mappedProfile,
     savedAtsReport,
     stats: {
       applicationsTotal: appsRes.count ?? 0,
@@ -228,7 +250,15 @@ async function fetchCommandCenterData(userId: string): Promise<CommandCenterData
       profileViews: viewsRes.count ?? 0,
       TalentNetwork: TalentNetworkRes.count ?? 0,
     },
-    recentApplications: (appsRes.data ?? []) as CommandCenterData['recentApplications'],
+    recentApplications: (appsRes.data ?? []).map((app: any) => ({
+      id: app.id,
+      status: app.status,
+      created_at: app.created_at,
+      jobs: app.jobs ? {
+        title: app.jobs.title,
+        companies: app.jobs.company_name ? { name: app.jobs.company_name } : null
+      } : null
+    })),
     topJobMatches: scoredJobs.slice(0, 4),
   };
 }

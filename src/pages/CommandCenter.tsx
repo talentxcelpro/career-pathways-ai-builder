@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCommandCenterData } from '@/hooks/useCommandCenterData';
 import { TalentScoreRing, getTier } from '@/components/talent-score/TalentScoreRing';
@@ -68,7 +69,39 @@ const CommandCenter: React.FC = () => {
         )
       );
   const tier = getTier(score);
-  const firstName = data?.profile?.full_name?.split(' ')[0] ?? user?.email?.split('@')[0] ?? 'there';
+  
+  // Real Profile Identity: prioritize full_name, user_metadata, username, then clean email fallback
+  const rawDisplayName = 
+    data?.profile?.full_name || 
+    user?.user_metadata?.full_name || 
+    user?.user_metadata?.name || 
+    data?.profile?.username || 
+    user?.email?.split('@')[0] || 
+    'Candidate';
+
+  const displayName = rawDisplayName.includes('.')
+    ? rawDisplayName.split('.').map((s: string) => s.charAt(0).toUpperCase() + s.slice(1)).join(' ')
+    : rawDisplayName;
+
+  const profileId = 
+    data?.profile?.username || 
+    user?.user_metadata?.user_name || 
+    (user?.email ? user.email.split('@')[0] : null) || 
+    (data?.profile?.id ? data.profile.id.slice(0, 8) : null);
+
+  const avatarUrl = 
+    data?.profile?.profile_picture_url || 
+    user?.user_metadata?.avatar_url || 
+    user?.user_metadata?.picture;
+
+  const initials = displayName
+    .split(' ')
+    .filter(Boolean)
+    .map((n: string) => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2) || 'TX';
+
   const streak = data?.profile?.streak_days ?? 0;
 
   const hour = new Date().getHours();
@@ -196,10 +229,32 @@ const CommandCenter: React.FC = () => {
               </Link>
 
               <div className="min-w-0 flex-1">
-                <p className="text-white/50 text-xs font-bold">{greeting},</p>
-                <h2 className="text-xl font-black text-white tracking-tight truncate">{firstName}</h2>
+                <div className="flex items-center gap-3.5 mb-1.5">
+                  <Avatar className="h-12 w-12 rounded-2xl border-2 border-white/20 shadow-md shrink-0">
+                    <AvatarImage 
+                      src={avatarUrl && !avatarUrl.includes('chatr.chat') ? avatarUrl : undefined} 
+                      alt={displayName} 
+                      className="object-cover"
+                    />
+                    <AvatarFallback className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white font-black text-sm">
+                      {initials}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0">
+                    <p className="text-white/50 text-xs font-bold leading-none mb-1">{greeting},</p>
+                    <h2 className="text-xl font-black text-white tracking-tight truncate leading-tight">
+                      {displayName}
+                    </h2>
+                    {profileId && (
+                      <p className="text-[11px] font-mono text-sky-400 font-semibold truncate leading-none mt-0.5">
+                        @{profileId}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
                 {data?.profile?.title && (
-                  <p className="text-white/60 text-xs mt-0.5 truncate">
+                  <p className="text-white/60 text-xs mt-1 truncate pl-1">
                     {data.profile.title}{data.profile.current_company ? ` · ${data.profile.current_company}` : ''}
                   </p>
                 )}
