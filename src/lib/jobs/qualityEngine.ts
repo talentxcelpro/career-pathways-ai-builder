@@ -1,13 +1,18 @@
-﻿/**
- * TalentXcel Internal Job Quality Score Engine
- * Computes a transparent 0-100 quality score to evaluate completeness, freshness,
- * verification tier, salary precision, and description depth.
+/**
+ * TalentXcel Internal Job Quality & Official Source Confidence Engine
+ * Computes:
+ * 1. Job Quality Score (0 - 100): completeness, description depth, salary, dates, skills
+ * 2. Official Source Confidence Score (0 - 100): verified government domain, official PDF notice, application URL stability
+ * 3. Evaluates source-specific quality thresholds to gate automated publishing
  */
 
 import { GlobalJob } from '@/types/jobs/globalJob';
 
 export interface JobQualityAudit {
   totalScore: number;
+  sourceConfidenceScore: number;
+  sourceThreshold: number;
+  decision: 'PASS' | 'REVIEW' | 'REJECT';
   grade: 'A+' | 'A' | 'B' | 'C' | 'REJECT';
   factors: {
     sourceReliability: number;     // max 25
@@ -19,7 +24,52 @@ export interface JobQualityAudit {
   recommendations: string[];
 }
 
-export function computeJobQualityScore(job: Partial<GlobalJob>): JobQualityAudit {
+export function computeSourceConfidenceScore(params: {
+  sourceId: string;
+  domain: string;
+  hasOfficialPdf?: boolean;
+  hasOfficialApplicationUrl?: boolean;
+  isRecent?: boolean;
+}): number {
+  let score = 0;
+  const d = (params.domain || '').toLowerCase();
+
+  // Official Government TLD (+35)
+  if (d.endsWith('.gov') || d.endsWith('.gov.in') || d.endsWith('.nic.in') || d.endsWith('.gov.uk') || d.endsWith('.mil')) {
+    score += 35;
+  } else if (d.endsWith('.edu') || d.endsWith('.ac.in') || d.endsWith('.org')) {
+    score += 20;
+  } else {
+    score += 10;
+  }
+
+  // Official Vacancy Notice PDF attached (+25)
+  if (params.hasOfficialPdf) {
+    score += 25;
+  }
+
+  // Official Secure Application URL (+25)
+  if (params.hasOfficialApplicationUrl) {
+    score += 25;
+  }
+
+  // Recency within 24h (+15)
+  if (params.isRecent !== false) {
+    score += 15;
+  }
+
+  return Math.min(100, score);
+}
+
+export function getSourceQualityThreshold(sourceLevel?: string, isNewlyDiscovered = false): number {
+  if (isNewlyDiscovered) return 85;
+  if (sourceLevel === 'FEDERAL') return 70;
+  if (sourceLevel === 'STATE') return 75;
+  if (sourceLevel === 'PUBLIC_SECTOR') return 70;
+  return 80;
+}
+
+export function computeJobQualityScore(job: Partial<GlobalJob>, isNewlyDiscovered = false): JobQualityAudit {
   let sourceReliability = 15;
   let dataCompleteness = 10;
   let salaryTransparency = 0;
@@ -29,7 +79,7 @@ export function computeJobQualityScore(job: Partial<GlobalJob>): JobQualityAudit
 
   // 1. Source Reliability (max 25)
   if (job.is_government) {
-    sourceReliability = 25; // Government notices have highest authoritative provenance
+    sourceReliability = 25;
   } else if (job.employer?.verification_status === 'BUSINESS_VERIFIED') {
     sourceReliability = 22;
   } else if (job.employer?.verification_status === 'DOMAIN_VERIFIED') {
@@ -59,18 +109,17 @@ export function computeJobQualityScore(job: Partial<GlobalJob>): JobQualityAudit
   } else if (job.salary?.minimum) {
     salaryTransparency = 12;
   } else if (job.salary?.original_display) {
-    salaryTransparency = 8;
+    salaryTransparency = 10;
   } else {
-    recommendations.push('Add salary range to increase applicant response and Google click-through rate.');
+    recommendations.push('Disclose salary pay scale or pay band for Google Jobs rich results eligibility.');
   }
 
   // 4. Freshness (max 15)
   if (job.posted_at) {
     const ageDays = (Date.now() - new Date(job.posted_at).getTime()) / (1000 * 60 * 60 * 24);
-    if (ageDays <= 3) freshness = 15;
-    else if (ageDays <= 14) freshness = 12;
-    else if (ageDays <= 30) freshness = 8;
-    else freshness = 3;
+    if (ageDays <= 7) freshness = 15;
+    else if (ageDays <= 30) freshness = 10;
+    else freshness = 5;
   }
 
   // 5. Location Precision (max 15)
@@ -78,22 +127,43 @@ export function computeJobQualityScore(job: Partial<GlobalJob>): JobQualityAudit
     locationPrecision = 15;
   } else if (job.city && job.country_code) {
     locationPrecision = 12;
-  } else if (job.workplace_type === 'REMOTE') {
-    locationPrecision = 15;
+  } else if (job.country_code) {
+    locationPrecision = 8;
   } else {
-    recommendations.push('Specify city and state for localized search visibility.');
+    recommendations.push('Specify city and administrative region for accurate geographic distribution.');
   }
 
-  const totalScore = sourceReliability + dataCompleteness + salaryTransparency + freshness + locationPrecision;
+  const totalScore = Math.min(100, sourceReliability + dataCompleteness + salaryTransparency + freshness + locationPrecision);
+
+  // Compute Source Confidence Score
+  const sourceConfidenceScore = computeSourceConfidenceScore({
+    sourceId: job.provenance?.source_id || 'unknown',
+    domain: job.provenance?.source_url || '',
+    hasOfficialPdf: !!job.provenance?.official_notification_pdf_url,
+    hasOfficialApplicationUrl: !!(job.application_url && job.application_url.startsWith('https://')),
+    isRecent: freshness >= 10,
+  });
+
+  const sourceThreshold = getSourceQualityThreshold(job.government_level, isNewlyDiscovered);
+
+  let decision: 'PASS' | 'REVIEW' | 'REJECT' = 'REVIEW';
+  if (totalScore >= sourceThreshold && sourceConfidenceScore >= 60) {
+    decision = 'PASS';
+  } else if (totalScore < 50 || sourceConfidenceScore < 40) {
+    decision = 'REJECT';
+  }
 
   let grade: JobQualityAudit['grade'] = 'C';
   if (totalScore >= 90) grade = 'A+';
-  else if (totalScore >= 75) grade = 'A';
-  else if (totalScore >= 60) grade = 'B';
-  else if (totalScore < 40) grade = 'REJECT';
+  else if (totalScore >= 80) grade = 'A';
+  else if (totalScore >= 70) grade = 'B';
+  else if (totalScore < 50) grade = 'REJECT';
 
   return {
     totalScore,
+    sourceConfidenceScore,
+    sourceThreshold,
+    decision,
     grade,
     factors: {
       sourceReliability,

@@ -75,6 +75,11 @@ export interface GovernmentJobSource {
   active: boolean;
   last_reviewed_at: string;    // ISO date
   notes: string;
+  connector_version?: string;
+  schema_version?: string;
+  policy_version?: string;
+  terms_last_reviewed_at?: string;
+  last_certified_at?: string;
 }
 
 export const GOVERNMENT_SOURCES: readonly GovernmentJobSource[] = [

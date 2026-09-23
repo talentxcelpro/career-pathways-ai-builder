@@ -1,4 +1,4 @@
-﻿/**
+/**
  * TalentXcel Government Source Policy Engine
  * Enforces field-level redistribution permissions, application routing,
  * and canonical indexing rules on a per-source basis.
@@ -179,3 +179,6 @@ export function evaluateSourcePolicy(sourceId: string): SourceRightsDecision {
       };
   }
 }
+
+export const resolveSourcePolicy = evaluateSourcePolicy;
+

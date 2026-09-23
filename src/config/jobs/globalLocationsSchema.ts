@@ -1,50 +1,29 @@
-// src/config/jobs/globalLocationsSchema.ts
-// Canonical Schema for TalentXcel 100,000+ Global Location Universe
-// Provides hierarchical geographic resolution across Country -> Region/State -> Metro -> City -> District
+/**
+ * TalentXcel Global Jobs Network — 10,000–20,000 Global Locations Schema
+ * Database-backed normalized location model avoiding programmatic SEO explosions.
+ */
 
-export type LocationType = 'country' | 'state' | 'metro' | 'city' | 'district';
+export type LocationTier = 'TIER_1' | 'TIER_2' | 'TIER_3' | 'GLOBAL_HUB';
 
-export interface GlobalLocation {
-  id: string;
-  countryCode: string;       // ISO 3166-1 alpha-2 lowercase (e.g. 'in', 'us', 'gb', 'ae')
-  countryName: string;       // Normalized English country name
-  stateRegion?: string;      // State, Province, Emirate, Prefecture, or Department
-  city: string;              // Primary city or municipality name
-  metro?: string;            // Metropolitan statistical area / Urban agglomeration
-  district?: string;         // District, Borough, Ward, or Locality
-  locality?: string;         // Micro-locality or neighborhood
+export interface GlobalLocationEntity {
+  location_id: string;             // UUID or canonical slug
+  country_code: string;            // ISO 3166-1 alpha-2, e.g. 'IN', 'US'
+  country_name: string;
+  region_code?: string;            // State/province ISO code, e.g. 'UP', 'CA'
+  region_name?: string;            // e.g. 'Uttar Pradesh', 'California'
+  district?: string;               // Administrative district/county
+  city: string;                    // Normalized canonical city name
+  locality?: string;
+  postal_codes: string[];
   latitude?: number;
   longitude?: number;
-  timezone?: string;         // IANA timezone identifier (e.g. 'Asia/Kolkata', 'America/New_York')
-  currency?: string;         // ISO 4217 currency code (e.g. 'INR', 'USD', 'GBP', 'AED')
-  language?: string;         // Primary spoken/business language code
-  population?: number;
-  slug: string;              // Canonical URL slug (kebab-case)
-  parentLocationId?: string; // ID of parent region/metro
-  locationType: LocationType;
-  active: boolean;           // True if eligible for employer posting
-  jobInventory: number;      // Live verified count of active job postings
-  lastSyncAt?: string;       // Timestamp of last inventory/sitemap sync
-}
-
-export interface CountryMetadata {
-  code: string;              // ISO 3166-1 alpha-2 lowercase
-  codeAlpha3: string;        // ISO 3166-1 alpha-3 uppercase
-  name: string;
-  nativeName?: string;
-  flagEmoji: string;
-  continent: 'Asia' | 'Europe' | 'North America' | 'South America' | 'Africa' | 'Oceania';
-  tier: 1 | 2 | 3;           // 1: Primary global tech/commercial hub; 2: Regional growth market; 3: Emerging
-  currency: string;
-  currencySymbol: string;
+  timezone: string;                // e.g. 'Asia/Kolkata', 'America/New_York'
+  currency: string;                // ISO 4217, e.g. 'INR', 'USD'
   languages: string[];
-  defaultTimezone: string;
-  callingCode: string;
-  totalLocations: number;
-  activeJobs: number;
-  googleEligibleJobs: number;
-  blockedJobs: number;
-  indexableDiscoveryPages: number;
-  noindexDiscoveryPages: number;
-  sitemapShardsCount: number;
+  tier: LocationTier;
+  population_band?: string;        // e.g. '10M+', '1M-5M'
+  employment_market: string;       // e.g. 'National Capital Region', 'Silicon Valley'
+  aliases: string[];               // Historical, colloquial, or abbreviations
+  canonical_slug: string;          // e.g. 'mumbai-maharashtra-india'
+  active: boolean;
 }
