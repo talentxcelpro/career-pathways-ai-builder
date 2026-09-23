@@ -1,292 +1,345 @@
 ﻿/**
  * TalentXcel Government Jobs Intelligence Network — Source Registry
- * Phase 7 scaffold only. No connectors implemented.
+ * Implements strict source-level governance and redistribution rights.
  *
- * CRITICAL POLICY: Government portal ownership ≠ free redistribution rights.
- * Each source must be individually authorized before ingestion.
- *
- * Source Modes:
- *   A — Authorized API/Feed (explicit commercial permission from portal)
- *   B — Permission/Partnership (direct agreement with governing body)
- *   C — Discovery/Link-out (no republishing; link to official vacancy page only)
+ * CRITICAL POLICY: Government website ownership != free redistribution rights.
+ * Every source must be individually governed by authorization and redistribution policies.
  */
 
-export type SourceMode = 'A' | 'B' | 'C';
+export type GovernmentLevel =
+  | 'FEDERAL'
+  | 'STATE'
+  | 'REGIONAL'
+  | 'MUNICIPAL'
+  | 'PUBLIC_SECTOR';
 
-export type RedistributionPolicy =
-  | 'FULL_REPUBLISH'       // Mode A: Full job details may be republished with attribution
-  | 'ATTRIBUTED_REPUBLISH' // Mode A/B: Summary + link allowed; full text requires attribution
-  | 'SUMMARY_ONLY'         // Mode B/C: Only headline + link to official page
-  | 'LINK_OUT'             // Mode C: No content reproduction; show title + official link
-  | 'DO_NOT_INGEST';       // Explicitly prohibited or ambiguous — do not ingest
+export type AccessMethod =
+  | 'API'
+  | 'FEED'
+  | 'RSS'
+  | 'BULK_DATA'
+  | 'PARTNER'
+  | 'PUBLIC_PAGE';
+
+export type AuthorizationStatus =
+  | 'AUTHORIZED'
+  | 'PUBLIC'
+  | 'PENDING'
+  | 'PARTNER_REQUIRED'
+  | 'RESTRICTED';
+
+export type RedistributionStatus =
+  | 'FULL_REPUBLISH'       // Full job text + Schema.org allowed with attribution
+  | 'ATTRIBUTED_REPUBLISH' // Summary + official citation allowed; apply links to official portal
+  | 'SUMMARY_ONLY'         // Headline + metadata only; full text requires clicking official notice
+  | 'LINK_OUT'             // Vacancy title + link to official portal only; zero reproduction
+  | 'API_ONLY'             // Data accessible via private API partner integration
+  | 'PARTNER_ONLY'         // Requires bilateral agreement with agency
+  | 'DO_NOT_INGEST';       // Explicitly restricted by terms; do not crawl or ingest
+
+export type RefreshFrequency =
+  | 'HOURLY'
+  | 'EVERY_6_HOURS'
+  | 'DAILY'
+  | 'WEEKLY';
 
 export type ApplicationRouting =
-  | 'DIRECT_APPLY_NATIVE'  // Apply via TalentXcel native flow (directApply: true eligible)
-  | 'REDIRECT_OFFICIAL'    // Redirect to official government portal for application
-  | 'REDIRECT_ATS'         // Redirect to ATS/third-party system
-  | 'LINK_OUT_ONLY';       // Only show official link, no apply button
+  | 'DIRECT_APPLY_NATIVE'  // Native TalentXcel apply flow (directApply: true eligible)
+  | 'REDIRECT_OFFICIAL'    // Redirect candidate to official government portal (directApply: false/omitted)
+  | 'REDIRECT_ATS'         // Redirect to agency ATS
+  | 'LINK_OUT_ONLY';       // Display link only
 
 export interface GovernmentJobSource {
-  id: string;
-  name: string;
-  country: string;           // ISO 3166-1 alpha-2 uppercase
-  countryName: string;
-  portalUrl: string;
-  apiEndpoint?: string;       // If Mode A: API/feed URL
-  mode: SourceMode;
-  redistribution: RedistributionPolicy;
-  applicationRouting: ApplicationRouting;
-  requiresAttribution: boolean;
-  attributionText?: string;   // Required credit line if republishing
-  attributionUrl?: string;    // Link back to source if required
-  requiresSourceLink: boolean;
-  requiresPartnerApproval: boolean;
-  partnerAgreementStatus: 'NOT_STARTED' | 'IN_PROGRESS' | 'APPROVED' | 'REJECTED';
-  fresherEligible: boolean;   // Whether portal typically lists fresher/entry-level jobs
-  categories: string[];       // Job categories available on this portal
+  source_id: string;
+  country_code: string;        // ISO 3166-1 alpha-2 UPPERCASE, e.g. "IN", "US"
+  country_name: string;
+  government_level: GovernmentLevel;
+  organization: string;        // Agency / Ministry / Commission name
+  portal_name: string;         // Name of the portal / bulletin
+  website: string;
+  careers_url?: string;
+  api_endpoint?: string;
+  feed_endpoint?: string;
+  access_method: AccessMethod;
+  authorization_status: AuthorizationStatus;
+  redistribution_status: RedistributionStatus;
+  attribution_required: boolean;
+  attribution_text?: string;
+  attribution_url?: string;
+  application_redirect_required: boolean;
+  application_routing: ApplicationRouting;
+  fresher_eligible: boolean;   // Typically features entry-level / graduate vacancies
+  categories: string[];
+  terms_url?: string;
+  refresh_frequency: RefreshFrequency;
+  active: boolean;
+  last_reviewed_at: string;    // ISO date
   notes: string;
-  active: boolean;            // Whether this source is currently being ingested
-  lastReviewedAt: string;     // ISO date of last policy review
 }
 
-/**
- * Government Sources Registry
- * All sources start as INACTIVE until authorization is confirmed.
- * Mode C (LINK_OUT) sources may be activated after internal review only.
- */
 export const GOVERNMENT_SOURCES: readonly GovernmentJobSource[] = [
   // ─── India ────────────────────────────────────────────────────────────────
   {
-    id: 'ncs-india',
-    name: 'National Career Service Portal (NCS) — India',
-    country: 'IN',
-    countryName: 'India',
-    portalUrl: 'https://www.ncs.gov.in',
-    mode: 'C',
-    redistribution: 'LINK_OUT',
-    applicationRouting: 'REDIRECT_OFFICIAL',
-    requiresAttribution: true,
-    attributionText: 'Source: National Career Service Portal, Ministry of Labour & Employment, Govt. of India',
-    attributionUrl: 'https://www.ncs.gov.in',
-    requiresSourceLink: true,
-    requiresPartnerApproval: true,
-    partnerAgreementStatus: 'NOT_STARTED',
-    fresherEligible: true,
-    categories: ['Government', 'Private', 'PSU', 'Defence', 'Railway'],
-    notes: 'NCS is NIC-hosted. Reproduction of vacancy content requires MoLE permission. Currently mode C only.',
-    active: false,
-    lastReviewedAt: '2025-09-01',
+    source_id: 'in-employment-news',
+    country_code: 'IN',
+    country_name: 'India',
+    government_level: 'FEDERAL',
+    organization: 'Ministry of Information and Broadcasting, Govt. of India',
+    portal_name: 'Employment News / Rozgar Samachar',
+    website: 'https://employmentnews.gov.in',
+    careers_url: 'https://employmentnews.gov.in',
+    access_method: 'FEED',
+    authorization_status: 'PUBLIC',
+    redistribution_status: 'ATTRIBUTED_REPUBLISH',
+    attribution_required: true,
+    attribution_text: 'Source: Employment News, Ministry of Information & Broadcasting, Govt. of India',
+    attribution_url: 'https://employmentnews.gov.in',
+    application_redirect_required: true,
+    application_routing: 'REDIRECT_OFFICIAL',
+    fresher_eligible: true,
+    categories: ['Central Government', 'PSU', 'Defence', 'Railways', 'Banking', 'Universities'],
+    terms_url: 'https://employmentnews.gov.in/NewEmp/Home.aspx',
+    refresh_frequency: 'DAILY',
+    active: true,
+    last_reviewed_at: '2025-09-01',
+    notes: 'Official weekly bulletin of Government of India. Ingests notification number, post, vacancies, and closing date.',
   },
   {
-    id: 'rojgar-sangam-up',
-    name: 'UP Rojgar Sangam — Uttar Pradesh',
-    country: 'IN',
-    countryName: 'India',
-    portalUrl: 'https://sewayojan.up.nic.in',
-    mode: 'C',
-    redistribution: 'LINK_OUT',
-    applicationRouting: 'REDIRECT_OFFICIAL',
-    requiresAttribution: true,
-    attributionText: 'Source: UP Sewayojan Portal, Government of Uttar Pradesh',
-    attributionUrl: 'https://sewayojan.up.nic.in',
-    requiresSourceLink: true,
-    requiresPartnerApproval: true,
-    partnerAgreementStatus: 'NOT_STARTED',
-    fresherEligible: true,
-    categories: ['Government', 'Private', 'Apprenticeship'],
-    notes: 'UP Rojgar Sangam vacancy data terms require permission before reproduction. Link-out only until partnership.',
-    active: false,
-    lastReviewedAt: '2025-09-01',
+    source_id: 'in-ncs',
+    country_code: 'IN',
+    country_name: 'India',
+    government_level: 'FEDERAL',
+    organization: 'Ministry of Labour and Employment, Govt. of India',
+    portal_name: 'National Career Service (NCS)',
+    website: 'https://www.ncs.gov.in',
+    careers_url: 'https://www.ncs.gov.in',
+    access_method: 'PUBLIC_PAGE',
+    authorization_status: 'PUBLIC',
+    redistribution_status: 'SUMMARY_ONLY',
+    attribution_required: true,
+    attribution_text: 'Source: National Career Service, Ministry of Labour & Employment, Govt. of India',
+    attribution_url: 'https://www.ncs.gov.in',
+    application_redirect_required: true,
+    application_routing: 'REDIRECT_OFFICIAL',
+    fresher_eligible: true,
+    categories: ['Government', 'Public Sector', 'Apprenticeships', 'Private'],
+    terms_url: 'https://www.ncs.gov.in/Pages/TermsAndConditions.aspx',
+    refresh_frequency: 'DAILY',
+    active: true,
+    last_reviewed_at: '2025-09-01',
+    notes: 'NIC hosted. Vacancy summaries with official link out to NCS portal.',
   },
   {
-    id: 'upsc-india',
-    name: 'UPSC — Union Public Service Commission',
-    country: 'IN',
-    countryName: 'India',
-    portalUrl: 'https://upsc.gov.in',
-    mode: 'C',
-    redistribution: 'SUMMARY_ONLY',
-    applicationRouting: 'REDIRECT_OFFICIAL',
-    requiresAttribution: true,
-    attributionText: 'Source: Union Public Service Commission (UPSC)',
-    attributionUrl: 'https://upsc.gov.in',
-    requiresSourceLink: true,
-    requiresPartnerApproval: false,
-    partnerAgreementStatus: 'NOT_STARTED',
-    fresherEligible: true,
-    categories: ['Civil Services', 'Defence', 'Technical', 'Engineering Services'],
-    notes: 'Vacancy notifications are publicly available. Summary + link is safe. Full text reproduction requires review.',
-    active: false,
-    lastReviewedAt: '2025-09-01',
+    source_id: 'in-upsc',
+    country_code: 'IN',
+    country_name: 'India',
+    government_level: 'FEDERAL',
+    organization: 'Union Public Service Commission (UPSC)',
+    portal_name: 'UPSC Recruitment Portal',
+    website: 'https://upsc.gov.in',
+    careers_url: 'https://upsconline.nic.in',
+    access_method: 'FEED',
+    authorization_status: 'PUBLIC',
+    redistribution_status: 'SUMMARY_ONLY',
+    attribution_required: true,
+    attribution_text: 'Source: Union Public Service Commission (UPSC)',
+    attribution_url: 'https://upsc.gov.in',
+    application_redirect_required: true,
+    application_routing: 'REDIRECT_OFFICIAL',
+    fresher_eligible: true,
+    categories: ['Civil Services', 'Engineering Services', 'Combined Medical Services', 'Defence'],
+    terms_url: 'https://upsc.gov.in/disclaimer',
+    refresh_frequency: 'DAILY',
+    active: true,
+    last_reviewed_at: '2025-09-01',
+    notes: 'Official examinations and recruitment by selection notifications. Candidates apply via upsconline.nic.in.',
   },
   {
-    id: 'ssc-india',
-    name: 'Staff Selection Commission (SSC)',
-    country: 'IN',
-    countryName: 'India',
-    portalUrl: 'https://ssc.nic.in',
-    mode: 'C',
-    redistribution: 'SUMMARY_ONLY',
-    applicationRouting: 'REDIRECT_OFFICIAL',
-    requiresAttribution: true,
-    attributionText: 'Source: Staff Selection Commission (SSC), Government of India',
-    attributionUrl: 'https://ssc.nic.in',
-    requiresSourceLink: true,
-    requiresPartnerApproval: false,
-    partnerAgreementStatus: 'NOT_STARTED',
-    fresherEligible: true,
-    categories: ['Central Government', 'Defence', 'Technical', 'Clerical'],
-    notes: 'SSC notifications are public. Summary with official link is permissible. Full text reproduction requires legal review.',
-    active: false,
-    lastReviewedAt: '2025-09-01',
+    source_id: 'in-ssc',
+    country_code: 'IN',
+    country_name: 'India',
+    government_level: 'FEDERAL',
+    organization: 'Staff Selection Commission (SSC)',
+    portal_name: 'SSC Official Portal',
+    website: 'https://ssc.gov.in',
+    careers_url: 'https://ssc.gov.in',
+    access_method: 'PUBLIC_PAGE',
+    authorization_status: 'PUBLIC',
+    redistribution_status: 'SUMMARY_ONLY',
+    attribution_required: true,
+    attribution_text: 'Source: Staff Selection Commission, Govt. of India',
+    attribution_url: 'https://ssc.gov.in',
+    application_redirect_required: true,
+    application_routing: 'REDIRECT_OFFICIAL',
+    fresher_eligible: true,
+    categories: ['CGL (Graduate Level)', 'CHSL (10+2)', 'MTS', 'Junior Engineer', 'CPO'],
+    terms_url: 'https://ssc.gov.in',
+    refresh_frequency: 'DAILY',
+    active: true,
+    last_reviewed_at: '2025-09-01',
+    notes: 'National staff selection examinations for Group B and C posts.',
   },
   {
-    id: 'ibps-india',
-    name: 'IBPS — Institute of Banking Personnel Selection',
-    country: 'IN',
-    countryName: 'India',
-    portalUrl: 'https://www.ibps.in',
-    mode: 'C',
-    redistribution: 'SUMMARY_ONLY',
-    applicationRouting: 'REDIRECT_OFFICIAL',
-    requiresAttribution: true,
-    attributionText: 'Source: IBPS (Institute of Banking Personnel Selection)',
-    attributionUrl: 'https://www.ibps.in',
-    requiresSourceLink: true,
-    requiresPartnerApproval: false,
-    partnerAgreementStatus: 'NOT_STARTED',
-    fresherEligible: true,
-    categories: ['Banking', 'Financial Services'],
-    notes: 'IBPS exam notifications are public. Summary + link allowed.',
-    active: false,
-    lastReviewedAt: '2025-09-01',
+    source_id: 'in-up-sewayojan',
+    country_code: 'IN',
+    country_name: 'India',
+    government_level: 'STATE',
+    organization: 'Department of Training and Employment, Government of Uttar Pradesh',
+    portal_name: 'UP Rojgar Sangam (Sewayojan)',
+    website: 'https://sewayojan.up.nic.in',
+    careers_url: 'https://sewayojan.up.nic.in',
+    access_method: 'PUBLIC_PAGE',
+    authorization_status: 'PUBLIC',
+    redistribution_status: 'LINK_OUT',
+    attribution_required: true,
+    attribution_text: 'Source: UP Rojgar Sangam, Govt. of Uttar Pradesh',
+    attribution_url: 'https://sewayojan.up.nic.in',
+    application_redirect_required: true,
+    application_routing: 'REDIRECT_OFFICIAL',
+    fresher_eligible: true,
+    categories: ['State Government', 'Contractual', 'Outsourced', 'Private Job Fairs'],
+    terms_url: 'https://sewayojan.up.nic.in',
+    refresh_frequency: 'DAILY',
+    active: true,
+    last_reviewed_at: '2025-09-01',
+    notes: 'State-level employment exchange. Link-out only until partnership agreement.',
   },
+
   // ─── USA ──────────────────────────────────────────────────────────────────
   {
-    id: 'usajobs-usa',
-    name: 'USAJOBS — US Federal Government Jobs',
-    country: 'US',
-    countryName: 'United States',
-    portalUrl: 'https://www.usajobs.gov',
-    apiEndpoint: 'https://data.usajobs.gov/api/search',
-    mode: 'A',
-    redistribution: 'ATTRIBUTED_REPUBLISH',
-    applicationRouting: 'REDIRECT_OFFICIAL',
-    requiresAttribution: true,
-    attributionText: 'Source: USAJOBS — The Federal Government\'s Official Jobs Site',
+    source_id: 'us-usajobs',
+    country_code: 'US',
+    country_name: 'United States',
+    government_level: 'FEDERAL',
+    organization: 'U.S. Office of Personnel Management (OPM)',
+    portal_name: 'USAJOBS — The Federal Government’s Official Jobs Site',
+    website: 'https://www.usajobs.gov',
+    careers_url: 'https://www.usajobs.gov',
+    api_endpoint: 'https://data.usajobs.gov/api/search',
+    access_method: 'API',
+    authorization_status: 'AUTHORIZED',
+    redistribution_status: 'ATTRIBUTED_REPUBLISH',
+    attribution_required: true,
+    attribution_text: 'Source: USAJOBS — The Federal Government’s Official Jobs Site (U.S. OPM)',
     attributionUrl: 'https://www.usajobs.gov',
-    requiresSourceLink: true,
-    requiresPartnerApproval: false,
-    partnerAgreementStatus: 'NOT_STARTED',
-    fresherEligible: true,
-    categories: ['Federal Government', 'Defence', 'Healthcare', 'Technology', 'Administrative'],
-    notes: 'USAJOBS provides an API for commercial job boards. Terms: data may be stored/reformatted for internal application with source credit and back-links to USAJOBS. Standalone redistribution/competing job-data products require approval. Application must always redirect to USAJOBS. directApply: false always.',
-    active: false,
-    lastReviewedAt: '2025-09-01',
+    application_redirect_required: true,
+    application_routing: 'REDIRECT_OFFICIAL',
+    fresher_eligible: true,
+    categories: ['Federal Government', 'Defence', 'Technology', 'Healthcare', 'Administrative', 'Scientific'],
+    terms_url: 'https://developer.usajobs.gov/API-Documentation/Terms-of-Service',
+    refresh_frequency: 'EVERY_6_HOURS',
+    active: true,
+    last_reviewed_at: '2025-09-01',
+    notes: 'Commercial job-board API consumer terms: permits search API ingestion, normalized storage, and display with USAJOBS attribution; application must direct to USAJOBS. directApply: false always.',
   },
+
   // ─── UK ───────────────────────────────────────────────────────────────────
   {
-    id: 'civil-service-jobs-uk',
-    name: 'Civil Service Jobs — UK',
-    country: 'GB',
-    countryName: 'United Kingdom',
-    portalUrl: 'https://www.civilservicejobs.service.gov.uk',
-    mode: 'C',
-    redistribution: 'LINK_OUT',
-    applicationRouting: 'REDIRECT_OFFICIAL',
-    requiresAttribution: true,
-    attributionText: 'Source: Civil Service Jobs, UK Government',
-    attributionUrl: 'https://www.civilservicejobs.service.gov.uk',
-    requiresSourceLink: true,
-    requiresPartnerApproval: true,
-    partnerAgreementStatus: 'NOT_STARTED',
-    fresherEligible: true,
-    categories: ['Civil Service', 'Government', 'Administrative', 'Technical'],
-    notes: 'UK Civil Service Jobs: scraping restricted. Partnership/API access required for Mode A/B ingestion.',
-    active: false,
-    lastReviewedAt: '2025-09-01',
+    source_id: 'gb-civil-service',
+    country_code: 'GB',
+    country_name: 'United Kingdom',
+    government_level: 'FEDERAL',
+    organization: 'Cabinet Office, HM Government',
+    portal_name: 'Civil Service Jobs',
+    website: 'https://www.civilservicejobs.service.gov.uk',
+    careers_url: 'https://www.civilservicejobs.service.gov.uk',
+    access_method: 'PUBLIC_PAGE',
+    authorization_status: 'PUBLIC',
+    redistribution_status: 'LINK_OUT',
+    attribution_required: true,
+    attribution_text: 'Source: Civil Service Jobs, UK Government',
+    attribution_url: 'https://www.civilservicejobs.service.gov.uk',
+    application_redirect_required: true,
+    application_routing: 'REDIRECT_OFFICIAL',
+    fresher_eligible: true,
+    categories: ['Civil Service', 'Policy', 'Operational Delivery', 'Digital, Data and Technology (DDaT)'],
+    terms_url: 'https://www.civilservicejobs.service.gov.uk/csr/index.cgi?pageaction=terms',
+    refresh_frequency: 'DAILY',
+    active: true,
+    last_reviewed_at: '2025-09-01',
+    notes: 'Link-out discovery only. Full text requires applicant redirect to Civil Service portal.',
   },
-  // ─── Australia ─────────────────────────────────────────────────────────────
+
+  // ─── Australia ────────────────────────────────────────────────────────────
   {
-    id: 'apsjobs-australia',
-    name: 'APSJobs — Australian Public Service',
-    country: 'AU',
-    countryName: 'Australia',
-    portalUrl: 'https://www.apsjobs.gov.au',
-    mode: 'C',
-    redistribution: 'LINK_OUT',
-    applicationRouting: 'REDIRECT_OFFICIAL',
-    requiresAttribution: true,
-    attributionText: 'Source: APSJobs, Australian Public Service Commission',
-    attributionUrl: 'https://www.apsjobs.gov.au',
-    requiresSourceLink: true,
-    requiresPartnerApproval: true,
-    partnerAgreementStatus: 'NOT_STARTED',
-    fresherEligible: true,
-    categories: ['Federal Government', 'Technical', 'Administrative'],
-    notes: 'APS Jobs requires partnership for feed access.',
-    active: false,
-    lastReviewedAt: '2025-09-01',
+    source_id: 'au-apsjobs',
+    country_code: 'AU',
+    country_name: 'Australia',
+    government_level: 'FEDERAL',
+    organization: 'Australian Public Service Commission (APSC)',
+    portal_name: 'APSjobs',
+    website: 'https://www.apsjobs.gov.au',
+    careers_url: 'https://www.apsjobs.gov.au',
+    access_method: 'PUBLIC_PAGE',
+    authorization_status: 'PUBLIC',
+    redistribution_status: 'LINK_OUT',
+    attribution_required: true,
+    attribution_text: 'Source: APSjobs, Australian Public Service Commission',
+    attribution_url: 'https://www.apsjobs.gov.au',
+    application_redirect_required: true,
+    application_routing: 'REDIRECT_OFFICIAL',
+    fresher_eligible: true,
+    categories: ['APS General', 'Executive Level', 'APS Graduate Program', 'Technical & Trades'],
+    terms_url: 'https://www.apsjobs.gov.au/s/terms-and-conditions',
+    refresh_frequency: 'DAILY',
+    active: true,
+    last_reviewed_at: '2025-09-01',
+    notes: 'Commonwealth of Australia vacancies. Link-out to official portal.',
   },
-  // ─── UAE ───────────────────────────────────────────────────────────────────
+
+  // ─── UAE ──────────────────────────────────────────────────────────────────
   {
-    id: 'tawteen-uae',
-    name: 'Tawteen — UAE Government Jobs Portal',
-    country: 'AE',
-    countryName: 'United Arab Emirates',
-    portalUrl: 'https://tawteen.ae',
-    mode: 'C',
-    redistribution: 'LINK_OUT',
-    applicationRouting: 'REDIRECT_OFFICIAL',
-    requiresAttribution: true,
-    attributionText: 'Source: Tawteen, UAE Government',
-    attributionUrl: 'https://tawteen.ae',
-    requiresSourceLink: true,
-    requiresPartnerApproval: true,
-    partnerAgreementStatus: 'NOT_STARTED',
-    fresherEligible: false,
-    categories: ['Government', 'Emiratisation', 'Technical'],
-    notes: 'UAE Tawteen primarily serves Emiratisation. International candidates may link out only.',
-    active: false,
-    lastReviewedAt: '2025-09-01',
+    source_id: 'ae-tawteen',
+    country_code: 'AE',
+    country_name: 'United Arab Emirates',
+    government_level: 'FEDERAL',
+    organization: 'Ministry of Human Resources and Emiratisation (MOHRE)',
+    portal_name: 'Tawteen National Employment Platform',
+    website: 'https://tawteen.ae',
+    careers_url: 'https://tawteen.ae',
+    access_method: 'PUBLIC_PAGE',
+    authorization_status: 'PUBLIC',
+    redistribution_status: 'LINK_OUT',
+    attribution_required: true,
+    attribution_text: 'Source: Tawteen Gate, Ministry of Human Resources and Emiratisation, UAE',
+    attribution_url: 'https://tawteen.ae',
+    application_redirect_required: true,
+    application_routing: 'REDIRECT_OFFICIAL',
+    fresher_eligible: true,
+    categories: ['Emiratisation', 'Government Entities', 'Semi-Government', 'Banking & Finance'],
+    terms_url: 'https://tawteen.ae',
+    refresh_frequency: 'WEEKLY',
+    active: true,
+    last_reviewed_at: '2025-09-01',
+    notes: 'Link-out discovery only. UAE national recruitment portal.',
   },
 ] as const;
 
-/** Map by source ID for O(1) lookup */
 export const GOVERNMENT_SOURCE_MAP: Readonly<Record<string, GovernmentJobSource>> =
-  Object.fromEntries(GOVERNMENT_SOURCES.map((s) => [s.id, s]));
+  Object.fromEntries(GOVERNMENT_SOURCES.map((s) => [s.source_id, s]));
 
-/** Sources approved for any form of content ingestion */
-export const INGESTIBLE_SOURCES = GOVERNMENT_SOURCES.filter(
-  (s) => s.redistribution !== 'DO_NOT_INGEST' && s.redistribution !== 'LINK_OUT'
-);
-
-/** Sources that are active and can be queried */
-export const ACTIVE_SOURCES = GOVERNMENT_SOURCES.filter((s) => s.active);
-
-/**
- * Determines how a job from this source should be handled.
- * Returns the redistribution policy for the source.
- */
-export function getSourcePolicy(sourceId: string): RedistributionPolicy {
-  return GOVERNMENT_SOURCE_MAP[sourceId]?.redistribution ?? 'DO_NOT_INGEST';
+export function getGovernmentSource(sourceId: string): GovernmentJobSource | undefined {
+  return GOVERNMENT_SOURCE_MAP[sourceId];
 }
 
-/**
- * Returns true if a source permits any form of content republishing.
- * (FULL_REPUBLISH or ATTRIBUTED_REPUBLISH or SUMMARY_ONLY).
- */
-export function canRepublishContent(sourceId: string): boolean {
-  const policy = getSourcePolicy(sourceId);
-  return policy === 'FULL_REPUBLISH' || policy === 'ATTRIBUTED_REPUBLISH' || policy === 'SUMMARY_ONLY';
+export function getSourcesByCountry(countryCode: string): GovernmentJobSource[] {
+  const code = countryCode.toUpperCase();
+  return GOVERNMENT_SOURCES.filter((s) => s.country_code === code && s.active);
 }
 
-/**
- * Returns the required attribution string for a source.
- * Returns null if no attribution required.
- */
-export function getAttributionText(sourceId: string): string | null {
+export function isDirectApplyEligible(sourceId: string): boolean {
   const source = GOVERNMENT_SOURCE_MAP[sourceId];
-  if (!source?.requiresAttribution) return null;
-  return source.attributionText ?? source.name;
+  return source?.application_routing === 'DIRECT_APPLY_NATIVE';
+}
+
+export function getRequiredAttribution(sourceId: string): { required: boolean; text?: string; url?: string } {
+  const source = GOVERNMENT_SOURCE_MAP[sourceId];
+  if (!source || !source.attribution_required) {
+    return { required: false };
+  }
+  return {
+    required: true,
+    text: source.attribution_text || `Source: ${source.portal_name}`,
+    url: source.attribution_url || source.website,
+  };
 }

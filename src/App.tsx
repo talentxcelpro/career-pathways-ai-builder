@@ -203,6 +203,9 @@ const CompanyRankingProfile = lazy(() => import('./pages/claim1/CompanyRankingPr
 const WatchPage = lazy(() => import('./pages/claim1/WatchPage'));
 const CommandCenter = lazy(() => import('./pages/CommandCenter'));
 const TalentScorePage = lazy(() => import('./pages/TalentScorePage'));
+const GovernmentJobs = lazy(() => import('./pages/GovernmentJobs'));
+const GovernmentJobDetail = lazy(() => import('./pages/GovernmentJobDetail'));
+const GovernmentSourcesAdmin = lazy(() => import('./pages/admin/GovernmentSources'));
 
 // ── Infrastructure imports (kept static — tiny, needed on every page) ─────
 import { turboCore } from "@/utils/turboCore";
@@ -420,6 +423,14 @@ const App = () => {
                 
                 {/* TalentXcel SEO Blueprint Routes */}
                 <Route path="/jobs" element={<Suspense fallback={<div>Loading...</div>}><JobsPage /></Suspense>} />
+                
+                {/* Government Jobs Intelligence Network Routes */}
+                <Route path="/government-jobs" element={<Suspense fallback={<div>Loading...</div>}><GovernmentJobs /></Suspense>} />
+                <Route path="/government-jobs/:country" element={<Suspense fallback={<div>Loading...</div>}><GovernmentJobs /></Suspense>} />
+                <Route path="/government-jobs/:country/freshers" element={<Suspense fallback={<div>Loading...</div>}><GovernmentJobs /></Suspense>} />
+                <Route path="/government-jobs/freshers" element={<Suspense fallback={<div>Loading...</div>}><GovernmentJobs /></Suspense>} />
+                <Route path="/government-jobs/detail/:id" element={<Suspense fallback={<div>Loading...</div>}><GovernmentJobDetail /></Suspense>} />
+                <Route path="/admin/government-sources" element={<Suspense fallback={<div>Loading...</div>}><GovernmentSourcesAdmin /></Suspense>} />
                 
                 {/* Category Pages */}
                 <Route path="/jobs/it-jobs" element={<Suspense fallback={<div>Loading...</div>}><JobCategoryPage /></Suspense>} />
