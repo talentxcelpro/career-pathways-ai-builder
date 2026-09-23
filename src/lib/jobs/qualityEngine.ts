@@ -35,9 +35,23 @@ export function computeSourceConfidenceScore(params: {
   const d = (params.domain || '').toLowerCase();
 
   // Official Government TLD (+35)
-  if (d.endsWith('.gov') || d.endsWith('.gov.in') || d.endsWith('.nic.in') || d.endsWith('.gov.uk') || d.endsWith('.mil')) {
+  if (
+    d.includes('.gov') || 
+    d.includes('.nic.in') || 
+    d.includes('.mil') || 
+    d.includes('.gc.ca') || 
+    d.includes('.gov.uk') || 
+    d.includes('.gov.au') || 
+    d.includes('.gov.sg') || 
+    d.includes('.europa.eu') || 
+    d.includes('.esa.int') ||
+    d.includes('iocl.com') ||
+    d.includes('csiro.au') ||
+    d.includes('rta.ae') ||
+    d.includes('digitaldubai.ae')
+  ) {
     score += 35;
-  } else if (d.endsWith('.edu') || d.endsWith('.ac.in') || d.endsWith('.org')) {
+  } else if (d.includes('.edu') || d.includes('.ac.in') || d.includes('.org')) {
     score += 20;
   } else {
     score += 10;

@@ -114,6 +114,13 @@ const securityItems = [
 // 3. JOBS & TALENT DATABASE
 const talentJobsItems = [
   {
+    title: 'Global Jobs Network',
+    url: '/admin/global-jobs',
+    icon: Globe,
+    description: '100+ countries 24/7 automation network',
+    badge: 'LIVE'
+  },
+  {
     title: 'Jobs Management',
     url: '/admin/jobs',
     icon: Briefcase,

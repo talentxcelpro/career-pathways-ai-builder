@@ -10,12 +10,20 @@ import {
   Shield,
   Search,
   Bot,
-  TrendingUp
+  TrendingUp,
+  Globe
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export const AdminNavigationPanel = () => {
   const adminSections = [
+    {
+      title: 'Global Jobs Network',
+      description: '100+ countries 24/7 automation network',
+      icon: Globe,
+      href: '/admin/global-jobs',
+      color: 'text-cyan-500'
+    },
     {
       title: 'Learning Management',
       description: 'Manage courses & learning paths',

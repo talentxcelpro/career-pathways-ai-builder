@@ -58,6 +58,7 @@ const VerificationManagement = lazy(() => import('../components/admin/Verificati
 const TestimonialsManagement = lazy(() => import('../components/admin/TestimonialsManagement').then(m => ({ default: m.TestimonialsManagement })));
 const BotIdentityManager = lazy(() => import('../components/admin/BotIdentityManager').then(m => ({ default: m.BotIdentityManager })));
 const CareerPlatform = lazy(() => import('../pages/admin/CareerPlatform'));
+const GlobalJobsAutomationCenter = lazy(() => import('../pages/admin/GlobalJobsAutomationCenter'));
 const TalentDatabase = lazy(() => import('../pages/admin/TalentDatabase'));
 const SEOSuite = lazy(() => import('../pages/admin/SEOSuite'));
 const EnterpriseBilling = lazy(() => import('../pages/admin/EnterpriseBilling'));
@@ -154,6 +155,13 @@ export const adminRoutes = [
     to: "/admin/employer-requests",
     icon: <Building2 className="h-4 w-4" />,
     page: <Suspense fallback={null}><EmployerRequestsAdmin /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "Global Jobs Network",
+    to: "/admin/global-jobs",
+    icon: <Globe className="h-4 w-4" />,
+    page: <Suspense fallback={null}><GlobalJobsAutomationCenter /></Suspense>,
     isPublic: true,
   },
   {
