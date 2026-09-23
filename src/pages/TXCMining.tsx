@@ -10,6 +10,7 @@ import { useTokenBalance } from '@/hooks/useTokenBalance';
 import { useTXCMining } from '@/hooks/useTXCMining';
 import { formatTXC } from '@/types/txc-pricing';
 import txcMascot from '@/assets/txc-mascot.jpg';
+import { TXC3DAnimatedMascot } from '@/components/txc/TXC3DAnimatedMascot';
 import { RetroactiveTXCAdmin } from '@/components/admin/RetroactiveTXCAdmin';
 import { ComprehensiveTXCDistribution } from '@/components/admin/ComprehensiveTXCDistribution';
 
@@ -77,20 +78,8 @@ const TXCMining: React.FC = () => {
 
         {/* Welcome Header with Mascot */}
         <div className="text-center mb-8">
-          <div className="flex justify-center mb-6">
-            <div className="relative">
-              <img 
-                src={txcMascot} 
-                alt="TXC Mining Mascot" 
-                className="w-24 h-24 rounded-full shadow-lg border-4 border-primary/20"
-              />
-              <div className="absolute -top-2 -right-2">
-                <div className="bg-gradient-to-r from-primary to-secondary text-white text-xs px-2 py-1 rounded-full font-bold animate-bounce">
-                  <Sparkles className="h-3 w-3 inline mr-1" />
-                  EARN
-                </div>
-              </div>
-            </div>
+          <div className="flex justify-center mb-2">
+            <TXC3DAnimatedMascot size={130} showOrbitCoins={true} />
           </div>
           
           <h1 className="text-4xl font-bold bg-gradient-to-r from-primary via-purple-600 to-primary/60 bg-clip-text text-transparent mb-4">

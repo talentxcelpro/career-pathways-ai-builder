@@ -8,14 +8,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { JOB_CATEGORIES, EMPLOYMENT_TYPES, EXPERIENCE_LEVELS, WORK_MODES, getSkillsForCategory, getRolesForCategory } from "@/utils/jobCategories";
-import { Sparkles, Plus, X } from "lucide-react";
+import { Sparkles, Plus, X, ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
+import { toast } from 'sonner';
 
 interface IndustryJobPostFormProps {
   onSubmit: (jobData: any) => void;
   initialData?: any;
+  isSubmitting?: boolean;
 }
 
-export const IndustryJobPostForm: React.FC<IndustryJobPostFormProps> = ({ onSubmit, initialData = {} }) => {
+export const IndustryJobPostForm: React.FC<IndustryJobPostFormProps> = ({ 
+  onSubmit, 
+  initialData = {}, 
+  isSubmitting = false 
+}) => {
+  const [activeTab, setActiveTab] = useState<'basic' | 'description' | 'requirements' | 'compensation'>('basic');
   const [formData, setFormData] = useState({
     // Basic Info
     industry: initialData.industry || '',
@@ -87,7 +94,57 @@ export const IndustryJobPostForm: React.FC<IndustryJobPostFormProps> = ({ onSubm
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+
+    const title = (formData.job_title || '').trim();
+    if (!title) {
+      setActiveTab('basic');
+      toast.error('Please enter a job title');
+      return;
+    }
+
+    const company = (formData.company_name || '').trim();
+    if (!company) {
+      setActiveTab('basic');
+      toast.error('Please enter a company name');
+      return;
+    }
+
+    const location = (formData.location || '').trim();
+    if (!location) {
+      setActiveTab('basic');
+      toast.error('Please enter a job location (e.g. Mumbai, India or Remote)');
+      return;
+    }
+
+    // Auto-fill fallback summary if omitted
+    const jobSummary = formData.job_summary?.trim() || 
+      formData.job_description?.trim() || 
+      `We are hiring a ${title} to join ${company}. This role offers exciting growth opportunities in ${formData.industry || 'the tech domain'}.`;
+
+    const jobDescription = formData.job_description?.trim() || jobSummary;
+
+    const minSalary = formData.salary_min ? parseInt(String(formData.salary_min), 10) : null;
+    const maxSalary = formData.salary_max ? parseInt(String(formData.salary_max), 10) : null;
+    const salaryRange = (minSalary && maxSalary)
+      ? `₹${(minSalary / 100000).toFixed(1)}L - ₹${(maxSalary / 100000).toFixed(1)}L`
+      : (minSalary ? `From ₹${(minSalary / 100000).toFixed(1)}L` : 'Competitive / Based on experience');
+
+    onSubmit({
+      ...formData,
+      job_title: title,
+      title: title,
+      company_name: company,
+      location: location,
+      location_city: location,
+      job_summary: jobSummary,
+      job_description: jobDescription,
+      description: jobDescription,
+      salary_min: minSalary,
+      salary_max: maxSalary,
+      min_salary: minSalary,
+      max_salary: maxSalary,
+      salary_range: salaryRange,
+    });
   };
 
   const generateWithAI = () => {
@@ -126,7 +183,7 @@ export const IndustryJobPostForm: React.FC<IndustryJobPostFormProps> = ({ onSubm
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <Tabs defaultValue="basic" className="w-full">
+      <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as any)} className="w-full">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="basic">Basic Info</TabsTrigger>
           <TabsTrigger value="description">Description</TabsTrigger>
@@ -137,10 +194,10 @@ export const IndustryJobPostForm: React.FC<IndustryJobPostFormProps> = ({ onSubm
         <TabsContent value="basic" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                Basic Job Information
+              <CardTitle className="flex items-center justify-between">
+                <span className="flex items-center gap-2">Basic Job Information</span>
                 <Button type="button" onClick={generateWithAI} variant="outline" size="sm">
-                  <Sparkles className="h-4 w-4 mr-1" />
+                  <Sparkles className="h-4 w-4 mr-1 text-primary" />
                   AI Generate
                 </Button>
               </CardTitle>
@@ -148,7 +205,7 @@ export const IndustryJobPostForm: React.FC<IndustryJobPostFormProps> = ({ onSubm
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="industry">Industry *</Label>
+                  <Label htmlFor="industry">Industry</Label>
                   <Select value={formData.industry} onValueChange={handleIndustryChange}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select Industry" />
@@ -170,7 +227,6 @@ export const IndustryJobPostForm: React.FC<IndustryJobPostFormProps> = ({ onSubm
                     value={formData.job_title}
                     onChange={(e) => handleInputChange('job_title', e.target.value)}
                     placeholder="e.g., Senior Software Engineer"
-                    required
                   />
                 </div>
 
@@ -180,7 +236,7 @@ export const IndustryJobPostForm: React.FC<IndustryJobPostFormProps> = ({ onSubm
                     id="company_name"
                     value={formData.company_name}
                     onChange={(e) => handleInputChange('company_name', e.target.value)}
-                    required
+                    placeholder="e.g., Acme Tech Solutions"
                   />
                 </div>
 
@@ -190,13 +246,12 @@ export const IndustryJobPostForm: React.FC<IndustryJobPostFormProps> = ({ onSubm
                     id="location"
                     value={formData.location}
                     onChange={(e) => handleInputChange('location', e.target.value)}
-                    placeholder="e.g., Mumbai, India"
-                    required
+                    placeholder="e.g., Mumbai, India or Remote"
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="employment_type">Employment Type *</Label>
+                  <Label htmlFor="employment_type">Employment Type</Label>
                   <Select value={formData.employment_type} onValueChange={(value) => handleInputChange('employment_type', value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select Type" />
@@ -212,7 +267,7 @@ export const IndustryJobPostForm: React.FC<IndustryJobPostFormProps> = ({ onSubm
                 </div>
 
                 <div>
-                  <Label htmlFor="experience_level">Experience Level *</Label>
+                  <Label htmlFor="experience_level">Experience Level</Label>
                   <Select value={formData.experience_level} onValueChange={(value) => handleInputChange('experience_level', value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select Level" />
@@ -243,6 +298,12 @@ export const IndustryJobPostForm: React.FC<IndustryJobPostFormProps> = ({ onSubm
                   </Select>
                 </div>
               </div>
+
+              <div className="flex justify-end pt-4 border-t">
+                <Button type="button" onClick={() => setActiveTab('description')}>
+                  Next: Description <ArrowRight className="h-4 w-4 ml-1.5" />
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -254,14 +315,13 @@ export const IndustryJobPostForm: React.FC<IndustryJobPostFormProps> = ({ onSubm
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="job_summary">Job Summary *</Label>
+                <Label htmlFor="job_summary">Job Summary</Label>
                 <Textarea
                   id="job_summary"
                   value={formData.job_summary}
                   onChange={(e) => handleInputChange('job_summary', e.target.value)}
                   placeholder="Brief overview of the role..."
                   rows={3}
-                  required
                 />
               </div>
 
@@ -304,6 +364,15 @@ export const IndustryJobPostForm: React.FC<IndustryJobPostFormProps> = ({ onSubm
                     </Badge>
                   ))}
                 </div>
+              </div>
+
+              <div className="flex justify-between pt-4 border-t">
+                <Button type="button" variant="outline" onClick={() => setActiveTab('basic')}>
+                  <ArrowLeft className="h-4 w-4 mr-1.5" /> Back: Basic Info
+                </Button>
+                <Button type="button" onClick={() => setActiveTab('requirements')}>
+                  Next: Requirements <ArrowRight className="h-4 w-4 ml-1.5" />
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -384,6 +453,15 @@ export const IndustryJobPostForm: React.FC<IndustryJobPostFormProps> = ({ onSubm
                     </Badge>
                   ))}
                 </div>
+              </div>
+
+              <div className="flex justify-between pt-4 border-t">
+                <Button type="button" variant="outline" onClick={() => setActiveTab('description')}>
+                  <ArrowLeft className="h-4 w-4 mr-1.5" /> Back: Description
+                </Button>
+                <Button type="button" onClick={() => setActiveTab('compensation')}>
+                  Next: Compensation <ArrowRight className="h-4 w-4 ml-1.5" />
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -471,17 +549,48 @@ export const IndustryJobPostForm: React.FC<IndustryJobPostFormProps> = ({ onSubm
                   />
                 </div>
               </div>
+
+              <div className="flex justify-between pt-4 border-t">
+                <Button type="button" variant="outline" onClick={() => setActiveTab('requirements')}>
+                  <ArrowLeft className="h-4 w-4 mr-1.5" /> Back: Requirements
+                </Button>
+                <Button 
+                  type="submit" 
+                  disabled={isSubmitting} 
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold shadow-md"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Posting Job...
+                    </>
+                  ) : (
+                    'Ready to Post Job 🚀'
+                  )}
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
 
-      <div className="flex gap-4">
-        <Button type="submit" className="flex-1">
-          Post Job
+      <div className="flex gap-4 pt-4 border-t">
+        <Button 
+          type="submit" 
+          disabled={isSubmitting} 
+          className="flex-1 h-12 text-base font-semibold bg-gradient-to-r from-blue-600 via-indigo-600 to-primary hover:from-blue-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all"
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+              Posting Job to TalentXcel...
+            </>
+          ) : (
+            'Post Job Now'
+          )}
         </Button>
-        <Button type="button" variant="outline" onClick={generateWithAI}>
-          <Sparkles className="h-4 w-4 mr-2" />
+        <Button type="button" variant="outline" size="lg" onClick={generateWithAI} className="h-12 border-primary/30 hover:bg-primary/5">
+          <Sparkles className="h-4 w-4 mr-2 text-primary" />
           Generate with AI
         </Button>
       </div>

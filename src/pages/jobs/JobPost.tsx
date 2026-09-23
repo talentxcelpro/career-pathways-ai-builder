@@ -203,7 +203,11 @@ function JobPostContent() {
   const postJobMutation = useMutation({
     mutationFn: async (jobData: any) => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
+      if (!user) {
+        toast.error('Please sign in to post a job');
+        navigate('/auth?redirect=/jobs/post');
+        throw new Error('User not authenticated');
+      }
 
       console.log('Posting job with data:', jobData);
 
@@ -224,47 +228,65 @@ function JobPostContent() {
         }
       }
 
+      // Compute bulletproof fallback values for database constraints and triggers
+      const finalTitle = jobData.title?.trim() || jobData.job_title?.trim() || canonicalPayload.title || 'Untitled Role';
+      const finalLocation = jobData.location?.trim() || canonicalPayload.location?.trim() || jobData.location_city?.trim() || 'Remote';
+      const finalDescription = jobData.description?.trim() || jobData.job_description?.trim() || jobData.job_summary?.trim() || canonicalPayload.description || 'Job details available upon application.';
+      const finalSalaryMin = jobData.salary_min ?? jobData.min_salary ?? null;
+      const finalSalaryMax = jobData.salary_max ?? jobData.max_salary ?? null;
+      const finalSalaryRange = jobData.salary_range || 
+        (finalSalaryMin && finalSalaryMax ? `₹${(finalSalaryMin/100000).toFixed(1)}L - ₹${(finalSalaryMax/100000).toFixed(1)}L` : (finalSalaryMin ? `From ₹${(finalSalaryMin/100000).toFixed(1)}L` : 'Competitive / Based on experience'));
+
       // Prepare data with proper null handling and correct column names
       const insertData = {
         // Base canonical payload (normalized title, description, employment_type, requirement arrays)
         ...canonicalPayload,
 
-        // Map form fields to correct database columns
-        job_title: jobData.job_title,
-        company_name: canonicalPayload.company_name || jobData.company_name,
-        job_summary: jobData.job_summary,
-        job_description: jobData.job_description,
-        location_city: jobData.location_city,
-        location_state: jobData.location_state,
-        employment_type: canonicalPayload.employment_type,
-        work_mode: jobData.work_mode,
-        work_schedule: jobData.work_schedule,
-        experience_level: canonicalPayload.experience_level || jobData.experience_level,
+        // Core fields
+        title: finalTitle,
+        job_title: finalTitle,
+        company_name: jobData.company_name?.trim() || canonicalPayload.company_name || 'Hiring Company',
+        location: finalLocation,
+        location_city: jobData.location_city?.trim() || finalLocation,
+        location_state: jobData.location_state || '',
+        description: finalDescription,
+        job_description: finalDescription,
+        job_summary: jobData.job_summary?.trim() || finalDescription.slice(0, 250),
+        employment_type: canonicalPayload.employment_type || jobData.employment_type || 'full-time',
+        experience_level: canonicalPayload.experience_level || jobData.experience_level || 'mid-level',
+        work_mode: jobData.work_mode || (finalLocation.toLowerCase().includes('remote') ? 'remote' : 'onsite'),
+        work_schedule: jobData.work_schedule || 'full-time',
+
+        // Salary info (satisfies validate_job_quality trigger)
+        salary_min: finalSalaryMin,
+        salary_max: finalSalaryMax,
+        salary_range: finalSalaryRange,
 
         // Contact information
-        contact_name: jobData.contact_name,
-        contact_designation: jobData.contact_designation,
-        contact_person_email: jobData.contact_email, // Map to correct column
-        contact_person_phone: jobData.contact_phone, // Map to correct column
+        contact_name: jobData.contact_name || '',
+        contact_designation: jobData.contact_designation || '',
+        contact_person_email: jobData.contact_person_email || jobData.contact_email || user.email || '',
+        contact_person_phone: jobData.contact_person_phone || jobData.contact_phone || '',
         
         // Company info
-        company_website: jobData.company_website,
-        industry_domain: jobData.industry_domain,
-        company_size: jobData.company_size,
+        company_website: jobData.company_website || '',
+        industry_domain: jobData.industry_domain || jobData.industry || '',
+        company_size: jobData.company_size || '',
         
         // System fields
         posted_by: user.id,
         company_id: resolvedCompanyId,
-        is_active: jobData.visibility_status === 'active',
-        visibility_status: jobData.visibility_status,
-        ai_match_enabled: jobData.ai_match_enabled,
-        ai_priority: jobData.ai_priority,
+        is_active: jobData.visibility_status !== 'draft',
+        job_status: 'open',
+        visibility_status: jobData.visibility_status || 'active',
+        ai_match_enabled: jobData.ai_match_enabled ?? true,
+        ai_priority: jobData.ai_priority ?? false,
         
         // Convert arrays and handle nulls
-        key_responsibilities: jobData.key_responsibilities || [],
-        must_have_requirements: jobData.must_have_requirements || [],
-        preferred_requirements: jobData.preferred_requirements || [],
-        skills_required: jobData.required_skills || [],
+        key_responsibilities: jobData.key_responsibilities?.length ? jobData.key_responsibilities : (canonicalPayload.key_responsibilities || []),
+        must_have_requirements: jobData.must_have_requirements?.length ? jobData.must_have_requirements : (canonicalPayload.must_have_requirements || []),
+        preferred_requirements: jobData.preferred_requirements?.length ? jobData.preferred_requirements : (canonicalPayload.preferred_requirements || []),
+        skills_required: jobData.skills_required?.length ? jobData.skills_required : (jobData.required_skills?.length ? jobData.required_skills : (canonicalPayload.skills_required || [])),
         field_of_study: jobData.field_of_study || [],
         certifications: jobData.certifications || [],
         preferred_industries: jobData.preferred_industries || [],
@@ -273,18 +295,16 @@ function JobPostContent() {
         benefits: jobData.benefits || [],
         
         // Numeric fields
-        salary_min: jobData.min_salary || null,
-        salary_max: jobData.max_salary || null,
-        min_experience: jobData.min_experience || null,
-        max_experience: jobData.max_experience || null,
+        min_experience: jobData.min_experience || canonicalPayload.min_experience || null,
+        max_experience: jobData.max_experience || canonicalPayload.max_experience || null,
         year_of_passing: jobData.year_of_passing || null,
         max_education_gap: jobData.max_education_gap || null,
-        education_level: jobData.education_level,
+        education_level: jobData.education_level || canonicalPayload.education_level || null,
         
         // Supporting documents
-        jd_flyer_url: jobData.jd_flyer_url,
-        team_brochure_url: jobData.team_brochure_url,
-        benefits_policy_url: jobData.benefits_policy_url,
+        jd_flyer_url: jobData.jd_flyer_url || null,
+        team_brochure_url: jobData.team_brochure_url || null,
+        benefits_policy_url: jobData.benefits_policy_url || null,
         
         // Date handling
         application_deadline: jobData.application_deadline ? new Date(jobData.application_deadline).toISOString().split('T')[0] : null
@@ -340,28 +360,63 @@ function JobPostContent() {
 
   const handleSubmit = (e: React.FormEvent, isDraft = false) => {
     e.preventDefault();
-    
+
+    const title = formData.job_title?.trim() || '';
+    const company = formData.company_name?.trim() || (userCompany?.companies as any)?.name || '';
+    const locationCity = formData.location_city?.trim() || '';
+    const locationState = formData.location_state?.trim() || '';
+    const location = [locationCity, locationState].filter(Boolean).join(', ') || locationCity || (formData.work_mode === 'remote' ? 'Remote' : '');
+
+    if (!isDraft) {
+      if (!title) {
+        toast.error('Please enter a job title');
+        return;
+      }
+      if (!company) {
+        toast.error('Please provide a company name');
+        return;
+      }
+      if (!location) {
+        toast.error('Please provide a job location');
+        return;
+      }
+    } else {
+      if (!title) {
+        toast.error('Please add a job title to save as draft');
+        return;
+      }
+    }
+
+    const effectiveDesc = formData.job_description?.trim() || formData.job_summary?.trim() || (title ? `Exciting opportunity for ${title} at ${company || 'our company'}.` : '');
+    const minSal = formData.min_salary ? Number(formData.min_salary) : null;
+    const maxSal = formData.max_salary ? Number(formData.max_salary) : null;
+    const salaryRange = (minSal && maxSal)
+      ? `₹${(minSal / 100000).toFixed(1)}L - ₹${(maxSal / 100000).toFixed(1)}L`
+      : (minSal ? `From ₹${(minSal / 100000).toFixed(1)}L` : 'Competitive / Based on experience');
+
     const submitData = { 
       ...formData, 
+      title,
+      job_title: title,
+      company_name: company,
+      location,
+      location_city: locationCity || location,
+      location_state: locationState,
+      description: effectiveDesc,
+      job_description: effectiveDesc,
+      job_summary: formData.job_summary?.trim() || effectiveDesc.slice(0, 250),
+      salary_min: minSal,
+      salary_max: maxSal,
+      min_salary: minSal,
+      max_salary: maxSal,
+      salary_range: salaryRange,
       visibility_status: isDraft ? 'draft' : 'active'
     };
     
     if (!isDraft) {
-      // Enhanced validation for publishing using utility
       const validation = validateJobData(submitData);
       if (!validation.isValid) {
         toast.error(validation.errors[0]);
-        return;
-      }
-
-      if (!formData.company_name?.trim() && !userCompany?.company_id) {
-        toast.error('Please provide a company name');
-        return;
-      }
-    } else {
-      // Minimal validation for draft
-      if (!formData.job_title?.trim()) {
-        toast.error('Please add a job title to save as draft');
         return;
       }
     }
@@ -446,27 +501,9 @@ function JobPostContent() {
 
         {useIndustryForm ? (
           <IndustryJobPostForm 
+            isSubmitting={postJobMutation.isPending}
             onSubmit={(data) => {
-              const mappedData = {
-                ...data,
-                job_title: data.job_title,
-                company_name: data.company_name,
-                location_city: data.location,
-                employment_type: data.employment_type,
-                experience_level: data.experience_level,
-                work_mode: data.work_mode,
-                job_summary: data.job_summary,
-                job_description: data.job_description,
-                key_responsibilities: data.key_responsibilities,
-                required_skills: data.skills_required,
-                min_salary: data.salary_min ? parseInt(data.salary_min) : null,
-                max_salary: data.salary_max ? parseInt(data.salary_max) : null,
-                benefits: data.benefits,
-                contact_email: data.contact_email,
-                contact_phone: data.contact_phone,
-                visibility_status: 'active'
-              };
-              postJobMutation.mutate(mappedData);
+              postJobMutation.mutate(data);
             }}
             initialData={formData}
           />

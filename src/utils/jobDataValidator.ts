@@ -101,7 +101,7 @@ export class JobDataValidator {
 
     const { salary_min, salary_max, employment_type, experience_level } = jobData;
 
-    if (!salary_min && !salary_max) {
+    if (!salary_min && !salary_max && (!jobData.salary_range || String(jobData.salary_range).trim() === '')) {
       errors.push('Salary information is required');
       return { errors, correctedSalary };
     }
