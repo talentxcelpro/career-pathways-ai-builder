@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { TXCMiningDashboard } from '@/components/txc/TXCMiningDashboard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -48,25 +48,29 @@ const TXCMining: React.FC = () => {
 
       <div className="container mx-auto px-4 py-8">
         {/* Navigation Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between mb-6 relative z-30">
+          <div className="flex items-center gap-3">
             <Button 
+              asChild
               variant="outline" 
               size="sm" 
-              onClick={() => navigate('/gamification')}
-              className="flex items-center gap-2"
+              className="cursor-pointer hover:bg-accent border-border/80 shadow-xs"
             >
-              <ArrowLeft className="h-4 w-4" />
-              Back to Dashboard
+              <Link to="/dashboard" className="flex items-center gap-2 text-foreground font-semibold">
+                <ArrowLeft className="h-4 w-4" />
+                Back to Dashboard
+              </Link>
             </Button>
             <Button 
+              asChild
               variant="outline" 
               size="sm" 
-              onClick={() => navigate('/gamification')}
-              className="flex items-center gap-2"
+              className="cursor-pointer hover:bg-accent border-border/80 shadow-xs"
             >
-              <BarChart3 className="h-4 w-4" />
-              View Progress
+              <Link to="/gamification" className="flex items-center gap-2 text-foreground font-semibold">
+                <BarChart3 className="h-4 w-4" />
+                View Progress
+              </Link>
             </Button>
           </div>
         </div>

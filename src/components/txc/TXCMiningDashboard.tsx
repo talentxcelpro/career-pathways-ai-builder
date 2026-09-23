@@ -102,7 +102,7 @@ export const TXCMiningDashboard: React.FC = () => {
       </div>
 
       {/* Mining Progress */}
-      <Card>
+      <Card id="mining-progress">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Trophy className="h-5 w-5" />

@@ -151,6 +151,8 @@ const JobMatchGPTPage                 = lazy(() => import('./pages/JobMatchGPTPa
 const DynamicAchievementSystem        = lazy(() => import('./pages/DynamicAchievementSystem'));
 const GamificationCenter              = lazy(() => import('./pages/GamificationCenter'));
 const TalentXcelCore                  = lazy(() => import('./pages/TalentXcelCore'));
+const NavigatorPage                   = lazy(() => import('./pages/ai/NavigatorPage'));
+const TalentBeacon                    = lazy(() => import('./pages/jobs/TalentBeacon'));
 const InteractiveCareerRoadmapBuilder = lazy(() => import('./pages/InteractiveCareerRoadmapBuilder'));
 const Services                        = lazy(() => import('./pages/Services'));
 const ServicesMarketplacePage         = lazy(() => import('./pages/ServicesMarketplacePage'));
@@ -541,6 +543,10 @@ const App = () => {
                                 <Route path="/passport/:userId" element={<FastPassportRedirect />} />
                                 <Route path="/passport/:username" element={<CareerPassportDashboard />} />
                                 <Route path="/career-os" element={<TalentXcelCore />} />
+                                <Route path="/navigator" element={<Suspense fallback={<div>Loading...</div>}><NavigatorPage /></Suspense>} />
+                                <Route path="/ai/navigator" element={<Suspense fallback={<div>Loading...</div>}><NavigatorPage /></Suspense>} />
+                                <Route path="/talent-beacon" element={<Suspense fallback={<div>Loading...</div>}><TalentBeacon /></Suspense>} />
+                                <Route path="/beacon" element={<Suspense fallback={<div>Loading...</div>}><TalentBeacon /></Suspense>} />
                                 <Route path="/gamification" element={<GamificationCenter />} />
                                 <Route path="/t/@:username" element={<UniversalProfileRouteHandler />} />
                                 <Route path="/t/:username" element={<UniversalProfileRouteHandler />} />
