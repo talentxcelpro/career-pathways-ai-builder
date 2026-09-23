@@ -34,16 +34,29 @@ export function buildJobPostingSchema(job: RawJobData): Record<string, any> | nu
   // 4. Clean Description (Preserves actual visible job posting text)
   const cleanDescription = (job.description || job.job_description || '').trim();
 
-  // 5. Experience Requirements
+  // 5. Experience Requirements — use isFresherEligible for better detection
   let monthsOfExperience = 24;
   const expRaw = (job.experience_level || '').toLowerCase();
   if (typeof job.min_experience === 'number' && job.min_experience >= 0) {
     monthsOfExperience = Math.max(0, Math.round(job.min_experience * 12));
-  } else if (expRaw.includes('fresher') || expRaw.includes('entry') || expRaw.includes('junior')) {
+  } else if (expRaw.includes('fresher') || expRaw.includes('entry') || expRaw.includes('0-1') || expRaw.includes('junior')) {
     monthsOfExperience = 0;
-  } else if (expRaw.includes('senior') || expRaw.includes('lead') || expRaw.includes('architect')) {
+  } else if (expRaw.includes('1-2') || expRaw.includes('1 to 2')) {
+    monthsOfExperience = 12;
+  } else if (expRaw.includes('2-3') || expRaw.includes('2 to 3')) {
+    monthsOfExperience = 24;
+  } else if (expRaw.includes('3-5') || expRaw.includes('mid')) {
+    monthsOfExperience = 36;
+  } else if (expRaw.includes('senior') || expRaw.includes('lead') || expRaw.includes('architect') || expRaw.includes('5')) {
     monthsOfExperience = 60;
+  } else if (expRaw.includes('8') || expRaw.includes('executive') || expRaw.includes('director')) {
+    monthsOfExperience = 96;
   }
+
+  // directApply: true ONLY when job uses TalentXcel native apply flow (no external_url redirect)
+  // Google defines directApply around a short, simple application experience on the job page.
+  const hasExternalUrl = !!(job.external_url && job.external_url.trim().length > 0);
+  const isDirectApply = !hasExternalUrl;
 
   // 6. Assemble Schema Object
   const schema: Record<string, any> = {
@@ -66,18 +79,23 @@ export function buildJobPostingSchema(job: RawJobData): Record<string, any> | nu
       logo: job.companies?.logo_url || 'https://talentxcel.in/talentxcel-official-logo.png',
     },
     url: canonicalUrl,
-    directApply: true,
-    experienceRequirements: {
-      '@type': 'OccupationalExperienceRequirements',
-      monthsOfExperience,
-    },
+    ...(isDirectApply && { directApply: true }),
+    ...(monthsOfExperience >= 0 && {
+      experienceRequirements: {
+        '@type': 'OccupationalExperienceRequirements',
+        monthsOfExperience,
+      },
+    }),
   };
 
-  // 7. Base Salary (Strictly only if provided by employer — never fabricated)
+  // 7. Base Salary — multi-currency, strictly only if provided by employer
   if (typeof job.salary_min === 'number' && job.salary_min > 0) {
     const minSal = job.salary_min;
     const maxSal = (typeof job.salary_max === 'number' && job.salary_max >= minSal) ? job.salary_max : minSal;
-    const currency = job.salary_currency || 'INR';
+    // Support any ISO 4217 currency, default to INR for India market
+    const currency = (job.salary_currency && job.salary_currency.length === 3)
+      ? job.salary_currency.toUpperCase()
+      : 'INR';
 
     schema.baseSalary = {
       '@type': 'MonetaryAmount',

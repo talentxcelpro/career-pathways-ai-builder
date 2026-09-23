@@ -417,12 +417,19 @@ const Jobs = () => {
                 💰 High Salary
               </Button>
               <Button
-                variant="outline"
+                variant={filters.experience_level?.some((l: string) => ['fresher', 'entry-level', '0-1 years'].includes(l.toLowerCase())) ? "default" : "outline"}
                 size="sm"
-                onClick={() => updateFilters({ experience_level: ['entry-level'] })}
-                className="whitespace-nowrap flex items-center gap-1"
+                onClick={() => {
+                  const isFiltered = filters.experience_level?.some((l: string) => ['fresher', 'entry-level', '0-1 years'].includes(l.toLowerCase()));
+                  updateFilters({ experience_level: isFiltered ? [] : ['fresher', 'entry-level', '0-1 years'] });
+                }}
+                className={`whitespace-nowrap flex items-center gap-1.5 font-medium transition-all ${
+                  filters.experience_level?.some((l: string) => ['fresher', 'entry-level', '0-1 years'].includes(l.toLowerCase()))
+                    ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm'
+                    : 'border-emerald-500/40 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/10'
+                }`}
               >
-                🌟 Fresher Jobs
+                🎓 Freshers / Entry Level (0-1 yrs)
               </Button>
               <Button
                 variant="outline"

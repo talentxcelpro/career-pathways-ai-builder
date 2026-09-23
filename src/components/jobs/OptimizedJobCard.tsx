@@ -3,10 +3,11 @@
  */
 
 import React, { memo, useCallback } from 'react';
-import { MapPin, Clock, Coins, Heart, Eye, Users, Star, ExternalLink } from 'lucide-react';
+import { MapPin, Clock, Coins, Heart, Eye, Users, Star, ExternalLink, GraduationCap } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { isFresherEligible } from '@/config/jobs/experienceLevels';
 
 interface OptimizedJobCardProps {
   job: {
@@ -20,6 +21,10 @@ interface OptimizedJobCardProps {
     is_featured: boolean;
     employment_type: string;
     is_remote?: boolean;
+    experience_level?: string | null;
+    experience_required?: string | null;
+    years_of_experience?: string | number | null;
+    is_fresher_eligible?: boolean | null;
     skills_required?: string[];
     views_count?: number;
     applications_count?: number;
@@ -109,6 +114,12 @@ const OptimizedJobCard: React.FC<OptimizedJobCardProps> = memo(({
               {job.is_remote && (
                 <Badge variant="outline" className="text-xs">
                   Remote
+                </Badge>
+              )}
+              {isFresherEligible(job) && (
+                <Badge className="text-xs bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25">
+                  <GraduationCap className="h-3 w-3 mr-1" />
+                  Fresher
                 </Badge>
               )}
             </div>

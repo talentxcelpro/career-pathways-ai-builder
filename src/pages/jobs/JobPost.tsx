@@ -260,7 +260,9 @@ function JobPostContent() {
         // Salary info (satisfies validate_job_quality trigger)
         salary_min: finalSalaryMin,
         salary_max: finalSalaryMax,
+        salary_currency: jobData.salary_currency || 'INR',
         salary_range: finalSalaryRange,
+        is_fresher_eligible: jobData.is_fresher_eligible ?? (finalTitle.toLowerCase().includes('fresher') || finalTitle.toLowerCase().includes('graduate') || (jobData.experience_level && jobData.experience_level.toLowerCase().includes('entry'))),
 
         // Contact information
         contact_name: jobData.contact_name || '',

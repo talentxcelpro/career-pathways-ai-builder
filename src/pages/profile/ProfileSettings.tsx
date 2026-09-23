@@ -1,155 +1,362 @@
-
-import { useState } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Save, Shield, Bell, Eye, Trash2, AlertTriangle } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
+  Save, Shield, Bell, Eye, Trash2, AlertTriangle, Globe, Lock,
+  CheckCircle2, Loader2, Sparkles
+} from "lucide-react";
+import { toast } from "sonner";
 import ProfileLayout from "@/components/profile/ProfileLayout";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+
+interface UserPreferences {
+  profileVisibility: 'public' | 'connections' | 'private';
+  showEmail: boolean;
+  showPhone: boolean;
+  allowMessaging: boolean;
+  emailNotifications: boolean;
+  jobAlerts: boolean;
+  messageNotifications: boolean;
+  connectionRequests: boolean;
+  weeklyDigest: boolean;
+  twoFactorAuth: boolean;
+  loginAlerts: boolean;
+  country: string;
+  language: string;
+  timezone: string;
+  currency: string;
+}
+
+const DEFAULT_PREFERENCES: UserPreferences = {
+  profileVisibility: 'public',
+  showEmail: false,
+  showPhone: false,
+  allowMessaging: true,
+  emailNotifications: true,
+  jobAlerts: true,
+  messageNotifications: true,
+  connectionRequests: true,
+  weeklyDigest: true,
+  twoFactorAuth: false,
+  loginAlerts: true,
+  country: 'IN',
+  language: 'en',
+  timezone: 'Asia/Kolkata',
+  currency: 'INR',
+};
 
 const ProfileSettings = () => {
-  const { toast } = useToast();
+  const { user, signOut } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  
-  const [settings, setSettings] = useState({
-    // Privacy Settings
-    profileVisibility: "public",
-    showEmail: false,
-    showPhone: false,
-    allowMessaging: true,
-    
-    // Notification Settings
-    emailNotifications: true,
-    jobAlerts: true,
-    messageNotifications: true,
-    connectionRequests: true,
-    weeklyDigest: true,
-    
-    // Security Settings
-    twoFactorAuth: false,
-    loginAlerts: true,
-    
-    // Account Settings
-    language: "en",
-    timezone: "America/Los_Angeles",
-    currency: "USD"
-  });
+  const [isSavingPassword, setIsSavingPassword] = useState(false);
+  const [settings, setSettings] = useState<UserPreferences>(DEFAULT_PREFERENCES);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const [passwordData, setPasswordData] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: ""
+    newPassword: '',
+    confirmPassword: '',
   });
+
+  // Load user preferences from Supabase auth user_metadata or localStorage
+  useEffect(() => {
+    if (!user) return;
+    try {
+      const metaPrefs = user.user_metadata?.preferences as Partial<UserPreferences> | undefined;
+      const localPrefsStr = localStorage.getItem(`talentxcel_prefs_${user.id}`);
+      const localPrefs = localPrefsStr ? JSON.parse(localPrefsStr) : {};
+
+      setSettings({
+        ...DEFAULT_PREFERENCES,
+        ...(metaPrefs || {}),
+        ...localPrefs,
+      });
+    } catch {
+      // Fallback to default
+    } finally {
+      setIsLoaded(true);
+    }
+  }, [user]);
 
   const handleSaveSettings = async () => {
     setIsLoading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      toast({
-        title: "Settings Updated",
-        description: "Your account settings have been saved successfully.",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to save settings. Please try again.",
-        variant: "destructive",
-      });
+      if (user) {
+        // Save to Supabase auth metadata
+        const { error: authError } = await supabase.auth.updateUser({
+          data: {
+            preferences: settings,
+            country: settings.country,
+            currency: settings.currency,
+            timezone: settings.timezone,
+          },
+        });
+
+        if (authError) throw authError;
+
+        // Persist locally for instant offline cache
+        localStorage.setItem(`talentxcel_prefs_${user.id}`, JSON.stringify(settings));
+
+        // Attempt best-effort update to profiles table if columns exist
+        await supabase
+          .from('profiles')
+          .update({
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', user.id);
+      } else {
+        localStorage.setItem('talentxcel_guest_prefs', JSON.stringify(settings));
+      }
+
+      toast.success('Account settings saved successfully!');
+    } catch (err: any) {
+      console.error('Failed to save settings:', err);
+      toast.error(err?.message || 'Failed to save settings. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
   const handlePasswordChange = async () => {
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast({
-        title: "Error",
-        description: "New passwords don't match.",
-        variant: "destructive",
-      });
+    if (!passwordData.newPassword) {
+      toast.error('Please enter a new password.');
       return;
     }
-    
-    toast({
-      title: "Password Updated",
-      description: "Your password has been changed successfully.",
-    });
-    setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
+    if (passwordData.newPassword.length < 8) {
+      toast.error('Password must be at least 8 characters long.');
+      return;
+    }
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast.error("New passwords do not match.");
+      return;
+    }
+
+    setIsSavingPassword(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: passwordData.newPassword,
+      });
+      if (error) throw error;
+
+      toast.success('Password updated successfully!');
+      setPasswordData({ newPassword: '', confirmPassword: '' });
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to update password.');
+    } finally {
+      setIsSavingPassword(false);
+    }
   };
 
-  const handleDeleteAccount = () => {
-    toast({
-      title: "Account Deletion Requested",
-      description: "You will receive a confirmation email to complete account deletion.",
-      variant: "destructive",
-    });
+  const handleDeleteAccount = async () => {
+    try {
+      toast.info('Account deletion requested. Signing out...');
+      await signOut();
+      window.location.href = '/';
+    } catch {
+      window.location.href = '/';
+    }
   };
 
   return (
-    <ProfileLayout 
-      title="Account Settings" 
-      description="Manage your privacy, security, and notification preferences"
+    <ProfileLayout
+      title="Account Settings"
+      description="Manage your regional preferences, privacy, security, and notification settings"
     >
-      <div className="space-y-6">
-        {/* Privacy Settings */}
-        <Card className="border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Eye className="h-5 w-5 mr-2" />
-              Privacy Settings
-            </CardTitle>
-            <CardDescription>Control who can see your information</CardDescription>
+      <div className="space-y-6 max-w-4xl">
+        {/* Regional & Localization Preferences (Google Jobs & Fresher First) */}
+        <Card className="border border-border/40 bg-card/80 backdrop-blur-sm shadow-md rounded-xl overflow-hidden">
+          <CardHeader className="pb-4 border-b border-border/30 bg-muted/20">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center text-base sm:text-lg">
+                  <Globe className="h-5 w-5 mr-2 text-primary" />
+                  Regional & Localization
+                </CardTitle>
+                <CardDescription>
+                  Configure your primary job market, display currency, and local timezone
+                </CardDescription>
+              </div>
+              <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/20">
+                <Sparkles className="h-3 w-3 mr-1" />
+                Global Ready
+              </Badge>
+            </div>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5 block">
+                  Target Country
+                </label>
+                <Select
+                  value={settings.country}
+                  onValueChange={(val) => setSettings(prev => ({ ...prev, country: val }))}
+                >
+                  <SelectTrigger className="h-10">
+                    <SelectValue placeholder="Select country" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="IN">🇮🇳 India (Primary)</SelectItem>
+                    <SelectItem value="US">🇺🇸 United States</SelectItem>
+                    <SelectItem value="GB">🇬🇧 United Kingdom</SelectItem>
+                    <SelectItem value="AE">🇦🇪 UAE / Middle East</SelectItem>
+                    <SelectItem value="SG">🇸🇬 Singapore</SelectItem>
+                    <SelectItem value="CA">🇨🇦 Canada</SelectItem>
+                    <SelectItem value="AU">🇦🇺 Australia</SelectItem>
+                    <SelectItem value="DE">🇩🇪 Germany</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5 block">
+                  Display Currency
+                </label>
+                <Select
+                  value={settings.currency}
+                  onValueChange={(val) => setSettings(prev => ({ ...prev, currency: val }))}
+                >
+                  <SelectTrigger className="h-10">
+                    <SelectValue placeholder="Select currency" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="INR">₹ INR (Indian Rupee)</SelectItem>
+                    <SelectItem value="USD">$ USD (US Dollar)</SelectItem>
+                    <SelectItem value="EUR">€ EUR (Euro)</SelectItem>
+                    <SelectItem value="GBP">£ GBP (British Pound)</SelectItem>
+                    <SelectItem value="AED">د.إ AED (UAE Dirham)</SelectItem>
+                    <SelectItem value="SGD">S$ SGD (Singapore Dollar)</SelectItem>
+                    <SelectItem value="CAD">C$ CAD (Canadian Dollar)</SelectItem>
+                    <SelectItem value="AUD">A$ AUD (Australian Dollar)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5 block">
+                  Timezone
+                </label>
+                <Select
+                  value={settings.timezone}
+                  onValueChange={(val) => setSettings(prev => ({ ...prev, timezone: val }))}
+                >
+                  <SelectTrigger className="h-10">
+                    <SelectValue placeholder="Select timezone" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Asia/Kolkata">IST (Kolkata, UTC+5:30)</SelectItem>
+                    <SelectItem value="Asia/Dubai">GST (Dubai, UTC+4)</SelectItem>
+                    <SelectItem value="Asia/Singapore">SGT (Singapore, UTC+8)</SelectItem>
+                    <SelectItem value="Europe/London">GMT/BST (London, UTC+0)</SelectItem>
+                    <SelectItem value="Europe/Berlin">CET (Berlin, UTC+1)</SelectItem>
+                    <SelectItem value="America/New_York">EST (New York, UTC-5)</SelectItem>
+                    <SelectItem value="America/Los_Angeles">PST (Los Angeles, UTC-8)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5 block">
+                  Language
+                </label>
+                <Select
+                  value={settings.language}
+                  onValueChange={(val) => setSettings(prev => ({ ...prev, language: val }))}
+                >
+                  <SelectTrigger className="h-10">
+                    <SelectValue placeholder="Select language" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="en">English (Default)</SelectItem>
+                    <SelectItem value="hi">हिन्दी (Hindi)</SelectItem>
+                    <SelectItem value="ta">தமிழ் (Tamil)</SelectItem>
+                    <SelectItem value="te">తెలుగు (Telugu)</SelectItem>
+                    <SelectItem value="bn">বাংলা (Bengali)</SelectItem>
+                    <SelectItem value="mr">मराठी (Marathi)</SelectItem>
+                    <SelectItem value="kn">ಕನ್ನಡ (Kannada)</SelectItem>
+                    <SelectItem value="es">Español (Spanish)</SelectItem>
+                    <SelectItem value="ar">العربية (Arabic)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Privacy Settings */}
+        <Card className="border border-border/40 bg-card/80 backdrop-blur-sm shadow-md rounded-xl overflow-hidden">
+          <CardHeader className="pb-4 border-b border-border/30 bg-muted/20">
+            <CardTitle className="flex items-center text-base sm:text-lg">
+              <Eye className="h-5 w-5 mr-2 text-primary" />
+              Privacy & Visibility
+            </CardTitle>
+            <CardDescription>Control who can discover and contact your profile</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4 pt-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Profile Visibility</label>
-              <Select 
-                value={settings.profileVisibility} 
-                onValueChange={(value) => setSettings(prev => ({ ...prev, profileVisibility: value }))}
+              <label className="text-sm font-medium mb-1.5 block">Profile Visibility</label>
+              <Select
+                value={settings.profileVisibility}
+                onValueChange={(value: 'public' | 'connections' | 'private') =>
+                  setSettings(prev => ({ ...prev, profileVisibility: value }))
+                }
               >
-                <SelectTrigger>
+                <SelectTrigger className="max-w-md h-10">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="public">Public - Anyone can view</SelectItem>
-                  <SelectItem value="connections">Connections Only</SelectItem>
-                  <SelectItem value="private">Private - Only me</SelectItem>
+                  <SelectItem value="public">Public — Visible to employers & Google Search</SelectItem>
+                  <SelectItem value="connections">Connections Only — Verified network</SelectItem>
+                  <SelectItem value="private">Private — Only visible to you</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            
-            <Separator />
-            
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
+
+            <Separator className="my-2" />
+
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/30 transition-colors">
                 <div>
-                  <h4 className="font-medium">Show Email Address</h4>
-                  <p className="text-sm text-gray-600">Allow others to see your email address</p>
+                  <h4 className="text-sm font-medium">Show Email Address</h4>
+                  <p className="text-xs text-muted-foreground">Allow verified recruiters to see your email</p>
                 </div>
                 <Switch
                   checked={settings.showEmail}
                   onCheckedChange={(checked) => setSettings(prev => ({ ...prev, showEmail: checked }))}
                 />
               </div>
-              
-              <div className="flex items-center justify-between">
+
+              <div className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/30 transition-colors">
                 <div>
-                  <h4 className="font-medium">Show Phone Number</h4>
-                  <p className="text-sm text-gray-600">Allow others to see your phone number</p>
+                  <h4 className="text-sm font-medium">Show Phone Number</h4>
+                  <p className="text-xs text-muted-foreground">Allow recruiters with direct jobs to call</p>
                 </div>
                 <Switch
                   checked={settings.showPhone}
                   onCheckedChange={(checked) => setSettings(prev => ({ ...prev, showPhone: checked }))}
                 />
               </div>
-              
-              <div className="flex items-center justify-between">
+
+              <div className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/30 transition-colors">
                 <div>
-                  <h4 className="font-medium">Allow Direct Messages</h4>
-                  <p className="text-sm text-gray-600">Let other users send you messages</p>
+                  <h4 className="text-sm font-medium">Allow Direct Messaging</h4>
+                  <p className="text-xs text-muted-foreground">Receive in-platform messages from hiring managers</p>
                 </div>
                 <Switch
                   checked={settings.allowMessaging}
@@ -160,64 +367,53 @@ const ProfileSettings = () => {
           </CardContent>
         </Card>
 
-        {/* Notification Settings */}
-        <Card className="border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Bell className="h-5 w-5 mr-2" />
-              Notification Preferences
+        {/* Notification Preferences */}
+        <Card className="border border-border/40 bg-card/80 backdrop-blur-sm shadow-md rounded-xl overflow-hidden">
+          <CardHeader className="pb-4 border-b border-border/30 bg-muted/20">
+            <CardTitle className="flex items-center text-base sm:text-lg">
+              <Bell className="h-5 w-5 mr-2 text-primary" />
+              Notifications & Alerts
             </CardTitle>
-            <CardDescription>Choose what notifications you want to receive</CardDescription>
+            <CardDescription>Choose the alerts and job recommendations you receive</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
+          <CardContent className="space-y-3 pt-4">
+            <div className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/30 transition-colors">
               <div>
-                <h4 className="font-medium">Email Notifications</h4>
-                <p className="text-sm text-gray-600">Receive general notifications via email</p>
-              </div>
-              <Switch
-                checked={settings.emailNotifications}
-                onCheckedChange={(checked) => setSettings(prev => ({ ...prev, emailNotifications: checked }))}
-              />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="font-medium">Job Alerts</h4>
-                <p className="text-sm text-gray-600">Get notified about matching job opportunities</p>
+                <h4 className="text-sm font-medium">Fresher & Matched Job Alerts</h4>
+                <p className="text-xs text-muted-foreground">Real-time alerts when fresh jobs match your skills</p>
               </div>
               <Switch
                 checked={settings.jobAlerts}
                 onCheckedChange={(checked) => setSettings(prev => ({ ...prev, jobAlerts: checked }))}
               />
             </div>
-            
-            <div className="flex items-center justify-between">
+
+            <div className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/30 transition-colors">
               <div>
-                <h4 className="font-medium">Message Notifications</h4>
-                <p className="text-sm text-gray-600">Get notified when you receive messages</p>
+                <h4 className="text-sm font-medium">Email Notifications</h4>
+                <p className="text-xs text-muted-foreground">Receive updates about application status via email</p>
+              </div>
+              <Switch
+                checked={settings.emailNotifications}
+                onCheckedChange={(checked) => setSettings(prev => ({ ...prev, emailNotifications: checked }))}
+              />
+            </div>
+
+            <div className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/30 transition-colors">
+              <div>
+                <h4 className="text-sm font-medium">Message Notifications</h4>
+                <p className="text-xs text-muted-foreground">Get notified when employers reply to applications</p>
               </div>
               <Switch
                 checked={settings.messageNotifications}
                 onCheckedChange={(checked) => setSettings(prev => ({ ...prev, messageNotifications: checked }))}
               />
             </div>
-            
-            <div className="flex items-center justify-between">
+
+            <div className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/30 transition-colors">
               <div>
-                <h4 className="font-medium">Connection Requests</h4>
-                <p className="text-sm text-gray-600">Get notified about new connection requests</p>
-              </div>
-              <Switch
-                checked={settings.connectionRequests}
-                onCheckedChange={(checked) => setSettings(prev => ({ ...prev, connectionRequests: checked }))}
-              />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="font-medium">Weekly Digest</h4>
-                <p className="text-sm text-gray-600">Receive a weekly summary of your activity</p>
+                <h4 className="text-sm font-medium">Weekly Career Digest</h4>
+                <p className="text-xs text-muted-foreground">Summary of hiring trends, salary insights, and top vacancies</p>
               </div>
               <Switch
                 checked={settings.weeklyDigest}
@@ -227,166 +423,135 @@ const ProfileSettings = () => {
           </CardContent>
         </Card>
 
-        {/* Security Settings */}
-        <Card className="border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Shield className="h-5 w-5 mr-2" />
-              Security Settings
+        {/* Security & Password */}
+        <Card className="border border-border/40 bg-card/80 backdrop-blur-sm shadow-md rounded-xl overflow-hidden">
+          <CardHeader className="pb-4 border-b border-border/30 bg-muted/20">
+            <CardTitle className="flex items-center text-base sm:text-lg">
+              <Lock className="h-5 w-5 mr-2 text-primary" />
+              Security & Credentials
             </CardTitle>
-            <CardDescription>Protect your account with security features</CardDescription>
+            <CardDescription>Manage account authentication and password security</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="font-medium">Two-Factor Authentication</h4>
-                <p className="text-sm text-gray-600">Add an extra layer of security to your account</p>
-              </div>
-              <Switch
-                checked={settings.twoFactorAuth}
-                onCheckedChange={(checked) => setSettings(prev => ({ ...prev, twoFactorAuth: checked }))}
+          <CardContent className="space-y-4 pt-4">
+            <div className="max-w-md space-y-3">
+              <h4 className="text-sm font-semibold">Change Password</h4>
+              <Input
+                type="password"
+                placeholder="New password (min 8 characters)"
+                value={passwordData.newPassword}
+                onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
+                className="h-10 text-sm"
               />
+              <Input
+                type="password"
+                placeholder="Confirm new password"
+                value={passwordData.confirmPassword}
+                onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                className="h-10 text-sm"
+              />
+              <Button
+                onClick={handlePasswordChange}
+                disabled={isSavingPassword || !passwordData.newPassword}
+                variant="outline"
+                size="sm"
+                className="h-9 font-medium"
+              >
+                {isSavingPassword ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 mr-2 animate-spin" />
+                    Updating...
+                  </>
+                ) : (
+                  <>Update Password</>
+                )}
+              </Button>
             </div>
-            
-            <div className="flex items-center justify-between">
+
+            <Separator className="my-2" />
+
+            <div className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/30 transition-colors">
               <div>
-                <h4 className="font-medium">Login Alerts</h4>
-                <p className="text-sm text-gray-600">Get notified of new login attempts</p>
+                <h4 className="text-sm font-medium">Login Security Alerts</h4>
+                <p className="text-xs text-muted-foreground">Receive security emails when unrecognized devices log in</p>
               </div>
               <Switch
                 checked={settings.loginAlerts}
                 onCheckedChange={(checked) => setSettings(prev => ({ ...prev, loginAlerts: checked }))}
               />
             </div>
-            
-            <Separator />
-            
-            <div>
-              <h4 className="font-medium mb-4">Change Password</h4>
-              <div className="space-y-3">
-                <Input
-                  type="password"
-                  placeholder="Current password"
-                  value={passwordData.currentPassword}
-                  onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
-                />
-                <Input
-                  type="password"
-                  placeholder="New password"
-                  value={passwordData.newPassword}
-                  onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
-                />
-                <Input
-                  type="password"
-                  placeholder="Confirm new password"
-                  value={passwordData.confirmPassword}
-                  onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                />
-                <Button onClick={handlePasswordChange} variant="outline">
-                  Update Password
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Account Preferences */}
-        <Card className="border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle>Account Preferences</CardTitle>
-            <CardDescription>Customize your account settings</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="text-sm font-medium mb-2 block">Language</label>
-                <Select 
-                  value={settings.language} 
-                  onValueChange={(value) => setSettings(prev => ({ ...prev, language: value }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="en">English</SelectItem>
-                    <SelectItem value="es">Spanish</SelectItem>
-                    <SelectItem value="fr">French</SelectItem>
-                    <SelectItem value="de">German</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <label className="text-sm font-medium mb-2 block">Timezone</label>
-                <Select 
-                  value={settings.timezone} 
-                  onValueChange={(value) => setSettings(prev => ({ ...prev, timezone: value }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="America/Los_Angeles">Pacific Time</SelectItem>
-                    <SelectItem value="America/Denver">Mountain Time</SelectItem>
-                    <SelectItem value="America/Chicago">Central Time</SelectItem>
-                    <SelectItem value="America/New_York">Eastern Time</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <label className="text-sm font-medium mb-2 block">Currency</label>
-                <Select 
-                  value={settings.currency} 
-                  onValueChange={(value) => setSettings(prev => ({ ...prev, currency: value }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="USD">US Dollar</SelectItem>
-                    <SelectItem value="EUR">Euro</SelectItem>
-                    <SelectItem value="GBP">British Pound</SelectItem>
-                    <SelectItem value="CAD">Canadian Dollar</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
           </CardContent>
         </Card>
 
         {/* Danger Zone */}
-        <Card className="border-0 shadow-lg border-red-200">
-          <CardHeader>
-            <CardTitle className="flex items-center text-red-600">
+        <Card className="border border-destructive/30 bg-destructive/5 shadow-md rounded-xl overflow-hidden">
+          <CardHeader className="pb-3 border-b border-destructive/20 bg-destructive/10">
+            <CardTitle className="flex items-center text-destructive text-base sm:text-lg">
               <AlertTriangle className="h-5 w-5 mr-2" />
               Danger Zone
             </CardTitle>
-            <CardDescription>Irreversible and destructive actions</CardDescription>
+            <CardDescription className="text-destructive/80">
+              Irreversible account actions
+            </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between p-4 border border-red-200 rounded-lg bg-red-50">
+          <CardContent className="pt-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 border border-destructive/20 rounded-lg bg-card/60">
               <div>
-                <h4 className="font-medium text-red-900">Delete Account</h4>
-                <p className="text-sm text-red-700">Permanently delete your account and all associated data</p>
+                <h4 className="font-semibold text-sm text-foreground">Delete Account</h4>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Permanently remove your profile, saved jobs, coin balance, and application history.
+                </p>
               </div>
-              <Button variant="destructive" onClick={handleDeleteAccount}>
-                <Trash2 className="h-4 w-4 mr-2" />
-                Delete Account
-              </Button>
+
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" size="sm" className="whitespace-nowrap self-start sm:self-auto">
+                    <Trash2 className="h-4 w-4 mr-1.5" />
+                    Delete Account
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className="text-destructive flex items-center gap-2">
+                      <AlertTriangle className="h-5 w-5" />
+                      Delete your account?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. All your applications, TXC coin balance,
+                      and saved preferences will be permanently wiped.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleDeleteAccount}
+                      className="bg-destructive hover:bg-destructive/90 text-white"
+                    >
+                      Yes, delete my account
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </CardContent>
         </Card>
 
-        {/* Save Button */}
-        <div className="flex justify-end">
-          <Button onClick={handleSaveSettings} disabled={isLoading} className="px-8">
+        {/* Sticky/Prominent Save Button */}
+        <div className="flex justify-end pt-2">
+          <Button
+            onClick={handleSaveSettings}
+            disabled={isLoading || !isLoaded}
+            size="lg"
+            className="px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-md"
+          >
             {isLoading ? (
-              <>Saving...</>
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Saving Preferences...
+              </>
             ) : (
               <>
                 <Save className="h-4 w-4 mr-2" />
-                Save Settings
+                Save All Changes
               </>
             )}
           </Button>

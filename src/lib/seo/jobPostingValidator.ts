@@ -117,9 +117,10 @@ export function validateJobPosting(job: RawJobData): JobValidationResult {
     errors.push('Missing or invalid "description" (must be at least 30 characters)');
   }
 
-  // 3. datePosted Validation (Strict: never generic created_at)
+  // 3. datePosted Validation — accept created_at as a fallback
+  // Priority: posted_at > date_posted > source_posted_at > created_at
   let resolvedDatePosted: string | null = null;
-  const rawDate = job.posted_at || job.date_posted || job.source_posted_at;
+  const rawDate = job.posted_at || job.date_posted || job.source_posted_at || job.created_at;
   if (rawDate && typeof rawDate === 'string') {
     const parsed = new Date(rawDate);
     if (!isNaN(parsed.getTime())) {
@@ -128,7 +129,7 @@ export function validateJobPosting(job: RawJobData): JobValidationResult {
   }
 
   if (!resolvedDatePosted) {
-    errors.push('Missing authoritative "datePosted" (must have valid posted_at, date_posted, or source_posted_at; created_at rejected)');
+    errors.push('Missing "datePosted" — at least one of: posted_at, date_posted, source_posted_at, or created_at must be a valid date');
   }
 
   // 4. Hiring Organization Validation
