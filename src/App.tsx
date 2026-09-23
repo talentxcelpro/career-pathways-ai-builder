@@ -52,6 +52,7 @@ const BenchmarkResultsPage = lazy(() => import("@/pages/BenchmarkResultsPage"));
 const GrowthControlPlane = lazy(() => import("@/pages/growth/GrowthControlPlane"));
 const CandidateGrowthPage = lazy(() => import("@/pages/CandidateGrowthPage"));
 const GlobalJobsAutomationCenter = lazy(() => import("@/pages/admin/GlobalJobsAutomationCenter"));
+const ReferAndEarn = lazy(() => import("@/pages/ReferAndEarn"));
 
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
@@ -365,6 +366,9 @@ const App = () => {
                 <Route path="/admin/growth" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 text-slate-400 p-8 flex items-center justify-center">Loading Growth Control Plane...</div>}><UDXSuperAdminGuard><GrowthControlPlane /></UDXSuperAdminGuard></Suspense>} />
                 <Route path="/admin/global-jobs" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 text-slate-400 p-8 flex items-center justify-center font-mono text-xs">Loading Global Jobs Automation Network...</div>}><UDXSuperAdminGuard><GlobalJobsAutomationCenter /></UDXSuperAdminGuard></Suspense>} />
                 <Route path="/grow" element={<Suspense fallback={<div className="min-h-screen bg-[#070b14] text-slate-400 p-8 flex items-center justify-center font-mono text-xs">Loading Career Growth Hub...</div>}><CandidateGrowthPage /></Suspense>} />
+                <Route path="/referrals" element={<Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>}><ReferAndEarn /></Suspense>} />
+                <Route path="/referral" element={<Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>}><ReferAndEarn /></Suspense>} />
+                <Route path="/refer-and-earn" element={<Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>}><ReferAndEarn /></Suspense>} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/privacypolicy" element={<PrivacyPolicy />} />

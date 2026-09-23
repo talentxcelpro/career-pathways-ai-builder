@@ -3,7 +3,7 @@ import { NavItem } from "../types/nav-item";
 import { Navigate } from "react-router-dom";
 
 const PersonalizedReferral = lazy(() => import("../pages/PersonalizedReferral"));
-const ReferralCenter = lazy(() => import("../pages/ReferralCenter"));
+const ReferAndEarn = lazy(() => import("../pages/ReferAndEarn"));
 
 const S = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={null}>{children}</Suspense>
@@ -11,15 +11,22 @@ const S = ({ children }: { children: React.ReactNode }) => (
 
 export const referralRoutes: NavItem[] = [
   {
+    title: "Referrals & Rewards",
+    to: "/referrals",
+    page: <S><ReferAndEarn /></S>,
+    requiresAuth: false,
+  },
+  {
     title: "Refer & Earn",
     to: "/refer-and-earn",
-    page: <Navigate to="/passport" replace />,
+    page: <S><ReferAndEarn /></S>,
+    requiresAuth: false,
   },
   {
     title: "Referral Center",
     to: "/referral",
-    page: <S><ReferralCenter /></S>,
-    requiresAuth: true,
+    page: <S><ReferAndEarn /></S>,
+    requiresAuth: false,
   },
   {
     title: "Referral",

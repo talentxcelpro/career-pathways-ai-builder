@@ -28,6 +28,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
 import { useOptimizedAuth } from '@/contexts/OptimizedAuthContext';
+import { GrowthCertificateModal } from '@/components/growth/GrowthCertificateModal';
 
 interface Accelerator {
   id: string;
@@ -136,6 +137,7 @@ const CandidateGrowthPage: React.FC = () => {
   const baseScore = 823;
   const [selectedAccelerators, setSelectedAccelerators] = useState<string[]>(['arch-project']);
   const [isRecalculating, setIsRecalculating] = useState(false);
+  const [isCertificateModalOpen, setIsCertificateModalOpen] = useState(false);
 
   // Calculate projected boost
   const additionalBoost = selectedAccelerators.reduce((sum, id) => {
@@ -160,16 +162,7 @@ const CandidateGrowthPage: React.FC = () => {
   };
 
   const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: 'My TalentXcel Growth Velocity',
-        text: 'I reached a TalentScore of 823 (Elite Tier) with +66 points 30-day velocity!',
-        url: window.location.href,
-      }).catch(() => {});
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      toast.success('🔗 Growth Hub link copied to clipboard!');
-    }
+    setIsCertificateModalOpen(true);
   };
 
   return (
@@ -261,10 +254,8 @@ const CandidateGrowthPage: React.FC = () => {
             </Button>
             <Button
               size="sm"
-              onClick={() => {
-                toast.success('📄 Verified Career Growth Report downloaded (PDF with cryptographic hash)');
-              }}
-              className="bg-slate-800 hover:bg-slate-700 text-slate-100 text-xs gap-1.5 rounded-xl border border-slate-700"
+              onClick={() => setIsCertificateModalOpen(true)}
+              className="bg-gradient-to-r from-slate-800 to-slate-800/90 hover:from-cyan-950 hover:to-slate-800 text-slate-100 hover:text-cyan-300 text-xs gap-1.5 rounded-xl border border-slate-700 hover:border-cyan-500/50 shadow-sm transition-all"
             >
               <FileCheck className="w-3.5 h-3.5 text-emerald-400" />
               <span>Export Growth Certificate</span>
@@ -642,6 +633,19 @@ const CandidateGrowthPage: React.FC = () => {
         </div>
 
       </main>
+
+      {/* Verified Career Growth Certificate Modal */}
+      <GrowthCertificateModal
+        isOpen={isCertificateModalOpen}
+        onClose={() => setIsCertificateModalOpen(false)}
+        candidateName={user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Arshid Wani'}
+        score={baseScore}
+        velocity={66}
+        acceleration="+8.2%"
+        globalRank="#853"
+        telemetryFidelity="98%"
+        specialization="Principal Distributed Systems & Cloud Architecture"
+      />
     </div>
   );
 };

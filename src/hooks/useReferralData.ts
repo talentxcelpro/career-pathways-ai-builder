@@ -250,6 +250,8 @@ export const useReferralData = () => {
   useEffect(() => {
     if (user) {
       fetchData();
+    } else {
+      setLoading(false);
     }
   }, [user]);
 

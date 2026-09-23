@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useEnhancedSEO } from '@/hooks/useEnhancedSEO';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,6 +19,7 @@ import {
   Crown,
   Rocket,
   ArrowRight,
+  ArrowLeft,
   Share2,
   Coins,
   Heart,
@@ -27,6 +28,7 @@ import {
 import { TalentXcelNotificationLogo } from '@/assets/talentxcel-notification-logo';
 
 const ReferAndEarn: React.FC = () => {
+  const navigate = useNavigate();
   const { referralData, loading, generateReferralLink, copyReferralLink, shareOnPlatform } = useReferralSystem();
   const { triggerHaptic } = useHapticFeedback();
 
@@ -104,6 +106,39 @@ const ReferAndEarn: React.FC = () => {
 
   return (
     <div className="min-h-screen gradient-subtle native-app-style ios-scroll">
+      {/* Top Navigation Bar */}
+      <header className="border-b border-border/40 bg-background/80 backdrop-blur-md px-4 sm:px-6 py-3 flex items-center justify-between sticky top-0 z-30">
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/grow')}
+            className="text-muted-foreground hover:text-foreground text-xs gap-1.5 rounded-xl"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Career Growth Hub</span>
+          </Button>
+          <div className="h-4 w-px bg-border/60 hidden sm:block" />
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-sm tracking-tight">TalentXcel</span>
+            <Badge variant="outline" className="text-[10px] uppercase font-mono">
+              Referrals & Rewards
+            </Badge>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate('/dashboard')}
+            className="text-xs rounded-xl"
+          >
+            Dashboard
+          </Button>
+        </div>
+      </header>
+
       {/* Mobile-Optimized Hero Section */}
       <section className="pt-6 pb-4 px-4 safe-area-top">
         <div className="max-w-4xl mx-auto text-center">
