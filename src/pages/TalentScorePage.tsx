@@ -1,149 +1,37 @@
+/**
+ * TalentXcel TalentScore Experience — Career Potential in 4D
+ * Pixel-perfect implementation matching the master 3D gaming card and 3-column cockpit design.
+ */
+
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  ArrowLeft, Share2, Copy, Check, ExternalLink,
-  Zap, Trophy, TrendingUp, ShieldCheck, Sparkles,
-  Gauge, Target, BarChart3, LockKeyhole, ArrowRight,
-  Activity, Brain, Globe, Shield
+  Target, BarChart3, Zap, Compass, Briefcase, TrendingUp,
+  User, Users, BookOpen, GraduationCap, ChevronRight, ArrowRight,
+  Sparkles, Check, Share2, Copy, Shield, Layers, Award,
+  Flame, Lock, ExternalLink
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { AuthDialog } from '@/components/auth/AuthDialog';
-import { TalentScoreRing, getTier } from '@/components/talent-score/TalentScoreRing';
-import { TalentScoreBreakdown } from '@/components/talent-score/TalentScoreBreakdown';
 import { GamingTalentScoreCard } from '@/components/talent-score/GamingTalentScoreCard';
 import { useTalentScore } from '@/hooks/useTalentScore';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
-const TIER_SHARE_TEXT: Record<string, string> = {
-  emerging: "I'm building my TalentScore on TalentXcel. Current score: {score}.",
-  rising: "My TalentScore just moved to {score} in Rising Tier on TalentXcel.",
-  pro: "TalentScore {score} in Pro Tier on TalentXcel. Momentum is real.",
-  elite: "TalentScore {score} in Elite Tier on TalentXcel. Serious professionals track their signal.",
-  legend: "Legend Tier with TalentScore {score}/1000. TalentXcel is fully in motion.",
-};
-
-function PublicTalentScorePreview() {
-  const previewSignals = [
-    {
-      label: 'Identity Strength',
-      value: '250 pts',
-      description: 'Role clarity, work proof, and professional readiness.',
-      icon: ShieldCheck,
-    },
-    {
-      label: 'Verified Capability',
-      value: '300 pts',
-      description: 'Current skills, verification depth, and market relevance.',
-      icon: Target,
-    },
-    {
-      label: 'Professional Ecosystem',
-      value: '150 pts',
-      description: 'Trusted reach, ecosystem influence, and professional activity.',
-      icon: BarChart3,
-    },
-  ];
-
-  return (
-    <div className="min-h-screen bg-slate-950 text-white selection:bg-blue-500/30 overflow-hidden edge-to-edge">
-      {/* Premium Background */}
-      <div className="fixed inset-0 z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-600/10 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/10 rounded-full blur-[100px]" />
-      </div>
-
-      <div className="relative z-10 mx-auto flex max-w-7xl flex-col gap-16 px-8 py-24">
-        <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="inline-flex w-fit items-center gap-3 rounded-full border border-blue-500/20 bg-blue-500/10 px-8 py-3 text-xs font-apple-heavy text-blue-400 shadow-2xl backdrop-blur-xl">
-          <Activity className="h-4 w-4" />
-          TALENTSCORE
-        </motion.div>
-
-        <section className="grid gap-20 lg:grid-cols-[1fr_480px] lg:items-center">
-          <motion.div initial={{ x: -30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.1 }}>
-            <h1 className="text-6xl md:text-9xl font-apple-heavy leading-[0.85] tracking-tighter text-white sm:text-7xl">
-              Professional identity, <br />
-              <span className="text-blue-600">Synchronized.</span>
-            </h1>
-            <p className="mt-10 max-w-3xl text-2xl font-apple-medium leading-relaxed text-slate-400">
-              TalentScore turns your identity, capabilities, momentum, and market activity into one clear career benchmark.
-            </p>
-
-            <div className="mt-12 flex flex-col gap-6 sm:flex-row">
-              <AuthDialog>
-                <Button className="h-20 rounded-[28px] bg-blue-600 px-12 text-lg font-apple-heavy text-white shadow-2xl shadow-blue-500/40 hover:scale-105 transition-all">
-                  Unlock TalentScore
-                  <ArrowRight className="ml-3 h-6 w-6" />
-                </Button>
-              </AuthDialog>
-              <Button asChild variant="outline" className="h-20 rounded-[28px] border-white/10 bg-white/5 px-12 text-lg font-apple-heavy text-white hover:bg-white/10 transition-all border">
-                <Link to="/career-os">Open TalentXcel Core</Link>
-              </Button>
-            </div>
-          </motion.div>
-
-          <motion.div initial={{ x: 30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.2 }} className="rounded-[64px] border border-white/10 bg-white/5 p-12 shadow-2xl relative overflow-hidden group border">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-transparent pointer-events-none" />
-            <div className="rounded-[56px] bg-slate-950 p-12 text-center text-white relative z-10 shadow-2xl border border-white/5">
-              <p className="text-xs font-apple-heavy uppercase tracking-[0.4em] text-blue-500 mb-12">TALENTSCORE PREVIEW</p>
-              <div className="flex justify-center group-hover:scale-110 transition-transform duration-700">
-                <TalentScoreRing score={720} size="lg" animated={false} highContrast />
-              </div>
-              <p className="mt-12 text-base font-apple-medium leading-relaxed text-slate-400">
-                TalentScore activates after sign-in so TalentXcel can map your profile with real data.
-              </p>
-            </div>
-          </motion.div>
-        </section>
-
-        <section className="grid gap-10 md:grid-cols-3">
-          {previewSignals.map(({ label, value, description, icon: Icon }, idx) => (
-            <motion.div 
-              key={label}
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.3 + idx * 0.1 }}
-              className="rounded-[48px] border border-white/10 bg-white/5 p-12 shadow-xl hover:bg-white/10 transition-all border group"
-            >
-              <div className="mb-10 flex h-16 w-16 items-center justify-center rounded-[24px] bg-blue-600/10 text-blue-500 shadow-inner group-hover:scale-110 transition-transform">
-                <Icon className="h-8 w-8" />
-              </div>
-              <p className="text-xs font-apple-heavy text-slate-500 uppercase tracking-[0.2em]">{label}</p>
-              <p className="mt-4 text-4xl font-apple-heavy text-white tracking-tighter">{value}</p>
-              <p className="mt-8 text-lg font-apple-medium leading-relaxed text-slate-400">{description}</p>
-            </motion.div>
-          ))}
-        </section>
-
-        <motion.section initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.6 }} className="rounded-[56px] border border-white/10 bg-blue-600/5 backdrop-blur-xl p-12 shadow-2xl border">
-          <div className="flex items-start gap-10">
-            <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-[28px] bg-white text-slate-950 shadow-2xl">
-              <LockKeyhole className="h-9 w-9" />
-            </div>
-            <div className="pt-2">
-              <h2 className="text-3xl font-apple-heavy text-white tracking-tight">Private by Design.</h2>
-              <p className="mt-4 text-xl font-apple-medium leading-relaxed text-slate-400 max-w-4xl">
-                Your TalentScore is private by default. You decide when to share it with recruiters, hiring teams, or trusted connections.
-              </p>
-            </div>
-          </div>
-        </motion.section>
-      </div>
-    </div>
-  );
-}
-
-const TalentScorePage: React.FC = () => {
+export default function TalentScorePage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
-  const [activeTab, setActiveTab] = useState<'breakdown' | 'history' | 'compare'>('breakdown');
+  const [activeMainTab, setActiveMainTab] = useState<'breakdown' | 'benchmark'>('breakdown');
+  const [activeSidebarTab, setActiveSidebarTab] = useState('my-score');
+  const [activeSubTab, setActiveSubTab] = useState('CORE_DIMENSIONS');
+
   const { talentScore, isLoading: isTalentScoreLoading } = useTalentScore();
 
   const { data: profile, isLoading } = useQuery({
@@ -166,222 +54,434 @@ const TalentScorePage: React.FC = () => {
   });
 
   const score = talentScore?.score ?? profile?.achievement_score ?? 823;
-  const tier = getTier(score);
   const isScoreLoading = isLoading || isTalentScoreLoading;
 
-  const rawDisplayName = 
-    profile?.full_name || 
-    user?.user_metadata?.full_name || 
-    user?.user_metadata?.name || 
-    profile?.username || 
-    user?.email?.split('@')[0] || 
-    'Candidate';
+  const rawDisplayName =
+    profile?.full_name ||
+    user?.user_metadata?.full_name ||
+    user?.user_metadata?.name ||
+    profile?.username ||
+    'TalentXcelServices';
 
   const displayName = rawDisplayName.includes('.')
     ? rawDisplayName.split('.').map((s: string) => s.charAt(0).toUpperCase() + s.slice(1)).join(' ')
     : rawDisplayName;
 
-  const handleShare = async () => {
-    const text = (TIER_SHARE_TEXT[tier] || TIER_SHARE_TEXT.emerging)
-      .replace('{score}', String(score));
-    const url = `${window.location.origin}/t/@${user?.email?.split('@')[0] ?? 'me'}`;
-    const shareText = `${text}\n${url}`;
+  const displayTitle = profile?.title || 'Director Operations at TalentXcel Services';
 
-    if (navigator.share) {
-      await navigator.share({ title: 'My TalentScore', text: shareText, url });
-    } else {
-      await navigator.clipboard.writeText(shareText);
-      setCopied(true);
-      toast.success('TalentScore copied to clipboard!');
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
+  // 5 Dimension Cards Data
+  const dimensions = [
+    {
+      id: 'industry-strength',
+      title: 'Industry Strength',
+      subtitle: 'Your domain expertise and relevance',
+      score: 92,
+      icon: User,
+      color: 'from-amber-400 to-orange-500',
+    },
+    {
+      id: 'technical-capability',
+      title: 'Technical Capability',
+      subtitle: 'Your validated technical skills',
+      score: 88,
+      icon: Zap,
+      color: 'from-amber-400 to-orange-500',
+    },
+    {
+      id: 'market-relevance',
+      title: 'Market Relevance',
+      subtitle: 'Demand alignment with current opportunities',
+      score: 78,
+      icon: Briefcase,
+      color: 'from-amber-400 to-orange-500',
+    },
+    {
+      id: 'recognition-influence',
+      title: 'Recognition & Influence',
+      subtitle: 'Your professional presence and impact',
+      score: 76,
+      icon: Users,
+      color: 'from-amber-400 to-orange-500',
+    },
+    {
+      id: 'skill-evolution',
+      title: 'Skill Evolution',
+      subtitle: 'Your learning momentum and adaptability',
+      score: 82,
+      icon: BookOpen,
+      color: 'from-amber-400 to-orange-500',
+    },
+  ];
 
-  const handleCopyLink = async () => {
-    const url = `${window.location.origin}/passport/${user?.email?.split('@')[0] ?? ''}`;
-    await navigator.clipboard.writeText(url);
-    setCopied(true);
-    toast.success('Identity Hub link copied!');
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  if (!user) {
-    return <PublicTalentScorePreview />;
-  }
+  const sidebarItems = [
+    { id: 'my-score', label: 'My Score', icon: BarChart3 },
+    { id: 'skill-analysis', label: 'Skill Analysis', icon: Sparkles },
+    { id: 'opportunity-map', label: 'Opportunity Map', icon: Target },
+    { id: 'career-path', label: 'Career Path', icon: Compass },
+    { id: 'learning-plan', label: 'Learning Plan', icon: BookOpen },
+    { id: 'my-badges', label: 'My Badges', icon: Shield },
+  ];
 
   return (
     <>
       <Helmet>
-        <title>TalentScore - {profile?.full_name ?? 'My'} Career Signals | TalentXcel</title>
-        <meta name="description" content={`TalentScore ${score}/1000 - ${tier.charAt(0).toUpperCase() + tier.slice(1)} Tier. Track your career momentum with TalentXcel.`} />
-        <meta property="og:title" content={`TalentScore ${score} - ${tier} Tier`} />
-        <meta property="og:description" content={`${profile?.full_name}'s TalentScore on TalentXcel`} />
+        <title>TalentScore - Your Career Potential in 4D | TalentXcel</title>
+        <meta name="description" content="AI-powered insights. Real opportunities. A smarter you with TalentScore." />
       </Helmet>
 
-      <div className="min-h-screen bg-slate-50/50 backdrop-blur-xl edge-to-edge pb-32">
-        {/* Header */}
-        <div className="sticky top-0 z-[100] bg-white/80 backdrop-blur-2xl border-b border-slate-200/50 px-4 md:px-8">
-          <div className="max-w-4xl mx-auto py-5 md:py-8 flex items-center justify-between gap-3">
-            <button
-              onClick={() => navigate(-1)}
-              className="flex items-center gap-3 h-12 px-6 rounded-[18px] font-apple-heavy text-slate-500 hover:text-slate-950 hover:bg-slate-50 transition-all border border-transparent hover:border-slate-100"
-            >
-              <ArrowLeft className="h-5 w-5" />
-              Back
-            </button>
-            <div className="text-center">
-              <h1 className="text-xl md:text-2xl font-apple-heavy text-slate-950 tracking-tighter leading-none">TalentScore</h1>
-              <p className="text-[10px] font-apple-heavy uppercase tracking-[0.3em] text-slate-400 mt-2">CAREER SIGNALS</p>
+      <div className="min-h-screen bg-[#f3f7fd] text-slate-900 selection:bg-blue-500/20 overflow-x-hidden">
+        {/* ========================================================================= */}
+        {/* HERO SECTION: Futuristic 3D Cyber Stage with Glowing Pedestal & Card     */}
+        {/* ========================================================================= */}
+        <div className="relative w-full bg-gradient-to-b from-[#030919] via-[#05112c] to-[#0b1c42] pt-8 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+          {/* Ambient Lighting & Glows */}
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-blue-600/15 rounded-full blur-[140px] pointer-events-none" />
+          <div className="absolute top-1/3 left-1/4 w-[350px] h-[350px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none" />
+          <div className="absolute bottom-10 right-1/4 w-[400px] h-[400px] bg-indigo-600/15 rounded-full blur-[120px] pointer-events-none" />
+
+          <div className="relative max-w-7xl mx-auto">
+            {/* 3-Column Hero Layout: Text Left | Pedestal & Card Center | Typography Right */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center pt-4">
+              {/* Left Column: Heading & 4 Quick Actions */}
+              <div className="lg:col-span-4 space-y-6 text-left z-20">
+                <div className="tracking-[0.3em] text-[11px] font-bold text-blue-400/90 uppercase">
+                  C A R E E R &nbsp;&nbsp; S I G N A L S
+                </div>
+
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1]">
+                  Your Career<br />
+                  Potential in <span className="text-cyan-400 drop-shadow-[0_0_35px_rgba(34,211,238,0.7)]">4D</span>
+                </h1>
+
+                <p className="text-sm sm:text-base text-slate-300/90 font-medium leading-relaxed max-w-md">
+                  AI-powered insights. Real opportunities.<br />
+                  A smarter you.
+                </p>
+
+                {/* 4 Feature Pills Row */}
+                <div className="grid grid-cols-4 gap-2 pt-4 max-w-md">
+                  <div className="flex flex-col items-center gap-2 text-center group cursor-pointer">
+                    <div className="w-12 h-12 rounded-full bg-blue-500/10 border border-blue-400/30 flex items-center justify-center text-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.25)] group-hover:scale-110 transition-transform">
+                      <Target className="w-5 h-5" />
+                    </div>
+                    <span className="text-[10px] font-semibold text-slate-300 leading-tight">
+                      Discover<br />Strengths
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col items-center gap-2 text-center group cursor-pointer">
+                    <div className="w-12 h-12 rounded-full bg-blue-500/10 border border-blue-400/30 flex items-center justify-center text-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.25)] group-hover:scale-110 transition-transform">
+                      <BarChart3 className="w-5 h-5" />
+                    </div>
+                    <span className="text-[10px] font-semibold text-slate-300 leading-tight">
+                      Get<br />Insights
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col items-center gap-2 text-center group cursor-pointer">
+                    <div className="w-12 h-12 rounded-full bg-blue-500/10 border border-blue-400/30 flex items-center justify-center text-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.25)] group-hover:scale-110 transition-transform">
+                      <Zap className="w-5 h-5" />
+                    </div>
+                    <span className="text-[10px] font-semibold text-slate-300 leading-tight">
+                      Unlock<br />Opportunities
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col items-center gap-2 text-center group cursor-pointer">
+                    <div className="w-12 h-12 rounded-full bg-blue-500/10 border border-blue-400/30 flex items-center justify-center text-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.25)] group-hover:scale-110 transition-transform">
+                      <Compass className="w-5 h-5" />
+                    </div>
+                    <span className="text-[10px] font-semibold text-slate-300 leading-tight">
+                      Build<br />Your Future
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Center Column: 3D Stage Pedestal with Gaming Card & Orbiting Badges */}
+              <div className="lg:col-span-5 relative flex flex-col items-center justify-center py-6">
+                {/* Orbiting Glass Holographic Badges */}
+                {/* Left Floating Badge: Growth */}
+                <motion.div
+                  initial={{ x: -20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="hidden md:flex absolute -left-6 top-1/2 -translate-y-1/2 z-30 p-3 px-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/25 shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_20px_rgba(34,211,238,0.25)] flex-col items-center gap-1.5"
+                >
+                  <Briefcase className="w-5 h-5 text-cyan-300" />
+                  <span className="text-[11px] font-bold text-white tracking-wide">Growth</span>
+                </motion.div>
+
+                {/* Right Upper Floating Badge: Skills */}
+                <motion.div
+                  initial={{ x: 20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className="hidden md:flex absolute -right-6 top-1/4 z-30 p-3 px-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/25 shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_20px_rgba(34,211,238,0.25)] flex-col items-center gap-1.5"
+                >
+                  <TrendingUp className="w-5 h-5 text-cyan-300" />
+                  <span className="text-[11px] font-bold text-white tracking-wide">Skills</span>
+                </motion.div>
+
+                {/* Right Lower Floating Badge: Opportunities */}
+                <motion.div
+                  initial={{ x: 20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                  className="hidden md:flex absolute -right-6 bottom-1/4 z-30 p-3 px-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/25 shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_20px_rgba(34,211,238,0.25)] flex-col items-center gap-1.5"
+                >
+                  <User className="w-5 h-5 text-cyan-300" />
+                  <span className="text-[11px] font-bold text-white tracking-wide">Opportunities</span>
+                </motion.div>
+
+                {/* Vertical Tablet Gaming Card */}
+                <div className="relative z-20 w-full max-w-[380px] drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)]">
+                  <GamingTalentScoreCard
+                    score={score}
+                    displayName={isScoreLoading ? '...' : displayName}
+                    title={profile?.title || 'Director Operations'}
+                    company={profile?.current_company || 'TalentXcel Services'}
+                    actionText="View & Earn in Gaming Hub"
+                    actionRoute="/gamification"
+                    rankOverride="#853"
+                    growthDeltaOverride="+66"
+                    syncFidelityOverride="98%"
+                    className="border-blue-400/40 shadow-[0_0_40px_rgba(37,99,235,0.35)]"
+                  />
+                </div>
+
+                {/* 3D Circular Illuminated Stage Pedestal */}
+                <div className="w-full max-w-[480px] relative -mt-7 z-10">
+                  <div className="w-full h-14 rounded-[100%] bg-gradient-to-r from-[#04102b] via-[#0b245a] to-[#04102b] border-2 border-cyan-400/50 shadow-[0_0_40px_rgba(6,182,212,0.6),inset_0_0_25px_rgba(6,182,212,0.4)] flex items-center justify-center">
+                    <span className="text-[10px] sm:text-xs font-black tracking-[0.35em] text-cyan-300 drop-shadow-[0_0_12px_rgba(6,182,212,0.9)] uppercase select-none">
+                      LEARN &nbsp;&nbsp;|&nbsp;&nbsp; GROW &nbsp;&nbsp;|&nbsp;&nbsp; EARN &nbsp;&nbsp;|&nbsp;&nbsp; ACHIEVE
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: Stylized Vertical Slogan */}
+              <div className="hidden lg:flex lg:col-span-3 flex-col items-end text-right space-y-6 z-20">
+                <div className="text-[10px] font-bold tracking-[0.35em] text-blue-300/80 uppercase space-y-1">
+                  <div>B E T T E R</div>
+                  <div>T A L E N T</div>
+                  <div>B R I G H T E R</div>
+                  <div>T O M O R R O W</div>
+                  <div className="w-12 h-0.5 bg-cyan-400 ml-auto mt-2 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
+                </div>
+
+                <div className="font-serif italic text-2xl text-blue-100/90 leading-snug drop-shadow-sm max-w-[180px]">
+                  More Than a Score, A Bigger Future
+                </div>
+              </div>
             </div>
-            <Button
-              onClick={handleShare}
-              variant="ghost"
-              size="sm"
-              className="h-12 w-12 rounded-[18px] bg-slate-50 hover:bg-slate-100 font-apple-heavy text-slate-600 border border-slate-100"
-            >
-              {copied ? <Check className="h-5 w-5 text-emerald-500" /> : <Share2 className="h-5 w-5" />}
-            </Button>
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto px-4 md:px-8 pt-8 md:pt-16 space-y-10 md:space-y-16">
-
-          {/* Pixel-Perfect Gaming TalentScore Card */}
-          <GamingTalentScoreCard
-            score={score}
-            displayName={isScoreLoading ? '...' : displayName}
-            title={profile?.title || 'Director Operations'}
-            company={profile?.current_company || 'TalentXcel Services'}
-            actionText="View & Earn in Gaming Hub"
-            actionRoute="/gamification"
-            rankOverride={`#${Math.floor(4821 * (1 - score / 1000)) || 853}`}
-            growthDeltaOverride={`+${Math.round(score * 0.08) || 66}`}
-            syncFidelityOverride="98%"
-          />
-
-          {/* Action buttons */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-            <Button
-              onClick={handleShare}
-              className="h-20 rounded-[28px] font-apple-heavy text-base bg-blue-600 text-white hover:scale-105 transition-all shadow-2xl shadow-blue-500/30"
+        {/* ========================================================================= */}
+        {/* MIDDLE SECTION: Segmented Toggle Pill Bar                                 */}
+        {/* ========================================================================= */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-30 flex justify-center">
+          <div className="inline-flex p-1.5 rounded-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-slate-200/90 dark:border-slate-800 shadow-lg">
+            <button
+              onClick={() => setActiveMainTab('breakdown')}
+              className={cn(
+                'flex items-center gap-2 px-8 py-3 rounded-full text-xs font-bold transition-all duration-300',
+                activeMainTab === 'breakdown'
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/35'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+              )}
             >
-              <Share2 className="h-6 w-6 mr-4" />
-              Share TalentScore
-            </Button>
-            <Button
-              onClick={handleCopyLink}
-              variant="outline"
-              className="h-20 rounded-[28px] font-apple-heavy text-base border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm border"
+              <Sparkles className="w-4 h-4" />
+              Your Breakdown
+            </button>
+            <button
+              onClick={() => setActiveMainTab('benchmark')}
+              className={cn(
+                'flex items-center gap-2 px-8 py-3 rounded-full text-xs font-bold transition-all duration-300',
+                activeMainTab === 'benchmark'
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/35'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+              )}
             >
-              {copied ? <Check className="h-6 w-6 mr-4 text-emerald-500" /> : <Copy className="h-6 w-6 mr-4" />}
-              Identity Hub Link
-            </Button>
+              <BarChart3 className="w-4 h-4" />
+              Industry Benchmark
+            </button>
           </div>
+        </div>
 
-          {/* Tactical Move nudge */}
-          <motion.div initial={{ y: 20, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true }} className="rounded-[40px] bg-indigo-50/30 backdrop-blur-xl border border-indigo-100 p-10 flex items-start gap-8 shadow-2xl shadow-indigo-500/5 group hover:shadow-indigo-500/10 transition-all border">
-            <div className="h-16 w-16 bg-white rounded-[24px] flex items-center justify-center shrink-0 shadow-sm group-hover:scale-110 transition-transform">
-              <Sparkles className="h-8 w-8 text-indigo-600" />
+        {/* ========================================================================= */}
+        {/* MAIN BODY: 3-Column Layout (Sidebar Left | Dimensions Center | Card Right) */}
+        {/* ========================================================================= */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            {/* ── Left Column: Glass Navigation Menu (lg:col-span-3) ────────────────── */}
+            <div className="lg:col-span-3 space-y-4">
+              <Card className="rounded-[24px] border border-blue-200/40 bg-gradient-to-b from-[#253e70]/80 via-[#2d4982]/85 to-[#3b5d9e]/90 text-white backdrop-blur-xl shadow-xl overflow-hidden p-3 space-y-1">
+                {sidebarItems.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => setActiveSidebarTab(item.id)}
+                    className={cn(
+                      'w-full flex items-center justify-between px-4 py-3.5 rounded-xl text-xs font-bold transition-all',
+                      activeSidebarTab === item.id
+                        ? 'bg-white/20 text-white border border-white/25 shadow-sm'
+                        : 'text-blue-100/80 hover:bg-white/10 hover:text-white'
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <item.icon className="w-4 h-4 text-cyan-300" />
+                      <span>{item.label}</span>
+                    </div>
+                    {activeSidebarTab === item.id && <ChevronRight className="w-4 h-4 text-cyan-300" />}
+                  </button>
+                ))}
+
+                {/* Level Up Promo Card inside sidebar */}
+                <div
+                  onClick={() => navigate('/career-os')}
+                  className="p-4 mt-4 rounded-xl bg-gradient-to-br from-slate-900/60 to-blue-950/80 border border-white/15 text-white space-y-2 cursor-pointer hover:border-cyan-400/40 transition-all group"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-xs font-bold">
+                      <GraduationCap className="w-4 h-4 text-cyan-400" />
+                      <span>Level Up</span>
+                    </div>
+                    <ArrowRight className="w-3.5 h-3.5 text-cyan-400 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                  <p className="text-[11px] text-slate-300 leading-snug">
+                    Unlock new opportunities with TalentXcel
+                  </p>
+                </div>
+              </Card>
             </div>
-            <div className="pt-1">
-              <p className="text-xs font-apple-heavy text-indigo-600 uppercase tracking-[0.3em] mb-2">
-                TACTICAL STRATEGIC MOVE
-              </p>
-              <p className="text-xl font-apple-medium text-slate-700 leading-relaxed">
-                Add your professional evolution roadmap and complete the Capability Sync to gain an estimated
-                <span className="font-apple-heavy text-indigo-700 ml-2"> +47 points</span> this cycle.
-              </p>
+
+            {/* ── Center Column: Dimensions & Insights (lg:col-span-6) ──────────────── */}
+            <div className="lg:col-span-6 space-y-5">
+              {/* AI Insights Banner Card */}
+              <div className="p-5 rounded-2xl bg-white/90 border border-blue-100 shadow-sm flex items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-blue-500/10 text-blue-600 flex items-center justify-center shrink-0">
+                  <Sparkles className="w-5 h-5 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="text-xs font-bold text-slate-900">
+                    AI Insights for <span className="text-blue-600">Your Career Growth</span>
+                  </h3>
+                  <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                    Add your professional details like resume, skills, and complete the CareerProfile form to get an actionable 4D growth analysis.
+                  </p>
+                </div>
+              </div>
+
+              {/* Sub-tabs: CORE DIMENSIONS / INDUSTRY / OPPORTUNITIES / COMPARISON */}
+              <div className="flex items-center gap-6 border-b border-slate-200 px-2">
+                {[
+                  { id: 'CORE_DIMENSIONS', label: 'CORE DIMENSIONS' },
+                  { id: 'INDUSTRY', label: 'INDUSTRY' },
+                  { id: 'OPPORTUNITIES', label: 'OPPORTUNITIES' },
+                  { id: 'COMPARISON', label: 'COMPARISON' },
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveSubTab(tab.id)}
+                    className={cn(
+                      'pb-3 text-xs font-bold transition-all relative',
+                      activeSubTab === tab.id
+                        ? 'text-slate-950 font-black'
+                        : 'text-slate-400 hover:text-slate-700'
+                    )}
+                  >
+                    {tab.label}
+                    {activeSubTab === tab.id && (
+                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-slate-950 rounded-full" />
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              {/* 5 Dimension Cards */}
+              <div className="space-y-3">
+                {dimensions.map((dim) => (
+                  <Card key={dim.id} className="rounded-2xl border border-slate-200/80 bg-white/95 p-4 shadow-xs hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-3.5 min-w-[200px]">
+                        <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center shrink-0">
+                          <dim.icon className="w-4 h-4 text-amber-500" />
+                        </div>
+                        <div>
+                          <h4 className="text-xs font-bold text-slate-900">{dim.title}</h4>
+                          <p className="text-[10px] text-slate-400">{dim.subtitle}</p>
+                        </div>
+                      </div>
+
+                      {/* Smooth Golden/Orange Progress Bar */}
+                      <div className="flex-1 max-w-[240px] hidden sm:block">
+                        <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                          <div
+                            className="h-full rounded-full bg-gradient-to-r from-amber-400 to-orange-500 transition-all duration-700"
+                            style={{ width: `${dim.score}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="text-right">
+                        <span className="text-sm font-extrabold text-slate-800">{dim.score}</span>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Professional Identity Hub Banner */}
+              <div className="p-4 rounded-2xl bg-white/95 border border-slate-200/80 shadow-xs flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                    <Target className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-900">Professional Identity Hub</h4>
+                    <p className="text-[11px] text-slate-400">Showcase your full credentials including licenses, certifications, and achievements.</p>
+                  </div>
+                </div>
+                <Link
+                  to="/passport"
+                  className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 shrink-0"
+                >
+                  View Hub <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
             </div>
-          </motion.div>
 
-          {/* Tabs */}
-          <div className="flex gap-3 p-3 bg-slate-100/50 backdrop-blur-xl rounded-[32px] border border-slate-200 shadow-inner">
-            {(['breakdown', 'history', 'compare'] as const).map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={cn(
-                  'flex-1 py-5 rounded-[24px] text-xs font-apple-heavy uppercase tracking-widest transition-all duration-500',
-                  activeTab === tab
-                    ? 'bg-white text-slate-950 shadow-2xl'
-                    : 'text-slate-400 hover:text-slate-600'
-                )}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
+            {/* ── Right Column: Improve Your TalentScore Card (lg:col-span-3) ──────── */}
+            <div className="lg:col-span-3">
+              <Card className="rounded-[28px] bg-gradient-to-b from-[#091530] via-[#050e22] to-[#020612] border border-blue-500/25 p-7 text-white text-center space-y-5 shadow-2xl relative overflow-hidden">
+                {/* Glowing Background Glow */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
 
-          {/* Tab Content */}
-          <div className="min-h-[500px]">
-            {activeTab === 'breakdown' && (
-              <TalentScoreBreakdown
-                score={score}
-                onActionClick={(key) => {
-                  const routes: Record<string, string> = {
-                    profile: '/profile/edit',
-                    skills: '/tools/skill-assessor',
-                    activity: '/jobs',
-                    network: '/network',
-                    learning: '/learning',
-                  };
-                  navigate(routes[key] ?? '/career-os');
-                }}
-              />
-            )}
+                <div className="w-12 h-12 mx-auto rounded-full bg-amber-400/15 border border-amber-400/40 flex items-center justify-center text-amber-400 shadow-[0_0_25px_rgba(251,191,36,0.35)]">
+                  <Zap className="w-6 h-6" />
+                </div>
 
-            {activeTab === 'history' && (
-              <div className="rounded-[56px] border border-slate-200 bg-white p-24 text-center shadow-2xl border">
-                <TrendingUp className="mx-auto mb-10 h-20 w-20 text-blue-600 opacity-20 shadow-inner" />
-                <p className="text-2xl font-apple-heavy text-slate-950 tracking-tight">Evolution History Syncing</p>
-                <p className="text-lg font-apple-medium text-slate-500 mt-4 leading-relaxed max-w-md mx-auto">We&apos;re tracking your progress from this score point forward.</p>
-              </div>
-            )}
+                <div>
+                  <h3 className="text-base font-black text-white leading-tight">
+                    Improve Your<br />TalentScore
+                  </h3>
+                  <p className="text-[11px] text-slate-300 mt-2.5 leading-relaxed">
+                    Complete focused career actions to unlock the next 100+ score points and access exclusive opportunities.
+                  </p>
+                </div>
 
-            {activeTab === 'compare' && (
-              <div className="rounded-[56px] border border-slate-200 bg-white p-24 text-center shadow-2xl border">
-                <BarChart3 className="mx-auto mb-10 h-20 w-20 text-indigo-600 opacity-20 shadow-inner" />
-                <p className="text-2xl font-apple-heavy text-slate-950 tracking-tight">Ecosystem Benchmarking</p>
-                <p className="text-lg font-apple-medium text-slate-500 mt-4 leading-relaxed max-w-md mx-auto">See how your professional evolution compares to elite tiers in your synchronized ecosystem.</p>
-              </div>
-            )}
-          </div>
-
-          {/* Public identity link */}
-          <div className="flex items-center justify-between rounded-[48px] border border-slate-200 bg-white p-10 shadow-2xl hover:shadow-indigo-500/10 transition-all group border">
-            <div className="flex items-center gap-8">
-              <div className="h-16 w-16 bg-slate-50 rounded-[24px] flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
-                <Globe className="h-7 w-7 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-apple-heavy text-slate-950 tracking-tight">Professional Identity Hub</p>
-                <p className="text-base font-apple-medium text-slate-500 mt-1">Broadcast your full evolution hub to ecosystem partners</p>
-              </div>
-            </div>
-            <Button asChild variant="ghost" size="sm" className="h-14 px-8 rounded-2xl font-apple-heavy text-blue-600 hover:bg-blue-50 transition-all">
-              <Link to="/passport">
-                View Hub <ExternalLink className="h-4 w-4 ml-3" />
-              </Link>
-            </Button>
-          </div>
-
-          {/* Earn more score CTA */}
-          <div className="rounded-[64px] bg-slate-950 p-16 text-white text-center shadow-2xl relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent pointer-events-none" />
-            <div className="relative z-10">
-              <Zap className="h-16 w-16 text-amber-400 mx-auto mb-10 animate-pulse shadow-lg" />
-              <h3 className="text-4xl font-apple-heavy mb-6 tracking-tighter leading-none">Improve Your TalentScore</h3>
-              <p className="text-slate-400 font-apple-medium text-xl mb-12 max-w-2xl mx-auto leading-relaxed">Complete focused career moves to climb from the {tier.toUpperCase()} tier toward elite momentum.</p>
-              <Button asChild className="h-20 px-16 rounded-[28px] bg-white text-slate-950 hover:scale-105 transition-all font-apple-heavy text-lg shadow-2xl">
-                <Link to="/career-os">Open TalentXcel Core</Link>
-              </Button>
+                <Button
+                  onClick={() => navigate('/career-os')}
+                  className="w-full h-11 rounded-full bg-white text-slate-950 hover:bg-slate-100 text-xs font-bold gap-2 shadow-lg hover:scale-105 transition-all"
+                >
+                  Start Improving <ArrowRight className="w-3.5 h-3.5" />
+                </Button>
+              </Card>
             </div>
           </div>
-
         </div>
       </div>
     </>
   );
-};
-
-export default TalentScorePage;
+}

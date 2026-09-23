@@ -40,7 +40,6 @@ export const ResumeUploadSection: React.FC<ResumeUploadSectionProps> = ({
   };
 
   return (
-  return (
     <Card className="border border-slate-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-slate-900/90 shadow-xs rounded-2xl">
       <CardHeader className="p-4 sm:p-5 pb-3">
         <CardTitle className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
