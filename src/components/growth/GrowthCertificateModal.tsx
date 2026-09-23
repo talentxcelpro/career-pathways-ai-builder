@@ -21,12 +21,13 @@ import QRCode from 'qrcode';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
+import { useOptimizedAuth } from '@/contexts/OptimizedAuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 interface GrowthCertificateModalProps {
   isOpen: boolean;
   onClose: () => void;
   candidateName?: string;
-  role?: string;
   score?: number;
   velocity?: number;
   acceleration?: string;
@@ -37,30 +38,73 @@ interface GrowthCertificateModalProps {
 export const GrowthCertificateModal: React.FC<GrowthCertificateModalProps> = ({
   isOpen,
   onClose,
-  candidateName = 'Sanobar Jahan',
-  role = 'Founder of TalentXcel Services',
+  candidateName,
   score = 823,
   velocity = 66,
   acceleration = '+8.2%',
   globalRank = '#853',
   telemetryFidelity = '98%',
 }) => {
+  const { user } = useOptimizedAuth();
   const certificateRef = useRef<HTMLDivElement>(null);
+  
+  const [actualName, setActualName] = useState<string>(candidateName || 'Valued Candidate');
+  const [passportUsername, setPassportUsername] = useState<string>('');
   const [isExportingImage, setIsExportingImage] = useState(false);
   const [isExportingPDF, setIsExportingPDF] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedText, setCopiedText] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
 
-  const name = 'Sanobar Jahan';
-  const designation = 'Founder of TalentXcel Services';
   const credentialId = `TXC-GRW-${score}-9481X`;
   const issueDate = 'September 23, 2026';
-  const passportUrl = 'https://talentxcel.in/passport/sanobar-jahan';
 
-  // Generate Passport QR Code with high resolution
+  // Pull actual user name & passport handle
+  useEffect(() => {
+    const resolveActualUser = async () => {
+      let resolvedName = candidateName;
+      let resolvedUsername = '';
+
+      if (user) {
+        if (!resolvedName || resolvedName === 'Valued Candidate') {
+          resolvedName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Valued Candidate';
+        }
+
+        try {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('full_name, username')
+            .eq('id', user.id)
+            .maybeSingle();
+
+          if (profile) {
+            if (profile.full_name) resolvedName = profile.full_name;
+            if (profile.username) resolvedUsername = profile.username;
+          }
+        } catch (err) {
+          console.warn('Profile fetch warning in certificate:', err);
+        }
+
+        if (!resolvedUsername) {
+          resolvedUsername = user.id;
+        }
+      }
+
+      setActualName(resolvedName || 'Valued Candidate');
+      setPassportUsername(resolvedUsername || 'candidate');
+    };
+
+    resolveActualUser();
+  }, [user, candidateName]);
+
+  const passportUrl = passportUsername 
+    ? `https://talentxcel.in/passport/${passportUsername}`
+    : 'https://talentxcel.in/passport';
+
+  // Generate Actual Passport QR Code with center emblem
   useEffect(() => {
     const generatePassportQR = async () => {
+      if (!passportUrl) return;
       try {
         const canvas = document.createElement('canvas');
         canvas.width = 256;
@@ -81,7 +125,6 @@ export const GrowthCertificateModal: React.FC<GrowthCertificateModalProps> = ({
           const center = 128;
           const radius = 22;
 
-          // Inner circular badge
           ctx.beginPath();
           ctx.arc(center, center, radius + 3, 0, 2 * Math.PI);
           ctx.fillStyle = '#FFFFFF';
@@ -117,20 +160,21 @@ export const GrowthCertificateModal: React.FC<GrowthCertificateModalProps> = ({
     generatePassportQR();
   }, [passportUrl]);
 
-  const viralShareText = `🌟 Official TalentXcel Verified Executive Growth Certificate for Sanobar Jahan, Founder of TalentXcel Services!
+  const viralShareText = `🌟 Honored to receive the Official TalentXcel Executive Growth Certificate!
 
-Recognizing visionary leadership in driving global career velocity, empirical excellence, and empowering millions of talent opportunities worldwide.
+Certified by Sanobar Jahan, Founder of TalentXcel Services, recognizing top-tier career velocity and verified multi-source skill validation.
 
 📊 Verified Standing:
+• Candidate: ${actualName}
 • TalentScore: ${score} / 1000 (Elite Tier Standing)
 • Global Standing: ${globalRank} (Top 5% Worldwide)
 • 30-Day Velocity: +${velocity} PTS (${acceleration})
 • Telemetry Fidelity: ${telemetryFidelity} (Multi-source verified)
 
-View verified Career Passport profile:
+Scan QR code or view my live verified Career Passport profile:
 ${passportUrl}
 
-#TalentXcel #SanobarJahan #CareerGrowth #ExecutiveLeadership #TalentScore #GlobalTalent`;
+#TalentXcel #CareerGrowth #ExecutiveLeadership #TalentScore #CareerPassport`;
 
   const handleDownloadPNG = async () => {
     if (!certificateRef.current) return;
@@ -147,7 +191,7 @@ ${passportUrl}
 
       const dataUrl = canvas.toDataURL('image/png');
       const link = document.createElement('a');
-      link.download = `TalentXcel-Growth-Certificate-Sanobar-Jahan.png`;
+      link.download = `TalentXcel-Growth-Certificate-${actualName.replace(/\s+/g, '_')}.png`;
       link.href = dataUrl;
       link.click();
 
@@ -181,7 +225,7 @@ ${passportUrl}
       });
 
       pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-      pdf.save(`TalentXcel-Growth-Certificate-Sanobar-Jahan.pdf`);
+      pdf.save(`TalentXcel-Growth-Certificate-${actualName.replace(/\s+/g, '_')}.pdf`);
 
       toast.success('📄 Executive PDF Certificate downloaded successfully!');
     } catch (error) {
@@ -200,7 +244,7 @@ ${passportUrl}
   };
 
   const handleShareTwitter = () => {
-    const tweetText = `Official Executive Growth Certificate for Sanobar Jahan, Founder of @TalentXcel! 🌟 View verified Career Passport: ${passportUrl} #TalentXcel #CareerGrowth`;
+    const tweetText = `Honored to receive the Official Executive Growth Certificate certified by Sanobar Jahan on @TalentXcel! 🌟 View my verified Career Passport: ${passportUrl} #TalentXcel #CareerGrowth`;
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
     window.open(url, '_blank', 'noopener,noreferrer');
   };
@@ -244,7 +288,7 @@ ${passportUrl}
                     Official Credential
                   </Badge>
                 </div>
-                <p className="text-[11px] text-slate-400">Sanobar Jahan &bull; Founder of TalentXcel Services</p>
+                <p className="text-[11px] text-slate-400">Awarded to {actualName} &bull; Signature Authority: Sanobar Jahan, Founder of TalentXcel Services</p>
               </div>
             </div>
 
@@ -276,7 +320,7 @@ ${passportUrl}
               <div className="absolute inset-2 border-2 border-amber-500/40 rounded-lg pointer-events-none" />
               <div className="absolute inset-3 border border-cyan-500/30 rounded-md pointer-events-none" />
               
-              {/* Corner Rosettes / Filigree Accents */}
+              {/* Corner Filigree Accents */}
               <div className="absolute top-4 left-4 w-6 h-6 border-t-2 border-l-2 border-amber-400 pointer-events-none" />
               <div className="absolute top-4 right-4 w-6 h-6 border-t-2 border-r-2 border-amber-400 pointer-events-none" />
               <div className="absolute bottom-4 left-4 w-6 h-6 border-b-2 border-l-2 border-amber-400 pointer-events-none" />
@@ -325,13 +369,13 @@ ${passportUrl}
                 </div>
               </div>
 
-              {/* 2. TITLE & CANDIDATE RECOGNITION (NO PHOTO) */}
+              {/* 2. TITLE & CANDIDATE RECOGNITION (ACTUAL USER NAME, NO PHOTO) */}
               <div className="relative z-10 text-center my-3 space-y-2">
                 <p className="text-xs uppercase tracking-[0.3em] text-cyan-300/80 font-mono">
                   AUTONOMOUS VERIFICATION OF EXCELLENCE
                 </p>
                 
-                {/* Gold Highlighted Bar Title */}
+                {/* Gold Headline */}
                 <div className="py-1">
                   <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-100 font-serif drop-shadow-sm">
                     Executive Certificate of Career Velocity
@@ -342,22 +386,22 @@ ${passportUrl}
                   This official empirical credential is appropriately awarded to
                 </p>
 
-                {/* Recipient Name in Big Glowing Type */}
+                {/* Actual Candidate Name in Big Glowing Type */}
                 <div className="py-2">
                   <div className="inline-block relative">
                     <span className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-white to-amber-200 tracking-wide border-b-2 border-amber-400/70 pb-1 px-8 font-serif">
-                      {name}
+                      {actualName}
                     </span>
                     <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-amber-400 rotate-45" />
                   </div>
                   <p className="text-sm font-semibold text-cyan-300 mt-2 font-sans tracking-wide">
-                    {designation}
+                    Verified Candidate &bull; Career Growth &amp; Velocity Cohort
                   </p>
                 </div>
 
                 <p className="text-[11.5px] text-slate-300 max-w-2xl mx-auto leading-relaxed">
-                  For visionary leadership in architecting the TalentXcel global platform, continuous top-tier technical velocity, 
-                  and verified multi-source executive leadership, accelerating to the top 5% peer acceleration cohort worldwide.
+                  For demonstrating continuous top-tier technical velocity, empirical distributed architecture validation, 
+                  and verified multi-source professional excellence, accelerating to the top 5% peer acceleration cohort worldwide.
                 </p>
               </div>
 
@@ -419,103 +463,43 @@ ${passportUrl}
                 </div>
               </div>
 
-              {/* 4. SIGN-OFF, OFFICIAL SEAL & PASSPORT QR CODE ROW */}
+              {/* 4. SIGNATURE AUTHORITY (SANOBAR JAHAN), ATTACHED STAMP & USER PASSPORT QR CODE */}
               <div className="relative z-10 pt-3 border-t border-slate-800/80 flex items-end justify-between">
                 
-                {/* Signatory Left: Sanobar Jahan */}
-                <div className="space-y-1 w-48 text-left">
-                  <div className="font-serif italic text-base text-cyan-300 font-semibold tracking-wider select-none">
+                {/* SIGNATURE AUTHORITY: SANOBAR JAHAN */}
+                <div className="space-y-1 w-52 text-left">
+                  <div className="font-serif italic text-lg sm:text-xl text-cyan-300 font-semibold tracking-wider select-none">
                     Sanobar Jahan
                   </div>
-                  <div className="h-px w-36 bg-slate-700" />
-                  <p className="text-[10px] text-slate-300 font-semibold">Founder & Managing Director</p>
-                  <p className="text-[9px] text-slate-500 font-mono">TalentXcel Services</p>
+                  <div className="h-px w-44 bg-slate-700" />
+                  <p className="text-[10.5px] text-white font-bold tracking-wide uppercase">Sanobar Jahan</p>
+                  <p className="text-[9.5px] text-cyan-300 font-medium">Founder of TalentXcel Services</p>
+                  <p className="text-[8.5px] text-slate-400 font-mono uppercase">Signature Authority</p>
                 </div>
 
-                {/* CENTER: THE 32-POINT METALLIC GOLD SEAL (Matching Image 1:1) */}
+                {/* CENTER: THE ACTUAL STAMPING AS ATTACHED (1:1 with media_1790166572466.jpg) */}
                 <div className="relative flex flex-col items-center">
                   <div className="relative w-28 h-28 flex items-center justify-center">
                     
-                    {/* Radiating Glow */}
-                    <div className="absolute inset-0 rounded-full bg-amber-500/20 blur-lg animate-pulse" />
+                    {/* Ambient Radiating Glow */}
+                    <div className="absolute inset-0 rounded-full bg-cyan-500/20 blur-md animate-pulse" />
 
-                    {/* SVG Metallic Gold Starburst Seal */}
-                    <svg viewBox="0 0 160 160" className="w-28 h-28 drop-shadow-2xl">
-                      <defs>
-                        <radialGradient id="goldSealGradDark" cx="50%" cy="50%" r="50%">
-                          <stop offset="0%" stopColor="#FFFBEB" />
-                          <stop offset="35%" stopColor="#FBBF24" />
-                          <stop offset="70%" stopColor="#D97706" />
-                          <stop offset="100%" stopColor="#78350F" />
-                        </radialGradient>
-                        <linearGradient id="goldRimGradDark" x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" stopColor="#FDE68A" />
-                          <stop offset="50%" stopColor="#B45309" />
-                          <stop offset="100%" stopColor="#F59E0B" />
-                        </linearGradient>
-                      </defs>
-
-                      {/* 32-point Starburst Outer Rim */}
-                      <path
-                        d="M 80,0 L 87,14 L 102,5 L 105,21 L 122,16 L 120,32 L 137,33 L 130,49 L 147,54 L 137,68 L 152,78 L 138,89 L 150,102 L 133,110 L 142,125 L 124,129 L 129,145 L 112,144 L 112,160 L 97,154 L 92,168 L 80,158 L 68,168 L 63,154 L 48,160 L 48,144 L 31,145 L 36,129 L 18,125 L 27,110 L 10,102 L 22,89 L 8,78 L 23,68 L 13,54 L 30,49 L 23,33 L 40,32 L 38,16 L 55,21 L 58,5 L 73,14 Z"
-                        fill="url(#goldSealGradDark)"
-                        stroke="url(#goldRimGradDark)"
-                        strokeWidth="1.5"
-                      />
-
-                      {/* Concentric Golden Ring */}
-                      <circle cx="80" cy="80" r="54" fill="#0b1329" stroke="url(#goldRimGradDark)" strokeWidth="2.5" />
-                      <circle cx="80" cy="80" r="49" fill="none" stroke="#FDE68A" strokeWidth="0.8" strokeDasharray="3 2" />
-
-                      {/* Seal Inner Crest */}
-                      <g transform="translate(80, 80)">
-                        <path
-                          d="M -16,-12 C -8,-22 8,-22 16,-12 C 16,10 0,22 0,22 C 0,22 -16,10 -16,-12 Z"
-                          fill="url(#goldSealGradDark)"
-                          opacity="0.9"
-                        />
-                        <text
-                          y="-2"
-                          textAnchor="middle"
-                          fill="#78350F"
-                          fontSize="7"
-                          fontWeight="bold"
-                          fontFamily="sans-serif"
-                        >
-                          VERIFIED
-                        </text>
-                        <text
-                          y="7"
-                          textAnchor="middle"
-                          fill="#78350F"
-                          fontSize="6"
-                          fontWeight="bold"
-                          fontFamily="sans-serif"
-                        >
-                          2026
-                        </text>
-                        <text
-                          y="14"
-                          textAnchor="middle"
-                          fill="#78350F"
-                          fontSize="5"
-                          fontWeight="bold"
-                          fontFamily="sans-serif"
-                        >
-                          GOLD SEAL
-                        </text>
-                      </g>
-                    </svg>
+                    {/* Official Transparent High-Res Stamp */}
+                    <img
+                      src="/assets/talentxcel-official-stamp.png"
+                      alt="Official TalentXcel Stamp"
+                      className="w-28 h-28 object-contain drop-shadow-2xl select-none pointer-events-none transform -rotate-6 hover:rotate-0 transition-transform duration-300"
+                    />
                   </div>
-                  <div className="text-[8px] font-mono text-amber-300/90 tracking-widest uppercase mt-0.5 text-center font-bold">
-                    OFFICIAL TALENTXCEL SEAL
+                  <div className="text-[8px] font-mono text-cyan-300/90 tracking-widest uppercase mt-1 text-center font-bold">
+                    OFFICIAL TALENTXCEL STAMP
                   </div>
                 </div>
 
-                {/* Right: Career Passport QR Code */}
+                {/* RIGHT: ACTUAL USER'S CAREER PASSPORT QR CODE */}
                 <div className="space-y-1 w-52 text-right flex flex-col items-end">
                   <div className="flex items-center gap-2 mb-1">
-                    <div className="w-12 h-12 bg-white p-0.5 rounded shadow-sm">
+                    <div className="w-13 h-13 bg-white p-0.5 rounded shadow-md border border-slate-700">
                       {qrCodeUrl ? (
                         <img src={qrCodeUrl} alt="Passport QR" className="w-full h-full object-contain" />
                       ) : (
@@ -526,11 +510,11 @@ ${passportUrl}
                       <div className="text-[9px] font-bold text-cyan-300 uppercase tracking-wider font-mono">
                         CAREER PASSPORT
                       </div>
-                      <div className="text-[8px] text-slate-400">
+                      <div className="text-[8px] text-slate-300 font-medium">
                         Scan to view profile
                       </div>
-                      <div className="text-[7.5px] text-slate-500 font-mono">
-                        talentxcel.in/passport/sanobar-jahan
+                      <div className="text-[7px] text-slate-500 font-mono truncate max-w-[110px]" title={passportUrl}>
+                        {passportUrl.replace('https://', '')}
                       </div>
                     </div>
                   </div>
@@ -547,7 +531,7 @@ ${passportUrl}
                   <span>SHA-256 HASH: 823f-e91b-42c0-8a71-d6023cb8f</span>
                 </div>
                 <div>
-                  <span>PASSPORT: talentxcel.in/passport/sanobar-jahan</span>
+                  <span>PASSPORT: {passportUrl.replace('https://', '')}</span>
                 </div>
               </div>
             </div>

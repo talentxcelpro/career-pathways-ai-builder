@@ -638,8 +638,7 @@ const CandidateGrowthPage: React.FC = () => {
       <GrowthCertificateModal
         isOpen={isCertificateModalOpen}
         onClose={() => setIsCertificateModalOpen(false)}
-        candidateName="Sanobar Jahan"
-        role="Founder of TalentXcel Services"
+        candidateName={user?.user_metadata?.full_name || user?.email?.split('@')[0]}
         score={baseScore}
         velocity={66}
         acceleration="+8.2%"
