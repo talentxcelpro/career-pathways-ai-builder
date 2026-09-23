@@ -6,7 +6,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { searchService } from '@/services/search/SearchService';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 interface CriticalJobData {
   id: string;
@@ -127,22 +127,39 @@ export const FALLBACK_JOBS = [
 export const useJobsCriticalPath = (filters: JobFilters, sortBy: string = 'posted_at') => {
   const queryClient = useQueryClient();
   const [isEnhancementLoaded, setIsEnhancementLoaded] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [accumulatedJobs, setAccumulatedJobs] = useState<any[]>([]);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const pageSize = 24;
 
-  // Step 1: Load real active jobs via SearchService (₹0 Scale Provider with browser LRU cache)
+  // Track filter changes to reset accumulated jobs and page
+  const filterSignature = JSON.stringify({ filters, sortBy });
+  const prevSignature = useRef(filterSignature);
+
+  useEffect(() => {
+    if (prevSignature.current !== filterSignature) {
+      prevSignature.current = filterSignature;
+      setCurrentPage(1);
+      setAccumulatedJobs([]);
+    }
+  }, [filterSignature]);
+
+  // Normalize experience levels to database enum representation
+  const getMappedLevels = () => (filters.experience_level || []).map(lvl => {
+    const l = lvl.toLowerCase();
+    if (l.includes('entry') || l.includes('fresher') || l.includes('0-1')) return 'fresher';
+    if (l.includes('mid') || l.includes('1-3') || l.includes('2-5')) return 'mid-level';
+    if (l.includes('senior') || l.includes('3-5') || l.includes('5-10')) return 'senior-level';
+    if (l.includes('lead') || l.includes('exec') || l.includes('10+')) return 'executive';
+    return lvl;
+  });
+
+  // Step 1: Load initial page of active jobs via SearchService
   const criticalQuery = useQuery({
     queryKey: ['jobs-critical', filters, sortBy],
     queryFn: async () => {
-      console.log('🚀 Loading active database jobs via SearchService (20 limit)...');
-
-      // Normalize experience levels to database enum representation
-      const mappedLevels = (filters.experience_level || []).map(lvl => {
-        const l = lvl.toLowerCase();
-        if (l.includes('entry') || l.includes('fresher') || l.includes('0-1')) return 'fresher';
-        if (l.includes('mid') || l.includes('1-3') || l.includes('2-5')) return 'mid-level';
-        if (l.includes('senior') || l.includes('3-5') || l.includes('5-10')) return 'senior-level';
-        if (l.includes('lead') || l.includes('exec') || l.includes('10+')) return 'executive';
-        return lvl;
-      });
+      console.log('🚀 Loading active database jobs via SearchService (batch: 24)...');
+      const mappedLevels = getMappedLevels();
 
       try {
         const searchResult = await searchService.searchJobs({
@@ -155,7 +172,7 @@ export const useJobsCriticalPath = (filters: JobFilters, sortBy: string = 'poste
           is_remote: filters.is_remote,
           skills: filters.skills,
           page: 1,
-          limit: 20, // Strict 20 results max as required by ₹0 Scale rules
+          limit: pageSize,
           sortBy
         });
 
@@ -163,7 +180,6 @@ export const useJobsCriticalPath = (filters: JobFilters, sortBy: string = 'poste
         const count = searchResult.totalCount || data.length;
 
         if (!data || data.length === 0) {
-          // If filters yielded 0 matches, return empty array so UI shows "No jobs found" for that filter
           const isFiltered = Boolean(
             (filters.search && filters.search.trim()) ||
             (filters.location && filters.location.trim()) ||
@@ -182,7 +198,6 @@ export const useJobsCriticalPath = (filters: JobFilters, sortBy: string = 'poste
         const isSearchActive = Boolean(filters.search || filters.location);
         const normalizedJobs = data.map((job: any, index: number) => ({
           ...job,
-          // Designate top 6 jobs as featured on default view so both Featured and All sections are populated
           is_featured: job.is_featured || (!isSearchActive && index < 6),
           companies: job.companies || {
             name: job.company_name || 'TalentXcel Services (Client Partner)',
@@ -201,24 +216,89 @@ export const useJobsCriticalPath = (filters: JobFilters, sortBy: string = 'poste
         return { jobs: FALLBACK_JOBS, totalCount: FALLBACK_JOBS.length };
       }
     },
-    staleTime: 3 * 60 * 1000, // 3-minute browser cache
+    staleTime: 3 * 60 * 1000,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
 
+  // Keep accumulated jobs in sync with page 1
+  useEffect(() => {
+    if (criticalQuery.data?.jobs) {
+      setAccumulatedJobs(criticalQuery.data.jobs);
+      setCurrentPage(1);
+    }
+  }, [criticalQuery.data]);
+
   const jobsData = criticalQuery.data;
-  const jobs = jobsData?.jobs || [];
-  const totalCount = jobsData?.totalCount || jobs.length;
-  const isLoading = criticalQuery.isLoading;
+  const initialJobs = jobsData?.jobs || [];
+  const displayJobs = accumulatedJobs.length > 0 ? accumulatedJobs : initialJobs;
+  const totalCount = jobsData?.totalCount || displayJobs.length;
+  const hasMore = displayJobs.length < totalCount;
+
+  // Progressive loading function to fetch subsequent pages
+  const loadMore = async () => {
+    if (isLoadingMore || !hasMore) return;
+    const nextPage = currentPage + 1;
+    setIsLoadingMore(true);
+
+    try {
+      const mappedLevels = getMappedLevels();
+      const nextResult = await searchService.searchJobs({
+        query: filters.search,
+        location: filters.location,
+        employment_types: filters.employment_type,
+        experience_levels: mappedLevels,
+        min_salary: filters.salary_min,
+        max_salary: filters.salary_max,
+        is_remote: filters.is_remote,
+        skills: filters.skills,
+        page: nextPage,
+        limit: pageSize,
+        sortBy
+      });
+
+      const nextBatch = nextResult.jobs || [];
+      if (nextBatch.length > 0) {
+        const normalizedBatch = nextBatch.map((job: any) => ({
+          ...job,
+          is_featured: false,
+          companies: job.companies || {
+            name: job.company_name || 'TalentXcel Services (Client Partner)',
+            logo_url: job.organization_logo_url || '/talentxcel-official-logo.png',
+            industry: job.industry || 'Technology & Enterprise Services',
+            is_verified: true
+          }
+        }));
+
+        setAccumulatedJobs(prev => {
+          const seen = new Set(prev.map(j => j.id));
+          const uniqueNew = normalizedBatch.filter(j => !seen.has(j.id));
+          return [...prev, ...uniqueNew];
+        });
+        setCurrentPage(nextPage);
+      }
+    } catch (err) {
+      console.warn('Load more jobs error:', err);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
 
   return {
-    jobs,
-    isLoading,
+    jobs: displayJobs,
+    isLoading: criticalQuery.isLoading && displayJobs.length === 0,
+    isLoadingMore,
     isEnhancing: false,
     isEnhancementLoaded: true,
     totalCount,
-    hasMore: (jobsData?.totalCount || 0) > jobs.length,
-    refetch: () => criticalQuery.refetch()
+    hasMore,
+    currentPage,
+    loadMore,
+    refetch: () => {
+      setCurrentPage(1);
+      setAccumulatedJobs([]);
+      return criticalQuery.refetch();
+    }
   };
 };
 

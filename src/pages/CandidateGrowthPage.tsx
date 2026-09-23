@@ -638,13 +638,15 @@ const CandidateGrowthPage: React.FC = () => {
       <GrowthCertificateModal
         isOpen={isCertificateModalOpen}
         onClose={() => setIsCertificateModalOpen(false)}
-        candidateName={user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Arshid Wani'}
+        candidateName={user?.user_metadata?.full_name || 'Arshid Hussain Wani'}
+        role={user?.user_metadata?.title || 'Vice President, Operations'}
+        company={user?.user_metadata?.company || 'TalentXcel Services'}
         score={baseScore}
         velocity={66}
         acceleration="+8.2%"
         globalRank="#853"
         telemetryFidelity="98%"
-        specialization="Principal Distributed Systems & Cloud Architecture"
+        specialization="Operations & Global Talent Architecture"
       />
     </div>
   );

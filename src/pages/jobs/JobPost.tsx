@@ -228,6 +228,19 @@ function JobPostContent() {
         }
       }
 
+      if (resolvedCompanyId && user) {
+        try {
+          await supabase.from('company_team_members').upsert({
+            company_id: resolvedCompanyId,
+            user_id: user.id,
+            role: 'owner',
+            is_active: true
+          }, { onConflict: 'company_id,user_id' });
+        } catch (mErr) {
+          console.warn('Failed to ensure company team membership:', mErr);
+        }
+      }
+
       // Compute bulletproof fallback values for database constraints and triggers
       const finalTitle = jobData.title?.trim() || jobData.job_title?.trim() || canonicalPayload.title || 'Untitled Role';
       const finalLocation = jobData.location?.trim() || canonicalPayload.location?.trim() || jobData.location_city?.trim() || 'Remote';
@@ -396,6 +409,12 @@ function JobPostContent() {
       ? `₹${(minSal / 100000).toFixed(1)}L - ₹${(maxSal / 100000).toFixed(1)}L`
       : (minSal ? `From ₹${(minSal / 100000).toFixed(1)}L` : 'Competitive / Based on experience');
 
+    const rawSkills = (formData.required_skills && formData.required_skills.length > 0)
+      ? formData.required_skills
+      : (formData.skills_required && formData.skills_required.length > 0)
+        ? formData.skills_required
+        : [];
+
     const submitData = { 
       ...formData, 
       title,
@@ -407,6 +426,10 @@ function JobPostContent() {
       description: effectiveDesc,
       job_description: effectiveDesc,
       job_summary: formData.job_summary?.trim() || effectiveDesc.slice(0, 250),
+      employment_type: formData.employment_type || 'full-time',
+      experience_level: formData.experience_level || 'mid-level',
+      skills_required: rawSkills,
+      required_skills: rawSkills,
       salary_min: minSal,
       salary_max: maxSal,
       min_salary: minSal,

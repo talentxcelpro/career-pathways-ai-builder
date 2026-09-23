@@ -135,6 +135,8 @@ const Jobs = () => {
     totalCount,
     hasMore,
     isLoading, 
+    isLoadingMore,
+    loadMore,
     isEnhancing,
     refetch
   } = useJobsCriticalPath(effectiveFilters, sortBy);
@@ -654,7 +656,7 @@ const Jobs = () => {
                       <p className="text-muted-foreground">Finding perfect job matches...</p>
                     </div>
                   </div>
-                ) : regularJobs.length === 0 ? (
+                ) : allJobs.length === 0 ? (
                   <Card className="p-12 text-center">
                     <div className="space-y-4">
                       <div className="text-6xl">🔍</div>
@@ -763,6 +765,39 @@ const Jobs = () => {
                           />
                           )
                         ))}
+                      </div>
+                    )}
+
+                    {/* Progressive Load More Opportunities */}
+                    {hasMore && (
+                      <div className="pt-8 pb-4 flex flex-col items-center justify-center gap-3">
+                        <div className="text-xs text-muted-foreground font-mono">
+                          Showing {allJobs.length} of {totalCount} active verified opportunities
+                        </div>
+                        <Button
+                          size="lg"
+                          variant="outline"
+                          onClick={loadMore}
+                          disabled={isLoadingMore}
+                          className="px-8 py-3 text-sm font-bold bg-card hover:bg-primary hover:text-primary-foreground border-primary/30 shadow-md transition-all gap-2"
+                        >
+                          {isLoadingMore ? (
+                            <>
+                              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                              <span>Loading more opportunities...</span>
+                            </>
+                          ) : (
+                            <>
+                              <TrendingUp className="w-4 h-4 text-primary" />
+                              <span>Load More Jobs (+{Math.min(24, totalCount - allJobs.length)})</span>
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    )}
+                    {!hasMore && allJobs.length > 0 && totalCount > 24 && (
+                      <div className="text-center py-6 text-xs text-muted-foreground border-t border-border/30 mt-6">
+                        ✓ You have viewed all {totalCount} active verified opportunities.
                       </div>
                     )}
                   </>

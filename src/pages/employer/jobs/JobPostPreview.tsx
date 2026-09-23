@@ -88,6 +88,19 @@ const JobPostPreview = () => {
         }
       }
 
+      if (companyId && user) {
+        try {
+          await supabase.from('company_team_members').upsert({
+            company_id: companyId,
+            user_id: user.id,
+            role: 'owner',
+            is_active: true
+          }, { onConflict: 'company_id,user_id' });
+        } catch (mErr) {
+          console.warn('Failed to ensure company team membership in preview:', mErr);
+        }
+      }
+
       const insertData = {
         ...canonicalPayload,
         job_title: formData.job_title || formData.title,

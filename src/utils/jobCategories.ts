@@ -542,7 +542,12 @@ export function validateJobData(jobData: any): { isValid: boolean; errors: strin
   }
 
   // Skills validation
-  if (!jobData.skills_required || jobData.skills_required.length === 0) {
+  const skills = (jobData.skills_required && jobData.skills_required.length > 0)
+    ? jobData.skills_required
+    : (jobData.required_skills && jobData.required_skills.length > 0)
+      ? jobData.required_skills
+      : [];
+  if (skills.length === 0) {
     errors.push('At least one skill is required');
   }
 

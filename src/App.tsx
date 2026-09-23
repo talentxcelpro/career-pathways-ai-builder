@@ -53,6 +53,14 @@ const GrowthControlPlane = lazy(() => import("@/pages/growth/GrowthControlPlane"
 const CandidateGrowthPage = lazy(() => import("@/pages/CandidateGrowthPage"));
 const GlobalJobsAutomationCenter = lazy(() => import("@/pages/admin/GlobalJobsAutomationCenter"));
 const ReferAndEarn = lazy(() => import("@/pages/ReferAndEarn"));
+const JobPost = lazy(() => import('@/pages/jobs/JobPost'));
+const JobPostAI = lazy(() => import('@/pages/employer/jobs/JobPostAI'));
+const JobPostPreview = lazy(() => import('@/pages/employer/jobs/JobPostPreview'));
+const JobPostSuccess = lazy(() => import('@/pages/employer/jobs/JobPostSuccess'));
+const JobsManage = lazy(() => import('@/pages/jobs/Manage'));
+const SavedJobs = lazy(() => import('@/pages/jobs/SavedJobs'));
+const MyApplications = lazy(() => import('@/pages/jobs/MyApplications'));
+const JobAlerts = lazy(() => import('@/pages/jobs/Alerts'));
 
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
@@ -416,6 +424,16 @@ const App = () => {
                 <Route path="/industries/:industry" element={<IndustryJobs />} />
                 <Route path="/industries" element={<IndustryJobs />} />
                 
+                {/* Priority Employer Job Posting & Management Routes (must precede /jobs/:slugOrId) */}
+                <Route path="/jobs/post" element={<Suspense fallback={<div className="p-8 text-center text-sm text-muted-foreground">Loading Job Composer...</div>}><JobPost /></Suspense>} />
+                <Route path="/jobs/post/ai" element={<Suspense fallback={<div className="p-8 text-center text-sm text-muted-foreground">Loading AI Job Composer...</div>}><JobPostAI /></Suspense>} />
+                <Route path="/jobs/post/preview" element={<Suspense fallback={<div className="p-8 text-center text-sm text-muted-foreground">Loading Job Preview...</div>}><JobPostPreview /></Suspense>} />
+                <Route path="/jobs/post/success" element={<Suspense fallback={<div className="p-8 text-center text-sm text-muted-foreground">Loading...</div>}><JobPostSuccess /></Suspense>} />
+                <Route path="/jobs/manage" element={<Suspense fallback={<div className="p-8 text-center text-sm text-muted-foreground">Loading Job Manager...</div>}><JobsManage /></Suspense>} />
+                <Route path="/jobs/saved" element={<Suspense fallback={<div className="p-8 text-center text-sm text-muted-foreground">Loading Saved Jobs...</div>}><SavedJobs /></Suspense>} />
+                <Route path="/jobs/applied" element={<Suspense fallback={<div className="p-8 text-center text-sm text-muted-foreground">Loading Applications...</div>}><MyApplications /></Suspense>} />
+                <Route path="/jobs/alerts" element={<Suspense fallback={<div className="p-8 text-center text-sm text-muted-foreground">Loading Job Alerts...</div>}><JobAlerts /></Suspense>} />
+
                 {/* Specific Job Detail Routes - UUID patterns */}
                 <Route path="/jobs/:slugOrId" element={
                   <Suspense fallback={<div>Loading...</div>}>
