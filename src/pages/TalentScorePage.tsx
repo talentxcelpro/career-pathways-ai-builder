@@ -222,7 +222,12 @@ export default function TalentScorePage() {
     } else if (word === 'GROW') {
       setActiveSidebarTab('skill-analysis');
       scrollToContent();
-      toast.success('📈 30-Day Growth Delta: +66 Points (+8.2% acceleration)');
+      toast.success('📈 30-Day Growth Delta: +66 Points (+8.2% acceleration)', {
+        action: {
+          label: 'Open Growth Hub',
+          onClick: () => navigate('/grow'),
+        },
+      });
     } else if (word === 'EARN') {
       setActiveSidebarTab('opportunity-map');
       scrollToContent();
@@ -300,11 +305,11 @@ export default function TalentScorePage() {
             <Button
               onClick={() => {
                 setActiveModal({ type: null });
-                navigate('/growth');
+                navigate('/grow');
               }}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold"
             >
-              View Full Growth Timeline
+              View Full Career Growth Hub & Accelerators
             </Button>
           </div>
         ),

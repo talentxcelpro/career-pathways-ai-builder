@@ -2,7 +2,7 @@ import React from 'react';
 import { useOptimizedAuth } from '@/contexts/OptimizedAuthContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ShieldAlert, Lock, LogIn } from 'lucide-react';
+import { ShieldAlert, Lock, LogIn, TrendingUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const SUPER_ADMIN_EMAILS = [
@@ -122,11 +122,18 @@ export const UDXSuperAdminGuard: React.FC<UDXSuperAdminGuardProps> = ({ children
 
             <div className="space-y-2 pt-2">
               <Button
+                onClick={() => navigate('/grow')}
+                className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 text-xs shadow-lg shadow-cyan-900/40"
+              >
+                <TrendingUp className="w-4 h-4" />
+                <span>Candidate Career Growth Hub (/grow)</span>
+              </Button>
+              <Button
                 onClick={async () => {
                   await signOut();
                   navigate(`/auth/login?redirect=${encodeURIComponent(window.location.pathname)}`);
                 }}
-                className="w-full bg-rose-600 hover:bg-rose-500 text-white font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 text-xs"
+                className="w-full bg-rose-600/90 hover:bg-rose-500 text-white font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 text-xs"
               >
                 <span>Switch Account / Sign In as Super Admin</span>
               </Button>

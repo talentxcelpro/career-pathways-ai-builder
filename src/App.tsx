@@ -50,6 +50,7 @@ import UDXDiscoveryDashboard from "@/pages/discovery/UDXDiscoveryDashboard";
 import { UDXSuperAdminGuard } from "@/components/auth/UDXSuperAdminGuard";
 const BenchmarkResultsPage = lazy(() => import("@/pages/BenchmarkResultsPage"));
 const GrowthControlPlane = lazy(() => import("@/pages/growth/GrowthControlPlane"));
+const CandidateGrowthPage = lazy(() => import("@/pages/CandidateGrowthPage"));
 
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
@@ -361,6 +362,7 @@ const App = () => {
                 <Route path="/admin/discovery" element={<UDXSuperAdminGuard><UDXDiscoveryDashboard /></UDXSuperAdminGuard>} />
                 <Route path="/growth" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 text-slate-400 p-8 flex items-center justify-center">Loading Growth Control Plane...</div>}><UDXSuperAdminGuard><GrowthControlPlane /></UDXSuperAdminGuard></Suspense>} />
                 <Route path="/admin/growth" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 text-slate-400 p-8 flex items-center justify-center">Loading Growth Control Plane...</div>}><UDXSuperAdminGuard><GrowthControlPlane /></UDXSuperAdminGuard></Suspense>} />
+                <Route path="/grow" element={<Suspense fallback={<div className="min-h-screen bg-[#070b14] text-slate-400 p-8 flex items-center justify-center font-mono text-xs">Loading Career Growth Hub...</div>}><CandidateGrowthPage /></Suspense>} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/privacypolicy" element={<PrivacyPolicy />} />
