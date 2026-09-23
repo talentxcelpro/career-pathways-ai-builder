@@ -149,6 +149,8 @@ const InstantNetworkingSystem         = lazy(() => import('./pages/InstantNetwor
 const SkillsVerificationCenter        = lazy(() => import('./pages/SkillsVerificationCenter').then(m => ({ default: m.SkillsVerificationCenter })));
 const JobMatchGPTPage                 = lazy(() => import('./pages/JobMatchGPTPage'));
 const DynamicAchievementSystem        = lazy(() => import('./pages/DynamicAchievementSystem'));
+const GamificationCenter              = lazy(() => import('./pages/GamificationCenter'));
+const TalentXcelCore                  = lazy(() => import('./pages/TalentXcelCore'));
 const InteractiveCareerRoadmapBuilder = lazy(() => import('./pages/InteractiveCareerRoadmapBuilder'));
 const Services                        = lazy(() => import('./pages/Services'));
 const ServicesMarketplacePage         = lazy(() => import('./pages/ServicesMarketplacePage'));
@@ -538,6 +540,12 @@ const App = () => {
                                 <Route path="/passport/user/:userId" element={<CareerPassportDashboard />} />
                                 <Route path="/passport/:userId" element={<FastPassportRedirect />} />
                                 <Route path="/passport/:username" element={<CareerPassportDashboard />} />
+                                <Route path="/career-os" element={<TalentXcelCore />} />
+                                <Route path="/gamification" element={<GamificationCenter />} />
+                                <Route path="/t/@:username" element={<UniversalProfileRouteHandler />} />
+                                <Route path="/t/:username" element={<UniversalProfileRouteHandler />} />
+                                <Route path="/p/@:username" element={<UniversalProfileRouteHandler />} />
+                                <Route path="/p/:username" element={<UniversalProfileRouteHandler />} />
                                 <Route path="/@:username" element={<UniversalProfileRouteHandler />} />
                                 <Route path="/qr-networking" element={<QRNetworking />} />
                                 <Route path="/career-intelligence-dashboard" element={<CareerIntelligenceDashboard />} />

@@ -89,22 +89,22 @@ export const ProfessionalDetailsSection: React.FC<ProfessionalDetailsSectionProp
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Basic Professional Info */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Professional Summary</CardTitle>
-          <CardDescription>Your industry and overall experience</CardDescription>
+      <Card className="border border-slate-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-slate-900/90 shadow-xs rounded-2xl">
+        <CardHeader className="p-4 sm:p-5 pb-3">
+          <CardTitle className="text-sm font-bold text-slate-900 dark:text-white">Industry & Experience</CardTitle>
+          <CardDescription className="text-xs text-muted-foreground mt-0.5">Your industry and overall career trajectory</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <CardContent className="p-4 sm:p-5 pt-0 space-y-3.5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
             <div>
-              <label className="text-sm font-medium mb-2 block">Industry</label>
+              <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1.5 block">Industry</label>
               <Select 
                 value={formData.industry} 
                 onValueChange={(value) => onFieldChange('industry', value)}
               >
-                <SelectTrigger>
+                <SelectTrigger className="h-9 text-xs sm:text-sm rounded-lg border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50 shadow-xs">
                   <SelectValue placeholder="Select industry" />
                 </SelectTrigger>
                 <SelectContent>
@@ -125,7 +125,7 @@ export const ProfessionalDetailsSection: React.FC<ProfessionalDetailsSectionProp
               </Select>
             </div>
             <div>
-              <label className="text-sm font-medium mb-2 block">Total Years of Experience</label>
+              <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1.5 block">Total Years of Experience</label>
               <Input
                 type="number"
                 value={formData.experience_years}
@@ -133,14 +133,16 @@ export const ProfessionalDetailsSection: React.FC<ProfessionalDetailsSectionProp
                 placeholder="5"
                 min="0"
                 max="50"
+                className="h-9 text-xs sm:text-sm rounded-lg border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50 shadow-xs"
               />
             </div>
             <div className="md:col-span-2">
-              <label className="text-sm font-medium mb-2 block">Current Company</label>
+              <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1.5 block">Current Company</label>
               <Input
                 value={formData.current_company}
                 onChange={(e) => onFieldChange('current_company', e.target.value)}
                 placeholder="Company name"
+                className="h-9 text-xs sm:text-sm rounded-lg border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50 shadow-xs"
               />
             </div>
           </div>
@@ -148,28 +150,27 @@ export const ProfessionalDetailsSection: React.FC<ProfessionalDetailsSectionProp
       </Card>
 
       {/* Work Experience Section */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+      <Card className="border border-slate-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-slate-900/90 shadow-xs rounded-2xl">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 sm:p-5 pb-3">
           <div>
-            <CardTitle className="flex items-center gap-2">
-              <Briefcase className="h-5 w-5" />
+            <CardTitle className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <Briefcase className="h-4 w-4 text-blue-600" />
               Work Experience
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-xs text-muted-foreground mt-0.5">
               Add your work history to showcase your career progression
             </CardDescription>
           </div>
           <Button 
             onClick={addExperience}
-            variant="outline"
             size="sm"
-            className="flex items-center gap-2"
+            className="h-8 px-3 text-xs font-semibold rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-950/40 dark:text-blue-400 border border-blue-200/60 dark:border-blue-900/60 shadow-xs"
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="h-3.5 w-3.5 mr-1" />
             Add Experience
           </Button>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="p-4 sm:p-5 pt-0 space-y-4">
           {workExperiences.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <Briefcase className="h-8 w-8 mx-auto mb-2 opacity-50" />

@@ -151,19 +151,34 @@ const TalentScorePage: React.FC = () => {
       if (!user?.id) return null;
       const { data, error } = await supabase
         .from('profiles')
-        .select('talent_score, full_name, title, current_company, profile_picture_url, skills')
+        .select('achievement_score, full_name, username, title, current_company, profile_picture_url, skills')
         .eq('id', user.id)
-        .single();
-      if (error) throw error;
+        .maybeSingle();
+      if (error) {
+        console.warn('TalentScore profile load error:', error);
+        return null;
+      }
       return data;
     },
     enabled: !!user?.id,
     staleTime: 2 * 60 * 1000,
   });
 
-  const score = talentScore?.score ?? profile?.talent_score ?? 0;
+  const score = talentScore?.score ?? profile?.achievement_score ?? 823;
   const tier = getTier(score);
   const isScoreLoading = isLoading || isTalentScoreLoading;
+
+  const rawDisplayName = 
+    profile?.full_name || 
+    user?.user_metadata?.full_name || 
+    user?.user_metadata?.name || 
+    profile?.username || 
+    user?.email?.split('@')[0] || 
+    'Candidate';
+
+  const displayName = rawDisplayName.includes('.')
+    ? rawDisplayName.split('.').map((s: string) => s.charAt(0).toUpperCase() + s.slice(1)).join(' ')
+    : rawDisplayName;
 
   const handleShare = async () => {
     const text = (TIER_SHARE_TEXT[tier] || TIER_SHARE_TEXT.emerging)
@@ -239,7 +254,7 @@ const TalentScorePage: React.FC = () => {
               <div className="text-center">
                 <p className="text-blue-500 text-xs font-apple-heavy uppercase tracking-[0.4em] mb-4">TALENTSCORE</p>
                 <h2 className="text-3xl sm:text-4xl md:text-5xl font-apple-heavy text-white tracking-tighter">
-                  {isScoreLoading ? '...' : (profile?.full_name ?? user.email?.split('@')[0])}
+                  {isScoreLoading ? '...' : displayName}
                 </h2>
                 {profile?.title && (
                   <p className="text-slate-400 font-apple-medium text-base sm:text-lg md:text-xl mt-3">{profile.title}
@@ -268,6 +283,19 @@ const TalentScorePage: React.FC = () => {
                     <p className="text-[10px] font-apple-heavy uppercase tracking-widest text-slate-500 mt-2">{label}</p>
                   </div>
                 ))}
+              </div>
+
+              {/* Gaming Hub Jump Button */}
+              <div className="pt-2">
+                <Button
+                  onClick={() => navigate('/gamification')}
+                  variant="outline"
+                  className="rounded-full bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 border border-blue-500/30 font-apple-heavy text-xs px-6 py-2 h-9 flex items-center gap-2"
+                >
+                  <Trophy className="h-4 w-4 text-amber-400" />
+                  View & Earn in Gaming Hub
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Button>
               </div>
             </div>
           </div>

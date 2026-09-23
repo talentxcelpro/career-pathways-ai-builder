@@ -16,6 +16,7 @@ export const RESERVED_ROUTES = new Set([
   'robots.txt', 'favicon.ico', 'manifest.json', 'assets', 'mobile', 'ai',
   'skills-assessment', 'career-goals', 'career-intelligence', 'instant-networking',
   'skills-verification', 'complete-intelligence', 'jobs1', 'platform', 'career-platform',
+  'career-os', 'talent-score', 'gamification', 'txc', 't', 'p',
   '404', 'not-found'
 ]);
 

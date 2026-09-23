@@ -400,14 +400,14 @@ const ProfileEdit = () => {
       title="Edit Profile" 
       description="Update your professional information and preferences"
     >
-      <div className="space-y-6">
+      <div className="space-y-4">
         {/* Profile Picture */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Profile Picture</CardTitle>
-            <CardDescription>Upload a professional photo</CardDescription>
+        <Card className="border border-slate-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-slate-900/90 shadow-xs rounded-2xl">
+          <CardHeader className="p-4 sm:p-5 pb-3">
+            <CardTitle className="text-sm font-bold text-slate-900 dark:text-white">Profile Picture</CardTitle>
+            <CardDescription className="text-xs text-muted-foreground mt-0.5">Upload a professional photo for your verified identity</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 sm:p-5 pt-0">
             <ProfilePictureUpload
               currentImageUrl={formData.profile_picture_url}
               userName={formData.full_name}
@@ -439,19 +439,19 @@ const ProfileEdit = () => {
         />
 
         {/* Professional Summary */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Professional Summary</CardTitle>
-            <CardDescription>Tell potential employers about yourself</CardDescription>
+        <Card className="border border-slate-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-slate-900/90 shadow-xs rounded-2xl">
+          <CardHeader className="p-4 sm:p-5 pb-3">
+            <CardTitle className="text-sm font-bold text-slate-900 dark:text-white">Professional Summary</CardTitle>
+            <CardDescription className="text-xs text-muted-foreground mt-0.5">Tell potential employers about yourself</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 sm:p-5 pt-0">
             <Textarea
               value={formData.about}
               onChange={(e) => setFormData(prev => ({ ...prev, about: e.target.value }))}
               placeholder="Write a compelling summary of your professional background..."
-              className="min-h-[120px]"
+              className="min-h-[100px] text-xs sm:text-sm rounded-lg border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50 focus-visible:bg-white dark:focus-visible:bg-slate-900 focus-visible:ring-1 focus-visible:ring-blue-500 shadow-xs"
             />
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-[11px] text-muted-foreground mt-1.5 text-right font-mono">
               {formData.about.length}/500 characters
             </p>
           </CardContent>
@@ -490,21 +490,28 @@ const ProfileEdit = () => {
         />
 
         {/* Save Button */}
-        <div className="flex flex-col-reverse items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col-reverse items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between pt-2">
           <SessionStatusIndicator />
-          <div className="flex justify-end gap-3">
-            <Button variant="outline" onClick={() => navigate('/profile')}>
+          <div className="flex justify-end gap-2.5">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => navigate('/profile')}
+              className="h-9 px-4 text-xs font-semibold rounded-lg border-slate-200 dark:border-slate-800"
+            >
               Cancel
             </Button>
             <Button
               onClick={handleSave}
+              size="sm"
               disabled={authLoading || saveProfileMutation.isPending}
+              className="h-9 px-5 text-xs font-semibold rounded-lg bg-blue-600 hover:bg-blue-500 text-white shadow-xs"
             >
               {saveProfileMutation.isPending ? (
                 <>Saving...</>
               ) : (
                 <>
-                  <Save className="h-4 w-4 mr-2" />
+                  <Save className="h-3.5 w-3.5 mr-1.5" />
                   Save Changes
                 </>
               )}

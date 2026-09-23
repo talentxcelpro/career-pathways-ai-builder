@@ -51,9 +51,11 @@ export function useSlugProfile(slug?: string) {
       const conditions = [
         `slug.ilike.${cleanSlug}`,
         `custom_profile_url.ilike.${cleanSlug}`,
+        `custom_url_slug.ilike.${cleanSlug}`,
         `username.ilike.${cleanSlug}`,
         `username.ilike.${compactUsername}`,
-        `full_name.ilike.${nameQuery}`
+        `full_name.ilike.${nameQuery}`,
+        `email.ilike.${cleanSlug}@%`
       ];
 
       if (isUUID) {
