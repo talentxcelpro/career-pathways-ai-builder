@@ -10,104 +10,55 @@ import {
   Check, 
   Sparkles, 
   ShieldCheck, 
-  Award, 
-  ExternalLink,
-  Edit3,
   FileText,
-  Users,
-  TrendingUp,
+  Flame,
   Globe,
-  Upload,
-  RefreshCw,
-  Camera
+  Award
 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import QRCode from 'qrcode';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { useOptimizedAuth } from '@/contexts/OptimizedAuthContext';
-import { supabase } from '@/integrations/supabase/client';
 
 interface GrowthCertificateModalProps {
   isOpen: boolean;
   onClose: () => void;
   candidateName?: string;
   role?: string;
-  company?: string;
-  avatarUrl?: string;
   score?: number;
   velocity?: number;
   acceleration?: string;
   globalRank?: string;
   telemetryFidelity?: string;
-  specialization?: string;
-  username?: string;
 }
 
 export const GrowthCertificateModal: React.FC<GrowthCertificateModalProps> = ({
   isOpen,
   onClose,
-  candidateName = 'Arshid Hussain Wani',
-  role: initialRole = 'Vice President, Operations',
-  company: initialCompany = 'TalentXcel Services',
-  avatarUrl: initialAvatar = '/assets/candidate-avatar-default.jpg',
+  candidateName = 'Sanobar Jahan',
+  role = 'Founder of TalentXcel Services',
   score = 823,
   velocity = 66,
   acceleration = '+8.2%',
   globalRank = '#853',
   telemetryFidelity = '98%',
-  specialization = 'Operations & Global Talent Architecture',
-  username: initialUsername
 }) => {
-  const { user } = useOptimizedAuth();
   const certificateRef = useRef<HTMLDivElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const [name, setName] = useState(candidateName);
-  const [role, setRole] = useState(initialRole);
-  const [company, setCompany] = useState(initialCompany);
-  const [avatar, setAvatar] = useState(initialAvatar);
-  const [passportUsername, setPassportUsername] = useState(initialUsername || user?.id || 'arshid-wani');
-  
-  const [isEditing, setIsEditing] = useState(false);
   const [isExportingImage, setIsExportingImage] = useState(false);
   const [isExportingPDF, setIsExportingPDF] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedText, setCopiedText] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
 
+  const name = 'Sanobar Jahan';
+  const designation = 'Founder of TalentXcel Services';
+  const credentialId = `TXC-GRW-${score}-9481X`;
   const issueDate = 'September 23, 2026';
-  const passportUrl = `https://talentxcel.in/passport/${passportUsername}`;
+  const passportUrl = 'https://talentxcel.in/passport/sanobar-jahan';
 
-  // Fetch real profile information if available
-  useEffect(() => {
-    const loadProfile = async () => {
-      if (!user) return;
-      try {
-        const { data } = await supabase
-          .from('profiles')
-          .select('full_name, title, company, avatar_url, username')
-          .eq('id', user.id)
-          .maybeSingle();
-
-        if (data) {
-          if (data.full_name && candidateName === 'Arshid Hussain Wani') setName(data.full_name);
-          if (data.title && initialRole === 'Vice President, Operations') setRole(data.title);
-          if (data.company && initialCompany === 'TalentXcel Services') setCompany(data.company);
-          if (data.avatar_url) setAvatar(data.avatar_url);
-          if (data.username) setPassportUsername(data.username);
-        }
-      } catch (err) {
-        console.warn('Profile fetch for certificate:', err);
-      }
-    };
-    loadProfile();
-  }, [user]);
-
-  // Generate QR Code with centered TalentXcel emblem
+  // Generate Passport QR Code with high resolution
   useEffect(() => {
     const generatePassportQR = async () => {
       try {
@@ -120,8 +71,8 @@ export const GrowthCertificateModal: React.FC<GrowthCertificateModalProps> = ({
           margin: 1,
           errorCorrectionLevel: 'H',
           color: {
-            dark: '#0F1E36',
-            light: '#FFFFFF',
+            dark: '#070b14',
+            light: '#ffffff',
           },
         });
 
@@ -130,31 +81,28 @@ export const GrowthCertificateModal: React.FC<GrowthCertificateModalProps> = ({
           const center = 128;
           const radius = 22;
 
-          // Outer white circular cushion
+          // Inner circular badge
           ctx.beginPath();
           ctx.arc(center, center, radius + 3, 0, 2 * Math.PI);
           ctx.fillStyle = '#FFFFFF';
           ctx.fill();
 
-          // Brand gradient circle
           const grad = ctx.createLinearGradient(center - radius, center - radius, center + radius, center + radius);
-          grad.addColorStop(0, '#1D4ED8');
-          grad.addColorStop(1, '#0284C7');
+          grad.addColorStop(0, '#2563EB');
+          grad.addColorStop(1, '#06B6D4');
           ctx.beginPath();
           ctx.arc(center, center, radius, 0, 2 * Math.PI);
           ctx.fillStyle = grad;
           ctx.fill();
 
-          // Inner white ring
           ctx.beginPath();
           ctx.arc(center, center, radius - 4, 0, 2 * Math.PI);
           ctx.strokeStyle = '#FFFFFF';
           ctx.lineWidth = 1.5;
           ctx.stroke();
 
-          // Text 'TX'
           ctx.fillStyle = '#FFFFFF';
-          ctx.font = 'bold 14px sans-serif';
+          ctx.font = 'bold 13px sans-serif';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillText('TX', center, center);
@@ -169,29 +117,20 @@ export const GrowthCertificateModal: React.FC<GrowthCertificateModalProps> = ({
     generatePassportQR();
   }, [passportUrl]);
 
-  const handleAvatarFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const previewUrl = URL.createObjectURL(file);
-      setAvatar(previewUrl);
-      toast.success('Certificate photo updated!');
-    }
-  };
+  const viralShareText = `🌟 Official TalentXcel Verified Executive Growth Certificate for Sanobar Jahan, Founder of TalentXcel Services!
 
-  const viralShareText = `🌟 Honored to receive the Certified Global Career Leader recognition from TalentXcel!
+Recognizing visionary leadership in driving global career velocity, empirical excellence, and empowering millions of talent opportunities worldwide.
 
-Recognizing excellence in driving global talent opportunities and creating a more inclusive, skill-driven future for millions.
+📊 Verified Standing:
+• TalentScore: ${score} / 1000 (Elite Tier Standing)
+• Global Standing: ${globalRank} (Top 5% Worldwide)
+• 30-Day Velocity: +${velocity} PTS (${acceleration})
+• Telemetry Fidelity: ${telemetryFidelity} (Multi-source verified)
 
-🏆 Verified Standing:
-• Standing: Elite Tier (Top Global Talent)
-• Growth Momentum: +${velocity} (Ahead of the Curve)
-• Global Standing: ${globalRank} (Top Talent Worldwide)
-• Trust & Reliability: ${telemetryFidelity}
-
-Scan the QR code or view my live Career Passport profile:
+View verified Career Passport profile:
 ${passportUrl}
 
-#TalentXcel #CareerLeader #GlobalTalent #CareerPassport #ProfessionalExcellence`;
+#TalentXcel #SanobarJahan #CareerGrowth #ExecutiveLeadership #TalentScore #GlobalTalent`;
 
   const handleDownloadPNG = async () => {
     if (!certificateRef.current) return;
@@ -202,13 +141,13 @@ ${passportUrl}
         scale: 2,
         useCORS: true,
         allowTaint: true,
-        backgroundColor: '#FCFAF6',
+        backgroundColor: '#070b14',
         logging: false,
       });
 
       const dataUrl = canvas.toDataURL('image/png');
       const link = document.createElement('a');
-      link.download = `TalentXcel-Global-Career-Leader-${name.replace(/\s+/g, '_')}.png`;
+      link.download = `TalentXcel-Growth-Certificate-Sanobar-Jahan.png`;
       link.href = dataUrl;
       link.click();
 
@@ -230,7 +169,7 @@ ${passportUrl}
         scale: 2,
         useCORS: true,
         allowTaint: true,
-        backgroundColor: '#FCFAF6',
+        backgroundColor: '#070b14',
         logging: false,
       });
 
@@ -242,7 +181,7 @@ ${passportUrl}
       });
 
       pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-      pdf.save(`TalentXcel-Global-Career-Leader-${name.replace(/\s+/g, '_')}.pdf`);
+      pdf.save(`TalentXcel-Growth-Certificate-Sanobar-Jahan.pdf`);
 
       toast.success('📄 Executive PDF Certificate downloaded successfully!');
     } catch (error) {
@@ -255,13 +194,13 @@ ${passportUrl}
 
   const handleShareLinkedIn = () => {
     navigator.clipboard.writeText(viralShareText);
-    toast.success('📋 Post copy copied to clipboard! Opening LinkedIn...');
+    toast.success('📋 Post text copied to clipboard! Opening LinkedIn...');
     const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(passportUrl)}`;
     window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   const handleShareTwitter = () => {
-    const tweetText = `Honored to receive the Certified Global Career Leader recognition on @TalentXcel! 🌟 Check out my verified Career Passport: ${passportUrl} #TalentXcel #CareerGrowth`;
+    const tweetText = `Official Executive Growth Certificate for Sanobar Jahan, Founder of @TalentXcel! 🌟 View verified Career Passport: ${passportUrl} #TalentXcel #CareerGrowth`;
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
     window.open(url, '_blank', 'noopener,noreferrer');
   };
@@ -276,7 +215,7 @@ ${passportUrl}
   const handleCopyPostText = () => {
     navigator.clipboard.writeText(viralShareText);
     setCopiedText(true);
-    toast.success('📋 Post text copied!');
+    toast.success('📋 Post copy copied!');
     setTimeout(() => setCopiedText(false), 2500);
   };
 
@@ -292,34 +231,24 @@ ${passportUrl}
           transition={{ duration: 0.25, ease: 'easeOut' }}
           className="relative w-full max-w-5xl bg-slate-950 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col my-auto max-h-[96vh]"
         >
-          {/* Modal Header Bar */}
-          <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-800 bg-slate-900/80">
+          {/* Top Bar */}
+          <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-sm">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center shadow-md text-white font-bold text-xs">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-md text-white font-bold text-xs">
                 TX
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-bold text-white tracking-tight">Official Global Career Leader Certificate</h3>
-                  <Badge className="bg-amber-500/15 text-amber-300 border border-amber-500/30 text-[10px] uppercase font-mono">
-                    Verified Credential
+                  <h3 className="text-sm font-bold text-white tracking-tight">Verified Career Growth Certificate</h3>
+                  <Badge className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[10px] uppercase font-mono">
+                    Official Credential
                   </Badge>
                 </div>
-                <p className="text-[11px] text-slate-400">Honoring excellence in empowering global talent & transforming lives</p>
+                <p className="text-[11px] text-slate-400">Sanobar Jahan &bull; Founder of TalentXcel Services</p>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsEditing(!isEditing)}
-                className="h-8 text-xs border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 gap-1.5"
-              >
-                <Edit3 className="w-3.5 h-3.5 text-cyan-400" />
-                <span>{isEditing ? 'Done Editing' : 'Customize Certificate'}</span>
-              </Button>
-
               <Button
                 variant="ghost"
                 size="sm"
@@ -331,104 +260,41 @@ ${passportUrl}
             </div>
           </div>
 
-          {/* Quick Customization Row */}
-          {isEditing && (
-            <motion.div 
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="px-6 py-3 bg-slate-900/90 border-b border-slate-800 flex flex-wrap items-center gap-4 text-xs"
-            >
-              <div className="flex items-center gap-2">
-                <span className="text-slate-400 font-medium">Name:</span>
-                <Input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="h-7 w-44 text-xs bg-slate-800 border-slate-700 text-white"
-                  placeholder="Full Name"
-                />
-              </div>
-
-              <div className="flex items-center gap-2">
-                <span className="text-slate-400 font-medium">Role:</span>
-                <Input
-                  value={role}
-                  onChange={(e) => setRole(e.target.value)}
-                  className="h-7 w-48 text-xs bg-slate-800 border-slate-700 text-white"
-                  placeholder="Role / Title"
-                />
-              </div>
-
-              <div className="flex items-center gap-2">
-                <span className="text-slate-400 font-medium">Company:</span>
-                <Input
-                  value={company}
-                  onChange={(e) => setCompany(e.target.value)}
-                  className="h-7 w-40 text-xs bg-slate-800 border-slate-700 text-white"
-                  placeholder="Organization"
-                />
-              </div>
-
-              <div className="flex items-center gap-2 ml-auto">
-                <input 
-                  type="file" 
-                  ref={fileInputRef} 
-                  onChange={handleAvatarFileChange} 
-                  accept="image/*" 
-                  className="hidden" 
-                />
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="h-7 text-xs gap-1.5"
-                >
-                  <Camera className="w-3.5 h-3.5 text-blue-500" />
-                  <span>Change Photo</span>
-                </Button>
-              </div>
-            </motion.div>
-          )}
-
-          {/* Certificate View Container */}
-          <div className="flex-1 overflow-x-auto overflow-y-auto p-3 sm:p-6 bg-[#04060d] flex justify-center items-center">
+          {/* Certificate View Canvas */}
+          <div className="flex-1 overflow-x-auto overflow-y-auto p-4 sm:p-6 bg-[#04060d] flex justify-center items-center">
             
-            {/* THE MASTER LUXURY CERTIFICATE CANVAS (Matching Uploaded Design 1:1) */}
+            {/* THE MASTER LUXURY CERTIFICATE (1:1 with Attached Reference) */}
             <div
               ref={certificateRef}
               id="talentxcel-growth-certificate"
-              className="relative w-[940px] min-w-[940px] min-h-[640px] p-8 sm:p-10 bg-[#FAF8F5] text-[#0F1E36] shadow-2xl flex flex-col justify-between overflow-hidden select-none"
+              className="relative w-[920px] min-w-[920px] min-h-[620px] p-8 sm:p-10 bg-gradient-to-b from-[#0a0f1d] via-[#060a14] to-[#04060c] text-white rounded-xl shadow-2xl flex flex-col justify-between overflow-hidden select-none border-4 border-[#1e293b]"
               style={{
-                fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                boxShadow: '0 25px 60px rgba(0, 0, 0, 0.45), inset 0 0 80px rgba(230, 220, 205, 0.35)'
+                boxShadow: '0 0 50px rgba(6, 182, 212, 0.12), inset 0 0 40px rgba(0, 0, 0, 0.8)'
               }}
             >
-              {/* Outer Elegant Gold Frame */}
-              <div className="absolute inset-2 border-[1.5px] border-[#C5A880] pointer-events-none" />
-              {/* Inset Double Fine Border */}
-              <div className="absolute inset-3 border-[0.75px] border-[#C5A880]/70 pointer-events-none" />
+              {/* Outer Decorative Gold/Cyan Framing */}
+              <div className="absolute inset-2 border-2 border-amber-500/40 rounded-lg pointer-events-none" />
+              <div className="absolute inset-3 border border-cyan-500/30 rounded-md pointer-events-none" />
+              
+              {/* Corner Rosettes / Filigree Accents */}
+              <div className="absolute top-4 left-4 w-6 h-6 border-t-2 border-l-2 border-amber-400 pointer-events-none" />
+              <div className="absolute top-4 right-4 w-6 h-6 border-t-2 border-r-2 border-amber-400 pointer-events-none" />
+              <div className="absolute bottom-4 left-4 w-6 h-6 border-b-2 border-l-2 border-amber-400 pointer-events-none" />
+              <div className="absolute bottom-4 right-4 w-6 h-6 border-b-2 border-r-2 border-amber-400 pointer-events-none" />
 
-              {/* Classic Corner Filigree / Accent Brackets */}
-              <div className="absolute top-4 left-4 w-5 h-5 border-t-2 border-l-2 border-[#A27B3D] pointer-events-none" />
-              <div className="absolute top-4 right-4 w-5 h-5 border-t-2 border-r-2 border-[#A27B3D] pointer-events-none" />
-              <div className="absolute bottom-4 left-4 w-5 h-5 border-b-2 border-l-2 border-[#A27B3D] pointer-events-none" />
-              <div className="absolute bottom-4 right-4 w-5 h-5 border-b-2 border-r-2 border-[#A27B3D] pointer-events-none" />
-
-              {/* Background World Map Watermark */}
-              <div className="absolute inset-0 flex items-center justify-center opacity-[0.09] pointer-events-none select-none overflow-hidden">
-                <img 
-                  src="/assets/world-map-watermark.svg" 
-                  alt="" 
-                  className="w-[92%] h-[92%] object-contain" 
+              {/* Watermark Logo Background */}
+              <div className="absolute inset-0 flex items-center justify-center opacity-[0.035] pointer-events-none">
+                <img
+                  src="/talentxcel-official-logo.png"
+                  alt=""
+                  className="w-[450px] h-[450px] object-contain grayscale"
                 />
               </div>
 
               {/* 1. TOP HEADER SECTION */}
               <div className="relative z-10 flex items-start justify-between">
-                {/* Brand Logo & Slogan */}
                 <div className="flex items-center gap-3">
-                  {/* TalentXcel Official Circular Icon */}
-                  <div className="w-10 h-10 rounded-full bg-white border border-[#C5A880]/60 p-1 flex items-center justify-center shadow-sm">
+                  <div className="w-11 h-11 rounded-xl bg-slate-900 border border-slate-700/80 p-2 flex items-center justify-center shadow-lg">
                     <img 
                       src="/talentxcel-official-logo.png" 
                       alt="TalentXcel" 
@@ -436,250 +302,265 @@ ${passportUrl}
                     />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-black tracking-tight text-[#0F1E36] font-sans">
-                      Talent<span className="text-[#0284C7]">Xcel</span>
-                    </h2>
-                    <p className="text-[8.5px] tracking-[0.26em] text-[#64748B] font-semibold uppercase mt-0.5">
-                      PEOPLE &nbsp;|&nbsp; OPPORTUNITIES &nbsp;|&nbsp; PROGRESS
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl font-black tracking-tight text-white font-sans">
+                        TALENT<span className="text-cyan-400">XCEL</span>
+                      </span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 font-mono font-semibold">
+                        CANDIDATE OS
+                      </span>
+                    </div>
+                    <p className="text-[9.5px] text-slate-400 uppercase tracking-widest font-mono">
+                      GLOBAL CAREER VELOCITY & TELEMETRY REGISTRY
                     </p>
                   </div>
                 </div>
 
-                {/* Right Top Header Taglines */}
                 <div className="text-right">
-                  <p className="text-[9.5px] font-bold tracking-[0.24em] text-[#1E293B] uppercase">
-                    A GLOBAL PHENOMENON
-                  </p>
-                  <p className="text-[8.5px] font-medium tracking-[0.16em] text-[#A27B3D] uppercase mt-0.5">
-                    EMPOWERING TALENT. TRANSFORMING LIVES.
-                  </p>
-                  <div className="w-14 h-[1.5px] bg-[#C5A880] ml-auto mt-1" />
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[10px] font-semibold tracking-wide uppercase">
+                    <Sparkles className="w-3 h-3 text-amber-400" />
+                    <span>L1 Verified Trajectory Credential</span>
+                  </div>
+                  <p className="text-[10px] text-slate-500 font-mono mt-1">Serial: {credentialId}</p>
                 </div>
               </div>
 
-              {/* 2. MAJESTIC TITLE BANNER */}
-              <div className="relative z-10 text-center my-2 space-y-1">
-                <p className="text-[11px] font-semibold tracking-[0.45em] text-[#A27B3D] uppercase">
-                  C &nbsp;E &nbsp;R &nbsp;T &nbsp;I &nbsp;F &nbsp;I &nbsp;E &nbsp;D
+              {/* 2. TITLE & CANDIDATE RECOGNITION (NO PHOTO) */}
+              <div className="relative z-10 text-center my-3 space-y-2">
+                <p className="text-xs uppercase tracking-[0.3em] text-cyan-300/80 font-mono">
+                  AUTONOMOUS VERIFICATION OF EXCELLENCE
                 </p>
-                <h1 className="text-3xl sm:text-[36px] font-bold uppercase tracking-wider text-[#0F2347] font-serif">
-                  GLOBAL CAREER LEADER
-                </h1>
-                <p className="text-[9px] font-medium tracking-[0.22em] text-[#64748B] uppercase">
-                  RECOGNIZING EXCELLENCE IN DRIVING OPPORTUNITIES WORLDWIDE
+                
+                {/* Gold Highlighted Bar Title */}
+                <div className="py-1">
+                  <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-100 font-serif drop-shadow-sm">
+                    Executive Certificate of Career Velocity
+                  </h1>
+                </div>
+                
+                <p className="text-xs text-slate-400 italic">
+                  This official empirical credential is appropriately awarded to
+                </p>
+
+                {/* Recipient Name in Big Glowing Type */}
+                <div className="py-2">
+                  <div className="inline-block relative">
+                    <span className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-white to-amber-200 tracking-wide border-b-2 border-amber-400/70 pb-1 px-8 font-serif">
+                      {name}
+                    </span>
+                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-amber-400 rotate-45" />
+                  </div>
+                  <p className="text-sm font-semibold text-cyan-300 mt-2 font-sans tracking-wide">
+                    {designation}
+                  </p>
+                </div>
+
+                <p className="text-[11.5px] text-slate-300 max-w-2xl mx-auto leading-relaxed">
+                  For visionary leadership in architecting the TalentXcel global platform, continuous top-tier technical velocity, 
+                  and verified multi-source executive leadership, accelerating to the top 5% peer acceleration cohort worldwide.
                 </p>
               </div>
 
-              {/* 3. HERO CANDIDATE & QR CODE SECTION */}
-              <div className="relative z-10 grid grid-cols-12 gap-6 items-center my-2">
-                
-                {/* Left: Photo + Candidate Recognition Block */}
-                <div className="col-span-8 flex items-center gap-5">
-                  {/* Photo Frame in Gold Border */}
-                  <div className="w-[124px] h-[138px] border-2 border-[#C5A880] p-1 bg-white shadow-sm flex-shrink-0 relative">
-                    <img
-                      src={avatar}
-                      alt={name}
-                      className="w-full h-full object-cover object-top"
-                      onError={() => setAvatar('/assets/avatar-placeholder.png')}
-                    />
+              {/* 3. FOUR METRIC BADGES */}
+              <div className="relative z-10 grid grid-cols-4 gap-3 my-2">
+                {/* 1. Score */}
+                <div className="p-3 rounded-lg bg-slate-900/80 border border-cyan-500/30 text-center">
+                  <div className="text-[10px] text-slate-400 font-mono uppercase font-semibold flex items-center justify-center gap-1">
+                    <span>TalentScore</span>
                   </div>
+                  <div className="text-2xl font-black text-cyan-300 font-mono tracking-tight mt-0.5">
+                    {score} <span className="text-xs text-slate-400">/ 1000</span>
+                  </div>
+                  <div className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">
+                    Elite Tier Standing
+                  </div>
+                </div>
 
-                  {/* Candidate Designation & Citation */}
-                  <div className="space-y-1">
-                    <h2 className="text-2xl font-bold font-serif text-[#0F2347] tracking-tight leading-tight">
-                      {name}
-                    </h2>
-                    <p className="text-sm font-semibold text-[#334155]">
-                      {role}
-                    </p>
-                    <p className="text-sm font-medium text-[#64748B]">
-                      {company}
-                    </p>
-                    <p className="text-xs text-[#475569] leading-relaxed pt-2 max-w-md font-normal">
-                      For outstanding contribution in enabling global talent opportunities 
-                      and creating a more inclusive, skill-driven future for millions.
-                    </p>
+                {/* 2. Velocity */}
+                <div className="p-3 rounded-lg bg-slate-900/80 border border-emerald-500/30 text-center">
+                  <div className="text-[10px] text-slate-400 font-mono uppercase font-semibold flex items-center justify-center gap-1">
+                    <Flame className="w-3 h-3 text-amber-400" />
+                    <span>30-Day Velocity</span>
+                  </div>
+                  <div className="text-2xl font-black text-emerald-400 font-mono tracking-tight mt-0.5">
+                    +{velocity} <span className="text-xs text-emerald-300">PTS</span>
+                  </div>
+                  <div className="text-[10px] text-slate-300 font-medium">
+                    {acceleration} Acceleration
+                  </div>
+                </div>
+
+                {/* 3. Rank */}
+                <div className="p-3 rounded-lg bg-slate-900/80 border border-purple-500/30 text-center">
+                  <div className="text-[10px] text-slate-400 font-mono uppercase font-semibold flex items-center justify-center gap-1">
+                    <Globe className="w-3 h-3 text-purple-400" />
+                    <span>Global Standing</span>
+                  </div>
+                  <div className="text-2xl font-black text-purple-300 font-mono tracking-tight mt-0.5">
+                    {globalRank}
+                  </div>
+                  <div className="text-[10px] text-purple-400 font-medium">
+                    Top 5% Worldwide
+                  </div>
+                </div>
+
+                {/* 4. Fidelity */}
+                <div className="p-3 rounded-lg bg-slate-900/80 border border-amber-500/30 text-center">
+                  <div className="text-[10px] text-slate-400 font-mono uppercase font-semibold flex items-center justify-center gap-1">
+                    <ShieldCheck className="w-3 h-3 text-amber-400" />
+                    <span>Fidelity</span>
+                  </div>
+                  <div className="text-2xl font-black text-amber-300 font-mono tracking-tight mt-0.5">
+                    {telemetryFidelity}
+                  </div>
+                  <div className="text-[10px] text-amber-400 font-bold uppercase">
+                    Max Integrity Verified
+                  </div>
+                </div>
+              </div>
+
+              {/* 4. SIGN-OFF, OFFICIAL SEAL & PASSPORT QR CODE ROW */}
+              <div className="relative z-10 pt-3 border-t border-slate-800/80 flex items-end justify-between">
+                
+                {/* Signatory Left: Sanobar Jahan */}
+                <div className="space-y-1 w-48 text-left">
+                  <div className="font-serif italic text-base text-cyan-300 font-semibold tracking-wider select-none">
+                    Sanobar Jahan
+                  </div>
+                  <div className="h-px w-36 bg-slate-700" />
+                  <p className="text-[10px] text-slate-300 font-semibold">Founder & Managing Director</p>
+                  <p className="text-[9px] text-slate-500 font-mono">TalentXcel Services</p>
+                </div>
+
+                {/* CENTER: THE 32-POINT METALLIC GOLD SEAL (Matching Image 1:1) */}
+                <div className="relative flex flex-col items-center">
+                  <div className="relative w-28 h-28 flex items-center justify-center">
+                    
+                    {/* Radiating Glow */}
+                    <div className="absolute inset-0 rounded-full bg-amber-500/20 blur-lg animate-pulse" />
+
+                    {/* SVG Metallic Gold Starburst Seal */}
+                    <svg viewBox="0 0 160 160" className="w-28 h-28 drop-shadow-2xl">
+                      <defs>
+                        <radialGradient id="goldSealGradDark" cx="50%" cy="50%" r="50%">
+                          <stop offset="0%" stopColor="#FFFBEB" />
+                          <stop offset="35%" stopColor="#FBBF24" />
+                          <stop offset="70%" stopColor="#D97706" />
+                          <stop offset="100%" stopColor="#78350F" />
+                        </radialGradient>
+                        <linearGradient id="goldRimGradDark" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor="#FDE68A" />
+                          <stop offset="50%" stopColor="#B45309" />
+                          <stop offset="100%" stopColor="#F59E0B" />
+                        </linearGradient>
+                      </defs>
+
+                      {/* 32-point Starburst Outer Rim */}
+                      <path
+                        d="M 80,0 L 87,14 L 102,5 L 105,21 L 122,16 L 120,32 L 137,33 L 130,49 L 147,54 L 137,68 L 152,78 L 138,89 L 150,102 L 133,110 L 142,125 L 124,129 L 129,145 L 112,144 L 112,160 L 97,154 L 92,168 L 80,158 L 68,168 L 63,154 L 48,160 L 48,144 L 31,145 L 36,129 L 18,125 L 27,110 L 10,102 L 22,89 L 8,78 L 23,68 L 13,54 L 30,49 L 23,33 L 40,32 L 38,16 L 55,21 L 58,5 L 73,14 Z"
+                        fill="url(#goldSealGradDark)"
+                        stroke="url(#goldRimGradDark)"
+                        strokeWidth="1.5"
+                      />
+
+                      {/* Concentric Golden Ring */}
+                      <circle cx="80" cy="80" r="54" fill="#0b1329" stroke="url(#goldRimGradDark)" strokeWidth="2.5" />
+                      <circle cx="80" cy="80" r="49" fill="none" stroke="#FDE68A" strokeWidth="0.8" strokeDasharray="3 2" />
+
+                      {/* Seal Inner Crest */}
+                      <g transform="translate(80, 80)">
+                        <path
+                          d="M -16,-12 C -8,-22 8,-22 16,-12 C 16,10 0,22 0,22 C 0,22 -16,10 -16,-12 Z"
+                          fill="url(#goldSealGradDark)"
+                          opacity="0.9"
+                        />
+                        <text
+                          y="-2"
+                          textAnchor="middle"
+                          fill="#78350F"
+                          fontSize="7"
+                          fontWeight="bold"
+                          fontFamily="sans-serif"
+                        >
+                          VERIFIED
+                        </text>
+                        <text
+                          y="7"
+                          textAnchor="middle"
+                          fill="#78350F"
+                          fontSize="6"
+                          fontWeight="bold"
+                          fontFamily="sans-serif"
+                        >
+                          2026
+                        </text>
+                        <text
+                          y="14"
+                          textAnchor="middle"
+                          fill="#78350F"
+                          fontSize="5"
+                          fontWeight="bold"
+                          fontFamily="sans-serif"
+                        >
+                          GOLD SEAL
+                        </text>
+                      </g>
+                    </svg>
+                  </div>
+                  <div className="text-[8px] font-mono text-amber-300/90 tracking-widest uppercase mt-0.5 text-center font-bold">
+                    OFFICIAL TALENTXCEL SEAL
                   </div>
                 </div>
 
                 {/* Right: Career Passport QR Code */}
-                <div className="col-span-4 flex flex-col items-center justify-center text-center pl-4 border-l border-slate-200/80">
-                  <div className="w-[108px] h-[108px] bg-white p-1 border border-slate-200 rounded shadow-sm relative flex items-center justify-center">
-                    {qrCodeUrl ? (
-                      <img 
-                        src={qrCodeUrl} 
-                        alt="Career Passport QR" 
-                        className="w-full h-full object-contain" 
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-[10px] text-slate-400 font-mono">
-                        Generating...
+                <div className="space-y-1 w-52 text-right flex flex-col items-end">
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="w-12 h-12 bg-white p-0.5 rounded shadow-sm">
+                      {qrCodeUrl ? (
+                        <img src={qrCodeUrl} alt="Passport QR" className="w-full h-full object-contain" />
+                      ) : (
+                        <div className="w-full h-full bg-slate-900" />
+                      )}
+                    </div>
+                    <div className="text-right">
+                      <div className="text-[9px] font-bold text-cyan-300 uppercase tracking-wider font-mono">
+                        CAREER PASSPORT
                       </div>
-                    )}
+                      <div className="text-[8px] text-slate-400">
+                        Scan to view profile
+                      </div>
+                      <div className="text-[7.5px] text-slate-500 font-mono">
+                        talentxcel.in/passport/sanobar-jahan
+                      </div>
+                    </div>
                   </div>
-                  <span className="text-[9.5px] font-bold text-[#0F2347] tracking-wider uppercase mt-1.5 font-sans">
-                    SCAN TO VIEW PROFILE
-                  </span>
-                  <span className="text-[8.5px] text-[#64748B] font-medium">
-                    Connect &middot; Collaborate &middot; Create Opportunities
-                  </span>
-                  <span className="text-[9px] text-[#475569] italic mt-1 font-serif">
-                    &ldquo;A world of opportunities begins with people.&rdquo;
-                  </span>
+                  <div className="h-px w-36 bg-slate-700 ml-auto" />
+                  <p className="text-[9px] text-slate-300 font-semibold">Global Candidate Telemetry Board</p>
+                  <p className="text-[8.5px] text-slate-500 font-mono">Issued: {issueDate}</p>
                 </div>
               </div>
 
-              {/* 4. FOUR KEY PILLARS / METRICS (NO TECHNICAL JARGON) */}
-              <div className="relative z-10 grid grid-cols-4 divide-x divide-slate-200/80 bg-white/70 backdrop-blur-xs border border-slate-200/80 rounded-lg py-2.5 my-2 shadow-xs">
-                {/* Metric 1 */}
-                <div className="text-center px-2">
-                  <div className="w-8 h-8 rounded-full bg-[#EBF3FC] text-[#1D4ED8] flex items-center justify-center mx-auto mb-1 shadow-xs">
-                    <Users className="w-4 h-4" />
-                  </div>
-                  <div className="text-xl font-black text-[#0F2347] tracking-tight">
-                    {score}
-                  </div>
-                  <div className="text-[9.5px] font-bold uppercase tracking-wider text-[#1E293B] mt-0.5">
-                    ELITE TIER STANDING
-                  </div>
-                  <div className="text-[8.5px] text-[#64748B]">
-                    Among Global Talent
-                  </div>
+              {/* 5. SECURITY & VERIFICATION FOOTER */}
+              <div className="relative z-10 mt-3 pt-2 border-t border-slate-800/60 flex items-center justify-between text-[9px] text-slate-500 font-mono">
+                <div className="flex items-center gap-1.5">
+                  <ShieldCheck className="w-3 h-3 text-emerald-400" />
+                  <span>SHA-256 HASH: 823f-e91b-42c0-8a71-d6023cb8f</span>
                 </div>
-
-                {/* Metric 2 */}
-                <div className="text-center px-2">
-                  <div className="w-8 h-8 rounded-full bg-[#EBF3FC] text-[#1D4ED8] flex items-center justify-center mx-auto mb-1 shadow-xs">
-                    <TrendingUp className="w-4 h-4" />
-                  </div>
-                  <div className="text-xl font-black text-[#0F2347] tracking-tight">
-                    +{velocity}
-                  </div>
-                  <div className="text-[9.5px] font-bold uppercase tracking-wider text-[#1E293B] mt-0.5">
-                    GROWTH MOMENTUM
-                  </div>
-                  <div className="text-[8.5px] text-[#64748B]">
-                    Ahead of the Curve
-                  </div>
-                </div>
-
-                {/* Metric 3 */}
-                <div className="text-center px-2">
-                  <div className="w-8 h-8 rounded-full bg-[#EBF3FC] text-[#1D4ED8] flex items-center justify-center mx-auto mb-1 shadow-xs">
-                    <Globe className="w-4 h-4" />
-                  </div>
-                  <div className="text-xl font-black text-[#0F2347] tracking-tight">
-                    {globalRank}
-                  </div>
-                  <div className="text-[9.5px] font-bold uppercase tracking-wider text-[#1E293B] mt-0.5">
-                    GLOBAL STANDING
-                  </div>
-                  <div className="text-[8.5px] text-[#64748B]">
-                    Top Talent Worldwide
-                  </div>
-                </div>
-
-                {/* Metric 4 */}
-                <div className="text-center px-2">
-                  <div className="w-8 h-8 rounded-full bg-[#EBF3FC] text-[#1D4ED8] flex items-center justify-center mx-auto mb-1 shadow-xs">
-                    <ShieldCheck className="w-4 h-4" />
-                  </div>
-                  <div className="text-xl font-black text-[#0F2347] tracking-tight">
-                    {telemetryFidelity}
-                  </div>
-                  <div className="text-[9.5px] font-bold uppercase tracking-wider text-[#1E293B] mt-0.5">
-                    TRUST & RELIABILITY
-                  </div>
-                  <div className="text-[8.5px] text-[#64748B]">
-                    People Trust Our Impact
-                  </div>
+                <div>
+                  <span>PASSPORT: talentxcel.in/passport/sanobar-jahan</span>
                 </div>
               </div>
-
-              {/* 5. SIGN-OFF, AUTHENTIC SEAL & SIGNATURE ROW */}
-              <div className="relative z-10 pt-3 flex items-end justify-between">
-                
-                {/* Date of Issue */}
-                <div className="text-left w-44">
-                  <div className="text-xs font-semibold text-[#1E293B]">
-                    {issueDate}
-                  </div>
-                  <div className="w-32 h-[1px] bg-slate-300 my-1" />
-                  <p className="text-[8.5px] font-bold tracking-[0.2em] text-[#64748B] uppercase">
-                    DATE OF ISSUE
-                  </p>
-                </div>
-
-                {/* Signatory Center */}
-                <div className="text-center w-56">
-                  <div className="h-9 flex items-center justify-center mb-0.5">
-                    <img 
-                      src="/assets/signature-sample.png" 
-                      alt="Signature" 
-                      className="h-8 object-contain"
-                      onError={(e) => {
-                        (e.target as HTMLElement).style.display = 'none';
-                      }}
-                    />
-                  </div>
-                  <div className="w-48 h-[1px] bg-slate-300 my-1 mx-auto" />
-                  <p className="text-[9.5px] font-bold uppercase tracking-wider text-[#0F2347]">
-                    ARSHID HUSSAIN WANI
-                  </p>
-                  <p className="text-[8.5px] font-semibold uppercase tracking-wide text-[#475569]">
-                    VICE PRESIDENT, OPERATIONS
-                  </p>
-                  <p className="text-[8px] font-medium uppercase tracking-wider text-[#64748B]">
-                    TALENTXCEL SERVICES
-                  </p>
-                </div>
-
-                {/* The Authentic Circular Seal (Matching Reference Image 2) */}
-                <div className="text-right w-44 flex justify-end items-center">
-                  <div 
-                    className="relative w-28 h-28 flex items-center justify-center transform -rotate-12 select-none pointer-events-none"
-                    title="Official TalentXcel Global Talent Seal"
-                  >
-                    <img 
-                      src="/assets/talentxcel-official-seal.png" 
-                      alt="TalentXcel Official Seal" 
-                      className="w-full h-full object-contain drop-shadow-xs" 
-                      onError={(e) => {
-                        (e.target as HTMLElement).style.display = 'none';
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* 6. BOTTOM FOOTER RIBBON */}
-              <div className="relative z-10 pt-2 border-t border-[#C5A880]/60 flex items-center justify-between text-[8.5px]">
-                <div className="flex items-center gap-1.5 font-bold tracking-wider text-[#1E293B] uppercase">
-                  <span className="w-3.5 h-[1.5px] bg-[#A27B3D] inline-block" />
-                  <span>GLOBAL TALENT. REAL IMPACT.</span>
-                </div>
-
-                <div className="tracking-[0.24em] text-[#64748B] uppercase font-semibold hidden sm:block">
-                  SKILLS &nbsp;|&nbsp; CAREERS &nbsp;|&nbsp; OPPORTUNITIES &nbsp;|&nbsp; A BRIGHTER TOMORROW
-                </div>
-
-                <div className="font-mono font-medium text-[#1E293B] text-[9.5px]">
-                  www.talentxcel.in
-                </div>
-              </div>
-
             </div>
           </div>
 
-          {/* Bottom Action & Viral Share Bar */}
-          <div className="px-5 py-3.5 border-t border-slate-800 bg-slate-900/95 flex flex-col sm:flex-row items-center justify-between gap-3">
+          {/* Bottom Viral Action Bar */}
+          <div className="px-5 py-4 border-t border-slate-800 bg-slate-900/90 flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="flex items-center gap-2 flex-wrap">
               <Button
                 size="sm"
                 onClick={handleDownloadPNG}
                 disabled={isExportingImage}
-                className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold text-xs gap-1.5 rounded-xl shadow-md shadow-blue-900/30"
+                className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold text-xs gap-1.5 rounded-xl shadow-md shadow-cyan-900/30"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>{isExportingImage ? 'Generating PNG...' : 'Download Image (PNG)'}</span>
@@ -707,7 +588,7 @@ ${passportUrl}
               </Button>
             </div>
 
-            {/* Viral Share Links */}
+            {/* Social Momentum Share Hub */}
             <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
               <span className="text-xs text-slate-400 font-medium hidden md:inline">Share Credential:</span>
               
