@@ -21,7 +21,7 @@ import SupportingDocumentsForm from "@/components/jobs/SupportingDocumentsForm";
 import AIJobGenerator from "@/components/jobs/AIJobGenerator";
 import AITestButton from "@/components/jobs/AITestButton";
 import { IndustryJobPostForm } from "@/components/jobs/IndustryJobPostForm";
-import { validateJobData } from "@/utils/jobCategories";
+import { validateJobData, JOB_CATEGORIES } from "@/utils/jobCategories";
 import { normalizeJobContent } from '@/lib/job/normalizeJobContent';
 import { toJobsTablePayload } from '@/lib/job/toJobsTablePayload';
 

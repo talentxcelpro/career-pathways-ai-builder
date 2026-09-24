@@ -9,8 +9,10 @@ export const BundleErrorFallback: React.FC<BundleErrorFallbackProps> = ({
   error, 
   resetErrorBoundary 
 }) => {
-  // Check if the error is a deployment chunk mismatch or dynamic module loading failure
   useEffect(() => {
+    if (error) {
+      console.error('[Application Runtime Error caught by ErrorBoundary]:', error);
+    }
     const errorMsg = error?.message?.toLowerCase() || '';
     const errorName = error?.name?.toLowerCase() || '';
     
