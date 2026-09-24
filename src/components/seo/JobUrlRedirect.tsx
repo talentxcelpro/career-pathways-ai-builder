@@ -12,24 +12,24 @@ export const JobUrlRedirect: React.FC = () => {
     const handleRedirect = async () => {
       if (!slugOrId) return;
 
-      // If it's already a valid SEO slug, no redirect needed
+      // If it's already a valid SEO slug, redirect to /jobs/:slugOrId
       if (isValidJobSlug(slugOrId)) {
+        navigate(`/jobs/${slugOrId}`, { replace: true });
         return;
       }
 
       // If it's a UUID, fetch job data and redirect to SEO URL
-      if (slugOrId.length === 36 && slugOrId.includes('-')) {
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slugOrId);
+      if (isUuid) {
         try {
           const { data: job } = await supabase
             .from('jobs')
             .select('id, title, location, seo_slug')
             .eq('id', slugOrId)
-            .single();
+            .maybeSingle();
 
           if (job) {
-            const seoUrl = getJobDetailUrl(job);
-            // 301 redirect to SEO-friendly URL
-            window.location.replace(seoUrl);
+            navigate(getJobDetailUrl(job), { replace: true });
             return;
           }
         } catch (error) {
@@ -37,21 +37,43 @@ export const JobUrlRedirect: React.FC = () => {
         }
       }
 
-      // If we can extract an ID from the slug, try to find the job using the new database function
+      // If we can extract an ID from the slug, try to find the job using partial ID
       const extractedId = extractJobId(slugOrId);
       if (extractedId && extractedId !== slugOrId) {
         try {
           const { data: job } = await supabase
-            .rpc('find_job_by_partial_id', { partial_id: extractedId })
+            .from('jobs')
+            .select('id, title, location, seo_slug')
+            .ilike('seo_slug', `%${extractedId}%`)
+            .limit(1)
             .maybeSingle();
 
           if (job) {
-            const seoUrl = getJobDetailUrl(job);
-            window.location.replace(seoUrl);
+            navigate(getJobDetailUrl(job), { replace: true });
             return;
           }
         } catch (error) {
           console.error('Error fetching job by partial ID:', error);
+        }
+      }
+
+      // General fallback: search by title keywords
+      const titleKeywords = slugOrId.replace(/[-_]+/g, ' ').trim();
+      if (titleKeywords.length >= 3) {
+        try {
+          const { data: job } = await supabase
+            .from('jobs')
+            .select('id, title, location, seo_slug')
+            .ilike('title', `%${titleKeywords.split(' ')[0]}%`)
+            .limit(1)
+            .maybeSingle();
+
+          if (job) {
+            navigate(getJobDetailUrl(job), { replace: true });
+            return;
+          }
+        } catch (e) {
+          console.error('Error fuzzy searching job:', e);
         }
       }
 

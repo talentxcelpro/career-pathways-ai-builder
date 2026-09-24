@@ -156,6 +156,29 @@ const JobDetail = () => {
         jobData = searchData;
       }
 
+      // If still not found due to companies foreign key join, query jobs directly
+      if (!jobData) {
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slugOrId);
+        let query = supabase.from('jobs').select('*');
+        if (isUuid) {
+          query = query.eq('id', slugOrId);
+        } else {
+          query = query.eq('seo_slug', slugOrId);
+        }
+        const { data: rawJob } = await query.eq('is_active', true).maybeSingle();
+        if (rawJob) {
+          jobData = {
+            ...rawJob,
+            companies: {
+              name: rawJob.company_name || 'TalentXcel Services',
+              logo_url: rawJob.organization_logo_url || '/talentxcel-official-logo.png',
+              industry: rawJob.industry || 'Technology & Enterprise Services',
+              is_verified: true
+            }
+          };
+        }
+      }
+
       return jobData;
     },
     enabled: !!slugOrId,

@@ -12,11 +12,31 @@ export const JobRedirectHandler = () => {
     queryFn: async () => {
       if (!id) return null;
       
-      // Try to find job by numeric ID or partial match
+      // Check if it's a UUID
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+      if (isUuid) {
+        const { data: uuidJob } = await supabase
+          .from('jobs')
+          .select('id, seo_slug, title')
+          .eq('id', id)
+          .maybeSingle();
+        if (uuidJob) return uuidJob;
+      }
+
+      // Try exact SEO slug match
+      const { data: exactSlugJob } = await supabase
+        .from('jobs')
+        .select('id, seo_slug, title')
+        .eq('seo_slug', id)
+        .maybeSingle();
+      if (exactSlugJob) return exactSlugJob;
+
+      // Try partial match
+      const cleanSearch = id.replace(/-/g, ' ');
       const { data, error } = await supabase
         .from('jobs')
         .select('id, seo_slug, title')
-        .or(`seo_slug.ilike.%${id}%,title.ilike.%${id}%`)
+        .or(`seo_slug.ilike.%${id}%,title.ilike.%${cleanSearch}%`)
         .eq('is_active', true)
         .limit(1)
         .maybeSingle();

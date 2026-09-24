@@ -34,6 +34,7 @@ interface JobFilters {
 export const FALLBACK_JOBS = [
   {
     id: 'job-fin-01',
+    seo_slug: 'senior-financial-analyst-jpmorgan-chase-mumbai',
     title: 'Senior Financial Analyst',
     company_name: 'JPMorgan Chase & Co.',
     location: 'Mumbai • Hybrid',
@@ -45,10 +46,17 @@ export const FALLBACK_JOBS = [
     is_remote: true,
     department: 'Finance & Accounting',
     skills_required: ['Financial Modeling', 'Excel', 'Valuation', 'Financial Analysis'],
-    description: 'Lead quarterly financial forecasting, valuation modeling, and capital expenditure analysis for Asia-Pacific operations.'
+    description: 'Lead quarterly financial forecasting, valuation modeling, and capital expenditure analysis for Asia-Pacific operations.',
+    companies: {
+      name: 'JPMorgan Chase & Co.',
+      logo_url: '/talentxcel-official-logo.png',
+      industry: 'Finance & Banking',
+      is_verified: true
+    }
   },
   {
     id: 'job-hsp-01',
+    seo_slug: 'hotel-operations-manager-taj-hotels-new-delhi',
     title: 'Hotel Operations Manager',
     company_name: 'Taj Hotels & Resorts',
     location: 'New Delhi • On-site',
@@ -60,10 +68,17 @@ export const FALLBACK_JOBS = [
     is_remote: false,
     department: 'Hospitality & Tourism',
     skills_required: ['Hotel Operations', 'Guest Experience', 'Front Office', 'Revenue Strategy'],
-    description: 'Manage luxury resort operations, guest satisfaction metrics, room inventory logistics, and front office teams.'
+    description: 'Manage luxury resort operations, guest satisfaction metrics, room inventory logistics, and front office teams.',
+    companies: {
+      name: 'Taj Hotels & Resorts',
+      logo_url: '/talentxcel-official-logo.png',
+      industry: 'Hospitality & Tourism',
+      is_verified: true
+    }
   },
   {
     id: 'job-hr-01',
+    seo_slug: 'hr-analytics-specialist-deloitte-bengaluru',
     title: 'HR Analytics Specialist',
     company_name: 'Deloitte Consulting',
     location: 'Bangalore • Hybrid',
@@ -75,10 +90,17 @@ export const FALLBACK_JOBS = [
     is_remote: true,
     department: 'HR & People',
     skills_required: ['People Analytics', 'Power BI', 'HR Metrics', 'Recruitment'],
-    description: 'Transform workforce data into strategic insights using Power BI turnover dashboards, compensation models, and retention analytics.'
+    description: 'Transform workforce data into strategic insights using Power BI turnover dashboards, compensation models, and retention analytics.',
+    companies: {
+      name: 'Deloitte Consulting',
+      logo_url: '/talentxcel-official-logo.png',
+      industry: 'Consulting & Corporate Strategy',
+      is_verified: true
+    }
   },
   {
     id: 'job-hlth-01',
+    seo_slug: 'healthcare-operations-administrator-apollo-hospitals-hyderabad',
     title: 'Healthcare Operations Administrator',
     company_name: 'Apollo Hospitals Group',
     location: 'Hyderabad • On-site',
@@ -90,10 +112,17 @@ export const FALLBACK_JOBS = [
     is_remote: false,
     department: 'Healthcare & Life Sciences',
     skills_required: ['Healthcare Operations', 'Patient Flow', 'Clinical Quality', 'Compliance'],
-    description: 'Oversee hospital department workflow, patient discharge efficiency, clinical quality audit compliance, and facility staffing.'
+    description: 'Oversee hospital department workflow, patient discharge efficiency, clinical quality audit compliance, and facility staffing.',
+    companies: {
+      name: 'Apollo Hospitals Group',
+      logo_url: '/talentxcel-official-logo.png',
+      industry: 'Healthcare & Life Sciences',
+      is_verified: true
+    }
   },
   {
     id: 'job-cld-01',
+    seo_slug: 'cloud-solutions-architect-aws-remote-india',
     title: 'Cloud Solutions Architect',
     company_name: 'Amazon Web Services (AWS)',
     location: 'Remote • India',
@@ -105,10 +134,17 @@ export const FALLBACK_JOBS = [
     is_remote: true,
     department: 'Technology & IT',
     skills_required: ['AWS Architecture', 'Cloud Security', 'Kubernetes', 'Terraform IaC'],
-    description: 'Architect secure, resilient enterprise cloud infrastructure on AWS for enterprise financial and healthcare clients.'
+    description: 'Architect secure, resilient enterprise cloud infrastructure on AWS for enterprise financial and healthcare clients.',
+    companies: {
+      name: 'Amazon Web Services (AWS)',
+      logo_url: '/talentxcel-official-logo.png',
+      industry: 'Technology & Cloud',
+      is_verified: true
+    }
   },
   {
     id: 'job-scm-01',
+    seo_slug: 'supply-chain-logistics-manager-dhl-pune',
     title: 'Supply Chain & Logistics Manager',
     company_name: 'DHL Supply Chain',
     location: 'Pune • On-site',
@@ -120,7 +156,13 @@ export const FALLBACK_JOBS = [
     is_remote: false,
     department: 'Supply Chain & Logistics',
     skills_required: ['Supply Chain', 'Demand Forecasting', 'Warehouse Logistics', 'Procurement'],
-    description: 'Drive end-to-end supply chain optimization, fulfillment center logistics, carrier negotiation, and demand forecasting.'
+    description: 'Drive end-to-end supply chain optimization, fulfillment center logistics, carrier negotiation, and demand forecasting.',
+    companies: {
+      name: 'DHL Supply Chain',
+      logo_url: '/talentxcel-official-logo.png',
+      industry: 'Supply Chain & Logistics',
+      is_verified: true
+    }
   }
 ];
 

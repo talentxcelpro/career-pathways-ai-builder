@@ -63,17 +63,32 @@ export default function JobDetails() {
         if (uuidJob) return uuidJob;
       }
 
-      // Strategy 3: Try fuzzy title / ILIKE search from jobs table
+      // Strategy 3: Try partial SEO slug match
+      const cleanSlugPrefix = slugOrId.split('-').slice(0, 4).join('-');
+      if (cleanSlugPrefix.length >= 5) {
+        const { data: partialSlugJob } = await supabase
+          .from('jobs')
+          .select('*')
+          .ilike('seo_slug', `%${cleanSlugPrefix}%`)
+          .eq('is_active', true)
+          .limit(1)
+          .maybeSingle();
+
+        if (partialSlugJob) return partialSlugJob;
+      }
+
+      // Strategy 4: Try fuzzy title / ILIKE search from jobs table
       const titleKeywords = slugOrId
         .replace(/-/g, ' ')
         .replace(/\b(noida|uttar|pradesh|india|chatr|charchat|talentxcel|services|\d+)\b/gi, '')
         .trim();
 
       if (titleKeywords.length >= 3) {
+        const firstWord = titleKeywords.split(' ')[0];
         const { data: titleJob } = await supabase
           .from('jobs')
           .select('*')
-          .ilike('title', `%${titleKeywords.split(' ')[0]}%`)
+          .ilike('title', `%${firstWord}%`)
           .eq('is_active', true)
           .limit(1)
           .maybeSingle();

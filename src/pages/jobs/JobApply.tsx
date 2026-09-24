@@ -28,11 +28,33 @@ export default function JobApply() {
     additional_info: ''
   });
 
-  // Fetch job details
+  // Fetch job details (supports UUID, seo_slug, or fallback)
   const { data: job, isLoading: jobLoading } = useQuery({
     queryKey: ['job', id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      if (!id) return null;
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+
+      if (isUuid) {
+        const { data, error } = await supabase
+          .from('jobs')
+          .select(`
+            *,
+            companies (
+              id,
+              name,
+              logo_url,
+              industry
+            )
+          `)
+          .eq('id', id)
+          .maybeSingle();
+
+        if (data) return data;
+      }
+
+      // Try exact SEO slug match
+      const { data: slugData } = await supabase
         .from('jobs')
         .select(`
           *,
@@ -43,11 +65,28 @@ export default function JobApply() {
             industry
           )
         `)
-        .eq('id', id)
-        .single();
+        .eq('seo_slug', id)
+        .maybeSingle();
 
-      if (error) throw error;
-      return data;
+      if (slugData) return slugData;
+
+      // Try partial/ilike slug match
+      const { data: partialData } = await supabase
+        .from('jobs')
+        .select(`
+          *,
+          companies (
+            id,
+            name,
+            logo_url,
+            industry
+          )
+        `)
+        .ilike('seo_slug', `%${id}%`)
+        .limit(1)
+        .maybeSingle();
+
+      return partialData || null;
     },
     enabled: !!id
   });
@@ -76,13 +115,15 @@ export default function JobApply() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
+      const targetJobId = job?.id || id;
+
       // Check if already applied
       const { data: existingApplication } = await supabase
         .from('job_applications')
         .select('id')
         .eq('user_id', user.id)
-        .eq('job_id', id)
-        .single();
+        .eq('job_id', targetJobId)
+        .maybeSingle();
 
       if (existingApplication) {
         throw new Error('You have already applied to this job');
@@ -110,7 +151,7 @@ export default function JobApply() {
         .from('job_applications')
         .insert({
           user_id: user.id,
-          job_id: id,
+          job_id: targetJobId,
           cover_letter: applicationData.cover_letter,
           resume_url: resumeUrl,
           status: 'applied'
@@ -119,9 +160,9 @@ export default function JobApply() {
       if (error) throw error;
 
       // Update application count
-      if (id) {
+      if (targetJobId) {
         try {
-          await incrementJobApplications(id);
+          await incrementJobApplications(targetJobId);
         } catch (error) {
           console.log('Failed to increment application count:', error);
         }
