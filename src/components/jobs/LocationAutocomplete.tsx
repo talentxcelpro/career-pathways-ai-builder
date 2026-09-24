@@ -1,4 +1,4 @@
-﻿/**
+/**
  * LocationAutocomplete
  * Searchable combobox for the 1,194-location corpus.
  * Debounced search, country flag, state label, canonical value output.
@@ -68,10 +68,20 @@ export const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
     }, DEBOUNCE_MS);
   }, [showPopular]);
 
+  // Keep local query in sync when parent value changes
+  useEffect(() => {
+    if (value !== undefined) {
+      setQuery(value);
+      setSelectedLabel(value);
+    }
+  }, [value]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const q = e.target.value;
     setQuery(q);
+    setSelectedLabel(q);
     setActiveIndex(-1);
+    onChange(q);
     handleSearch(q);
   };
 

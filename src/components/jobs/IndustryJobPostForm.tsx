@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,8 +13,11 @@ import { EXPERIENCE_LEVELS } from "@/config/jobs/experienceLevels";
 import { CURRENCIES, DEFAULT_CURRENCY } from "@/config/jobs/currencies";
 import { LocationAutocomplete } from "@/components/jobs/LocationAutocomplete";
 import { GoogleJobsPreviewCard } from "@/components/jobs/GoogleJobsPreviewCard";
-import { Sparkles, Plus, X, ArrowLeft, ArrowRight, Loader2, GraduationCap } from "lucide-react";
+import { Sparkles, Plus, X, ArrowLeft, ArrowRight, Loader2, GraduationCap, Save, RotateCcw, CheckCircle2, Clock } from "lucide-react";
 import { toast } from 'sonner';
+import { cn } from "@/lib/utils";
+
+const LOCAL_DRAFT_KEY = 'txc_industry_job_draft';
 
 interface IndustryJobPostFormProps {
   onSubmit: (jobData: any) => void;
@@ -28,12 +31,14 @@ export const IndustryJobPostForm: React.FC<IndustryJobPostFormProps> = ({
   isSubmitting = false 
 }) => {
   const [activeTab, setActiveTab] = useState<'basic' | 'description' | 'requirements' | 'compensation'>('basic');
+  const [lastSavedTime, setLastSavedTime] = useState<string | null>(null);
+
   const [formData, setFormData] = useState({
     // Basic Info
-    industry: initialData.industry || '',
-    job_title: initialData.job_title || '',
+    industry: initialData.industry || initialData.industry_domain || '',
+    job_title: initialData.job_title || initialData.title || '',
     company_name: initialData.company_name || '',
-    location: initialData.location || '',
+    location: initialData.location || initialData.location_city || '',
     employment_type: initialData.employment_type || 'FULL_TIME',
     experience_level: initialData.experience_level || 'ENTRY_LEVEL',
     is_fresher_eligible: initialData.is_fresher_eligible ?? true,
@@ -41,25 +46,85 @@ export const IndustryJobPostForm: React.FC<IndustryJobPostFormProps> = ({
     
     // Description
     job_summary: initialData.job_summary || '',
-    job_description: initialData.job_description || '',
+    job_description: initialData.job_description || initialData.description || '',
     key_responsibilities: initialData.key_responsibilities || [],
     
     // Requirements
-    skills_required: initialData.skills_required || [],
+    skills_required: initialData.skills_required || initialData.required_skills || [],
     education_requirements: initialData.education_requirements || '',
-    certifications_required: initialData.certifications_required || [],
+    certifications_required: initialData.certifications_required || initialData.certifications || [],
     
     // Compensation
-    salary_min: initialData.salary_min || '',
-    salary_max: initialData.salary_max || '',
+    salary_min: initialData.salary_min || initialData.min_salary || '',
+    salary_max: initialData.salary_max || initialData.max_salary || '',
     salary_currency: initialData.salary_currency || DEFAULT_CURRENCY.code,
     benefits: initialData.benefits || [],
     
     // Contact & Application
-    contact_email: initialData.contact_email || '',
-    contact_phone: initialData.contact_phone || '',
+    contact_email: initialData.contact_email || initialData.contact_person_email || '',
+    contact_phone: initialData.contact_phone || initialData.contact_person_phone || '',
     external_url: initialData.external_url || '',
   });
+
+  // Restore local draft on mount if available
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(LOCAL_DRAFT_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed?.data) {
+          if (!formData.job_title && !formData.job_description) {
+            setFormData(prev => ({
+              ...prev,
+              ...parsed.data
+            }));
+            if (parsed.savedAt) {
+              const timeStr = new Date(parsed.savedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+              setLastSavedTime(timeStr);
+              toast.info(`Restored your saved draft from ${timeStr}`);
+            }
+          }
+        }
+      }
+    } catch (e) {
+      console.error('Failed to parse local draft', e);
+    }
+  }, []);
+
+  // Auto-save form data to localStorage with debounce
+  useEffect(() => {
+    const hasContent = !!(formData.job_title || formData.job_description || formData.job_summary || formData.location);
+    if (!hasContent) return;
+
+    const timer = setTimeout(() => {
+      try {
+        const now = new Date();
+        localStorage.setItem(LOCAL_DRAFT_KEY, JSON.stringify({
+          data: formData,
+          savedAt: now.toISOString()
+        }));
+        setLastSavedTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+      } catch (err) {
+        console.error('Auto-save draft error:', err);
+      }
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [formData]);
+
+  // Sync initialData changes when employer profile loads asynchronously
+  useEffect(() => {
+    if (initialData && Object.keys(initialData).length > 0) {
+      setFormData(prev => ({
+        ...prev,
+        company_name: prev.company_name || initialData.company_name || '',
+        location: prev.location || initialData.location || initialData.location_city || '',
+        contact_email: prev.contact_email || initialData.contact_email || initialData.contact_person_email || '',
+        contact_phone: prev.contact_phone || initialData.contact_phone || initialData.contact_person_phone || '',
+        industry: prev.industry || initialData.industry_domain || initialData.industry || '',
+      }));
+    }
+  }, [initialData]);
 
   const [newSkill, setNewSkill] = useState('');
   const [newResponsibility, setNewResponsibility] = useState('');
@@ -156,40 +221,208 @@ export const IndustryJobPostForm: React.FC<IndustryJobPostFormProps> = ({
       salary_currency: currency,
       salary_range: salaryRange,
       is_fresher_eligible: formData.is_fresher_eligible,
+      visibility_status: 'active',
     });
   };
 
-  const generateWithAI = () => {
-    if (!formData.industry || !formData.job_title) {
-      toast.info('Please select an industry and enter a job title first');
-      return;
+  const handleSaveDraft = () => {
+    const title = (formData.job_title || '').trim() || 'Draft Job Role';
+    const company = (formData.company_name || '').trim() || initialData.company_name || 'TalentXcel Partner';
+    const location = (formData.location || '').trim() || 'Noida, Uttar Pradesh, India';
+    const description = (formData.job_description || formData.job_summary || '').trim() || (title ? `Draft posting for ${title} at ${company}.` : '');
+
+    const minSalary = formData.salary_min ? Number(formData.salary_min) : undefined;
+    const maxSalary = formData.salary_max ? Number(formData.salary_max) : undefined;
+    const currency = formData.salary_currency || 'INR';
+
+    try {
+      localStorage.setItem(LOCAL_DRAFT_KEY, JSON.stringify({
+        data: formData,
+        savedAt: new Date().toISOString()
+      }));
+      setLastSavedTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    } catch (e) {
+      console.error(e);
     }
 
-    const skills = getSkillsForCategory(formData.industry);
-    
+    onSubmit({
+      ...formData,
+      job_title: title,
+      title: title,
+      company_name: company,
+      location: location,
+      location_city: location,
+      job_summary: formData.job_summary || description.slice(0, 250),
+      job_description: description,
+      description: description,
+      salary_min: minSalary,
+      salary_max: maxSalary,
+      min_salary: minSalary,
+      max_salary: maxSalary,
+      salary_currency: currency,
+      visibility_status: 'draft',
+      is_active: false,
+    });
+  };
+
+  const handleResetDraft = () => {
+    if (window.confirm('Reset this job draft? All current unsaved inputs will be cleared.')) {
+      try {
+        localStorage.removeItem(LOCAL_DRAFT_KEY);
+      } catch (e) {
+        console.error(e);
+      }
+      setFormData({
+        industry: initialData.industry || initialData.industry_domain || '',
+        job_title: '',
+        company_name: initialData.company_name || '',
+        location: initialData.location || initialData.location_city || '',
+        employment_type: 'FULL_TIME',
+        experience_level: 'ENTRY_LEVEL',
+        is_fresher_eligible: true,
+        work_mode: 'hybrid',
+        job_summary: '',
+        job_description: '',
+        key_responsibilities: [],
+        skills_required: [],
+        education_requirements: '',
+        certifications_required: [],
+        salary_min: '',
+        salary_max: '',
+        salary_currency: DEFAULT_CURRENCY.code,
+        benefits: [],
+        contact_email: initialData.contact_email || initialData.contact_person_email || '',
+        contact_phone: initialData.contact_phone || initialData.contact_person_phone || '',
+        external_url: '',
+      });
+      setLastSavedTime(null);
+      toast.info('Draft cleared successfully.');
+    }
+  };
+
+  const generateWithAI = () => {
+    let title = (formData.job_title || '').trim();
+    let industry = formData.industry;
+
+    if (!title && !industry) {
+      title = 'Senior Software Engineer';
+      industry = 'Technology';
+    } else if (title && !industry) {
+      const lower = title.toLowerCase();
+      if (
+        lower.includes('software') || 
+        lower.includes('developer') || 
+        lower.includes('engineer') || 
+        lower.includes('cloud') || 
+        lower.includes('devops') || 
+        lower.includes('full stack') ||
+        lower.includes('data') ||
+        lower.includes('qa') ||
+        lower.includes('frontend') ||
+        lower.includes('backend')
+      ) {
+        industry = 'Technology';
+      } else if (
+        lower.includes('sales') || 
+        lower.includes('marketing') || 
+        lower.includes('business development') ||
+        lower.includes('growth')
+      ) {
+        industry = 'Sales & Marketing';
+      } else if (
+        lower.includes('finance') || 
+        lower.includes('accountant') || 
+        lower.includes('banking') ||
+        lower.includes('audit')
+      ) {
+        industry = 'Finance & Banking';
+      } else if (
+        lower.includes('hr') || 
+        lower.includes('talent') || 
+        lower.includes('recruiter') ||
+        lower.includes('people')
+      ) {
+        industry = 'Human Resources';
+      } else if (
+        lower.includes('design') || 
+        lower.includes('ui') || 
+        lower.includes('ux') ||
+        lower.includes('graphic')
+      ) {
+        industry = 'Design & Creative';
+      } else if (
+        lower.includes('health') || 
+        lower.includes('nurse') || 
+        lower.includes('medical') ||
+        lower.includes('pharma')
+      ) {
+        industry = 'Healthcare';
+      } else {
+        industry = 'Technology';
+      }
+    } else if (!title && industry) {
+      const roles = getRolesForCategory(industry);
+      title = roles.length > 0 ? roles[0] : `${industry} Specialist`;
+    }
+
+    const companyName = formData.company_name?.trim() || initialData.company_name || 'TalentXcel Services';
+    const location = formData.location?.trim() || initialData.location || initialData.location_city || 'Noida, Uttar Pradesh, India';
+    const skills = getSkillsForCategory(industry);
+
+    const jobDescription = `About the Role:
+We are seeking an experienced, proactive, and results-driven ${title} to join our high-performing team at ${companyName}. In this strategic role within the ${industry} domain, you will be responsible for leading core initiatives, architecting reliable solutions, and driving cross-functional collaboration that directly influences our technological growth and client satisfaction.
+
+Key Responsibilities & Scope:
+• Take end-to-end ownership of project lifecycles, ensuring rigorous engineering excellence, scalability, and adherence to industry best standards.
+• Partner closely with multidisciplinary teams including product managers, domain leads, and engineering teams to translate business requirements into technical blueprints.
+• Conduct thorough code evaluations, architecture reviews, and automated testing to maintain system stability and high availability.
+• Troubleshoot complex technical challenges, identify bottlenecks, and engineer durable, high-throughput solutions.
+• Mentor teammates, foster a culture of continuous learning, and document system workflows and best practices.
+
+Candidate Profile & Qualifications:
+• Demonstrated background in the ${industry} landscape with a solid track record of delivering resilient products.
+• Exceptional problem-solving capabilities, clear communication, and an agile, customer-first mindset.
+• Ability to thrive in a fast-paced environment, taking initiative with minimal supervision.`;
+
+    const jobSummary = `We are looking for a dedicated and forward-thinking ${title} to contribute to our mission at ${companyName}. In this position, you will lead high-impact initiatives in the ${industry} domain, work closely with cross-functional partners, and leverage modern industry best practices to deliver outstanding results.`;
+
     const generatedData = {
       ...formData,
-      job_summary: `We are seeking a talented ${formData.job_title} to join our ${formData.industry.toLowerCase()} team. This role offers an excellent opportunity to work with cutting-edge technologies and contribute to innovative projects.`,
-      job_description: `As a ${formData.job_title}, you will be responsible for delivering high-quality solutions in the ${formData.industry.toLowerCase()} domain. You will work collaboratively with cross-functional teams to drive business objectives, mentor teammates, and achieve technical excellence.`,
+      job_title: title,
+      industry: industry,
+      company_name: companyName,
+      location: location,
+      employment_type: formData.employment_type || 'FULL_TIME',
+      experience_level: formData.experience_level || 'ENTRY_LEVEL',
+      work_mode: formData.work_mode || 'hybrid',
+      job_summary: jobSummary,
+      job_description: jobDescription,
       key_responsibilities: [
-        `Lead key initiatives within the ${formData.industry.toLowerCase()} domain`,
-        `Collaborate with cross-functional stakeholders to define requirements`,
-        `Implement industry best practices and technical standards`,
-        `Participate in code reviews, design sessions, and testing`,
-        `Ensure timely execution and high quality deliverables`
+        `Lead day-to-day execution and delivery of key ${title} initiatives and project roadmaps`,
+        `Collaborate closely with cross-functional teams and product stakeholders to refine requirements`,
+        `Apply industry best practices, modern methodologies, and quality assurance principles`,
+        `Troubleshoot issues, identify root causes, and implement scalable, resilient solutions`,
+        `Maintain clear technical documentation, reports, and knowledge-sharing artifacts`,
+        `Contribute to continuous improvement of workflows, systems, and team standards`
       ],
-      skills_required: skills.slice(0, 8),
+      skills_required: skills.length > 0 ? skills.slice(0, 8) : ['Analytical Thinking', 'Problem Solving', 'Team Collaboration', 'Communication', 'Strategic Planning'],
+      education_requirements: "Bachelor's or Master's degree in Computer Science, Engineering, Business, or related discipline (or equivalent practical experience)",
+      salary_min: formData.salary_min || '600000',
+      salary_max: formData.salary_max || '1400000',
+      salary_currency: formData.salary_currency || 'INR',
       benefits: [
-        'Competitive compensation package',
-        'Comprehensive health insurance',
-        'Professional development allowance',
-        'Flexible working arrangements',
-        'Performance-based bonus'
-      ]
+        'Competitive compensation with annual performance appraisal',
+        'Comprehensive health, medical, and accidental insurance coverage',
+        'Annual professional development and industry certification budget',
+        'Flexible hybrid working arrangements with modern tech setup',
+        'Generous paid time off, parental leave, and wellness holidays'
+      ],
+      contact_email: formData.contact_email || initialData.contact_email || '',
+      contact_phone: formData.contact_phone || initialData.contact_phone || '',
     };
 
     setFormData(generatedData);
-    toast.success('AI job draft generated successfully!');
+    toast.success('AI draft & auto-population applied! Google Jobs criteria fulfilled.');
   };
 
   // Prepare Google Jobs preview data
@@ -203,7 +436,59 @@ export const IndustryJobPostForm: React.FC<IndustryJobPostFormProps> = ({
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Form tabs (left 2 cols) */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-4">
+          {/* Draft & Auto-population Action Toolbar */}
+          <div className="flex flex-wrap items-center justify-between gap-3 bg-muted/40 p-3 rounded-lg border border-border/70 backdrop-blur-sm">
+            <div className="flex items-center gap-2 text-xs sm:text-sm">
+              {lastSavedTime ? (
+                <span className="inline-flex items-center text-emerald-600 dark:text-emerald-400 font-medium">
+                  <CheckCircle2 className="h-4 w-4 mr-1.5" />
+                  Draft auto-saved at {lastSavedTime}
+                </span>
+              ) : (
+                <span className="inline-flex items-center text-muted-foreground">
+                  <Clock className="h-4 w-4 mr-1.5" />
+                  Local auto-save active
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleResetDraft}
+                className="text-xs text-muted-foreground hover:text-destructive h-8 px-2.5"
+                title="Clear current draft and start fresh"
+              >
+                <RotateCcw className="h-3.5 w-3.5 mr-1" />
+                Reset Draft
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleSaveDraft}
+                disabled={isSubmitting}
+                className="text-xs h-8 px-3 border-border hover:bg-muted font-medium"
+                title="Save draft directly to your employer dashboard"
+              >
+                <Save className="h-3.5 w-3.5 mr-1 text-primary" />
+                Save as Draft
+              </Button>
+              <Button
+                type="button"
+                variant="default"
+                size="sm"
+                onClick={generateWithAI}
+                className="text-xs bg-primary hover:bg-primary/90 h-8 px-3 font-semibold shadow-sm"
+              >
+                <Sparkles className="h-3.5 w-3.5 mr-1 text-primary-foreground" />
+                Auto-Fill with AI
+              </Button>
+            </div>
+          </div>
+
           <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as any)} className="w-full">
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="basic">Basic Info</TabsTrigger>
@@ -376,13 +661,23 @@ export const IndustryJobPostForm: React.FC<IndustryJobPostFormProps> = ({
                   </div>
 
                   <div>
-                    <Label htmlFor="job_description">Detailed Description *</Label>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <Label htmlFor="job_description">Detailed Description *</Label>
+                      <span className={cn(
+                        "text-xs font-medium px-2 py-0.5 rounded-full transition-colors",
+                        (formData.job_description || '').length >= 500 
+                          ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300/40" 
+                          : "bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300/40"
+                      )}>
+                        {(formData.job_description || '').length} / 500 chars {(formData.job_description || '').length >= 500 ? '✓ (Google Jobs ready)' : '(min 500 for Google Jobs)'}
+                      </span>
+                    </div>
                     <Textarea
                       id="job_description"
                       value={formData.job_description}
                       onChange={(e) => handleInputChange('job_description', e.target.value)}
                       placeholder="Comprehensive job description, team context, growth opportunities..."
-                      rows={6}
+                      rows={7}
                     />
                   </div>
 
@@ -623,24 +918,35 @@ export const IndustryJobPostForm: React.FC<IndustryJobPostFormProps> = ({
                     </div>
                   </div>
 
-                  <div className="flex justify-between pt-2 border-t">
+                  <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t">
                     <Button type="button" variant="outline" onClick={() => setActiveTab('requirements')}>
                       <ArrowLeft className="h-4 w-4 mr-1.5" /> Back
                     </Button>
-                    <Button 
-                      type="submit" 
-                      disabled={isSubmitting} 
-                      className="bg-primary text-primary-foreground font-semibold shadow-md"
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          Publishing...
-                        </>
-                      ) : (
-                        'Publish Job Now 🚀'
-                      )}
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleSaveDraft}
+                        disabled={isSubmitting}
+                      >
+                        <Save className="h-4 w-4 mr-1.5 text-primary" />
+                        Save as Draft
+                      </Button>
+                      <Button 
+                        type="submit" 
+                        disabled={isSubmitting} 
+                        className="bg-primary text-primary-foreground font-semibold shadow-md"
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Publishing...
+                          </>
+                        ) : (
+                          'Publish Job Now 🚀'
+                        )}
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -648,7 +954,7 @@ export const IndustryJobPostForm: React.FC<IndustryJobPostFormProps> = ({
           </Tabs>
 
           {/* Form submit bar */}
-          <div className="flex gap-4 pt-2">
+          <div className="flex flex-col sm:flex-row gap-3 pt-2">
             <Button 
               type="submit" 
               disabled={isSubmitting} 
@@ -663,9 +969,20 @@ export const IndustryJobPostForm: React.FC<IndustryJobPostFormProps> = ({
                 'Publish Job Now'
               )}
             </Button>
+            <Button 
+              type="button" 
+              variant="outline" 
+              size="lg" 
+              onClick={handleSaveDraft}
+              disabled={isSubmitting}
+              className="h-12 border-border/80 hover:bg-muted font-medium"
+            >
+              <Save className="h-4 w-4 mr-2 text-primary" />
+              Save as Draft
+            </Button>
             <Button type="button" variant="outline" size="lg" onClick={generateWithAI} className="h-12 border-primary/30 hover:bg-primary/5">
               <Sparkles className="h-4 w-4 mr-2 text-primary" />
-              Generate with AI
+              Auto-Fill with AI
             </Button>
           </div>
         </div>
@@ -681,6 +998,7 @@ export const IndustryJobPostForm: React.FC<IndustryJobPostFormProps> = ({
               salary: previewSalary,
               currency: formData.salary_currency,
               datePosted: new Date().toISOString(),
+              validThrough: new Date(Date.now() + 30 * 86400000).toISOString(),
               description: formData.job_description || formData.job_summary,
               externalUrl: formData.external_url || 'https://talentxcel.in/jobs/apply',
               isFresherEligible: formData.is_fresher_eligible,

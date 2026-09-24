@@ -20,7 +20,7 @@ import {
   Star
 } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { EmployerAccessGuard } from "@/components/employer/EmployerAccessGuard";
 
@@ -40,8 +40,28 @@ interface Application {
 
 function ApplicationsContent() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
+
+  // Supabase Real-Time subscription for employer applications
+  React.useEffect(() => {
+    const channel = supabase
+      .channel('employer-applications-live-sync')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'job_applications' },
+        (payload) => {
+          console.log('⚡ Realtime job_applications update on applications page:', payload.eventType);
+          queryClient.invalidateQueries({ queryKey: ['employer-applications'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   // Get company ID from team membership
   const { data: teamData } = useQuery({
@@ -107,6 +127,7 @@ function ApplicationsContent() {
           resume_url,
           cover_letter,
           ai_match_score,
+          application_data,
           jobs:jobs!fk_job_applications_job_id (
             id,
             title
@@ -126,19 +147,22 @@ function ApplicationsContent() {
         return [];
       }
 
-      return (appsData || []).map((app: any) => ({
-        id: app.id,
-        job_id: app.job_id,
-        job_title: app.jobs?.title || 'Position',
-        candidate_name: app.profiles?.full_name || 'Candidate',
-        candidate_email: app.profiles?.email || 'No email provided',
-        candidate_phone: app.profiles?.phone || undefined,
-        applied_at: app.applied_at || new Date().toISOString(),
-        status: (app.status?.toLowerCase() || 'pending') as Application['status'],
-        resume_url: app.resume_url || undefined,
-        cover_letter: app.cover_letter || undefined,
-        rating: app.ai_match_score ? Math.min(5, Math.max(1, Math.round(app.ai_match_score / 20))) : undefined,
-      }));
+      return (appsData || []).map((app: any) => {
+        const appData = app.application_data || {};
+        return {
+          id: app.id,
+          job_id: app.job_id,
+          job_title: app.jobs?.title || appData.jobTitle || 'Position',
+          candidate_name: app.profiles?.full_name || appData.fullName || appData.candidate_name || 'Candidate',
+          candidate_email: app.profiles?.email || appData.email || 'No email provided',
+          candidate_phone: app.profiles?.phone || appData.phoneNumber || appData.phone || undefined,
+          applied_at: app.applied_at || new Date().toISOString(),
+          status: (app.status?.toLowerCase() || 'pending') as Application['status'],
+          resume_url: app.resume_url || appData.resumeUrl || undefined,
+          cover_letter: app.cover_letter || appData.coverLetter || undefined,
+          rating: app.ai_match_score ? Math.min(5, Math.max(1, Math.round(app.ai_match_score / 20))) : undefined,
+        };
+      });
     },
   });
 

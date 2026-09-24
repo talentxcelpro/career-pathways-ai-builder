@@ -94,48 +94,90 @@ function JobPostContent() {
     ai_priority: false
   });
 
-  // Fetch user's company info
-  const { data: userCompany } = useQuery({
-    queryKey: ['user-company'],
+  // Fetch user's company and profile info for seamless auto-population
+  const { data: userEmployerInfo } = useQuery({
+    queryKey: ['user-employer-info'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
-      
-      const { data, error } = await supabase
+
+      // 1. Fetch user profile
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id, full_name, email, phone, location, current_company')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      // 2. Fetch company team membership
+      const { data: teamMembers } = await supabase
         .from('company_team_members')
-        .select(`
-          company_id,
-          companies (
-            id,
-            name,
-            website,
-            industry,
-            size_range
-          )
-        `)
+        .select('company_id')
         .eq('user_id', user.id)
         .eq('is_active', true)
-        .single();
-      
-      if (error) return null;
-      return data;
+        .limit(1);
+
+      let companyDetails: any = null;
+      const companyId = teamMembers && teamMembers.length > 0 ? teamMembers[0].company_id : null;
+
+      if (companyId) {
+        const { data: comp } = await supabase
+          .from('companies')
+          .select('id, name, website_url, industry, size_range')
+          .eq('id', companyId)
+          .maybeSingle();
+        companyDetails = comp;
+      }
+
+      const effectiveCompanyName = 
+        companyDetails?.name || 
+        profile?.current_company || 
+        'TalentXcel Services';
+
+      return {
+        user,
+        profile,
+        company_id: companyId,
+        company_name: effectiveCompanyName,
+        company_website: companyDetails?.website_url || '',
+        industry_domain: companyDetails?.industry || '',
+        company_size: companyDetails?.size_range || '',
+        location: profile?.location || 'Noida',
+        contact_name: profile?.full_name || user.user_metadata?.full_name || '',
+        contact_email: user.email || profile?.email || '',
+        contact_phone: profile?.phone || '',
+      };
     }
   });
 
-  // Fetch job categories
-  const { data: categories = [] } = useQuery({
-    queryKey: ['job-categories'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('job_categories')
-        .select('*')
-        .eq('is_active', true)
-        .order('name');
-      
-      if (error) throw error;
-      return data;
-    }
-  });
+  const userCompany = userEmployerInfo;
+
+  // Static standard categories from jobCategories utility (avoids 404s on missing table)
+  const categories = React.useMemo(() => {
+    return Object.values(JOB_CATEGORIES).map(c => ({
+      id: c.name,
+      name: c.name,
+      slug: c.name.toLowerCase().replace(/\s+/g, '-'),
+      is_active: true
+    }));
+  }, []);
+
+  // Auto-populate form when employer profile & company info is loaded
+  useEffect(() => {
+    if (!userEmployerInfo) return;
+
+    setFormData(prev => ({
+      ...prev,
+      company_id: prev.company_id || userEmployerInfo.company_id || '',
+      company_name: prev.company_name || userEmployerInfo.company_name || 'TalentXcel Services',
+      company_website: prev.company_website || userEmployerInfo.company_website || '',
+      industry_domain: prev.industry_domain || userEmployerInfo.industry_domain || '',
+      company_size: prev.company_size || userEmployerInfo.company_size || '',
+      location_city: prev.location_city || userEmployerInfo.location || 'Noida',
+      contact_name: prev.contact_name || userEmployerInfo.contact_name || '',
+      contact_email: prev.contact_email || userEmployerInfo.contact_email || '',
+      contact_phone: prev.contact_phone || userEmployerInfo.contact_phone || '',
+    }));
+  }, [userEmployerInfo]);
 
   // Auto-save functionality
   const autoSaveFunction = async (data: any) => {
@@ -344,6 +386,12 @@ function JobPostContent() {
       
       const createdJob = Array.isArray(data) ? data[0] : (data || variables);
       const createdId = createdJob?.id || createdJob?.seo_slug || '';
+
+      if (variables.visibility_status === 'draft') {
+        toast.success('Job draft saved successfully to your dashboard!');
+        navigate('/dashboard');
+        return;
+      }
 
       toast.success('Job posted successfully!');
       navigate('/jobs/post/success', {

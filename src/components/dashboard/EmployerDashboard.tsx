@@ -21,7 +21,7 @@ import {
   MapPin,
   Video
 } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -39,6 +39,46 @@ interface ScheduledInterview {
 
 export function EmployerDashboard() {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  // Supabase Real-Time live synchronization for job applications and jobs
+  React.useEffect(() => {
+    if (!user?.id) return;
+
+    const channel = supabase
+      .channel(`employer-dashboard-realtime-${user.id}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'job_applications' },
+        (payload) => {
+          console.log('⚡ Realtime job_application event received:', payload.eventType);
+          queryClient.invalidateQueries({ queryKey: ['employer-dashboard-real-data'] });
+          queryClient.invalidateQueries({ queryKey: ['employer-applications'] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'jobs' },
+        (payload) => {
+          console.log('⚡ Realtime job event received:', payload.eventType);
+          queryClient.invalidateQueries({ queryKey: ['employer-dashboard-real-data'] });
+        }
+      )
+      .subscribe();
+
+    // Listen for local interview schedule events
+    const handleInterviewUpdate = () => {
+      queryClient.invalidateQueries({ queryKey: ['employer-dashboard-real-data'] });
+    };
+    window.addEventListener('storage', handleInterviewUpdate);
+    window.addEventListener('txc-interview-scheduled', handleInterviewUpdate);
+
+    return () => {
+      supabase.removeChannel(channel);
+      window.removeEventListener('storage', handleInterviewUpdate);
+      window.removeEventListener('txc-interview-scheduled', handleInterviewUpdate);
+    };
+  }, [user?.id, queryClient]);
 
   const { data: dashboardData, isLoading } = useQuery({
     queryKey: ['employer-dashboard-real-data', user?.id],
@@ -56,9 +96,9 @@ export function EmployerDashboard() {
       }
 
       // 1. Fetch real jobs posted by this user
-      const { data: jobs, error: jErr } = await supabase
+      const { data: jobs } = await supabase
         .from('jobs')
-        .select('id, title, location, employment_type, is_active, applications_count, views_count, created_at, company_name')
+        .select('id, title, location, employment_type, is_active, created_at, company_name')
         .eq('posted_by', user.id)
         .order('created_at', { ascending: false });
 
@@ -74,27 +114,34 @@ export function EmployerDashboard() {
 
       const companyId = teamData && teamData.length > 0 ? teamData[0].company_id : null;
 
-      if (userJobs.length === 0 && companyId) {
+      if (companyId) {
         const { data: companyJobs } = await supabase
           .from('jobs')
-          .select('id, title, location, employment_type, is_active, applications_count, views_count, created_at, company_name')
+          .select('id, title, location, employment_type, is_active, created_at, company_name')
           .eq('company_id', companyId)
           .order('created_at', { ascending: false });
-        if (companyJobs) userJobs = companyJobs;
+        if (companyJobs && companyJobs.length > 0) {
+          const map = new Map<string, any>();
+          userJobs.forEach(j => map.set(j.id, j));
+          companyJobs.forEach(j => map.set(j.id, j));
+          userJobs = Array.from(map.values());
+        }
       }
 
       const activeJobs = userJobs.filter(j => j.is_active);
       const activeJobsCount = activeJobs.length;
       const jobIds = userJobs.map(j => j.id);
 
-      // 2. Fetch real job applications if any jobs exist
+      // 2. Fetch real job applications from Supabase
       let realApps: any[] = [];
       if (jobIds.length > 0) {
-        const { data: apps } = await supabase
+        const { data: apps, error: aErr } = await supabase
           .from('job_applications')
           .select('id, job_id, status, applied_at')
           .in('job_id', jobIds);
-        realApps = apps || [];
+        if (!aErr && apps) {
+          realApps = apps;
+        }
       }
 
       // Check localStorage for scheduled interviews
@@ -109,17 +156,15 @@ export function EmployerDashboard() {
         }
       }
 
-      // Real pipeline counts
+      // Real pipeline counts based strictly on actual applications
       const newApps = realApps.filter(a => !a.status || a.status === 'pending' || a.status === 'applied').length;
       const underReview = realApps.filter(a => a.status === 'reviewed' || a.status === 'screening').length;
       const interviews = realApps.filter(a => a.status === 'interviewed' || a.status === 'interview').length + scheduledInterviewsCount;
       const offers = realApps.filter(a => a.status === 'offer' || a.status === 'hired').length;
       const hires = realApps.filter(a => a.status === 'hired').length;
 
-      // Real total applications
-      const totalApplicationsCount = realApps.length > 0
-        ? realApps.length
-        : userJobs.reduce((sum, j) => sum + (j.applications_count || 0), 0);
+      // Real total applications - STRICTLY REAL, NO MOCK FALLBACK
+      const totalApplicationsCount = realApps.length;
 
       // Month stats
       const thirtyDaysAgo = new Date();
@@ -134,7 +179,10 @@ export function EmployerDashboard() {
         totalApplicationsCount,
         interviewsCount: interviews,
         offersCount: offers,
-        recentJobs: userJobs.slice(0, 3),
+        recentJobs: userJobs.slice(0, 3).map(j => ({
+          ...j,
+          real_applications_count: realApps.filter(a => a.job_id === j.id).length
+        })),
         pipeline: {
           newApps,
           underReview,
@@ -184,7 +232,16 @@ export function EmployerDashboard() {
       {/* Welcome Section */}
       <div className="bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-blue-500/10 border border-emerald-500/20 p-6 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 mb-1">Employer Dashboard</h1>
+          <div className="flex items-center gap-2 mb-1">
+            <h1 className="text-2xl font-black text-slate-900">Employer Dashboard</h1>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              Live Real-Time
+            </span>
+          </div>
           <p className="text-sm text-slate-600">
             Manage your hiring pipeline, review candidates, and grow your team.
           </p>
@@ -358,7 +415,7 @@ export function EmployerDashboard() {
                         </p>
                         <div className="flex items-center gap-2 mt-2">
                           <Badge variant="secondary" className="text-xs">
-                            {job.applications_count || 0} Applications
+                            {(job as any).real_applications_count ?? 0} {(job as any).real_applications_count === 1 ? 'Application' : 'Applications'}
                           </Badge>
                           <Badge variant="outline" className={job.is_active 
                             ? "text-xs bg-emerald-50 text-emerald-700 border-emerald-200"

@@ -102,12 +102,12 @@ async function fetchCommandCenterData(userId: string): Promise<CommandCenterData
       .eq('id', userId)
       .maybeSingle(),
 
-    // Application count + recent applications
+    // Application count + recent applications from canonical job_applications table
     supabase
-      .from('enhanced_job_applications')
-      .select('id, status, created_at, jobs(title, company_name)', { count: 'exact' })
+      .from('job_applications')
+      .select('id, status, applied_at, jobs:jobs!fk_job_applications_job_id(title, company_name)', { count: 'exact' })
       .eq('user_id', userId)
-      .order('created_at', { ascending: false })
+      .order('applied_at', { ascending: false })
       .limit(3),
 
     // Saved jobs count

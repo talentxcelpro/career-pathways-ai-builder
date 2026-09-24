@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Building2, Users, Briefcase, Eye, TrendingUp, Calendar, Plus, Mail, BarChart3 } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { EmployerAccessGuard } from "@/components/employer/EmployerAccessGuard";
 import { CRMWidget } from "@/components/employer/CRMWidget";
@@ -16,6 +16,24 @@ import { PendingAccessRequests } from "@/components/employer/PendingAccessReques
 
 function DashboardContent() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  // Real-time live synchronization for employer stats
+  React.useEffect(() => {
+    const channel = supabase
+      .channel('employer-legacy-stats-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'job_applications' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['employer-stats'] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'jobs' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['employer-stats'] });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   // Get company ID from team membership
   const { data: teamData, isLoading: teamLoading } = useQuery({
@@ -67,14 +85,34 @@ function DashboardContent() {
       const totalJobs = jobs?.length || 0;
       const activeJobs = jobs?.filter(job => job.is_active).length || 0;
       const totalViews = jobs?.reduce((sum, job) => sum + (job.views_count || 0), 0) || 0;
-      const totalApplications = jobs?.reduce((sum, job) => sum + (job.applications_count || 0), 0) || 0;
+      
+      const jobIds = (jobs || []).map(j => j.id);
+      let totalApplications = 0;
+      let appCountsByJob: Record<string, number> = {};
+
+      if (jobIds.length > 0) {
+        const { data: realApps } = await supabase
+          .from('job_applications')
+          .select('id, job_id')
+          .in('job_id', jobIds);
+        
+        if (realApps) {
+          totalApplications = realApps.length;
+          for (const a of realApps) {
+            appCountsByJob[a.job_id] = (appCountsByJob[a.job_id] || 0) + 1;
+          }
+        }
+      }
 
       return {
         totalJobs,
         activeJobs,
         totalViews,
         totalApplications,
-        recentJobs: jobs?.slice(0, 5) || []
+        recentJobs: (jobs?.slice(0, 5) || []).map(j => ({
+          ...j,
+          real_applications_count: appCountsByJob[j.id] || 0
+        }))
       };
     }
   });

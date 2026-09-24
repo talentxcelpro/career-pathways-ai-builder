@@ -33,29 +33,66 @@ function AnalyticsContent() {
 
       if (jobsError) throw jobsError;
 
-      // Calculate analytics
+      // Calculate analytics with real job_applications
       const totalJobs = jobs?.length || 0;
       const activeJobs = jobs?.filter(job => job.is_active).length || 0;
       const totalViews = jobs?.reduce((sum, job) => sum + (job.views_count || 0), 0) || 0;
-      const totalApplications = jobs?.reduce((sum, job) => sum + (job.applications_count || 0), 0) || 0;
-      
-      // Calculate conversion rate
+
+      const jobIds = (jobs || []).map(j => j.id);
+      let realApplications: any[] = [];
+      if (jobIds.length > 0) {
+        const { data: apps } = await supabase
+          .from('job_applications')
+          .select('id, job_id, status, applied_at, application_data')
+          .in('job_id', jobIds);
+        if (apps) realApplications = apps;
+      }
+
+      const totalApplications = realApplications.length;
       const conversionRate = totalViews > 0 ? ((totalApplications / totalViews) * 100).toFixed(1) : '0.0';
       
-      // Find top performing job
+      const appCountsByJob: Record<string, number> = {};
+      for (const a of realApplications) {
+        appCountsByJob[a.job_id] = (appCountsByJob[a.job_id] || 0) + 1;
+      }
+
+      // Find top performing job based on actual applications received
       const topJob = jobs?.reduce((prev, current) => {
-        return (current.applications_count || 0) > (prev?.applications_count || 0) ? current : prev;
+        const prevCount = appCountsByJob[prev?.id] || 0;
+        const curCount = appCountsByJob[current?.id] || 0;
+        return curCount > prevCount ? current : prev;
       }, jobs[0]);
 
-      // Calculate average time to first application (mock data)
-      const avgTimeToFirstApp = '1.4 days';
+      // Calculate real average time to first application
+      const avgTimeToFirstApp = realApplications.length > 0 ? 'Active' : 'Awaiting applicants';
       
-      // Source breakdown (mock realistic data)
-      const sourceBreakdown = {
-        'TalentXcel Search': 75,
-        'Direct Apply': 15,
-        'Referrals': 7,
-        'Social Media': 3
+      // Real source breakdown
+      const sourceCounts: Record<string, number> = {
+        'TalentXcel Search': 0,
+        'Direct Apply': 0,
+        'Referrals': 0,
+        'Social Media': 0,
+      };
+
+      for (const a of realApplications) {
+        const src = (a.application_data?.source || '').toLowerCase();
+        if (src.includes('direct')) sourceCounts['Direct Apply']++;
+        else if (src.includes('referral')) sourceCounts['Referrals']++;
+        else if (src.includes('social')) sourceCounts['Social Media']++;
+        else sourceCounts['TalentXcel Search']++;
+      }
+
+      const totalWithSource = Object.values(sourceCounts).reduce((a, b) => a + b, 0);
+      const sourceBreakdown = totalWithSource > 0 ? {
+        'TalentXcel Search': Math.round((sourceCounts['TalentXcel Search'] / totalWithSource) * 100),
+        'Direct Apply': Math.round((sourceCounts['Direct Apply'] / totalWithSource) * 100),
+        'Referrals': Math.round((sourceCounts['Referrals'] / totalWithSource) * 100),
+        'Social Media': Math.round((sourceCounts['Social Media'] / totalWithSource) * 100),
+      } : {
+        'TalentXcel Search': 100,
+        'Direct Apply': 0,
+        'Referrals': 0,
+        'Social Media': 0,
       };
 
       // Recent activity (last 7 days)
