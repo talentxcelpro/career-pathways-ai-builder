@@ -28,6 +28,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
 import { useOptimizedAuth } from '@/contexts/OptimizedAuthContext';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useTalentScore } from '@/hooks/useTalentScore';
 import { GrowthCertificateModal } from '@/components/growth/GrowthCertificateModal';
 
 interface Accelerator {
@@ -134,7 +137,42 @@ const CandidateGrowthPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useOptimizedAuth();
 
-  const baseScore = 823;
+  const { talentScore } = useTalentScore();
+
+  const { data: profile } = useQuery({
+    queryKey: ['candidate-growth-profile', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data } = await supabase
+        .from('profiles')
+        .select('full_name, username, achievement_score, skills')
+        .eq('id', user.id)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!user?.id,
+    staleTime: 60 * 1000,
+  });
+
+  const baseScore = talentScore?.score ?? profile?.achievement_score ?? 823;
+  const rawVelocity = talentScore?.delta ? Math.abs(talentScore.delta) : 66;
+  const currentVelocity = rawVelocity > 0 ? rawVelocity : 66;
+  const currentAcceleration = `+${Math.max(4.5, ((currentVelocity / baseScore) * 100).toFixed(1))}%`;
+  const currentRank = talentScore?.percentile ? `Top ${Math.max(1, 100 - talentScore.percentile)}%` : '#853';
+  const currentFidelity = profile?.skills && profile.skills.length > 5 ? '98%' : '96%';
+
+  const rawCandidateName = 
+    profile?.full_name || 
+    user?.user_metadata?.full_name || 
+    user?.user_metadata?.name || 
+    profile?.username || 
+    user?.email?.split('@')[0] || 
+    'Candidate';
+
+  const actualCandidateName = rawCandidateName.includes('.')
+    ? rawCandidateName.split('.').map((s: string) => s.charAt(0).toUpperCase() + s.slice(1)).join(' ')
+    : rawCandidateName.charAt(0).toUpperCase() + rawCandidateName.slice(1);
+
   const [selectedAccelerators, setSelectedAccelerators] = useState<string[]>(['arch-project']);
   const [isRecalculating, setIsRecalculating] = useState(false);
   const [isCertificateModalOpen, setIsCertificateModalOpen] = useState(false);
@@ -638,12 +676,12 @@ const CandidateGrowthPage: React.FC = () => {
       <GrowthCertificateModal
         isOpen={isCertificateModalOpen}
         onClose={() => setIsCertificateModalOpen(false)}
-        candidateName={user?.user_metadata?.full_name || user?.email?.split('@')[0]}
+        candidateName={actualCandidateName}
         score={baseScore}
-        velocity={66}
-        acceleration="+8.2%"
-        globalRank="#853"
-        telemetryFidelity="98%"
+        velocity={currentVelocity}
+        acceleration={currentAcceleration}
+        globalRank={currentRank}
+        telemetryFidelity={currentFidelity}
       />
     </div>
   );

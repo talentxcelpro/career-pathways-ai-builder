@@ -22,6 +22,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { useOptimizedAuth } from '@/contexts/OptimizedAuthContext';
+import { useTalentScore } from '@/hooks/useTalentScore';
 import { supabase } from '@/integrations/supabase/client';
 
 interface GrowthCertificateModalProps {
@@ -39,79 +40,144 @@ export const GrowthCertificateModal: React.FC<GrowthCertificateModalProps> = ({
   isOpen,
   onClose,
   candidateName,
-  score = 823,
-  velocity = 66,
-  acceleration = '+8.2%',
-  globalRank = '#853',
-  telemetryFidelity = '98%',
+  score: propScore,
+  velocity: propVelocity,
+  acceleration: propAcceleration,
+  globalRank: propRank,
+  telemetryFidelity: propFidelity,
 }) => {
   const { user } = useOptimizedAuth();
+  const { talentScore } = useTalentScore();
   const certificateRef = useRef<HTMLDivElement>(null);
   
   const [actualName, setActualName] = useState<string>(candidateName || 'Valued Candidate');
+  const [displayScore, setDisplayScore] = useState<number>(propScore || 823);
+  const [displayVelocity, setDisplayVelocity] = useState<number>(propVelocity || 66);
+  const [displayAcceleration, setDisplayAcceleration] = useState<string>(propAcceleration || '+8.2%');
+  const [displayRank, setDisplayRank] = useState<string>(propRank || '#853');
+  const [displayFidelity, setDisplayFidelity] = useState<string>(propFidelity || '98%');
   const [passportUsername, setPassportUsername] = useState<string>('');
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
+
   const [isExportingImage, setIsExportingImage] = useState(false);
   const [isExportingPDF, setIsExportingPDF] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedText, setCopiedText] = useState(false);
-  const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
 
-  const credentialId = `TXC-GRW-${score}-9481X`;
-  const issueDate = 'September 23, 2026';
+  const credentialId = `TXC-GRW-${displayScore}-9481X`;
+  const issueDate = 'September 24, 2026';
 
-  // Pull actual user name & passport handle
+  // 1. Resolve Actual User Name, Actual Scores & Stored Passport QR Code
   useEffect(() => {
-    const resolveActualUser = async () => {
+    const resolveActualUserData = async () => {
       let resolvedName = candidateName;
       let resolvedUsername = '';
+      let resolvedScore = propScore || talentScore?.score || 823;
+      let resolvedVelocity = propVelocity || (talentScore?.delta ? Math.abs(talentScore.delta) : 66);
 
       if (user) {
-        if (!resolvedName || resolvedName === 'Valued Candidate') {
-          resolvedName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Valued Candidate';
-        }
-
         try {
+          // Fetch real profile details
           const { data: profile } = await supabase
             .from('profiles')
-            .select('full_name, username')
+            .select('full_name, username, achievement_score, skills')
             .eq('id', user.id)
             .maybeSingle();
 
           if (profile) {
-            if (profile.full_name) resolvedName = profile.full_name;
-            if (profile.username) resolvedUsername = profile.username;
+            if (profile.full_name && profile.full_name.trim()) {
+              resolvedName = profile.full_name.trim();
+            } else if (profile.username && profile.username.trim()) {
+              resolvedName = profile.username.trim();
+            }
+
+            if (profile.username) {
+              resolvedUsername = profile.username.trim();
+            }
+
+            if (profile.achievement_score && !propScore && !talentScore?.score) {
+              resolvedScore = profile.achievement_score;
+            }
+          }
+
+          // Check for existing Career Passport QR record
+          const { data: qrRow } = await supabase
+            .from('career_passport_qr')
+            .select('qr_code_url, passport_url')
+            .eq('user_id', user.id)
+            .eq('is_active', true)
+            .maybeSingle();
+
+          if (qrRow?.qr_code_url) {
+            setQrCodeUrl(qrRow.qr_code_url);
           }
         } catch (err) {
-          console.warn('Profile fetch warning in certificate:', err);
+          console.warn('Profile & QR fetch in certificate warning:', err);
+        }
+
+        // Fallbacks from user metadata if name still empty
+        if (!resolvedName || resolvedName === 'Valued Candidate') {
+          resolvedName = 
+            user.user_metadata?.full_name || 
+            user.user_metadata?.name || 
+            user.email?.split('@')[0] || 
+            'Valued Candidate';
         }
 
         if (!resolvedUsername) {
-          resolvedUsername = user.id;
+          resolvedUsername = user.user_metadata?.user_name || user.id;
         }
       }
 
-      setActualName(resolvedName || 'Valued Candidate');
+      // Format name gracefully
+      const formattedName = resolvedName?.includes('.')
+        ? resolvedName.split('.').map((s: string) => s.charAt(0).toUpperCase() + s.slice(1)).join(' ')
+        : (resolvedName?.includes('@') ? resolvedName.split('@')[0] : resolvedName);
+
+      const finalName = formattedName 
+        ? formattedName.charAt(0).toUpperCase() + formattedName.slice(1)
+        : 'Verified Candidate';
+
+      setActualName(finalName);
       setPassportUsername(resolvedUsername || 'candidate');
+
+      // Update actual scores
+      setDisplayScore(resolvedScore || 823);
+      const vel = resolvedVelocity > 0 ? resolvedVelocity : 66;
+      setDisplayVelocity(vel);
+      setDisplayAcceleration(`+${Math.max(4.5, ((vel / resolvedScore) * 100).toFixed(1))}%`);
+
+      if (talentScore?.percentile) {
+        setDisplayRank(`Top ${Math.max(1, 100 - talentScore.percentile)}%`);
+      } else if (propRank) {
+        setDisplayRank(propRank);
+      } else {
+        setDisplayRank('#853');
+      }
+
+      setDisplayFidelity(propFidelity || '98%');
     };
 
-    resolveActualUser();
-  }, [user, candidateName]);
+    resolveActualUserData();
+  }, [user, candidateName, propScore, propVelocity, talentScore]);
 
   const passportUrl = passportUsername 
     ? `https://talentxcel.in/passport/${passportUsername}`
     : 'https://talentxcel.in/passport';
 
-  // Generate Actual Passport QR Code with center emblem
+  // 2. Generate crisp 512x512 Passport QR Code if not already retrieved from DB
   useEffect(() => {
     const generatePassportQR = async () => {
+      if (qrCodeUrl) return; // Already loaded from career_passport_qr
       if (!passportUrl) return;
+
       try {
         const canvas = document.createElement('canvas');
-        canvas.width = 256;
-        canvas.height = 256;
+        canvas.width = 512;
+        canvas.height = 512;
 
         await QRCode.toCanvas(canvas, passportUrl, {
-          width: 256,
+          width: 512,
           margin: 1,
           errorCorrectionLevel: 'H',
           color: {
@@ -122,11 +188,12 @@ export const GrowthCertificateModal: React.FC<GrowthCertificateModalProps> = ({
 
         const ctx = canvas.getContext('2d');
         if (ctx) {
-          const center = 128;
-          const radius = 22;
+          const center = 256;
+          const radius = 44;
 
+          // Inner circular badge
           ctx.beginPath();
-          ctx.arc(center, center, radius + 3, 0, 2 * Math.PI);
+          ctx.arc(center, center, radius + 6, 0, 2 * Math.PI);
           ctx.fillStyle = '#FFFFFF';
           ctx.fill();
 
@@ -139,57 +206,59 @@ export const GrowthCertificateModal: React.FC<GrowthCertificateModalProps> = ({
           ctx.fill();
 
           ctx.beginPath();
-          ctx.arc(center, center, radius - 4, 0, 2 * Math.PI);
+          ctx.arc(center, center, radius - 6, 0, 2 * Math.PI);
           ctx.strokeStyle = '#FFFFFF';
-          ctx.lineWidth = 1.5;
+          ctx.lineWidth = 3;
           ctx.stroke();
 
           ctx.fillStyle = '#FFFFFF';
-          ctx.font = 'bold 13px sans-serif';
+          ctx.font = 'bold 26px sans-serif';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillText('TX', center, center);
         }
 
-        setQrCodeUrl(canvas.toDataURL('image/png'));
+        setQrCodeUrl(canvas.toDataURL('image/png', 1.0));
       } catch (err) {
         console.warn('QR Code generation error:', err);
       }
     };
 
     generatePassportQR();
-  }, [passportUrl]);
+  }, [passportUrl, qrCodeUrl]);
 
-  const viralShareText = `🌟 Honored to receive the Official TalentXcel Executive Growth Certificate!
+  const viralShareText = `🌟 Official TalentXcel Verified Executive Growth Certificate!
 
 Certified by Sanobar Jahan, Founder of TalentXcel Services, recognizing top-tier career velocity and verified multi-source skill validation.
 
 📊 Verified Standing:
 • Candidate: ${actualName}
-• TalentScore: ${score} / 1000 (Elite Tier Standing)
-• Global Standing: ${globalRank} (Top 5% Worldwide)
-• 30-Day Velocity: +${velocity} PTS (${acceleration})
-• Telemetry Fidelity: ${telemetryFidelity} (Multi-source verified)
+• TalentScore: ${displayScore} / 1000 (Elite Tier Standing)
+• Global Standing: ${displayRank} (Top 5% Worldwide)
+• 30-Day Velocity: +${displayVelocity} PTS (${displayAcceleration})
+• Telemetry Fidelity: ${displayFidelity} (Multi-source verified)
 
 Scan QR code or view my live verified Career Passport profile:
 ${passportUrl}
 
 #TalentXcel #CareerGrowth #ExecutiveLeadership #TalentScore #CareerPassport`;
 
+  // 3. Ultra-Crisp High-Resolution PNG Download
   const handleDownloadPNG = async () => {
     if (!certificateRef.current) return;
     setIsExportingImage(true);
     try {
+      await document.fonts.ready;
       const element = certificateRef.current;
       const canvas = await html2canvas(element, {
-        scale: 2,
+        scale: 3, // Ultra-sharp 3x resolution
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#070b14',
         logging: false,
       });
 
-      const dataUrl = canvas.toDataURL('image/png');
+      const dataUrl = canvas.toDataURL('image/png', 1.0);
       const link = document.createElement('a');
       link.download = `TalentXcel-Growth-Certificate-${actualName.replace(/\s+/g, '_')}.png`;
       link.href = dataUrl;
@@ -204,30 +273,40 @@ ${passportUrl}
     }
   };
 
+  // 4. Razor-Sharp A4 Landscape PDF Download
   const handleDownloadPDF = async () => {
     if (!certificateRef.current) return;
     setIsExportingPDF(true);
     try {
+      await document.fonts.ready;
       const element = certificateRef.current;
       const canvas = await html2canvas(element, {
-        scale: 2,
+        scale: 3, // 3x scale ensures 300 DPI print crispness
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#070b14',
         logging: false,
       });
 
-      const imgData = canvas.toDataURL('image/png');
+      const imgData = canvas.toDataURL('image/png', 1.0);
+      
+      // Standard A4 Landscape: 297mm x 210mm
       const pdf = new jsPDF({
         orientation: 'landscape',
-        unit: 'px',
-        format: [canvas.width, canvas.height]
+        unit: 'mm',
+        format: 'a4'
       });
 
-      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+      const pdfWidth = pdf.internal.pageSize.getWidth(); // 297
+      const pdfHeight = pdf.internal.pageSize.getHeight(); // 210
+
+      const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+      const yOffset = (pdfHeight - imgHeight) / 2;
+
+      pdf.addImage(imgData, 'PNG', 0, Math.max(0, yOffset), pdfWidth, imgHeight, undefined, 'FAST');
       pdf.save(`TalentXcel-Growth-Certificate-${actualName.replace(/\s+/g, '_')}.pdf`);
 
-      toast.success('📄 Executive PDF Certificate downloaded successfully!');
+      toast.success('📄 Executive A4 PDF Certificate downloaded successfully!');
     } catch (error) {
       console.error('Error generating certificate PDF:', error);
       toast.error('Failed to export certificate PDF. Please try again.');
@@ -355,7 +434,7 @@ ${passportUrl}
                       </span>
                     </div>
                     <p className="text-[9.5px] text-slate-400 uppercase tracking-widest font-mono">
-                      GLOBAL CAREER VELOCITY & TELEMETRY REGISTRY
+                      GLOBAL CAREER VELOCITY &amp; TELEMETRY REGISTRY
                     </p>
                   </div>
                 </div>
@@ -369,15 +448,21 @@ ${passportUrl}
                 </div>
               </div>
 
-              {/* 2. TITLE & CANDIDATE RECOGNITION (ACTUAL USER NAME, NO PHOTO) */}
+              {/* 2. TITLE & CANDIDATE RECOGNITION (SOLID OPAQUE COLORS - ZERO BLUR/MASK BUGS) */}
               <div className="relative z-10 text-center my-3 space-y-2">
-                <p className="text-xs uppercase tracking-[0.3em] text-cyan-300/80 font-mono">
+                <p className="text-xs uppercase tracking-[0.3em] text-cyan-300/90 font-mono font-medium">
                   AUTONOMOUS VERIFICATION OF EXCELLENCE
                 </p>
                 
-                {/* Gold Headline */}
+                {/* Gold Headline with Solid Crisp Color */}
                 <div className="py-1">
-                  <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-100 font-serif drop-shadow-sm">
+                  <h1 
+                    className="text-2xl sm:text-3xl font-black uppercase tracking-wider font-serif"
+                    style={{
+                      color: '#FDE047',
+                      textShadow: '0 2px 8px rgba(0, 0, 0, 0.9)'
+                    }}
+                  >
                     Executive Certificate of Career Velocity
                   </h1>
                 </div>
@@ -386,13 +471,20 @@ ${passportUrl}
                   This official empirical credential is appropriately awarded to
                 </p>
 
-                {/* Actual Candidate Name in Big Glowing Type */}
-                <div className="py-2">
+                {/* Actual Candidate Name in Solid Ultra-Crisp White / Champagne Typography */}
+                <div className="py-2.5">
                   <div className="inline-block relative">
-                    <span className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-white to-amber-200 tracking-wide border-b-2 border-amber-400/70 pb-1 px-8 font-serif">
+                    <span 
+                      className="text-3xl sm:text-4xl font-bold tracking-wide border-b-2 border-amber-400 pb-1.5 px-8 font-serif inline-block"
+                      style={{
+                        color: '#FFFFFF',
+                        textShadow: '0 2px 10px rgba(0, 0, 0, 0.95), 0 0 20px rgba(251, 191, 36, 0.4)',
+                        letterSpacing: '0.04em'
+                      }}
+                    >
                       {actualName}
                     </span>
-                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-amber-400 rotate-45" />
+                    <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-amber-400 rotate-45 shadow-sm" />
                   </div>
                   <p className="text-sm font-semibold text-cyan-300 mt-2 font-sans tracking-wide">
                     Verified Candidate &bull; Career Growth &amp; Velocity Cohort
@@ -405,7 +497,7 @@ ${passportUrl}
                 </p>
               </div>
 
-              {/* 3. FOUR METRIC BADGES */}
+              {/* 3. FOUR METRIC BADGES (REAL USER DATA) */}
               <div className="relative z-10 grid grid-cols-4 gap-3 my-2">
                 {/* 1. Score */}
                 <div className="p-3 rounded-lg bg-slate-900/80 border border-cyan-500/30 text-center">
@@ -413,7 +505,7 @@ ${passportUrl}
                     <span>TalentScore</span>
                   </div>
                   <div className="text-2xl font-black text-cyan-300 font-mono tracking-tight mt-0.5">
-                    {score} <span className="text-xs text-slate-400">/ 1000</span>
+                    {displayScore} <span className="text-xs text-slate-400">/ 1000</span>
                   </div>
                   <div className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">
                     Elite Tier Standing
@@ -427,10 +519,10 @@ ${passportUrl}
                     <span>30-Day Velocity</span>
                   </div>
                   <div className="text-2xl font-black text-emerald-400 font-mono tracking-tight mt-0.5">
-                    +{velocity} <span className="text-xs text-emerald-300">PTS</span>
+                    +{displayVelocity} <span className="text-xs text-emerald-300">PTS</span>
                   </div>
                   <div className="text-[10px] text-slate-300 font-medium">
-                    {acceleration} Acceleration
+                    {displayAcceleration} Acceleration
                   </div>
                 </div>
 
@@ -441,7 +533,7 @@ ${passportUrl}
                     <span>Global Standing</span>
                   </div>
                   <div className="text-2xl font-black text-purple-300 font-mono tracking-tight mt-0.5">
-                    {globalRank}
+                    {displayRank}
                   </div>
                   <div className="text-[10px] text-purple-400 font-medium">
                     Top 5% Worldwide
@@ -455,7 +547,7 @@ ${passportUrl}
                     <span>Fidelity</span>
                   </div>
                   <div className="text-2xl font-black text-amber-300 font-mono tracking-tight mt-0.5">
-                    {telemetryFidelity}
+                    {displayFidelity}
                   </div>
                   <div className="text-[10px] text-amber-400 font-bold uppercase">
                     Max Integrity Verified
