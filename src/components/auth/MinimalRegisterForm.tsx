@@ -8,11 +8,11 @@ import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Eye, EyeOff, Mail, Lock, User, Loader2, Check, Shield, Zap, Users, Target } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, Loader2, Check, Shield, Zap, Users, Target, Building2 } from 'lucide-react';
 import { SocialLogin } from './SocialLogin';
 import { generatePersonProfileSlug, ensureUserProfileSlug } from '@/utils/userProfileSlug';
 
-// Restored full register form functionality
+// Restored full register form functionality with Recruiter OS support
 export const MinimalRegisterForm = () => {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -24,6 +24,12 @@ export const MinimalRegisterForm = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const returnUrlParam = searchParams.get('returnUrl') || searchParams.get('redirect');
+  const roleParam = searchParams.get('role');
+
+  const [accountType, setAccountType] = useState<'candidate' | 'employer'>(
+    roleParam === 'employer' || roleParam === 'recruiter' ? 'employer' : 'candidate'
+  );
+  const [companyName, setCompanyName] = useState('');
 
   // Password validation helpers
   const hasMinLength = password.length >= 8;
@@ -44,10 +50,16 @@ export const MinimalRegisterForm = () => {
       return;
     }
 
+    if (accountType === 'employer' && !companyName.trim()) {
+      toast.error('Please enter your company or organization name');
+      return;
+    }
+
     setLoading(true);
 
     try {
       const profileSlug = generatePersonProfileSlug(fullName, email);
+      const userRole = accountType === 'employer' ? 'employer' : 'candidate';
 
       const { data, error } = await supabase.auth.signUp({
         email: email.trim(),
@@ -55,6 +67,9 @@ export const MinimalRegisterForm = () => {
         options: {
           data: {
             full_name: fullName.trim(),
+            role: userRole,
+            user_type: userRole,
+            company_name: accountType === 'employer' ? companyName.trim() : undefined,
             slug: profileSlug,
             custom_profile_url: profileSlug,
             username: profileSlug.replace(/-/g, '')
@@ -74,19 +89,30 @@ export const MinimalRegisterForm = () => {
           await ensureUserProfileSlug(data.user.id, fullName.trim(), email.trim());
         } catch (_) {}
 
+        if (accountType === 'employer') {
+          localStorage.setItem('txc_active_workspace', 'employer');
+        } else {
+          localStorage.setItem('txc_active_workspace', 'candidate');
+        }
+
         // If email confirmation is required by Supabase, session is null
         if (!data.session) {
           toast.success('Verification link sent! Please check your email inbox.');
-          navigate(`/auth/login?registered=true&email=${encodeURIComponent(email.trim())}`);
+          navigate(`/auth/login?registered=true&role=${userRole}&email=${encodeURIComponent(email.trim())}`);
           return;
         }
 
         const urlParams = new URLSearchParams(window.location.search);
         const redirectParam = urlParams.get('redirect') || urlParams.get('returnUrl');
-        const targetUrl = redirectParam ? decodeURIComponent(redirectParam) : '/network';
-
-        toast.success('Account created successfully! 🎉');
-        navigate(targetUrl);
+        
+        if (accountType === 'employer') {
+          toast.success('Recruiter account created! Welcome to Recruiter OS 🎉');
+          navigate(redirectParam ? decodeURIComponent(redirectParam) : '/dashboard?view=role');
+        } else {
+          const targetUrl = redirectParam ? decodeURIComponent(redirectParam) : '/network';
+          toast.success('Account created successfully! 🎉');
+          navigate(targetUrl);
+        }
       }
     } catch (error: any) {
       toast.error('An unexpected error occurred');
@@ -113,17 +139,53 @@ export const MinimalRegisterForm = () => {
         </div>
       </div>
 
+      {/* Role Selector Tabs */}
+      <div className="grid grid-cols-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs font-semibold">
+        <button
+          type="button"
+          onClick={() => setAccountType('candidate')}
+          className={`py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+            accountType === 'candidate'
+              ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm font-bold'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+          }`}
+        >
+          <User className="h-3.5 w-3.5" />
+          <span>Job Seeker</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setAccountType('employer')}
+          className={`py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+            accountType === 'employer'
+              ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm font-bold'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+          }`}
+        >
+          <Building2 className="h-3.5 w-3.5 text-blue-500" />
+          <span>Recruiter / Employer</span>
+        </button>
+      </div>
+
+      {accountType === 'employer' && (
+        <div className="p-2.5 rounded-lg bg-blue-50/90 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-[11px] text-blue-900 dark:text-blue-200 flex items-center gap-2">
+          <Zap className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+          <span>Creates an employer account with immediate access to <strong>Recruiter OS</strong> and 12,000+ unified candidates.</span>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-2.5">
         <div className="space-y-1">
           <Label htmlFor="fullName" className="text-xs font-medium text-slate-700">
-            Full Name
+            {accountType === 'employer' ? 'Full Name / Recruiter Name' : 'Full Name'}
           </Label>
           <div className="relative group">
             <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
             <Input
               id="fullName"
               type="text"
-              placeholder="Enter your full name"
+              placeholder={accountType === 'employer' ? 'e.g. Sarah Jenkins' : 'Enter your full name'}
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               className="pl-10 h-10 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 text-sm font-medium text-slate-800"
@@ -134,16 +196,37 @@ export const MinimalRegisterForm = () => {
           </div>
         </div>
 
+        {accountType === 'employer' && (
+          <div className="space-y-1">
+            <Label htmlFor="companyName" className="text-xs font-medium text-slate-700">
+              Company / Organization Name
+            </Label>
+            <div className="relative group">
+              <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+              <Input
+                id="companyName"
+                type="text"
+                placeholder="e.g. Acme Corp / TechScale AI"
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                className="pl-10 h-10 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 text-sm font-medium text-slate-800"
+                required={accountType === 'employer'}
+                maxLength={100}
+              />
+            </div>
+          </div>
+        )}
+
         <div className="space-y-1">
           <Label htmlFor="email" className="text-xs font-medium text-slate-700">
-            Email Address
+            {accountType === 'employer' ? 'Work Email Address' : 'Email Address'}
           </Label>
           <div className="relative group">
             <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
             <Input
               id="email"
               type="email"
-              placeholder="Enter your email address"
+              placeholder={accountType === 'employer' ? 'name@company.com' : 'Enter your email address'}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="pl-10 h-10 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 text-sm font-medium text-slate-800"
@@ -202,10 +285,10 @@ export const MinimalRegisterForm = () => {
           {loading ? (
             <div className="flex items-center justify-center gap-2">
               <Loader2 className="h-4 w-4 animate-spin text-white" />
-              <span>Creating account...</span>
+              <span>{accountType === 'employer' ? 'Setting up Recruiter OS...' : 'Creating account...'}</span>
             </div>
           ) : (
-            'Create Account'
+            accountType === 'employer' ? 'Create Recruiter Account (Recruiter OS)' : 'Create Account'
           )}
         </Button>
       </form>

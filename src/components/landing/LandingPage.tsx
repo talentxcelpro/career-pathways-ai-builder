@@ -20,17 +20,17 @@ export const LandingPage = () => {
   return (
     <div className="min-h-screen">
       <Helmet>
-        <title>TalentXcel — AI Career Platform for Jobs, Resumes, Colleges & Skills</title>
-        <meta name="description" content="Careers, Designed — Not Discovered. Search verified jobs, build ATS-ready executive resumes, explore 10,250+ Indian colleges, and master high-income skills on TalentXcel." />
+        <title>TalentXcel — The Professional Talent Network | Connect, Discover & Hire</title>
+        <meta name="description" content="TalentXcel is India's professional talent network where professionals, recruiters, and companies connect, discover, and grow. Build your career identity, find verified opportunities, or hire from 12,000+ candidates on Recruiter OS." />
         <link rel="canonical" href="https://talentxcel.in/" />
-        <meta property="og:title" content="TalentXcel — AI Career Platform for Jobs, Resumes, Colleges & Skills" />
-        <meta property="og:description" content="Careers, Designed — Not Discovered. Search verified jobs, build ATS-ready executive resumes, explore 10,250+ Indian colleges, and master high-income skills on TalentXcel." />
+        <meta property="og:title" content="TalentXcel — The Professional Talent Network" />
+        <meta property="og:description" content="Where professionals, recruiters, and companies connect, discover, and grow. Living talent graph, verified jobs, and AI Recruiter OS." />
         <meta property="og:url" content="https://talentxcel.in/" />
         <meta property="og:type" content="website" />
         <meta property="og:image" content="https://talentxcel.in/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="TalentXcel — AI Career Platform for Jobs, Resumes, Colleges & Skills" />
-        <meta name="twitter:description" content="Careers, Designed — Not Discovered. Search verified jobs, build ATS-ready executive resumes, explore 10,250+ Indian colleges, and master skills." />
+        <meta name="twitter:title" content="TalentXcel — The Professional Talent Network" />
+        <meta name="twitter:description" content="Where professionals, recruiters, and companies connect, discover, and grow. Connect with 12,000+ candidates on Recruiter OS." />
         <meta name="twitter:image" content="https://talentxcel.in/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" />
       </Helmet>
       <AppleHeroSection />

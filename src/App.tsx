@@ -61,7 +61,7 @@ const JobsManage = lazy(() => import('@/pages/jobs/Manage'));
 const SavedJobs = lazy(() => import('@/pages/jobs/SavedJobs'));
 const MyApplications = lazy(() => import('@/pages/jobs/MyApplications'));
 const JobAlerts = lazy(() => import('@/pages/jobs/Alerts'));
-
+const RecruiterLandingPage = lazy(() => import('@/pages/recruiters/RecruiterLandingPage'));
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
@@ -140,9 +140,11 @@ const CareerPassportDashboard         = lazy(() => import('./pages/passport/Care
 const PassportLayout                  = lazy(() => import('./pages/passport/PassportLayout'));
 const PublicPassport                  = lazy(() => import('./pages/passport/PublicPassport'));
 const ProofRedirect                   = lazy(() => import('./pages/passport/components/ProofRedirect'));
-const CVDatabase                      = lazy(() => import('@/components/employer/CVDatabase').then(m => ({ default: m.CVDatabase })));
 const VideoCall                       = lazy(() => import('@/components/realtime/VideoCall').then(m => ({ default: m.VideoCall })));
 const RealTimeChat                    = lazy(() => import('@/components/realtime/RealTimeChat').then(m => ({ default: m.RealTimeChat })));
+const CommunitiesPage                 = lazy(() => import('./pages/network/Communities'));
+const MessagesPage                    = lazy(() => import('./pages/network/Messages'));
+const PeopleDirectoryPage             = lazy(() => import('./pages/network/People'));
 const LiveEvent                       = lazy(() => import('@/components/realtime/LiveEvent').then(m => ({ default: m.LiveEvent })));
 const UserProfile                     = lazy(() => import('./pages/UserProfile'));
 const AIAgentDashboard                = lazy(() => import('./pages/ai/AIAgentDashboard'));
@@ -348,6 +350,55 @@ const App = () => {
                                 } />
                                 
                 {/* PRIORITY ROUTES - These must come BEFORE navItems.map to take precedence */}
+                <Route path="/recruiters" element={
+                  <Suspense fallback={
+                    <div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Recruiter OS...</div>
+                  }>
+                    <RecruiterLandingPage />
+                  </Suspense>
+                } />
+                <Route path="/hire" element={
+                  <Suspense fallback={
+                    <div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Recruiter OS...</div>
+                  }>
+                    <RecruiterLandingPage />
+                  </Suspense>
+                } />
+                <Route path="/reels" element={
+                  <Suspense fallback={
+                    <div className="min-h-screen bg-black flex items-center justify-center text-white">Loading Reels...</div>
+                  }>
+                    <MobileReelsPage />
+                  </Suspense>
+                } />
+                <Route path="/communities" element={
+                  <Suspense fallback={
+                    <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading Communities...</div>
+                  }>
+                    <CommunitiesPage />
+                  </Suspense>
+                } />
+                <Route path="/messages" element={
+                  <Suspense fallback={
+                    <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading Messages...</div>
+                  }>
+                    <MessagesPage />
+                  </Suspense>
+                } />
+                <Route path="/messages/:id" element={
+                  <Suspense fallback={
+                    <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading Messages...</div>
+                  }>
+                    <MessagesPage />
+                  </Suspense>
+                } />
+                <Route path="/talent" element={
+                  <Suspense fallback={
+                    <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading Talent Directory...</div>
+                  }>
+                    <PeopleDirectoryPage />
+                  </Suspense>
+                } />
                 <Route path="/dashboard" element={
                   <Suspense fallback={
                     <div className="min-h-screen flex items-center justify-center">

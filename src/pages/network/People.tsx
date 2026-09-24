@@ -594,41 +594,45 @@ const People = () => {
                                 </div>
                               )}
 
-                              {/* Social Actions */}
-                              <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                                <div className="flex gap-4">
-                                  <button 
-                                    className="flex items-center gap-1 text-xs text-gray-500 hover:text-blue-600 transition-all duration-200 hover:scale-110"
-                                    onClick={(e) => e.stopPropagation()}
+                              {/* Social & Professional Actions */}
+                              <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-800">
+                                <div className="flex items-center gap-2">
+                                  <Button 
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-7 px-2 text-[11px] font-bold border-slate-200 hover:border-blue-300 hover:text-blue-600"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleProfileView(person);
+                                    }}
                                   >
-                                    <Eye className="h-3 w-3" />
-                                    {Math.floor(Math.random() * 500) + 100}
-                                  </button>
-                                  <button 
-                                    className="flex items-center gap-1 text-xs text-gray-500 hover:text-green-600 transition-all duration-200 hover:scale-110"
-                                    onClick={(e) => e.stopPropagation()}
+                                    View Career
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-7 px-2 text-[11px] font-semibold text-slate-500 hover:text-slate-900"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleShareProfile(person);
+                                    }}
                                   >
-                                    <Heart className="h-3 w-3" />
-                                    {Math.floor(Math.random() * 50) + 10}
-                                  </button>
-                                  <button 
-                                    className="flex items-center gap-1 text-xs text-gray-500 hover:text-purple-600 transition-all duration-200 hover:scale-110"
-                                    onClick={(e) => e.stopPropagation()}
-                                  >
-                                    <Share2 className="h-3 w-3" />
+                                    <Share2 className="h-3 w-3 mr-1" />
                                     Share
-                                  </button>
+                                  </Button>
                                 </div>
+
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-8 w-8 p-0 hover:bg-blue-50 hover:scale-110 transition-all duration-200"
+                                  className="h-7 px-2 text-[11px] font-bold text-blue-600 hover:bg-blue-50"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     handleMessage(person);
                                   }}
                                 >
-                                  <Send className="h-4 w-4 text-blue-600" />
+                                  <Send className="h-3 w-3 mr-1" />
+                                  Message
                                 </Button>
                               </div>
                             </div>

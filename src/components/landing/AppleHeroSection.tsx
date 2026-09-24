@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { AuthDialog } from '../auth/AuthDialog';
-import { ChevronRight, Play } from 'lucide-react';
+import { ChevronRight, Play, Building2, Sparkles } from 'lucide-react';
 import { TXCProductVideoModal } from '@/components/video/TXCProductVideoModal';
 import careerPassportPreview from '@/assets/career-passport-preview.png';
 import { conversionTelemetry } from '@/utils/conversionTelemetry';
@@ -24,6 +24,18 @@ export const AppleHeroSection = () => {
           {/* Left Side - Text Content */}
           <div className="space-y-6 text-center lg:text-left">
             <div className="space-y-4">
+              {/* Recruiter / Candidate Quick Banner */}
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 mb-2">
+                <a 
+                  href="/recruiters"
+                  className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-600/10 dark:bg-blue-400/10 border border-blue-500/30 hover:border-blue-500 text-blue-700 dark:text-blue-300 text-xs font-bold transition-all shadow-sm group hover:bg-blue-600/15"
+                >
+                  <span className="flex h-2 w-2 rounded-full bg-blue-600 animate-pulse" />
+                  <span>Hiring Talent? Search 12,000+ candidates on Recruiter OS</span>
+                  <ChevronRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
+                </a>
+              </div>
+
               {/* Globe Icon with semantic colors */}
               <div className="flex justify-center lg:justify-start mb-4">
                 <div className="w-[clamp(3rem,4vw,4rem)] h-[clamp(3rem,4vw,4rem)] bg-gradient-to-br from-primary via-primary to-accent rounded-full flex items-center justify-center shadow-lg relative overflow-hidden">
@@ -37,19 +49,19 @@ export const AppleHeroSection = () => {
               </div>
               
               <h1 className="text-display font-heading tracking-tight text-foreground leading-[1.1]">
-                Get Job-Ready. Get Matched.
-                <span className="block font-medium bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                  Get Hired.
+                The Professional
+                <span className="block font-medium bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                  Talent Network.
                 </span>
               </h1>
               
               <p className="text-body-large text-muted-foreground font-light leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                Check your resume, discover matching jobs, optimize your profile and apply with confidence.
+                Where professionals, recruiters and companies connect, discover and grow. Build your career identity, find verified opportunities, or hire from a living talent graph with Recruiter OS.
               </p>
             </div>
 
-            {/* CTA Buttons - Acquisition & Value Before Login */}
-            <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+            {/* CTA Buttons - Two Doors for Candidates & Recruiters */}
+            <div className="flex flex-wrap gap-3 justify-center lg:justify-start items-center">
               <a 
                 href="/resume/ats-check?source=homepage"
                 onClick={() => {
@@ -63,8 +75,17 @@ export const AppleHeroSection = () => {
               </a>
 
               <a 
+                href="/recruiters"
+                className="inline-flex items-center justify-center px-5 py-3.5 bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white text-sm font-black rounded-2xl shadow-lg hover:shadow-xl border border-slate-700/50 transition-all gap-2 group"
+              >
+                <Building2 className="h-4 w-4 text-blue-400" />
+                <span>Hire Talent (Recruiter OS)</span>
+                <ChevronRight className="h-4 w-4 text-slate-400 group-hover:translate-x-1 group-hover:text-white transition-all" />
+              </a>
+
+              <a 
                 href="/jobs"
-                className="inline-flex items-center justify-center px-5 py-3.5 bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-900 text-blue-600 dark:text-blue-400 hover:bg-blue-50/50 dark:hover:bg-slate-800 text-sm font-bold rounded-2xl shadow-sm transition-all"
+                className="inline-flex items-center justify-center px-4 py-3.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 text-sm font-bold rounded-2xl shadow-sm transition-all"
               >
                 Find Jobs
               </a>
@@ -82,12 +103,40 @@ export const AppleHeroSection = () => {
                 </div>
                 24s Demo
               </button>
+            </div>
+
+            {/* Quick-choice Two-Door Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60 backdrop-blur-sm text-left">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900 dark:text-slate-100 mb-1">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                  For Job Seekers & Professionals
+                </div>
+                <p className="text-[12px] text-slate-500 dark:text-slate-400 mb-2 leading-relaxed">
+                  ATS resume scoring, 10,250+ Indian colleges, salary benchmarks & matched jobs.
+                </p>
+                <a href="/resume/ats-check" className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1">
+                  Build Career & Resume <ChevronRight className="h-3 w-3" />
+                </a>
+              </div>
 
               <a 
-                href="/colleges"
-                className="inline-flex items-center justify-center px-4 py-3.5 bg-slate-100 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 hover:bg-slate-200 text-sm font-bold rounded-2xl transition-all"
+                href="/recruiters" 
+                className="p-3.5 rounded-xl border-2 border-blue-500/30 hover:border-blue-600 bg-gradient-to-br from-blue-50/70 to-indigo-50/50 dark:from-blue-950/40 dark:to-indigo-950/30 backdrop-blur-sm text-left transition-all group block shadow-sm hover:shadow"
               >
-                10,250+ Colleges
+                <div className="flex items-center justify-between text-xs font-bold text-blue-950 dark:text-blue-200 mb-1">
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-blue-600 animate-ping" />
+                    For Recruiters & Founders
+                  </span>
+                  <span className="text-[10px] uppercase font-black bg-blue-600 text-white px-1.5 py-0.5 rounded">RECRUITER OS</span>
+                </div>
+                <p className="text-[12px] text-slate-600 dark:text-slate-300 mb-2 leading-relaxed">
+                  Search 12,000+ candidates live. Talent CRM, AI match, and direct candidate outreach.
+                </p>
+                <span className="text-xs font-bold text-blue-700 dark:text-blue-300 group-hover:underline inline-flex items-center gap-1">
+                  Search Candidates Free <ChevronRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+                </span>
               </a>
             </div>
 
