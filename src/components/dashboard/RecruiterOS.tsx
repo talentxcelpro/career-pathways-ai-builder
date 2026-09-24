@@ -634,8 +634,8 @@ export function RecruiterOS() {
                     {
                       icon: Star,
                       color: 'text-purple-400 bg-purple-950/40 border-purple-800/50',
-                      title: '6 high-value candidates haven't been contacted in 14+ days',
-                      desc: 'TalentScore > 820 profiles currently idle in talent pools with zero active recruiter touchpoints.',
+                      title: "6 high-value candidates haven't been contacted in 14+ days",
+                      desc: "TalentScore > 820 profiles currently idle in talent pools with zero active recruiter touchpoints.",
                       actionText: 'Launch Outreach',
                       onClick: () => { setActiveTab('crm'); }
                     },
