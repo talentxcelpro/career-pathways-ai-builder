@@ -257,7 +257,7 @@ function JobPostContent() {
       const normResult = normalizeJobContent(jobData);
       const canonicalPayload = toJobsTablePayload(normResult.normalized);
 
-      // Resolve company_id
+      // Resolve company_id safely
       let resolvedCompanyId = userCompany?.company_id || null;
       if (!resolvedCompanyId && jobData.company_name?.trim()) {
         try {
@@ -270,37 +270,26 @@ function JobPostContent() {
         }
       }
 
-      if (resolvedCompanyId && user) {
-        try {
-          await supabase.from('company_team_members').upsert({
-            company_id: resolvedCompanyId,
-            user_id: user.id,
-            role: 'owner',
-            is_active: true
-          }, { onConflict: 'company_id,user_id' });
-        } catch (mErr) {
-          console.warn('Failed to ensure company team membership:', mErr);
-        }
-      }
-
       // Compute bulletproof fallback values for database constraints and triggers
       const finalTitle = jobData.title?.trim() || jobData.job_title?.trim() || canonicalPayload.title || 'Untitled Role';
-      const finalLocation = jobData.location?.trim() || canonicalPayload.location?.trim() || jobData.location_city?.trim() || 'Remote';
+      const finalLocation = jobData.location?.trim() || canonicalPayload.location?.trim() || jobData.location_city?.trim() || 'Noida, Uttar Pradesh, India';
       const finalDescription = jobData.description?.trim() || jobData.job_description?.trim() || jobData.job_summary?.trim() || canonicalPayload.description || 'Job details available upon application.';
-      const finalSalaryMin = jobData.salary_min ?? jobData.min_salary ?? null;
-      const finalSalaryMax = jobData.salary_max ?? jobData.max_salary ?? null;
+      const finalSalaryMin = (jobData.salary_min != null && jobData.salary_min !== '') ? Number(jobData.salary_min) : (jobData.min_salary != null ? Number(jobData.min_salary) : null);
+      const finalSalaryMax = (jobData.salary_max != null && jobData.salary_max !== '') ? Number(jobData.salary_max) : (jobData.max_salary != null ? Number(jobData.max_salary) : null);
       const finalSalaryRange = jobData.salary_range || 
         (finalSalaryMin && finalSalaryMax ? `₹${(finalSalaryMin/100000).toFixed(1)}L - ₹${(finalSalaryMax/100000).toFixed(1)}L` : (finalSalaryMin ? `From ₹${(finalSalaryMin/100000).toFixed(1)}L` : 'Competitive / Based on experience'));
 
-      // Prepare data with proper null handling and correct column names
-      const insertData = {
+      const nowIso = new Date().toISOString();
+
+      // Prepare data with proper null handling and strictly valid columns
+      const insertData: any = {
         // Base canonical payload (normalized title, description, employment_type, requirement arrays)
         ...canonicalPayload,
 
         // Core fields
         title: finalTitle,
         job_title: finalTitle,
-        company_name: jobData.company_name?.trim() || canonicalPayload.company_name || 'Hiring Company',
+        company_name: jobData.company_name?.trim() || canonicalPayload.company_name || 'TalentXcel Partner',
         location: finalLocation,
         location_city: jobData.location_city?.trim() || finalLocation,
         location_state: jobData.location_state || '',
@@ -308,8 +297,8 @@ function JobPostContent() {
         job_description: finalDescription,
         job_summary: jobData.job_summary?.trim() || finalDescription.slice(0, 250),
         employment_type: canonicalPayload.employment_type || jobData.employment_type || 'full-time',
-        experience_level: canonicalPayload.experience_level || jobData.experience_level || 'mid-level',
-        work_mode: jobData.work_mode || (finalLocation.toLowerCase().includes('remote') ? 'remote' : 'onsite'),
+        experience_level: jobData.experience_level || canonicalPayload.experience_level || 'entry-level',
+        work_mode: jobData.work_mode || (finalLocation.toLowerCase().includes('remote') ? 'remote' : 'hybrid'),
         work_schedule: jobData.work_schedule || 'full-time',
 
         // Salary info (satisfies validate_job_quality trigger)
@@ -317,7 +306,6 @@ function JobPostContent() {
         salary_max: finalSalaryMax,
         salary_currency: jobData.salary_currency || 'INR',
         salary_range: finalSalaryRange,
-        is_fresher_eligible: jobData.is_fresher_eligible ?? (finalTitle.toLowerCase().includes('fresher') || finalTitle.toLowerCase().includes('graduate') || (jobData.experience_level && jobData.experience_level.toLowerCase().includes('entry'))),
 
         // Contact information
         contact_name: jobData.contact_name || '',
@@ -327,12 +315,12 @@ function JobPostContent() {
         
         // Company info
         company_website: jobData.company_website || '',
-        industry_domain: jobData.industry_domain || jobData.industry || '',
+        industry_domain: jobData.industry_domain || jobData.industry || 'Technology',
         company_size: jobData.company_size || '',
         
         // System fields
         posted_by: user.id,
-        company_id: resolvedCompanyId,
+        company_id: resolvedCompanyId || null,
         is_active: jobData.visibility_status !== 'draft',
         job_status: 'open',
         visibility_status: jobData.visibility_status || 'active',
@@ -352,8 +340,8 @@ function JobPostContent() {
         benefits: jobData.benefits || [],
         
         // Numeric fields
-        min_experience: jobData.min_experience || canonicalPayload.min_experience || null,
-        max_experience: jobData.max_experience || canonicalPayload.max_experience || null,
+        min_experience: jobData.min_experience ?? canonicalPayload.min_experience ?? null,
+        max_experience: jobData.max_experience ?? canonicalPayload.max_experience ?? null,
         year_of_passing: jobData.year_of_passing || null,
         max_education_gap: jobData.max_education_gap || null,
         education_level: jobData.education_level || canonicalPayload.education_level || null,
@@ -363,26 +351,52 @@ function JobPostContent() {
         team_brochure_url: jobData.team_brochure_url || null,
         benefits_policy_url: jobData.benefits_policy_url || null,
         
+        // Fresh timestamps satisfying triggers
+        created_at: nowIso,
+        posted_at: nowIso,
+        updated_at: nowIso,
+
         // Date handling
         application_deadline: jobData.application_deadline ? new Date(jobData.application_deadline).toISOString().split('T')[0] : null
       };
 
+      // Ensure no invalid columns are included
+      delete insertData.is_fresher_eligible;
+
+      let insertedJob: any = null;
       const { data, error } = await supabase
         .from('jobs')
-        .insert(insertData)
-        .select();
+        .insert([insertData])
+        .select('id, title, job_title, seo_slug, slug, location_city, location_state, employment_type, salary_min, salary_max, company_name');
 
       if (error) {
-        console.error('Job posting error:', error);
-        throw error;
+        console.warn('Job insert select warning:', error);
+        // Fallback insert without select in case RLS limits immediate select
+        const { error: fallbackError } = await supabase
+          .from('jobs')
+          .insert([insertData]);
+
+        if (fallbackError) {
+          console.error('Job posting failed completely:', fallbackError);
+          throw fallbackError;
+        }
+      } else if (data && data.length > 0) {
+        insertedJob = data[0];
       }
 
-      return data;
+      // Clear local draft upon successful publication / save
+      try {
+        localStorage.removeItem('txc_industry_job_draft');
+      } catch (e) {}
+
+      return insertedJob || insertData;
     },
     onSuccess: (data, variables) => {
-      // Invalidate queries to refresh data
+      // Invalidate queries to refresh data across all views
       queryClient.invalidateQueries({ queryKey: ['employer-stats'] });
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
+      queryClient.invalidateQueries({ queryKey: ['employer-jobs'] });
+      queryClient.invalidateQueries({ queryKey: ['user-jobs'] });
       
       const createdJob = Array.isArray(data) ? data[0] : (data || variables);
       const createdId = createdJob?.id || createdJob?.seo_slug || '';
@@ -393,7 +407,7 @@ function JobPostContent() {
         return;
       }
 
-      toast.success('Job posted successfully!');
+      toast.success('Job posted successfully! Redirecting...');
       navigate('/jobs/post/success', {
         state: {
           jobData: {
@@ -404,8 +418,8 @@ function JobPostContent() {
             location_city: createdJob?.location_city || variables.location_city,
             location_state: createdJob?.location_state || variables.location_state,
             employment_type: createdJob?.employment_type || variables.employment_type,
-            salary_min: createdJob?.salary_min ?? variables.min_salary,
-            salary_max: createdJob?.salary_max ?? variables.max_salary,
+            salary_min: createdJob?.salary_min ?? variables.salary_min,
+            salary_max: createdJob?.salary_max ?? variables.salary_max,
             company_name: createdJob?.company_name || variables.company_name
           }
         }
@@ -413,7 +427,7 @@ function JobPostContent() {
     },
     onError: (error: any) => {
       console.error('Job posting failed:', error);
-      toast.error(error.message || 'Failed to post job');
+      toast.error(error.message || 'Failed to post job. Please verify required fields.');
     }
   });
 

@@ -220,7 +220,7 @@ export const IndustryJobPostForm: React.FC<IndustryJobPostFormProps> = ({
       max_salary: maxSalary,
       salary_currency: currency,
       salary_range: salaryRange,
-      is_fresher_eligible: formData.is_fresher_eligible,
+      experience_level: formData.experience_level || (formData.is_fresher_eligible ? 'entry-level' : 'mid-level'),
       visibility_status: 'active',
     });
   };

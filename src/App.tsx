@@ -777,6 +777,7 @@ const App = () => {
            {/* PWA Install Prompts */}
            <ChromePWAPrompt />
            <IOSInstallPrompt />
+           <Toaster richColors position="top-right" />
          </QueryClientProvider>
      </ErrorBoundary>
   );
