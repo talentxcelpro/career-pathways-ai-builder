@@ -36,6 +36,7 @@ const CRMCandidates = () => {
   // Fetch unified candidates from multiple sources
   const { data: candidatesData, isLoading } = useQuery({
     queryKey: ['crm-candidates', searchTerm, selectedSource],
+    queryFn: async () => {
       try {
         const { data, error } = await supabase.functions.invoke('cv-search', {
           body: {
