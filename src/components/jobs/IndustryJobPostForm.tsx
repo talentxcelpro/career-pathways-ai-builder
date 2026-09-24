@@ -9,7 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { JOB_CATEGORIES, EMPLOYMENT_TYPES, WORK_MODES, getSkillsForCategory, getRolesForCategory } from "@/utils/jobCategories";
-import { EXPERIENCE_LEVELS } from "@/config/jobs/experienceLevels";
+import { EXPERIENCE_LEVELS, toDbExperienceLevel } from "@/config/jobs/experienceLevels";
+import { toDbEmploymentType } from "@/config/jobs/employmentTypes";
 import { CURRENCIES, DEFAULT_CURRENCY } from "@/config/jobs/currencies";
 import { LocationAutocomplete } from "@/components/jobs/LocationAutocomplete";
 import { GoogleJobsPreviewCard } from "@/components/jobs/GoogleJobsPreviewCard";
@@ -39,8 +40,8 @@ export const IndustryJobPostForm: React.FC<IndustryJobPostFormProps> = ({
     job_title: initialData.job_title || initialData.title || '',
     company_name: initialData.company_name || '',
     location: initialData.location || initialData.location_city || '',
-    employment_type: initialData.employment_type || 'FULL_TIME',
-    experience_level: initialData.experience_level || 'ENTRY_LEVEL',
+    employment_type: initialData.employment_type ? toDbEmploymentType(initialData.employment_type) : 'Full-time',
+    experience_level: initialData.experience_level ? toDbExperienceLevel(initialData.experience_level) : 'fresher',
     is_fresher_eligible: initialData.is_fresher_eligible ?? true,
     work_mode: initialData.work_mode || 'hybrid',
     
@@ -220,7 +221,8 @@ export const IndustryJobPostForm: React.FC<IndustryJobPostFormProps> = ({
       max_salary: maxSalary,
       salary_currency: currency,
       salary_range: salaryRange,
-      experience_level: formData.experience_level || (formData.is_fresher_eligible ? 'entry-level' : 'mid-level'),
+      employment_type: toDbEmploymentType(formData.employment_type),
+      experience_level: toDbExperienceLevel(formData.experience_level || (formData.is_fresher_eligible ? 'fresher' : 'mid-level')),
       visibility_status: 'active',
     });
   };
@@ -277,8 +279,8 @@ export const IndustryJobPostForm: React.FC<IndustryJobPostFormProps> = ({
         job_title: '',
         company_name: initialData.company_name || '',
         location: initialData.location || initialData.location_city || '',
-        employment_type: 'FULL_TIME',
-        experience_level: 'ENTRY_LEVEL',
+        employment_type: 'Full-time',
+        experience_level: 'fresher',
         is_fresher_eligible: true,
         work_mode: 'hybrid',
         job_summary: '',
@@ -392,8 +394,8 @@ Candidate Profile & Qualifications:
       industry: industry,
       company_name: companyName,
       location: location,
-      employment_type: formData.employment_type || 'FULL_TIME',
-      experience_level: formData.experience_level || 'ENTRY_LEVEL',
+      employment_type: formData.employment_type || 'Full-time',
+      experience_level: formData.experience_level || 'fresher',
       work_mode: formData.work_mode || 'hybrid',
       job_summary: jobSummary,
       job_description: jobDescription,

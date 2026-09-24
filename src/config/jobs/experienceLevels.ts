@@ -1,4 +1,4 @@
-﻿/**
+/**
  * TalentXcel Global Experience Level Registry
  * 8-tier system: FRESHER through 8_PLUS_YEARS.
  * Includes isFresherEligible() helper and Schema.org mapping.
@@ -116,3 +116,45 @@ export function buildExperienceRequirements(
   if (!cfg || cfg.schemaMonthsOfExperience === null) return null;
   return { '@type': 'OccupationalExperienceRequirements', monthsOfExperience: cfg.schemaMonthsOfExperience };
 }
+
+/**
+ * Maps any raw experience level (UI code, alias, year string) to the exact PostgreSQL check constraint value:
+ * CHECK (experience_level IS NULL OR experience_level IN ('fresher', 'mid-level', 'senior-level', 'executive'))
+ */
+export function toDbExperienceLevel(val?: string | null): 'fresher' | 'mid-level' | 'senior-level' | 'executive' {
+  if (!val) return 'mid-level';
+  const clean = String(val).toLowerCase().replace(/[-_\s]+/g, '');
+  if (
+    clean.includes('fresh') ||
+    clean.includes('entry') ||
+    clean.includes('01') ||
+    clean.includes('12') ||
+    clean.includes('intern') ||
+    clean.includes('grad') ||
+    clean.includes('noexp')
+  ) {
+    return 'fresher';
+  }
+  if (
+    clean.includes('exec') ||
+    clean.includes('director') ||
+    clean.includes('vp') ||
+    clean.includes('chief') ||
+    clean.includes('8plus') ||
+    clean.includes('clevel')
+  ) {
+    return 'executive';
+  }
+  if (
+    clean.includes('senior') ||
+    clean.includes('lead') ||
+    clean.includes('58') ||
+    clean.includes('manager') ||
+    clean.includes('staff') ||
+    clean.includes('principal')
+  ) {
+    return 'senior-level';
+  }
+  return 'mid-level';
+}
+

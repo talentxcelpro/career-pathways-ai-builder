@@ -452,12 +452,12 @@ export const JOB_CATEGORIES = {
 };
 
 export const EMPLOYMENT_TYPES = [
-  { value: 'full-time', label: 'Full-time' },
-  { value: 'part-time', label: 'Part-time' },
-  { value: 'contract', label: 'Contract' },
-  { value: 'freelance', label: 'Freelance' },
-  { value: 'internship', label: 'Internship' },
-  { value: 'temporary', label: 'Temporary' }
+  { value: 'Full-time', label: 'Full-time' },
+  { value: 'Part-time', label: 'Part-time' },
+  { value: 'Contract', label: 'Contract' },
+  { value: 'Freelance', label: 'Freelance' },
+  { value: 'Internship', label: 'Internship' },
+  { value: 'Temporary', label: 'Temporary' }
 ];
 
 export const EXPERIENCE_LEVELS = [

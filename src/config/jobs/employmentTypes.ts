@@ -1,4 +1,4 @@
-﻿/**
+/**
  * TalentXcel Employment Type Registry
  * Maps internal codes to labels and Google Schema.org employmentType values.
  */
@@ -78,3 +78,26 @@ export const REMOTE_SCOPE_MAP: Readonly<Record<RemoteScopeCode, RemoteScopeConfi
 export function isRemoteJob(workplaceType?: string): boolean {
   return workplaceType === 'REMOTE' || workplaceType === 'HYBRID';
 }
+
+export function toDbEmploymentType(val?: string | null): 'Full-time' | 'Part-time' | 'Contract' | 'Freelance' | 'Internship' | 'Temporary' | 'Remote' | 'Hybrid' {
+  if (!val) return 'Full-time';
+  const clean = String(val).toLowerCase().replace(/[-_\s]+/g, '');
+  if (clean.includes('full')) return 'Full-time';
+  if (clean.includes('part')) return 'Part-time';
+  if (clean.includes('contract')) return 'Contract';
+  if (clean.includes('freelance')) return 'Freelance';
+  if (clean.includes('intern') || clean.includes('apprentice')) return 'Internship';
+  if (clean.includes('temp') || clean.includes('seasonal') || clean.includes('gig')) return 'Temporary';
+  if (clean.includes('remote')) return 'Remote';
+  if (clean.includes('hybrid')) return 'Hybrid';
+  return 'Full-time';
+}
+
+export function toDbWorkMode(val?: string | null): 'hybrid' | 'onsite' | 'remote' {
+  if (!val) return 'hybrid';
+  const clean = String(val).toLowerCase().replace(/[-_\s]+/g, '');
+  if (clean.includes('remot')) return 'remote';
+  if (clean.includes('site') || clean.includes('office')) return 'onsite';
+  return 'hybrid';
+}
+

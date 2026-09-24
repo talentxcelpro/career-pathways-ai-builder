@@ -24,6 +24,8 @@ import { IndustryJobPostForm } from "@/components/jobs/IndustryJobPostForm";
 import { validateJobData, JOB_CATEGORIES } from "@/utils/jobCategories";
 import { normalizeJobContent } from '@/lib/job/normalizeJobContent';
 import { toJobsTablePayload } from '@/lib/job/toJobsTablePayload';
+import { toDbEmploymentType, toDbWorkMode } from '@/config/jobs/employmentTypes';
+import { toDbExperienceLevel } from '@/config/jobs/experienceLevels';
 
 
 function JobPostContent() {
@@ -296,9 +298,9 @@ function JobPostContent() {
         description: finalDescription,
         job_description: finalDescription,
         job_summary: jobData.job_summary?.trim() || finalDescription.slice(0, 250),
-        employment_type: canonicalPayload.employment_type || jobData.employment_type || 'full-time',
-        experience_level: jobData.experience_level || canonicalPayload.experience_level || 'entry-level',
-        work_mode: jobData.work_mode || (finalLocation.toLowerCase().includes('remote') ? 'remote' : 'hybrid'),
+        employment_type: toDbEmploymentType(jobData.employment_type || canonicalPayload.employment_type),
+        experience_level: toDbExperienceLevel(jobData.experience_level || canonicalPayload.experience_level),
+        work_mode: toDbWorkMode(jobData.work_mode || (finalLocation.toLowerCase().includes('remote') ? 'remote' : 'hybrid')),
         work_schedule: jobData.work_schedule || 'full-time',
 
         // Salary info (satisfies validate_job_quality trigger)
@@ -360,7 +362,10 @@ function JobPostContent() {
         application_deadline: jobData.application_deadline ? new Date(jobData.application_deadline).toISOString().split('T')[0] : null
       };
 
-      // Ensure no invalid columns are included
+      // Guarantee strictly valid database values satisfying all check constraints
+      insertData.employment_type = toDbEmploymentType(insertData.employment_type);
+      insertData.experience_level = toDbExperienceLevel(insertData.experience_level);
+      insertData.work_mode = toDbWorkMode(insertData.work_mode);
       delete insertData.is_fresher_eligible;
 
       let insertedJob: any = null;
