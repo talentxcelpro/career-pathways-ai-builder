@@ -36,20 +36,39 @@ const CRMCandidates = () => {
   // Fetch unified candidates from multiple sources
   const { data: candidatesData, isLoading } = useQuery({
     queryKey: ['crm-candidates', searchTerm, selectedSource],
-    queryFn: async () => {
-      if (!user?.id) return { candidates: [], total: 0 };
+      try {
+        const { data, error } = await supabase.functions.invoke('cv-search', {
+          body: {
+            searchTerm,
+            filters: selectedSource !== 'all' ? { source: [selectedSource] } : {},
+            page: 1,
+            limit: 50
+          }
+        });
 
-      const { data, error } = await supabase.functions.invoke('cv-search', {
-        body: {
-          searchTerm,
-          filters: selectedSource !== 'all' ? { source: [selectedSource] } : {},
-          page: 1,
-          limit: 50
+        if (!error && data) {
+          const list = data.data || data.candidates || (Array.isArray(data) ? data : []);
+          return { candidates: list, total: data.pagination?.total ?? list.length };
         }
-      });
+      } catch (err) {
+        console.warn('cv-search edge function failed, falling back to database query:', err);
+      }
 
-      if (error) throw error;
-      return data;
+      // Resilient fallback directly querying unified_candidates table
+      let dbQuery = supabase
+        .from('unified_candidates')
+        .select('*', { count: 'exact' });
+
+      if (searchTerm.trim()) {
+        const pattern = `%${searchTerm.trim()}%`;
+        dbQuery = dbQuery.or(`name.ilike.${pattern},title.ilike.${pattern},location.ilike.${pattern},email.ilike.${pattern}`);
+      }
+
+      const { data: dbCandidates, count: dbCount } = await dbQuery.limit(50);
+      return {
+        candidates: dbCandidates || [],
+        total: dbCount ?? (dbCandidates?.length || 0)
+      };
     },
     enabled: !!user?.id
   });

@@ -15,8 +15,8 @@ function AnalyticsContent() {
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) throw new Error('Not authenticated');
 
-      // Get user's company jobs with analytics
-      const { data: jobs, error: jobsError } = await supabase
+      // 1. Get user's posted jobs
+      const { data: userJobs, error: jobsError } = await supabase
         .from('jobs')
         .select(`
           id,
@@ -26,12 +26,53 @@ function AnalyticsContent() {
           applications_count,
           is_active,
           expires_at,
-          companies!inner(name)
+          company_name,
+          company_id
         `)
         .eq('posted_by', user.user.id)
         .order('created_at', { ascending: false });
 
-      if (jobsError) throw jobsError;
+      if (jobsError) {
+        console.warn('Jobs query error in analytics:', jobsError);
+      }
+
+      let allJobs = userJobs || [];
+
+      // 2. Check if user is part of a company team and include those jobs
+      const { data: teamData } = await supabase
+        .from('company_team_members')
+        .select('company_id')
+        .eq('user_id', user.user.id)
+        .eq('is_active', true)
+        .limit(1);
+
+      const teamCompanyId = teamData && teamData.length > 0 ? teamData[0].company_id : null;
+      if (teamCompanyId) {
+        const { data: compJobs } = await supabase
+          .from('jobs')
+          .select(`
+            id,
+            title,
+            created_at,
+            views_count,
+            applications_count,
+            is_active,
+            expires_at,
+            company_name,
+            company_id
+          `)
+          .eq('company_id', teamCompanyId)
+          .order('created_at', { ascending: false });
+
+        if (compJobs && compJobs.length > 0) {
+          const jobMap = new Map<string, any>();
+          allJobs.forEach(j => jobMap.set(j.id, j));
+          compJobs.forEach(j => jobMap.set(j.id, j));
+          allJobs = Array.from(jobMap.values());
+        }
+      }
+
+      const jobs = allJobs;
 
       // Calculate analytics with real job_applications
       const totalJobs = jobs?.length || 0;

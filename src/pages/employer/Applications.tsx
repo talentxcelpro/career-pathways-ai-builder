@@ -4,6 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { 
   Users, 
   Search, 
@@ -17,11 +25,14 @@ import {
   CheckCircle,
   XCircle,
   Clock,
-  Star
+  Star,
+  ExternalLink,
+  FileText
 } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { EmployerAccessGuard } from "@/components/employer/EmployerAccessGuard";
 
 interface Application {
@@ -43,6 +54,27 @@ function ApplicationsContent() {
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
+  const [selectedApp, setSelectedApp] = useState<Application | null>(null);
+
+  const updateStatusMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: Application['status'] }) => {
+      const { error } = await supabase
+        .from('job_applications')
+        .update({ status, updated_at: new Date().toISOString() })
+        .eq('id', id);
+      if (error) throw error;
+      return { id, status };
+    },
+    onSuccess: ({ id, status }) => {
+      queryClient.invalidateQueries({ queryKey: ['employer-applications'] });
+      queryClient.invalidateQueries({ queryKey: ['employer-dashboard-real-data'] });
+      toast.success(`Candidate status updated to ${status}`);
+      setSelectedApp(prev => (prev && prev.id === id ? { ...prev, status } : prev));
+    },
+    onError: (err: any) => {
+      toast.error('Failed to update status: ' + (err.message || 'Unknown error'));
+    }
+  });
 
   // Supabase Real-Time subscription for employer applications
   React.useEffect(() => {
@@ -62,6 +94,15 @@ function ApplicationsContent() {
       supabase.removeChannel(channel);
     };
   }, [queryClient]);
+
+  // Get current authenticated user
+  const { data: userAuth, isLoading: userLoading } = useQuery({
+    queryKey: ['employer-auth-user'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      return user;
+    }
+  });
 
   // Get company ID from team membership
   const { data: teamData } = useQuery({
@@ -241,12 +282,18 @@ function ApplicationsContent() {
     );
   }
 
-  if (!companyId) {
+  if (!userLoading && !userAuth) {
     return (
       <div className="p-6 max-w-7xl mx-auto">
-        <Card className="p-8 text-center">
-          <h2 className="text-xl font-semibold mb-2">No Company Access</h2>
-          <p className="text-gray-600">You need company access to view applications.</p>
+        <Card className="p-12 text-center max-w-md mx-auto shadow-sm">
+          <Users className="h-14 w-14 text-blue-600 mx-auto mb-4 bg-blue-50 p-3 rounded-full" />
+          <h2 className="text-2xl font-bold mb-2">Employer Sign In Required</h2>
+          <p className="text-gray-600 mb-6">
+            Sign in to your employer account to review candidates, manage applications, and schedule interviews.
+          </p>
+          <Button onClick={() => navigate('/auth?redirect=/employer/applications')} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold">
+            Sign In to Employer Portal
+          </Button>
         </Card>
       </div>
     );
@@ -367,14 +414,33 @@ function ApplicationsContent() {
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Button variant="outline" size="sm">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => setSelectedApp(application)}
+                        className="hover:bg-blue-50 hover:text-blue-600 border-slate-200"
+                      >
                         <Eye className="h-4 w-4 mr-1" />
                         View
                       </Button>
-                      <Button variant="outline" size="sm">
-                        <MessageSquare className="h-4 w-4 mr-1" />
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => window.open(`mailto:${application.candidate_email}?subject=${encodeURIComponent(`Regarding your application for ${application.job_title} at TalentXcel`)}`, '_blank')}
+                        className="hover:bg-slate-100 border-slate-200"
+                      >
+                        <Mail className="h-4 w-4 mr-1" />
                         Contact
+                      </Button>
+                      <Button
+                        variant="default"
+                        size="sm"
+                        onClick={() => navigate(`/employer/interview/schedule?appId=${application.id}&name=${encodeURIComponent(application.candidate_name)}&email=${encodeURIComponent(application.candidate_email)}&jobTitle=${encodeURIComponent(application.job_title)}&jobId=${application.job_id}`)}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
+                      >
+                        <Calendar className="h-4 w-4 mr-1" />
+                        Schedule
                       </Button>
                     </div>
                   </div>
@@ -400,6 +466,147 @@ function ApplicationsContent() {
           )}
         </CardContent>
       </Card>
+
+      {/* Candidate Details & Stage Progression Modal */}
+      <Dialog open={!!selectedApp} onOpenChange={(open) => !open && setSelectedApp(null)}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          {selectedApp && (
+            <>
+              <DialogHeader>
+                <div className="flex items-center justify-between gap-4 pr-6">
+                  <div>
+                    <DialogTitle className="text-2xl font-bold flex items-center gap-2">
+                      {selectedApp.candidate_name}
+                      <Badge className={`${getStatusColor(selectedApp.status)} ml-2 text-xs`}>
+                        {selectedApp.status}
+                      </Badge>
+                    </DialogTitle>
+                    <DialogDescription className="text-sm font-medium text-blue-600 mt-1">
+                      Applied for: {selectedApp.job_title}
+                    </DialogDescription>
+                  </div>
+                </div>
+              </DialogHeader>
+
+              <div className="space-y-6 py-4">
+                {/* Contact Info */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 bg-slate-50 dark:bg-slate-900 rounded-lg text-sm border border-slate-100">
+                  <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+                    <Mail className="h-4 w-4 text-slate-400" />
+                    <span>{selectedApp.candidate_email}</span>
+                  </div>
+                  {selectedApp.candidate_phone && (
+                    <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+                      <Phone className="h-4 w-4 text-slate-400" />
+                      <span>{selectedApp.candidate_phone}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+                    <Calendar className="h-4 w-4 text-slate-400" />
+                    <span>Applied on {new Date(selectedApp.applied_at).toLocaleDateString(undefined, { dateStyle: 'long' })}</span>
+                  </div>
+                  {selectedApp.rating && (
+                    <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+                      <Star className="h-4 w-4 text-amber-500 fill-current" />
+                      <span>TalentScore Match: {selectedApp.rating}/5</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Cover Letter */}
+                {selectedApp.cover_letter && (
+                  <div>
+                    <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Cover Letter / Candidate Note</h4>
+                    <div className="p-3 bg-white dark:bg-slate-950 rounded-lg border border-slate-200 text-sm text-slate-700 dark:text-slate-300 whitespace-pre-line leading-relaxed">
+                      {selectedApp.cover_letter}
+                    </div>
+                  </div>
+                )}
+
+                {/* Resume Access */}
+                {selectedApp.resume_url && (
+                  <div>
+                    <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Resume / CV Document</h4>
+                    <div className="flex items-center justify-between p-3 bg-blue-50/50 rounded-lg border border-blue-100">
+                      <div className="flex items-center gap-2 text-sm text-blue-900 font-medium">
+                        <FileText className="h-5 w-5 text-blue-600" />
+                        <span>Candidate Attached Resume</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => window.open(selectedApp.resume_url, '_blank')}
+                          className="bg-white"
+                        >
+                          <ExternalLink className="h-4 w-4 mr-1" />
+                          Open
+                        </Button>
+                        <Button
+                          variant="default"
+                          size="sm"
+                          asChild
+                          className="bg-blue-600 hover:bg-blue-700"
+                        >
+                          <a href={selectedApp.resume_url} download target="_blank" rel="noopener noreferrer">
+                            <Download className="h-4 w-4 mr-1" />
+                            Download
+                          </a>
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Status Update Actions */}
+                <div>
+                  <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2.5">Move Candidate to Stage</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { status: 'reviewed', label: 'Mark Reviewed', className: 'hover:bg-blue-50 text-blue-700 border-blue-200' },
+                      { status: 'shortlisted', label: 'Shortlist', className: 'hover:bg-purple-50 text-purple-700 border-purple-200' },
+                      { status: 'interviewed', label: 'Interviewed', className: 'hover:bg-indigo-50 text-indigo-700 border-indigo-200' },
+                      { status: 'hired', label: 'Mark Hired', className: 'hover:bg-emerald-50 text-emerald-700 border-emerald-200' },
+                      { status: 'rejected', label: 'Reject', className: 'hover:bg-rose-50 text-rose-700 border-rose-200' },
+                    ].map((act) => (
+                      <Button
+                        key={act.status}
+                        variant="outline"
+                        size="sm"
+                        disabled={selectedApp.status === act.status || updateStatusMutation.isPending}
+                        onClick={() => updateStatusMutation.mutate({ id: selectedApp.id, status: act.status as any })}
+                        className={`${act.className} ${selectedApp.status === act.status ? 'bg-slate-200 text-slate-500 cursor-not-allowed opacity-60' : ''}`}
+                      >
+                        {act.label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <DialogFooter className="gap-2 sm:gap-0 pt-2 border-t">
+                <Button
+                  variant="outline"
+                  onClick={() => setSelectedApp(null)}
+                >
+                  Close
+                </Button>
+                <Button
+                  onClick={() => {
+                    const app = selectedApp;
+                    setSelectedApp(null);
+                    navigate(`/employer/interview/schedule?appId=${app.id}&name=${encodeURIComponent(app.candidate_name)}&email=${encodeURIComponent(app.candidate_email)}&jobTitle=${encodeURIComponent(app.job_title)}&jobId=${app.job_id}`);
+                  }}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                >
+                  <Calendar className="h-4 w-4 mr-1.5" />
+                  Schedule Interview
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

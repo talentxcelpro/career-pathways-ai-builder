@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,9 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, ArrowLeft, Clock, Users, Video, MapPin, Plus, CheckCircle, Mail } from "lucide-react";
-import { useNavigate, useParams, Link } from 'react-router-dom';
-import { useQuery } from "@tanstack/react-query";
+import { Calendar, ArrowLeft, Clock, Users, Video, MapPin, Plus, CheckCircle, Mail, Copy, ExternalLink, Check } from "lucide-react";
+import { useNavigate, useParams, useSearchParams, Link } from 'react-router-dom';
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -21,25 +21,48 @@ interface ScheduledInterview {
   date: string;
   time: string;
   mode: string;
+  meetingUrl?: string;
   notes?: string;
   status: 'confirmed' | 'completed' | 'cancelled';
+  applicationId?: string;
 }
 
 const InterviewSchedule: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const queryClient = useQueryClient();
 
-  const [showScheduleForm, setShowScheduleForm] = useState(false);
-  const [candidateName, setCandidateName] = useState('');
-  const [candidateEmail, setCandidateEmail] = useState('');
-  const [selectedJobId, setSelectedJobId] = useState(id || '');
-  const [interviewDate, setInterviewDate] = useState('');
+  const appIdParam = searchParams.get('appId') || '';
+  const nameParam = searchParams.get('name') || '';
+  const emailParam = searchParams.get('email') || '';
+  const jobTitleParam = searchParams.get('jobTitle') || '';
+  const jobIdParam = searchParams.get('jobId') || id || '';
+
+  const [showScheduleForm, setShowScheduleForm] = useState(Boolean(nameParam || appIdParam));
+  const [candidateName, setCandidateName] = useState(nameParam);
+  const [candidateEmail, setCandidateEmail] = useState(emailParam);
+  const [selectedJobId, setSelectedJobId] = useState(jobIdParam);
+  const [interviewDate, setInterviewDate] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    return d.toISOString().split('T')[0];
+  });
   const [interviewTime, setInterviewTime] = useState('10:00');
   const [interviewMode, setInterviewMode] = useState('Google Meet');
+  const [meetingUrl, setMeetingUrl] = useState('https://meet.google.com/new');
   const [notes, setNotes] = useState('');
 
+  // Auto-fill from query params if navigated with a candidate
+  useEffect(() => {
+    if (nameParam) setCandidateName(nameParam);
+    if (emailParam) setCandidateEmail(emailParam);
+    if (jobIdParam) setSelectedJobId(jobIdParam);
+    if (nameParam || appIdParam) setShowScheduleForm(true);
+  }, [nameParam, emailParam, jobIdParam, appIdParam]);
+
   // Persisted local scheduled interviews for session
-  const [scheduledList, setScheduledList] = useState<ScheduledInterview[]>(() => {
+  const [localScheduled, setLocalScheduled] = useState<ScheduledInterview[]>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('txc_scheduled_interviews');
       if (saved) {
@@ -48,6 +71,67 @@ const InterviewSchedule: React.FC = () => {
     }
     return [];
   });
+
+  // Query real scheduled interviews from Supabase job_applications
+  const { data: dbInterviews } = useQuery({
+    queryKey: ['db-scheduled-interviews'],
+    queryFn: async () => {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) return [];
+
+      const { data, error } = await supabase
+        .from('job_applications')
+        .select(`
+          id,
+          status,
+          applied_at,
+          application_data,
+          jobs:jobs!fk_job_applications_job_id (
+            id,
+            title
+          ),
+          profiles:profiles!fk_job_applications_user_id (
+            id,
+            full_name,
+            email
+          )
+        `)
+        .in('status', ['interview_scheduled', 'interviewed'])
+        .order('applied_at', { ascending: false });
+
+      if (error || !data) return [];
+
+      return data.map((app: any) => {
+        const intv = (app.application_data as any)?.interview || {};
+        return {
+          id: app.id,
+          applicationId: app.id,
+          candidateName: intv.candidateName || app.profiles?.full_name || 'Applicant',
+          candidateEmail: intv.candidateEmail || app.profiles?.email || '',
+          jobTitle: app.jobs?.title || 'Applied Position',
+          date: intv.date || (app.applied_at ? app.applied_at.split('T')[0] : new Date().toISOString().split('T')[0]),
+          time: intv.time || '10:00 AM',
+          mode: intv.mode || 'Google Meet',
+          meetingUrl: intv.meetingUrl || 'https://meet.google.com/new',
+          notes: intv.notes || '',
+          status: (app.status === 'interviewed' ? 'completed' : 'confirmed') as any
+        };
+      });
+    }
+  });
+
+  // Merge database scheduled interviews with local list (avoiding duplicate IDs)
+  const scheduledList: ScheduledInterview[] = React.useMemo(() => {
+    const list = [...localScheduled];
+    if (dbInterviews) {
+      dbInterviews.forEach(dbItem => {
+        if (!list.some(item => item.id === dbItem.id || item.applicationId === dbItem.id)) {
+          list.push(dbItem);
+        }
+      });
+    }
+    return list;
+  }, [localScheduled, dbInterviews]);
 
   // Query real jobs from Supabase
   const { data: userJobs, isLoading: jobsLoading } = useQuery({
@@ -71,7 +155,7 @@ const InterviewSchedule: React.FC = () => {
     },
   });
 
-  const handleCreateSchedule = (e: React.FormEvent) => {
+  const handleCreateSchedule = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!candidateName.trim() || !candidateEmail.trim() || !interviewDate) {
       toast.error('Please enter candidate name, email, and interview date');
@@ -80,24 +164,63 @@ const InterviewSchedule: React.FC = () => {
 
     const job = userJobs?.find(j => j.id === selectedJobId);
     const newInterview: ScheduledInterview = {
-      id: 'intv-' + Date.now(),
+      id: appIdParam ? appIdParam : 'intv-' + Date.now(),
+      applicationId: appIdParam || undefined,
       candidateName: candidateName.trim(),
       candidateEmail: candidateEmail.trim(),
-      jobTitle: job?.title || 'General Position',
+      jobTitle: job?.title || jobTitleParam || 'Applied Opening',
       date: interviewDate,
       time: interviewTime,
       mode: interviewMode,
+      meetingUrl: meetingUrl.trim() || 'https://meet.google.com/new',
       notes: notes.trim(),
       status: 'confirmed',
     };
 
-    const updated = [newInterview, ...scheduledList];
-    setScheduledList(updated);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('txc_scheduled_interviews', JSON.stringify(updated));
+    // If an application ID is associated, persist directly to Supabase job_applications!
+    if (appIdParam) {
+      try {
+        const { error: appErr } = await supabase
+          .from('job_applications')
+          .update({
+            status: 'interview_scheduled',
+            application_data: {
+              interview: {
+                candidateName: newInterview.candidateName,
+                candidateEmail: newInterview.candidateEmail,
+                date: newInterview.date,
+                time: newInterview.time,
+                mode: newInterview.mode,
+                meetingUrl: newInterview.meetingUrl,
+                notes: newInterview.notes,
+                status: 'confirmed',
+                scheduledAt: new Date().toISOString()
+              }
+            },
+            last_activity_at: new Date().toISOString()
+          })
+          .eq('id', appIdParam);
+
+        if (appErr) {
+          console.warn('Could not update job_applications status in DB:', appErr);
+        } else {
+          queryClient.invalidateQueries({ queryKey: ['employer-applications'] });
+          queryClient.invalidateQueries({ queryKey: ['employer-dashboard-real-data'] });
+          queryClient.invalidateQueries({ queryKey: ['db-scheduled-interviews'] });
+        }
+      } catch (err) {
+        console.warn('DB update failed, using local sync:', err);
+      }
     }
 
-    toast.success(`Interview scheduled with ${candidateName}!`);
+    const updated = [newInterview, ...localScheduled.filter(i => i.id !== newInterview.id)];
+    setLocalScheduled(updated);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('txc_scheduled_interviews', JSON.stringify(updated));
+      window.dispatchEvent(new Event('txc-interview-scheduled'));
+    }
+
+    toast.success(`Interview scheduled with ${candidateName}! Invitation ready.`);
     setCandidateName('');
     setCandidateEmail('');
     setNotes('');
@@ -220,6 +343,17 @@ const InterviewSchedule: React.FC = () => {
                     onChange={(e) => setInterviewTime(e.target.value)}
                   />
                 </div>
+
+                <div className="space-y-1.5 md:col-span-2">
+                  <Label htmlFor="meetingUrl">Meeting Link (Google Meet / Zoom / Teams)</Label>
+                  <Input 
+                    id="meetingUrl" 
+                    type="url" 
+                    placeholder="https://meet.google.com/..." 
+                    value={meetingUrl}
+                    onChange={(e) => setMeetingUrl(e.target.value)}
+                  />
+                </div>
               </div>
 
               <div className="space-y-1.5">
@@ -276,11 +410,11 @@ const InterviewSchedule: React.FC = () => {
           ) : (
             <div className="space-y-3">
               {scheduledList.map((interview) => (
-                <div key={interview.id} className="p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div className="space-y-1">
+                <div key={interview.id} className="p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                  <div className="space-y-1.5">
                     <div className="flex items-center gap-2">
                       <h4 className="font-bold text-slate-900">{interview.candidateName}</h4>
-                      <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] font-bold">
+                      <Badge variant="outline" className={interview.status === 'completed' ? "bg-blue-50 text-blue-700 border-blue-200 text-[10px] font-bold" : "bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] font-bold"}>
                         {interview.status.toUpperCase()}
                       </Badge>
                     </div>
@@ -303,16 +437,72 @@ const InterviewSchedule: React.FC = () => {
                       <p className="text-[11px] text-slate-400 italic pt-1">Note: {interview.notes}</p>
                     )}
                   </div>
-                  <div className="flex items-center gap-2 self-end sm:self-center">
+
+                  <div className="flex items-center gap-2 flex-wrap self-end lg:self-center">
+                    {interview.meetingUrl && (
+                      <>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="text-xs bg-white hover:bg-slate-50"
+                          onClick={() => {
+                            navigator.clipboard.writeText(interview.meetingUrl!);
+                            toast.success('Meeting link copied to clipboard');
+                          }}
+                        >
+                          <Copy className="h-3.5 w-3.5 mr-1" />
+                          Copy Link
+                        </Button>
+                        <Button 
+                          variant="default" 
+                          size="sm" 
+                          className="text-xs bg-purple-600 hover:bg-purple-700 text-white font-medium"
+                          onClick={() => window.open(interview.meetingUrl, '_blank')}
+                        >
+                          <Video className="h-3.5 w-3.5 mr-1" />
+                          Join Call
+                        </Button>
+                      </>
+                    )}
+                    
+                    {interview.status !== 'completed' && (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="text-xs text-emerald-700 hover:bg-emerald-50 border-emerald-200"
+                        onClick={async () => {
+                          const updated = localScheduled.map(i => i.id === interview.id ? { ...i, status: 'completed' as const } : i);
+                          setLocalScheduled(updated);
+                          if (typeof window !== 'undefined') {
+                            localStorage.setItem('txc_scheduled_interviews', JSON.stringify(updated));
+                          }
+                          if (interview.applicationId) {
+                            await supabase.from('job_applications').update({ status: 'interviewed' }).eq('id', interview.applicationId);
+                            queryClient.invalidateQueries({ queryKey: ['employer-applications'] });
+                            queryClient.invalidateQueries({ queryKey: ['db-scheduled-interviews'] });
+                          }
+                          toast.success('Interview marked as completed');
+                        }}
+                      >
+                        <Check className="h-3.5 w-3.5 mr-1" />
+                        Completed
+                      </Button>
+                    )}
+
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      className="text-xs text-red-600 hover:bg-red-50 hover:text-red-700"
-                      onClick={() => {
-                        const updated = scheduledList.filter(i => i.id !== interview.id);
-                        setScheduledList(updated);
+                      className="text-xs text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200"
+                      onClick={async () => {
+                        const updated = localScheduled.filter(i => i.id !== interview.id);
+                        setLocalScheduled(updated);
                         if (typeof window !== 'undefined') {
                           localStorage.setItem('txc_scheduled_interviews', JSON.stringify(updated));
+                        }
+                        if (interview.applicationId) {
+                          await supabase.from('job_applications').update({ status: 'reviewed' }).eq('id', interview.applicationId);
+                          queryClient.invalidateQueries({ queryKey: ['employer-applications'] });
+                          queryClient.invalidateQueries({ queryKey: ['db-scheduled-interviews'] });
                         }
                         toast.info('Interview cancelled');
                       }}

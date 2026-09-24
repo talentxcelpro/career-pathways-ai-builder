@@ -25,6 +25,14 @@ export default function UnifiedDashboard() {
     return isPrivileged ? 'role' : 'candidate';
   });
 
+  React.useEffect(() => {
+    if (requestedView === 'role') {
+      setActiveView('role');
+    } else if (requestedView === 'candidate') {
+      setActiveView('candidate');
+    }
+  }, [requestedView]);
+
   const handleToggleView = (view: 'role' | 'candidate') => {
     setActiveView(view);
     if (typeof window !== 'undefined') {
