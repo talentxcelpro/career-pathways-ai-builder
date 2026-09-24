@@ -47,14 +47,7 @@ export const PublicJobApplyButton: React.FC<PublicJobApplyButtonProps> = ({
       is_authenticated: !!currentUser,
     });
 
-    // Check if this is an external job first
-    if (job?.external_url) {
-      console.log('🔗 External job detected, redirecting to:', job.external_url);
-      window.open(job.external_url, '_blank', 'noopener,noreferrer');
-      return;
-    }
-
-    // Always provide zero-friction 1-click modal for guest applicants
+    // Always provide zero-friction 1-click modal for applicants
     setShowGuestModal(true);
   };
 
@@ -73,18 +66,9 @@ export const PublicJobApplyButton: React.FC<PublicJobApplyButtonProps> = ({
         onClick={handleApplyClick}
         className={`bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 ${className}`}
       >
-        {currentUser ? (
-          <>
-            <Zap className="h-4 w-4 mr-2 text-amber-300 fill-amber-300" />
-            {job?.external_url ? 'Apply on Company Site' : 'Apply Now'}
-          </>
-        ) : (
-          <>
-            <Zap className="h-4 w-4 mr-2 text-amber-300 fill-amber-300" />
-            {job?.external_url ? 'Apply on Company Site' : 'Apply Now'}
-            <ArrowRight className="h-4 w-4 ml-2" />
-          </>
-        )}
+        <Zap className="h-4 w-4 mr-2 text-amber-300 fill-amber-300" />
+        Apply Now
+        <ArrowRight className="h-4 w-4 ml-2" />
       </Button>
 
       {/* Zero-friction 1-Click Guest & Authenticated Application Modal */}

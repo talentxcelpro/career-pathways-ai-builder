@@ -184,16 +184,9 @@ const JobDetail = () => {
     enabled: !!slugOrId,
   });
 
-  // Handle SEO redirects and external jobs
+  // Handle canonical SEO slug redirects
   useEffect(() => {
     if (job) {
-      // If job has external URL, redirect to it
-      if (job.external_url) {
-        console.log('🔗 Redirecting to external URL:', job.external_url);
-        window.location.href = job.external_url;
-        return;
-      }
-
       // If current URL doesn't match the proper SEO slug, redirect
       if (job.seo_slug && job.seo_slug !== slugOrId) {
         console.log('🔄 Redirecting to proper SEO URL:', job.seo_slug);

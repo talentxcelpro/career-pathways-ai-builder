@@ -72,14 +72,7 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
   };
 
   const handleViewJob = () => {
-    // Check if this is an external job
-    if (job.external_url) {
-      console.log('🔗 External job detected, redirecting to:', job.external_url);
-      window.open(job.external_url, '_blank', 'noopener,noreferrer');
-      return;
-    }
-    
-    // Internal job - navigate to detail page
+    // Always navigate to TalentXcel detail page
     navigate(getJobDetailUrl(job));
   };
 

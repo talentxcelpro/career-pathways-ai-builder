@@ -53,15 +53,10 @@ const OptimizedJobCard: React.FC<OptimizedJobCardProps> = memo(({
   }, [onSave, job.id]);
 
   const handleApply = useCallback(() => {
-    if (job.external_url) {
-      console.log('🔗 External job detected, redirecting to:', job.external_url);
-      window.open(job.external_url, '_blank', 'noopener,noreferrer');
-    } else {
-      // Navigate to internal apply page
-      window.location.href = `/jobs/${(job as any).seo_slug || job.id}/apply`;
-    }
+    // Navigate to internal TalentXcel apply page
+    window.location.href = `/jobs/${(job as any).seo_slug || job.id}/apply`;
     onApply?.(job.id);
-  }, [onApply, job.id, job.external_url, (job as any).seo_slug]);
+  }, [onApply, job.id, (job as any).seo_slug]);
 
   const formatSalary = useCallback((min?: number, max?: number) => {
     if (!min && !max) return 'Not disclosed';
