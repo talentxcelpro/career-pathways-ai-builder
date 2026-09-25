@@ -478,52 +478,49 @@ const Communities: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50/60 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6 space-y-5 sm:space-y-6">
 
         {/* ── Top Executive Global Positioning Hero ─────────────────── */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white p-6 sm:p-10 shadow-2xl border border-indigo-900/40">
-          <div className="absolute top-0 right-0 -mt-10 -mr-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-1/3 -mb-10 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white py-4 sm:py-5 px-5 sm:px-7 shadow-lg border border-indigo-900/40">
+          <div className="absolute top-0 right-0 -mt-8 -mr-8 w-64 h-64 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute bottom-0 left-1/3 -mb-8 w-60 h-60 bg-purple-500/10 rounded-full blur-2xl pointer-events-none" />
 
-          <div className="relative z-10 max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-300 text-xs font-semibold tracking-wide uppercase backdrop-blur-md">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              The Global Professional Talent Network
-              <span className="text-white/40">•</span>
-              <span>54,000+ Members Active in Circles</span>
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="space-y-1.5 max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-300 text-[11px] font-semibold tracking-wide uppercase backdrop-blur-md">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                The Global Professional Talent Network
+                <span className="text-white/30">•</span>
+                <span>54,000+ Members Active in Circles</span>
+              </div>
+
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-white leading-tight">
+                Professional <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">Communities & Circles</span>
+              </h1>
+
+              <p className="text-slate-300 text-xs sm:text-sm leading-normal line-clamp-2">
+                Connect with verified technical leaders, founders, and specialized engineering circles. Share production architectures, participate in weekly tech debates, and build relationships with peers worldwide.
+              </p>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
-              Professional <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">Communities & Circles</span>
-            </h1>
-
-            <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
-              Connect with verified technical leaders, founders, and specialized engineering circles. 
-              Share production architectures, participate in weekly tech debates, and build relationships with peers worldwide.
-            </p>
-
             {/* Quick KPI stats row & Action Button */}
-            <div className="pt-2 flex flex-wrap items-center justify-between gap-4">
-              <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-xs text-slate-300 font-medium">
-                <div className="flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                  <span>Verified Peer Groups</span>
+            <div className="flex items-center gap-3 shrink-0 pt-1 md:pt-0">
+              <div className="hidden lg:flex items-center gap-3 text-xs text-slate-300 font-medium">
+                <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                  <span className="text-[11px]">Verified Peer Groups</span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <Globe2 className="w-4 h-4 text-blue-400" />
-                  <span>Dubai • London • SF • Singapore • Remote</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <MessageSquare className="w-4 h-4 text-purple-400" />
-                  <span>1,400+ Daily Discussions</span>
+                <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl">
+                  <Globe2 className="w-3.5 h-3.5 text-blue-400" />
+                  <span className="text-[11px]">Global Hubs</span>
                 </div>
               </div>
 
               <Button
                 onClick={() => setIsCreateOpen(true)}
-                className="h-10 px-5 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold text-xs rounded-xl shadow-lg transition-all flex items-center gap-2"
+                className="h-9 px-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5 shrink-0"
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="w-3.5 h-3.5" />
                 <span>Create Circle</span>
               </Button>
             </div>

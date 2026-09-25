@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useAuth } from '@/contexts/AuthContext';
 import { 
   Users, 
   Sparkles, 
@@ -12,7 +13,8 @@ import {
   Compass, 
   Building2,
   TrendingUp,
-  Share2
+  Share2,
+  UserCheck
 } from 'lucide-react';
 import { PLATFORM_METRICS } from '@/config/platformMetrics';
 
@@ -29,8 +31,11 @@ export const SocialNetworkConversionCTA: React.FC<SocialNetworkConversionCTAProp
   category,
   compact = false
 }) => {
-  const displayRole = roleTitle || 'High-Growth Tech & Leadership';
-  const displayLoc = location ? `in ${location}` : 'Across India & Remote';
+  const { user } = useAuth();
+  const displayRole = roleTitle && roleTitle !== 'Tech & Leadership' ? roleTitle : 'Global Leadership, Tech & Industry';
+  const displayLoc = location && !['india', 'in india'].includes(location.toLowerCase().trim()) 
+    ? `in ${location}` 
+    : 'Worldwide & Remote';
 
   if (compact) {
     return (
@@ -52,16 +57,25 @@ export const SocialNetworkConversionCTA: React.FC<SocialNetworkConversionCTAProp
         </div>
 
         <div className="flex items-center gap-2.5 shrink-0 flex-wrap justify-center">
-          <Link to="/auth/register?role=candidate">
-            <Button size="sm" className="bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow-md gap-1.5">
-              <span>Join Network Free</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Button>
-          </Link>
-          <Link to={`/talent?role=${encodeURIComponent(displayRole)}`}>
+          {user ? (
+            <Link to="/passport">
+              <Button size="sm" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold text-xs rounded-xl shadow-md gap-1.5">
+                <UserCheck className="w-3.5 h-3.5" />
+                <span>My Career Passport</span>
+              </Button>
+            </Link>
+          ) : (
+            <Link to="/auth/register?role=candidate">
+              <Button size="sm" className="bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow-md gap-1.5">
+                <span>Join Network Free</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Button>
+            </Link>
+          )}
+          <Link to={`/talent?q=${encodeURIComponent(roleTitle || '')}`}>
             <Button size="sm" variant="outline" className="border-blue-400/40 text-blue-200 hover:bg-blue-900/50 text-xs rounded-xl">
               <Users className="w-3.5 h-3.5 mr-1" />
-              <span>See People</span>
+              <span>Explore Talent</span>
             </Button>
           </Link>
         </div>
@@ -144,12 +158,21 @@ export const SocialNetworkConversionCTA: React.FC<SocialNetworkConversionCTAProp
         {/* Action Gate / Call to Actions */}
         <div className="pt-3 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-center sm:justify-start">
-            <Link to="/auth/register?role=candidate" className="w-full sm:w-auto">
-              <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm px-6 py-3 rounded-2xl shadow-xl shadow-blue-500/20 gap-2">
-                <span>Join TalentXcel Free (1-Click)</span>
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-            </Link>
+            {user ? (
+              <Link to="/passport" className="w-full sm:w-auto">
+                <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm px-6 py-3 rounded-2xl shadow-xl shadow-blue-500/20 gap-2">
+                  <UserCheck className="w-4 h-4" />
+                  <span>My Career Passport & TalentScore</span>
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/auth/register?role=candidate" className="w-full sm:w-auto">
+                <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm px-6 py-3 rounded-2xl shadow-xl shadow-blue-500/20 gap-2">
+                  <span>Join TalentXcel Free (1-Click)</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </Link>
+            )}
 
             <Link to="/hire" className="w-full sm:w-auto">
               <Button size="lg" variant="outline" className="w-full sm:w-auto border-indigo-400/40 bg-indigo-950/40 hover:bg-indigo-900/60 text-indigo-200 font-semibold text-sm px-5 py-3 rounded-2xl gap-2">

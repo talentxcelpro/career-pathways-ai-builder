@@ -334,8 +334,31 @@ const People: React.FC = () => {
   const enrichedProfiles = useMemo(() => {
     const mappedDbProfiles: GlobalTalentProfile[] = (dbProfiles || []).map((db, idx) => {
       const name = db.full_name || 'Global Professional';
-      const cleanHeadline = db.headline || db.title || (idx % 2 === 0 ? 'Senior Software Architect • Ex-FAANG' : 'Staff AI & Systems Engineer');
-      const loc = db.location || (idx % 3 === 0 ? 'Dubai, UAE' : idx % 3 === 1 ? 'London, UK' : 'Bengaluru, India');
+      const defaultRoles = [
+        'Project Manager – Change Management',
+        'Senior Product Manager • FinTech Platforms',
+        'Lead AI Engineer • Agentic Architectures',
+        'Staff Systems & Distributed Cloud Architect',
+        'Director of Engineering • Enterprise Platforms',
+        'Operations & Strategic Transformation Lead',
+        'Staff DevOps & Site Reliability Engineer',
+        'Head of Growth & Product Analytics',
+        'Principal Security & Zero-Trust Architect',
+        'Global Talent & People Operations Lead'
+      ];
+      const defaultLocations = [
+        'Dubai, UAE',
+        'London, UK',
+        'Bengaluru, India',
+        'San Francisco, USA',
+        'Singapore',
+        'Berlin, Germany',
+        'Toronto, Canada',
+        'Global Remote'
+      ];
+
+      const cleanHeadline = db.headline || db.title || defaultRoles[idx % defaultRoles.length];
+      const loc = db.location || defaultLocations[idx % defaultLocations.length];
       
       let hub: GlobalTalentProfile['hub'] = 'remote';
       const lowerLoc = loc.toLowerCase();
@@ -350,7 +373,7 @@ const People: React.FC = () => {
       if (lowerHead.includes('ai') || lowerHead.includes('ml') || lowerHead.includes('data')) domain = 'ai';
       else if (lowerHead.includes('product') || lowerHead.includes('pm')) domain = 'product';
       else if (lowerHead.includes('design') || lowerHead.includes('ux') || lowerHead.includes('ui')) domain = 'design';
-      else if (lowerHead.includes('vp') || lowerHead.includes('director') || lowerHead.includes('head') || lowerHead.includes('lead')) domain = 'leadership';
+      else if (lowerHead.includes('vp') || lowerHead.includes('director') || lowerHead.includes('head') || lowerHead.includes('lead') || lowerHead.includes('manager')) domain = 'leadership';
       else if (lowerHead.includes('security') || lowerHead.includes('devops') || lowerHead.includes('cloud')) domain = 'security';
 
       const photo = db.profile_photo_url || db.profile_picture_url || 
@@ -358,14 +381,14 @@ const People: React.FC = () => {
 
       const rawSkills = Array.isArray(db.skills) && db.skills.length > 0 
         ? db.skills 
-        : ['Distributed Systems', 'TypeScript', 'Cloud Architecture', 'System Design'];
+        : ['Distributed Systems', 'Strategic Planning', 'Cloud Architecture', 'Team Leadership'];
 
       return {
         id: db.id,
         full_name: name,
         username: db.username,
         headline: cleanHeadline,
-        title: db.title || cleanHeadline.split('@')[0].trim(),
+        title: db.title || cleanHeadline.split(/[•–-]/)[0].trim(),
         location: loc,
         hub,
         domain,
@@ -381,15 +404,29 @@ const People: React.FC = () => {
       };
     });
 
-    const combined = [...GLOBAL_SPOTLIGHT_LEADERS];
-    mappedDbProfiles.forEach(p => {
-      if (!combined.some(existing => existing.id === p.id || existing.full_name.toLowerCase() === p.full_name.toLowerCase())) {
-        combined.push(p);
+    // Prioritize real registered DB profiles first, ensuring real community members are visible
+    const combined: GlobalTalentProfile[] = [...mappedDbProfiles];
+    GLOBAL_SPOTLIGHT_LEADERS.forEach(leader => {
+      if (!combined.some(existing => existing.id === leader.id || existing.full_name.toLowerCase() === leader.full_name.toLowerCase())) {
+        combined.push(leader);
       }
     });
 
     return combined;
   }, [dbProfiles]);
+
+  // Interleave real profiles and curated global spotlight leaders for the top story bar
+  const spotlightLeaders = useMemo(() => {
+    const realWithAvatars = enrichedProfiles.filter(p => !p.id.startsWith('txc-')).slice(0, 6);
+    const globalCurated = GLOBAL_SPOTLIGHT_LEADERS.slice(0, 8);
+    const result: GlobalTalentProfile[] = [];
+    const maxLen = Math.max(realWithAvatars.length, globalCurated.length);
+    for (let i = 0; i < maxLen; i++) {
+      if (realWithAvatars[i]) result.push(realWithAvatars[i]);
+      if (globalCurated[i]) result.push(globalCurated[i]);
+    }
+    return result;
+  }, [enrichedProfiles]);
 
   const filteredProfiles = useMemo(() => {
     return enrichedProfiles.filter(profile => {
@@ -454,11 +491,7 @@ const People: React.FC = () => {
 
   const handleProfileView = useCallback((person: GlobalTalentProfile) => {
     trackProfileView(person.id);
-    if (person.username) {
-      navigate(`/profile/${person.username}`);
-    } else {
-      navigate(`/passport?user=${person.id}`);
-    }
+    navigate(`/profile/${person.username || person.id}`);
   }, [navigate, trackProfileView]);
 
   const handleMessage = useCallback((person: GlobalTalentProfile) => {
@@ -495,43 +528,44 @@ const People: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50/60 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6 space-y-5 sm:space-y-6">
 
-        {/* ── Top Global Positioning Hero ────────────────────────────── */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white p-6 sm:p-10 shadow-2xl border border-indigo-900/40">
-          <div className="absolute top-0 right-0 -mt-10 -mr-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-1/3 -mb-10 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+        {/* ── Compact Global Positioning Hero ────────────────────────── */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white py-4 sm:py-5 px-5 sm:px-7 shadow-lg border border-indigo-900/40">
+          <div className="absolute top-0 right-0 -mt-8 -mr-8 w-64 h-64 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute bottom-0 left-1/3 -mb-8 w-60 h-60 bg-purple-500/10 rounded-full blur-2xl pointer-events-none" />
 
-          <div className="relative z-10 max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-300 text-xs font-semibold tracking-wide uppercase backdrop-blur-md">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              The Global Professional Talent Network
-              <span className="text-white/40">•</span>
-              <span>14,800+ Verified Profiles</span>
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="space-y-1.5 max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-300 text-[11px] font-semibold tracking-wide uppercase backdrop-blur-md">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                The Global Professional Talent Network
+                <span className="text-white/30">•</span>
+                <span>Worldwide Verified Profiles</span>
+              </div>
+
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-white leading-tight">
+                Discover <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">Global Talent</span> & Leaders
+              </h1>
+
+              <p className="text-slate-300 text-xs sm:text-sm leading-normal line-clamp-2">
+                Connect with verified engineers, leaders, and creators across global hubs. Explore technical reels, verified Career Passports, and unlock direct recruiter discovery worldwide.
+              </p>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
-              Discover <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">Global Talent</span> & Leaders
-            </h1>
-
-            <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
-              Connect with verified engineers, systems architects, and leaders across 40+ global hubs. 
-              Explore technical reels, review verified Career Passports, and unlock direct recruiter discovery worldwide.
-            </p>
-
             {/* Quick KPI stats row */}
-            <div className="pt-2 flex flex-wrap items-center gap-4 sm:gap-6 text-xs text-slate-300 font-medium">
-              <div className="flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                <span>Verified TalentScore</span>
+            <div className="flex md:flex-col lg:flex-row flex-wrap items-start md:items-end lg:items-center gap-2.5 text-xs text-slate-300 font-medium shrink-0 pt-1 md:pt-0">
+              <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="text-[11px]">Verified TalentScore</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <Globe2 className="w-4 h-4 text-blue-400" />
-                <span>Dubai • London • SF • Singapore • Remote</span>
+              <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl">
+                <Globe2 className="w-3.5 h-3.5 text-blue-400" />
+                <span className="text-[11px]">Global Hubs & Remote</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <Briefcase className="w-4 h-4 text-purple-400" />
-                <span>850+ Active Global Hiring Teams</span>
+              <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl">
+                <Briefcase className="w-3.5 h-3.5 text-purple-400" />
+                <span className="text-[11px]">850+ Hiring Teams</span>
               </div>
             </div>
           </div>
@@ -552,7 +586,7 @@ const People: React.FC = () => {
           </div>
 
           <div className="flex gap-4 overflow-x-auto pb-3 pt-1 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700">
-            {GLOBAL_SPOTLIGHT_LEADERS.map((leader) => (
+            {spotlightLeaders.map((leader) => (
               <div
                 key={leader.id}
                 onClick={() => handleProfileView(leader)}

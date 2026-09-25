@@ -339,20 +339,20 @@ const Jobs = () => {
   return (
     <>
       <Helmet>
-        <title>Search Verified Jobs in India | AI-Matched Career Opportunities — TalentXcel</title>
-        <meta name="description" content="Discover thousands of verified tech, engineering, sales, and executive job openings across India with TalentXcel AI matching. Instant apply, transparent salary data, and direct recruiter connections." />
-        <meta name="keywords" content="jobs india, verified tech jobs, ai job matching, fresher jobs, remote jobs india, bangalore jobs, hyderabad jobs, talentxcel hiring" />
+        <title>Search Verified Global Jobs | AI-Matched Career Opportunities — TalentXcel</title>
+        <meta name="description" content="Discover thousands of verified global tech, leadership, finance, healthcare, and engineering opportunities worldwide with TalentXcel AI matching." />
+        <meta name="keywords" content="global jobs, verified remote jobs, ai job matching, executive careers, dubai tech jobs, london finance jobs, silicon valley careers, talentxcel hiring" />
         <link rel="canonical" href="https://talentxcel.in/jobs" />
         
-        <meta property="og:title" content="Search Verified Jobs in India | TalentXcel AI Career Platform" />
-        <meta property="og:description" content="Discover thousands of verified tech, engineering, and business job openings across India with AI-powered candidate matching." />
+        <meta property="og:title" content="Search Verified Global Jobs | TalentXcel AI Career Platform" />
+        <meta property="og:description" content="Discover thousands of verified career opportunities across global hubs in UAE, US, Europe, India, and Worldwide with AI-powered matching." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://talentxcel.in/jobs" />
         <meta property="og:image" content="https://talentxcel.in/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" />
         
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Search Verified Jobs in India | TalentXcel" />
-        <meta name="twitter:description" content="Discover thousands of verified job openings across India with AI matching and instant apply on TalentXcel." />
+        <meta name="twitter:title" content="Search Verified Global Jobs | TalentXcel" />
+        <meta name="twitter:description" content="Discover verified executive, tech, design, and business jobs worldwide with TalentScore verification on TalentXcel." />
         <meta name="twitter:image" content="https://talentxcel.in/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" />
       </Helmet>
 
@@ -361,63 +361,87 @@ const Jobs = () => {
         {/* Mobile-First Navigation with Quick Filters */}
         <div className="border-b border-border/10 bg-background/95 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-4">
-            {/* Mobile-First Quick Filter Categories */}
+            {/* Multi-Domain Professional Quick Filter Categories */}
             <div className="flex items-center gap-2 mb-3 sm:mb-4 overflow-x-auto scrollbar-hide touch-pan-x">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => updateFilters({ is_remote: true })}
-                className="whitespace-nowrap flex items-center gap-1 min-h-[44px] touch-target"
+                className="whitespace-nowrap flex items-center gap-1 min-h-[40px] text-xs font-semibold"
               >
-                🏠 Remote Jobs
+                🌐 Global Remote
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => updateFilters({ skills: ['react'] })}
-                className="whitespace-nowrap flex items-center gap-1"
+                onClick={() => updateFilters({ search: 'AI Machine Learning' })}
+                className="whitespace-nowrap flex items-center gap-1 text-xs"
               >
-                ⚛️ React Developer
+                ⚡ AI & Machine Learning
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => updateFilters({ search: 'data scientist' })}
-                className="whitespace-nowrap flex items-center gap-1"
+                onClick={() => updateFilters({ search: 'Executive Director VP' })}
+                className="whitespace-nowrap flex items-center gap-1 text-xs"
               >
-                📊 Data Scientist
+                💼 Executive & Leadership
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => updateFilters({ search: 'product manager' })}
-                className="whitespace-nowrap flex items-center gap-1"
+                onClick={() => updateFilters({ search: 'FinTech Banking Finance' })}
+                className="whitespace-nowrap flex items-center gap-1 text-xs"
               >
-                🚀 Product Manager
+                💳 FinTech & Finance
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => updateFilters({ search: 'ui ux designer' })}
-                className="whitespace-nowrap flex items-center gap-1"
+                onClick={() => updateFilters({ search: 'Product Manager' })}
+                className="whitespace-nowrap flex items-center gap-1 text-xs"
               >
-                🎨 UI/UX Designer
+                🎯 Product Management
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => updateFilters({ search: 'devops engineer' })}
-                className="whitespace-nowrap flex items-center gap-1"
+                onClick={() => updateFilters({ search: 'Design UI UX' })}
+                className="whitespace-nowrap flex items-center gap-1 text-xs"
               >
-                🔧 DevOps Engineer
+                🎨 Product & Design
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => updateFilters({ salary_min: 1500000 })}
-                className="whitespace-nowrap flex items-center gap-1"
+                onClick={() => updateFilters({ search: 'Cloud Systems Architecture' })}
+                className="whitespace-nowrap flex items-center gap-1 text-xs"
               >
-                💰 High Salary
+                🏗️ Cloud & Distributed Systems
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => updateFilters({ search: 'Marketing Growth' })}
+                className="whitespace-nowrap flex items-center gap-1 text-xs"
+              >
+                📈 Marketing & Growth
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => updateFilters({ search: 'Healthcare BioTech' })}
+                className="whitespace-nowrap flex items-center gap-1 text-xs"
+              >
+                🏥 Healthcare & BioTech
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => updateFilters({ search: 'Legal Compliance Operations' })}
+                className="whitespace-nowrap flex items-center gap-1 text-xs"
+              >
+                ⚖️ Legal & Operations
               </Button>
               <Button
                 variant={filters.experience_level?.some((l: string) => ['fresher', 'entry-level', '0-1 years'].includes(l.toLowerCase())) ? "default" : "outline"}
@@ -426,7 +450,7 @@ const Jobs = () => {
                   const isFiltered = filters.experience_level?.some((l: string) => ['fresher', 'entry-level', '0-1 years'].includes(l.toLowerCase()));
                   updateFilters({ experience_level: isFiltered ? [] : ['fresher', 'entry-level', '0-1 years'] });
                 }}
-                className={`whitespace-nowrap flex items-center gap-1.5 font-medium transition-all ${
+                className={`whitespace-nowrap flex items-center gap-1.5 text-xs font-medium transition-all ${
                   filters.experience_level?.some((l: string) => ['fresher', 'entry-level', '0-1 years'].includes(l.toLowerCase()))
                     ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm'
                     : 'border-emerald-500/40 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/10'
@@ -438,14 +462,14 @@ const Jobs = () => {
                 variant="outline"
                 size="sm"
                 onClick={() => updateFilters({ company_type: ['fortune-500'] })}
-                className="whitespace-nowrap flex items-center gap-1"
+                className="whitespace-nowrap flex items-center gap-1 text-xs"
               >
                 🏢 Fortune 500
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                className="whitespace-nowrap flex items-center gap-1"
+                className="whitespace-nowrap flex items-center gap-1 text-xs"
               >
                 ⚡ Quick Apply
               </Button>
@@ -455,20 +479,20 @@ const Jobs = () => {
                 onClick={() => navigate('/career-dashboard')}
                 variant="default"
                 size="sm"
-                className="whitespace-nowrap flex items-center gap-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-md"
+                className="whitespace-nowrap flex items-center gap-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-md text-xs"
               >
                 <Brain className="h-3 w-3" />
-                AI Hub
+                AI Career Copilot
               </Button>
             </div>
 
             {/* Semantic Page Header for Google & Users */}
             <div className="max-w-4xl mx-auto mb-3 text-center sm:text-left">
               <h1 className="text-lg sm:text-2xl font-bold tracking-tight text-foreground">
-                Search Verified Jobs in India
+                Search Verified Global Jobs & Careers
               </h1>
               <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-                Explore AI-matched career opportunities across top tech companies, startups, and enterprises.
+                Explore AI-matched career opportunities across top global enterprises, high-growth startups, and international hubs.
               </p>
             </div>
 
@@ -476,8 +500,8 @@ const Jobs = () => {
             <div className="max-w-4xl mx-auto">
               <SocialNetworkConversionCTA
                 compact={true}
-                roleTitle={filters.search || 'Tech & Leadership'}
-                location={filters.location || 'India'}
+                roleTitle={filters.search || 'Global Leadership, Tech & Industry'}
+                location={filters.location || 'Worldwide & Remote'}
               />
             </div>
 
