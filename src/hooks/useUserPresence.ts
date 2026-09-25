@@ -5,7 +5,6 @@ import { useAuth } from '@/contexts/AuthContext';
 export function useUserPresence() {
   const { user } = useAuth();
   const presenceChannelRef = useRef<any>(null);
-  const heartbeatRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -59,22 +58,8 @@ export function useUserPresence() {
       presenceChannelRef.current = channel;
     };
 
-    // Set up heartbeat to keep presence alive
-    const setupHeartbeat = () => {
-      heartbeatRef.current = setInterval(async () => {
-        if (presenceChannelRef.current) {
-          await presenceChannelRef.current.track({
-            user_id: user.id,
-            online_at: new Date().toISOString(),
-          });
-        }
-        await setOnlineStatus(true);
-      }, 30000); // Update every 30 seconds
-    };
-
-    // Initialize presence tracking
+    // Initialize presence tracking via real-time WebSocket channel
     setupPresenceChannel();
-    setupHeartbeat();
 
     // Handle page visibility changes
     const handleVisibilityChange = () => {
@@ -97,9 +82,6 @@ export function useUserPresence() {
     return () => {
       if (presenceChannelRef.current) {
         supabase.removeChannel(presenceChannelRef.current);
-      }
-      if (heartbeatRef.current) {
-        clearInterval(heartbeatRef.current);
       }
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('beforeunload', handleBeforeUnload);

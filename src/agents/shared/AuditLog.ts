@@ -1,7 +1,6 @@
 // src/agents/shared/AuditLog.ts
 // Immutable Audit Trail and Telemetry Recorder for Agent Operations
 
-import { supabase } from '@/integrations/supabase/client';
 import type { AgentAuditRecord } from './types';
 
 class AgentAuditEngine {
@@ -31,17 +30,6 @@ class AgentAuditEngine {
     this.inMemoryLog.unshift(record);
     if (this.inMemoryLog.length > this.MAX_RECORDS) {
       this.inMemoryLog.pop();
-    }
-
-    // Persist to Supabase telemetry asynchronously
-    try {
-      await supabase.from('claim1_growth_events' as any).insert({
-        event_type: `AGENT_${agentName.toUpperCase()}_${action.toUpperCase()}`,
-        channel: 'agent_kernel',
-        metadata: { ...details, success, error, record_id: record.id },
-      });
-    } catch {
-      // safe fallback
     }
 
     return record;

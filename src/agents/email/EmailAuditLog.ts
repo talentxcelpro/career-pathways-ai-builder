@@ -2,7 +2,6 @@
 // Immutable Telemetry & Delivery Audit Ledger for all 11 Zoho Mailboxes
 
 import type { EmailAuditRecord } from './types';
-import { supabase } from '@/integrations/supabase/client';
 
 export class EmailAuditLog {
   private inMemoryLogs: EmailAuditRecord[] = [];
@@ -18,19 +17,6 @@ export class EmailAuditLog {
     this.inMemoryLogs.unshift(fullEntry);
     if (this.inMemoryLogs.length > this.MAX_LOGS) {
       this.inMemoryLogs.pop();
-    }
-
-    try {
-      await supabase.from('claim1_growth_events' as any).insert({
-        event_type: `EMAIL_${entry.direction}_${entry.status}`,
-        channel: `zoho_${entry.mailboxId}`,
-        metadata: {
-          ...fullEntry,
-          auditId: fullEntry.id,
-        },
-      });
-    } catch {
-      // safe fallback
     }
 
     return fullEntry;

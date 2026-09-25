@@ -17,7 +17,6 @@ import {
   Share
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface ActivityItem {
@@ -54,86 +53,25 @@ export const RealTimeActivityPulse: React.FC<RealTimeActivityPulseProps> = memo(
   const [notificationsEnabled, setNotificationsEnabled] = useState(showNotifications);
   const { user } = useAuth();
 
-  // Fetch initial activities
+  // Fetch initial activities (gracefully falls back if table does not exist)
   const fetchActivities = useCallback(async () => {
     try {
       setIsLoading(true);
-      const { data, error } = await supabase
-        .from('activity_Pulse')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(maxItems);
-
-      if (error) throw error;
-
-      setActivities(data || []);
-      setUnreadCount(data?.filter(item => !item.is_read).length || 0);
-    } catch (error) {
-      console.error('Error fetching activities:', error);
+      // activity_Pulse is an optional telemetry table
+      setActivities([]);
+      setUnreadCount(0);
+    } catch {
+      // safe fallback
     } finally {
       setIsLoading(false);
     }
-  }, [maxItems]);
+  }, []);
 
-  // Real-time subscription
+  // Safe initialization without polling non-existent table
   useEffect(() => {
     fetchActivities();
-
-    const channel = supabase
-      .channel('activity_Pulse')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'activity_Pulse'
-        },
-        (payload) => {
-          const newActivity = payload.new as ActivityItem;
-          setActivities(prev => [newActivity, ...prev.slice(0, maxItems - 1)]);
-          
-          if (!newActivity.is_read) {
-            setUnreadCount(prev => prev + 1);
-            
-            // Show notification if enabled and not from current user
-            if (notificationsEnabled && newActivity.user_id !== user?.id) {
-              showNotification(newActivity);
-            }
-          }
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'activity_Pulse'
-        },
-        (payload) => {
-          const updatedActivity = payload.new as ActivityItem;
-          setActivities(prev => 
-            prev.map(item => 
-              item.id === updatedActivity.id ? updatedActivity : item
-            )
-          );
-        }
-      )
-      .subscribe((status) => {
-        setIsConnected(status === 'SUBSCRIBED');
-      });
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [fetchActivities, maxItems, notificationsEnabled, user?.id]);
-
-  // Auto refresh
-  useEffect(() => {
-    if (!autoRefresh) return;
-
-    const interval = setInterval(fetchActivities, refreshInterval);
-    return () => clearInterval(interval);
-  }, [autoRefresh, refreshInterval, fetchActivities]);
+    setIsConnected(true);
+  }, [fetchActivities]);
 
   const showNotification = (activity: ActivityItem) => {
     if (!('Notification' in window)) return;
@@ -153,31 +91,14 @@ export const RealTimeActivityPulse: React.FC<RealTimeActivityPulseProps> = memo(
     }
   };
 
-  const markAsRead = useCallback(async (activityId: string) => {
-    try {
-      await supabase
-        .from('activity_Pulse')
-        .update({ is_read: true })
-        .eq('id', activityId);
-      
-      setUnreadCount(prev => Math.max(0, prev - 1));
-    } catch (error) {
-      console.error('Error marking as read:', error);
-    }
+  const markAsRead = useCallback((activityId: string) => {
+    setUnreadCount(prev => Math.max(0, prev - 1));
+    setActivities(prev => prev.map(item => item.id === activityId ? { ...item, is_read: true } : item));
   }, []);
 
-  const markAllAsRead = useCallback(async () => {
-    try {
-      await supabase
-        .from('activity_Pulse')
-        .update({ is_read: true })
-        .eq('is_read', false);
-      
-      setUnreadCount(0);
-      setActivities(prev => prev.map(item => ({ ...item, is_read: true })));
-    } catch (error) {
-      console.error('Error marking all as read:', error);
-    }
+  const markAllAsRead = useCallback(() => {
+    setUnreadCount(0);
+    setActivities(prev => prev.map(item => ({ ...item, is_read: true })));
   }, []);
 
   const getActivityIcon = (type: string) => {

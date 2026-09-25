@@ -285,19 +285,6 @@ const App = () => {
             console.log('🤖 AI-powered performance features initialized');
           });
 
-          // Initialize Autonomous Network Posting Background Runner
-          import('@/services/networkAutoPostEngine').then(({ networkAutoPostEngine }) => {
-            networkAutoPostEngine.checkAndExecuteScheduledPost();
-            setInterval(() => {
-              networkAutoPostEngine.checkAndExecuteScheduledPost();
-            }, 60000);
-          });
-
-          // Initialize TalentXcel Autonomous Business OS Kernel
-          import('@/agents/shared/AgentRuntime').then(({ agentRuntime }) => {
-            agentRuntime.boot();
-          });
-
           advancedPerformanceMonitor.trackRouteChange('/', startTime);
         });
       } catch (error) {
