@@ -1,6 +1,7 @@
 
 import React, { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { PLATFORM_METRICS } from '@/config/platformMetrics';
 import { AppleHeroSection } from './AppleHeroSection';
 import { FeaturesSection } from './FeaturesSection';
 import { ProductVideoSection } from './ProductVideoSection';
@@ -20,17 +21,17 @@ export const LandingPage = () => {
   return (
     <div className="min-h-screen">
       <Helmet>
-        <title>TalentXcel — The Professional Talent Network | Connect, Discover & Hire</title>
-        <meta name="description" content="TalentXcel is India's professional talent network where professionals, recruiters, and companies connect, discover, and grow. Build your career identity, find verified opportunities, or hire from 12,000+ candidates on Recruiter OS." />
+        <title>TalentXcel — The Global Professional Talent Network</title>
+        <meta name="description" content={`Connect with Tech & Leadership Professionals worldwide across UAE, Europe, the Americas, and Asia. Build your Career Passport, get verified by TalentScore, discover opportunities, and let top hiring teams discover you across ${PLATFORM_METRICS.totalProfessionalsDisplay} verified talent on TalentXcel.`} />
         <link rel="canonical" href="https://talentxcel.in/" />
-        <meta property="og:title" content="TalentXcel — The Professional Talent Network" />
-        <meta property="og:description" content="Where professionals, recruiters, and companies connect, discover, and grow. Living talent graph, verified jobs, and AI Recruiter OS." />
+        <meta property="og:title" content="TalentXcel — The Global Professional Talent Network" />
+        <meta property="og:description" content="Connect with Tech & Leadership Professionals worldwide across UAE, Europe, the Americas, and Asia. Build your Career Passport, get verified by TalentScore, discover opportunities, and get discovered by hiring teams worldwide." />
         <meta property="og:url" content="https://talentxcel.in/" />
         <meta property="og:type" content="website" />
         <meta property="og:image" content="https://talentxcel.in/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="TalentXcel — The Professional Talent Network" />
-        <meta name="twitter:description" content="Where professionals, recruiters, and companies connect, discover, and grow. Connect with 12,000+ candidates on Recruiter OS." />
+        <meta name="twitter:title" content="TalentXcel — The Global Professional Talent Network" />
+        <meta name="twitter:description" content="Connect with Tech & Leadership Professionals worldwide across UAE, Europe, the Americas, and Asia. Build your Career Passport, get verified by TalentScore, discover opportunities, and get discovered by hiring teams worldwide." />
         <meta name="twitter:image" content="https://talentxcel.in/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" />
       </Helmet>
       <AppleHeroSection />

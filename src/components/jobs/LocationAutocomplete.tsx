@@ -30,7 +30,7 @@ const DEBOUNCE_MS = 220;
 export const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
   value = '',
   onChange,
-  placeholder = 'Search city, e.g. Mumbai, Bengaluru…',
+  placeholder = 'Search city, e.g. Dubai, London, San Francisco, Bengaluru…',
   className,
   disabled = false,
   defaultCountry = 'IN',
@@ -197,7 +197,7 @@ export const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
           {isEmpty && (
             <div className="px-3 py-1.5 text-xs text-muted-foreground font-medium border-b flex items-center gap-1.5">
               <Search className="h-3 w-3" />
-              Popular cities in India
+              Popular tech hubs
             </div>
           )}
           <ul

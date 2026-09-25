@@ -11,6 +11,7 @@ import { SocialLogin } from './SocialLogin';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import talentxcelLogo from '@/assets/talentxcel-logo.png';
 import { conversionTelemetry } from '@/utils/conversionTelemetry';
+import { PLATFORM_METRICS } from '@/config/platformMetrics';
 
 interface UnifiedAuthFormProps {
   onSuccess?: () => void;
@@ -213,7 +214,7 @@ export const UnifiedAuthForm = ({ onSuccess, initialMode }: UnifiedAuthFormProps
           <div className="bg-blue-50/90 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800/60 rounded-xl p-2.5 text-center space-y-0.5 shadow-sm">
             <p className="text-xs font-bold text-blue-950 dark:text-blue-200">
               {accountType === 'employer' 
-                ? 'Search 12,000+ candidates & manage talent in Recruiter OS.' 
+                ? `Search ${PLATFORM_METRICS.totalProfessionalsDisplay} candidates & manage talent in Recruiter OS.` 
                 : typeof window !== 'undefined' && sessionStorage.getItem('txc_acquisition_source') === 'ats_scanner'
                   ? 'Save your ATS score and unlock your personalized job matches.'
                   : typeof window !== 'undefined' && sessionStorage.getItem('txc_acquisition_source') === 'seo_job_page'

@@ -12,20 +12,16 @@ import { realtimeManager } from '@/lib/realtimeManager';
 export const MobileReels = () => {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [activeTab, setActiveTab] = useState<'following' | 'explore'>('explore');
+  const [category, setCategory] = useState('all');
   const navigate = useNavigate();
 
   // Disable realtime on this page to prevent binding conflicts
   useEffect(() => {
-    console.log('🎬 MobileReels: Disabling realtime to prevent conflicts');
     try {
       realtimeManager.cleanup();
     } catch (error) {
       console.warn('Failed to cleanup realtime:', error);
     }
-    
-    return () => {
-      console.log('🎬 MobileReels: Component unmounting');
-    };
   }, []);
 
   const handleUploadSuccess = () => {
@@ -40,96 +36,102 @@ export const MobileReels = () => {
   return (
     <>
       <Helmet>
-        <title>TalentXcel Reels - Discover Professional Stories | Career Growth Videos</title>
-        <meta name="description" content="Discover inspiring career stories, professional tips, and growth content on TalentXcel Reels. Connect with professionals and share your journey." />
-        <meta name="keywords" content="career reels, professional videos, career growth, job tips, networking, professional development" />
-        <meta property="og:title" content="TalentXcel Reels - Professional Video Stories" />
-        <meta property="og:description" content="Watch and share professional career stories, tips, and insights on TalentXcel Reels." />
-        <meta property="og:type" content="website" />
+        <title>TalentXcel Reels — Global Tech, AI & Career Stories</title>
+        <meta name="description" content="Watch short-form video stories, system design deep-dives, RAG AI architectures, and salary negotiation strategies from verified tech leaders worldwide across UAE, Europe, Americas, and Asia." />
+        <meta name="keywords" content="tech reels, AI architecture videos, system design, salary negotiation, global tech careers, talent network" />
+        <meta property="og:title" content="TalentXcel Reels — Global Tech, AI & Career Stories" />
+        <meta property="og:description" content="Watch short-form video stories and system design deep-dives from verified tech leaders worldwide." />
+        <meta property="og:type" content="video.other" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="TalentXcel Reels - Career Growth Videos" />
-        <meta name="twitter:description" content="Discover inspiring career stories and professional content." />
-        <link rel="canonical" href="https://talentxcel.in/mobile/reels" />
+        <meta name="twitter:title" content="TalentXcel Reels — Global Tech, AI & Career Stories" />
+        <meta name="twitter:description" content="Discover inspiring career stories and engineering breakdowns from global tech leaders." />
+        <link rel="canonical" href="https://talentxcel.in/reels" />
       </Helmet>
       
-      <div className="w-full h-screen overflow-hidden bg-black relative">
-        {/* Enhanced Mobile Header */}
-        <ReelsHeader
-          activeTab={activeTab}
-          onTabChange={handleTabChange}
-          onSearch={() => console.log('Search opened')}
-          onNotifications={() => navigate('/mobile/notifications')}
-          onMessages={() => navigate('/network/messages')}
-          notificationCount={0}
-          messageCount={0}
-        />
+      {/* Centered responsive container (9:16 on desktop, 100% on mobile) */}
+      <div className="w-full h-screen overflow-hidden bg-slate-950 flex justify-center">
+        <div className="w-full max-w-[480px] h-screen relative bg-black shadow-2xl border-x border-slate-900/60 overflow-hidden">
+          {/* Header with Tab switcher and Category pills */}
+          <ReelsHeader
+            activeTab={activeTab}
+            onTabChange={handleTabChange}
+            category={category}
+            onCategoryChange={setCategory}
+            onSearch={() => navigate('/talent')}
+            onNotifications={() => navigate('/mobile/notifications')}
+            onMessages={() => navigate('/network/messages')}
+            notificationCount={0}
+            messageCount={0}
+          />
 
-        {/* Infinite Reels Feed with Enhanced Features */}
-        <InfiniteReelsFeed 
-          onUploadClick={() => setShowUploadModal(true)}
-          feedType={activeTab}
-        />
+          {/* Infinite Reels Feed with responsive controls and category support */}
+          <InfiniteReelsFeed 
+            onUploadClick={() => setShowUploadModal(true)}
+            feedType={activeTab}
+            category={category}
+          />
 
-        {/* Enhanced Bottom Navigation */}
-        <div className="absolute bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-black via-black/90 to-transparent backdrop-blur-md">
-          <div className="flex items-center justify-around py-3 px-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate('/')}
-              className="flex flex-col items-center gap-1 text-white/70 hover:text-white hover:bg-white/10 rounded-xl h-12 w-12 transition-all"
-            >
-              <Home className="h-5 w-5" />
-              <span className="text-xs">Home</span>
-            </Button>
-            
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate('/network/people')}
-              className="flex flex-col items-center gap-1 text-white/70 hover:text-white hover:bg-white/10 rounded-xl h-12 w-12 transition-all"
-            >
-              <Heart className="h-5 w-5" />
-              <span className="text-xs">Activity</span>
-            </Button>
-            
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setShowUploadModal(true)}
-              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 rounded-xl h-14 w-14 shadow-lg transform hover:scale-105 transition-all"
-            >
-              <Plus className="h-6 w-6" />
-            </Button>
-            
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate('/network/messages')}
-              className="flex flex-col items-center gap-1 text-white/70 hover:text-white hover:bg-white/10 rounded-xl h-12 w-12 transition-all"
-            >
-              <MessageCircle className="h-5 w-5" />
-              <span className="text-xs">Messages</span>
-            </Button>
-            
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate('/mobile/profile')}
-              className="flex flex-col items-center gap-1 text-white/70 hover:text-white hover:bg-white/10 rounded-xl h-12 w-12 transition-all"
-            >
-              <User className="h-5 w-5" />
-              <span className="text-xs">Profile</span>
-            </Button>
+          {/* Bottom Navigation */}
+          <div className="absolute bottom-0 left-0 right-0 z-40 bg-gradient-to-t from-black via-black/95 to-transparent backdrop-blur-md">
+            <div className="flex items-center justify-around py-2 px-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate('/')}
+                className="flex flex-col items-center gap-0.5 text-white/70 hover:text-white hover:bg-white/10 rounded-xl h-11 w-11 transition-all"
+              >
+                <Home className="h-4 w-4" />
+                <span className="text-[10px]">Home</span>
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate('/network')}
+                className="flex flex-col items-center gap-0.5 text-white/70 hover:text-white hover:bg-white/10 rounded-xl h-11 w-11 transition-all"
+              >
+                <Heart className="h-4 w-4" />
+                <span className="text-[10px]">Network</span>
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowUploadModal(true)}
+                className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 rounded-xl h-12 w-12 shadow-lg transform hover:scale-105 transition-all"
+              >
+                <Plus className="h-5 w-5" />
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate('/jobs')}
+                className="flex flex-col items-center gap-0.5 text-white/70 hover:text-white hover:bg-white/10 rounded-xl h-11 w-11 transition-all"
+              >
+                <Search className="h-4 w-4" />
+                <span className="text-[10px]">Jobs</span>
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate('/talent')}
+                className="flex flex-col items-center gap-0.5 text-white/70 hover:text-white hover:bg-white/10 rounded-xl h-11 w-11 transition-all"
+              >
+                <User className="h-4 w-4" />
+                <span className="text-[10px]">Talent</span>
+              </Button>
+            </div>
           </div>
+        
+          {/* Upload Modal */}
+          <ReelsUploadModal
+            isOpen={showUploadModal}
+            onClose={() => setShowUploadModal(false)}
+            onUploadSuccess={handleUploadSuccess}
+          />
         </div>
-      
-      {/* Upload Modal */}
-      <ReelsUploadModal
-        isOpen={showUploadModal}
-        onClose={() => setShowUploadModal(false)}
-        onUploadSuccess={handleUploadSuccess}
-        />
       </div>
     </>
   );

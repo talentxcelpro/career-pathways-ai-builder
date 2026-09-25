@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Sparkles, TrendingUp, Users, Building2, ArrowRight, Mic } from "lucide-react";
+import { PLATFORM_METRICS } from "@/config/platformMetrics";
 
 export const HeroSection: React.FC = () => {
   const [jobCount, setJobCount] = useState(2430);
@@ -109,7 +110,7 @@ export const HeroSection: React.FC = () => {
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-              <span>⚡ Applied by 10,000+</span>
+              <span>⚡ Applied by {PLATFORM_METRICS.totalProfessionalsDisplay}</span>
             </div>
           </div>
         </div>

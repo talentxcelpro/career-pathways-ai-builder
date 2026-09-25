@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { Eye, EyeOff, Mail, Lock, User, Loader2, Check, Shield, Zap, Users, Target, Building2 } from 'lucide-react';
 import { SocialLogin } from './SocialLogin';
 import { generatePersonProfileSlug, ensureUserProfileSlug } from '@/utils/userProfileSlug';
+import { PLATFORM_METRICS } from '@/config/platformMetrics';
 
 // Restored full register form functionality with Recruiter OS support
 export const MinimalRegisterForm = () => {
@@ -171,7 +172,7 @@ export const MinimalRegisterForm = () => {
       {accountType === 'employer' && (
         <div className="p-2.5 rounded-lg bg-blue-50/90 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-[11px] text-blue-900 dark:text-blue-200 flex items-center gap-2">
           <Zap className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
-          <span>Creates an employer account with immediate access to <strong>Recruiter OS</strong> and 12,000+ unified candidates.</span>
+          <span>Creates an employer account with immediate access to <strong>Recruiter OS</strong> and {PLATFORM_METRICS.totalProfessionalsDisplay} verified candidates.</span>
         </div>
       )}
 

@@ -14,6 +14,7 @@ import {
   TrendingUp,
   Share2
 } from 'lucide-react';
+import { PLATFORM_METRICS } from '@/config/platformMetrics';
 
 interface SocialNetworkConversionCTAProps {
   roleTitle?: string;
@@ -38,7 +39,7 @@ export const SocialNetworkConversionCTA: React.FC<SocialNetworkConversionCTAProp
           <div className="flex items-center justify-center md:justify-start gap-2">
             <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/40 text-[11px] font-mono">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse mr-1.5 inline-block"></span>
-              Living Talent Network
+              Living Global Talent Network
             </Badge>
             <span className="text-xs text-blue-200/80">3,400+ members active now</span>
           </div>
@@ -46,7 +47,7 @@ export const SocialNetworkConversionCTA: React.FC<SocialNetworkConversionCTAProp
             Connect with {displayRole} Professionals {displayLoc}
           </h4>
           <p className="text-xs text-blue-100/70">
-            Build your Career Passport, get verified by TalentScore™, and let top hiring teams discover you.
+            Build your Career Passport, get verified by TalentScore, and let top hiring teams discover you.
           </p>
         </div>
 
@@ -81,10 +82,10 @@ export const SocialNetworkConversionCTA: React.FC<SocialNetworkConversionCTAProp
           <div className="flex items-center gap-2">
             <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/40 text-xs py-1 px-3 rounded-full font-mono flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              TalentXcel Professional Network
+              TalentXcel Global Talent Network
             </Badge>
             <span className="text-2xs sm:text-xs text-slate-400 hidden sm:inline">
-              10K+ verified professionals & 500+ hiring teams connected
+              {PLATFORM_METRICS.totalProfessionalsDisplay} verified professionals & {PLATFORM_METRICS.hiringTeamsDisplay} hiring teams connected
             </span>
           </div>
 
@@ -113,7 +114,7 @@ export const SocialNetworkConversionCTA: React.FC<SocialNetworkConversionCTAProp
             <div className="w-8 h-8 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400">
               <ShieldCheck className="w-4 h-4" />
             </div>
-            <h5 className="text-xs sm:text-sm font-bold text-white">Verified TalentScore™</h5>
+            <h5 className="text-xs sm:text-sm font-bold text-white">Verified TalentScore</h5>
             <p className="text-2xs sm:text-xs text-slate-400 leading-normal">
               Showcase verified credentials, skills, and projects that jump you straight to the top of recruiter pipelines.
             </p>

@@ -22,7 +22,7 @@ export function buildTalentXcelOrganizationSchema(canonicalUrl: string = `${BASE
       caption: 'TalentXcel Official Logo',
     },
     image: `${BASE_PRODUCTION_ORIGIN}/talentxcel-official-logo.png`,
-    description: 'TalentXcel is an AI-powered career operating system, recruitment platform, and professional growth ecosystem connecting job seekers, employers, and higher education institutions.',
+    description: 'TalentXcel is the Global Professional Talent Network connecting tech and leadership professionals worldwide across UAE, Europe, the Americas, and Asia with Career Passports, verified TalentScore, video Reels, and Recruiter OS.',
     address: {
       '@type': 'PostalAddress',
       addressLocality: 'Noida',

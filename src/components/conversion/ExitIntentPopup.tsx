@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { X, Gift, Zap, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { PLATFORM_METRICS } from '@/config/platformMetrics';
 
 interface ExitIntentPopupProps {
   page?: 'resume' | 'jobs' | 'interview' | 'insights';
@@ -186,7 +187,7 @@ export const ExitIntentPopup: React.FC<ExitIntentPopupProps> = ({ page = 'resume
 
           {/* Trust signals */}
           <div className="text-center text-xs text-muted-foreground">
-            <p>✨ Trusted by 10,000+ professionals</p>
+            <p>✨ Trusted by {PLATFORM_METRICS.totalProfessionalsDisplay} professionals</p>
             <p>🔒 We respect your privacy. No spam ever.</p>
           </div>
 

@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Star, Users, TrendingUp, Shield } from "lucide-react";
+import { PLATFORM_METRICS } from "@/config/platformMetrics";
 
 export const TrustSection: React.FC = () => {
   return (
@@ -12,7 +13,7 @@ export const TrustSection: React.FC = () => {
             🎯 Why Use TalentXcel?
           </h2>
           <p className="text-xl text-gray-600 mb-8">
-            Trusted by thousands of professionals across India
+            Trusted by thousands of professionals worldwide across UAE, Europe, Americas, and Asia
           </p>
           
           {/* Main Stats */}
@@ -42,7 +43,7 @@ export const TrustSection: React.FC = () => {
                 <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                   <TrendingUp className="h-8 w-8 text-orange-600" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">10,000+</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">{PLATFORM_METRICS.totalProfessionalsDisplay}</h3>
                 <p className="text-gray-600">Applications submitted</p>
               </CardContent>
             </Card>
@@ -57,7 +58,7 @@ export const TrustSection: React.FC = () => {
               🧠 AI Personalized
             </Badge>
             <Badge className="bg-orange text-white px-4 py-2 text-sm">
-              ⚡ Applied by 10,000+
+              ⚡ Applied by {PLATFORM_METRICS.totalProfessionalsDisplay}
             </Badge>
           </div>
           

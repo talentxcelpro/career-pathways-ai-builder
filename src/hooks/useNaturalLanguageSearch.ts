@@ -24,12 +24,12 @@ export const useNaturalLanguageSearch = () => {
   const suggestions = useMemo(() => {
     if (!searchTerm || searchTerm.length < 2) {
       return [
-        'React developers in Mumbai',
-        'Senior UI/UX designers',
-        'Product managers with 3+ years experience',
-        'Marketing professionals in Bangalore',
-        'Data scientists with Python skills',
-        'Frontend developers remote'
+        'Senior AI Engineers in San Francisco',
+        'Staff System Architects in Dubai',
+        'Principal Fullstack Engineers in London',
+        'Product Leaders with 5+ yrs in Singapore',
+        'Cloud & DevOps Specialists in Bengaluru',
+        'Founding Engineers Remote Worldwide'
       ];
     }
 
@@ -37,18 +37,18 @@ export const useNaturalLanguageSearch = () => {
     const lowerInput = searchTerm.toLowerCase();
 
     // Technology-based suggestions
-    if (['react', 'angular', 'vue', 'js', 'javascript'].some(tech => lowerInput.includes(tech))) {
-      suggestions.push('Frontend developers', 'Full-stack engineers', 'React Native developers');
+    if (['react', 'angular', 'vue', 'js', 'javascript', 'python', 'rust', 'go', 'ai', 'ml'].some(tech => lowerInput.includes(tech))) {
+      suggestions.push('Senior AI Engineers', 'Full-stack Engineers', 'Distributed Systems Architects');
     }
 
     // Role-based suggestions
-    if (['design', 'ui', 'ux'].some(role => lowerInput.includes(role))) {
-      suggestions.push('UI/UX designers', 'Product designers', 'Graphic designers');
+    if (['design', 'ui', 'ux', 'product'].some(role => lowerInput.includes(role))) {
+      suggestions.push('Lead Product Designers', 'VP of Product', 'Design System Leads');
     }
 
     // Location-based suggestions
-    if (['bangalore', 'mumbai', 'delhi', 'remote'].some(loc => lowerInput.includes(loc))) {
-      suggestions.push('Remote workers', 'Bangalore tech professionals', 'Mumbai finance experts');
+    if (['dubai', 'london', 'san francisco', 'new york', 'singapore', 'berlin', 'bengaluru', 'remote'].some(loc => lowerInput.includes(loc))) {
+      suggestions.push('Dubai & UAE Tech Leaders', 'Silicon Valley AI Talent', 'London & European Engineers', 'Global Remote Specialists');
     }
 
     return suggestions.slice(0, 3);

@@ -107,7 +107,7 @@ export const UniversalShare: React.FC<UniversalShareProps> = ({
 
     const messageData = messages[content.type];
     
-    const attribution = '— Powered by TalentXcel • The Professional Talent Network';
+    const attribution = '— Powered by TalentXcel • The Global Professional Talent Network';
 
     const platformSpecificFormatting = {
       whatsapp: `*${messageData.title}*\n\n${messageData.description}\n\n${attribution}\n${url}`,

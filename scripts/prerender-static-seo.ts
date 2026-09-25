@@ -168,26 +168,90 @@ async function prerender() {
   const coreHubs = [
     {
       route: '/',
-      title: 'TalentXcel — AI Career Operating System & Corporate Recruitment',
-      desc: 'TalentXcel is an AI-powered career operating system and recruitment ecosystem connecting job seekers, verified employers, higher education institutions, and professional networks.',
-      h1: 'AI-Powered Career & Recruitment Ecosystem',
+      title: 'TalentXcel — The Global Professional Talent Network',
+      desc: 'Connect with Tech & Leadership Professionals worldwide across UAE, Europe, the Americas, and Asia. Build your Career Passport, get verified by TalentScore, discover global opportunities, and let top hiring teams discover you.',
+      h1: 'The Global Professional Talent Network',
       bodyHtml: `
         <div class="space-y-8">
+          <div class="bg-gradient-to-r from-blue-900/60 via-purple-900/60 to-slate-900 border border-blue-800/40 rounded-3xl p-8 text-center space-y-4">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
+              Global Network • UAE • Europe • Americas • Asia
+            </span>
+            <h2 class="text-2xl md:text-3xl font-extrabold text-white">Connect. Discover. Grow. Get Hired.</h2>
+            <p class="text-slate-300 text-sm max-w-2xl mx-auto leading-relaxed">
+              Where professionals build their career identity, discover opportunities, share knowledge through Reels, and get discovered by top hiring teams worldwide.
+            </p>
+            <div class="flex flex-wrap justify-center gap-3 pt-2">
+              <a href="/network" class="px-5 py-2.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-lg">Join the Network &rarr;</a>
+              <a href="/reels" class="px-5 py-2.5 rounded-full bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold transition-all shadow-lg">Watch Reels &rarr;</a>
+              <a href="/hire" class="px-5 py-2.5 rounded-full bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition-all border border-slate-700">Recruiter OS &rarr;</a>
+            </div>
+          </div>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-              <h2 class="text-xl font-bold text-white mb-2">Jobs & Hiring</h2>
-              <p class="text-slate-300 text-sm leading-relaxed mb-4">Discover verified job openings with transparent compensation, ATS compatibility, and direct employer introductions.</p>
+              <h3 class="text-lg font-bold text-white mb-2">Global Tech & Leadership Jobs</h3>
+              <p class="text-slate-300 text-sm leading-relaxed mb-4">Discover verified career opportunities across UAE, Europe, the Americas, and Asia with transparent compensation.</p>
               <a href="/jobs" class="text-blue-400 text-xs font-semibold hover:underline">Explore Jobs &rarr;</a>
             </div>
             <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-              <h2 class="text-xl font-bold text-white mb-2">ATS Resume Builder</h2>
-              <p class="text-slate-300 text-sm leading-relaxed mb-4">Create recruiter-ready, ATS-optimized resumes with real-time scoring, formatting validation, and keyword matching.</p>
-              <a href="/resume" class="text-blue-400 text-xs font-semibold hover:underline">Build ATS Resume &rarr;</a>
+              <h3 class="text-lg font-bold text-white mb-2">Verified Career Passport</h3>
+              <p class="text-slate-300 text-sm leading-relaxed mb-4">Benchmark your technical capabilities into a verified TalentScore recognized by leading international employers.</p>
+              <a href="/careerpassport" class="text-blue-400 text-xs font-semibold hover:underline">Build Career Passport &rarr;</a>
             </div>
             <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-              <h2 class="text-xl font-bold text-white mb-2">Higher Education Pathways</h2>
-              <p class="text-slate-300 text-sm leading-relaxed mb-4">Forensic data across 10,250 Indian colleges, global tuition-free degree programs, and 6-step AI pathways.</p>
-              <a href="/colleges" class="text-blue-400 text-xs font-semibold hover:underline">Explore Colleges &rarr;</a>
+              <h3 class="text-lg font-bold text-white mb-2">Recruiter OS & Candidate 360</h3>
+              <p class="text-slate-300 text-sm leading-relaxed mb-4">Search 12,000+ pre-vetted engineers, AI architects, and leaders with forensic capability scoring.</p>
+              <a href="/hire" class="text-blue-400 text-xs font-semibold hover:underline">Access Recruiter OS &rarr;</a>
+            </div>
+          </div>
+        </div>
+      `,
+    },
+    {
+      route: '/reels',
+      title: 'TalentXcel Reels — Global Tech, AI & Career Stories',
+      desc: 'Watch short-form video stories, system design deep-dives, RAG AI architectures, and salary negotiation strategies from verified tech leaders worldwide across UAE, Europe, Americas, and Asia.',
+      h1: 'Global Professional Reels & Tech Architecture Stories',
+      bodyHtml: `
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-white mb-3">Short-Form Professional Knowledge & Engineering Breakdowns</h2>
+          <p class="text-slate-300 text-sm leading-relaxed mb-4">Explore bite-sized video insights from global tech architects, engineering managers, and recruitment leaders across UAE, Europe, Americas, and Asia.</p>
+          <div class="flex flex-wrap gap-2 text-xs">
+            <a href="/reels?category=ai" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">AI & Machine Learning</a>
+            <a href="/reels?category=systemdesign" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">System Design</a>
+            <a href="/reels?category=career" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">Salary & Career Growth</a>
+            <a href="/reels?category=interview" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">Interview Prep</a>
+          </div>
+        </div>
+      `,
+    },
+    {
+      route: '/about',
+      title: 'About TalentXcel — The Global Professional Talent Network',
+      desc: 'TalentXcel is the Global Professional Talent Network connecting verified tech & leadership talent, recruiters, and companies worldwide across UAE, Europe, the Americas, and Asia.',
+      h1: 'About TalentXcel: The Global Professional Talent Network',
+      bodyHtml: `
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+          <h2 class="text-xl font-bold text-white">Connect. Discover. Grow. Get Hired.</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">
+            TalentXcel transforms professional discovery from static keyword matching into a living talent graph powered by Career Passports, verified TalentScore capability indexing, and video Reels.
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 text-xs">
+            <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700">
+              <span class="font-bold text-white">🇦🇪 UAE & Middle East</span>
+              <p class="text-slate-400 mt-1">Dubai Internet City, Abu Dhabi Hub71, Riyadh tech corridors.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700">
+              <span class="font-bold text-white">🇪🇺 Europe & UK</span>
+              <p class="text-slate-400 mt-1">London Silicon Roundabout, Berlin, Dublin, Amsterdam engineering hubs.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700">
+              <span class="font-bold text-white">🇺🇸 North & South America</span>
+              <p class="text-slate-400 mt-1">San Francisco, NYC, Austin, São Paulo, and Latin America engineering.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700">
+              <span class="font-bold text-white">🇮🇳 India & South Asia</span>
+              <p class="text-slate-400 mt-1">Bengaluru, NCR/Noida, Hyderabad, Pune technology centers.</p>
             </div>
           </div>
         </div>
@@ -195,18 +259,19 @@ async function prerender() {
     },
     {
       route: '/jobs',
-      title: 'Jobs in India — Software, Tech, Management & AI Vacancies | TalentXcel',
-      desc: 'Explore active job vacancies across software engineering, data science, AI, marketing, sales, and management in Noida, Bangalore, Hyderabad, Pune, and Remote.',
-      h1: 'Verified Job Vacancies & Tech Openings',
+      title: 'Global Tech & Executive Jobs — UAE, Europe, Americas, Asia | TalentXcel',
+      desc: 'Explore verified tech, engineering, AI, product, and leadership jobs across UAE & Middle East, Europe, North & South America, and Asia with transparent compensation and direct recruiter discovery.',
+      h1: 'Verified Global Tech & Executive Job Openings',
       bodyHtml: `
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-          <h2 class="text-xl font-bold text-white mb-3">Explore Active Employment Opportunities</h2>
-          <p class="text-slate-300 text-sm leading-relaxed mb-4">Search thousands of verified jobs across top Indian tech hubs with salary transparency and direct application paths.</p>
+          <h2 class="text-xl font-bold text-white mb-3">Explore Global Employment Opportunities</h2>
+          <p class="text-slate-300 text-sm leading-relaxed mb-4">Search thousands of verified jobs across top international tech hubs with transparent compensation and direct recruiter connections.</p>
           <div class="flex flex-wrap gap-2 text-xs">
             <a href="/jobs?role=software-engineer" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">Software Engineer Jobs</a>
             <a href="/jobs?role=data-scientist" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">Data Scientist Jobs</a>
             <a href="/jobs?role=ai-engineer" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">AI Engineer Jobs</a>
-            <a href="/jobs?location=noida" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">Jobs in Noida</a>
+            <a href="/jobs?location=dubai" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">Jobs in Dubai</a>
+            <a href="/jobs?location=london" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">Jobs in London</a>
             <a href="/jobs?location=bangalore" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">Jobs in Bangalore</a>
           </div>
         </div>
@@ -214,13 +279,13 @@ async function prerender() {
     },
     {
       route: '/companies',
-      title: 'Verified Companies & Top Tech Employers | TalentXcel Directory',
-      desc: 'Browse verified companies, tech startups, and enterprise employers hiring across India. Research company culture, tech stacks, active job openings, and salaries.',
-      h1: 'Verified Companies Directory & Employer Intelligence',
+      title: 'Top Global Tech Employers & Enterprises | TalentXcel Directory',
+      desc: 'Discover verified technology companies, high-growth startups, and global enterprises hiring across UAE, Europe, the Americas, and Asia.',
+      h1: 'Verified Global Companies & Enterprise Employers',
       bodyHtml: `
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-          <h2 class="text-xl font-bold text-white mb-3">Top Employers & Hiring Organizations</h2>
-          <p class="text-slate-300 text-sm leading-relaxed mb-4">Discover verified companies across FinTech, HealthTech, AI/ML, SaaS, and Enterprise IT hiring on TalentXcel.</p>
+          <h2 class="text-xl font-bold text-white mb-3">Global Employers & Hiring Organizations</h2>
+          <p class="text-slate-300 text-sm leading-relaxed mb-4">Discover verified companies across FinTech, HealthTech, AI/ML, SaaS, and Enterprise IT hiring on TalentXcel worldwide.</p>
           <a href="/company/talentxcel" class="text-blue-400 text-xs font-semibold hover:underline">TalentXcel Services Entity Profile &rarr;</a>
         </div>
       `,
@@ -1057,11 +1122,11 @@ async function prerender() {
         const routePath = page === 1 ? '/network' : `/network/page/${page}`;
         writePrerenderedPage(routePath, {
           title: page === 1
-            ? 'Professional Network & Community Feed | TalentXcel'
-            : `TalentXcel Network — Page ${page} | Career Community Feed`,
-          description: `Discover ${pagePosts.length} recent posts from India's professional career network. Career insights, job discussions, and industry conversations on TalentXcel.`,
+            ? 'Global Professional Talent Network & Community Feed | TalentXcel'
+            : `TalentXcel Network — Page ${page} | Global Career Community Feed`,
+          description: `Discover ${pagePosts.length} recent posts from our global professional talent network across UAE, Europe, Americas, and Asia. Career insights, engineering discussions, and global opportunities on TalentXcel.`,
           canonical: pageCanonical,
-          h1: page === 1 ? 'Professional Community & Network Feed' : `Network Feed — Page ${page}`,
+          h1: page === 1 ? 'Global Professional Talent Network Feed' : `Network Feed — Page ${page}`,
           bodyContentHtml: networkBodyHtml,
           jsonLd: [networkCollectionSchema, networkBreadcrumb],
         });
@@ -1127,7 +1192,7 @@ async function prerender() {
               <div class="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 border border-slate-800 rounded-3xl p-6 space-y-3">
                 <a href="/network" class="text-xs text-blue-400 hover:text-blue-300">← Back to Network</a>
                 <h1 class="text-2xl md:text-3xl font-extrabold text-white">${hub.emoji} ${escapeHtml(hub.label)} Discussions</h1>
-                <p class="text-slate-300 text-sm">Explore the latest ${escapeHtml(hub.label.toLowerCase())} posts from India's verified professional community on TalentXcel.</p>
+                <p class="text-slate-300 text-sm">Explore the latest ${escapeHtml(hub.label.toLowerCase())} posts from our verified global professional community across UAE, Europe, Americas, and Asia on TalentXcel.</p>
               </div>
               <div class="space-y-6">${hubArticlesHtml}</div>
               <div class="pt-4 text-center">

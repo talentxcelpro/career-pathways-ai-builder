@@ -43,6 +43,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog';
+import { PLATFORM_METRICS } from '@/config/platformMetrics';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -149,7 +150,7 @@ export default function RecruiterLandingPage() {
         <title>TalentXcel Recruiter OS — The Database That Works For You</title>
         <meta 
           name="description" 
-          content="Access 12,000+ pre-vetted engineers, architects, and specialists. Define your hiring need, let AI rank top talent, and engage in one click on TalentXcel Recruiter OS." 
+          content={`Access ${PLATFORM_METRICS.totalProfessionalsDisplay} pre-vetted engineers, architects, and specialists. Define your hiring need, let AI rank top talent, and engage in one click on TalentXcel Recruiter OS.`}
         />
         <link rel="canonical" href="https://talentxcel.in/recruiters" />
       </Helmet>
@@ -161,7 +162,7 @@ export default function RecruiterLandingPage() {
             <Badge className="bg-blue-600/30 text-blue-400 border border-blue-500/40 text-[10px] uppercase font-bold tracking-wider">
               Recruiter OS Portal
             </Badge>
-            <span className="text-slate-400 hidden sm:inline">• Access 12,840+ verified candidates across India & global markets</span>
+            <span className="text-slate-400 hidden sm:inline">• Access {PLATFORM_METRICS.totalProfessionalsDisplay} verified candidates across UAE, Europe, Americas, India & global markets</span>
           </div>
 
           <div className="flex items-center gap-3">
@@ -191,7 +192,7 @@ export default function RecruiterLandingPage() {
         </h1>
 
         <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
-          Define your hiring need. TalentXcel instantly discovers, ranks by proof-backed skills, and engages 12,000+ candidates in one unified hiring operating system.
+          Define your hiring need. TalentXcel instantly discovers, ranks by proof-backed skills, and engages {PLATFORM_METRICS.totalProfessionalsDisplay} candidates in one unified hiring operating system.
         </p>
 
         {/* INTERACTIVE LIVE SEARCH BAR (PRODUCT VALUE BEFORE SIGNUP) */}
@@ -202,14 +203,14 @@ export default function RecruiterLandingPage() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              placeholder="Search talent: e.g. Python developers in Bangalore, Data Analysts, 5+ yrs..."
+              placeholder="Search talent: e.g. Python developers in Dubai, Cloud Architects in Berlin, Full-Stack Engineers..."
               className="border-0 bg-transparent text-white placeholder:text-slate-500 text-sm sm:text-base focus-visible:ring-0 focus-visible:ring-offset-0 px-3"
             />
             <Button
               onClick={() => handleSearch()}
               className="bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm px-5 py-2.5 rounded-xl h-11 shrink-0 shadow-lg shadow-blue-600/30"
             >
-              Search 12,000+ Talent →
+              Search {PLATFORM_METRICS.totalProfessionalsDisplay} Talent →
             </Button>
           </div>
 
@@ -217,10 +218,11 @@ export default function RecruiterLandingPage() {
           <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
             <span className="text-xs text-slate-400 font-semibold">Try searching:</span>
             {[
-              'Python Bangalore',
-              'Data Analyst',
-              'Java Architect',
-              'AWS Cloud Specialist',
+              'AI / ML Engineers',
+              'Dubai & UAE',
+              'London & Europe',
+              'US Remote',
+              'Bangalore Tech',
               'Immediate Joiners'
             ].map((chip, idx) => (
               <button
@@ -240,7 +242,7 @@ export default function RecruiterLandingPage() {
         {/* LIVE METRIC BAR */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-4xl mx-auto pt-6 border-t border-slate-900">
           {[
-            { label: 'Active Candidates', val: '12,840+', sub: 'Indexed in Talent Graph' },
+            { label: 'Active Candidates', val: PLATFORM_METRICS.totalProfessionalsDisplay, sub: 'Indexed in Talent Graph' },
             { label: 'Verified Skills', val: '4,218+', sub: 'Proof-backed profiles' },
             { label: 'Immediate Joiners', val: '1,420+', sub: 'Available within 15 days' },
             { label: 'Average Time-to-Hire', val: '18 Days', sub: 'vs 45 days industry avg' }
@@ -378,7 +380,7 @@ export default function RecruiterLandingPage() {
             {
               icon: BrainCircuitIcon,
               title: 'The Database Works For You',
-              desc: 'Instead of posting jobs and hoping candidates apply, TalentXcel continuously cross-matches your active requirements against 12,000+ pre-vetted profiles.'
+              desc: `Instead of posting jobs and hoping candidates apply, TalentXcel continuously cross-matches your active requirements against ${PLATFORM_METRICS.totalProfessionalsDisplay} pre-vetted profiles.`
             },
             {
               icon: Sparkles,

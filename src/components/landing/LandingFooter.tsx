@@ -5,11 +5,11 @@ import { SocialConnect } from '@/components/social/SocialConnect';
 export const LandingFooter: React.FC = () => {
   const platformLinks = [
     { name: 'Search Verified Jobs', href: '/jobs' },
-    { name: 'AI Resume Builder', href: '/resume' },
-    { name: 'Indian Colleges & Universities', href: '/colleges' },
-    { name: 'Career Learning Hub', href: '/learning' },
-    { name: 'Career Passport', href: '/passport' },
     { name: 'Professional Network', href: '/network' },
+    { name: 'Career Passport & TalentScore', href: '/passport' },
+    { name: 'Recruiter OS for Employers', href: '/recruiters' },
+    { name: 'Career Reels', href: '/reels' },
+    { name: 'Colleges & Institutions', href: '/colleges' },
   ];
 
   const companyLinks = [
@@ -43,7 +43,7 @@ export const LandingFooter: React.FC = () => {
               <span className="font-bold text-xl">TalentXcel</span>
             </div>
             <p className="text-background/70 mb-4 text-sm leading-relaxed">
-              India's AI career platform connecting Jobs, Resumes, Colleges, Learning, Career Passports and Professional Networking.
+              The Global Professional Talent Network connecting verified talent, recruiters, and companies worldwide across UAE, Europe, Americas, and Asia.
             </p>
             <p className="text-background/50 text-xs">
               © 2026 TalentXcel Services Pvt Ltd. All rights reserved.

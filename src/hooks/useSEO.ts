@@ -110,9 +110,9 @@ export const usePageSEO = (pageType: string, data?: any) => {
     switch (pageType) {
       case 'home':
         return {
-          title: 'TalentXcel - AI-Powered Career Platform | Find Jobs, Learn Skills, Network',
-          description: 'Accelerate your career with TalentXcel. Find dream jobs, learn new skills, network with professionals, and get AI-powered career guidance. Join 50,000+ professionals.',
-          keywords: ['jobs', 'careers', 'learning', 'networking', 'AI career guidance', 'skill development', 'job search', 'professional networking'],
+          title: 'TalentXcel — The Global Professional Talent Network',
+          description: 'Connect with Tech & Leadership Professionals worldwide across UAE, Europe, the Americas, and Asia. Build your Career Passport, get verified by TalentScore, discover global opportunities, and let top hiring teams discover you.',
+          keywords: ['global talent network', 'career passport', 'talentscore', 'tech leadership network', 'remote tech jobs', 'hire developers uae', 'software engineering europe', 'recruiter os'],
           breadcrumbs: [{ name: 'Home', url: '/' }]
         };
 
@@ -120,13 +120,13 @@ export const usePageSEO = (pageType: string, data?: any) => {
         return {
           title: data?.location 
             ? `Jobs in ${data.location} | Latest ${data.location} Job Openings | TalentXcel`
-            : 'Latest Job Openings in India | TalentXcel Jobs',
+            : 'Global Job Openings — UAE, Europe, Americas, Asia | TalentXcel Jobs',
           description: data?.location
-            ? `Find the best job opportunities in ${data.location}. Latest openings in IT, Finance, Marketing, Healthcare, and more. Apply now and get hired faster.`
-            : 'Discover thousands of job opportunities across India. Latest openings in IT, Finance, Marketing, Healthcare, and more. Apply with one click and get hired faster.',
+            ? `Find verified job opportunities in ${data.location}. Latest openings in Software, AI, Cloud, Product, and Leadership. Apply now and get discovered by top hiring teams.`
+            : 'Discover thousands of verified career opportunities worldwide across UAE, Europe, the Americas, and Asia. Apply with one click and let global recruiters discover your Career Passport.',
           keywords: data?.location 
-            ? [`jobs in ${data.location.toLowerCase()}`, `${data.location.toLowerCase()} jobs`, 'job openings', 'career opportunities', 'hiring', 'employment']
-            : ['jobs in india', 'job openings', 'career opportunities', 'hiring', 'employment', 'job search', 'recruitment'],
+            ? [`jobs in ${data.location.toLowerCase()}`, `${data.location.toLowerCase()} jobs`, 'global job openings', 'career opportunities', 'hiring', 'employment']
+            : ['global jobs', 'tech jobs uae', 'software engineering europe', 'us remote jobs', 'career opportunities', 'hiring', 'recruitment'],
           breadcrumbs: [
             { name: 'Home', url: '/' },
             { name: 'Jobs', url: '/jobs' }
@@ -135,9 +135,9 @@ export const usePageSEO = (pageType: string, data?: any) => {
 
       case 'companies':
         return {
-          title: 'Top Companies Hiring in India | Company Profiles | TalentXcel',
-          description: 'Explore top companies hiring in India. Get insights into company culture, salaries, interview processes, and current job openings. Make informed career decisions.',
-          keywords: ['top companies india', 'company profiles', 'employer reviews', 'company culture', 'hiring companies'],
+          title: 'Top Global Companies Hiring Worldwide | Company Profiles | TalentXcel',
+          description: 'Explore top companies hiring worldwide across UAE, Europe, the Americas, and Asia. Get insights into company culture, global salaries, engineering stacks, and active job openings.',
+          keywords: ['global tech companies', 'companies hiring remote', 'uae enterprise employers', 'tech startups europe', 'hiring companies'],
           breadcrumbs: [
             { name: 'Home', url: '/' },
             { name: 'Companies', url: '/companies' }
@@ -157,9 +157,9 @@ export const usePageSEO = (pageType: string, data?: any) => {
 
       case 'network':
         return {
-          title: 'Professional Network | Connect with Industry Experts | TalentXcel',
-          description: 'Build your professional network. Connect with industry experts, join professional groups, attend virtual events, and advance your career through meaningful connections.',
-          keywords: ['professional networking', 'industry experts', 'career networking', 'professional connections', 'industry events'],
+          title: 'Global Professional Talent Network | Connect with Leaders & Mentors | TalentXcel',
+          description: 'Build your professional identity on the global talent network. Connect with engineering leaders and mentors worldwide across UAE, Europe, Americas, and Asia.',
+          keywords: ['global professional network', 'tech leaders', 'mentorship', 'career network', 'professional connections'],
           breadcrumbs: [
             { name: 'Home', url: '/' },
             { name: 'Network', url: '/network' }

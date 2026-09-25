@@ -31,7 +31,7 @@ export const ReelCommentsModal: React.FC<ReelCommentsModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newComment.trim() || !user || isAddingComment) return;
+    if (!newComment.trim() || isAddingComment) return;
 
     const trimmedComment = newComment.trim();
     if (trimmedComment.length > 500) {
@@ -50,6 +50,14 @@ export const ReelCommentsModal: React.FC<ReelCommentsModalProps> = ({
       console.error('Error adding comment:', error);
       setIsComposing(false);
       toast.error('Failed to add comment. Please try again.');
+    }
+  };
+
+  const handleQuickEmoji = async (emoji: string) => {
+    try {
+      await addComment(emoji);
+    } catch (error) {
+      console.error('Error adding emoji reaction:', error);
     }
   };
 
@@ -167,77 +175,92 @@ export const ReelCommentsModal: React.FC<ReelCommentsModalProps> = ({
           </div>
         </ScrollArea>
 
-        {/* Comment Input - Instagram Style */}
-        {user && (
-          <div className="border-t bg-background/95 backdrop-blur-sm sticky bottom-0">
-            <form onSubmit={handleSubmit} className="p-4">
-              <div className="flex items-center gap-3">
-                {/* User Avatar */}
-                <Avatar className="h-8 w-8 flex-shrink-0">
-                  <AvatarImage src={user.user_metadata?.avatar_url} />
-                  <AvatarFallback className="bg-gradient-to-br from-primary/20 to-secondary/20 text-xs">
-                    {user.user_metadata?.full_name?.[0]?.toUpperCase() || 'U'}
-                  </AvatarFallback>
-                </Avatar>
-                
-                {/* Input Field */}
-                <div className="flex-1">
-                  <Input
-                    ref={inputRef}
-                    value={newComment}
-                    onChange={handleInputChange}
-                    placeholder="Add a comment..."
-                    className={cn(
-                      "border-0 bg-transparent focus:bg-transparent text-sm",
-                      "shadow-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0",
-                      "placeholder:text-muted-foreground h-auto py-2"
-                    )}
-                    disabled={isAddingComment}
-                    autoComplete="off"
-                    maxLength={500}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        if (newComment.trim() && !isAddingComment) {
-                          handleSubmit(e);
-                        }
-                      }
-                    }}
-                  />
-                </div>
-                
-                {/* Post Button */}
-                <Button
-                  type="submit"
-                  variant="ghost"
-                  size="sm"
-                  disabled={!newComment.trim() || isAddingComment}
+        {/* Quick Reaction Emoji Bar */}
+        <div className="flex items-center gap-1.5 px-4 py-2 border-t border-b bg-muted/30 overflow-x-auto scrollbar-none">
+          <span className="text-[11px] text-muted-foreground whitespace-nowrap font-medium pr-1">Quick react:</span>
+          {['🔥', '👏', '💡', '🚀', '💯', '❤️'].map((emoji) => (
+            <button
+              key={emoji}
+              type="button"
+              onClick={() => handleQuickEmoji(emoji)}
+              disabled={isAddingComment}
+              className="text-base px-2 py-0.5 rounded-full hover:bg-muted active:scale-90 transition-transform"
+              title={`React with ${emoji}`}
+            >
+              {emoji}
+            </button>
+          ))}
+        </div>
+
+        {/* Comment Input */}
+        <div className="bg-background/95 backdrop-blur-sm sticky bottom-0">
+          <form onSubmit={handleSubmit} className="p-3.5">
+            <div className="flex items-center gap-2.5">
+              {/* User Avatar */}
+              <Avatar className="h-8 w-8 flex-shrink-0">
+                <AvatarImage src={user?.user_metadata?.avatar_url} />
+                <AvatarFallback className="bg-gradient-to-br from-primary/20 to-secondary/20 text-xs font-semibold">
+                  {user?.user_metadata?.full_name?.[0]?.toUpperCase() || 'Y'}
+                </AvatarFallback>
+              </Avatar>
+              
+              {/* Input Field */}
+              <div className="flex-1">
+                <Input
+                  ref={inputRef}
+                  value={newComment}
+                  onChange={handleInputChange}
+                  placeholder={user ? "Add a comment..." : "Add a comment as guest..."}
                   className={cn(
-                    "text-sm font-semibold h-auto p-2 transition-all duration-200 shrink-0",
-                    newComment.trim() && !isAddingComment 
-                      ? "text-primary hover:text-primary/80" 
-                      : "text-muted-foreground cursor-not-allowed"
+                    "border-0 bg-transparent focus:bg-transparent text-sm",
+                    "shadow-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0",
+                    "placeholder:text-muted-foreground h-auto py-1.5"
                   )}
-                >
-                  {isAddingComment ? (
-                    <div className="flex items-center gap-1">
-                      <div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
-                    </div>
-                  ) : (
-                    "Post"
-                  )}
-                </Button>
+                  disabled={isAddingComment}
+                  autoComplete="off"
+                  maxLength={500}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      if (newComment.trim() && !isAddingComment) {
+                        handleSubmit(e);
+                      }
+                    }
+                  }}
+                />
               </div>
               
-              {/* Character Count - Only show when close to limit */}
-              {newComment.length > 450 && (
-                <div className="text-xs text-muted-foreground mt-2 text-right">
-                  {newComment.length}/500
-                </div>
-              )}
-            </form>
-          </div>
-        )}
+              {/* Post Button */}
+              <Button
+                type="submit"
+                variant="ghost"
+                size="sm"
+                disabled={!newComment.trim() || isAddingComment}
+                className={cn(
+                  "text-xs font-semibold h-8 px-3 rounded-full transition-all duration-200 shrink-0",
+                  newComment.trim() && !isAddingComment 
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                    : "text-muted-foreground cursor-not-allowed"
+                )}
+              >
+                {isAddingComment ? (
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
+                  </div>
+                ) : (
+                  "Post"
+                )}
+              </Button>
+            </div>
+            
+            {/* Character Count */}
+            {newComment.length > 420 && (
+              <div className="text-[10px] text-muted-foreground mt-1 text-right">
+                {newComment.length}/500
+              </div>
+            )}
+          </form>
+        </div>
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { X, ArrowRight, Users, Star } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
+import { PLATFORM_METRICS } from '@/config/platformMetrics';
 
 interface ConversionBannerProps {
   variant?: 'floating' | 'sticky' | 'inline';
@@ -92,7 +93,7 @@ export const ConversionBanner: React.FC<ConversionBannerProps> = ({
           <div className="flex items-center gap-2 mb-1">
             <div className="flex items-center gap-1">
               <Users className="h-4 w-4" />
-              <span className="text-sm font-medium">10,000+ users</span>
+              <span className="text-sm font-medium">{PLATFORM_METRICS.totalProfessionalsDisplay} users</span>
             </div>
             <div className="flex items-center gap-1">
               <Star className="h-4 w-4 fill-current" />

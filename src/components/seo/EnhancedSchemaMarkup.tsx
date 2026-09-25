@@ -157,7 +157,7 @@ export const EnhancedSchemaMarkup: React.FC<EnhancedSchemaProps> = ({
         "@type": "WebSite",
         "name": "TalentXcel",
         "url": "https://talentxcel.in",
-        "description": "Find your dream job, advance your career, and connect with top employers in India. Comprehensive career guidance, skill development, and job opportunities.",
+        "description": "The Global Professional Talent Network connecting verified tech and leadership talent, recruiters, and companies worldwide across UAE, Europe, the Americas, and Asia.",
         "publisher": {
           "@type": "Organization",
           "name": "TalentXcel",
@@ -174,7 +174,7 @@ export const EnhancedSchemaMarkup: React.FC<EnhancedSchemaProps> = ({
         "mainEntity": {
           "@type": "JobBoard",
           "name": "TalentXcel Jobs",
-          "description": "Browse thousands of job opportunities across India"
+          "description": "Browse verified global career opportunities across UAE, Europe, the Americas, and Asia"
         }
       };
       schemas.push({ id: 'website-schema', schema: websiteSchema });

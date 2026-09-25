@@ -225,21 +225,16 @@ export function useOfflineSync() {
 
   const syncPendingActions = useCallback(async () => {
     if (!isOnline || isSyncing) return;
+    const initialPending = offlineManager.getPendingCount();
+    if (initialPending === 0) return;
 
     setIsSyncing(true);
     try {
       await offlineManager.syncActions();
       const remaining = offlineManager.getPendingCount();
-      
-      if (remaining === 0) {
-        toast.success('All changes synced', { id: 'sync-status' });
-      } else {
-        toast.warning(`${remaining} changes pending`, { id: 'sync-status' });
-      }
-      
       setPendingCount(remaining);
     } catch (error) {
-      toast.error('Sync failed - will retry', { id: 'sync-status' });
+      console.warn('Sync failed - will retry offline queue:', error);
     } finally {
       setIsSyncing(false);
     }

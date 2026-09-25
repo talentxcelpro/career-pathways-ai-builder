@@ -5,6 +5,7 @@ import { ChevronRight, Play, Building2, Sparkles } from 'lucide-react';
 import { TXCProductVideoModal } from '@/components/video/TXCProductVideoModal';
 import careerPassportPreview from '@/assets/career-passport-preview.png';
 import { conversionTelemetry } from '@/utils/conversionTelemetry';
+import { PLATFORM_METRICS } from '@/config/platformMetrics';
 
 export const AppleHeroSection = () => {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
@@ -31,7 +32,7 @@ export const AppleHeroSection = () => {
                   className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-600/10 dark:bg-blue-400/10 border border-blue-500/30 hover:border-blue-500 text-blue-700 dark:text-blue-300 text-xs font-bold transition-all shadow-sm group hover:bg-blue-600/15"
                 >
                   <span className="flex h-2 w-2 rounded-full bg-blue-600 animate-pulse" />
-                  <span>Hiring Talent? Search 12,000+ candidates on Recruiter OS</span>
+                  <span>Hiring Talent? Search {PLATFORM_METRICS.totalProfessionalsDisplay} candidates on Recruiter OS</span>
                   <ChevronRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
                 </a>
               </div>
@@ -49,29 +50,52 @@ export const AppleHeroSection = () => {
               </div>
               
               <h1 className="text-display font-heading tracking-tight text-foreground leading-[1.1]">
-                The Professional
+                The Global Professional
                 <span className="block font-medium bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  Talent Network.
+                  Talent Network
                 </span>
               </h1>
+
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/60 text-blue-700 dark:text-blue-300 text-xs sm:text-sm font-semibold">
+                <span>Connect with Tech & Leadership Professionals Worldwide • UAE • Europe • Americas • Asia</span>
+              </div>
               
-              <p className="text-body-large text-muted-foreground font-light leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                Where professionals, recruiters and companies connect, discover and grow. Build your career identity, find verified opportunities, or hire from a living talent graph with Recruiter OS.
+              <p className="text-body-large text-muted-foreground font-normal leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                Build your Career Passport, get verified by TalentScore, connect with global leaders and peers, discover opportunities worldwide, and let top hiring teams discover you.
               </p>
+
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-2 gap-y-1 text-xs text-muted-foreground font-medium">
+                <span className="text-foreground font-semibold">Professionals</span>
+                <span>•</span>
+                <span className="text-foreground font-semibold">Tech Leaders</span>
+                <span>•</span>
+                <span className="text-foreground font-semibold">Recruiters</span>
+                <span>•</span>
+                <span className="text-foreground font-semibold">Companies</span>
+                <span className="hidden sm:inline">•</span>
+                <span className="text-blue-600 dark:text-blue-400 font-bold hidden sm:inline">Connect. Discover. Grow. Get Hired.</span>
+              </div>
             </div>
 
             {/* CTA Buttons - Two Doors for Candidates & Recruiters */}
             <div className="flex flex-wrap gap-3 justify-center lg:justify-start items-center">
               <a 
-                href="/resume/ats-check?source=homepage"
+                href="/auth/register"
                 onClick={() => {
                   conversionTelemetry.track('signup_cta_click', { source: 'homepage' });
                   conversionTelemetry.setAcquisitionContext('homepage', '/');
                 }}
                 className="inline-flex items-center justify-center px-6 py-3.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-black rounded-2xl shadow-lg hover:shadow-xl transition-all group"
               >
-                Check My Resume Free
+                Join TalentXcel
                 <ChevronRight className="ml-1.5 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              </a>
+
+              <a 
+                href="/jobs"
+                className="inline-flex items-center justify-center px-5 py-3.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 text-sm font-bold rounded-2xl shadow-sm transition-all"
+              >
+                Find Jobs
               </a>
 
               <a 
@@ -79,15 +103,8 @@ export const AppleHeroSection = () => {
                 className="inline-flex items-center justify-center px-5 py-3.5 bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white text-sm font-black rounded-2xl shadow-lg hover:shadow-xl border border-slate-700/50 transition-all gap-2 group"
               >
                 <Building2 className="h-4 w-4 text-blue-400" />
-                <span>Hire Talent (Recruiter OS)</span>
+                <span>Hire Talent</span>
                 <ChevronRight className="h-4 w-4 text-slate-400 group-hover:translate-x-1 group-hover:text-white transition-all" />
-              </a>
-
-              <a 
-                href="/jobs"
-                className="inline-flex items-center justify-center px-4 py-3.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 text-sm font-bold rounded-2xl shadow-sm transition-all"
-              >
-                Find Jobs
               </a>
 
               <button 
@@ -132,7 +149,7 @@ export const AppleHeroSection = () => {
                   <span className="text-[10px] uppercase font-black bg-blue-600 text-white px-1.5 py-0.5 rounded">RECRUITER OS</span>
                 </div>
                 <p className="text-[12px] text-slate-600 dark:text-slate-300 mb-2 leading-relaxed">
-                  Search 10K+ talent live → Match with Candidate 360 → Direct verified outreach → Hire.
+                  Search {PLATFORM_METRICS.totalProfessionalsDisplay} talent live → Match with Candidate 360 → Direct verified outreach → Hire.
                 </p>
                 <span className="text-xs font-bold text-blue-700 dark:text-blue-300 group-hover:underline inline-flex items-center gap-1">
                   Open Recruiter OS <ChevronRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
@@ -143,20 +160,20 @@ export const AppleHeroSection = () => {
             {/* Social Proof */}
             <div className="pt-8 border-t border-border">
               <p className="text-sm text-muted-foreground mb-4 font-medium">
-                Join thousands of professionals accelerating their careers with TalentXcel
+                Join thousands of verified professionals accelerating their careers with TalentXcel
               </p>
               <div className="flex items-center justify-center lg:justify-start space-x-8 text-sm">
                 <div className="text-center">
-                  <div className="text-headline font-semibold text-foreground">10K+</div>
+                  <div className="text-headline font-semibold text-foreground">{PLATFORM_METRICS.totalProfessionalsDisplay}</div>
                   <div className="text-caption text-muted-foreground">Professionals</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-headline font-semibold text-foreground">1K+</div>
-                  <div className="text-caption text-muted-foreground">Businesses</div>
+                  <div className="text-headline font-semibold text-foreground">{PLATFORM_METRICS.hiringTeamsDisplay}</div>
+                  <div className="text-caption text-muted-foreground">Hiring Teams</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-headline font-semibold text-foreground">95%</div>
-                  <div className="text-caption text-muted-foreground">Success Rate</div>
+                  <div className="text-headline font-semibold text-foreground">{PLATFORM_METRICS.matchSuccessRateDisplay}</div>
+                  <div className="text-caption text-muted-foreground">Match Success</div>
                 </div>
               </div>
             </div>

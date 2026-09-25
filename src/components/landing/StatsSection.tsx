@@ -1,12 +1,13 @@
 
 import React from 'react';
+import { PLATFORM_METRICS } from '@/config/platformMetrics';
 
 export const StatsSection = () => {
   const stats = [
-    { number: "10K+", label: "Active Users" },
-    { number: "500+", label: "Partner Companies" },
-    { number: "50K+", label: "Jobs Posted" },
-    { number: "98%", label: "Success Rate" }
+    { number: PLATFORM_METRICS.totalProfessionalsDisplay, label: "Active Professionals" },
+    { number: PLATFORM_METRICS.hiringTeamsDisplay, label: "Hiring Teams & Companies" },
+    { number: PLATFORM_METRICS.activeJobsDisplay, label: "Verified Jobs" },
+    { number: PLATFORM_METRICS.matchSuccessRateDisplay, label: "Match Success Rate" }
   ];
 
   return (

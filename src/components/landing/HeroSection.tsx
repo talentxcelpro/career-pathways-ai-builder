@@ -2,6 +2,7 @@
 import React from 'react';
 import { UnifiedAuthForm } from '../auth/UnifiedAuthForm';
 import { HeroImage } from '../ui/OptimizedImage';
+import { PLATFORM_METRICS } from '@/config/platformMetrics';
 
 export const HeroSection = () => {
   return (
@@ -15,33 +16,37 @@ export const HeroSection = () => {
           <div className="min-h-screen flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
             {/* Left Section - Apple-style typography */}
             <div className="flex-1 flex flex-col justify-center text-center lg:text-left">
-              <h1 className="text-apple-hero font-apple-bold text-foreground mb-6 tracking-tight leading-none">
-                Powering Global
+              <h1 className="text-apple-hero font-apple-bold text-foreground mb-4 tracking-tight leading-none">
+                The Global Professional
                 <span className="block bg-gradient-to-r from-primary via-primary/80 to-accent bg-clip-text text-transparent">
-                  Career Growth
+                  Talent Network
                 </span>
               </h1>
+
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/60 text-blue-700 dark:text-blue-300 text-xs font-semibold mb-4">
+                <span>Connect with Tech & Leadership Professionals Worldwide • UAE • Europe • Americas • Asia</span>
+              </div>
               
-              <p className="text-apple-subtitle text-muted-foreground mb-8 max-w-lg mx-auto lg:mx-0 font-apple-regular leading-relaxed">
-                Your all-in-one platform for networking, skill-building, and finding the perfect career opportunities tailored to your unique journey.
+              <p className="text-apple-subtitle text-muted-foreground mb-4 max-w-lg mx-auto lg:mx-0 font-apple-regular leading-relaxed">
+                Build your Career Passport, get verified by TalentScore, connect with global leaders and peers, discover opportunities worldwide, and let top hiring teams discover you.
               </p>
               
               <div className="text-apple-caption text-muted-foreground/80 max-w-lg mx-auto lg:mx-0 mb-8 font-apple-medium">
-                Join thousands of professionals accelerating their careers with TalentXcel
+                Professionals • Tech Leaders • Recruiters • Companies • Connect. Discover. Grow. Get Hired.
               </div>
 
               {/* Apple-style metrics */}
               <div className="flex items-center justify-center lg:justify-start space-x-8 text-apple-caption">
                 <div className="flex flex-col items-center lg:items-start">
-                  <span className="text-apple-large font-apple-bold text-foreground">10K+</span>
+                  <span className="text-apple-large font-apple-bold text-foreground">{PLATFORM_METRICS.totalProfessionalsDisplay}</span>
                   <span className="text-muted-foreground font-apple-regular">Professionals</span>
                 </div>
                 <div className="flex flex-col items-center lg:items-start">
-                  <span className="text-apple-large font-apple-bold text-foreground">1K+</span>
-                  <span className="text-muted-foreground font-apple-regular">Businesses</span>
+                  <span className="text-apple-large font-apple-bold text-foreground">{PLATFORM_METRICS.hiringTeamsDisplay}</span>
+                  <span className="text-muted-foreground font-apple-regular">Hiring Teams</span>
                 </div>
                 <div className="flex flex-col items-center lg:items-start">
-                  <span className="text-apple-large font-apple-bold text-foreground">95%</span>
+                  <span className="text-apple-large font-apple-bold text-foreground">{PLATFORM_METRICS.matchSuccessRateDisplay}</span>
                   <span className="text-muted-foreground font-apple-regular">Success Rate</span>
                 </div>
               </div>
