@@ -80,7 +80,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     for (const email of pendingEmails) {
       try {
-        console.log(`Processing email ${email.id} to ${email.recipient_email} (attempt ${(email.retry_count || 0) + 1})`);
+        // INFO: Processed ${email.id} (attempt ${(email.retry_count || 0) + 1}) - Omitted to save log volume
 
         // Increment retry_count before processing
         await supabase
@@ -102,18 +102,16 @@ const handler = async (req: Request): Promise<Response> => {
         });
 
         if (emailError) {
-          console.error('Amazon SES email service error details:', emailError);
+          console.error(`ERROR: SES service error for email ${email.id}:`, emailError.message || 'Unknown error');
           throw new Error(`Amazon SES email service error: ${emailError.message || 'Unknown error'}`);
         }
 
         if (!emailResult || !emailResult.success) {
-          console.error('Email service returned unsuccessful result:', emailResult);
+          console.error(`ERROR: Unsuccessful SES result for email ${email.id}:`, emailResult?.error || 'Unknown error');
           throw new Error(`Email sending failed: ${emailResult?.error || 'Unknown error'}`);
         }
 
-        console.log('Email sent successfully via Amazon SES:', emailResult);
-
-        console.log(`Email sent successfully to ${email.recipient_email}`);
+        console.log(`INFO: Email sent successfully to ${email.recipient_email} [ID: ${email.id}]`);
 
         // Update email status to sent
         await supabase
@@ -133,7 +131,7 @@ const handler = async (req: Request): Promise<Response> => {
         });
 
       } catch (emailError: any) {
-        console.error(`Failed to send email ${email.id} to ${email.recipient_email}:`, emailError);
+        console.error(`ERROR: Failed to send email ${email.id} to ${email.recipient_email}:`, emailError.message || 'Unknown error');
         
         const currentRetries = (email.retry_count || 0) + 1;
         const newStatus = currentRetries >= (email.max_retries || 3) ? 'failed' : 'pending';
@@ -171,7 +169,7 @@ const handler = async (req: Request): Promise<Response> => {
       results
     };
 
-    console.log('Processing summary:', JSON.stringify(summary, null, 2));
+    console.log(`Email queue processed: ${processed} sent, ${failed} failed, ${pendingEmails.length - processed - failed} retrying`);
 
     return new Response(JSON.stringify(summary), {
       status: 200,
@@ -179,7 +177,7 @@ const handler = async (req: Request): Promise<Response> => {
     });
 
   } catch (error: any) {
-    console.error("Error in process-email-queue function:", error);
+    console.error("ERROR: process-email-queue function:", error.message || 'Unknown error');
     return new Response(
       JSON.stringify({ 
         error: error.message,

@@ -112,7 +112,7 @@ serve(async (req) => {
     });
 
     if (error) {
-      console.error(`API Gateway error for ${endpoint}:`, error);
+      console.error(`ERROR: API Gateway error for ${endpoint}:`, error.message || 'Unknown error');
       return new Response(
         JSON.stringify({ success: false, error: 'Internal service error' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -124,8 +124,8 @@ serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
-  } catch (error) {
-    console.error('API Gateway error:', error);
+  } catch (error: any) {
+    console.error('ERROR: API Gateway error:', error.message || 'Unknown error');
     return new Response(
       JSON.stringify({ success: false, error: 'Internal server error' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

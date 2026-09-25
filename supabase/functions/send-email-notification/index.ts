@@ -210,8 +210,7 @@ async function sendEmailViaSES(
   const AWS_ACCESS_KEY_ID = Deno.env.get('AWS_ACCESS_KEY_ID');
   const AWS_SECRET_ACCESS_KEY = Deno.env.get('AWS_SECRET_ACCESS_KEY');
   
-  console.log(`[Attempt ${attemptNumber}] Sending email via SES in region: ${region}`);
-  console.log(`[Attempt ${attemptNumber}] To: ${to}, Subject: ${subject}`);
+  console.log(`[SES Attempt ${attemptNumber}] To: ${to} | Region: ${region}`);
   
   if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY) {
     console.error('❌ AWS credentials not configured');
@@ -224,9 +223,6 @@ async function sendEmailViaSES(
 
   const fromEmail = 'noreply@talentxcel.in';
   const sesEndpoint = `https://email.${region}.amazonaws.com`;
-  
-  console.log(`[Attempt ${attemptNumber}] Using SES endpoint: ${sesEndpoint}`);
-  console.log(`[Attempt ${attemptNumber}] From: ${fromEmail}`);
   
   try {
     // Create AWS V4 signature
@@ -343,11 +339,9 @@ async function sendEmailViaSES(
     });
 
     const responseText = await response.text();
-    console.log(`[Attempt ${attemptNumber}] SES Response Status: ${response.status}`);
-    console.log(`[Attempt ${attemptNumber}] SES Response: ${responseText.substring(0, 500)}`);
 
     if (!response.ok) {
-      console.error(`[Attempt ${attemptNumber}] ❌ SES Error:`, responseText);
+      console.error(`[SES Attempt ${attemptNumber}] ❌ HTTP ${response.status}:`, responseText.substring(0, 300));
       
       // Try fallback region if primary fails and we haven't tried it yet
       if (region === 'eu-north-1' && attemptNumber < 2) {
@@ -377,7 +371,7 @@ async function sendEmailViaSES(
     };
 
   } catch (error: any) {
-    console.error(`[Attempt ${attemptNumber}] ❌ Exception during email send:`, error);
+    console.error(`ERROR: [Attempt ${attemptNumber}] Exception during email send:`, error.message || 'Unknown error');
     
     // Try fallback region on exception if we haven't tried it yet
     if (region === 'us-east-1' && attemptNumber < 2) {
@@ -480,7 +474,7 @@ const handler = async (req: Request): Promise<Response> => {
 
   } catch (error: any) {
     const duration = Date.now() - startTime;
-    console.error(`❌ Email notification error after ${duration}ms:`, error);
+    console.error(`ERROR: Email notification failed after ${duration}ms:`, error.message || 'Unknown error');
     
     return new Response(
       JSON.stringify({ 

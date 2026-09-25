@@ -19,7 +19,6 @@ import { AuthErrorRecovery } from "./components/auth/AuthErrorRecovery";
 import { AuthErrorBoundary } from "./components/auth/AuthErrorBoundary";
 import { BundleErrorFallback } from "./components/BundleErrorFallback";
 import { ErrorBoundary } from "react-error-boundary";
-import { HealthMonitor } from '@/components/monitoring/HealthMonitor';
 import { MetaTags } from '@/components/seo/MetaTags';
 import { initializeProductionOptimizations } from '@/utils/productionOptimizer';
 import { initializePerformanceOptimizations } from '@/utils/performanceOptimizations';
@@ -120,6 +119,7 @@ const SecurityCenter                  = lazy(() => import('@/pages/admin/Securit
 const ProductRequirementDocument      = lazy(() => import('@/pages/admin/ProductRequirementDocument'));
 const AdminScrapedJobApplications     = lazy(() => import('@/components/admin/AdminScrapedJobApplications').then(m => ({ default: m.AdminScrapedJobApplications })));
 const EdgeFunctionsMonitor            = lazy(() => import('@/pages/admin/EdgeFunctionsMonitor'));
+const SupabaseEfficiencyDashboard     = lazy(() => import('@/components/admin/SupabaseEfficiencyDashboard'));
 const NewsManagement                  = lazy(() => import('@/pages/admin/NewsManagement'));
 const EmailAutomation                 = lazy(() => import('@/pages/admin/EmailAutomation'));
 const PopulateCoursesAdmin            = lazy(() => import('@/pages/admin/PopulateCoursesAdmin'));
@@ -718,6 +718,7 @@ const App = () => {
                                 <Route path="/admin/seo-dashboard" element={<AdminLayout><SEODashboard /></AdminLayout>} />
                                 <Route path="/admin/scraped-applications" element={<AdminLayout><AdminScrapedJobApplications /></AdminLayout>} />
                                 <Route path="/admin/edge-functions-monitor" element={<AdminLayout><EdgeFunctionsMonitor /></AdminLayout>} />
+                                <Route path="/admin/supabase-efficiency" element={<AdminLayout><SupabaseEfficiencyDashboard /></AdminLayout>} />
                                 <Route path="/admin/news-management" element={<AdminLayout><NewsManagement /></AdminLayout>} />
                                 <Route path="/admin/email-automation" element={<AdminLayout><EmailAutomation /></AdminLayout>} />
                                 <Route path="/admin/populate-courses" element={<AdminLayout><PopulateCoursesAdmin /></AdminLayout>} />
