@@ -1,9 +1,9 @@
 ﻿-- Emergency Quota Cleanup Migration
--- 1. Unschedule all orphaned / failing pg_cron jobs calling dead endpoints
+-- 1. Unschedule all orphaned / failing pg_cron jobs safely using jobid
 DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_cron') THEN
-    PERFORM cron.unschedule(jobname)
+    PERFORM cron.unschedule(jobid)
     FROM cron.job
     WHERE jobname IN (
       'smart-email-processor-every-2min',
@@ -19,6 +19,11 @@ BEGIN
       'sitemap-refresh',
       'news-automation-every-2-hours'
     );
+
+    -- Clear accumulated execution logs
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'cron' AND table_name = 'job_run_details') THEN
+      TRUNCATE TABLE cron.job_run_details;
+    END IF;
   END IF;
 EXCEPTION WHEN OTHERS THEN
   RAISE NOTICE 'pg_cron unschedule skipped: %', SQLERRM;
