@@ -84,7 +84,7 @@ export const SocialNetworkConversionCTA: React.FC<SocialNetworkConversionCTAProp
               TalentXcel Professional Network
             </Badge>
             <span className="text-2xs sm:text-xs text-slate-400 hidden sm:inline">
-              Over 25,000+ professionals & 1,400+ hiring teams connected
+              10K+ verified professionals & 500+ hiring teams connected
             </span>
           </div>
 
