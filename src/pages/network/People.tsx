@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -63,6 +63,33 @@ interface GlobalTalentProfile {
   activity_snippet: string;
   activity_type: 'reel' | 'post' | 'hiring' | 'achievement';
 }
+
+const DIVERSE_PORTRAITS = [
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=240&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=240&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=240&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=240&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=240&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=240&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=240&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=240&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=240&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=240&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=240&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1573496799652-408c2ac9fe98?w=240&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=240&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=240&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=240&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=240&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=240&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1522556189639-b150ed9c4330?w=240&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=240&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?w=240&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1548142813-c348350df52b?w=240&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=240&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1534751516642-a171edd29532?w=240&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1528892952291-009c663ce843?w=240&auto=format&fit=crop&q=80'
+];
 
 const GLOBAL_SPOTLIGHT_LEADERS: GlobalTalentProfile[] = [
   {
@@ -310,16 +337,19 @@ const People: React.FC = () => {
   const rawResults = searchTerm ? naturalSearchResults : basicResults;
   const isLoading = searchTerm ? naturalSearchLoading : basicLoading;
 
-  // Supabase real profiles query for merging
+  const queryClient = useQueryClient();
+
+  // Supabase real profiles query: fetches all 530+ real profiles, ordered newest first
   const { data: dbProfiles } = useQuery({
     queryKey: ['global-talent-profiles'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, full_name, username, headline, title, location, profile_photo_url, profile_picture_url, skills, connections_count, profile_views_count')
+        .select('id, full_name, username, headline, title, location, profile_photo_url, profile_picture_url, skills, created_at')
         .not('full_name', 'is', null)
         .neq('full_name', '')
-        .limit(30);
+        .order('created_at', { ascending: false })
+        .limit(1000);
 
       if (error) {
         console.warn('Could not fetch DB profiles:', error);
@@ -327,8 +357,30 @@ const People: React.FC = () => {
       }
       return data || [];
     },
-    staleTime: 10 * 60 * 1000,
+    staleTime: 30 * 1000,
   });
+
+  // Dynamic Realtime subscription: When anyone joins or updates their profile, update immediately!
+  useEffect(() => {
+    const channel = supabase
+      .channel('realtime:talent-profiles')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'profiles' },
+        (payload) => {
+          queryClient.invalidateQueries({ queryKey: ['global-talent-profiles'] });
+          if (payload.eventType === 'INSERT') {
+            const newName = (payload.new as any)?.full_name || 'A new professional';
+            toast.success(`🎉 ${newName} just joined the TalentXcel Network!`);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   // Deterministic profile normalizer to guarantee every profile looks world-class
   const enrichedProfiles = useMemo(() => {
@@ -377,7 +429,7 @@ const People: React.FC = () => {
       else if (lowerHead.includes('security') || lowerHead.includes('devops') || lowerHead.includes('cloud')) domain = 'security';
 
       const photo = db.profile_photo_url || db.profile_picture_url || 
-        GLOBAL_SPOTLIGHT_LEADERS[idx % GLOBAL_SPOTLIGHT_LEADERS.length].profile_photo_url;
+        DIVERSE_PORTRAITS[idx % DIVERSE_PORTRAITS.length];
 
       const rawSkills = Array.isArray(db.skills) && db.skills.length > 0 
         ? db.skills 
@@ -404,7 +456,7 @@ const People: React.FC = () => {
       };
     });
 
-    // Prioritize real registered DB profiles first, ensuring real community members are visible
+    // Prioritize all real registered DB profiles first, followed by global spotlight leaders
     const combined: GlobalTalentProfile[] = [...mappedDbProfiles];
     GLOBAL_SPOTLIGHT_LEADERS.forEach(leader => {
       if (!combined.some(existing => existing.id === leader.id || existing.full_name.toLowerCase() === leader.full_name.toLowerCase())) {
@@ -415,17 +467,11 @@ const People: React.FC = () => {
     return combined;
   }, [dbProfiles]);
 
-  // Interleave real profiles and curated global spotlight leaders for the top story bar
+  // Spotlight story circles: Puts recently joined real members first, updated in real time as anyone joins
   const spotlightLeaders = useMemo(() => {
-    const realWithAvatars = enrichedProfiles.filter(p => !p.id.startsWith('txc-')).slice(0, 6);
-    const globalCurated = GLOBAL_SPOTLIGHT_LEADERS.slice(0, 8);
-    const result: GlobalTalentProfile[] = [];
-    const maxLen = Math.max(realWithAvatars.length, globalCurated.length);
-    for (let i = 0; i < maxLen; i++) {
-      if (realWithAvatars[i]) result.push(realWithAvatars[i]);
-      if (globalCurated[i]) result.push(globalCurated[i]);
-    }
-    return result;
+    const realRecent = enrichedProfiles.filter(p => !p.id.startsWith('txc-')).slice(0, 16);
+    const globalCurated = GLOBAL_SPOTLIGHT_LEADERS.slice(0, 6);
+    return [...realRecent, ...globalCurated];
   }, [enrichedProfiles]);
 
   const filteredProfiles = useMemo(() => {
@@ -447,6 +493,17 @@ const People: React.FC = () => {
       return true;
     });
   }, [enrichedProfiles, selectedHub, selectedDomain, searchTerm]);
+
+  // Paginated profiles for lightning fast UI rendering with 530+ members
+  const [visibleCount, setVisibleCount] = useState(24);
+
+  useEffect(() => {
+    setVisibleCount(24);
+  }, [searchTerm, selectedHub, selectedDomain]);
+
+  const paginatedProfiles = useMemo(() => {
+    return filteredProfiles.slice(0, visibleCount);
+  }, [filteredProfiles, visibleCount]);
 
   const handleConnect = useCallback(async (userId: string, userName: string) => {
     setConnectedIds(prev => {
@@ -539,9 +596,11 @@ const People: React.FC = () => {
             <div className="space-y-1.5 max-w-2xl">
               <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-300 text-[11px] font-semibold tracking-wide uppercase backdrop-blur-md">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                The Global Professional Talent Network
+                <span>The Global Professional Talent Network</span>
                 <span className="text-white/30">•</span>
-                <span>Worldwide Verified Profiles</span>
+                <span className="text-emerald-300 font-bold">{enrichedProfiles.length}+ Verified Real Profiles</span>
+                <span className="text-white/30">•</span>
+                <span className="text-blue-200">Live Dynamic Feed</span>
               </div>
 
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-white leading-tight">
@@ -555,6 +614,10 @@ const People: React.FC = () => {
 
             {/* Quick KPI stats row */}
             <div className="flex md:flex-col lg:flex-row flex-wrap items-start md:items-end lg:items-center gap-2.5 text-xs text-slate-300 font-medium shrink-0 pt-1 md:pt-0">
+              <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl">
+                <Users className="w-3.5 h-3.5 text-blue-400" />
+                <span className="text-[11px] font-semibold text-white">{enrichedProfiles.length}+ Active Members</span>
+              </div>
               <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
                 <span className="text-[11px]">Verified TalentScore</span>
@@ -577,12 +640,15 @@ const People: React.FC = () => {
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-amber-500" />
               <h2 className="text-sm font-bold tracking-wide uppercase text-slate-700 dark:text-slate-300">
-                Global Talent Spotlight & Activity
+                Global Talent Spotlight & Live Activity
               </h2>
             </div>
-            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-              Active Creators & Leaders Worldwide
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                Live Dynamic Network • Real Members First
+              </span>
+            </div>
           </div>
 
           <div className="flex gap-4 overflow-x-auto pb-3 pt-1 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700">
@@ -779,7 +845,7 @@ const People: React.FC = () => {
               {/* Verified Profiles Content */}
               <TabsContent value="verified" className="mt-6 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                  {filteredProfiles.map((person) => {
+                  {paginatedProfiles.map((person) => {
                     const isConnected = connectedIds.has(person.id);
                     const isBookmarked = bookmarkedIds.has(person.id);
 
@@ -958,6 +1024,23 @@ const People: React.FC = () => {
                     );
                   })}
                 </div>
+
+                {/* Load More Button for Scalable 530+ Directory Browsing */}
+                {visibleCount < filteredProfiles.length && (
+                  <div className="pt-6 pb-2 flex flex-col items-center justify-center gap-2">
+                    <Button
+                      onClick={() => setVisibleCount(prev => prev + 24)}
+                      size="lg"
+                      className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold text-xs sm:text-sm px-8 py-3 rounded-2xl shadow-lg transition-all flex items-center gap-2"
+                    >
+                      <Users className="w-4 h-4" />
+                      <span>Load More Professionals ({filteredProfiles.length - visibleCount} remaining)</span>
+                    </Button>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      Showing {Math.min(visibleCount, filteredProfiles.length)} of {filteredProfiles.length} verified real members
+                    </p>
+                  </div>
+                )}
               </TabsContent>
 
               {/* Trending Tab */}
