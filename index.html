@@ -40,8 +40,8 @@
         document.head.appendChild(script);
       });
     </script>
-    <title>TalentXcel — AI Career Platform for Jobs, Skills &amp; Hiring</title>
-    <meta name="description" content="Careers, Designed — Not Discovered. Search verified jobs, build an ATS-ready resume, prepare for interviews and grow your skills on TalentXcel." />
+    <title>TalentXcel — The Professional Talent Network</title>
+    <meta name="description" content="Connect. Discover. Grow. Get Hired. Where professionals build their career identity, explore opportunities, share knowledge, and get discovered by recruiters and companies on TalentXcel." />
     <meta name="author" content="TalentXcel" />
     <link rel="icon" href="/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png" type="image/png">
 
@@ -60,6 +60,7 @@
     <!-- Prefetch likely next pages -->
     <link rel="prefetch" href="/jobs" as="document">
     <link rel="prefetch" href="/network" as="document">
+    <link rel="prefetch" href="/talent" as="document">
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
@@ -74,8 +75,8 @@
     <link rel="apple-touch-startup-image" href="/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png" />
 
     <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="TalentXcel — AI Career Platform for Jobs, Skills &amp; Hiring" />
-    <meta property="og:description" content="Careers, Designed — Not Discovered. Search verified jobs, build an ATS-ready resume, prepare for interviews and grow your skills." />
+    <meta property="og:title" content="TalentXcel — The Professional Talent Network" />
+    <meta property="og:description" content="Connect. Discover. Grow. Get Hired. Where professionals build their career identity, explore opportunities, and connect with recruiters and companies." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://talentxcel.in/" />
     <meta property="og:image" content="https://talentxcel.in/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" />
@@ -84,8 +85,8 @@
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="TalentXcel — AI Career Platform for Jobs, Skills &amp; Hiring" />
-    <meta name="twitter:description" content="Careers, Designed — Not Discovered. Verified jobs, ATS-ready resumes and AI interview prep." />
+    <meta name="twitter:title" content="TalentXcel — The Professional Talent Network" />
+    <meta name="twitter:description" content="Connect. Discover. Grow. Get Hired. Where professionals build their career identity, explore opportunities, and connect with recruiters and companies." />
     <meta name="twitter:image" content="https://talentxcel.in/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" />
 
     <!-- Additional SEO Meta Tags -->
@@ -109,27 +110,37 @@
     <!-- Removed to improve initial load time - loaded via AsyncGoogleOneTap component -->
     
     <!-- Structured Data -->
-    <!-- WebSite + SearchAction: tells Google the site has a search function at /jobs?search= -->
+    <!-- WebSite + SearchAction: tells Google the site has a search function at /jobs?search= and /talent?search= -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "TalentXcel",
-      "alternateName": "TalentXcel — AI Career Platform",
+      "alternateName": ["TalentXcel", "TalentXcel — The Professional Talent Network", "TalentXcel Recruiter OS"],
       "url": "https://talentxcel.in",
-      "description": "Careers, Designed — Not Discovered. India's AI career platform for job search, ATS resume building, college discovery, interview prep and skill growth.",
+      "description": "Connect. Discover. Grow. Get Hired. The professional talent network where members build their career identity, explore opportunities, share knowledge in reels and communities, and get discovered by companies.",
       "inLanguage": "en-IN",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": {
-          "@type": "EntryPoint",
-          "urlTemplate": "https://talentxcel.in/jobs?search={search_term_string}"
+      "potentialAction": [
+        {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://talentxcel.in/jobs?search={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
         },
-        "query-input": "required name=search_term_string"
-      }
+        {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://talentxcel.in/talent?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      ]
     }
     </script>
-    <!-- Organization: core disambiguated entity signal for Google and generative AI systems -->
+    <!-- Organization: core disambiguated entity signal for Google, LinkedIn, and generative AI systems -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -139,8 +150,9 @@
       "legalName": "TalentXcel Services Private Limited",
       "alternateName": [
         "TalentXcel",
-        "TalentXcel India",
-        "TalentXcel AI"
+        "TalentXcel Network",
+        "TalentXcel — The Professional Talent Network",
+        "TalentXcel Recruiter OS"
       ],
       "url": "https://talentxcel.in",
       "logo": {
@@ -149,9 +161,9 @@
         "url": "https://talentxcel.in/talentxcel-official-logo.png",
         "width": 200,
         "height": 200,
-        "caption": "TalentXcel"
+        "caption": "TalentXcel — The Professional Talent Network"
       },
-      "description": "TalentXcel is an AI-powered career operating system connecting job seekers, students and professionals with verified jobs, ATS-ready resume tools, college intelligence, career pathways, skill verification and intent-driven career discovery.",
+      "description": "TalentXcel is the professional talent network and AI-powered career and recruitment ecosystem where professionals build their identity, discover opportunities, connect with their industry, and get discovered by recruiters and companies through Recruiter OS.",
       "foundingDate": "2024",
       "address": {
         "@type": "PostalAddress",

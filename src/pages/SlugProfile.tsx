@@ -260,7 +260,7 @@ const SlugProfile = () => {
     );
   }
 
-  const fullTitle = `${profile.full_name} | ${profile.title ?? 'TalentXcel'}`;
+  const fullTitle = `${profile.full_name} | ${profile.title ?? 'Professional'} | TalentXcel`;
   const candidateSkills = Array.isArray(profile.skills) ? profile.skills : [];
 
   // Formulate data-driven capabilities from actual skills or profile title
@@ -295,6 +295,7 @@ const SlugProfile = () => {
       telephone: profile.phone,
       image: profile.profile_picture_url,
       description: profile.about,
+      knowsAbout: candidateSkills,
       worksFor: {
         '@type': 'Organization',
         name: 'TalentXcel',

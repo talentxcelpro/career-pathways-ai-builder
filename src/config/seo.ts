@@ -13,10 +13,10 @@ export const SECONDARY_ORIGINS = ['https://talentxcel.net', 'https://www.talentx
 
 export const SITE_NAME = 'TalentXcel';
 
-export const DEFAULT_TITLE = 'TalentXcel — AI Career Platform for Jobs, Skills & Hiring';
+export const DEFAULT_TITLE = 'TalentXcel | The Professional Talent Network';
 
 export const DEFAULT_DESCRIPTION =
-  'Careers, Designed — Not Discovered. Search verified jobs, build an ATS-ready resume, prepare for interviews and grow your skills on TalentXcel.';
+  'Connect. Discover. Grow. Get Hired. Where professionals build their career identity, explore opportunities, share knowledge, and get discovered by recruiters and companies on TalentXcel.';
 
 export const DEFAULT_OG_IMAGE = `${PRODUCTION_ORIGIN}/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png`;
 
@@ -57,7 +57,14 @@ export interface IndexableRoute {
 
 export const INDEXABLE_ROUTES: IndexableRoute[] = [
   { path: '/', changefreq: 'daily', priority: '1.0' },
+  { path: '/network', changefreq: 'daily', priority: '1.0' },
   { path: '/jobs', changefreq: 'daily', priority: '0.9' },
+  { path: '/talent', changefreq: 'daily', priority: '0.9' },
+  { path: '/reels', changefreq: 'daily', priority: '0.9' },
+  { path: '/communities', changefreq: 'daily', priority: '0.8' },
+  { path: '/recruiters', changefreq: 'daily', priority: '0.9' },
+  { path: '/hire', changefreq: 'daily', priority: '0.9' },
+  { path: '/colleges', changefreq: 'weekly', priority: '0.8' },
   { path: '/companies', changefreq: 'weekly', priority: '0.8' },
   { path: '/learning', changefreq: 'weekly', priority: '0.8' },
   { path: '/tools', changefreq: 'weekly', priority: '0.8' },

@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Briefcase, TrendingUp, Building, Users, MapPin, DollarSign } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { SocialNetworkConversionCTA } from '@/components/network/SocialNetworkConversionCTA';
 
 const IndustryJobs = () => {
   const { industry } = useParams();
@@ -203,6 +204,12 @@ const IndustryJobs = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* High-Converting Social Network Entry Gate */}
+      <SocialNetworkConversionCTA 
+        roleTitle={industryInfo.name} 
+        category={industryInfo.name} 
+      />
 
       {/* FAQs */}
       {seo?.faqs && seo.faqs.length > 0 && (

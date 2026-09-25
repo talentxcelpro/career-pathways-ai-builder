@@ -39,6 +39,7 @@ import { JobCategoriesGrid } from '@/components/jobs/JobCategoriesGrid';
 import { HundredsOfIndustriesSection } from '@/components/jobs/HundredsOfIndustriesSection';
 import { OptimizedJobCard } from '@/components/jobs/OptimizedJobCard';
 import { CompactJobCard } from '@/components/jobs/CompactJobCard';
+import { SocialNetworkConversionCTA } from '@/components/network/SocialNetworkConversionCTA';
 
 // Input validation schema for security
 const filtersSchema = z.object({
@@ -471,6 +472,15 @@ const Jobs = () => {
               </p>
             </div>
 
+            {/* Social Network Conversion Magnet */}
+            <div className="max-w-4xl mx-auto">
+              <SocialNetworkConversionCTA
+                compact={true}
+                roleTitle={filters.search || 'Tech & Leadership'}
+                location={filters.location || 'India'}
+              />
+            </div>
+
             {/* Mobile-First Global Search Bar */}
             <div className="max-w-4xl mx-auto mb-3 sm:mb-4">
               <GlobalSearch
@@ -800,6 +810,12 @@ const Jobs = () => {
                         ✓ You have viewed all {totalCount} active verified opportunities.
                       </div>
                     )}
+
+                    {/* Viral Social Network Conversion Flywheel Banner */}
+                    <SocialNetworkConversionCTA
+                      roleTitle={filters.search}
+                      location={filters.location}
+                    />
                   </>
                 )}
               </div>

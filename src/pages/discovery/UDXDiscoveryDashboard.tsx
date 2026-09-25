@@ -34,7 +34,6 @@ import {
   Rocket
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { GSCControlPanel } from './components/GSCControlPanel';
 import { DemandQueriesTable, DemandEntity } from './components/DemandQueriesTable';
 import { WorldView } from './components/WorldView';
 import { NowView } from './components/NowView';
@@ -573,10 +572,6 @@ export default function UDXDiscoveryDashboard() {
                   <Database className="w-4 h-4 mr-2" />
                   Demand Queries ({totalEntitiesCount})
                 </TabsTrigger>
-                <TabsTrigger value="gsc" className="data-[state=active]:bg-emerald-600 text-slate-400 data-[state=active]:text-white">
-                  <Radio className="w-4 h-4 mr-2" />
-                  GSC Live OAuth & Sync
-                </TabsTrigger>
                 <TabsTrigger value="memory" className="data-[state=active]:bg-indigo-600 text-slate-400 data-[state=active]:text-white">
                   <BrainCircuit className="w-4 h-4 mr-2" />
                   Intent Memory (Moat)
@@ -589,10 +584,6 @@ export default function UDXDiscoveryDashboard() {
 
               <TabsContent value="queries" className="space-y-4">
                 <DemandQueriesTable entities={entities} totalCount={totalEntitiesCount} />
-              </TabsContent>
-
-              <TabsContent value="gsc" className="space-y-6">
-                <GSCControlPanel gscStatus={gscStatus} totalQueries={totalEntitiesCount} onRefresh={fetchDiscoveryData} />
               </TabsContent>
 
               <TabsContent value="memory" className="space-y-4">
