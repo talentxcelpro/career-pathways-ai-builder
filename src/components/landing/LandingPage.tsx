@@ -12,6 +12,7 @@ import { SEOJobCategories } from '@/components/seo/SEOJobCategories';
 import { SEOLandingPageLinks } from '@/components/seo/SEOLandingPageLinks';
 import { ChatrServiceSection } from './ChatrServiceSection';
 import { LandingFooter } from './LandingFooter';
+import { AboutTalentXcelSEO } from './AboutTalentXcelSEO';
 
 // Lazy load news widget for faster initial load
 const NewsLatestWidget = React.lazy(() => 
@@ -52,9 +53,11 @@ export const LandingPage = () => {
           </div>
         </div>
       </div>
+      <AboutTalentXcelSEO />
       <LandingFooter />
     </div>
   );
 };
+
 
 

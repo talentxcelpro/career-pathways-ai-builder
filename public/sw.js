@@ -21,8 +21,16 @@ self.addEventListener('activate', (event) => {
 
     await Promise.all(
       clients.map((client) => {
-        if ('navigate' in client) {
-          return client.navigate(client.url);
+        try {
+          if ('navigate' in client && client.url) {
+            // Only navigate if it's a window client that we can actually control
+            return client.navigate(client.url).catch(err => {
+              console.warn('Navigation failed for client, ignoring:', err);
+              return client.postMessage({ type: 'SERVICE_WORKER_DISABLED' });
+            });
+          }
+        } catch (e) {
+          console.warn('Client iteration error:', e);
         }
         return client.postMessage({ type: 'SERVICE_WORKER_DISABLED' });
       })

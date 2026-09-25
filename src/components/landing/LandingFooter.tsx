@@ -6,6 +6,8 @@ export const LandingFooter: React.FC = () => {
   const platformLinks = [
     { name: 'Search Verified Jobs', href: '/jobs' },
     { name: 'Professional Network', href: '/network' },
+    { name: 'Professional Communities', href: '/communities' },
+    { name: 'Top Companies & Employers', href: '/companies' },
     { name: 'Career Passport & TalentScore', href: '/passport' },
     { name: 'Recruiter OS for Employers', href: '/recruiters' },
     { name: 'Career Reels', href: '/reels' },
@@ -127,3 +129,4 @@ export const LandingFooter: React.FC = () => {
     </footer>
   );
 };
+

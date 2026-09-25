@@ -9,20 +9,21 @@ export const BundleErrorFallback: React.FC<BundleErrorFallbackProps> = ({
   error, 
   resetErrorBoundary 
 }) => {
+  const errorMsg = error?.message?.toLowerCase() || '';
+  const errorName = error?.name?.toLowerCase() || '';
+  
+  const isChunkOrDeployError = 
+    errorMsg.includes('failed to fetch dynamically imported module') ||
+    errorMsg.includes('loading chunk') ||
+    errorMsg.includes('loading css chunk') ||
+    errorMsg.includes('dynamically imported') ||
+    errorName.includes('chunkloaderror') ||
+    errorMsg.includes('mime type');
+
   useEffect(() => {
     if (error) {
       console.error('[Application Runtime Error caught by ErrorBoundary]:', error);
     }
-    const errorMsg = error?.message?.toLowerCase() || '';
-    const errorName = error?.name?.toLowerCase() || '';
-    
-    const isChunkOrDeployError = 
-      errorMsg.includes('failed to fetch dynamically imported module') ||
-      errorMsg.includes('loading chunk') ||
-      errorMsg.includes('loading css chunk') ||
-      errorMsg.includes('dynamically imported') ||
-      errorName.includes('chunkloaderror') ||
-      errorMsg.includes('mime type');
 
     if (isChunkOrDeployError) {
       const lastReload = parseInt(sessionStorage.getItem('last_chunk_reload') || '0', 10);
@@ -39,7 +40,7 @@ export const BundleErrorFallback: React.FC<BundleErrorFallbackProps> = ({
         window.location.reload();
       }
     }
-  }, [error]);
+  }, [error, isChunkOrDeployError]);
 
   const handleRefresh = () => {
     try {
@@ -66,11 +67,18 @@ export const BundleErrorFallback: React.FC<BundleErrorFallbackProps> = ({
 
         <div className="space-y-2">
           <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-            Updating TalentXcel
+            {isChunkOrDeployError ? "Updating TalentXcel" : "Something went wrong"}
           </h2>
           <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-            A new version of the platform was recently deployed. We are syncing the latest updates and performance improvements.
+            {isChunkOrDeployError 
+              ? "A new version of the platform was recently deployed. We are syncing the latest updates and performance improvements."
+              : "An unexpected error occurred in the application. Please try reloading the page."}
           </p>
+          {!isChunkOrDeployError && error?.message && (
+            <div className="mt-4 p-2 bg-red-50 dark:bg-red-900/20 rounded-md text-left overflow-auto text-xs font-mono text-red-600 dark:text-red-400 max-h-32">
+              {error.message}
+            </div>
+          )}
         </div>
 
         <div className="pt-2 space-y-2.5">
