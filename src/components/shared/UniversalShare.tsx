@@ -107,15 +107,17 @@ export const UniversalShare: React.FC<UniversalShareProps> = ({
 
     const messageData = messages[content.type];
     
+    const attribution = '— Powered by TalentXcel • The Professional Talent Network';
+
     const platformSpecificFormatting = {
-      whatsapp: `*${messageData.title}*\n\n${messageData.description}\n\n${url}`,
-      telegram: `**${messageData.title}**\n\n${messageData.description}\n\n${url}\n\n${messageData.hashtags.map(tag => `#${tag}`).join(' ')}`,
-      facebook: `${messageData.title}\n\n${messageData.description}`,
-      twitter: `${messageData.title}\n\n${messageData.hashtags.map(tag => `#${tag}`).join(' ')}`,
-      linkedin: `${messageData.title}\n\n${messageData.description}`,
-      email: `Subject: ${messageData.title}\n\nBody: ${messageData.description}\n\n${url}`,
-      instagram: `${messageData.title}\n\n${messageData.hashtags.map(tag => `#${tag}`).join(' ')}`,
-      default: `${messageData.title}\n\n${messageData.description}\n\n${url}`
+      whatsapp: `*${messageData.title}*\n\n${messageData.description}\n\n${attribution}\n${url}`,
+      telegram: `**${messageData.title}**\n\n${messageData.description}\n\n${attribution}\n${url}\n\n${messageData.hashtags.map(tag => `#${tag}`).join(' ')}`,
+      facebook: `${messageData.title}\n\n${messageData.description}\n\n${attribution}`,
+      twitter: `${messageData.title}\n\n${attribution}\n${url}\n${messageData.hashtags.map(tag => `#${tag}`).join(' ')}`,
+      linkedin: `${messageData.title}\n\n${messageData.description}\n\n${attribution}\n${url}`,
+      email: `Subject: ${messageData.title}\n\nBody: ${messageData.description}\n\n${attribution}\n\n${url}`,
+      instagram: `${messageData.title}\n\n${attribution}\n\n${messageData.hashtags.map(tag => `#${tag}`).join(' ')}`,
+      default: `${messageData.title}\n\n${messageData.description}\n\n${attribution}\n\n${url}`
     };
 
     return {

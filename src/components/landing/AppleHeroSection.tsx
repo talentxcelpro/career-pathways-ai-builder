@@ -110,13 +110,13 @@ export const AppleHeroSection = () => {
               <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60 backdrop-blur-sm text-left">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900 dark:text-slate-100 mb-1">
                   <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                  For Job Seekers & Professionals
+                  For Professionals
                 </div>
                 <p className="text-[12px] text-slate-500 dark:text-slate-400 mb-2 leading-relaxed">
-                  ATS resume scoring, 10,250+ Indian colleges, salary benchmarks & matched jobs.
+                  Build Career Passport → Network with peers → Discover verified jobs → Get discovered.
                 </p>
-                <a href="/resume/ats-check" className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1">
-                  Build Career & Resume <ChevronRight className="h-3 w-3" />
+                <a href="/passport" className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1">
+                  Build Career Passport <ChevronRight className="h-3 w-3" />
                 </a>
               </div>
 
@@ -127,15 +127,15 @@ export const AppleHeroSection = () => {
                 <div className="flex items-center justify-between text-xs font-bold text-blue-950 dark:text-blue-200 mb-1">
                   <span className="flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-blue-600 animate-ping" />
-                    For Recruiters & Founders
+                    For Recruiters & Hiring Teams
                   </span>
                   <span className="text-[10px] uppercase font-black bg-blue-600 text-white px-1.5 py-0.5 rounded">RECRUITER OS</span>
                 </div>
                 <p className="text-[12px] text-slate-600 dark:text-slate-300 mb-2 leading-relaxed">
-                  Search 12,000+ candidates live. Talent CRM, AI match, and direct candidate outreach.
+                  Search 10K+ talent live → Match with Candidate 360 → Direct verified outreach → Hire.
                 </p>
                 <span className="text-xs font-bold text-blue-700 dark:text-blue-300 group-hover:underline inline-flex items-center gap-1">
-                  Search Candidates Free <ChevronRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+                  Open Recruiter OS <ChevronRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
                 </span>
               </a>
             </div>
