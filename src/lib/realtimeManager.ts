@@ -116,6 +116,12 @@ class RealtimeManager {
     const channelName = 'production-realtime';
     console.log(`🔗 Creating single channel: ${channelName}`);
 
+    // First ensure we remove any existing channel with this name to avoid binding duplication
+    const existingChannel = supabase.getChannels().find(c => c.topic === `realtime:${channelName}`);
+    if (existingChannel) {
+      supabase.removeChannel(existingChannel).catch(() => {});
+    }
+
     const channel = supabase.channel(channelName);
 
     // Subscribe to all essential tables in a single channel
@@ -412,9 +418,10 @@ class RealtimeManager {
     // Clear all channels with error handling
     this.channels.forEach((channel, channelName) => {
       try {
-        // Only remove if channel still exists
-        if (channel && typeof channel.unsubscribe === 'function') {
-          channel.unsubscribe();
+        if (channel) {
+          // Unsubscribe and explicitly remove channel to prevent binding conflicts on reconnect
+          channel.unsubscribe().catch(() => {});
+          supabase.removeChannel(channel).catch(() => {});
         }
         console.log(`❌ Removed channel: ${channelName}`);
       } catch (error) {

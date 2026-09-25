@@ -137,8 +137,8 @@ export function AdminDashboard() {
         activities
       };
     },
-    staleTime: 30 * 1000,
-    refetchInterval: 60 * 1000
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: 5 * 60 * 1000 // 5 minutes — admin overview doesn't need per-minute refreshes
   });
 
   return (

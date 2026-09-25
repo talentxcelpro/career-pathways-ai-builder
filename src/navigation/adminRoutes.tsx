@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';;
-import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag, Bot, Globe, AlertTriangle, Link, Newspaper, Coins, Upload, Database, Rocket, Eye, Target, TrendingUp, Calendar } from "lucide-react";
+import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag, Bot, Globe, AlertTriangle, Link, Newspaper, Coins, Upload, Database, Rocket, Eye, Target, TrendingUp, Calendar, Activity } from "lucide-react";
 
 const BulkUserImports = lazy(() => import('../pages/admin/BulkUserImports'));
 const SocialMarketingDashboard = lazy(() => import('../pages/admin/SocialMarketingDashboard'));
@@ -84,6 +84,7 @@ const TokenWallet = lazy(() => import('../components/blockchain/TokenWallet').th
 const TXCTokenManagement = lazy(() => import('../pages/admin/TXCTokenManagement'));
 const TXCPricing = lazy(() => import('../pages/TXCPricing'));
 const LinkedInImportManager = lazy(() => import('../components/admin/LinkedInImportManager').then(m => ({ default: m.LinkedInImportManager })));
+const SupabaseEfficiencyDashboard = lazy(() => import('../components/admin/SupabaseEfficiencyDashboard'));
 // Using TXC Token Economy for Pricing
 
 export const adminRoutes = [
@@ -682,6 +683,13 @@ export const adminRoutes = [
     to: "/admin/social-marketing/calendar",
     icon: <Calendar className="h-4 w-4 text-amber-400" />,
     page: <Suspense fallback={null}><SocialMarketingCalendar /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "Supabase Efficiency Monitor",
+    to: "/admin/supabase-efficiency",
+    icon: <Activity className="h-4 w-4 text-blue-500" />,
+    page: <Suspense fallback={null}><SupabaseEfficiencyDashboard /></Suspense>,
     isPublic: true,
   }
 ];

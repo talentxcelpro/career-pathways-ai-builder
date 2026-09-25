@@ -19,11 +19,12 @@ export interface VerifiedMemoryState {
 class KernelMemoryManager {
   private cache: VerifiedMemoryState | null = null;
   private lastFetched = 0;
-  private readonly TTL_MS = 10_000;
+  private readonly TTL_MS = 900_000; // 15 minutes cache to eliminate repeated HEAD queries
 
   async getVerifiedState(forceFresh = false): Promise<VerifiedMemoryState> {
     const now = Date.now();
-    if (!forceFresh && this.cache && now - this.lastFetched < this.TTL_MS) {
+    const minCooldownMs = 60_000;
+    if (this.cache && (!forceFresh ? (now - this.lastFetched < this.TTL_MS) : (now - this.lastFetched < minCooldownMs))) {
       return this.cache;
     }
 

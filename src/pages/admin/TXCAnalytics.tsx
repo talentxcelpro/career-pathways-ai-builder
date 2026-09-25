@@ -26,7 +26,8 @@ const TXCAnalytics = () => {
       if (error) throw error;
       return data;
     },
-    refetchInterval: 30000 // Refresh every 30 seconds
+    refetchInterval: 5 * 60 * 1000, // 5 minutes — analytics are not real-time critical
+    staleTime: 5 * 60 * 1000,
   });
 
   const tokenEconomics = analyticsData?.tokenEconomics;

@@ -13,10 +13,10 @@ export const SECONDARY_ORIGINS = ['https://talentxcel.net', 'https://www.talentx
 
 export const SITE_NAME = 'TalentXcel';
 
-export const DEFAULT_TITLE = 'TalentXcel | The Global Professional Talent Network';
+export const DEFAULT_TITLE = 'TalentXcel | Global Professional Talent Network, Jobs & Career Passport';
 
 export const DEFAULT_DESCRIPTION =
-  'Connect with Tech & Leadership Professionals worldwide across UAE, Europe, the Americas, and Asia. Build your Career Passport, get verified by TalentScore, discover global opportunities, and let top hiring teams discover you.';
+  'Connect with Tech & Leadership Professionals worldwide. Build your Career Passport, verify skills with TalentScore, discover jobs and connect with hiring teams.';
 
 export const DEFAULT_OG_IMAGE = `${PRODUCTION_ORIGIN}/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png`;
 

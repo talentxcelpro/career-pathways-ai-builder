@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -9,65 +10,41 @@ import { supabase } from '@/integrations/supabase/client';
  */
 export const useSecureAdmin = () => {
   const { user } = useAuth();
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [lastValidated, setLastValidated] = useState<Date | null>(null);
-  
-  useEffect(() => {
-    const validateAdminStatus = async () => {
-      if (!user?.id) {
-        setIsAdmin(false);
-        setIsSuperAdmin(false);
-        setIsLoading(false);
-        setLastValidated(null);
-        return;
+  const { data: adminData, isLoading, error } = useQuery({
+    queryKey: ['secure-admin-status', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return { isAdmin: false, isSuperAdmin: false };
+
+      // Server-side validation via secure RPC
+      const { data: isAdminResult, error: adminError } = await supabase.rpc('is_current_user_admin');
+      
+      if (adminError) {
+        console.error('Admin validation error:', adminError);
+        return { isAdmin: false, isSuperAdmin: false };
       }
 
-      try {
-        // Server-side validation via secure RPC
-        const { data: isAdminResult, error: adminError } = await supabase.rpc('is_current_user_admin');
+      let isSuperAdmin = false;
+      // Check for super admin specifically
+      if (isAdminResult) {
+        const { data: roleData, error: roleError } = await supabase.rpc('get_user_app_role', {
+          _user_id: user.id
+        });
         
-        if (adminError) {
-          console.error('Admin validation error:', adminError);
-          setIsAdmin(false);
-          setIsSuperAdmin(false);
-          setLastValidated(null);
-          return;
+        if (!roleError && roleData === 'super_admin') {
+          isSuperAdmin = true;
         }
-
-        setIsAdmin(isAdminResult || false);
-
-        // Check for super admin specifically
-        if (isAdminResult) {
-          const { data: roleData, error: roleError } = await supabase.rpc('get_user_app_role', {
-            _user_id: user.id
-          });
-          
-          if (!roleError && roleData === 'super_admin') {
-            setIsSuperAdmin(true);
-          }
-        }
-
-        setLastValidated(new Date());
-
-      } catch (error) {
-        console.error('Error validating admin status:', error);
-        setIsAdmin(false);
-        setIsSuperAdmin(false);
-        setLastValidated(null);
-      } finally {
-        setIsLoading(false);
       }
-    };
 
-    validateAdminStatus();
-    
-    // Re-validate every 5 minutes
-    const interval = setInterval(validateAdminStatus, 5 * 60 * 1000);
-    
-    return () => clearInterval(interval);
-  }, [user?.id]);
+      return { isAdmin: isAdminResult || false, isSuperAdmin };
+    },
+    enabled: !!user?.id,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+
+  const isAdmin = adminData?.isAdmin || false;
+  const isSuperAdmin = adminData?.isSuperAdmin || false;
+  const lastValidated = adminData ? new Date() : null;
 
   /**
    * Perform an admin action with server-side validation

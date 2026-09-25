@@ -49,7 +49,7 @@ export function BackgroundProcessingUI() {
     fetchOperations();
     
     if (autoRefresh) {
-      const interval = setInterval(fetchOperations, 5000); // Refresh every 5 seconds
+      const interval = setInterval(fetchOperations, 60000); // Refresh every 60 seconds — background ops don't need 5s visibility
       return () => clearInterval(interval);
     }
   }, [autoRefresh]);

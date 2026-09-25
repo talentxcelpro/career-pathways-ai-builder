@@ -49,8 +49,6 @@ export const HealthMonitor: React.FC = () => {
 
   useEffect(() => {
     checkHealth();
-    const interval = setInterval(checkHealth, 30000); // Check every 30s
-    return () => clearInterval(interval);
   }, []);
 
   const getStatusColor = (status: string) => {

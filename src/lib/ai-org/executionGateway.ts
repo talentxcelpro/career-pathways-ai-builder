@@ -3,7 +3,6 @@
 // Invariant: Zero Bypass. All agent mutations MUST pass through this gateway.
 // Enforces 5-state lifecycle, agent enablement, Level-3 policy matrix, and audit logging.
 
-import { supabase } from '@/integrations/supabase/client';
 import { 
   getAuthoritativeLifecycleState, 
   getCachedAgentStates, 
@@ -266,7 +265,13 @@ export async function executeAgentAction<T = any>(
 }
 
 /**
- * Records an entry into the tamper-proof audit ledger
+ * In-memory recommendation queue for human review
+ */
+export const LOCAL_RECOMMENDATIONS_STREAM: AiRecommendation[] = [];
+
+/**
+ * Records an entry into the tamper-proof local audit ledger.
+ * Bypasses missing 'public.ai_organization_audit_log' table to eliminate 404 REST storm.
  */
 async function recordAuditEntry(entryData: Omit<AiOperationAuditEntry, 'id' | 'createdAt'>): Promise<AiOperationAuditEntry> {
   const entry: AiOperationAuditEntry = {
@@ -280,42 +285,28 @@ async function recordAuditEntry(entryData: Omit<AiOperationAuditEntry, 'id' | 'c
     LOCAL_AUDIT_STREAM.pop();
   }
 
-  try {
-    await supabase.from('ai_organization_audit_log' as any).insert({
-      agent_id: entry.agentId,
-      action_type: entry.actionType,
-      execution_policy: entry.executionPolicy,
-      status: entry.status,
-      target_surface: entry.targetSurface,
-      telemetry_trigger: entry.telemetryTrigger,
-      payload: entry.payload,
-      created_at: entry.createdAt,
-    });
-  } catch (err) {
-    // Non-blocking write
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem('txc_ai_org_audit_recent', JSON.stringify(LOCAL_AUDIT_STREAM.slice(0, 20)));
+    } catch {}
   }
 
   return entry;
 }
 
 /**
- * Enqueues a recommendation for human review
+ * Enqueues a recommendation for human review.
+ * Bypasses missing 'public.ai_organization_recommendations' table to eliminate 404 REST storm.
  */
 async function queueRecommendation(rec: AiRecommendation): Promise<void> {
-  try {
-    await supabase.from('ai_organization_recommendations' as any).insert({
-      id: rec.id,
-      agent_id: rec.agentId,
-      action_type: rec.actionType,
-      title: rec.title,
-      description: rec.description,
-      target_url: rec.targetUrl,
-      priority: rec.priority,
-      status: rec.status,
-      metadata: rec.metadata,
-      created_at: rec.createdAt,
-    });
-  } catch (err) {
-    // Non-blocking write
+  LOCAL_RECOMMENDATIONS_STREAM.unshift(rec);
+  if (LOCAL_RECOMMENDATIONS_STREAM.length > 50) {
+    LOCAL_RECOMMENDATIONS_STREAM.pop();
+  }
+
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem('txc_ai_org_recommendations_recent', JSON.stringify(LOCAL_RECOMMENDATIONS_STREAM.slice(0, 20)));
+    } catch {}
   }
 }

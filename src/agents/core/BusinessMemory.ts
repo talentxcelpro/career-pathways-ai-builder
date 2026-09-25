@@ -8,11 +8,13 @@ import type { BusinessKPIState } from './types';
 export class BusinessMemory {
   private cache: BusinessKPIState | null = null;
   private lastFetched = 0;
-  private readonly TTL_MS = 5_000;
+  private readonly TTL_MS = 900_000; // 15 minutes cache to eliminate repeated HEAD queries
 
   async getVerifiedMetrics(forceFresh = false): Promise<BusinessKPIState> {
     const now = Date.now();
-    if (!forceFresh && this.cache && now - this.lastFetched < this.TTL_MS) {
+    // Return cached metrics if within TTL, or within 60s minimum cooldown even if forceFresh is set
+    const minCooldownMs = 60_000;
+    if (this.cache && (!forceFresh ? (now - this.lastFetched < this.TTL_MS) : (now - this.lastFetched < minCooldownMs))) {
       return this.cache;
     }
 

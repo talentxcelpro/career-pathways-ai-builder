@@ -24,7 +24,7 @@ export const useStreaks = () => {
       try {
         const { data, error } = await supabase
           .from('user_streaks')
-          .select('*')
+          .select('id, user_id, streak_count, last_active_date, created_at')
           .eq('user_id', user.id)
           .maybeSingle();
 

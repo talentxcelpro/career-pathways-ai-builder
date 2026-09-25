@@ -26,7 +26,8 @@ const EdgeFunctionsMonitor = () => {
       if (error) throw error;
       return data || [];
     },
-    refetchInterval: 30000 // Refresh every 30 seconds
+    refetchInterval: 5 * 60 * 1000, // 5 minutes — function health logs are not real-time critical
+    staleTime: 5 * 60 * 1000,
   });
 
   // Fetch function alerts
@@ -42,7 +43,8 @@ const EdgeFunctionsMonitor = () => {
       if (error) throw error;
       return data || [];
     },
-    refetchInterval: 30000
+    refetchInterval: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
 
   // Get unique function names

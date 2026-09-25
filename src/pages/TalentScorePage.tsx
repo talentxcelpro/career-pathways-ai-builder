@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useRef } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { SEOHead } from '@/components/seo/SEOHead';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import {
@@ -429,10 +429,7 @@ export default function TalentScorePage() {
 
   return (
     <>
-      <Helmet>
-        <title>TalentScore - Your Career Potential in 4D | TalentXcel</title>
-        <meta name="description" content="AI-powered insights. Real opportunities. A smarter you with TalentScore." />
-      </Helmet>
+      <SEOHead title="TalentScore | Verify Your Skills with TalentXcel" description="Showcase and verify your professional skills with TalentScore and build a stronger career identity on TalentXcel." canonical="https://talentxcel.in/talentscore" type="website" />
 
       {/* Global Interactive Modal */}
       <Dialog open={activeModal.type !== null} onOpenChange={(open) => !open && setActiveModal({ type: null })}>
@@ -1217,3 +1214,4 @@ export default function TalentScorePage() {
     </>
   );
 }
+

@@ -16,7 +16,7 @@ export function useAutoRefresh<T>(
   options: AutoRefreshOptions = {}
 ) {
   const {
-    interval = 2000,
+    interval = 60000, // raised from 2000ms — 2s default was creating unintentional polling storms
     enabled = true,
     dependencies = []
   } = options;
@@ -75,7 +75,7 @@ export function useAutoRefreshJobs(options: AutoRefreshOptions = {}) {
     async () => {
       const { data, error } = await supabase
         .from('jobs')
-        .select('*')
+        .select('id, title, company_name, location, employment_type, salary_min, salary_max, is_remote, created_at, is_active, job_status')
         .eq('is_active', true)
         .order('created_at', { ascending: false })
         .limit(10);
@@ -95,7 +95,7 @@ export function useAutoRefreshPosts(options: AutoRefreshOptions = {}) {
     async () => {
       const { data, error } = await supabase
         .from('posts')
-        .select('*')
+        .select('id, content, author_id, created_at, likes_count, comments_count, post_type, media_url')
         .order('created_at', { ascending: false })
         .limit(10);
       
@@ -114,7 +114,7 @@ export function useAutoRefreshCompanies(options: AutoRefreshOptions = {}) {
     async () => {
       const { data, error } = await supabase
         .from('companies')
-        .select('*')
+        .select('id, name, logo_url, industry, location, size, is_verified, created_at')
         .order('created_at', { ascending: false })
         .limit(10);
       
@@ -173,11 +173,18 @@ export const useSmartAutoRefresh = <T>(
   return useAutoRefresh(asyncFetch, options);
 };
 
+// Refresh interval constants — classified by operational need.
+// Use realtime subscriptions for truly real-time data; these are polling fallbacks only.
 export const REFRESH_INTERVALS = {
-  FAST: 1000,
-  NORMAL: 2000,
-  SLOW: 5000,
-  JOBS: 2000,
-  COMPANIES: 3000,
-  NETWORK: 1500
+  CRITICAL_REALTIME: 5000,    // 5s  — live bid/auction counters, active video streams
+  OPERATIONAL:       60000,   // 60s — job feeds, post feeds, notification counts
+  ANALYTICS:         300000,  // 5m  — dashboards, statistics, admin panels
+  STATIC:            Infinity, // ∞  — reference data, config, manual refresh only
+  // Legacy aliases (kept for backward-compat — point to OPERATIONAL tier)
+  FAST:    60000,
+  NORMAL:  60000,
+  SLOW:    300000,
+  JOBS:    60000,
+  COMPANIES: 300000,
+  NETWORK: 60000,
 };

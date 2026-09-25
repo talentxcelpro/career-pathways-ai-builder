@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Building2, MapPin, Globe, Heart, Search, Briefcase, CheckCircle, ExternalLink } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Helmet } from 'react-helmet-async';
+import { SEOHead } from '@/components/seo/SEOHead';
 import { getGoogleCompanyLogo } from '@/services/companyLogoService';
 import { CompanyLogoSlot } from '@/components/companies/CompanyLogoSlot';
 
@@ -208,14 +208,7 @@ export const Companies: React.FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Top Companies Hiring in India | Real Company Profiles & Jobs | TalentXcel</title>
-        <meta 
-          name="description" 
-          content="Explore verified employer companies hiring in India. Discover real culture insights, active job counts from the database, and direct recruitment pathways." 
-        />
-        <link rel="canonical" href="https://talentxcel.in/companies" />
-      </Helmet>
+      <SEOHead title="Companies & Hiring | Find Career Opportunities | TalentXcel" description="Explore verified companies, industry insights and direct recruitment pathways with TalentXcel." canonical="https://talentxcel.in/companies" type="website" />
 
       <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950/40">
         {/* Compact Hero Section */}
@@ -420,3 +413,4 @@ export const Companies: React.FC = () => {
 };
 
 export default Companies;
+

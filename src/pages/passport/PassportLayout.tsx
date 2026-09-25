@@ -1,5 +1,5 @@
 import React from "react";
-import { Helmet } from "react-helmet-async";
+import { SEOHead } from "@/components/seo/SEOHead";
 import { Link, useParams, Navigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { PageShell } from "@/components/layout/PageShell";
@@ -88,21 +88,7 @@ const PassportLayout: React.FC = () => {
   }
 
   const seoHelmet = (
-    <Helmet>
-      <title>Digital Career Passport &amp; Verified Skill Credentials | TalentXcel</title>
-      <meta name="description" content="Your verified digital career passport on TalentXcel. Track verified credentials, education milestones, work achievements, and AI career readiness scores in one secure hub." />
-      <meta name="keywords" content="career passport, verified skills, digital credentials, career readiness, professional achievements, talentxcel passport" />
-      <link rel="canonical" href="https://talentxcel.in/passport" />
-      <meta property="og:title" content="Digital Career Passport | TalentXcel" />
-      <meta property="og:description" content="Track verified credentials, education milestones, and AI career readiness scores in one secure hub." />
-      <meta property="og:type" content="website" />
-      <meta property="og:url" content="https://talentxcel.in/passport" />
-      <meta property="og:image" content="https://talentxcel.in/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" />
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content="Digital Career Passport | TalentXcel" />
-      <meta name="twitter:description" content="Your verified skill passport and career readiness score on TalentXcel." />
-      <meta name="twitter:image" content="https://talentxcel.in/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" />
-    </Helmet>
+    <SEOHead title="TalentXcel Career Passport | Your Professional Career Identity" description="Build a verified professional profile with your experience, skills, career history and achievements in one Career Passport." canonical="https://talentxcel.in/passport" type="website" />
   );
 
   // When viewing Overview (/passport), render the full-screen hyper-premium Career Passport dashboard with Left Desktop Sidebar Nav!
@@ -208,3 +194,5 @@ const PassportLayout: React.FC = () => {
 };
 
 export default PassportLayout;
+
+

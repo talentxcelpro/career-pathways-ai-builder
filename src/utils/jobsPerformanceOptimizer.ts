@@ -36,13 +36,8 @@ export class JobsDataOptimizer {
   // Prefetch popular job filters
   async prefetchPopularFilters() {
     const popularFilters = [
-      { search: '', location: 'Bangalore', employment_type: [], experience_level: [] },
-      { search: '', location: 'Mumbai', employment_type: [], experience_level: [] },
-      { search: '', location: 'Delhi', employment_type: [], experience_level: [] },
-      { search: 'React', location: '', employment_type: [], experience_level: [] },
-      { search: 'Python', location: '', employment_type: [], experience_level: [] },
-      { search: '', location: '', employment_type: ['full-time'], experience_level: [] },
-      { search: '', location: '', employment_type: [], experience_level: ['entry-level'] },
+      // Only prefetch the absolute default view to save egress
+      { search: '', location: '', employment_type: [], experience_level: [] },
     ];
 
     console.log('🔄 Prefetching popular job filters...');

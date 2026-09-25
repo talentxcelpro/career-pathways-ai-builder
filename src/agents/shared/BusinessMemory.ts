@@ -19,14 +19,15 @@ export interface BusinessStateSnapshot {
 class BusinessMemoryGraph {
   private cache: BusinessStateSnapshot | null = null;
   private lastFetched = 0;
-  private readonly TTL_MS = 10_000; // 10s fresh cache
+  private readonly TTL_MS = 900_000; // 15 minutes cache to eliminate repeated HEAD queries
 
   /**
    * Fetches the unified snapshot of the entire business state across all domains
    */
   async getSnapshot(forceFresh = false): Promise<BusinessStateSnapshot> {
     const now = Date.now();
-    if (!forceFresh && this.cache && now - this.lastFetched < this.TTL_MS) {
+    const minCooldownMs = 60_000;
+    if (this.cache && (!forceFresh ? (now - this.lastFetched < this.TTL_MS) : (now - this.lastFetched < minCooldownMs))) {
       return this.cache;
     }
 

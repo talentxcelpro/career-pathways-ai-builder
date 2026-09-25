@@ -55,7 +55,8 @@ export default function Marketing() {
   const { data: analytics, isLoading: analyticsLoading } = useQuery({
     queryKey: ['claim1-growth-analytics'],
     queryFn: claim1MarketingService.getGrowthAnalytics,
-    refetchInterval: 15_000,
+    refetchInterval: 3 * 60 * 1000, // 3 minutes — claim1 marketing analytics don't need 15s refresh
+    staleTime: 3 * 60 * 1000,
   });
 
   // 2. Fetch prospects pipeline

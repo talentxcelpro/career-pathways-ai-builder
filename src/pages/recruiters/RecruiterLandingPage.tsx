@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { SEOHead } from '@/components/seo/SEOHead';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
   Search, 
@@ -146,14 +146,7 @@ export default function RecruiterLandingPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-blue-600 selection:text-white">
-      <Helmet>
-        <title>TalentXcel Recruiter OS — The Database That Works For You</title>
-        <meta 
-          name="description" 
-          content={`Access ${PLATFORM_METRICS.totalProfessionalsDisplay} pre-vetted engineers, architects, and specialists. Define your hiring need, let AI rank top talent, and engage in one click on TalentXcel Recruiter OS.`}
-        />
-        <link rel="canonical" href="https://talentxcel.in/recruiters" />
-      </Helmet>
+      <SEOHead title="Recruiter OS | Discover & Hire Talent | TalentXcel" description="Search talent, discover candidates and manage hiring with TalentXcel Recruiter OS." canonical="https://talentxcel.in/recruiters" type="website" />
 
       {/* TOP RECRUITER SUB-NAV */}
       <div className="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur px-4 py-2.5">
@@ -591,3 +584,4 @@ function BrainCircuitIcon(props: any) {
     </svg>
   );
 }
+

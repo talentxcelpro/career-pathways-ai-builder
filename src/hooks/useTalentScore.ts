@@ -124,7 +124,10 @@ async function fetchLocalTalentScore(): Promise<TalentScoreResponse> {
   if (!user?.id) throw new Error('TalentScore requires a signed-in user');
 
   const [profileRes, TalentNetworkRes, postsRes, resumesRes, matchesRes] = await Promise.all([
-    supabase.from('profiles').select('*').eq('id', user.id).maybeSingle(),
+    supabase.from('profiles')
+      .select('id, full_name, headline, location, skills, education, experience, profile_picture_url, profile_completed, profile_completion_percentage')
+      .eq('id', user.id)
+      .maybeSingle(),
     supabase
       .from('connections')
       .select('id', { count: 'exact', head: true })

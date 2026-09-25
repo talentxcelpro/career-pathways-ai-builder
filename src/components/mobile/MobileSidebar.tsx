@@ -34,7 +34,7 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose })
   const { user, signOut } = useAuth();
   const { availableBalance, isLoading: balanceLoading } = useTokenBalance();
 
-  // Get profile data
+  // Get profile data — only fetch fields the MobileSidebar actually renders
   const { data: profile } = useQuery({
     queryKey: ['profile', user?.id],
     queryFn: async () => {
@@ -42,13 +42,14 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose })
       
       const { data: profileData } = await supabase
         .from('profiles')
-        .select('*')
+        .select('id, full_name, username, profile_picture_url, user_role, primary_role')
         .eq('id', user.id)
         .maybeSingle();
       
       return profileData;
     },
-    enabled: !!user?.id
+    enabled: !!user?.id,
+    staleTime: 10 * 60 * 1000, // 10 minutes
   });
 
   const getInitials = () => {

@@ -54,25 +54,25 @@ export const ProductionRealtimeDemo: React.FC = () => {
     limit: 5
   });
 
-  // Auto-refresh polling fallback (every 2 seconds)
+  // Auto-refresh polling fallback (60s — realtime subscriptions handle instant updates)
   const pollingJobs = useAutoRefreshJobs({ 
     enabled: usePolling,
-    interval: 2000 
+    interval: 60000 
   });
   
   const pollingPosts = useAutoRefreshPosts({ 
     enabled: usePolling,
-    interval: 2000 
+    interval: 60000 
   });
   
   const pollingCompanies = useAutoRefreshCompanies({ 
     enabled: usePolling,
-    interval: 2000 
+    interval: 60000 
   });
   
   const pollingApplications = useAutoRefreshApplications({ 
     enabled: usePolling,
-    interval: 2000 
+    interval: 60000 
   });
 
   // Choose data source based on mode

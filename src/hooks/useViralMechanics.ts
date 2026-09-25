@@ -31,7 +31,7 @@ export const useViralMechanics = () => {
       try {
         const { data, error } = await supabase
           .from('user_referrals')
-          .select('*')
+          .select('id, user_id, referral_code, referral_slug, referrer_id, total_referrals, successful_referrals, total_rewards_value, current_tier, is_active, rewards_earned, created_at')
           .eq('user_id', user.id)
           .maybeSingle();
 

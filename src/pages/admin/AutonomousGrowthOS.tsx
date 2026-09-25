@@ -194,7 +194,8 @@ const AutonomousGrowthOS: React.FC = () => {
         };
       }
     },
-    refetchInterval: 30000
+    refetchInterval: 5 * 60 * 1000, // 5 minutes — admin dashboard, not real-time critical
+    staleTime: 5 * 60 * 1000,
   });
 
   const totalUsers = dbMetrics?.profilesCount || 529;

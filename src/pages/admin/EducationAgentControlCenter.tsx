@@ -83,13 +83,15 @@ export default function EducationAgentControlCenter() {
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ['education-agent-stats'],
     queryFn: fetchAgentStats,
-    refetchInterval: 60_000, // refresh every minute
+    refetchInterval: 5 * 60 * 1000, // 5 minutes — agent stats are not real-time critical
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: runHistory, isLoading: historyLoading } = useQuery({
     queryKey: ['education-agent-runs'],
     queryFn: () => getAgentRunHistory(5),
-    refetchInterval: 30_000,
+    refetchInterval: 3 * 60 * 1000, // 3 minutes — run history is not real-time critical
+    staleTime: 3 * 60 * 1000,
   });
 
   const { data: dueRecords } = useQuery({

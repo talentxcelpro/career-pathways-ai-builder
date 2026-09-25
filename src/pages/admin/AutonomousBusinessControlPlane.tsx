@@ -120,25 +120,28 @@ export default function AutonomousBusinessControlPlane() {
   const [simSubject, setSimSubject] = useState('Re: TalentXcel Candidate Shortlist');
   const [simBody, setSimBody] = useState('Yes, we are hiring Java and Go engineers. Please share the candidate shortlist.');
 
-  // 1. Live verified business memory & KPIs
+  // 1. Live verified business memory & KPIs (cached with zero aggressive polling)
   const { data: memory, refetch: refetchMemory } = useQuery({
     queryKey: ['core-verified-memory'],
-    queryFn: () => coreBusinessMemory.getVerifiedMetrics(true),
-    refetchInterval: 10_000,
+    queryFn: () => coreBusinessMemory.getVerifiedMetrics(false),
+    refetchInterval: false,
+    staleTime: 15 * 60 * 1000,
   });
 
   // 2. Strategic targets
   const { data: goals = [], refetch: refetchGoals } = useQuery({
     queryKey: ['core-strategic-goals'],
     queryFn: () => coreObjectiveEngine.getSynchronizedGoals(),
-    refetchInterval: 10_000,
+    refetchInterval: false,
+    staleTime: 15 * 60 * 1000,
   });
 
   // 3. 48 specialist workers diagnostics
   const { data: workers = [], refetch: refetchWorkers } = useQuery({
     queryKey: ['core-48-workers'],
     queryFn: () => kernelAgentRegistry.getLiveWorkerDiagnostics(),
-    refetchInterval: 5_000,
+    refetchInterval: false,
+    staleTime: 5 * 60 * 1000,
   });
 
   // 4. Acquisition Database & Relational Tables (100% Genuine Counts)

@@ -89,11 +89,8 @@ export const AIServiceStatus: React.FC<{
 
   useEffect(() => {
     checkAllServices();
-    
-    // Check services every 30 seconds
-    const interval = setInterval(checkAllServices, 30000);
-    
-    return () => clearInterval(interval);
+    // Service status check on mount only — services don't change every 30s
+    // and this was firing for every AI feature user
   }, [services.join(',')]);
 
   const getStatusColor = (status: ServiceStatus['status']) => {

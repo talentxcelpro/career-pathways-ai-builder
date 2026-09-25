@@ -25,7 +25,7 @@ const JobsBySkill = () => {
   return (
     <>
       <SEOHead
-        title={`${formattedSkill} Jobs in India | TalentXcel - Latest ${formattedSkill} Developer Opportunities`}
+        title={formattedSkill ? `${formattedSkill} Skills, Jobs & Career Opportunities | TalentXcel` : "Skills & Career Intelligence | TalentXcel"}
         description={skillDescriptions[skill!] || `Find ${formattedSkill} developer jobs and career opportunities. Browse verified positions requiring ${formattedSkill} skills on TalentXcel.`}
         keywords={[
           `${skill} jobs`,

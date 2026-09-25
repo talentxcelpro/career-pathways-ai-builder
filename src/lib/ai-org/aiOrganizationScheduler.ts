@@ -2,7 +2,6 @@
 // Autonomous Scheduler & Background Worker Engine for TalentXcel AI Growth Organization
 // Periodically wakes the organization, audits server-authoritative state, runs the AI CEO plan, and dispatches agent tasks
 
-import { supabase } from '@/integrations/supabase/client';
 import { getAuthoritativeLifecycleState } from './aiOrganizationState';
 import { runExecutiveDirectorCycle } from './executiveDirectorAgent';
 import {
@@ -73,17 +72,11 @@ export async function runFullOrganizationCycle(): Promise<FullOrganizationCycleR
     const totalPendingReview = summaries.filter((s) => s.status === 'PENDING_REVIEW').length;
     const totalBlocked = summaries.filter((s) => s.status === 'BLOCKED_OFF' || s.status === 'BLOCKED_PERMISSION').length;
 
-    // Update last run time in Supabase state table
-    try {
-      await supabase
-        .from('ai_organization_state' as any)
-        .update({
-          last_cycle_run_at: now.toISOString(),
-          updated_at: now.toISOString(),
-        })
-        .eq('id', 'master');
-    } catch {
-      // Non-blocking
+    // Record last run time locally (zero calls to missing ai_organization_state table)
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('txc_ai_org_last_cycle_run', now.toISOString());
+      } catch {}
     }
 
     return {

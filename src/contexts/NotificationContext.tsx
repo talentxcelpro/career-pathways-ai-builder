@@ -71,7 +71,7 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
     try {
       const { data, error } = await supabase
         .from('notifications')
-        .select('*')
+        .select('id, title, message, type, is_read, created_at, link, icon, module, priority, related_id')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(50);
@@ -126,6 +126,7 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
 
     return () => {
       channel.unsubscribe();
+      supabase.removeChannel(channel);
     };
   }, [user, loadNotifications]);
 

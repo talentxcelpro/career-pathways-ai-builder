@@ -79,7 +79,7 @@ export default function CompactApplicationForm({ open, onOpenChange, job }: Comp
       if (!user) return;
 
       const [profileResult, resumesResult] = await Promise.all([
-        supabase.from('profiles').select('*').eq('id', user.id).single(),
+        supabase.from('profiles').select('id, full_name, email, phone, location, linkedin_url, portfolio_url').eq('id', user.id).single(),
         supabase.from('resumes').select('*').eq('user_id', user.id).eq('is_active', true)
       ]);
 

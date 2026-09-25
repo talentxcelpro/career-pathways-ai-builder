@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { SEOHead } from '@/components/seo/SEOHead';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useProfile } from '@/hooks/useProfile';
@@ -148,21 +148,7 @@ export default function Colleges() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 pb-20 text-slate-900 dark:text-slate-100">
-      <Helmet>
-        <title>10,250+ Indian Colleges & Universities | TalentXcel Higher Education Hub</title>
-        <meta name="description" content="Discover 10,250+ verified Indian colleges, universities and premier institutes. Compare NIRF rankings, annual fees, placement rates and apply to your dream institution — all on TalentXcel." />
-        <meta name="keywords" content="indian colleges, universities india, NIRF ranking, IIT, NIT, IIM, AIIMS, engineering colleges india, medical colleges, management colleges, college fees, placement records" />
-        <link rel="canonical" href="https://talentxcel.in/colleges" />
-        <meta property="og:title" content="10,250+ Indian Colleges & Universities | TalentXcel Higher Education Hub" />
-        <meta property="og:description" content="India's largest verified college discovery platform. NIRF rankings, fees, placements and admission guidance for 10,250+ institutions." />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://talentxcel.in/colleges" />
-        <meta property="og:image" content="https://talentxcel.in/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="10,250+ Indian Colleges & Universities | TalentXcel" />
-        <meta name="twitter:description" content="Discover, compare and apply to 10,250+ verified Indian colleges with real NIRF rankings, fee structures and placement data." />
-        <meta name="twitter:image" content="https://talentxcel.in/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" />
-      </Helmet>
+      <SEOHead title="Colleges & Career Education | TalentXcel" description="Discover universities, higher education institutions, and career learning pathways with TalentXcel." canonical="https://talentxcel.in/colleges" type="website" />
       {/* ───────────────────────────────────────────────────────────────────────── */}
       {/* 1. SUB-HEADER PILL NAVIGATION BAR (Matching /learning benchmark)          */}
       {/* ───────────────────────────────────────────────────────────────────────── */}
@@ -727,3 +713,4 @@ export default function Colleges() {
     </div>
   );
 }
+

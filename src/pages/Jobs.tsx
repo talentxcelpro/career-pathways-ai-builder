@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import { SEOHead } from '@/components/seo/SEOHead';
 import { 
   Search, Brain, Filter, TrendingUp, Building, MapPin, Zap, 
   Star, Heart, Clock, Users, Award, Sparkles, Target, 
@@ -338,23 +338,7 @@ const Jobs = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Search Verified Global Jobs | AI-Matched Career Opportunities — TalentXcel</title>
-        <meta name="description" content="Discover thousands of verified global tech, leadership, finance, healthcare, and engineering opportunities worldwide with TalentXcel AI matching." />
-        <meta name="keywords" content="global jobs, verified remote jobs, ai job matching, executive careers, dubai tech jobs, london finance jobs, silicon valley careers, talentxcel hiring" />
-        <link rel="canonical" href="https://talentxcel.in/jobs" />
-        
-        <meta property="og:title" content="Search Verified Global Jobs | TalentXcel AI Career Platform" />
-        <meta property="og:description" content="Discover thousands of verified career opportunities across global hubs in UAE, US, Europe, India, and Worldwide with AI-powered matching." />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://talentxcel.in/jobs" />
-        <meta property="og:image" content="https://talentxcel.in/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" />
-        
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Search Verified Global Jobs | TalentXcel" />
-        <meta name="twitter:description" content="Discover verified executive, tech, design, and business jobs worldwide with TalentScore verification on TalentXcel." />
-        <meta name="twitter:image" content="https://talentxcel.in/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" />
-      </Helmet>
+      <SEOHead title="Jobs | Find Career Opportunities Worldwide | TalentXcel" description="Discover jobs by role, skill, industry and location and build your career with TalentXcel." canonical="https://talentxcel.in/jobs" type="website" />
 
       <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 mobile-optimized">
         

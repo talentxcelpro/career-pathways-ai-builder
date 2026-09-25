@@ -1,4 +1,5 @@
 import React, { Suspense } from 'react';
+import { SEOHead } from '@/components/seo/SEOHead';
 import { ErrorBoundary } from 'react-error-boundary';
 
 const MobileReelsLazy = React.lazy(() => 
@@ -45,12 +46,21 @@ const ErrorFallback = ({ error, resetErrorBoundary }: any) => (
 
 const MobileReelsPage = () => {
   return (
-    <ErrorBoundary FallbackComponent={ErrorFallback}>
+    <>
+      <SEOHead 
+        title="Professional Career Content & Reels | TalentXcel" 
+        description="Watch short-form professional career content, industry insights, and interview tips on TalentXcel Reels." 
+        canonical="https://talentxcel.in/reels" 
+      />
+      <ErrorBoundary FallbackComponent={ErrorFallback}>
       <Suspense fallback={<LoadingFallback />}>
         <MobileReelsLazy />
       </Suspense>
     </ErrorBoundary>
+    </>
   );
 };
 
 export default MobileReelsPage;
+
+

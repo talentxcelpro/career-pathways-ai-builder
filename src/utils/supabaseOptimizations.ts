@@ -16,9 +16,9 @@ export const prefetchCommonData = async (userId?: string) => {
   if (!userId) return;
 
   const queries = [
-    supabase.from('profiles').select('*').eq('id', userId).single().then(res => res.data),
-    supabase.from('connections').select('*').or(`requester_id.eq.${userId},recipient_id.eq.${userId}`).limit(10).then(res => res.data),
-    supabase.from('notifications').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(20).then(res => res.data)
+    supabase.from('profiles').select('id, full_name, username, profile_picture_url, user_role, primary_role').eq('id', userId).single().then(res => res.data),
+    supabase.from('connections').select('id, requester_id, recipient_id, status, connected_at').or(`requester_id.eq.${userId},recipient_id.eq.${userId}`).limit(10).then(res => res.data),
+    supabase.from('notifications').select('id, title, message, type, is_read, created_at, link, icon, module, priority, related_id').eq('user_id', userId).order('created_at', { ascending: false }).limit(20).then(res => res.data)
   ];
 
   try {

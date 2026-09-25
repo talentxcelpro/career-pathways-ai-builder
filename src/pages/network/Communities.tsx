@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
+import { SEOHead } from '@/components/seo/SEOHead';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -478,6 +479,11 @@ const Communities: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50/60 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
+      <SEOHead 
+        title="Professional Communities | Connect with Professionals | TalentXcel" 
+        description="Join professional communities, share knowledge, and connect with peers in your industry on TalentXcel." 
+        canonical="https://talentxcel.in/communities" 
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6 space-y-5 sm:space-y-6">
 
         {/* ── Top Executive Global Positioning Hero ─────────────────── */}
@@ -1199,3 +1205,4 @@ const Communities: React.FC = () => {
 };
 
 export default Communities;
+
