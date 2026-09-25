@@ -77,10 +77,8 @@ export const Navbar = () => {
     setActiveWorkspace(mode);
     localStorage.setItem('txc_active_workspace', mode);
     if (mode === 'employer') {
-      toast.success('Switched to Recruiter OS workspace');
       navigate('/dashboard?view=role');
     } else {
-      toast.success('Switched to Professional Career workspace');
       navigate('/passport');
     }
   };
