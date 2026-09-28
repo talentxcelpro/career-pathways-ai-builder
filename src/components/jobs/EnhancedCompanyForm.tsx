@@ -102,8 +102,12 @@ export default function EnhancedCompanyForm({ value, onValueChange, onCompanyCre
       const { data, error } = await supabase
         .from('companies')
         .insert({
-          ...companyData,
-            employee_count_range: undefined,
+          name: companyData.name,
+          description: companyData.description,
+          location: companyData.location,
+          industry: companyData.industry,
+          website_url: companyData.website || null,
+          size_range: companyData.employee_count_range || null,
           logo_url: logoUrl || null,
           created_by: user.id,
           founded_year: companyData.founded_year ? parseInt(companyData.founded_year) : null
@@ -525,4 +529,7 @@ export default function EnhancedCompanyForm({ value, onValueChange, onCompanyCre
     </Card>
   );
 }
+
+
+
 
