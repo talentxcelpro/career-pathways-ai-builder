@@ -1,5 +1,7 @@
 
 import React, { useState } from 'react';
+import { toDbEmploymentType, toDbWorkMode } from '@/config/jobs/employmentTypes';
+import { toDbExperienceLevel } from '@/config/jobs/experienceLevels';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -146,9 +148,13 @@ const JobPostPreview = () => {
         application_deadline: formData.application_deadline ? new Date(formData.application_deadline).toISOString().split('T')[0] : null
       };
 
-      const { data, error } = await supabase
-        .from('jobs')
-        .insert(insertData)
+      insertData.employment_type = toDbEmploymentType(insertData.employment_type);
+        insertData.experience_level = toDbExperienceLevel(insertData.experience_level);
+        insertData.work_mode = toDbWorkMode(insertData.work_mode);
+
+        const { data, error } = await supabase
+          .from('jobs')
+          .insert(insertData)
         .select();
 
       if (error) {
@@ -404,3 +410,5 @@ const JobPostPreview = () => {
 };
 
 export default JobPostPreview;
+
+

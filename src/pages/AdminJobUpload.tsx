@@ -69,7 +69,7 @@ Why Join TalentXcel?
 • Career growth into Desktop Support, Infra, Networking, or Cloud roles
 
 Apply now to start your IT career with TalentXcel!`,
-          employment_type: "full_time",
+          employment_type: "Full-time",
           experience_level: "fresher",
           salary_min: 220000,
           salary_max: 300000,
@@ -113,7 +113,7 @@ Why Join TalentXcel?
 • Enterprise exposure for freshers
 • Mentorship and structured career growth
 • Opportunities to progress into Desktop Support, Network, or Infra roles`,
-          employment_type: "full_time",
+          employment_type: "Full-time",
           experience_level: "fresher",
           salary_min: 250000,
           salary_max: 320000,
@@ -154,7 +154,7 @@ Qualifications: Any graduate; freshers encouraged.
 Why Join TalentXcel?
 • Hands-on exposure to enterprise IT operations
 • Mentorship, training programs, and career progression`,
-          employment_type: "full_time",
+          employment_type: "Full-time",
           experience_level: "fresher",
           salary_min: 260000,
           salary_max: 330000,
@@ -194,7 +194,7 @@ Qualifications: Graduate in IT, CS, or Engineering.
 Why Join TalentXcel?
 • Enterprise exposure for freshers
 • Mentorship and structured career growth`,
-          employment_type: "full_time",
+          employment_type: "Full-time",
           experience_level: "fresher",
           salary_min: 250000,
           salary_max: 320000,
@@ -234,7 +234,7 @@ Qualifications: Graduate in IT, CS, or related field.
 Why Join TalentXcel?
 • Exposure to enterprise applications and software support
 • Structured training program and career roadmap`,
-          employment_type: "full_time",
+          employment_type: "Full-time",
           experience_level: "fresher",
           salary_min: 270000,
           salary_max: 340000,
@@ -275,7 +275,7 @@ Qualifications: Any graduate; freshers encouraged.
 Why Join TalentXcel?
 • Enterprise IT infrastructure exposure
 • Mentorship and career growth opportunities`,
-          employment_type: "full_time",
+          employment_type: "Full-time",
           experience_level: "fresher",
           salary_min: 280000,
           salary_max: 350000,
@@ -315,7 +315,7 @@ Qualifications: Any graduate; freshers encouraged.
 Why Join TalentXcel?
 • Hands-on networking exposure
 • Structured mentorship and career roadmap`,
-          employment_type: "full_time",
+          employment_type: "Full-time",
           experience_level: "fresher",
           salary_min: 240000,
           salary_max: 310000,
@@ -355,7 +355,7 @@ Qualifications: Any graduate; freshers encouraged.
 Why Join TalentXcel?
 • Enterprise exposure for freshers
 • Mentorship and structured career growth`,
-          employment_type: "full_time",
+          employment_type: "Full-time",
           experience_level: "fresher",
           salary_min: 230000,
           salary_max: 300000,
@@ -394,7 +394,7 @@ Qualifications: Graduate in any field; freshers encouraged.
 Why Join TalentXcel?
 • Hands-on enterprise IT exposure
 • Mentorship and career growth opportunities`,
-          employment_type: "full_time",
+          employment_type: "Full-time",
           experience_level: "fresher",
           salary_min: 220000,
           salary_max: 290000,
@@ -434,7 +434,7 @@ Qualifications: Any graduate; freshers encouraged.
 Why Join TalentXcel?
 • Hands-on IT experience
 • Structured onboarding and career growth opportunities`,
-          employment_type: "full_time",
+          employment_type: "Full-time",
           experience_level: "fresher",
           salary_min: 260000,
           salary_max: 330000,
@@ -473,7 +473,7 @@ Qualifications: Any graduate; freshers encouraged.
 Why Join TalentXcel?
 • Enterprise IT exposure for freshers
 • Structured training and career roadmap`,
-          employment_type: "full_time",
+          employment_type: "Full-time",
           experience_level: "fresher",
           salary_min: 210000,
           salary_max: 280000,
@@ -511,7 +511,7 @@ Qualifications: Any graduate; freshers encouraged.
 Why Join TalentXcel?
 • Enterprise IT exposure and mentorship
 • Career growth into Service Desk, Infra, or Network roles`,
-          employment_type: "full_time",
+          employment_type: "Full-time",
           experience_level: "fresher",
           salary_min: 230000,
           salary_max: 300000,
