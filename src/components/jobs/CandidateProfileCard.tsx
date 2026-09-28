@@ -88,10 +88,7 @@ export const CandidateProfileCard: React.FC<CandidateProfileCardProps> = ({
           </div>
 
           <div className="flex space-x-2 w-full">
-            <Button variant="outline" className="flex-1" size="sm">
-              <Mail className="h-4 w-4 mr-2" />
-              Email
-            </Button>
+            {profile?.email ? (<Button variant="outline" className="flex-1" size="sm" onClick={() => window.open('mailto:' + profile.email)}><Mail className="h-4 w-4 mr-2" />Email</Button>) : (<Button variant="outline" className="flex-1" size="sm" disabled><Mail className="h-4 w-4 mr-2" />No Email</Button>)}
             <Link to={`/network/messages/${profile?.id}`} className="flex-1">
               <Button variant="outline" className="w-full" size="sm">
                 <MessageCircle className="h-4 w-4 mr-2" />
@@ -104,3 +101,4 @@ export const CandidateProfileCard: React.FC<CandidateProfileCardProps> = ({
     </Card>
   );
 };
+
