@@ -55,10 +55,7 @@ const JobApplicants = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('jobs')
-        .select(`
-          *,
-          companies(name, logo_url)
-        `)
+        .select('*')
         .eq('id', jobId)
         .single();
       
@@ -200,7 +197,7 @@ const JobApplicants = () => {
           </div>
           <h1 className="text-3xl font-bold text-gray-900">{job.title}</h1>
           <p className="text-gray-600 mt-1">
-            {job.companies?.name} • {applications?.length || 0} applicants
+            {job.company_name} • {applications?.length || 0} applicants
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -402,3 +399,5 @@ const JobApplicants = () => {
 };
 
 export default JobApplicants;
+
+
