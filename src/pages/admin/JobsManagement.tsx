@@ -40,7 +40,7 @@ const JobsManagement = () => {
           company_id: "54e7fc5a-792d-46a9-8413-171cc3fe507f",
           location: "Noida",
           description: `Join TalentXcel as an IT Helpdesk Executive. Provide first-line IT support, troubleshoot hardware/software issues, and gain enterprise exposure.`,
-          employment_type: "full_time",
+          employment_type: "Full-time",
           experience_level: "fresher",
           salary_min: 220000,
           salary_max: 300000,
@@ -121,3 +121,4 @@ const JobsManagement = () => {
 };
 
 export default JobsManagement;
+

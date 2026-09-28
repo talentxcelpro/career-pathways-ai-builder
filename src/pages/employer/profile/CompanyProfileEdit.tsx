@@ -108,11 +108,20 @@ const CompanyProfileEdit = () => {
       if (!user?.id) throw new Error('Not authenticated');
 
       const companyData = {
-        ...data,
-        founded_year: data.founded_year ? parseInt(data.founded_year) : null,
-        created_by: user.id,
-        is_verified: false
-      };
+          name: data.name,
+          description: data.description,
+          location: data.location,
+          industry: data.industry,
+          website_url: data.website || null,
+          size_range: data.employee_count_range || null,
+          logo_url: data.logo_url || null,
+          cover_image_url: data.cover_image_url || null,
+          benefits: data.benefits,
+          tech_stack: data.tech_stack,
+          founded_year: data.founded_year ? parseInt(data.founded_year) : null,
+          created_by: user.id,
+          is_verified: false
+        };
 
       // Create the company
       const { data: newCompany, error: companyError } = await supabase
@@ -163,10 +172,19 @@ const CompanyProfileEdit = () => {
       if (!(company as any)?.id) throw new Error('No company ID');
 
       const updateData = {
-        ...data,
-        founded_year: data.founded_year ? parseInt(data.founded_year) : null,
-        updated_at: new Date().toISOString()
-      };
+          name: data.name,
+          description: data.description,
+          location: data.location,
+          industry: data.industry,
+          website_url: data.website || null,
+          size_range: data.employee_count_range || null,
+          logo_url: data.logo_url || null,
+          cover_image_url: data.cover_image_url || null,
+          benefits: data.benefits,
+          tech_stack: data.tech_stack,
+          founded_year: data.founded_year ? parseInt(data.founded_year) : null,
+          updated_at: new Date().toISOString()
+        };
 
       const { error } = await supabase
         .from('companies')
@@ -529,3 +547,4 @@ const CompanyProfileEdit = () => {
 };
 
 export default CompanyProfileEdit;
+
