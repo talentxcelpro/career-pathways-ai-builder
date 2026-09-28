@@ -103,6 +103,7 @@ export default function EnhancedCompanyForm({ value, onValueChange, onCompanyCre
         .from('companies')
         .insert({
           ...companyData,
+            employee_count_range: undefined,
           logo_url: logoUrl || null,
           created_by: user.id,
           founded_year: companyData.founded_year ? parseInt(companyData.founded_year) : null
@@ -524,3 +525,4 @@ export default function EnhancedCompanyForm({ value, onValueChange, onCompanyCre
     </Card>
   );
 }
+
