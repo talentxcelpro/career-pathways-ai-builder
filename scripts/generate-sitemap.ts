@@ -149,17 +149,21 @@ function escapeXml(unsafe: string): string {
 }
 
 function buildUrlSetXml(entries: SitemapEntry[]): string {
-  const today = new Date().toISOString().split('T')[0];
   const urlNodes = entries.map((entry) => {
     const loc = `${PRODUCTION_ORIGIN}${entry.path === '/' ? '/' : entry.path.replace(/\/+$/, '')}`;
-    return [
+    const lines = [
       '  <url>',
       `    <loc>${escapeXml(loc)}</loc>`,
-      `    <lastmod>${entry.lastmod || today}</lastmod>`,
+    ];
+    if (entry.lastmod) {
+      lines.push(`    <lastmod>${entry.lastmod}</lastmod>`);
+    }
+    lines.push(
       entry.changefreq ? `    <changefreq>${entry.changefreq}</changefreq>` : '    <changefreq>weekly</changefreq>',
       entry.priority ? `    <priority>${entry.priority}</priority>` : '    <priority>0.7</priority>',
-      '  </url>',
-    ].join('\n');
+      '  </url>'
+    );
+    return lines.join('\n');
   });
 
   return [
@@ -172,11 +176,9 @@ function buildUrlSetXml(entries: SitemapEntry[]): string {
 }
 
 function buildSitemapIndexXml(sitemapFiles: { filename: string; count: number }[]): string {
-  const today = new Date().toISOString().split('T')[0];
   const sitemapNodes = sitemapFiles.map(({ filename }) => [
     '  <sitemap>',
     `    <loc>${PRODUCTION_ORIGIN}/${filename}</loc>`,
-    `    <lastmod>${today}</lastmod>`,
     '  </sitemap>',
   ].join('\n'));
 

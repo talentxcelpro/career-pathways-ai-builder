@@ -72,11 +72,8 @@ export const initCriticalPerformance = () => {
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
       optimizePageImages();
-      // Delay route prefetching to not compete with critical resources
-      setTimeout(prefetchCriticalRoutes, 2000);
     });
   } else {
     optimizePageImages();
-    setTimeout(prefetchCriticalRoutes, 2000);
   }
 };

@@ -72,52 +72,52 @@ Allow: /
 
 
 # ------------------------------
-# Generative AI & Model Training Crawlers
+# Generative AI & Model Training Crawlers (Restricted to preserve crawl budget & bandwidth)
 # ------------------------------
 
 User-agent: GPTBot
-Allow: /
+Disallow: /
 
 User-agent: ChatGPT-User
-Allow: /
+Disallow: /
 
 User-agent: ClaudeBot
-Allow: /
+Disallow: /
 
 User-agent: anthropic-ai
-Allow: /
+Disallow: /
 
 User-agent: Google-Extended
-Allow: /
+Disallow: /
 
 User-agent: Applebot-Extended
-Allow: /
+Disallow: /
 
 User-agent: Meta-ExternalAgent
-Allow: /
+Disallow: /
 
 User-agent: cohere-ai
-Allow: /
+Disallow: /
 
 User-agent: Bytespider
-Allow: /
+Disallow: /
 
 
 # ------------------------------
-# SEO Crawlers
+# Commercial SEO & Backlink Crawlers (Restricted to preserve edge bandwidth)
 # ------------------------------
 
 User-agent: AhrefsBot
-Allow: /
+Disallow: /
 
 User-agent: SemrushBot
-Allow: /
+Disallow: /
 
 User-agent: MJ12bot
-Allow: /
+Disallow: /
 
 User-agent: ScreamingFrogSEOSpider
-Allow: /
+Disallow: /
 
 
 # ==========================================================

@@ -88,6 +88,7 @@ export const ProductVideoSection: React.FC = () => {
               ref={videoRef}
               src={activeVideo.videoUrl}
               poster={activeVideo.thumbnailUrl}
+              preload="none"
               playsInline
               muted={isMuted}
               controls

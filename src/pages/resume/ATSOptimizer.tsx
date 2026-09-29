@@ -525,6 +525,7 @@ export const ATSOptimizer: React.FC = () => {
                         <video
                           src="/videos/txc/ats-demo-2.mp4"
                           poster="/videos/txc/thumbnails/ats-demo-2.jpg"
+                          preload="none"
                           controls
                           playsInline
                           className="w-full h-full object-cover"
