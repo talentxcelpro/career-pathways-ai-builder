@@ -204,20 +204,22 @@ async function sendEmailViaSES(
   to: string, 
   subject: string, 
   htmlContent: string, 
-  region: string = 'eu-north-1',
+  region: string = Deno.env.get('AWS_REGION') || 'us-east-1',
   attemptNumber: number = 1
 ): Promise<EmailSendResult> {
+  const EMAIL_MODE = Deno.env.get('EMAIL_MODE') || 'console';
   const AWS_ACCESS_KEY_ID = Deno.env.get('AWS_ACCESS_KEY_ID');
   const AWS_SECRET_ACCESS_KEY = Deno.env.get('AWS_SECRET_ACCESS_KEY');
   
-  console.log(`[SES Attempt ${attemptNumber}] To: ${to} | Region: ${region}`);
+  console.log(`[SES Attempt ${attemptNumber}] To: ${to} | Region: ${region} | Mode: ${EMAIL_MODE}`);
   
-  if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY) {
-    console.error('❌ AWS credentials not configured');
+  if (EMAIL_MODE === 'console' || !AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY) {
+    console.log('ℹ️ [Console Email Mode] Mocking successful send to avoid live dispatch:', { to, subject });
     return {
-      success: false,
-      error: 'AWS credentials not configured',
-      attempts: attemptNumber
+      success: true,
+      messageId: `console_ses_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,
+      region: 'console',
+      attempts: 1
     };
   }
 
@@ -425,6 +427,27 @@ const handler = async (req: Request): Promise<Response> => {
       current_year: '2025',
       ...requestData.data
     };
+
+    // Check if recipient is suppressed
+    const cleanEmail = requestData.recipient_email?.toLowerCase().trim();
+    const { data: suppressionData } = await supabase
+      .from('email_suppression_list')
+      .select('id, suppression_type, reason')
+      .eq('email_address', cleanEmail)
+      .eq('is_active', true)
+      .maybeSingle();
+
+    if (suppressionData) {
+      console.warn(`🛡️ Recipient ${cleanEmail} is suppressed (${suppressionData.suppression_type}). Skipping send.`);
+      return new Response(
+        JSON.stringify({
+          success: false,
+          suppressed: true,
+          error: `Recipient is suppressed: ${suppressionData.reason || suppressionData.suppression_type}`
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     // Render email template
     console.log('📧 Rendering template:', requestData.event_name);

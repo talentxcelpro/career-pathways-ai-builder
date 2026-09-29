@@ -37,30 +37,44 @@ export function EmailQueueManager() {
   const fetchQueueData = async () => {
     setIsLoading(true);
     try {
-      // Fetch recent emails
-      const { data: emailData, error: emailError } = await supabase
-        .from('email_queue_simple')
+      // Primary: Query centralized email_automation_queue
+      let { data: emailData, error: emailError } = await supabase
+        .from('email_automation_queue')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(50);
 
       if (emailError) {
-        console.error('Error fetching emails:', emailError);
-        toast.error('Failed to fetch email queue data');
-        return;
+        // Fallback to legacy email_queue_simple if table does not exist
+        const fallback = await supabase
+          .from('email_queue_simple')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(50);
+        emailData = fallback.data;
       }
 
-      setEmails((emailData as any) || []);
+      const safeData = (emailData || []).map((e: any) => ({
+        id: e.id,
+        to_email: e.recipient_email || e.to_email || 'Unknown',
+        subject: e.template_data?.subject || e.subject || e.trigger_type || 'Email Notification',
+        template_name: e.trigger_type || e.template_name || 'Standard',
+        status: e.status || 'pending',
+        retry_count: e.retry_count || e.attempts || 0,
+        max_retries: e.max_retries || 3,
+        created_at: e.created_at,
+        sent_at: e.sent_at || null,
+        error_message: e.error_message || null,
+      }));
 
-      // Calculate stats with safe access
-      const safeData = (emailData as any) || [];
-      const pending = safeData.filter((e: any) => e && e.status === 'pending').length || 0;
-      const sent = safeData.filter((e: any) => e && e.status === 'sent').length || 0;
-      const failed = safeData.filter((e: any) => e && e.status === 'failed').length || 0;
-      const total = safeData.length || 0;
+      setEmails(safeData);
+
+      const pending = safeData.filter((e: any) => e && e.status === 'pending').length;
+      const sent = safeData.filter((e: any) => e && e.status === 'sent').length;
+      const failed = safeData.filter((e: any) => e && e.status === 'failed').length;
+      const total = safeData.length;
 
       setStats({ pending, sent, failed, total });
-
     } catch (error) {
       console.error('Error fetching queue data:', error);
       toast.error('Failed to fetch email queue data');
@@ -71,72 +85,28 @@ export function EmailQueueManager() {
 
   const processQueue = async () => {
     setIsProcessing(true);
-    
-    console.log('=== Email Queue Processing Debug ===');
-    console.log('Starting manual queue processing...');
-    console.log('Timestamp:', new Date().toISOString());
-    
     try {
-      // Use secure configuration
-      const config = getSupabaseConfig();
-      const securityHeaders = getSecurityHeaders();
-      const functionUrl = `${config.url}/functions/v1/process-email-queue`;
-      
-      const response = await fetch(functionUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${config.anonKey}`,
-          ...securityHeaders
-        },
-        body: JSON.stringify({ manual: true })
-      });
+      // 1. Try serverless process-queue API
+      try {
+        const apiRes = await fetch('/api/email/process-queue', { method: 'POST' });
+        if (apiRes.ok) {
+          const apiResult = await apiRes.json();
+          toast.success(`Queue processed: ${apiResult.sent || 0} sent, ${apiResult.failed || 0} failed`);
+          await fetchQueueData();
+          return;
+        }
+      } catch (_) {}
 
-      console.log('Response status:', response.status);
-      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+      // 2. Fallback to Supabase Edge Function
+      const { data, error } = await supabase.functions.invoke('process-email-queue');
+      if (error) throw error;
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Function call failed:', errorText);
-        toast.error(`Processing failed: ${response.status} ${errorText}`);
-        return;
-      }
-
-      const result = await response.json();
-      console.log('Processing result:', result);
-      
-      if (result?.success) {
-        const message = `Queue processed successfully! ${result.stats.sent} sent, ${result.stats.failed} failed`;
-        console.log('Success:', message);
-        toast.success(message);
-        await fetchQueueData(); // Refresh the data
-      } else {
-        const errorMsg = result?.error || 'Unknown error occurred during processing';
-        console.error('Processing failed:', errorMsg);
-        toast.error(`Processing failed: ${errorMsg}`);
-      }
-
-    } catch (error) {
-      console.error('=== Unexpected Error ===');
-      console.error('Error type:', typeof error);
-      console.error('Error name:', error?.name);
-      console.error('Error message:', error?.message);
-      console.error('Error stack:', error?.stack);
-      console.error('Full error object:', error);
-      
-      // Determine error type for better user feedback
-      let userMessage = 'Failed to process email queue';
-      if (error instanceof TypeError && error.message.includes('fetch')) {
-        userMessage = 'Network connection failed. Please check your internet connection and try again.';
-      } else if (error?.message?.includes('NetworkError')) {
-        userMessage = 'Network error occurred. The service may be temporarily unavailable.';
-      } else if (error?.message) {
-        userMessage = `Error: ${error.message}`;
-      }
-      
-      toast.error(userMessage);
+      toast.success('Queue processing triggered');
+      await fetchQueueData();
+    } catch (error: any) {
+      console.error('Failed to process email queue:', error);
+      toast.error(`Processing failed: ${error.message}`);
     } finally {
-      console.log('Processing attempt completed');
       setIsProcessing(false);
     }
   };

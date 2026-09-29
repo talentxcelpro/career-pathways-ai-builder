@@ -51,6 +51,10 @@ export const QueueMonitor = () => {
 
   const processQueueMutation = useMutation({
     mutationFn: async () => {
+      try {
+        const res = await fetch('/api/email/process-queue', { method: 'POST' });
+        if (res.ok) return await res.json();
+      } catch (_) {}
       const { data, error } = await supabase.functions.invoke('process-email-queue');
       if (error) throw error;
       return data;
@@ -75,15 +79,29 @@ export const QueueMonitor = () => {
     switch (status) {
       case 'sent': return 'default';
       case 'pending': return 'secondary';
+      case 'processing': return 'secondary';
       case 'failed': return 'destructive';
+      case 'suppressed': return 'destructive';
       default: return 'outline';
+    }
+  };
+
+  const getPriorityLabel = (priority?: number) => {
+    switch (priority) {
+      case 1: return { label: 'CRITICAL', variant: 'destructive' as const };
+      case 2: return { label: 'HIGH', variant: 'default' as const };
+      case 3: return { label: 'NORMAL', variant: 'secondary' as const };
+      case 4: return { label: 'LOW', variant: 'outline' as const };
+      default: return { label: 'NORMAL', variant: 'secondary' as const };
     }
   };
 
   const statusCounts = {
     pending: queueItems?.filter(i => i.status === 'pending').length || 0,
+    processing: queueItems?.filter(i => i.status === 'processing').length || 0,
     sent: queueItems?.filter(i => i.status === 'sent').length || 0,
     failed: queueItems?.filter(i => i.status === 'failed').length || 0,
+    suppressed: queueItems?.filter(i => i.status === 'suppressed').length || 0,
   };
 
   if (isLoading) {
@@ -92,13 +110,21 @@ export const QueueMonitor = () => {
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-5">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Pending</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{statusCounts.pending}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Processing</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{statusCounts.processing}</div>
           </CardContent>
         </Card>
         <Card>
@@ -115,6 +141,14 @@ export const QueueMonitor = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{statusCounts.failed}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Suppressed</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{statusCounts.suppressed}</div>
           </CardContent>
         </Card>
       </div>
@@ -152,6 +186,11 @@ export const QueueMonitor = () => {
                     <p className="font-medium">{item.recipient_email}</p>
                     <Badge variant={getStatusColor(item.status)}>{item.status}</Badge>
                     <Badge variant="outline">{item.trigger_type}</Badge>
+                    {item.priority && (
+                      <Badge variant={getPriorityLabel(item.priority).variant}>
+                        {getPriorityLabel(item.priority).label}
+                      </Badge>
+                    )}
                   </div>
                   <div className="flex items-center gap-4 text-sm text-muted-foreground">
                     <span>Created: {new Date(item.created_at).toLocaleString()}</span>

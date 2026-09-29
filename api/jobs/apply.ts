@@ -253,6 +253,31 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     } catch (_) {}
 
     // ─────────────────────────────────────────────────────────────
+    // 5b. QUEUE IDEMPOTENT APPLICATION CONFIRMATION EMAIL
+    // ─────────────────────────────────────────────────────────────
+    try {
+      const emailIdempotencyKey = `app_conf_${authoritativeJobId}_${candidateId}`;
+      await supabase.rpc('enqueue_idempotent_email', {
+        p_trigger_type: 'application_confirmation',
+        p_recipient_email: cleanEmail,
+        p_recipient_name: cleanName,
+        p_template_data: {
+          candidateName: cleanName,
+          jobTitle: authoritativeJobTitle,
+          companyName: authoritativeCompanyName,
+          applicationId: newApplication?.id || `app_${Date.now()}`,
+          ctaUrl: 'https://talentxcel.in/jobs/applications'
+        },
+        p_category: 'transactional',
+        p_priority: 2, // HIGH
+        p_idempotency_key: emailIdempotencyKey,
+        p_user_id: candidateId
+      });
+    } catch (emailErr) {
+      console.warn('⚠️ Application confirmation email enqueue warning (non-fatal):', emailErr);
+    }
+
+    // ─────────────────────────────────────────────────────────────
     // 6. ATS PROCESSING & CAREER PATHWAY ENGINE
     // ─────────────────────────────────────────────────────────────
     const titleTokens = authoritativeJobTitle.toLowerCase().split(/[\s,/-]+/).filter((w: string) => w.length > 3);

@@ -51,6 +51,7 @@ const handler = async (req: Request): Promise<Response> => {
       .eq('status', 'pending')
       .lte('scheduled_at', new Date().toISOString())
       .lt('retry_count', 3)
+      .order('priority', { ascending: true })
       .order('created_at', { ascending: true })
       .limit(50);
 

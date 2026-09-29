@@ -15,6 +15,7 @@
     "postbuild": "npx tsx scripts/prerender-static-seo.ts && npx tsx scripts/seo-ci-gate.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-sesv2": "^3.758.0",
     "@capacitor/android": "^7.4.3",
     "@capacitor/camera": "^7.0.2",
     "@capacitor/cli": "^7.4.3",

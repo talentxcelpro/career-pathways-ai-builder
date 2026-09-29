@@ -216,6 +216,10 @@
       "source": "/api/growth/:path*",
       "destination": "/api/growth/:path*"
     },
+    {
+      "source": "/api/email/:path*",
+      "destination": "/api/email/:path*"
+    },
     { "source": "/(.*)", "destination": "/index.html" }
 
   ]

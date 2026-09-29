@@ -17,82 +17,69 @@ export const useEmailAutomation = () => {
   const sendAutomatedEmail = async (config: EmailAutomationConfig) => {
     setIsProcessing(true);
     try {
-      // Try SES API function first (most reliable)
-      console.log('Attempting to send via SES API function...');
+      // 1. Primary: Centralized Email API (/api/email/send)
       try {
-        const { data, error } = await supabase.functions.invoke('send-email-ses-api', {
-          body: {
+        const res = await fetch('/api/email/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
             to: config.to,
-            subject: config.subject,
+            recipientName: config.data?.name || config.data?.recipient_name || 'User',
             template: config.template,
-            template_data: config.data
-          }
+            category: 'product_notification',
+            priority: 3,
+            variables: {
+              subject: config.subject,
+              ...config.data
+            }
+          })
         });
 
-        if (error) throw error;
-        
-        console.log('Email sent successfully via SES API');
-        return { success: true, result: data };
-        
-      } catch (sesError) {
-        console.error('SES API function failed, trying SMTP fallback...', sesError);
-        
-        // Fallback: Try SMTP function
-        try {
-          console.log('Attempting fallback via SMTP function...');
-          const { data: smtpData, error: smtpError } = await supabase.functions.invoke('send-automated-email', {
-            body: {
-              template_name: config.template,
-              recipient_email: config.to,
-              recipient_name: config.data?.name || config.data?.recipient_name || 'User',
-              template_data: config.data
-            }
-          });
-
-          if (smtpError) throw smtpError;
-          
-          console.log('Email sent successfully via SMTP fallback');
-          return { success: true, result: smtpData };
-          
-        } catch (smtpError) {
-          console.error('SMTP fallback also failed, queuing email:', smtpError);
-          
-          // Final fallback: Queue email in database for later processing
-          // Generate HTML content from template for the queue
-          const templateFunction = templates[config.template];
-          const htmlContent = templateFunction ? templateFunction(config.data) : `<p>Subject: ${config.subject}</p>`;
-          
-          const { error: queueError } = await supabase
-            .from('email_queue_simple')
-            .insert({
-              to_email: config.to,
-              subject: config.subject,
-              html_content: htmlContent,
-              template_name: config.template,
-              template_data: {
-                name: config.data?.name || config.data?.recipient_name || 'User',
-                ...config.data
-              },
-              status: 'pending',
-              retry_count: 0,
-              max_retries: 3
-            });
-
-          if (queueError) {
-            console.error('Failed to queue email:', queueError);
-            throw new Error('All email sending methods failed');
-          }
-          
-          console.log('Email queued successfully for later processing');
-          toast.info('Email queued for delivery');
-          return { success: true, queued: true };
+        if (res.ok) {
+          const data = await res.json();
+          return { success: true, result: data };
         }
+      } catch (fetchErr) {
+        console.warn('API send fetch error, trying direct queue fallback:', fetchErr);
       }
-    } catch (error) {
+
+      // 2. Resilient Database Queue Fallback (email_automation_queue)
+      const { data: queueData, error: queueError } = await supabase
+        .from('email_automation_queue')
+        .insert({
+          trigger_type: config.template,
+          recipient_email: config.to,
+          recipient_name: config.data?.name || config.data?.recipient_name || 'User',
+          template_data: {
+            subject: config.subject,
+            ...config.data
+          },
+          status: 'pending',
+          scheduled_at: new Date().toISOString()
+        })
+        .select()
+        .maybeSingle();
+
+      if (queueError) {
+        // Fallback to RPC if direct insert fails
+        await (supabase as any).rpc('enqueue_email_event', {
+          p_event_key: config.template,
+          p_recipient_email: config.to,
+          p_recipient_name: config.data?.name || config.data?.recipient_name || 'User',
+          p_template_data: config.data,
+          p_delay_minutes: 0
+        });
+      }
+
+      return { success: true, queued: true, result: queueData };
+    } catch (error: any) {
       console.error('Email automation error:', error);
-      toast.error('Failed to send email');
-      throw error;
+      toast.error('Failed to dispatch email');
+      return { success: false, error: error?.message };
     } finally {
+      setIsProcessing(false);
+    }
+  };
       setIsProcessing(false);
     }
   };

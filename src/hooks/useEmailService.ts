@@ -1,303 +1,198 @@
-import { useState } from 'react';
+// src/hooks/useEmailService.ts
+/**
+ * React Hook for TalentXcel Centralized Email Service
+ * Routes all client-triggered emails through the centralized email architecture.
+ * Ensures zero credentials exposed in browser, checks suppressions/preferences,
+ * and maintains audit integrity.
+ */
+
+import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { EmailPriority, type EmailCategory, type EmailJobPayload } from '@/services/email/emailTypes';
 
-interface EmailData {
+export interface SendEmailOptions {
   to: string;
-  subject: string;
   template: string;
-  data?: Record<string, any>;
-  immediate?: boolean;
+  category?: EmailCategory;
+  priority?: EmailPriority;
+  variables?: Record<string, any>;
+  recipientName?: string;
+  idempotencyKey?: string;
+  userId?: string;
 }
 
-interface EmailServiceHook {
-  sendEmail: (emailData: EmailData) => Promise<boolean>;
-  queueEmail: (emailData: Omit<EmailData, 'immediate'>) => Promise<boolean>;
-  isLoading: boolean;
-}
-
-export const useEmailService = (): EmailServiceHook => {
+export const useEmailService = () => {
   const [isLoading, setIsLoading] = useState(false);
 
-  const sendEmail = async (emailData: EmailData): Promise<boolean> => {
+  /**
+   * Enqueues or dispatches an email via the centralized API Gateway
+   */
+  const sendEmail = useCallback(async (options: SendEmailOptions): Promise<boolean> => {
     setIsLoading(true);
+    const cleanEmail = options.to?.toLowerCase().trim();
+
+    if (!cleanEmail || !cleanEmail.includes('@')) {
+      toast.error('Please provide a valid recipient email address');
+      setIsLoading(false);
+      return false;
+    }
+
+    const payload: EmailJobPayload = {
+      to: cleanEmail,
+      recipientName: options.recipientName || 'User',
+      template: options.template,
+      category: options.category || 'transactional',
+      priority: options.priority || EmailPriority.NORMAL,
+      variables: options.variables || {},
+      idempotencyKey: options.idempotencyKey,
+      userId: options.userId,
+    };
+
     try {
-      console.log('Attempting to send email via edge function:', emailData);
-      
-      // Create HTML content from template
-      let html = '';
-      
-      try {
-        // First try to get HTML template from database
-        const { data: template } = await supabase
-          .from('email_templates')
-          .select('html_template, content')
-          .eq('template_type', emailData.template)
-          .single();
-        
-        if (template?.html_template) {
-          // Use rich HTML template and replace variables
-          html = template.html_template
-            .replace(/\{\{candidate_name\}\}/g, emailData.data?.name || 'there')
-            .replace(/\{\{name\}\}/g, emailData.data?.name || 'there')
-            .replace(/\{\{job_title\}\}/g, emailData.data?.job_title || '')
-            .replace(/\{\{company_name\}\}/g, emailData.data?.company_name || '')
-            .replace(/\{\{location\}\}/g, emailData.data?.location || '')
-            .replace(/\{\{salary_range\}\}/g, emailData.data?.salary_range || 'Competitive')
-            .replace(/\{\{requirements\}\}/g, emailData.data?.requirements?.join(', ') || 'As per job description');
-        } else {
-          // Fallback to hardcoded templates
-          if (emailData.template === 'welcome') {
-            html = `
-              <h2>Welcome to TalentXcel!</h2>
-              <p>Hi ${emailData.data?.name || 'there'}! 🎉</p>
-              <p>We're excited to have you join our professional community.</p>
-              <p><strong>Powering Global Career Growth</strong></p>
-            `;
-          } else if (emailData.template === 'job_opening') {
-            html = `
-              <h2>New Job Match for You!</h2>
-              <p>Hi ${emailData.data?.name || 'there'}! 💼</p>
-              <p>We found a job opportunity that matches your profile:</p>
-              <h3>${emailData.data?.job_title || 'Job Title'}</h3>
-              <p><strong>${emailData.data?.company_name || 'Company'}</strong> • ${emailData.data?.location || 'Location'}</p>
-              <p>Salary: ${emailData.data?.salary_range || 'Competitive'}</p>
-              <p>Requirements: ${emailData.data?.requirements?.join(', ') || 'As per job description'}</p>
-            `;
-          } else {
-            html = '<p>Thank you for using TalentXcel!</p>';
-          }
-        }
-      } catch (dbError) {
-        console.warn('Failed to fetch email template from database, using fallback:', dbError);
-        // Fallback to hardcoded templates
-        if (emailData.template === 'welcome') {
-          html = `
-            <h2>Welcome to TalentXcel!</h2>
-            <p>Hi ${emailData.data?.name || 'there'}! 🎉</p>
-            <p>We're excited to have you join our professional community.</p>
-            <p><strong>Powering Global Career Growth</strong></p>
-          `;
-        } else if (emailData.template === 'job_opening') {
-          html = `
-            <h2>New Job Match for You!</h2>
-            <p>Hi ${emailData.data?.name || 'there'}! 💼</p>
-            <p>We found a job opportunity that matches your profile:</p>
-            <h3>${emailData.data?.job_title || 'Job Title'}</h3>
-            <p><strong>${emailData.data?.company_name || 'Company'}</strong> • ${emailData.data?.location || 'Location'}</p>
-            <p>Salary: ${emailData.data?.salary_range || 'Competitive'}</p>
-            <p>Requirements: ${emailData.data?.requirements?.join(', ') || 'As per job description'}</p>
-          `;
-        } else {
-          html = '<p>Thank you for using TalentXcel!</p>';
-        }
-      }
-      
-      try {
-        // Use AWS SES email service directly
-        const { data, error } = await supabase.functions.invoke('send-email-aws-ses', {
-          body: {
-            to: emailData.to,
-            subject: emailData.subject,
-            html: html,
-            template: emailData.template,
-            templateData: emailData.data,
-            priority: emailData.immediate ? 'high' : 'medium'
-          },
-        });
+      // 1. Primary: Dispatch via Serverless Gateway (/api/email/send)
+      const res = await fetch('/api/email/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
 
-        console.log('AWS SES email service response:', { data, error });
-
-        if (error) {
-          console.log('AWS SES email service failed, falling back to database queue');
-          throw error;
-        }
-
-        if (data?.success) {
-          toast.success(`Email sent successfully via Amazon SES!`);
-          return true;
-        } else {
-          throw new Error(data?.error || 'AWS SES failed');
-        }
-      } catch (edgeFunctionError) {
-        console.log('AWS SES Edge function error:', edgeFunctionError);
-        
-        // Fallback to database queue
-        console.log('Using database queue fallback');
-        try {
-          const { error: dbError } = await supabase
-            .from('email_queue_simple')
-            .insert({
-              to_email: emailData.to,
-              subject: emailData.subject,
-              html_content: html,
-              template_name: emailData.template,
-              template_data: emailData.data || {}
-            });
-
-          if (dbError) {
-            console.error('Database queue error:', dbError);
-            throw dbError;
-          }
-
-          toast.success('Email queued for delivery! 📧');
-          return true;
-
-        } catch (dbError) {
-          console.error('Database fallback failed:', dbError);
-          toast.error('Failed to queue email. Please try again.');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.status === 'suppressed') {
+          toast.warning('Recipient is in the suppression list (bounced/complaint).');
           return false;
         }
+        if (data.status === 'preference_blocked') {
+          console.log('Recipient has opted out of this category.');
+          return false;
+        }
+        return true;
       }
+
+      // 2. Fallback: Direct Database RPC enqueue if API route is unreachable
+      console.warn('⚠️ Serverless email endpoint unreachable, falling back to database queue RPC');
+      const { data: queueId, error: rpcError } = await supabase.rpc('enqueue_idempotent_email', {
+        p_trigger_type: payload.template,
+        p_recipient_email: payload.to,
+        p_recipient_name: payload.recipientName,
+        p_template_data: payload.variables,
+        p_category: payload.category,
+        p_priority: payload.priority || 3,
+        p_idempotency_key: payload.idempotencyKey || null,
+        p_user_id: payload.userId || null,
+      });
+
+      if (rpcError) {
+        console.error('❌ Database fallback queue error:', rpcError.message);
+        throw rpcError;
+      }
+
+      return !!queueId;
+    } catch (err: any) {
+      console.error('❌ Email dispatch error:', err.message);
+      toast.error(err.message || 'Failed to dispatch email');
+      return false;
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const queueEmail = async (emailData: Omit<EmailData, 'immediate'>): Promise<boolean> => {
-    return sendEmail({ ...emailData, immediate: false });
-  };
+  }, []);
 
   return {
     sendEmail,
-    queueEmail,
     isLoading,
   };
 };
 
-// Utility functions for common email scenarios
+/**
+ * Common high-level email triggers
+ */
 export const emailUtils = {
-  welcomeEmail: async (userEmail: string, userName: string) => {
-    const { sendEmail } = useEmailService();
-    return sendEmail({
-      to: userEmail,
-      subject: 'Welcome to TalentXcel! 🎉',
-      template: 'welcome',
-      data: { name: userName },
-      immediate: true,
-    });
-  },
-
-  connectionRequestEmail: async (
-    recipientEmail: string,
-    recipientName: string,
-    requesterName: string,
-    requesterTitle?: string,
-    requesterCompany?: string
-  ) => {
-    const { queueEmail } = useEmailService();
-    return queueEmail({
-      to: recipientEmail,
-      subject: `${requesterName} wants to connect with you`,
-      template: 'new_connection',
-      data: {
-        recipient_name: recipientName,
-        requester_name: requesterName,
-        requester_title: requesterTitle,
-        requester_company: requesterCompany,
-      },
-    });
+  welcomeEmail: async (userEmail: string, userName: string, userId?: string) => {
+    try {
+      const res = await fetch('/api/email/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: userEmail,
+          recipientName: userName,
+          template: 'welcome',
+          category: 'transactional',
+          priority: EmailPriority.HIGH,
+          userId,
+          idempotencyKey: `welcome_${userId || userEmail}`,
+          variables: { firstName: userName },
+        }),
+      });
+      return res.ok;
+    } catch (_) {
+      return false;
+    }
   },
 
   jobMatchEmail: async (
     userEmail: string,
-    userName: string,
-    jobTitle: string,
-    companyName: string,
-    jobId: string,
-    location?: string,
-    salaryRange?: string,
-    requirements?: string[]
+    job: { title: string; company: string; location?: string; salary?: string },
+    userName?: string,
+    userId?: string
   ) => {
-    const { queueEmail } = useEmailService();
-    return queueEmail({
-      to: userEmail,
-      subject: `New job match: ${jobTitle} at ${companyName}`,
-      template: 'job_opening',
-      data: {
-        name: userName,
-        job_title: jobTitle,
-        company_name: companyName,
-        job_id: jobId,
-        location,
-        salary_range: salaryRange,
-        requirements,
-      },
-    });
+    try {
+      const res = await fetch('/api/email/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: userEmail,
+          recipientName: userName,
+          template: 'job_match',
+          category: 'product_notification',
+          priority: EmailPriority.NORMAL,
+          userId,
+          variables: {
+            firstName: userName || 'there',
+            jobTitle: job.title,
+            companyName: job.company,
+            location: job.location,
+            salaryRange: job.salary,
+          },
+        }),
+      });
+      return res.ok;
+    } catch (_) {
+      return false;
+    }
   },
 
-  applicationConfirmationEmail: async (
+  applicationConfirmation: async (
     userEmail: string,
-    userName: string,
     jobTitle: string,
     companyName: string,
-    applicationId: string
+    applicationId: string,
+    userName?: string,
+    userId?: string
   ) => {
-    const { sendEmail } = useEmailService();
-    return sendEmail({
-      to: userEmail,
-      subject: `Application confirmed: ${jobTitle}`,
-      template: 'application_confirmation',
-      data: {
-        name: userName,
-        job_title: jobTitle,
-        company_name: companyName,
-        application_id: applicationId,
-        applied_date: new Date().toISOString(),
-      },
-      immediate: true,
-    });
-  },
-
-  teamInviteEmail: async (
-    invitedEmail: string,
-    invitedName: string,
-    inviterName: string,
-    companyName: string,
-    role: string,
-    inviteToken: string
-  ) => {
-    const { sendEmail } = useEmailService();
-    return sendEmail({
-      to: invitedEmail,
-      subject: `You've been invited to join ${companyName}`,
-      template: 'invite_member',
-      data: {
-        invited_name: invitedName,
-        inviter_name: inviterName,
-        company_name: companyName,
-        role,
-        invite_token: inviteToken,
-      },
-      immediate: true,
-    });
-  },
-
-  interviewScheduledEmail: async (
-    candidateEmail: string,
-    candidateName: string,
-    companyName: string,
-    jobTitle: string,
-    interviewDate: string,
-    interviewTime: string,
-    interviewType?: string,
-    meetingLink?: string
-  ) => {
-    const { sendEmail } = useEmailService();
-    return sendEmail({
-      to: candidateEmail,
-      subject: `Interview scheduled: ${jobTitle} at ${companyName}`,
-      template: 'interview_scheduled',
-      data: {
-        candidate_name: candidateName,
-        company_name: companyName,
-        job_title: jobTitle,
-        interview_date: interviewDate,
-        interview_time: interviewTime,
-        interview_type: interviewType,
-        meeting_link: meetingLink,
-      },
-      immediate: true,
-    });
+    try {
+      const res = await fetch('/api/email/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: userEmail,
+          recipientName: userName,
+          template: 'application_confirmation',
+          category: 'transactional',
+          priority: EmailPriority.HIGH,
+          userId,
+          idempotencyKey: `app_conf_${applicationId}`,
+          variables: {
+            candidateName: userName || 'there',
+            jobTitle,
+            companyName,
+            applicationId,
+          },
+        }),
+      });
+      return res.ok;
+    } catch (_) {
+      return false;
+    }
   },
 };

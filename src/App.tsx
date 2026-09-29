@@ -61,6 +61,7 @@ const SavedJobs = lazy(() => import('@/pages/jobs/SavedJobs'));
 const MyApplications = lazy(() => import('@/pages/jobs/MyApplications'));
 const JobAlerts = lazy(() => import('@/pages/jobs/Alerts'));
 const RecruiterLandingPage = lazy(() => import('@/pages/recruiters/RecruiterLandingPage'));
+const UnsubscribePage = lazy(() => import('@/pages/email/UnsubscribePage'));
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
@@ -421,6 +422,8 @@ const App = () => {
                 <Route path="/privacypolicy" element={<PrivacyPolicy />} />
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/terms-of-service" element={<Terms />} />
+                <Route path="/unsubscribe" element={<Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading preferences...</div>}><UnsubscribePage /></Suspense>} />
+                <Route path="/email-preferences" element={<Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading preferences...</div>}><UnsubscribePage /></Suspense>} />
                 <Route path="/score/:token" element={<Suspense fallback={<div>Loading...</div>}><SharedScoreView /></Suspense>} />
                 <Route path="/colleges/batch" element={<Suspense fallback={<div>Loading...</div>}><BatchScreening /></Suspense>} />
                 <Route path="/b/:cohortCode" element={<Suspense fallback={<div>Loading...</div>}><BatchScreening /></Suspense>} />
