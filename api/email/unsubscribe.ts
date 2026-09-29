@@ -10,7 +10,6 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
 import { verifyUnsubscribeToken } from '../../src/services/email/emailUnsubscribe';
 
-export const config = { runtime: 'nodejs' };
 
 const SUPABASE_URL = process.env.TX_SUPABASE_URL || process.env.VITE_SUPABASE_URL || 'https://dthlgsnakhoftinssokm.supabase.co';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.TALENTXCEL_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
