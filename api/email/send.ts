@@ -11,7 +11,6 @@
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
-import { SESv2Client, SendEmailCommand } from '@aws-sdk/client-sesv2';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CONFIGURATION & CONSTANTS
@@ -279,13 +278,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // Diagnostic GET for health monitoring
   if (req.method === 'GET') {
+    let awsSdkAvailable = false;
+    try {
+      await import('@aws-sdk/client-sesv2');
+      awsSdkAvailable = true;
+    } catch (_) {}
     const emailMode = (process.env.EMAIL_MODE || 'console').toLowerCase();
-    const hasAwsKeys = !!(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY);
+    const hasAwsKeys = !!((process.env.AWS_ACCESS_KEY_ID || process.env.AWS_SES_ACCESS_KEY_ID) && (process.env.AWS_SECRET_ACCESS_KEY || process.env.AWS_SES_SECRET_ACCESS_KEY));
     return res.status(200).json({
       status: 'healthy',
       service: 'TalentXcel Email Dispatch Gateway',
       emailMode,
       hasAwsKeys,
+      awsSdkAvailable,
       region: process.env.AWS_REGION || DEFAULT_REGION,
       timestamp: new Date().toISOString()
     });
@@ -353,6 +358,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       // ─────────────────────────────────────────────────────────────
       // LIVE AMAZON SES DISPATCH (Production us-east-1)
       // ─────────────────────────────────────────────────────────────
+      let sesSdk: any;
+      try {
+        sesSdk = await import('@aws-sdk/client-sesv2');
+      } catch (sdkErr: any) {
+        return res.status(500).json({
+          success: false,
+          error: `AWS SES SDK could not be loaded: ${sdkErr?.message || sdkErr}`,
+          mode: 'ses'
+        });
+      }
+      const { SESv2Client, SendEmailCommand } = sesSdk;
+
       const sesClient = new SESv2Client({
         region,
         credentials: {
