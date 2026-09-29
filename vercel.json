@@ -213,6 +213,22 @@
       "destination": "/api/jobs/apply"
     },
     {
+      "source": "/api/email/send",
+      "destination": "/api/email/send"
+    },
+    {
+      "source": "/api/email/process-queue",
+      "destination": "/api/email/process-queue"
+    },
+    {
+      "source": "/api/email/ses-webhook",
+      "destination": "/api/email/ses-webhook"
+    },
+    {
+      "source": "/api/email/unsubscribe",
+      "destination": "/api/email/unsubscribe"
+    },
+    {
       "source": "/api/growth/:path*",
       "destination": "/api/growth/:path*"
     },
