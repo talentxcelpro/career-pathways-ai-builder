@@ -129,7 +129,7 @@ const ProfileAnalytics = () => {
       };
     },
     enabled: !!user?.id,
-    refetchInterval: 15000 // Real-time refresh
+    refetchInterval: false
   });
 
   // Get chart data for views over time

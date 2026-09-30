@@ -32,30 +32,14 @@ const MGMT_API = "https://api.supabase.com/v1";
 //                        realtime_logs, storage_logs, pgbouncer_logs, function_logs
 
 async function queryAnalytics(
-  projectRef: string,
-  token: string,
-  sql: string,
-  timestampStart: string,
-  timestampEnd: string
+  _projectRef: string,
+  _token: string,
+  _sql: string,
+  _timestampStart: string,
+  _timestampEnd: string
 ): Promise<any[]> {
-  const url = `${MGMT_API}/projects/${projectRef}/analytics/endpoints/logs.all`;
-  const res = await fetch(url, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ sql, timestamp_start: timestampStart, timestamp_end: timestampEnd }),
-  });
-
-  if (!res.ok) {
-    const errText = await res.text();
-    console.error(`Analytics query failed (${res.status}):`, errText.substring(0, 300));
-    return [];
-  }
-
-  const json = await res.json();
-  return json?.result ?? json?.data ?? [];
+  // Disabled: Querying Supabase logs.all triggers massive BigQuery log scans (consuming 80+ GB Log Query quota)
+  return [];
 }
 
 // ─── Supabase Management API: Project Usage ────────────────────────────────────

@@ -22,15 +22,10 @@ max_rows = 1000
 
 [auth]
 enabled = true
-port = 54324
 site_url = "https://talentxcel.in"
 additional_redirect_urls = ["https://talentxcel.in/auth/callback", "https://dthlgsnakhoftinssokm.supabase.co/auth/v1/callback"]
 jwt_expiry = 3600
 enable_signup = true
-enable_confirmations = false
-password_min_length = 8
-security_password_change_confirm = true
-security_update_password_require_reauthentication = true
 
 # Core Infrastructure (Essential)
 [functions.health-check]

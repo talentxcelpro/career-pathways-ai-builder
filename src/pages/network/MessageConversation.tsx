@@ -24,28 +24,8 @@ const MessageConversation = () => {
   // Online status hook
   const { getUserOnlineStatus } = useOnlineStatus(currentUserId);
 
-  // Auto-refresh interval (every 3 seconds)
-  const REFRESH_INTERVAL = 3000;
-
-  // Get current user ID
-  useEffect(() => {
-    const getCurrentUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setCurrentUserId(user?.id || null);
-    };
-    getCurrentUser();
-  }, []);
-
-  // Set up auto-refresh for messages
-  useEffect(() => {
-    if (!id) return;
-
-    const interval = setInterval(() => {
-      queryClient.invalidateQueries({ queryKey: ['messages', id] });
-    }, REFRESH_INTERVAL);
-
-    return () => clearInterval(interval);
-  }, [id, queryClient]);
+  // Auto-refresh interval (relaxed to 30s only when tab is active)
+  const REFRESH_INTERVAL = 30000;
 
   // Simulate online status detection
   useEffect(() => {
@@ -122,8 +102,8 @@ const MessageConversation = () => {
       return data;
     },
     enabled: !!id,
-    refetchInterval: REFRESH_INTERVAL,
-    refetchIntervalInBackground: true
+    refetchInterval: false,
+    refetchIntervalInBackground: false
   });
 
   const sendMessageMutation = useMutation({

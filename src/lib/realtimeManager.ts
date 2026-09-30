@@ -67,20 +67,21 @@ class RealtimeManager {
     // Wait for authentication to stabilize before creating channels
     await this.waitForAuthStability();
 
-    // Check authentication status
+    // Check authentication status - only connect if user is authenticated
     const { data: { session }, error } = await supabase.auth.getSession();
     if (error || !session) {
-      console.warn('🔐 No authenticated session - will try with unauthenticated access');
-    } else {
-      console.log('🔐 Authenticated user detected');
+      console.log('🔐 No authenticated session - skipping realtime connection to conserve Supabase quota');
+      return;
     }
+
+    console.log('🔐 Authenticated user detected - setting up realtime');
 
     // Add callback if provided
     if (callback) {
       this.callbacks.add(callback);
     }
 
-    this._setupRealtimeConnections(!!session);
+    this._setupRealtimeConnections(true);
   }
 
   /**

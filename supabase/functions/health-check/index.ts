@@ -18,34 +18,15 @@ const corsHeaders = {
 
 const MGMT_API = "https://api.supabase.com/v1";
 
-// ─── Analytics Query ──────────────────────────────────────────────────────────
 async function queryAnalytics(
-  projectRef: string,
-  token: string,
-  sql: string,
-  tsStart: string,
-  tsEnd: string
+  _projectRef: string,
+  _token: string,
+  _sql: string,
+  _tsStart: string,
+  _tsEnd: string
 ): Promise<any[]> {
-  try {
-    const res = await fetch(`${MGMT_API}/projects/${projectRef}/analytics/endpoints/logs.all`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ sql, timestamp_start: tsStart, timestamp_end: tsEnd }),
-    });
-    if (!res.ok) {
-      const txt = await res.text();
-      console.error(`Analytics query HTTP ${res.status}:`, txt.substring(0, 200));
-      return [];
-    }
-    const json = await res.json();
-    return json?.result ?? json?.data ?? [];
-  } catch (e: any) {
-    console.error("Analytics query error:", e.message);
-    return [];
-  }
+  // Disabled: Querying Supabase logs.all triggers massive BigQuery log scans (consuming 80+ GB Log Query quota)
+  return [];
 }
 
 // ─── Project Usage ─────────────────────────────────────────────────────────────
