@@ -74,14 +74,14 @@ const LoginForm = () => {
         return;
       }
 
-        // Login successful
-        const destination = resolvePostAuthDestination({
-          searchParams,
-          userMetadata: data.user.user_metadata,
-        });
-        navigate(destination);
-      }
-    } catch (error: any) {
+        if (data.user) {
+          const destination = resolvePostAuthDestination({
+            searchParams,
+            userMetadata: data.user.user_metadata,
+          });
+          navigate(destination);
+        }
+    } catch (error) {
       setAttemptCount(prev => prev + 1);
       toast.error('An unexpected error occurred. Please try again.');
     } finally {
