@@ -22,7 +22,8 @@ import {
   Search,
   Sparkles,
   TrendingUp,
-  FileCheck2
+  FileCheck2,
+  Banknote
 } from 'lucide-react';
 import { formatSalaryRange } from '@/utils/currencyUtils';
 import { toast } from 'sonner';
@@ -291,7 +292,12 @@ export default function JobDetails() {
                   { name: 'Hyderabad', path: '/jobs/hyderabad' },
                   { name: 'Pune', path: '/jobs/pune' },
                   { name: 'Mumbai', path: '/jobs/mumbai' },
-                  { name: 'Remote India', path: '/jobs/remote/software-engineer/india' },
+                  { name: 'London, UK', path: '/jobs/london' },
+                  { name: 'Dubai, UAE', path: '/jobs/dubai' },
+                  { name: 'Singapore', path: '/jobs/singapore' },
+                  { name: 'Sydney, AUS', path: '/jobs/sydney' },
+                  { name: 'Toronto, CAN', path: '/jobs/toronto' },
+                  { name: 'Remote Global', path: '/jobs/remote/software-engineer/india' },
                 ].map((hub) => (
                   <Link 
                     key={hub.name} 
@@ -366,14 +372,37 @@ export default function JobDetails() {
                   </span>
                 </p>
 
-                {job.salary_min && (
-                  <div className="mt-3 text-emerald-400 font-semibold text-base flex items-center gap-1">
-                    <IndianRupee className="w-4 h-4" />
-                    <span>
-                      {(job.salary_min / 100000).toFixed(1)}L - {((job.salary_max || job.salary_min) / 100000).toFixed(1)}L per annum
-                    </span>
-                  </div>
-                )}
+                {job.salary_min && (() => {
+                  const curr = (job.salary_currency || 'INR').toUpperCase();
+                  const min = job.salary_min;
+                  const max = (job.salary_max && job.salary_max >= min) ? job.salary_max : min;
+
+                  if (curr === 'INR') {
+                    return (
+                      <div className="mt-3 text-emerald-400 font-semibold text-base flex items-center gap-1.5">
+                        <IndianRupee className="w-4 h-4" />
+                        <span>
+                          {min >= 100000 
+                            ? `${(min / 100000).toFixed(1)}L - ${(max / 100000).toFixed(1)}L per annum` 
+                            : `₹${min.toLocaleString('en-IN')} - ₹${max.toLocaleString('en-IN')} / year`}
+                        </span>
+                      </div>
+                    );
+                  }
+
+                  const symbolMap: Record<string, string> = { USD: '$', EUR: '€', GBP: '£', AUD: 'A$', CAD: 'C$', SGD: 'S$' };
+                  const symbol = symbolMap[curr] || `${curr} `;
+                  const formatVal = (v: number) => (v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v.toLocaleString());
+
+                  return (
+                    <div className="mt-3 text-emerald-400 font-semibold text-base flex items-center gap-1.5">
+                      <Banknote className="w-4 h-4" />
+                      <span>
+                        {symbol}{formatVal(min)} - {symbol}{formatVal(max)} per annum
+                      </span>
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Action Buttons */}
@@ -453,6 +482,43 @@ export default function JobDetails() {
                     </Badge>
                   </div>
                 </div>
+              </div>
+
+              {/* Instant SI Skill Match Evaluation */}
+              <div className="bg-gradient-to-br from-blue-950/60 via-slate-900/90 to-purple-950/50 border border-blue-500/30 rounded-2xl p-6 space-y-4 shadow-lg">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-blue-400" />
+                    <h3 className="text-base font-bold text-white">Instant SI Match</h3>
+                  </div>
+                  <Badge variant="outline" className="border-blue-500/40 text-blue-300 bg-blue-500/10 text-[10px]">
+                    Skill Intelligence
+                  </Badge>
+                </div>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  Evaluate your background alignment for this role before applying. TalentXcel calculates your match index across required competencies.
+                </p>
+                <div className="space-y-1.5 pt-1">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-400">Match Readiness</span>
+                    <span className="text-emerald-400 font-semibold">High Potential</span>
+                  </div>
+                  <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                    <div className="bg-gradient-to-r from-blue-500 to-emerald-400 h-full w-[85%] rounded-full" />
+                  </div>
+                </div>
+                <div className="pt-1">
+                  <PublicJobApplyButton
+                    jobId={job.id}
+                    job={job}
+                    jobTitle={job.title}
+                    companyName={companyName}
+                    className="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs py-2.5 h-auto justify-center"
+                  />
+                </div>
+                <p className="text-[11px] text-slate-400 text-center">
+                  1-click apply &bull; Creates or updates your verified Career Passport
+                </p>
               </div>
 
               {/* Free ATS Resume Tool CTA */}

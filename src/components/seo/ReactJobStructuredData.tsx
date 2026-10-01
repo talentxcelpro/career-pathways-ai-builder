@@ -15,6 +15,72 @@ export const ReactJobStructuredData: React.FC<ReactJobStructuredDataProps> = ({ 
   const canonicalUrl = getPublicJobUrl(job.seo_slug || job.id);
   const logoUrl = job.companies?.logo_url || 'https://talentxcel.in/talentxcel-official-logo.png';
 
+  // Breadcrumbs Schema for Google Search Rich Results
+  const breadcrumbsSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://talentxcel.in',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Jobs',
+        item: 'https://talentxcel.in/jobs',
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: job.title,
+        item: canonicalUrl,
+      },
+    ],
+  };
+
+  // FAQ Schema for Search Appearance
+  const salaryText = typeof job.salary_min === 'number' && job.salary_min > 0
+    ? `The advertised compensation for this role ranges from ${job.salary_min.toLocaleString()} to ${(job.salary_max || job.salary_min).toLocaleString()} ${(job.salary_currency || 'INR').toUpperCase()} per annum.`
+    : `Compensation is competitive and aligned with market standards for ${job.title}.`;
+
+  const workLocationText = job.is_remote
+    ? 'This is a remote position open to qualified candidates globally.'
+    : `This role is based on-site in ${job.location || 'the specified office location'}.`;
+
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: `What is the salary for ${job.title} at ${companyName}?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: salaryText,
+        },
+      },
+      {
+        '@type': 'Question',
+        name: `Is the ${job.title} position remote or on-site?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: workLocationText,
+        },
+      },
+      {
+        '@type': 'Question',
+        name: `How do I apply for ${job.title} at ${companyName}?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `You can apply directly on TalentXcel using our 1-click application or Skill Intelligence (SI) Career Passport matching.`,
+        },
+      },
+    ],
+  };
+
   return (
     <Helmet>
       <title>{seoTitle}</title>
@@ -40,6 +106,16 @@ export const ReactJobStructuredData: React.FC<ReactJobStructuredDataProps> = ({ 
           {JSON.stringify(structuredData)}
         </script>
       )}
+
+      {/* BreadcrumbList JSON-LD */}
+      <script type="application/ld+json">
+        {JSON.stringify(breadcrumbsSchema)}
+      </script>
+
+      {/* FAQPage JSON-LD */}
+      <script type="application/ld+json">
+        {JSON.stringify(faqSchema)}
+      </script>
     </Helmet>
   );
 };

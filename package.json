@@ -12,6 +12,8 @@
     "predev": "npx tsx scripts/generate-sitemap.ts",
     "prebuild": "node -e \"const fs=require('fs'); if(fs.existsSync('dist/assets')) fs.rmSync('dist/assets', {recursive:true, force:true});\" && npx tsx scripts/generate-sitemap.ts",
     "refresh:news": "npx tsx scripts/content/run-15day-news-refresh.ts",
+    "gsc:copilot": "node scripts/gsc-copilot-analysis.cjs",
+    "gsc:query-pages": "node scripts/gsc-copilot-query-pages.cjs",
     "postbuild": "npx tsx scripts/prerender-static-seo.ts && npx tsx scripts/seo-ci-gate.ts"
   },
   "dependencies": {
