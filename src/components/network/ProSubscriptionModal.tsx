@@ -276,7 +276,7 @@ const ProSubscriptionModal: React.FC<ProSubscriptionModalProps> = ({
             <li>• Get discovered by more clients with boosted profiles</li>
             <li>• Showcase your services with professional pages</li>
             <li>• Access advanced CRM tools to manage clients</li>
-            <li>• Use AI-powered business tools for growth</li>
+            <li>• Use SI-powered business tools for growth</li>
             <li>• Get priority support and exclusive features</li>
           </ul>
         </div>

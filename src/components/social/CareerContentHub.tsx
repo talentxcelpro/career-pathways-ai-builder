@@ -1159,7 +1159,7 @@ export function CareerContentHub() {
           <div className="max-w-4xl mx-auto space-y-4">
             <h3 className="text-xl font-semibold text-foreground">Join the TalentXcel Community</h3>
             <p className="text-muted-foreground">
-              Share your expertise, learn from others, and grow your career with AI-powered insights.
+              Share your expertise, learn from others, and grow your career with SI-powered insights.
             </p>
             <div className="flex items-center justify-center gap-6 mt-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
@@ -1176,7 +1176,7 @@ export function CareerContentHub() {
               </div>
             </div>
             <div className="text-xs text-muted-foreground mt-4">
-              Powered by <span className="font-semibold text-primary">TalentXcel AI</span> • 
+              Powered by <span className="font-semibold text-primary">TalentXcel SI</span> • 
               Building the future of career development
             </div>
           </div>

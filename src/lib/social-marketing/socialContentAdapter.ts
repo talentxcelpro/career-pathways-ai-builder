@@ -1,5 +1,5 @@
 // src/lib/social-marketing/socialContentAdapter.ts
-// Stage 8: Native Platform Adapters for TalentXcel AI Content Factory
+// Stage 8: Native Platform Adapters for TalentXcel SI Content Factory
 // Transforms Core Content Draft into 4 genuinely native platform deliverables (YouTube, Instagram, Facebook, X).
 // Invariant: Non-duplication. Output across platforms is materially adapted with <= 20% verbatim phrasing overlap.
 

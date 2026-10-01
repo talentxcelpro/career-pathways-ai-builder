@@ -146,7 +146,7 @@ class AIJobService {
     return suggestions;
   }
 
-  // Get AI-powered job recommendations for a user
+  // Get SI-powered job recommendations for a user
   async getJobRecommendations(userId: string, limit: number = 10): Promise<string[]> {
     try {
       const { data: profile } = await supabase

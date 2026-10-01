@@ -59,11 +59,11 @@ export const CANDIDATE_SERVICES: ServicePage[] = [
   {
     slug: 'ai-career-coach',
     audience: 'candidate',
-    title: 'AI Career Coach',
+    title: 'SI Career Coach',
     h1: 'AI career coach',
-    metaTitle: 'AI Career Coach — Personalised Career Guidance | TalentXcel',
+    metaTitle: 'SI Career Coach — Personalised Career Guidance | TalentXcel',
     metaDescription:
-      'Get a personalised career roadmap from the TalentXcel AI career coach: skill gaps, next roles, salary benchmarks and a step-by-step plan.',
+      'Get a personalised career roadmap from the TalentXcel SI career coach: skill gaps, next roles, salary benchmarks and a step-by-step plan.',
     intro:
       'The AI career coach reads your Career Passport — verified education, employment, skills and assessments — and turns it into a concrete plan: what to learn next, which roles you already qualify for, and what is holding your profile back.',
     bullets: [
@@ -81,9 +81,9 @@ export const CANDIDATE_SERVICES: ServicePage[] = [
   {
     slug: 'job-matching',
     audience: 'candidate',
-    title: 'AI Job Matching',
+    title: 'SI Job Matching',
     h1: 'AI job matching',
-    metaTitle: 'AI Job Matching — Roles That Fit Your Profile | TalentXcel',
+    metaTitle: 'SI Job Matching — Roles That Fit Your Profile | TalentXcel',
     metaDescription:
       'TalentXcel matches your verified skills and experience against live openings and scores each role so you apply where you actually stand a chance.',
     intro:

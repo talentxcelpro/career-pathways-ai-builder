@@ -130,7 +130,7 @@ export const toolsRoutes = [
   },
   // Job Search Tools
   {
-    title: "AI Job Match GPT",
+    title: "SI Job Match GPT",
     to: "/tools/ai-job-match-gpt", 
     icon: <Briefcase className="h-4 w-4" />,
     page: <Suspense fallback={null}><AIJobMatchGPT /></Suspense>,
@@ -277,7 +277,7 @@ export const toolsRoutes = [
     isPublic: true,
   },
   {
-    title: "AI Resume Builder",
+    title: "SI Resume Builder",
     to: "/tools/ai-resume-builder",
     icon: <FileText className="h-4 w-4" />,
     page: <Suspense fallback={null}><AIResumeBuilder /></Suspense>,

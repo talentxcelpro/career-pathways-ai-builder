@@ -152,7 +152,7 @@ export const Phase2LaunchOptimizer: React.FC = () => {
       "@context": "https://schema.org",
       "@type": "WebApplication",
       "name": "TalentXcel",
-      "description": "AI-Powered Career Platform",
+      "description": "SI-powered Career & Talent Intelligence Platform",
       "url": "https://talentxcel.in",
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web",

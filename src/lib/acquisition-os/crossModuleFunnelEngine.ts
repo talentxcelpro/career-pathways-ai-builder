@@ -46,7 +46,7 @@ export const ACQUISITION_SURFACE_REGISTRY: Record<AcquisitionSurfaceId, Acquisit
   },
   RESUME_BUILDER: {
     id: 'RESUME_BUILDER',
-    name: 'AI Resume Studio & Instant ATS Scanner',
+    name: 'SI Resume Studio & Instant ATS Scanner',
     baseUrl: '/resume',
     primaryIntent: 'TRANSACTIONAL',
     targetAudience: 'JOB_SEEKERS',

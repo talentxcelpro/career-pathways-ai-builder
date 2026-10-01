@@ -16,7 +16,7 @@ const AIAgentDashboard: React.FC = () => {
 
   React.useEffect(() => {
     updateMetaTags({
-      title: 'TalentXcel AI - Your AI-Powered Career Assistant | TalentXcel',
+      title: 'TalentXcel SI - Your AI-Powered Career Assistant | TalentXcel',
       description: 'Advanced AI assistant for career growth, intelligent job matching, resume optimization, interview prep, and personalized career insights.'
     });
   }, []);

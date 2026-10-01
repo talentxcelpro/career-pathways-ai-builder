@@ -154,7 +154,7 @@ export default function LearningHub() {
   ];
 
   const benefits = [
-    "AI-powered career matching",
+    "SI-powered career matching",
     "Earn industry-recognized certificates",
     "Learn at your own pace",
     "Job-ready skills for the future"

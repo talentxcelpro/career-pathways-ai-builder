@@ -434,7 +434,7 @@ export const SmartConnectAI: React.FC = () => {
           </p>
           <div className="text-center py-8 text-muted-foreground">
             <TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p className="text-sm">AI-powered mentor recommendations coming soon</p>
+            <p className="text-sm">SI-powered mentor recommendations coming soon</p>
             <p className="text-xs mt-1">We're analyzing industry expertise and career paths</p>
           </div>
         </CardContent>

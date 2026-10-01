@@ -87,7 +87,7 @@ export const EventDialog = ({ open, onOpenChange, event }: EventDialogProps) => 
   };
 
   const modules = [
-    'Authentication', 'Profile', 'Resume Builder', 'Job Search', 'AI Career Coach',
+    'Authentication', 'Profile', 'Resume Builder', 'Job Search', 'SI Career Coach',
     'Learning', 'Networking', 'Collaboration', 'Analytics', 'Company Portal',
     'Content', 'Gamification', 'System', 'Interview Prep', 'Salary Insights',
     'Skills Assessment', 'Mentorship'

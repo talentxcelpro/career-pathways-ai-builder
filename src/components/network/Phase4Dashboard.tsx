@@ -163,7 +163,7 @@ export default function Phase4Dashboard() {
       {
         id: '2',
         name: 'Smart Candidate Matching',
-        description: 'AI-powered matching with automatic notifications',
+        description: 'SI-powered matching with automatic notifications',
         triggers: ['Job Posted', 'Candidate Updated'],
         actions: ['Analyze', 'Match', 'Score', 'Notify'],
         status: 'active',
@@ -363,7 +363,7 @@ export default function Phase4Dashboard() {
                   <span className="font-medium">Smart Matching</span>
                 </div>
                 <p className="text-sm text-muted-foreground text-left">
-                  AI-powered candidate-job matching with notifications
+                  SI-powered candidate-job matching with notifications
                 </p>
               </Button>
               

@@ -75,7 +75,7 @@ export const PersonalizedDashboard: React.FC = () => {
 
   const loadPersonalizedRecommendations = async () => {
     try {
-      // AI-powered recommendations based on user behavior
+      // SI-powered recommendations based on user behavior
       const mockRecommendations: ContentRecommendation[] = [
         {
           id: '1',

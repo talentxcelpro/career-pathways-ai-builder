@@ -211,7 +211,7 @@ export const StreamlinedResumeCreator: React.FC = () => {
                 </div>
                 <CardTitle className="text-xl">Start from Scratch</CardTitle>
                 <CardDescription>
-                  Build your resume step by step with AI-powered suggestions and templates
+                  Build your resume step by step with SI-powered suggestions and templates
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-0">

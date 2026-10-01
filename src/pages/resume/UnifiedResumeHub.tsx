@@ -63,7 +63,7 @@ export default function UnifiedResumeHub() {
       navigate('/resume/build');
       return;
     }
-    toast.success(`Target role set to "${targetRole}". Initializing AI Resume Tailor...`);
+    toast.success(`Target role set to "${targetRole}". Initializing SI Resume Tailor...`);
     navigate(`/resume/build?target=${encodeURIComponent(targetRole)}`);
   };
 
@@ -180,20 +180,20 @@ export default function UnifiedResumeHub() {
   return (
     <>
       <Helmet>
-        <title>AI Resume Builder & ATS Score Optimization | TalentXcel</title>
-        <meta name="description" content="Build executive, ATS-optimized resumes in minutes with TalentXcel AI. 50+ templates, instant parsing, real-time keyword scoring, and interview coaching." />
+        <title>SI Resume Builder & ATS Score Optimization | TalentXcel</title>
+        <meta name="description" content="Build executive, ATS-optimized resumes in minutes with TalentXcel SI. 50+ templates, instant parsing, real-time keyword scoring, and interview coaching." />
         <meta name="keywords" content="ai resume builder, ats resume checker, resume score, cv builder india, executive resume templates, talentxcel resume" />
         <link rel="canonical" href="https://talentxcel.in/resume" />
         
-        <meta property="og:title" content="AI Resume Builder & ATS Score Optimization | TalentXcel" />
-        <meta property="og:description" content="Build executive, ATS-optimized resumes in minutes with TalentXcel AI. 50+ templates, instant keyword parsing, and direct job matching." />
+        <meta property="og:title" content="SI Resume Builder & ATS Score Optimization | TalentXcel" />
+        <meta property="og:description" content="Build executive, ATS-optimized resumes in minutes with TalentXcel SI. 50+ templates, instant keyword parsing, and direct job matching." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://talentxcel.in/resume" />
         <meta property="og:image" content="https://talentxcel.in/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" />
         
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="AI Resume Builder & ATS Scanner | TalentXcel" />
-        <meta name="twitter:description" content="Build and score your ATS-optimized resume with TalentXcel AI." />
+        <meta name="twitter:title" content="SI Resume Builder & ATS Scanner | TalentXcel" />
+        <meta name="twitter:description" content="Build and score your ATS-optimized resume with TalentXcel SI." />
         <meta name="twitter:image" content="https://talentxcel.in/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" />
       </Helmet>
 
@@ -206,7 +206,7 @@ export default function UnifiedResumeHub() {
           <div className="bg-white dark:bg-card border border-slate-200/80 dark:border-border rounded-full p-1.5 shadow-xs flex items-center justify-between overflow-x-auto gap-1">
             {[
               { label: 'Resume Command Center', id: 'All', icon: Sparkles, badge: 'Hub' },
-              { label: 'AI Resume Builder', id: 'Builder', icon: Brain, badge: 'Active' },
+              { label: 'SI Resume Builder', id: 'Builder', icon: Brain, badge: 'Active' },
               { label: 'ATS Scanner', id: 'ATS', icon: Target, badge: '98% Pass' },
               { label: '50+ Templates', id: 'Templates', icon: Layers, badge: 'Pro' },
               { label: 'Cover Letter Studio', id: 'CoverLetter', icon: Mail, badge: null },

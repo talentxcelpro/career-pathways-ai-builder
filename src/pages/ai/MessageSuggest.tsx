@@ -123,7 +123,7 @@ const MessageSuggest = () => {
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Smart Messaging Assistant</h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Generate personalized, professional messages for networking, connections, and follow-ups 
-            with AI-powered suggestions.
+            with SI-powered suggestions.
           </p>
         </div>
 

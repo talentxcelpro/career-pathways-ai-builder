@@ -17,7 +17,7 @@ export const QuickActions = () => {
       textColor: "text-violet-700"
     },
     {
-      title: "Build Resume with TalentXcel AI",
+      title: "Build Resume with TalentXcel SI",
       description: "Create professional resume",
       icon: FileText,
       href: "/tools/resume-builder",

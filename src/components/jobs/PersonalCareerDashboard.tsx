@@ -112,7 +112,7 @@ export const PersonalCareerDashboard: React.FC<PersonalCareerDashboardProps> = (
                 Welcome back, {user?.full_name || user?.name || 'Job Seeker'}! 👋
               </h1>
               <p className="text-gray-600 mt-1">
-                Your AI Career Assistant found {Math.floor(Math.random() * 15) + 5} new matches today
+                Your TalentXcel SI Career Assistant found {Math.floor(Math.random() * 15) + 5} new matches today
               </p>
             </div>
             <div className="text-right">
@@ -269,7 +269,7 @@ export const PersonalCareerDashboard: React.FC<PersonalCareerDashboardProps> = (
             <CardContent className="space-y-2">
               <Button size="sm" className="w-full justify-start" variant="ghost">
                 <Brain className="h-4 w-4 mr-2" />
-                Ask AI Career Assistant
+                Ask TalentXcel SI Career Assistant
               </Button>
               <Button size="sm" className="w-full justify-start" variant="ghost">
                 <Target className="h-4 w-4 mr-2" />

@@ -87,10 +87,10 @@ const AIProfileOptimizer = () => {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
           <Zap className="h-8 w-8 text-purple-600" />
-          Powered by TalentXcel AI Profile Optimizer
+          Powered by TalentXcel SI Profile Optimizer
         </h1>
         <p className="text-gray-600 mt-2">
-          Optimize your professional profile with Powered by TalentXcel AI suggestions and keyword analysis
+          Optimize your professional profile with Powered by TalentXcel SI suggestions and keyword analysis
         </p>
       </div>
 
@@ -259,7 +259,7 @@ const AIProfileOptimizer = () => {
                 <User className="h-12 w-12 text-gray-400 mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">Ready to Optimize</h3>
                 <p className="text-gray-600 text-center">
-                  Fill in your profile information and click "Optimize Profile" to get AI-powered suggestions
+                  Fill in your profile information and click "Optimize Profile" to get SI-powered suggestions
                 </p>
               </CardContent>
             </Card>

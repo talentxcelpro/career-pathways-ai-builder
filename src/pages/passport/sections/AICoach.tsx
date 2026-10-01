@@ -69,7 +69,7 @@ const AICoach: React.FC = () => {
   return (
     <div className="space-y-10">
       <PageHeader
-        eyebrow="AI Career Coach"
+        eyebrow="SI Career Coach"
         title="Your personalized career guidance"
         description="Trained on your verified passport data — get missing-skill analysis and a role-specific roadmap."
       />

@@ -92,7 +92,7 @@ const CareerIntelligenceDashboard: React.FC = () => {
         <title>Career Intelligence Dashboard - Real-Time Analytics | TalentXcel</title>
         <meta 
           name="description" 
-          content="Monitor your career progression with real-time analytics, market insights, and AI-powered recommendations for accelerated professional growth." 
+          content="Monitor your career progression with real-time analytics, market insights, and SI-powered recommendations for accelerated professional growth." 
         />
         <meta name="robots" content="noindex" />
       </Helmet>

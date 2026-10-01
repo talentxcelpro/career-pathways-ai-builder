@@ -434,7 +434,7 @@ const Marketplace = () => {
         {/* Footer Note */}
         <div className="text-center py-8 mt-12">
           <p className="text-sm text-text-secondary">
-            Powered by TalentXcel AI – India's Intelligent Career Platform
+            Powered by TalentXcel SI – India's Intelligent Career Platform
           </p>
         </div>
       </div>

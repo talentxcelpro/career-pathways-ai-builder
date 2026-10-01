@@ -9,7 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Eye, EyeOff, Mail, Lock, Loader2, ArrowRight, AlertTriangle } from 'lucide-react';
 import { SocialLogin } from './SocialLogin';
-import { getSubdomainRedirect } from '@/utils/subdomainRedirect';
+import { resolvePostAuthDestination } from '@/utils/intentRouting';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
@@ -74,19 +74,12 @@ const LoginForm = () => {
         return;
       }
 
-      if (data.user) {
-        // Login successful - no toast message
-        
-        // Redirect to return URL, subdomain path, or appropriate dashboard
-        if (returnUrl) {
-          navigate(decodeURIComponent(returnUrl));
-        } else if (redirectParam) {
-          navigate(redirectParam);
-        } else {
-          const subdomainPath = getSubdomainRedirect();
-          const redirectPath = subdomainPath || '/network';
-          navigate(redirectPath);
-        }
+        // Login successful
+        const destination = resolvePostAuthDestination({
+          searchParams,
+          userMetadata: data.user.user_metadata,
+        });
+        navigate(destination);
       }
     } catch (error: any) {
       setAttemptCount(prev => prev + 1);

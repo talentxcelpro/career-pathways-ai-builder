@@ -307,7 +307,7 @@ export const ResumeExamplesGallery: React.FC<ResumeExamplesGalleryProps> = ({
               <div className="text-center py-8">
                 <h3 className="text-lg font-semibold mb-2">Before & After Transformations</h3>
                 <p className="text-muted-foreground mb-4">
-                  See how our AI-powered improvements transformed these resumes
+                  See how our SI-powered improvements transformed these resumes
                 </p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

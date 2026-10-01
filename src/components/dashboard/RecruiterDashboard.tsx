@@ -160,7 +160,7 @@ export const RecruiterDashboard: React.FC = () => {
             <h1 className="text-3xl font-bold text-foreground">Recruiter Dashboard</h1>
           </AIStatusIndicator>
           <p className="text-muted-foreground mt-1">
-            AI-powered recruitment analytics and candidate management
+            SI-powered recruitment analytics and candidate management
           </p>
         </div>
         

@@ -241,7 +241,7 @@ export const InterviewPrep: React.FC<InterviewPrepProps> = ({ className }) => {
             Interview Preparation
           </CardTitle>
           <p className="text-muted-foreground">
-            Practice with AI-powered mock interviews tailored to your target roles
+            Practice with SI-powered mock interviews tailored to your target roles
           </p>
         </CardHeader>
         <CardContent>

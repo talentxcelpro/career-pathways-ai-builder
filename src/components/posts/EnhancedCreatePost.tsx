@@ -252,7 +252,7 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
     setTags(tags.filter(t => t !== tagToRemove));
   };
 
-  // ✨ TalentXcel AI: Rewrite & Transform Post
+  // ✨ TalentXcel SI: Rewrite & Transform Post
   const handleAiTransform = async (mode: 'polish' | 'professional' | 'career' | 'engaging' | 'concise' | 'job_seeker' | 'hiring' | 'hindi') => {
     setIsGeneratingAi(true);
     try {
@@ -279,7 +279,7 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
         concise: 'Concise'
       };
 
-      toast.success(`TalentXcel AI generated ${modeNames[mode] || mode} post!`);
+      toast.success(`TalentXcel SI generated ${modeNames[mode] || mode} post!`);
       setShowAiDrawer(false);
     } catch (err: any) {
       toast.error('AI transformation failed');
@@ -288,7 +288,7 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
     }
   };
 
-  // ✨ TalentXcel AI: Generate Post from Scratch / Topic
+  // ✨ TalentXcel SI: Generate Post from Scratch / Topic
   const handleAiDraftFromTopic = async () => {
     if (!aiTopic.trim()) {
       toast.error('Please enter a topic or achievement');
@@ -305,7 +305,7 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
         setTags(Array.from(new Set([...tags, ...cleanTags])));
       }
 
-      toast.success('TalentXcel AI crafted your post!');
+      toast.success('TalentXcel SI crafted your post!');
       setShowAiDrawer(false);
     } catch {
       toast.error('AI draft generation failed');
@@ -517,7 +517,7 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
             className="h-7 px-2.5 text-[11px] font-bold text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800 bg-purple-500/10 hover:bg-purple-500/20 rounded-full gap-1"
           >
             <Sparkles className="h-3 w-3 text-purple-600" />
-            <span>TalentXcel AI</span>
+            <span>TalentXcel SI</span>
           </Button>
         </div>
 
@@ -570,18 +570,18 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
             }`}
           >
             <Wand2 className="h-3.5 w-3.5 text-purple-600 dark:text-purple-300" />
-            <span>TalentXcel AI</span>
+            <span>TalentXcel SI</span>
           </Button>
         </div>
       </div>
 
-      {/* ✨ TalentXcel AI Assistant Panel */}
+      {/* ✨ TalentXcel SI Assistant Panel */}
       {showAiDrawer && (
         <div className="p-4 rounded-2xl bg-gradient-to-r from-purple-500/10 via-indigo-500/10 to-blue-500/10 border border-purple-200 dark:border-purple-900/60 space-y-3.5 animate-in fade-in duration-200">
           <div className="flex items-center justify-between">
             <span className="text-xs font-extrabold text-purple-900 dark:text-purple-200 flex items-center gap-1.5">
               <Sparkles className="h-3.5 w-3.5 text-purple-600" />
-              TalentXcel AI Post Studio
+              TalentXcel SI Post Studio
             </span>
             <X className="h-4 w-4 cursor-pointer text-muted-foreground hover:text-foreground" onClick={() => setShowAiDrawer(false)} />
           </div>

@@ -226,7 +226,7 @@ const SkillAssessor = () => {
             </div>
             <div>
               <h1 className="text-3xl font-bold text-gray-900">AI Skill Assessor</h1>
-              <p className="text-gray-600">Evaluate your skills with AI-powered assessments</p>
+              <p className="text-gray-600">Evaluate your skills with SI-powered assessments</p>
             </div>
           </div>
         </div>

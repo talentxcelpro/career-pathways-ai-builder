@@ -143,7 +143,7 @@ export function RecruiterOS() {
   }>>([
     {
       role: 'assistant',
-      text: "Hello! I am your AI Recruiter Copilot connected live to your candidate database. Ask me to find candidates with specific skills or locations, create shortlists, or review pipeline health."
+      text: "Hello! I am your TalentXcel SI Recruiter Copilot connected live to your candidate database. Ask me to find candidates with specific skills or locations, create shortlists, or review pipeline health."
     }
   ]);
 
@@ -762,7 +762,7 @@ export function RecruiterOS() {
                     {
                       icon: Bot,
                       color: 'text-purple-400 bg-purple-950/40 border-purple-800/50',
-                      title: 'AI Recruiter Copilot ready for sourcing and outreach execution',
+                      title: 'TalentXcel SI Recruiter Copilot ready for sourcing and outreach execution',
                       desc: 'Use conversational queries to filter talent and draft candidate outreach batches.',
                       actionText: 'Open Copilot',
                       onClick: () => { setActiveTab('copilot'); }

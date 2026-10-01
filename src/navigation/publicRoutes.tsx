@@ -100,7 +100,7 @@ export const publicRoutes = [
     description: "Prepare for interviews with our free resources"
   },
   {
-    title: "AI Job Matching",
+    title: "SI Job Matching",
     to: "/public/job-matcher",
     icon: <Search className="h-4 w-4" />,
     page: (

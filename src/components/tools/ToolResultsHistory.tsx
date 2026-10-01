@@ -156,7 +156,7 @@ const ToolResultsHistory = () => {
       'cover-letter': 'Cover Letter Generator',
       'salary-analyzer': 'Salary Analyzer',
       'interview-prep': 'Interview Prep',
-      'ai-assistant': 'AI Career Assistant',
+      'ai-assistant': 'TalentXcel SI Career Assistant',
       'profile-score': 'Profile Score',
       'market-insights': 'Market Insights'
     };

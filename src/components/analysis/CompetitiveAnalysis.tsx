@@ -222,7 +222,7 @@ const CompetitiveAnalysis = () => {
       indeed: 40,
       monster: 50,
       weight: 15,
-      description: 'AI-powered career advice and guidance'
+      description: 'SI-powered career advice and guidance'
     },
     {
       feature: 'Job Database Size',
@@ -298,7 +298,7 @@ const CompetitiveAnalysis = () => {
       title: 'Network Effects',
       description: 'LinkedIn\'s networking advantage is hard to replicate',
       severity: 'Medium', 
-      mitigation: 'Build unique AI-powered networking features'
+      mitigation: 'Build unique SI-powered networking features'
     },
     {
       title: 'Database Size',
@@ -312,7 +312,7 @@ const CompetitiveAnalysis = () => {
     {
       category: 'Differentiation',
       recommendations: [
-        'Double down on AI-powered features that competitors can\'t easily replicate',
+        'Double down on SI-powered features that competitors can\'t easily replicate',
         'Focus on career guidance and personalized growth paths',
         'Build unique features like AI interview prep and skill gap analysis'
       ]
@@ -337,7 +337,7 @@ const CompetitiveAnalysis = () => {
       category: 'Market Positioning',
       recommendations: [
         'Position as "Future of Career Development" vs traditional job boards',
-        'Emphasize AI-powered personalization and career growth',
+        'Emphasize SI-powered personalization and career growth',
         'Target tech-savvy professionals and young graduates first'
       ]
     }

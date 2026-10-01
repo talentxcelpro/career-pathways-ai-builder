@@ -24,7 +24,7 @@ export function AIEnhancementPanel({ resumeData, onUpdate }: AIEnhancementPanelP
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       if (section === 'summary') {
-        const enhanced = `${resumeData.personalInfo.summary}\n\nEnhanced with AI-powered keywords and industry-specific terminology to improve ATS compatibility.`;
+        const enhanced = `${resumeData.personalInfo.summary}\n\nEnhanced with SI-powered keywords and industry-specific terminology to improve ATS compatibility.`;
         onUpdate({
           personalInfo: { ...resumeData.personalInfo, summary: enhanced }
         });

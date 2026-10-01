@@ -8,7 +8,7 @@ export const FeaturesSection = () => {
     {
       icon: FileText,
       title: "Resume Builder",
-      description: "Create professional resumes with AI-powered suggestions and templates",
+      description: "Create professional resumes with SI-powered suggestions and templates",
       link: "/resume"
     },
     {

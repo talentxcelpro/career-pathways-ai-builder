@@ -158,7 +158,7 @@ export const AdvancedEmployerCRM: React.FC = () => {
           <div>
             <h1 className="text-3xl font-bold">Advanced CRM</h1>
             <p className="text-muted-foreground">
-              Manage your candidate pipeline with AI-powered insights
+              Manage your candidate pipeline with SI-powered insights
             </p>
           </div>
           <div className="flex gap-2">

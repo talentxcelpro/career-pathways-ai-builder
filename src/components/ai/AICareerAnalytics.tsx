@@ -166,7 +166,7 @@ export const AICareerAnalytics: React.FC = () => {
           <Brain className="h-12 w-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">AI Career Analytics</h3>
           <p className="text-gray-600 mb-4">
-            Login to get personalized AI-powered career insights
+            Login to get personalized SI-powered career insights
           </p>
         </CardContent>
       </Card>

@@ -162,7 +162,7 @@ export const ContentAutomationDashboard: React.FC = () => {
         <div>
           <h2 className="text-2xl font-bold">Content Automation</h2>
           <p className="text-muted-foreground">
-            AI-powered content generation system producing 400-600 pieces daily
+            SI-powered content generation system producing 400-600 pieces daily
           </p>
         </div>
         <div className="flex gap-2">

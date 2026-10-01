@@ -479,7 +479,7 @@ export const NetworkAnalytics = () => {
                 <Brain className="h-5 w-5" />
                 Skill Demand Trends
               </CardTitle>
-              <p className="text-muted-foreground">Real-time market insights powered by TalentXcel AI</p>
+              <p className="text-muted-foreground">Real-time market insights powered by TalentXcel SI</p>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -523,7 +523,7 @@ export const NetworkAnalytics = () => {
                     <Brain className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <h4 className="font-semibold mb-2">TalentXcel AI Recommendation</h4>
+                    <h4 className="font-semibold mb-2">TalentXcel SI Recommendation</h4>
                     <p className="text-sm text-muted-foreground mb-3">
                       Based on your profile and industry trends, we recommend focusing on AI/Machine Learning skills. 
                       This field shows 95% market demand with 23% growth, making it an excellent investment for your career.

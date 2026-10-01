@@ -1,5 +1,5 @@
 // src/lib/social-marketing/videoProductionEngine.ts
-// Stage 7: Video Production Engine for TalentXcel AI Content Factory
+// Stage 7: Video Production Engine for TalentXcel SI Content Factory
 // Decoupled video assembly pipeline: Stitches visual frames, voice stems, subtitles, and branding.
 // Invariant: Decoupled tolerance. A video render failure does NOT block static, carousel, or text deliverables.
 

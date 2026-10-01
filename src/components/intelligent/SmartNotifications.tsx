@@ -71,7 +71,7 @@ export const SmartNotifications: React.FC<SmartNotificationsProps> = ({
         });
       });
 
-      // Generate AI-powered content recommendations
+      // Generate SI-powered content recommendations
       if (personalizedFeed.length > 0) {
         const topRecommendation = personalizedFeed[0];
         if (topRecommendation.relevanceScore > 0.8) {

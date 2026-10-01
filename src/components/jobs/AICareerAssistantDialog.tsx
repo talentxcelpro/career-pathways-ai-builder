@@ -29,7 +29,7 @@ export const AICareerAssistantDialog: React.FC<AICareerAssistantDialogProps> = (
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([
     {
       id: '1',
-      content: "Hi! I'm your AI Career Assistant. I can help you with job search strategies, career planning, resume tips, and more. What would you like to know?",
+      content: "Hi! I'm your TalentXcel SI Career Assistant. I can help you with job search strategies, career planning, resume tips, and more. What would you like to know?",
       type: 'assistant',
       timestamp: new Date()
     }
@@ -97,7 +97,7 @@ export const AICareerAssistantDialog: React.FC<AICareerAssistantDialogProps> = (
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Brain className="h-5 w-5 text-purple-600" />
-            AI Career Assistant
+            TalentXcel SI Career Assistant
           </DialogTitle>
         </DialogHeader>
 

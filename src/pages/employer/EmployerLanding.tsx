@@ -224,7 +224,7 @@ const EmployerLanding = () => {
         <title>Employer Recruitment Portal | Post Jobs & Hire Talent | TalentXcel</title>
         <meta 
           name="description" 
-          content="Post jobs, screen ATS-optimized candidates, and build high-velocity engineering teams with TalentXcel AI employer intelligence." 
+          content="Post jobs, screen ATS-optimized candidates, and build high-velocity engineering teams with TalentXcel SI employer intelligence." 
         />
         <link rel="canonical" href="https://talentxcel.in/employer" />
       </Helmet>
@@ -251,7 +251,7 @@ const EmployerLanding = () => {
                 </div>
 
                 <p className="text-sm sm:text-base text-muted-foreground mb-6 leading-relaxed">
-                  AI-powered hiring that connects you with verified candidates instantly. Publish roles, review ATS scorecards, and hire faster.
+                  SI-powered hiring that connects you with verified candidates instantly. Publish roles, review ATS scorecards, and hire faster.
                 </p>
                 
                 {/* Features Grid */}

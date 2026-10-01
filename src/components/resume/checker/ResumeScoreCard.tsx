@@ -45,7 +45,7 @@ export const ResumeScoreCard: React.FC<ResumeScoreCardProps> = ({ score }) => {
       <div className="absolute top-4 right-4">
         <Badge variant="secondary" className="bg-white/80">
           <Sparkles className="h-3 w-3 mr-1" />
-          TalentXcel AI
+          TalentXcel SI
         </Badge>
       </div>
       

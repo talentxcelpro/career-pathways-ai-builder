@@ -351,7 +351,7 @@ function generateJobLocationPage(location: string, role?: string): SEOPage {
       },
       {
         question: `How do I apply for jobs in ${location}?`,
-        answer: `Simply create a profile on TalentXcel, upload your resume, and start applying to relevant positions. Our AI-powered matching helps connect you with suitable opportunities.`
+        answer: `Simply create a profile on TalentXcel, upload your resume, and start applying to relevant positions. Our SI-powered matching helps connect you with suitable opportunities.`
       }
     ],
     structuredData: {

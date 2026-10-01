@@ -1,5 +1,5 @@
 // src/lib/social-marketing/marketingScheduler.ts
-// Stage 2: Marketing Scheduler & 2-Hour Autonomous Heartbeat for TalentXcel AI Content Factory
+// Stage 2: Marketing Scheduler & 2-Hour Autonomous Heartbeat for TalentXcel SI Content Factory
 // Coordinates the full 12-stage cycle. Decides whether to publish or explicitly choose NO_ACTION.
 // Invariant: Non-spammy. Never publishes merely because the 2-hour timer fired.
 

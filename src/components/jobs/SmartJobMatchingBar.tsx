@@ -175,7 +175,7 @@ export const SmartJobMatchingBar: React.FC<AIJobMatchProps> = ({
           <div className="flex items-center gap-3 mb-3">
             <div className="flex items-center gap-2">
               <Brain className="h-5 w-5 text-purple-600" />
-              <span className="font-medium text-purple-800">AI Career Assistant</span>
+              <span className="font-medium text-purple-800">TalentXcel SI Career Assistant</span>
             </div>
             <Badge className="bg-purple-100 text-purple-800 text-xs">
               <Sparkles className="h-3 w-3 mr-1" />
@@ -233,7 +233,7 @@ export const SmartJobMatchingBar: React.FC<AIJobMatchProps> = ({
                 <CardContent className="p-3">
                   <div className="text-xs text-gray-600 mb-2 flex items-center gap-1">
                     <Lightbulb className="h-3 w-3" />
-                    Try these AI-powered searches:
+                    Try these SI-powered searches:
                   </div>
                   <div className="space-y-1">
                     {smartSearchSuggestions.slice(0, 4).map((suggestion, index) => (

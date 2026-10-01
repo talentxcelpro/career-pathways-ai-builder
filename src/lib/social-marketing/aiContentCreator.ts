@@ -1,5 +1,5 @@
 // src/lib/social-marketing/aiContentCreator.ts
-// Stage 4: AI Content Creator for TalentXcel AI Content Factory
+// Stage 4: AI Content Creator for TalentXcel SI Content Factory
 // Generates structured, high-utility core narratives with 3 distinct hook variants and evidence-backed takeaways.
 // Invariant: Zero generic filler. Every value point connects directly to verified evidence.
 

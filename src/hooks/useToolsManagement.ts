@@ -35,7 +35,7 @@ export const useToolsManagement = () => {
       return data.map(tool => ({
         id: tool.id,
         name: tool.tool_slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-        description: `AI-powered ${tool.tool_slug} tool`,
+        description: `SI-powered ${tool.tool_slug} tool`,
         category: tool.tool_slug.includes('resume') ? 'Resume' : 
                  tool.tool_slug.includes('interview') ? 'Interview' :
                  tool.tool_slug.includes('salary') ? 'Salary' : 'General',

@@ -5,8 +5,8 @@ export const TALENTXCEL_NAMING_MAP = [
   ['Career OS', 'TalentXcel Core'],
   ['Signal OS', 'TalentXcel Platform'],
   ['AI Coach', 'TalentXcel Navigator'],
-  ['AI Career Coach', 'TalentXcel Navigator'],
-  ['AI Assistant', 'TalentXcel Navigator'],
+  ['SI Career Coach', 'TalentXcel Navigator'],
+  ['SI Assistant', 'TalentXcel Navigator'],
   ['AI Insights', 'Talent Signals'],
   ['AI Recommendations', 'Career Moves'],
   ['AI Suggestions', 'Smart Moves'],
@@ -14,7 +14,7 @@ export const TALENTXCEL_NAMING_MAP = [
   ['AI Powered', 'Talent Engine'],
   ['AI Engine', 'Talent Engine'],
   ['AI Matching', 'Precision Match'],
-  ['AI Score', 'TalentScore'],
+  ['TalentScore', 'TalentScore'],
   ['Progress Tracking', 'Growth Path'],
 ] as const;
 

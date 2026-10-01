@@ -22,7 +22,7 @@ const Careers = () => {
       location: "Remote / New York",
       type: "Full-time", 
       salary: "$140k - $200k",
-      description: "Lead product strategy for our AI-powered career intelligence platform and resume optimization tools."
+      description: "Lead product strategy for our SI-powered career intelligence platform and resume optimization tools."
     },
     {
       title: "Data Scientist",
@@ -48,7 +48,7 @@ const Careers = () => {
         <PageHeader
           eyebrow="Careers"
           title="Join the TalentXcel team"
-          description="Help us build the future of career development. We're a passionate team creating AI-powered tools that help millions of professionals advance their careers worldwide."
+          description="Help us build the future of career development. We're a passionate team creating SI-powered tools that help millions of professionals advance their careers worldwide."
           size="lg"
           align="center"
         />

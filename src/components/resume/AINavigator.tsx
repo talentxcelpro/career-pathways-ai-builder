@@ -29,7 +29,7 @@ export const AINavigator = ({ resumeContent, onSuggestionApply }: AINavigatorPro
     {
       id: '1',
       type: 'Navigator',
-      content: "Hi! I'm your AI Resume Navigator. I can help you improve your resume content, suggest better wording, or answer questions about best practices. What would you like to work on?",
+      content: "Hi! I'm your SI Resume Navigator. I can help you improve your resume content, suggest better wording, or answer questions about best practices. What would you like to work on?",
       timestamp: new Date()
     }
   ]);

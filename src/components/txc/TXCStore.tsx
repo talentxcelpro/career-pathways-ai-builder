@@ -47,7 +47,7 @@ export const TXCStore: React.FC = () => {
     // AI Tools Category
     {
       id: 'ai_resume_optimization',
-      name: 'AI Resume Optimizer',
+      name: 'SI Resume Optimizer',
       description: 'Let AI optimize your resume for maximum ATS compatibility and impact',
       cost: 750,
       category: 'ai_tools',

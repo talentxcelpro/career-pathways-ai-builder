@@ -78,7 +78,7 @@ export const ProgressiveDisclosure: React.FC<ProgressiveDisclosureProps> = ({
                     <div className="space-y-2">
                       {[
                         { id: 'personal-dashboard', label: 'Personal Dashboard' },
-                        { id: 'ai-matching', label: 'AI Job Matching' },
+                        { id: 'ai-matching', label: 'SI Job Matching' },
                         { id: 'salary-widget', label: 'Salary Transparency' },
                         { id: 'quick-apply', label: 'Quick Apply Widget' },
                         { id: 'top-companies', label: 'Top Companies' },

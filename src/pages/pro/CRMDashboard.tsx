@@ -470,7 +470,7 @@ export default function CRMDashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg AI Score</CardTitle>
+            <CardTitle className="text-sm font-medium">Avg TalentScore</CardTitle>
             <Star className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -538,7 +538,7 @@ export default function CRMDashboard() {
                       </Badge>
                       {lead.ai_lead_score > 0 && (
                         <Badge variant="outline">
-                          AI Score: {lead.ai_lead_score}
+                          TalentScore: {lead.ai_lead_score}
                         </Badge>
                       )}
                     </div>

@@ -44,7 +44,7 @@ export const OFFICIAL_TXC_VIDEOS: TXCVideoItem[] = [
   },
   {
     id: 'talentxcel-job-match',
-    title: 'AI Job Matching Engine',
+    title: 'SI Job Matching Engine',
     tagline: 'Semantic Relevance & Instant High-Fit Discovery',
     description: 'Zero-barrier job discovery matched directly against your exact skill profile, compensation targets, and verified career milestones.',
     videoUrl: '/videos/txc/talentxcel-job-match.mp4',

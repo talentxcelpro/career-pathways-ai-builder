@@ -1,5 +1,5 @@
 // src/pages/admin/AIOrganizationControlCenter.tsx
-// Master Control Plane for TalentXcel AI Growth Organization (/admin/ai-organization)
+// Master Control Plane for TalentXcel SI Growth Organization (/admin/ai-organization)
 // Features 5-State Server-Authoritative Kill Switch, 9-Agent Grid (1 CEO + 8 Specialists), AI CEO Daily Plan & Audit Stream
 
 import React, { useState, useEffect } from 'react';
@@ -228,7 +228,7 @@ export default function AIOrganizationControlCenter() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 p-4 sm:p-6 lg:p-8">
       <Helmet>
-        <title>TalentXcel AI Growth Organization | Admin Control Plane</title>
+        <title>TalentXcel SI Growth Organization | Admin Control Plane</title>
       </Helmet>
 
       <div className="max-w-7xl mx-auto space-y-8">
@@ -244,7 +244,7 @@ export default function AIOrganizationControlCenter() {
               </Badge>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
-              TalentXcel AI Growth Organization
+              TalentXcel SI Growth Organization
             </h1>
             <p className="text-slate-400 text-xs sm:text-sm mt-1">
               1 Executive AI CEO + 9 Department Specialist Agents ({TOTAL_AGENTS_COUNT} Total) · Server-Authoritative Kill Switch · Closed GSC Feedback Loop

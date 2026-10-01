@@ -74,7 +74,7 @@ const SmartPostAssistant: React.FC<SmartPostAssistantProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* AI Assistant Header */}
+      {/* SI Assistant Header */}
       <Card className="border-blue-200 bg-blue-50">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-blue-800">
@@ -84,7 +84,7 @@ const SmartPostAssistant: React.FC<SmartPostAssistantProps> = ({
             Smart Post Assistant
           </CardTitle>
           <CardDescription className="text-blue-600">
-            Get AI-powered post suggestions tailored to your professional network
+            Get SI-powered post suggestions tailored to your professional network
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-0">

@@ -1,5 +1,5 @@
 // src/lib/ai-org/aiOrganizationScheduler.ts
-// Autonomous Scheduler & Background Worker Engine for TalentXcel AI Growth Organization
+// Autonomous Scheduler & Background Worker Engine for TalentXcel SI Growth Organization
 // Periodically wakes the organization, audits server-authoritative state, runs the AI CEO plan, and dispatches agent tasks
 
 import { getAuthoritativeLifecycleState } from './aiOrganizationState';

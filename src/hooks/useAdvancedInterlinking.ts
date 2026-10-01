@@ -22,7 +22,7 @@ export const useAdvancedInterlinking = () => {
   const [linkMetrics, setLinkMetrics] = useState<Record<string, LinkMetrics>>({});
   const [contextualSuggestions, setContextualSuggestions] = useState<ContextualLink[]>([]);
 
-  // AI-powered contextual link generation
+  // SI-powered contextual link generation
   const generateContextualLinks = useCallback((content: string, currentPath: string): ContextualLink[] => {
     const linkMap = {
       '/': [

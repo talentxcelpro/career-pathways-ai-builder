@@ -128,7 +128,7 @@ const PredictiveCareerAnalytics: React.FC = () => {
               <Brain className="h-6 w-6 text-primary" />
               Predictive Career Analytics
             </h2>
-            <p className="text-muted-foreground">AI-powered insights into your career trajectory</p>
+            <p className="text-muted-foreground">SI-powered insights into your career trajectory</p>
           </div>
           <Button onClick={generatePredictions} disabled={isAnalyzing}>
             {isAnalyzing ? 'Analyzing...' : 'Refresh Analysis'}
@@ -151,7 +151,7 @@ const PredictiveCareerAnalytics: React.FC = () => {
                 <Brain className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-muted-foreground mb-2">No Predictions Available</h3>
                 <p className="text-muted-foreground">
-                  Connect your API to generate AI-powered career predictions
+                  Connect your API to generate SI-powered career predictions
                 </p>
               </div>
             ) : (

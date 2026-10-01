@@ -14,7 +14,7 @@ export const analyticsRoutes = [
     to: "/analytics/recruiter",
     icon: <Users className="h-4 w-4" />,
     page: <Suspense fallback={null}><RecruiterDashboard /></Suspense>,
-    description: "AI-powered recruitment analytics and candidate management"
+    description: "SI-powered recruitment analytics and candidate management"
   },
   {
     title: "Trending Jobs Analytics",

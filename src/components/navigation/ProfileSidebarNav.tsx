@@ -58,7 +58,7 @@ export const ProfileSidebarNav: React.FC = () => {
       title: "GROWTH & REWARDS",
       items: [
         { label: 'Analytics & Insights', icon: TrendingUp, path: '/profile/analytics' },
-        { label: 'AI Career Coach', icon: Bot, path: '/ai-agent' },
+        { label: 'SI Career Coach', icon: Bot, path: '/ai-agent' },
         { label: 'Rewards & TXC', icon: Award, path: '/txc/mining' },
         { label: 'Refer & Earn', icon: Share2, path: '/referral' },
       ]

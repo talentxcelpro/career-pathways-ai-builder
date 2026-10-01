@@ -94,7 +94,7 @@ export default function Phase3Dashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Phase 3: AI Intelligence Engine</h2>
+          <h2 className="text-3xl font-bold tracking-tight">Phase 3: SI Intelligence Engine</h2>
           <p className="text-muted-foreground">
             Advanced ML models powering semantic matching, enhancement, and predictive insights
           </p>
@@ -138,7 +138,7 @@ export default function Phase3Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-blue-600">47,382</div>
-            <p className="text-xs text-muted-foreground">AI-powered matches made</p>
+            <p className="text-xs text-muted-foreground">SI-powered matches made</p>
           </CardContent>
         </Card>
 

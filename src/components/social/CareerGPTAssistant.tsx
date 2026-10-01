@@ -98,7 +98,7 @@ export function CareerGPTAssistant() {
   const welcomeMessage: Message = {
     id: 'welcome',
     role: 'assistant',
-    content: `👋 Hi! I'm your AI Career Assistant. I'm here to help you with:
+    content: `👋 Hi! I'm your TalentXcel SI Career Assistant. I'm here to help you with:
 
 • **Resume & Cover Letter** - Review, optimization, and writing tips
 • **Interview Preparation** - Mock questions, strategies, and feedback
@@ -302,7 +302,7 @@ Could you provide more specific details about what you'd like help with? I can g
                 <Bot className="w-4 h-4 text-primary" />
               </div>
               <div>
-                <CardTitle className="text-sm">Career AI Assistant</CardTitle>
+                <CardTitle className="text-sm">Career SI Assistant</CardTitle>
                 <p className="text-xs text-muted-foreground">Ask me anything about your career!</p>
               </div>
             </div>
@@ -324,7 +324,7 @@ Could you provide more specific details about what you'd like help with? I can g
               <Bot className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <CardTitle className="text-lg">Career AI Assistant</CardTitle>
+              <CardTitle className="text-lg">Career SI Assistant</CardTitle>
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                 Online • Ready to help

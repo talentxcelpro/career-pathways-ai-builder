@@ -168,8 +168,8 @@ export const usePageSEO = (pageType: string, data?: any) => {
 
       default:
         return {
-          title: 'TalentXcel - AI-Powered Career Platform',
-          description: 'Accelerate your career with AI-powered tools and comprehensive career resources.',
+          title: 'TalentXcel - SI-powered Career & Talent Intelligence Platform',
+          description: 'Accelerate your career with SI-powered tools and comprehensive career resources.',
           keywords: ['careers', 'jobs', 'professional development']
         };
     }

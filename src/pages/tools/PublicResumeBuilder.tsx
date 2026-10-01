@@ -17,7 +17,7 @@ export default function PublicResumeBuilder() {
   ];
 
   const features = [
-    'AI-powered content suggestions',
+    'SI-powered content suggestions',
     'ATS-optimized templates',
     'Real-time preview',
     'One-click download',

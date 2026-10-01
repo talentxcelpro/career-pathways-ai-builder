@@ -3,7 +3,7 @@ import { Star, Quote } from 'lucide-react';
 
 const testimonials = [
   {
-    quote: "TalentXcel helped me land a job in 2 weeks! The AI-powered job matching is incredible.",
+    quote: "TalentXcel helped me land a job in 2 weeks! The SI-powered job matching is incredible.",
     author: "Ayesha Khan",
     role: "Full Stack Developer",
     company: "Tech Innovators Inc.",
@@ -11,7 +11,7 @@ const testimonials = [
     rating: 5
   },
   {
-    quote: "The AI-powered resume builder and career map features are absolutely next level. Game changer!",
+    quote: "The SI-powered resume builder and career map features are absolutely next level. Game changer!",
     author: "Rohan Sharma",
     role: "Product Manager",
     company: "Digital Solutions Ltd.",

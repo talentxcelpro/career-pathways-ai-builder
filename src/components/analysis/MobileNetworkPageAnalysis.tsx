@@ -150,7 +150,7 @@ const MobileNetworkPageAnalysis = () => {
       "Build mobile-first responsive design"
     ],
     shortTerm: [
-      "Add AI-powered connection recommendations",
+      "Add SI-powered connection recommendations",
       "Implement real-time messaging with Supabase",
       "Create professional posts and feed system",
       "Add push notifications for mobile"
@@ -255,7 +255,7 @@ const MobileNetworkPageAnalysis = () => {
                       {category === 'core' && 'Essential networking functionality'}
                       {category === 'engagement' && 'User interaction and social features'}
                       {category === 'mobile' && 'Mobile-specific networking features'}
-                      {category === 'ai' && 'AI-powered networking enhancements'}
+                      {category === 'ai' && 'SI-powered networking enhancements'}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -369,7 +369,7 @@ const MobileNetworkPageAnalysis = () => {
                       <p>• Implement real-time messaging system using Supabase</p>
                       <p>• Add people search with filters (location, industry, skills)</p>
                       <p>• Create network feed with professional posts</p>
-                      <p>• Build AI-powered connection recommendations</p>
+                      <p>• Build SI-powered connection recommendations</p>
                     </div>
                     <div className="mt-3">
                       <Badge className="bg-orange-100 text-orange-800">Priority: High</Badge>

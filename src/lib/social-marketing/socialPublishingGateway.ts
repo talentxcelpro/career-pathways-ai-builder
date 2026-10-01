@@ -1,5 +1,5 @@
 // src/lib/social-marketing/socialPublishingGateway.ts
-// Stage 10: Master Publishing Gateway for TalentXcel AI Content Factory
+// Stage 10: Master Publishing Gateway for TalentXcel SI Content Factory
 // Governed execution boundary: Enforces Master Org Killswitch (Immediate Pre-Flight), Level-3 Policy,
 // Platform Readiness, Account Health, and Idempotency before external mutation.
 

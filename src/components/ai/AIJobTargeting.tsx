@@ -203,7 +203,7 @@ export const AIJobTargeting: React.FC<AIJobTargetingProps> = ({
           <h2 className="text-2xl font-bold">AI Job Targeting</h2>
         </div>
         <p className="text-muted-foreground">
-          Analyze job compatibility and optimize your resume with AI-powered insights
+          Analyze job compatibility and optimize your resume with SI-powered insights
         </p>
       </div>
 

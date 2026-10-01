@@ -16,6 +16,6 @@ export const aiRoutes = [
     page: <Suspense fallback={null}><JobMatchGPTPage /></Suspense>,
     isPublic: true,
     icon: "brain",
-    description: "AI-powered resume analysis and job matching"
+    description: "SI-powered resume analysis and job matching"
   }
 ];

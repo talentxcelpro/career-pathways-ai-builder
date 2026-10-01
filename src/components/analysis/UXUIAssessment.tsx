@@ -201,11 +201,11 @@ const UXUIAssessment = () => {
       aiPowered: true
     },
     {
-      name: 'AI Career Coach Chatbot',
+      name: 'SI Career Coach Chatbot',
       description: 'Intelligent conversational assistant providing 24/7 career guidance, interview prep, and skill recommendations',
       impact: 'high',
       effort: 'medium',
-      category: 'AI Assistant',
+      category: 'SI Assistant',
       userStory: 'As a user, I want to chat with an AI coach that understands my career goals and provides personalized advice',
       technicalRequirements: [
         'Natural language processing',
@@ -217,7 +217,7 @@ const UXUIAssessment = () => {
     },
     {
       name: 'Video Interview Practice with AI Feedback',
-      description: 'AI-powered mock interviews with facial expression analysis, speech patterns, and content evaluation',
+      description: 'SI-powered mock interviews with facial expression analysis, speech patterns, and content evaluation',
       impact: 'high',
       effort: 'high',
       category: 'Interview Preparation',
@@ -403,7 +403,7 @@ const UXUIAssessment = () => {
       <div className="text-center space-y-4">
         <h1 className="text-3xl font-bold text-foreground">TalentXcel UX/UI Assessment</h1>
         <p className="text-muted-foreground max-w-3xl mx-auto">
-          Comprehensive analysis of user experience, interface design, and missing AI-powered features
+          Comprehensive analysis of user experience, interface design, and missing SI-powered features
         </p>
         <div className="flex items-center justify-center gap-4">
           <div className="text-center">
@@ -752,7 +752,7 @@ const UXUIAssessment = () => {
                     <div className="space-y-2">
                       <h4 className="font-semibold">Learning Platform</h4>
                       <ul className="text-sm space-y-1">
-                        <li>• AI-powered learning path generator</li>
+                        <li>• SI-powered learning path generator</li>
                         <li>• Gamification system</li>
                         <li>• Progress analytics dashboard</li>
                       </ul>

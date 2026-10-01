@@ -191,7 +191,7 @@ const MatchingEngine = () => {
       {/* How Matching Works */}
       <Card>
         <CardHeader>
-          <CardTitle>How AI Job Matching Works</CardTitle>
+          <CardTitle>How SI Job Matching Works</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">

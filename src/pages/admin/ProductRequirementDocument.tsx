@@ -77,7 +77,7 @@ const ProductRequirementDocument = () => {
             },
             {
               title: "Startups / SMEs",
-              wants: "Compete with big brands on SEO with affordable AI-powered tools",
+              wants: "Compete with big brands on SEO with affordable SI-powered tools",
               pain: "Expensive SEO agencies, lack of in-house SEO talent"
             },
             {

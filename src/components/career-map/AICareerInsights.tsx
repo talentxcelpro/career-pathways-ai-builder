@@ -32,7 +32,7 @@ export const AICareerInsights: React.FC<AICareerInsightsProps> = ({
   currentSkills,
   location = 'Global'
 }) => {
-  // Mock AI-powered insights data
+  // Mock SI-powered insights data
   const marketTrends: MarketTrend[] = [
     { skill: 'AI/ML', demand: 'high', growth: 45, salaryRange: { min: 120000, max: 180000 } },
     { skill: 'Cloud Computing', demand: 'high', growth: 38, salaryRange: { min: 110000, max: 160000 } },
@@ -90,7 +90,7 @@ export const AICareerInsights: React.FC<AICareerInsightsProps> = ({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Brain className="h-5 w-5 text-blue-600" />
-            TalentXcel AI Career Insights
+            TalentXcel SI Career Insights
           </CardTitle>
           <CardDescription>
             Powered by real-world market data and predictive analytics
@@ -148,7 +148,7 @@ export const AICareerInsights: React.FC<AICareerInsightsProps> = ({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Star className="h-5 w-5 text-yellow-500" />
-            TalentXcel AI Insights
+            TalentXcel SI Insights
           </CardTitle>
           <CardDescription>
             Personalized recommendations based on your profile and market analysis

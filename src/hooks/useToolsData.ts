@@ -197,7 +197,7 @@ export const DEFAULT_26_TOOLS: Tool[] = [
   // JobSearch (3)
   {
     id: 'tool-jobsearch-1',
-    name: 'AI Job Match GPT',
+    name: 'SI Job Match GPT',
     slug: 'ai-job-match-gpt',
     category: 'JobSearch',
     description: 'Semantic AI engine matching your verified candidate profile against active hiring openings.',
@@ -311,7 +311,7 @@ export const DEFAULT_26_TOOLS: Tool[] = [
   // Resume (3)
   {
     id: 'tool-resume-1',
-    name: 'AI Resume Builder',
+    name: 'SI Resume Builder',
     slug: 'resume-builder',
     category: 'Resume',
     description: 'Build ATS-optimized, modern resumes with auto-formatting and AI bullet point enhancement.',

@@ -144,7 +144,7 @@ class APIClient {
     });
   }
 
-  // AI-powered APIs
+  // SI-powered APIs
   async generatePrefill(module: string, context: any) {
     return this.request<any>('ai-prefill-generator', {
       body: { module, ...context }

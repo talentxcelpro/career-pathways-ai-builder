@@ -206,7 +206,7 @@ export const AppleInspiredResumeBuilder = () => {
                   <FileText className="h-10 w-10 text-white" />
                 </div>
                 <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent">
-                  TalentXcel AI Resume Builder
+                  TalentXcel SI Resume Builder
                 </h1>
                 <p className="text-xl text-gray-600 max-w-lg mx-auto">
                   Transform your career with TalentXcel's intelligent resume builder. Upload your existing resume or start fresh with AI assistance.
@@ -467,7 +467,7 @@ export const AppleInspiredResumeBuilder = () => {
               <div className="text-center mb-8 animate-slideInUp">
                 <h2 className="text-3xl font-bold text-gray-900 mb-4">Career Guidance</h2>
                 <p className="text-gray-600 max-w-2xl mx-auto">
-                  Get AI-powered career path recommendations and skill gap analysis.
+                  Get SI-powered career path recommendations and skill gap analysis.
                 </p>
               </div>
               
@@ -485,7 +485,7 @@ export const AppleInspiredResumeBuilder = () => {
               <div className="text-center mb-8 animate-slideInUp">
                 <h2 className="text-3xl font-bold text-gray-900 mb-4">Interview Preparation</h2>
                 <p className="text-gray-600 max-w-2xl mx-auto">
-                  Practice with AI-powered mock interviews and get ready for your dream job.
+                  Practice with SI-powered mock interviews and get ready for your dream job.
                 </p>
               </div>
               

@@ -93,7 +93,7 @@ export const TXC_JOB_POSTING: TXCPricingTier[] = [
       '60-day listing',
       'Top placement',
       'Maximum visibility',
-      'AI-powered candidate matching',
+      'SI-powered candidate matching',
       'Detailed analytics',
       'Direct messaging to candidates'
     ]
@@ -105,7 +105,7 @@ export const TXC_TOOLS_PRICING: TXCFeaturePricing[] = [
   {
     feature: 'ai_resume_builder',
     cost: 2000,
-    description: 'AI-powered resume generation',
+    description: 'SI-powered resume generation',
     category: 'tools'
   },
   {
@@ -187,7 +187,7 @@ export const TXC_SUBSCRIPTION_TIERS: TXCPricingTier[] = [
     cost: 25000,
     duration: 'monthly',
     features: [
-      'AI Resume Builder',
+      'SI Resume Builder',
       'Basic Analytics',
       'Standard Support',
       'Profile Enhancement',

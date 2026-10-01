@@ -36,7 +36,7 @@ const ProAITools: React.FC = () => {
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Bot className="h-6 w-6 text-blue-600" />
-                <CardTitle>AI Assistant</CardTitle>
+                <CardTitle>SI Assistant</CardTitle>
               </div>
               <CardDescription>
                 Get help with business tasks using AI
@@ -45,7 +45,7 @@ const ProAITools: React.FC = () => {
             <CardContent>
               <Button className="w-full">
                 <Sparkles className="h-4 w-4 mr-2" />
-                Launch AI Assistant
+                Launch SI Assistant
               </Button>
             </CardContent>
           </Card>
@@ -75,7 +75,7 @@ const ProAITools: React.FC = () => {
                 <CardTitle>Smart Analytics</CardTitle>
               </div>
               <CardDescription>
-                AI-powered insights for your business
+                SI-powered insights for your business
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -112,7 +112,7 @@ const ProAITools: React.FC = () => {
               </div>
               <div>
                 <h4 className="font-medium">Smart Insights</h4>
-                <p className="text-sm text-gray-600">Get AI-powered recommendations for business growth</p>
+                <p className="text-sm text-gray-600">Get SI-powered recommendations for business growth</p>
               </div>
             </div>
             

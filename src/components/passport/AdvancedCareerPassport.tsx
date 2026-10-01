@@ -462,7 +462,7 @@ export const AdvancedCareerPassport: React.FC = () => {
                     <div className="flex-1">
                       <h4 className="font-medium">Project Launch</h4>
                       <p className="text-sm text-muted-foreground">
-                        Successfully launched AI-powered resume builder with 10k+ users
+                        Successfully launched SI-powered resume builder with 10k+ users
                       </p>
                       <span className="text-xs text-muted-foreground">December 1, 2023</span>
                     </div>

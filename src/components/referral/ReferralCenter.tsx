@@ -278,7 +278,7 @@ const ReferralCenter: React.FC = () => {
               <Trophy className="h-4 w-4 text-primary" />
               Referral Reward Tiers
             </CardTitle>
-            <p className="text-xs text-muted-foreground">Every friend you refer gets you closer to unlocking premium features and exclusive AI-powered career tools.</p>
+            <p className="text-xs text-muted-foreground">Every friend you refer gets you closer to unlocking premium features and exclusive SI-powered career tools.</p>
           </CardHeader>
           <CardContent className="pt-0">
             <div className="space-y-2">

@@ -283,7 +283,7 @@ const App = () => {
           });
 
           import('@/hooks/usePredictivePreloading').then(() => {
-            console.log('🤖 AI-powered performance features initialized');
+            console.log('🤖 SI-powered performance features initialized');
           });
 
           advancedPerformanceMonitor.trackRouteChange('/', startTime);

@@ -1,5 +1,5 @@
 // src/lib/social-marketing/visualContentCreator.ts
-// Stage 6: Visual Content Factory for TalentXcel AI Content Factory
+// Stage 6: Visual Content Factory for TalentXcel SI Content Factory
 // Generates actual rendered visual assets (SVG/Vector layouts for Carousels, Thumbnails, and Infographics)
 // Invariant: Produces complete rendered deliverables with SHA-256 checksums, dimensions, and asset vault records.
 

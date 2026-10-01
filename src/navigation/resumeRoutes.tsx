@@ -44,7 +44,7 @@ export const resumeRoutes = [
     isPublic: true,
   },
   {
-    title: "AI Resume Builder", 
+    title: "SI Resume Builder", 
     to: "/resume/builder",
     icon: <Sparkles className="h-4 w-4" />,
     page: <Suspense fallback={null}><AIResumeBuilder /></Suspense>,

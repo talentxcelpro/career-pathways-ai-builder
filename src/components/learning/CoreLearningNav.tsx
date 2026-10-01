@@ -121,7 +121,7 @@ export const CoreLearningNav: React.FC = () => {
           <Sparkles className="h-6 w-6 text-primary" />
         </div>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Your complete learning ecosystem with AI-powered recommendations, career tools, and community features
+          Your complete learning ecosystem with SI-powered recommendations, career tools, and community features
         </p>
       </div>
 

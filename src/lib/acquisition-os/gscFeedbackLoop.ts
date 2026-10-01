@@ -1,5 +1,5 @@
 // src/lib/acquisition-os/gscFeedbackLoop.ts
-// Closed Search Console Feedback Loop for TalentXcel AI Growth Organization
+// Closed Search Console Feedback Loop for TalentXcel SI Growth Organization
 // Invariant: GSC is the external intelligence feedback layer guiding what the AI organization builds next.
 // Extended with Brand Marketing triage — all brand metrics sourced from real GSC rows only.
 

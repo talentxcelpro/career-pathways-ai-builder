@@ -1,5 +1,5 @@
 // src/lib/ai-org/aiOrganizationState.ts
-// Authoritative State Provider for TalentXcel AI Growth Organization
+// Authoritative State Provider for TalentXcel SI Growth Organization
 // Memory & Client-Persisted State: Clean fallback preventing 42P01 / 404 relation errors against Supabase.
 
 import { 

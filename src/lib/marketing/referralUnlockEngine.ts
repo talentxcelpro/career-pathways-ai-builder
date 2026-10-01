@@ -22,7 +22,7 @@ export const REFERRAL_UNLOCK_TIERS: ReferralTier[] = [
   {
     tierId: 'TIER_2_AI_RESUME_PRO',
     requiredInvites: 5,
-    unlockedAssetTitle: 'Unlimited 1-Click AI Resume Auto-Optimizer & Cover Letter Generator',
+    unlockedAssetTitle: 'Unlimited 1-Click SI Resume Auto-Optimizer & Cover Letter Generator',
     unlockedAssetDescription: 'Full access to automated ATS keyword injection, bullet-point impact rewrites, and role-specific cover letter studio.',
     assetDownloadUrl: 'https://talentxcel.in/resume/pro-unlocked',
     badgeTitle: 'Elite Career Pro'

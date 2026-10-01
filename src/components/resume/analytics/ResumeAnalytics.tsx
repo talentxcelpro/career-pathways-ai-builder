@@ -72,7 +72,7 @@ export const ResumeAnalytics: React.FC<ResumeAnalyticsProps> = ({
       // Calculate completion score
       const completionScore = calculateCompletionScore(resume);
       
-      // Simulate AI-powered analytics (in real implementation, call AI service)
+      // Simulate SI-powered analytics (in real implementation, call AI service)
       const mockAnalytics: AnalyticsData = {
         completionScore,
         atsScore: Math.min(85 + Math.random() * 15, 100),
@@ -202,7 +202,7 @@ export const ResumeAnalytics: React.FC<ResumeAnalyticsProps> = ({
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-2xl font-bold">Resume Analytics</h3>
-          <p className="text-muted-foreground">AI-powered insights for your resume</p>
+          <p className="text-muted-foreground">SI-powered insights for your resume</p>
         </div>
         <Button variant="outline" onClick={refreshAnalytics} disabled={refreshing}>
           <TrendingUp className="h-4 w-4 mr-2" />

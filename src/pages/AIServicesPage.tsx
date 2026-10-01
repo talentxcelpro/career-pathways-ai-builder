@@ -17,7 +17,7 @@ const AIServicesPage = () => {
             AI Career Services
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Get personalized AI-powered assistance for career coaching, resume optimization, 
+            Get personalized SI-powered assistance for career coaching, resume optimization, 
             interview preparation, and more.
           </p>
         </div>

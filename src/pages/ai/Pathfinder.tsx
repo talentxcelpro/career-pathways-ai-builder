@@ -120,7 +120,7 @@ const Pathfinder = () => {
           <h1 className="text-4xl font-bold text-gray-900 mb-4">AI Career Pathfinder</h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Discover ideal career paths and growth opportunities tailored to your skills, 
-            interests, and professional goals with AI-powered recommendations.
+            interests, and professional goals with SI-powered recommendations.
           </p>
         </div>
 

@@ -107,7 +107,7 @@ export const EnhancedAIBuilder = ({
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Wand2 className="h-5 w-5" />
-                    AI Resume Content
+                    SI Resume Content
                   </CardTitle>
                   <CardDescription>
                     AI-generated content based on your profile and job requirements

@@ -265,7 +265,7 @@ const aiItems = [
     badge: 'ONLINE'
   },
   {
-    title: 'AI Agent Fleet Operations',
+    title: 'SI Agent Fleet Operations',
     url: '/admin/agent-operations',
     icon: Bot,
     description: '8 autonomous daemons'

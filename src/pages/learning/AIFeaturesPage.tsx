@@ -44,7 +44,7 @@ export default function AIFeaturesPage() {
     },
     {
       title: 'Progress Analytics',
-      description: 'AI-powered insights into your learning patterns and skill gaps',
+      description: 'SI-powered insights into your learning patterns and skill gaps',
       icon: TrendingUp,
       badge: 'Analytics'
     }
@@ -67,7 +67,7 @@ export default function AIFeaturesPage() {
           </h1>
           
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            Experience the future of learning with our AI-powered features that adapt to your needs and accelerate your progress.
+            Experience the future of learning with our SI-powered features that adapt to your needs and accelerate your progress.
           </p>
           
           <Button size="lg" className="bg-primary hover:bg-primary/90">

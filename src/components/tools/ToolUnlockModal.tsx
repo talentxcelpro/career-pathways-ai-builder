@@ -251,7 +251,7 @@ export const ToolUnlockModal: React.FC<ToolUnlockModalProps> = ({
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3 h-3 text-green-500" />
-                  Advanced AI-powered features
+                  Advanced SI-powered features
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3 h-3 text-green-500" />

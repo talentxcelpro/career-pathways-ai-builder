@@ -155,7 +155,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, content }) =
         </div>
         
         <div className="text-xs text-gray-500 text-center pt-2 border-t">
-          Powered by TalentXcel AI Resume Technology
+          Powered by TalentXcel SI Resume Technology
         </div>
       </CardContent>
     </Card>

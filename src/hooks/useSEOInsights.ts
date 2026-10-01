@@ -32,7 +32,7 @@ export const useSEOInsights = () => {
         .from('companies')
         .select('*');
 
-      // Generate AI-powered insights based on data
+      // Generate SI-powered insights based on data
       const generatedInsights: SEOInsight[] = [
         {
           id: '1',

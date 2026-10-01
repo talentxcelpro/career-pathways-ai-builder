@@ -113,7 +113,7 @@ export const SmartScrapingDashboard = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Smart Job Scraping</h1>
-          <p className="text-muted-foreground">AI-powered job scraping with portal filtering and quality scoring</p>
+          <p className="text-muted-foreground">SI-powered job scraping with portal filtering and quality scoring</p>
         </div>
         <Button 
           onClick={handleRunAutomation}
@@ -283,7 +283,7 @@ export const SmartScrapingDashboard = () => {
           <Card>
             <CardHeader>
               <CardTitle>Recent Source Validations</CardTitle>
-              <CardDescription>AI-powered classification of job sources</CardDescription>
+              <CardDescription>SI-powered classification of job sources</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">

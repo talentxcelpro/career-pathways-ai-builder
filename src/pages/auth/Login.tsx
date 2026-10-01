@@ -2,8 +2,9 @@ import React, { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AuthLayout } from '@/components/auth/AuthLayout';
 import LoginForm from '@/components/auth/LoginForm';
-import { setSubdomainRedirect, getSubdomainRedirect } from '@/utils/subdomainRedirect';
+import { setSubdomainRedirect } from '@/utils/subdomainRedirect';
 import { useOptimizedAuth } from '@/contexts/OptimizedAuthContext';
+import { resolvePostAuthDestination } from '@/utils/intentRouting';
 
 const Login = () => {
   const { user, loading } = useOptimizedAuth();
@@ -19,11 +20,14 @@ const Login = () => {
 
   useEffect(() => {
     if (!loading && user) {
-      const destination = redirectParam || getSubdomainRedirect() || '/network';
+      const destination = resolvePostAuthDestination({
+        searchParams,
+        userMetadata: user.user_metadata,
+      });
       console.log('[LOGIN AUTH CHECK] User already authenticated, redirecting to:', destination);
       navigate(destination, { replace: true });
     }
-  }, [user, loading, redirectParam, navigate]);
+  }, [user, loading, searchParams, navigate]);
 
   return (
     <AuthLayout

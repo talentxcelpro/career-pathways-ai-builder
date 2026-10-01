@@ -195,7 +195,7 @@ const JobMatchScoreEngine: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">AI Job Match Engine</h1>
+          <h1 className="text-3xl font-bold text-gray-900">SI Job Match Engine</h1>
           <p className="text-lg text-gray-600 mt-2">
             Intelligent job matching with detailed compatibility analysis
           </p>

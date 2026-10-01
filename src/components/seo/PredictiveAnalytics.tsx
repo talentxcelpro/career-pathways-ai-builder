@@ -158,7 +158,7 @@ export const PredictiveAnalytics = () => {
             Predictive SEO Analytics
           </CardTitle>
           <CardDescription>
-            AI-powered predictions for rankings, traffic, and market share
+            SI-powered predictions for rankings, traffic, and market share
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">

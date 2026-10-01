@@ -345,7 +345,7 @@ const ResumeBuilderV2: React.FC = () => {
                 </h2>
                 <Badge variant="secondary" className="text-xs">
                   {activePanel === 'editor' && 'Auto-saves every second'}
-                  {activePanel === 'ai' && 'AI-powered optimization'}
+                  {activePanel === 'ai' && 'SI-powered optimization'}
                   {activePanel === 'export' && 'Multiple formats available'}
                 </Badge>
               </div>

@@ -259,7 +259,7 @@ export const SmartUserSegmentation: React.FC = () => {
             Smart User Segmentation
           </CardTitle>
           <CardDescription>
-            AI-powered user segmentation for targeted email campaigns and personalization
+            SI-powered user segmentation for targeted email campaigns and personalization
           </CardDescription>
         </CardHeader>
       </Card>

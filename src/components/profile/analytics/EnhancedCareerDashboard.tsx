@@ -333,7 +333,7 @@ export const EnhancedCareerDashboard = () => {
         }
       ];
 
-      // AI-powered recommendations
+      // SI-powered recommendations
       const aiRecommendations = [
         {
           type: 'skill' as const,

@@ -74,7 +74,7 @@ export const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
 
       if (error) throw error;
 
-      toast.success('🚀 Your AI-powered career roadmap has been created!', {
+      toast.success('🚀 Your SI-powered career roadmap has been created!', {
         description: 'Check your personalized visualizations above',
       });
 

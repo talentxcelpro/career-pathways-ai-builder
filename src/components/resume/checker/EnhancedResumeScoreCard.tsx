@@ -61,7 +61,7 @@ export const EnhancedResumeScoreCard: React.FC<EnhancedResumeScoreCardProps> = (
         <div className="absolute top-4 right-4">
           <Badge variant="secondary" className="bg-white/80 backdrop-blur-sm">
             <Sparkles className="h-3 w-3 mr-1" />
-            TalentXcel AI
+            TalentXcel SI
           </Badge>
         </div>
         

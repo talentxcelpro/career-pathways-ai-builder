@@ -487,7 +487,7 @@ export const BotProfileManager: React.FC<BotProfileManagerProps> = ({
                     <div className="p-3 border rounded-md">
                       <h4 className="font-medium">{bot.role}</h4>
                       <p className="text-sm text-muted-foreground">TalentXcel</p>
-                      <p className="text-sm">AI-powered professional working in {bot.department?.join(', ')}</p>
+                      <p className="text-sm">SI-powered professional working in {bot.department?.join(', ')}</p>
                     </div>
                   </div>
                 </div>

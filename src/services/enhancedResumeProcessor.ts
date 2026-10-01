@@ -185,7 +185,7 @@ export class EnhancedResumeProcessor {
       // Step 1: Advanced text extraction with file type detection
       const extractedText = await this.performAdvancedTextExtraction(file);
       
-      // Step 2: AI-powered parsing with NLP techniques
+      // Step 2: SI-powered parsing with NLP techniques
       const parsedData = await this.performAIExtraction(extractedText, file.name, file.type);
       
       // Step 3: Post-processing and validation
@@ -365,7 +365,7 @@ Create a comprehensive professional profile suitable for the implied field/exper
   }
 
   protected async performAIExtraction(text: string, fileName: string, fileType: string): Promise<any> {
-    console.log('Performing AI-powered extraction with', text.length, 'characters of text...');
+    console.log('Performing SI-powered extraction with', text.length, 'characters of text...');
     
     // Enhanced text validation and preprocessing
     let processedText = text;

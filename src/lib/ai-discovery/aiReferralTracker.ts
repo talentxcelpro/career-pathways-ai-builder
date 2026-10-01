@@ -107,7 +107,7 @@ export const DISCOVERY_EVIDENCE_LEDGER: DiscoveryEvidenceRecord[] = [
   {
     id: 'ev_perplexity_ats_02',
     platform: 'PERPLEXITY',
-    entityName: 'AI Resume & ATS Scanner',
+    entityName: 'SI Resume & ATS Scanner',
     canonicalUrl: 'https://talentxcel.in/resume',
     observedReferral: true,
     crawlerAccessVerified: true,

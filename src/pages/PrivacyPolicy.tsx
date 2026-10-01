@@ -38,10 +38,10 @@ const PrivacyPolicy = () => {
           <CardContent>
             <div className="text-gray-600 leading-relaxed space-y-4">
               <p>
-                Welcome to TalentXcel ("we," "our," or "us"). We are committed to protecting your personal information and your right to privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our career platform and AI-powered services.
+                Welcome to TalentXcel ("we," "our," or "us"). We are committed to protecting your personal information and your right to privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our career platform and SI-powered services.
               </p>
               <p>
-                TalentXcel is a comprehensive career platform that connects job seekers with employers, provides AI-powered career insights, resume optimization, skill development, and professional networking opportunities. We operate from Noida, India, and serve users globally.
+                TalentXcel is a comprehensive career platform that connects job seekers with employers, provides SI-powered career insights, resume optimization, skill development, and professional networking opportunities. We operate from Noida, India, and serve users globally.
               </p>
               <p>
                 By using our services, you agree to the collection and use of information in accordance with this Privacy Policy.
@@ -111,7 +111,7 @@ const PrivacyPolicy = () => {
               <div>
                 <h3 className="font-semibold text-gray-800 mb-2">Core Services</h3>
                 <ul className="space-y-1 ml-4">
-                  <li>• Provide AI-powered job matching and career recommendations</li>
+                  <li>• Provide SI-powered job matching and career recommendations</li>
                   <li>• Enable resume optimization and ATS scoring</li>
                   <li>• Facilitate connections between job seekers and employers</li>
                   <li>• Deliver personalized learning and skill development content</li>

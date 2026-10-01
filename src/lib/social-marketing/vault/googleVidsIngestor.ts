@@ -72,7 +72,7 @@ export class GoogleVidsIngestor {
         .replace(/[_-]+/g, ' ')
         .replace(/\s+/g, ' ')
         .trim();
-      const title = cleanTitle.length > 5 ? cleanTitle : 'TalentXcel AI Career Intelligence';
+      const title = cleanTitle.length > 5 ? cleanTitle : 'TalentXcel SI Career Intelligence';
 
       return {
         originalFile: filePath,

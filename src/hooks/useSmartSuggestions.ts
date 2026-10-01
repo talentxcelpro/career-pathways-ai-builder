@@ -169,7 +169,7 @@ export const useSmartSuggestions = () => {
     return suggestions;
   }, []);
 
-  // Generate AI-powered suggestions for any section
+  // Generate SI-powered suggestions for any section
   const generateAISuggestions = useCallback(async (request: SuggestionRequest): Promise<SmartSuggestion[]> => {
     try {
       setIsGenerating(true);
@@ -238,7 +238,7 @@ export const useSmartSuggestions = () => {
 
     allSuggestions.push(...starSuggestions, ...summarySuggestions, ...skillsSuggestions);
 
-    // Generate AI-powered suggestions for each section
+    // Generate SI-powered suggestions for each section
     try {
       const sections = ['summary', 'experience', 'skills'];
       

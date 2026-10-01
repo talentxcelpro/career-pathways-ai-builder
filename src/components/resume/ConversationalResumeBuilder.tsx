@@ -584,8 +584,8 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
                 className="h-12 w-12 rounded-lg"
               />
               <div>
-                <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">TalentXcel AI Resume Builder</h1>
-                <p className="text-sm text-gray-500 mt-0.5">AI-powered resume creation that lands you interviews – Powered by TalentXcel AI</p>
+                <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">TalentXcel SI Resume Builder</h1>
+                <p className="text-sm text-gray-500 mt-0.5">SI-powered resume creation that lands you interviews – Powered by TalentXcel SI</p>
               </div>
             </div>
             
@@ -1237,7 +1237,7 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
               <CardHeader>
                 <CardTitle className="flex items-center gap-3 text-lg">
                   <Sparkles className="h-5 w-5 text-purple-600" />
-                  TalentXcel AI Tools
+                  TalentXcel SI Tools
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">

@@ -76,7 +76,7 @@ export default function TalentXcelAIChat() {
       const welcomeMsg: Message = {
         id: Date.now(),
         type: 'ai',
-        text: `Hi ${userName}! 👋 I'm your TalentXcel AI Career Companion. I'm powered by real AI and can help you with:\n\n🎯 ATS Resume Scanning\n📝 Job Description Tailoring\n🎤 Mock Interview Practice\n✍️ Content Generation\n📚 Skill Assessment\n📋 Daily Career Brief\n\nTry clicking any button above or type a command like /ats-scan, /daily-brief, or ask me anything!`,
+        text: `Hi ${userName}! 👋 I'm your TalentXcel SI Career Companion. I'm powered by real AI and can help you with:\n\n🎯 ATS Resume Scanning\n📝 Job Description Tailoring\n🎤 Mock Interview Practice\n✍️ Content Generation\n📚 Skill Assessment\n📋 Daily Career Brief\n\nTry clicking any button above or type a command like /ats-scan, /daily-brief, or ask me anything!`,
         timestamp: new Date()
       };
       setMessages([welcomeMsg]);
@@ -113,7 +113,7 @@ export default function TalentXcelAIChat() {
         prompt: payload.prompt
       };
 
-      console.log('Sending to AI Agent:', requestBody);
+      console.log('Sending to SI Agent:', requestBody);
 
       const response = await supabase.functions.invoke('ai-agent', {
         body: requestBody
@@ -200,7 +200,7 @@ export default function TalentXcelAIChat() {
         <div className="flex items-center gap-3">
           <Sparkles className="w-6 h-6 text-primary" />
           <div>
-            <h1 className="text-xl font-bold">TalentXcel AI</h1>
+            <h1 className="text-xl font-bold">TalentXcel SI</h1>
             <p className="text-sm text-muted-foreground">Your AI Career Companion</p>
           </div>
         </div>

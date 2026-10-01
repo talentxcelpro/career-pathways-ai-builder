@@ -45,7 +45,7 @@ const AdvancedAIHub: React.FC = () => {
               <CardContent className="p-4 text-center">
                 <TrendingUp className="h-8 w-8 text-primary mx-auto mb-2" />
                 <h3 className="font-semibold mb-1">Predictive Analytics</h3>
-                <p className="text-xs text-muted-foreground">AI-powered career trajectory forecasting</p>
+                <p className="text-xs text-muted-foreground">SI-powered career trajectory forecasting</p>
               </CardContent>
             </Card>
             
@@ -60,7 +60,7 @@ const AdvancedAIHub: React.FC = () => {
             <Card className="hover:shadow-lg transition-shadow">
               <CardContent className="p-4 text-center">
                 <MessageSquare className="h-8 w-8 text-primary mx-auto mb-2" />
-                <h3 className="font-semibold mb-1">AI Career Coach</h3>
+                <h3 className="font-semibold mb-1">SI Career Coach</h3>
                 <p className="text-xs text-muted-foreground">Personalized career guidance and mentoring</p>
               </CardContent>
             </Card>

@@ -286,7 +286,7 @@ export const AIContentSuggester: React.FC<AIContentSuggesterProps> = ({
         {suggestions.length === 0 && (
           <div className="text-center text-muted-foreground py-8">
             <Sparkles className="h-8 w-8 mx-auto mb-2 opacity-50" />
-            <p>No suggestions yet. Click the buttons above to get AI-powered content suggestions.</p>
+            <p>No suggestions yet. Click the buttons above to get SI-powered content suggestions.</p>
           </div>
         )}
       </CardContent>

@@ -1,5 +1,5 @@
 // src/lib/ai-org/ollamaClient.ts
-// Local Ollama LLM Client Service for TalentXcel AI Growth Organization
+// Local Ollama LLM Client Service for TalentXcel SI Growth Organization
 // Provides zero-token-cost local AI inference with automatic health checks,
 // model switching (talentxcel-ceo, llama3.2:3b, phi3:latest, etc.), and structured JSON generation.
 

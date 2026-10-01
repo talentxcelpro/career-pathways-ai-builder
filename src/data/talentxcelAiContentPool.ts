@@ -1,5 +1,5 @@
 // src/data/talentxcelAiContentPool.ts
-// Comprehensive, 400+ distinct content intelligence pool for TalentXcel AI Post Studio
+// Comprehensive, 400+ distinct content intelligence pool for TalentXcel SI Post Studio
 // Ensures zero repeating content across all categories, tones, roles, and languages.
 
 export interface TalentXcelContentItem {

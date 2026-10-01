@@ -28,14 +28,14 @@ const CareerHomepage: React.FC = () => {
   React.useEffect(() => {
     updateMetaTags({
       title: 'TalentXcel - AI-Powered Career Development Platform | Professional Growth & Success',
-      description: 'Transform your career with AI-powered coaching, interview simulation, skill assessment, and personalized roadmaps. Join thousands of professionals achieving their career goals.'
+      description: 'Transform your career with SI-powered coaching, interview simulation, skill assessment, and personalized roadmaps. Join thousands of professionals achieving their career goals.'
     });
   }, []);
 
   const aiFeatures = [
     {
       icon: <Brain className="h-8 w-8" />,
-      title: 'AI Career Coach',
+      title: 'SI Career Coach',
       description: 'Personalized career guidance with intelligent conversation',
       link: '/ai/advanced-hub',
       badge: 'Text & Voice',
@@ -44,7 +44,7 @@ const CareerHomepage: React.FC = () => {
     {
       icon: <MessageSquare className="h-8 w-8" />,
       title: 'Interview Simulator',
-      description: 'Practice with AI-powered interview scenarios',
+      description: 'Practice with SI-powered interview scenarios',
       link: '/ai/advanced-hub',
       badge: 'Real-time Feedback',
       color: 'bg-green-500/10 text-green-600'
@@ -122,7 +122,7 @@ const CareerHomepage: React.FC = () => {
               </h1>
               
               <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-                Experience the future of career development with our comprehensive AI-powered platform. 
+                Experience the future of career development with our comprehensive SI-powered platform. 
                 Get personalized coaching, practice interviews, and accelerate your professional growth.
               </p>
               
@@ -250,7 +250,7 @@ const CareerHomepage: React.FC = () => {
                 Ready to Accelerate Your Career?
               </h2>
               <p className="text-xl opacity-90 mb-8">
-                Join thousands of professionals who have transformed their careers with our AI-powered platform.
+                Join thousands of professionals who have transformed their careers with our SI-powered platform.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link to="/dashboard">

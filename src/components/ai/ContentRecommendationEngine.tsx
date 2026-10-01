@@ -85,7 +85,7 @@ const RecommendationCard: React.FC<RecommendationProps> = ({
             </div>
             
             <p className="text-sm">
-              Just launched our new AI-powered analytics dashboard! 
+              Just launched our new SI-powered analytics dashboard! 
               The insights we're getting are incredible. 
               #AI #Analytics #ProductLaunch
             </p>
@@ -240,7 +240,7 @@ export const ContentRecommendationEngine: React.FC = () => {
       <div>
         <h2 className="text-2xl font-bold mb-2">Recommended for You</h2>
         <p className="text-muted-foreground">
-          AI-powered content recommendations based on your interests and network
+          SI-powered content recommendations based on your interests and network
         </p>
       </div>
 

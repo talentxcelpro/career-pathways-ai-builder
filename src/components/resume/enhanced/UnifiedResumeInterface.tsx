@@ -292,7 +292,7 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
                 {mode === 'create' ? 'Create Resume' : 'Edit Resume'}
               </h1>
               <p className="text-muted-foreground">
-                AI-powered resume builder with real-time optimization
+                SI-powered resume builder with real-time optimization
               </p>
             </div>
             

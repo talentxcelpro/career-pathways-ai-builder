@@ -113,7 +113,7 @@ const AIEnhancement: React.FC = () => {
       <div className="mb-8 text-center">
         <h1 className="text-3xl font-bold mb-4 flex items-center justify-center gap-3">
           <Brain className="h-8 w-8 text-primary" />
-          AI Resume Enhancement
+          SI Resume Enhancement
         </h1>
         <p className="text-muted-foreground max-w-2xl mx-auto">
           Leverage artificial intelligence to optimize your resume for better job matching, 

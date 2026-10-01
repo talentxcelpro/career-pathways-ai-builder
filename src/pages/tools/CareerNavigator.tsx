@@ -30,7 +30,7 @@ export const CareerNavigator: React.FC = () => {
     {
       id: '1',
       type: 'TalentXcel',
-      content: "Hello! I'm your TalentXcel AI Navigator. I can help you with career planning, job search strategies, interview preparation, salary negotiations, and professional development. What would you like to discuss today?",
+      content: "Hello! I'm your TalentXcel SI Navigator. I can help you with career planning, job search strategies, interview preparation, salary negotiations, and professional development. What would you like to discuss today?",
       timestamp: new Date(),
       suggestions: [
         "Help me plan my career path",
@@ -163,7 +163,7 @@ export const CareerNavigator: React.FC = () => {
 
   return (
     <ToolLayout
-      title="TalentXcel AI Navigator"
+      title="TalentXcel SI Navigator"
       description="Get personalized career guidance, strategic advice, and actionable insights from your AI career coach"
       category="Intelligence"
       estimatedTime="Ongoing"

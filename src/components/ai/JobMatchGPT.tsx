@@ -104,7 +104,7 @@ const JobMatchGPT: React.FC = () => {
     }
   });
 
-  // AI Resume Analysis Mutation
+  // SI Resume Analysis Mutation
   const analyzeResumeMutation = useMutation({
     mutationFn: async ({ file, jobDescriptions }: { file: File; jobDescriptions?: string[] }) => {
       setIsAnalyzing(true);
@@ -216,7 +216,7 @@ const JobMatchGPT: React.FC = () => {
             Job Match GPT
           </h1>
           <p className="text-lg text-muted-foreground mt-2">
-            AI-powered resume analysis and intelligent job matching
+            SI-powered resume analysis and intelligent job matching
           </p>
         </div>
         <div className="flex gap-2">
@@ -255,7 +255,7 @@ const JobMatchGPT: React.FC = () => {
             <CardHeader>
               <CardTitle>Upload Your Resume</CardTitle>
               <p className="text-muted-foreground">
-                Upload your resume to get AI-powered analysis and job matching
+                Upload your resume to get SI-powered analysis and job matching
               </p>
             </CardHeader>
             <CardContent>

@@ -636,7 +636,7 @@ export const UnifiedResumeBuilder = () => {
       <div className="container max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-center mb-2">AI Resume Builder</h1>
+          <h1 className="text-4xl font-bold text-center mb-2">SI Resume Builder</h1>
           <p className="text-muted-foreground text-center">Upload, enhance, and export your resume with AI</p>
         </div>
 

@@ -87,7 +87,7 @@ export const InternalLinks: React.FC<InternalLinksProps> = ({ currentPage }) => 
             <ul className="space-y-1">
               <li>
                 <Link to="/resume" className="text-muted-foreground hover:text-primary transition-colors">
-                  AI Resume Builder
+                  SI Resume Builder
                 </Link>
               </li>
               <li>

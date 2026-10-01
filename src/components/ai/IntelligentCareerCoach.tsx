@@ -60,7 +60,7 @@ const IntelligentCareerCoach: React.FC = () => {
     const welcomeMessage: Message = {
       id: '1',
       type: 'coach',
-      content: "Hello! I'm your AI Career Coach. I'm here to help you navigate your career journey, set goals, develop skills, and prepare for interviews. What would you like to work on today?",
+      content: "Hello! I'm your SI Career Coach. I'm here to help you navigate your career journey, set goals, develop skills, and prepare for interviews. What would you like to work on today?",
       timestamp: new Date(),
       suggestions: [
         "Help me set career goals",
@@ -243,7 +243,7 @@ const IntelligentCareerCoach: React.FC = () => {
               <Bot className="h-6 w-6 text-primary" />
               Intelligent Career Coach
             </h2>
-            <p className="text-muted-foreground">Your AI-powered personal career development assistant</p>
+            <p className="text-muted-foreground">Your SI-powered personal career development assistant</p>
           </div>
         </div>
 

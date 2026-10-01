@@ -131,10 +131,10 @@ export const JobMatchGPT: React.FC = () => {
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-4">
           <Brain className="w-8 h-8 inline-block mr-2 text-blue-600" />
-          AI Job Match GPT
+          SI Job Match GPT
         </h1>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          Upload your resume and get AI-powered job recommendations with skill gap analysis and career suggestions
+          Upload your resume and get SI-powered job recommendations with skill gap analysis and career suggestions
         </p>
       </div>
 

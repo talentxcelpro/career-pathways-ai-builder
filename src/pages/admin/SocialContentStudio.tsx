@@ -1,5 +1,5 @@
 // src/pages/admin/SocialContentStudio.tsx
-// Interactive Visual Content Studio for TalentXcel AI Content Factory
+// Interactive Visual Content Studio for TalentXcel SI Content Factory
 // Provides interactive previewers for YouTube, Instagram Carousels (swipeable), Facebook Posts, and X Threads.
 
 import React, { useState, useEffect } from 'react';

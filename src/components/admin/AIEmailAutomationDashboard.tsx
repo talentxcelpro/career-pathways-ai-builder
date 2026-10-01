@@ -84,7 +84,7 @@ export const AIEmailAutomationDashboard: React.FC = () => {
       id: 'new_match',
       type: 'new_job_match',
       name: 'New Job Match',
-      description: 'AI-powered job recommendations with high match scores',
+      description: 'SI-powered job recommendations with high match scores',
       isActive: true,
       triggerCount24h: 156,
       conversionRate: 28.3
@@ -308,7 +308,7 @@ export const AIEmailAutomationDashboard: React.FC = () => {
                     <span className="font-semibold">Subject Line Optimization</span>
                   </div>
                   <p className="text-sm text-muted-foreground text-left">
-                    AI-powered subject line variants for maximum open rates
+                    SI-powered subject line variants for maximum open rates
                   </p>
                 </Button>
 
@@ -364,7 +364,7 @@ export const AIEmailAutomationDashboard: React.FC = () => {
                     <span className="font-semibold">Performance Analysis</span>
                   </div>
                   <p className="text-sm text-muted-foreground text-left">
-                    AI-powered insights and optimization recommendations
+                    SI-powered insights and optimization recommendations
                   </p>
                 </Button>
 
@@ -534,7 +534,7 @@ export const AIEmailAutomationDashboard: React.FC = () => {
                 <div className="p-4 border rounded-lg">
                   <h4 className="font-semibold mb-2">Job Recommendations</h4>
                   <p className="text-sm text-muted-foreground mb-3">
-                    AI-powered job matching integrated into email campaigns
+                    SI-powered job matching integrated into email campaigns
                   </p>
                   <Badge variant="outline">Active</Badge>
                 </div>

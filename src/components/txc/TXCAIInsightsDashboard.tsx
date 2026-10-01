@@ -275,7 +275,7 @@ export const TXCAIInsightsDashboard: React.FC = () => {
             <Brain className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
             <h3 className="text-lg font-medium mb-2">No Patterns Detected Yet</h3>
             <p className="text-muted-foreground mb-4">
-              Start using TXC to unlock AI-powered insights and predictions
+              Start using TXC to unlock SI-powered insights and predictions
             </p>
             <Button variant="outline" onClick={refreshAnalysis}>
               <RefreshCw className="w-4 h-4 mr-2" />

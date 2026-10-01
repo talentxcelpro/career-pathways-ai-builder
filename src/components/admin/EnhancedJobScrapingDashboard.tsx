@@ -194,7 +194,7 @@ export const EnhancedJobScrapingDashboard = () => {
               AI Salary Normalization
             </CardTitle>
             <CardDescription>
-              Normalize salary data with AI-powered parsing and validation
+              Normalize salary data with SI-powered parsing and validation
             </CardDescription>
           </CardHeader>
           <CardContent>

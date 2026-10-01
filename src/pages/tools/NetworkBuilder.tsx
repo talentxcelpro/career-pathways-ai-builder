@@ -52,7 +52,7 @@ const NetworkBuilder = () => {
 
     setIsSearching(true);
     
-    // Simulate AI-powered connection discovery
+    // Simulate SI-powered connection discovery
     setTimeout(() => {
       const mockConnections: NetworkConnection[] = [
         {
@@ -180,7 +180,7 @@ const NetworkBuilder = () => {
             </div>
             <div>
               <h1 className="text-3xl font-bold text-gray-900">AI Network Builder</h1>
-              <p className="text-gray-600">Build strategic professional connections with AI-powered recommendations</p>
+              <p className="text-gray-600">Build strategic professional connections with SI-powered recommendations</p>
             </div>
           </div>
         </div>

@@ -1,5 +1,5 @@
 // src/lib/social-marketing/publishingQueue.ts
-// Stage 10: Publishing Queue & Retry Manager for TalentXcel AI Content Factory
+// Stage 10: Publishing Queue & Retry Manager for TalentXcel SI Content Factory
 // Enforces: Deterministic idempotency, exponential backoff, dead-letter state, and per-platform isolation.
 
 import { ACTIVE_GOVERNANCE_CONFIG } from './governanceConfig';

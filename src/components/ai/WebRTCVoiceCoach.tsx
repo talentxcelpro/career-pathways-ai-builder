@@ -194,7 +194,7 @@ const WebRTCVoiceCoach: React.FC = () => {
                   </Avatar>
                   <div className="bg-muted rounded-lg p-3 max-w-[80%]">
                     <p className="text-sm leading-relaxed">
-                      👋 Hello! I'm your WebRTC-powered AI Career Coach. Connect above to start our voice conversation. You can speak naturally or type messages - I'll respond with both voice and text!
+                      👋 Hello! I'm your WebRTC-powered SI Career Coach. Connect above to start our voice conversation. You can speak naturally or type messages - I'll respond with both voice and text!
                     </p>
                     <div className="text-xs text-muted-foreground mt-1">
                       Just now

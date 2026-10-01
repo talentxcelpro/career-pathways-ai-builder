@@ -292,7 +292,7 @@ export const AdvancedABTestingEngine: React.FC = () => {
             Advanced A/B Testing Engine
           </CardTitle>
           <CardDescription>
-            AI-powered A/B testing with statistical significance and automated optimization
+            SI-powered A/B testing with statistical significance and automated optimization
           </CardDescription>
         </CardHeader>
       </Card>
@@ -414,7 +414,7 @@ export const AdvancedABTestingEngine: React.FC = () => {
             <CardHeader>
               <CardTitle>Create New A/B Test</CardTitle>
               <CardDescription>
-                Set up a new A/B test with AI-powered optimization suggestions
+                Set up a new A/B test with SI-powered optimization suggestions
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">

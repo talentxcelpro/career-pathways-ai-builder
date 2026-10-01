@@ -85,7 +85,7 @@ export const MobileAuth = () => {
           />
         </div>
         <h1 className="text-2xl font-bold text-gray-900 mb-2">TalentXcel</h1>
-        <p className="text-gray-600">Your AI-powered career companion</p>
+        <p className="text-gray-600">Your SI-powered career companion</p>
       </div>
 
       {/* Auth Form */}
@@ -175,7 +175,7 @@ export const MobileAuth = () => {
         <div className="space-y-3">
           <div className="flex items-center gap-3 text-sm text-gray-600">
             <div className="w-2 h-2 bg-primary rounded-full"></div>
-            <span>AI-powered job matching</span>
+            <span>SI-powered job matching</span>
           </div>
           <div className="flex items-center gap-3 text-sm text-gray-600">
             <div className="w-2 h-2 bg-primary rounded-full"></div>

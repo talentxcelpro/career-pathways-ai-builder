@@ -36,7 +36,7 @@ const TalentDatabase = () => {
     {
       icon: Database,
       title: 'Searchable Database',
-      description: 'AI-powered talent matching',
+      description: 'SI-powered talent matching',
       count: '0 Matches',
       color: 'bg-purple-500'
     },
@@ -157,7 +157,7 @@ const TalentDatabase = () => {
             <CardHeader>
               <CardTitle>Standard Bulk CV Upload</CardTitle>
               <CardDescription>
-                Upload and process CVs with basic AI-powered parsing (recommended for up to 10k files)
+                Upload and process CVs with basic SI-powered parsing (recommended for up to 10k files)
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -243,7 +243,7 @@ const TalentDatabase = () => {
         <TabsContent value="matching" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>AI Job Matching Engine</CardTitle>
+              <CardTitle>SI Job Matching Engine</CardTitle>
               <CardDescription>
                 Intelligent matching between candidates and job openings
               </CardDescription>

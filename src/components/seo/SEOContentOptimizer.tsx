@@ -76,19 +76,19 @@ export const SEOContentOptimizer = () => {
     
     switch (type) {
       case 'title':
-        setTitle('Ultimate AI Resume Builder: Create Professional Resumes in Minutes');
+        setTitle('Ultimate SI Resume Builder: Create Professional Resumes in Minutes');
         break;
       case 'meta':
-        setMetaDescription('Create stunning professional resumes with our AI-powered builder. 50+ templates, ATS-friendly formats. Start building your dream career today!');
+        setMetaDescription('Create stunning professional resumes with our SI-powered builder. 50+ templates, ATS-friendly formats. Start building your dream career today!');
         break;
       case 'outline':
-        setContent(`# Ultimate AI Resume Builder Guide
+        setContent(`# Ultimate SI Resume Builder Guide
 
 ## Introduction
 - Why AI resume builders are revolutionizing job search
 - Benefits of using AI for resume creation
 
-## How AI Resume Builders Work
+## How SI Resume Builders Work
 - Machine learning algorithms
 - Natural language processing
 - Template optimization

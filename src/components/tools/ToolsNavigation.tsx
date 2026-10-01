@@ -59,7 +59,7 @@ const ToolsNavigation = () => {
     },
     {
       id: 'ai-assistant',
-      title: 'AI Assistant',
+      title: 'SI Assistant',
       icon: Brain,
       path: '/tools/ai-assistant',
       color: 'text-indigo-600',

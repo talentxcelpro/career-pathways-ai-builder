@@ -154,7 +154,7 @@ export const RealityEngineView: React.FC = () => {
     };
 
     const metadata = {
-      google: { agentId: 'google-gemini-agent', agentName: 'Google AI Assistant', protocolVersion: 'udx-rpc-v1.0' },
+      google: { agentId: 'google-gemini-agent', agentName: 'Google SI Assistant', protocolVersion: 'udx-rpc-v1.0' },
       siri: { agentId: 'apple-siri-agent', agentName: 'Apple Intelligence Siri', protocolVersion: 'udx-rpc-v1.0' },
       copilot: { agentId: 'ms-copilot-agent', agentName: 'Microsoft 365 Copilot', protocolVersion: 'udx-rpc-v1.0' },
       muse: { agentId: 'meta-muse-agent', agentName: 'Meta Muse Personal Agent', protocolVersion: 'udx-rpc-v1.0' },

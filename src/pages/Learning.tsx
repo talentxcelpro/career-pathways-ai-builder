@@ -144,7 +144,7 @@ const Learning = () => {
             {/* Typing Animation Subtitle */}
             <p className="text-body-large opacity-90 mb-8 max-w-2xl mx-auto animate-fade-in delay-300">
               Join <span className="font-bold text-cyan-300">50,000+</span> professionals advancing their careers with our 
-              <span className="font-semibold text-ai-violet-light"> AI-powered learning engine</span> and expert-crafted courses.
+              <span className="font-semibold text-ai-violet-light"> SI-powered learning engine</span> and expert-crafted courses.
             </p>
             
             {/* Real-time Learning Stats */}
@@ -463,7 +463,7 @@ const Learning = () => {
               <span className="text-caption font-medium text-muted-foreground uppercase tracking-wider">Learning Engine Active</span>
             </div>
             <h2 className="text-title font-heading text-foreground mb-2">Take Your Learning Further</h2>
-            <p className="text-body text-muted-foreground">Explore specialized AI-powered tools and resources designed for your success</p>
+            <p className="text-body text-muted-foreground">Explore specialized SI-powered tools and resources designed for your success</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

@@ -255,7 +255,7 @@ export const ResumeWorkspace = ({ resumeId, mode = 'edit' }: ResumeWorkspaceProp
                 onClick={() => setShowAIAssistant(true)}
               >
                 <MessageSquare className="h-4 w-4 mr-2" />
-                AI Assistant
+                SI Assistant
               </Button>
               
               <Button
@@ -446,11 +446,11 @@ export const ResumeWorkspace = ({ resumeId, mode = 'edit' }: ResumeWorkspaceProp
         </Tabs>
       </div>
 
-      {/* AI Assistant Dialog */}
+      {/* SI Assistant Dialog */}
       <Dialog open={showAIAssistant} onOpenChange={setShowAIAssistant}>
         <DialogContent className="max-w-2xl h-[600px]">
           <DialogHeader>
-            <DialogTitle>AI Resume Assistant</DialogTitle>
+            <DialogTitle>SI Resume Assistant</DialogTitle>
           </DialogHeader>
           <AIAssistant 
             resumeContent={resume?.content}

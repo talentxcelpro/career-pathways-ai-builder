@@ -373,7 +373,7 @@ export function AIInterviewCoach() {
             AI Interview Coach
           </h2>
           <p className="text-muted-foreground">
-            Practice interviews with AI-powered feedback and real-time coaching
+            Practice interviews with SI-powered feedback and real-time coaching
           </p>
         </div>
         
@@ -775,7 +775,7 @@ export function AIInterviewCoach() {
           <Brain className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
           <h3 className="text-xl font-semibold mb-2">Ready to Practice?</h3>
           <p className="text-muted-foreground mb-6">
-            Start an AI-powered interview session to improve your skills and confidence.
+            Start an SI-powered interview session to improve your skills and confidence.
           </p>
           <Button onClick={() => setShowSettings(true)} size="lg">
             <Play className="w-4 h-4 mr-2" />

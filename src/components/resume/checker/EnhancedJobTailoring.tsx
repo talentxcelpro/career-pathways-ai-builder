@@ -211,7 +211,7 @@ export const EnhancedJobTailoring: React.FC<EnhancedJobTailoringProps> = ({
             <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
               <h5 className="font-semibold text-blue-900 mb-2">Ready to Optimize Your Resume?</h5>
               <p className="text-sm text-blue-800 mb-3">
-                Use our AI-powered resume builder to automatically incorporate these insights and create a perfectly tailored resume.
+                Use our SI-powered resume builder to automatically incorporate these insights and create a perfectly tailored resume.
               </p>
               <Button className="bg-blue-600 hover:bg-blue-700">
                 <Sparkles className="h-4 w-4 mr-2" />

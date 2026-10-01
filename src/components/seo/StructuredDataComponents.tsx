@@ -55,7 +55,7 @@ export const ToolJSONLD: React.FC<ToolJSONLDProps> = ({ tool }) => {
       "ratingCount": "100"
     } : undefined,
     "featureList": tool.features || [
-      "AI-powered optimization",
+      "SI-powered optimization",
       "Real-time feedback",
       "Professional templates"
     ],

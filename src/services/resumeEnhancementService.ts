@@ -20,7 +20,7 @@ export interface EnhanceResumeResponse {
 }
 
 /**
- * Call the enhance-resume edge function to get AI-powered resume enhancements
+ * Call the enhance-resume edge function to get SI-powered resume enhancements
  */
 export const enhanceResume = async (
   request: EnhanceResumeRequest

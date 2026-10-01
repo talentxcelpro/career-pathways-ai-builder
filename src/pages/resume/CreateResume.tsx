@@ -169,7 +169,7 @@ const CreateResume = () => {
                       <div>
                         <h3 className="font-medium text-gray-900">Resume Builder Interface</h3>
                         <p className="text-sm text-gray-600 mt-1">
-                          Interactive editor with AI-powered suggestions and real-time preview
+                          Interactive editor with SI-powered suggestions and real-time preview
                         </p>
                       </div>
                     </div>

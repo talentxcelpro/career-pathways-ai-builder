@@ -1,5 +1,5 @@
 // src/lib/social-marketing/contentResearchEngine.ts
-// Stage 3: Research & Evidence Engine for TalentXcel AI Content Factory
+// Stage 3: Research & Evidence Engine for TalentXcel SI Content Factory
 // Anti-Hallucination Layer: Gathers verified facts, statistics, benchmarks, and citations.
 // Invariant: Claim -> Evidence ID -> Source -> Verification. Factual claims without evidence are blocked.
 

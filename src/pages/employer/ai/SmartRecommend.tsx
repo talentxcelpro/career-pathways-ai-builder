@@ -80,7 +80,7 @@ const SmartRecommend = () => {
           <Brain className="h-8 w-8 text-purple-600" />
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Smart Recommendations</h1>
-            <p className="text-gray-600">AI-powered candidate matching for your job posting</p>
+            <p className="text-gray-600">SI-powered candidate matching for your job posting</p>
           </div>
         </div>
         <div className="flex items-center space-x-2">

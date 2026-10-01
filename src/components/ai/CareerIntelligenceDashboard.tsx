@@ -324,7 +324,7 @@ const CareerIntelligenceDashboard: React.FC = () => {
                 Career Intelligence Dashboard
               </CardTitle>
               <p className="text-muted-foreground mt-1">
-                AI-powered insights for accelerated career growth
+                SI-powered insights for accelerated career growth
               </p>
             </div>
             <div className="flex items-center gap-2">

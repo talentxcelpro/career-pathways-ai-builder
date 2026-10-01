@@ -187,7 +187,7 @@ export const ModernResumeBuilder: React.FC = () => {
                 Build Your Perfect Resume
               </h1>
               <p className="text-xl text-slate-600 mb-8 max-w-2xl mx-auto">
-                Create ATS-optimized resumes with AI-powered suggestions and professional templates
+                Create ATS-optimized resumes with SI-powered suggestions and professional templates
               </p>
               
               {/* Action Buttons */}

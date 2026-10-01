@@ -32,7 +32,7 @@ const AICareerCoach: React.FC = () => {
     {
       id: '1',
       type: 'ai',
-      content: "👋 Hi! I'm your AI Career Coach. I'm here to help you navigate your career journey with personalized insights and actionable advice. What career challenge can I help you with today?",
+      content: "👋 Hi! I'm your SI Career Coach. I'm here to help you navigate your career journey with personalized insights and actionable advice. What career challenge can I help you with today?",
       timestamp: new Date(),
       suggestions: [
         "How to transition to a new industry?",
@@ -137,7 +137,7 @@ const AICareerCoach: React.FC = () => {
           <MessageSquare className="h-6 w-6 text-primary" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold">AI Career Coach</h2>
+          <h2 className="text-2xl font-bold">SI Career Coach</h2>
           <p className="text-muted-foreground">Get personalized career guidance powered by AI</p>
         </div>
       </div>

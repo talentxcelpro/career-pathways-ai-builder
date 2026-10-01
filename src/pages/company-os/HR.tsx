@@ -109,7 +109,7 @@ export default function HR() {
             label: "Stage",
             render: (r: any) => <Badge variant="outline">{r.stage}</Badge>,
           },
-          { key: "ai_score", label: "AI Score" },
+          { key: "ai_score", label: "TalentScore" },
           { key: "email", label: "Email" },
         ]}
       />

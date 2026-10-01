@@ -122,7 +122,7 @@ const JobMatch = () => {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
           <Sparkles className="h-8 w-8 text-blue-600" />
-          AI Job Matching
+          SI Job Matching
         </h1>
         <p className="text-gray-600 mt-2">
           Discover jobs that perfectly match your skills, experience, and career goals
@@ -292,7 +292,7 @@ const JobMatch = () => {
               No Job Matches Yet
             </h3>
             <p className="text-gray-600 mb-4">
-              Complete your profile to get AI-powered job recommendations
+              Complete your profile to get SI-powered job recommendations
             </p>
             <Button asChild>
               <Link to="/profile/edit">Complete Profile</Link>

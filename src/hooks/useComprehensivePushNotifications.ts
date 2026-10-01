@@ -173,7 +173,7 @@ const DEFAULT_NOTIFICATION_TEMPLATES: NotificationTemplate[] = [
   {
     type: 'ai_assistant_suggestion',
     category: 'tool_engagement',
-    title: 'AI Assistant Suggestion',
+    title: 'SI Assistant Suggestion',
     message: 'Based on your profile, try our {{tool_name}} tool',
     priority: 'low',
     channels: ['in_app'],

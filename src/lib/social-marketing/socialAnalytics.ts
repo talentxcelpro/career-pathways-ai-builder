@@ -1,5 +1,5 @@
 // src/lib/social-marketing/socialAnalytics.ts
-// Stage 11: 3-Tier Outcome Measurement Engine for TalentXcel AI Content Factory
+// Stage 11: 3-Tier Outcome Measurement Engine for TalentXcel SI Content Factory
 // Segregates performance into: Tier 1 (Attention) -> Tier 2 (Intent) -> Tier 3 (Business Revenue).
 // Invariant: Business value is the final optimization metric, not superficial likes.
 

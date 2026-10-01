@@ -35,7 +35,7 @@ export const ProcessingStep: React.FC<ProcessingStepProps> = ({
     'Validating file...',
     'Extracting text content...',
     'Advanced text extraction...',
-    'AI-powered parsing with NLP...',
+    'SI-powered parsing with NLP...',
     'Structure analysis & validation...',
     'ATS optimization & scoring...',
     'Generating enhancement suggestions...',

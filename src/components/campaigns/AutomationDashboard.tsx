@@ -303,7 +303,7 @@ export function AutomationDashboard() {
                 </Button>
                 
                 <div className="text-sm text-muted-foreground">
-                  Processes pending opportunities with AI-powered personalization
+                  Processes pending opportunities with SI-powered personalization
                 </div>
               </CardContent>
             </Card>

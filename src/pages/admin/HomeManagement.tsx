@@ -69,7 +69,7 @@ const HomeManagement = () => {
         {
           id: '2',
           title: 'New Features Released',
-          content: 'Check out our latest AI-powered job matching features.',
+          content: 'Check out our latest SI-powered job matching features.',
           type: 'feature',
           is_active: true,
           priority: 'medium',

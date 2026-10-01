@@ -19,7 +19,7 @@ const AICareerChat = () => {
     {
       id: '1',
       type: 'ai',
-      content: "Hi! I'm your AI Career Assistant. I can help you with job search strategies, career planning, salary negotiations, interview preparation, and much more. What would you like to discuss today?",
+      content: "Hi! I'm your TalentXcel SI Career Assistant. I can help you with job search strategies, career planning, salary negotiations, interview preparation, and much more. What would you like to discuss today?",
       timestamp: new Date(),
       suggestions: [
         "How can I improve my resume?",
@@ -160,8 +160,8 @@ const AICareerChat = () => {
           <MessageSquare className="h-6 w-6 text-primary" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold">TalentXcel AI Career Chat</h2>
-          <p className="text-muted-foreground">Get instant career advice from your TalentXcel AI assistant</p>
+          <h2 className="text-2xl font-bold">TalentXcel SI Career Chat</h2>
+          <p className="text-muted-foreground">Get instant career advice from your TalentXcel SI assistant</p>
         </div>
       </div>
 

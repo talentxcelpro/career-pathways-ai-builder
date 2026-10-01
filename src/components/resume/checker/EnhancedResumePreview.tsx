@@ -181,7 +181,7 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
                     Unlock Enhanced Resume
                   </h3>
                   <p className="text-purple-700 max-w-md">
-                    See how TalentXcel AI can transform your resume with optimized content, ATS-friendly formatting, and industry-specific enhancements.
+                    See how TalentXcel SI can transform your resume with optimized content, ATS-friendly formatting, and industry-specific enhancements.
                   </p>
                   <Button className="bg-purple-600 hover:bg-purple-700">
                     <Sparkles className="h-4 w-4 mr-2" />
@@ -214,7 +214,7 @@ export const EnhancedResumePreview: React.FC<EnhancedResumePreviewProps> = ({
         </div>
         
         <div className="text-xs text-gray-500 text-center pt-2 border-t">
-          Powered by TalentXcel AI Resume Technology
+          Powered by TalentXcel SI Resume Technology
         </div>
       </CardContent>
     </Card>

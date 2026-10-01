@@ -28,7 +28,7 @@ export type GeminiReplyResult = TalentXcelReplyResult;
 export type GeminiPassportResult = TalentXcelPassportResult;
 export type GeminiConnectResult = TalentXcelConnectResult;
 
-// 1. ✨ TalentXcel AI Post Assistant
+// 1. ✨ TalentXcel SI Post Assistant
 export async function generateTalentXcelPost(topic: string, tone: string = 'Thought Leader'): Promise<TalentXcelPostResult> {
   try {
     const { data, error } = await supabase.functions.invoke('gemini-ai', {
@@ -49,7 +49,7 @@ export async function generateTalentXcelPost(topic: string, tone: string = 'Thou
 }
 export const generateGeminiPost = generateTalentXcelPost;
 
-// 2. 🪄 TalentXcel AI Smart Reply & Comment Generator
+// 2. 🪄 TalentXcel SI Smart Reply & Comment Generator
 export function getSmartCopilotReply(postContent: string, replyType: string): string {
   const normType = (replyType || '').toLowerCase();
   const trimmed = (postContent || '').trim().toLowerCase();
@@ -137,7 +137,7 @@ export async function generateTalentXcelSmartReply(postContent: string, replyTyp
 }
 export const generateGeminiSmartReply = generateTalentXcelSmartReply;
 
-// 3. ⚡ TalentXcel AI Career Passport Assistant
+// 3. ⚡ TalentXcel SI Career Passport Assistant
 export async function generateTalentXcelPassportAssistant(profile: any): Promise<TalentXcelPassportResult> {
   try {
     const { data, error } = await supabase.functions.invoke('gemini-ai', {
@@ -161,7 +161,7 @@ export async function generateTalentXcelPassportAssistant(profile: any): Promise
 }
 export const generateGeminiPassportAssistant = generateTalentXcelPassportAssistant;
 
-// 4. 🤖 TalentXcel AI Smart Connect AI
+// 4. 🤖 TalentXcel SI Smart Connect AI
 export async function generateTalentXcelSmartConnect(profile: any, targetProfile: any): Promise<TalentXcelConnectResult> {
   try {
     const { data, error } = await supabase.functions.invoke('gemini-ai', {
@@ -179,7 +179,7 @@ export async function generateTalentXcelSmartConnect(profile: any, targetProfile
 }
 export const generateGeminiSmartConnect = generateTalentXcelSmartConnect;
 
-// 5. ✍️ TalentXcel AI Post Rewriter & Optimizer
+// 5. ✍️ TalentXcel SI Post Rewriter & Optimizer
 export async function rewriteTalentXcelPost(
   currentText: string, 
   mode: 'polish' | 'professional' | 'career' | 'engaging' | 'concise' | 'job_seeker' | 'hiring' | 'hindi',

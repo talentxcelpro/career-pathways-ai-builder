@@ -125,7 +125,7 @@ export default function Jobs1() {
     <>
       <SEOHead
         title="TalentSpark - Revolutionary Job Discovery | TalentXcel"
-        description="Experience the future of job hunting with AI-powered matching, TXC rewards, and gamified career growth. Find your dream job with TalentSpark!"
+        description="Experience the future of job hunting with SI-powered matching, TXC rewards, and gamified career growth. Find your dream job with TalentSpark!"
         keywords={['jobs', 'AI matching', 'TXC rewards', 'gamified job search', 'career growth', 'TalentSpark']}
       />
 
@@ -164,7 +164,7 @@ export default function Jobs1() {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search jobs with AI-powered matching..."
+                  placeholder="Search jobs with SI-powered matching..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10 pr-4 h-12 rounded-2xl border-2 focus:border-primary"

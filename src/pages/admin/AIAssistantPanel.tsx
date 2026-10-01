@@ -65,7 +65,7 @@ const AIAssistantPanel = () => {
         'Create schema markup for job postings',
       ],
       'jobs': [
-        'Add AI-powered job matching algorithm',
+        'Add SI-powered job matching algorithm',
         'Implement job recommendation engine',
         'Optimize job search filters for better UX',
       ],
@@ -98,7 +98,7 @@ const AIAssistantPanel = () => {
   };
 
   return (
-    <UnifiedAdminLayout title="AI Assistant Panel" description="Smart suggestions and insights for platform optimization">
+    <UnifiedAdminLayout title="SI Assistant Panel" description="Smart suggestions and insights for platform optimization">
       <div className="space-y-6">
         {/* Quick AI Insights */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -106,7 +106,7 @@ const AIAssistantPanel = () => {
             <CardHeader className="pb-3">
               <CardTitle className="text-sm flex items-center gap-2">
                 <Brain className="h-4 w-4 text-blue-600" />
-                AI Score
+                TalentScore
               </CardTitle>
             </CardHeader>
             <CardContent>

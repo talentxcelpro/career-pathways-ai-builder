@@ -168,7 +168,7 @@ const Jobs = () => {
         {
           "@type": "CollectionPage",
           "name": "TalentXcel Job Listings",
-          "description": "Find your next career opportunity with AI-powered job matching",
+          "description": "Find your next career opportunity with SI-powered job matching",
           "url": "https://talentxcel.in/jobs",
           "mainEntity": {
             "@type": "ItemList",

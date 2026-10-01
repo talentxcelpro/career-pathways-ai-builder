@@ -82,7 +82,7 @@ export const SEOKeywordResearch = () => {
 
   const keywordClusters = [
     {
-      name: 'AI Resume Tools',
+      name: 'SI Resume Tools',
       keywords: ['ai resume builder', 'resume ai generator', 'automated resume creation', 'smart resume maker'],
       totalVolume: 234000,
       avgDifficulty: 42

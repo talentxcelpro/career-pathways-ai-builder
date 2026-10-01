@@ -1,5 +1,5 @@
 // src/lib/social-marketing/governanceConfig.ts
-// Configurable Governance Parameters for TalentXcel AI Content Factory
+// Configurable Governance Parameters for TalentXcel SI Content Factory
 // Invariant: Zero magic numbers. All thresholds are governed and versioned.
 
 import type { SocialPlatform } from './types';

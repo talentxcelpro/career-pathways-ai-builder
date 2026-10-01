@@ -208,7 +208,7 @@ export const SmartProfileOptimizer: React.FC<SmartProfileOptimizerProps> = ({
         {suggestions.length === 0 && !isAnalyzing && (
           <div className="text-center py-8 text-muted-foreground">
             <Brain className="h-8 w-8 mx-auto mb-2 opacity-50" />
-            <p>Click "Analyze Profile" to get AI-powered optimization suggestions</p>
+            <p>Click "Analyze Profile" to get SI-powered optimization suggestions</p>
           </div>
         )}
       </CardContent>

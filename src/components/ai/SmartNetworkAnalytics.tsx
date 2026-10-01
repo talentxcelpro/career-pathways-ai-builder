@@ -187,7 +187,7 @@ export const SmartNetworkAnalytics: React.FC = () => {
           <Network className="h-12 w-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">Smart Network Analytics</h3>
           <p className="text-gray-600 mb-4">
-            Login to get AI-powered insights about your professional network
+            Login to get SI-powered insights about your professional network
           </p>
         </CardContent>
       </Card>
@@ -205,7 +205,7 @@ export const SmartNetworkAnalytics: React.FC = () => {
             </div>
             <div>
               <h2 className="text-xl font-bold text-green-900">Smart Network Analytics</h2>
-              <p className="text-sm text-green-700">AI-powered network intelligence and growth insights</p>
+              <p className="text-sm text-green-700">SI-powered network intelligence and growth insights</p>
             </div>
           </div>
           

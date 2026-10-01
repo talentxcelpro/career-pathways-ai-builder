@@ -66,7 +66,7 @@ export const PersonalizedAIAgent: React.FC = () => {
         <CardContent className="flex items-center justify-center h-64">
           <div className="text-center">
             <Brain className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-lg font-semibold mb-2">AI Assistant Unavailable</h3>
+            <h3 className="text-lg font-semibold mb-2">SI Assistant Unavailable</h3>
             <p className="text-muted-foreground">Please try refreshing the page</p>
           </div>
         </CardContent>
@@ -112,7 +112,7 @@ export const PersonalizedAIAgent: React.FC = () => {
         </Card>
       )}
 
-      {/* Main AI Agent Interface */}
+      {/* Main SI Agent Interface */}
       <Card>
         <CardHeader className="pb-4">
           <div className="flex items-center justify-between">

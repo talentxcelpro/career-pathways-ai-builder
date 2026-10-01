@@ -42,7 +42,7 @@ const primaryFeatures = [
     icon: Brain,
     href: '/learning/skill-assessment',
     color: 'bg-purple-50 text-purple-600 border-purple-200',
-    stats: 'AI-powered'
+    stats: 'SI-powered'
   }
 ];
 

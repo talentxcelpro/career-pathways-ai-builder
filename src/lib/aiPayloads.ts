@@ -1,4 +1,4 @@
-// TalentXcel AI Payload Library
+// TalentXcel SI Payload Library
 // Production-ready payload templates for all AI modules and tasks
 
 export interface AIPayload {

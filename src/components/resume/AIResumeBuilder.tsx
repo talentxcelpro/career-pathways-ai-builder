@@ -63,8 +63,8 @@ export function AIResumeBuilder() {
   return (
     <>
       <Helmet>
-        <title>AI Resume Builder | Edit, Enhance & Optimize Your Resume</title>
-        <meta name="description" content="Build ATS-optimized resumes with AI-powered editing, templates, and instant ATS scoring." />
+        <title>SI Resume Builder | Edit, Enhance & Optimize Your Resume</title>
+        <meta name="description" content="Build ATS-optimized resumes with SI-powered editing, templates, and instant ATS scoring." />
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">

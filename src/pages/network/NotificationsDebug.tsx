@@ -70,7 +70,7 @@ const NotificationsDebug = () => {
       content: 'Senior React Developer at TechCorp matches your profile',
       is_read: true,
       created_at: new Date(Date.now() - 3600000).toISOString(),
-      sender_name: 'TalentXcel AI',
+      sender_name: 'TalentXcel SI',
       avatar_url: null
     },
     {

@@ -17,7 +17,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({ currentUser }) => {
 
   const quickActions = [
     {
-      title: 'Ask AI Career Assistant',
+      title: 'Ask TalentXcel SI Career Assistant',
       description: 'Get personalized career advice',
       icon: Brain,
       color: 'text-purple-600',

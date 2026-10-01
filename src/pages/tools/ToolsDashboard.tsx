@@ -129,7 +129,7 @@ export const ToolsDashboard = () => {
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium mb-3">
             <Sparkles className="h-3.5 w-3.5" />
-            <span>TalentXcel AI Career Intelligence Suite</span>
+            <span>TalentXcel SI Career Intelligence Suite</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-2">
             {user && firstName ? `Welcome back, ${firstName}!` : 'Professional Career Tools'}

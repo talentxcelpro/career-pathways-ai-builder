@@ -479,7 +479,7 @@ export default function TalentScorePage() {
                 </h1>
 
                 <p className="text-xs sm:text-sm text-slate-300/90 font-medium leading-relaxed max-w-sm">
-                  AI-powered insights. Real opportunities.<br />
+                  SI-powered insights. Real opportunities.<br />
                   A smarter, verified you.
                 </p>
 

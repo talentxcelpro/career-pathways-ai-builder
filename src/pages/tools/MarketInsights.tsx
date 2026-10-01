@@ -250,7 +250,7 @@ const MarketInsights = () => {
                   <Target className="h-5 w-5 text-purple-600 mt-1" />
                   <div>
                     <h4 className="font-medium">Demand Forecasting</h4>
-                    <p className="text-sm text-gray-600">AI-powered predictions for future market trends</p>
+                    <p className="text-sm text-gray-600">SI-powered predictions for future market trends</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">

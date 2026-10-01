@@ -21,7 +21,7 @@ const ResumeBuilder = () => {
   React.useEffect(() => {
     updateMetaTags({
       title: 'Free ATS Resume Builder | Create Professional Resumes | TalentXcel',
-      description: 'Build ATS-friendly resumes that get you hired. Free professional resume templates, AI-powered suggestions, and expert tips. Download in PDF & Word formats.',
+      description: 'Build ATS-friendly resumes that get you hired. Free professional resume templates, SI-powered suggestions, and expert tips. Download in PDF & Word formats.',
       url: `${window.location.origin}/resume-builder`,
       keywords: ['resume builder', 'ATS resume', 'free resume builder', 'professional resume', 'CV maker', 'resume templates', 'job application'],
       type: 'website',
@@ -69,7 +69,7 @@ const ResumeBuilder = () => {
 
   const features = [
     { icon: <PenTool className="w-6 h-6" />, title: "Drag & Drop Editor", description: "Rearrange sections with intuitive drag and drop" },
-    { icon: <Sparkles className="w-6 h-6" />, title: "TalentXcel AI Enhancement", description: "Get intelligent suggestions to improve content" },
+    { icon: <Sparkles className="w-6 h-6" />, title: "TalentXcel SI Enhancement", description: "Get intelligent suggestions to improve content" },
     { icon: <Upload className="w-6 h-6" />, title: "Import Existing Resume", description: "Upload your current resume for enhancement" },
     { icon: <Download className="w-6 h-6" />, title: "Multiple Export Formats", description: "Download as PDF, Word, or share online" }
   ];
@@ -96,7 +96,7 @@ const ResumeBuilder = () => {
             </Button>
             <Badge variant="secondary" className="bg-blue-100 text-blue-700">
               <Sparkles className="w-3 h-3 mr-1" />
-              TalentXcel AI-Powered
+              TalentXcel SI-Powered
             </Badge>
           </div>
         </div>
@@ -117,10 +117,10 @@ const ResumeBuilder = () => {
             </div>
             <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6">
               Build Your Dream Resume with
-              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> TalentXcel AI</span>
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> TalentXcel SI</span>
             </h1>
             <p className="text-xl text-slate-600 mb-8 max-w-3xl mx-auto">
-              Create a professional resume with TalentXcel AI-powered tools and beautiful TalentXcel templates.
+              Create a professional resume with TalentXcel SI-powered tools and beautiful TalentXcel templates.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
@@ -130,7 +130,7 @@ const ResumeBuilder = () => {
                 onClick={createNewResume}
               >
                 <Sparkles className="w-5 h-5 mr-2" />
-                Start Building with TalentXcel AI
+                Start Building with TalentXcel SI
               </Button>
               <Link to="/resume-builder/upload">
                 <Button size="lg" variant="outline" className="px-8 py-4 text-lg font-semibold rounded-xl border-2">
@@ -218,14 +218,14 @@ const ResumeBuilder = () => {
           <div className="text-center">
             <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-12 py-4 text-lg font-semibold rounded-xl" onClick={createNewResume}>
               <Sparkles className="w-5 h-5 mr-2" />
-              Start Building with TalentXcel AI
+              Start Building with TalentXcel SI
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Floating AI Assistant Button */}
+      {/* Floating SI Assistant Button */}
       <div className="fixed bottom-6 right-6 z-50">
         <Button
           onClick={() => setShowAIAssistant(true)}
@@ -235,11 +235,11 @@ const ResumeBuilder = () => {
         </Button>
       </div>
 
-      {/* AI Assistant Dialog */}
+      {/* SI Assistant Dialog */}
       <Dialog open={showAIAssistant} onOpenChange={setShowAIAssistant}>
         <DialogContent className="max-w-4xl h-[80vh] p-0">
           <DialogHeader className="sr-only">
-            <DialogTitle>AI Resume Assistant</DialogTitle>
+            <DialogTitle>SI Resume Assistant</DialogTitle>
           </DialogHeader>
           <ChatGPTStyleInterface 
             resumeData={resumeData}

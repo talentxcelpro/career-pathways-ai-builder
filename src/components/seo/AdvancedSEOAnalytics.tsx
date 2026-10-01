@@ -364,7 +364,7 @@ export const AdvancedSEOAnalytics = () => {
                 <div className="flex items-center justify-between p-3 border rounded-lg">
                   <div>
                     <h4 className="font-medium">Content Optimization</h4>
-                    <p className="text-sm text-gray-600">AI-powered content suggestions</p>
+                    <p className="text-sm text-gray-600">SI-powered content suggestions</p>
                   </div>
                   <Badge variant="secondary">Planned</Badge>
                 </div>

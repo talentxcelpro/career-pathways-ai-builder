@@ -133,7 +133,7 @@ const modules: ModuleItem[] = [
   {
     id: 'ai-career-hub',
     name: 'AI Career Hub',
-    description: 'AI-powered career assistance',
+    description: 'SI-powered career assistance',
     icon: Zap,
     route: '/ai-career-hub',
     category: 'tools',

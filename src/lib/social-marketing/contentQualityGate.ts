@@ -1,5 +1,5 @@
 // src/lib/social-marketing/contentQualityGate.ts
-// Stage 9: Quality & Safety Gates for TalentXcel AI Content Factory
+// Stage 9: Quality & Safety Gates for TalentXcel SI Content Factory
 // Enforces 2 orthogonal gates:
 // 1. Safety Gate: Hard stop for fabricated claims, fake testimonials, unsupported salaries, or copyright risks.
 // 2. 18-Point Quality Gate: Scores style, brand rules, character limits, link/UTM validity, and <= 20% platform divergence.

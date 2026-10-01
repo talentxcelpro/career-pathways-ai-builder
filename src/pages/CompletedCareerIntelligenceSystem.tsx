@@ -74,7 +74,7 @@ export const CompletedCareerIntelligenceSystem: React.FC = () => {
         </div>
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
           Real-time career intelligence with banking-level security, blockchain verification, 
-          and AI-powered insights for the modern professional.
+          and SI-powered insights for the modern professional.
         </p>
       </div>
 

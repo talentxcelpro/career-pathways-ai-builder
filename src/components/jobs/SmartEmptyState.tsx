@@ -137,7 +137,7 @@ export const SmartEmptyState: React.FC<SmartEmptyStateProps> = ({
       <div className="w-full rounded-2xl bg-gradient-to-br from-violet-50 to-blue-50 border border-violet-100 p-5">
         <div className="flex items-center gap-2 mb-2">
           <Zap className="h-4 w-4 text-violet-600" />
-          <span className="text-xs font-extrabold text-violet-700 uppercase tracking-wider">AI Career Coach</span>
+          <span className="text-xs font-extrabold text-violet-700 uppercase tracking-wider">SI Career Coach</span>
         </div>
         <p className="text-sm font-bold text-slate-800 mb-1">
           Can't find what you're looking for?

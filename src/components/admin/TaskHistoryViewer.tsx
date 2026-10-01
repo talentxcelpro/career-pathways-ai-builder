@@ -294,7 +294,7 @@ export const TaskHistoryViewer: React.FC = () => {
                         <TableCell>
                           <div className="flex flex-col">
                             <span className="font-medium">{task.agent_id ? `Agent ${task.agent_id.slice(0, 8)}` : 'Unknown'}</span>
-                            <span className="text-xs text-muted-foreground">AI Agent</span>
+                            <span className="text-xs text-muted-foreground">SI Agent</span>
                           </div>
                         </TableCell>
                         <TableCell>

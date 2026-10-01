@@ -62,7 +62,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
       resume: {
         title: 'Build Your Professional Resume',
         subtitle: 'Free ATS scan + 1 download',
-        benefits: ['ATS-optimized templates', 'AI-powered suggestions', 'Free download in PDF/Word']
+        benefits: ['ATS-optimized templates', 'SI-powered suggestions', 'Free download in PDF/Word']
       },
       jobs: {
         title: 'Find Your Dream Job',

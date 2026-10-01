@@ -646,7 +646,7 @@ export default function Colleges() {
                 Unlock Direct Admission &amp; Cutoff Predictions
               </h4>
               <p className="text-xs text-emerald-200 mt-1 leading-relaxed">
-                Get AI-powered JEE/NEET/CAT percentile cutoff predictions, fee waiver roadmaps, and Career Passport endorsement.
+                Get SI-powered JEE/NEET/CAT percentile cutoff predictions, fee waiver roadmaps, and Career Passport endorsement.
               </p>
             </div>
 

@@ -100,7 +100,7 @@ export const CTA_MAP: Record<CtaPageType, CtaConfig> = {
     secondaryLabel: 'Use AI Career Hub',
     secondaryHref: '/ai-career-hub',
     headline: 'Ace Your Next Interview with TalentXcel',
-    subtext: 'Access interview preparation tools, AI-powered coaching, and role-specific question banks.',
+    subtext: 'Access interview preparation tools, SI-powered coaching, and role-specific question banks.',
   },
 
   SkillGuide: {

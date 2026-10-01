@@ -293,7 +293,7 @@ export const JobAnalyticsDashboard: React.FC = () => {
         <Card>
           <CardHeader>
             <CardTitle>Quality Assessment</CardTitle>
-            <CardDescription>AI-powered job quality distribution (last 7 days)</CardDescription>
+            <CardDescription>SI-powered job quality distribution (last 7 days)</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-80">

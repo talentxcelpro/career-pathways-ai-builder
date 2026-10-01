@@ -77,7 +77,7 @@ const AICareerCoPilot: React.FC = () => {
     queryFn: async () => {
       if (!userProfile) return [];
 
-      // Mock AI-powered job recommendations
+      // Mock SI-powered job recommendations
       const mockRecommendations: JobRecommendation[] = [
         {
           id: '1',
@@ -403,7 +403,7 @@ const AICareerCoPilot: React.FC = () => {
           <Alert>
             <Brain className="h-4 w-4" />
             <AlertDescription>
-              AI-powered career roadmap feature coming soon! This will provide step-by-step guidance 
+              SI-powered career roadmap feature coming soon! This will provide step-by-step guidance 
               to achieve your career goals with timeline and milestone tracking.
             </AlertDescription>
           </Alert>

@@ -411,7 +411,7 @@ export const FOUNDATION_NEWS_ARTICLES: NewsArticle[] = [
   {
     "id": "art-013",
     "slug": "unlocking-career-potential-ai-resume-prep-tools",
-    "title": "Unlocking Career Potential: AI Resume Builders, Interview Prep, and Skill Growth Tools",
+    "title": "Unlocking Career Potential: SI Resume Builders, Interview Prep, and Skill Growth Tools",
     "summary": "A deep academic inquiry into the cognitive and operational impact of AI-assisted career progression across diverse socioeconomic cohorts.",
     "category": "Career Intelligence",
     "archetype": "Professional Journal",

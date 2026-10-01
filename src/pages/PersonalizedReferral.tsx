@@ -145,7 +145,7 @@ const PersonalizedReferral: React.FC = () => {
               
               <p className="text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto">
                 Join TalentXcel through this exclusive referral and both of you will earn TXC tokens! 
-                Start your AI-powered career journey today.
+                Start your SI-powered career journey today.
               </p>
 
               {referrerProfile.about && (
@@ -305,7 +305,7 @@ const PersonalizedReferral: React.FC = () => {
                     <span className="text-lg font-bold text-primary">4</span>
                   </div>
                   <h4 className="font-semibold">Grow Career</h4>
-                  <p className="text-sm text-muted-foreground">Land your dream job with AI-powered tools</p>
+                  <p className="text-sm text-muted-foreground">Land your dream job with SI-powered tools</p>
                 </div>
               </div>
             </CardContent>

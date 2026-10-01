@@ -1,5 +1,5 @@
 // src/lib/social-marketing/socialAttribution.ts
-// Stage 11: Deterministic UTM Attribution Engine for TalentXcel AI Content Factory
+// Stage 11: Deterministic UTM Attribution Engine for TalentXcel SI Content Factory
 // Maps social clicks to downstream account signups, activations, and verified revenue.
 // Invariant: Zero manufactured attribution. If attribution is unknown, returns 'UNKNOWN', never fabricated metrics.
 

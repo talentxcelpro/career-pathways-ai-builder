@@ -28,7 +28,7 @@ const banners: BannerItem[] = [
   {
     id: '2',
     title: '🛠️ Resume Analysis',
-    description: 'Get AI-powered insights to improve your resume',
+    description: 'Get SI-powered insights to improve your resume',
     buttonText: 'Analyze Resume',
     buttonAction: '/resume-analysis',
     gradient: 'from-blue-500 to-cyan-600',

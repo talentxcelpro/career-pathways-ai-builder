@@ -97,7 +97,7 @@ export const EnterpriseSolutions: React.FC = () => {
   const clientTestimonials: ClientTestimonial[] = [
     {
       company: "Tech Mahindra",
-      testimonial: "TalentXcel's AI-powered internal mobility platform helped us redeploy 40% of our workforce efficiently during digital transformation.",
+      testimonial: "TalentXcel's SI-powered internal mobility platform helped us redeploy 40% of our workforce efficiently during digital transformation.",
       person: "Rajesh Kumar",
       title: "VP, Human Resources",
       savings: "₹2.5Cr",
@@ -113,7 +113,7 @@ export const EnterpriseSolutions: React.FC = () => {
     },
     {
       company: "Infosys",
-      testimonial: "Reduced time-to-hire for specialized roles by 65% while improving quality of hire through AI-powered candidate matching.",
+      testimonial: "Reduced time-to-hire for specialized roles by 65% while improving quality of hire through SI-powered candidate matching.",
       person: "Amit Patel",
       title: "Global Head of Talent Acquisition",
       savings: "₹1.8Cr",
@@ -148,7 +148,7 @@ export const EnterpriseSolutions: React.FC = () => {
       id: 'internal-mobility',
       title: 'Internal Mobility Engine',
       subtitle: 'Career Pathways & Talent Optimization',
-      description: 'AI-powered internal talent marketplace connecting employees with growth opportunities and career advancement.',
+      description: 'SI-powered internal talent marketplace connecting employees with growth opportunities and career advancement.',
       icon: <TrendingUp className="h-10 w-10" />,
       gradient: 'from-green-600 to-emerald-700',
       features: [
@@ -529,7 +529,7 @@ export const EnterpriseSolutions: React.FC = () => {
             </h2>
             <p className="text-xl text-blue-100 mb-12 leading-relaxed">
               Join industry leaders who have revolutionized their workforce planning 
-              and talent development with AI-powered solutions.
+              and talent development with SI-powered solutions.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">

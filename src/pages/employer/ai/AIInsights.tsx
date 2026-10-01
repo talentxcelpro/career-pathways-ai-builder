@@ -80,7 +80,7 @@ const AIInsights = () => {
         <Brain className="h-8 w-8 text-purple-600" />
         <div>
           <h1 className="text-3xl font-bold text-gray-900">AI Job Insights</h1>
-          <p className="text-gray-600">Optimize your job posting with AI-powered recommendations</p>
+          <p className="text-gray-600">Optimize your job posting with SI-powered recommendations</p>
         </div>
       </div>
 

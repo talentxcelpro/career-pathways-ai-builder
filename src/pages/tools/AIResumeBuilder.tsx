@@ -138,10 +138,10 @@ ${generatedResume.education.map((edu: any) => `${edu.degree} - ${edu.institution
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
           <Sparkles className="h-8 w-8 text-purple-600" />
-          AI Resume Builder
+          SI Resume Builder
         </h1>
         <p className="text-gray-600 mt-2">
-          Create a professional resume with AI-powered content generation and optimization
+          Create a professional resume with SI-powered content generation and optimization
         </p>
       </div>
 
@@ -406,7 +406,7 @@ ${generatedResume.education.map((edu: any) => `${edu.degree} - ${edu.institution
                 <FileText className="h-16 w-16 text-gray-400 mb-4" />
                 <h3 className="text-xl font-medium text-gray-900 mb-2">Ready to Build</h3>
                 <p className="text-gray-600 text-center">
-                  Fill in your information and click "Generate Resume" to create your AI-powered resume
+                  Fill in your information and click "Generate Resume" to create your SI-powered resume
                 </p>
               </CardContent>
             </Card>

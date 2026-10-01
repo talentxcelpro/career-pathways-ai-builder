@@ -61,7 +61,7 @@ const AdvancedAIJobMatching: React.FC = () => {
       const { useDeepSeekAI } = await import('@/hooks/useDeepSeekAI');
       const { chatWithDeepSeek } = useDeepSeekAI();
       
-      const prompt = `Generate AI-powered job matches based on user profile. Return JSON with this structure:
+      const prompt = `Generate SI-powered job matches based on user profile. Return JSON with this structure:
       {
         "matches": [
           {
@@ -114,7 +114,7 @@ const AdvancedAIJobMatching: React.FC = () => {
           <div>
             <h2 className="text-2xl font-bold flex items-center gap-2">
               <Zap className="h-6 w-6 text-primary" />
-              Advanced AI Job Matching
+              Advanced SI Job Matching
             </h2>
             <p className="text-muted-foreground">Intelligent job recommendations based on your profile and preferences</p>
           </div>
@@ -123,7 +123,7 @@ const AdvancedAIJobMatching: React.FC = () => {
           </Button>
         </div>
 
-        <UsageMeter type="dailyAIRequests" currentUsage={3} label="AI Job Match Requests" />
+        <UsageMeter type="dailyAIRequests" currentUsage={3} label="SI Job Match Requests" />
 
         {/* Search and Filters */}
         <Card>
@@ -137,7 +137,7 @@ const AdvancedAIJobMatching: React.FC = () => {
             <div className="space-y-4">
               <div className="flex gap-2">
                 <Input
-                  placeholder="Search jobs with AI-powered understanding..."
+                  placeholder="Search jobs with SI-powered understanding..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="flex-1"
@@ -190,7 +190,7 @@ const AdvancedAIJobMatching: React.FC = () => {
                 <Zap className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-muted-foreground mb-2">No Job Matches Yet</h3>
                 <p className="text-muted-foreground mb-4">
-                  Connect your API to start receiving AI-powered job recommendations
+                  Connect your API to start receiving SI-powered job recommendations
                 </p>
                 <Button onClick={performAIMatching} disabled={isMatching}>
                   Get AI Matches

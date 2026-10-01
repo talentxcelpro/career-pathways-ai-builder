@@ -101,7 +101,7 @@ export const AIServiceMatcher = () => {
           AI Career Services
         </h1>
         <p className="text-muted-foreground">
-          Get personalized AI-powered assistance for your career growth
+          Get personalized SI-powered assistance for your career growth
         </p>
       </div>
 
@@ -146,7 +146,7 @@ export const AIServiceMatcher = () => {
       {/* Chat Interface */}
       <Card>
         <CardHeader>
-          <CardTitle>AI Assistant</CardTitle>
+          <CardTitle>SI Assistant</CardTitle>
           <CardDescription>
             Ask questions and get personalized advice
           </CardDescription>

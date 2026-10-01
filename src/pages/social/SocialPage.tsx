@@ -196,8 +196,8 @@ const SocialPage = () => {
             <CardContent>
               <SocialShare 
                 showTitle={false}
-                title="TalentXcel - AI-Powered Career Platform"
-                description="Discover your dream job and advance your career with AI-powered tools. Join thousands of professionals who trust TalentXcel for their career growth."
+                title="TalentXcel - SI-powered Career & Talent Intelligence Platform"
+                description="Discover your dream job and advance your career with SI-powered tools. Join thousands of professionals who trust TalentXcel for their career growth."
                 hashtags={['TalentXcel', 'CareerGrowth', 'JobSearch', 'AI', 'ProfessionalDevelopment']}
               />
             </CardContent>

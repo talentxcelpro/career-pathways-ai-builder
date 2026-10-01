@@ -280,7 +280,7 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true, pu
                 Recommended Actions
               </CardTitle>
               <CardDescription className="text-xs">
-                AI-powered suggestions to boost your career readiness
+                SI-powered suggestions to boost your career readiness
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">

@@ -216,7 +216,7 @@ const AIRoadmapBuilder = () => {
             <Brain className="h-5 w-5" />
             AI Analysis
           </CardTitle>
-          <CardDescription>AI-powered insights for your career path</CardDescription>
+          <CardDescription>SI-powered insights for your career path</CardDescription>
         </CardHeader>
       </Card>
       

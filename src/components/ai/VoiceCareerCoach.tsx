@@ -205,7 +205,7 @@ const VoiceCareerCoach: React.FC = () => {
                   </Avatar>
                   <div className="bg-muted rounded-lg p-3 max-w-[80%]">
                     <p className="text-sm leading-relaxed">
-                      👋 Hello! I'm your voice-enabled AI Career Coach. Connect and start talking to me about your career goals, challenges, or any professional development questions you have.
+                      👋 Hello! I'm your voice-enabled SI Career Coach. Connect and start talking to me about your career goals, challenges, or any professional development questions you have.
                     </p>
                     <div className="text-xs text-muted-foreground mt-1">
                       Just now

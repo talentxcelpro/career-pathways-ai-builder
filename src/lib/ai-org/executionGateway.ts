@@ -1,5 +1,5 @@
 // src/lib/ai-org/executionGateway.ts
-// Server-Authoritative Execution Gateway for TalentXcel AI Growth Organization
+// Server-Authoritative Execution Gateway for TalentXcel SI Growth Organization
 // Invariant: Zero Bypass. All agent mutations MUST pass through this gateway.
 // Enforces 5-state lifecycle, agent enablement, Level-3 policy matrix, and audit logging.
 
@@ -94,7 +94,7 @@ export async function executeAgentAction<T = any>(
     return {
       success: false,
       status: 'BLOCKED_OFF',
-      rejectionReason: 'Execution blocked: TalentXcel AI Organization is currently OFFLINE.',
+      rejectionReason: 'Execution blocked: TalentXcel SI Organization is currently OFFLINE.',
       auditEntryId: blockedEntry.id,
     };
   }
@@ -130,7 +130,7 @@ export async function executeAgentAction<T = any>(
     return {
       success: false,
       status: 'BLOCKED_OFF',
-      rejectionReason: 'Execution blocked: TalentXcel AI Organization is PAUSED. Only read-only operations permitted.',
+      rejectionReason: 'Execution blocked: TalentXcel SI Organization is PAUSED. Only read-only operations permitted.',
       auditEntryId: blockedEntry.id,
     };
   }

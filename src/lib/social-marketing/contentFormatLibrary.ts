@@ -1,5 +1,5 @@
 // src/lib/social-marketing/contentFormatLibrary.ts
-// Content Format Library for TalentXcel AI Content Factory
+// Content Format Library for TalentXcel SI Content Factory
 // 5 major categories spanning 20+ distinct deliverables with exact constraints and platform targets.
 
 import type { ContentCategory, ContentFormatType, SocialPlatform } from './types';

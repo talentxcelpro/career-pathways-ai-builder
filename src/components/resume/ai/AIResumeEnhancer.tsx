@@ -117,8 +117,8 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
   const enhancerFeatures = [
     {
       id: 'enhance',
-      title: 'AI Resume Enhancer',
-      description: 'Improve your resume content with AI-powered suggestions',
+      title: 'SI Resume Enhancer',
+      description: 'Improve your resume content with SI-powered suggestions',
       icon: Sparkles,
       color: 'bg-gradient-to-r from-purple-500 to-pink-500',
       action: handleResumeEnhancement
@@ -289,7 +289,7 @@ export const AIResumeEnhancer: React.FC<AIResumeEnhancerProps> = ({
                   ) : (
                     <>
                       <Icon className="h-4 w-4 mr-2" />
-                      {feature.title === 'AI Resume Enhancer' ? 'Enhance Resume' :
+                      {feature.title === 'SI Resume Enhancer' ? 'Enhance Resume' :
                        feature.title === 'ATS Optimizer' ? 'Optimize for ATS' :
                        'Analyze Skills'}
                     </>

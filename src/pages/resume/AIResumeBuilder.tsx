@@ -119,7 +119,7 @@ const AIResumeBuilder = () => {
   return (
     <>
       <Helmet>
-        <title>AI Resume Builder | Real-time ATS Scoring | TalentXcel</title>
+        <title>SI Resume Builder | Real-time ATS Scoring | TalentXcel</title>
         <meta 
           name="description" 
           content="Build your resume with AI assistance. Real-time ATS scoring, smart suggestions, and multiple building modes. Get hired faster." 
@@ -163,7 +163,7 @@ const AIResumeBuilder = () => {
               <div>
                 <h1 className="text-2xl font-bold flex items-center gap-2">
                   <Sparkles className="h-6 w-6 text-primary" />
-                  AI Resume Builder
+                  SI Resume Builder
                 </h1>
                 <p className="text-sm text-muted-foreground">
                   Real-time ATS optimization • Smart suggestions • Multiple templates
@@ -255,7 +255,7 @@ const AIResumeBuilder = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <MessageSquare className="h-5 w-5" />
-                    AI Resume Assistant
+                    SI Resume Assistant
                   </CardTitle>
                 </CardHeader>
                 <CardContent>

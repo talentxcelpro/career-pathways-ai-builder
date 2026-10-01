@@ -287,7 +287,7 @@ export default function TopicHubPage() {
                 <Sparkles className="w-7 h-7 text-blue-600 mx-auto" />
                 <h4 className="text-sm font-bold text-slate-900 dark:text-white">Build Your Career Pathway</h4>
                 <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                  Generate an AI-powered education and career roadmap tailored to your specific background and budget.
+                  Generate an SI-powered education and career roadmap tailored to your specific background and budget.
                 </p>
                 <Link to="/colleges/career-pathway" className="block pt-1">
                   <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs h-8">

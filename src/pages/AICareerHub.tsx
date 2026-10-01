@@ -19,7 +19,7 @@ const AICareerHub = () => {
     },
     {
       id: 'job-match',
-      title: 'AI Job Match GPT',
+      title: 'SI Job Match GPT',
       description: 'Intelligent job fit scoring and role alignment engine with salary benchmarks and ATS keyword insights.',
       icon: <Target className="h-7 w-7 text-blue-600 dark:text-blue-400" />,
       features: ['97% match accuracy', 'Skills compatibility', 'Salary benchmark analysis', 'Company culture fit'],
@@ -59,7 +59,7 @@ const AICareerHub = () => {
           <div className="text-center space-y-3 max-w-3xl mx-auto">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-semibold">
               <Sparkles className="w-3.5 h-3.5" />
-              TalentXcel AI Career Intelligence Suite
+              TalentXcel SI Career Intelligence Suite
             </div>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
               AI Career Intelligence Hub
@@ -131,7 +131,7 @@ const AICareerHub = () => {
           {/* Stats Section */}
           <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-xs">
             <h2 className="text-lg sm:text-xl font-bold text-center text-slate-900 dark:text-white mb-6 tracking-tight">
-              TalentXcel AI Career Performance Metrics
+              TalentXcel SI Career Performance Metrics
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
               <div className="space-y-1">

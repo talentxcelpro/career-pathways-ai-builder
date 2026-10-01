@@ -13,8 +13,8 @@ const Api = () => {
     },
     {
       icon: <Zap className="h-8 w-8 text-yellow-600" />,
-      title: "AI Resume Analysis", 
-      description: "Integrate our AI-powered resume scoring and optimization recommendations."
+      title: "SI Resume Analysis", 
+      description: "Integrate our SI-powered resume scoring and optimization recommendations."
     },
     {
       icon: <Globe className="h-8 w-8 text-green-600" />,
@@ -64,7 +64,7 @@ const Api = () => {
           </h1>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
             Build powerful career and recruitment applications with our comprehensive API suite. 
-            Access job data, AI-powered insights, and seamless integrations.
+            Access job data, SI-powered insights, and seamless integrations.
           </p>
         </div>
 

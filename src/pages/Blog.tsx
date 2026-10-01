@@ -383,7 +383,7 @@ const Blog = () => {
                 <h3 className="text-sm font-bold text-white">TalentXcel Career Tools</h3>
               </div>
               <p className="text-xs text-slate-300 leading-relaxed mb-4">
-                Put these insights into practice with our AI-powered career operating tools.
+                Put these insights into practice with our SI-powered career operating tools.
               </p>
               <div className="space-y-2">
                 <Link 

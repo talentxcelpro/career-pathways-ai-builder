@@ -78,7 +78,7 @@ export default function ToolsHub() {
     <>
       <Helmet>
         <title>Career Tools Hub | TalentXcel - AI-Powered Career Tools</title>
-        <meta name="description" content="Access 24+ AI-powered career tools including resume builder, interview prep, job matching, skill gap analysis, and career pathfinding tools." />
+        <meta name="description" content="Access 24+ SI-powered career tools including resume builder, interview prep, job matching, skill gap analysis, and career pathfinding tools." />
         <meta name="keywords" content="career tools, resume builder, interview prep, job search, AI career tools, skill development" />
         <link rel="canonical" href="https://talentxcel.in/tools" />
       </Helmet>
@@ -90,7 +90,7 @@ export default function ToolsHub() {
             <div>
               <h1 className="text-3xl font-bold mb-2">Career Tools Hub</h1>
               <p className="text-muted-foreground text-lg">
-                24+ AI-powered tools to accelerate your career growth
+                24+ SI-powered tools to accelerate your career growth
               </p>
             </div>
             

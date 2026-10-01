@@ -84,7 +84,7 @@ const KNOWN_COMPANY_PROFILES: Record<string, CompanyProfileData> = {
     foundedYear: 2024,
     sizeRange: '50-200 employees',
     coreServices: [
-      'Autonomous AI Agent Messaging & Workflows',
+      'Autonomous SI Agent Messaging & Workflows',
       'Encrypted Real-Time Chat Infrastructure',
       'Omnichannel Customer Support Intelligence',
       'Enterprise Team Collaboration Platform'

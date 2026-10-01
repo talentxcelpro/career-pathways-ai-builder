@@ -1,5 +1,5 @@
 // src/lib/admin/agentSafetyEngine.ts
-// AI Agent Safety & Risk Classification Engine
+// SI Agent Safety & Risk Classification Engine
 // Prevents high-risk/irreversible autonomous operations without human governance.
 
 import { isSuperAdminUser, AdminActor } from './superAdminPolicy';

@@ -14,7 +14,7 @@ const ComprehensiveCareerIntelligence: React.FC = () => {
   React.useEffect(() => {
     updateMetaTags({
       title: 'Comprehensive Career Intelligence - TalentXcel | AI-Powered Career Analytics',
-      description: 'Access comprehensive AI-powered career intelligence including real-time market data, credibility scoring, networking insights, and personalized career recommendations.'
+      description: 'Access comprehensive SI-powered career intelligence including real-time market data, credibility scoring, networking insights, and personalized career recommendations.'
     });
   }, []);
 
@@ -32,7 +32,7 @@ const ComprehensiveCareerIntelligence: React.FC = () => {
                 Comprehensive Career Intelligence
               </h1>
               <p className="text-muted-foreground text-lg mt-2">
-                Advanced AI-powered career analytics and real-time market intelligence
+                Advanced SI-powered career analytics and real-time market intelligence
               </p>
             </div>
           </div>
@@ -158,7 +158,7 @@ const ComprehensiveCareerIntelligence: React.FC = () => {
               </h3>
               <p className="text-muted-foreground mb-4 max-w-3xl mx-auto">
                 This comprehensive career intelligence platform provides real-time market analysis, 
-                AI-powered insights, professional credibility scoring, and strategic networking intelligence 
+                SI-powered insights, professional credibility scoring, and strategic networking intelligence 
                 to accelerate your career growth with data-driven decisions.
               </p>
               

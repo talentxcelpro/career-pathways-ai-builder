@@ -288,7 +288,7 @@ export const InterviewPreparationSystem: React.FC = () => {
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold">Interview Preparation System</h1>
         <p className="text-muted-foreground">
-          Practice with AI-powered mock interviews and get personalized feedback
+          Practice with SI-powered mock interviews and get personalized feedback
         </p>
       </div>
 
@@ -529,7 +529,7 @@ export const InterviewPreparationSystem: React.FC = () => {
                     <ul className="text-sm text-muted-foreground space-y-1">
                       <li>• 5-7 questions based on your selected type</li>
                       <li>• 30-45 minute session with timing</li>
-                      <li>• AI-powered feedback and scoring</li>
+                      <li>• SI-powered feedback and scoring</li>
                       <li>• Personalized improvement recommendations</li>
                     </ul>
                   </div>

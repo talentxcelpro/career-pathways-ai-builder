@@ -236,7 +236,7 @@ export const SimpleResumeBuilder: React.FC = () => {
             </Button>
             <div>
               <h1 className="text-2xl font-bold">TalentXcel Simple Resume Builder</h1>
-              <p className="text-muted-foreground">Clean, focused resume editing powered by TalentXcel AI</p>
+              <p className="text-muted-foreground">Clean, focused resume editing powered by TalentXcel SI</p>
             </div>
           </div>
           

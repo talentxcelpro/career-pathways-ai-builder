@@ -95,7 +95,7 @@ export default function PublicJobSearch() {
     <>
       <Helmet>
         <title>Jobs in India 2025 | Latest IT Jobs, Fresher Jobs, Remote Jobs - TalentXcel</title>
-        <meta name="description" content="Find latest jobs in India 2025. Browse 15,000+ IT jobs, fresher positions, remote work opportunities. AI-powered job matching with top companies." />
+        <meta name="description" content="Find latest jobs in India 2025. Browse 15,000+ IT jobs, fresher positions, remote work opportunities. SI-powered job matching with top companies." />
         <meta name="keywords" content="jobs in India 2025, latest IT jobs, fresher jobs, remote jobs India, job search, software engineer jobs, product manager jobs" />
         <link rel="canonical" href="https://talentxcel.in/public/jobs" />
         <meta property="og:title" content="Jobs in India 2025 | Latest IT Jobs, Fresher Jobs, Remote Jobs - TalentXcel" />
@@ -107,7 +107,7 @@ export default function PublicJobSearch() {
             "@context": "https://schema.org",
             "@type": "JobBoard",
             "name": "TalentXcel Jobs",
-            "description": "Find latest jobs in India with AI-powered matching",
+            "description": "Find latest jobs in India with SI-powered matching",
             "url": "https://talentxcel.in/public/jobs",
             "hiringOrganization": {
               "@type": "Organization",

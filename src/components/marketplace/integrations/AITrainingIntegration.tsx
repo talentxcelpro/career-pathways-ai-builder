@@ -52,7 +52,7 @@ export const AITrainingIntegration: React.FC<AITrainingIntegrationProps> = ({
       if (modelsError) throw modelsError;
       setTrainingModels(models || []);
 
-      // Generate AI-powered training recommendations
+      // Generate SI-powered training recommendations
       const trainingRecommendations = generateTrainingRecommendations(userSkills, careerGoals);
       setRecommendations(trainingRecommendations);
 
@@ -65,7 +65,7 @@ export const AITrainingIntegration: React.FC<AITrainingIntegrationProps> = ({
   };
 
   const generateTrainingRecommendations = (skills: string[], goals: string[]): AITrainingRecommendation[] => {
-    // AI-powered recommendation logic based on user profile
+    // SI-powered recommendation logic based on user profile
     const baseRecommendations: AITrainingRecommendation[] = [
       {
         id: '1',

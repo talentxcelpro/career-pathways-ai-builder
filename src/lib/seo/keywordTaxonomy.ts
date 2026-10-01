@@ -143,7 +143,7 @@ export const TALENTXCEL_KEYWORD_TAXONOMY: KeywordTaxonomyNode[] = [
     parentHub: '/topics/artificial-intelligence',
     conversionGoal: 'EMPLOYER_LEAD',
     priority: 1,
-    semanticVariants: ['AI-powered hiring software', 'algorithmic talent matching', 'automated candidate screening tool', 'AI recruiting solutions India'],
+    semanticVariants: ['SI-powered hiring software', 'algorithmic talent matching', 'automated candidate screening tool', 'AI recruiting solutions India'],
   },
   {
     keyword: 'artificial intelligence career topic hub',

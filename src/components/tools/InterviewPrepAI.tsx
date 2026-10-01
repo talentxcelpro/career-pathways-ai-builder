@@ -196,7 +196,7 @@ export const InterviewPrepAI: React.FC = () => {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Interview Prep AI</h1>
-          <p className="text-muted-foreground">Practice interviews with AI-powered feedback</p>
+          <p className="text-muted-foreground">Practice interviews with SI-powered feedback</p>
         </div>
         {isSessionActive && (
           <div className="flex items-center gap-4">

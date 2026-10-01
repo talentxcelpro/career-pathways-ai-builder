@@ -358,7 +358,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
         {
           id: 'growth-metrics',
           title: 'Career Growth Metrics',
-          description: 'Quantify your career progression with AI-powered scoring',
+          description: 'Quantify your career progression with SI-powered scoring',
           icon: TrendingUp,
           category: 'career',
           impact: 'high'
@@ -464,7 +464,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
         {
           id: 'video-recording',
           name: 'Video Analysis & Feedback',
-          description: 'AI-powered body language and speech pattern analysis',
+          description: 'SI-powered body language and speech pattern analysis',
           isPremium: true,
           category: 'ai'
         },
@@ -540,7 +540,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
         {
           id: 'swot-engine',
           name: 'Advanced SWOT Engine',
-          description: 'AI-powered analysis of strengths, weaknesses, opportunities, threats',
+          description: 'SI-powered analysis of strengths, weaknesses, opportunities, threats',
           isPremium: false,
           category: 'ai'
         },
@@ -865,7 +865,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
                 </Badge>
               </div>
               <DialogDescription className="text-xs text-slate-500 dark:text-slate-400 leading-snug font-normal">
-                Powered by TalentXcel AI — Unlock actionable insights designed to advance your career trajectory with {tool.name}.
+                Powered by TalentXcel SI — Unlock actionable insights designed to advance your career trajectory with {tool.name}.
               </DialogDescription>
             </div>
           </div>

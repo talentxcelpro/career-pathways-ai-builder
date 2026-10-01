@@ -82,13 +82,13 @@ export const EnhancedCommentsSection: React.FC<EnhancedCommentsSectionProps> = (
     enabled: isOpen
   });
 
-  // Generate 1-click TalentXcel AI Reply
+  // Generate 1-click TalentXcel SI Reply
   const handleGenerateTalentXcelReply = async (replyType: string) => {
     setIsGeneratingReply(true);
     try {
       const res = await generateGeminiSmartReply(postData?.content || 'Career update post', replyType);
       setNewComment(res.reply);
-      toast.success('TalentXcel AI generated smart comment!');
+      toast.success('TalentXcel SI generated smart comment!');
     } catch (err) {
       toast.error('Could not generate AI comment');
     } finally {
@@ -159,11 +159,11 @@ export const EnhancedCommentsSection: React.FC<EnhancedCommentsSectionProps> = (
   return (
     <div className="space-y-4 pt-2">
       
-      {/* 🪄 1-Click TalentXcel AI Smart Reply Pills */}
+      {/* 🪄 1-Click TalentXcel SI Smart Reply Pills */}
       <div className="flex flex-wrap items-center gap-1.5 p-2 rounded-2xl bg-purple-500/5 border border-purple-200/60 dark:border-purple-950">
         <span className="text-[11px] font-extrabold text-purple-700 dark:text-purple-300 flex items-center gap-1 shrink-0">
           <Sparkles className="h-3 w-3 text-purple-600" />
-          TalentXcel AI Quick Reply:
+          TalentXcel SI Quick Reply:
         </span>
 
         <button

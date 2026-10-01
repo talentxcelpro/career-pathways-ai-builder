@@ -143,7 +143,7 @@ export default function SocialHub() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Sparkles className="w-5 h-5" />
-                Career AI Assistant
+                Career SI Assistant
               </CardTitle>
               <p className="text-muted-foreground">
                 Get personalized career advice, interview preparation, and skill recommendations from our AI assistant.
@@ -152,7 +152,7 @@ export default function SocialHub() {
             <CardContent>
               <div className="text-center py-8">
                 <Bot className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">AI Assistant Available</h3>
+                <h3 className="text-lg font-semibold mb-2">SI Assistant Available</h3>
                 <p className="text-muted-foreground mb-4">
                   Click the assistant icon in the bottom right corner to start chatting with your AI career coach.
                 </p>

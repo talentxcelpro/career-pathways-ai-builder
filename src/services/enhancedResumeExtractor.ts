@@ -79,7 +79,7 @@ interface ExtractedContent {
 
 export class EnhancedResumeExtractor {
   private async callAIExtraction(text: string, fileName: string): Promise<ExtractedContent> {
-    console.log('Using AI-powered extraction for:', fileName);
+    console.log('Using SI-powered extraction for:', fileName);
     
     try {
       const { supabase } = await import("@/integrations/supabase/client");

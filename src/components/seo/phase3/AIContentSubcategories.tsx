@@ -31,7 +31,7 @@ const AIContentSubcategories = () => {
       id: 'meta-optimization',
       title: 'Meta Tag Optimization',
       icon: Tags,
-      description: 'AI-powered meta titles and descriptions',
+      description: 'SI-powered meta titles and descriptions',
       status: 'active'
     },
     {

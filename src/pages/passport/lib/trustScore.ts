@@ -76,7 +76,7 @@ export function computeTrustScore(input: TrustInput): TrustResult {
   // Projects / portfolio
   const projectsScore = clamp(c.projects * 25);
 
-  // AI Score (from profile / external)
+  // TalentScore (from profile / external)
   const aiRaw =
     input.aiScore ??
     (typeof p.profile_score === "number" ? p.profile_score : null) ??
@@ -160,7 +160,7 @@ export function computeTrustScore(input: TrustInput): TrustResult {
     },
     {
       key: "ai",
-      label: "AI Score",
+      label: "TalentScore",
       score: aiScore,
       weight: 10,
       status: aiScore >= 80 ? "verified" : aiScore > 0 ? "partial" : "pending",

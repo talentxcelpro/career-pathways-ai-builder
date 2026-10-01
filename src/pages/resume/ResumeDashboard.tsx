@@ -270,7 +270,7 @@ const ResumeDashboard = () => {
                 <CardContent className="p-12 text-center">
                   <FileText className="w-16 h-16 mx-auto mb-4 text-gray-400" />
                   <h3 className="text-lg font-semibold mb-2">No resumes yet</h3>
-                  <p className="text-gray-600 mb-4">Create your first professional resume with our AI-powered builder</p>
+                  <p className="text-gray-600 mb-4">Create your first professional resume with our SI-powered builder</p>
                   <Button onClick={createNewResume}>
                     <Plus className="w-4 h-4 mr-2" />
                     Create Your First Resume
@@ -339,12 +339,12 @@ const ResumeDashboard = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Sparkles className="w-5 h-5" />
-                    AI Resume Enhancer
+                    SI Resume Enhancer
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-gray-600 mb-4">
-                    Improve your resume content with AI-powered suggestions
+                    Improve your resume content with SI-powered suggestions
                   </p>
                   <Button className="w-full">
                     Enhance Resume

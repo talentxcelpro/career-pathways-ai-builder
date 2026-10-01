@@ -12,6 +12,7 @@ import { Eye, EyeOff, Mail, Lock, User, Loader2, Check, Shield, Zap, Users, Targ
 import { SocialLogin } from './SocialLogin';
 import { generatePersonProfileSlug, ensureUserProfileSlug } from '@/utils/userProfileSlug';
 import { PLATFORM_METRICS } from '@/config/platformMetrics';
+import { resolvePostAuthDestination } from '@/utils/intentRouting';
 
 // Restored full register form functionality with Recruiter OS support
 export const MinimalRegisterForm = () => {
@@ -103,17 +104,18 @@ export const MinimalRegisterForm = () => {
           return;
         }
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const redirectParam = urlParams.get('redirect') || urlParams.get('returnUrl');
+        const destination = resolvePostAuthDestination({
+          searchParams,
+          role: userRole,
+          userMetadata: { role: userRole }
+        });
         
         if (accountType === 'employer') {
           toast.success('Recruiter account created! Welcome to Recruiter OS 🎉');
-          navigate(redirectParam ? decodeURIComponent(redirectParam) : '/dashboard?view=role');
         } else {
-          const targetUrl = redirectParam ? decodeURIComponent(redirectParam) : '/network';
           toast.success('Account created successfully! 🎉');
-          navigate(targetUrl);
         }
+        navigate(destination);
       }
     } catch (error: any) {
       toast.error('An unexpected error occurred');

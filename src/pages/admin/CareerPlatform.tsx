@@ -61,7 +61,7 @@ const CareerPlatform = () => {
     queryFn: async () => {
       const features = [
         { name: 'Job Search', usage: platformStats?.totalApplications || 0, total: platformStats?.totalUsers || 1 },
-        { name: 'AI Resume Builder', usage: platformStats?.aiOperations || 0, total: platformStats?.totalUsers || 1 },
+        { name: 'SI Resume Builder', usage: platformStats?.aiOperations || 0, total: platformStats?.totalUsers || 1 },
         { name: 'Professional Network', usage: platformStats?.networkConnections || 0, total: platformStats?.totalUsers || 1 },
         { name: 'Career Insights', usage: Math.floor((platformStats?.totalUsers || 0) * 0.3), total: platformStats?.totalUsers || 1 }
       ];
@@ -115,7 +115,7 @@ const CareerPlatform = () => {
             Career Platform Overview
           </h1>
           <p className="text-muted-foreground">
-            Complete AI-powered career development ecosystem
+            Complete SI-powered career development ecosystem
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -168,7 +168,7 @@ const CareerPlatform = () => {
             <div className="text-2xl font-bold">{stats.aiOperations.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">
               <Zap className="h-3 w-3 inline mr-1" />
-              AI-powered interactions
+              SI-powered interactions
             </p>
           </CardContent>
         </Card>
@@ -266,7 +266,7 @@ const CareerPlatform = () => {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {[
               { name: 'Job Portal', status: 'operational', uptime: 99.9, users: stats.totalUsers },
-              { name: 'AI Resume Builder', status: 'operational', uptime: 99.5, users: Math.floor(stats.totalUsers * 0.6) },
+              { name: 'SI Resume Builder', status: 'operational', uptime: 99.5, users: Math.floor(stats.totalUsers * 0.6) },
               { name: 'Professional Network', status: 'operational', uptime: 99.8, users: stats.networkConnections },
               { name: 'Career Insights', status: 'operational', uptime: 98.9, users: Math.floor(stats.totalUsers * 0.3) },
               { name: 'Learning Platform', status: 'maintenance', uptime: 95.0, users: Math.floor(stats.totalUsers * 0.2) },

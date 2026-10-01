@@ -33,15 +33,15 @@ const ReferAndEarn: React.FC = () => {
   const { triggerHaptic } = useHapticFeedback();
 
   useEnhancedSEO({
-    title: 'Refer TalentXcel AI – Earn Free Pro Access, Tools & Priority Support',
-    description: 'Invite friends to TalentXcel AI and unlock exclusive benefits like free Pro upgrades, advanced career tools, unlimited access, and AI-powered features. Share your referral link and earn big!',
-    keywords: ['AI career tools', 'resume builder', 'job applications', 'freelancer services', 'career support', 'SEO resume', 'referral rewards', 'pro membership', 'professional growth platform', 'TalentXcel AI'],
+    title: 'Refer TalentXcel SI – Earn Free Pro Access, Tools & Priority Support',
+    description: 'Invite friends to TalentXcel SI and unlock exclusive benefits like free Pro upgrades, advanced career tools, unlimited access, and SI-powered features. Share your referral link and earn big!',
+    keywords: ['AI career tools', 'resume builder', 'job applications', 'freelancer services', 'career support', 'SEO resume', 'referral rewards', 'pro membership', 'professional growth platform', 'TalentXcel SI'],
     type: 'website',
     structuredData: JSON.stringify({
       "@context": "https://schema.org/",
       "@type": "OfferCatalog",
-      "name": "TalentXcel AI Referral Program",
-      "description": "Refer friends and unlock exclusive benefits like free Pro upgrades, advanced career tools, and AI-powered features.",
+      "name": "TalentXcel SI Referral Program",
+      "description": "Refer friends and unlock exclusive benefits like free Pro upgrades, advanced career tools, and SI-powered features.",
       "itemListElement": [
         {
           "@type": "Offer",
@@ -258,7 +258,7 @@ const ReferAndEarn: React.FC = () => {
               </h2>
             </div>
             <p className="text-sm text-muted-foreground max-w-xl mx-auto">
-              Every friend you refer unlocks premium features and AI-powered career tools.
+              Every friend you refer unlocks premium features and SI-powered career tools.
             </p>
           </div>
 
@@ -392,7 +392,7 @@ const ReferAndEarn: React.FC = () => {
         <div className="max-w-4xl mx-auto">
           <p>
             Keywords: AI career tools, resume builder, job applications, freelancer services, 
-            career support, SEO resume, referral rewards, pro membership, professional growth platform, TalentXcel AI
+            career support, SEO resume, referral rewards, pro membership, professional growth platform, TalentXcel SI
           </p>
         </div>
       </section>

@@ -122,7 +122,7 @@ const JobsSimplified = () => {
     <>
       <Helmet>
         <title>Jobs | Find Your Dream Career | TalentXcel</title>
-        <meta name="description" content="Discover thousands of job opportunities with AI-powered matching and intelligent career guidance. Find remote jobs, tech roles, and career growth opportunities." />
+        <meta name="description" content="Discover thousands of job opportunities with SI-powered matching and intelligent career guidance. Find remote jobs, tech roles, and career growth opportunities." />
         <meta name="keywords" content="jobs, careers, remote jobs, tech jobs, job search, career opportunities, employment, hiring, job listings" />
       </Helmet>
 

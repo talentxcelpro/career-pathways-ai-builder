@@ -96,7 +96,7 @@ export const AIResumeAnalyzer: React.FC<AIResumeAnalyzerProps> = ({
     <div className="space-y-6">
       {/* Header */}
       <div className="text-center">
-        <h2 className="text-2xl font-bold mb-2">AI Resume Analyzer</h2>
+        <h2 className="text-2xl font-bold mb-2">SI Resume Analyzer</h2>
         <p className="text-muted-foreground">
           Get intelligent insights and optimization suggestions for your resume
         </p>

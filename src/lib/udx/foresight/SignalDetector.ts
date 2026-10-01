@@ -79,7 +79,7 @@ export class SignalDetector {
       sampleSize: 450,
       epistemicStatus: 'DETECTED',
       detectedAt: new Date().toISOString(),
-      source: 'AI Assistant Intent Tracker',
+      source: 'SI Assistant Intent Tracker',
       evidenceId: 'EVID-CANDE-EXPERIENCE-SURVEY'
     });
 

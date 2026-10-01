@@ -116,7 +116,7 @@ export const CareerHub = () => {
             <h2 className="text-xl font-bold text-foreground">AI Spotlight</h2>
             <Badge variant="secondary" className="ml-auto">Top 3 Trending</Badge>
           </div>
-          <p className="text-muted-foreground mb-4">AI-powered trending articles based on community engagement</p>
+          <p className="text-muted-foreground mb-4">SI-powered trending articles based on community engagement</p>
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
               <div key={i} className="p-3 bg-background/60 rounded-lg border border-border/50">

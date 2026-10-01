@@ -54,7 +54,7 @@ const TalentXcelImprovementRoadmap = () => {
           status: 'Can Implement',
           complexity: 'Medium',
           impact: 'High',
-          description: 'AI-powered resume optimization with real-time suggestions, ATS compatibility checks, and industry-specific templates.'
+          description: 'SI-powered resume optimization with real-time suggestions, ATS compatibility checks, and industry-specific templates.'
         },
         {
           feature: 'Intelligent Job Matching Engine',
@@ -64,7 +64,7 @@ const TalentXcelImprovementRoadmap = () => {
           description: 'ML-based job recommendations using skills analysis, career trajectory prediction, and preference learning.'
         },
         {
-          feature: 'AI Career Coach & Learning Paths',
+          feature: 'SI Career Coach & Learning Paths',
           status: 'Can Implement',
           complexity: 'High',
           impact: 'Very High',
@@ -75,7 +75,7 @@ const TalentXcelImprovementRoadmap = () => {
           status: 'Can Implement',
           complexity: 'High',
           impact: 'High',
-          description: 'AI-powered interview simulation, real-time feedback, and performance analytics.'
+          description: 'SI-powered interview simulation, real-time feedback, and performance analytics.'
         },
         {
           feature: 'Smart Assessment Engine',

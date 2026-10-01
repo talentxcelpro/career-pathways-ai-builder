@@ -216,10 +216,10 @@ const ResumeAnalysis = () => {
             <div className="text-center mb-8">
               <div className="flex items-center justify-center gap-3 mb-4">
                 <FileText className="h-8 w-8 text-primary" />
-                <h1 className="text-3xl font-bold text-gray-900">AI Resume Analysis</h1>
+                <h1 className="text-3xl font-bold text-gray-900">SI Resume Analysis</h1>
               </div>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Get comprehensive insights about your resume with AI-powered analysis. 
+                Get comprehensive insights about your resume with SI-powered analysis. 
                 Improve your chances of landing your dream job.
               </p>
             </div>
@@ -351,7 +351,7 @@ const ResumeAnalysis = () => {
                 Your Resume Analysis Results
               </h1>
               <p className="text-gray-600">
-                Comprehensive AI-powered insights to optimize your resume
+                Comprehensive SI-powered insights to optimize your resume
               </p>
             </div>
 

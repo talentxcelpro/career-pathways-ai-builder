@@ -25,7 +25,7 @@ export const AIContentAssistant: React.FC = () => {
             <FileText className="h-8 w-8 mx-auto mb-3 text-primary" />
             <h3 className="font-semibold mb-2">Generate Post</h3>
             <p className="text-sm text-muted-foreground mb-4">
-              AI-powered professional posts
+              SI-powered professional posts
             </p>
             <Button 
               onClick={() => generateContent({ type: 'post' })}

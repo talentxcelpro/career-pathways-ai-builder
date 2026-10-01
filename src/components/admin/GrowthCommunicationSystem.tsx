@@ -427,7 +427,7 @@ export const GrowthCommunicationSystem: React.FC = () => {
                 Smart Growth Automation
               </CardTitle>
               <CardDescription>
-                AI-powered automation rules for maximum growth impact
+                SI-powered automation rules for maximum growth impact
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">

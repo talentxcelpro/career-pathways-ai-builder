@@ -128,7 +128,7 @@ export default function DecisionQueue() {
                   <p className="mt-1 text-sm text-muted-foreground">{d.summary}</p>
                 )}
                 <p className="mt-2 text-xs text-muted-foreground">
-                  by {d.created_by_agent ?? "AI Agent"} •{" "}
+                  by {d.created_by_agent ?? "SI Agent"} •{" "}
                   {new Date(d.created_at).toLocaleString()}
                 </p>
               </div>

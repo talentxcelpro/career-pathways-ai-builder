@@ -22,7 +22,7 @@ export const TALENTXCEL_PRODUCT_ECOSYSTEM: Record<ProductSurface, ProductEcosyst
   RESUME_ATS: {
     surface: 'RESUME_ATS',
     name: 'ATS Resume Scanner & Studio',
-    description: 'Free AI-powered resume scanner and ATS formatting optimization.',
+    description: 'Free SI-powered resume scanner and ATS formatting optimization.',
     primary_url: 'https://talentxcel.in/tools/ats-optimizer',
     default_cta_strength: 'CONTEXTUAL',
     cta_options: {

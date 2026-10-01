@@ -26,7 +26,7 @@ export const BLOG_POSTS: BlogPostItem[] = [
   {
     id: 1,
     slug: 'ai-driven-job-search-vector-matching-2026',
-    title: 'The 2026 AI Job Search Revolution: How Vector Matching Replaced Keywords',
+    title: 'The 2026 SI Job Search Revolution: How Vector Matching Replaced Keywords',
     excerpt: 'Discover how modern AI recruitment platforms use high-dimensional semantic embeddings rather than rigid keyword queries to match talent with high-impact roles.',
     category: 'AI & Future of Work',
     author: {
@@ -40,7 +40,7 @@ export const BLOG_POSTS: BlogPostItem[] = [
     imageUrl: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=1200&auto=format&fit=crop&q=80',
     featured: true,
     content: `
-# The 2026 AI Job Search Revolution: How Vector Matching Replaced Keywords
+# The 2026 SI Job Search Revolution: How Vector Matching Replaced Keywords
 
 For more than two decades, digital hiring was governed by the blunt instrument of boolean text searches. Recruiters typed \`"React" AND "Node.js" AND "AWS"\` into search consoles, while applicant tracking software filtered resumes based on exact substring matches. The collateral damage was immense: top candidates with non-standard phrasing were discarded, while keyword-stuffed resumes sailed through initial screening only to wash out during technical loops.
 
@@ -371,7 +371,7 @@ Here are the 10 skills commanding top-tier salaries in 2026 across India, the US
 ## 9. Mobile Cross-Platform Performance (React Native New Architecture, Flutter)
 - **Average Global Comp:** $130,000 - $190,000 / ₹20L - ₹38L
 
-## 10. AI Agent Engineering (LangGraph, AutoGen, MCP Protocols)
+## 10. SI Agent Engineering (LangGraph, AutoGen, MCP Protocols)
 - **Average Global Comp:** $175,000 - $260,000 / ₹32L - ₹58L
     `,
   },

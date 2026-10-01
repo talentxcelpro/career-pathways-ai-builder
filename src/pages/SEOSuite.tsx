@@ -232,7 +232,7 @@ const SEOSuite = () => {
     <div className="container mx-auto py-8 space-y-8">
       <Helmet>
         <title>TalentXcel SEO Suite - AI-Powered SEO Platform</title>
-        <meta name="description" content="Complete AI-powered SEO platform with keyword research, site audits, rank tracking, and competitor analysis" />
+        <meta name="description" content="Complete SI-powered SEO platform with keyword research, site audits, rank tracking, and competitor analysis" />
       </Helmet>
 
       {/* Header */}
@@ -241,7 +241,7 @@ const SEOSuite = () => {
           <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
             TalentXcel SEO Suite
           </h1>
-          <p className="text-muted-foreground mt-2">AI-powered SEO platform that outperforms industry leaders</p>
+          <p className="text-muted-foreground mt-2">SI-powered SEO platform that outperforms industry leaders</p>
         </div>
         <Badge variant="secondary" className="bg-gradient-to-r from-green-500 to-emerald-500 text-white">
           <Zap className="h-3 w-3 mr-1" />
@@ -256,7 +256,7 @@ const SEOSuite = () => {
             <Brain className="h-5 w-5 text-primary" />
             Quick SEO Analysis
           </CardTitle>
-          <CardDescription>Get instant AI-powered SEO insights for any website</CardDescription>
+          <CardDescription>Get instant SI-powered SEO insights for any website</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex gap-4 items-end">

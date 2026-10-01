@@ -64,7 +64,7 @@ export const ProfileCompletionPrompt: React.FC<ProfileCompletionPromptProps> = (
 
         <div className="space-y-3">
           <p className="text-sm text-orange-700">
-            Complete your profile to get better AI-powered connection recommendations:
+            Complete your profile to get better SI-powered connection recommendations:
           </p>
           
           <div className="space-y-2">

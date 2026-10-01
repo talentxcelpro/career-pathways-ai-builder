@@ -45,10 +45,10 @@ const S = ({ C }: { C: React.LazyExoticComponent<any> }) => (
   <React.Suspense fallback={null}><C /></React.Suspense>
 );
 
-// AI Agent routes
+// SI Agent routes
 export const aiAgentRoutes = [
   {
-    title: "AI Career Agent",
+    title: "SI Career Agent",
     to: "/ai-agent",
     icon: "brain",
     page: <S C={AIAgentDashboard} />,

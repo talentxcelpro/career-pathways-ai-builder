@@ -251,7 +251,7 @@ export function AIRecommendationEngine({
             <div>
               <CardTitle className="flex items-center text-purple-800">
                 <Brain className="w-6 h-6 mr-2" />
-                AI Career Assistant
+                TalentXcel SI Career Assistant
               </CardTitle>
               <CardDescription className="text-purple-700">
                 Personalized insights and recommendations powered by AI
@@ -313,7 +313,7 @@ export function AIRecommendationEngine({
                     <Lightbulb className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
                     <h3 className="text-lg font-medium mb-2">No recommendations yet</h3>
                     <p className="text-muted-foreground mb-4">
-                      Generate AI-powered insights to get personalized career recommendations
+                      Generate SI-powered insights to get personalized career recommendations
                     </p>
                     <Button onClick={() => generateRecommendations.mutate()}>
                       <Brain className="w-4 h-4 mr-2" />

@@ -253,7 +253,7 @@ export function SmartOneClickApply() {
             Smart One-Click Apply
           </h2>
           <p className="text-muted-foreground">
-            AI-powered job applications with automatic resume and cover letter optimization
+            SI-powered job applications with automatic resume and cover letter optimization
           </p>
         </div>
         

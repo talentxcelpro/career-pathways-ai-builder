@@ -118,7 +118,7 @@ export const CampaignDialog = ({ open, onOpenChange }: CampaignDialogProps) => {
   };
 
   const modules = [
-    'Authentication', 'Profile', 'Resume Builder', 'Job Search', 'AI Career Coach',
+    'Authentication', 'Profile', 'Resume Builder', 'Job Search', 'SI Career Coach',
     'Learning', 'Networking', 'Collaboration', 'Analytics', 'Company Portal',
     'Content', 'Gamification', 'System'
   ];

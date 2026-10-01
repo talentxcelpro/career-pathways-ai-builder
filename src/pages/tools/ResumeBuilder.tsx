@@ -229,7 +229,7 @@ const ResumeBuilder = () => {
               Back to Tools
             </Button>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">AI Resume Builder</h1>
+              <h1 className="text-3xl font-bold text-gray-900">SI Resume Builder</h1>
               <p className="text-gray-600">Create professional resumes with AI assistance</p>
             </div>
           </div>

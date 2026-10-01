@@ -32,7 +32,7 @@ const SmartPageBuilder = () => {
             type: 'hero',
             content: {
               title: 'Welcome to TalentXcel',
-              subtitle: 'Build your career with AI-powered tools',
+              subtitle: 'Build your career with SI-powered tools',
               cta: 'Get Started',
               background: 'gradient'
             }
@@ -372,7 +372,7 @@ const SmartPageBuilder = () => {
                     {/* Hero Section Example */}
                     <div className="text-center py-12 border-b border-dashed">
                       <h1 className="text-3xl font-bold mb-4">Welcome to TalentXcel</h1>
-                      <p className="text-gray-600 mb-6">Build your career with AI-powered tools</p>
+                      <p className="text-gray-600 mb-6">Build your career with SI-powered tools</p>
                       <Button>Get Started</Button>
                     </div>
                     
@@ -382,7 +382,7 @@ const SmartPageBuilder = () => {
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="text-center">
                           <div className="w-12 h-12 bg-primary rounded-lg mx-auto mb-4"></div>
-                          <h3 className="font-medium">AI Resume Builder</h3>
+                          <h3 className="font-medium">SI Resume Builder</h3>
                           <p className="text-sm text-gray-600">Create professional resumes</p>
                         </div>
                         <div className="text-center">

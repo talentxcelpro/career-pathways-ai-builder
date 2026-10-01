@@ -20,7 +20,7 @@ export const growthRoutes = [
     to: "/growth/content-studio",
     icon: <Star className="h-4 w-4" />,
     page: <Suspense fallback={null}><ContentStudioPage /></Suspense>,
-    description: "AI-powered content creation and scheduling",
+    description: "SI-powered content creation and scheduling",
     isPublic: true,
   },
   {

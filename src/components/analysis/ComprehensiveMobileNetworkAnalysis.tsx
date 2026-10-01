@@ -159,7 +159,7 @@ const ComprehensiveMobileNetworkAnalysis: React.FC = () => {
         platform: 'LinkedIn Mobile',
         feature: 'Smart Connection Suggestions',
         status: 'missing',
-        description: 'AI-powered suggestions based on profile, interests, and network',
+        description: 'SI-powered suggestions based on profile, interests, and network',
         priority: 'high',
         implementation_complexity: 'hard'
       },
@@ -641,7 +641,7 @@ const ComprehensiveMobileNetworkAnalysis: React.FC = () => {
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-yellow-600" />
-                      <span>AI-powered content suggestions</span>
+                      <span>SI-powered content suggestions</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-yellow-600" />

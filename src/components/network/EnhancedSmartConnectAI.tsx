@@ -46,7 +46,7 @@ export const EnhancedSmartConnectAI: React.FC = () => {
     try {
       const res = await generateGeminiSmartConnect(currentUserProfile, suggestion);
       setPitchMessages(prev => ({ ...prev, [suggestion.id]: res.message }));
-      toast.success("TalentXcel AI generated a personalized connection pitch!");
+      toast.success("TalentXcel SI generated a personalized connection pitch!");
     } catch (err) {
       toast.error("Failed to generate AI pitch");
     } finally {
@@ -94,7 +94,7 @@ export const EnhancedSmartConnectAI: React.FC = () => {
   return (
     <div className="space-y-6">
       
-      {/* TalentXcel AI Header Card */}
+      {/* TalentXcel SI Header Card */}
       <Card className="border border-purple-200 dark:border-purple-900 bg-gradient-to-r from-purple-500/10 via-indigo-500/10 to-blue-500/10 rounded-3xl p-5 sm:p-6 shadow-xs">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
@@ -107,10 +107,10 @@ export const EnhancedSmartConnectAI: React.FC = () => {
             <div className="space-y-0.5">
               <h2 className="text-base sm:text-lg font-extrabold text-foreground flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-purple-600 shrink-0" />
-                {currentUserProfile?.full_name ? `AI Matchmaker for ${currentUserProfile.full_name}` : "TalentXcel AI Smart Connect & Matchmaker"}
+                {currentUserProfile?.full_name ? `AI Matchmaker for ${currentUserProfile.full_name}` : "TalentXcel SI Smart Connect & Matchmaker"}
               </h2>
               <p className="text-xs text-muted-foreground font-medium">
-                {currentUserProfile?.title ? `Personalized for ${currentUserProfile.title}` : "AI-driven connection recommendations and personalized pitch messages powered by TalentXcel AI."}
+                {currentUserProfile?.title ? `Personalized for ${currentUserProfile.title}` : "AI-driven connection recommendations and personalized pitch messages powered by TalentXcel SI."}
               </p>
             </div>
           </div>
@@ -239,11 +239,11 @@ export const EnhancedSmartConnectAI: React.FC = () => {
                 </div>
               </div>
 
-              {/* TalentXcel AI Generated Pitch Message Box */}
+              {/* TalentXcel SI Generated Pitch Message Box */}
               {pitchMessages[suggestion.id] && (
                 <div className="p-3 rounded-2xl bg-purple-50/80 dark:bg-purple-950/40 border border-purple-200/80 dark:border-purple-900/60 text-xs space-y-2">
                   <div className="flex items-center justify-between font-extrabold text-purple-900 dark:text-purple-200">
-                    <span className="flex items-center gap-1"><Sparkles className="h-3.5 w-3.5 text-purple-600" /> TalentXcel AI Personalized Pitch</span>
+                    <span className="flex items-center gap-1"><Sparkles className="h-3.5 w-3.5 text-purple-600" /> TalentXcel SI Personalized Pitch</span>
                     <button 
                       onClick={() => {
                         navigator.clipboard.writeText(pitchMessages[suggestion.id]);

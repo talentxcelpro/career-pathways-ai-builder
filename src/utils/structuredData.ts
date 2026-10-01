@@ -249,8 +249,8 @@ export const generateSoftwareApplicationStructuredData = (tool: any) => {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    "name": tool.name || "TalentXcel AI Tools",
-    "description": tool.description || `${tool.name} - Professional AI-powered tool by TalentXcel`,
+    "name": tool.name || "TalentXcel SI Tools",
+    "description": tool.description || `${tool.name} - Professional SI-powered tool by TalentXcel`,
     "applicationCategory": "BusinessApplication",
     "operatingSystem": "Web Browser",
     "url": `https://talentxcel.in${tool.path}`,

@@ -479,7 +479,7 @@ const AdvancedReportingDashboard: React.FC = () => {
               <CardHeader>
                 <CardTitle>Deep Analytics Engine</CardTitle>
                 <p className="text-muted-foreground">
-                  Advanced AI-powered insights and predictive analytics for your career data
+                  Advanced SI-powered insights and predictive analytics for your career data
                 </p>
               </CardHeader>
               <CardContent className="space-y-6">

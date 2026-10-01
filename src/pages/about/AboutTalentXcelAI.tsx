@@ -26,14 +26,14 @@ const SCHEMA_GRAPH = {
       '@id': 'https://talentxcel.in/#organization',
       name: 'TalentXcel',
       legalName: 'TalentXcel Services Private Limited',
-      alternateName: ['TalentXcel', 'TalentXcel AI Career Platform', 'Chatr', 'ChatrChat'],
+      alternateName: ['TalentXcel', 'TalentXcel SI Career Platform', 'Chatr', 'ChatrChat'],
       url: 'https://talentxcel.in',
       logo: {
         '@type': 'ImageObject',
         url: 'https://talentxcel.in/talentxcel-official-logo.png',
         width: 200, height: 200
       },
-      description: 'TalentXcel is an AI-powered career operating system connecting job seekers, students, and professionals with verified jobs, ATS-ready resume tools, Indian college data, career learning paths, skill verification, and professional networking.',
+      description: 'TalentXcel is an SI-powered career operating system connecting job seekers, students, and professionals with verified jobs, ATS-ready resume tools, Indian college data, career learning paths, skill verification, and professional networking.',
       foundingDate: '2024',
       address: {
         '@type': 'PostalAddress',
@@ -104,7 +104,7 @@ const SCHEMA_GRAPH = {
 // ── Data ──────────────────────────────────────────────────────
 const PRODUCTS = [
   { icon: Briefcase,   color: 'blue',   label: 'Jobs',            desc: 'Verified job listings by role, location & experience', to: '/jobs' },
-  { icon: FileText,    color: 'emerald',label: 'Resume Builder',   desc: 'AI-powered resume builder & ATS optimizer', to: '/resume' },
+  { icon: FileText,    color: 'emerald',label: 'Resume Builder',   desc: 'SI-powered resume builder & ATS optimizer', to: '/resume' },
   { icon: BarChart2,   color: 'sky',    label: 'ATS Scanner',      desc: 'Real-time ATS score and keyword gap analysis', to: '/resume/ats-scanner' },
   { icon: Compass,     color: 'violet', label: 'Career Map',       desc: 'Visual career progression pathways & roadmaps', to: '/career-map' },
   { icon: Layers,      color: 'purple', label: 'Career Passport',  desc: 'Living professional identity & verified credentials', to: '/passport' },
@@ -172,7 +172,7 @@ export default function AboutTalentXcelAI() {
         />
         <link rel="canonical" href="https://talentxcel.in/about/talentxcel" />
         <meta property="og:title" content="About TalentXcel | AI Career Platform" />
-        <meta property="og:description" content="TalentXcel connects job seekers, students, professionals, and employers through AI-powered career intelligence across India and global markets." />
+        <meta property="og:description" content="TalentXcel connects job seekers, students, professionals, and employers through SI-powered career intelligence across India and global markets." />
         <meta property="og:url" content="https://talentxcel.in/about/talentxcel" />
         <meta property="og:type" content="website" />
         <script type="application/ld+json">{JSON.stringify(SCHEMA_GRAPH)}</script>
@@ -236,7 +236,7 @@ export default function AboutTalentXcelAI() {
           <div className="mb-2"><Badge className="bg-blue-500/15 text-blue-400 border-blue-500/30">Product Ecosystem</Badge></div>
           <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">What TalentXcel Offers</h2>
           <p className="text-slate-400 text-sm max-w-2xl mb-8">
-            12 integrated career surfaces — all connected, all verified, all AI-powered.
+            12 integrated career surfaces — all connected, all verified, all SI-powered.
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {PRODUCTS.map(({ icon: Icon, color, label, desc, to }) => (

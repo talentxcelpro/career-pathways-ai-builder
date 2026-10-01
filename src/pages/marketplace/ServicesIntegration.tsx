@@ -275,7 +275,7 @@ const ServicesIntegration = () => {
                 Personalized Recommendations
               </h4>
               <ul className="space-y-2 text-sm text-gray-600">
-                <li>• AI-powered service matching based on your skills and goals</li>
+                <li>• SI-powered service matching based on your skills and goals</li>
                 <li>• Job performance analysis drives service suggestions</li>
                 <li>• Network-based service discovery through connections</li>
                 <li>• Real-time recommendations as your profile evolves</li>

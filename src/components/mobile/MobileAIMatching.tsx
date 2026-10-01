@@ -121,7 +121,7 @@ export const MobileAIMatching = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Brain className="h-5 w-5 text-primary" />
-          <h2 className="text-lg font-semibold">AI Job Matching</h2>
+          <h2 className="text-lg font-semibold">SI Job Matching</h2>
         </div>
         <Button 
           variant="outline" 

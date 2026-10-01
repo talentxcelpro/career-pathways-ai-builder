@@ -68,7 +68,7 @@ const AICareerAssistant = () => {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
           <Brain className="h-8 w-8 text-blue-600" />
-          AI Career Assistant
+          TalentXcel SI Career Assistant
         </h1>
         <p className="text-gray-600 mt-2">
           Get personalized career guidance and strategic advice for your professional journey using AI
@@ -246,7 +246,7 @@ const AICareerAssistant = () => {
                   Ready for Career Guidance
                 </h3>
                 <p className="text-gray-600">
-                  Fill in your career profile and get personalized AI-powered guidance for your professional journey
+                  Fill in your career profile and get personalized SI-powered guidance for your professional journey
                 </p>
               </CardContent>
             </Card>

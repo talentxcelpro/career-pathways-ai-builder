@@ -69,7 +69,7 @@ const InstantNetworkingSystem: React.FC = () => {
         <title>Instant Networking System - Real-Time Professional Connections | TalentXcel</title>
         <meta 
           name="description" 
-          content="Connect with professionals instantly using AI-powered matching, real-time chat, and smart networking recommendations for accelerated career growth." 
+          content="Connect with professionals instantly using SI-powered matching, real-time chat, and smart networking recommendations for accelerated career growth." 
         />
         <meta name="robots" content="noindex" />
       </Helmet>
@@ -87,7 +87,7 @@ const InstantNetworkingSystem: React.FC = () => {
                 Instant Networking System
               </h1>
               <p className="text-xl text-muted-foreground mt-2">
-                AI-powered professional connections in real-time
+                SI-powered professional connections in real-time
               </p>
             </div>
 

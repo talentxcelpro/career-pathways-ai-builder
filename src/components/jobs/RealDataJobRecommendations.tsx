@@ -262,7 +262,7 @@ export const RealDataJobRecommendations = () => {
             Getting your recommendations ready...
           </h3>
           <p className="text-gray-600 mb-4">
-            Complete your profile to get personalized AI-powered job matches
+            Complete your profile to get personalized SI-powered job matches
           </p>
           <Button className="bg-gradient-to-r from-purple-500 to-blue-500">
             <Brain className="h-4 w-4 mr-2" />

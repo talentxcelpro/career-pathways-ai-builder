@@ -735,7 +735,7 @@ export class CompetitiveWorldModel {
         },
         observationCount: 110,
         inventoryCoverage: {
-          value: 'AI Agent Answer Summaries',
+          value: 'SI Agent Answer Summaries',
           status: 'OBSERVED',
           confidence: 'MEDIUM',
           confidenceScore: 0.80,

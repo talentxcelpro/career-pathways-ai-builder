@@ -117,7 +117,7 @@ const SmartFeedAlgorithmComponent: React.FC<SmartFeedAlgorithmProps> = ({
     staleTime: 10 * 60 * 1000, // Cache for 10 minutes
   });
 
-  // Smart feed algorithm with AI-powered ranking
+  // Smart feed algorithm with SI-powered ranking
   const { data: smartPosts = [], isLoading, error, refetch } = useQuery({
     queryKey: ['smart-feed', userId, feedType, connectionIds, userPreferences],
     queryFn: async () => {
@@ -238,7 +238,7 @@ const SmartFeedAlgorithmComponent: React.FC<SmartFeedAlgorithmProps> = ({
           return {
             icon: <Zap className="h-4 w-4" />,
             label: 'Smart Feed',
-            description: 'AI-powered mix of relevance and engagement'
+            description: 'SI-powered mix of relevance and engagement'
           };
       }
     };

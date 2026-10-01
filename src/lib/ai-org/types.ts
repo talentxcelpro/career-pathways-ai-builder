@@ -1,5 +1,5 @@
 // src/lib/ai-org/types.ts
-// Authoritative Type System for TalentXcel AI Growth Organization & Control Plane
+// Authoritative Type System for TalentXcel SI Growth Organization & Control Plane
 // Structure: 1 Executive AI CEO + 8 Specialist Department Agents = 9 Total Agents
 
 export type OrganizationLifecycleState = 

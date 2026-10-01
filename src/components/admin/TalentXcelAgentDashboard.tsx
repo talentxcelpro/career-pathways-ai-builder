@@ -433,7 +433,7 @@ export const TalentXcelAgentDashboard: React.FC = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex items-center gap-3">
           <RefreshCw className="h-6 w-6 animate-spin" />
-          <span>Loading TalentXcel AI Agent Operations...</span>
+          <span>Loading TalentXcel SI Agent Operations...</span>
         </div>
       </div>
     );
@@ -446,8 +446,8 @@ export const TalentXcelAgentDashboard: React.FC = () => {
         <div className="px-6 py-4">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-3xl font-bold text-foreground">TalentXcel AI Agent Operations</h1>
-              <p className="text-muted-foreground">24/7 AI-powered platform management & virality optimization</p>
+              <h1 className="text-3xl font-bold text-foreground">TalentXcel SI Agent Operations</h1>
+              <p className="text-muted-foreground">24/7 SI-powered platform management & virality optimization</p>
             </div>
             <div className="flex items-center gap-3">
               <Button
@@ -726,14 +726,14 @@ export const TalentXcelAgentDashboard: React.FC = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Zap className="h-5 w-5" />
-                  How TalentXcel AI Agent Operations Work
+                  How TalentXcel SI Agent Operations Work
                 </CardTitle>
                 <CardDescription>Understanding the 24/7 automated platform management system</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-3">
-                    <h4 className="font-semibold text-sm">🤖 AI Agent Architecture</h4>
+                    <h4 className="font-semibold text-sm">🤖 SI Agent Architecture</h4>
                     <ul className="text-sm space-y-1 text-muted-foreground">
                       <li>• Autonomous agents for each platform module</li>
                       <li>• Real-time task scheduling and execution</li>

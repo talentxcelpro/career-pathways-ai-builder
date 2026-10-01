@@ -300,7 +300,7 @@ export const adminRoutes = [
     isPublic: true,
   },
   {
-    title: "AI Agent Operations",
+    title: "SI Agent Operations",
     to: "/admin/agent-operations",
     icon: <Bot className="h-4 w-4" />,
     page: <Suspense fallback={null}><AgentOperationsPage /></Suspense>,
@@ -377,7 +377,7 @@ export const adminRoutes = [
     isPublic: true,
   },
   {
-    title: "AI Assistant Panel",
+    title: "SI Assistant Panel",
     to: "/admin/ai-assistant",
     icon: <Brain className="h-4 w-4" />,
     page: <Suspense fallback={null}><AIAssistantPanel /></Suspense>,

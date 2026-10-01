@@ -46,7 +46,7 @@ export const Footer = () => {
               </li>
               <li>
                 <Link to="/resume" className="text-background/70 hover:text-background transition-colors text-sm">
-                  AI Resume Builder
+                  SI Resume Builder
                 </Link>
               </li>
               <li>

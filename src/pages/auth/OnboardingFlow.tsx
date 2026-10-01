@@ -190,7 +190,7 @@ export const OnboardingFlow: React.FC = () => {
               {currentStep === 1 && "We'll use this to personalize your experience"}
               {currentStep === 2 && "Help us understand your professional background"}
               {currentStep === 3 && "We'll tailor recommendations based on your objectives"}
-              {currentStep === 4 && "Upload your resume to get AI-powered insights (optional)"}
+              {currentStep === 4 && "Upload your resume to get SI-powered insights (optional)"}
               {currentStep === 5 && "Customize your job search preferences"}
               {currentStep === 6 && "Your personalized dashboard is ready"}
             </CardDescription>

@@ -54,7 +54,7 @@ export const AIJobRecommendations: React.FC<AIJobRecommendationsProps> = ({ clas
       location: 'San Francisco, CA',
       type: 'full-time',
       salary: { min: 140000, max: 180000, currency: 'USD' },
-      description: 'Lead product strategy for our AI-powered platform serving millions of users...',
+      description: 'Lead product strategy for our SI-powered platform serving millions of users...',
       requirements: ['5+ years PM experience', 'AI/ML product experience', 'Technical background'],
       skills: ['Product Strategy', 'AI/ML', 'Leadership', 'Analytics', 'Agile'],
       posted: '2 days ago',

@@ -262,7 +262,7 @@ export const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                     Smart Suggestions
                   </CardTitle>
                   <CardDescription>
-                    {suggestions.length} AI-powered improvement recommendations
+                    {suggestions.length} SI-powered improvement recommendations
                   </CardDescription>
                 </div>
                 <Button

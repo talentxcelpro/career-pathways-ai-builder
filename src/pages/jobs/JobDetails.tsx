@@ -337,7 +337,7 @@ export default function JobDetails() {
               <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 space-y-3">
                 <h3 className="text-base font-bold text-white">About the Employer</h3>
                 <p className="text-xs text-slate-300 leading-relaxed">
-                  {companyName} is an AI-powered talent and recruitment organization providing strategic staffing, technology solutions, and career intelligence.
+                  {companyName} is an SI-powered talent and recruitment organization providing strategic staffing, technology solutions, and career intelligence.
                 </p>
                 <Link to={`/company/${companySlug}`}>
                   <Button size="sm" variant="ghost" className="text-blue-400 hover:text-blue-300 text-xs p-0 h-auto">

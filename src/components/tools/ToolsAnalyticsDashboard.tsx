@@ -144,7 +144,7 @@ const ToolsAnalyticsDashboard = () => {
       'cover-letter': 'Cover Letter',
       'salary-analyzer': 'Salary Analyzer',
       'interview-prep': 'Interview Prep',
-      'ai-assistant': 'AI Assistant',
+      'ai-assistant': 'SI Assistant',
       'profile-score': 'Profile Score',
       'market-insights': 'Market Insights'
     };

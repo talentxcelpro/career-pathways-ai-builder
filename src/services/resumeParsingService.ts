@@ -405,7 +405,7 @@ export const parseResumeFile = async (file: File): Promise<ParsedResume> => {
         return parseFallback(text);
       }
 
-      console.log('✅ AI Resume parsed successfully:', { 
+      console.log('✅ SI Resume parsed successfully:', { 
         name: aiResume.name, 
         email: aiResume.email,
         experienceCount: aiResume.work_experience?.length || 0 

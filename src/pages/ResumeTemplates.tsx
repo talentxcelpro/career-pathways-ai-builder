@@ -210,11 +210,11 @@ const ResumeTemplates = () => {
             Can't Find the Perfect Template?
           </h3>
           <p className="text-xl mb-8 opacity-90">
-            Our AI Resume Builder can create a custom template based on your specific needs and industry.
+            Our SI Resume Builder can create a custom template based on your specific needs and industry.
           </p>
           <AuthDialog>
             <Button size="lg" variant="secondary">
-              Try AI Resume Builder
+              Try SI Resume Builder
             </Button>
           </AuthDialog>
         </div>

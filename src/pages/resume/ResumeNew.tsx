@@ -33,7 +33,7 @@ const ResumeNew: React.FC = () => {
       href: "/resume-builder/upload-enhanced"
     },
     {
-      title: "AI Resume Builder",
+      title: "SI Resume Builder",
       description: "Build your resume from scratch with AI assistance and smart suggestions",
       badge: "🔥 Most Popular",
       badgeColor: "bg-orange-500",
@@ -61,7 +61,7 @@ const ResumeNew: React.FC = () => {
     },
     {
       title: "Interview Prep",
-      description: "Practice with AI-powered mock interviews tailored to your industry",
+      description: "Practice with SI-powered mock interviews tailored to your industry",
       badge: "AI Trainer",
       badgeColor: "bg-cyan-500",
       stat: "Mock Interviews",
@@ -97,7 +97,7 @@ const ResumeNew: React.FC = () => {
     },
     {
       title: "Job Matcher AI",
-      description: "Get AI-powered job recommendations based on your profile and preferences",
+      description: "Get SI-powered job recommendations based on your profile and preferences",
       badge: "Smart Match",
       badgeColor: "bg-violet-500",
       stat: "Perfect Matches",
@@ -115,7 +115,7 @@ const ResumeNew: React.FC = () => {
     },
     {
       title: "Networking Assistant",
-      description: "Build professional relationships with AI-powered networking strategies",
+      description: "Build professional relationships with SI-powered networking strategies",
       badge: "Smart Connect",
       badgeColor: "bg-pink-500",
       stat: "Network Growth",
@@ -233,7 +233,7 @@ const ResumeNew: React.FC = () => {
               Complete Career Toolkit
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Everything you need to accelerate your career journey with AI-powered tools
+              Everything you need to accelerate your career journey with SI-powered tools
             </p>
           </div>
 

@@ -46,7 +46,7 @@ export const ModuleOnboarding: React.FC<ModuleOnboardingProps> = ({
     {
       id: 'jobs',
       name: 'Job Search',
-      description: 'Find your dream job with AI-powered matching and personalized recommendations.',
+      description: 'Find your dream job with SI-powered matching and personalized recommendations.',
       icon: <Briefcase className="w-8 h-8" />,
       route: '/jobs',
       benefits: ['AI job matching', 'Salary insights', 'One-click applications', 'Company reviews'],

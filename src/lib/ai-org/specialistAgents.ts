@@ -1,5 +1,5 @@
 // src/lib/ai-org/specialistAgents.ts
-// The 8 Department Specialist Agents for TalentXcel AI Organization
+// The 8 Department Specialist Agents for TalentXcel SI Organization
 // Strictly executes every operation through the Server-Authoritative Execution Gateway
 
 import { executeAgentAction, type ExecutionResult } from './executionGateway';

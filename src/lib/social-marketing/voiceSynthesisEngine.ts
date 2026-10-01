@@ -1,5 +1,5 @@
 // src/lib/social-marketing/voiceSynthesisEngine.ts
-// Stage 5: Voice Synthesis Engine for TalentXcel AI Content Factory
+// Stage 5: Voice Synthesis Engine for TalentXcel SI Content Factory
 // Generates natural speech specifications, word-level subtitle timings (.vtt), and transcript files.
 // Invariant: Graceful degradation. Voice is optional; audio render failures do NOT block static/carousel assets.
 

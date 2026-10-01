@@ -50,8 +50,8 @@ export const EnhancedSEODemo: React.FC<EnhancedSEODemoProps> = ({ contentType })
 
   const sampleTool = {
     id: "sample-tool-789",
-    name: "AI Resume Optimizer",
-    description: "Our AI-powered resume optimizer analyzes your resume against job descriptions and provides personalized recommendations to improve your chances of getting hired. Features include ATS compatibility check, keyword optimization, and professional formatting.",
+    name: "SI Resume Optimizer",
+    description: "Our SI-powered resume optimizer analyzes your resume against job descriptions and provides personalized recommendations to improve your chances of getting hired. Features include ATS compatibility check, keyword optimization, and professional formatting.",
     category: "resume-builder",
     features: ["ATS Compatibility Check", "Keyword Optimization", "Professional Templates", "Real-time Feedback"],
     pricing: "freemium",

@@ -164,7 +164,7 @@ export const AIPostAssistant: React.FC<AIPostAssistantProps> = ({
           AI Post Assistant
         </CardTitle>
         <CardDescription>
-          Get AI-powered suggestions for engaging professional posts
+          Get SI-powered suggestions for engaging professional posts
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">

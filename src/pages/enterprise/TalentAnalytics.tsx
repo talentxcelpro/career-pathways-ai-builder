@@ -359,7 +359,7 @@ export const TalentAnalytics: React.FC = () => {
             <Card>
               <CardHeader>
                 <CardTitle>Retention Risk Analysis</CardTitle>
-                <CardDescription>AI-powered predictions for employee turnover</CardDescription>
+                <CardDescription>SI-powered predictions for employee turnover</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">

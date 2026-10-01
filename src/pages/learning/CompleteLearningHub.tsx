@@ -27,7 +27,7 @@ export default function CompleteLearningHub() {
   React.useEffect(() => {
     updateMetaTags({
       title: "Complete Learning Hub | TalentXcel - Master Any Skill",
-      description: "Access 7,000+ courses, AI-powered learning paths, skill assessments, and career tools. Your complete learning ecosystem for professional growth."
+      description: "Access 7,000+ courses, SI-powered learning paths, skill assessments, and career tools. Your complete learning ecosystem for professional growth."
     });
   }, []);
 

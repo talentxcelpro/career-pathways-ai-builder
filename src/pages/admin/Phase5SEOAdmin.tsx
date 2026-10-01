@@ -185,7 +185,7 @@ const Phase5SEOAdmin = () => {
                 </li>
                 <li className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  AI-powered content suggestions
+                  SI-powered content suggestions
                 </li>
                 <li className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>

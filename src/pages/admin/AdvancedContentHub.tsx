@@ -83,7 +83,7 @@ Key points covered:
 
   if (isLoading) {
     return (
-      <UnifiedAdminLayout title="Advanced Content Hub" description="AI-powered content creation and management">
+      <UnifiedAdminLayout title="Advanced Content Hub" description="SI-powered content creation and management">
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
@@ -92,7 +92,7 @@ Key points covered:
   }
 
   return (
-    <UnifiedAdminLayout title="Advanced Content Hub" description="AI-powered content creation and management">
+    <UnifiedAdminLayout title="Advanced Content Hub" description="SI-powered content creation and management">
       <div className="space-y-6">
         {/* Content Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -521,7 +521,7 @@ Key points covered:
                   <CardTitle className="text-sm">Top Content</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-sm font-medium">AI Resume Guide</div>
+                  <div className="text-sm font-medium">SI Resume Guide</div>
                   <p className="text-sm text-muted-foreground">3,456 views</p>
                 </CardContent>
               </Card>

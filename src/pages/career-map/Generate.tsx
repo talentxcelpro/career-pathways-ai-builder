@@ -99,7 +99,7 @@ const Generate = () => {
             ← Back to Career Map
           </Link>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Generate Career Roadmap</h1>
-          <p className="text-gray-600">Create an AI-powered career plan based on your profile and goals</p>
+          <p className="text-gray-600">Create an SI-powered career plan based on your profile and goals</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -262,7 +262,7 @@ const Generate = () => {
                     Generated Roadmap
                   </CardTitle>
                   <CardDescription>
-                    Your AI-powered career roadmap
+                    Your SI-powered career roadmap
                   </CardDescription>
                 </CardHeader>
                 <CardContent>

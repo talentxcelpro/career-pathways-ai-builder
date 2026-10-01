@@ -253,8 +253,8 @@ ${Object.entries(results?.sections || {}).map(([section, data]) =>
               <FileText className="h-6 w-6 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">AI Resume Optimizer</h1>
-              <p className="text-gray-600">Upload and optimize your resume with AI-powered analysis</p>
+              <h1 className="text-3xl font-bold text-gray-900">SI Resume Optimizer</h1>
+              <p className="text-gray-600">Upload and optimize your resume with SI-powered analysis</p>
             </div>
           </div>
         </div>
@@ -419,7 +419,7 @@ ${Object.entries(results?.sections || {}).map(([section, data]) =>
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">Resume Analysis Results</h2>
-                <p className="text-gray-600">AI-powered optimization recommendations for "{jobTitle}"</p>
+                <p className="text-gray-600">SI-powered optimization recommendations for "{jobTitle}"</p>
               </div>
               <div className="flex gap-2">
                 <Button variant="outline" onClick={() => setResults(null)}>

@@ -1,6 +1,6 @@
 ﻿/**
  * JobEligibilityCard Component
- * Interactive AI-powered candidate eligibility assessment widget.
+ * Interactive SI-powered candidate eligibility assessment widget.
  * For Government jobs: "Check My Government Job Eligibility"
  * For Private jobs: "Can I Get This Job? Check My Match"
  */
@@ -85,7 +85,7 @@ export const JobEligibilityCard: React.FC<JobEligibilityCardProps> = ({
             {isGovernment ? 'Check My Government Job Eligibility' : 'Can I Get This Job? Check Match'}
           </CardTitle>
           <Badge variant="outline" className="text-[10px] bg-background">
-            AI Assistant
+            SI Assistant
           </Badge>
         </div>
         <CardDescription className="text-xs">

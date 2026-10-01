@@ -39,7 +39,7 @@ export const PossibilityGraphView: React.FC<PossibilityGraphViewProps> = ({ init
     },
     REMOTE_AI: {
       id: 'intent-remote-ai-102',
-      title: 'AI Agent Developer Remote Arbitrage',
+      title: 'SI Agent Developer Remote Arbitrage',
       location: 'Remote',
       description: 'Living in Tier-2/Tier-3 ecosystem while capturing Tier-1 Bangalore/Silicon Valley compensation.',
       domain: 'CAREER',

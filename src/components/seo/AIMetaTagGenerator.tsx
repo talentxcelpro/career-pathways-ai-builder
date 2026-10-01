@@ -72,7 +72,7 @@ export const AIMetaTagGenerator: React.FC = () => {
       skills: ['Product Strategy', 'Agile', 'Data Analysis']
     },
     tool: {
-      name: 'AI Resume Builder',
+      name: 'SI Resume Builder',
       description: 'Create professional resumes with AI assistance',
       category: 'Career Tools',
       features: ['ATS Optimization', 'AI Writing', 'Multiple Templates']

@@ -147,7 +147,7 @@ export const ProDashboard: React.FC = () => {
           <Crown className="h-16 w-16 text-primary mx-auto mb-6" />
           <h1 className="text-3xl font-bold mb-4">Welcome to TalentXcel Pro</h1>
           <p className="text-muted-foreground mb-8">
-            Create your professional service profile and start attracting clients with AI-powered tools.
+            Create your professional service profile and start attracting clients with SI-powered tools.
           </p>
           <Button onClick={handleCreateProfile} size="lg">
             <Plus className="h-5 w-5 mr-2" />
@@ -281,7 +281,7 @@ export const ProDashboard: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-semibold mb-2">AI Business Tools</h3>
-                  <p className="text-sm text-muted-foreground">Optimize with AI-powered suggestions</p>
+                  <p className="text-sm text-muted-foreground">Optimize with SI-powered suggestions</p>
                 </div>
                 <ArrowRight className="h-5 w-5 text-muted-foreground" />
               </div>

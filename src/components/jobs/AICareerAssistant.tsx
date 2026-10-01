@@ -51,7 +51,7 @@ export const AICareerAssistant: React.FC = () => {
     {
       id: '1',
       type: 'assistant',
-      content: "Hi! I'm your AI Career Assistant. I can help you with job search strategies, resume optimization, interview preparation, and career planning. What would you like to work on today?",
+      content: "Hi! I'm your TalentXcel SI Career Assistant. I can help you with job search strategies, resume optimization, interview preparation, and career planning. What would you like to work on today?",
       timestamp: new Date(),
       suggestions: [
         "Optimize my resume for ATS",
@@ -142,7 +142,7 @@ export const AICareerAssistant: React.FC = () => {
     try {
       const response = await chatWithDeepSeek(
         inputMessage,
-        "You are an AI Career Assistant specialized in helping job seekers with resume optimization, interview preparation, career planning, and job search strategies. Provide practical, actionable advice."
+        "You are an TalentXcel SI Career Assistant specialized in helping job seekers with resume optimization, interview preparation, career planning, and job search strategies. Provide practical, actionable advice."
       );
 
       if (response) {
@@ -247,7 +247,7 @@ export const AICareerAssistant: React.FC = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Bot className="h-5 w-5 text-blue-600" />
-          AI Career Assistant
+          TalentXcel SI Career Assistant
         </CardTitle>
         <div className="flex gap-2">
           {['chat', 'insights', 'actions', 'analytics'].map((tab) => (

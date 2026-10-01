@@ -486,7 +486,7 @@ export const AdvancedNotificationDashboard: React.FC = () => {
                 Smart Automation
               </CardTitle>
               <p className="text-sm text-muted-foreground">
-                AI-powered notification automation based on user behavior
+                SI-powered notification automation based on user behavior
               </p>
             </CardHeader>
             <CardContent className="space-y-6">

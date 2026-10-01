@@ -200,7 +200,7 @@ Responsibilities:
               Your Resume Analysis
             </h1>
             <p className="text-gray-600">
-              Complete analysis powered by TalentXcel AI
+              Complete analysis powered by TalentXcel SI
             </p>
           </div>
 
@@ -274,7 +274,7 @@ Responsibilities:
             </h1>
           </div>
           <p className="text-xl text-gray-600 mb-4">
-            Get your free AI-powered resume analysis in seconds
+            Get your free SI-powered resume analysis in seconds
           </p>
           <p className="text-gray-500">
             Upload your resume and get detailed feedback on ATS compatibility, content quality, and more

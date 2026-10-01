@@ -171,7 +171,7 @@ const Events = () => {
                     onClick={() => setShowAIAssistant(!showAIAssistant)}
                   >
                     <Sparkles className="h-4 w-4 mr-1" />
-                    AI Assistant
+                    SI Assistant
                   </Button>
                 </DialogTitle>
               </DialogHeader>
