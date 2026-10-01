@@ -25,7 +25,24 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, error, refetch } = useReelsData(feedType, category);
   const containerRef = useRef<HTMLDivElement>(null);
   const observerTargets = useRef<Map<number, HTMLDivElement>>(new Map());
+  const loadMoreRef = useRef<HTMLDivElement>(null);
   const { followUser } = useFollow();
+
+  // Trigger fetchNextPage when the load-more sentinel scrolls into view
+  useEffect(() => {
+    const sentinel = loadMoreRef.current;
+    if (!sentinel) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    obs.observe(sentinel);
+    return () => obs.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   // Flatten all pages into a single array of reels
   const reels = data?.pages.flat() || [];
