@@ -14,7 +14,8 @@
     "refresh:news": "npx tsx scripts/content/run-15day-news-refresh.ts",
     "gsc:copilot": "node scripts/gsc-copilot-analysis.cjs",
     "gsc:query-pages": "node scripts/gsc-copilot-query-pages.cjs",
-    "postbuild": "npx tsx scripts/prerender-static-seo.ts && npx tsx scripts/seo-ci-gate.ts"
+    "postbuild": "npx tsx scripts/prerender-static-seo.ts && npx tsx scripts/seo-ci-gate.ts",
+    "gsc:command-center": "node scripts/gsc-command-center.cjs"
   },
   "dependencies": {
     "@aws-sdk/client-sesv2": "^3.1142.0",
