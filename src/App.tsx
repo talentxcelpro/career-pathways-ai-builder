@@ -476,7 +476,23 @@ const App = () => {
                 <Route path="/jobs/applied" element={<Suspense fallback={<div className="p-8 text-center text-sm text-muted-foreground">Loading Applications...</div>}><MyApplications /></Suspense>} />
                 <Route path="/jobs/alerts" element={<Suspense fallback={<div className="p-8 text-center text-sm text-muted-foreground">Loading Job Alerts...</div>}><JobAlerts /></Suspense>} />
 
-                {/* Specific Job Detail Routes - UUID patterns */}
+                {/* Category Pages (Specific routes must precede wildcard) */}
+                <Route path="/jobs/it-jobs" element={<Suspense fallback={<div>Loading...</div>}><JobCategoryPage /></Suspense>} />
+                <Route path="/jobs/engineering-jobs" element={<Suspense fallback={<div>Loading...</div>}><JobCategoryPage /></Suspense>} />
+                <Route path="/jobs/marketing-jobs" element={<Suspense fallback={<div>Loading...</div>}><JobCategoryPage /></Suspense>} />
+
+                {/* Location Pages (Specific routes must precede wildcard) */}
+                <Route path="/jobs/bangalore" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/mumbai" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/delhi" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/hyderabad" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/chennai" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/pune" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/varanasi" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/noida" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/lucknow" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+
+                {/* Specific Job Detail Routes - UUID and slug patterns */}
                 <Route path="/jobs/:slugOrId" element={
                   <Suspense fallback={<div>Loading...</div>}>
                     <JobDetails />
@@ -503,27 +519,11 @@ const App = () => {
                 <Route path="/admin/global-jobs" element={<Suspense fallback={<div>Loading...</div>}><GlobalJobsDashboard /></Suspense>} />
                 <Route path="/admin/global-jobs/*" element={<Suspense fallback={<div>Loading...</div>}><GlobalJobsDashboard /></Suspense>} />
                 
-                {/* Category Pages */}
-                <Route path="/jobs/it-jobs" element={<Suspense fallback={<div>Loading...</div>}><JobCategoryPage /></Suspense>} />
-                <Route path="/jobs/engineering-jobs" element={<Suspense fallback={<div>Loading...</div>}><JobCategoryPage /></Suspense>} />
-                <Route path="/jobs/marketing-jobs" element={<Suspense fallback={<div>Loading...</div>}><JobCategoryPage /></Suspense>} />
-                
                 {/* Global Employer Acquisition & Multi-Location Ingestion */}
                 <Route path="/hire" element={<Suspense fallback={null}><GlobalEmployerAcquisition /></Suspense>} />
                 <Route path="/employers/post-job" element={<Suspense fallback={null}><GlobalEmployerAcquisition /></Suspense>} />
                 <Route path="/jobs/post/multi-location" element={<Suspense fallback={null}><MultiLocationJobComposer /></Suspense>} />
                 <Route path="/about/talentxcel" element={<Suspense fallback={null}><AboutTalentXcelAI /></Suspense>} />
-
-                {/* Location Pages */}
-                <Route path="/jobs/bangalore" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
-                <Route path="/jobs/mumbai" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
-                <Route path="/jobs/delhi" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
-                <Route path="/jobs/hyderabad" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
-                <Route path="/jobs/chennai" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
-                <Route path="/jobs/pune" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
-                <Route path="/jobs/varanasi" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
-                <Route path="/jobs/noida" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
-                <Route path="/jobs/lucknow" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
                 
                 {/* Global & India Jobs Matrix Engine (Role x Experience x City) */}
                 <Route path="/jobs/:role/:experience/:country/:city" element={<Suspense fallback={<div>Loading...</div>}><JobsByRoleExperienceCity /></Suspense>} />

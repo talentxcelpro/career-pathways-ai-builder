@@ -156,18 +156,31 @@ export function validateJobPosting(job: RawJobData): JobValidationResult {
     const expDate = new Date(rawExpiry);
     if (!isNaN(expDate.getTime())) {
       if (expDate <= new Date()) {
-        errors.push('Job has expired (expires_at is in the past)');
+        if (isActive) {
+          // If marked active in database, extend validity so Google doesn't drop it
+          const extended = new Date();
+          extended.setDate(extended.getDate() + 60);
+          resolvedValidThrough = extended.toISOString();
+        } else {
+          errors.push('Job has expired (expires_at is in the past)');
+        }
       } else {
         resolvedValidThrough = expDate.toISOString();
       }
     }
   }
 
-  // If no explicit expires_at, default to 90 days from datePosted
+  // If no explicit expires_at, default to 90 days from datePosted or 60 days from now
   if (!resolvedValidThrough && resolvedDatePosted) {
     const base = new Date(resolvedDatePosted);
     base.setDate(base.getDate() + 90);
-    resolvedValidThrough = base.toISOString();
+    if (base <= new Date() && isActive) {
+      const future = new Date();
+      future.setDate(future.getDate() + 60);
+      resolvedValidThrough = future.toISOString();
+    } else {
+      resolvedValidThrough = base.toISOString();
+    }
   }
 
   // 8. Location Quality (Warnings vs Errors)

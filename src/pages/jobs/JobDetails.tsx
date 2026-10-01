@@ -132,25 +132,42 @@ export default function JobDetails() {
     );
   }
 
+  // Fetch live active jobs as discovery recommendations when the specific job isn't found
+  const { data: fallbackJobs = [] } = useQuery({
+    queryKey: ['job-details-fallback-jobs', slugOrId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('jobs')
+        .select('id, title, company_name, location, salary_min, salary_max, salary_currency, employment_type, created_at, seo_slug')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false })
+        .limit(6);
+      return data || [];
+    },
+    enabled: !job && !isLoading,
+  });
+
   if (!job) {
     const rawRole = slugOrId ? slugOrId.replace(/[-_]+/g, ' ') : 'Career';
     const roleCapitalized = rawRole.replace(/\b\w/g, (c) => c.toUpperCase());
+    const canonical = getPublicJobUrl(slugOrId);
 
     return (
       <>
         <Helmet>
-          <title>{roleCapitalized} Opportunities &amp; Verified Openings | TalentXcel</title>
-          <meta name="description" content={`Explore live ${roleCapitalized} openings, in-hand salary calculations, and free ATS resume diagnostics on TalentXcel.`} />
-          <meta name="robots" content="noindex, follow" />
+          <title>{roleCapitalized} Jobs & Verified Career Openings | TalentXcel</title>
+          <meta name="description" content={`Explore live ${roleCapitalized} openings, hiring companies, salary benchmarks, and free ATS diagnostics on TalentXcel.`} />
+          <link rel="canonical" href={canonical} />
+          <meta name="robots" content="index, follow" />
         </Helmet>
 
-        <div className="min-h-screen bg-slate-950 text-slate-100 py-16 px-4">
-          <div className="max-w-3xl mx-auto space-y-8 text-center">
+        <div className="min-h-screen bg-slate-950 text-slate-100 py-12 px-4">
+          <div className="max-w-4xl mx-auto space-y-8">
             
-            <div className="space-y-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-semibold">
-                <Clock className="w-3.5 h-3.5" />
-                <span>Listing Closed / Filled</span>
+            <div className="text-center space-y-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-semibold">
+                <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+                <span>Active Job Discovery Hub</span>
               </div>
 
               <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white">
@@ -158,16 +175,75 @@ export default function JobDetails() {
               </h1>
 
               <p className="text-slate-400 text-sm max-w-xl mx-auto leading-relaxed">
-                This specific job posting has concluded applications. Discover active verified {rawRole} openings across India, optimize your resume, and benchmark your 2026 salary expectations below.
+                Discover verified {rawRole} openings across India, optimize your resume for recruiters, and explore compensation benchmarks below.
               </p>
             </div>
 
+            {/* Live Active Job Cards (Resolves Soft 404) */}
+            {fallbackJobs.length > 0 && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                    <Briefcase className="w-5 h-5 text-blue-400" />
+                    <span>Top Verified Opportunities</span>
+                  </h2>
+                  <Link to="/jobs" className="text-xs font-semibold text-blue-400 hover:text-blue-300 flex items-center gap-1">
+                    View all {fallbackJobs.length}+ jobs <ChevronRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {fallbackJobs.map((item: any) => (
+                    <Card key={item.id} className="bg-slate-900/80 border-slate-800 hover:border-slate-700 transition-all p-5 flex flex-col justify-between">
+                      <div className="space-y-2">
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <h3 className="text-base font-bold text-white line-clamp-1">{item.title}</h3>
+                            <p className="text-xs text-slate-400 font-medium">{item.company_name || 'TalentXcel Partner'}</p>
+                          </div>
+                          <Badge variant="outline" className="border-blue-500/30 text-blue-300 text-[10px] shrink-0">
+                            {item.employment_type || 'Full-time'}
+                          </Badge>
+                        </div>
+
+                        <div className="flex items-center gap-3 text-xs text-slate-400 pt-1 flex-wrap">
+                          {item.location && (
+                            <span className="flex items-center gap-1">
+                              <MapPin className="w-3.5 h-3.5 text-slate-500" /> {item.location}
+                            </span>
+                          )}
+                          {(item.salary_min || item.salary_max) && (
+                            <span className="flex items-center gap-1 text-emerald-400 font-medium">
+                              <IndianRupee className="w-3.5 h-3.5" /> {formatSalaryRange(item.salary_min, item.salary_max, item.salary_currency)}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="pt-4 mt-2 border-t border-slate-800/60 flex items-center justify-between">
+                        <span className="text-[11px] text-slate-500 flex items-center gap-1">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Verified Opening
+                        </span>
+                        <Button 
+                          size="sm"
+                          onClick={() => navigate(`/jobs/${item.seo_slug || item.id}`)}
+                          className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold h-8 px-3"
+                        >
+                          View &amp; Apply
+                        </Button>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Quick Action Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
               <Card className="bg-slate-900/80 border-slate-800 text-left p-5 space-y-3">
                 <Briefcase className="w-6 h-6 text-blue-400" />
                 <h3 className="text-sm font-bold text-white">Browse Live Jobs</h3>
-                <p className="text-xs text-slate-400">Search 4,800+ active tech &amp; corporate openings in India.</p>
+                <p className="text-xs text-slate-400">Search thousands of active tech &amp; corporate openings in India.</p>
                 <Button 
                   onClick={() => navigate(`/jobs?search=${encodeURIComponent(rawRole)}`)} 
                   className="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold"
@@ -182,7 +258,7 @@ export default function JobDetails() {
                 <p className="text-xs text-slate-400">Get a 10-second parseability audit for top Indian recruiters.</p>
                 <Button 
                   variant="outline" 
-                  onClick={() => navigate('/resume')} 
+                  onClick={() => navigate('/resume/ats-check')} 
                   className="w-full border-slate-700 text-white hover:bg-slate-800 text-xs font-bold"
                 >
                   <Sparkles className="w-3.5 h-3.5 mr-1.5" /> Check Resume (100% Free)
@@ -195,7 +271,7 @@ export default function JobDetails() {
                 <p className="text-xs text-slate-400">Calculate take-home in-hand pay across Bangalore, Pune &amp; NCR.</p>
                 <Button 
                   variant="outline" 
-                  onClick={() => navigate(`/tools/salary-analyzer?role=${encodeURIComponent(rawRole)}`)} 
+                  onClick={() => navigate(`/rankings`)} 
                   className="w-full border-slate-700 text-white hover:bg-slate-800 text-xs font-bold"
                 >
                   <IndianRupee className="w-3.5 h-3.5 mr-1.5" /> Benchmark Salary
@@ -204,7 +280,7 @@ export default function JobDetails() {
             </div>
 
             {/* Popular City Links */}
-            <div className="pt-6 border-t border-slate-900">
+            <div className="pt-6 border-t border-slate-900 text-center">
               <span className="text-xs font-mono uppercase tracking-wider text-slate-500 block mb-3">
                 Explore Jobs by Top Hubs
               </span>

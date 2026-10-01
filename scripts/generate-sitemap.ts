@@ -271,60 +271,51 @@ export async function generateProductionSitemaps() {
   const collegeReviewsEntries = deduplicate(collegeReviews);
   const collegeCampusEntries = deduplicate(collegeCampus);
 
-  // 3. College Degrees & State Matrix (25,000 URLs)
+  // 3. College Degrees & State Matrix
   const collegeStateDegrees: SitemapEntry[] = [];
   POPULAR_DEGREES.forEach(deg => {
     INDIAN_STATES.forEach(st => {
       collegeStateDegrees.push({ path: `/colleges/${deg}/in-${st}`, changefreq: 'weekly', priority: '0.8' });
-      collegeStateDegrees.push({ path: `/colleges/degree/${deg}/state/${st}`, changefreq: 'weekly', priority: '0.75' });
     });
     CANONICAL_LOCATIONS.forEach(loc => {
       collegeStateDegrees.push({ path: `/colleges/${deg}/in-${loc}`, changefreq: 'weekly', priority: '0.8' });
-      collegeStateDegrees.push({ path: `/colleges/top-${deg}-colleges-in-${loc}`, changefreq: 'weekly', priority: '0.85' });
-      collegeStateDegrees.push({ path: `/colleges/degree/${deg}/city/${loc}`, changefreq: 'weekly', priority: '0.75' });
     });
   });
   const collegeStateDegreeEntries = deduplicate(collegeStateDegrees);
 
-  // 4. Job Roles x Locations (75,000 URLs)
+  // 4. Job Roles x Locations (Canonical single format)
   const jobRolesList: SitemapEntry[] = [];
   CANONICAL_ROLES.forEach(role => {
     CANONICAL_LOCATIONS.forEach(loc => {
       jobRolesList.push({ path: `/jobs/${role}-jobs-in-${loc}`, changefreq: 'daily', priority: '0.85' });
-      jobRolesList.push({ path: `/jobs/role/${role}/${loc}`, changefreq: 'daily', priority: '0.8' });
-      jobRolesList.push({ path: `/jobs/${role}/${loc}`, changefreq: 'daily', priority: '0.8' });
       jobRolesList.push({ path: `/salaries/${role}-salary-in-${loc}`, changefreq: 'weekly', priority: '0.8' });
-      jobRolesList.push({ path: `/salaries/role/${role}/${loc}`, changefreq: 'weekly', priority: '0.75' });
     });
   });
 
-  // 5. Experience Levels Matrix (70,000 URLs)
+  // 5. Experience Levels Matrix (Canonical single format)
   const expJobsList: SitemapEntry[] = [];
   CANONICAL_ROLES.forEach(role => {
     EXPERIENCE_LEVELS.forEach(exp => {
       CANONICAL_LOCATIONS.forEach(loc => {
         expJobsList.push({ path: `/jobs/${exp}-${role}-in-${loc}`, changefreq: 'daily', priority: '0.8' });
-        expJobsList.push({ path: `/jobs/experience/${exp}/${role}/${loc}`, changefreq: 'daily', priority: '0.75' });
       });
     });
   });
 
-  // 6. Skills x Locations Matrix (35,000 URLs)
+  // 6. Skills x Locations Matrix (Canonical single format)
   const skillJobsList: SitemapEntry[] = [];
   CANONICAL_SKILLS.forEach(skill => {
     CANONICAL_LOCATIONS.forEach(loc => {
       skillJobsList.push({ path: `/jobs/${skill}-jobs-in-${loc}`, changefreq: 'daily', priority: '0.8' });
-      skillJobsList.push({ path: `/jobs/skill/${skill}/${loc}`, changefreq: 'daily', priority: '0.75' });
       skillJobsList.push({ path: `/skills/${skill}/salary-in-${loc}`, changefreq: 'weekly', priority: '0.75' });
     });
   });
 
-  // 7. Companies Hiring Matrix (20,000 URLs)
+  // 7. Companies Hiring Matrix (Canonical single format)
   const companyHiringList: SitemapEntry[] = [];
   TOP_COMPANIES.forEach(comp => {
     CANONICAL_ROLES.slice(0, 45).forEach(role => {
       companyHiringList.push({ path: `/jobs/company/${comp}/${role}`, changefreq: 'daily', priority: '0.8' });
-      companyHiringList.push({ path: `/company/${comp}/jobs/${role}`, changefreq: 'daily', priority: '0.8' });
     });
     CANONICAL_LOCATIONS.slice(0, 40).forEach(loc => {
       companyHiringList.push({ path: `/jobs/company/${comp}/in-${loc}`, changefreq: 'daily', priority: '0.8' });
