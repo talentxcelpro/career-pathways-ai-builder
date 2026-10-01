@@ -5,7 +5,6 @@ import {
   Play,
   MessageCircle,
   CreditCard,
-  Trophy,
   Users,
   Grid3X3
 } from 'lucide-react';
@@ -47,10 +46,10 @@ export const MobileBottomNav = () => {
 
   const navItems: NavItem[] = [
     { to: '/network', icon: MessageCircle, label: 'Network', badge: unreadMessages > 0 },
-    { to: '/mobile/reels', icon: Play, label: 'Reels' },
     { to: '/jobs', icon: Briefcase, label: 'Jobs' },
-    { to: '/gamification', icon: Trophy, label: 'Rewards' },
-    { to: '/refer-and-earn', icon: Users, label: 'Refer' },
+    { to: '/passport', icon: CreditCard, label: 'Career' },
+    { to: '/dashboard?view=role', icon: Users, label: 'Recruiter' },
+    { to: '/mobile/reels', icon: Play, label: 'Reels' },
   ];
 
   const isCurrentPath = (path: string) => {

@@ -100,17 +100,43 @@ export const Navbar = () => {
     { to: "/reels",        label: "Reels",        icon: PlayCircle },
     { to: "/communities",  label: "Communities",  icon: Globe },
     { to: "/messages",     label: "Messages",     icon: MessageSquare },
+    { to: "/dashboard?view=role", label: "Recruiter OS", icon: Building2 },
   ];
 
-  // Secondary Tools / Utilities
-  const secondaryTools = [
-    { to: "/passport",   label: "Career Passport",  desc: "Universal profile & TalentScore", icon: User },
-    { to: "/resume",     label: "Resume Builder",   desc: "ATS-ready executive resumes",     icon: BookOpen },
-    { to: "/companies",  label: "Companies",        desc: "Explore verified employer pages", icon: Building2 },
-    { to: "/colleges",   label: "10,250+ Colleges", desc: "NIRF rankings & placement stats", icon: Compass },
-    { to: "/rankings",   label: "Salary & Rankings", desc: "Compensation benchmarks",        icon: Award },
-    { to: "/career-map", label: "Career Map",       desc: "Skill progression trajectories",  icon: Layers },
-    { to: "/learning",   label: "Learning & Skills", desc: "High-income credentials",        icon: Zap },
+  // Three-Intent Organized Explore Menu
+  const intentGroups = [
+    {
+      label: "Find a Job",
+      color: "text-blue-400",
+      items: [
+        { to: "/jobs",             label: "Browse Jobs",          desc: "Millions of live opportunities",       icon: Briefcase },
+        { to: "/government-jobs",  label: "Government Jobs",      desc: "PSU, UPSC & state roles",             icon: Award },
+        { to: "/resume/ats-check", label: "ATS Resume Check",     desc: "SI-powered resume score",             icon: BookOpen },
+        { to: "/jobs/applied",     label: "My Applications",      desc: "Track your active applications",      icon: Layers },
+      ],
+    },
+    {
+      label: "Build My Career",
+      color: "text-emerald-400",
+      items: [
+        { to: "/passport",   label: "Career Passport",    desc: "Universal profile & TalentScore", icon: User },
+        { to: "/career-map", label: "Career Map",         desc: "Skill progression trajectories",  icon: Compass },
+        { to: "/learning",   label: "Learning & Skills",  desc: "High-income credentials",         icon: Zap },
+        { to: "/rankings",   label: "Salary & Rankings",  desc: "Compensation benchmarks",         icon: Award },
+        { to: "/colleges",   label: "10,250+ Colleges",   desc: "NIRF rankings & placement stats", icon: Globe },
+        { to: "/companies",  label: "Companies",          desc: "Explore verified employer pages", icon: Building2 },
+      ],
+    },
+    {
+      label: "Hire Talent",
+      color: "text-purple-400",
+      items: [
+        { to: "/recruiters",          label: "Recruiter OS",          desc: "SI-powered hiring intelligence",  icon: Sparkles },
+        { to: "/talent",              label: "Talent Discovery",       desc: "Search verified candidate pool", icon: Users },
+        { to: "/hire",                label: "Post a Job",             desc: "Reach qualified candidates fast", icon: Briefcase },
+        { to: "/dashboard?view=role", label: "Employer Dashboard",     desc: "Requirements, matches & pipeline", icon: Layers },
+      ],
+    },
   ];
 
   const isCurrentPath = (path: string) => {
@@ -190,7 +216,7 @@ export const Navbar = () => {
                   );
                 })}
 
-                {/* Secondary Tools Dropdown */}
+                {/* Three-Intent Explore Dropdown */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/10 transition-all whitespace-nowrap">
@@ -198,27 +224,34 @@ export const Navbar = () => {
                       <ChevronDown className="h-3 w-3" />
                     </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56 bg-slate-900 border-slate-800 text-white p-1.5 shadow-2xl" align="start">
-                    <div className="px-2 py-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                      Career Tools & Resources
-                    </div>
-                    <DropdownMenuSeparator className="bg-slate-800" />
-                    {secondaryTools.map(tool => {
-                      const ToolIcon = tool.icon;
-                      return (
-                        <DropdownMenuItem
-                          key={tool.label}
-                          onClick={() => navigate(tool.to)}
-                          className="flex items-start gap-2.5 p-2 rounded-lg hover:bg-slate-800 focus:bg-slate-800 cursor-pointer"
-                        >
-                          <ToolIcon className="h-4 w-4 text-blue-400 mt-0.5 shrink-0" />
-                          <div>
-                            <p className="text-xs font-bold text-slate-200 leading-tight">{tool.label}</p>
-                            <p className="text-[11px] text-slate-400">{tool.desc}</p>
+                  <DropdownMenuContent className="w-[600px] bg-slate-900 border-slate-800 text-white p-3 shadow-2xl" align="start">
+                    <div className="grid grid-cols-3 gap-4">
+                      {intentGroups.map((group) => (
+                        <div key={group.label}>
+                          <p className={`text-[10px] font-black uppercase tracking-widest mb-2 ${group.color}`}>
+                            {group.label}
+                          </p>
+                          <div className="space-y-0.5">
+                            {group.items.map((item) => {
+                              const ItemIcon = item.icon;
+                              return (
+                                <DropdownMenuItem
+                                  key={item.label}
+                                  onClick={() => navigate(item.to)}
+                                  className="flex items-start gap-2 p-1.5 rounded-lg hover:bg-slate-800 focus:bg-slate-800 cursor-pointer"
+                                >
+                                  <ItemIcon className="h-3.5 w-3.5 text-slate-400 mt-0.5 shrink-0" />
+                                  <div>
+                                    <p className="text-xs font-semibold text-slate-200 leading-tight">{item.label}</p>
+                                    <p className="text-[10px] text-slate-500 leading-tight">{item.desc}</p>
+                                  </div>
+                                </DropdownMenuItem>
+                              );
+                            })}
                           </div>
-                        </DropdownMenuItem>
-                      );
-                    })}
+                        </div>
+                      ))}
+                    </div>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
