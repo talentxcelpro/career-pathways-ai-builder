@@ -83,7 +83,7 @@ const Recommendations = () => {
       <div className="mb-8">
         <h1 className="text-3xl font-bold flex items-center gap-2">
           <Sparkles className="h-8 w-8 text-blue-600" />
-          AI Job Recommendations
+          SI Job Recommendations
         </h1>
         <p className="text-gray-600 mt-2">
           Jobs matched to your profile, skills, and career goals

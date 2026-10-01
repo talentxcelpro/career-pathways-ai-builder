@@ -140,7 +140,7 @@ export const OnboardingFlow: React.FC = () => {
         'employer': '/resume/company-tools'
       };
       
-      navigate(redirectMap[flow] || '/network');
+      navigate(redirectMap[flow] || '/career-dashboard');
     } catch (error) {
       console.error('Onboarding error:', error);
       toast.error('Failed to complete onboarding. Please try again.');

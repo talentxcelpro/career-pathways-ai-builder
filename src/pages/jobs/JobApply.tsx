@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { incrementJobApplications } from "@/utils/supabaseHelpers";
+import { conversionTelemetry } from '@/utils/conversionTelemetry';
 
 export default function JobApply() {
   const { id } = useParams<{ id: string }>();
@@ -169,6 +170,7 @@ export default function JobApply() {
       }
     },
     onSuccess: () => {
+      conversionTelemetry.track('job_applied', { jobId: targetJobId });
       toast.success('Application submitted successfully!');
       navigate('/jobs/applied');
     },

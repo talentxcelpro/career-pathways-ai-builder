@@ -184,7 +184,7 @@ const JobMatcher = () => {
             location: applyModalJob.location,
             salary_range: applyModalJob.salaryRange,
             match_score: applyModalJob.matchScore,
-            applied_via: 'AI Job Matcher Tool',
+            applied_via: 'SI Job Matcher Tool',
             applied_at: new Date().toISOString()
           }
         });
@@ -240,9 +240,9 @@ const JobMatcher = () => {
               <Target className="h-7 w-7 stroke-[2.2]" />
             </div>
             <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">AI Job Matcher</h1>
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">SI Job Matcher</h1>
               <p className="text-sm text-slate-600 dark:text-slate-400 font-medium mt-1">
-                Discover job opportunities matched to your exact skills and career preferences with AI scoring.
+                Discover job opportunities matched to your exact skills and career preferences with SI scoring.
               </p>
             </div>
           </div>

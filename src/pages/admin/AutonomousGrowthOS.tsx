@@ -32,11 +32,13 @@ import {
   Clock,
   ExternalLink,
   MessageCircle,
-  Building2
+  Building2,
+  Layers
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { GrowthFunnelDashboard } from '@/components/admin/GrowthFunnelDashboard';
 import { 
   runAutonomousGrowthCycle, 
   AutonomousOsState, 
@@ -371,9 +373,12 @@ const AutonomousGrowthOS: React.FC = () => {
 
         {/* 3. TABS COCKPIT */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-1 w-full shadow-inner">
+          <TabsList className="bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-1 w-full shadow-inner">
             <TabsTrigger value="overview" className="rounded-xl data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm font-bold text-xs py-2.5">
               <Zap className="h-4 w-4 mr-1.5" /> Overview
+            </TabsTrigger>
+            <TabsTrigger value="phase4_funnel" className="rounded-xl data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm font-bold text-xs py-2.5">
+              <Layers className="h-4 w-4 mr-1.5 text-blue-600" /> Funnel OS (Phase 4)
             </TabsTrigger>
             <TabsTrigger value="opportunities" className="rounded-xl data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm font-bold text-xs py-2.5">
               <Target className="h-4 w-4 mr-1.5" /> Opportunities
@@ -391,6 +396,11 @@ const AutonomousGrowthOS: React.FC = () => {
               <Brain className="h-4 w-4 mr-1.5" /> Command Center
             </TabsTrigger>
           </TabsList>
+
+          {/* TAB 0: PHASE 4 GROWTH OS FUNNEL & COHORTS */}
+          <TabsContent value="phase4_funnel" className="space-y-6">
+            <GrowthFunnelDashboard />
+          </TabsContent>
 
           {/* TAB 1: OVERVIEW & TRAJECTORY */}
           <TabsContent value="overview" className="space-y-6">

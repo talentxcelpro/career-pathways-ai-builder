@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ArrowLeft, Mail, Lock, User, Building, Chrome } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { conversionTelemetry } from '@/utils/conversionTelemetry';
+import { resolvePostAuthDestination } from '@/utils/intentRouting';
 
 interface AuthPageProps {
   mode?: 'signin' | 'signup';
@@ -33,7 +34,11 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
 
   // Get flow from URL params or props
   const currentFlow = flow || searchParams.get('flow') || 'resume';
-  const redirectTo = searchParams.get('redirect') || location.state?.from || '/network';
+  const redirectTo = resolvePostAuthDestination({
+    searchParams,
+    role: userType,
+    userMetadata: user?.user_metadata
+  });
 
   useEffect(() => {
     const urlMode = searchParams.get('mode');
@@ -120,9 +125,13 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
         
         console.log('Signup successful:', data);
         conversionTelemetry.track('signup_completed', { source: currentFlow });
-        const { returnUrl } = conversionTelemetry.consumeAcquisitionReturnUrl();
-        if (data.session && (returnUrl || redirectTo)) {
-          navigate(returnUrl || redirectTo);
+        const destination = resolvePostAuthDestination({
+          searchParams,
+          role: userType,
+          userMetadata: data.user?.user_metadata
+        });
+        if (data.session) {
+          navigate(destination);
           return;
         }
         toast.success('Account created! Welcome to TalentXcel.');
@@ -135,11 +144,13 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
         if (error) throw error;
         
         console.log('Signin successful:', data);
-        const { returnUrl } = conversionTelemetry.consumeAcquisitionReturnUrl();
-        if (returnUrl || redirectTo) {
-          navigate(returnUrl || redirectTo);
-          return;
-        }
+        const destination = resolvePostAuthDestination({
+          searchParams,
+          role: userType,
+          userMetadata: data.user?.user_metadata
+        });
+        navigate(destination);
+        return;
         toast.success('Welcome back!');
       }
     } catch (error: any) {

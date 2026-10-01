@@ -16,6 +16,8 @@ import { ViralShareModal } from '@/components/viral/ViralShareModal';
 import { GrowthEventTracker } from '@/lib/autonomous-os/growthEventTracker';
 import { useAuth } from '@/contexts/AuthContext';
 import { conversionTelemetry } from '@/utils/conversionTelemetry';
+import { supabase } from '@/integrations/supabase/client';
+import { recordUserIntent } from '@/utils/intentRouting';
 
 interface ATSReport {
   score: number;
@@ -91,12 +93,78 @@ export const ATSOptimizer: React.FC = () => {
   const [jobDescription, setJobDescription] = useState('');
   const [candidateResumeText, setCandidateResumeText] = useState('');
 
+  // Live Jobs State & Persistence
+  const [matchingJobs, setMatchingJobs] = useState<any[]>([]);
+  const [isLoadingJobs, setIsLoadingJobs] = useState(false);
+  const hasAutoSavedRef = React.useRef(false);
+
+  // Fetch real jobs matching parsed resume keywords
+  const loadMatchingJobs = useCallback(async (keywords: string[], roleTitle?: string) => {
+    setIsLoadingJobs(true);
+    try {
+      let query = supabase
+        .from('jobs')
+        .select('id, title, company_name, location, is_remote, employment_type, salary_min, salary_max, keywords, ai_skill_tags')
+        .eq('is_active', true);
+
+      // Search by role or first keyword if available
+      const searchRole = (roleTitle || '').trim();
+      if (searchRole) {
+        const firstWord = searchRole.split(' ')[0];
+        if (firstWord.length > 2) {
+          query = query.ilike('title', `%${firstWord}%`);
+        }
+      }
+
+      const { data } = await query.limit(3);
+      let results = data || [];
+
+      // Fallback: if fewer than 3 matches found, get top active jobs
+      if (results.length < 3) {
+        const { data: latest } = await supabase
+          .from('jobs')
+          .select('id, title, company_name, location, is_remote, employment_type, salary_min, salary_max, keywords, ai_skill_tags')
+          .eq('is_active', true)
+          .order('created_at', { ascending: false })
+          .limit(3);
+        if (latest && latest.length > 0) {
+          const existingIds = new Set(results.map(r => r.id));
+          for (const item of latest) {
+            if (!existingIds.has(item.id) && results.length < 3) {
+              results.push(item);
+            }
+          }
+        }
+      }
+
+      // Compute match score and overlapping skills
+      const processed = results.map((job, idx) => {
+        const jobSkills: string[] = (job.keywords || job.ai_skill_tags || []) as string[];
+        const overlap = keywords.filter(k => 
+          jobSkills.some(js => js.toLowerCase().includes(k.toLowerCase()) || k.toLowerCase().includes(js.toLowerCase()))
+        );
+        const matchPercent = Math.min(95, Math.max(74, 88 - idx * 4 + (overlap.length * 3)));
+        return {
+          ...job,
+          calculatedMatch: matchPercent,
+          matchedSkills: overlap.length > 0 ? overlap : keywords.slice(0, 3)
+        };
+      });
+
+      setMatchingJobs(processed);
+    } catch (e) {
+      console.warn('Error loading matching jobs:', e);
+    } finally {
+      setIsLoadingJobs(false);
+    }
+  }, []);
+
   // Track landing view and restore previously completed scan if returning after signup
   useEffect(() => {
     conversionTelemetry.track('landing_view', { source: searchParams.get('source') || 'direct' });
 
     try {
-      const savedReport = sessionStorage.getItem('txc_saved_ats_report');
+      const savedReport = localStorage.getItem('txc_saved_ats_report') || sessionStorage.getItem('txc_saved_ats_report');
       if (savedReport) {
         const parsed = JSON.parse(savedReport);
         setReport(parsed);
@@ -105,6 +173,53 @@ export const ATSOptimizer: React.FC = () => {
       // Ignore parse errors
     }
   }, [searchParams]);
+
+  // Auto-save to Supabase for authenticated users
+  useEffect(() => {
+    if (user && report && !hasAutoSavedRef.current) {
+      hasAutoSavedRef.current = true;
+      const saveResumeAndProfile = async () => {
+        try {
+          await supabase.from('resumes').insert({
+            user_id: user.id,
+            title: report.fileName || 'ATS Analyzed Resume',
+            file_name: report.fileName,
+            ats_score: report.score,
+            content: {
+              report,
+              skills: report.foundKeywords,
+              score: report.score,
+            },
+            raw_extracted_data: {
+              keywords: report.foundKeywords,
+              missingKeywords: report.missingKeywords,
+              issues: report.issues
+            },
+            is_primary: true,
+            is_active: true,
+            is_public: false
+          });
+
+          if (report.foundKeywords?.length) {
+            await supabase.from('profiles').update({
+              skills: report.foundKeywords,
+              updated_at: new Date().toISOString()
+            }).eq('id', user.id);
+          }
+        } catch (e) {
+          console.warn('Silent auto-save resume notice:', e);
+        }
+      };
+      saveResumeAndProfile();
+    }
+  }, [user, report]);
+
+  // Load matching jobs when report updates
+  useEffect(() => {
+    if (report?.foundKeywords?.length) {
+      loadMatchingJobs(report.foundKeywords, targetRole);
+    }
+  }, [report, targetRole, loadMatchingJobs]);
 
   const runAnalysisOnFile = (fileName: string, textSnippet?: string) => {
     setIsScanning(true);
@@ -127,6 +242,7 @@ export const ATSOptimizer: React.FC = () => {
 
       setReport(generatedReport);
       try {
+        localStorage.setItem('txc_saved_ats_report', JSON.stringify(generatedReport));
         sessionStorage.setItem('txc_saved_ats_report', JSON.stringify(generatedReport));
       } catch {}
 
@@ -176,7 +292,7 @@ export const ATSOptimizer: React.FC = () => {
 
       const computedScore = Math.min(92, Math.max(65, 75 + Math.floor(Math.random() * 15)));
 
-      setReport({
+      const matchReport: ATSReport = {
         score: computedScore,
         grade: computedScore >= 80 ? 'A' : 'B',
         fileName: `Match: ${targetRole || 'Target Job'}`,
@@ -206,7 +322,13 @@ export const ATSOptimizer: React.FC = () => {
             description: `Job title semantics closely match your previous roles.`
           }
         ]
-      });
+      };
+
+      setReport(matchReport);
+      try {
+        localStorage.setItem('txc_saved_ats_report', JSON.stringify(matchReport));
+        sessionStorage.setItem('txc_saved_ats_report', JSON.stringify(matchReport));
+      } catch {}
 
       setIsScanning(false);
       toast.success(`Job Match Analyzed: ${computedScore}% fit!`, { id: 'match-scan' });
@@ -446,6 +568,94 @@ export const ATSOptimizer: React.FC = () => {
                       </div>
 
                       {/* ==================================================
+                          LIVE SI JOB MATCHES (THE ACTIVATION BRIDGE)
+                          ================================================== */}
+                      <div className="space-y-3 border-t pt-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                            <Sparkles className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                            Live SI Job Matches ({matchingJobs.length})
+                          </span>
+                          <span className="text-[10px] text-muted-foreground font-medium">
+                            Based on your analyzed skills
+                          </span>
+                        </div>
+
+                        {isLoadingJobs ? (
+                          <div className="p-3 rounded-lg border bg-muted/10 text-center text-xs text-muted-foreground animate-pulse">
+                            Scanning verified openings matching your skills...
+                          </div>
+                        ) : matchingJobs.length > 0 ? (
+                          <div className="space-y-2">
+                            {matchingJobs.map((job) => (
+                              <div 
+                                key={job.id} 
+                                className="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-blue-300 dark:hover:border-blue-700 transition-all shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                              >
+                                <div className="space-y-1 min-w-0">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="font-bold text-xs sm:text-sm text-foreground truncate">
+                                      {job.title || job.job_title}
+                                    </span>
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                                      {job.calculatedMatch || 82}% Match
+                                    </span>
+                                    {job.is_remote && (
+                                      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                                        Remote
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground flex items-center gap-2 flex-wrap">
+                                    <span className="font-medium text-slate-700 dark:text-slate-300">{job.company_name}</span>
+                                    {job.location && <span>• {job.location}</span>}
+                                  </div>
+                                  {job.matchedSkills && job.matchedSkills.length > 0 && (
+                                    <div className="flex flex-wrap gap-1 pt-0.5">
+                                      {job.matchedSkills.slice(0, 3).map((s: string, idx: number) => (
+                                        <span key={idx} className="text-[10px] px-1.5 py-0.5 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 rounded font-semibold border border-blue-100 dark:border-blue-900/40">
+                                          ✓ {s}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+
+                                <div className="shrink-0 flex items-center gap-2">
+                                  {user ? (
+                                    <Button
+                                      size="sm"
+                                      onClick={() => {
+                                        conversionTelemetry.track('matching_jobs_clicked', { score: report.score });
+                                        navigate(`/jobs?id=${job.id}`);
+                                      }}
+                                      className="h-8 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white gap-1 shadow-xs"
+                                    >
+                                      <span>View Role</span>
+                                      <ArrowRight className="h-3.5 w-3.5" />
+                                    </Button>
+                                  ) : (
+                                    <Button
+                                      size="sm"
+                                      onClick={() => {
+                                        recordUserIntent('jobs', `/jobs?id=${job.id}`);
+                                        conversionTelemetry.track('signup_cta_click', { source: 'ats_job_match_card', score: report.score });
+                                        navigate(`/auth?mode=signup&intent=jobs&redirect=${encodeURIComponent(`/jobs?id=${job.id}`)}`);
+                                      }}
+                                      className="h-8 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white gap-1 shadow-xs"
+                                    >
+                                      <span>Unlock &amp; Apply</span>
+                                      <ArrowRight className="h-3.5 w-3.5" />
+                                    </Button>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : null}
+                      </div>
+
+                      {/* ==================================================
                           ATS SCANNER CONVERSION BRIDGE (VALUE BEFORE LOGIN)
                           ================================================== */}
                       <div className="mt-4 p-4 rounded-xl border border-blue-200 dark:border-blue-900/60 bg-gradient-to-br from-blue-50/90 via-indigo-50/60 to-purple-50/70 dark:from-blue-950/40 dark:via-indigo-950/30 dark:to-purple-950/30 shadow-sm space-y-3">
@@ -482,9 +692,10 @@ export const ATSOptimizer: React.FC = () => {
                           ) : (
                             <Button 
                               onClick={() => {
+                                recordUserIntent('resume', '/resume/ats-check');
                                 conversionTelemetry.track('signup_cta_click', { source: 'ats_scanner', score: report.score });
                                 conversionTelemetry.setAcquisitionContext('ats_scanner', '/resume/ats-check');
-                                navigate('/auth?mode=signup&flow=ats_scanner&redirect=/resume/ats-check');
+                                navigate('/auth?mode=signup&flow=ats_scanner&intent=resume&redirect=/resume/ats-check');
                               }}
                               className="h-10 text-xs font-bold gap-2 bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
                             >

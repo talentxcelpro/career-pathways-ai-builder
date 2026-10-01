@@ -9,7 +9,7 @@ export const QuickActions = () => {
 
   const actions = [
     {
-      title: "AI Career Map",
+      title: "SI Career Map",
       description: "Generate career roadmap",
       icon: Brain,
       href: "/career-map/generate",

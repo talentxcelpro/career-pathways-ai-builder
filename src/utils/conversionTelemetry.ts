@@ -1,6 +1,8 @@
-// Conversion Telemetry — Lightweight, ₹0 In-Memory & Session Funnel Tracker
-// Tracks funnel milestones: landing_view -> ats_started -> ats_completed -> signup_cta_click -> signup_completed -> matching_jobs_clicked
-// No external analytics, no cookies, no personal data, zero PII, zero resume content stored.
+// Conversion Telemetry — Persistent Growth & Funnel Telemetry Tracker
+// Tracks core funnel milestones: landing_view -> ats_started -> ats_completed -> signup_cta_click -> signup_completed -> matching_jobs_clicked -> job_applied
+// Persists stats & event stream across sessions, tabs, and OAuth redirects via localStorage & Supabase.
+
+import { supabase } from '@/integrations/supabase/client';
 
 export type ConversionEvent = 
   | 'landing_view'
@@ -10,7 +12,18 @@ export type ConversionEvent =
   | 'signup_cta_click'
   | 'signup_started'
   | 'signup_completed'
-  | 'matching_jobs_clicked';
+  | 'matching_jobs_clicked'
+  | 'view_job_detail'
+  | 'job_applied';
+
+export interface TelemetryLogEntry {
+  event: ConversionEvent;
+  timestamp: string;
+  url: string;
+  referrer?: string;
+  metadata?: Record<string, any>;
+  synced?: boolean;
+}
 
 export interface ConversionStats {
   landing_view: number;
@@ -21,6 +34,8 @@ export interface ConversionStats {
   signup_started: number;
   signup_completed: number;
   matching_jobs_clicked: number;
+  view_job_detail: number;
+  job_applied: number;
   // Derived conversion rates
   atsCompletionRate: string;   // ats_completed / ats_started
   signupCtaClickRate: string;  // signup_cta_click / signup_cta_view
@@ -28,7 +43,9 @@ export interface ConversionStats {
   overallFunnelRate: string;   // signup_completed / landing_view
 }
 
-const STORAGE_KEY = 'txc_conversion_telemetry';
+const STORAGE_KEY = 'txc_persistent_funnel_stats';
+const LOG_STORAGE_KEY = 'txc_funnel_events_log';
+const MAX_LOCAL_EVENTS = 50;
 
 class ConversionTelemetryManager {
   private counts: Record<ConversionEvent, number> = {
@@ -39,63 +56,123 @@ class ConversionTelemetryManager {
     signup_cta_click: 0,
     signup_started: 0,
     signup_completed: 0,
-    matching_jobs_clicked: 0
+    matching_jobs_clicked: 0,
+    view_job_detail: 0,
+    job_applied: 0,
   };
 
+  private eventsLog: TelemetryLogEntry[] = [];
+
   constructor() {
-    this.loadFromSession();
+    this.loadFromStorage();
   }
 
-  private loadFromSession(): void {
+  private loadFromStorage(): void {
     if (typeof window === 'undefined') return;
     try {
-      const raw = sessionStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw);
+      const rawCounts = localStorage.getItem(STORAGE_KEY) || sessionStorage.getItem(STORAGE_KEY);
+      if (rawCounts) {
+        const parsed = JSON.parse(rawCounts);
         this.counts = { ...this.counts, ...parsed };
       }
+      const rawLog = localStorage.getItem(LOG_STORAGE_KEY);
+      if (rawLog) {
+        this.eventsLog = JSON.parse(rawLog);
+      }
     } catch {
-      // Ignore session storage errors
+      // Storage safety
     }
   }
 
-  private saveToSession(): void {
+  private saveToStorage(): void {
     if (typeof window === 'undefined') return;
     try {
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(this.counts));
+      const serializedCounts = JSON.stringify(this.counts);
+      localStorage.setItem(STORAGE_KEY, serializedCounts);
+      sessionStorage.setItem(STORAGE_KEY, serializedCounts);
+      localStorage.setItem(LOG_STORAGE_KEY, JSON.stringify(this.eventsLog.slice(-MAX_LOCAL_EVENTS)));
     } catch {
-      // Ignore session storage errors
+      // Storage safety
     }
   }
 
   /**
-   * Records a conversion event
+   * Records a conversion event locally and syncs to backend if authenticated
    */
-  track(event: ConversionEvent, meta?: { source?: string; score?: number }): void {
+  track(event: ConversionEvent, meta?: { source?: string; score?: number; [key: string]: any }): void {
     if (this.counts[event] !== undefined) {
       this.counts[event]++;
-      this.saveToSession();
     }
-    
-    // Optional console log for developer visibility
+
+    const logEntry: TelemetryLogEntry = {
+      event,
+      timestamp: new Date().toISOString(),
+      url: typeof window !== 'undefined' ? window.location.pathname + window.location.search : '',
+      referrer: typeof document !== 'undefined' ? document.referrer : '',
+      metadata: meta,
+    };
+
+    this.eventsLog.push(logEntry);
+    if (this.eventsLog.length > MAX_LOCAL_EVENTS) {
+      this.eventsLog.shift();
+    }
+
+    this.saveToStorage();
+
+    // Async background sync to Supabase user_behavior_events if authenticated
+    this.syncToSupabase(logEntry);
+
     if (typeof window !== 'undefined' && (import.meta as any).env?.DEV) {
-      console.log(`[ConversionTelemetry] ${event}`, meta || '');
+      console.log(`[GrowthTelemetry] ${event}`, meta || '');
+    }
+  }
+
+  private async syncToSupabase(entry: TelemetryLogEntry): Promise<void> {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user?.id) {
+        // Find all un-synced entries including current
+        const pending = this.eventsLog.filter(e => !e.synced);
+        if (!pending.some(e => e.timestamp === entry.timestamp && e.event === entry.event)) {
+          pending.push(entry);
+        }
+
+        const rows = pending.map(e => ({
+          user_id: session.user.id,
+          event_type: e.event,
+          event_category: 'growth_funnel',
+          page_url: e.url,
+          referrer: e.referrer || null,
+          event_data: e.metadata || {},
+          created_at: e.timestamp,
+        }));
+
+        if (rows.length > 0) {
+          const { error } = await supabase.from('user_behavior_events').insert(rows);
+          if (!error) {
+            pending.forEach(e => { e.synced = true; });
+            this.saveToStorage();
+          }
+        }
+      }
+    } catch {
+      // Non-blocking telemetry failure
     }
   }
 
   /**
    * Sets acquisition context for the signup return flow
    */
-  setAcquisitionContext(source: 'ats_scanner' | 'jobs' | 'seo_job_page' | 'homepage', returnUrl?: string): void {
+  setAcquisitionContext(source: string, returnUrl?: string): void {
     if (typeof window === 'undefined') return;
     try {
+      localStorage.setItem('txc_acquisition_source', source);
       sessionStorage.setItem('txc_acquisition_source', source);
       if (returnUrl) {
+        localStorage.setItem('txc_acquisition_return_url', returnUrl);
         sessionStorage.setItem('txc_acquisition_return_url', returnUrl);
       }
-    } catch {
-      // Ignore
-    }
+    } catch {}
   }
 
   /**
@@ -104,13 +181,21 @@ class ConversionTelemetryManager {
   consumeAcquisitionReturnUrl(): { source: string | null; returnUrl: string | null } {
     if (typeof window === 'undefined') return { source: null, returnUrl: null };
     try {
-      const source = sessionStorage.getItem('txc_acquisition_source');
-      const returnUrl = sessionStorage.getItem('txc_acquisition_return_url');
+      const source = localStorage.getItem('txc_acquisition_source') || sessionStorage.getItem('txc_acquisition_source');
+      const returnUrl = localStorage.getItem('txc_acquisition_return_url') || sessionStorage.getItem('txc_acquisition_return_url');
+      localStorage.removeItem('txc_acquisition_return_url');
       sessionStorage.removeItem('txc_acquisition_return_url');
       return { source, returnUrl };
     } catch {
       return { source: null, returnUrl: null };
     }
+  }
+
+  /**
+   * Returns recent events log
+   */
+  getRecentEvents(): TelemetryLogEntry[] {
+    return [...this.eventsLog];
   }
 
   /**
@@ -134,9 +219,12 @@ class ConversionTelemetryManager {
     Object.keys(this.counts).forEach(k => {
       this.counts[k as ConversionEvent] = 0;
     });
+    this.eventsLog = [];
     if (typeof window !== 'undefined') {
       try {
+        localStorage.removeItem(STORAGE_KEY);
         sessionStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(LOG_STORAGE_KEY);
       } catch {}
     }
   }

@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
+import { resolvePostAuthDestination } from '@/utils/intentRouting';
 
 interface OptimizedAuthContextType {
   user: User | null;
@@ -94,10 +95,12 @@ export const OptimizedAuthProvider = ({ children }: { children: ReactNode }) => 
           const currentPath = window.location.pathname;
           
           // Only redirect if on auth pages
-          if (currentPath.startsWith('/auth') || currentPath === '/') {
-            const redirectPath = localStorage.getItem('subdomain_redirect') || '/network';
+          if (currentPath.startsWith('/auth')) {
+            const redirectPath = resolvePostAuthDestination({
+              searchParams: new URLSearchParams(window.location.search),
+              userMetadata: session.user.user_metadata,
+            });
             navigate(redirectPath, { replace: true });
-            localStorage.removeItem('subdomain_redirect');
           }
         }
         
@@ -114,11 +117,19 @@ export const OptimizedAuthProvider = ({ children }: { children: ReactNode }) => 
           setSession(session);
           setUser(session?.user ?? null);
           
-          // Auto-redirect for authenticated users on home page
-          if (session?.user && window.location.pathname === '/') {
-            const redirectPath = localStorage.getItem('subdomain_redirect') || '/network';
+          // Auto-redirect if user is already authenticated and lands on auth pages
+          if (session?.user && window.location.pathname.startsWith('/auth')) {
+            const redirectPath = resolvePostAuthDestination({
+              searchParams: new URLSearchParams(window.location.search),
+              userMetadata: session.user.user_metadata,
+            });
             navigate(redirectPath, { replace: true });
-            localStorage.removeItem('subdomain_redirect');
+          } else if (session?.user && window.location.pathname === '/') {
+            const subdomainRedirect = localStorage.getItem('subdomain_redirect');
+            if (subdomainRedirect && subdomainRedirect !== '/network') {
+              localStorage.removeItem('subdomain_redirect');
+              navigate(subdomainRedirect, { replace: true });
+            }
           }
         }
       } catch (error) {

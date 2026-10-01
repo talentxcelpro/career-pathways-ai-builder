@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import { GOOGLE_CLIENT_ID, loadGoogleIdentityServices } from '@/config/googleAuth';
+import { resolvePostAuthDestination } from '@/utils/intentRouting';
 
 interface SocialLoginProps {
   variant?: 'default' | 'prominent';
@@ -64,13 +65,10 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
         }
       }
 
-      const urlParams = new URLSearchParams(window.location.search);
-      const redirectParam = urlParams.get('redirect') || urlParams.get('returnUrl');
-      const storedRedirect = localStorage.getItem('subdomain_redirect');
-      const targetUrl = redirectParam ? decodeURIComponent(redirectParam) : (storedRedirect || '/network');
-      try {
-        localStorage.removeItem('subdomain_redirect');
-      } catch (_) {}
+      const targetUrl = resolvePostAuthDestination({
+        searchParams: new URLSearchParams(window.location.search),
+        userMetadata: data.user.user_metadata,
+      });
 
       window.location.replace(targetUrl);
     } catch (error: any) {
