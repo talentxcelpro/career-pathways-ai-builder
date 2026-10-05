@@ -16,6 +16,7 @@ import { GlobalOccupationEvidenceFactory } from '../src/lib/seo/searchUniverse/g
 import { GlobalIndustryHierarchy } from '../src/lib/seo/searchUniverse/globalIndustryHierarchy';
 import { OccupationRoadmapRegistry } from '../src/lib/seo/searchUniverse/occupationRoadmapRegistry';
 import { SearchCareerFunnelTelemetry } from '../src/lib/seo/searchUniverse/searchCareerFunnelTelemetry';
+import { OccupationLedgerRegistry } from '../src/lib/seo/searchUniverse/occupationLedger';
 
 let passed = 0;
 let failed = 0;
@@ -131,6 +132,28 @@ async function runTestSuite() {
     sectorDiversityWeight: 1.1,
   });
   assert(priorityScore >= 85, 'Factory prioritization scoring calculates composite score >= 85 (scored: ' + priorityScore + ')');
+
+  // --- 9. Testing Per-Occupation Evidence & Economic Ledger ---
+  console.log('\n--- 9. Testing Per-Occupation Evidence & Economic Ledger ---');
+  const stats = OccupationLedgerRegistry.getLedgerAggregateStats();
+  assert(stats.provenOccupationsCount === 44, 'Ledger tracks exact 44 baseline proven units (found: ' + stats.provenOccupationsCount + ')');
+  assert(stats.b1CandidateCount === 56, 'Ledger queues exact 56 Phase B1 candidate units (found: ' + stats.b1CandidateCount + ')');
+  assert(stats.b1TotalTarget === 100, 'Ledger establishes exact 100-role B1 milestone gate (found: ' + stats.b1TotalTarget + ')');
+  assert(stats.totalCostINR === 52800, 'Ledger aggregate baseline production cost is ₹52,800 (found: ₹' + stats.totalCostINR + ')');
+  assert(stats.totalApps === 19, 'Ledger accounts for exact 19 applications across 44 units (found: ' + stats.totalApps + ')');
+  assert(stats.totalMatches === 3, 'Ledger accounts for exact 3 placements across 44 units (found: ' + stats.totalMatches + ')');
+  assert(stats.evidenceCostPerApplicationINR === 2779, 'Evidence Cost / Application reflects ₹2,779 (found: ₹' + stats.evidenceCostPerApplicationINR + ')');
+  assert(stats.evidenceCostPerPlacementINR === 17600, 'Evidence Cost / Placement reflects ₹17,600 (found: ₹' + stats.evidenceCostPerPlacementINR + ')');
+  assert(stats.costModel === 'BASELINE_ASSUMED', 'Ledger initializes costModel to BASELINE_ASSUMED');
+
+  const emergingWinners = OccupationLedgerRegistry.getEmergingWinners();
+  assert(emergingWinners.length >= 5, 'Ledger identifies >= 5 emerging winners (found: ' + emergingWinners.length + ')');
+  assert(emergingWinners[0].performanceTier === 'EMERGING_WINNER', 'Top performers classified as EMERGING_WINNER rather than confirmed heroes');
+
+  const sectorSummary = OccupationLedgerRegistry.getSectorPerformanceSummary();
+  assert(sectorSummary['healthcare'] !== undefined, 'Sector summary contains healthcare vertical');
+  assert(sectorSummary['healthcare'].evidenceCostPerApplicationINR === 1400, 'Healthcare Evidence Cost / Application is ₹1,400 (superior to average ₹2,779)');
+  assert(sectorSummary['healthcare'].evidenceCostPerPlacementINR === 4200, 'Healthcare Evidence Cost / Placement is ₹4,200 (superior to average ₹17,600)');
 
   console.log('\n================================================================');
   console.log(`🏁 EVIDENCE FACTORY RESULTS: ${passed} PASSED, ${failed} FAILED`);

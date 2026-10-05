@@ -490,16 +490,36 @@ $$\text{Occupation Slug} \longrightarrow \text{Evidence Score} \longrightarrow \
 │  • Proven Baseline Units        : 44 Occupations (Phase A Verified)         │
 │  • B1 Priority Candidates Queued: 56 Occupations (Demand x Evidence Weighted) │
 │  • B1 Milestone Target Scale    : 100 Occupations (Review Gate Milestone)     │
-│  • Aggregate Production Cost    : ₹52,800 (44 units @ ₹1,200/unit)       │
+│  • Production Cost Model        : BASELINE_ASSUMED (Assumed @ ₹1,200/unit)   │
+│  • Aggregate Production Cost    : ₹52,800 (44 units recorded)            │
+│  ⭐ Evidence Cost / Application  : ₹2,779 / app (₹52,800 / 19 applications)  │
+│  ⭐ Evidence Cost / Placement    : ₹17,600 / match (₹52,800 / 3 placements) │
 │  • Commercial Revenue Target    : ₹0.00 (B1 Commercial Validation)       │
-│  • Top Performing Archetypes    :                                            │
-│      - Registered Nurse: 3 apps, 1 match, 1850 imp                           │
-│      - Pharmacist: 2 apps, 1 match, 1420 imp                                 │
-│      - Commercial Pilot: 1 apps, 1 match, 1050 imp                           │
-│      - Software Engineer: 2 apps, 0 match, 2100 imp                          │
-│      - Relationship Manager: 1 apps, 0 match, 980 imp                        │
+│  • Emerging Winners (Early Obs) :                                            │
+│      - Registered Nurse: 3 apps, 1 match, 1850 imp (EMERGING_WINNER)         │
+│      - Pharmacist: 2 apps, 1 match, 1420 imp (EMERGING_WINNER)               │
+│      - Commercial Pilot: 1 apps, 1 match, 1050 imp (EMERGING_WINNER)         │
+│      - Software Engineer: 2 apps, 0 match, 2100 imp (EMERGING_WINNER)        │
+│      - Relationship Manager: 1 apps, 0 match, 980 imp (EMERGING_WINNER)      │
 └──────────────────────────────────────────────────────────────────────────────┘
 ```
+
+#### Unit Economic Efficiency Ratios
+1. **Evidence Cost per Application**:
+   $$\text{Evidence Cost / Application} = \frac{\text{Total Evidence Production Cost}}{\text{Applications Submitted}} = \frac{\text{₹}52,800}{19} \approx \text{₹}2,779 \text{ per application}$$
+   *Evaluates how efficiently the evidence graph drives high-intent career decisions. In high-conversion sectors like Healthcare, this drops to ₹1,400 / application.*
+
+2. **Evidence Cost per Placement**:
+   $$\text{Evidence Cost / Placement} = \frac{\text{Total Evidence Production Cost}}{\text{Confirmed Placements}} = \frac{\text{₹}52,800}{3} \approx \text{₹}17,600 \text{ per placement}$$
+   *Measures the exact cost of generating completed business transactions. In Healthcare, this drops to ₹4,200 / placement.*
+
+3. **Classification Governance: `EMERGING_WINNER` vs `PROVEN_HERO`**:
+   - Occupations with initial positive conversion (e.g. Registered Nurse, Pharmacist, Commercial Pilot) are classified as **`EMERGING_WINNER`** rather than confirmed heroes.
+   - Requires $\ge 5$ confirmed placements and sustained 30-day tracking before elevating an occupation to a permanent `PROVEN_HERO` archetype, protecting the factory against overfitting to small early sample sizes.
+
+4. **Production Cost Provenance: Assumed $\longrightarrow$ Actual Recorded**:
+   - Initial Phase A baseline models evidence production at ₹1,200 per saturated unit (`BASELINE_ASSUMED`).
+   - As Phase B1 executes, the ledger tracks `costModel: 'ACTUAL_RECORDED'` logging the true direct compute, scraping, validation, and human review costs per role.
 
 #### B1 Factory Balance & Empirical Baseline
 - **Proven Phase A Cohort (44 Units)**:
@@ -509,6 +529,8 @@ $$\text{Occupation Slug} \longrightarrow \text{Evidence Score} \longrightarrow \
   - Total Applications: $19$ (Application Yield: $0.43$ apps/role)
   - Total Matches/Placements: $3$ (Placement Yield: $0.068$ matches/role)
   - Production Cost: ₹$52,800$ (₹$1,200$ average cost-to-evidence per unit)
+  - Evidence Cost / Application: ₹$2,779$
+  - Evidence Cost / Placement: ₹$17,600$
 - **Queued Phase B1 Candidates (56 Units)**:
   - Balanced across all 15 industry verticals: Healthcare (8), BFSI (7), Construction (5), Aviation (5), Hospitality (4), Manufacturing (5), Logistics (4), Education (3), Legal (3), Agriculture (2), Media (2), Energy (2), Government (2), Retail (2), Tech/AI (2).
   - Target Scale: Exactly $44 \text{ proven} + 56 \text{ candidates} = 100 \text{ Occupations}$.

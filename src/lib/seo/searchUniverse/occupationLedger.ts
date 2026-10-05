@@ -23,7 +23,9 @@ export type OccupationCohort =
   | 'PHASE_B3_PLANNED';
 
 export type ArchetypePerformanceTier = 
-  | 'HERO_PERFORMER'      // Top 10% search & application volume
+  | 'EMERGING_WINNER'     // Promising early observation signal (< 5 placements; unconfirmed archetype)
+  | 'PROVEN_HERO'         // Statistically confirmed high-transaction archetype (>= 5 placements, large sample)
+  | 'HERO_PERFORMER'      // Backward-compatible alias for EMERGING_WINNER
   | 'PROVEN_BASELINE'     // Validated active transactional unit
   | 'ACTIVE_INCUBATION'   // Phase B1 candidate undergoing evidence saturation
   | 'UNDER_OBSERVATION';  // Low transaction yield relative to production cost
@@ -58,12 +60,15 @@ export interface OccupationLedgerEntry {
   matches: number;                       // Confirmed candidate placements / employer matches
   revenueINR: number;                    // Direct monetized GMV / revenue in INR
   costToProduceINR: number;              // Evidence acquisition & verification cost in INR
+  costModel?: 'BASELINE_ASSUMED' | 'ACTUAL_RECORDED'; // Cost recording provenance
 
   // 5. Unit Economics & Yield Metrics
   searchYield: number;                   // Impressions / occupation
   careerEventYield: number;              // (Registrations + Apps + Matches) / clicks (%)
   applicationYield: number;              // Applications / occupation
   placementYield: number;                // Matches / occupation
+  evidenceCostPerApplicationINR?: number | null; // Production cost / applications (₹/app)
+  evidenceCostPerPlacementINR?: number | null;   // Production cost / matches (₹/placement)
   netEconomicReturnINR: number;          // Revenue - Cost to produce
   performanceTier: ArchetypePerformanceTier;
 }
@@ -101,7 +106,7 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applicationYield: 3.0,
     placementYield: 1.0,
     netEconomicReturnINR: -1200,
-    performanceTier: 'HERO_PERFORMER',
+    performanceTier: 'EMERGING_WINNER',
   },
   {
     occupationSlug: 'pharmacist',
@@ -130,7 +135,7 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applicationYield: 2.0,
     placementYield: 1.0,
     netEconomicReturnINR: -1200,
-    performanceTier: 'HERO_PERFORMER',
+    performanceTier: 'EMERGING_WINNER',
   },
   {
     occupationSlug: 'doctor-physician',
@@ -179,13 +184,13 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     clicks: 18,
     ctr: 2.43,
     registrations: 2,
-    applications: 1,
+    applications: 0,
     matches: 0,
     revenueINR: 0,
     costToProduceINR: 1200,
     searchYield: 740,
-    careerEventYield: 16.67,
-    applicationYield: 1.0,
+    careerEventYield: 11.11,
+    applicationYield: 0,
     placementYield: 0,
     netEconomicReturnINR: -1200,
     performanceTier: 'PROVEN_BASELINE',
@@ -306,7 +311,7 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applicationYield: 1.0,
     placementYield: 0,
     netEconomicReturnINR: -1200,
-    performanceTier: 'HERO_PERFORMER',
+    performanceTier: 'EMERGING_WINNER',
   },
   {
     occupationSlug: 'credit-analyst',
@@ -326,13 +331,13 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     clicks: 19,
     ctr: 2.64,
     registrations: 2,
-    applications: 1,
+    applications: 0,
     matches: 0,
     revenueINR: 0,
     costToProduceINR: 1200,
     searchYield: 720,
-    careerEventYield: 15.79,
-    applicationYield: 1.0,
+    careerEventYield: 10.53,
+    applicationYield: 0,
     placementYield: 0,
     netEconomicReturnINR: -1200,
     performanceTier: 'PROVEN_BASELINE',
@@ -424,7 +429,7 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applicationYield: 1.0,
     placementYield: 0,
     netEconomicReturnINR: -1200,
-    performanceTier: 'HERO_PERFORMER',
+    performanceTier: 'EMERGING_WINNER',
   },
   {
     occupationSlug: 'quantity-surveyor',
@@ -444,13 +449,13 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     clicks: 16,
     ctr: 2.58,
     registrations: 2,
-    applications: 1,
+    applications: 0,
     matches: 0,
     revenueINR: 0,
     costToProduceINR: 1200,
     searchYield: 620,
-    careerEventYield: 18.75,
-    applicationYield: 1.0,
+    careerEventYield: 12.5,
+    applicationYield: 0,
     placementYield: 0,
     netEconomicReturnINR: -1200,
     performanceTier: 'PROVEN_BASELINE',
@@ -513,7 +518,7 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applicationYield: 1.0,
     placementYield: 1.0,
     netEconomicReturnINR: -1200,
-    performanceTier: 'HERO_PERFORMER',
+    performanceTier: 'EMERGING_WINNER',
   },
   {
     occupationSlug: 'cabin-crew',
@@ -533,13 +538,13 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     clicks: 25,
     ctr: 2.81,
     registrations: 3,
-    applications: 1,
+    applications: 0,
     matches: 0,
     revenueINR: 0,
     costToProduceINR: 1200,
     searchYield: 890,
-    careerEventYield: 16.0,
-    applicationYield: 1.0,
+    careerEventYield: 12.0,
+    applicationYield: 0,
     placementYield: 0,
     netEconomicReturnINR: -1200,
     performanceTier: 'PROVEN_BASELINE',
@@ -602,7 +607,7 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applicationYield: 1.0,
     placementYield: 0,
     netEconomicReturnINR: -1200,
-    performanceTier: 'HERO_PERFORMER',
+    performanceTier: 'EMERGING_WINNER',
   },
   {
     occupationSlug: 'executive-chef',
@@ -831,13 +836,13 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     clicks: 18,
     ctr: 2.43,
     registrations: 2,
-    applications: 1,
+    applications: 0,
     matches: 0,
     revenueINR: 0,
     costToProduceINR: 1200,
     searchYield: 740,
-    careerEventYield: 16.67,
-    applicationYield: 1.0,
+    careerEventYield: 11.11,
+    applicationYield: 0,
     placementYield: 0,
     netEconomicReturnINR: -1200,
     performanceTier: 'PROVEN_BASELINE',
@@ -1278,13 +1283,13 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     clicks: 17,
     ctr: 2.50,
     registrations: 2,
-    applications: 1,
+    applications: 0,
     matches: 0,
     revenueINR: 0,
     costToProduceINR: 1200,
     searchYield: 680,
-    careerEventYield: 17.65,
-    applicationYield: 1.0,
+    careerEventYield: 11.76,
+    applicationYield: 0,
     placementYield: 0,
     netEconomicReturnINR: -1200,
     performanceTier: 'PROVEN_BASELINE',
@@ -1318,7 +1323,7 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applicationYield: 2.0,
     placementYield: 0,
     netEconomicReturnINR: -1200,
-    performanceTier: 'HERO_PERFORMER',
+    performanceTier: 'EMERGING_WINNER',
   },
   {
     occupationSlug: 'cloud-devops-engineer',
@@ -1500,9 +1505,13 @@ export class OccupationLedgerRegistry {
 
   public static getTopPerformingArchetypes(limit = 7): OccupationLedgerEntry[] {
     return this.getAllProvenUnits()
-      .filter(e => e.performanceTier === 'HERO_PERFORMER')
+      .filter(e => e.performanceTier === 'EMERGING_WINNER' || (e as any).performanceTier === 'HERO_PERFORMER')
       .sort((a, b) => (b.applications + b.matches * 3) - (a.applications + a.matches * 3))
       .slice(0, limit);
+  }
+
+  public static getEmergingWinners(limit = 7): OccupationLedgerEntry[] {
+    return this.getTopPerformingArchetypes(limit);
   }
 
   public static getSectorPerformanceSummary(): Record<string, {
@@ -1511,7 +1520,10 @@ export class OccupationLedgerRegistry {
     totalClicks: number;
     totalApplications: number;
     totalMatches: number;
+    totalCostINR: number;
     averageYieldPerRole: number;
+    evidenceCostPerApplicationINR: number | null;
+    evidenceCostPerPlacementINR: number | null;
   }> {
     const summary: Record<string, {
       occupationsCount: number;
@@ -1519,7 +1531,10 @@ export class OccupationLedgerRegistry {
       totalClicks: number;
       totalApplications: number;
       totalMatches: number;
+      totalCostINR: number;
       averageYieldPerRole: number;
+      evidenceCostPerApplicationINR: number | null;
+      evidenceCostPerPlacementINR: number | null;
     }> = {};
 
     for (const entry of this.getAllProvenUnits()) {
@@ -1530,7 +1545,10 @@ export class OccupationLedgerRegistry {
           totalClicks: 0,
           totalApplications: 0,
           totalMatches: 0,
+          totalCostINR: 0,
           averageYieldPerRole: 0,
+          evidenceCostPerApplicationINR: null,
+          evidenceCostPerPlacementINR: null,
         };
       }
 
@@ -1540,6 +1558,7 @@ export class OccupationLedgerRegistry {
       rec.totalClicks += entry.clicks;
       rec.totalApplications += entry.applications;
       rec.totalMatches += entry.matches;
+      rec.totalCostINR += entry.costToProduceINR;
     }
 
     for (const ind in summary) {
@@ -1547,6 +1566,12 @@ export class OccupationLedgerRegistry {
       rec.averageYieldPerRole = rec.occupationsCount > 0
         ? Math.round((rec.totalImpressions / rec.occupationsCount) * 10) / 10
         : 0;
+      rec.evidenceCostPerApplicationINR = rec.totalApplications > 0
+        ? Math.round(rec.totalCostINR / rec.totalApplications)
+        : null;
+      rec.evidenceCostPerPlacementINR = rec.totalMatches > 0
+        ? Math.round(rec.totalCostINR / rec.totalMatches)
+        : null;
     }
 
     return summary;
@@ -1562,6 +1587,20 @@ export class OccupationLedgerRegistry {
     const totalRevenue = units.reduce((s, u) => s + u.revenueINR, 0);
     const totalCost = units.reduce((s, u) => s + u.costToProduceINR, 0);
 
+    const actualCount = units.filter(u => u.costModel === 'ACTUAL_RECORDED').length;
+    const costModel: 'BASELINE_ASSUMED' | 'ACTUAL_RECORDED' | 'HYBRID_RECORDED_ASSUMED' = 
+      actualCount > 0 
+        ? (actualCount === units.length ? 'ACTUAL_RECORDED' : 'HYBRID_RECORDED_ASSUMED') 
+        : 'BASELINE_ASSUMED';
+
+    const evidenceCostPerApplicationINR = totalApps > 0 
+      ? Math.round(totalCost / totalApps) 
+      : 0;
+
+    const evidenceCostPerPlacementINR = totalMatches > 0 
+      ? Math.round(totalCost / totalMatches) 
+      : 0;
+
     return {
       provenOccupationsCount: units.length,
       b1CandidateCount: PHASE_B1_NEW_56_CANDIDATES.length,
@@ -1573,6 +1612,10 @@ export class OccupationLedgerRegistry {
       totalMatches,
       totalRevenueINR: totalRevenue,
       totalCostINR: totalCost,
+      costModel,
+      actualRecordedUnitsCount: actualCount,
+      evidenceCostPerApplicationINR, // ₹2,779
+      evidenceCostPerPlacementINR,   // ₹17,600
       averageSearchYield: units.length > 0 ? (totalImpressions / units.length) : 0,
       averageApplicationYield: units.length > 0 ? (totalApps / units.length) : 0,
       averagePlacementYield: units.length > 0 ? (totalMatches / units.length) : 0,

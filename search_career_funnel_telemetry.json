@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-10-05T11:37:19.940Z",
+  "timestamp": "2026-10-05T11:50:08.880Z",
   "scaleSummary": {
     "modeledSearchOpportunities": "1.057B+",
     "qualifiedOpportunities": "241M",
@@ -31,7 +31,9 @@
     "transactionYieldPerOccupation": "0.50 transactions / saturated occupation (22 transactions / 44 saturated)",
     "unitEconomicCTR": "2.50%",
     "unitEconomicSignupRate": "10.99%",
-    "unitEconomicApplicationRate": "24.36%"
+    "unitEconomicApplicationRate": "24.36%",
+    "evidenceCostPerApplication": "₹2,779 / application (₹52,800 / 19 apps)",
+    "evidenceCostPerPlacement": "₹17,600 / placement (₹52,800 / 3 matches)"
   },
   "occupationLedgerSummary": {
     "provenUnitsCount": 44,
@@ -39,6 +41,46 @@
     "b1TotalTarget": 100,
     "totalProductionCostINR": 52800,
     "totalMonetizedRevenueINR": 0,
+    "costModel": "BASELINE_ASSUMED",
+    "evidenceCostPerApplicationINR": 2779,
+    "evidenceCostPerPlacementINR": 17600,
+    "emergingWinners": [
+      {
+        "occupationName": "Registered Nurse",
+        "applications": 3,
+        "matches": 1,
+        "searchYield": 1850,
+        "performanceTier": "EMERGING_WINNER"
+      },
+      {
+        "occupationName": "Pharmacist",
+        "applications": 2,
+        "matches": 1,
+        "searchYield": 1420,
+        "performanceTier": "EMERGING_WINNER"
+      },
+      {
+        "occupationName": "Commercial Pilot",
+        "applications": 1,
+        "matches": 1,
+        "searchYield": 1050,
+        "performanceTier": "EMERGING_WINNER"
+      },
+      {
+        "occupationName": "Software Engineer",
+        "applications": 2,
+        "matches": 0,
+        "searchYield": 2100,
+        "performanceTier": "EMERGING_WINNER"
+      },
+      {
+        "occupationName": "Relationship Manager",
+        "applications": 1,
+        "matches": 0,
+        "searchYield": 980,
+        "performanceTier": "EMERGING_WINNER"
+      }
+    ],
     "topPerformingArchetypes": [
       {
         "occupationName": "Registered Nurse",

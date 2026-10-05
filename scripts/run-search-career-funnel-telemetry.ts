@@ -83,11 +83,14 @@ async function runTelemetry() {
     console.log(`│  • Proven Baseline Units        : ${snapshot.occupationLedgerSummary.provenUnitsCount} Occupations (Phase A Verified)         │`);
     console.log(`│  • B1 Priority Candidates Queued: ${snapshot.occupationLedgerSummary.b1CandidateCount} Occupations (Demand x Evidence Weighted) │`);
     console.log(`│  • B1 Milestone Target Scale    : ${snapshot.occupationLedgerSummary.b1TotalTarget} Occupations (Review Gate Milestone)     │`);
-    console.log(`│  • Aggregate Production Cost    : ₹${snapshot.occupationLedgerSummary.totalProductionCostINR.toLocaleString()} (44 units @ ₹1,200/unit)       │`);
+    console.log(`│  • Production Cost Model        : ${snapshot.occupationLedgerSummary.costModel} (Assumed @ ₹1,200/unit)   │`);
+    console.log(`│  • Aggregate Production Cost    : ₹${snapshot.occupationLedgerSummary.totalProductionCostINR.toLocaleString()} (44 units recorded)            │`);
+    console.log(`│  ⭐ Evidence Cost / Application  : ₹${snapshot.occupationLedgerSummary.evidenceCostPerApplicationINR.toLocaleString()} / app (₹52,800 / 19 applications)  │`);
+    console.log(`│  ⭐ Evidence Cost / Placement    : ₹${snapshot.occupationLedgerSummary.evidenceCostPerPlacementINR.toLocaleString()} / match (₹52,800 / 3 placements) │`);
     console.log(`│  • Commercial Revenue Target    : ₹${snapshot.occupationLedgerSummary.totalMonetizedRevenueINR.toFixed(2)} (B1 Commercial Validation)       │`);
-    console.log('│  • Top Performing Archetypes    :                                            │');
-    for (const arch of snapshot.occupationLedgerSummary.topPerformingArchetypes) {
-      const line = `    - ${arch.occupationName}: ${arch.applications} apps, ${arch.matches} match, ${arch.searchYield} imp`;
+    console.log('│  • Emerging Winners (Early Obs) :                                            │');
+    for (const arch of snapshot.occupationLedgerSummary.emergingWinners) {
+      const line = `    - ${arch.occupationName}: ${arch.applications} apps, ${arch.matches} match, ${arch.searchYield} imp (${arch.performanceTier})`;
       console.log(`│  ${line.padEnd(76)}│`);
     }
     console.log('└──────────────────────────────────────────────────────────────────────────────┘\n');

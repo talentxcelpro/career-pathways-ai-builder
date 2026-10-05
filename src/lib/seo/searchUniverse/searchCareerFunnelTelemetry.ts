@@ -77,6 +77,8 @@ export interface ExecutiveUniverseDashboard {
     unitEconomicCTR: string;
     unitEconomicSignupRate: string;
     unitEconomicApplicationRate: string;
+    evidenceCostPerApplication?: string;
+    evidenceCostPerPlacement?: string;
   };
   occupationLedgerSummary?: {
     provenUnitsCount: number;
@@ -84,6 +86,10 @@ export interface ExecutiveUniverseDashboard {
     b1TotalTarget: number;
     totalProductionCostINR: number;
     totalMonetizedRevenueINR: number;
+    costModel: 'BASELINE_ASSUMED' | 'ACTUAL_RECORDED' | 'HYBRID_RECORDED_ASSUMED';
+    evidenceCostPerApplicationINR: number;
+    evidenceCostPerPlacementINR: number;
+    emergingWinners: Array<{ occupationName: string; applications: number; matches: number; searchYield: number; performanceTier: string }>;
     topPerformingArchetypes: Array<{ occupationName: string; applications: number; matches: number; searchYield: number }>;
   };
   funnelStages: FunnelStageMetric[];
@@ -320,6 +326,8 @@ export class SearchCareerFunnelTelemetry {
         unitEconomicCTR: `${ctr.toFixed(2)}%`,
         unitEconomicSignupRate: `${signupRate.toFixed(2)}%`,
         unitEconomicApplicationRate: `${appRate.toFixed(2)}%`,
+        evidenceCostPerApplication: `₹${OccupationLedgerRegistry.getLedgerAggregateStats().evidenceCostPerApplicationINR.toLocaleString()} / application (₹${OccupationLedgerRegistry.getLedgerAggregateStats().totalCostINR.toLocaleString()} / ${applications} apps)`,
+        evidenceCostPerPlacement: `₹${OccupationLedgerRegistry.getLedgerAggregateStats().evidenceCostPerPlacementINR.toLocaleString()} / placement (₹${OccupationLedgerRegistry.getLedgerAggregateStats().totalCostINR.toLocaleString()} / ${hiresMatches} matches)`,
       },
       occupationLedgerSummary: {
         provenUnitsCount: OccupationLedgerRegistry.getLedgerAggregateStats().provenOccupationsCount,
@@ -327,6 +335,16 @@ export class SearchCareerFunnelTelemetry {
         b1TotalTarget: OccupationLedgerRegistry.getLedgerAggregateStats().b1TotalTarget,
         totalProductionCostINR: OccupationLedgerRegistry.getLedgerAggregateStats().totalCostINR,
         totalMonetizedRevenueINR: OccupationLedgerRegistry.getLedgerAggregateStats().totalRevenueINR,
+        costModel: OccupationLedgerRegistry.getLedgerAggregateStats().costModel,
+        evidenceCostPerApplicationINR: OccupationLedgerRegistry.getLedgerAggregateStats().evidenceCostPerApplicationINR,
+        evidenceCostPerPlacementINR: OccupationLedgerRegistry.getLedgerAggregateStats().evidenceCostPerPlacementINR,
+        emergingWinners: OccupationLedgerRegistry.getEmergingWinners(5).map(a => ({
+          occupationName: a.occupationName,
+          applications: a.applications,
+          matches: a.matches,
+          searchYield: a.searchYield,
+          performanceTier: a.performanceTier,
+        })),
         topPerformingArchetypes: OccupationLedgerRegistry.getTopPerformingArchetypes(5).map(a => ({
           occupationName: a.occupationName,
           applications: a.applications,
