@@ -1,0 +1,165 @@
+{
+  "timestamp": "2026-10-05T10:27:09.447Z",
+  "scaleSummary": {
+    "modeledSearchOpportunities": "1.057B+",
+    "qualifiedOpportunities": "241M",
+    "evidenceBackedDestinations": "73M",
+    "maximumQualityCapacity": "22.6M (Ceiling)",
+    "currentlyIndexableUrls": 12053,
+    "actuallyIndexedUrls": 8450,
+    "totalOrganicImpressions": 28400,
+    "totalOrganicClicks": 710,
+    "candidateRegistrations": 78,
+    "jobApplicationsSubmitted": 19,
+    "hiresMatchesCompleted": 3
+  },
+  "executiveRatios": {
+    "searchUniverseEfficiency": "0.0035% (8,450 indexed / 241M qualified)",
+    "searchUniverseEfficiencyPercentage": 0.0035062240663900415,
+    "searchToCareerConversion": "14.08% (100 conversions / 710 clicks)",
+    "searchToCareerConversionPercentage": 14.084507042253522,
+    "unitEconomicCTR": "2.50%",
+    "unitEconomicSignupRate": "10.99%",
+    "unitEconomicApplicationRate": "24.36%"
+  },
+  "funnelStages": [
+    {
+      "stageId": "MODELED_DEMAND",
+      "stageName": "Modeled Search Opportunities",
+      "category": "SEARCH_DEMAND",
+      "count": 1057000000,
+      "formattedCount": "1.057B+",
+      "sourceOfTruth": "MODELED_TARGET",
+      "notes": "Total modeled search query demand across 32 industries and 31 search universes."
+    },
+    {
+      "stageId": "RECOGNIZED_ENTITIES",
+      "stageName": "Recognized Entity Graph Nodes",
+      "category": "SEARCH_DEMAND",
+      "count": 540000000,
+      "formattedCount": "540M",
+      "sourceOfTruth": "TAXONOMY_ENGINE",
+      "conversionRateFromPreviousStage": 51.1,
+      "notes": "Demands resolving to verified 6-Tier Industry nodes and 7-Level Location nodes."
+    },
+    {
+      "stageId": "RECOGNIZED_INTENTS",
+      "stageName": "Recognized Intent Archetypes",
+      "category": "SEARCH_DEMAND",
+      "count": 380000000,
+      "formattedCount": "380M",
+      "sourceOfTruth": "TAXONOMY_ENGINE",
+      "conversionRateFromPreviousStage": 70.4,
+      "notes": "Demands successfully mapped to the 22 canonical intent archetypes."
+    },
+    {
+      "stageId": "QUALIFIED_OPPORTUNITIES",
+      "stageName": "Qualified Search Opportunities",
+      "category": "ENGINEERING_SUPPLY",
+      "count": 241000000,
+      "formattedCount": "241M",
+      "sourceOfTruth": "EVIDENCE_CONTRACT",
+      "conversionRateFromPreviousStage": 63.4,
+      "notes": "Intents with Search Opportunity Score >= 70."
+    },
+    {
+      "stageId": "BUILDABLE_DESTINATIONS",
+      "stageName": "Buildable Evidence-Backed Destinations",
+      "category": "ENGINEERING_SUPPLY",
+      "count": 73000000,
+      "formattedCount": "73M",
+      "sourceOfTruth": "EVIDENCE_CONTRACT",
+      "conversionRateFromPreviousStage": 30.3,
+      "notes": "Pages backed by first-party datasets (Jobs >= 3, Salary >= 15 pts, ATS >= 20 terms)."
+    },
+    {
+      "stageId": "MAX_QUALITY_CAPACITY",
+      "stageName": "Maximum Quality Indexable Capacity",
+      "category": "ENGINEERING_SUPPLY",
+      "count": 22600000,
+      "formattedCount": "22.6M (Ceiling)",
+      "sourceOfTruth": "EVIDENCE_CONTRACT",
+      "conversionRateFromPreviousStage": 31,
+      "notes": "Hard governor capacity ceiling; zero thin content permitted."
+    },
+    {
+      "stageId": "SUBMITTED_SITEMAPS",
+      "stageName": "Submitted to XML Sitemaps",
+      "category": "GOOGLEBOT_DISCOVERY",
+      "count": 12053,
+      "formattedCount": "12,053",
+      "sourceOfTruth": "XML_SITEMAP",
+      "conversionRateFromPreviousStage": 0.05,
+      "notes": "Active, high-evidence destinations included in partitioned XML sitemaps."
+    },
+    {
+      "stageId": "INDEXED_BY_GOOGLE",
+      "stageName": "Indexed by Googlebot",
+      "category": "GOOGLEBOT_DISCOVERY",
+      "count": 8450,
+      "formattedCount": "8,450",
+      "sourceOfTruth": "GSC_API",
+      "conversionRateFromPreviousStage": 70.10702729610885,
+      "notes": "Clean URLs confirmed in Google Search Console index."
+    },
+    {
+      "stageId": "ORGANIC_IMPRESSIONS",
+      "stageName": "Organic Search Impressions",
+      "category": "CANDIDATE_ACQUISITION",
+      "count": 28400,
+      "formattedCount": "28,400",
+      "sourceOfTruth": "GSC_API",
+      "notes": "Total organic impressions generated across Google Search."
+    },
+    {
+      "stageId": "ORGANIC_CLICKS",
+      "stageName": "Organic Qualified Clicks",
+      "category": "CANDIDATE_ACQUISITION",
+      "count": 710,
+      "formattedCount": "710",
+      "sourceOfTruth": "GSC_API",
+      "conversionRateFromPreviousStage": 2.5,
+      "notes": "High-intent visitors arriving on TalentXcel destinations."
+    },
+    {
+      "stageId": "TOOL_INTERACTIONS",
+      "stageName": "Interactive Tool Engagements",
+      "category": "CANDIDATE_ACQUISITION",
+      "count": 298,
+      "formattedCount": "298",
+      "sourceOfTruth": "SUPABASE_DB",
+      "conversionRateFromPreviousStage": 42,
+      "notes": "Visitors running 10-second instant match, ATS score reveal, or salary calculations."
+    },
+    {
+      "stageId": "CANDIDATE_REGISTRATIONS",
+      "stageName": "Candidate Registrations",
+      "category": "BUSINESS_CONVERSION",
+      "count": 78,
+      "formattedCount": "78",
+      "sourceOfTruth": "SUPABASE_DB",
+      "conversionRateFromPreviousStage": 10.985915492957748,
+      "notes": "Visitors completing zero-friction Google/OTP authentication."
+    },
+    {
+      "stageId": "JOB_APPLICATIONS",
+      "stageName": "Job Applications Submitted",
+      "category": "BUSINESS_CONVERSION",
+      "count": 19,
+      "formattedCount": "19",
+      "sourceOfTruth": "SUPABASE_DB",
+      "conversionRateFromPreviousStage": 24.358974358974358,
+      "notes": "Candidates applying with verified skills and score to live vacancies."
+    },
+    {
+      "stageId": "HIRES_MATCHES",
+      "stageName": "Successful Hires & Employer Matches",
+      "category": "BUSINESS_CONVERSION",
+      "count": 3,
+      "formattedCount": "3",
+      "sourceOfTruth": "SUPABASE_DB",
+      "conversionRateFromPreviousStage": 15.789473684210526,
+      "notes": "Confirmed candidate placement with employer."
+    }
+  ]
+}
