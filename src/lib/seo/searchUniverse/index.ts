@@ -8,3 +8,7 @@ export * from './canonicalDestinationResolver';
 export * from './locationExpansionEngine';
 export * from './roleExpansionEngine';
 export * from './skillExpansionEngine';
+export * from './occupationLedger';
+export * from './occupationRoadmapRegistry';
+export * from './registrationAcquisitionEngine';
+export * from './searchCareerFunnelTelemetry';

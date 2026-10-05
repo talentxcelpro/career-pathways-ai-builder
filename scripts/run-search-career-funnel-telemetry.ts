@@ -84,11 +84,10 @@ async function runTelemetry() {
     console.log(`│  • B1 Priority Candidates Queued: ${snapshot.occupationLedgerSummary.b1CandidateCount} Occupations (Demand x Evidence Weighted) │`);
     console.log(`│  • B1 Milestone Target Scale    : ${snapshot.occupationLedgerSummary.b1TotalTarget} Occupations (Review Gate Milestone)     │`);
     console.log(`│  • Factory Cost Model           : ${snapshot.occupationLedgerSummary.costModel} (Owned Infrastructure)│`);
-    console.log(`│  • Incremental Cash Cost        : ₹${snapshot.occupationLedgerSummary.incrementalCashCostINR} (Zero External Cash Spend)       │`);
+    console.log(`│  • Incremental Cash Spend       : ₹${snapshot.occupationLedgerSummary.incrementalCashSpendINR ?? 0} (Zero External Cash Spend)       │`);
     console.log(`│  • Aggregate Production Cost    : ₹${snapshot.occupationLedgerSummary.totalProductionCostINR.toLocaleString()} (Owned Infrastructure)            │`);
-    console.log(`│  ⭐ Evidence Cost / Application  : ₹0 / app (Owned Infrastructure)              │`);
-    console.log(`│  ⭐ Evidence Cost / Placement    : ₹0 / match (Owned Infrastructure)            │`);
-    console.log(`│  ⭐ Primary Transaction KPI      : ${snapshot.occupationLedgerSummary.primaryKpi.padEnd(44)}│`);
+    console.log(`│  • Zero-Cost Transaction Yield  : ${snapshot.occupationLedgerSummary.zeroCostTransactionYield ?? 28} (Applications + 3 × Matches: 19 + 9)    │`);
+    console.log(`│  ⭐ Management Display           : ${snapshot.occupationLedgerSummary.managementSummary.padEnd(44)}│`);
     console.log(`│  • Commercial Revenue Target    : ₹${snapshot.occupationLedgerSummary.totalMonetizedRevenueINR.toFixed(2)} (B1 Commercial Validation)       │`);
     console.log('│  • Emerging Winners (Zero-Cost) :                                            │');
     for (const arch of snapshot.occupationLedgerSummary.emergingWinners) {
@@ -97,6 +96,30 @@ async function runTelemetry() {
         : '';
       const line = `    - ${arch.occupationName}: ${arch.applications} apps, ${arch.matches} match${scoreStr} [${arch.performanceTier}]`;
       console.log(`│  ${line.padEnd(76)}│`);
+    }
+    console.log('└──────────────────────────────────────────────────────────────────────────────┘\n');
+  }
+
+  if ((snapshot as any).registrationAcquisitionEngine) {
+    const acq = (snapshot as any).registrationAcquisitionEngine;
+    console.log('┌──────────────────────────────────────────────────────────────────────────────┐');
+    console.log('│ 🚀 BOX 6: REGISTRATION ACQUISITION ENGINE (50,000 REGISTRATIONS/DAY)         │');
+    console.log('├──────────────────────────────────────────────────────────────────────────────┤');
+    console.log(`│  🎯 Target Daily Registrations  : ${acq.targetDailyRegistrations.toLocaleString().padEnd(42)} │`);
+    console.log(`│  🌐 Required Daily Visits       : ~${acq.requiredDailyQualifiedVisits.toLocaleString()} qualified visits/day (@10.99% signup) │`);
+    console.log(`│  📄 Expected Daily Applications : ~${acq.expectedDailyApplications.toLocaleString()} applications/day (@24.36% app rate)   │`);
+    console.log(`│  📈 Growth Multiplier Required  : ~${acq.growthMultiplierRequired}x scale from current baseline (78 signups)        │`);
+    console.log('│  ──────────────────────────────────────────────────────────────────────────  │');
+    console.log('│  ⚙️  FOUR ACQUISITION ENGINES:                                                │');
+    console.log('│    1. SEO Acquisition Engine       : 31 Search Universes + 12-factor evidence │');
+    console.log('│    2. Programmatic Intent Engine   : 10 High-value intent surfaces / role     │');
+    console.log('│    3. Job-to-Career Conversion     : Check match, ATS resume, salary reveal   │');
+    console.log('│    4. Viral Referral Engine        : Public Career Passports & badge loops    │');
+    console.log('│  ──────────────────────────────────────────────────────────────────────────  │');
+    console.log('│  🪜 5-STAGE MILESTONE GATES:                                                 │');
+    for (const gate of acq.milestoneGates) {
+      const gateLine = `    [Stage ${gate.stage}] ${gate.dailyRegistrationsTarget.toLocaleString()} reg/day (${gate.dailyQualifiedVisitsTarget.toLocaleString()} visits) -> ${gate.canonicalOccupationsTarget} roles / ${gate.evidenceBackedLandingSurfaces} surfaces`;
+      console.log(`│  ${gateLine.padEnd(76)}│`);
     }
     console.log('└──────────────────────────────────────────────────────────────────────────────┘\n');
   }

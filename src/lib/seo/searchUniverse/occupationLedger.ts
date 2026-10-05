@@ -1612,6 +1612,7 @@ export class OccupationLedgerRegistry {
     const totalMatches = units.reduce((s, u) => s + u.matches, 0);
     const totalRevenue = units.reduce((s, u) => s + u.revenueINR, 0);
     const totalTransactions = totalApps + totalMatches; // 19 + 3 = 22
+    const zeroCostTransactionYield = totalApps + totalMatches * 3; // 19 + 9 = 28
 
     return {
       provenOccupationsCount: units.length,
@@ -1623,9 +1624,11 @@ export class OccupationLedgerRegistry {
       totalApps,
       totalMatches,
       totalTransactions,
+      zeroCostTransactionYield,
       totalRevenueINR: totalRevenue,
       totalCostINR: 0,
       incrementalCashCostINR: 0,
+      incrementalCashSpendINR: 0,
       capitalRequiredForB1INR: 0,
       costModel: 'ZERO_INCREMENTAL_CASH' as const,
       infrastructureCostModel: 'OWNED_EXISTING_INFRASTRUCTURE' as const,
@@ -1635,7 +1638,8 @@ export class OccupationLedgerRegistry {
       averageSearchYield: units.length > 0 ? (totalImpressions / units.length) : 0,
       averageApplicationYield: units.length > 0 ? (totalApps / units.length) : 0,
       averagePlacementYield: units.length > 0 ? (totalMatches / units.length) : 0,
-      primaryTransactionEfficiencyKPI: `${totalTransactions} career transactions / ₹0 incremental cash cost`,
+      managementSummary: `${totalTransactions} transaction events generated at ₹0 incremental cash spend`,
+      primaryTransactionEfficiencyKPI: `${totalTransactions} transaction events generated at ₹0 incremental cash spend`,
     };
   }
 

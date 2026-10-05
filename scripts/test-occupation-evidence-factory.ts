@@ -17,6 +17,7 @@ import { GlobalIndustryHierarchy } from '../src/lib/seo/searchUniverse/globalInd
 import { OccupationRoadmapRegistry } from '../src/lib/seo/searchUniverse/occupationRoadmapRegistry';
 import { SearchCareerFunnelTelemetry } from '../src/lib/seo/searchUniverse/searchCareerFunnelTelemetry';
 import { OccupationLedgerRegistry } from '../src/lib/seo/searchUniverse/occupationLedger';
+import { RegistrationAcquisitionEngine } from '../src/lib/seo/searchUniverse/registrationAcquisitionEngine';
 
 let passed = 0;
 let failed = 0;
@@ -175,6 +176,34 @@ async function runTestSuite() {
   const ranked = OccupationLedgerRegistry.rankByCapitalEfficiency(5);
   assert(ranked[0].occupationSlug === 'nurse', 'Top opportunity ranking unit is Registered Nurse (found: ' + ranked[0].occupationSlug + ')');
   assert(ranked[0].capitalAllocationScore > 10, 'Registered Nurse opportunity score > 10 (scored: ' + ranked[0].capitalAllocationScore + ')');
+  assert(stats.managementSummary === '22 transaction events generated at ₹0 incremental cash spend', 'Management display accurately shows 22 transaction events generated at ₹0 incremental cash spend');
+
+  // --- 10. Testing Registration Acquisition Engine (50k Registrations/Day Roadmap) ---
+  console.log('\n--- 10. Testing Registration Acquisition Engine (50k Registrations/Day Roadmap) ---');
+  const fourEngines = RegistrationAcquisitionEngine.getFourAcquisitionEngines();
+  assert(fourEngines.length === 4, 'Engine framework defines exact 4 acquisition engines (found: ' + fourEngines.length + ')');
+  assert(fourEngines.some(e => e.id === 'SEO_ACQUISITION_ENGINE'), 'Includes SEO Acquisition Engine for 31 search universes');
+  assert(fourEngines.some(e => e.id === 'PROGRAMMATIC_CAREER_INTENT_ENGINE'), 'Includes Programmatic Career Intent Engine');
+  assert(fourEngines.some(e => e.id === 'JOB_TO_CAREER_CONVERSION_ENGINE'), 'Includes Job-to-Career Conversion Engine');
+  assert(fourEngines.some(e => e.id === 'VIRAL_REFERRAL_ACQUISITION_ENGINE'), 'Includes Viral Referral Acquisition Engine');
+
+  const nurseSurfaces = RegistrationAcquisitionEngine.getAcquisitionSurfacesForOccupation('nurse', 'Registered Nurse');
+  assert(nurseSurfaces.length === 10, 'Registered Nurse maps to exact 10 high-value acquisition surfaces (found: ' + nurseSurfaces.length + ')');
+  assert(nurseSurfaces.some(s => s.surfaceType === 'JOBS' && s.actionHook === 'CHECK_MY_MATCH'), 'Jobs surface features CHECK_MY_MATCH action hook');
+  assert(nurseSurfaces.some(s => s.surfaceType === 'RESUME_ATS' && s.actionHook === 'BUILD_MY_ATS_RESUME'), 'Resume surface features BUILD_MY_ATS_RESUME action hook');
+  assert(nurseSurfaces.some(s => s.surfaceType === 'SALARY' && s.actionHook === 'SEE_SALARY_BENCHMARK'), 'Salary surface features SEE_SALARY_BENCHMARK action hook');
+  assert(nurseSurfaces.some(s => s.surfaceType === 'INTERVIEW_QUESTIONS' && s.actionHook === 'PRACTICE_INTERVIEW'), 'Interview surface features PRACTICE_INTERVIEW hook');
+  assert(nurseSurfaces.every(s => s.conversionPath.googleAuthTrigger.includes('Google')), 'Every surface enforces zero-friction Google sign-in trigger');
+  assert(nurseSurfaces.every(s => s.isEvidenceSatisfied === true), 'All 10 surfaces for Registered Nurse pass evidence verification gate');
+
+  const funnelCalc = RegistrationAcquisitionEngine.calculateFunnelRequirements(50000);
+  assert(funnelCalc.requiredDailyQualifiedVisits >= 450000, '50k daily registrations requires ~455,000 qualified visits/day (calculated: ' + funnelCalc.requiredDailyQualifiedVisits + ')');
+  assert(funnelCalc.expectedDailyApplications >= 12000, '50k daily registrations produces ~12,200 daily applications (calculated: ' + funnelCalc.expectedDailyApplications + ')');
+  assert(funnelCalc.signupRatePercent === 10.99, 'Funnel operates on verified 10.99% signup rate');
+
+  const gates = RegistrationAcquisitionEngine.getMilestoneGates();
+  assert(gates.length === 6, 'Defines 6 progression gates from Stage 0 to Stage 5 (50k/day) (found: ' + gates.length + ')');
+  assert(gates[5].dailyRegistrationsTarget === 50000, 'Stage 5 targets exactly 50,000 daily registrations');
 
   console.log('\n================================================================');
   console.log(`🏁 EVIDENCE FACTORY RESULTS: ${passed} PASSED, ${failed} FAILED`);

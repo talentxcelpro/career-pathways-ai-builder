@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-10-05T12:19:06.402Z",
+  "timestamp": "2026-10-05T12:30:35.980Z",
   "scaleSummary": {
     "modeledSearchOpportunities": "1.057B+",
     "qualifiedOpportunities": "241M",
@@ -34,7 +34,10 @@
     "unitEconomicApplicationRate": "24.36%",
     "evidenceCostPerApplication": "₹0 / application (Owned Infrastructure — ₹0 incremental cash spend)",
     "evidenceCostPerPlacement": "₹0 / placement (Owned Infrastructure — ₹0 incremental cash spend)",
-    "primaryTransactionEfficiencyKPI": "22 career transactions / ₹0 incremental cash cost"
+    "zeroCostTransactionYield": "28 (19 applications + 3 matches × 3)",
+    "incrementalCashSpend": "₹0 (Zero External Cash Spend)",
+    "managementTransactionSummary": "22 transaction events generated at ₹0 incremental cash spend",
+    "primaryTransactionEfficiencyKPI": "22 transaction events generated at ₹0 incremental cash spend"
   },
   "occupationLedgerSummary": {
     "provenUnitsCount": 44,
@@ -42,12 +45,15 @@
     "b1TotalTarget": 100,
     "totalProductionCostINR": 0,
     "incrementalCashCostINR": 0,
+    "incrementalCashSpendINR": 0,
+    "zeroCostTransactionYield": 28,
     "totalMonetizedRevenueINR": 0,
     "costModel": "ZERO_INCREMENTAL_CASH",
     "infrastructureCostModel": "OWNED_EXISTING_INFRASTRUCTURE",
     "evidenceCostPerApplicationINR": 0,
     "evidenceCostPerPlacementINR": 0,
-    "primaryKpi": "22 career transactions / ₹0 incremental cash cost",
+    "managementSummary": "22 transaction events generated at ₹0 incremental cash spend",
+    "primaryKpi": "22 transaction events generated at ₹0 incremental cash spend",
     "emergingWinners": [
       {
         "occupationName": "Registered Nurse",
@@ -127,6 +133,135 @@
         "zeroCostOpportunityScore": 1.3
       }
     ]
+  },
+  "registrationAcquisitionEngine": {
+    "operatingFunnelTarget": "500,000 qualified visits/day -> 50,000 registrations/day -> 12,200 applications/day",
+    "targetDailyRegistrations": 50000,
+    "requiredDailyQualifiedVisits": 455000,
+    "expectedDailyApplications": 12200,
+    "signupRatePercentage": 10.99,
+    "growthMultiplierRequired": 641,
+    "engines": [
+      {
+        "id": "SEO_ACQUISITION_ENGINE",
+        "name": "1. SEO Acquisition Engine",
+        "focus": "Turn 31 search universes into high-quality landing surfaces with the 12-factor evidence gate.",
+        "mechanism": "Maps query intent across 32 global industries; satisfies jobs, salary, and ATS keyword density before indexation.",
+        "keyArtifacts": [
+          "Verified Job Postings",
+          "Salary Distribution Tables",
+          "ATS Keyword Lexicons"
+        ]
+      },
+      {
+        "id": "PROGRAMMATIC_CAREER_INTENT_ENGINE",
+        "name": "2. Programmatic Career Intent Engine",
+        "focus": "Multi-intent expansion per occupation (Jobs, Salary, Resume, Interview, Skills, Locations).",
+        "mechanism": "Expands 1 canonical role into 10 high-value acquisition surfaces, publishing only combinations satisfying evidence contract.",
+        "keyArtifacts": [
+          "10 Surface Multi-Intent Matrix",
+          "STAR Interview Frameworks",
+          "Career Pathway Ladders"
+        ]
+      },
+      {
+        "id": "JOB_TO_CAREER_CONVERSION_ENGINE",
+        "name": "3. Job-to-Career Conversion Engine",
+        "focus": "Every job page sells a career action, not merely a vacancy.",
+        "mechanism": "10-Second Instant Match, ATS Resume Scorer, Salary Benchmarking, and STAR prep leading to Google Sign-in & Career Passport creation.",
+        "keyArtifacts": [
+          "10-Second Instant Match",
+          "Real-Time ATS Scorer",
+          "Zero-Friction Google/OTP Auth"
+        ]
+      },
+      {
+        "id": "VIRAL_REFERRAL_ACQUISITION_ENGINE",
+        "name": "4. Viral / Referral Acquisition Engine",
+        "focus": "Every generated artifact produces a shareable link that brings another user in.",
+        "mechanism": "Public Career Passports, verified ATS scorecard badges, and career progression maps with open-graph cards and invite hooks.",
+        "keyArtifacts": [
+          "Public Career Passport Link",
+          "Verifiable Skill Badges",
+          "Peer Benchmark Invitations"
+        ]
+      }
+    ],
+    "milestoneGates": [
+      {
+        "stage": 0,
+        "stageName": "Stage 0: Phase A Empirical Baseline",
+        "status": "ACTIVE_NOW",
+        "canonicalOccupationsTarget": 44,
+        "evidenceBackedLandingSurfaces": 44,
+        "dailyQualifiedVisitsTarget": 710,
+        "dailyRegistrationsTarget": 78,
+        "dailyApplicationsTarget": 19,
+        "signupRateExpected": 10.99,
+        "description": "Empirical starting foundation: 28.4k impressions, 710 clicks, 78 signups, 19 apps, 3 matches."
+      },
+      {
+        "stage": 1,
+        "stageName": "Stage 1: B1 Cohort & Intent Seeding (100 Occupations)",
+        "status": "NEXT_IN_PROGRESS",
+        "canonicalOccupationsTarget": 100,
+        "evidenceBackedLandingSurfaces": 1000,
+        "dailyQualifiedVisitsTarget": 1000,
+        "dailyRegistrationsTarget": 110,
+        "dailyApplicationsTarget": 27,
+        "signupRateExpected": 11,
+        "description": "100 validated occupations expanded across 10 high-value intent surfaces (Jobs, Salary, ATS, Interview)."
+      },
+      {
+        "stage": 2,
+        "stageName": "Stage 2: 1,000 High-Demand Surfaces Indexed",
+        "status": "PLANNED_MILESTONE",
+        "canonicalOccupationsTarget": 100,
+        "evidenceBackedLandingSurfaces": 1000,
+        "dailyQualifiedVisitsTarget": 10000,
+        "dailyRegistrationsTarget": 1100,
+        "dailyApplicationsTarget": 270,
+        "signupRateExpected": 11,
+        "description": "1,000 top occupation-location-intent landing pages fully indexed with 12-factor evidence saturation."
+      },
+      {
+        "stage": 3,
+        "stageName": "Stage 3: 10,000 Daily Registrations Gate",
+        "status": "PLANNED_MILESTONE",
+        "canonicalOccupationsTarget": 250,
+        "evidenceBackedLandingSurfaces": 3500,
+        "dailyQualifiedVisitsTarget": 91000,
+        "dailyRegistrationsTarget": 10000,
+        "dailyApplicationsTarget": 2430,
+        "signupRateExpected": 11,
+        "description": "Crosses first mega-scale distribution threshold: 91k qualified daily visits driving 10k registrations/day."
+      },
+      {
+        "stage": 4,
+        "stageName": "Stage 4: 25,000 Daily Registrations Gate",
+        "status": "PLANNED_MILESTONE",
+        "canonicalOccupationsTarget": 500,
+        "evidenceBackedLandingSurfaces": 7500,
+        "dailyQualifiedVisitsTarget": 228000,
+        "dailyRegistrationsTarget": 25000,
+        "dailyApplicationsTarget": 6100,
+        "signupRateExpected": 11,
+        "description": "Broad national + global coverage across 68 specialized sectors delivering 228k daily visits."
+      },
+      {
+        "stage": 5,
+        "stageName": "Stage 5: Target Operating Scale (50,000 Daily Registrations)",
+        "status": "PLANNED_MILESTONE",
+        "canonicalOccupationsTarget": 500,
+        "evidenceBackedLandingSurfaces": 15000,
+        "dailyQualifiedVisitsTarget": 455000,
+        "dailyRegistrationsTarget": 50000,
+        "dailyApplicationsTarget": 12200,
+        "signupRateExpected": 11,
+        "description": "Ultimate acquisition objective: 455k qualified visits/day -> 50k registrations/day -> 12.2k+ applications/day."
+      }
+    ],
+    "sampleSurfacesCount": 10
   },
   "funnelStages": [
     {

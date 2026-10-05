@@ -487,37 +487,53 @@ $$\text{Occupation Slug} \longrightarrow \text{Evidence Score} \longrightarrow \
 ┌──────────────────────────────────────────────────────────────────────────────┐
 │ 📋 BOX 5: PER-OCCUPATION EVIDENCE & ECONOMIC LEDGER (B1 FACTORY)             │
 ├──────────────────────────────────────────────────────────────────────────────┤
-│  • Proven Baseline Units        : 44 Occupations (Phase A Verified)         │
-│  • B1 Priority Candidates Queued: 56 Occupations (Demand x Evidence Weighted) │
-│  • B1 Milestone Target Scale    : 100 Occupations (Review Gate Milestone)     │
-│  • Production Cost Model        : BASELINE_ASSUMED (Assumed @ ₹1,200/unit)   │
-│  • Aggregate Production Cost    : ₹52,800 (44 units recorded)            │
-│  ⭐ Evidence Cost / Application  : ₹2,779 / app (₹52,800 / 19 applications)  │
-│  ⭐ Evidence Cost / Placement    : ₹17,600 / match (₹52,800 / 3 placements) │
-│  • Commercial Revenue Target    : ₹0.00 (B1 Commercial Validation)       │
-│  • Emerging Winners (Early Obs) :                                            │
-│  • Factory Cost Model           : ZERO_INCREMENTAL_CASH (Owned Infrastructure)│
-│  • Incremental Cash Cost        : ₹0 (Zero External Cash Spend)               │
-│  • Aggregate Production Cost    : ₹0 (Owned Infrastructure)                   │
-│  ⭐ Evidence Cost / Application  : ₹0 / app (Owned Infrastructure)             │
-│  ⭐ Evidence Cost / Placement    : ₹0 / match (Owned Infrastructure)           │
-│  ⭐ Primary Transaction KPI      : 22 career transactions / ₹0 incremental cash cost │
-│  • Commercial Revenue Target    : ₹0.00 (B1 Commercial Validation)            │
-│  • Emerging Winners (Zero-Cost) :                                             │
-│      - Registered Nurse: 3 apps, 1 match (Score: 15.00) [EMERGING_WINNER]     │
-│      - Pharmacist: 2 apps, 1 match (Score: 11.25) [EMERGING_WINNER]           │
-│      - Commercial Pilot: 1 apps, 1 match (Score: 5.60) [EMERGING_WINNER]      │
-│      - Software Engineer: 2 apps, 0 match (Score: 5.00) [EMERGING_WINNER]     │
-│      - Relationship Manager: 1 apps, 0 match (Score: 1.30) [EMERGING_WINNER]  │
-└───────────────────────────────────────────────────────────────────────────────┘
+│  • Proven Baseline Units        : 44 Occupations (Phase A Verified)          │
+│  • B1 Priority Candidates Queued: 56 Occupations (Demand x Evidence Weighted)│
+│  • B1 Milestone Target Scale    : 100 Occupations (Review Gate Milestone)    │
+│  • Factory Cost Model           : ZERO_INCREMENTAL_CASH (Owned Infrastructure│
+│  • Incremental Cash Spend       : ₹0 (Zero External Cash Spend)              │
+│  • Aggregate Production Cost    : ₹0 (Owned Infrastructure)                  │
+│  • Zero-Cost Transaction Yield  : 28 (Applications + 3 × Matches: 19 + 9)    │
+│  ⭐ Management Display           : 22 transaction events generated at ₹0 inc  │
+│  • Commercial Revenue Target    : ₹0.00 (B1 Commercial Validation)           │
+│  • Emerging Winners (Zero-Cost) :                                            │
+│      - Registered Nurse: 3 apps, 1 match (Score: 15.00) [EMERGING_WINNER]    │
+│      - Pharmacist: 2 apps, 1 match (Score: 11.25) [EMERGING_WINNER]          │
+│      - Commercial Pilot: 1 apps, 1 match (Score: 5.60) [EMERGING_WINNER]     │
+│      - Software Engineer: 2 apps, 0 match (Score: 5.00) [EMERGING_WINNER]    │
+│      - Relationship Manager: 1 apps, 0 match (Score: 1.30) [EMERGING_WINNER] │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 🚀 BOX 6: REGISTRATION ACQUISITION ENGINE (50,000 REGISTRATIONS/DAY)         │
+├──────────────────────────────────────────────────────────────────────────────┤
+│  🎯 Target Daily Registrations  : 50,000                                     │
+│  🌐 Required Daily Visits       : ~455,000 qualified visits/day (@10.99% sign│
+│  📄 Expected Daily Applications : ~12,200 applications/day (@24.36% app rate)│
+│  📈 Growth Multiplier Required  : ~641x scale from current baseline (78 sign)│
+│  ──────────────────────────────────────────────────────────────────────────  │
+│  ⚙️  FOUR ACQUISITION ENGINES:                                                │
+│    1. SEO Acquisition Engine       : 31 Search Universes + 12-factor evidence│
+│    2. Programmatic Intent Engine   : 10 High-value intent surfaces / role    │
+│    3. Job-to-Career Conversion     : Check match, ATS resume, salary reveal  │
+│    4. Viral Referral Engine        : Public Career Passports & badge loops   │
+│  ──────────────────────────────────────────────────────────────────────────  │
+│  🪜 5-STAGE MILESTONE GATES:                                                 │
+│      [Stage 0] 78 reg/day (710 visits) -> 44 roles / 44 surfaces             │
+│      [Stage 1] 110 reg/day (1,000 visits) -> 100 roles / 1,000 surfaces      │
+│      [Stage 2] 1,100 reg/day (10,000 visits) -> 100 roles / 1,000 surfaces   │
+│      [Stage 3] 10,000 reg/day (91,000 visits) -> 250 roles / 3,500 surfaces  │
+│      [Stage 4] 25,000 reg/day (228,000 visits) -> 500 roles / 7,500 surfaces │
+│      [Stage 5] 50,000 reg/day (455,000 visits) -> 500 roles / 15,000 surfaces│
+└──────────────────────────────────────────────────────────────────────────────┘
 ```
 
 #### Zero Incremental Cash Cost Model (`ZERO_INCREMENTAL_CASH`)
 1. **Owned Infrastructure vs. Incremental Cash Spend**:
    - TalentXcel manufactures the 56 Phase-B1 occupations using existing infrastructure, open/verified public data sources, internal product telemetry, and automated extraction scripts.
    - Engineering salaries, cloud servers, and foundational APIs are accounted for as fixed corporate overhead. The factory requires **₹0 additional incremental cash spend**.
-   - **Primary Transaction Efficiency KPI**:
-     $$\text{Transaction Efficiency} = \frac{22 \text{ Career Transactions}}{\text{₹0 Incremental Cash Cost}}$$
+   - **Executive Display**:
+     $$\text{22 transaction events generated at ₹0 incremental cash spend}$$
 
 2. **Unit Economic Metrics in Zero-Cost Model**:
    - **Evidence Production Cost**: ₹0
@@ -573,10 +589,53 @@ Commercial Pilot | Commercial Airline Operations | 97/100 | ₹0 | 2026-10-05 | 
   - Target Scale: Exactly $44 \text{ proven} + 56 \text{ candidates} = 100 \text{ Occupations}$.
   - Incremental Cash Required for B1: ₹$0$.
 
-#### Mandatory B1 Review Gate Condition
-> [!IMPORTANT]
-> **Strict Scaling Halt Condition**: Do not advance to Phase B2 ($250$) or B3 ($500$) until all 100 occupations have completed at least 30 days of live production tracking, and the factory evaluates:
-> 1. Which occupations and sub-sectors yield the highest Zero-Cost Opportunity Scores and transaction volume?
-> 2. Which location and credential modifiers trigger the highest CTR and lowest bounce rate?
-> 3. Where is Googlebot indexation rate highest vs where is crawl throttling observed?
-> Production capacity will be expanded based exclusively on empirical ledger yield and zero incremental cash spend.
+---
+
+### 12. The Registration Acquisition Engine (50,000 Daily Registrations Roadmap)
+
+#### The Strategic Shift: Distribution & Demand Capture
+While the ₹0 incremental cost model solves factory economics, it does not solve user acquisition. With current telemetry delivering $78$ registrations from $710$ clicks ($10.99\%$ signup rate), scaling to **$40,000\text{--}50,000\text{ registrations/day}$** requires an operating volume of:
+$$\text{Required Qualified Visits / Day} = \frac{50,000}{0.1099} \approx \mathbf{455,000\text{ visits/day}}$$
+This represents a $\approx 641\times$ scale over baseline. The bottleneck is therefore not URL generation, but **high-intent distribution and conversion capture**.
+
+#### The Operating Funnel
+$$\mathbf{500,000\text{ Qualified Visits/Day}} \longrightarrow \mathbf{50,000\text{ Registrations/Day}} \longrightarrow \mathbf{12,200+\text{ Applications/Day}} \longrightarrow \mathbf{1,900+\text{ Matches/Day}} \longrightarrow \text{Referrals / Repeat Usage}$$
+
+#### The Four Acquisition Engines
+1. **SEO Acquisition Engine**:
+   - Transforms the 31 search universes into focused, high-intent landing surfaces.
+   - Enforces the 12-factor evidence gate before Googlebot indexation.
+2. **Programmatic Career Intent Engine**:
+   - Expands every canonical occupation into a multi-intent surface matrix rather than a single generic page.
+   - Generates only combinations backed by verifiable evidence.
+3. **Job-to-Career Conversion Engine**:
+   - Every job page sells a high-intent career action: "Check my match" (10-second instant match), "Build my ATS resume", "See salary", "Practice STAR interview questions", "Claim Career Passport".
+   - Enforces zero-friction Google/OTP authentication to unlock personalized outcomes.
+4. **Viral / Referral Acquisition Engine**:
+   - Every generated Career Passport, ATS score, and career pathway diagram produces a shareable artifact that drives organic incoming referral traffic.
+
+#### 10 High-Value Acquisition Surfaces per Occupation
+| Surface Type | Canonical Route Example | Action Hook | Conversion Tool / Outcome |
+| :--- | :--- | :--- | :--- |
+| **1. Jobs** | `/jobs/registered-nurse` | `CHECK_MY_MATCH` | 10-Second Instant Match to live vacancies |
+| **2. Resume / ATS** | `/resume-examples/registered-nurse` | `BUILD_MY_ATS_RESUME` | Real-time ATS resume scorer & Google XYZ bullet generator |
+| **3. Salary** | `/salary/registered-nurse` | `SEE_SALARY_BENCHMARK` | Empirical percentile pay scale & market calculator |
+| **4. Interview Questions** | `/interview-questions/registered-nurse` | `PRACTICE_INTERVIEW` | STAR framework answer banks & AI mock practice |
+| **5. Career Map** | `/career-pathways/registered-nurse` | `CLAIM_CAREER_PASSPORT` | 4-stage progression ladder & shareable Career Passport |
+| **6. Skills Intelligence** | `/skills/registered-nurse` | `DIAGNOSE_SKILL_GAPS` | Market skill gap quiz & verified badge endorsements |
+| **7. Companies** | `/companies/registered-nurse` | `CHECK_MY_MATCH` | Employer culture rating & direct expressions of interest |
+| **8. Colleges & Courses** | `/courses/registered-nurse` | `DIAGNOSE_SKILL_GAPS` | Accredited curriculum directory & fresher internships |
+| **9. Government Jobs** | `/government-jobs/registered-nurse` | `GOVERNMENT_JOB_ALERTS` | Official gazette exam eligibility & alert subscriptions |
+| **10. Location Pages** | `/jobs/registered-nurse-delhi` | `CHECK_MY_MATCH` | Hyperlocal commuter job board with city pay index |
+
+#### The 6-Step Universal Conversion Path
+Every acquisition surface adheres strictly to the 6-stage conversion sequence:
+$$\text{Search Intent} \longrightarrow \text{Useful Tool / Answer} \longrightarrow \text{Personalized Result} \longrightarrow \text{Google Sign-in} \longrightarrow \text{Career Passport Profile} \longrightarrow \text{Job Application / Match}$$
+
+#### 5-Stage Milestone Progression Gates
+- **Stage 0 (Current Baseline)**: $44\text{ Occupations} \longrightarrow 710\text{ clicks} \longrightarrow 78\text{ registrations total}$.
+- **Stage 1 (B1 Cohort Seeding)**: $100\text{ Occupations} \longrightarrow 1,000\text{ surfaces} \longrightarrow 1,000\text{ visits/day} \longrightarrow 110\text{ registrations/day}$.
+- **Stage 2 (1,000 Surfaces Indexed)**: $1,000\text{ saturated surfaces} \longrightarrow 10,000\text{ visits/day} \longrightarrow 1,100\text{ registrations/day}$.
+- **Stage 3 (10,000 Daily Gate)**: $250\text{ Occupations} \longrightarrow 3,500\text{ surfaces} \longrightarrow 91,000\text{ visits/day} \longrightarrow 10,000\text{ registrations/day} \longrightarrow 2,430\text{ applications/day}$.
+- **Stage 4 (25,000 Daily Gate)**: $500\text{ Occupations} \longrightarrow 7,500\text{ surfaces} \longrightarrow 228,000\text{ visits/day} \longrightarrow 25,000\text{ registrations/day} \longrightarrow 6,100\text{ applications/day}$.
+- **Stage 5 (Target Scale: 50,000 Daily Gate)**: $500\text{ Occupations} \longrightarrow 15,000\text{ surfaces} \longrightarrow 455,000\text{ visits/day} \longrightarrow \mathbf{50,000\text{ registrations/day}} \longrightarrow \mathbf{12,200\text{ applications/day}}$.

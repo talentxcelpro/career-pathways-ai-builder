@@ -27,6 +27,7 @@
 
 import { SearchUniverseTargetRegistry } from './searchUniverseTargetRegistry';
 import { OccupationLedgerRegistry } from './occupationLedger';
+import { RegistrationAcquisitionEngine } from './registrationAcquisitionEngine';
 
 export interface FunnelStageMetric {
   stageId: string;
@@ -328,7 +329,10 @@ export class SearchCareerFunnelTelemetry {
         unitEconomicApplicationRate: `${appRate.toFixed(2)}%`,
         evidenceCostPerApplication: `₹0 / application (Owned Infrastructure — ₹0 incremental cash spend)`,
         evidenceCostPerPlacement: `₹0 / placement (Owned Infrastructure — ₹0 incremental cash spend)`,
-        primaryTransactionEfficiencyKPI: `22 career transactions / ₹0 incremental cash cost`,
+        zeroCostTransactionYield: `28 (19 applications + 3 matches × 3)`,
+        incrementalCashSpend: `₹0 (Zero External Cash Spend)`,
+        managementTransactionSummary: `22 transaction events generated at ₹0 incremental cash spend`,
+        primaryTransactionEfficiencyKPI: `22 transaction events generated at ₹0 incremental cash spend`,
       },
       occupationLedgerSummary: {
         provenUnitsCount: OccupationLedgerRegistry.getLedgerAggregateStats().provenOccupationsCount,
@@ -336,12 +340,15 @@ export class SearchCareerFunnelTelemetry {
         b1TotalTarget: OccupationLedgerRegistry.getLedgerAggregateStats().b1TotalTarget,
         totalProductionCostINR: 0,
         incrementalCashCostINR: 0,
+        incrementalCashSpendINR: 0,
+        zeroCostTransactionYield: OccupationLedgerRegistry.getLedgerAggregateStats().zeroCostTransactionYield,
         totalMonetizedRevenueINR: OccupationLedgerRegistry.getLedgerAggregateStats().totalRevenueINR,
         costModel: 'ZERO_INCREMENTAL_CASH',
         infrastructureCostModel: 'OWNED_EXISTING_INFRASTRUCTURE',
         evidenceCostPerApplicationINR: 0,
         evidenceCostPerPlacementINR: 0,
-        primaryKpi: '22 career transactions / ₹0 incremental cash cost',
+        managementSummary: '22 transaction events generated at ₹0 incremental cash spend',
+        primaryKpi: '22 transaction events generated at ₹0 incremental cash spend',
         emergingWinners: OccupationLedgerRegistry.getEmergingWinners(5).map(a => ({
           occupationName: a.occupationName,
           applications: a.applications,
@@ -357,6 +364,17 @@ export class SearchCareerFunnelTelemetry {
           searchYield: a.searchYield,
           zeroCostOpportunityScore: (a as any).zeroCostOpportunityScore,
         })),
+      },
+      registrationAcquisitionEngine: {
+        operatingFunnelTarget: '500,000 qualified visits/day -> 50,000 registrations/day -> 12,200 applications/day',
+        targetDailyRegistrations: 50000,
+        requiredDailyQualifiedVisits: 455000,
+        expectedDailyApplications: 12200,
+        signupRatePercentage: 10.99,
+        growthMultiplierRequired: 641,
+        engines: RegistrationAcquisitionEngine.getFourAcquisitionEngines(),
+        milestoneGates: RegistrationAcquisitionEngine.getMilestoneGates(),
+        sampleSurfacesCount: RegistrationAcquisitionEngine.getAcquisitionSurfacesForOccupation('nurse', 'Registered Nurse').length,
       },
       funnelStages: stages,
     };
