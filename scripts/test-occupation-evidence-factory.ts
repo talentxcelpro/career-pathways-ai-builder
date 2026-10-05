@@ -116,7 +116,21 @@ async function runTestSuite() {
   const snapshot = SearchCareerFunnelTelemetry.generateSnapshot();
   assert(snapshot.executiveRatios.careerGraphCoverage.includes('8.80%'), 'Career Graph Coverage reflects 8.80% (44 / 500 target)');
   assert(snapshot.executiveRatios.qualifiedOpportunityCoverage.includes('0.0035%'), 'Qualified Opportunity Coverage reflects 0.0035%');
-  assert(snapshot.executiveRatios.transactionYieldPerOccupation.includes('0.50 transactions'), 'Transaction Yield reflects 0.50 transactions / saturated occupation');
+  assert(snapshot.executiveRatios.careerEventYield.includes('14.08%'), 'Career Event Yield reflects 14.08% (100 events / 710 clicks)');
+  assert(snapshot.executiveRatios.occupationTransactionYield.includes('0.43 applications'), 'Occupation Transaction Yield reflects 0.43 applications / saturated occupation');
+  assert(snapshot.executiveRatios.occupationPlacementYield.includes('0.068 matches'), 'Occupation Placement Yield reflects 0.068 matches / saturated occupation');
+
+  const subMilestones = OccupationRoadmapRegistry.getPhaseBSubMilestones();
+  assert(subMilestones.length === 3, 'Phase B defines 3 structured sub-milestones (B1: 100, B2: 250, B3: 500)');
+
+  const priorityScore = OccupationRoadmapRegistry.computeOccupationPriorityScore({
+    demandScore: 90,
+    activeJobDensity: 85,
+    salaryDataAvailability: 80,
+    transactionPotential: 88,
+    sectorDiversityWeight: 1.1,
+  });
+  assert(priorityScore >= 85, 'Factory prioritization scoring calculates composite score >= 85 (scored: ' + priorityScore + ')');
 
   console.log('\n================================================================');
   console.log(`🏁 EVIDENCE FACTORY RESULTS: ${passed} PASSED, ${failed} FAILED`);

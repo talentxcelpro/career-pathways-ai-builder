@@ -59,14 +59,19 @@ export interface ExecutiveUniverseDashboard {
     qualifiedOpportunityCoveragePercentage: number;
     searchUniverseEfficiency: string; // Backward compatibility alias
     searchUniverseEfficiencyPercentage: number;
-    // Metric 2: (Registrations + applications + matches) / organic qualified visitors
-    searchToCareerConversion: string;
+    // Metric 2: Career Event Yield = (Registrations + Applications + Matches) / Organic Clicks
+    careerEventYield: string;
+    careerEventYieldPercentage: number;
+    searchToCareerConversion: string; // Backward compatibility alias
     searchToCareerConversionPercentage: number;
     // Executive Occupation KPIs
     careerGraphCoverage: string;
     occupationSearchYield: string;
     occupationConversionYield: string;
-    transactionYieldPerOccupation: string;
+    occupationTransactionYield: string; // Applications / Saturated Occupation
+    occupationPlacementYield: string;   // Matches / Saturated Occupation
+    occupationEconomicYield?: string;  // Revenue / Saturated Occupation (Future)
+    transactionYieldPerOccupation: string; // Backward compatibility alias
     // Unit Economics: 1,000 impressions -> 50 clicks -> 5 signups -> 1 application
     unitEconomicCTR: string;
     unitEconomicSignupRate: string;
@@ -269,6 +274,8 @@ export class SearchCareerFunnelTelemetry {
     const searchYield = saturatedOccupations > 0 ? (impressions / saturatedOccupations) : 0;
     const transactions = applications + hiresMatches; // 19 + 3 = 22
     const transactionYield = saturatedOccupations > 0 ? (transactions / saturatedOccupations) : 0;
+    const applicationYield = saturatedOccupations > 0 ? (applications / saturatedOccupations) : 0;
+    const placementYield = saturatedOccupations > 0 ? (hiresMatches / saturatedOccupations) : 0;
 
     return {
       timestamp: new Date().toISOString(),
@@ -290,11 +297,16 @@ export class SearchCareerFunnelTelemetry {
         qualifiedOpportunityCoveragePercentage: efficiencyPercentage,
         searchUniverseEfficiency: `${efficiencyPercentage.toFixed(4)}% (${actuallyIndexed.toLocaleString()} indexed / 241M qualified)`,
         searchUniverseEfficiencyPercentage: efficiencyPercentage,
-        searchToCareerConversion: `${conversionPercentage.toFixed(2)}% (${totalConversions} conversions / ${clicks} clicks)`,
+        careerEventYield: `${conversionPercentage.toFixed(2)}% (${totalConversions} career events / ${clicks} clicks)`,
+        careerEventYieldPercentage: conversionPercentage,
+        searchToCareerConversion: `${conversionPercentage.toFixed(2)}% (${totalConversions} career events / ${clicks} clicks)`,
         searchToCareerConversionPercentage: conversionPercentage,
         careerGraphCoverage: `${coveragePercentage.toFixed(2)}% (${saturatedOccupations} saturated / ${totalCanonicalOccupations} canonical Phase B target)`,
         occupationSearchYield: `${searchYield.toFixed(1)} impressions / saturated occupation`,
         occupationConversionYield: `${conversionPercentage.toFixed(2)}% (${totalConversions} conversions / ${clicks} clicks)`,
+        occupationTransactionYield: `${applicationYield.toFixed(2)} applications / saturated occupation (${applications} applications / ${saturatedOccupations} saturated)`,
+        occupationPlacementYield: `${placementYield.toFixed(3)} matches / saturated occupation (${hiresMatches} matches / ${saturatedOccupations} saturated)`,
+        occupationEconomicYield: '₹0.00 / saturated occupation (Phase B commercialization in progress)',
         transactionYieldPerOccupation: `${transactionYield.toFixed(2)} transactions / saturated occupation (${transactions} transactions / ${saturatedOccupations} saturated)`,
         unitEconomicCTR: `${ctr.toFixed(2)}%`,
         unitEconomicSignupRate: `${signupRate.toFixed(2)}%`,

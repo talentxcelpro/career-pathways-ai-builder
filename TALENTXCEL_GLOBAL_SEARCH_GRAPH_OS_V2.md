@@ -380,6 +380,7 @@ $$\begin{aligned}
 │  • Saturated Occupations        : 44 (Phase A) / 500 (Phase B Milestone)    │
 │  • Specialized Sub-Sectors      : 68 Sectors (Cataloged & Mapped)            │
 │  • Career Graph Coverage        : 8.80% (44 saturated / 500 canonical target)│
+│  • Internal Roadmap Cadence     : B1 (100) ➔ B2 (250) ➔ B3 (500 Roles)       │
 │  • Evidence Contract Standard   : 12-Factor Full Evidence Saturation         │
 └──────────────────────────────────────────────────────────────────────────────┘
 
@@ -397,10 +398,10 @@ $$\begin{aligned}
 │ 🎯 BOX 4: YIELD & UNIT ECONOMICS                                             │
 ├──────────────────────────────────────────────────────────────────────────────┤
 │  ⭐ Qualified Opp Coverage       : 0.0035% — intentionally governor-limited   │
-│  ⭐ Search-to-Career Conversion : 14.08% (100 conversions / 710 clicks)      │
+│  ⭐ Career Event Yield           : 14.08% (100 career events / 710 clicks)    │
+│  ⭐ Occupation Transaction Yield : 0.43 applications / saturated occupation   │
+│  ⭐ Occupation Placement Yield   : 0.068 matches / saturated occupation       │
 │  ⭐ Occupation Search Yield     : 645.5 impressions / saturated occupation   │
-│  ⭐ Occupation Conversion Yield : 14.08% (100 conversions / 710 clicks)      │
-│  ⭐ Transaction Yield           : 0.50 transactions / saturated occupation   │
 │  • Unit Economic CTR            : 2.50%                                      │
 │  • Unit Economic Signup Rate    : 10.99%                                     │
 │  • Unit Economic App Rate       : 24.36%                                     │
@@ -410,22 +411,49 @@ $$\begin{aligned}
 #### Executive Yield Ratios Defined
 1. **Qualified Opportunity Coverage**:
    $$\text{Coverage} = \frac{\text{Actually Indexed Clean Pages}}{\text{Qualified Opportunities}} = \frac{8,450}{241,000,000} = 0.0035\% \quad \text{(Intentionally Governor-Limited)}$$
-   *Reflects deliberate quality constraint: only destinations with verified first-party evidence enter indexable sitemaps.*
+   *Reflects deliberate quality constraint: only destinations with verified first-party evidence enter indexable sitemaps. Zero thin content.*
 
-2. **Search-to-Career Conversion**:
-   $$\text{Conversion} = \frac{\text{Registrations} + \text{Applications} + \text{Matches}}{\text{Organic Qualified Clicks}} = \frac{78 + 19 + 3}{710} = 14.08\%$$
+2. **Career Event Yield**:
+   $$\text{Career Event Yield} = \frac{\text{Registrations} + \text{Applications} + \text{Matches}}{\text{Organic Qualified Clicks}} = \frac{78 + 19 + 3}{710} = 14.08\%$$
+   *Measures total downstream candidate activity (100 career events across 710 clicks). Relabeled from "conversion" to avoid confusion with single-event conversion rates.*
 
-3. **Occupation Search Yield**:
+3. **Occupation Transaction Yield (Applications)**:
+   $$\text{Transaction Yield} = \frac{\text{Applications Submitted}}{\text{Evidence-Saturated Occupations}} = \frac{19}{44} = 0.43 \text{ applications / saturated occupation}$$
+
+4. **Occupation Placement Yield (Hires / Matches)**:
+   $$\text{Placement Yield} = \frac{\text{Matches \& Placements}}{\text{Evidence-Saturated Occupations}} = \frac{3}{44} = 0.068 \text{ matches / saturated occupation}$$
+
+5. **Occupation Economic Yield (Revenue)**:
+   $$\text{Economic Yield} = \frac{\text{Direct Monetized Revenue}}{\text{Evidence-Saturated Occupations}} = \frac{\text{₹0.00}}{44} = \text{₹0.00 / saturated occupation} \quad \text{(Post-B1 Target)}$$
+
+6. **Occupation Search Yield**:
    $$\text{Search Yield} = \frac{\text{Total Organic Impressions}}{\text{Evidence-Saturated Occupations}} = \frac{28,400}{44} = 645.5 \text{ impressions / saturated occupation}$$
-
-4. **Transaction Yield per Occupation**:
-   $$\text{Transaction Yield} = \frac{\text{Applications} + \text{Hires/Matches}}{\text{Evidence-Saturated Occupations}} = \frac{19 + 3}{44} = 0.50 \text{ transactions / saturated occupation}$$
 
 ---
 
 ### 11.4 Phase B Milestone: 500 Occupations across 68 Specialized Sub-Sectors
-The platform advances from Phase A ($44$ baseline proof occupations) to Phase B ($500$ occupations across $68$ specialized sub-sectors) covering all $15$ global industry verticals:
 
+#### Factory Prioritization Engine (Demand × Evidence × Transaction Potential)
+Candidate occupations are never chosen uniformly across industries. Instead, the Evidence Factory scores and queues roles using:
+
+$$\text{Priority Score} = \Big(\text{Demand} \times 0.35 + \text{JobDensity} \times 0.25 + \text{SalaryDepth} \times 0.15 + \text{TransactionPotential} \times 0.25\Big) \times \text{SectorDiversityWeight}$$
+
+- **Sector Diversity Quotas**: Applied to ensure non-IT industries (Healthcare, BFSI, Construction, Aviation, Hospitality, Manufacturing) maintain balanced coverage.
+- **Factory Pipeline**:
+  $$\text{Role Queued} \longrightarrow \text{Demand Score} \longrightarrow \text{Evidence Audit} \longrightarrow \text{12-Factor Saturation} \longrightarrow \text{Publish} \longrightarrow \text{Measure Yield}$$
+
+#### Structured Phase B Cadence
+1. **Phase B1 — First 100 Occupations**:
+   - Scale from $44 \to 100$ fully saturated occupations.
+   - Focus: High-demand, high-vacancy vocations across Healthcare, BFSI, Construction, Aviation, and Core Systems.
+2. **Phase B2 — 250 Occupations Expansion**:
+   - Scale from $100 \to 250$ occupations.
+   - Enforce sector diversity across all 15 industry verticals (Hospitality, Logistics, Manufacturing, Education, Legal, Agriculture).
+3. **Phase B3 — 500 Occupations / 68 Sectors**:
+   - Complete evidence saturation of all $500+$ roles across $68$ specialized sub-sectors.
+   - **Data Stop & Analysis**: Before advancing to Phase C (2,500), evaluate deep telemetry per occupation (impressions, clicks, CTR, applications, placements, cost-to-evidence, and revenue).
+
+#### 68 Specialized Sub-Sectors Catalog
 | Vertical Industry | Specialized Sub-Sectors | Target Occupations | Priority Focus |
 | :--- | :--- | :--- | :--- |
 | **Healthcare & Life Sciences** | 12 Sectors | 85 Roles | Hospitals, Pharmacy, Diagnostics, MedTech, Biotech, Mental Health |
@@ -444,5 +472,6 @@ The platform advances from Phase A ($44$ baseline proof occupations) to Phase B 
 | **Government & Public Safety**| 2 Sectors | 13 Roles | Civil Administration/Public Policy, Law Enforcement & Forensics |
 | **Retail & E-Commerce** | 2 Sectors | 14 Roles | Omnichannel Store Networks, E-Commerce Marketplaces & D2C Brands |
 | **TOTAL (Phase B Milestone)** | **68 Sectors** | **514 Roles** | **Full 12-Factor Evidence Saturation Standard** |
+
 
 

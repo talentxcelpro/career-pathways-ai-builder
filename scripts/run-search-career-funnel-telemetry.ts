@@ -2,11 +2,11 @@
 /**
  * Executive Search-to-Career Funnel Telemetry Runner
  *
- * Implements 4-Box Executive Layout:
+ * Implements 4-Box Executive Operating Model:
  * 1. GLOBAL CAREER GRAPH: 1.057B+ modeled opportunities | 241M qualified | 73M evidence-backed | 22.6M max capacity | 12,053 indexable | 8,450 indexed
- * 2. OCCUPATION GRAPH: 44 / 500 Phase-B saturated | 68 specialized sectors | 8.8% Career Graph Coverage
+ * 2. OCCUPATION GRAPH: 44 / 500 Phase-B saturated | 68 specialized sectors | 8.8% Career Graph Coverage | B1 (100) -> B2 (250) -> B3 (500)
  * 3. MARKET PERFORMANCE: 28,400 impressions | 710 clicks | 78 registrations | 19 applications | 3 matches
- * 4. YIELD & UNIT ECONOMICS: Qualified Opportunity Coverage | Search Yield | Conversion Yield | Transaction Yield
+ * 4. YIELD & UNIT ECONOMICS: Career Event Yield | Occupation Transaction Yield | Occupation Placement Yield
  *
  * 14-Stage End-to-End Funnel Progression
  * Saves executive snapshot to search_career_funnel_telemetry.json
@@ -49,6 +49,7 @@ async function runTelemetry() {
   console.log(`│  • Saturated Occupations        : 44 (Phase A) / 500 (Phase B Milestone)    │`);
   console.log(`│  • Specialized Sub-Sectors      : 68 Sectors (Cataloged & Mapped)            │`);
   console.log(`│  • Career Graph Coverage        : ${snapshot.executiveRatios.careerGraphCoverage.padEnd(42)} │`);
+  console.log(`│  • Internal Roadmap Cadence     : B1 (100) ➔ B2 (250) ➔ B3 (500 Roles)       │`);
   console.log(`│  • Evidence Contract Standard   : 12-Factor Full Saturation                  │`);
   console.log('└──────────────────────────────────────────────────────────────────────────────┘\n');
 
@@ -66,10 +67,10 @@ async function runTelemetry() {
   console.log('│ 🎯 BOX 4: YIELD & UNIT ECONOMICS                                             │');
   console.log('├──────────────────────────────────────────────────────────────────────────────┤');
   console.log(`│  ⭐ Qualified Opp Coverage       : ${snapshot.executiveRatios.qualifiedOpportunityCoverage.padEnd(42)} │`);
-  console.log(`│  ⭐ Search-to-Career Conversion : ${snapshot.executiveRatios.searchToCareerConversion.padEnd(42)} │`);
+  console.log(`│  ⭐ Career Event Yield           : ${snapshot.executiveRatios.careerEventYield.padEnd(42)} │`);
+  console.log(`│  ⭐ Occupation Transaction Yield : ${snapshot.executiveRatios.occupationTransactionYield.padEnd(42)} │`);
+  console.log(`│  ⭐ Occupation Placement Yield   : ${snapshot.executiveRatios.occupationPlacementYield.padEnd(42)} │`);
   console.log(`│  ⭐ Occupation Search Yield     : ${snapshot.executiveRatios.occupationSearchYield.padEnd(42)} │`);
-  console.log(`│  ⭐ Occupation Conversion Yield : ${snapshot.executiveRatios.occupationConversionYield.padEnd(42)} │`);
-  console.log(`│  ⭐ Transaction Yield           : ${snapshot.executiveRatios.transactionYieldPerOccupation.padEnd(42)} │`);
   console.log(`│  • Unit Economic CTR            : ${snapshot.executiveRatios.unitEconomicCTR.padEnd(42)} │`);
   console.log(`│  • Unit Economic Signup Rate    : ${snapshot.executiveRatios.unitEconomicSignupRate.padEnd(42)} │`);
   console.log(`│  • Unit Economic App Rate       : ${snapshot.executiveRatios.unitEconomicApplicationRate.padEnd(42)} │`);

@@ -39,6 +39,40 @@ export interface RoadmapPhaseDefinition {
   description: string;
 }
 
+export type PhaseBSubMilestoneId = 'PHASE_B1_100' | 'PHASE_B2_250' | 'PHASE_B3_500';
+
+export interface PhaseBSubMilestoneDefinition {
+  milestoneId: PhaseBSubMilestoneId;
+  name: string;
+  targetOccupations: number;
+  description: string;
+  focus: string;
+}
+
+export const PHASE_B_SUB_MILESTONES: Record<PhaseBSubMilestoneId, PhaseBSubMilestoneDefinition> = {
+  PHASE_B1_100: {
+    milestoneId: 'PHASE_B1_100',
+    name: 'Phase B1: First 100 Occupations',
+    targetOccupations: 100,
+    description: 'First 100 fully saturated occupations prioritized by Search Demand × Evidence × Transaction Potential.',
+    focus: 'Top demand roles across Healthcare, BFSI, Construction, Aviation, and Core Tech with high job density.',
+  },
+  PHASE_B2_250: {
+    milestoneId: 'PHASE_B2_250',
+    name: 'Phase B2: 250 Occupations Expansion',
+    targetOccupations: 250,
+    description: 'Scale to 250 occupations ensuring sector diversity quotas across all 15 industry verticals.',
+    focus: 'Expanding mid-tail occupations across Hospitality, Logistics, Manufacturing, Education, and Legal.',
+  },
+  PHASE_B3_500: {
+    milestoneId: 'PHASE_B3_500',
+    name: 'Phase B3: Complete 500-Occupation Milestone',
+    targetOccupations: 500,
+    description: 'Complete evidence saturation of all 500+ occupations across 68 specialized sub-sectors.',
+    focus: 'Deep analysis of yield telemetry (impressions, clicks, applications, placements, revenue) before Phase C.',
+  },
+};
+
 export const OCCUPATION_ROADMAP_PHASES: Record<RoadmapPhaseId, RoadmapPhaseDefinition> = {
   PHASE_A_44: {
     phaseId: 'PHASE_A_44',
@@ -747,15 +781,53 @@ export class OccupationRoadmapRegistry {
       ? transactions / metrics.evidenceSaturatedOccupations
       : 0;
 
+    const applicationYield = metrics.evidenceSaturatedOccupations > 0
+      ? metrics.applications / metrics.evidenceSaturatedOccupations
+      : 0;
+
+    const placementYield = metrics.evidenceSaturatedOccupations > 0
+      ? metrics.matches / metrics.evidenceSaturatedOccupations
+      : 0;
+
     return {
       careerGraphCoverageFormatted: `${careerGraphCoverage.toFixed(2)}% (${metrics.evidenceSaturatedOccupations} saturated / ${metrics.totalCanonicalOccupations} canonical Phase B target)`,
       careerGraphCoveragePercentage: careerGraphCoverage,
       occupationSearchYieldFormatted: `${occupationSearchYield.toFixed(1)} impressions / saturated occupation`,
       occupationSearchYieldValue: occupationSearchYield,
-      occupationConversionYieldFormatted: `${occupationConversionYield.toFixed(2)}% (${totalTransactions} conversions / ${metrics.organicClicks} clicks)`,
+      careerEventYieldFormatted: `${occupationConversionYield.toFixed(2)}% (${totalTransactions} career events / ${metrics.organicClicks} clicks)`,
+      occupationConversionYieldFormatted: `${occupationConversionYield.toFixed(2)}% (${totalTransactions} career events / ${metrics.organicClicks} clicks)`,
       occupationConversionYieldPercentage: occupationConversionYield,
+      occupationTransactionYieldFormatted: `${applicationYield.toFixed(2)} applications / saturated occupation (${metrics.applications} applications / ${metrics.evidenceSaturatedOccupations} saturated)`,
+      occupationTransactionYieldValue: applicationYield,
+      occupationPlacementYieldFormatted: `${placementYield.toFixed(3)} matches / saturated occupation (${metrics.matches} matches / ${metrics.evidenceSaturatedOccupations} saturated)`,
+      occupationPlacementYieldValue: placementYield,
       transactionYieldFormatted: `${transactionYield.toFixed(2)} transactions / saturated occupation (${transactions} transactions / ${metrics.evidenceSaturatedOccupations} saturated)`,
       transactionYieldValue: transactionYield,
     };
+  }
+
+  public static getPhaseBSubMilestones(): PhaseBSubMilestoneDefinition[] {
+    return Object.values(PHASE_B_SUB_MILESTONES);
+  }
+
+  /**
+   * Prioritizes candidate occupations for saturation in the factory:
+   * Score = (Demand × 0.35 + JobDensity × 0.25 + SalaryDepth × 0.15 + TransactionPotential × 0.25) × SectorDiversityWeight
+   */
+  public static computeOccupationPriorityScore(input: {
+    demandScore: number;            // 0 - 100
+    activeJobDensity: number;       // 0 - 100
+    salaryDataAvailability: number; // 0 - 100
+    transactionPotential: number;   // 0 - 100
+    sectorDiversityWeight?: number; // 0.8 - 1.5 (boosts underrepresented non-IT sectors)
+  }): number {
+    const diversity = input.sectorDiversityWeight ?? 1.0;
+    const raw = (
+      input.demandScore * 0.35 +
+      input.activeJobDensity * 0.25 +
+      input.salaryDataAvailability * 0.15 +
+      input.transactionPotential * 0.25
+    );
+    return Math.min(100, Math.round(raw * diversity * 10) / 10);
   }
 }
