@@ -139,12 +139,14 @@ async function runTestSuite() {
   assert(stats.provenOccupationsCount === 44, 'Ledger tracks exact 44 baseline proven units (found: ' + stats.provenOccupationsCount + ')');
   assert(stats.b1CandidateCount === 56, 'Ledger queues exact 56 Phase B1 candidate units (found: ' + stats.b1CandidateCount + ')');
   assert(stats.b1TotalTarget === 100, 'Ledger establishes exact 100-role B1 milestone gate (found: ' + stats.b1TotalTarget + ')');
-  assert(stats.totalCostINR === 52800, 'Ledger aggregate baseline production cost is ₹52,800 (found: ₹' + stats.totalCostINR + ')');
+  assert(stats.totalCostINR === 0, 'Ledger aggregate production cost is ₹0 incremental cash (found: ₹' + stats.totalCostINR + ')');
+  assert(stats.incrementalCashCostINR === 0, 'Incremental cash cost is ₹0 (found: ₹' + stats.incrementalCashCostINR + ')');
   assert(stats.totalApps === 19, 'Ledger accounts for exact 19 applications across 44 units (found: ' + stats.totalApps + ')');
   assert(stats.totalMatches === 3, 'Ledger accounts for exact 3 placements across 44 units (found: ' + stats.totalMatches + ')');
-  assert(stats.evidenceCostPerApplicationINR === 2779, 'Evidence Cost / Application reflects ₹2,779 (found: ₹' + stats.evidenceCostPerApplicationINR + ')');
-  assert(stats.evidenceCostPerPlacementINR === 17600, 'Evidence Cost / Placement reflects ₹17,600 (found: ₹' + stats.evidenceCostPerPlacementINR + ')');
-  assert(stats.costModel === 'BASELINE_ASSUMED', 'Ledger initializes costModel to BASELINE_ASSUMED');
+  assert(stats.evidenceCostPerApplicationINR === 0, 'Evidence Cost / Application reflects ₹0 in zero-cost model (found: ₹' + stats.evidenceCostPerApplicationINR + ')');
+  assert(stats.evidenceCostPerPlacementINR === 0, 'Evidence Cost / Placement reflects ₹0 in zero-cost model (found: ₹' + stats.evidenceCostPerPlacementINR + ')');
+  assert(stats.costModel === 'ZERO_INCREMENTAL_CASH', 'Ledger initializes costModel to ZERO_INCREMENTAL_CASH (found: ' + stats.costModel + ')');
+  assert(stats.infrastructureCostModel === 'OWNED_EXISTING_INFRASTRUCTURE', 'Infrastructure model is OWNED_EXISTING_INFRASTRUCTURE');
 
   const emergingWinners = OccupationLedgerRegistry.getEmergingWinners();
   assert(emergingWinners.length >= 5, 'Ledger identifies >= 5 emerging winners (found: ' + emergingWinners.length + ')');
@@ -152,17 +154,16 @@ async function runTestSuite() {
 
   const sectorSummary = OccupationLedgerRegistry.getSectorPerformanceSummary();
   assert(sectorSummary['healthcare'] !== undefined, 'Sector summary contains healthcare vertical');
-  assert(sectorSummary['healthcare'].evidenceCostPerApplicationINR === 1400, 'Healthcare Evidence Cost / Application is ₹1,400 (superior to average ₹2,779)');
-  assert(sectorSummary['healthcare'].evidenceCostPerPlacementINR === 4200, 'Healthcare Evidence Cost / Placement is ₹4,200 (superior to average ₹17,600)');
+  assert(sectorSummary['healthcare'].evidenceCostPerApplicationINR === 0, 'Healthcare Evidence Cost / Application is ₹0 (found: ' + sectorSummary['healthcare'].evidenceCostPerApplicationINR + ')');
+  assert(sectorSummary['healthcare'].evidenceCostPerPlacementINR === 0, 'Healthcare Evidence Cost / Placement is ₹0 (found: ' + sectorSummary['healthcare'].evidenceCostPerPlacementINR + ')');
 
-  // Capital Allocation Score (Post-B1 Formula)
-  const capitalScore = OccupationRoadmapRegistry.computeCapitalAllocationScore({
+  // Zero-Cost Opportunity Score (Post-B1 Formula 2 Redesign)
+  const oppScore = OccupationRoadmapRegistry.computeZeroCostOpportunityScore({
     observedTransactionYield: 6,
     revenuePotentialWeight: 2.5,
     confidenceScore: 0.6,
-    actualEvidenceCostINR: 1200,
   });
-  assert(capitalScore === 7.5, 'Capital Allocation Score calculates (6 * 2.5 * 0.6) / 1.2 = 7.5 (found: ' + capitalScore + ')');
+  assert(oppScore === 9.0, 'Zero-Cost Opportunity Score calculates 6 * 2.5 * 0.6 = 9.0 (found: ' + oppScore + ')');
 
   // 15-Column Table Export
   const headers = OccupationLedgerRegistry.get15ColumnLedgerHeaders();
@@ -170,10 +171,10 @@ async function runTestSuite() {
   const table = OccupationLedgerRegistry.get15ColumnLedgerTable(undefined, 3);
   assert(table.includes('Registered Nurse') && table.includes('Pharmacist'), '15-column table renders top units with complete metrics');
 
-  // Capital Efficiency Ranking
+  // Opportunity / Capital Efficiency Ranking
   const ranked = OccupationLedgerRegistry.rankByCapitalEfficiency(5);
-  assert(ranked[0].occupationSlug === 'nurse', 'Top capital efficiency unit is Registered Nurse (found: ' + ranked[0].occupationSlug + ')');
-  assert(ranked[0].capitalAllocationScore > 10, 'Registered Nurse capital allocation score > 10 (scored: ' + ranked[0].capitalAllocationScore + ')');
+  assert(ranked[0].occupationSlug === 'nurse', 'Top opportunity ranking unit is Registered Nurse (found: ' + ranked[0].occupationSlug + ')');
+  assert(ranked[0].capitalAllocationScore > 10, 'Registered Nurse opportunity score > 10 (scored: ' + ranked[0].capitalAllocationScore + ')');
 
   console.log('\n================================================================');
   console.log(`🏁 EVIDENCE FACTORY RESULTS: ${passed} PASSED, ${failed} FAILED`);

@@ -59,17 +59,20 @@ export interface OccupationLedgerEntry {
   applications: number;                  // Job applications submitted
   matches: number;                       // Confirmed candidate placements / employer matches
   revenueINR: number;                    // Direct monetized GMV / revenue in INR
-  costToProduceINR: number;              // Evidence acquisition & verification cost in INR
-  costModel?: 'BASELINE_ASSUMED' | 'ACTUAL_RECORDED'; // Cost recording provenance
+  incrementalCashCostINR?: number;       // Direct incremental cash expenditure for evidence (₹0 for factory)
+  infrastructureCostModel?: 'OWNED_EXISTING_INFRASTRUCTURE' | 'INCREMENTAL_CASH_EXPENSE';
+  costToProduceINR: number;              // Incremental evidence production cost (₹0 in zero-cost model)
+  costModel?: 'ZERO_INCREMENTAL_CASH' | 'BASELINE_ASSUMED' | 'ACTUAL_RECORDED'; // Cost recording provenance
 
   // 5. Unit Economics & Yield Metrics
   searchYield: number;                   // Impressions / occupation
   careerEventYield: number;              // (Registrations + Apps + Matches) / clicks (%)
   applicationYield: number;              // Applications / occupation
   placementYield: number;                // Matches / occupation
-  evidenceCostPerApplicationINR?: number | null; // Production cost / applications (₹/app)
-  evidenceCostPerPlacementINR?: number | null;   // Production cost / matches (₹/placement)
-  netEconomicReturnINR: number;          // Revenue - Cost to produce
+  evidenceCostPerApplicationINR?: number | null; // Incremental cash cost / applications (₹0 / app)
+  evidenceCostPerPlacementINR?: number | null;   // Incremental cash cost / matches (₹0 / placement)
+  zeroCostOpportunityScore?: number;     // (Applications + Matches * 3) × Revenue Potential × Confidence
+  netEconomicReturnINR: number;          // Revenue - Incremental Cash Cost
   performanceTier: ArchetypePerformanceTier;
 }
 
@@ -100,12 +103,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 3,
     matches: 1,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 1850,
     careerEventYield: 20.69,
     applicationYield: 3.0,
     placementYield: 1.0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'EMERGING_WINNER',
   },
   {
@@ -129,12 +132,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 2,
     matches: 1,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 1420,
     careerEventYield: 20.0,
     applicationYield: 2.0,
     placementYield: 1.0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'EMERGING_WINNER',
   },
   {
@@ -158,12 +161,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 1,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 1100,
     careerEventYield: 13.79,
     applicationYield: 1.0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
   {
@@ -187,12 +190,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 0,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 740,
     careerEventYield: 11.11,
     applicationYield: 0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
   {
@@ -216,12 +219,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 0,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 680,
     careerEventYield: 12.5,
     applicationYield: 0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
   {
@@ -245,12 +248,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 0,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 620,
     careerEventYield: 6.67,
     applicationYield: 0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
   {
@@ -274,12 +277,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 0,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 590,
     careerEventYield: 7.14,
     applicationYield: 0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
 
@@ -305,12 +308,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 1,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 980,
     careerEventYield: 15.38,
     applicationYield: 1.0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'EMERGING_WINNER',
   },
   {
@@ -334,12 +337,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 0,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 720,
     careerEventYield: 10.53,
     applicationYield: 0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
   {
@@ -363,12 +366,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 0,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 650,
     careerEventYield: 12.5,
     applicationYield: 0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
   {
@@ -392,12 +395,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 0,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 540,
     careerEventYield: 7.14,
     applicationYield: 0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
 
@@ -423,12 +426,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 1,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 1210,
     careerEventYield: 14.71,
     applicationYield: 1.0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'EMERGING_WINNER',
   },
   {
@@ -452,12 +455,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 0,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 620,
     careerEventYield: 12.5,
     applicationYield: 0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
   {
@@ -481,12 +484,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 0,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 510,
     careerEventYield: 8.33,
     applicationYield: 0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
 
@@ -512,12 +515,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 1,
     matches: 1,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 1050,
     careerEventYield: 17.86,
     applicationYield: 1.0,
     placementYield: 1.0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'EMERGING_WINNER',
   },
   {
@@ -541,12 +544,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 0,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 890,
     careerEventYield: 12.0,
     applicationYield: 0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
   {
@@ -570,12 +573,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 0,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 610,
     careerEventYield: 13.33,
     applicationYield: 0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
 
@@ -601,12 +604,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 1,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 890,
     careerEventYield: 13.64,
     applicationYield: 1.0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'EMERGING_WINNER',
   },
   {
@@ -630,12 +633,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 0,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 640,
     careerEventYield: 12.5,
     applicationYield: 0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
   {
@@ -659,12 +662,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 0,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 480,
     careerEventYield: 9.09,
     applicationYield: 0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
 
@@ -690,12 +693,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 1,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 780,
     careerEventYield: 15.79,
     applicationYield: 1.0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
   {
@@ -719,12 +722,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 0,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 560,
     careerEventYield: 14.29,
     applicationYield: 0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
   {
@@ -748,12 +751,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 0,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 510,
     careerEventYield: 8.33,
     applicationYield: 0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
 
@@ -779,12 +782,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 1,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 760,
     careerEventYield: 15.79,
     applicationYield: 1.0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
   {
@@ -808,12 +811,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 0,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 610,
     careerEventYield: 13.33,
     applicationYield: 0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
 
@@ -839,12 +842,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 0,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 740,
     careerEventYield: 11.11,
     applicationYield: 0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
   {
@@ -868,12 +871,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 0,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 480,
     careerEventYield: 9.09,
     applicationYield: 0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
   {
@@ -897,12 +900,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 0,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 450,
     careerEventYield: 10.0,
     applicationYield: 0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
 
@@ -928,12 +931,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 1,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 780,
     careerEventYield: 15.0,
     applicationYield: 1.0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
   {
@@ -957,12 +960,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 0,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 590,
     careerEventYield: 7.14,
     applicationYield: 0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
 
@@ -988,12 +991,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 0,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 560,
     careerEventYield: 7.69,
     applicationYield: 0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
   {
@@ -1017,12 +1020,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 0,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 510,
     careerEventYield: 8.33,
     applicationYield: 0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
 
@@ -1048,12 +1051,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 0,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 520,
     careerEventYield: 8.33,
     applicationYield: 0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
   {
@@ -1077,12 +1080,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 0,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 480,
     careerEventYield: 9.09,
     applicationYield: 0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
 
@@ -1108,12 +1111,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 1,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 680,
     careerEventYield: 17.65,
     applicationYield: 1.0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
   {
@@ -1137,12 +1140,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 0,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 510,
     careerEventYield: 8.33,
     applicationYield: 0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
   {
@@ -1166,12 +1169,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 0,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 480,
     careerEventYield: 9.09,
     applicationYield: 0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
 
@@ -1197,12 +1200,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 0,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 720,
     careerEventYield: 11.11,
     applicationYield: 0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
   {
@@ -1226,12 +1229,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 0,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 520,
     careerEventYield: 8.33,
     applicationYield: 0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
 
@@ -1257,12 +1260,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 1,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 640,
     careerEventYield: 18.75,
     applicationYield: 1.0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
   {
@@ -1286,12 +1289,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 0,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 680,
     careerEventYield: 11.76,
     applicationYield: 0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
 
@@ -1317,12 +1320,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 2,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 2100,
     careerEventYield: 17.74,
     applicationYield: 2.0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'EMERGING_WINNER',
   },
   {
@@ -1346,12 +1349,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 1,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 1150,
     careerEventYield: 16.13,
     applicationYield: 1.0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
   {
@@ -1375,12 +1378,12 @@ export const PROVEN_PHASE_A_LEDGER: OccupationLedgerEntry[] = [
     applications: 1,
     matches: 0,
     revenueINR: 0,
-    costToProduceINR: 1200,
+    costToProduceINR: 0,
     searchYield: 980,
     careerEventYield: 16.0,
     applicationYield: 1.0,
     placementYield: 0,
-    netEconomicReturnINR: -1200,
+    netEconomicReturnINR: 0,
     performanceTier: 'PROVEN_BASELINE',
   },
 ];
@@ -1400,90 +1403,90 @@ export const PHASE_B1_NEW_56_CANDIDATES: Array<{
   estimatedCostINR: number;
 }> = [
   // Healthcare (8 roles)
-  { occupationSlug: 'clinical-pharmacist', occupationName: 'Clinical Pharmacist', industrySlug: 'healthcare', sectorSlug: 'pharmacy-care', priorityScore: 94.2, targetJobDensity: 24, targetApplicationsYield: 0.8, estimatedCostINR: 1500 },
-  { occupationSlug: 'oncology-pharmacist', occupationName: 'Oncology Pharmacist', industrySlug: 'healthcare', sectorSlug: 'pharmacy-care', priorityScore: 89.6, targetJobDensity: 16, targetApplicationsYield: 0.6, estimatedCostINR: 1500 },
-  { occupationSlug: 'icu-nurse', occupationName: 'ICU Critical Care Nurse', industrySlug: 'healthcare', sectorSlug: 'nursing-care', priorityScore: 96.5, targetJobDensity: 42, targetApplicationsYield: 1.2, estimatedCostINR: 1500 },
-  { occupationSlug: 'nurse-practitioner', occupationName: 'Nurse Practitioner', industrySlug: 'healthcare', sectorSlug: 'nursing-care', priorityScore: 91.8, targetJobDensity: 20, targetApplicationsYield: 0.7, estimatedCostINR: 1500 },
-  { occupationSlug: 'biomedical-engineer', occupationName: 'Biomedical Engineer', industrySlug: 'healthcare', sectorSlug: 'medical-devices', priorityScore: 87.2, targetJobDensity: 15, targetApplicationsYield: 0.5, estimatedCostINR: 1500 },
-  { occupationSlug: 'pathologist', occupationName: 'Clinical Pathologist', industrySlug: 'healthcare', sectorSlug: 'diagnostics-pathology', priorityScore: 89.0, targetJobDensity: 17, targetApplicationsYield: 0.6, estimatedCostINR: 1500 },
-  { occupationSlug: 'clinical-psychologist', occupationName: 'Clinical Psychologist', industrySlug: 'healthcare', sectorSlug: 'mental-health-psychiatry', priorityScore: 88.9, targetJobDensity: 22, targetApplicationsYield: 0.6, estimatedCostINR: 1500 },
-  { occupationSlug: 'psychiatrist', occupationName: 'Consultant Psychiatrist', industrySlug: 'healthcare', sectorSlug: 'mental-health-psychiatry', priorityScore: 90.1, targetJobDensity: 14, targetApplicationsYield: 0.5, estimatedCostINR: 1500 },
+  { occupationSlug: 'clinical-pharmacist', occupationName: 'Clinical Pharmacist', industrySlug: 'healthcare', sectorSlug: 'pharmacy-care', priorityScore: 94.2, targetJobDensity: 24, targetApplicationsYield: 0.8, estimatedCostINR: 0 },
+  { occupationSlug: 'oncology-pharmacist', occupationName: 'Oncology Pharmacist', industrySlug: 'healthcare', sectorSlug: 'pharmacy-care', priorityScore: 89.6, targetJobDensity: 16, targetApplicationsYield: 0.6, estimatedCostINR: 0 },
+  { occupationSlug: 'icu-nurse', occupationName: 'ICU Critical Care Nurse', industrySlug: 'healthcare', sectorSlug: 'nursing-care', priorityScore: 96.5, targetJobDensity: 42, targetApplicationsYield: 1.2, estimatedCostINR: 0 },
+  { occupationSlug: 'nurse-practitioner', occupationName: 'Nurse Practitioner', industrySlug: 'healthcare', sectorSlug: 'nursing-care', priorityScore: 91.8, targetJobDensity: 20, targetApplicationsYield: 0.7, estimatedCostINR: 0 },
+  { occupationSlug: 'biomedical-engineer', occupationName: 'Biomedical Engineer', industrySlug: 'healthcare', sectorSlug: 'medical-devices', priorityScore: 87.2, targetJobDensity: 15, targetApplicationsYield: 0.5, estimatedCostINR: 0 },
+  { occupationSlug: 'pathologist', occupationName: 'Clinical Pathologist', industrySlug: 'healthcare', sectorSlug: 'diagnostics-pathology', priorityScore: 89.0, targetJobDensity: 17, targetApplicationsYield: 0.6, estimatedCostINR: 0 },
+  { occupationSlug: 'clinical-psychologist', occupationName: 'Clinical Psychologist', industrySlug: 'healthcare', sectorSlug: 'mental-health-psychiatry', priorityScore: 88.9, targetJobDensity: 22, targetApplicationsYield: 0.6, estimatedCostINR: 0 },
+  { occupationSlug: 'psychiatrist', occupationName: 'Consultant Psychiatrist', industrySlug: 'healthcare', sectorSlug: 'mental-health-psychiatry', priorityScore: 90.1, targetJobDensity: 14, targetApplicationsYield: 0.5, estimatedCostINR: 0 },
 
   // BFSI (7 roles)
-  { occupationSlug: 'investment-banker', occupationName: 'Investment Banker', industrySlug: 'banking-finance', sectorSlug: 'investment-banking-ma', priorityScore: 95.8, targetJobDensity: 28, targetApplicationsYield: 0.9, estimatedCostINR: 1500 },
-  { occupationSlug: 'ma-analyst', occupationName: 'M&A Financial Analyst', industrySlug: 'banking-finance', sectorSlug: 'investment-banking-ma', priorityScore: 92.4, targetJobDensity: 22, targetApplicationsYield: 0.7, estimatedCostINR: 1500 },
-  { occupationSlug: 'equity-research-associate', occupationName: 'Equity Research Associate', industrySlug: 'banking-finance', sectorSlug: 'investment-banking-ma', priorityScore: 90.7, targetJobDensity: 18, targetApplicationsYield: 0.6, estimatedCostINR: 1500 },
-  { occupationSlug: 'private-wealth-advisor', occupationName: 'Private Wealth Advisor', industrySlug: 'banking-finance', sectorSlug: 'wealth-management-private-banking', priorityScore: 91.5, targetJobDensity: 24, targetApplicationsYield: 0.7, estimatedCostINR: 1500 },
-  { occupationSlug: 'credit-risk-modeler', occupationName: 'Credit Risk Modeler', industrySlug: 'banking-finance', sectorSlug: 'financial-risk-compliance', priorityScore: 89.3, targetJobDensity: 16, targetApplicationsYield: 0.5, estimatedCostINR: 1500 },
-  { occupationSlug: 'portfolio-manager', occupationName: 'Portfolio Manager', industrySlug: 'banking-finance', sectorSlug: 'asset-management-hedge-funds', priorityScore: 92.0, targetJobDensity: 19, targetApplicationsYield: 0.7, estimatedCostINR: 1500 },
-  { occupationSlug: 'fintech-product-manager', occupationName: 'FinTech Product Manager', industrySlug: 'banking-finance', sectorSlug: 'fintech-digital-payments', priorityScore: 93.8, targetJobDensity: 26, targetApplicationsYield: 0.8, estimatedCostINR: 1500 },
+  { occupationSlug: 'investment-banker', occupationName: 'Investment Banker', industrySlug: 'banking-finance', sectorSlug: 'investment-banking-ma', priorityScore: 95.8, targetJobDensity: 28, targetApplicationsYield: 0.9, estimatedCostINR: 0 },
+  { occupationSlug: 'ma-analyst', occupationName: 'M&A Financial Analyst', industrySlug: 'banking-finance', sectorSlug: 'investment-banking-ma', priorityScore: 92.4, targetJobDensity: 22, targetApplicationsYield: 0.7, estimatedCostINR: 0 },
+  { occupationSlug: 'equity-research-associate', occupationName: 'Equity Research Associate', industrySlug: 'banking-finance', sectorSlug: 'investment-banking-ma', priorityScore: 90.7, targetJobDensity: 18, targetApplicationsYield: 0.6, estimatedCostINR: 0 },
+  { occupationSlug: 'private-wealth-advisor', occupationName: 'Private Wealth Advisor', industrySlug: 'banking-finance', sectorSlug: 'wealth-management-private-banking', priorityScore: 91.5, targetJobDensity: 24, targetApplicationsYield: 0.7, estimatedCostINR: 0 },
+  { occupationSlug: 'credit-risk-modeler', occupationName: 'Credit Risk Modeler', industrySlug: 'banking-finance', sectorSlug: 'financial-risk-compliance', priorityScore: 89.3, targetJobDensity: 16, targetApplicationsYield: 0.5, estimatedCostINR: 0 },
+  { occupationSlug: 'portfolio-manager', occupationName: 'Portfolio Manager', industrySlug: 'banking-finance', sectorSlug: 'asset-management-hedge-funds', priorityScore: 92.0, targetJobDensity: 19, targetApplicationsYield: 0.7, estimatedCostINR: 0 },
+  { occupationSlug: 'fintech-product-manager', occupationName: 'FinTech Product Manager', industrySlug: 'banking-finance', sectorSlug: 'fintech-digital-payments', priorityScore: 93.8, targetJobDensity: 26, targetApplicationsYield: 0.8, estimatedCostINR: 0 },
 
   // Construction & Real Estate (5 roles)
-  { occupationSlug: 'structural-engineer', occupationName: 'Structural Engineer', industrySlug: 'construction-real-estate', sectorSlug: 'commercial-real-estate-high-rise', priorityScore: 94.6, targetJobDensity: 25, targetApplicationsYield: 0.8, estimatedCostINR: 1500 },
-  { occupationSlug: 'construction-project-manager', occupationName: 'Construction Project Manager', industrySlug: 'construction-real-estate', sectorSlug: 'commercial-real-estate-high-rise', priorityScore: 93.1, targetJobDensity: 22, targetApplicationsYield: 0.7, estimatedCostINR: 1500 },
-  { occupationSlug: 'architect', occupationName: 'Chief Architect', industrySlug: 'construction-real-estate', sectorSlug: 'architecture-urban-planning', priorityScore: 92.5, targetJobDensity: 21, targetApplicationsYield: 0.6, estimatedCostINR: 1500 },
-  { occupationSlug: 'hvac-design-engineer', occupationName: 'HVAC Design Engineer', industrySlug: 'construction-real-estate', sectorSlug: 'mep-building-services', priorityScore: 89.2, targetJobDensity: 20, targetApplicationsYield: 0.5, estimatedCostINR: 1500 },
-  { occupationSlug: 'bim-architectural-modeler', occupationName: 'BIM Modeler', industrySlug: 'construction-real-estate', sectorSlug: 'architecture-urban-planning', priorityScore: 91.0, targetJobDensity: 24, targetApplicationsYield: 0.7, estimatedCostINR: 1500 },
+  { occupationSlug: 'structural-engineer', occupationName: 'Structural Engineer', industrySlug: 'construction-real-estate', sectorSlug: 'commercial-real-estate-high-rise', priorityScore: 94.6, targetJobDensity: 25, targetApplicationsYield: 0.8, estimatedCostINR: 0 },
+  { occupationSlug: 'construction-project-manager', occupationName: 'Construction Project Manager', industrySlug: 'construction-real-estate', sectorSlug: 'commercial-real-estate-high-rise', priorityScore: 93.1, targetJobDensity: 22, targetApplicationsYield: 0.7, estimatedCostINR: 0 },
+  { occupationSlug: 'architect', occupationName: 'Chief Architect', industrySlug: 'construction-real-estate', sectorSlug: 'architecture-urban-planning', priorityScore: 92.5, targetJobDensity: 21, targetApplicationsYield: 0.6, estimatedCostINR: 0 },
+  { occupationSlug: 'hvac-design-engineer', occupationName: 'HVAC Design Engineer', industrySlug: 'construction-real-estate', sectorSlug: 'mep-building-services', priorityScore: 89.2, targetJobDensity: 20, targetApplicationsYield: 0.5, estimatedCostINR: 0 },
+  { occupationSlug: 'bim-architectural-modeler', occupationName: 'BIM Modeler', industrySlug: 'construction-real-estate', sectorSlug: 'architecture-urban-planning', priorityScore: 91.0, targetJobDensity: 24, targetApplicationsYield: 0.7, estimatedCostINR: 0 },
 
   // Aviation (5 roles)
-  { occupationSlug: 'first-officer', occupationName: 'Airline First Officer', industrySlug: 'aviation-aerospace', sectorSlug: 'commercial-airlines-cockpit', priorityScore: 95.0, targetJobDensity: 18, targetApplicationsYield: 0.8, estimatedCostINR: 1500 },
-  { occupationSlug: 'airline-captain', occupationName: 'Airline Captain', industrySlug: 'aviation-aerospace', sectorSlug: 'commercial-airlines-cockpit', priorityScore: 93.5, targetJobDensity: 12, targetApplicationsYield: 0.5, estimatedCostINR: 1500 },
-  { occupationSlug: 'air-traffic-controller', occupationName: 'Air Traffic Controller', industrySlug: 'aviation-aerospace', sectorSlug: 'air-traffic-airport-operations', priorityScore: 91.2, targetJobDensity: 15, targetApplicationsYield: 0.6, estimatedCostINR: 1500 },
-  { occupationSlug: 'avionics-technician', occupationName: 'Avionics Technician', industrySlug: 'aviation-aerospace', sectorSlug: 'aircraft-maintenance-mro', priorityScore: 89.8, targetJobDensity: 19, targetApplicationsYield: 0.5, estimatedCostINR: 1500 },
-  { occupationSlug: 'flight-operations-officer', occupationName: 'Flight Operations Dispatcher', industrySlug: 'aviation-aerospace', sectorSlug: 'commercial-airlines-cockpit', priorityScore: 87.5, targetJobDensity: 16, targetApplicationsYield: 0.5, estimatedCostINR: 1500 },
+  { occupationSlug: 'first-officer', occupationName: 'Airline First Officer', industrySlug: 'aviation-aerospace', sectorSlug: 'commercial-airlines-cockpit', priorityScore: 95.0, targetJobDensity: 18, targetApplicationsYield: 0.8, estimatedCostINR: 0 },
+  { occupationSlug: 'airline-captain', occupationName: 'Airline Captain', industrySlug: 'aviation-aerospace', sectorSlug: 'commercial-airlines-cockpit', priorityScore: 93.5, targetJobDensity: 12, targetApplicationsYield: 0.5, estimatedCostINR: 0 },
+  { occupationSlug: 'air-traffic-controller', occupationName: 'Air Traffic Controller', industrySlug: 'aviation-aerospace', sectorSlug: 'air-traffic-airport-operations', priorityScore: 91.2, targetJobDensity: 15, targetApplicationsYield: 0.6, estimatedCostINR: 0 },
+  { occupationSlug: 'avionics-technician', occupationName: 'Avionics Technician', industrySlug: 'aviation-aerospace', sectorSlug: 'aircraft-maintenance-mro', priorityScore: 89.8, targetJobDensity: 19, targetApplicationsYield: 0.5, estimatedCostINR: 0 },
+  { occupationSlug: 'flight-operations-officer', occupationName: 'Flight Operations Dispatcher', industrySlug: 'aviation-aerospace', sectorSlug: 'commercial-airlines-cockpit', priorityScore: 87.5, targetJobDensity: 16, targetApplicationsYield: 0.5, estimatedCostINR: 0 },
 
   // Hospitality (4 roles)
-  { occupationSlug: 'front-office-manager', occupationName: 'Front Office Manager', industrySlug: 'hospitality-tourism', sectorSlug: 'luxury-hotels-resorts', priorityScore: 90.8, targetJobDensity: 23, targetApplicationsYield: 0.6, estimatedCostINR: 1500 },
-  { occupationSlug: 'executive-housekeeper', occupationName: 'Executive Housekeeper', industrySlug: 'hospitality-tourism', sectorSlug: 'luxury-hotels-resorts', priorityScore: 86.5, targetJobDensity: 21, targetApplicationsYield: 0.5, estimatedCostINR: 1500 },
-  { occupationSlug: 'event-director', occupationName: 'MICE Event Director', industrySlug: 'hospitality-tourism', sectorSlug: 'mice-event-management', priorityScore: 89.3, targetJobDensity: 18, targetApplicationsYield: 0.5, estimatedCostINR: 1500 },
-  { occupationSlug: 'convention-services-manager', occupationName: 'Convention Services Manager', industrySlug: 'hospitality-tourism', sectorSlug: 'mice-event-management', priorityScore: 87.0, targetJobDensity: 15, targetApplicationsYield: 0.5, estimatedCostINR: 1500 },
+  { occupationSlug: 'front-office-manager', occupationName: 'Front Office Manager', industrySlug: 'hospitality-tourism', sectorSlug: 'luxury-hotels-resorts', priorityScore: 90.8, targetJobDensity: 23, targetApplicationsYield: 0.6, estimatedCostINR: 0 },
+  { occupationSlug: 'executive-housekeeper', occupationName: 'Executive Housekeeper', industrySlug: 'hospitality-tourism', sectorSlug: 'luxury-hotels-resorts', priorityScore: 86.5, targetJobDensity: 21, targetApplicationsYield: 0.5, estimatedCostINR: 0 },
+  { occupationSlug: 'event-director', occupationName: 'MICE Event Director', industrySlug: 'hospitality-tourism', sectorSlug: 'mice-event-management', priorityScore: 89.3, targetJobDensity: 18, targetApplicationsYield: 0.5, estimatedCostINR: 0 },
+  { occupationSlug: 'convention-services-manager', occupationName: 'Convention Services Manager', industrySlug: 'hospitality-tourism', sectorSlug: 'mice-event-management', priorityScore: 87.0, targetJobDensity: 15, targetApplicationsYield: 0.5, estimatedCostINR: 0 },
 
   // Manufacturing & Automotive (5 roles)
-  { occupationSlug: 'plant-manager', occupationName: 'Manufacturing Plant Manager', industrySlug: 'manufacturing-automotive', sectorSlug: 'plant-operations-production', priorityScore: 92.6, targetJobDensity: 19, targetApplicationsYield: 0.6, estimatedCostINR: 1500 },
-  { occupationSlug: 'automotive-design-engineer', occupationName: 'Automotive Design Engineer', industrySlug: 'manufacturing-automotive', sectorSlug: 'automotive-future-mobility', priorityScore: 91.4, targetJobDensity: 17, targetApplicationsYield: 0.5, estimatedCostINR: 1500 },
-  { occupationSlug: 'ev-battery-engineer', occupationName: 'EV Battery Systems Engineer', industrySlug: 'manufacturing-automotive', sectorSlug: 'automotive-future-mobility', priorityScore: 94.0, targetJobDensity: 25, targetApplicationsYield: 0.8, estimatedCostINR: 1500 },
-  { occupationSlug: 'robotics-automation-engineer', occupationName: 'Robotics Automation Engineer', industrySlug: 'manufacturing-automotive', sectorSlug: 'industrial-automation-robotics', priorityScore: 93.2, targetJobDensity: 22, targetApplicationsYield: 0.7, estimatedCostINR: 1500 },
-  { occupationSlug: 'quality-assurance-manager', occupationName: 'Industrial QA Manager', industrySlug: 'manufacturing-automotive', sectorSlug: 'quality-assurance-lean-six-sigma', priorityScore: 89.5, targetJobDensity: 20, targetApplicationsYield: 0.6, estimatedCostINR: 1500 },
+  { occupationSlug: 'plant-manager', occupationName: 'Manufacturing Plant Manager', industrySlug: 'manufacturing-automotive', sectorSlug: 'plant-operations-production', priorityScore: 92.6, targetJobDensity: 19, targetApplicationsYield: 0.6, estimatedCostINR: 0 },
+  { occupationSlug: 'automotive-design-engineer', occupationName: 'Automotive Design Engineer', industrySlug: 'manufacturing-automotive', sectorSlug: 'automotive-future-mobility', priorityScore: 91.4, targetJobDensity: 17, targetApplicationsYield: 0.5, estimatedCostINR: 0 },
+  { occupationSlug: 'ev-battery-engineer', occupationName: 'EV Battery Systems Engineer', industrySlug: 'manufacturing-automotive', sectorSlug: 'automotive-future-mobility', priorityScore: 94.0, targetJobDensity: 25, targetApplicationsYield: 0.8, estimatedCostINR: 0 },
+  { occupationSlug: 'robotics-automation-engineer', occupationName: 'Robotics Automation Engineer', industrySlug: 'manufacturing-automotive', sectorSlug: 'industrial-automation-robotics', priorityScore: 93.2, targetJobDensity: 22, targetApplicationsYield: 0.7, estimatedCostINR: 0 },
+  { occupationSlug: 'quality-assurance-manager', occupationName: 'Industrial QA Manager', industrySlug: 'manufacturing-automotive', sectorSlug: 'quality-assurance-lean-six-sigma', priorityScore: 89.5, targetJobDensity: 20, targetApplicationsYield: 0.6, estimatedCostINR: 0 },
 
   // Logistics & Supply Chain (4 roles)
-  { occupationSlug: 'customs-broker', occupationName: 'Customs Clearance Broker', industrySlug: 'logistics-supply-chain', sectorSlug: 'freight-forwarding-multimodal', priorityScore: 88.0, targetJobDensity: 18, targetApplicationsYield: 0.5, estimatedCostINR: 1500 },
-  { occupationSlug: 'freight-forwarding-executive', occupationName: 'Freight Forwarding Specialist', industrySlug: 'logistics-supply-chain', sectorSlug: 'freight-forwarding-multimodal', priorityScore: 89.4, targetJobDensity: 22, targetApplicationsYield: 0.6, estimatedCostINR: 1500 },
-  { occupationSlug: 'cold-chain-manager', occupationName: 'Cold Chain Logistics Manager', industrySlug: 'logistics-supply-chain', sectorSlug: 'warehousing-fulfillment-cold-chain', priorityScore: 87.6, targetJobDensity: 16, targetApplicationsYield: 0.5, estimatedCostINR: 1500 },
-  { occupationSlug: 'last-mile-delivery-manager', occupationName: 'Last-Mile Fleet Director', industrySlug: 'logistics-supply-chain', sectorSlug: 'last-mile-courier-fleet', priorityScore: 90.1, targetJobDensity: 25, targetApplicationsYield: 0.7, estimatedCostINR: 1500 },
+  { occupationSlug: 'customs-broker', occupationName: 'Customs Clearance Broker', industrySlug: 'logistics-supply-chain', sectorSlug: 'freight-forwarding-multimodal', priorityScore: 88.0, targetJobDensity: 18, targetApplicationsYield: 0.5, estimatedCostINR: 0 },
+  { occupationSlug: 'freight-forwarding-executive', occupationName: 'Freight Forwarding Specialist', industrySlug: 'logistics-supply-chain', sectorSlug: 'freight-forwarding-multimodal', priorityScore: 89.4, targetJobDensity: 22, targetApplicationsYield: 0.6, estimatedCostINR: 0 },
+  { occupationSlug: 'cold-chain-manager', occupationName: 'Cold Chain Logistics Manager', industrySlug: 'logistics-supply-chain', sectorSlug: 'warehousing-fulfillment-cold-chain', priorityScore: 87.6, targetJobDensity: 16, targetApplicationsYield: 0.5, estimatedCostINR: 0 },
+  { occupationSlug: 'last-mile-delivery-manager', occupationName: 'Last-Mile Fleet Director', industrySlug: 'logistics-supply-chain', sectorSlug: 'last-mile-courier-fleet', priorityScore: 90.1, targetJobDensity: 25, targetApplicationsYield: 0.7, estimatedCostINR: 0 },
 
   // Education (3 roles)
-  { occupationSlug: 'university-professor', occupationName: 'University Professor', industrySlug: 'education-academia', sectorSlug: 'higher-education-academia', priorityScore: 91.5, targetJobDensity: 20, targetApplicationsYield: 0.6, estimatedCostINR: 1500 },
-  { occupationSlug: 'admissions-director', occupationName: 'Admissions Director', industrySlug: 'education-academia', sectorSlug: 'higher-education-academia', priorityScore: 87.2, targetJobDensity: 14, targetApplicationsYield: 0.4, estimatedCostINR: 1500 },
-  { occupationSlug: 'instructional-designer', occupationName: 'Instructional Designer / EdTech', industrySlug: 'education-academia', sectorSlug: 'edtech-corporate-training', priorityScore: 90.0, targetJobDensity: 23, targetApplicationsYield: 0.6, estimatedCostINR: 1500 },
+  { occupationSlug: 'university-professor', occupationName: 'University Professor', industrySlug: 'education-academia', sectorSlug: 'higher-education-academia', priorityScore: 91.5, targetJobDensity: 20, targetApplicationsYield: 0.6, estimatedCostINR: 0 },
+  { occupationSlug: 'admissions-director', occupationName: 'Admissions Director', industrySlug: 'education-academia', sectorSlug: 'higher-education-academia', priorityScore: 87.2, targetJobDensity: 14, targetApplicationsYield: 0.4, estimatedCostINR: 0 },
+  { occupationSlug: 'instructional-designer', occupationName: 'Instructional Designer / EdTech', industrySlug: 'education-academia', sectorSlug: 'edtech-corporate-training', priorityScore: 90.0, targetJobDensity: 23, targetApplicationsYield: 0.6, estimatedCostINR: 0 },
 
   // Legal (3 roles)
-  { occupationSlug: 'patent-attorney', occupationName: 'Patent & IP Attorney', industrySlug: 'legal-compliance', sectorSlug: 'intellectual-property-patents', priorityScore: 91.8, targetJobDensity: 15, targetApplicationsYield: 0.5, estimatedCostINR: 1500 },
-  { occupationSlug: 'in-house-legal-counsel', occupationName: 'In-House Legal Counsel', industrySlug: 'legal-compliance', sectorSlug: 'corporate-law-ma-securities', priorityScore: 92.5, targetJobDensity: 21, targetApplicationsYield: 0.7, estimatedCostINR: 1500 },
-  { occupationSlug: 'commercial-arbitrator', occupationName: 'Commercial Arbitrator', industrySlug: 'legal-compliance', sectorSlug: 'litigation-dispute-resolution', priorityScore: 86.0, targetJobDensity: 11, targetApplicationsYield: 0.3, estimatedCostINR: 1500 },
+  { occupationSlug: 'patent-attorney', occupationName: 'Patent & IP Attorney', industrySlug: 'legal-compliance', sectorSlug: 'intellectual-property-patents', priorityScore: 91.8, targetJobDensity: 15, targetApplicationsYield: 0.5, estimatedCostINR: 0 },
+  { occupationSlug: 'in-house-legal-counsel', occupationName: 'In-House Legal Counsel', industrySlug: 'legal-compliance', sectorSlug: 'corporate-law-ma-securities', priorityScore: 92.5, targetJobDensity: 21, targetApplicationsYield: 0.7, estimatedCostINR: 0 },
+  { occupationSlug: 'commercial-arbitrator', occupationName: 'Commercial Arbitrator', industrySlug: 'legal-compliance', sectorSlug: 'litigation-dispute-resolution', priorityScore: 86.0, targetJobDensity: 11, targetApplicationsYield: 0.3, estimatedCostINR: 0 },
 
   // Agriculture (2 roles)
-  { occupationSlug: 'precision-farming-technologist', occupationName: 'Precision Agriculture Specialist', industrySlug: 'agriculture-food-processing', sectorSlug: 'precision-agritech-crop-sciences', priorityScore: 87.9, targetJobDensity: 14, targetApplicationsYield: 0.4, estimatedCostINR: 1500 },
-  { occupationSlug: 'food-safety-haccp-auditor', occupationName: 'Food Safety HACCP Auditor', industrySlug: 'agriculture-food-processing', sectorSlug: 'food-processing-dairy-fmcg', priorityScore: 88.5, targetJobDensity: 16, targetApplicationsYield: 0.5, estimatedCostINR: 1500 },
+  { occupationSlug: 'precision-farming-technologist', occupationName: 'Precision Agriculture Specialist', industrySlug: 'agriculture-food-processing', sectorSlug: 'precision-agritech-crop-sciences', priorityScore: 87.9, targetJobDensity: 14, targetApplicationsYield: 0.4, estimatedCostINR: 0 },
+  { occupationSlug: 'food-safety-haccp-auditor', occupationName: 'Food Safety HACCP Auditor', industrySlug: 'agriculture-food-processing', sectorSlug: 'food-processing-dairy-fmcg', priorityScore: 88.5, targetJobDensity: 16, targetApplicationsYield: 0.5, estimatedCostINR: 0 },
 
   // Media (2 roles)
-  { occupationSlug: 'news-editor', occupationName: 'Newsroom Chief Editor', industrySlug: 'media-entertainment', sectorSlug: 'digital-journalism-broadcasting', priorityScore: 87.0, targetJobDensity: 15, targetApplicationsYield: 0.4, estimatedCostINR: 1500 },
-  { occupationSlug: 'vfx-artist', occupationName: 'VFX & CGI Lead Artist', industrySlug: 'media-entertainment', sectorSlug: 'vfx-animation-game-production', priorityScore: 89.2, targetJobDensity: 20, targetApplicationsYield: 0.5, estimatedCostINR: 1500 },
+  { occupationSlug: 'news-editor', occupationName: 'Newsroom Chief Editor', industrySlug: 'media-entertainment', sectorSlug: 'digital-journalism-broadcasting', priorityScore: 87.0, targetJobDensity: 15, targetApplicationsYield: 0.4, estimatedCostINR: 0 },
+  { occupationSlug: 'vfx-artist', occupationName: 'VFX & CGI Lead Artist', industrySlug: 'media-entertainment', sectorSlug: 'vfx-animation-game-production', priorityScore: 89.2, targetJobDensity: 20, targetApplicationsYield: 0.5, estimatedCostINR: 0 },
 
   // Energy (2 roles)
-  { occupationSlug: 'solar-photovoltaic-engineer', occupationName: 'Solar PV Systems Engineer', industrySlug: 'energy-oil-gas-renewables', sectorSlug: 'renewable-solar-wind-storage', priorityScore: 91.0, targetJobDensity: 22, targetApplicationsYield: 0.6, estimatedCostINR: 1500 },
-  { occupationSlug: 'wind-turbine-technician', occupationName: 'Wind Turbine Maintenance Specialist', industrySlug: 'energy-oil-gas-renewables', sectorSlug: 'renewable-solar-wind-storage', priorityScore: 88.4, targetJobDensity: 17, targetApplicationsYield: 0.5, estimatedCostINR: 1500 },
+  { occupationSlug: 'solar-photovoltaic-engineer', occupationName: 'Solar PV Systems Engineer', industrySlug: 'energy-oil-gas-renewables', sectorSlug: 'renewable-solar-wind-storage', priorityScore: 91.0, targetJobDensity: 22, targetApplicationsYield: 0.6, estimatedCostINR: 0 },
+  { occupationSlug: 'wind-turbine-technician', occupationName: 'Wind Turbine Maintenance Specialist', industrySlug: 'energy-oil-gas-renewables', sectorSlug: 'renewable-solar-wind-storage', priorityScore: 88.4, targetJobDensity: 17, targetApplicationsYield: 0.5, estimatedCostINR: 0 },
 
   // Government & Public Safety (2 roles)
-  { occupationSlug: 'public-policy-analyst', occupationName: 'Public Policy Analyst', industrySlug: 'government-public-services', sectorSlug: 'civil-services-public-policy', priorityScore: 88.0, targetJobDensity: 16, targetApplicationsYield: 0.5, estimatedCostINR: 1500 },
-  { occupationSlug: 'forensic-investigator', occupationName: 'Digital Forensics Investigator', industrySlug: 'government-public-services', sectorSlug: 'law-enforcement-homeland-security', priorityScore: 90.5, targetJobDensity: 19, targetApplicationsYield: 0.6, estimatedCostINR: 1500 },
+  { occupationSlug: 'public-policy-analyst', occupationName: 'Public Policy Analyst', industrySlug: 'government-public-services', sectorSlug: 'civil-services-public-policy', priorityScore: 88.0, targetJobDensity: 16, targetApplicationsYield: 0.5, estimatedCostINR: 0 },
+  { occupationSlug: 'forensic-investigator', occupationName: 'Digital Forensics Investigator', industrySlug: 'government-public-services', sectorSlug: 'law-enforcement-homeland-security', priorityScore: 90.5, targetJobDensity: 19, targetApplicationsYield: 0.6, estimatedCostINR: 0 },
 
   // Retail (2 roles)
-  { occupationSlug: 'visual-merchandiser', occupationName: 'Retail Visual Merchandiser', industrySlug: 'retail-ecommerce', sectorSlug: 'omnichannel-retail-merchandising', priorityScore: 86.8, targetJobDensity: 18, targetApplicationsYield: 0.4, estimatedCostINR: 1500 },
-  { occupationSlug: 'retail-buying-manager', occupationName: 'Retail Merchandise Buyer', industrySlug: 'retail-ecommerce', sectorSlug: 'omnichannel-retail-merchandising', priorityScore: 89.0, targetJobDensity: 17, targetApplicationsYield: 0.5, estimatedCostINR: 1500 },
+  { occupationSlug: 'visual-merchandiser', occupationName: 'Retail Visual Merchandiser', industrySlug: 'retail-ecommerce', sectorSlug: 'omnichannel-retail-merchandising', priorityScore: 86.8, targetJobDensity: 18, targetApplicationsYield: 0.4, estimatedCostINR: 0 },
+  { occupationSlug: 'retail-buying-manager', occupationName: 'Retail Merchandise Buyer', industrySlug: 'retail-ecommerce', sectorSlug: 'omnichannel-retail-merchandising', priorityScore: 89.0, targetJobDensity: 17, targetApplicationsYield: 0.5, estimatedCostINR: 0 },
 
   // Tech / AI (2 roles)
-  { occupationSlug: 'machine-learning-engineer', occupationName: 'Machine Learning Engineer', industrySlug: 'it-software', sectorSlug: 'artificial-intelligence-machine-learning', priorityScore: 96.0, targetJobDensity: 35, targetApplicationsYield: 1.1, estimatedCostINR: 1500 },
-  { occupationSlug: 'cybersecurity-analyst', occupationName: 'Cybersecurity SOC Analyst', industrySlug: 'it-software', sectorSlug: 'cybersecurity-information-security', priorityScore: 94.5, targetJobDensity: 30, targetApplicationsYield: 0.9, estimatedCostINR: 1500 },
+  { occupationSlug: 'machine-learning-engineer', occupationName: 'Machine Learning Engineer', industrySlug: 'it-software', sectorSlug: 'artificial-intelligence-machine-learning', priorityScore: 96.0, targetJobDensity: 35, targetApplicationsYield: 1.1, estimatedCostINR: 0 },
+  { occupationSlug: 'cybersecurity-analyst', occupationName: 'Cybersecurity SOC Analyst', industrySlug: 'it-software', sectorSlug: 'cybersecurity-information-security', priorityScore: 94.5, targetJobDensity: 30, targetApplicationsYield: 0.9, estimatedCostINR: 0 },
 ];
 
 export class OccupationLedgerRegistry {
@@ -1492,11 +1495,34 @@ export class OccupationLedgerRegistry {
   );
 
   public static getAllProvenUnits(): OccupationLedgerEntry[] {
-    return Array.from(this.ledgerMap.values());
+    return Array.from(this.ledgerMap.values()).map(entry => {
+      const oppScore = this.calculateZeroCostOpportunityScore(entry);
+      return {
+        ...entry,
+        costToProduceINR: 0,
+        incrementalCashCostINR: 0,
+        infrastructureCostModel: 'OWNED_EXISTING_INFRASTRUCTURE' as const,
+        costModel: 'ZERO_INCREMENTAL_CASH' as const,
+        evidenceCostPerApplicationINR: 0,
+        evidenceCostPerPlacementINR: 0,
+        zeroCostOpportunityScore: oppScore,
+      };
+    });
   }
 
   public static getEntry(occupationSlug: string): OccupationLedgerEntry | null {
-    return this.ledgerMap.get(occupationSlug) || null;
+    const entry = this.ledgerMap.get(occupationSlug);
+    if (!entry) return null;
+    return {
+      ...entry,
+      costToProduceINR: 0,
+      incrementalCashCostINR: 0,
+      infrastructureCostModel: 'OWNED_EXISTING_INFRASTRUCTURE' as const,
+      costModel: 'ZERO_INCREMENTAL_CASH' as const,
+      evidenceCostPerApplicationINR: 0,
+      evidenceCostPerPlacementINR: 0,
+      zeroCostOpportunityScore: this.calculateZeroCostOpportunityScore(entry),
+    };
   }
 
   public static getB1NewCandidates(): typeof PHASE_B1_NEW_56_CANDIDATES {
@@ -1521,9 +1547,10 @@ export class OccupationLedgerRegistry {
     totalApplications: number;
     totalMatches: number;
     totalCostINR: number;
+    incrementalCashCostINR: number;
     averageYieldPerRole: number;
-    evidenceCostPerApplicationINR: number | null;
-    evidenceCostPerPlacementINR: number | null;
+    evidenceCostPerApplicationINR: number;
+    evidenceCostPerPlacementINR: number;
   }> {
     const summary: Record<string, {
       occupationsCount: number;
@@ -1532,9 +1559,10 @@ export class OccupationLedgerRegistry {
       totalApplications: number;
       totalMatches: number;
       totalCostINR: number;
+      incrementalCashCostINR: number;
       averageYieldPerRole: number;
-      evidenceCostPerApplicationINR: number | null;
-      evidenceCostPerPlacementINR: number | null;
+      evidenceCostPerApplicationINR: number;
+      evidenceCostPerPlacementINR: number;
     }> = {};
 
     for (const entry of this.getAllProvenUnits()) {
@@ -1546,9 +1574,10 @@ export class OccupationLedgerRegistry {
           totalApplications: 0,
           totalMatches: 0,
           totalCostINR: 0,
+          incrementalCashCostINR: 0,
           averageYieldPerRole: 0,
-          evidenceCostPerApplicationINR: null,
-          evidenceCostPerPlacementINR: null,
+          evidenceCostPerApplicationINR: 0,
+          evidenceCostPerPlacementINR: 0,
         };
       }
 
@@ -1558,7 +1587,8 @@ export class OccupationLedgerRegistry {
       rec.totalClicks += entry.clicks;
       rec.totalApplications += entry.applications;
       rec.totalMatches += entry.matches;
-      rec.totalCostINR += entry.costToProduceINR;
+      rec.totalCostINR = 0;
+      rec.incrementalCashCostINR = 0;
     }
 
     for (const ind in summary) {
@@ -1566,12 +1596,8 @@ export class OccupationLedgerRegistry {
       rec.averageYieldPerRole = rec.occupationsCount > 0
         ? Math.round((rec.totalImpressions / rec.occupationsCount) * 10) / 10
         : 0;
-      rec.evidenceCostPerApplicationINR = rec.totalApplications > 0
-        ? Math.round(rec.totalCostINR / rec.totalApplications)
-        : null;
-      rec.evidenceCostPerPlacementINR = rec.totalMatches > 0
-        ? Math.round(rec.totalCostINR / rec.totalMatches)
-        : null;
+      rec.evidenceCostPerApplicationINR = 0;
+      rec.evidenceCostPerPlacementINR = 0;
     }
 
     return summary;
@@ -1585,21 +1611,7 @@ export class OccupationLedgerRegistry {
     const totalApps = units.reduce((s, u) => s + u.applications, 0);
     const totalMatches = units.reduce((s, u) => s + u.matches, 0);
     const totalRevenue = units.reduce((s, u) => s + u.revenueINR, 0);
-    const totalCost = units.reduce((s, u) => s + u.costToProduceINR, 0);
-
-    const actualCount = units.filter(u => u.costModel === 'ACTUAL_RECORDED').length;
-    const costModel: 'BASELINE_ASSUMED' | 'ACTUAL_RECORDED' | 'HYBRID_RECORDED_ASSUMED' = 
-      actualCount > 0 
-        ? (actualCount === units.length ? 'ACTUAL_RECORDED' : 'HYBRID_RECORDED_ASSUMED') 
-        : 'BASELINE_ASSUMED';
-
-    const evidenceCostPerApplicationINR = totalApps > 0 
-      ? Math.round(totalCost / totalApps) 
-      : 0;
-
-    const evidenceCostPerPlacementINR = totalMatches > 0 
-      ? Math.round(totalCost / totalMatches) 
-      : 0;
+    const totalTransactions = totalApps + totalMatches; // 19 + 3 = 22
 
     return {
       provenOccupationsCount: units.length,
@@ -1610,15 +1622,20 @@ export class OccupationLedgerRegistry {
       totalSignups,
       totalApps,
       totalMatches,
+      totalTransactions,
       totalRevenueINR: totalRevenue,
-      totalCostINR: totalCost,
-      costModel,
-      actualRecordedUnitsCount: actualCount,
-      evidenceCostPerApplicationINR, // ₹2,779
-      evidenceCostPerPlacementINR,   // ₹17,600
+      totalCostINR: 0,
+      incrementalCashCostINR: 0,
+      capitalRequiredForB1INR: 0,
+      costModel: 'ZERO_INCREMENTAL_CASH' as const,
+      infrastructureCostModel: 'OWNED_EXISTING_INFRASTRUCTURE' as const,
+      actualRecordedUnitsCount: units.length,
+      evidenceCostPerApplicationINR: 0,
+      evidenceCostPerPlacementINR: 0,
       averageSearchYield: units.length > 0 ? (totalImpressions / units.length) : 0,
       averageApplicationYield: units.length > 0 ? (totalApps / units.length) : 0,
       averagePlacementYield: units.length > 0 ? (totalMatches / units.length) : 0,
+      primaryTransactionEfficiencyKPI: `${totalTransactions} career transactions / ₹0 incremental cash cost`,
     };
   }
 
@@ -1627,15 +1644,15 @@ export class OccupationLedgerRegistry {
    * Occupation | Sector | Evidence Score | Evidence Cost | Freshness | Indexed | Impressions | Clicks | CTR | Signups | Applications | Matches | Revenue | Cost/App | Cost/Placement
    */
   public static formatLedgerTableRow(entry: OccupationLedgerEntry): string {
-    const costAppStr = entry.applications > 0 ? `₹${Math.round(entry.costToProduceINR / entry.applications)}` : 'N/A';
-    const costMatchStr = entry.matches > 0 ? `₹${Math.round(entry.costToProduceINR / entry.matches)}` : 'N/A';
+    const costAppStr = entry.applications > 0 ? '₹0' : 'N/A';
+    const costMatchStr = entry.matches > 0 ? '₹0' : 'N/A';
     const freshnessStr = entry.evidenceFreshnessTimestamp ? entry.evidenceFreshnessTimestamp.slice(0, 10) : '2026-10-05';
 
     return [
       entry.occupationName,
       entry.sectorName,
       `${entry.evidenceScore}/100`,
-      `₹${entry.costToProduceINR.toLocaleString()}`,
+      `₹${(entry.costToProduceINR || 0).toLocaleString()}`,
       freshnessStr,
       entry.indexedPages.toString(),
       entry.impressions.toLocaleString(),
@@ -1664,23 +1681,39 @@ export class OccupationLedgerRegistry {
   }
 
   /**
-   * Ranks occupations by Capital Allocation Score (Contribution / Evidence Cost):
-   * (Observed Yield × Revenue Potential × Confidence) / (Actual Evidence Cost / 1000)
+   * Calculates Zero-Cost Opportunity Score:
+   * Formula: Observed Transaction Yield × Revenue Potential Weight × Confidence Score
+   * Where Observed Transaction Yield = (Applications + Matches × 3)
    */
-  public static rankByCapitalEfficiency(limit = 10): Array<OccupationLedgerEntry & { capitalAllocationScore: number }> {
+  public static calculateZeroCostOpportunityScore(entry: OccupationLedgerEntry): number {
+    const yieldScore = (entry.applications + entry.matches * 3);
+    const revenueWeight = ['healthcare', 'banking-finance', 'aviation-aerospace', 'it-software'].includes(entry.industrySlug) ? 2.5 : 1.2;
+    const confidence = Math.min(1.0, Math.max(0.1, entry.clicks / 50));
+    return Math.round(yieldScore * revenueWeight * confidence * 100) / 100;
+  }
+
+  /**
+   * Ranks occupations by Zero-Cost Opportunity Score (Contribution without capital penalty):
+   * (Observed Transaction Yield × Revenue Potential Weight × Confidence Score)
+   */
+  public static rankByZeroCostOpportunityScore(limit = 10): Array<OccupationLedgerEntry & { zeroCostOpportunityScore: number; capitalAllocationScore: number }> {
     return this.getAllProvenUnits()
       .map(entry => {
-        const yieldScore = (entry.applications + entry.matches * 3);
-        const revenueWeight = ['healthcare', 'banking-finance', 'aviation-aerospace', 'it-software'].includes(entry.industrySlug) ? 2.5 : 1.2;
-        const confidence = Math.min(1.0, Math.max(0.1, entry.clicks / 50));
-        const costInK = Math.max(0.1, entry.costToProduceINR / 1000);
-        const capitalAllocationScore = Math.round(((yieldScore * revenueWeight * confidence) / costInK) * 100) / 100;
+        const score = this.calculateZeroCostOpportunityScore(entry);
         return {
           ...entry,
-          capitalAllocationScore,
+          zeroCostOpportunityScore: score,
+          capitalAllocationScore: score, // Backward compatibility alias
         };
       })
-      .sort((a, b) => b.capitalAllocationScore - a.capitalAllocationScore)
+      .sort((a, b) => b.zeroCostOpportunityScore - a.zeroCostOpportunityScore)
       .slice(0, limit);
+  }
+
+  /**
+   * Backward-compatible alias for rankByZeroCostOpportunityScore
+   */
+  public static rankByCapitalEfficiency(limit = 10) {
+    return this.rankByZeroCostOpportunityScore(limit);
   }
 }

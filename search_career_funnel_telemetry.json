@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-10-05T11:50:08.880Z",
+  "timestamp": "2026-10-05T12:19:06.402Z",
   "scaleSummary": {
     "modeledSearchOpportunities": "1.057B+",
     "qualifiedOpportunities": "241M",
@@ -32,53 +32,62 @@
     "unitEconomicCTR": "2.50%",
     "unitEconomicSignupRate": "10.99%",
     "unitEconomicApplicationRate": "24.36%",
-    "evidenceCostPerApplication": "₹2,779 / application (₹52,800 / 19 apps)",
-    "evidenceCostPerPlacement": "₹17,600 / placement (₹52,800 / 3 matches)"
+    "evidenceCostPerApplication": "₹0 / application (Owned Infrastructure — ₹0 incremental cash spend)",
+    "evidenceCostPerPlacement": "₹0 / placement (Owned Infrastructure — ₹0 incremental cash spend)",
+    "primaryTransactionEfficiencyKPI": "22 career transactions / ₹0 incremental cash cost"
   },
   "occupationLedgerSummary": {
     "provenUnitsCount": 44,
     "b1CandidateCount": 56,
     "b1TotalTarget": 100,
-    "totalProductionCostINR": 52800,
+    "totalProductionCostINR": 0,
+    "incrementalCashCostINR": 0,
     "totalMonetizedRevenueINR": 0,
-    "costModel": "BASELINE_ASSUMED",
-    "evidenceCostPerApplicationINR": 2779,
-    "evidenceCostPerPlacementINR": 17600,
+    "costModel": "ZERO_INCREMENTAL_CASH",
+    "infrastructureCostModel": "OWNED_EXISTING_INFRASTRUCTURE",
+    "evidenceCostPerApplicationINR": 0,
+    "evidenceCostPerPlacementINR": 0,
+    "primaryKpi": "22 career transactions / ₹0 incremental cash cost",
     "emergingWinners": [
       {
         "occupationName": "Registered Nurse",
         "applications": 3,
         "matches": 1,
         "searchYield": 1850,
-        "performanceTier": "EMERGING_WINNER"
+        "performanceTier": "EMERGING_WINNER",
+        "zeroCostOpportunityScore": 15
       },
       {
         "occupationName": "Pharmacist",
         "applications": 2,
         "matches": 1,
         "searchYield": 1420,
-        "performanceTier": "EMERGING_WINNER"
+        "performanceTier": "EMERGING_WINNER",
+        "zeroCostOpportunityScore": 11.25
       },
       {
         "occupationName": "Commercial Pilot",
         "applications": 1,
         "matches": 1,
         "searchYield": 1050,
-        "performanceTier": "EMERGING_WINNER"
+        "performanceTier": "EMERGING_WINNER",
+        "zeroCostOpportunityScore": 5.6
       },
       {
         "occupationName": "Software Engineer",
         "applications": 2,
         "matches": 0,
         "searchYield": 2100,
-        "performanceTier": "EMERGING_WINNER"
+        "performanceTier": "EMERGING_WINNER",
+        "zeroCostOpportunityScore": 5
       },
       {
         "occupationName": "Relationship Manager",
         "applications": 1,
         "matches": 0,
         "searchYield": 980,
-        "performanceTier": "EMERGING_WINNER"
+        "performanceTier": "EMERGING_WINNER",
+        "zeroCostOpportunityScore": 1.3
       }
     ],
     "topPerformingArchetypes": [
@@ -86,31 +95,36 @@
         "occupationName": "Registered Nurse",
         "applications": 3,
         "matches": 1,
-        "searchYield": 1850
+        "searchYield": 1850,
+        "zeroCostOpportunityScore": 15
       },
       {
         "occupationName": "Pharmacist",
         "applications": 2,
         "matches": 1,
-        "searchYield": 1420
+        "searchYield": 1420,
+        "zeroCostOpportunityScore": 11.25
       },
       {
         "occupationName": "Commercial Pilot",
         "applications": 1,
         "matches": 1,
-        "searchYield": 1050
+        "searchYield": 1050,
+        "zeroCostOpportunityScore": 5.6
       },
       {
         "occupationName": "Software Engineer",
         "applications": 2,
         "matches": 0,
-        "searchYield": 2100
+        "searchYield": 2100,
+        "zeroCostOpportunityScore": 5
       },
       {
         "occupationName": "Relationship Manager",
         "applications": 1,
         "matches": 0,
-        "searchYield": 980
+        "searchYield": 980,
+        "zeroCostOpportunityScore": 1.3
       }
     ]
   },

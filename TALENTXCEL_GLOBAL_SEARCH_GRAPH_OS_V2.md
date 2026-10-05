@@ -496,50 +496,66 @@ $$\text{Occupation Slug} \longrightarrow \text{Evidence Score} \longrightarrow \
 │  ⭐ Evidence Cost / Placement    : ₹17,600 / match (₹52,800 / 3 placements) │
 │  • Commercial Revenue Target    : ₹0.00 (B1 Commercial Validation)       │
 │  • Emerging Winners (Early Obs) :                                            │
-│      - Registered Nurse: 3 apps, 1 match, 1850 imp (EMERGING_WINNER)         │
-│      - Pharmacist: 2 apps, 1 match, 1420 imp (EMERGING_WINNER)               │
-│      - Commercial Pilot: 1 apps, 1 match, 1050 imp (EMERGING_WINNER)         │
-│      - Software Engineer: 2 apps, 0 match, 2100 imp (EMERGING_WINNER)        │
-│      - Relationship Manager: 1 apps, 0 match, 980 imp (EMERGING_WINNER)      │
-└──────────────────────────────────────────────────────────────────────────────┘
+│  • Factory Cost Model           : ZERO_INCREMENTAL_CASH (Owned Infrastructure)│
+│  • Incremental Cash Cost        : ₹0 (Zero External Cash Spend)               │
+│  • Aggregate Production Cost    : ₹0 (Owned Infrastructure)                   │
+│  ⭐ Evidence Cost / Application  : ₹0 / app (Owned Infrastructure)             │
+│  ⭐ Evidence Cost / Placement    : ₹0 / match (Owned Infrastructure)           │
+│  ⭐ Primary Transaction KPI      : 22 career transactions / ₹0 incremental cash cost │
+│  • Commercial Revenue Target    : ₹0.00 (B1 Commercial Validation)            │
+│  • Emerging Winners (Zero-Cost) :                                             │
+│      - Registered Nurse: 3 apps, 1 match (Score: 15.00) [EMERGING_WINNER]     │
+│      - Pharmacist: 2 apps, 1 match (Score: 11.25) [EMERGING_WINNER]           │
+│      - Commercial Pilot: 1 apps, 1 match (Score: 5.60) [EMERGING_WINNER]      │
+│      - Software Engineer: 2 apps, 0 match (Score: 5.00) [EMERGING_WINNER]     │
+│      - Relationship Manager: 1 apps, 0 match (Score: 1.30) [EMERGING_WINNER]  │
+└───────────────────────────────────────────────────────────────────────────────┘
 ```
 
-#### Unit Economic Efficiency Ratios
-1. **Evidence Cost per Application**:
-   $$\text{Evidence Cost / Application} = \frac{\text{Total Evidence Production Cost}}{\text{Applications Submitted}} = \frac{\text{₹}52,800}{19} \approx \text{₹}2,779 \text{ per application}$$
-   *Evaluates how efficiently the evidence graph drives high-intent career decisions. In high-conversion sectors like Healthcare, this drops to ₹1,400 / application.*
+#### Zero Incremental Cash Cost Model (`ZERO_INCREMENTAL_CASH`)
+1. **Owned Infrastructure vs. Incremental Cash Spend**:
+   - TalentXcel manufactures the 56 Phase-B1 occupations using existing infrastructure, open/verified public data sources, internal product telemetry, and automated extraction scripts.
+   - Engineering salaries, cloud servers, and foundational APIs are accounted for as fixed corporate overhead. The factory requires **₹0 additional incremental cash spend**.
+   - **Primary Transaction Efficiency KPI**:
+     $$\text{Transaction Efficiency} = \frac{22 \text{ Career Transactions}}{\text{₹0 Incremental Cash Cost}}$$
 
-2. **Evidence Cost per Placement**:
-   $$\text{Evidence Cost / Placement} = \frac{\text{Total Evidence Production Cost}}{\text{Confirmed Placements}} = \frac{\text{₹}52,800}{3} \approx \text{₹}17,600 \text{ per placement}$$
-   *Measures the exact cost of generating completed business transactions. In Healthcare, this drops to ₹4,200 / placement.*
+2. **Unit Economic Metrics in Zero-Cost Model**:
+   - **Evidence Production Cost**: ₹0
+   - **Evidence Cost per Application**: ₹0 / application
+   - **Evidence Cost per Placement**: ₹0 / placement
+   - **Capital Required for B1**: ₹0
 
 3. **Classification Governance: `EMERGING_WINNER` vs `PROVEN_HERO`**:
    - Occupations with initial positive conversion (e.g. Registered Nurse, Pharmacist, Commercial Pilot) are classified as **`EMERGING_WINNER`** rather than confirmed heroes.
    - Requires $\ge 5$ confirmed placements and sustained 30-day tracking before elevating an occupation to a permanent `PROVEN_HERO` archetype, protecting the factory against overfitting to small early sample sizes.
 
-4. **Production Cost Provenance: Assumed $\longrightarrow$ Actual Recorded**:
-   - Initial Phase A baseline models evidence production at ₹1,200 per saturated unit (`BASELINE_ASSUMED`).
-   - As Phase B1 executes, the ledger tracks `costModel: 'ACTUAL_RECORDED'` logging the true direct compute, scraping, validation, and human review costs per role.
+4. **Strict Quality Safeguard**:
+   - > [!IMPORTANT]
+   - > **Zero-Cost Production $\neq$ Zero-Quality Production**: A ₹0 incremental cost model never permits lowering evidence quality thresholds. The **12-factor evidence saturation gate** remains 100% strict and uncompromising. Every candidate occupation must satisfy all 12 criteria (active jobs $\ge 3$, verified salary data $\ge 15$ points, ATS keywords $\ge 20$, STAR interview framework, Google XYZ resume bullets) before indexation.
 
-#### Dual-Formula Factory Governance (Selection vs. Capital Allocation)
-To prevent conflating initial hypothesis selection with ongoing capital investment, the factory deploys two distinct mathematical governance models:
+#### Dual-Formula Factory Governance (Selection vs. Zero-Cost Opportunity)
+To eliminate division-by-zero artifacts and prevent conflating pre-build potential with post-build scaling, the factory deploys two distinct mathematical governance models:
 
 1. **Formula 1: Pre-Build Selection Formula ("What should we build?")**
    $$\text{Priority Score} = \Big(\text{Demand} \times 0.35 + \text{JobDensity} \times 0.25 + \text{SalaryDepth} \times 0.15 + \text{TransactionPotential} \times 0.25\Big) \times \text{SectorDiversityWeight}$$
    *Applied before an occupation graph is seeded. Guides the intake of candidate vocations across underrepresented non-IT sectors.*
 
-2. **Formula 2: Post-Build Capital Allocation Formula ("What should we invest more capital in?")**
-   $$\text{Capital Allocation Score} = \frac{\text{Observed Transaction Yield} \times \text{Revenue Potential Weight} \times \text{Confidence Score}}{\frac{\text{Actual Evidence Cost (₹)}}{1,000}}$$
-   *Applied after 30 days of live production tracking. Ranks occupations by contribution margin per rupee of evidence expenditure, determining where capital should be re-allocated in Phase B2 ($250$) and B3 ($500$).*
+2. **Formula 2: Post-Build Zero-Cost Opportunity Score ("What should we scale?")**
+   $$\text{Zero-Cost Opportunity Score} = \text{Observed Transaction Yield} \times \text{Revenue Potential Weight} \times \text{Confidence Score}$$
+   Where:
+   - $\text{Observed Transaction Yield} = \text{Applications} + 3 \times \text{Matches}$
+   - $\text{Revenue Potential Weight} = 2.5$ for high-monetization verticals (Healthcare, BFSI, Aviation, IT) and $1.2$ for standard sectors
+   - $\text{Confidence Score} = \min(1.0, \max(0.1, \text{clicks} / 50))$ based on empirical traffic sample size
+   *Ranks occupations by gross commercial contribution without introducing artificial infinity scores from a ₹0 cost denominator.*
 
 #### Standardized 15-Column Unit Tracking Output
 For every completed occupation unit, the factory produces a standardized row in the evidence ledger:
 ```
 Occupation | Sector | Evidence Score | Evidence Cost | Freshness | Indexed | Impressions | Clicks | CTR | Signups | Applications | Matches | Revenue | Cost/App | Cost/Placement
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
-Registered Nurse | Specialized Clinical Nursing | 98/100 | ₹1,200 | 2026-10-05 | 11 | 1,850 | 58 | 3.14% | 8 | 3 | 1 | ₹0 | ₹400 | ₹1200
-Pharmacist | Pharmacy & Clinical Drug Therapy | 98/100 | ₹1,200 | 2026-10-05 | 9 | 1,420 | 45 | 3.17% | 6 | 2 | 1 | ₹0 | ₹600 | ₹1200
-Commercial Pilot | Commercial Airline Operations | 96/100 | ₹1,200 | 2026-10-05 | 8 | 1,050 | 32 | 3.05% | 4 | 1 | 1 | ₹0 | ₹1200 | ₹1200
+Registered Nurse | Specialized Clinical Nursing | 98/100 | ₹0 | 2026-10-05 | 11 | 1,850 | 58 | 3.14% | 8 | 3 | 1 | ₹0 | ₹0 | ₹0
+Pharmacist | Pharmacy & Clinical Drug Therapy | 98/100 | ₹0 | 2026-10-05 | 9 | 1,420 | 45 | 3.17% | 6 | 2 | 1 | ₹0 | ₹0 | ₹0
+Commercial Pilot | Commercial Airline Operations | 97/100 | ₹0 | 2026-10-05 | 9 | 1,050 | 28 | 2.67% | 3 | 1 | 1 | ₹0 | ₹0 | ₹0
 ```
 
 #### B1 Factory Balance & Empirical Baseline
@@ -549,17 +565,18 @@ Commercial Pilot | Commercial Airline Operations | 96/100 | ₹1,200 | 2026-10-0
   - Total Candidate Registrations: $78$
   - Total Applications: $19$ (Application Yield: $0.43$ apps/role)
   - Total Matches/Placements: $3$ (Placement Yield: $0.068$ matches/role)
-  - Production Cost: ₹$52,800$ (₹$1,200$ average cost-to-evidence per unit)
-  - Evidence Cost / Application: ₹$2,779$
-  - Evidence Cost / Placement: ₹$17,600$
+  - Incremental Cash Production Cost: ₹$0$ (Owned infrastructure)
+  - Evidence Cost / Application: ₹$0$
+  - Evidence Cost / Placement: ₹$0$
 - **Queued Phase B1 Candidates (56 Units)**:
   - Balanced across all 15 industry verticals: Healthcare (8), BFSI (7), Construction (5), Aviation (5), Hospitality (4), Manufacturing (5), Logistics (4), Education (3), Legal (3), Agriculture (2), Media (2), Energy (2), Government (2), Retail (2), Tech/AI (2).
   - Target Scale: Exactly $44 \text{ proven} + 56 \text{ candidates} = 100 \text{ Occupations}$.
+  - Incremental Cash Required for B1: ₹$0$.
 
 #### Mandatory B1 Review Gate Condition
 > [!IMPORTANT]
 > **Strict Scaling Halt Condition**: Do not advance to Phase B2 ($250$) or B3 ($500$) until all 100 occupations have completed at least 30 days of live production tracking, and the factory evaluates:
-> 1. Which occupations and sub-sectors yield the highest applications and placements per ₹1,000 of evidence production cost?
+> 1. Which occupations and sub-sectors yield the highest Zero-Cost Opportunity Scores and transaction volume?
 > 2. Which location and credential modifiers trigger the highest CTR and lowest bounce rate?
 > 3. Where is Googlebot indexation rate highest vs where is crawl throttling observed?
-> Production capacity will be re-allocated based exclusively on empirical ledger yield rather than theoretical keyword volume.
+> Production capacity will be expanded based exclusively on empirical ledger yield and zero incremental cash spend.

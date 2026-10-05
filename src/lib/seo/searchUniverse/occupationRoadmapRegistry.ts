@@ -832,18 +832,38 @@ export class OccupationRoadmapRegistry {
   }
 
   /**
+   * Stage 2: Post-Build Zero-Cost Opportunity Score ("What should we scale?")
+   * With denominator = ₹0 in a zero-incremental-cost model, avoid dividing by zero.
+   * Formula: Observed Transaction Yield × Revenue Potential Weight × Confidence Score
+   * Where Observed Transaction Yield = (Applications + Matches × 3)
+   */
+  public static computeZeroCostOpportunityScore(input: {
+    observedTransactionYield: number; // Applications + Matches * 3 (or transaction rate)
+    revenuePotentialWeight: number;   // 1.0 - 5.0 (monetization tier based on role compensation & placement fees)
+    confidenceScore: number;          // 0.1 - 1.0 (sample size confidence based on clicks, impressions, live days)
+  }): number {
+    const confidence = Math.max(0.1, Math.min(1.0, input.confidenceScore));
+    const raw = input.observedTransactionYield * input.revenuePotentialWeight * confidence;
+    return Math.round(raw * 100) / 100;
+  }
+
+  /**
    * Stage 2: Post-Build Capital Allocation Formula ("What should we invest more capital in?")
    * Formula: (Observed Transaction Yield × Revenue Potential × Confidence) / (Actual Evidence Cost / 1000)
    *
-   * Ranks occupations by contribution / evidence cost to guide Phase B2 capital reinvestment.
+   * In a zero-incremental-cost model (actualEvidenceCostINR <= 0 or omitted),
+   * delegates directly to computeZeroCostOpportunityScore to avoid division by zero or infinity.
    */
   public static computeCapitalAllocationScore(input: {
     observedTransactionYield: number; // Applications + Matches * 3 (or transaction rate)
     revenuePotentialWeight: number;   // 1.0 - 5.0 (monetization tier based on role compensation & placement fees)
     confidenceScore: number;          // 0.1 - 1.0 (sample size confidence based on clicks, impressions, live days)
-    actualEvidenceCostINR: number;    // Evidence acquisition and verification cost in INR
+    actualEvidenceCostINR?: number;   // Evidence acquisition and verification cost in INR (₹0 in zero-cost model)
   }): number {
-    const costInThousands = Math.max(0.1, input.actualEvidenceCostINR / 1000);
+    if (!input.actualEvidenceCostINR || input.actualEvidenceCostINR <= 0) {
+      return this.computeZeroCostOpportunityScore(input);
+    }
+    const costInThousands = input.actualEvidenceCostINR / 1000;
     const confidence = Math.max(0.1, Math.min(1.0, input.confidenceScore));
     const raw = (input.observedTransactionYield * input.revenuePotentialWeight * confidence) / costInThousands;
     return Math.round(raw * 100) / 100;
