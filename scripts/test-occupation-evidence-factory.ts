@@ -155,6 +155,26 @@ async function runTestSuite() {
   assert(sectorSummary['healthcare'].evidenceCostPerApplicationINR === 1400, 'Healthcare Evidence Cost / Application is ₹1,400 (superior to average ₹2,779)');
   assert(sectorSummary['healthcare'].evidenceCostPerPlacementINR === 4200, 'Healthcare Evidence Cost / Placement is ₹4,200 (superior to average ₹17,600)');
 
+  // Capital Allocation Score (Post-B1 Formula)
+  const capitalScore = OccupationRoadmapRegistry.computeCapitalAllocationScore({
+    observedTransactionYield: 6,
+    revenuePotentialWeight: 2.5,
+    confidenceScore: 0.6,
+    actualEvidenceCostINR: 1200,
+  });
+  assert(capitalScore === 7.5, 'Capital Allocation Score calculates (6 * 2.5 * 0.6) / 1.2 = 7.5 (found: ' + capitalScore + ')');
+
+  // 15-Column Table Export
+  const headers = OccupationLedgerRegistry.get15ColumnLedgerHeaders();
+  assert(headers.includes('Cost/App') && headers.includes('Cost/Placement'), '15-column headers include Cost/App and Cost/Placement');
+  const table = OccupationLedgerRegistry.get15ColumnLedgerTable(undefined, 3);
+  assert(table.includes('Registered Nurse') && table.includes('Pharmacist'), '15-column table renders top units with complete metrics');
+
+  // Capital Efficiency Ranking
+  const ranked = OccupationLedgerRegistry.rankByCapitalEfficiency(5);
+  assert(ranked[0].occupationSlug === 'nurse', 'Top capital efficiency unit is Registered Nurse (found: ' + ranked[0].occupationSlug + ')');
+  assert(ranked[0].capitalAllocationScore > 10, 'Registered Nurse capital allocation score > 10 (scored: ' + ranked[0].capitalAllocationScore + ')');
+
   console.log('\n================================================================');
   console.log(`🏁 EVIDENCE FACTORY RESULTS: ${passed} PASSED, ${failed} FAILED`);
   console.log('================================================================\n');

@@ -521,6 +521,27 @@ $$\text{Occupation Slug} \longrightarrow \text{Evidence Score} \longrightarrow \
    - Initial Phase A baseline models evidence production at ₹1,200 per saturated unit (`BASELINE_ASSUMED`).
    - As Phase B1 executes, the ledger tracks `costModel: 'ACTUAL_RECORDED'` logging the true direct compute, scraping, validation, and human review costs per role.
 
+#### Dual-Formula Factory Governance (Selection vs. Capital Allocation)
+To prevent conflating initial hypothesis selection with ongoing capital investment, the factory deploys two distinct mathematical governance models:
+
+1. **Formula 1: Pre-Build Selection Formula ("What should we build?")**
+   $$\text{Priority Score} = \Big(\text{Demand} \times 0.35 + \text{JobDensity} \times 0.25 + \text{SalaryDepth} \times 0.15 + \text{TransactionPotential} \times 0.25\Big) \times \text{SectorDiversityWeight}$$
+   *Applied before an occupation graph is seeded. Guides the intake of candidate vocations across underrepresented non-IT sectors.*
+
+2. **Formula 2: Post-Build Capital Allocation Formula ("What should we invest more capital in?")**
+   $$\text{Capital Allocation Score} = \frac{\text{Observed Transaction Yield} \times \text{Revenue Potential Weight} \times \text{Confidence Score}}{\frac{\text{Actual Evidence Cost (₹)}}{1,000}}$$
+   *Applied after 30 days of live production tracking. Ranks occupations by contribution margin per rupee of evidence expenditure, determining where capital should be re-allocated in Phase B2 ($250$) and B3 ($500$).*
+
+#### Standardized 15-Column Unit Tracking Output
+For every completed occupation unit, the factory produces a standardized row in the evidence ledger:
+```
+Occupation | Sector | Evidence Score | Evidence Cost | Freshness | Indexed | Impressions | Clicks | CTR | Signups | Applications | Matches | Revenue | Cost/App | Cost/Placement
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+Registered Nurse | Specialized Clinical Nursing | 98/100 | ₹1,200 | 2026-10-05 | 11 | 1,850 | 58 | 3.14% | 8 | 3 | 1 | ₹0 | ₹400 | ₹1200
+Pharmacist | Pharmacy & Clinical Drug Therapy | 98/100 | ₹1,200 | 2026-10-05 | 9 | 1,420 | 45 | 3.17% | 6 | 2 | 1 | ₹0 | ₹600 | ₹1200
+Commercial Pilot | Commercial Airline Operations | 96/100 | ₹1,200 | 2026-10-05 | 8 | 1,050 | 32 | 3.05% | 4 | 1 | 1 | ₹0 | ₹1200 | ₹1200
+```
+
 #### B1 Factory Balance & Empirical Baseline
 - **Proven Phase A Cohort (44 Units)**:
   - Total Impressions: $28,400$

@@ -811,7 +811,7 @@ export class OccupationRoadmapRegistry {
   }
 
   /**
-   * Prioritizes candidate occupations for saturation in the factory:
+   * Stage 1: Pre-Build Selection Formula ("What should we build?")
    * Score = (Demand × 0.35 + JobDensity × 0.25 + SalaryDepth × 0.15 + TransactionPotential × 0.25) × SectorDiversityWeight
    */
   public static computeOccupationPriorityScore(input: {
@@ -829,5 +829,23 @@ export class OccupationRoadmapRegistry {
       input.transactionPotential * 0.25
     );
     return Math.min(100, Math.round(raw * diversity * 10) / 10);
+  }
+
+  /**
+   * Stage 2: Post-Build Capital Allocation Formula ("What should we invest more capital in?")
+   * Formula: (Observed Transaction Yield × Revenue Potential × Confidence) / (Actual Evidence Cost / 1000)
+   *
+   * Ranks occupations by contribution / evidence cost to guide Phase B2 capital reinvestment.
+   */
+  public static computeCapitalAllocationScore(input: {
+    observedTransactionYield: number; // Applications + Matches * 3 (or transaction rate)
+    revenuePotentialWeight: number;   // 1.0 - 5.0 (monetization tier based on role compensation & placement fees)
+    confidenceScore: number;          // 0.1 - 1.0 (sample size confidence based on clicks, impressions, live days)
+    actualEvidenceCostINR: number;    // Evidence acquisition and verification cost in INR
+  }): number {
+    const costInThousands = Math.max(0.1, input.actualEvidenceCostINR / 1000);
+    const confidence = Math.max(0.1, Math.min(1.0, input.confidenceScore));
+    const raw = (input.observedTransactionYield * input.revenuePotentialWeight * confidence) / costInThousands;
+    return Math.round(raw * 100) / 100;
   }
 }

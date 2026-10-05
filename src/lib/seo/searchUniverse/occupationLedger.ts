@@ -1621,4 +1621,66 @@ export class OccupationLedgerRegistry {
       averagePlacementYield: units.length > 0 ? (totalMatches / units.length) : 0,
     };
   }
+
+  /**
+   * Generates a standardized 15-column ledger row for an individual occupation unit:
+   * Occupation | Sector | Evidence Score | Evidence Cost | Freshness | Indexed | Impressions | Clicks | CTR | Signups | Applications | Matches | Revenue | Cost/App | Cost/Placement
+   */
+  public static formatLedgerTableRow(entry: OccupationLedgerEntry): string {
+    const costAppStr = entry.applications > 0 ? `₹${Math.round(entry.costToProduceINR / entry.applications)}` : 'N/A';
+    const costMatchStr = entry.matches > 0 ? `₹${Math.round(entry.costToProduceINR / entry.matches)}` : 'N/A';
+    const freshnessStr = entry.evidenceFreshnessTimestamp ? entry.evidenceFreshnessTimestamp.slice(0, 10) : '2026-10-05';
+
+    return [
+      entry.occupationName,
+      entry.sectorName,
+      `${entry.evidenceScore}/100`,
+      `₹${entry.costToProduceINR.toLocaleString()}`,
+      freshnessStr,
+      entry.indexedPages.toString(),
+      entry.impressions.toLocaleString(),
+      entry.clicks.toString(),
+      `${entry.ctr.toFixed(2)}%`,
+      entry.registrations.toString(),
+      entry.applications.toString(),
+      entry.matches.toString(),
+      `₹${entry.revenueINR}`,
+      costAppStr,
+      costMatchStr,
+    ].join(' | ');
+  }
+
+  public static get15ColumnLedgerHeaders(): string {
+    return 'Occupation | Sector | Evidence Score | Evidence Cost | Freshness | Indexed | Impressions | Clicks | CTR | Signups | Applications | Matches | Revenue | Cost/App | Cost/Placement';
+  }
+
+  public static get15ColumnLedgerTable(cohort?: OccupationCohort, limit = 10): string {
+    const units = cohort 
+      ? this.getAllProvenUnits().filter(u => u.cohort === cohort)
+      : this.getAllProvenUnits();
+
+    const rows = units.slice(0, limit).map(u => this.formatLedgerTableRow(u));
+    return [this.get15ColumnLedgerHeaders(), '-'.repeat(160), ...rows].join('\n');
+  }
+
+  /**
+   * Ranks occupations by Capital Allocation Score (Contribution / Evidence Cost):
+   * (Observed Yield × Revenue Potential × Confidence) / (Actual Evidence Cost / 1000)
+   */
+  public static rankByCapitalEfficiency(limit = 10): Array<OccupationLedgerEntry & { capitalAllocationScore: number }> {
+    return this.getAllProvenUnits()
+      .map(entry => {
+        const yieldScore = (entry.applications + entry.matches * 3);
+        const revenueWeight = ['healthcare', 'banking-finance', 'aviation-aerospace', 'it-software'].includes(entry.industrySlug) ? 2.5 : 1.2;
+        const confidence = Math.min(1.0, Math.max(0.1, entry.clicks / 50));
+        const costInK = Math.max(0.1, entry.costToProduceINR / 1000);
+        const capitalAllocationScore = Math.round(((yieldScore * revenueWeight * confidence) / costInK) * 100) / 100;
+        return {
+          ...entry,
+          capitalAllocationScore,
+        };
+      })
+      .sort((a, b) => b.capitalAllocationScore - a.capitalAllocationScore)
+      .slice(0, limit);
+  }
 }
