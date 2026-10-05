@@ -14,6 +14,8 @@
 
 import { GlobalOccupationEvidenceFactory } from '../src/lib/seo/searchUniverse/globalOccupationEvidenceFactory';
 import { GlobalIndustryHierarchy } from '../src/lib/seo/searchUniverse/globalIndustryHierarchy';
+import { OccupationRoadmapRegistry } from '../src/lib/seo/searchUniverse/occupationRoadmapRegistry';
+import { SearchCareerFunnelTelemetry } from '../src/lib/seo/searchUniverse/searchCareerFunnelTelemetry';
 
 let passed = 0;
 let failed = 0;
@@ -103,6 +105,18 @@ async function runTestSuite() {
 
   const invalidSaturation = GlobalOccupationEvidenceFactory.verifyEvidenceSaturation('non-existent-fantasy-role');
   assert(invalidSaturation.isEligibleForIndex === false, 'Invalid role rejected by evidence saturation gate');
+
+  // --- 8. Testing Phase B 500-Occupation Roadmap & Yield KPIs ---
+  console.log('\n--- 8. Testing Phase B 500-Occupation Roadmap & Yield KPIs ---');
+  const sectors = OccupationRoadmapRegistry.getAllSectorsCatalog();
+  assert(sectors.length === 68, 'Phase B sectors catalog contains exactly 68 specialized sub-sectors (found: ' + sectors.length + ')');
+  const plannedOccupations = OccupationRoadmapRegistry.getTotalPlannedOccupationsForPhaseB();
+  assert(plannedOccupations >= 500, 'Phase B targets >= 500 canonical occupations (found: ' + plannedOccupations + ')');
+
+  const snapshot = SearchCareerFunnelTelemetry.generateSnapshot();
+  assert(snapshot.executiveRatios.careerGraphCoverage.includes('8.80%'), 'Career Graph Coverage reflects 8.80% (44 / 500 target)');
+  assert(snapshot.executiveRatios.qualifiedOpportunityCoverage.includes('0.0035%'), 'Qualified Opportunity Coverage reflects 0.0035%');
+  assert(snapshot.executiveRatios.transactionYieldPerOccupation.includes('0.50 transactions'), 'Transaction Yield reflects 0.50 transactions / saturated occupation');
 
   console.log('\n================================================================');
   console.log(`🏁 EVIDENCE FACTORY RESULTS: ${passed} PASSED, ${failed} FAILED`);

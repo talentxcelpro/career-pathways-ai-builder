@@ -54,8 +54,10 @@ export interface ExecutiveUniverseDashboard {
     hiresMatchesCompleted: number;      // Database matches
   };
   executiveRatios: {
-    // Metric 1: Indexed qualified pages / qualified opportunities
-    searchUniverseEfficiency: string;
+    // Metric 1: Qualified Opportunity Coverage (Indexed qualified pages / qualified opportunities - governor ceiling)
+    qualifiedOpportunityCoverage: string;
+    qualifiedOpportunityCoveragePercentage: number;
+    searchUniverseEfficiency: string; // Backward compatibility alias
     searchUniverseEfficiencyPercentage: number;
     // Metric 2: (Registrations + applications + matches) / organic qualified visitors
     searchToCareerConversion: string;
@@ -64,6 +66,7 @@ export interface ExecutiveUniverseDashboard {
     careerGraphCoverage: string;
     occupationSearchYield: string;
     occupationConversionYield: string;
+    transactionYieldPerOccupation: string;
     // Unit Economics: 1,000 impressions -> 50 clicks -> 5 signups -> 1 application
     unitEconomicCTR: string;
     unitEconomicSignupRate: string;
@@ -264,6 +267,8 @@ export class SearchCareerFunnelTelemetry {
     const totalCanonicalOccupations = 500;
     const coveragePercentage = (saturatedOccupations / totalCanonicalOccupations) * 100;
     const searchYield = saturatedOccupations > 0 ? (impressions / saturatedOccupations) : 0;
+    const transactions = applications + hiresMatches; // 19 + 3 = 22
+    const transactionYield = saturatedOccupations > 0 ? (transactions / saturatedOccupations) : 0;
 
     return {
       timestamp: new Date().toISOString(),
@@ -281,13 +286,16 @@ export class SearchCareerFunnelTelemetry {
         hiresMatchesCompleted: hiresMatches,
       },
       executiveRatios: {
-        searchUniverseEfficiency: `${(efficiencyPercentage).toFixed(4)}% (${actuallyIndexed.toLocaleString()} indexed / 241M qualified)`,
+        qualifiedOpportunityCoverage: `${efficiencyPercentage.toFixed(4)}% — intentionally governor-limited (${actuallyIndexed.toLocaleString()} indexed / 241M qualified)`,
+        qualifiedOpportunityCoveragePercentage: efficiencyPercentage,
+        searchUniverseEfficiency: `${efficiencyPercentage.toFixed(4)}% (${actuallyIndexed.toLocaleString()} indexed / 241M qualified)`,
         searchUniverseEfficiencyPercentage: efficiencyPercentage,
         searchToCareerConversion: `${conversionPercentage.toFixed(2)}% (${totalConversions} conversions / ${clicks} clicks)`,
         searchToCareerConversionPercentage: conversionPercentage,
         careerGraphCoverage: `${coveragePercentage.toFixed(2)}% (${saturatedOccupations} saturated / ${totalCanonicalOccupations} canonical Phase B target)`,
         occupationSearchYield: `${searchYield.toFixed(1)} impressions / saturated occupation`,
         occupationConversionYield: `${conversionPercentage.toFixed(2)}% (${totalConversions} conversions / ${clicks} clicks)`,
+        transactionYieldPerOccupation: `${transactionYield.toFixed(2)} transactions / saturated occupation (${transactions} transactions / ${saturatedOccupations} saturated)`,
         unitEconomicCTR: `${ctr.toFixed(2)}%`,
         unitEconomicSignupRate: `${signupRate.toFixed(2)}%`,
         unitEconomicApplicationRate: `${appRate.toFixed(2)}%`,

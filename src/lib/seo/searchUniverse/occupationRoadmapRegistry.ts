@@ -505,6 +505,198 @@ export const PHASE_B_SECTORS_CATALOG: SectorOccupationsDefinition[] = [
     targetOccupationsCount: 8,
     sampleOccupations: ['embedded-firmware-engineer', 'iot-solutions-architect', 'rtos-engineer', 'pcb-hardware-engineer']
   },
+
+  // ============================================================================
+  // 8. LOGISTICS, SUPPLY CHAIN & FREIGHT (3 Sectors, ~22 Occupations)
+  // ============================================================================
+  {
+    sectorSlug: 'freight-forwarding-multimodal',
+    sectorName: 'Freight Forwarding, Customs & Multimodal Cargo',
+    parentIndustrySlug: 'logistics-supply-chain',
+    parentIndustryName: 'Logistics, Supply Chain & Freight',
+    targetOccupationsCount: 7,
+    sampleOccupations: ['supply-chain-manager', 'customs-broker', 'freight-forwarding-executive', 'cargo-operations-manager', 'multimodal-logistics-coordinator']
+  },
+  {
+    sectorSlug: 'warehousing-fulfillment-cold-chain',
+    sectorName: 'Warehousing, Fulfillment & Cold Chain Systems',
+    parentIndustrySlug: 'logistics-supply-chain',
+    parentIndustryName: 'Logistics, Supply Chain & Freight',
+    targetOccupationsCount: 8,
+    sampleOccupations: ['warehouse-operations-manager', 'cold-chain-manager', 'fulfillment-center-lead', 'inventory-controller', 'distribution-center-director']
+  },
+  {
+    sectorSlug: 'last-mile-courier-fleet',
+    sectorName: 'Last-Mile Delivery, Express Couriers & Fleet Operations',
+    parentIndustrySlug: 'logistics-supply-chain',
+    parentIndustryName: 'Logistics, Supply Chain & Freight',
+    targetOccupationsCount: 7,
+    sampleOccupations: ['last-mile-delivery-manager', 'fleet-operations-supervisor', 'dispatch-route-planner', 'express-hub-manager']
+  },
+
+  // ============================================================================
+  // 9. EDUCATION, TEACHING & EDTECH (3 Sectors, ~22 Occupations)
+  // ============================================================================
+  {
+    sectorSlug: 'higher-education-academia',
+    sectorName: 'Higher Education, Research & University Administration',
+    parentIndustrySlug: 'education-academia',
+    parentIndustryName: 'Education, Teaching & EdTech',
+    targetOccupationsCount: 7,
+    sampleOccupations: ['university-professor', 'academic-registrar', 'admissions-director', 'research-grant-coordinator', 'dean-of-academic-affairs']
+  },
+  {
+    sectorSlug: 'k12-specialized-schooling',
+    sectorName: 'K-12 Primary, Secondary & Specialized Education',
+    parentIndustrySlug: 'education-academia',
+    parentIndustryName: 'Education, Teaching & EdTech',
+    targetOccupationsCount: 8,
+    sampleOccupations: ['school-teacher', 'school-principal', 'academic-counselor', 'special-education-teacher', 'stem-curriculum-coordinator']
+  },
+  {
+    sectorSlug: 'edtech-corporate-training',
+    sectorName: 'EdTech, Instructional Design & Corporate Learning',
+    parentIndustrySlug: 'education-academia',
+    parentIndustryName: 'Education, Teaching & EdTech',
+    targetOccupationsCount: 7,
+    sampleOccupations: ['instructional-designer', 'corporate-trainer', 'lms-platform-administrator', 'edtech-product-specialist', 'curriculum-author']
+  },
+
+  // ============================================================================
+  // 10. LEGAL, JUDICIARY & CORPORATE COMPLIANCE (3 Sectors, ~20 Occupations)
+  // ============================================================================
+  {
+    sectorSlug: 'corporate-law-ma-securities',
+    sectorName: 'Corporate Law, M&A, Capital Markets & Transactional Legal',
+    parentIndustrySlug: 'legal-compliance',
+    parentIndustryName: 'Legal, Judiciary & Corporate Compliance',
+    targetOccupationsCount: 7,
+    sampleOccupations: ['corporate-lawyer', 'in-house-legal-counsel', 'ma-legal-associate', 'securities-lawyer', 'contract-lifecycle-manager']
+  },
+  {
+    sectorSlug: 'intellectual-property-patents',
+    sectorName: 'Intellectual Property, Patents & Tech Licensing',
+    parentIndustrySlug: 'legal-compliance',
+    parentIndustryName: 'Legal, Judiciary & Corporate Compliance',
+    targetOccupationsCount: 6,
+    sampleOccupations: ['patent-attorney', 'trademark-examiner', 'ip-licensing-manager', 'patent-analyst', 'technology-transfer-officer']
+  },
+  {
+    sectorSlug: 'litigation-dispute-resolution',
+    sectorName: 'Commercial Litigation, Arbitration & Regulatory Compliance',
+    parentIndustrySlug: 'legal-compliance',
+    parentIndustryName: 'Legal, Judiciary & Corporate Compliance',
+    targetOccupationsCount: 7,
+    sampleOccupations: ['compliance-officer', 'litigation-lawyer', 'commercial-arbitrator', 'legal-paralegal', 'regulatory-affairs-counsel']
+  },
+
+  // ============================================================================
+  // 11. AGRICULTURE, AGRITECH & FOOD PROCESSING (3 Sectors, ~20 Occupations)
+  // ============================================================================
+  {
+    sectorSlug: 'precision-agritech-crop-sciences',
+    sectorName: 'Precision Agriculture, Agronomy & Crop Sciences',
+    parentIndustrySlug: 'agriculture-food-processing',
+    parentIndustryName: 'Agriculture, Agritech & Food Processing',
+    targetOccupationsCount: 7,
+    sampleOccupations: ['agronomist', 'crop-scientist', 'precision-farming-technologist', 'soil-scientist', 'agricultural-drone-pilot']
+  },
+  {
+    sectorSlug: 'food-processing-dairy-fmcg',
+    sectorName: 'Food Processing, Dairy Technology & Industrial Food Safety',
+    parentIndustrySlug: 'agriculture-food-processing',
+    parentIndustryName: 'Agriculture, Agritech & Food Processing',
+    targetOccupationsCount: 7,
+    sampleOccupations: ['food-technologist', 'food-safety-haccp-auditor', 'dairy-plant-manager', 'sensory-evaluation-analyst', 'quality-assurance-food-chemist']
+  },
+  {
+    sectorSlug: 'agri-supply-grain-trading',
+    sectorName: 'Agri-Supply Chain, Grain Trading & Farm-to-Fork Networks',
+    parentIndustrySlug: 'agriculture-food-processing',
+    parentIndustryName: 'Agriculture, Agritech & Food Processing',
+    targetOccupationsCount: 6,
+    sampleOccupations: ['commodity-grain-trader', 'farm-procurement-manager', 'cold-storage-inspector', 'agri-logistics-coordinator']
+  },
+
+  // ============================================================================
+  // 12. MEDIA, JOURNALISM & ENTERTAINMENT (2 Sectors, ~14 Occupations)
+  // ============================================================================
+  {
+    sectorSlug: 'digital-journalism-broadcasting',
+    sectorName: 'Investigative Journalism, News Broadcasting & Podcasting',
+    parentIndustrySlug: 'media-entertainment',
+    parentIndustryName: 'Media, Journalism & Entertainment',
+    targetOccupationsCount: 7,
+    sampleOccupations: ['journalist', 'news-editor', 'broadcast-producer', 'digital-content-strategist', 'podcast-host-producer']
+  },
+  {
+    sectorSlug: 'vfx-animation-game-production',
+    sectorName: 'Animation, VFX, Game Art & Digital Post-Production',
+    parentIndustrySlug: 'media-entertainment',
+    parentIndustryName: 'Media, Journalism & Entertainment',
+    targetOccupationsCount: 7,
+    sampleOccupations: ['video-producer', 'vfx-artist', '3d-animator', 'game-environment-artist', 'sound-designer', 'motion-graphics-lead']
+  },
+
+  // ============================================================================
+  // 13. ENERGY, OIL, GAS & RENEWABLE CLEANTECH (2 Sectors, ~14 Occupations)
+  // ============================================================================
+  {
+    sectorSlug: 'renewable-solar-wind-storage',
+    sectorName: 'Renewable Energy, Solar PV, Wind & Battery Storage',
+    parentIndustrySlug: 'energy-oil-gas-renewables',
+    parentIndustryName: 'Energy, Oil, Gas & Renewable CleanTech',
+    targetOccupationsCount: 7,
+    sampleOccupations: ['solar-technician', 'solar-photovoltaic-engineer', 'wind-turbine-technician', 'battery-storage-engineer', 'grid-integration-specialist']
+  },
+  {
+    sectorSlug: 'oil-gas-petrochemical-power',
+    sectorName: 'Oil, Gas Exploration, Power Plants & Substation Grid Systems',
+    parentIndustrySlug: 'energy-oil-gas-renewables',
+    parentIndustryName: 'Energy, Oil, Gas & Renewable CleanTech',
+    targetOccupationsCount: 7,
+    sampleOccupations: ['drilling-engineer', 'electrical-power-engineer', 'substation-automation-engineer', 'refinery-process-engineer', 'pipeline-integrity-engineer']
+  },
+
+  // ============================================================================
+  // 14. GOVERNMENT, CIVIL ADMINISTRATION & DEFENCE (2 Sectors, ~13 Occupations)
+  // ============================================================================
+  {
+    sectorSlug: 'civil-services-public-policy',
+    sectorName: 'Civil Administration, Public Policy & Foreign Affairs',
+    parentIndustrySlug: 'government-public-services',
+    parentIndustryName: 'Government, Defence & Civil Administration',
+    targetOccupationsCount: 7,
+    sampleOccupations: ['civil-services-officer', 'public-policy-analyst', 'administrative-officer', 'municipal-commissioner', 'revenue-inspector']
+  },
+  {
+    sectorSlug: 'law-enforcement-homeland-security',
+    sectorName: 'Law Enforcement, Forensic Investigation & Disaster Response',
+    parentIndustrySlug: 'government-public-services',
+    parentIndustryName: 'Government, Defence & Civil Administration',
+    targetOccupationsCount: 6,
+    sampleOccupations: ['police-officer', 'forensic-investigator', 'disaster-management-officer', 'fire-safety-chief', 'cybercrime-investigator']
+  },
+
+  // ============================================================================
+  // 15. RETAIL, FMCG & E-COMMERCE (2 Sectors, ~14 Occupations)
+  // ============================================================================
+  {
+    sectorSlug: 'omnichannel-retail-merchandising',
+    sectorName: 'Omnichannel Retail Operations, Merchandising & Store Networks',
+    parentIndustrySlug: 'retail-ecommerce',
+    parentIndustryName: 'Retail & E-Commerce',
+    targetOccupationsCount: 7,
+    sampleOccupations: ['retail-store-manager', 'area-retail-manager', 'visual-merchandiser', 'retail-loss-prevention-manager', 'retail-buyer']
+  },
+  {
+    sectorSlug: 'ecommerce-d2c-category-growth',
+    sectorName: 'E-Commerce Marketplaces, D2C Brands & Category Management',
+    parentIndustrySlug: 'retail-ecommerce',
+    parentIndustryName: 'Retail & E-Commerce',
+    targetOccupationsCount: 7,
+    sampleOccupations: ['ecommerce-category-manager', 'marketplace-growth-lead', 'catalog-operations-manager', 'pricing-strategy-analyst', 'd2c-brand-manager']
+  },
 ];
 
 export class OccupationRoadmapRegistry {
@@ -537,6 +729,7 @@ export class OccupationRoadmapRegistry {
     matches: number;
   }) {
     const totalTransactions = metrics.registrations + metrics.applications + metrics.matches;
+    const transactions = metrics.applications + metrics.matches; // 19 + 3 = 22
 
     const careerGraphCoverage = metrics.totalCanonicalOccupations > 0
       ? (metrics.evidenceSaturatedOccupations / metrics.totalCanonicalOccupations) * 100
@@ -550,13 +743,19 @@ export class OccupationRoadmapRegistry {
       ? (totalTransactions / metrics.organicClicks) * 100
       : 0;
 
+    const transactionYield = metrics.evidenceSaturatedOccupations > 0
+      ? transactions / metrics.evidenceSaturatedOccupations
+      : 0;
+
     return {
-      careerGraphCoverageFormatted: `${careerGraphCoverage.toFixed(2)}% (${metrics.evidenceSaturatedOccupations} saturated / ${metrics.totalCanonicalOccupations} canonical)`,
+      careerGraphCoverageFormatted: `${careerGraphCoverage.toFixed(2)}% (${metrics.evidenceSaturatedOccupations} saturated / ${metrics.totalCanonicalOccupations} canonical Phase B target)`,
       careerGraphCoveragePercentage: careerGraphCoverage,
       occupationSearchYieldFormatted: `${occupationSearchYield.toFixed(1)} impressions / saturated occupation`,
       occupationSearchYieldValue: occupationSearchYield,
       occupationConversionYieldFormatted: `${occupationConversionYield.toFixed(2)}% (${totalTransactions} conversions / ${metrics.organicClicks} clicks)`,
       occupationConversionYieldPercentage: occupationConversionYield,
+      transactionYieldFormatted: `${transactionYield.toFixed(2)} transactions / saturated occupation (${transactions} transactions / ${metrics.evidenceSaturatedOccupations} saturated)`,
+      transactionYieldValue: transactionYield,
     };
   }
 }

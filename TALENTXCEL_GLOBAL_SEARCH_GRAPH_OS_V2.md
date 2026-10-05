@@ -361,12 +361,88 @@ $$\begin{aligned}
 \longrightarrow\;& \text{Successful Hires \& Placements (3, 15.79\% Placement)}
 \end{aligned}$$
 
-#### The Two Executive Efficiency Ratios
-1. **Search Universe Efficiency**:
-   $$\text{Efficiency} = \frac{\text{Indexed Qualified Pages}}{\text{Qualified Opportunities}} = \frac{8,450}{241,000,000} = 0.0035\%$$
-   *Measures how much of our qualified opportunity graph is currently captured by Google Search.*
+#### The Four-Box Executive Dashboard & Yield Engine
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 🌐 BOX 1: GLOBAL CAREER GRAPH                                                │
+├──────────────────────────────────────────────────────────────────────────────┤
+│  • Modeled Search Opportunities : 1.057B+                                    │
+│  • Qualified Opportunities      : 241M                                       │
+│  • Evidence-Backed Destinations : 73M                                        │
+│  • Maximum Quality Capacity     : 22.6M (Governor Ceiling)                   │
+│  • Submitted to XML Sitemaps    : 12,053 (Live Clean Corpus)                 │
+│  • Actually Indexed (Googlebot) : 8,450 (GSC Confirmed Index)                │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 🧭 BOX 2: OCCUPATION GRAPH (PHASE B 500-TARGET)                              │
+├──────────────────────────────────────────────────────────────────────────────┤
+│  • Saturated Occupations        : 44 (Phase A) / 500 (Phase B Milestone)    │
+│  • Specialized Sub-Sectors      : 68 Sectors (Cataloged & Mapped)            │
+│  • Career Graph Coverage        : 8.80% (44 saturated / 500 canonical target)│
+│  • Evidence Contract Standard   : 12-Factor Full Evidence Saturation         │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 📈 BOX 3: MARKET PERFORMANCE & TRANSACTIONS                                  │
+├──────────────────────────────────────────────────────────────────────────────┤
+│  • Organic Search Impressions   : 28,400                                     │
+│  • Organic Qualified Clicks     : 710 (CTR: 2.50%)                           │
+│  • Candidate Registrations      : 78 (10.99% Signup Rate)                    │
+│  • Job Applications Submitted   : 19 (24.36% Application Rate)               │
+│  • Successful Hires / Matches   : 3 (15.79% Placement Rate)                  │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 🎯 BOX 4: YIELD & UNIT ECONOMICS                                             │
+├──────────────────────────────────────────────────────────────────────────────┤
+│  ⭐ Qualified Opp Coverage       : 0.0035% — intentionally governor-limited   │
+│  ⭐ Search-to-Career Conversion : 14.08% (100 conversions / 710 clicks)      │
+│  ⭐ Occupation Search Yield     : 645.5 impressions / saturated occupation   │
+│  ⭐ Occupation Conversion Yield : 14.08% (100 conversions / 710 clicks)      │
+│  ⭐ Transaction Yield           : 0.50 transactions / saturated occupation   │
+│  • Unit Economic CTR            : 2.50%                                      │
+│  • Unit Economic Signup Rate    : 10.99%                                     │
+│  • Unit Economic App Rate       : 24.36%                                     │
+└──────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### Executive Yield Ratios Defined
+1. **Qualified Opportunity Coverage**:
+   $$\text{Coverage} = \frac{\text{Actually Indexed Clean Pages}}{\text{Qualified Opportunities}} = \frac{8,450}{241,000,000} = 0.0035\% \quad \text{(Intentionally Governor-Limited)}$$
+   *Reflects deliberate quality constraint: only destinations with verified first-party evidence enter indexable sitemaps.*
 
 2. **Search-to-Career Conversion**:
-   $$\text{Conversion} = \frac{\text{Registrations} + \text{Applications} + \text{Matches}}{\text{Organic Qualified Visitors}} = \frac{78 + 19 + 3}{710} = 14.08\%$$
-   *Measures whether organic search traffic converts into measurable candidate and employer transactions.*
+   $$\text{Conversion} = \frac{\text{Registrations} + \text{Applications} + \text{Matches}}{\text{Organic Qualified Clicks}} = \frac{78 + 19 + 3}{710} = 14.08\%$$
+
+3. **Occupation Search Yield**:
+   $$\text{Search Yield} = \frac{\text{Total Organic Impressions}}{\text{Evidence-Saturated Occupations}} = \frac{28,400}{44} = 645.5 \text{ impressions / saturated occupation}$$
+
+4. **Transaction Yield per Occupation**:
+   $$\text{Transaction Yield} = \frac{\text{Applications} + \text{Hires/Matches}}{\text{Evidence-Saturated Occupations}} = \frac{19 + 3}{44} = 0.50 \text{ transactions / saturated occupation}$$
+
+---
+
+### 11.4 Phase B Milestone: 500 Occupations across 68 Specialized Sub-Sectors
+The platform advances from Phase A ($44$ baseline proof occupations) to Phase B ($500$ occupations across $68$ specialized sub-sectors) covering all $15$ global industry verticals:
+
+| Vertical Industry | Specialized Sub-Sectors | Target Occupations | Priority Focus |
+| :--- | :--- | :--- | :--- |
+| **Healthcare & Life Sciences** | 12 Sectors | 85 Roles | Hospitals, Pharmacy, Diagnostics, MedTech, Biotech, Mental Health |
+| **BFSI & Fintech** | 8 Sectors | 65 Roles | Retail Banking, Corporate Lending, Investment Banking, Wealth, Risk, Actuarial |
+| **Construction & Real Estate**| 6 Sectors | 50 Roles | Civil Infrastructure, High-Rise, Architecture, Quantity Surveying, MEP |
+| **Manufacturing & Automotive**| 6 Sectors | 50 Roles | EV Mobility, Plant Ops, CNC Precision, Automation/PLC, Lean Six Sigma |
+| **IT, Software & AI** | 6 Sectors | 50 Roles | Full-Stack, AI/ML/LLM, Cloud/DevOps, Cybersecurity, Data Eng, Embedded |
+| **Hospitality & Tourism** | 5 Sectors | 40 Roles | Luxury Hotels, Culinary Arts, Travel Agencies, MICE Events, Cruise Ships |
+| **Aviation & Aerospace** | 5 Sectors | 35 Roles | Cockpit, Cabin Safety, MRO Maintenance, Air Traffic, Avionics Defense |
+| **Logistics & Supply Chain** | 3 Sectors | 22 Roles | Multimodal Freight, Warehousing/Cold Chain, Last-Mile Express Fleet |
+| **Education & EdTech** | 3 Sectors | 22 Roles | Higher Ed Academia, K-12 Schooling, Instructional Design / EdTech |
+| **Legal & Compliance** | 3 Sectors | 20 Roles | Corporate Law/M&A, IP & Patents, Litigation & Regulatory Compliance |
+| **Agriculture & Food Tech** | 3 Sectors | 20 Roles | Precision Agronomy, Industrial Food Processing, Grain Trading Supply |
+| **Media & Creative Design** | 2 Sectors | 14 Roles | Digital Journalism/Broadcasting, VFX/Animation/Game Art |
+| **Energy & CleanTech** | 2 Sectors | 14 Roles | Solar/Wind/Battery Storage, Oil/Gas Petrochem & Substation Power |
+| **Government & Public Safety**| 2 Sectors | 13 Roles | Civil Administration/Public Policy, Law Enforcement & Forensics |
+| **Retail & E-Commerce** | 2 Sectors | 14 Roles | Omnichannel Store Networks, E-Commerce Marketplaces & D2C Brands |
+| **TOTAL (Phase B Milestone)** | **68 Sectors** | **514 Roles** | **Full 12-Factor Evidence Saturation Standard** |
+
 
