@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-10-05T10:27:09.447Z",
+  "timestamp": "2026-10-05T10:32:57.668Z",
   "scaleSummary": {
     "modeledSearchOpportunities": "1.057B+",
     "qualifiedOpportunities": "241M",
@@ -18,6 +18,9 @@
     "searchUniverseEfficiencyPercentage": 0.0035062240663900415,
     "searchToCareerConversion": "14.08% (100 conversions / 710 clicks)",
     "searchToCareerConversionPercentage": 14.084507042253522,
+    "careerGraphCoverage": "8.80% (44 saturated / 500 canonical Phase B target)",
+    "occupationSearchYield": "645.5 impressions / saturated occupation",
+    "occupationConversionYield": "14.08% (100 conversions / 710 clicks)",
     "unitEconomicCTR": "2.50%",
     "unitEconomicSignupRate": "10.99%",
     "unitEconomicApplicationRate": "24.36%"

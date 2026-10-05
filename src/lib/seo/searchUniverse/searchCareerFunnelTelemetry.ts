@@ -60,6 +60,10 @@ export interface ExecutiveUniverseDashboard {
     // Metric 2: (Registrations + applications + matches) / organic qualified visitors
     searchToCareerConversion: string;
     searchToCareerConversionPercentage: number;
+    // Executive Occupation KPIs
+    careerGraphCoverage: string;
+    occupationSearchYield: string;
+    occupationConversionYield: string;
     // Unit Economics: 1,000 impressions -> 50 clicks -> 5 signups -> 1 application
     unitEconomicCTR: string;
     unitEconomicSignupRate: string;
@@ -255,6 +259,12 @@ export class SearchCareerFunnelTelemetry {
       },
     ];
 
+    // Executive Occupation KPIs (Phase A: 44 -> Phase B: 500)
+    const saturatedOccupations = 44;
+    const totalCanonicalOccupations = 500;
+    const coveragePercentage = (saturatedOccupations / totalCanonicalOccupations) * 100;
+    const searchYield = saturatedOccupations > 0 ? (impressions / saturatedOccupations) : 0;
+
     return {
       timestamp: new Date().toISOString(),
       scaleSummary: {
@@ -275,6 +285,9 @@ export class SearchCareerFunnelTelemetry {
         searchUniverseEfficiencyPercentage: efficiencyPercentage,
         searchToCareerConversion: `${conversionPercentage.toFixed(2)}% (${totalConversions} conversions / ${clicks} clicks)`,
         searchToCareerConversionPercentage: conversionPercentage,
+        careerGraphCoverage: `${coveragePercentage.toFixed(2)}% (${saturatedOccupations} saturated / ${totalCanonicalOccupations} canonical Phase B target)`,
+        occupationSearchYield: `${searchYield.toFixed(1)} impressions / saturated occupation`,
+        occupationConversionYield: `${conversionPercentage.toFixed(2)}% (${totalConversions} conversions / ${clicks} clicks)`,
         unitEconomicCTR: `${ctr.toFixed(2)}%`,
         unitEconomicSignupRate: `${signupRate.toFixed(2)}%`,
         unitEconomicApplicationRate: `${appRate.toFixed(2)}%`,

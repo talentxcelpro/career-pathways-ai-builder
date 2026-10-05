@@ -45,6 +45,9 @@ async function runTelemetry() {
   console.log('\n--- 2. EXECUTIVE CONVERSION RATIOS ---');
   console.log(`  ⭐ Search Universe Efficiency  : ${snapshot.executiveRatios.searchUniverseEfficiency}`);
   console.log(`  ⭐ Search-to-Career Conversion : ${snapshot.executiveRatios.searchToCareerConversion}`);
+  console.log(`  ⭐ Career Graph Coverage (B)   : ${snapshot.executiveRatios.careerGraphCoverage}`);
+  console.log(`  ⭐ Occupation Search Yield     : ${snapshot.executiveRatios.occupationSearchYield}`);
+  console.log(`  ⭐ Occupation Conversion Yield : ${snapshot.executiveRatios.occupationConversionYield}`);
   console.log(`  • Unit Economic CTR            : ${snapshot.executiveRatios.unitEconomicCTR}`);
   console.log(`  • Unit Economic Signup Rate    : ${snapshot.executiveRatios.unitEconomicSignupRate}`);
   console.log(`  • Unit Economic Application Rate: ${snapshot.executiveRatios.unitEconomicApplicationRate}`);
