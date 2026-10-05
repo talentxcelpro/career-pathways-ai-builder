@@ -15,7 +15,9 @@
     "gsc:copilot": "node scripts/gsc-copilot-analysis.cjs",
     "gsc:query-pages": "node scripts/gsc-copilot-query-pages.cjs",
     "postbuild": "npx tsx scripts/prerender-static-seo.ts && npx tsx scripts/seo-ci-gate.ts",
-    "gsc:command-center": "node scripts/gsc-command-center.cjs"
+    "gsc:command-center": "node scripts/gsc-command-center.cjs",
+    "indexing:jobs": "node scripts/submit-all-jobs-indexing.cjs",
+    "growth:funnel": "node scripts/growth-funnel-dashboard.cjs"
   },
   "dependencies": {
     "@aws-sdk/client-sesv2": "^3.1142.0",

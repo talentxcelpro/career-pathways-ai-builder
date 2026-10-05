@@ -6,6 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { useProfile } from '@/hooks/useProfile';
@@ -122,8 +123,16 @@ export default function CollegeDetail() {
   const entranceExams = catalogInstitution?.admissionRequirements?.entranceExams || ['Standard Merit / International Eligibility'];
   const disciplines = catalogInstitution?.disciplines || ['Commerce & Business', 'Engineering & Technology', 'Applied Sciences', 'Global Management'];
 
+  const canonicalCollegeSlug = catalogInstitution?.slug || dbCollege?.slug || id;
+  const canonicalUrl = `https://talentxcel.in/colleges/${canonicalCollegeSlug}`;
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 pb-20 text-slate-900 dark:text-slate-100">
+      <Helmet>
+        <title>{instName} — Fees, Cutoffs, Admissions & Placements | TalentXcel</title>
+        <meta name="description" content={`Comprehensive verified dossier for ${instName} (${instCity}, ${instState}): courses, fee structures, cutoff scores, placements, and career pathways.`} />
+        <link rel="canonical" href={canonicalUrl} />
+      </Helmet>
       {/* ───────────────────────────────────────────────────────────────────────── */}
       {/* 1. SUB-HEADER PILL NAVIGATION BAR                                         */}
       {/* ───────────────────────────────────────────────────────────────────────── */}

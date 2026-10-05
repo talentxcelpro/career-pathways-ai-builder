@@ -105,7 +105,7 @@
     },
     {
       "source": "/job/:path*",
-      "destination": "https://talentxcel.in/jobs",
+      "destination": "https://talentxcel.in/jobs/:path*",
       "permanent": true
     },
     {
@@ -236,7 +236,9 @@
       "source": "/api/email/:path*",
       "destination": "/api/email/:path*"
     },
-    { "source": "/(.*)", "destination": "/index.html" }
-
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
   ]
 }

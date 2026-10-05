@@ -1,0 +1,283 @@
+[
+  {
+    "template": "COLLEGE_FACET_FEES",
+    "url": "https://talentxcel.in/colleges/indian-institute-of-technology-bombay/fees",
+    "httpStatus": 200,
+    "verdict": "NEUTRAL",
+    "coverageState": "URL is unknown to Google",
+    "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+    "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+    "raw": {
+      "inspectionResult": {
+        "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=https://talentxcel.in/&id=Z1dgKwepSyh7FA_49YWRhg&utm_medium=link&utm_source=api",
+        "indexStatusResult": {
+          "verdict": "NEUTRAL",
+          "coverageState": "URL is unknown to Google",
+          "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+          "indexingState": "INDEXING_STATE_UNSPECIFIED",
+          "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED"
+        },
+        "mobileUsabilityResult": {
+          "verdict": "VERDICT_UNSPECIFIED"
+        }
+      }
+    }
+  },
+  {
+    "template": "COLLEGE_FACET_COURSES",
+    "url": "https://talentxcel.in/colleges/indian-institute-of-technology-delhi/courses",
+    "httpStatus": 200,
+    "verdict": "NEUTRAL",
+    "coverageState": "URL is unknown to Google",
+    "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+    "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+    "raw": {
+      "inspectionResult": {
+        "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=https://talentxcel.in/&id=ztqn4bfCPUEL3jPKCsgy1A&utm_medium=link&utm_source=api",
+        "indexStatusResult": {
+          "verdict": "NEUTRAL",
+          "coverageState": "URL is unknown to Google",
+          "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+          "indexingState": "INDEXING_STATE_UNSPECIFIED",
+          "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED"
+        },
+        "mobileUsabilityResult": {
+          "verdict": "VERDICT_UNSPECIFIED"
+        }
+      }
+    }
+  },
+  {
+    "template": "COLLEGE_FACET_PLACEMENTS",
+    "url": "https://talentxcel.in/colleges/indian-institute-of-technology-madras/placements",
+    "httpStatus": 200,
+    "verdict": "NEUTRAL",
+    "coverageState": "URL is unknown to Google",
+    "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+    "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+    "raw": {
+      "inspectionResult": {
+        "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=https://talentxcel.in/&id=NoowDYIcsXt8oGa6W5xrKA&utm_medium=link&utm_source=api",
+        "indexStatusResult": {
+          "verdict": "NEUTRAL",
+          "coverageState": "URL is unknown to Google",
+          "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+          "indexingState": "INDEXING_STATE_UNSPECIFIED",
+          "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED"
+        },
+        "mobileUsabilityResult": {
+          "verdict": "VERDICT_UNSPECIFIED"
+        }
+      }
+    }
+  },
+  {
+    "template": "JOB_EXP_ROLE_LOC",
+    "url": "https://talentxcel.in/jobs/freshers-software-engineer-in-bangalore",
+    "httpStatus": 200,
+    "verdict": "NEUTRAL",
+    "coverageState": "Discovered - currently not indexed",
+    "crawledAs": "CRAWLING_USER_AGENT_UNSPECIFIED",
+    "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+    "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+    "raw": {
+      "inspectionResult": {
+        "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=https://talentxcel.in/&id=IlPQQq-C-iTl0NCVDWte4Q&utm_medium=link&utm_source=api",
+        "indexStatusResult": {
+          "verdict": "NEUTRAL",
+          "coverageState": "Discovered - currently not indexed",
+          "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+          "indexingState": "INDEXING_STATE_UNSPECIFIED",
+          "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+          "sitemap": [
+            "https://talentxcel.in/sitemap-job-experience-1.xml",
+            "https://talentxcel.in/sitemap.xml"
+          ],
+          "crawledAs": "CRAWLING_USER_AGENT_UNSPECIFIED"
+        },
+        "mobileUsabilityResult": {
+          "verdict": "VERDICT_UNSPECIFIED"
+        }
+      }
+    }
+  },
+  {
+    "template": "JOB_EXP_ROLE_LOC",
+    "url": "https://talentxcel.in/jobs/senior-product-manager-in-mumbai",
+    "httpStatus": 200,
+    "verdict": "NEUTRAL",
+    "coverageState": "Discovered - currently not indexed",
+    "crawledAs": "CRAWLING_USER_AGENT_UNSPECIFIED",
+    "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+    "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+    "raw": {
+      "inspectionResult": {
+        "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=https://talentxcel.in/&id=jvHs25m7Ytg5jf50MVSBww&utm_medium=link&utm_source=api",
+        "indexStatusResult": {
+          "verdict": "NEUTRAL",
+          "coverageState": "Discovered - currently not indexed",
+          "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+          "indexingState": "INDEXING_STATE_UNSPECIFIED",
+          "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+          "sitemap": [
+            "https://talentxcel.in/sitemap-job-experience-2.xml",
+            "https://talentxcel.in/sitemap.xml"
+          ],
+          "crawledAs": "CRAWLING_USER_AGENT_UNSPECIFIED"
+        },
+        "mobileUsabilityResult": {
+          "verdict": "VERDICT_UNSPECIFIED"
+        }
+      }
+    }
+  },
+  {
+    "template": "JOB_ROLE_LOC",
+    "url": "https://talentxcel.in/jobs/python-developer-jobs-in-pune",
+    "httpStatus": 200,
+    "verdict": "NEUTRAL",
+    "coverageState": "Discovered - currently not indexed",
+    "crawledAs": "CRAWLING_USER_AGENT_UNSPECIFIED",
+    "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+    "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+    "raw": {
+      "inspectionResult": {
+        "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=https://talentxcel.in/&id=iSUPM3Jngc_C3xQ1TSrs5w&utm_medium=link&utm_source=api",
+        "indexStatusResult": {
+          "verdict": "NEUTRAL",
+          "coverageState": "Discovered - currently not indexed",
+          "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+          "indexingState": "INDEXING_STATE_UNSPECIFIED",
+          "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+          "sitemap": [
+            "https://talentxcel.in/sitemap-job-roles-1.xml",
+            "https://talentxcel.in/sitemap.xml"
+          ],
+          "crawledAs": "CRAWLING_USER_AGENT_UNSPECIFIED"
+        },
+        "mobileUsabilityResult": {
+          "verdict": "VERDICT_UNSPECIFIED"
+        }
+      }
+    }
+  },
+  {
+    "template": "JOB_ROLE_LOC",
+    "url": "https://talentxcel.in/jobs/react-developer-jobs-in-hyderabad",
+    "httpStatus": 200,
+    "verdict": "NEUTRAL",
+    "coverageState": "Discovered - currently not indexed",
+    "crawledAs": "CRAWLING_USER_AGENT_UNSPECIFIED",
+    "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+    "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+    "raw": {
+      "inspectionResult": {
+        "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=https://talentxcel.in/&id=lGN87yAfG3R4DZfDA5PnlA&utm_medium=link&utm_source=api",
+        "indexStatusResult": {
+          "verdict": "NEUTRAL",
+          "coverageState": "Discovered - currently not indexed",
+          "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+          "indexingState": "INDEXING_STATE_UNSPECIFIED",
+          "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+          "sitemap": [
+            "https://talentxcel.in/sitemap-job-roles-1.xml",
+            "https://talentxcel.in/sitemap.xml"
+          ],
+          "crawledAs": "CRAWLING_USER_AGENT_UNSPECIFIED"
+        },
+        "mobileUsabilityResult": {
+          "verdict": "VERDICT_UNSPECIFIED"
+        }
+      }
+    }
+  },
+  {
+    "template": "COLLEGE_DEGREE_STATE",
+    "url": "https://talentxcel.in/colleges/btech/in-delhi",
+    "httpStatus": 200,
+    "verdict": "NEUTRAL",
+    "coverageState": "Discovered - currently not indexed",
+    "crawledAs": "CRAWLING_USER_AGENT_UNSPECIFIED",
+    "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+    "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+    "raw": {
+      "inspectionResult": {
+        "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=https://talentxcel.in/&id=wIcolsUsnT2FMYGpsUpafg&utm_medium=link&utm_source=api",
+        "indexStatusResult": {
+          "verdict": "NEUTRAL",
+          "coverageState": "Discovered - currently not indexed",
+          "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+          "indexingState": "INDEXING_STATE_UNSPECIFIED",
+          "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+          "sitemap": [
+            "https://talentxcel.in/sitemap.xml"
+          ],
+          "crawledAs": "CRAWLING_USER_AGENT_UNSPECIFIED"
+        },
+        "mobileUsabilityResult": {
+          "verdict": "VERDICT_UNSPECIFIED"
+        }
+      }
+    }
+  },
+  {
+    "template": "SALARY_MATRIX",
+    "url": "https://talentxcel.in/salaries/data-scientist-salary-in-bangalore",
+    "httpStatus": 200,
+    "verdict": "NEUTRAL",
+    "coverageState": "Discovered - currently not indexed",
+    "crawledAs": "CRAWLING_USER_AGENT_UNSPECIFIED",
+    "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+    "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+    "raw": {
+      "inspectionResult": {
+        "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=https://talentxcel.in/&id=mMO0FP_wWPArVKcQ7e_IAQ&utm_medium=link&utm_source=api",
+        "indexStatusResult": {
+          "verdict": "NEUTRAL",
+          "coverageState": "Discovered - currently not indexed",
+          "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+          "indexingState": "INDEXING_STATE_UNSPECIFIED",
+          "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+          "sitemap": [
+            "https://talentxcel.in/sitemap-job-roles-1.xml",
+            "https://talentxcel.in/sitemap.xml"
+          ],
+          "crawledAs": "CRAWLING_USER_AGENT_UNSPECIFIED"
+        },
+        "mobileUsabilityResult": {
+          "verdict": "VERDICT_UNSPECIFIED"
+        }
+      }
+    }
+  },
+  {
+    "template": "COMPANY_HIRING",
+    "url": "https://talentxcel.in/jobs/company/google/software-engineer",
+    "httpStatus": 200,
+    "verdict": "NEUTRAL",
+    "coverageState": "Discovered - currently not indexed",
+    "crawledAs": "CRAWLING_USER_AGENT_UNSPECIFIED",
+    "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+    "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+    "raw": {
+      "inspectionResult": {
+        "inspectionResultLink": "https://search.google.com/search-console/inspect?resource_id=https://talentxcel.in/&id=8vlN787nf_sQzVjjzKOdpg&utm_medium=link&utm_source=api",
+        "indexStatusResult": {
+          "verdict": "NEUTRAL",
+          "coverageState": "Discovered - currently not indexed",
+          "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+          "indexingState": "INDEXING_STATE_UNSPECIFIED",
+          "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+          "sitemap": [
+            "https://talentxcel.in/sitemap-companies-hiring.xml",
+            "https://talentxcel.in/sitemap.xml"
+          ],
+          "crawledAs": "CRAWLING_USER_AGENT_UNSPECIFIED"
+        },
+        "mobileUsabilityResult": {
+          "verdict": "VERDICT_UNSPECIFIED"
+        }
+      }
+    }
+  }
+]

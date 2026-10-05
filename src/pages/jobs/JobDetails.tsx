@@ -23,7 +23,8 @@ import {
   Sparkles,
   TrendingUp,
   FileCheck2,
-  Banknote
+  Banknote,
+  AlertCircle
 } from 'lucide-react';
 import { formatSalaryRange } from '@/utils/currencyUtils';
 import { toast } from 'sonner';
@@ -31,6 +32,7 @@ import { PublicJobApplyButton } from '@/components/jobs/PublicJobApplyButton';
 import { ReactJobStructuredData } from '@/components/seo/ReactJobStructuredData';
 import { getPublicJobUrl, getPublicCompanyUrl } from '@/lib/seo/canonicalUrls';
 import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
+import { InteractiveJobMatchWidget } from '@/components/jobs/InteractiveJobMatchWidget';
 
 export default function JobDetails() {
   const { slugOrId = '' } = useParams<{ slugOrId: string }>();
@@ -156,27 +158,26 @@ export default function JobDetails() {
     return (
       <>
         <Helmet>
-          <title>{roleCapitalized} Jobs & Verified Career Openings | TalentXcel</title>
-          <meta name="description" content={`Explore live ${roleCapitalized} openings, hiring companies, salary benchmarks, and free ATS diagnostics on TalentXcel.`} />
-          <link rel="canonical" href={canonical} />
-          <meta name="robots" content="index, follow" />
+          <title>Position Closed | Verified Active Jobs | TalentXcel</title>
+          <meta name="description" content="This position has concluded or is no longer active. Browse 500+ live verified jobs and career matches on TalentXcel." />
+          <meta name="robots" content="noindex, nofollow" />
         </Helmet>
 
         <div className="min-h-screen bg-slate-950 text-slate-100 py-12 px-4">
           <div className="max-w-4xl mx-auto space-y-8">
             
             <div className="text-center space-y-3">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-semibold">
-                <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-                <span>Active Job Discovery Hub</span>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-semibold">
+                <AlertCircle className="w-3.5 h-3.5 text-amber-400" />
+                <span>Listing No Longer Active</span>
               </div>
 
               <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white">
-                {roleCapitalized} Opportunities on TalentXcel
+                This Opening Has Closed
               </h1>
 
               <p className="text-slate-400 text-sm max-w-xl mx-auto leading-relaxed">
-                Discover verified {rawRole} openings across India, optimize your resume for recruiters, and explore compensation benchmarks below.
+                The specific vacancy you requested is no longer accepting applications. Explore verified live roles and matching opportunities below.
               </p>
             </div>
 
@@ -405,14 +406,21 @@ export default function JobDetails() {
                 })()}
               </div>
 
-              {/* Action Buttons */}
+              {/* Primary Unified Hero CTA */}
               <div className="flex items-center gap-3 w-full md:w-auto shrink-0">
-                <PublicJobApplyButton
-                  jobId={job.id}
-                  job={job}
-                  jobTitle={job.title}
-                  companyName={companyName}
-                />
+                <Button
+                  onClick={() => {
+                    const matchSection = document.getElementById('interactive-match-section');
+                    if (matchSection) {
+                      matchSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                  className="bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm px-5 py-2.5 h-auto rounded-xl shadow-lg shadow-blue-600/30 flex items-center gap-2"
+                >
+                  <Sparkles className="w-4 h-4 text-amber-300" />
+                  Check My Match &amp; Apply Free
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
                 <Button
                   variant="outline"
                   size="icon"
@@ -484,41 +492,16 @@ export default function JobDetails() {
                 </div>
               </div>
 
-              {/* Instant SI Skill Match Evaluation */}
-              <div className="bg-gradient-to-br from-blue-950/60 via-slate-900/90 to-purple-950/50 border border-blue-500/30 rounded-2xl p-6 space-y-4 shadow-lg">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-blue-400" />
-                    <h3 className="text-base font-bold text-white">Instant SI Match</h3>
-                  </div>
-                  <Badge variant="outline" className="border-blue-500/40 text-blue-300 bg-blue-500/10 text-[10px]">
-                    Skill Intelligence
-                  </Badge>
-                </div>
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  Evaluate your background alignment for this role before applying. TalentXcel calculates your match index across required competencies.
-                </p>
-                <div className="space-y-1.5 pt-1">
-                  <div className="flex justify-between text-xs">
-                    <span className="text-slate-400">Match Readiness</span>
-                    <span className="text-emerald-400 font-semibold">High Potential</span>
-                  </div>
-                  <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
-                    <div className="bg-gradient-to-r from-blue-500 to-emerald-400 h-full w-[85%] rounded-full" />
-                  </div>
-                </div>
-                <div className="pt-1">
-                  <PublicJobApplyButton
-                    jobId={job.id}
-                    job={job}
-                    jobTitle={job.title}
-                    companyName={companyName}
-                    className="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs py-2.5 h-auto justify-center"
-                  />
-                </div>
-                <p className="text-[11px] text-slate-400 text-center">
-                  1-click apply &bull; Creates or updates your verified Career Passport
-                </p>
+              {/* Interactive Match Score & 1-Click Acquisition Funnel with Viral Loop */}
+              <div id="interactive-match-section">
+                <InteractiveJobMatchWidget
+                  job={job}
+                  onApplyClick={() => {
+                    const applyBtn = document.querySelector('[data-testid="public-job-apply"]') as HTMLButtonElement;
+                    if (applyBtn) applyBtn.click();
+                    else toast.success('Application initiated!');
+                  }}
+                />
               </div>
 
               {/* Free ATS Resume Tool CTA */}

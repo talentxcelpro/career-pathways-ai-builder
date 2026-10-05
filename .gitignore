@@ -47,3 +47,10 @@ gsc-service-account.json
 *.json.key
 scratch/
 gsc-full-dump.json
+
+# Scratch and audit test scripts with local keys
+scripts/storage-audit/
+scripts/security-audit/
+scripts/payment_entitlement_test.cjs
+scripts/external_security_test.cjs
+scripts/external_security_test_report.json

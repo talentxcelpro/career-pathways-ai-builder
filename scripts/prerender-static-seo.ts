@@ -707,8 +707,26 @@ async function prerender() {
             <div class="pt-6 border-t border-slate-800 text-slate-200 text-sm leading-relaxed whitespace-pre-line">
               ${escapeHtml(job.description || '')}
             </div>
+
+            <!-- Interactive Match Diagnostic & Conversion Hook -->
+            <div class="p-6 bg-gradient-to-r from-blue-950/60 via-slate-900 to-purple-950/60 border border-blue-500/40 rounded-2xl text-center space-y-4">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-semibold">
+                Instant Skill Intelligence Diagnostic
+              </span>
+              <h3 class="text-xl font-bold text-white">See How Well You Match This Job — Free</h3>
+              <p class="text-xs text-slate-300 max-w-md mx-auto">Calculate your ATS compatibility index, evaluate skill requirements, and unlock 24 matched positions in 10 seconds.</p>
+              <a href="${canonical}" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm rounded-xl shadow-lg shadow-blue-600/30">
+                Calculate Match Score Free &rarr;
+              </a>
+            </div>
           </div>
         `;
+
+        const breadcrumbSchema = buildBreadcrumbSchema([
+          { name: 'Home', url: BASE_URL },
+          { name: 'Jobs', url: `${BASE_URL}/jobs` },
+          { name: job.title, url: canonical },
+        ]);
 
         writePrerenderedPage(`/jobs/${slug}`, {
           title,
@@ -716,7 +734,7 @@ async function prerender() {
           canonical,
           h1: job.title,
           bodyContentHtml: bodyHtml,
-          jsonLd: schema || undefined,
+          jsonLd: schema ? [schema, breadcrumbSchema] : [breadcrumbSchema],
         });
       }
     }
@@ -1346,9 +1364,33 @@ async function prerender() {
             <p class="text-2xl font-bold text-emerald-400 mb-2">₹${(feeMin / 100000).toFixed(1)}L - ₹${(feeMax / 100000).toFixed(1)}L</p>
             <a href="${canonical}/pathway" class="inline-block w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-500 text-center text-white text-sm font-semibold rounded-lg">Generate Career Pathway &rarr;</a>
           </div>
+          <div class="bg-gradient-to-br from-blue-950/60 via-slate-900 to-purple-950/50 border border-blue-500/30 rounded-xl p-5 space-y-3">
+            <span class="text-xs font-bold text-blue-400 block uppercase tracking-wider">Placement Readiness</span>
+            <h4 class="text-sm font-bold text-white">Find Out Where You Can Get Placed</h4>
+            <p class="text-xs text-slate-300 leading-relaxed">Benchmark your skills against ${escapeHtml(inst.name)} top hiring partners and tech recruiters.</p>
+            <a href="/resume/ats-check" class="inline-block w-full py-2 px-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 text-center text-white text-xs font-bold rounded-lg shadow-md">Check Your Placement Score (Free) &rarr;</a>
+          </div>
         </div>
       </div>
     `;
+
+    const collegeBreadcrumb = buildBreadcrumbSchema([
+      { name: 'Home', url: BASE_URL },
+      { name: 'Colleges', url: `${BASE_URL}/colleges` },
+      { name: inst.name, url: canonical },
+    ]);
+    const collegeOrgSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'EducationalOrganization',
+      name: inst.name,
+      url: canonical,
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: inst.city || 'India',
+        addressRegion: inst.state || 'India',
+        addressCountry: 'IN',
+      },
+    };
 
     writePrerenderedPage(`/colleges/${slug}`, {
       title,
@@ -1356,6 +1398,7 @@ async function prerender() {
       canonical,
       h1: inst.name,
       bodyContentHtml: bodyHtml,
+      jsonLd: [collegeOrgSchema, collegeBreadcrumb],
     });
   }
 
@@ -1368,12 +1411,20 @@ async function prerender() {
     const title = `${prog.program_title} — ${prog.institution_name}, ${prog.country} | TalentXcel Global Intelligence`;
     const description = `Verified details for ${prog.program_title} at ${prog.institution_name} in ${prog.country}. Tuition: ${tuition}. Funding: ${prog.access_type}.`;
 
+    const progBreadcrumb = buildBreadcrumbSchema([
+      { name: 'Home', url: BASE_URL },
+      { name: 'Colleges', url: `${BASE_URL}/colleges` },
+      { name: 'Global Programs', url: `${BASE_URL}/colleges/global-programs` },
+      { name: prog.program_title, url: canonical },
+    ]);
+
     writePrerenderedPage(`/colleges/global-programs/${slug}`, {
       title,
       description,
       canonical,
       h1: prog.program_title,
       bodyContentHtml: `<div class="bg-slate-900 border border-slate-800 rounded-xl p-6"><h2 class="text-xl font-bold text-white mb-2">${escapeHtml(prog.program_title)}</h2><p class="text-emerald-400 font-semibold text-sm">${escapeHtml(prog.institution_name)} &bull; ${escapeHtml(prog.country)}</p></div>`,
+      jsonLd: [progBreadcrumb],
     });
   }
 
@@ -1413,12 +1464,19 @@ async function prerender() {
           </div>
         `;
 
+        const resBreadcrumb = buildBreadcrumbSchema([
+          { name: 'Home', url: BASE_URL },
+          { name: 'Resources', url: `${BASE_URL}/resources` },
+          { name: guide.title, url: canonical },
+        ]);
+
         writePrerenderedPage(`/resources/${guide.slug}`, {
           title,
           description,
           canonical,
           h1: guide.title,
           bodyContentHtml: bodyHtml,
+          jsonLd: [resBreadcrumb],
         });
       }
     }
@@ -1518,12 +1576,19 @@ async function prerender() {
       </div>
     `;
 
+    const roleBreadcrumb = buildBreadcrumbSchema([
+      { name: 'Home', url: BASE_URL },
+      { name: 'Jobs', url: `${BASE_URL}/jobs` },
+      { name: role.title.replace(/\b\w/g, (c) => c.toUpperCase()), url: `${BASE_URL}/jobs/${slug}` },
+    ]);
+
     writePrerenderedPage(`/roles/${slug}`, {
       title,
       description,
       canonical,
       h1: `${role.title.replace(/\b\w/g, (c) => c.toUpperCase())} Careers & Jobs`,
       bodyContentHtml: bodyHtml,
+      jsonLd: [roleBreadcrumb],
     });
 
     writePrerenderedPage(`/jobs/${slug}`, {
@@ -1532,6 +1597,7 @@ async function prerender() {
       canonical: `${BASE_URL}/jobs/${slug}`,
       h1: `${role.title.replace(/\b\w/g, (c) => c.toUpperCase())} Jobs`,
       bodyContentHtml: bodyHtml,
+      jsonLd: [roleBreadcrumb],
     });
 
     // Also write /jobs/:role/:city combinations

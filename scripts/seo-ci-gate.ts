@@ -1959,16 +1959,15 @@ async function runSeoCiGate() {
       'Validated /admin/seo/google-jobs is registered in src/navigation/adminRoutes.tsx'
     );
 
-    // 16.15 Invariant: Partitioned Sitemaps Generated & Linked
-    const indiaSitemapExists = existsSync(resolve('public/sitemaps/jobs-matrix-india.xml'));
-    const intlSitemapExists = existsSync(resolve('public/sitemaps/jobs-matrix-global.xml'));
+    // 16.15 Invariant: Verified Jobs Quality Core Sitemap Linked
+    const jobsSitemapExists = existsSync(resolve('public/sitemap-jobs.xml'));
     const sitemapIndexContent = readFileSync(resolve('public/sitemap.xml'), 'utf8');
-    const isLinkedToRoot = sitemapIndexContent.includes('jobs-matrix-india.xml') && sitemapIndexContent.includes('jobs-matrix-global.xml');
+    const isLinkedToRoot = sitemapIndexContent.includes('sitemap-jobs.xml');
     record(
       'Google_Jobs_Matrix',
-      'Partitioned XML Sitemaps Generated & Linked',
-      indiaSitemapExists && intlSitemapExists && isLinkedToRoot,
-      'Validated jobs-matrix-india.xml and jobs-matrix-global.xml exist and are linked in root sitemap.xml'
+      'Quality Core Jobs Sitemap Generated & Linked',
+      jobsSitemapExists && isLinkedToRoot,
+      'Validated verified jobs sitemap exists and is linked in root sitemap.xml'
     );
 
     // --- 17. GLOBAL 100K JOB NETWORK & GSC HEALTH ENGINE ---

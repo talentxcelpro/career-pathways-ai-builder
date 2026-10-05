@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "in.talentxcel.app",
+      "sha256_cert_fingerprints": [
+        "14:6D:E9:7D:0F:52:EA:43:18:49:17:62:39:7A:37:5E:2B:A2:4B:05:8B:10:98:B4:EB:FE:22:AA:7A:B4:B9:94"
+      ]
+    }
+  }
+]

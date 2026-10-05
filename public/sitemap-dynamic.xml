@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- This file redirects to the dynamic sitemap function -->
-  <!-- The actual dynamic content is served by the Supabase edge function -->
-  <!-- Visit https://dthlgsnakhoftinssokm.supabase.co/functions/v1/api-sitemap for live content -->
-</urlset>
