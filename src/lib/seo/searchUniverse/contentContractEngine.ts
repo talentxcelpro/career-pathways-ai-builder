@@ -112,6 +112,50 @@ export const ARCHETYPE_CONTRACTS: Record<string, ArchetypeContentContract> = {
       { moduleName: 'Resume Action Keywords', isMandatory: true, minDataPoints: 8, description: 'How to write impactful resume bullets featuring this skill' },
     ],
   },
+
+  GOVERNMENT_JOB_PAGE: {
+    archetypeId: 'GOVERNMENT_JOB_PAGE',
+    templateName: 'Official Government Recruitment Dossier',
+    requiredStructuredDataType: 'JobPosting',
+    primaryConversionWidget: 'InteractiveJobMatchWidget (Check Eligibility in 10s)',
+    modules: [
+      { moduleName: 'Official Gazette Notification & PDF', isMandatory: true, minDataPoints: 1, description: 'Direct verification link to official gazette recruitment notice' },
+      { moduleName: 'Vacancy Count & Reservation Breakdown', isMandatory: true, minDataPoints: 1, description: 'General, OBC, SC, ST, EWS vacancy distribution' },
+      { moduleName: 'Age Limit & Educational Eligibility', isMandatory: true, minDataPoints: 2, description: 'Age criteria, relaxations, and degree requirements' },
+      { moduleName: 'Selection Process & Exam Pattern', isMandatory: true, minDataPoints: 2, description: 'Prelims, Mains, Interview, Physical test structure' },
+      { moduleName: 'Key Application Dates & Deadlines', isMandatory: true, minDataPoints: 2, description: 'Start date, end date, admit card release, exam dates' },
+      { moduleName: 'Direct Official Apply Portal Link', isMandatory: true, minDataPoints: 1, description: 'Direct government portal URL with zero intermediary redirect' },
+    ],
+  },
+
+  COMPANY_CAREERS_DOSSIER: {
+    archetypeId: 'COMPANY_CAREERS_DOSSIER',
+    templateName: 'Employer Intelligence & Careers Dossier',
+    requiredStructuredDataType: 'Organization',
+    primaryConversionWidget: 'InteractiveJobMatchWidget (Check My Company Fit)',
+    modules: [
+      { moduleName: 'Company Profile & Sector Classification', isMandatory: true, minDataPoints: 1, description: 'Verified employer identity, headquarters, and industry' },
+      { moduleName: 'Active Verified Openings', isMandatory: true, minDataPoints: 1, description: 'Live unexpired job postings' },
+      { moduleName: 'Audited Salary Distributions', isMandatory: true, minDataPoints: 3, description: 'Compensation bands for entry, mid, and senior levels' },
+      { moduleName: 'Interview Process & Question Bank', isMandatory: true, minDataPoints: 3, description: 'Real interview rounds and technical questions asked' },
+      { moduleName: 'Core Tech Stack & Skills', isMandatory: true, minDataPoints: 5, description: 'Primary tools, technologies, and methodologies utilized' },
+      { moduleName: 'Office Locations & Work Mode Policy', isMandatory: true, minDataPoints: 1, description: 'Physical hubs and hybrid/remote flexibility' },
+    ],
+  },
+
+  INTERVIEW_QUESTIONS_PAGE: {
+    archetypeId: 'INTERVIEW_QUESTIONS_PAGE',
+    templateName: 'Interview Question Bank & Preparation Hub',
+    requiredStructuredDataType: 'FAQPage',
+    primaryConversionWidget: 'PublicInterviewPrep (Mock Interview Simulator)',
+    modules: [
+      { moduleName: 'Curated Question Bank', isMandatory: true, minDataPoints: 10, description: 'High-frequency technical and behavioral questions' },
+      { moduleName: 'STAR Answer Frameworks', isMandatory: true, minDataPoints: 5, description: 'Situation, Task, Action, Result structured model answers' },
+      { moduleName: 'Difficulty & Seniority Tags', isMandatory: true, minDataPoints: 3, description: 'Junior vs Mid vs Senior question classification' },
+      { moduleName: 'Live Code / Architecture Solutions', isMandatory: true, minDataPoints: 3, description: 'Complete working code snippets or architectural diagrams' },
+      { moduleName: 'Related Role Interview Hubs', isMandatory: true, minDataPoints: 4, description: 'Contextual internal graph links to adjacent roles' },
+    ],
+  },
 };
 
 export class ContentContractEngine {

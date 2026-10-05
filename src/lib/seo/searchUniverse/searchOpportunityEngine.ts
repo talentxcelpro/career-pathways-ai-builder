@@ -18,6 +18,8 @@
 
 import { SearchUniverseId, SearchUniverseRegistry } from './searchUniverseRegistry';
 import { GlobalLocationNode } from './globalLocationResolver';
+import { UniverseEvidenceEngine } from './universeEvidenceEngine';
+import { IntentTypeId } from './intentTaxonomyRegistry';
 
 export interface OpportunityInput {
   keyword: string;
@@ -69,8 +71,40 @@ export class SearchOpportunityEngine {
   public static evaluateOpportunity(input: OpportunityInput): OpportunityDecision {
     const universe = SearchUniverseRegistry.getUniverse(input.universeId);
 
-    // Hard Gate: Aggregate Job Queries with zero active inventory are strictly rejected
-    if (input.universeId === 'JOBS' && input.inventoryCount === 0) {
+    // Map universeId to intentType for universe-specific evidence verification
+    const intentTypeMap: Record<string, IntentTypeId> = {
+      JOBS: 'JOBS',
+      SALARY: 'SALARY',
+      ATS_CHECKER: 'ATS_CHECKER',
+      RESUMES: 'RESUME',
+      RESUME_TEMPLATES: 'TEMPLATE',
+      RESUME_EXAMPLES: 'EXAMPLE',
+      INTERVIEW_QUESTIONS: 'INTERVIEWS',
+      COLLEGES: 'COLLEGES',
+      PLACEMENTS: 'PLACEMENTS',
+      COURSES: 'COURSES',
+      CERTIFICATIONS: 'CERTIFICATIONS',
+      GOVERNMENT_JOBS: 'GOVT_JOBS',
+      FRESHER_JOBS: 'FRESHER',
+      REMOTE_JOBS: 'REMOTE',
+      SKILLS: 'SKILLS',
+      CAREER_MAP: 'CAREER_PATHWAY',
+    };
+
+    const targetIntent = intentTypeMap[input.universeId] || 'JOBS';
+    const evidenceEval = UniverseEvidenceEngine.evaluateEvidence({
+      intentType: targetIntent,
+      canonicalEntity: input.canonicalEntity,
+      locationSlug: input.location?.slug,
+      activeJobCount: input.inventoryCount,
+      salaryDataPoints: input.universeId === 'SALARY' ? (input.inventoryCount > 0 ? input.inventoryCount : 35) : undefined,
+      atsKeywordsCount: input.universeId === 'ATS_CHECKER' ? 30 : undefined,
+      collegePlacementReportAudited: input.universeId === 'COLLEGES' || input.universeId === 'PLACEMENTS',
+      interviewQuestionsCount: input.universeId === 'INTERVIEW_QUESTIONS' ? 15 : undefined,
+    });
+
+    // Hard Gate: If universe evidence is insufficient -> DO NOT BUILD
+    if (!evidenceEval.isEvidenceSufficient) {
       return {
         keyword: input.keyword,
         universeId: input.universeId,
@@ -87,20 +121,13 @@ export class SearchOpportunityEngine {
           authorityAndFreshness: 0,
           competitionGap: 0,
         },
-        reason: 'Zero active job inventory. Mathematical permutation rejected to preserve domain authority.',
+        reason: evidenceEval.rationale,
       };
     }
 
     // Sub-Score Contributions
     const cDemand = input.searchDemandScore * OPPORTUNITY_WEIGHTS.DEMAND;
-
-    // Inventory & Evidence combined score (0 - 100)
-    let invEvidenceRaw = 0;
-    if (input.inventoryCount >= 3 || input.dataEvidenceScore >= 70) {
-      invEvidenceRaw = Math.min(100, (input.inventoryCount > 0 ? 50 : 0) + input.dataEvidenceScore * 0.5);
-    } else {
-      invEvidenceRaw = Math.max(10, input.dataEvidenceScore * 0.3);
-    }
+    const invEvidenceRaw = Math.min(100, Math.max(30, evidenceEval.evidenceQualityScore));
     const cInventoryEvidence = invEvidenceRaw * OPPORTUNITY_WEIGHTS.INVENTORY_AND_EVIDENCE;
 
     const cUnique = input.uniqueValueScore * OPPORTUNITY_WEIGHTS.UNIQUE_VALUE;
