@@ -7,6 +7,7 @@ import { JobCard } from '@/components/jobs/JobCard';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, Globe, Sparkles, MapPin, Briefcase } from 'lucide-react';
 import { conversionTelemetry } from '@/utils/conversionTelemetry';
+import { createSafeHtml } from '@/utils/sanitize';
 
 
 interface SEOPage {
@@ -261,7 +262,7 @@ export const SEOPageGenerator: React.FC<SEOPageGeneratorProps> = ({
 
           <div 
             className="prose prose-lg max-w-none"
-            dangerouslySetInnerHTML={{ __html: page.content }}
+            dangerouslySetInnerHTML={createSafeHtml(page.content)}
           />
 
           {/* FAQs Section */}

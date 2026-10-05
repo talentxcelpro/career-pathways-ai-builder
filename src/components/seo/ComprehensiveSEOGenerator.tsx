@@ -4,6 +4,7 @@ import { SEOHead } from './SEOHead';
 import { StructuredDataManager } from './StructuredDataManager';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { createSafeHtml } from '@/utils/sanitize';
 
 interface ComprehensiveSEOGeneratorProps {
   pageType: 'user' | 'job' | 'course' | 'post' | 'company' | 'tool' | 'college' | 'skill' | 'location' | 'category';
@@ -184,7 +185,7 @@ export const ComprehensiveSEOGenerator: React.FC<ComprehensiveSEOGeneratorProps>
                   {content?.description && (
                     <div className="mb-6">
                       <h2 className="text-xl font-semibold mb-3">Job Description</h2>
-                      <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: content.description }} />
+                      <div className="prose max-w-none" dangerouslySetInnerHTML={createSafeHtml(content.description)} />
                     </div>
                   )}
                   

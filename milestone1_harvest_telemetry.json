@@ -1,0 +1,355 @@
+{
+  "timestamp": "2026-10-05T10:07:08.980Z",
+  "milestone": "MILESTONE_1_HARVEST",
+  "executionDurationMs": 46,
+  "metrics": {
+    "totalRawSignals": 494,
+    "totalExpandedIntents": 646,
+    "approvedDestinations": 403,
+    "prunedThinCandidates": 152,
+    "totalEdgesGenerated": 1570
+  },
+  "industryBreakdown": {
+    "it-software": {
+      "approved": 110,
+      "roles": [
+        "software-engineer",
+        "full-stack-developer",
+        "data-scientist",
+        "devops-engineer",
+        "cybersecurity-analyst"
+      ]
+    },
+    "general": {
+      "approved": 44,
+      "roles": [
+        "cloud-architect",
+        "product-manager"
+      ]
+    },
+    "healthcare": {
+      "approved": 68,
+      "roles": [
+        "pharmacist",
+        "nurse",
+        "doctor-physician"
+      ]
+    },
+    "banking-finance": {
+      "approved": 42,
+      "roles": [
+        "relationship-manager",
+        "credit-analyst"
+      ]
+    },
+    "hospitality-tourism": {
+      "approved": 42,
+      "roles": [
+        "hotel-manager",
+        "executive-chef"
+      ]
+    },
+    "construction-real-estate": {
+      "approved": 21,
+      "roles": [
+        "civil-engineer"
+      ]
+    },
+    "aviation-aerospace": {
+      "approved": 21,
+      "roles": [
+        "commercial-pilot"
+      ]
+    },
+    "manufacturing-automotive": {
+      "approved": 18,
+      "roles": [
+        "production-engineer"
+      ]
+    },
+    "legal-compliance": {
+      "approved": 18,
+      "roles": [
+        "corporate-lawyer"
+      ]
+    },
+    "education-academia": {
+      "approved": 19,
+      "roles": [
+        "school-teacher"
+      ]
+    }
+  },
+  "sampleApprovedDestinations": [
+    {
+      "role": "software-engineer",
+      "location": "global",
+      "universe": "ATS_CHECKER",
+      "url": "/resume/ats-check/software-engineer",
+      "evidenceApproved": true,
+      "contractApproved": true,
+      "opportunityScore": 92
+    },
+    {
+      "role": "software-engineer",
+      "location": "bangalore",
+      "universe": "JOBS",
+      "url": "/jobs/software-engineer/bangalore",
+      "evidenceApproved": true,
+      "contractApproved": true,
+      "opportunityScore": 85
+    },
+    {
+      "role": "full-stack-developer",
+      "location": "global",
+      "universe": "ATS_CHECKER",
+      "url": "/resume/ats-check/full-stack-developer",
+      "evidenceApproved": true,
+      "contractApproved": true,
+      "opportunityScore": 92
+    },
+    {
+      "role": "full-stack-developer",
+      "location": "bangalore",
+      "universe": "JOBS",
+      "url": "/jobs/full-stack-developer/bangalore",
+      "evidenceApproved": true,
+      "contractApproved": true,
+      "opportunityScore": 85
+    },
+    {
+      "role": "data-scientist",
+      "location": "global",
+      "universe": "ATS_CHECKER",
+      "url": "/resume/ats-check/data-scientist",
+      "evidenceApproved": true,
+      "contractApproved": true,
+      "opportunityScore": 92
+    },
+    {
+      "role": "data-scientist",
+      "location": "bangalore",
+      "universe": "JOBS",
+      "url": "/jobs/data-scientist/bangalore",
+      "evidenceApproved": true,
+      "contractApproved": true,
+      "opportunityScore": 85
+    },
+    {
+      "role": "devops-engineer",
+      "location": "global",
+      "universe": "ATS_CHECKER",
+      "url": "/resume/ats-check/devops-engineer",
+      "evidenceApproved": true,
+      "contractApproved": true,
+      "opportunityScore": 92
+    },
+    {
+      "role": "devops-engineer",
+      "location": "bangalore",
+      "universe": "JOBS",
+      "url": "/jobs/devops-engineer/bangalore",
+      "evidenceApproved": true,
+      "contractApproved": true,
+      "opportunityScore": 85
+    },
+    {
+      "role": "cloud-architect",
+      "location": "global",
+      "universe": "ATS_CHECKER",
+      "url": "/resume/ats-check/cloud-architect",
+      "evidenceApproved": true,
+      "contractApproved": true,
+      "opportunityScore": 92
+    },
+    {
+      "role": "cloud-architect",
+      "location": "bangalore",
+      "universe": "JOBS",
+      "url": "/jobs/bangalore",
+      "evidenceApproved": true,
+      "contractApproved": true,
+      "opportunityScore": 85
+    },
+    {
+      "role": "product-manager",
+      "location": "global",
+      "universe": "ATS_CHECKER",
+      "url": "/resume/ats-check/product-manager",
+      "evidenceApproved": true,
+      "contractApproved": true,
+      "opportunityScore": 92
+    },
+    {
+      "role": "product-manager",
+      "location": "bangalore",
+      "universe": "JOBS",
+      "url": "/jobs/product-manager/bangalore",
+      "evidenceApproved": true,
+      "contractApproved": true,
+      "opportunityScore": 85
+    },
+    {
+      "role": "cybersecurity-analyst",
+      "location": "global",
+      "universe": "ATS_CHECKER",
+      "url": "/resume/ats-check/cybersecurity-analyst",
+      "evidenceApproved": true,
+      "contractApproved": true,
+      "opportunityScore": 92
+    },
+    {
+      "role": "cybersecurity-analyst",
+      "location": "bangalore",
+      "universe": "JOBS",
+      "url": "/jobs/bangalore",
+      "evidenceApproved": true,
+      "contractApproved": true,
+      "opportunityScore": 85
+    },
+    {
+      "role": "pharmacist",
+      "location": "global",
+      "universe": "ATS_CHECKER",
+      "url": "/resume/ats-check/pharmacist",
+      "evidenceApproved": true,
+      "contractApproved": true,
+      "opportunityScore": 92
+    },
+    {
+      "role": "pharmacist",
+      "location": "bangalore",
+      "universe": "JOBS",
+      "url": "/jobs/pharmacist/bangalore",
+      "evidenceApproved": true,
+      "contractApproved": true,
+      "opportunityScore": 85
+    },
+    {
+      "role": "nurse",
+      "location": "global",
+      "universe": "ATS_CHECKER",
+      "url": "/resume/ats-check/nurse",
+      "evidenceApproved": true,
+      "contractApproved": true,
+      "opportunityScore": 92
+    },
+    {
+      "role": "nurse",
+      "location": "bangalore",
+      "universe": "JOBS",
+      "url": "/jobs/nurse/bangalore",
+      "evidenceApproved": true,
+      "contractApproved": true,
+      "opportunityScore": 85
+    },
+    {
+      "role": "doctor-physician",
+      "location": "global",
+      "universe": "ATS_CHECKER",
+      "url": "/resume/ats-check/doctor-physician",
+      "evidenceApproved": true,
+      "contractApproved": true,
+      "opportunityScore": 92
+    },
+    {
+      "role": "doctor-physician",
+      "location": "bangalore",
+      "universe": "JOBS",
+      "url": "/jobs/doctor-physician/bangalore",
+      "evidenceApproved": true,
+      "contractApproved": true,
+      "opportunityScore": 85
+    },
+    {
+      "role": "relationship-manager",
+      "location": "global",
+      "universe": "ATS_CHECKER",
+      "url": "/resume/ats-check/relationship-manager",
+      "evidenceApproved": true,
+      "contractApproved": true,
+      "opportunityScore": 92
+    },
+    {
+      "role": "relationship-manager",
+      "location": "mumbai",
+      "universe": "JOBS",
+      "url": "/jobs/relationship-manager/mumbai",
+      "evidenceApproved": true,
+      "contractApproved": true,
+      "opportunityScore": 85
+    },
+    {
+      "role": "credit-analyst",
+      "location": "global",
+      "universe": "ATS_CHECKER",
+      "url": "/resume/ats-check/credit-analyst",
+      "evidenceApproved": true,
+      "contractApproved": true,
+      "opportunityScore": 92
+    },
+    {
+      "role": "credit-analyst",
+      "location": "mumbai",
+      "universe": "JOBS",
+      "url": "/jobs/credit-analyst/mumbai",
+      "evidenceApproved": true,
+      "contractApproved": true,
+      "opportunityScore": 85
+    },
+    {
+      "role": "hotel-manager",
+      "location": "global",
+      "universe": "ATS_CHECKER",
+      "url": "/resume/ats-check/hotel-manager",
+      "evidenceApproved": true,
+      "contractApproved": true,
+      "opportunityScore": 92
+    },
+    {
+      "role": "hotel-manager",
+      "location": "mumbai",
+      "universe": "JOBS",
+      "url": "/jobs/hotel-manager/mumbai",
+      "evidenceApproved": true,
+      "contractApproved": true,
+      "opportunityScore": 85
+    },
+    {
+      "role": "executive-chef",
+      "location": "global",
+      "universe": "ATS_CHECKER",
+      "url": "/resume/ats-check/executive-chef",
+      "evidenceApproved": true,
+      "contractApproved": true,
+      "opportunityScore": 92
+    },
+    {
+      "role": "executive-chef",
+      "location": "mumbai",
+      "universe": "JOBS",
+      "url": "/jobs/executive-chef/mumbai",
+      "evidenceApproved": true,
+      "contractApproved": true,
+      "opportunityScore": 85
+    },
+    {
+      "role": "civil-engineer",
+      "location": "global",
+      "universe": "ATS_CHECKER",
+      "url": "/resume/ats-check/civil-engineer",
+      "evidenceApproved": true,
+      "contractApproved": true,
+      "opportunityScore": 92
+    },
+    {
+      "role": "civil-engineer",
+      "location": "bangalore",
+      "universe": "JOBS",
+      "url": "/jobs/civil-engineer/bangalore",
+      "evidenceApproved": true,
+      "contractApproved": true,
+      "opportunityScore": 85
+    }
+  ]
+}

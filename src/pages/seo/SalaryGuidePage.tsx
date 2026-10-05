@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { DollarSign, TrendingUp, MapPin, Briefcase, Building, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { createSafeHtml } from '@/utils/sanitize';
 
 const SalaryGuidePage = () => {
   const { role, location } = useParams();
@@ -170,7 +171,7 @@ const SalaryGuidePage = () => {
       {/* Intro Content */}
       {seo?.intro_content && (
         <div className="prose max-w-none">
-          <div dangerouslySetInnerHTML={{ __html: seo.intro_content }} />
+          <div dangerouslySetInnerHTML={createSafeHtml(seo.intro_content)} />
         </div>
       )}
 

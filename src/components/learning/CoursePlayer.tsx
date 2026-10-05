@@ -25,6 +25,7 @@ import {
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Textarea } from "@/components/ui/textarea";
 import { useUpdateProgress } from '@/hooks/useCourses';
+import { createSafeHtml } from '@/utils/sanitize';
 
 interface Module {
   id: string;
@@ -266,7 +267,7 @@ export const CoursePlayer: React.FC<CoursePlayerProps> = ({
                     <div className="p-6 max-w-4xl mx-auto">
                       <div className="prose prose-lg max-w-none">
                         {currentLesson.content_text ? (
-                          <div dangerouslySetInnerHTML={{ __html: currentLesson.content_text }} />
+                          <div dangerouslySetInnerHTML={createSafeHtml(currentLesson.content_text)} />
                         ) : (
                           <div className="text-center py-12 text-muted-foreground">
                             <FileText className="h-16 w-16 mx-auto mb-4 opacity-50" />

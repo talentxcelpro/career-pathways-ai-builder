@@ -8,6 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { Play, Pause, SkipForward, SkipBack, BookOpen, CheckCircle, Loader2, Volume2, VolumeX } from 'lucide-react';
+import { createSafeHtml } from '@/utils/sanitize';
 
 const CoursePlayer = () => {
   const { id } = useParams();
@@ -263,7 +264,7 @@ const CoursePlayer = () => {
                 </div>
                 {currentLesson?.content && (
                   <div className="prose max-w-none" 
-                       dangerouslySetInnerHTML={{ __html: currentLesson.content }} />
+                       dangerouslySetInnerHTML={createSafeHtml(currentLesson.content)} />
                 )}
               </CardContent>
             </Card>

@@ -25,6 +25,7 @@ import { useLearningProgressTracking } from '@/hooks/useLearningProgressTracking
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { createSafeHtml } from '@/utils/sanitize';
 
 interface Lesson {
   id: string;
@@ -538,7 +539,7 @@ export const CourseViewer: React.FC = () => {
                     </CardHeader>
                     {currentLesson.content && (
                       <CardContent>
-                        <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: currentLesson.content }} />
+                        <div className="prose max-w-none" dangerouslySetInnerHTML={createSafeHtml(currentLesson.content)} />
                       </CardContent>
                     )}
                   </Card>

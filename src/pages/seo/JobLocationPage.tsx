@@ -6,6 +6,7 @@ import { JobCard } from '@/components/jobs/JobCard';
 import { Button } from '@/components/ui/button';
 import { Search, Filter, MapPin, Building, TrendingUp, AlertCircle, Globe, Sparkles } from 'lucide-react';
 import { conversionTelemetry } from '@/utils/conversionTelemetry';
+import { createSafeHtml } from '@/utils/sanitize';
 
 interface JobLocationPageProps {}
 
@@ -167,7 +168,7 @@ const JobLocationPage: React.FC<JobLocationPageProps> = () => {
               <div className="lg:col-span-2">
                 <div 
                   className="prose prose-lg max-w-none mb-12"
-                  dangerouslySetInnerHTML={{ __html: locationData.content }}
+                  dangerouslySetInnerHTML={createSafeHtml(locationData.content)}
                 />
 
                 {/* Job Listings */}

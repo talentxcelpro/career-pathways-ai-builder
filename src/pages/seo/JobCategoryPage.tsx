@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { JobCard } from '@/components/jobs/JobCard';
 import { Button } from '@/components/ui/button';
 import { Search, Filter, MapPin, Briefcase } from 'lucide-react';
+import { createSafeHtml } from '@/utils/sanitize';
 
 interface JobCategoryPageProps {}
 
@@ -128,7 +129,7 @@ const JobCategoryPage: React.FC<JobCategoryPageProps> = () => {
               <div className="lg:col-span-2">
                 <div 
                   className="prose prose-lg max-w-none mb-12"
-                  dangerouslySetInnerHTML={{ __html: categoryData.content }}
+                  dangerouslySetInnerHTML={createSafeHtml(categoryData.content)}
                 />
 
                 {/* Job Listings */}

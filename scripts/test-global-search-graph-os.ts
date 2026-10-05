@@ -24,6 +24,8 @@ import { ContentContractEngine, ARCHETYPE_CONTRACTS } from '../src/lib/seo/searc
 import { InternalLinkAuthorityEngine } from '../src/lib/seo/searchUniverse/internalLinkAuthorityEngine';
 import { LocaleCurrencyEngine } from '../src/lib/seo/searchUniverse/localeCurrencyEngine';
 import { SearchOpportunityEngine } from '../src/lib/seo/searchUniverse/searchOpportunityEngine';
+import { SearchUniverseTargetRegistry } from '../src/lib/seo/searchUniverse/searchUniverseTargetRegistry';
+import { GlobalIndustryHierarchy } from '../src/lib/seo/searchUniverse/globalIndustryHierarchy';
 
 let passed = 0;
 let failed = 0;
@@ -307,6 +309,62 @@ async function runTestSuite() {
     competitionGapScore: 20,
   });
   assert(zeroOpp.decision === 'DO_NOT_BUILD', 'Zero inventory job intent evaluates to DO_NOT_BUILD');
+
+  // --- 11. Search Universe Target Registry & Scale Tests ---
+  console.log('\n--- 11. Testing Search Universe Target Registry & Scale Catalog ---');
+  const allScaleTargets = SearchUniverseTargetRegistry.getAllTargets();
+  assert(allScaleTargets.length === 31, 'Exactly 31 Search Universes registered in scale target registry');
+
+  const locIntellTarget = SearchUniverseTargetRegistry.getTarget('LOCATION_INTELLIGENCE');
+  assert(locIntellTarget !== undefined, 'LOCATION_INTELLIGENCE registered as 31st system universe');
+  assert(locIntellTarget?.keywordTarget === 100000000, 'LOCATION_INTELLIGENCE targets 100M keywords');
+  assert(locIntellTarget?.destinationTarget === 4000000, 'LOCATION_INTELLIGENCE targets 4M destinations');
+  assert(locIntellTarget?.priority === 'CRITICAL_MASSIVE', 'LOCATION_INTELLIGENCE marked as CRITICAL_MASSIVE priority');
+
+  const jobsTarget = SearchUniverseTargetRegistry.getTarget('JOBS');
+  assert(jobsTarget?.keywordTarget === 120000000, 'JOBS targets 120M keywords');
+  assert(jobsTarget?.destinationTarget === 10000000, 'JOBS targets 10M destinations');
+
+  const passportTarget = SearchUniverseTargetRegistry.getTarget('CAREER_PASSPORT');
+  assert(passportTarget?.destinationTarget === 6000000, 'CAREER_PASSPORT targets 6M destinations');
+
+  const aggMetrics = SearchUniverseTargetRegistry.getGlobalAggregateMetrics();
+  assert(aggMetrics.totalKeywordTarget === '1.057B (1057M)', `Global aggregate keyword target is 1.057B / 1.057 BILLION+ (found ${aggMetrics.totalKeywordTarget})`);
+  assert(aggMetrics.totalDestinationTarget === '73M', `Global aggregate destination target is 73M (found ${aggMetrics.totalDestinationTarget})`);
+  assert(aggMetrics.totalIndexableTarget === '22.6M', `Global aggregate indexable capacity is 22.6M (found ${aggMetrics.totalIndexableTarget})`);
+
+  // --- 12. Multi-Tier Global Industry & Cross-Occupation Hierarchy Tests ---
+  console.log('\n--- 12. Testing Global Industry & Cross-Occupation Hierarchy ---');
+  const industries = GlobalIndustryHierarchy.getAllIndustries();
+  assert(industries.length >= 10, `Loaded ${industries.length} global industries (Healthcare, BFSI, Construction, Hospitality, Aviation, etc.)`);
+
+  const occupations = GlobalIndustryHierarchy.getAllOccupations();
+  assert(occupations.length >= 25, `Loaded ${occupations.length} canonical occupations`);
+
+  // Resolution tests for non-IT professions
+  const pharmacistNode = GlobalIndustryHierarchy.resolveEntity('pharmacist');
+  assert(pharmacistNode?.slug === 'pharmacist' && pharmacistNode.tier === 'OCCUPATION', 'Pharmacist resolves to OCCUPATION tier');
+
+  const hotelMgrNode = GlobalIndustryHierarchy.resolveEntity('hotel manager');
+  assert(hotelMgrNode?.slug === 'hotel-manager', 'Hotel manager resolves to canonical hotel-manager');
+
+  const civilEngNode = GlobalIndustryHierarchy.resolveEntity('civil engineer');
+  assert(civilEngNode?.slug === 'civil-engineer', 'Civil engineer resolves to civil-engineer');
+
+  const pilotNode = GlobalIndustryHierarchy.resolveEntity('commercial pilot');
+  assert(pilotNode?.slug === 'commercial-pilot', 'Commercial pilot resolves to commercial-pilot');
+
+  // Ancestor hierarchy traversal
+  const pharmaAncestors = GlobalIndustryHierarchy.getOccupationHierarchy('pharmacist');
+  assert(pharmaAncestors.length >= 3, 'Pharmacist traverses upward to parent Pharmacy sector and Healthcare industry');
+  assert(pharmaAncestors.some(n => n.slug === 'healthcare'), 'Pharmacist hierarchy reaches root Healthcare industry');
+
+  const hotelAncestors = GlobalIndustryHierarchy.getOccupationHierarchy('hotel-manager');
+  assert(hotelAncestors.some(n => n.slug === 'hospitality-tourism'), 'Hotel manager hierarchy reaches Hospitality & Tourism industry');
+
+  // Industry occupation grouping
+  const healthcareOccupations = GlobalIndustryHierarchy.getOccupationsForIndustry('healthcare');
+  assert(healthcareOccupations.length >= 4, `Healthcare contains ${healthcareOccupations.length} occupations & specializations (pharmacist, nurse, physician, etc.)`);
 
   console.log('\n================================================================');
   console.log(`🏁 VERIFICATION SUITE RESULTS: ${passed} PASSED, ${failed} FAILED`);

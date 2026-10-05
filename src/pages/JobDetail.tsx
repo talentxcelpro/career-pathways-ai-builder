@@ -33,6 +33,7 @@ import { BrandedFooter } from '@/components/branded/BrandedFooter';
 import { ReactJobStructuredData } from '@/components/seo/ReactJobStructuredData';
 import { buildJobPostingSchema } from '@/lib/seo/jobPostingSchema';
 import ComprehensiveJobApplicationForm from '@/components/jobs/ComprehensiveJobApplicationForm';
+import { createSafeHtml } from '@/utils/sanitize';
 
 const JobDetail = () => {
   const { slugOrId } = useParams<{ slugOrId: string }>();
@@ -519,9 +520,9 @@ const JobDetail = () => {
               </CardHeader>
               <CardContent className="prose prose-sm max-w-none">
                 <div 
-                  dangerouslySetInnerHTML={{ 
-                    __html: job.description?.replace(/\n/g, '<br>') || 'No description available' 
-                  }} 
+                  dangerouslySetInnerHTML={createSafeHtml(
+                    job.description?.replace(/\n/g, '<br>') || 'No description available'
+                  )} 
                 />
               </CardContent>
             </Card>
@@ -534,9 +535,9 @@ const JobDetail = () => {
                 </CardHeader>
                 <CardContent className="prose prose-sm max-w-none">
                   <div 
-                    dangerouslySetInnerHTML={{ 
-                      __html: job.requirements.replace(/\n/g, '<br>') 
-                    }} 
+                    dangerouslySetInnerHTML={createSafeHtml(
+                      job.requirements.replace(/\n/g, '<br>')
+                    )} 
                   />
                 </CardContent>
               </Card>

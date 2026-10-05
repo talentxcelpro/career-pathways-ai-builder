@@ -10,6 +10,7 @@
  */
 
 import { GlobalLocationHierarchy, LocationHierarchyNode } from './globalLocationHierarchy';
+import { GlobalIndustryHierarchy } from './globalIndustryHierarchy';
 import { EntityTypeId, EntityTaxonomyRegistry } from './entityTaxonomyRegistry';
 import { IntentTypeId, INTENT_TAXONOMY_REGISTRY } from './intentTaxonomyRegistry';
 
@@ -44,8 +45,9 @@ export interface IngestedSearchDemandOpportunity {
   isActionable: boolean;
 }
 
-// Canonical matching lexicons
+// Canonical matching lexicons (Spanning 32 Global Industry Sectors)
 const ROLE_KEYWORDS: Record<string, string> = {
+  // IT & Software
   'software engineer': 'software-engineer',
   'software developer': 'software-engineer',
   'sde': 'software-engineer',
@@ -63,6 +65,75 @@ const ROLE_KEYWORDS: Record<string, string> = {
   'qa engineer': 'qa-automation-engineer',
   'hr manager': 'hr-manager',
   'recruiter': 'talent-acquisition-specialist',
+
+  // Healthcare & Medicine
+  'pharmacist': 'pharmacist',
+  'clinical pharmacist': 'clinical-pharmacist',
+  'hospital pharmacist': 'hospital-pharmacist',
+  'oncology pharmacist': 'oncology-pharmacist',
+  'nurse': 'nurse',
+  'registered nurse': 'nurse',
+  'doctor': 'doctor-physician',
+  'physician': 'doctor-physician',
+  'medical lab technician': 'medical-lab-technician',
+  'lab technician': 'medical-lab-technician',
+
+  // Banking & Financial Services
+  'relationship manager': 'relationship-manager',
+  'credit analyst': 'credit-analyst',
+  'branch manager': 'branch-manager',
+  'bank manager': 'branch-manager',
+  'actuary': 'insurance-actuary',
+  'accountant': 'accountant',
+
+  // Hospitality & Travel
+  'hotel manager': 'hotel-manager',
+  'hotel general manager': 'hotel-manager',
+  'executive chef': 'executive-chef',
+  'chef': 'executive-chef',
+  'travel consultant': 'travel-consultant',
+
+  // Construction, Infrastructure & Real Estate
+  'civil engineer': 'civil-engineer',
+  'structural engineer': 'civil-engineer',
+  'site supervisor': 'civil-engineer',
+  'quantity surveyor': 'quantity-surveyor',
+  'real estate broker': 'real-estate-broker',
+
+  // Manufacturing & Automotive
+  'production engineer': 'production-engineer',
+  'plant manager': 'production-engineer',
+  'cnc operator': 'cnc-machinist',
+  'cnc machinist': 'cnc-machinist',
+  'service advisor': 'automotive-service-advisor',
+
+  // Aviation & Logistics
+  'pilot': 'commercial-pilot',
+  'commercial pilot': 'commercial-pilot',
+  'cabin crew': 'cabin-crew',
+  'flight attendant': 'cabin-crew',
+  'supply chain manager': 'supply-chain-manager',
+  'warehouse manager': 'warehouse-operations-manager',
+
+  // Education & Legal
+  'teacher': 'school-teacher',
+  'principal': 'school-principal',
+  'academic counselor': 'academic-counselor',
+  'corporate lawyer': 'corporate-lawyer',
+  'lawyer': 'corporate-lawyer',
+  'compliance officer': 'compliance-officer',
+
+  // Agriculture, Energy & Government
+  'agronomist': 'agronomist',
+  'food technologist': 'food-technologist',
+  'electrical engineer': 'electrical-power-engineer',
+  'solar technician': 'solar-technician',
+  'drilling engineer': 'drilling-engineer',
+  'civil services officer': 'civil-services-officer',
+  'ias officer': 'civil-services-officer',
+  'police officer': 'police-officer',
+  'store manager': 'retail-store-manager',
+  'category manager': 'ecommerce-category-manager',
 };
 
 const SKILL_KEYWORDS: Record<string, string> = {
@@ -81,7 +152,7 @@ const SKILL_KEYWORDS: Record<string, string> = {
 const INTENT_INDICATORS: Array<{ intent: IntentTypeId; tokens: string[] }> = [
   { intent: 'ATS_CHECKER', tokens: ['ats', 'ats check', 'ats score', 'ats scanner', 'ats checker', 'ats resume'] },
   { intent: 'PLACEMENTS', tokens: ['placement report', 'average ctc', 'placements', 'highest package', 'placement statistics'] },
-  { intent: 'RESUME', tokens: ['resume builder', 'resume template', 'resume format', 'cv maker', 'resume cv'] },
+  { intent: 'RESUME', tokens: ['resume builder', 'resume template', 'resume format', 'resume examples', 'resume sample', 'cv maker', 'resume cv', 'resume', 'cv'] },
   { intent: 'SALARY', tokens: ['salary', 'ctc', 'compensation', 'package', 'pay scale', 'average pay'] },
   { intent: 'INTERVIEWS', tokens: ['interview questions', 'interview questions and answers', 'interview prep', 'technical interview'] },
   { intent: 'COURSES', tokens: ['course', 'classes', 'certification', 'training', 'learn online', 'bootcamp'] },
@@ -133,6 +204,24 @@ export class SearchDemandIngestionEngine {
           confidence: 0.95,
         });
         break;
+      }
+    }
+
+    // Fallback to GlobalIndustryHierarchy for occupations across all sectors
+    if (!matchedRole) {
+      for (const token of cleanTokens) {
+        if (STOP_WORDS.has(token)) continue;
+        const indNode = GlobalIndustryHierarchy.resolveEntity(token);
+        if (indNode && (indNode.tier === 'OCCUPATION' || indNode.tier === 'SPECIALIZATION')) {
+          matchedRole = indNode.slug;
+          detectedEntities.push({
+            entityType: 'ROLE',
+            canonicalSlug: indNode.slug,
+            matchedToken: token,
+            confidence: 0.92,
+          });
+          break;
+        }
       }
     }
 
@@ -206,12 +295,22 @@ export class SearchDemandIngestionEngine {
     let recommendedUrl = `/jobs`;
     if (detectedIntent === 'JOBS' && matchedRole && matchedLocation) {
       recommendedUrl = `/jobs/${matchedRole}/${matchedLocation.slug}`;
+    } else if (detectedIntent === 'JOBS' && matchedRole) {
+      recommendedUrl = `/jobs/role/${matchedRole}`;
+    } else if (detectedIntent === 'JOBS' && matchedLocation) {
+      recommendedUrl = `/jobs/${matchedLocation.slug}`;
     } else if (detectedIntent === 'SALARY' && matchedRole && matchedLocation) {
       recommendedUrl = `/salary/${matchedRole}/${matchedLocation.slug}`;
+    } else if (detectedIntent === 'SALARY' && matchedRole) {
+      recommendedUrl = `/salary/${matchedRole}`;
+    } else if (detectedIntent === 'GOVT_JOBS' && matchedRole) {
+      recommendedUrl = `/government-jobs?role=${matchedRole}`;
+    } else if (detectedIntent === 'GOVT_JOBS') {
+      recommendedUrl = `/government-jobs`;
     } else if (detectedIntent === 'ATS_CHECKER' && matchedRole) {
       recommendedUrl = `/resume/ats-check/${matchedRole}`;
     } else if (detectedIntent === 'RESUME' && matchedRole) {
-      recommendedUrl = `/resume-templates/${matchedRole}`;
+      recommendedUrl = `/resume/examples/${matchedRole}`;
     } else if (detectedIntent === 'INTERVIEWS' && matchedRole) {
       recommendedUrl = `/interview-questions/${matchedRole}`;
     } else if (detectedIntent === 'FRESHER' && matchedRole) {

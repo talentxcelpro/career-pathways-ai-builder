@@ -10,6 +10,7 @@ const CompaniesByLocation = lazy(() => import("../pages/seo/CompaniesByLocation"
 const SalaryGuide = lazy(() => import("../pages/seo/SalaryGuide"));
 const SalaryGuidePage = lazy(() => import("../pages/seo/SalaryGuidePage"));
 const IndustryJobs = lazy(() => import("../pages/seo/IndustryJobs"));
+const InterviewQuestionsPage = lazy(() => import("../pages/seo/InterviewQuestionsPage"));
 const ComprehensiveSEOGenerator = lazy(() => import("../components/seo/ComprehensiveSEOGenerator").then(m => ({ default: m.ComprehensiveSEOGenerator })));
 
 const S = ({ children }: { children: React.ReactNode }) => (
@@ -71,6 +72,20 @@ export const seoRoutes = [
     to: "/salary/:role/:location",
     icon: <DollarSign className="h-4 w-4" />,
     page: <S><SalaryGuidePage /></S>,
+  },
+  
+  // Interview questions & STAR answers hub
+  {
+    title: "Interview Questions Hub",
+    to: "/interview-questions",
+    icon: <Briefcase className="h-4 w-4" />,
+    page: <S><InterviewQuestionsPage /></S>,
+  },
+  {
+    title: "Interview Questions by Role",
+    to: "/interview-questions/:role",
+    icon: <Briefcase className="h-4 w-4" />,
+    page: <S><InterviewQuestionsPage /></S>,
   },
   
   // Industry-based job pages

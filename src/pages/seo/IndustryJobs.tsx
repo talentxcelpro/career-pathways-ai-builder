@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Briefcase, TrendingUp, Building, Users, MapPin, DollarSign } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { SocialNetworkConversionCTA } from '@/components/network/SocialNetworkConversionCTA';
+import { createSafeHtml } from '@/utils/sanitize';
 
 const IndustryJobs = () => {
   const { industry } = useParams();
@@ -112,7 +113,7 @@ const IndustryJobs = () => {
       {/* Intro Content */}
       {seo?.intro_content && (
         <div className="prose max-w-none">
-          <div dangerouslySetInnerHTML={{ __html: seo.intro_content }} />
+          <div dangerouslySetInnerHTML={createSafeHtml(seo.intro_content)} />
         </div>
       )}
 

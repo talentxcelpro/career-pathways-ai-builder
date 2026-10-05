@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { createSafeHtml } from '@/utils/sanitize';
 import { 
   PenTool, 
   FileText, 
@@ -338,7 +339,7 @@ ${generatedContent.structuredData ? `## Structured Data\n\`\`\`json\n${JSON.stri
             <div className="space-y-4">
               <h3 className="font-semibold">Content</h3>
               <div className="p-4 bg-muted rounded-lg max-h-96 overflow-y-auto">
-                <div dangerouslySetInnerHTML={{ __html: generatedContent.body }} />
+                <div dangerouslySetInnerHTML={createSafeHtml(generatedContent.body)} />
               </div>
             </div>
 

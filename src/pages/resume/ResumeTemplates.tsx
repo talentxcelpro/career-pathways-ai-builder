@@ -7,6 +7,7 @@ import { ArrowLeft, Eye, Palette, Crown, Code, Brush, Minimize, Wrench, Graduati
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { createSafeHtml } from "@/utils/sanitize";
 
 const ResumeTemplates = () => {
   const navigate = useNavigate();
@@ -637,7 +638,7 @@ const ResumeTemplates = () => {
             {previewTemplate && (
               <div 
                 className="border rounded-lg bg-white shadow-sm"
-                dangerouslySetInnerHTML={{ __html: generateSampleResume(previewTemplate) }}
+                dangerouslySetInnerHTML={createSafeHtml(generateSampleResume(previewTemplate))}
               />
             )}
           </div>

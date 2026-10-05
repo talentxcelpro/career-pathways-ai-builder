@@ -20,6 +20,8 @@ const AnalyticsDashboard = lazy(() => import('@/components/resume/AnalyticsDashb
 const LearningHub = lazy(() => import('@/pages/LearningHub'));
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 const AIEnhancement = lazy(() => import('@/pages/resume/AIEnhancement'));
+const ResumeExamplesPage = lazy(() => import('@/pages/resume/ResumeExamplesPage'));
+const ResumeTemplates = lazy(() => import('@/pages/resume/ResumeTemplates'));
 
 export const resumeRoutes = [
   {
@@ -90,6 +92,34 @@ export const resumeRoutes = [
     to: "/resume/ats-check",
     icon: <Target className="h-4 w-4" />,
     page: <Suspense fallback={null}><ATSOptimizer /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "ATS Checker by Role",
+    to: "/resume/ats-check/:role",
+    icon: <Target className="h-4 w-4" />,
+    page: <Suspense fallback={null}><ATSOptimizer /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "Resume Templates by Role",
+    to: "/resume/templates/:role",
+    icon: <FileText className="h-4 w-4" />,
+    page: <Suspense fallback={null}><ResumeTemplates /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "Resume Examples",
+    to: "/resume/examples",
+    icon: <FileText className="h-4 w-4" />,
+    page: <Suspense fallback={null}><ResumeExamplesPage /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "Resume Examples by Role",
+    to: "/resume/examples/:role",
+    icon: <FileText className="h-4 w-4" />,
+    page: <Suspense fallback={null}><ResumeExamplesPage /></Suspense>,
     isPublic: true,
   },
   {

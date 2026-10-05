@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useParams } from 'react-router-dom';
 import { ViralShareModal } from '@/components/viral/ViralShareModal';
 import { GrowthEventTracker } from '@/lib/autonomous-os/growthEventTracker';
 import { useAuth } from '@/contexts/AuthContext';
@@ -87,9 +87,11 @@ export const ATSOptimizer: React.FC = () => {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   // Job Match state
+  const { role: roleParam } = useParams<{ role?: string }>();
   const roleFromQuery = searchParams.get('role');
   const locationFromQuery = searchParams.get('location');
-  const [targetRole, setTargetRole] = useState(roleFromQuery || 'Senior Full Stack Engineer');
+  const formattedRoleFromParam = roleParam ? roleParam.split(/[-_]+/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : null;
+  const [targetRole, setTargetRole] = useState(roleFromQuery || formattedRoleFromParam || 'Senior Full Stack Engineer');
   const [jobDescription, setJobDescription] = useState('');
   const [candidateResumeText, setCandidateResumeText] = useState('');
 
@@ -341,15 +343,39 @@ export const ATSOptimizer: React.FC = () => {
     return 'text-amber-600 bg-amber-50 border-amber-200 dark:bg-amber-950/50 dark:border-amber-800';
   };
 
+  const pageTitle = formattedRoleFromParam 
+    ? `${formattedRoleFromParam} ATS Resume Checker & Keyword Scorer | TalentXcel`
+    : `ATS Resume Checker & Keyword Scorer | TalentXcel`;
+  const pageDesc = formattedRoleFromParam
+    ? `Free instant ATS resume scanner for ${formattedRoleFromParam}. Check your scannability score, discover high-frequency keywords, and benchmark against top ATS systems.`
+    : `Free instant ATS resume scanner. Check your scannability score, discover missing keywords, and benchmark against top Fortune 500 ATS systems.`;
+  const canonicalUrl = roleParam 
+    ? `https://talentxcel.in/resume/ats-check/${roleParam}`
+    : `https://talentxcel.in/resume/ats-check`;
+
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    'name': `${formattedRoleFromParam || 'ATS'} Resume Checker & Optimizer`,
+    'operatingSystem': 'Web Browser',
+    'applicationCategory': 'BusinessApplication',
+    'offers': {
+      '@type': 'Offer',
+      'price': '0',
+      'priceCurrency': 'USD'
+    },
+    'description': pageDesc
+  };
+
   return (
     <>
       <Helmet>
-        <title>ATS Resume Checker & Keyword Scorer | TalentXcel</title>
-        <meta 
-          name="description" 
-          content="Free instant ATS resume scanner. Check your scannability score, discover missing keywords, and benchmark against top Fortune 500 ATS systems." 
-        />
-        <link rel="canonical" href="https://talentxcel.in/resume/ats-check" />
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDesc} />
+        <link rel="canonical" href={canonicalUrl} />
+        <script type="application/ld+json">
+          {JSON.stringify(structuredData)}
+        </script>
       </Helmet>
 
       <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950/40">

@@ -3,6 +3,7 @@ import { ScrapedContent } from '@/services/ContentScraper';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ExternalLink } from 'lucide-react';
+import { createSafeHtml } from '@/utils/sanitize';
 
 interface VideoEmbedProps {
   content: ScrapedContent;
@@ -16,7 +17,12 @@ export const VideoEmbed: React.FC<VideoEmbedProps> = ({ content }) => {
         {content.embedHtml ? (
           <div 
             className="w-full h-full"
-            dangerouslySetInnerHTML={{ __html: content.embedHtml }}
+            dangerouslySetInnerHTML={createSafeHtml(content.embedHtml, {
+              ALLOWED_TAGS: ['iframe'],
+              ALLOWED_ATTR: ['src', 'title', 'allow', 'allowfullscreen', 'referrerpolicy', 'loading', 'width', 'height', 'frameborder', 'class'],
+              FORBID_TAGS: ['script', 'object', 'embed', 'base', 'form', 'input', 'textarea', 'button'],
+              FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onfocus', 'onblur']
+            })}
           />
         ) : content.videoUrl ? (
           <iframe

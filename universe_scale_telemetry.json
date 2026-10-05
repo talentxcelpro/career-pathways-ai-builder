@@ -1,0 +1,300 @@
+{
+  "timestamp": "2026-10-05T09:55:02.762Z",
+  "metrics": {
+    "universeCount": 31,
+    "potentialSearchIntentsRange": "646M - 1.78B+",
+    "totalKeywordTarget": "1.057B (1057M)",
+    "totalKeywordTargetRaw": 1057000000,
+    "totalQualifiedIntentTarget": "241M",
+    "potentialDestinationsRange": "36M - 155M+",
+    "totalDestinationTarget": "73M",
+    "totalIndexableTarget": "22.6M"
+  },
+  "liveDatabase": {
+    "locationEntities": 31,
+    "seoEntities": 98,
+    "seoIntents": 250,
+    "seoDestinations": 50
+  },
+  "targets": [
+    {
+      "universeId": "JOBS",
+      "name": "Active Jobs & Vacancies",
+      "keywordTarget": 120000000,
+      "qualifiedIntentTarget": 25000000,
+      "destinationTarget": 10000000,
+      "indexableTarget": 3000000,
+      "priority": "CRITICAL_MASSIVE"
+    },
+    {
+      "universeId": "GOVERNMENT_JOBS",
+      "name": "Government & Public Sector Jobs",
+      "keywordTarget": 25000000,
+      "qualifiedIntentTarget": 6000000,
+      "destinationTarget": 2000000,
+      "indexableTarget": 600000,
+      "priority": "CRITICAL_MASSIVE"
+    },
+    {
+      "universeId": "COMPANIES",
+      "name": "Companies & Employers Careers Hub",
+      "keywordTarget": 35000000,
+      "qualifiedIntentTarget": 8000000,
+      "destinationTarget": 3500000,
+      "indexableTarget": 1000000,
+      "priority": "CRITICAL_MASSIVE"
+    },
+    {
+      "universeId": "RESUMES",
+      "name": "Resume Builder & Writing Guide",
+      "keywordTarget": 8000000,
+      "qualifiedIntentTarget": 2000000,
+      "destinationTarget": 600000,
+      "indexableTarget": 200000,
+      "priority": "CRITICAL_MASSIVE"
+    },
+    {
+      "universeId": "RESUME_TEMPLATES",
+      "name": "Downloadable Resume & CV Templates",
+      "keywordTarget": 15000000,
+      "qualifiedIntentTarget": 3500000,
+      "destinationTarget": 1200000,
+      "indexableTarget": 400000,
+      "priority": "CRITICAL_MASSIVE"
+    },
+    {
+      "universeId": "RESUME_EXAMPLES",
+      "name": "Resume Examples & Achievement Bullets",
+      "keywordTarget": 45000000,
+      "qualifiedIntentTarget": 10000000,
+      "destinationTarget": 3500000,
+      "indexableTarget": 1200000,
+      "priority": "CRITICAL_MASSIVE"
+    },
+    {
+      "universeId": "ATS_CHECKER",
+      "name": "Free ATS Resume Score Checker",
+      "keywordTarget": 25000000,
+      "qualifiedIntentTarget": 5000000,
+      "destinationTarget": 1800000,
+      "indexableTarget": 600000,
+      "priority": "CRITICAL_MASSIVE"
+    },
+    {
+      "universeId": "ATS_KEYWORDS",
+      "name": "High-Impact ATS Keywords",
+      "keywordTarget": 40000000,
+      "qualifiedIntentTarget": 8000000,
+      "destinationTarget": 2500000,
+      "indexableTarget": 800000,
+      "priority": "CRITICAL_MASSIVE"
+    },
+    {
+      "universeId": "CAREER_MAP",
+      "name": "Career Roadmap & Progression",
+      "keywordTarget": 15000000,
+      "qualifiedIntentTarget": 3500000,
+      "destinationTarget": 1200000,
+      "indexableTarget": 400000,
+      "priority": "CRITICAL_MASSIVE"
+    },
+    {
+      "universeId": "SKILLS",
+      "name": "Skills Intelligence & Market Value",
+      "keywordTarget": 30000000,
+      "qualifiedIntentTarget": 7000000,
+      "destinationTarget": 2200000,
+      "indexableTarget": 700000,
+      "priority": "CRITICAL_MASSIVE"
+    },
+    {
+      "universeId": "SALARY",
+      "name": "Compensation & Salary Benchmarks",
+      "keywordTarget": 60000000,
+      "qualifiedIntentTarget": 15000000,
+      "destinationTarget": 5000000,
+      "indexableTarget": 1500000,
+      "priority": "CRITICAL_MASSIVE"
+    },
+    {
+      "universeId": "INTERVIEW_QUESTIONS",
+      "name": "Interview Questions & STAR Answers",
+      "keywordTarget": 35000000,
+      "qualifiedIntentTarget": 8000000,
+      "destinationTarget": 3000000,
+      "indexableTarget": 1000000,
+      "priority": "CRITICAL_MASSIVE"
+    },
+    {
+      "universeId": "COURSES",
+      "name": "Online Courses & Training",
+      "keywordTarget": 30000000,
+      "qualifiedIntentTarget": 7000000,
+      "destinationTarget": 2500000,
+      "indexableTarget": 800000,
+      "priority": "CRITICAL_MASSIVE"
+    },
+    {
+      "universeId": "CERTIFICATIONS",
+      "name": "Industry Certifications & Credentials",
+      "keywordTarget": 18000000,
+      "qualifiedIntentTarget": 4000000,
+      "destinationTarget": 1500000,
+      "indexableTarget": 500000,
+      "priority": "HIGH_PRIORITY"
+    },
+    {
+      "universeId": "COLLEGES",
+      "name": "Colleges & Universities Directory",
+      "keywordTarget": 15000000,
+      "qualifiedIntentTarget": 3500000,
+      "destinationTarget": 1200000,
+      "indexableTarget": 450000,
+      "priority": "CRITICAL_MASSIVE"
+    },
+    {
+      "universeId": "DEGREES",
+      "name": "Degrees & Academic Programs",
+      "keywordTarget": 20000000,
+      "qualifiedIntentTarget": 4500000,
+      "destinationTarget": 1600000,
+      "indexableTarget": 550000,
+      "priority": "CRITICAL_MASSIVE"
+    },
+    {
+      "universeId": "ADMISSIONS",
+      "name": "College Admissions & Cutoffs",
+      "keywordTarget": 18000000,
+      "qualifiedIntentTarget": 4000000,
+      "destinationTarget": 1400000,
+      "indexableTarget": 500000,
+      "priority": "HIGH_PRIORITY"
+    },
+    {
+      "universeId": "PLACEMENTS",
+      "name": "Audited Campus Placements",
+      "keywordTarget": 10000000,
+      "qualifiedIntentTarget": 2500000,
+      "destinationTarget": 800000,
+      "indexableTarget": 250000,
+      "priority": "HIGH_PRIORITY"
+    },
+    {
+      "universeId": "CAREER_PASSPORT",
+      "name": "Verified Career Passport Profiles",
+      "keywordTarget": 120000000,
+      "qualifiedIntentTarget": 30000000,
+      "destinationTarget": 6000000,
+      "indexableTarget": 1500000,
+      "priority": "CRITICAL_MASSIVE"
+    },
+    {
+      "universeId": "TALENTSCORE",
+      "name": "TalentScore Assessment & Rankings",
+      "keywordTarget": 15000000,
+      "qualifiedIntentTarget": 3500000,
+      "destinationTarget": 1200000,
+      "indexableTarget": 400000,
+      "priority": "HIGH_PRIORITY"
+    },
+    {
+      "universeId": "REMOTE",
+      "name": "Remote & WFH Jobs Worldwide",
+      "keywordTarget": 30000000,
+      "qualifiedIntentTarget": 7000000,
+      "destinationTarget": 2200000,
+      "indexableTarget": 700000,
+      "priority": "CRITICAL_MASSIVE"
+    },
+    {
+      "universeId": "FRESHER",
+      "name": "Freshers & Entry-Level Jobs",
+      "keywordTarget": 30000000,
+      "qualifiedIntentTarget": 7000000,
+      "destinationTarget": 2200000,
+      "indexableTarget": 700000,
+      "priority": "CRITICAL_MASSIVE"
+    },
+    {
+      "universeId": "INTERNSHIPS",
+      "name": "Internships & Traineeships",
+      "keywordTarget": 22000000,
+      "qualifiedIntentTarget": 5000000,
+      "destinationTarget": 1800000,
+      "indexableTarget": 600000,
+      "priority": "CRITICAL_MASSIVE"
+    },
+    {
+      "universeId": "JOB_TYPES",
+      "name": "Job Types & Contract Arrangements",
+      "keywordTarget": 15000000,
+      "qualifiedIntentTarget": 3000000,
+      "destinationTarget": 1000000,
+      "indexableTarget": 300000,
+      "priority": "HIGH_PRIORITY"
+    },
+    {
+      "universeId": "INDUSTRIES",
+      "name": "Industry Sectors & Verticals",
+      "keywordTarget": 18000000,
+      "qualifiedIntentTarget": 4000000,
+      "destinationTarget": 1400000,
+      "indexableTarget": 450000,
+      "priority": "HIGH_PRIORITY"
+    },
+    {
+      "universeId": "RECRUITERS",
+      "name": "Employer Recruiter & Sourcing Portal",
+      "keywordTarget": 15000000,
+      "qualifiedIntentTarget": 3000000,
+      "destinationTarget": 1000000,
+      "indexableTarget": 300000,
+      "priority": "HIGH_PRIORITY"
+    },
+    {
+      "universeId": "EDITORIAL_ADVICE",
+      "name": "Authoritative Career Advice & Editorial",
+      "keywordTarget": 80000000,
+      "qualifiedIntentTarget": 18000000,
+      "destinationTarget": 3500000,
+      "indexableTarget": 1000000,
+      "priority": "CRITICAL_MASSIVE"
+    },
+    {
+      "universeId": "LOCATION_INTELLIGENCE",
+      "name": "Global Location Intelligence & Regional Hubs",
+      "keywordTarget": 100000000,
+      "qualifiedIntentTarget": 24000000,
+      "destinationTarget": 4000000,
+      "indexableTarget": 1200000,
+      "priority": "CRITICAL_MASSIVE"
+    },
+    {
+      "universeId": "RANKINGS",
+      "name": "Company & Institutional Rankings",
+      "keywordTarget": 15000000,
+      "qualifiedIntentTarget": 3000000,
+      "destinationTarget": 1000000,
+      "indexableTarget": 300000,
+      "priority": "HIGH_PRIORITY"
+    },
+    {
+      "universeId": "CAREER_PIVOT",
+      "name": "Career Pivot & Transition Guides",
+      "keywordTarget": 15000000,
+      "qualifiedIntentTarget": 3000000,
+      "destinationTarget": 1000000,
+      "indexableTarget": 300000,
+      "priority": "HIGH_PRIORITY"
+    },
+    {
+      "universeId": "LEARNING",
+      "name": "Learning Hub & Skill Development",
+      "keywordTarget": 18000000,
+      "qualifiedIntentTarget": 4000000,
+      "destinationTarget": 1400000,
+      "indexableTarget": 450000,
+      "priority": "HIGH_PRIORITY"
+    }
+  ]
+}

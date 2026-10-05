@@ -41,7 +41,8 @@ export type SearchUniverseId =
   | 'REMOTE'
   | 'INTERNSHIPS'
   | 'FRESHER'
-  | 'CAREER_SWITCH';
+  | 'CAREER_SWITCH'
+  | 'LOCATION_INTELLIGENCE';
 
 export interface SearchUniverseDefinition {
   id: SearchUniverseId;
@@ -363,6 +364,16 @@ export const SEARCH_UNIVERSES_CATALOG: Record<SearchUniverseId, SearchUniverseDe
     sampleIntentQueries: ['how to get hired as a software engineer at google', 'how to beat ats resume scanners', 'career guidance for freshers'],
     primarySchemaType: 'Article',
   },
+  LOCATION_INTELLIGENCE: {
+    id: 'LOCATION_INTELLIGENCE',
+    name: 'Global Location Intelligence & Regional Employment Hubs',
+    productGroup: 'FIND_A_JOB',
+    baseRoute: '/locations',
+    potentialIntentsScale: '30M - 100M+ Global Regional Search Intents',
+    conversionFunnelCta: 'Explore Regional Tech Hub -> Local Salary & Cost of Living -> Top Hiring Employers',
+    sampleIntentQueries: ['tech jobs in bangalore', 'it companies in silicon valley', 'cost of living and tech salaries in dubai', 'london gcc hiring trends'],
+    primarySchemaType: 'Place',
+  },
 };
 
 export class SearchUniverseRegistry {
@@ -381,6 +392,7 @@ export class SearchUniverseRegistry {
     const q = query.toLowerCase();
 
     // High Priority Patterns
+    if (q.includes('relocation') || q.includes('living in') || q.includes('cost of living')) return 'LOCATION_INTELLIGENCE';
     if (q.includes('ats') || q.includes('score') || q.includes('scan resume')) return 'ATS_CHECKER';
     if (q.includes('template') && q.includes('resume')) return 'RESUME_TEMPLATES';
     if ((q.includes('example') || q.includes('sample')) && (q.includes('resume') || q.includes('cv'))) return 'RESUME_EXAMPLES';

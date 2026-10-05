@@ -66,9 +66,9 @@ async function runGlobalSearchGraphTests() {
   const extractedDubai = GlobalLocationResolver.extractFromQuery('senior python developer salary in dubai');
   assert(extractedDubai.location?.canonicalName === 'Dubai', 'Extracted Dubai from query');
 
-  console.log('\n--- 2. Testing 30 Search Universes Registry & Intent Classification ---');
+  console.log('\n--- 2. Testing 31 Search Universes Registry & Intent Classification ---');
   const allUniverses = SearchUniverseRegistry.getAllUniverses();
-  assert(allUniverses.length === 30, `Exactly 30 Search Universes registered (found ${allUniverses.length})`);
+  assert(allUniverses.length === 31, `Exactly 31 Search Universes registered (found ${allUniverses.length})`);
 
   // Verify Product Surface alignment with screenshot
   const findAJobUniverses = allUniverses.filter(u => u.productGroup === 'FIND_A_JOB');

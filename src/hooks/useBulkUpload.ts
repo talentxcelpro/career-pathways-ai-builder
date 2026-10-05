@@ -106,13 +106,14 @@ export const useBulkUpload = () => {
 
         if (uploadError) throw uploadError;
         
-        // Get the public URL
-        const { data: { publicUrl } } = supabase.storage
+        // Get secure signed URL for private documents bucket (1 hour expiry)
+        const { data: signedData, error: signError } = await supabase.storage
           .from('documents')
-          .getPublicUrl(filePath);
+          .createSignedUrl(filePath, 3600);
           
-        if (!publicUrl || publicUrl === 'undefined') {
-          throw new Error('Failed to generate valid public URL for uploaded file');
+        const secureUrl = signedData?.signedUrl;
+        if (!secureUrl || signError) {
+          throw new Error('Failed to generate secure signed URL for uploaded document');
         }
 
         // Extract text and determine processing tier
@@ -127,7 +128,7 @@ export const useBulkUpload = () => {
           if (smartResult) {
             console.log('✅ Smart extraction successful for:', file.name);
             return {
-              fileUrl: publicUrl,
+              fileUrl: secureUrl,
               extractedData: smartResult,
               fileName: file.name,
               processingTier: 'regex'
@@ -137,7 +138,7 @@ export const useBulkUpload = () => {
         
         // Fallback to AI processing
         const requestPayload = {
-          fileUrl: publicUrl,
+          fileUrl: secureUrl,
           fileName: file.name,
           fileType: file.type,
           batchId,

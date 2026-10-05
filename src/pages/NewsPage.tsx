@@ -33,6 +33,7 @@ import { newsService } from '@/services/newsService';
 import { NewsCategory, NewsArchetype } from '@/types/news';
 import { ARCHETYPE_CONFIG } from '@/services/news/newsFreshnessEngine';
 import { NewsArticleBanner } from '@/components/news/NewsArticleBanner';
+import { createSafeHtml } from '@/utils/sanitize';
 
 const CATEGORIES: NewsCategory[] = [
   'All',
@@ -360,7 +361,7 @@ const NewsPage: React.FC = () => {
           {/* Article Body Content */}
           <div 
             className="prose prose-slate max-w-none dark:prose-invert text-base leading-relaxed space-y-6 [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:tracking-tight [&>h2]:text-foreground [&>h2]:mt-8 [&>h2]:mb-4 [&>p]:text-foreground/90 [&>ul]:list-disc [&>ul]:pl-6 [&>ul>li]:mb-2"
-            dangerouslySetInnerHTML={{ __html: article.content }}
+            dangerouslySetInnerHTML={createSafeHtml(article.content)}
           />
 
           {/* Tags */}

@@ -5,8 +5,10 @@
 
 ## 1. Executive Summary & Core Paradigm
 
-TalentXcel's search footprint is not a static list of URLs, nor is it a blind combinatorial permutation engine. It is an **Autonomous Search Demand & Entity Graph Operating System** that spans the platform's complete three-pillar product ecosystem:
-1. **FIND A JOB** (Active Vacancies, Government Jobs, Remote/WFH, Freshers, Internships, Walk-ins)
+TalentXcel's search footprint is not an IT jobs board, nor a static directory of URLs, nor a blind combinatorial permutation engine. It is the **World's Largest Global Career Search & Intelligence Graph** covering **every profession, occupation, and industry worldwide**.
+
+TalentXcel's architecture addresses the complete three-pillar career ecosystem:
+1. **FIND A JOB** (Active Vacancies, Government Jobs, Remote/WFH, Freshers, Internships, Walk-ins, Multi-City Matrix across 32 Global Industries)
 2. **BUILD MY CAREER** (ATS Resume Checker, Resume Builder, Templates, Examples, Career Passport, Career Map, Skills, Learning, Courses, Certifications, Salary Guides, College Placements, Interview Prep)
 3. **HIRE TALENT** (Global Employer Acquisition, Candidate Sourcing, Recruiter Tools, CV Search)
 
@@ -14,8 +16,15 @@ TalentXcel's search footprint is not a static list of URLs, nor is it a blind co
 $$\text{Demand Signal} \times \text{Entity Resolution} \times \text{Universe Evidence} \times \text{Content Contract} = \text{Indexable Destination}$$
 
 - **No Cartesian Permutations**: We do not generate empty matrix cross-products (e.g. "Software Engineer Jobs in TinyVillage").
-- **Universe-Specific Evidence**: *"No supporting evidence $\to$ DO NOT BUILD"*. A Salary Benchmark page does not require active job listings if backed by 35 verified compensation records. A College Placement page does not require jobs if backed by audited placement reports.
+- **Universe-Specific Evidence**: *"No supporting evidence $\to$ DO NOT BUILD"*. A Salary Benchmark page does not require active job listings if backed by 15+ verified compensation records. A College Placement page does not require jobs if backed by audited placement reports.
 - **Conversion on First Touch**: Every indexable destination embeds a zero-friction, 10-second interactive free utility (ATS score reveal, job match evaluation, salary calculator) before authentication.
+- **Career-Centric, Not IT-Centric**: IT is only 1 of 32 global verticals. Healthcare (doctors, nurses, pharmacists), BFSI (bank branch managers, credit analysts), Construction (civil engineers, architects), Aviation (commercial pilots), Hospitality (hotel managers, head chefs), and Manufacturing (plant managers, CNC operators) are first-class peers.
+
+### The Architectural Scale North Star
+- **$\ge 1$ BILLION+ Potential Search Opportunities** ($646\text{M} - 1.78\text{B}+$ raw search intent universe)
+- **100M – 250M+ Qualified Search Opportunities** (Target: **241 Million**, strictly evidence-backed)
+- **20M – 100M+ Buildable Destinations** (Target: **73 Million**, governed by content contracts)
+- **10M – 50M+ Quality Indexable URL Capacity** (Target: **22.6 Million**, governor-controlled, zero thin crawl bloat)
 
 ---
 
@@ -26,12 +35,14 @@ flowchart TD
     DemandSources["GLOBAL SEARCH DEMAND SOURCES<br/>(GSC Impressions, Internal Search, Trends, SERP)"] --> IngestionEngine["Search Demand Ingestion Engine<br/>(Tokenization, Entity Extraction, Intent Mapping)"]
     
     subgraph CoreTaxonomy["Global Knowledge Graph"]
+        IngestionEngine --> IndustryGraph["6-Tier Industry & Occupation Graph<br/>(32 Industries, Sectors, Occupations, Roles)"]
         IngestionEngine --> EntityRegistry["22 Entity Dimensions<br/>(Role, Skill, Company, College, Degree, etc.)"]
         IngestionEngine --> LocationEngine["Global Location Hierarchy (6 Levels)<br/>(World, Continent, Country, State, Metro, City, District)"]
         IngestionEngine --> IntentRegistry["22 Intent Dimensions<br/>(Jobs, Salary, ATS, Resume, Placements, etc.)"]
     end
     
-    EntityRegistry --> ExpansionEngine["Systematic Intent Expansion Engine<br/>(Orthogonal Query Synthesis, Anti-Cartesian Pruning)"]
+    IndustryGraph --> ExpansionEngine["Systematic Intent Expansion Engine<br/>(Orthogonal Query Synthesis, Anti-Cartesian Pruning)"]
+    EntityRegistry --> ExpansionEngine
     LocationEngine --> ExpansionEngine
     IntentRegistry --> ExpansionEngine
     
@@ -56,7 +67,141 @@ flowchart TD
 
 ---
 
-## 3. The 22 Machine-Readable Entity Dimensions
+## 3. The 6-Tier Multi-Industry & Occupation Hierarchy
+
+TalentXcel structures all global work through a formalized 6-Tier Knowledge Graph:
+
+$$\text{Tier 1: Industry} \to \text{Tier 2: Sector} \to \text{Tier 3: Sub-Sector} \to \text{Tier 4: Occupation} \to \text{Tier 5: Specialization} \to \text{Tier 6: Role}$$
+
+```mermaid
+flowchart TD
+    T1["Tier 1: INDUSTRY<br/>(Healthcare & Medicine)"]
+    T2["Tier 2: SECTOR<br/>(Pharmacy & Pharmaceutical Care)"]
+    T3["Tier 3: SUB-SECTOR<br/>(Hospital & Inpatient Pharmacy)"]
+    T4["Tier 4: OCCUPATION<br/>(Pharmacist)"]
+    T5["Tier 5: SPECIALIZATION<br/>(Clinical / Oncology Pharmacist)"]
+    T6["Tier 6: ROLE<br/>(hospital-pharmacist)"]
+
+    T1 --> T2 --> T3 --> T4 --> T5 --> T6
+```
+
+### 32 Canonical Global Industry Verticals
+1. **Healthcare & Medicine** (Doctors, Nurses, Pharmacists, Radiologists, Lab Technicians)
+2. **Banking, Financial Services & Insurance (BFSI)** (Relationship Managers, Credit Analysts, Actuaries, Branch Managers)
+3. **Hospitality, Travel & Tourism** (Hotel General Managers, Executive Chefs, F&B Directors, Concierge)
+4. **Construction, Civil & Real Estate** (Civil Engineers, Structural Engineers, Quantity Surveyors, Architects)
+5. **Aviation, Aerospace & Defense** (Commercial Pilots, First Officers, Flight Attendants, Air Traffic Controllers, Avionics Engineers)
+6. **Automotive & Future Mobility** (Automotive Engineers, EV Powertrain Engineers, Diagnostic Technicians)
+7. **Manufacturing, Industrial & Heavy Machinery** (Plant Managers, Industrial Engineers, CNC Operators, Quality Engineers)
+8. **Supply Chain, Logistics & Maritime** (Logistics Directors, Warehouse Managers, Customs Officers, Marine Engineers)
+9. **Education, Higher Ed & Academia** (Professors, High School Teachers, Instructional Designers, Principals)
+10. **Legal, Judiciary & Compliance** (Corporate Lawyers, Regulatory Compliance Officers, Legal Counsel, Paralegals)
+11. **Agriculture, Agritech & Food Processing** (Agronomists, Farm Managers, Food Safety Scientists)
+12. **Media, Journalism & Creative Arts** (Journalists, Video Producers, Creative Directors, Animators)
+13. **Energy, Utilities & Renewables** (Petroleum Engineers, Solar PV Specialists, Power Grid Operators)
+14. **Government, Civil Services & Public Administration** (Civil Servants, Police Officers, Tax Inspectors)
+15. **Retail, Consumer Goods & E-Commerce** (Store Managers, Merchandisers, Category Managers)
+16. **IT, Software & Cybersecurity** (Software Engineers, Cloud Architects, Cybersecurity Specialists)
+17. *(Plus 16 additional global sectors covering Telecommunications, Biotechnology, Mining, Chemical, Marine, Non-Profit, Defense, etc.)*
+
+### Cross-Connected to 22 Intent Dimensions
+Each occupation connects orthogonally to the 22 intent archetypes:
+- `pharmacist jobs in srinagar` $\to$ `/jobs/pharmacist/srinagar`
+- `pharmacist salary in dubai` $\to$ `/salary/pharmacist/dubai`
+- `pharmacist resume examples` $\to$ `/resume/examples/pharmacist`
+- `pharmacist ats keywords` $\to$ `/resume/ats-check/pharmacist`
+- `pharmacist interview questions` $\to$ `/interview-questions/pharmacist`
+- `pharmacist government jobs` $\to$ `/government-jobs?role=pharmacist`
+- `hotel manager jobs in london` $\to$ `/jobs/hotel-manager/london`
+- `hotel manager salary` $\to$ `/salary/hotel-manager`
+- `civil engineer jobs in dubai` $\to$ `/jobs/civil-engineer/dubai`
+- `commercial pilot salary in dubai` $\to$ `/salary/commercial-pilot/dubai`
+
+---
+
+## 4. TalentXcel Global Search Universe — 1.057 Billion Target Catalog
+
+The platform registers **31 Search Universes** calibrated to capture over **1.057 Billion** search keywords with **73 Million** buildable destinations and **22.6 Million** indexable quality pages:
+
+| Universe ID | Category Name | Pillar | Keyword Universe (Min–Max) | Keyword Target | Qualified Intents | Destination Target | Indexable Capacity | Priority | Evidence Source |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `JOBS` | Active Jobs & Vacancies | `FIND_A_JOB` | 80M – 200M | **120,000,000** | 25,000,000 | **10,000,000** | 3,000,000 | 🔴 Critical | Job Inventory ($\ge 3$ jobs) |
+| `GOVERNMENT_JOBS` | Government & Public Sector | `FIND_A_JOB` | 15M – 40M | **25,000,000** | 6,000,000 | **2,000,000** | 600,000 | 🔴 Critical | Official Gazette Notice |
+| `COMPANIES` | Companies & Employers Hub | `FIND_A_JOB` | 20M – 60M | **35,000,000** | 8,000,000 | **3,500,000** | 1,000,000 | 🔴 Critical | Verified Employer Profile |
+| `RESUMES` | Resume Builder | `BUILD_MY_CAREER` | 5M – 15M | **10,000,000** | 2,500,000 | **800,000** | 250,000 | 🔴 Critical | Role Builder Modules |
+| `RESUME_TEMPLATES` | Resume Templates | `BUILD_MY_CAREER` | 8M – 25M | **15,000,000** | 3,500,000 | **1,200,000** | 400,000 | 🔴 Critical | Curated Templates |
+| `RESUME_EXAMPLES` | Resume Examples | `BUILD_MY_CAREER` | 25M – 75M | **45,000,000** | 10,000,000 | **3,500,000** | 1,100,000 | 🔴 Critical | Bullet Point Banks |
+| `ATS_CHECKER` | Free ATS Resume Checker | `BUILD_MY_CAREER` | 15M – 45M | **25,000,000** | 5,000,000 | **1,800,000** | 600,000 | 🔴 Critical | ATS Keyword Taxonomy |
+| `ATS_KEYWORDS` | High-Impact ATS Keywords | `BUILD_MY_CAREER` | 25M – 70M | **40,000,000** | 8,000,000 | **2,500,000** | 800,000 | 🔴 Critical | Frequency Heatmap |
+| `CAREER_MAP` | Career Roadmap & Progression | `BUILD_MY_CAREER` | 10M – 30M | **15,000,000** | 3,500,000 | **1,200,000** | 400,000 | 🔴 Critical | Career Progression Ladder |
+| `SKILLS` | Skills Intelligence & Value | `BUILD_MY_CAREER` | 20M – 55M | **30,000,000** | 7,000,000 | **2,200,000** | 700,000 | 🔴 Critical | Skill Demand & Premium |
+| `SALARY` | Salary Benchmarks & Pay Bands| `BUILD_MY_CAREER` | 35M – 100M | **60,000,000** | 15,000,000 | **5,000,000** | 1,500,000 | 🔴 Critical | Audited P10..P90 Dataset ($\ge 15$) |
+| `INTERVIEW_QUESTIONS`| Interview Questions & STAR | `BUILD_MY_CAREER` | 20M – 60M | **35,000,000** | 8,000,000 | **3,000,000** | 1,000,000 | 🔴 Critical | Curated Questions ($\ge 10$) |
+| `COURSES` | Online Courses & Bootcamps | `BUILD_MY_CAREER` | 20M – 55M | **30,000,000** | 7,000,000 | **2,500,000** | 800,000 | 🔴 Critical | Accredited Curriculum |
+| `CERTIFICATIONS` | Industry Certifications | `BUILD_MY_CAREER` | 10M – 30M | **18,000,000** | 4,000,000 | **1,500,000** | 500,000 | 🟠 High | Official Board Data |
+| `COLLEGES` | Colleges Directory | `BUILD_MY_CAREER` | 10M – 25M | **15,000,000** | 3,500,000 | **1,200,000** | 450,000 | 🔴 Critical | 10,250+ College NIRF Profiles |
+| `DEGREES` | Degrees & Academic Programs | `BUILD_MY_CAREER` | 12M – 35M | **20,000,000** | 5,000,000 | **1,800,000** | 600,000 | 🔴 Critical | Academic Curriculum |
+| `ADMISSIONS` | College Admissions & Cutoffs | `BUILD_MY_CAREER` | 12M – 35M | **20,000,000** | 5,000,000 | **1,800,000** | 600,000 | 🟠 High | Official Cutoff Records |
+| `PLACEMENTS` | Audited Campus Placements | `BUILD_MY_CAREER` | 6M – 18M | **10,000,000** | 2,500,000 | **800,000** | 250,000 | 🟠 High | Audited Placement Reports |
+| `CAREER_PASSPORT` | Verified Career Passports | `BUILD_MY_CAREER` | 70M – 200M | **120,000,000** | 30,000,000 | **6,000,000** | 1,500,000 | 🔴 Critical | Verified Candidate Profiles |
+| `TALENTSCORE` | TalentScore Benchmarks | `BUILD_MY_CAREER` | 10M – 25M | **15,000,000** | 3,500,000 | **1,200,000** | 400,000 | 🟠 High | Percentile Assessment Rubrics |
+| `REMOTE` | Remote & WFH Jobs Worldwide | `FIND_A_JOB` | 18M – 50M | **30,000,000** | 7,000,000 | **2,200,000** | 700,000 | 🔴 Critical | Remote Listings ($\ge 3$) |
+| `FRESHER` | Freshers & Entry-Level Jobs | `FIND_A_JOB` | 18M – 50M | **30,000,000** | 7,000,000 | **2,200,000** | 700,000 | 🔴 Critical | 0-1 Yr Vacancies ($\ge 3$) |
+| `INTERNSHIPS` | Internships & Traineeships | `FIND_A_JOB` | 12M – 35M | **22,000,000** | 5,000,000 | **1,800,000** | 600,000 | 🔴 Critical | Traineeships ($\ge 2$) |
+| `JOB_TYPES` | Job Types & Contracts | `FIND_A_JOB` | 10M – 25M | **15,000,000** | 3,000,000 | **1,000,000** | 300,000 | 🟠 High | Contract Listings |
+| `INDUSTRIES` | Industry Sectors & Verticals | `FIND_A_JOB` | 10M – 30M | **18,000,000** | 4,000,000 | **1,400,000** | 450,000 | 🟠 High | 32 Vertical Industry Hubs |
+| `RECRUITERS` | Employer Recruiter Portal | `HIRE_TALENT` | 10M – 25M | **15,000,000** | 3,000,000 | **1,000,000** | 300,000 | 🟠 High | Recruiter Landing Pages |
+| `EDITORIAL_ADVICE` | Career Advice & Editorial | `BUILD_MY_CAREER` | 50M – 130M | **80,000,000** | 18,000,000 | **3,500,000** | 1,000,000 | 🔴 Critical | Editorial Benchmark Content |
+| `LOCATION_INTELLIGENCE`| Location Intelligence (31st)| `FIND_A_JOB` | 60M – 160M | **100,000,000** | 24,000,000 | **4,000,000** | 1,200,000 | 🔴 Critical | Location Graph & Edges |
+| `RANKINGS` | Company & College Rankings | `FIND_A_JOB` | 10M – 25M | **15,000,000** | 3,000,000 | **1,000,000** | 300,000 | 🟠 High | Leaderboard Datasets |
+| `CAREER_PIVOT` | Career Switch Guides | `BUILD_MY_CAREER` | 10M – 25M | **15,000,000** | 3,000,000 | **1,000,000** | 300,000 | 🟠 High | Skill Bridge Matrix |
+| `LEARNING` | Learning Hub & Tutorials | `BUILD_MY_CAREER` | 10M – 30M | **18,000,000** | 4,000,000 | **1,400,000** | 450,000 | 🟠 High | Curated Free Learning Paths |
+| **GLOBAL AGGREGATE** | **31 Search Universes** | **ALL PILLARS** | **646M – 1.78B+** | **1,057,000,000 (1.057B)** | **241,000,000** | **73,000,000** | **22,600,000** | **PLATFORM SCALE** | **Operating System v2** |
+
+---
+
+## 5. The 31st Universe: Global Location Intelligence as the Multiplier Engine
+
+Location is not just another entity dimension — it is the **universal cross-product acquisition multiplier** spanning every other universe.
+
+```
+~250 Sovereign Countries & Territories
+   └── Thousands of Administrative States / Provinces
+        └── Tens of Thousands of Metros & Economic Urban Clusters
+             └── Tens of Thousands of Municipal Cities
+                  └── Thousands of High-Density Districts & Economic Zones
+```
+
+Every meaningful location node connects orthogonally to:
+- Jobs in [Location] (across Healthcare, BFSI, Tech, Engineering, Hospitality)
+- Salaries & Compensation Bands in [Location] (denominated in local currencies: INR, USD, AED, GBP, EUR)
+- Hiring Companies & GCCs in [Location]
+- In-Demand Skills in [Location]
+- Cost of Living & Quality of Life in [Location]
+- Colleges & Universities in [Location]
+- Government Jobs & Regional Exams in [Location]
+- Fresher & Graduate Recruitment in [Location]
+- Relocation Allowances & Visa Sponsorship Frameworks in [Location]
+
+### The Anti-Cartesian Math
+- 100,000 Normalized Roles $\times$ 10,000 Global Locations $\times$ 10 Intent Classes = **10 Billion theoretical permutations**.
+- The **Universe Evidence Engine** and **Anti-Cartesian Pruner** evaluate this universe down to **~36M – 155M legitimate opportunities**, yielding **73M buildable destinations** where real first-party data and candidate demand intersect.
+
+---
+
+## 6. Structural Competitive Analysis: Unifying Competitor Models
+
+| Platform | Core SEO Model | Competitor Scale | Fundamental Limitation | How TalentXcel Unifies & Surpasses It |
+| :--- | :--- | :--- | :--- | :--- |
+| **LinkedIn** | Jobs + People + Companies + Schools + Skills | Millions of jobs; hundreds of thousands of category/location hubs | Closed behind heavy login walls; weak interactive resume/ATS tooling; no direct salary calculator. | TalentXcel pairs every job with a **10-second interactive match evaluator** and native ATS score reveal before authentication. |
+| **Naukri** | Roles $\times$ Locations $\times$ Experience $\times$ Recruiter | Thousands of city and experience hubs across India | India-centric; fragmented tooling; static job listings lacking transparent placement and skill pathways. | TalentXcel expands globally (India, US, UK, UAE, Germany, Canada, Singapore) with verified local currencies and seamless Career Passport credentials. |
+| **Coursera** | Course + Subject + Skill + Degree + University | 100M+ learners; 200+ universities | Disconnected from live job hiring; cannot evaluate candidates' current resumes or match them directly to vacancies. | TalentXcel connects **Course $\to$ Skill $\to$ Resume $\to$ ATS $\to$ Job Opening** in a single end-to-end loop. |
+| **Zety** | 700+ CV examples; role-specific resume templates | ~1,000 highly granular content templates | No live job inventory; purely an editorial paywalled builder without recruiter connectivity. | TalentXcel connects every resume template to **live matching jobs, salary data, and interview prep** in that exact role. |
+| **Enhancv** | 1,700+ resume guides & examples | ~2,000 role/industry articles | Editorial articles with zero live database telemetry or employer recruitment infrastructure. | TalentXcel turns every role guide into a **dynamic, live-data acquisition destination** powered by first-party ATS algorithms. |
+
+---
+
+## 7. The 22 Machine-Readable Entity Dimensions
 
 TalentXcel's knowledge universe is modeled across 22 canonical entity dimensions:
 
@@ -87,7 +232,7 @@ TalentXcel's knowledge universe is modeled across 22 canonical entity dimensions
 
 ---
 
-## 4. The 22 Machine-Readable Intent Dimensions
+## 8. The 22 Machine-Readable Intent Dimensions
 
 Every search query is classified into one of 22 intent archetypes with strict evidence requirements and conversion anchors:
 
@@ -95,12 +240,12 @@ Every search query is classified into one of 22 intent archetypes with strict ev
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | `JOBS` | `FIND_A_JOB` | `JOB_INVENTORY` | 3 active jobs | `JOB_ROLE_CITY_PAGE` | `InteractiveJobMatchWidget` | `/jobs/{role}/{location}` |
 | `HIRING` | `HIRE_TALENT` | `EMPLOYER_VERIFIED_PROFILE` | 1 account | `EMPLOYER_ACQUISITION_PAGE` | `MultiLocationJobComposer` | `/hire/{role}/{location}` |
-| `RESUME` | `BUILD_MY_CAREER` | `RESUME_TEMPLATE_CATALOG` | 1 template | `RESUME_ROLE_LEVEL` | `UnifiedResumeBuilder` | `/resume/build/{role}` |
-| `CV` | `BUILD_MY_CAREER` | `RESUME_TEMPLATE_CATALOG` | 1 template | `RESUME_ROLE_LEVEL` | `UnifiedResumeBuilder` | `/cv-templates/{role}` |
+| `RESUME` | `BUILD_MY_CAREER` | `RESUME_TEMPLATE_CATALOG` | 1 template | `RESUME_ROLE_LEVEL` | `UnifiedResumeBuilder` | `/resume/examples/{role}` |
+| `CV` | `BUILD_MY_CAREER` | `RESUME_TEMPLATE_CATALOG` | 1 template | `RESUME_ROLE_LEVEL` | `UnifiedResumeBuilder` | `/resume/examples/{role}` |
 | `TEMPLATE` | `BUILD_MY_CAREER` | `RESUME_TEMPLATE_CATALOG` | 3 templates | `RESUME_ROLE_LEVEL` | `TemplateGallery` | `/resume-templates/{role}` |
-| `EXAMPLE` | `BUILD_MY_CAREER` | `RESUME_TEMPLATE_CATALOG` | 5 bullet sets | `RESUME_ROLE_LEVEL` | `UnifiedResumeBuilder` | `/resume-examples/{role}` |
+| `EXAMPLE` | `BUILD_MY_CAREER` | `RESUME_TEMPLATE_CATALOG` | 5 bullet sets | `RESUME_ROLE_LEVEL` | `ResumeExamplesPage` | `/resume/examples/{role}` |
 | `ATS_CHECKER`| `BUILD_MY_CAREER` | `ATS_KEYWORD_TAXONOMY` | 20 terms | `ATS_CHECKER_TOOL` | `ATSOptimizer (Instant Scan)` | `/resume/ats-check/{role}` |
-| `KEYWORDS` | `BUILD_MY_CAREER` | `ATS_KEYWORD_TAXONOMY` | 15 terms | `ATS_CHECKER_TOOL` | `ATSOptimizer` | `/resume/keywords/{role}` |
+| `KEYWORDS` | `BUILD_MY_CAREER` | `ATS_KEYWORD_TAXONOMY` | 15 terms | `ATS_CHECKER_TOOL` | `ATSOptimizer` | `/resume/ats-check/{role}` |
 | `SALARY` | `BUILD_MY_CAREER` | `SALARY_DATASET` | 15 records | `SALARY_BENCHMARK_PAGE` | `SalaryAnalyzer` | `/salary/{role}/{location}` |
 | `SKILLS` | `BUILD_MY_CAREER` | `SKILL_TAXONOMY_INTELLIGENCE` | 1 taxonomy node | `SKILL_INTELLIGENCE_PAGE` | `SkillAssessor` | `/skills/{skill}` |
 | `COURSES` | `BUILD_MY_CAREER` | `COURSE_CURRICULUM` | 1 curriculum | `COURSE_DESTINATION_PAGE` | `CoursePlayer` | `/learning/courses/{skill}` |
@@ -108,156 +253,44 @@ Every search query is classified into one of 22 intent archetypes with strict ev
 | `COLLEGES` | `BUILD_MY_CAREER` | `COLLEGE_PLACEMENT_REPORT` | 1 profile | `COLLEGE_DOSSIER_PLACEMENTS` | `CareerPathway` | `/colleges/{slug}` |
 | `ADMISSIONS` | `BUILD_MY_CAREER` | `COLLEGE_PLACEMENT_REPORT` | 1 cutoff table | `COLLEGE_DOSSIER_PLACEMENTS` | `CareerPathway` | `/colleges/{slug}/admissions` |
 | `PLACEMENTS` | `BUILD_MY_CAREER` | `COLLEGE_PLACEMENT_REPORT` | 1 audited report | `COLLEGE_DOSSIER_PLACEMENTS` | `CampusCareerMatcher` | `/colleges/{slug}/placements` |
-| `INTERVIEWS` | `BUILD_MY_CAREER` | `INTERVIEW_QUESTION_BANK` | 10 questions | `INTERVIEW_QUESTIONS_PAGE` | `PublicInterviewPrep` | `/interview-questions/{role}` |
-| `CAREER_PATHWAY`| `BUILD_MY_CAREER`| `SKILL_TAXONOMY_INTELLIGENCE` | 1 ladder | `SKILL_INTELLIGENCE_PAGE` | `InteractiveRoadmapBuilder`| `/career-pathway/{role}` |
-| `CAREER_SWITCH`| `BUILD_MY_CAREER`| `SKILL_TAXONOMY_INTELLIGENCE` | 1 bridge map | `SKILL_INTELLIGENCE_PAGE` | `InteractiveRoadmapBuilder`| `/career-switch/{from}-{to}` |
-| `REMOTE` | `FIND_A_JOB` | `JOB_INVENTORY` | 3 remote jobs | `JOB_ROLE_CITY_PAGE` | `InteractiveJobMatchWidget` | `/jobs/remote/{role}` |
+| `INTERVIEWS` | `BUILD_MY_CAREER` | `INTERVIEW_QUESTION_BANK` | 10 questions | `INTERVIEW_QUESTIONS_PAGE` | `InterviewQuestionsPage` | `/interview-questions/{role}` |
+| `CAREER_PATHWAY`| `BUILD_MY_CAREER`| `SKILL_TAXONOMY_INTELLIGENCE` | 1 ladder | `SKILL_INTELLIGENCE_PAGE` | `InteractiveRoadmapBuilder`| `/career-pathways/{role}` |
+| `CAREER_SWITCH`| `BUILD_MY_CAREER`| `SKILL_TAXONOMY_INTELLIGENCE` | 1 bridge map | `SKILL_INTELLIGENCE_PAGE` | `InteractiveRoadmapBuilder`| `/career-pathways/{from}-{to}` |
+| `REMOTE` | `FIND_A_JOB` | `JOB_INVENTORY` | 3 remote jobs | `JOB_ROLE_CITY_PAGE` | `InteractiveJobMatchWidget` | `/jobs/{role}/remote` |
 | `FRESHER` | `FIND_A_JOB` | `JOB_INVENTORY` | 3 entry jobs | `JOB_ROLE_CITY_PAGE` | `InteractiveJobMatchWidget` | `/jobs/{role}/freshers` |
 | `INTERNSHIP` | `FIND_A_JOB` | `JOB_INVENTORY` | 2 internships | `JOB_ROLE_CITY_PAGE` | `InteractiveJobMatchWidget` | `/internships/{role}/{loc}` |
-| `GOVT_JOBS` | `FIND_A_JOB` | `GOVT_GAZETTE_NOTIFICATION` | 1 notice | `GOVERNMENT_JOB_PAGE` | `InteractiveJobMatchWidget` | `/government-jobs/{cty}/{bd}`|
+| `GOVT_JOBS` | `FIND_A_JOB` | `GOVT_GAZETTE_NOTIFICATION` | 1 notice | `GOVERNMENT_JOB_PAGE` | `InteractiveJobMatchWidget` | `/government-jobs?role={role}`|
 
 ---
 
-## 5. Global Location Hierarchy & Relationship Engine
+## 9. Search Graph Milestones Roadmap
 
-The world geography is modeled as an administrative directed graph:
-
-```
-WORLD (Level 0)
-  └── CONTINENT (Level 1: Asia, North America, Europe, etc.)
-       └── COUNTRY (Level 2: India, USA, UAE, UK, Germany, Canada, Singapore, Australia)
-            └── STATE / PROVINCE (Level 3: Karnataka, California, New York State, NCR Region)
-                 └── METRO / CLUSTER (Level 4: Delhi NCR, SF Bay Area, NYC Metro, Greater London)
-                      └── CITY / MUNICIPALITY (Level 5: Bangalore, Mumbai, Gurgaon, Noida, Dubai, London, SF)
-                           └── DISTRICT / TECH CORRIDOR (Level 6: Whitefield, Manhattan, Shoreditch)
+```mermaid
+flowchart LR
+    M1["MILESTONE 1<br/>10 Million Discovered Opportunities<br/>(Cross-Industry Seed: 32 Verticals x 1,000 Cities)"] --> M2["MILESTONE 2<br/>100 Million Discovered Opportunities<br/>(National & Regional Occupations)"]
+    M2 --> M3["MILESTONE 3<br/>1.057 BILLION+ Search Opportunities<br/>(Ubiquitous Global Career Graph)"]
 ```
 
-### Relationship Edges (`location_edges` Table)
-- **`CITY_OF`**: Bangalore $\to$ Karnataka; San Francisco $\to$ California; London $\to$ United Kingdom.
-- **`METRO_OF`**: San Francisco $\to$ SF Bay Area; London $\to$ Greater London.
-- **`STATE_OF`**: Karnataka $\to$ India; California $\to$ United States.
-- **`WITHIN`**: Noida $\to$ Delhi NCR; Manhattan $\to$ New York City.
-- **`NEAR`**: Gurgaon $\leftrightarrow$ Delhi (28 km); Noida $\leftrightarrow$ Delhi (22 km); Dubai $\leftrightarrow$ Abu Dhabi (130 km).
-- **`ALTERNATIVE_NAME`**: BLR $\to$ Bangalore; Bombay $\to$ Mumbai; DXB $\to$ Dubai; NYC $\to$ New York City; WFH $\to$ Remote Worldwide.
+### Milestone #1: 10 Million Discovered Opportunities (Immediate Cross-Industry Seed)
+- Discover, normalize, and classify 10 Million real search intents across 32 industry verticals (Healthcare, BFSI, Hospitality, Construction, Aviation, IT).
+- Seed and harvest verified entities: Pharmacists, Hotel Managers, Civil Engineers, Commercial Pilots, Registered Nurses, Software Engineers.
+- Ensure 0 empty Cartesian pages; enforce the 4-part formula.
+
+### Milestone #2: 100 Million Discovered Opportunities
+- Expand into mid-tail roles, regional languages (Hindi, Arabic, German, Spanish, French).
+- Sub-city economic zones (DIFC Dubai, BKC Mumbai, Whitefield Bangalore, City of London, Manhattan NYC).
+- Employer $\times$ Role combinations across 5,000+ global enterprises.
+
+### Milestone #3: 1.057 BILLION+ Search Opportunities (The Ubiquitous Career Graph)
+- Comprehensive global career intelligence covering every recognized occupation, municipality, and credential worldwide.
+- Permanent Governance: Only the evidence-backed subset enters the XML sitemaps and indexable corpus (~22.6 Million indexable quality pages).
 
 ---
 
-## 6. Continuous Search Demand Ingestion Engine
-
-Rather than guessing keywords, the ingestion engine consumes real search telemetry:
-1. **Google Search Console**: Ingests high-impression and click query-page pairs (`gsc_copilot_snapshot.json`).
-2. **Internal Platform Searches**: Logs real queries executed in TalentXcel candidate search bars.
-3. **Competitor SERP Intelligence**: Observes commercial keywords driving traffic to competitors (Naukri, Indeed, LinkedIn, Zety, Coursera).
-4. **Token Normalization**: Strict anti-stop-word filtering (isolates English prepositions `in`, `at`, `for` from ISO country codes like `IN`).
-
----
-
-## 7. Systematic Intent Expansion Engine
-
-Takes any validated canonical entity and systematically expands it across legitimate orthogonal intent vectors:
-- **Role Entity Expansion**:
-  - `[role] jobs in [city]`
-  - `[role] salary in [city]`
-  - `free ats resume score checker for [role]`
-  - `[role] resume template download`
-  - `[role] interview questions and answers 2026`
-  - `[role] career path and promotion milestones`
-  - `[role] jobs for freshers 2026`
-  - `remote [role] jobs worldwide`
-- **Company Entity Expansion**:
-  - `[company] jobs and careers 2026`
-  - `[company] salary and compensation bands`
-  - `[company] interview questions and hiring process`
-  - `[company] [role] jobs and vacancies`
-- **College Entity Expansion**:
-  - `[college] placement report 2026 average ctc`
-  - `[college] admissions cutoff and eligibility`
-- **Anti-Cartesian Pruner**: Disallows senseless cross-products (e.g. no "freshers salary resume template in nowhereville").
-
----
-
-## 8. Universe-Specific Evidence Engine
-
-| Universe | Evidence Requirement | Pass Threshold | Rationale |
-| :--- | :--- | :--- | :--- |
-| **JOBS** | Active, unexpired job vacancies | $\ge 3$ jobs | Prevents empty landing pages and soft-404 index bloat. |
-| **SALARY** | Audited compensation points | $\ge 15$ records, P10..P90 | Statistical confidence; does not require current job vacancies. |
-| **RESUME** | Tested template + action bullets | $\ge 1$ template, $\ge 10$ bullets | Content utility; completely independent of job openings. |
-| **ATS_CHECKER**| Mapped domain keywords & scoring rubrics| $\ge 20$ terms | Diagnostic precision against enterprise ATS algorithms. |
-| **COLLEGES** | Audited NIRF/placement report | $\ge 1$ report (Median CTC, recruiters) | Valid educational dossier. |
-| **COURSES** | Accredited curriculum modules | $\ge 1$ structured syllabus | Verified learning journey. |
-| **INTERVIEWS** | Curated questions with STAR answers | $\ge 10$ questions | Actionable interview preparation. |
-| **GOVT_JOBS** | Gazette notification & key dates | $\ge 1$ verified official notice | Official public sector accuracy. |
-
----
-
-## 9. Content Contract Engine (Hard Requirements per Archetype)
-
-Every page archetype enforces a programmatic contract before HTML emission:
-- **`JOB_ROLE_CITY_PAGE`**:
-  - Hero & Canonical Intent H1
-  - Live Verified Job Inventory ($\ge 3$ active cards)
-  - Local Compensation Benchmarks (P25, P50, P75)
-  - Top Hiring Companies in City ($\ge 3$)
-  - Core Technical Skills Demands ($\ge 5$)
-  - `InteractiveJobMatchWidget` (Check My Match in 10s)
-  - Contextual Graph Links to Adjacent Cities ($\ge 4$)
-- **`SALARY_BENCHMARK_PAGE`**:
-  - Compensation Percentile Distribution (P10, P25, P50, P75, P90)
-  - Experience Band Curve (0-2 yrs, 3-5 yrs, 6-9 yrs, 10+ yrs)
-  - Sample Size & Audit Date Disclosure
-  - `InteractiveSalaryCalculator` (Compare My CTC)
-- **`ATS_CHECKER_TOOL`**:
-  - Drag-and-Drop Instant Resume Scanner (PDF/DOCX)
-  - Multi-Dimensional Score Breakdown (Formatting, Keywords, Metrics)
-  - Critical ATS Red Flags Detection
-  - `ATSOptimizer` (10-Second Score Reveal)
-- **`GOVERNMENT_JOB_PAGE`**:
-  - Official Gazette Notification & PDF Link
-  - Vacancy Count & Category Reservation Breakdown
-  - Age Limit & Educational Eligibility
-  - Selection Process & Exam Pattern
-  - Direct Official Government Portal Link
-
----
-
-## 10. Internal Link Authority Graph Engine (`seo_edges`)
-
-Constructs a rich, semantic mesh across all destinations to maximize PageRank flow and prevent orphan pages:
-- **Role Hub Connections**:
-  - `ROLE_TO_SALARY`: Software Engineer $\to$ Software Engineer Salary Bangalore
-  - `ROLE_TO_ATS`: Software Engineer $\to$ Free ATS Resume Checker Software Engineer
-  - `ROLE_TO_RESUME`: Software Engineer $\to$ Software Engineer Resume Templates
-  - `ROLE_TO_INTERVIEW`: Software Engineer $\to$ Software Engineer Interview Questions
-  - `ROLE_TO_CAREER_MAP`: Software Engineer $\to$ Software Engineer Career Roadmap
-  - `ROLE_TO_FRESHER`: Software Engineer $\to$ Software Engineer Jobs for Freshers
-  - `ROLE_TO_REMOTE`: Software Engineer $\to$ Remote Software Engineer Jobs
-- **Location Hub Connections**:
-  - `LOCATION_TO_ROLES`: Bangalore $\to$ Top Tech Roles in Bangalore
-  - `LOCATION_TO_NEIGHBORS`: Gurgaon $\to$ Jobs in Delhi & Noida
-
----
-
-## 11. Global Language, Locale & Currency Engine
-
-Binds geographic destinations to authentic local currency and employment terminology without machine-translation spam:
-
-| Country | Code | Default Currency | Salary Notation | Employment Vocabulary | Tax & Regulatory Standard |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **India** | `IN` | `INR (₹)` | `₹12 - 25 LPA` | CTC, Freshers, Notice Period | TDS, Old/New Tax Regime |
-| **UAE** | `AE` | `AED` | `AED 20,000 - 35,000/month` | Tax-Free Package, Visa Sponsorship | 0% Income Tax, End of Service Gratuity |
-| **United States** | `US` | `USD ($)` | `$120k - $160k/year` | Base + Equity (RSUs), 401(k) Match | W-2 / 1099, At-Will Employment |
-| **United Kingdom**| `GB` | `GBP (£)` | `£65k - £85k/year` | Base + Pension Scheme, Hybrid London | PAYE, National Insurance |
-| **Germany** | `DE` | `EUR (€)` | `€70k - €95k/Jahr` | Bruttojahresgehalt, EU Blue Card | Kündigungsfrist, Sozialabgaben |
-| **Canada** | `CA` | `CAD (C$)` | `C$90k - C$130k/year` | Base + RRSP Match, New Grad | CRA Federal & Provincial Taxes |
-| **Singapore** | `SG` | `SGD (S$)` | `S$8,000 - 14,000/month` | Base + AWS (13th Month), MOM EP Pass | IRAS Progressive Tax |
-
----
-
-## 12. Technical SEO CI Verification Gates vs Business North Star
+## 10. Technical SEO CI Verification Gates vs Business North Star
 
 ### Technical SEO CI Verification Gates (Automated & Blocking)
-1. **Schema Validation**: 100% compliant JSON-LD (`JobPosting`, `BreadcrumbList`, `Occupation`, `FAQPage`, `Dataset`).
+1. **Schema Validation**: 100% compliant JSON-LD (`JobPosting`, `BreadcrumbList`, `Occupation`, `FAQPage`, `ItemList`, `SoftwareApplication`, `Dataset`).
 2. **Canonical Correctness**: Zero conflicting user-selected vs Google-selected canonicals.
 3. **Soft 404 Prevention**: Thin or zero-inventory job URLs return HTTP 404 / NOINDEX_HOLD.
 4. **Expired Job Exterminator**: Expired jobs emit `HTTP 410 Gone` and are purged from XML sitemaps.

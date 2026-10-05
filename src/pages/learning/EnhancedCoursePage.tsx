@@ -23,6 +23,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { AITutorChat } from '@/components/learning/AITutorChat';
+import { createSafeHtml } from '@/utils/sanitize';
 import { InteractiveCodeEditor } from '@/components/learning/InteractiveCodeEditor';
 import { useInteractiveExercises, useTextToSpeech } from '@/hooks/useAdvancedLearning';
 import { useEnrollInCourse, useCourseEnrollments } from '@/hooks/useCourses';
@@ -531,7 +532,7 @@ export default function EnhancedCoursePage() {
                         
                         {lesson.content && (
                           <div className="prose prose-sm max-w-none">
-                            <div dangerouslySetInnerHTML={{ __html: lesson.content }} />
+                            <div dangerouslySetInnerHTML={createSafeHtml(lesson.content)} />
                           </div>
                         )}
                       </div>

@@ -140,23 +140,31 @@ export function useFileUpload(options?: UseFileUploadOptions) {
         throw uploadError;
       }
 
-      const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(data.path);
-      let publicUrl = urlData.publicUrl;
+      const isPrivateBucket = ['cv-files', 'documents', 'user-uploads'].includes(bucket);
+      let resolvedUrl: string;
 
-      // Per-upload cache-busting for mutable image buckets so profile images
-      // never show a stale version after re-upload. We use a short hash of the
-      // path + upload timestamp so the URL is deterministic per upload (not
-      // changing on every render) but unique per new upload.
-      if (mutableImageBuckets.has(bucket)) {
-        const stamp = Date.now().toString(36);
-        const hash = (data.path.length * 2654435761 >>> 0).toString(36).slice(0, 4);
-        const v = `${stamp}${hash}`;
-        publicUrl = `${publicUrl}${publicUrl.includes('?') ? '&' : '?'}v=${v}`;
+      if (isPrivateBucket) {
+        const { data: signedData, error: signErr } = await supabase.storage.from(bucket).createSignedUrl(data.path, 3600);
+        if (signErr || !signedData?.signedUrl) {
+          throw signErr || new Error(`Failed to generate signed URL for private bucket: ${bucket}`);
+        }
+        resolvedUrl = signedData.signedUrl;
+      } else {
+        const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(data.path);
+        resolvedUrl = urlData.publicUrl;
+
+        // Per-upload cache-busting for mutable image buckets
+        if (mutableImageBuckets.has(bucket)) {
+          const stamp = Date.now().toString(36);
+          const hash = (data.path.length * 2654435761 >>> 0).toString(36).slice(0, 4);
+          const v = `${stamp}${hash}`;
+          resolvedUrl = `${resolvedUrl}${resolvedUrl.includes('?') ? '&' : '?'}v=${v}`;
+        }
       }
 
       setProgress(100);
       toast.success('File uploaded successfully');
-      return publicUrl;
+      return resolvedUrl;
     } catch (error: any) {
       console.error('[upload] failed:', JSON.stringify(error), error);
       const errorMessage = error?.message || error?.error || 'Upload failed';
