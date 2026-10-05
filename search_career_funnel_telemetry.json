@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-10-05T11:21:31.555Z",
+  "timestamp": "2026-10-05T11:37:19.940Z",
   "scaleSummary": {
     "modeledSearchOpportunities": "1.057B+",
     "qualifiedOpportunities": "241M",
@@ -32,6 +32,45 @@
     "unitEconomicCTR": "2.50%",
     "unitEconomicSignupRate": "10.99%",
     "unitEconomicApplicationRate": "24.36%"
+  },
+  "occupationLedgerSummary": {
+    "provenUnitsCount": 44,
+    "b1CandidateCount": 56,
+    "b1TotalTarget": 100,
+    "totalProductionCostINR": 52800,
+    "totalMonetizedRevenueINR": 0,
+    "topPerformingArchetypes": [
+      {
+        "occupationName": "Registered Nurse",
+        "applications": 3,
+        "matches": 1,
+        "searchYield": 1850
+      },
+      {
+        "occupationName": "Pharmacist",
+        "applications": 2,
+        "matches": 1,
+        "searchYield": 1420
+      },
+      {
+        "occupationName": "Commercial Pilot",
+        "applications": 1,
+        "matches": 1,
+        "searchYield": 1050
+      },
+      {
+        "occupationName": "Software Engineer",
+        "applications": 2,
+        "matches": 0,
+        "searchYield": 2100
+      },
+      {
+        "occupationName": "Relationship Manager",
+        "applications": 1,
+        "matches": 0,
+        "searchYield": 980
+      }
+    ]
   },
   "funnelStages": [
     {

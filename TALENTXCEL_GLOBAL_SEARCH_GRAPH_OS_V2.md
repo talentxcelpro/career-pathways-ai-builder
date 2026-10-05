@@ -473,5 +473,50 @@ $$\text{Priority Score} = \Big(\text{Demand} \times 0.35 + \text{JobDensity} \ti
 | **Retail & E-Commerce** | 2 Sectors | 14 Roles | Omnichannel Store Networks, E-Commerce Marketplaces & D2C Brands |
 | **TOTAL (Phase B Milestone)** | **68 Sectors** | **514 Roles** | **Full 12-Factor Evidence Saturation Standard** |
 
+---
 
+### 11.5 Per-Occupation Evidence & Economic Ledger (Phase B1 Execution Engine)
 
+To prevent blind content creation and evaluate exact unit economics per occupation archetype, TalentXcel maintains a persistent **Per-Occupation Evidence & Economic Ledger** (`src/lib/seo/searchUniverse/occupationLedger.ts`).
+
+#### The Ledger Tracking Schema (12 Dimensions)
+For every canonical occupation in the career graph, the factory records:
+$$\text{Occupation Slug} \longrightarrow \text{Evidence Score} \longrightarrow \text{Freshness} \longrightarrow \text{Pages Published} \longrightarrow \text{Indexed Pages} \longrightarrow \text{Impressions} \longrightarrow \text{Clicks} \longrightarrow \text{Registrations} \longrightarrow \text{Applications} \longrightarrow \text{Matches} \longrightarrow \text{Revenue} \longrightarrow \text{Production Cost}$$
+
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 📋 BOX 5: PER-OCCUPATION EVIDENCE & ECONOMIC LEDGER (B1 FACTORY)             │
+├──────────────────────────────────────────────────────────────────────────────┤
+│  • Proven Baseline Units        : 44 Occupations (Phase A Verified)         │
+│  • B1 Priority Candidates Queued: 56 Occupations (Demand x Evidence Weighted) │
+│  • B1 Milestone Target Scale    : 100 Occupations (Review Gate Milestone)     │
+│  • Aggregate Production Cost    : ₹52,800 (44 units @ ₹1,200/unit)       │
+│  • Commercial Revenue Target    : ₹0.00 (B1 Commercial Validation)       │
+│  • Top Performing Archetypes    :                                            │
+│      - Registered Nurse: 3 apps, 1 match, 1850 imp                           │
+│      - Pharmacist: 2 apps, 1 match, 1420 imp                                 │
+│      - Commercial Pilot: 1 apps, 1 match, 1050 imp                           │
+│      - Software Engineer: 2 apps, 0 match, 2100 imp                          │
+│      - Relationship Manager: 1 apps, 0 match, 980 imp                        │
+└──────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### B1 Factory Balance & Empirical Baseline
+- **Proven Phase A Cohort (44 Units)**:
+  - Total Impressions: $28,400$
+  - Total Organic Clicks: $710$
+  - Total Candidate Registrations: $78$
+  - Total Applications: $19$ (Application Yield: $0.43$ apps/role)
+  - Total Matches/Placements: $3$ (Placement Yield: $0.068$ matches/role)
+  - Production Cost: ₹$52,800$ (₹$1,200$ average cost-to-evidence per unit)
+- **Queued Phase B1 Candidates (56 Units)**:
+  - Balanced across all 15 industry verticals: Healthcare (8), BFSI (7), Construction (5), Aviation (5), Hospitality (4), Manufacturing (5), Logistics (4), Education (3), Legal (3), Agriculture (2), Media (2), Energy (2), Government (2), Retail (2), Tech/AI (2).
+  - Target Scale: Exactly $44 \text{ proven} + 56 \text{ candidates} = 100 \text{ Occupations}$.
+
+#### Mandatory B1 Review Gate Condition
+> [!IMPORTANT]
+> **Strict Scaling Halt Condition**: Do not advance to Phase B2 ($250$) or B3 ($500$) until all 100 occupations have completed at least 30 days of live production tracking, and the factory evaluates:
+> 1. Which occupations and sub-sectors yield the highest applications and placements per ₹1,000 of evidence production cost?
+> 2. Which location and credential modifiers trigger the highest CTR and lowest bounce rate?
+> 3. Where is Googlebot indexation rate highest vs where is crawl throttling observed?
+> Production capacity will be re-allocated based exclusively on empirical ledger yield rather than theoretical keyword volume.

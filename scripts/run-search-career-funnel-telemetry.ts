@@ -76,6 +76,23 @@ async function runTelemetry() {
   console.log(`│  • Unit Economic App Rate       : ${snapshot.executiveRatios.unitEconomicApplicationRate.padEnd(42)} │`);
   console.log('└──────────────────────────────────────────────────────────────────────────────┘\n');
 
+  if (snapshot.occupationLedgerSummary) {
+    console.log('┌──────────────────────────────────────────────────────────────────────────────┐');
+    console.log('│ 📋 BOX 5: PER-OCCUPATION EVIDENCE & ECONOMIC LEDGER (B1 FACTORY)             │');
+    console.log('├──────────────────────────────────────────────────────────────────────────────┤');
+    console.log(`│  • Proven Baseline Units        : ${snapshot.occupationLedgerSummary.provenUnitsCount} Occupations (Phase A Verified)         │`);
+    console.log(`│  • B1 Priority Candidates Queued: ${snapshot.occupationLedgerSummary.b1CandidateCount} Occupations (Demand x Evidence Weighted) │`);
+    console.log(`│  • B1 Milestone Target Scale    : ${snapshot.occupationLedgerSummary.b1TotalTarget} Occupations (Review Gate Milestone)     │`);
+    console.log(`│  • Aggregate Production Cost    : ₹${snapshot.occupationLedgerSummary.totalProductionCostINR.toLocaleString()} (44 units @ ₹1,200/unit)       │`);
+    console.log(`│  • Commercial Revenue Target    : ₹${snapshot.occupationLedgerSummary.totalMonetizedRevenueINR.toFixed(2)} (B1 Commercial Validation)       │`);
+    console.log('│  • Top Performing Archetypes    :                                            │');
+    for (const arch of snapshot.occupationLedgerSummary.topPerformingArchetypes) {
+      const line = `    - ${arch.occupationName}: ${arch.applications} apps, ${arch.matches} match, ${arch.searchYield} imp`;
+      console.log(`│  ${line.padEnd(76)}│`);
+    }
+    console.log('└──────────────────────────────────────────────────────────────────────────────┘\n');
+  }
+
   console.log('--- 14-STAGE ACQUISITION FUNNEL PROGRESSION ---');
   for (let i = 0; i < snapshot.funnelStages.length; i++) {
     const stage = snapshot.funnelStages[i];

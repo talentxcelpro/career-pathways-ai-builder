@@ -26,6 +26,7 @@
  */
 
 import { SearchUniverseTargetRegistry } from './searchUniverseTargetRegistry';
+import { OccupationLedgerRegistry } from './occupationLedger';
 
 export interface FunnelStageMetric {
   stageId: string;
@@ -76,6 +77,14 @@ export interface ExecutiveUniverseDashboard {
     unitEconomicCTR: string;
     unitEconomicSignupRate: string;
     unitEconomicApplicationRate: string;
+  };
+  occupationLedgerSummary?: {
+    provenUnitsCount: number;
+    b1CandidateCount: number;
+    b1TotalTarget: number;
+    totalProductionCostINR: number;
+    totalMonetizedRevenueINR: number;
+    topPerformingArchetypes: Array<{ occupationName: string; applications: number; matches: number; searchYield: number }>;
   };
   funnelStages: FunnelStageMetric[];
 }
@@ -311,6 +320,19 @@ export class SearchCareerFunnelTelemetry {
         unitEconomicCTR: `${ctr.toFixed(2)}%`,
         unitEconomicSignupRate: `${signupRate.toFixed(2)}%`,
         unitEconomicApplicationRate: `${appRate.toFixed(2)}%`,
+      },
+      occupationLedgerSummary: {
+        provenUnitsCount: OccupationLedgerRegistry.getLedgerAggregateStats().provenOccupationsCount,
+        b1CandidateCount: OccupationLedgerRegistry.getLedgerAggregateStats().b1CandidateCount,
+        b1TotalTarget: OccupationLedgerRegistry.getLedgerAggregateStats().b1TotalTarget,
+        totalProductionCostINR: OccupationLedgerRegistry.getLedgerAggregateStats().totalCostINR,
+        totalMonetizedRevenueINR: OccupationLedgerRegistry.getLedgerAggregateStats().totalRevenueINR,
+        topPerformingArchetypes: OccupationLedgerRegistry.getTopPerformingArchetypes(5).map(a => ({
+          occupationName: a.occupationName,
+          applications: a.applications,
+          matches: a.matches,
+          searchYield: a.searchYield,
+        })),
       },
       funnelStages: stages,
     };
