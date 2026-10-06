@@ -168,12 +168,22 @@ async function runTelemetry() {
       console.log(`│  ${line.padEnd(76)}│`);
     }
     console.log('│  ──────────────────────────────────────────────────────────────────────────  │');
-    console.log('│  🪜 1,000 REGISTRATIONS/DAY FUNNEL CASCADE (PRIMARY VICTORY):                │');
+    console.log('│  🪜 1,000 REGISTRATIONS/DAY FUNNEL CASCADE & STAGE CONVERSIONS:              │');
     console.log(`│    • Upstream Cascade : ${ce.milestone1000.upstreamFunnelCascade.impressions.toLocaleString()} Imp ➔ ${ce.milestone1000.upstreamFunnelCascade.clicks.toLocaleString()} Clicks ➔ ${ce.milestone1000.upstreamFunnelCascade.matchStarts.toLocaleString()} Starts ➔ 1,000 Regs│`);
+    console.log(`│    • Imp ➔ Click Rate : ${ce.milestone1000.stageConversionRates.impressionToClickPct.toFixed(2)}%                                                    │`);
+    console.log(`│    • Click ➔ Start    : ${ce.milestone1000.stageConversionRates.clickToMatchStartPct.toFixed(2)}% (Visitors initiating 10-second match)             │`);
+    console.log(`│    • Start ➔ Reg      : ${ce.milestone1000.stageConversionRates.matchStartToRegistrationPct.toFixed(2)}% (Match starters completing registration)        │`);
+    console.log(`│    • Overall Headline : ${ce.milestone1000.stageConversionRates.sessionToRegistrationHeadlinePct.toFixed(2)}% (Session-to-registration full conversion rate)│`);
+    console.log(`│    • Reg ➔ Apply      : ${ce.milestone1000.stageConversionRates.registrationToApplicationPct.toFixed(2)}% (Registered users applying to jobs)          │`);
+    console.log(`│    • Apply ➔ Match    : ${ce.milestone1000.stageConversionRates.applicationToMatchPct.toFixed(2)}% (Applicants matched to employers)             │`);
     console.log(`│    • Sessions @ 11%   : ${ce.milestone1000.requiredDailySessionsAt11Pct.toLocaleString()} visits/day (Baseline Conversion Rate)         │`);
-    console.log(`│    • Sessions @ 15%   : ${ce.milestone1000.requiredDailySessionsAt15Pct.toLocaleString()} visits/day (Intermediate Milestone Gate)        │`);
     console.log(`│    • Sessions @ 25%   : ${ce.milestone1000.requiredDailySessionsAt25Pct.toLocaleString()} visits/day (Target 10-Second Match Conversion)  │`);
-    console.log(`│    • Traffic Savings  : Saves 5,091 visits/day (Halves traffic required by 2.27x)   │`);
+    console.log(`│    • Traffic Savings  : Saves 5,091 visits/day (Reduces required visits by 2.27x)    │`);
+    console.log('│  ──────────────────────────────────────────────────────────────────────────  │');
+    console.log(`│  🔒 HARD STATISTICAL SIGNIFICANCE GATE:                                      │`);
+    console.log(`│    • Status           : ${ce.milestone1000.statisticalGate.currentEvidenceStatus} (Directional, not conclusive)     │`);
+    console.log(`│    • Sample Threshold : Requires ≥1,000–2,000 eligible sessions per variant overall   │`);
+    console.log(`│    • Rollout Decision : Code frozen at 6532ad5e. No site-wide rollout until proven.  │`);
     console.log('└──────────────────────────────────────────────────────────────────────────────┘\n');
   }
 

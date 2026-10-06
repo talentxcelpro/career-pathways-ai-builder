@@ -262,7 +262,9 @@ async function runTestSuite() {
   assert(m1000.requiredDailySessionsAt25Pct === 4000, 'At 25% target conversion, 1,000 reg/day requires only 4,000 visits/day (vs 9,091 @ 11%)');
   assert(m1000.requiredDailySessionsAt11Pct === 9091, 'At 11% baseline conversion, 1,000 reg/day requires 9,091 visits/day');
   assert(m1000.provenCohortsCount >= 3, 'At least 3 high-intent cohorts demonstrate treatment superiority (proven: ' + m1000.provenCohortsCount + ')');
-  assert(m1000.isReadyForMassiveReplication === true, 'Engine certifies readiness to prove 1,000 registrations/day victory gate');
+  assert(m1000.isReadyForMassiveReplication === false, 'Engine enforces hard statistical gate: code frozen until >= 1,000-2,000 sessions confirm lift');
+  assert(m1000.statisticalGate.currentEvidenceStatus === 'DIRECTIONAL_EARLY_SIGNAL', 'Recognizes early cohort results as directional, not yet conclusive');
+  assert(m1000.stageConversionRates.matchStartToRegistrationPct > 40, 'Cleanly separates match start to registration rate (41.67%) from headline 25%');
 
   const vAssignmentControl = GrowthWedgeExperimentEngine.getVariant('EXP_VARANASI_HYPERLOCAL', 'visitor_hash_test_1');
   const vAssignmentTreatment = GrowthWedgeExperimentEngine.getVariant('EXP_VARANASI_HYPERLOCAL', 'visitor_hash_test_2');

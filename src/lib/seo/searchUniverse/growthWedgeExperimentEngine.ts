@@ -106,6 +106,19 @@ export interface Milestone1000Status {
     applications: number;
     matches: number;
   };
+  stageConversionRates: {
+    impressionToClickPct: number;         // 2.50%
+    clickToMatchStartPct: number;         // 60.00%
+    matchStartToRegistrationPct: number;  // 41.67%
+    sessionToRegistrationHeadlinePct: number; // 25.00%
+    registrationToApplicationPct: number; // 24.40%
+    applicationToMatchPct: number;        // 15.57%
+  };
+  statisticalGate: {
+    minSessionsPerVariantRequired: number; // 1,000 - 2,000
+    currentEvidenceStatus: 'DIRECTIONAL_EARLY_SIGNAL' | 'STATISTICALLY_CONCLUSIVE';
+    sampleSizeGuidance: string;
+  };
   provenCohortsCount: number;
   isReadyForMassiveReplication: boolean;
 }
@@ -476,8 +489,21 @@ export class GrowthWedgeExperimentEngine {
         applications: 244,      // 24.4% apply
         matches: 38,            // 15.8% employer matches
       },
+      stageConversionRates: {
+        impressionToClickPct: 2.50,
+        clickToMatchStartPct: 60.00,
+        matchStartToRegistrationPct: 41.67,
+        sessionToRegistrationHeadlinePct: 25.00,
+        registrationToApplicationPct: 24.40,
+        applicationToMatchPct: 15.57,
+      },
+      statisticalGate: {
+        minSessionsPerVariantRequired: 1000,
+        currentEvidenceStatus: 'DIRECTIONAL_EARLY_SIGNAL',
+        sampleSizeGuidance: 'Results are directional, not yet statistically conclusive. Hard gate: >= 1,000-2,000 eligible sessions per variant required before certifying site-wide roll-out.',
+      },
       provenCohortsCount: winningCount,
-      isReadyForMassiveReplication: winningCount >= 3,
+      isReadyForMassiveReplication: false, // Freeze code until 1,000-2,000 sessions confirm treatment superiority
     };
   }
 }

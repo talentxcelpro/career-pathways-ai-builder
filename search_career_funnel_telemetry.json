@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-10-06T05:57:34.580Z",
+  "timestamp": "2026-10-06T06:02:54.047Z",
   "scaleSummary": {
     "modeledSearchOpportunities": "1.057B+",
     "qualifiedOpportunities": "241M",
@@ -866,8 +866,21 @@
         "applications": 244,
         "matches": 38
       },
+      "stageConversionRates": {
+        "impressionToClickPct": 2.5,
+        "clickToMatchStartPct": 60,
+        "matchStartToRegistrationPct": 41.67,
+        "sessionToRegistrationHeadlinePct": 25,
+        "registrationToApplicationPct": 24.4,
+        "applicationToMatchPct": 15.57
+      },
+      "statisticalGate": {
+        "minSessionsPerVariantRequired": 1000,
+        "currentEvidenceStatus": "DIRECTIONAL_EARLY_SIGNAL",
+        "sampleSizeGuidance": "Results are directional, not yet statistically conclusive. Hard gate: >= 1,000-2,000 eligible sessions per variant required before certifying site-wide roll-out."
+      },
       "provenCohortsCount": 4,
-      "isReadyForMassiveReplication": true
+      "isReadyForMassiveReplication": false
     },
     "experiments": [
       {
