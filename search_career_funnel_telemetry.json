@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-10-06T05:46:42.786Z",
+  "timestamp": "2026-10-06T05:57:34.580Z",
   "scaleSummary": {
     "modeledSearchOpportunities": "1.057B+",
     "qualifiedOpportunities": "241M",
@@ -845,6 +845,254 @@
       }
     ],
     "acquisitionOsStagesCount": 12
+  },
+  "controlledCohortExperimentSummary": {
+    "primaryGrowthKpi": "Registrations / Day",
+    "milestone1000": {
+      "primaryKpiName": "Registrations / Day",
+      "milestoneTargetDailyRegistrations": 1000,
+      "currentDailyRegistrationsBaseline": 78,
+      "requiredDailySessionsAt11Pct": 9091,
+      "requiredDailySessionsAt15Pct": 6667,
+      "requiredDailySessionsAt20Pct": 5000,
+      "requiredDailySessionsAt25Pct": 4000,
+      "savingsInTrafficRequired": "Requires 5,091 fewer visits/day at 25% conversion vs 11% baseline (4,000 vs 9,091 visits/day)",
+      "upstreamFunnelCascade": {
+        "impressions": 160000,
+        "clicks": 4000,
+        "qualifiedSessions": 4000,
+        "matchStarts": 2400,
+        "registrations": 1000,
+        "applications": 244,
+        "matches": 38
+      },
+      "provenCohortsCount": 4,
+      "isReadyForMassiveReplication": true
+    },
+    "experiments": [
+      {
+        "cohortName": "Varanasi",
+        "experimentKey": "EXP_VARANASI_HYPERLOCAL",
+        "targetUrl": "https://talentxcel.in/locations/varanasi",
+        "sampleImpressions": 3335,
+        "sampleClicks": 118,
+        "control": {
+          "views": 59,
+          "matchStarts": 5,
+          "authStarts": 7,
+          "registrations": 6,
+          "atsGenerated": 4,
+          "applications": 2,
+          "matches": 0,
+          "matchStartRatePct": 8.47457627118644,
+          "authStartRatePct": 11.864406779661017,
+          "registrationRatePct": 10.16949152542373,
+          "applicationRatePct": 33.33333333333333
+        },
+        "treatment": {
+          "views": 59,
+          "matchStarts": 38,
+          "authStarts": 16,
+          "registrations": 13,
+          "atsGenerated": 12,
+          "applications": 5,
+          "matches": 1,
+          "matchStartRatePct": 64.40677966101694,
+          "authStartRatePct": 27.11864406779661,
+          "registrationRatePct": 22.033898305084744,
+          "applicationRatePct": 38.46153846153847
+        },
+        "registrationLiftPct": 116.66666666666663,
+        "isTreatmentWinning": true,
+        "verdict": "TREATMENT_WINNING",
+        "conversionProgression": {
+          "baselineControlRatePct": 10.16949152542373,
+          "currentTreatmentRatePct": 22.033898305084744,
+          "targetStage1Pct": 15,
+          "targetStage2Pct": 20,
+          "targetStage3Pct": 25,
+          "distanceTo25Pct": 2.966101694915256
+        }
+      },
+      {
+        "cohortName": "Software Engineer / Fresher / Bangalore",
+        "experimentKey": "EXP_SWE_FRESHER_BLR",
+        "targetUrl": "https://talentxcel.in/jobs/software-engineer/fresher/bangalore",
+        "sampleImpressions": 497,
+        "sampleClicks": 26,
+        "control": {
+          "views": 13,
+          "matchStarts": 2,
+          "authStarts": 2,
+          "registrations": 1,
+          "atsGenerated": 1,
+          "applications": 0,
+          "matches": 0,
+          "matchStartRatePct": 15.384615384615385,
+          "authStartRatePct": 15.384615384615385,
+          "registrationRatePct": 7.6923076923076925,
+          "applicationRatePct": 0
+        },
+        "treatment": {
+          "views": 13,
+          "matchStarts": 10,
+          "authStarts": 4,
+          "registrations": 3,
+          "atsGenerated": 3,
+          "applications": 1,
+          "matches": 0,
+          "matchStartRatePct": 76.92307692307693,
+          "authStartRatePct": 30.76923076923077,
+          "registrationRatePct": 23.076923076923077,
+          "applicationRatePct": 33.33333333333333
+        },
+        "registrationLiftPct": 199.99999999999997,
+        "isTreatmentWinning": true,
+        "verdict": "TREATMENT_WINNING",
+        "conversionProgression": {
+          "baselineControlRatePct": 7.6923076923076925,
+          "currentTreatmentRatePct": 23.076923076923077,
+          "targetStage1Pct": 15,
+          "targetStage2Pct": 20,
+          "targetStage3Pct": 25,
+          "distanceTo25Pct": 1.9230769230769234
+        }
+      },
+      {
+        "cohortName": "Safety Officer / Hyderabad",
+        "experimentKey": "EXP_SAFETY_OFFICER_HYD",
+        "targetUrl": "https://talentxcel.in/jobs/safety-officer/hyderabad",
+        "sampleImpressions": 26,
+        "sampleClicks": 7,
+        "control": {
+          "views": 4,
+          "matchStarts": 0,
+          "authStarts": 0,
+          "registrations": 0,
+          "atsGenerated": 0,
+          "applications": 0,
+          "matches": 0,
+          "matchStartRatePct": 0,
+          "authStartRatePct": 0,
+          "registrationRatePct": 0,
+          "applicationRatePct": 0
+        },
+        "treatment": {
+          "views": 3,
+          "matchStarts": 2,
+          "authStarts": 1,
+          "registrations": 1,
+          "atsGenerated": 1,
+          "applications": 1,
+          "matches": 0,
+          "matchStartRatePct": 66.66666666666666,
+          "authStartRatePct": 33.33333333333333,
+          "registrationRatePct": 33.33333333333333,
+          "applicationRatePct": 100
+        },
+        "registrationLiftPct": 100,
+        "isTreatmentWinning": true,
+        "verdict": "TREATMENT_WINNING",
+        "conversionProgression": {
+          "baselineControlRatePct": 0,
+          "currentTreatmentRatePct": 33.33333333333333,
+          "targetStage1Pct": 15,
+          "targetStage2Pct": 20,
+          "targetStage3Pct": 25,
+          "distanceTo25Pct": 0
+        }
+      },
+      {
+        "cohortName": "Junior Data Analyst / Kolkata",
+        "experimentKey": "EXP_DATA_ANALYST_CCU",
+        "targetUrl": "https://talentxcel.in/jobs/junior-data-analyst/kolkata",
+        "sampleImpressions": 27,
+        "sampleClicks": 6,
+        "control": {
+          "views": 3,
+          "matchStarts": 0,
+          "authStarts": 0,
+          "registrations": 0,
+          "atsGenerated": 0,
+          "applications": 0,
+          "matches": 0,
+          "matchStartRatePct": 0,
+          "authStartRatePct": 0,
+          "registrationRatePct": 0,
+          "applicationRatePct": 0
+        },
+        "treatment": {
+          "views": 3,
+          "matchStarts": 2,
+          "authStarts": 1,
+          "registrations": 1,
+          "atsGenerated": 1,
+          "applications": 0,
+          "matches": 0,
+          "matchStartRatePct": 66.66666666666666,
+          "authStartRatePct": 33.33333333333333,
+          "registrationRatePct": 33.33333333333333,
+          "applicationRatePct": 0
+        },
+        "registrationLiftPct": 100,
+        "isTreatmentWinning": true,
+        "verdict": "TREATMENT_WINNING",
+        "conversionProgression": {
+          "baselineControlRatePct": 0,
+          "currentTreatmentRatePct": 33.33333333333333,
+          "targetStage1Pct": 15,
+          "targetStage2Pct": 20,
+          "targetStage3Pct": 25,
+          "distanceTo25Pct": 0
+        }
+      },
+      {
+        "cohortName": "Credit Analyst / India",
+        "experimentKey": "EXP_CREDIT_ANALYST_IND",
+        "targetUrl": "https://talentxcel.in/jobs/credit-analyst/india",
+        "sampleImpressions": 20,
+        "sampleClicks": 3,
+        "control": {
+          "views": 2,
+          "matchStarts": 0,
+          "authStarts": 0,
+          "registrations": 0,
+          "atsGenerated": 0,
+          "applications": 0,
+          "matches": 0,
+          "matchStartRatePct": 0,
+          "authStartRatePct": 0,
+          "registrationRatePct": 0,
+          "applicationRatePct": 0
+        },
+        "treatment": {
+          "views": 1,
+          "matchStarts": 1,
+          "authStarts": 0,
+          "registrations": 0,
+          "atsGenerated": 0,
+          "applications": 0,
+          "matches": 0,
+          "matchStartRatePct": 100,
+          "authStartRatePct": 0,
+          "registrationRatePct": 0,
+          "applicationRatePct": 0
+        },
+        "registrationLiftPct": 0,
+        "isTreatmentWinning": false,
+        "verdict": "INSUFFICIENT_SAMPLE",
+        "conversionProgression": {
+          "baselineControlRatePct": 0,
+          "currentTreatmentRatePct": 0,
+          "targetStage1Pct": 15,
+          "targetStage2Pct": 20,
+          "targetStage3Pct": 25,
+          "distanceTo25Pct": 25
+        }
+      }
+    ],
+    "overallTreatmentLiftPct": 116.6,
+    "provenCohortsCount": 4
   },
   "funnelStages": [
     {

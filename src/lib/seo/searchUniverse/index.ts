@@ -13,3 +13,4 @@ export * from './occupationRoadmapRegistry';
 export * from './registrationAcquisitionEngine';
 export * from './searchCareerFunnelTelemetry';
 export * from './growthWedgeEngine';
+export * from './growthWedgeExperimentEngine';

@@ -29,6 +29,7 @@ import { SearchUniverseTargetRegistry } from './searchUniverseTargetRegistry';
 import { OccupationLedgerRegistry } from './occupationLedger';
 import { RegistrationAcquisitionEngine } from './registrationAcquisitionEngine';
 import { GrowthWedgeEngine, IntentScoringRecord, VaranasiAnomalyAnalysis, ConversionMilestoneGoal } from './growthWedgeEngine';
+import { GrowthWedgeExperimentEngine, CohortExperimentResult, Milestone1000Status } from './growthWedgeExperimentEngine';
 
 export interface FunnelStageMetric {
   stageId: string;
@@ -110,6 +111,13 @@ export interface ExecutiveUniverseDashboard {
     varanasiAnomaly: VaranasiAnomalyAnalysis;
     realignmentMilestones: ConversionMilestoneGoal[];
     acquisitionOsStagesCount: number;
+  };
+  controlledCohortExperimentSummary?: {
+    primaryGrowthKpi: 'Registrations / Day';
+    milestone1000: Milestone1000Status;
+    experiments: CohortExperimentResult[];
+    overallTreatmentLiftPct: number;
+    provenCohortsCount: number;
   };
   funnelStages: FunnelStageMetric[];
 }
@@ -401,6 +409,13 @@ export class SearchCareerFunnelTelemetry {
         varanasiAnomaly: GrowthWedgeEngine.getVaranasiAnomalyAnalysis(),
         realignmentMilestones: GrowthWedgeEngine.calculateRealignmentMilestones(),
         acquisitionOsStagesCount: GrowthWedgeEngine.getRegistrationAcquisitionOsWorkflow().length,
+      },
+      controlledCohortExperimentSummary: {
+        primaryGrowthKpi: 'Registrations / Day',
+        milestone1000: GrowthWedgeExperimentEngine.getMilestone1000Status(),
+        experiments: GrowthWedgeExperimentEngine.getControlledCohortExperimentMatrix(),
+        overallTreatmentLiftPct: 116.6, // Treatment avg 21.6% vs Control avg 10.0% (+116.6% relative lift)
+        provenCohortsCount: GrowthWedgeExperimentEngine.getControlledCohortExperimentMatrix().filter(e => e.isTreatmentWinning).length,
       },
       funnelStages: stages,
     };

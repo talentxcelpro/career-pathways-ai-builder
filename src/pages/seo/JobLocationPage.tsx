@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Search, Filter, MapPin, Building, TrendingUp, AlertCircle, Globe, Sparkles } from 'lucide-react';
 import { conversionTelemetry } from '@/utils/conversionTelemetry';
 import { createSafeHtml } from '@/utils/sanitize';
-import { TenSecondCareerMatchWidget } from '@/components/conversion/TenSecondCareerMatchWidget';
+import { GrowthExperimentWrapper } from '@/components/conversion/GrowthExperimentWrapper';
 
 interface JobLocationPageProps {}
 
@@ -172,9 +172,9 @@ const JobLocationPage: React.FC<JobLocationPageProps> = () => {
                   dangerouslySetInnerHTML={createSafeHtml(locationData.content)}
                 />
 
-                {/* 10-Second Instant Career Match Conversion Layer */}
+                {/* Controlled Cohort Experiment: Control (Static Directory) vs Treatment (10-Second Career Match) */}
                 <div className="mb-10">
-                  <TenSecondCareerMatchWidget
+                  <GrowthExperimentWrapper
                     location={locationData.name}
                     sourcePage={`job_location_${location || 'city'}`}
                   />

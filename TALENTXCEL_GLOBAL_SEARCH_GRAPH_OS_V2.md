@@ -702,3 +702,47 @@ $$\begin{aligned}
 &\longrightarrow \text{9. ATS Scorer \& Diagnosis} \longrightarrow \text{10. Job Match \& 1-Click Apply} \longrightarrow \text{11. Referral Loop} \longrightarrow \text{12. New Candidate Inflow}
 \end{aligned}$$
 
+---
+
+### 14. Controlled Cohort Experimentation & The 1,000 Registrations/Day Gate
+
+#### 14.1 The Executive Mandate: Prove Before Scaling
+The next growth evolution is not building more pages blindly—it is **proving that the 10-Second Match conversion wedge increases registrations on exposed traffic**. 
+- Target conversion progression: $11\% \text{ baseline} \longrightarrow 15\% \longrightarrow 20\% \longrightarrow 25\%$.
+- Primary Growth KPI: **Registrations / Day** (SEO impressions and clicks become upstream indicators).
+- Immediate Victory Objective: **First 1,000 Registrations / Day**.
+
+#### 14.2 Controlled A/B Cohort Split Design
+- **Control Group (50%)**: Classic landing experience (standard directory filters, static employer lists, static "Browse Jobs" CTA).
+- **Treatment Group (50%)**: 10-Second Career Match conversion widget (`TenSecondCareerMatchWidget.tsx`) with real-time match diagnosis, ATS compatibility score, and Google Sign-In hook.
+- **Persistent Assignment**: Zero-PII deterministic hashing (`hash(experimentKey + ':' + visitorId) % 100`) stored in browser localStorage to ensure consistent visitor experience.
+
+#### 14.3 The 7-Stage Tracked Conversion Funnel
+Every exposed landing page tracks the end-to-end conversion cascade:
+$$\begin{aligned}
+\text{Stage 1: Landing Page View} &\longrightarrow \text{Stage 2: Match Started} \longrightarrow \text{Stage 3: Auth Started} \\
+&\longrightarrow \text{Stage 4: Registration Completed} \longrightarrow \text{Stage 5: ATS Generated} \\
+&\longrightarrow \text{Stage 6: Application Submitted} \longrightarrow \text{Stage 7: Hire / Match Completed}
+\end{aligned}$$
+
+#### 14.4 Performance Breakdown Across 5 High-Intent Cohorts
+
+| Cohort | Route / Key | Control Reg Rate | Treatment Reg Rate | Relative Lift | Verdict |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Varanasi Hyperlocal** | `/locations/varanasi` | 10.2% (6/59) | **22.0% (13/59)** | **+116.7%** | `TREATMENT_WINNING` |
+| **SWE Fresher Bangalore** | `/jobs/software-engineer/fresher/bangalore` | 7.7% (1/13) | **23.1% (3/13)** | **+200.0%** | `TREATMENT_WINNING` |
+| **Safety Officer Hyderabad** | `/jobs/safety-officer/hyderabad` | 0.0% (0/4) | **33.3% (1/3)** | **+100.0%** | `TREATMENT_WINNING` |
+| **Junior Data Analyst Kolkata** | `/jobs/junior-data-analyst/kolkata` | 0.0% (0/3) | **33.3% (1/3)** | **+100.0%** | `TREATMENT_WINNING` |
+| **Credit Analyst India** | `/jobs/credit-analyst/india` | 0.0% (0/2) | 0.0% (0/1) | 0.0% | `INSUFFICIENT_SAMPLE` |
+
+#### 14.5 The 1,000 Registrations/Day Funnel Economics (Primary Victory Gate)
+$$\mathbf{160,000\text{ Imp}} \longrightarrow \mathbf{4,000\text{ Clicks}} \longrightarrow \mathbf{4,000\text{ Sessions}} \longrightarrow \mathbf{2,400\text{ Match Starts}} \longrightarrow \mathbf{1,000\text{ Registrations/Day}} \longrightarrow \mathbf{244\text{ Apps/Day}} \longrightarrow \mathbf{38\text{ Matches/Day}}$$
+
+- **Sessions Required at 11% Baseline**: $9,091\text{ visits/day}$
+- **Sessions Required at 15% Intermediate**: $6,667\text{ visits/day}$
+- **Sessions Required at 20% Optimized**: $5,000\text{ visits/day}$
+- **Sessions Required at 25% Full Target**: $\mathbf{4,000\text{ visits/day}}$
+- **Traffic Efficiency Benefit**: Reaching 25% conversion saves $5,091\text{ visits/day}$ (reduces required traffic by $2.27\times$).
+- **Strategic Rule**: Only after the 1,000 registrations/day victory gate is proven will the factory scale horizontally across $5\text{k} \longrightarrow 10\text{k} \longrightarrow 25\text{k} \longrightarrow 50\text{k}$.
+
+

@@ -150,6 +150,33 @@ async function runTelemetry() {
     console.log('└──────────────────────────────────────────────────────────────────────────────┘\n');
   }
 
+  if ((snapshot as any).controlledCohortExperimentSummary) {
+    const ce = (snapshot as any).controlledCohortExperimentSummary;
+    console.log('┌──────────────────────────────────────────────────────────────────────────────┐');
+    console.log('│ 🧪 BOX 8: CONTROLLED COHORT EXPERIMENT & 1,000 REGISTRATIONS/DAY GATE         │');
+    console.log('├──────────────────────────────────────────────────────────────────────────────┤');
+    console.log(`│  🎯 PRIMARY GROWTH KPI                : ${ce.primaryGrowthKpi} (Milestone Gate: 1,000/day)  │`);
+    console.log(`│  ⚖️  Cohort Experiment Design         : Control (Static Page) vs Treatment (10s Match)│`);
+    console.log(`│  📈 Target Progression Rate           : 11% Baseline ➔ 15% ➔ 20% ➔ 25% Target        │`);
+    console.log(`│  🚀 Overall Treatment Lift             : +${ce.overallTreatmentLiftPct.toFixed(1)}% Relative Conversion Uplift     │`);
+    console.log(`│  🏆 Proven Winning Cohorts             : ${ce.provenCohortsCount} of ${ce.experiments.length} Cohorts Showing Superior Conversion │`);
+    console.log('│  ──────────────────────────────────────────────────────────────────────────  │');
+    console.log('│  📊 5 HIGH-INTENT CONTROLLED COHORTS PERFORMANCE:                            │');
+    for (const exp of ce.experiments) {
+      const liftStr = exp.registrationLiftPct > 0 ? `+${exp.registrationLiftPct.toFixed(1)}%` : `${exp.registrationLiftPct.toFixed(1)}%`;
+      const line = `    • ${exp.cohortName.padEnd(36)}: Control ${exp.control.registrationRatePct.toFixed(1)}% vs Treatment ${exp.treatment.registrationRatePct.toFixed(1)}% [Lift: ${liftStr}] (${exp.verdict})`;
+      console.log(`│  ${line.padEnd(76)}│`);
+    }
+    console.log('│  ──────────────────────────────────────────────────────────────────────────  │');
+    console.log('│  🪜 1,000 REGISTRATIONS/DAY FUNNEL CASCADE (PRIMARY VICTORY):                │');
+    console.log(`│    • Upstream Cascade : ${ce.milestone1000.upstreamFunnelCascade.impressions.toLocaleString()} Imp ➔ ${ce.milestone1000.upstreamFunnelCascade.clicks.toLocaleString()} Clicks ➔ ${ce.milestone1000.upstreamFunnelCascade.matchStarts.toLocaleString()} Starts ➔ 1,000 Regs│`);
+    console.log(`│    • Sessions @ 11%   : ${ce.milestone1000.requiredDailySessionsAt11Pct.toLocaleString()} visits/day (Baseline Conversion Rate)         │`);
+    console.log(`│    • Sessions @ 15%   : ${ce.milestone1000.requiredDailySessionsAt15Pct.toLocaleString()} visits/day (Intermediate Milestone Gate)        │`);
+    console.log(`│    • Sessions @ 25%   : ${ce.milestone1000.requiredDailySessionsAt25Pct.toLocaleString()} visits/day (Target 10-Second Match Conversion)  │`);
+    console.log(`│    • Traffic Savings  : Saves 5,091 visits/day (Halves traffic required by 2.27x)   │`);
+    console.log('└──────────────────────────────────────────────────────────────────────────────┘\n');
+  }
+
   console.log('--- 14-STAGE ACQUISITION FUNNEL PROGRESSION ---');
   for (let i = 0; i < snapshot.funnelStages.length; i++) {
     const stage = snapshot.funnelStages[i];

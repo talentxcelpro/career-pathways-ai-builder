@@ -19,7 +19,7 @@ import {
   TrendingUp, Award, Building2, MapPin, CheckCircle2, GraduationCap,
   FileText, HelpCircle, Layers, Compass, ChevronRight, Zap
 } from 'lucide-react';
-import { TenSecondCareerMatchWidget } from '@/components/conversion/TenSecondCareerMatchWidget';
+import { GrowthExperimentWrapper } from '@/components/conversion/GrowthExperimentWrapper';
 
 interface Job {
   id: string;
@@ -401,8 +401,8 @@ export const JobsByRoleCity: React.FC = () => {
 
             {/* Main Discovery Body */}
             <div className="lg:col-span-3 space-y-10">
-              {/* 10-Second Instant Career Match Conversion Layer */}
-              <TenSecondCareerMatchWidget
+              {/* Controlled Cohort Experiment: Control (Static Directory) vs Treatment (10-Second Career Match) */}
+              <GrowthExperimentWrapper
                 role={roleDisplay}
                 location={cityDisplay}
                 sourcePage={`seo_role_city_${roleSlug}_${citySlug}`}

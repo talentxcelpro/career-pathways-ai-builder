@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { AlertCircle, Globe, Sparkles, MapPin, Briefcase } from 'lucide-react';
 import { conversionTelemetry } from '@/utils/conversionTelemetry';
 import { createSafeHtml } from '@/utils/sanitize';
-import { TenSecondCareerMatchWidget } from '@/components/conversion/TenSecondCareerMatchWidget';
+import { GrowthExperimentWrapper } from '@/components/conversion/GrowthExperimentWrapper';
 
 
 interface SEOPage {
@@ -169,9 +169,9 @@ export const SEOPageGenerator: React.FC<SEOPageGeneratorProps> = ({
             </Button>
           </div>
 
-          {/* 10-Second Instant Career Match Conversion Layer */}
+          {/* Controlled Cohort Experiment: Control (Static Directory) vs Treatment (10-Second Career Match) */}
           <div className="my-8">
-            <TenSecondCareerMatchWidget
+            <GrowthExperimentWrapper
               role={role}
               location={location}
               sourcePage={`seo_generator_${pageType}_${location || role || 'all'}`}

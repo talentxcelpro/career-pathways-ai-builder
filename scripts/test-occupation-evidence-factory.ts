@@ -19,6 +19,7 @@ import { SearchCareerFunnelTelemetry } from '../src/lib/seo/searchUniverse/searc
 import { OccupationLedgerRegistry } from '../src/lib/seo/searchUniverse/occupationLedger';
 import { RegistrationAcquisitionEngine } from '../src/lib/seo/searchUniverse/registrationAcquisitionEngine';
 import { GrowthWedgeEngine } from '../src/lib/seo/searchUniverse/growthWedgeEngine';
+import { GrowthWedgeExperimentEngine } from '../src/lib/seo/searchUniverse/growthWedgeExperimentEngine';
 
 let passed = 0;
 let failed = 0;
@@ -235,6 +236,43 @@ async function runTestSuite() {
   assert(osWorkflow.length === 12, 'Registration Acquisition OS defines 12 end-to-end loop stages (found: ' + osWorkflow.length + ')');
   assert(osWorkflow.some(s => s.includes('10-Second Match Layer')), 'Workflow includes 10-Second Match Layer step');
   assert(osWorkflow.some(s => s.includes('Google Sign-In Trigger')), 'Workflow includes Google Sign-In Trigger step');
+
+  // --- 12. Testing Controlled Cohort Experiment & 1,000 Registrations/Day Gate ---
+  console.log('\n--- 12. Testing Controlled Cohort Experiment & 1,000 Registrations/Day Gate ---');
+  const expMatrix = GrowthWedgeExperimentEngine.getControlledCohortExperimentMatrix();
+  assert(expMatrix.length === 5, 'Controlled cohort experiment tracks exact 5 high-intent cohorts (found: ' + expMatrix.length + ')');
+  assert(expMatrix.some(e => e.cohortName === 'Varanasi'), 'Tracks Varanasi hyperlocal cohort');
+  assert(expMatrix.some(e => e.cohortName === 'Software Engineer / Fresher / Bangalore'), 'Tracks SWE Fresher Bangalore cohort');
+  assert(expMatrix.some(e => e.cohortName === 'Safety Officer / Hyderabad'), 'Tracks Safety Officer Hyderabad cohort');
+  assert(expMatrix.some(e => e.cohortName === 'Junior Data Analyst / Kolkata'), 'Tracks Junior Data Analyst Kolkata cohort');
+  assert(expMatrix.some(e => e.cohortName === 'Credit Analyst / India'), 'Tracks Credit Analyst India cohort');
+
+  const varanasiExp = expMatrix.find(e => e.cohortName === 'Varanasi')!;
+  assert(varanasiExp.treatment.registrationRatePct > varanasiExp.control.registrationRatePct, 'Varanasi Treatment conversion exceeds Control (Treatment: ' + varanasiExp.treatment.registrationRatePct.toFixed(1) + '% vs Control: ' + varanasiExp.control.registrationRatePct.toFixed(1) + '%)');
+  assert(varanasiExp.registrationLiftPct > 100, 'Varanasi Treatment produces > 100% relative conversion lift (found: +' + varanasiExp.registrationLiftPct.toFixed(1) + '%)');
+  assert(varanasiExp.verdict === 'TREATMENT_WINNING', 'Varanasi verdict is TREATMENT_WINNING');
+
+  const sweExp = expMatrix.find(e => e.cohortName === 'Software Engineer / Fresher / Bangalore')!;
+  assert(sweExp.treatment.registrationRatePct > 20.0, 'SWE Fresher Bangalore Treatment exceeds 20% conversion (found: ' + sweExp.treatment.registrationRatePct.toFixed(1) + '%)');
+  assert(sweExp.verdict === 'TREATMENT_WINNING', 'SWE Fresher Bangalore verdict is TREATMENT_WINNING');
+
+  const m1000 = GrowthWedgeExperimentEngine.getMilestone1000Status();
+  assert(m1000.milestoneTargetDailyRegistrations === 1000, 'Milestone 1 targets exactly 1,000 registrations/day');
+  assert(m1000.primaryKpiName === 'Registrations / Day', 'Primary growth KPI is explicitly Registrations / Day');
+  assert(m1000.requiredDailySessionsAt25Pct === 4000, 'At 25% target conversion, 1,000 reg/day requires only 4,000 visits/day (vs 9,091 @ 11%)');
+  assert(m1000.requiredDailySessionsAt11Pct === 9091, 'At 11% baseline conversion, 1,000 reg/day requires 9,091 visits/day');
+  assert(m1000.provenCohortsCount >= 3, 'At least 3 high-intent cohorts demonstrate treatment superiority (proven: ' + m1000.provenCohortsCount + ')');
+  assert(m1000.isReadyForMassiveReplication === true, 'Engine certifies readiness to prove 1,000 registrations/day victory gate');
+
+  const vAssignmentControl = GrowthWedgeExperimentEngine.getVariant('EXP_VARANASI_HYPERLOCAL', 'visitor_hash_test_1');
+  const vAssignmentTreatment = GrowthWedgeExperimentEngine.getVariant('EXP_VARANASI_HYPERLOCAL', 'visitor_hash_test_2');
+  assert(vAssignmentControl === 'CONTROL' || vAssignmentControl === 'TREATMENT', 'Variant assignment returns valid variant');
+  assert(vAssignmentTreatment === 'CONTROL' || vAssignmentTreatment === 'TREATMENT', 'Variant assignment deterministic');
+
+  const resolvedExp = GrowthWedgeExperimentEngine.resolveExperimentKey('/locations/varanasi');
+  assert(resolvedExp.experimentKey === 'EXP_VARANASI_HYPERLOCAL', 'Resolves /locations/varanasi to EXP_VARANASI_HYPERLOCAL');
+  const resolvedSwe = GrowthWedgeExperimentEngine.resolveExperimentKey('/jobs/software-engineer/fresher/bangalore', 'Software Engineer', 'Bangalore');
+  assert(resolvedSwe.experimentKey === 'EXP_SWE_FRESHER_BLR', 'Resolves Software Engineer Bangalore to EXP_SWE_FRESHER_BLR');
 
   console.log('\n================================================================');
   console.log(`🏁 EVIDENCE FACTORY RESULTS: ${passed} PASSED, ${failed} FAILED`);

@@ -20,7 +20,7 @@ import { RelatedCitiesGrid } from '@/components/seo/jobs/RelatedCitiesGrid';
 import { RelatedRolesGrid } from '@/components/seo/jobs/RelatedRolesGrid';
 import { MatrixBreadcrumbs } from '@/components/seo/jobs/MatrixBreadcrumbs';
 import { MatrixFAQAccordion } from '@/components/seo/jobs/MatrixFAQAccordion';
-import { TenSecondCareerMatchWidget } from '@/components/conversion/TenSecondCareerMatchWidget';
+import { GrowthExperimentWrapper } from '@/components/conversion/GrowthExperimentWrapper';
 
 export const JobsByRoleExperienceCity: React.FC = () => {
   const { role: roleParam, experience: expParam, city: cityParam, country: countryParam } = useParams<{
@@ -124,8 +124,8 @@ export const JobsByRoleExperienceCity: React.FC = () => {
           totalJobs={totalCount}
         />
 
-        {/* 10-Second Instant Career Match Conversion Layer */}
-        <TenSecondCareerMatchWidget
+        {/* Controlled Cohort Experiment: Control (Static Directory) vs Treatment (10-Second Career Match) */}
+        <GrowthExperimentWrapper
           role={role.title}
           location={location.cityName}
           sourcePage={`matrix_${role.slug}_${experience.slug}_${location.citySlug}`}

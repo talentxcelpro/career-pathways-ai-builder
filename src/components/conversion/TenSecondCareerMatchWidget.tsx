@@ -10,6 +10,7 @@ import {
   FileText, ShieldCheck, MapPin, Briefcase, Award 
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { GrowthWedgeExperimentEngine } from '@/lib/seo/searchUniverse/growthWedgeExperimentEngine';
 
 interface TenSecondCareerMatchWidgetProps {
   role?: string;
@@ -41,6 +42,19 @@ export const TenSecondCareerMatchWidget: React.FC<TenSecondCareerMatchWidgetProp
     setIsCalculating(true);
     setCalculationProgress(15);
 
+    const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+    const resolved = GrowthWedgeExperimentEngine.resolveExperimentKey(currentPath, role, city || location);
+
+    // Track STAGE 2: MATCH STARTED
+    GrowthWedgeExperimentEngine.trackFunnelStep({
+      step: 'STAGE_2_MATCH_STARTED',
+      experimentKey: resolved.experimentKey,
+      variant: 'TREATMENT',
+      cohortName: resolved.cohortName,
+      pageUrl: currentPath,
+      metadata: { role, location: city || location, experience, qualification },
+    });
+
     const interval = setInterval(() => {
       setCalculationProgress((prev) => {
         if (prev >= 95) {
@@ -66,6 +80,19 @@ export const TenSecondCareerMatchWidget: React.FC<TenSecondCareerMatchWidgetProp
   };
 
   const handleGoogleAuth = () => {
+    const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+    const resolved = GrowthWedgeExperimentEngine.resolveExperimentKey(currentPath, role, city || location);
+
+    // Track STAGE 3: AUTH STARTED
+    GrowthWedgeExperimentEngine.trackFunnelStep({
+      step: 'STAGE_3_AUTH_STARTED',
+      experimentKey: resolved.experimentKey,
+      variant: 'TREATMENT',
+      cohortName: resolved.cohortName,
+      pageUrl: currentPath,
+      metadata: { role, location: city || location, matchScore: calculatedResult?.matchScore },
+    });
+
     // In production, triggers Supabase Google OAuth
     toast.info('Connecting to Google Sign-In to create your Career Passport...');
     window.location.href = `/auth?mode=signup&source=${encodeURIComponent(sourcePage || '10_second_match')}&role=${encodeURIComponent(role)}&city=${encodeURIComponent(city)}`;
