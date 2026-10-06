@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Search, Filter, MapPin, Building, TrendingUp, AlertCircle, Globe, Sparkles } from 'lucide-react';
 import { conversionTelemetry } from '@/utils/conversionTelemetry';
 import { createSafeHtml } from '@/utils/sanitize';
+import { TenSecondCareerMatchWidget } from '@/components/conversion/TenSecondCareerMatchWidget';
 
 interface JobLocationPageProps {}
 
@@ -170,6 +171,14 @@ const JobLocationPage: React.FC<JobLocationPageProps> = () => {
                   className="prose prose-lg max-w-none mb-12"
                   dangerouslySetInnerHTML={createSafeHtml(locationData.content)}
                 />
+
+                {/* 10-Second Instant Career Match Conversion Layer */}
+                <div className="mb-10">
+                  <TenSecondCareerMatchWidget
+                    location={locationData.name}
+                    sourcePage={`job_location_${location || 'city'}`}
+                  />
+                </div>
 
                 {/* Job Listings */}
                 <div className="space-y-6">

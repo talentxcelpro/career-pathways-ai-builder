@@ -1,0 +1,396 @@
+{
+  "timestamp": "2026-10-06T05:37:22.407Z",
+  "database": {
+    "totalProfiles": 543,
+    "newProfiles24h": 1,
+    "totalApplications": 8,
+    "newApplications24h": 1,
+    "totalAiResumes": 130,
+    "newAiResumes24h": 0
+  },
+  "gsc": {
+    "summary": [
+      {
+        "clicks": 182,
+        "impressions": 9690,
+        "ctr": 0.018782249742002065,
+        "position": 30.971207430340556
+      }
+    ],
+    "dailyBreakdown": [
+      {
+        "keys": [
+          "2026-09-28"
+        ],
+        "clicks": 11,
+        "impressions": 226,
+        "ctr": 0.048672566371681415,
+        "position": 18.57079646017699
+      },
+      {
+        "keys": [
+          "2026-09-29"
+        ],
+        "clicks": 2,
+        "impressions": 322,
+        "ctr": 0.006211180124223602,
+        "position": 26.503105590062113
+      },
+      {
+        "keys": [
+          "2026-09-30"
+        ],
+        "clicks": 9,
+        "impressions": 229,
+        "ctr": 0.039301310043668124,
+        "position": 18.310043668122272
+      },
+      {
+        "keys": [
+          "2026-10-01"
+        ],
+        "clicks": 3,
+        "impressions": 213,
+        "ctr": 0.014084507042253521,
+        "position": 22.131455399061032
+      },
+      {
+        "keys": [
+          "2026-10-02"
+        ],
+        "clicks": 4,
+        "impressions": 213,
+        "ctr": 0.018779342723004695,
+        "position": 25.44600938967136
+      },
+      {
+        "keys": [
+          "2026-10-03"
+        ],
+        "clicks": 1,
+        "impressions": 170,
+        "ctr": 0.0058823529411764705,
+        "position": 31.629411764705882
+      }
+    ],
+    "topQueries": [
+      {
+        "keys": [
+          "jobs in patiala"
+        ],
+        "clicks": 5,
+        "impressions": 111,
+        "ctr": 0.04504504504504504,
+        "position": 1.6576576576576576
+      },
+      {
+        "keys": [
+          "be fresher jobs in bangalore"
+        ],
+        "clicks": 2,
+        "impressions": 5,
+        "ctr": 0.4,
+        "position": 4.6
+      },
+      {
+        "keys": [
+          "patiala jobs"
+        ],
+        "clicks": 2,
+        "impressions": 12,
+        "ctr": 0.16666666666666666,
+        "position": 1.9166666666666665
+      },
+      {
+        "keys": [
+          "chatrchat"
+        ],
+        "clicks": 1,
+        "impressions": 21,
+        "ctr": 0.047619047619047616,
+        "position": 7.285714285714286
+      },
+      {
+        "keys": [
+          "clinical research jobs"
+        ],
+        "clicks": 1,
+        "impressions": 1,
+        "ctr": 1,
+        "position": 1
+      },
+      {
+        "keys": [
+          "control engineer job"
+        ],
+        "clicks": 1,
+        "impressions": 1,
+        "ctr": 1,
+        "position": 12
+      },
+      {
+        "keys": [
+          "curriculum designer jobs"
+        ],
+        "clicks": 1,
+        "impressions": 1,
+        "ctr": 1,
+        "position": 1
+      },
+      {
+        "keys": [
+          "devops jobs in vizag"
+        ],
+        "clicks": 1,
+        "impressions": 5,
+        "ctr": 0.2,
+        "position": 5.8
+      },
+      {
+        "keys": [
+          "drdo jobs in hyderabad"
+        ],
+        "clicks": 1,
+        "impressions": 10,
+        "ctr": 0.1,
+        "position": 2.2
+      },
+      {
+        "keys": [
+          "entry level software engineer jobs"
+        ],
+        "clicks": 1,
+        "impressions": 9,
+        "ctr": 0.1111111111111111,
+        "position": 2.4444444444444446
+      },
+      {
+        "keys": [
+          "flutter jobs in mumbai"
+        ],
+        "clicks": 1,
+        "impressions": 6,
+        "ctr": 0.16666666666666666,
+        "position": 7.666666666666667
+      },
+      {
+        "keys": [
+          "fresher software engineer jobs in bangalore"
+        ],
+        "clicks": 1,
+        "impressions": 4,
+        "ctr": 0.25,
+        "position": 1
+      },
+      {
+        "keys": [
+          "freshers it jobs in bangalore"
+        ],
+        "clicks": 1,
+        "impressions": 3,
+        "ctr": 0.3333333333333333,
+        "position": 1.6666666666666665
+      },
+      {
+        "keys": [
+          "freshers job in bangalore"
+        ],
+        "clicks": 1,
+        "impressions": 3,
+        "ctr": 0.3333333333333333,
+        "position": 1.3333333333333333
+      },
+      {
+        "keys": [
+          "freshers jobs"
+        ],
+        "clicks": 1,
+        "impressions": 8,
+        "ctr": 0.125,
+        "position": 5
+      }
+    ],
+    "topPages": [
+      {
+        "keys": [
+          "https://talentxcel.in/"
+        ],
+        "clicks": 54,
+        "impressions": 536,
+        "ctr": 0.10074626865671642,
+        "position": 6.595149253731344
+      },
+      {
+        "keys": [
+          "https://talentxcel.in/jobs/software-engineer/freshers/bangalore/nagpur"
+        ],
+        "clicks": 26,
+        "impressions": 497,
+        "ctr": 0.052313883299798795,
+        "position": 4.406438631790745
+      },
+      {
+        "keys": [
+          "https://talentxcel.in/locations/patiala"
+        ],
+        "clicks": 12,
+        "impressions": 226,
+        "ctr": 0.05309734513274336,
+        "position": 1.907079646017699
+      },
+      {
+        "keys": [
+          "https://talentxcel.in/jobs/junior-data-analyst-in-kolkata"
+        ],
+        "clicks": 6,
+        "impressions": 27,
+        "ctr": 0.2222222222222222,
+        "position": 4.037037037037037
+      },
+      {
+        "keys": [
+          "https://talentxcel.in/jobs/junior-associate-data-scientist-predictive-analytics-talentxcel-services-client-partner-noida-uttar--1"
+        ],
+        "clicks": 5,
+        "impressions": 39,
+        "ctr": 0.1282051282051282,
+        "position": 1.8974358974358974
+      },
+      {
+        "keys": [
+          "https://talentxcel.in/jobs/quality-assurance-chemist-formulations-talentxcel-services-client-partner-pune-maharashtra-india-1"
+        ],
+        "clicks": 5,
+        "impressions": 27,
+        "ctr": 0.18518518518518517,
+        "position": 6.037037037037037
+      },
+      {
+        "keys": [
+          "https://talentxcel.in/jobs/senior-devops-cloud-platform-engineer-talentxcel-services-client-partner-visakhapatnam-andhra-prades-1"
+        ],
+        "clicks": 5,
+        "impressions": 27,
+        "ctr": 0.18518518518518517,
+        "position": 7.518518518518518
+      },
+      {
+        "keys": [
+          "https://talentxcel.in/jobs/senior-mobile-application-developer-flutter-react-native-talentxcel-services-client-partner-mumbai-m-1"
+        ],
+        "clicks": 5,
+        "impressions": 45,
+        "ctr": 0.1111111111111111,
+        "position": 6.155555555555556
+      },
+      {
+        "keys": [
+          "https://talentxcel.in/jobs/senior-mechanical-design-engineer-cadcam-talentxcel-services-client-partner-patna-bihar-india-1"
+        ],
+        "clicks": 4,
+        "impressions": 31,
+        "ctr": 0.12903225806451613,
+        "position": 7.064516129032258
+      },
+      {
+        "keys": [
+          "https://talentxcel.in/about/talentxcel"
+        ],
+        "clicks": 3,
+        "impressions": 229,
+        "ctr": 0.013100436681222707,
+        "position": 1.2183406113537119
+      },
+      {
+        "keys": [
+          "https://talentxcel.in/jobs/human-resources-business-partner-hrbp-talentxcel-services-client-partner-coimbatore-tamil-nadu-india-1?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic"
+        ],
+        "clicks": 3,
+        "impressions": 22,
+        "ctr": 0.13636363636363635,
+        "position": 3
+      },
+      {
+        "keys": [
+          "https://talentxcel.in/colleges/cbit-college-of-pharmacy-health-sciences-hyderabad-2"
+        ],
+        "clicks": 2,
+        "impressions": 142,
+        "ctr": 0.014084507042253521,
+        "position": 7.971830985915493
+      },
+      {
+        "keys": [
+          "https://talentxcel.in/jobs/corporate-stem-coding-instructor-talentxcel-services-client-partner-indore-madhya-pradesh-india-1"
+        ],
+        "clicks": 2,
+        "impressions": 5,
+        "ctr": 0.4,
+        "position": 3.2
+      },
+      {
+        "keys": [
+          "https://talentxcel.in/jobs/junior-associate-corporate-learning-development-manager-talentxcel-services-client-partner-indore-ma-1"
+        ],
+        "clicks": 2,
+        "impressions": 8,
+        "ctr": 0.25,
+        "position": 3.5
+      },
+      {
+        "keys": [
+          "https://talentxcel.in/jobs/junior-associate-credit-risk-underwriting-manager-talentxcel-services-client-partner-remote-india-1"
+        ],
+        "clicks": 2,
+        "impressions": 15,
+        "ctr": 0.13333333333333333,
+        "position": 8.6
+      },
+      {
+        "keys": [
+          "https://talentxcel.in/jobs/lead-principal-senior-business-intelligence-data-analyst-talentxcel-services-client-partner-bhopal-m-1"
+        ],
+        "clicks": 2,
+        "impressions": 23,
+        "ctr": 0.08695652173913043,
+        "position": 3.0434782608695654
+      },
+      {
+        "keys": [
+          "https://talentxcel.in/jobs/learning-experience-designer/amsterdam-netherlands/experienced"
+        ],
+        "clicks": 2,
+        "impressions": 4,
+        "ctr": 0.5,
+        "position": 5.25
+      },
+      {
+        "keys": [
+          "https://talentxcel.in/jobs/senior-biomedical-equipment-systems-engineer-talentxcel-services-client-partner-visakhapatnam-andhra-1"
+        ],
+        "clicks": 2,
+        "impressions": 35,
+        "ctr": 0.05714285714285714,
+        "position": 7.2
+      },
+      {
+        "keys": [
+          "https://talentxcel.in/post/88f5a8d5-8591-4bd4-b852-53d380f36cdc"
+        ],
+        "clicks": 2,
+        "impressions": 6,
+        "ctr": 0.3333333333333333,
+        "position": 2.833333333333333
+      },
+      {
+        "keys": [
+          "https://talentxcel.in/colleges/bansal-institute-bist-bhopal-engineering-college-indore-2"
+        ],
+        "clicks": 1,
+        "impressions": 2,
+        "ctr": 0.5,
+        "position": 7
+      }
+    ]
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-10-05T12:30:35.980Z",
+  "timestamp": "2026-10-06T05:46:42.786Z",
   "scaleSummary": {
     "modeledSearchOpportunities": "1.057B+",
     "qualifiedOpportunities": "241M",
@@ -262,6 +262,589 @@
       }
     ],
     "sampleSurfacesCount": 10
+  },
+  "growthWedgeEngineSummary": {
+    "totalWinningPatternsEvaluated": 30,
+    "topWinningPatterns": [
+      {
+        "query": "software engineer fresher jobs in bangalore",
+        "pageUrl": "https://talentxcel.in/jobs/software-engineer/freshers/bangalore/nagpur",
+        "template": "HYPERLOCAL_CITY_EMPLOYMENT",
+        "impressions": 200,
+        "clicks": 26,
+        "ctrPct": 13,
+        "position": 2.2,
+        "wedgeScore": 2025,
+        "primaryConversionHook": "10_SECOND_MATCH",
+        "suggestedAction": "Embed 10_SECOND_MATCH interactive widget on https://talentxcel.in/jobs/software-engineer/freshers/bangalore/nagpur to capture candidate intent before bounce."
+      },
+      {
+        "query": "varanasi job vacancy",
+        "pageUrl": "https://talentxcel.in/locations/varanasi",
+        "template": "HYPERLOCAL_CITY_EMPLOYMENT",
+        "impressions": 850,
+        "clicks": 28,
+        "ctrPct": 3.29,
+        "position": 2.3,
+        "wedgeScore": 1591.5,
+        "primaryConversionHook": "10_SECOND_MATCH",
+        "suggestedAction": "Embed 10_SECOND_MATCH interactive widget on https://talentxcel.in/locations/varanasi to capture candidate intent before bounce."
+      },
+      {
+        "query": "jobs in varanasi",
+        "pageUrl": "https://talentxcel.in/locations/varanasi",
+        "template": "HYPERLOCAL_CITY_EMPLOYMENT",
+        "impressions": 757,
+        "clicks": 25,
+        "ctrPct": 3.3,
+        "position": 2.1,
+        "wedgeScore": 1424.9,
+        "primaryConversionHook": "10_SECOND_MATCH",
+        "suggestedAction": "Embed 10_SECOND_MATCH interactive widget on https://talentxcel.in/locations/varanasi to capture candidate intent before bounce."
+      },
+      {
+        "query": "job in varanasi",
+        "pageUrl": "https://talentxcel.in/locations/varanasi",
+        "template": "HYPERLOCAL_CITY_EMPLOYMENT",
+        "impressions": 1036,
+        "clicks": 19,
+        "ctrPct": 1.83,
+        "position": 2.3,
+        "wedgeScore": 663.7,
+        "primaryConversionHook": "10_SECOND_MATCH",
+        "suggestedAction": "Embed 10_SECOND_MATCH interactive widget on https://talentxcel.in/locations/varanasi to capture candidate intent before bounce."
+      },
+      {
+        "query": "safety officer jobs fresher",
+        "pageUrl": "https://talentxcel.in/jobs/safety-officer/hyderabad/fresher",
+        "template": "OCCUPATION_FRESHER_CITY",
+        "impressions": 26,
+        "clicks": 7,
+        "ctrPct": 26.92,
+        "position": 3.4,
+        "wedgeScore": 641.7,
+        "primaryConversionHook": "10_SECOND_MATCH",
+        "suggestedAction": "Embed 10_SECOND_MATCH interactive widget on https://talentxcel.in/jobs/safety-officer/hyderabad/fresher to capture candidate intent before bounce."
+      },
+      {
+        "query": "jobs in patiala",
+        "pageUrl": "https://talentxcel.in/locations/patiala",
+        "template": "HYPERLOCAL_CITY_EMPLOYMENT",
+        "impressions": 116,
+        "clicks": 6,
+        "ctrPct": 5.17,
+        "position": 1.6,
+        "wedgeScore": 493.5,
+        "primaryConversionHook": "10_SECOND_MATCH",
+        "suggestedAction": "Embed 10_SECOND_MATCH interactive widget on https://talentxcel.in/locations/patiala to capture candidate intent before bounce."
+      },
+      {
+        "query": "junior data analyst in kolkata",
+        "pageUrl": "https://talentxcel.in/jobs/junior-data-analyst-in-kolkata",
+        "template": "OCCUPATION_CITY_EXPERIENCE",
+        "impressions": 27,
+        "clicks": 6,
+        "ctrPct": 22.22,
+        "position": 4.2,
+        "wedgeScore": 490.8,
+        "primaryConversionHook": "10_SECOND_MATCH",
+        "suggestedAction": "Embed 10_SECOND_MATCH interactive widget on https://talentxcel.in/jobs/junior-data-analyst-in-kolkata to capture candidate intent before bounce."
+      },
+      {
+        "query": "mobile application developer flutter mumbai",
+        "pageUrl": "https://talentxcel.in/jobs/senior-mobile-application-developer-flutter-react-native-talentxcel-services-client-partner-mumbai-m-1",
+        "template": "OCCUPATION_CITY_EXPERIENCE",
+        "impressions": 45,
+        "clicks": 5,
+        "ctrPct": 11.11,
+        "position": 5.2,
+        "wedgeScore": 418,
+        "primaryConversionHook": "10_SECOND_MATCH",
+        "suggestedAction": "Embed 10_SECOND_MATCH interactive widget on https://talentxcel.in/jobs/senior-mobile-application-developer-flutter-react-native-talentxcel-services-client-partner-mumbai-m-1 to capture candidate intent before bounce."
+      },
+      {
+        "query": "junior associate data scientist noida",
+        "pageUrl": "https://talentxcel.in/jobs/junior-associate-data-scientist-predictive-analytics-talentxcel-services-client-partner-noida-uttar--1",
+        "template": "OCCUPATION_CITY_EXPERIENCE",
+        "impressions": 39,
+        "clicks": 5,
+        "ctrPct": 12.82,
+        "position": 4.5,
+        "wedgeScore": 415.6,
+        "primaryConversionHook": "10_SECOND_MATCH",
+        "suggestedAction": "Embed 10_SECOND_MATCH interactive widget on https://talentxcel.in/jobs/junior-associate-data-scientist-predictive-analytics-talentxcel-services-client-partner-noida-uttar--1 to capture candidate intent before bounce."
+      },
+      {
+        "query": "quality assurance chemist pune",
+        "pageUrl": "https://talentxcel.in/jobs/quality-assurance-chemist-formulations-talentxcel-services-client-partner-pune-maharashtra-india-1",
+        "template": "OCCUPATION_CITY_EXPERIENCE",
+        "impressions": 27,
+        "clicks": 5,
+        "ctrPct": 18.52,
+        "position": 3.8,
+        "wedgeScore": 410.8,
+        "primaryConversionHook": "10_SECOND_MATCH",
+        "suggestedAction": "Embed 10_SECOND_MATCH interactive widget on https://talentxcel.in/jobs/quality-assurance-chemist-formulations-talentxcel-services-client-partner-pune-maharashtra-india-1 to capture candidate intent before bounce."
+      }
+    ],
+    "urgentConversionSurfaces": [
+      {
+        "query": "software engineer fresher jobs in bangalore",
+        "pageUrl": "https://talentxcel.in/jobs/software-engineer/freshers/bangalore/nagpur",
+        "template": "HYPERLOCAL_CITY_EMPLOYMENT",
+        "impressions": 200,
+        "clicks": 26,
+        "ctrPct": 13,
+        "position": 2.2,
+        "wedgeScore": 2025,
+        "primaryConversionHook": "10_SECOND_MATCH",
+        "suggestedAction": "Embed 10_SECOND_MATCH interactive widget on https://talentxcel.in/jobs/software-engineer/freshers/bangalore/nagpur to capture candidate intent before bounce."
+      },
+      {
+        "query": "varanasi job vacancy",
+        "pageUrl": "https://talentxcel.in/locations/varanasi",
+        "template": "HYPERLOCAL_CITY_EMPLOYMENT",
+        "impressions": 850,
+        "clicks": 28,
+        "ctrPct": 3.29,
+        "position": 2.3,
+        "wedgeScore": 1591.5,
+        "primaryConversionHook": "10_SECOND_MATCH",
+        "suggestedAction": "Embed 10_SECOND_MATCH interactive widget on https://talentxcel.in/locations/varanasi to capture candidate intent before bounce."
+      },
+      {
+        "query": "jobs in varanasi",
+        "pageUrl": "https://talentxcel.in/locations/varanasi",
+        "template": "HYPERLOCAL_CITY_EMPLOYMENT",
+        "impressions": 757,
+        "clicks": 25,
+        "ctrPct": 3.3,
+        "position": 2.1,
+        "wedgeScore": 1424.9,
+        "primaryConversionHook": "10_SECOND_MATCH",
+        "suggestedAction": "Embed 10_SECOND_MATCH interactive widget on https://talentxcel.in/locations/varanasi to capture candidate intent before bounce."
+      },
+      {
+        "query": "job in varanasi",
+        "pageUrl": "https://talentxcel.in/locations/varanasi",
+        "template": "HYPERLOCAL_CITY_EMPLOYMENT",
+        "impressions": 1036,
+        "clicks": 19,
+        "ctrPct": 1.83,
+        "position": 2.3,
+        "wedgeScore": 663.7,
+        "primaryConversionHook": "10_SECOND_MATCH",
+        "suggestedAction": "Embed 10_SECOND_MATCH interactive widget on https://talentxcel.in/locations/varanasi to capture candidate intent before bounce."
+      },
+      {
+        "query": "safety officer jobs fresher",
+        "pageUrl": "https://talentxcel.in/jobs/safety-officer/hyderabad/fresher",
+        "template": "OCCUPATION_FRESHER_CITY",
+        "impressions": 26,
+        "clicks": 7,
+        "ctrPct": 26.92,
+        "position": 3.4,
+        "wedgeScore": 641.7,
+        "primaryConversionHook": "10_SECOND_MATCH",
+        "suggestedAction": "Embed 10_SECOND_MATCH interactive widget on https://talentxcel.in/jobs/safety-officer/hyderabad/fresher to capture candidate intent before bounce."
+      },
+      {
+        "query": "jobs in patiala",
+        "pageUrl": "https://talentxcel.in/locations/patiala",
+        "template": "HYPERLOCAL_CITY_EMPLOYMENT",
+        "impressions": 116,
+        "clicks": 6,
+        "ctrPct": 5.17,
+        "position": 1.6,
+        "wedgeScore": 493.5,
+        "primaryConversionHook": "10_SECOND_MATCH",
+        "suggestedAction": "Embed 10_SECOND_MATCH interactive widget on https://talentxcel.in/locations/patiala to capture candidate intent before bounce."
+      },
+      {
+        "query": "junior data analyst in kolkata",
+        "pageUrl": "https://talentxcel.in/jobs/junior-data-analyst-in-kolkata",
+        "template": "OCCUPATION_CITY_EXPERIENCE",
+        "impressions": 27,
+        "clicks": 6,
+        "ctrPct": 22.22,
+        "position": 4.2,
+        "wedgeScore": 490.8,
+        "primaryConversionHook": "10_SECOND_MATCH",
+        "suggestedAction": "Embed 10_SECOND_MATCH interactive widget on https://talentxcel.in/jobs/junior-data-analyst-in-kolkata to capture candidate intent before bounce."
+      },
+      {
+        "query": "mobile application developer flutter mumbai",
+        "pageUrl": "https://talentxcel.in/jobs/senior-mobile-application-developer-flutter-react-native-talentxcel-services-client-partner-mumbai-m-1",
+        "template": "OCCUPATION_CITY_EXPERIENCE",
+        "impressions": 45,
+        "clicks": 5,
+        "ctrPct": 11.11,
+        "position": 5.2,
+        "wedgeScore": 418,
+        "primaryConversionHook": "10_SECOND_MATCH",
+        "suggestedAction": "Embed 10_SECOND_MATCH interactive widget on https://talentxcel.in/jobs/senior-mobile-application-developer-flutter-react-native-talentxcel-services-client-partner-mumbai-m-1 to capture candidate intent before bounce."
+      },
+      {
+        "query": "junior associate data scientist noida",
+        "pageUrl": "https://talentxcel.in/jobs/junior-associate-data-scientist-predictive-analytics-talentxcel-services-client-partner-noida-uttar--1",
+        "template": "OCCUPATION_CITY_EXPERIENCE",
+        "impressions": 39,
+        "clicks": 5,
+        "ctrPct": 12.82,
+        "position": 4.5,
+        "wedgeScore": 415.6,
+        "primaryConversionHook": "10_SECOND_MATCH",
+        "suggestedAction": "Embed 10_SECOND_MATCH interactive widget on https://talentxcel.in/jobs/junior-associate-data-scientist-predictive-analytics-talentxcel-services-client-partner-noida-uttar--1 to capture candidate intent before bounce."
+      },
+      {
+        "query": "quality assurance chemist pune",
+        "pageUrl": "https://talentxcel.in/jobs/quality-assurance-chemist-formulations-talentxcel-services-client-partner-pune-maharashtra-india-1",
+        "template": "OCCUPATION_CITY_EXPERIENCE",
+        "impressions": 27,
+        "clicks": 5,
+        "ctrPct": 18.52,
+        "position": 3.8,
+        "wedgeScore": 410.8,
+        "primaryConversionHook": "10_SECOND_MATCH",
+        "suggestedAction": "Embed 10_SECOND_MATCH interactive widget on https://talentxcel.in/jobs/quality-assurance-chemist-formulations-talentxcel-services-client-partner-pune-maharashtra-india-1 to capture candidate intent before bounce."
+      },
+      {
+        "query": "senior devops engineer vizag",
+        "pageUrl": "https://talentxcel.in/jobs/senior-devops-cloud-platform-engineer-talentxcel-services-client-partner-visakhapatnam-andhra-prades-1",
+        "template": "OCCUPATION_CITY_EXPERIENCE",
+        "impressions": 27,
+        "clicks": 5,
+        "ctrPct": 18.52,
+        "position": 3.9,
+        "wedgeScore": 410.8,
+        "primaryConversionHook": "10_SECOND_MATCH",
+        "suggestedAction": "Embed 10_SECOND_MATCH interactive widget on https://talentxcel.in/jobs/senior-devops-cloud-platform-engineer-talentxcel-services-client-partner-visakhapatnam-andhra-prades-1 to capture candidate intent before bounce."
+      },
+      {
+        "query": "mechanical design engineer cad cam patna",
+        "pageUrl": "https://talentxcel.in/jobs/senior-mechanical-design-engineer-cadcam-talentxcel-services-client-partner-patna-bihar-india-1",
+        "template": "OCCUPATION_CITY_EXPERIENCE",
+        "impressions": 31,
+        "clicks": 4,
+        "ctrPct": 12.9,
+        "position": 4.8,
+        "wedgeScore": 332.4,
+        "primaryConversionHook": "10_SECOND_MATCH",
+        "suggestedAction": "Embed 10_SECOND_MATCH interactive widget on https://talentxcel.in/jobs/senior-mechanical-design-engineer-cadcam-talentxcel-services-client-partner-patna-bihar-india-1 to capture candidate intent before bounce."
+      },
+      {
+        "query": "be fresher jobs in bangalore",
+        "pageUrl": "https://talentxcel.in/jobs/software-engineer/freshers/bangalore/nagpur",
+        "template": "HYPERLOCAL_CITY_EMPLOYMENT",
+        "impressions": 45,
+        "clicks": 4,
+        "ctrPct": 8.89,
+        "position": 4.6,
+        "wedgeScore": 316.9,
+        "primaryConversionHook": "10_SECOND_MATCH",
+        "suggestedAction": "Embed 10_SECOND_MATCH interactive widget on https://talentxcel.in/jobs/software-engineer/freshers/bangalore/nagpur to capture candidate intent before bounce."
+      },
+      {
+        "query": "patiala jobs",
+        "pageUrl": "https://talentxcel.in/locations/patiala",
+        "template": "HYPERLOCAL_CITY_EMPLOYMENT",
+        "impressions": 32,
+        "clicks": 3,
+        "ctrPct": 9.38,
+        "position": 1.9,
+        "wedgeScore": 237,
+        "primaryConversionHook": "10_SECOND_MATCH",
+        "suggestedAction": "Embed 10_SECOND_MATCH interactive widget on https://talentxcel.in/locations/patiala to capture candidate intent before bounce."
+      },
+      {
+        "query": "credit analyst jobs in india",
+        "pageUrl": "https://talentxcel.in/jobs/credit-analyst/india/experienced",
+        "template": "HYPERLOCAL_CITY_EMPLOYMENT",
+        "impressions": 20,
+        "clicks": 3,
+        "ctrPct": 15,
+        "position": 5.1,
+        "wedgeScore": 232.5,
+        "primaryConversionHook": "10_SECOND_MATCH",
+        "suggestedAction": "Embed 10_SECOND_MATCH interactive widget on https://talentxcel.in/jobs/credit-analyst/india/experienced to capture candidate intent before bounce."
+      },
+      {
+        "query": "biomedical engineer jobs",
+        "pageUrl": "https://talentxcel.in/jobs/biomedical-engineer/chennai/bangalore",
+        "template": "OCCUPATION_CITY_EXPERIENCE",
+        "impressions": 130,
+        "clicks": 4,
+        "ctrPct": 3.08,
+        "position": 7.8,
+        "wedgeScore": 229.2,
+        "primaryConversionHook": "10_SECOND_MATCH",
+        "suggestedAction": "Embed 10_SECOND_MATCH interactive widget on https://talentxcel.in/jobs/biomedical-engineer/chennai/bangalore to capture candidate intent before bounce."
+      },
+      {
+        "query": "drdo jobs in hyderabad eligibility",
+        "pageUrl": "https://talentxcel.in/jobs/government/drdo-hyderabad",
+        "template": "HYPERLOCAL_CITY_EMPLOYMENT",
+        "impressions": 10,
+        "clicks": 1,
+        "ctrPct": 10,
+        "position": 2.2,
+        "wedgeScore": 78.8,
+        "primaryConversionHook": "10_SECOND_MATCH",
+        "suggestedAction": "Embed 10_SECOND_MATCH interactive widget on https://talentxcel.in/jobs/government/drdo-hyderabad to capture candidate intent before bounce."
+      },
+      {
+        "query": "govindammal engineering college fees",
+        "pageUrl": "https://talentxcel.in/colleges/govindammal-aditanar-engineering-college-chennai-2",
+        "template": "COLLEGE_CAREER_CUTOFF",
+        "impressions": 33,
+        "clicks": 1,
+        "ctrPct": 3.03,
+        "position": 9,
+        "wedgeScore": 35.3,
+        "primaryConversionHook": "CAREER_PASSPORT",
+        "suggestedAction": "Embed CAREER_PASSPORT interactive widget on https://talentxcel.in/colleges/govindammal-aditanar-engineering-college-chennai-2 to capture candidate intent before bounce."
+      },
+      {
+        "query": "data scientist salary career guide",
+        "pageUrl": "https://talentxcel.in/resources/data-scientist-salary-career-guide",
+        "template": "OCCUPATION_SALARY_BENCHMARK",
+        "impressions": 63,
+        "clicks": 0,
+        "ctrPct": 0,
+        "position": 11.2,
+        "wedgeScore": 1.6,
+        "primaryConversionHook": "SALARY_BENCHMARK",
+        "suggestedAction": "Embed SALARY_BENCHMARK interactive widget on https://talentxcel.in/resources/data-scientist-salary-career-guide to capture candidate intent before bounce."
+      },
+      {
+        "query": "bhu all courses banaras hindu university",
+        "pageUrl": "https://talentxcel.in/colleges/banaras-hindu-university-bhu",
+        "template": "COLLEGE_CAREER_CUTOFF",
+        "impressions": 82,
+        "clicks": 0,
+        "ctrPct": 0,
+        "position": 22.1,
+        "wedgeScore": 1.6,
+        "primaryConversionHook": "CAREER_PASSPORT",
+        "suggestedAction": "Embed CAREER_PASSPORT interactive widget on https://talentxcel.in/colleges/banaras-hindu-university-bhu to capture candidate intent before bounce."
+      }
+    ],
+    "varanasiAnomaly": {
+      "pageUrl": "https://talentxcel.in/locations/varanasi",
+      "totalImpressions": 3335,
+      "totalClicks": 118,
+      "blendedCtrPct": 3.54,
+      "averagePosition": 2.2,
+      "rootDemandDriver": "Massive organic employment vacancy intent in Tier-2/Tier-3 urban center with low web competition and high mobile search density.",
+      "topQueriesSample": [
+        {
+          "query": "job in varanasi",
+          "impressions": 1036,
+          "clicks": 19,
+          "position": 2.3
+        },
+        {
+          "query": "jobs in varanasi",
+          "impressions": 757,
+          "clicks": 25,
+          "position": 2.1
+        },
+        {
+          "query": "varanasi job vacancy",
+          "impressions": 361,
+          "clicks": 26,
+          "position": 2.3
+        },
+        {
+          "query": "varanasi job",
+          "impressions": 260,
+          "clicks": 12,
+          "position": 1.7
+        },
+        {
+          "query": "job varanasi",
+          "impressions": 221,
+          "clicks": 3,
+          "position": 3.5
+        }
+      ],
+      "strategicInsight": "Candidates in non-metro regional hubs actively search for localized employment. TalentXcel ranks #2 organically. Adding the 10-Second Instant Match widget turns this traffic directly into registered candidates.",
+      "tier2ReplicationMatrix": [
+        {
+          "city": "Varanasi",
+          "state": "Uttar Pradesh",
+          "tier": "TIER_2",
+          "status": "ACTIVE_PROVEN",
+          "expectedMonthlyImpressions": 3500,
+          "recommendedTargetRoleFilters": [
+            "software-engineer",
+            "sales-officer",
+            "nursing",
+            "teaching"
+          ]
+        },
+        {
+          "city": "Patiala",
+          "state": "Punjab",
+          "tier": "TIER_2",
+          "status": "ACTIVE_PROVEN",
+          "expectedMonthlyImpressions": 400,
+          "recommendedTargetRoleFilters": [
+            "nursing",
+            "operations",
+            "customer-support",
+            "banking"
+          ]
+        },
+        {
+          "city": "Lucknow",
+          "state": "Uttar Pradesh",
+          "tier": "TIER_2",
+          "status": "QUEUED_FOR_REPLICATION",
+          "expectedMonthlyImpressions": 4500,
+          "recommendedTargetRoleFilters": [
+            "software-engineer",
+            "civil-engineer",
+            "pharmacist",
+            "relationship-manager"
+          ]
+        },
+        {
+          "city": "Jaipur",
+          "state": "Rajasthan",
+          "tier": "TIER_2",
+          "status": "QUEUED_FOR_REPLICATION",
+          "expectedMonthlyImpressions": 4000,
+          "recommendedTargetRoleFilters": [
+            "hospitality",
+            "civil-engineer",
+            "sales",
+            "it-software"
+          ]
+        },
+        {
+          "city": "Chandigarh",
+          "state": "Punjab / Haryana",
+          "tier": "TIER_2",
+          "status": "QUEUED_FOR_REPLICATION",
+          "expectedMonthlyImpressions": 3200,
+          "recommendedTargetRoleFilters": [
+            "software-engineer",
+            "data-analyst",
+            "nursing",
+            "content-writer"
+          ]
+        },
+        {
+          "city": "Srinagar",
+          "state": "Jammu & Kashmir",
+          "tier": "TIER_2",
+          "status": "QUEUED_FOR_REPLICATION",
+          "expectedMonthlyImpressions": 2200,
+          "recommendedTargetRoleFilters": [
+            "teaching",
+            "civil-engineer",
+            "healthcare",
+            "tourism"
+          ]
+        },
+        {
+          "city": "Jammu",
+          "state": "Jammu & Kashmir",
+          "tier": "TIER_2",
+          "status": "QUEUED_FOR_REPLICATION",
+          "expectedMonthlyImpressions": 1800,
+          "recommendedTargetRoleFilters": [
+            "banking",
+            "pharmacy",
+            "administration",
+            "operations"
+          ]
+        },
+        {
+          "city": "Indore",
+          "state": "Madhya Pradesh",
+          "tier": "TIER_2",
+          "status": "QUEUED_FOR_REPLICATION",
+          "expectedMonthlyImpressions": 3800,
+          "recommendedTargetRoleFilters": [
+            "it-software",
+            "finance",
+            "logistics",
+            "manufacturing"
+          ]
+        },
+        {
+          "city": "Coimbatore",
+          "state": "Tamil Nadu",
+          "tier": "TIER_2",
+          "status": "QUEUED_FOR_REPLICATION",
+          "expectedMonthlyImpressions": 3000,
+          "recommendedTargetRoleFilters": [
+            "mechanical-engineer",
+            "textile",
+            "software-engineer",
+            "healthcare"
+          ]
+        },
+        {
+          "city": "Nagpur",
+          "state": "Maharashtra",
+          "tier": "TIER_2",
+          "status": "QUEUED_FOR_REPLICATION",
+          "expectedMonthlyImpressions": 2900,
+          "recommendedTargetRoleFilters": [
+            "logistics",
+            "cargo",
+            "healthcare",
+            "software-engineer"
+          ]
+        }
+      ]
+    },
+    "realignmentMilestones": [
+      {
+        "milestoneLevel": 1,
+        "dailyRegistrationsTarget": 1000,
+        "requiredDailyVisitsAt25Pct": 4000,
+        "requiredDailyVisitsAt11Pct": 9100,
+        "expectedDailyApplications": 244,
+        "prerequisiteCondition": "Deploy 10-second match widget on Top 20 high-CTR surfaces + Varanasi replication matrix."
+      },
+      {
+        "milestoneLevel": 2,
+        "dailyRegistrationsTarget": 5000,
+        "requiredDailyVisitsAt25Pct": 20000,
+        "requiredDailyVisitsAt11Pct": 45500,
+        "expectedDailyApplications": 1220,
+        "prerequisiteCondition": "Validate 25% signup conversion across 100 high-intent search patterns."
+      },
+      {
+        "milestoneLevel": 3,
+        "dailyRegistrationsTarget": 10000,
+        "requiredDailyVisitsAt25Pct": 40000,
+        "requiredDailyVisitsAt11Pct": 91000,
+        "expectedDailyApplications": 2440,
+        "prerequisiteCondition": "Viral referral loop active: each Career Passport produces >= 0.15 organic candidate invites."
+      },
+      {
+        "milestoneLevel": 4,
+        "dailyRegistrationsTarget": 25000,
+        "requiredDailyVisitsAt25Pct": 100000,
+        "requiredDailyVisitsAt11Pct": 228000,
+        "expectedDailyApplications": 6100,
+        "prerequisiteCondition": "Scale to 250 validated occupations + nationwide Tier-2/Tier-3 city coverage."
+      },
+      {
+        "milestoneLevel": 5,
+        "dailyRegistrationsTarget": 50000,
+        "requiredDailyVisitsAt25Pct": 200000,
+        "requiredDailyVisitsAt11Pct": 455000,
+        "expectedDailyApplications": 12200,
+        "prerequisiteCondition": "Full 500 occupation graph saturated + high-intent programmatic landing network operational."
+      }
+    ],
+    "acquisitionOsStagesCount": 12
   },
   "funnelStages": [
     {

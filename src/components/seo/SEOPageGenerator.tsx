@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { AlertCircle, Globe, Sparkles, MapPin, Briefcase } from 'lucide-react';
 import { conversionTelemetry } from '@/utils/conversionTelemetry';
 import { createSafeHtml } from '@/utils/sanitize';
+import { TenSecondCareerMatchWidget } from '@/components/conversion/TenSecondCareerMatchWidget';
 
 
 interface SEOPage {
@@ -166,6 +167,15 @@ export const SEOPageGenerator: React.FC<SEOPageGeneratorProps> = ({
             >
               Check My Resume Free →
             </Button>
+          </div>
+
+          {/* 10-Second Instant Career Match Conversion Layer */}
+          <div className="my-8">
+            <TenSecondCareerMatchWidget
+              role={role}
+              location={location}
+              sourcePage={`seo_generator_${pageType}_${location || role || 'all'}`}
+            />
           </div>
 
           {/* P0 TRUTH LAYER — REAL LIVE JOBS INVENTORY */}

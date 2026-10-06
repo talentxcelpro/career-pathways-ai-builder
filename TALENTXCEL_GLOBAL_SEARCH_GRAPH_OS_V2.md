@@ -639,3 +639,66 @@ $$\text{Search Intent} \longrightarrow \text{Useful Tool / Answer} \longrightarr
 - **Stage 3 (10,000 Daily Gate)**: $250\text{ Occupations} \longrightarrow 3,500\text{ surfaces} \longrightarrow 91,000\text{ visits/day} \longrightarrow 10,000\text{ registrations/day} \longrightarrow 2,430\text{ applications/day}$.
 - **Stage 4 (25,000 Daily Gate)**: $500\text{ Occupations} \longrightarrow 7,500\text{ surfaces} \longrightarrow 228,000\text{ visits/day} \longrightarrow 25,000\text{ registrations/day} \longrightarrow 6,100\text{ applications/day}$.
 - **Stage 5 (Target Scale: 50,000 Daily Gate)**: $500\text{ Occupations} \longrightarrow 15,000\text{ surfaces} \longrightarrow 455,000\text{ visits/day} \longrightarrow \mathbf{50,000\text{ registrations/day}} \longrightarrow \mathbf{12,200\text{ applications/day}}$.
+
+---
+
+### 13. The Growth Wedge Engine & 10-Second Career Match Conversion Layer
+
+#### 13.1 Strategic Reality Check: 24-Hour Telemetry Audit
+Following 24 hours of live production observation:
+- **Live Supabase Profiles**: 543 $\longrightarrow$ 544 (+1 net change)
+- **Live Job Applications**: 7 $\longrightarrow$ 8 (+1 net change)
+- **Live AI Resumes Created**: 130 (+0 net change)
+- **Indexed Googlebot URLs**: 8,450
+- **Submitted Clean Sitemaps**: 12,054 (0 errors)
+- **Google Search Console (30-Day)**: 9,690 impressions, 182 clicks, Average Position 31.0
+- **Operational Verdict**: **C $\longrightarrow$ B (Flat / Seeded Traction)**. Broad URL creation has zero marginal acquisition value when existing landing traffic bounces without converting. The bottleneck is not page supply—it is conversion on search demand.
+
+#### 13.2 The Winning Search Clusters (Empirical Google Demand Signals)
+Organic search demand is heavily clustered on specific **Intent $\times$ Location $\times$ Experience** combinations:
+1. **The Varanasi Anomaly**: 3,335 impressions / 118 clicks (3.54% CTR, Pos 2.2). Driven by localized employment queries (`job in varanasi` 1,036 imp/19 clk, `jobs in varanasi` 757 imp/25 clk, `varanasi job vacancy` 361 imp/26 clk).
+2. **Software Engineer Fresher Bangalore**: 497 impressions / 26 clicks (5.23%–13% CTR).
+3. **Patiala Jobs**: 226 impressions / 12 clicks (5.31% CTR).
+4. **Safety Officer Fresher Hyderabad**: 26 impressions / 7 clicks (26.92% CTR).
+5. **Junior Data Analyst Kolkata**: 27 impressions / 6 clicks (22.22% CTR).
+6. **Credit Analyst India Experienced**: 20 impressions / 3 clicks (15.00% CTR).
+
+#### 13.3 The 10-Second Career Match Conversion Layer
+Implemented in `TenSecondCareerMatchWidget.tsx` and embedded directly into:
+- `JobLocationPage.tsx` (`/locations/:location`, `/jobs/:location`)
+- `JobsSimple.tsx` (`/jobs`, `/jobs-simple`)
+- `JobsByRoleCity.tsx` (`/jobs/:role/:city`)
+- `JobsByRoleExperienceCity.tsx` (`/jobs/:role/:experience/:city`)
+- `SEOPageGenerator.tsx` (Programmatic SEO landing pages)
+
+**User Conversion Flow:**
+$$\text{Search Landing} \longrightarrow \text{Prefilled Criteria} \longrightarrow \text{1-Click 'Calculate My Match — Free'} \longrightarrow \text{92\% Match Score + ATS Gaps} \longrightarrow \text{Google Auth} \longrightarrow \text{Registered Candidate}$$
+
+#### 13.4 Varanasi Tier-2 Replication Matrix
+Replicating the Varanasi playbook across 10 high-intent regional hubs:
+- **Varanasi** (3,500 monthly imp) — Active / Proven
+- **Patiala** (400 monthly imp) — Active / Proven
+- **Lucknow** (4,500 monthly imp) — Queued for replication
+- **Jaipur** (4,000 monthly imp) — Queued for replication
+- **Chandigarh** (3,200 monthly imp) — Queued for replication
+- **Srinagar** (2,200 monthly imp) — Queued for replication
+- **Jammu** (1,800 monthly imp) — Queued for replication
+- **Indore** (3,800 monthly imp) — Queued for replication
+- **Coimbatore** (3,000 monthly imp) — Queued for replication
+- **Nagpur** (2,900 monthly imp) — Queued for replication
+
+#### 13.5 Realigned 25% Conversion Target & Milestones
+Lifting signup conversion from 11% to 25% through the interactive 10-Second Match Layer reduces the required traffic volume from 455,000 to 200,000 visits/day:
+- **Milestone 1**: 1,000 reg/day $\longrightarrow$ 4,000 visits/day @ 25% (vs 9,100 @ 11%) $\longrightarrow$ 244 apps/day
+- **Milestone 2**: 5,000 reg/day $\longrightarrow$ 20,000 visits/day @ 25% (vs 45,500 @ 11%) $\longrightarrow$ 1,220 apps/day
+- **Milestone 3**: 10,000 reg/day $\longrightarrow$ 40,000 visits/day @ 25% (vs 91,000 @ 11%) $\longrightarrow$ 2,440 apps/day
+- **Milestone 4**: 25,000 reg/day $\longrightarrow$ 100,000 visits/day @ 25% (vs 228,000 @ 11%) $\longrightarrow$ 6,100 apps/day
+- **Milestone 5**: 50,000 reg/day $\longrightarrow$ 200,000 visits/day @ 25% (vs 455,000 @ 11%) $\longrightarrow$ 12,200 apps/day
+
+#### 13.6 Complete Registration Acquisition OS Loop (12 Stages)
+$$\begin{aligned}
+\text{1. Search Demand} &\longrightarrow \text{2. Winning Intent Detector} \longrightarrow \text{3. Entity Mapping} \longrightarrow \text{4. 12-Factor Evidence Gate} \\
+&\longrightarrow \text{5. High-CTR Page} \longrightarrow \text{6. 10-Second Match} \longrightarrow \text{7. Google Sign-In Trigger} \longrightarrow \text{8. Career Passport Creation} \\
+&\longrightarrow \text{9. ATS Scorer \& Diagnosis} \longrightarrow \text{10. Job Match \& 1-Click Apply} \longrightarrow \text{11. Referral Loop} \longrightarrow \text{12. New Candidate Inflow}
+\end{aligned}$$
+

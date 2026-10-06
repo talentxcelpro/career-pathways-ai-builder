@@ -19,6 +19,7 @@ import {
   TrendingUp, Award, Building2, MapPin, CheckCircle2, GraduationCap,
   FileText, HelpCircle, Layers, Compass, ChevronRight, Zap
 } from 'lucide-react';
+import { TenSecondCareerMatchWidget } from '@/components/conversion/TenSecondCareerMatchWidget';
 
 interface Job {
   id: string;
@@ -400,6 +401,13 @@ export const JobsByRoleCity: React.FC = () => {
 
             {/* Main Discovery Body */}
             <div className="lg:col-span-3 space-y-10">
+              {/* 10-Second Instant Career Match Conversion Layer */}
+              <TenSecondCareerMatchWidget
+                role={roleDisplay}
+                location={cityDisplay}
+                sourcePage={`seo_role_city_${roleSlug}_${citySlug}`}
+              />
+
               {/* Active Jobs Listings (if any exist) */}
               {jobs.length > 0 && (
                 <section className="space-y-6">

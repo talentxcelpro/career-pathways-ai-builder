@@ -124,6 +124,32 @@ async function runTelemetry() {
     console.log('└──────────────────────────────────────────────────────────────────────────────┘\n');
   }
 
+  if ((snapshot as any).growthWedgeEngineSummary) {
+    const gw = (snapshot as any).growthWedgeEngineSummary;
+    console.log('┌──────────────────────────────────────────────────────────────────────────────┐');
+    console.log('│ ⚡ BOX 7: GROWTH WEDGE ENGINE (TOP 100 WINNING PATTERNS & 25% CONVERSION)    │');
+    console.log('├──────────────────────────────────────────────────────────────────────────────┤');
+    console.log(`│  🎯 Winning Search Patterns Evaluated : ${gw.totalWinningPatternsEvaluated} Patterns (Scored & Ranked)        │`);
+    console.log(`│  🏛️  Varanasi Anomaly Benchmark       : ${gw.varanasiAnomaly.totalImpressions.toLocaleString()} imp / ${gw.varanasiAnomaly.totalClicks} clicks (${gw.varanasiAnomaly.blendedCtrPct}% CTR, Pos ${gw.varanasiAnomaly.averagePosition})│`);
+    console.log('│  🏙️  Tier-2 Replication Cities (10)   : Patiala, Lucknow, Jaipur, Chandigarh,        │');
+    console.log('│                                         Srinagar, Jammu, Indore, Coimbatore, Nagpur  │');
+    console.log('│  ──────────────────────────────────────────────────────────────────────────  │');
+    console.log('│  🏆 TOP 5 WINNING INTENT PATTERNS:                                           │');
+    for (const p of gw.topWinningPatterns.slice(0, 5)) {
+      const pLine = `    • "${p.query}": ${p.impressions} imp / ${p.clicks} clicks (${p.ctrPct}% CTR) [Score: ${p.wedgeScore.toFixed(1)}]`;
+      console.log(`│  ${pLine.padEnd(76)}│`);
+    }
+    console.log('│  ──────────────────────────────────────────────────────────────────────────  │');
+    console.log('│  🚀 REALIGNED 25% CONVERSION ROADMAP (10-SECOND MATCH HOOK):                 │');
+    for (const m of gw.realignmentMilestones) {
+      const mLine = `    [M${m.milestoneLevel}] ${m.dailyRegistrationsTarget.toLocaleString()} reg/day: ${m.requiredDailyVisitsAt25Pct.toLocaleString()} visits @ 25% (vs ${m.requiredDailyVisitsAt11Pct.toLocaleString()} @ 11%) -> ${m.expectedDailyApplications.toLocaleString()} apps/day`;
+      console.log(`│  ${mLine.padEnd(76)}│`);
+    }
+    console.log(`│  ──────────────────────────────────────────────────────────────────────────  │`);
+    console.log(`│  🛡️  Urgent Conversion Surfaces Armed : ${gw.urgentConversionSurfaces.length} Surfaces with 10-Second Widget    │`);
+    console.log('└──────────────────────────────────────────────────────────────────────────────┘\n');
+  }
+
   console.log('--- 14-STAGE ACQUISITION FUNNEL PROGRESSION ---');
   for (let i = 0; i < snapshot.funnelStages.length; i++) {
     const stage = snapshot.funnelStages[i];

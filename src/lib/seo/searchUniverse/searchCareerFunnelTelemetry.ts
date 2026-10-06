@@ -28,6 +28,7 @@
 import { SearchUniverseTargetRegistry } from './searchUniverseTargetRegistry';
 import { OccupationLedgerRegistry } from './occupationLedger';
 import { RegistrationAcquisitionEngine } from './registrationAcquisitionEngine';
+import { GrowthWedgeEngine, IntentScoringRecord, VaranasiAnomalyAnalysis, ConversionMilestoneGoal } from './growthWedgeEngine';
 
 export interface FunnelStageMetric {
   stageId: string;
@@ -92,6 +93,23 @@ export interface ExecutiveUniverseDashboard {
     evidenceCostPerPlacementINR: number;
     emergingWinners: Array<{ occupationName: string; applications: number; matches: number; searchYield: number; performanceTier: string }>;
     topPerformingArchetypes: Array<{ occupationName: string; applications: number; matches: number; searchYield: number }>;
+  };
+  growthWedgeEngineSummary?: {
+    totalWinningPatternsEvaluated: number;
+    topWinningPatterns: IntentScoringRecord[];
+    urgentConversionSurfaces: Array<{
+      url: string;
+      pageType: string;
+      targetQuery: string;
+      impressions: number;
+      clicks: number;
+      ctrPct: number;
+      assignedHook: string;
+      urgency: string;
+    }>;
+    varanasiAnomaly: VaranasiAnomalyAnalysis;
+    realignmentMilestones: ConversionMilestoneGoal[];
+    acquisitionOsStagesCount: number;
   };
   funnelStages: FunnelStageMetric[];
 }
@@ -375,6 +393,14 @@ export class SearchCareerFunnelTelemetry {
         engines: RegistrationAcquisitionEngine.getFourAcquisitionEngines(),
         milestoneGates: RegistrationAcquisitionEngine.getMilestoneGates(),
         sampleSurfacesCount: RegistrationAcquisitionEngine.getAcquisitionSurfacesForOccupation('nurse', 'Registered Nurse').length,
+      },
+      growthWedgeEngineSummary: {
+        totalWinningPatternsEvaluated: GrowthWedgeEngine.getTop100WinningPatterns().length,
+        topWinningPatterns: GrowthWedgeEngine.getTop100WinningPatterns().slice(0, 10),
+        urgentConversionSurfaces: GrowthWedgeEngine.getTop20UrgentConversionSurfaces(),
+        varanasiAnomaly: GrowthWedgeEngine.getVaranasiAnomalyAnalysis(),
+        realignmentMilestones: GrowthWedgeEngine.calculateRealignmentMilestones(),
+        acquisitionOsStagesCount: GrowthWedgeEngine.getRegistrationAcquisitionOsWorkflow().length,
       },
       funnelStages: stages,
     };

@@ -18,6 +18,7 @@ import { OccupationRoadmapRegistry } from '../src/lib/seo/searchUniverse/occupat
 import { SearchCareerFunnelTelemetry } from '../src/lib/seo/searchUniverse/searchCareerFunnelTelemetry';
 import { OccupationLedgerRegistry } from '../src/lib/seo/searchUniverse/occupationLedger';
 import { RegistrationAcquisitionEngine } from '../src/lib/seo/searchUniverse/registrationAcquisitionEngine';
+import { GrowthWedgeEngine } from '../src/lib/seo/searchUniverse/growthWedgeEngine';
 
 let passed = 0;
 let failed = 0;
@@ -204,6 +205,36 @@ async function runTestSuite() {
   const gates = RegistrationAcquisitionEngine.getMilestoneGates();
   assert(gates.length === 6, 'Defines 6 progression gates from Stage 0 to Stage 5 (50k/day) (found: ' + gates.length + ')');
   assert(gates[5].dailyRegistrationsTarget === 50000, 'Stage 5 targets exactly 50,000 daily registrations');
+
+  // --- 11. Testing Growth Wedge Engine (Winning Intent Patterns & 25% Conversion) ---
+  console.log('\n--- 11. Testing Growth Wedge Engine (Winning Intent Patterns & 25% Conversion) ---');
+  const winningPatterns = GrowthWedgeEngine.getTop100WinningPatterns();
+  assert(winningPatterns.length >= 25, 'Growth Wedge Engine scores >= 25 high-intent winning patterns (found: ' + winningPatterns.length + ')');
+  assert(winningPatterns[0].wedgeScore > 1000, 'Top winning pattern achieves high Wedge Score (> 1000) (score: ' + winningPatterns[0].wedgeScore.toFixed(1) + ')');
+  assert(winningPatterns.some(p => p.query.includes('varanasi')), 'Includes Varanasi localized employment winning pattern');
+  assert(winningPatterns.some(p => p.query.includes('fresher')), 'Includes Fresher high-intent conversion patterns');
+
+  const urgentSurfaces = GrowthWedgeEngine.getTop20UrgentConversionSurfaces();
+  assert(urgentSurfaces.length === 20, 'Top 20 urgent conversion surfaces cataloged (found: ' + urgentSurfaces.length + ')');
+  assert(urgentSurfaces.some(s => s.primaryConversionHook === '10_SECOND_MATCH'), 'Urgent surfaces assign 10-Second Career Match hook');
+  assert(urgentSurfaces.every(s => s.wedgeScore > 0), 'All urgent surfaces have positive Wedge Score');
+
+  const varanasiAudit = GrowthWedgeEngine.getVaranasiAnomalyAnalysis();
+  assert(varanasiAudit.totalImpressions >= 3000, 'Varanasi anomaly accounts for >= 3,000 search impressions (recorded: ' + varanasiAudit.totalImpressions + ')');
+  assert(varanasiAudit.totalClicks >= 100, 'Varanasi anomaly accounts for >= 100 organic clicks (recorded: ' + varanasiAudit.totalClicks + ')');
+  assert(varanasiAudit.tier2ReplicationMatrix.length === 10, 'Replication matrix includes 10 Tier-2/Tier-3 regional cities (found: ' + varanasiAudit.tier2ReplicationMatrix.length + ')');
+  assert(varanasiAudit.tier2ReplicationMatrix.some(c => c.city.toLowerCase() === 'patiala'), 'Tier-2 replication includes Patiala');
+  assert(varanasiAudit.tier2ReplicationMatrix.some(c => c.city.toLowerCase() === 'lucknow'), 'Tier-2 replication includes Lucknow');
+
+  const milestones25 = GrowthWedgeEngine.calculateRealignmentMilestones();
+  assert(milestones25.length === 5, 'Realignment defines 5 conversion milestones (found: ' + milestones25.length + ')');
+  assert(milestones25[4].dailyRegistrationsTarget === 50000, 'Milestone 5 targets 50,000 registrations/day');
+  assert(milestones25[4].requiredDailyVisitsAt25Pct === 200000, 'At 25% conversion, 50k registrations/day requires 200,000 visits/day (vs 455,000 @ 11%)');
+
+  const osWorkflow = GrowthWedgeEngine.getRegistrationAcquisitionOsWorkflow();
+  assert(osWorkflow.length === 12, 'Registration Acquisition OS defines 12 end-to-end loop stages (found: ' + osWorkflow.length + ')');
+  assert(osWorkflow.some(s => s.includes('10-Second Match Layer')), 'Workflow includes 10-Second Match Layer step');
+  assert(osWorkflow.some(s => s.includes('Google Sign-In Trigger')), 'Workflow includes Google Sign-In Trigger step');
 
   console.log('\n================================================================');
   console.log(`🏁 EVIDENCE FACTORY RESULTS: ${passed} PASSED, ${failed} FAILED`);

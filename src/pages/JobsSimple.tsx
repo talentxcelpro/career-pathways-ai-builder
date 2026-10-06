@@ -4,6 +4,7 @@ import { JobFilters } from '@/components/jobs/JobFilters';
 import { JobsList } from '@/components/jobs/JobsList';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { JobCategories } from '@/components/jobs/JobCategories';
+import { TenSecondCareerMatchWidget } from '@/components/conversion/TenSecondCareerMatchWidget';
 
 interface JobsSimpleProps {
   roleFilter?: string;
@@ -73,6 +74,12 @@ const JobsSimple: React.FC<JobsSimpleProps> = ({ roleFilter, locationFilter, ski
       )}
       
       <div className="container mx-auto px-4 py-8 space-y-8">
+        <TenSecondCareerMatchWidget
+          role={filters.category}
+          location={filters.location}
+          sourcePage={`jobs_simple_${filters.location || filters.category || 'all'}`}
+        />
+
         {!roleFilter && !locationFilter && !skillFilter && <JobCategories />}
         
         <div className="space-y-6">
