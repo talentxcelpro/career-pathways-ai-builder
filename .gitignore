@@ -44,6 +44,11 @@ public/social-vault/2027-*
 
 gcp-key.json
 gsc-service-account.json
+talentxcel-indexing*.json
+talentxcel-indexing.json
+gcp-indexing-key.json
+indexing-key.json
+indexing_api_submission_log.json
 *.json.key
 scratch/
 gsc-full-dump.json

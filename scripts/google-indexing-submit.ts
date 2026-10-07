@@ -105,9 +105,16 @@ export async function runGoogleIndexingPipeline() {
   console.log('🚀 TalentXcel Rapid Google Indexing API Automation Pipeline');
   console.log('================================================================\n');
 
-  const keyPath = resolve('gcp-key.json');
-  if (!existsSync(keyPath)) {
-    throw new Error('gcp-key.json not found in root.');
+  const candidateKeys = [
+    resolve('talentxcel-indexing.json'),
+    resolve('gcp-indexing-key.json'),
+    resolve('indexing-key.json'),
+    resolve('gcp-key.json'),
+    resolve('gsc-service-account.json'),
+  ];
+  const keyPath = candidateKeys.find(p => existsSync(p));
+  if (!keyPath) {
+    throw new Error('Google service account key not found in root.');
   }
 
   const serviceAccount: ServiceAccountKey = JSON.parse(readFileSync(keyPath, 'utf-8'));
