@@ -93,9 +93,19 @@ async function run() {
   console.log('🚀 TALENTXCEL GOOGLE INDEXING API — ACTIVE JOBS BROADCASTER');
   console.log('================================================================\n');
 
-  const keyFile = fs.existsSync('gcp-key.json') ? 'gcp-key.json' : 'gsc-service-account.json';
+  // Prioritize dedicated indexing key if present, otherwise fall back to gcp-key.json
+  const candidateKeys = [
+    'talentxcel-indexing.json',
+    'gcp-indexing-key.json',
+    'indexing-key.json',
+    'gcp-key.json',
+    'gsc-service-account.json'
+  ];
+  const keyFile = candidateKeys.find(f => fs.existsSync(f)) || 'gcp-key.json';
   const key = JSON.parse(fs.readFileSync(keyFile, 'utf8'));
+  console.log(`Using Key File:       ${keyFile}`);
   console.log(`Using Service Account: ${key.client_email}`);
+  console.log(`GCP Project:          ${key.project_id}`);
 
   const token = await getAccessToken(key);
   console.log('✅ Google OAuth2 Token acquired for Indexing API!\n');
