@@ -222,6 +222,12 @@ const GovernmentJobs = lazy(() => import('./pages/GovernmentJobs'));
 const GovernmentJobDetail = lazy(() => import('./pages/GovernmentJobDetail'));
 const GovernmentSourcesAdmin = lazy(() => import('./pages/admin/GovernmentSources'));
 const GlobalJobsDashboard = lazy(() => import('./pages/admin/globalJobs/GlobalJobsDashboard'));
+const LearningHub = lazy(() => import('@/pages/LearningHub'));
+const AllCourses = lazy(() => import('@/pages/learning/AllCourses'));
+const AggregatedCourseDetail = lazy(() => import('@/pages/learning/AggregatedCourseDetail'));
+const LearningPathsPage = lazy(() => import('@/pages/learning/LearningPathsPage'));
+const Certificates = lazy(() => import('@/pages/learning/Certificates'));
+import { getCurrentUniverse } from '@/config/domainArchitecture';
 
 // ── Infrastructure imports (kept static — tiny, needed on every page) ─────
 import { turboCore } from "@/utils/turboCore";
@@ -294,18 +300,8 @@ const App = () => {
     }, 0);
   }, []);
 
-  // Check if this is a subdomain - simplified as fallback only
-  const hostname = window.location.hostname;
-  const isSubdomain = hostname.includes('.talentxcel.in') && hostname !== 'talentxcel.in';
-  
-  // Subdomain handling as safety fallback (should be redirected by Vercel)
-  if (isSubdomain) {
-    console.warn('Subdomain accessed directly - should be redirected by Vercel');
-    // Redirect to main domain with proper query params
-    const subdomainType = hostname.split('.')[0];
-    window.location.href = `https://talentxcel.in/auth/login?redirect=%2F${subdomainType}`;
-    return null;
-  }
+  // Resolve active Product Universe for multi-domain architecture
+  const currentUniverse = getCurrentUniverse();
 
   return (
     <ErrorBoundary FallbackComponent={BundleErrorFallback}>
@@ -338,6 +334,115 @@ const App = () => {
                                   </ProtectedRoute>
                                 } />
                                 
+                                 {/* ── Multi-Domain Universe Entry Routes (Active when visited via dedicated product subdomain) ── */}
+                                 {currentUniverse === 'JOBS' && (
+                                   <>
+                                     <Route path="/" element={<Suspense fallback={<div>Loading Jobs...</div>}><JobsPage /></Suspense>} />
+                                     <Route path="/:slugOrId" element={<Suspense fallback={<div>Loading...</div>}><JobDetails /></Suspense>} />
+                                     <Route path="/bangalore" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                                     <Route path="/mumbai" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                                     <Route path="/delhi" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                                     <Route path="/hyderabad" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                                     <Route path="/chennai" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                                     <Route path="/pune" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                                     <Route path="/varanasi" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                                     <Route path="/noida" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                                     <Route path="/lucknow" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                                     <Route path="/:role/:city" element={<Suspense fallback={<div>Loading...</div>}><JobsByRoleCity /></Suspense>} />
+                                     <Route path="/:role/:experience/:city" element={<Suspense fallback={<div>Loading...</div>}><JobsByRoleExperienceCity /></Suspense>} />
+                                     <Route path="/:role/:experience/:country/:city" element={<Suspense fallback={<div>Loading...</div>}><JobsByRoleExperienceCity /></Suspense>} />
+                                   </>
+                                 )}
+
+                                 {currentUniverse === 'LEARNING' && (
+                                   <>
+                                     <Route path="/" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Learning Hub...</div>}><LearningHub /></Suspense>} />
+                                     <Route path="/courses" element={<Suspense fallback={null}><AllCourses /></Suspense>} />
+                                     <Route path="/courses/:id" element={<Suspense fallback={null}><AggregatedCourseDetail /></Suspense>} />
+                                     <Route path="/course/:slug" element={<Suspense fallback={null}><AggregatedCourseDetail /></Suspense>} />
+                                     <Route path="/paths" element={<Suspense fallback={null}><LearningPathsPage /></Suspense>} />
+                                     <Route path="/paths/:id" element={<Suspense fallback={null}><AggregatedCourseDetail /></Suspense>} />
+                                     <Route path="/certificates" element={<Suspense fallback={null}><Certificates /></Suspense>} />
+                                     <Route path="/providers" element={<Suspense fallback={null}><AllProvidersPage /></Suspense>} />
+                                     <Route path="/providers/:slug" element={<Suspense fallback={null}><ProviderPage /></Suspense>} />
+                                   </>
+                                 )}
+
+                                 {currentUniverse === 'PASSPORT' && (
+                                   <>
+                                     <Route path="/" element={<Suspense fallback={null}><CareerPassportDashboard /></Suspense>} />
+                                     <Route path="/public/:identifier" element={<Suspense fallback={null}><PublicPassport /></Suspense>} />
+                                     <Route path="/section/:section" element={<PassportLayout />} />
+                                     <Route path="/proof/:credentialId" element={<ProofRedirect />} />
+                                     <Route path="/user/:userId" element={<Suspense fallback={null}><CareerPassportDashboard /></Suspense>} />
+                                     <Route path="/legacy" element={<Suspense fallback={null}><CareerPassportDashboard /></Suspense>} />
+                                   </>
+                                 )}
+
+                                 {currentUniverse === 'GOVERNMENT' && (
+                                   <>
+                                     <Route path="/" element={<Suspense fallback={<div>Loading...</div>}><GovernmentJobs /></Suspense>} />
+                                     <Route path="/freshers" element={<Suspense fallback={<div>Loading...</div>}><GovernmentJobs /></Suspense>} />
+                                     <Route path="/detail/:id" element={<Suspense fallback={<div>Loading...</div>}><GovernmentJobDetail /></Suspense>} />
+                                     <Route path="/:country" element={<Suspense fallback={<div>Loading...</div>}><GovernmentJobs /></Suspense>} />
+                                     <Route path="/:country/freshers" element={<Suspense fallback={<div>Loading...</div>}><GovernmentJobs /></Suspense>} />
+                                   </>
+                                 )}
+
+                                 {currentUniverse === 'EMPLOYERS' && (
+                                   <>
+                                     <Route path="/" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Recruiter OS...</div>}><RecruiterLandingPage /></Suspense>} />
+                                     <Route path="/post-job" element={<Suspense fallback={null}><GlobalEmployerAcquisition /></Suspense>} />
+                                     <Route path="/talent" element={<Suspense fallback={<div>Loading...</div>}><PeopleDirectoryPage /></Suspense>} />
+                                     <Route path="/cv-database" element={<Suspense fallback={null}><CVDatabase /></Suspense>} />
+                                   </>
+                                 )}
+
+                                 {currentUniverse === 'COLLEGES' && (
+                                   <>
+                                     <Route path="/" element={<Suspense fallback={null}><Colleges /></Suspense>} />
+                                     <Route path="/global-programs" element={<Suspense fallback={null}><GlobalPrograms /></Suspense>} />
+                                     <Route path="/global-programs/:slug" element={<Suspense fallback={null}><GlobalPrograms /></Suspense>} />
+                                     <Route path="/scholarships" element={<Suspense fallback={null}><Scholarships /></Suspense>} />
+                                     <Route path="/pathway" element={<Suspense fallback={null}><CareerPathway /></Suspense>} />
+                                     <Route path="/batch" element={<Suspense fallback={<div>Loading...</div>}><BatchScreening /></Suspense>} />
+                                   </>
+                                 )}
+
+                                 {currentUniverse === 'CAREERS' && (
+                                   <>
+                                     <Route path="/" element={<AICareerHub />} />
+                                     <Route path="/roadmap" element={<CareerRoadmapGenerator />} />
+                                     <Route path="/skills-assessment" element={<SkillsGap />} />
+                                     <Route path="/career-goals" element={<CareerGoals />} />
+                                     <Route path="/intelligence" element={<CareerIntelligenceDashboard />} />
+                                     <Route path="/platform" element={<CareerPlatformShowcasePage />} />
+                                   </>
+                                 )}
+
+                                 {currentUniverse === 'SALARY' && (
+                                   <>
+                                     <Route path="/" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Salary Analyzer...</div>}><SalaryAnalyzer /></Suspense>} />
+                                     <Route path="/analyzer" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Salary Analyzer...</div>}><SalaryAnalyzer /></Suspense>} />
+                                   </>
+                                 )}
+
+                                 {currentUniverse === 'RESUME' && (
+                                   <>
+                                     <Route path="/" element={<UnifiedResumeHub />} />
+                                     <Route path="/upload" element={<UnifiedUploadPage />} />
+                                     <Route path="/build" element={<UnifiedResumeBuilder />} />
+                                     <Route path="/build/:id" element={<UnifiedResumeBuilder />} />
+                                     <Route path="/dashboard" element={<MyResumes />} />
+                                     <Route path="/ats-check" element={<ATSChecker />} />
+                                     <Route path="/templates" element={<ResumeTemplates />} />
+                                     <Route path="/cover-letter" element={<CoverLetterStudio />} />
+                                     <Route path="/interview-prep" element={<InterviewPrepSuite />} />
+                                     <Route path="/analytics" element={<ResumeAnalytics />} />
+                                     <Route path="/ai-enhancement" element={<AIEnhancement />} />
+                                   </>
+                                 )}
+
                 {/* PRIORITY ROUTES - These must come BEFORE navItems.map to take precedence */}
                 <Route path="/recruiters" element={
                   <Suspense fallback={

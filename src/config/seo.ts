@@ -145,18 +145,13 @@ export const absoluteUrl = (pathOrUrl = '/'): string => {
   return `${PRODUCTION_ORIGIN}${pathOrUrl.startsWith('/') ? pathOrUrl : `/${pathOrUrl}`}`;
 };
 
+import { formatCanonicalUrl } from './domainArchitecture';
+
 /**
- * Canonical URL for a path: always the primary domain, no query string,
- * no hash, no trailing slash (except the homepage).
+ * Canonical URL for a path: dynamically maps to the authoritative product domain,
+ * no query string, no hash, no trailing slash (except the homepage).
  */
 export const canonicalFor = (pathOrUrl?: string): string => {
-  let pathname = '/';
-  try {
-    const url = new URL(pathOrUrl || '/', PRODUCTION_ORIGIN);
-    pathname = url.pathname;
-  } catch {
-    pathname = '/';
-  }
-  if (pathname.length > 1) pathname = pathname.replace(/\/+$/, '');
-  return `${PRODUCTION_ORIGIN}${pathname || '/'}`;
+  return formatCanonicalUrl(pathOrUrl);
 };
+

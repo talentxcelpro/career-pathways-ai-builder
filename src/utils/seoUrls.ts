@@ -159,10 +159,11 @@ export const getCompanyDetailUrl = (company: any): string => {
   return `/companies/${slug}`;
 };
 
+import { formatCanonicalUrl } from '@/config/domainArchitecture';
+
 // Generate canonical URLs
 export const getCanonicalUrl = (path: string): string => {
-  const baseUrl = 'https://talentxcel.in';
-  return `${baseUrl}${path.startsWith('/') ? path : `/${path}`}`;
+  return formatCanonicalUrl(path);
 };
 
 // SEO-friendly pagination URLs
