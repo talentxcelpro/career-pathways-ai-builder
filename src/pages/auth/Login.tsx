@@ -25,7 +25,11 @@ const Login = () => {
         userMetadata: user.user_metadata,
       });
       console.log('[LOGIN AUTH CHECK] User already authenticated, redirecting to:', destination);
-      navigate(destination, { replace: true });
+      if (destination.startsWith('http://') || destination.startsWith('https://')) {
+        window.location.replace(destination);
+      } else {
+        navigate(destination, { replace: true });
+      }
     }
   }, [user, loading, searchParams, navigate]);
 

@@ -5,6 +5,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { resolvePostAuthDestination } from '@/utils/intentRouting';
 
+import { syncSessionFromCrossSubdomainCookie } from '@/lib/auth/crossSubdomainStorage';
+
 interface OptimizedAuthContextType {
   user: User | null;
   session: Session | null;
@@ -27,6 +29,9 @@ export const useOptimizedAuth = () => {
 const getStoredSession = (): { user: User | null; session: Session | null } => {
   if (typeof window === 'undefined') return { user: null, session: null };
   try {
+    // Eagerly sync session from cross-subdomain cookie bridge if local storage is unpopulated
+    syncSessionFromCrossSubdomainCookie();
+
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (key && key.startsWith('sb-') && key.endsWith('-auth-token')) {

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { resolvePostAuthDestination } from '@/utils/intentRouting';
 
 const OAuthCallback = () => {
   const navigate = useNavigate();
@@ -60,8 +61,10 @@ const OAuthCallback = () => {
           if (!exchangeError && exchangeData?.session) {
             setStatus('success');
             toast.success('Signed in successfully!');
-            const dest = localStorage.getItem('subdomain_redirect') || '/network';
-            try { localStorage.removeItem('subdomain_redirect'); } catch (_) {}
+            const dest = resolvePostAuthDestination({
+              searchParams: requestUrl.searchParams,
+              userMetadata: exchangeData.session.user?.user_metadata,
+            });
             window.location.replace(dest);
             return;
           }
@@ -82,8 +85,10 @@ const OAuthCallback = () => {
 
         if (data.session?.user) {
           setStatus('success');
-          const dest = localStorage.getItem('subdomain_redirect') || '/network';
-          try { localStorage.removeItem('subdomain_redirect'); } catch (_) {}
+          const dest = resolvePostAuthDestination({
+            searchParams: requestUrl.searchParams,
+            userMetadata: data.session.user.user_metadata,
+          });
           window.location.replace(dest);
         } else {
           setStatus('error');

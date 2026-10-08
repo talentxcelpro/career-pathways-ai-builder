@@ -11,9 +11,11 @@ const { url: SUPABASE_URL, anonKey: SUPABASE_PUBLISHABLE_KEY } = getSupabaseConf
 
 import { usageGuardFetch } from '@/utils/supabaseUsageGuard';
 
+import { crossSubdomainStorage } from '@/lib/auth/crossSubdomainStorage';
+
 export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
-    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+    storage: crossSubdomainStorage,
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: true,
@@ -51,7 +53,7 @@ export const getSupabaseFunctions = () => {
       SUPABASE_PUBLISHABLE_KEY,
       {
         auth: {
-          storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+          storage: crossSubdomainStorage,
           persistSession: true,
           autoRefreshToken: true,
           detectSessionInUrl: false, // Prevent duplicate session detection

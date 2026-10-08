@@ -30,14 +30,14 @@ const LoginForm = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         // User is already logged in, redirect appropriately
-        if (returnUrl) {
-          navigate(decodeURIComponent(returnUrl));
-        } else if (redirectParam) {
-          navigate(redirectParam);
+        const destination = resolvePostAuthDestination({
+          searchParams,
+          userMetadata: user.user_metadata,
+        });
+        if (destination.startsWith('http://') || destination.startsWith('https://')) {
+          window.location.replace(destination);
         } else {
-          const subdomainPath = getSubdomainRedirect();
-          const redirectPath = subdomainPath || '/network';
-          navigate(redirectPath);
+          navigate(destination);
         }
       }
     };
@@ -79,7 +79,11 @@ const LoginForm = () => {
             searchParams,
             userMetadata: data.user.user_metadata,
           });
-          navigate(destination);
+          if (destination.startsWith('http://') || destination.startsWith('https://')) {
+            window.location.replace(destination);
+          } else {
+            navigate(destination);
+          }
         }
     } catch (error) {
       setAttemptCount(prev => prev + 1);

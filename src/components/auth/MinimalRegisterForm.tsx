@@ -115,7 +115,12 @@ export const MinimalRegisterForm = () => {
         } else {
           toast.success('Account created successfully! 🎉');
         }
-        navigate(destination);
+
+        if (destination.startsWith('http://') || destination.startsWith('https://')) {
+          window.location.replace(destination);
+        } else {
+          navigate(destination);
+        }
       }
     } catch (error: any) {
       toast.error('An unexpected error occurred');

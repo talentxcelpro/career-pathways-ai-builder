@@ -2,6 +2,8 @@
 // Directs users to the appropriate value-generating cockpit based on user intent and role.
 // Eliminates the dead-end dropoff caused by hardcoded /network redirects.
 
+import { isAllowedAuthHostname, getCurrentUniverse, UNIVERSE_ROOT_PATHS } from '@/config/domainArchitecture';
+
 export type UserIntent = 'resume' | 'ats' | 'jobs' | 'hire' | 'recruiter' | 'career' | 'learning' | 'default';
 
 const STORAGE_INTENT_KEY = 'txc_post_auth_intent';
@@ -55,15 +57,37 @@ export const clearStoredUserIntent = () => {
 };
 
 /**
- * Validates a redirect URL to prevent open-redirects and auth loops
+ * Validates a redirect URL to prevent open-redirects and auth loops.
+ * Supports:
+ * - Relative internal paths starting with / (e.g. /jobs, /career-dashboard)
+ * - Absolute URLs on approved TalentXcel domains (e.g. https://jobs.talentxcel.in/jobs/software-engineer)
+ * Blocks:
+ * - Untrusted external domains (open-redirect protection)
+ * - Protocol-relative URLs (//evil.com)
+ * - Auth loops (/auth, /login, /register)
  */
-const isValidInternalPath = (path?: string | null): boolean => {
+export const isValidInternalPath = (path?: string | null): boolean => {
   if (!path) return false;
   const decoded = decodeURIComponent(path).trim();
-  // Must start with single / and not //
+  if (!decoded) return false;
+
+  // Handle absolute URLs
+  if (decoded.startsWith('http://') || decoded.startsWith('https://')) {
+    try {
+      const url = new URL(decoded);
+      if (!isAllowedAuthHostname(url.hostname)) return false;
+      const pathname = url.pathname.toLowerCase();
+      if (pathname.startsWith('/auth') || pathname.startsWith('/login') || pathname.startsWith('/register')) return false;
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  // Handle relative internal paths
   if (!decoded.startsWith('/') || decoded.startsWith('//')) return false;
-  // Disallow auth loops
-  if (decoded.startsWith('/auth') || decoded.startsWith('/login') || decoded.startsWith('/register')) return false;
+  const lower = decoded.toLowerCase();
+  if (lower.startsWith('/auth') || lower.startsWith('/login') || lower.startsWith('/register')) return false;
   return true;
 };
 
@@ -159,7 +183,17 @@ export const resolvePostAuthDestination = (options?: ResolveDestinationOptions):
     return '/dashboard?view=role';
   }
 
-  // 6. Default destination for candidate accounts:
-  // Land on Career Dashboard where candidate sees readiness score, job matches, and resume status.
+  // 6. Active Universe Context (preserves originating product surface)
+  if (typeof window !== 'undefined') {
+    const universe = getCurrentUniverse();
+    if (universe !== 'CORE') {
+      if (universe === 'EMPLOYERS') {
+        return '/dashboard?view=role';
+      }
+      return UNIVERSE_ROOT_PATHS[universe] || '/career-dashboard';
+    }
+  }
+
+  // 7. Default destination for candidate accounts on CORE domain:
   return '/career-dashboard';
 };

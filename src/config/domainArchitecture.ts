@@ -74,12 +74,111 @@ export const UNIVERSE_ROOT_PATHS: Record<ProductUniverse, string> = {
 };
 
 /**
+ * All allowed production hostnames for TalentXcel authentication and cross-subdomain sessions.
+ */
+export const AUTH_ALLOWED_HOSTNAMES: readonly string[] = [
+  'talentxcel.in',
+  'www.talentxcel.in',
+  'jobs.talentxcel.in',
+  'learning.talentxcel.in',
+  'passport.talentxcel.in',
+  'government.talentxcel.in',
+  'employers.talentxcel.in',
+  'employer.talentxcel.in',
+  'colleges.talentxcel.in',
+  'careers.talentxcel.in',
+  'salary.talentxcel.in',
+  'resume.talentxcel.in',
+] as const;
+
+/**
+ * Exact Authorized JavaScript Origins for Google OAuth Web Client registration.
+ * Google Cloud Console explicitly forbids wildcard patterns (e.g. *.talentxcel.in).
+ * Each origin must be registered as scheme + domain (no trailing slash, no path).
+ */
+export const GOOGLE_OAUTH_AUTHORIZED_JAVASCRIPT_ORIGINS: readonly string[] = [
+  'https://talentxcel.in',
+  'https://www.talentxcel.in',
+  'https://jobs.talentxcel.in',
+  'https://learning.talentxcel.in',
+  'https://passport.talentxcel.in',
+  'https://government.talentxcel.in',
+  'https://employers.talentxcel.in',
+  'https://employer.talentxcel.in',
+  'https://colleges.talentxcel.in',
+  'https://careers.talentxcel.in',
+  'https://salary.talentxcel.in',
+  'https://resume.talentxcel.in',
+] as const;
+
+/**
+ * Exact Authorized Redirect URIs for Google OAuth Client & Supabase URL Configuration.
+ */
+export const GOOGLE_OAUTH_AUTHORIZED_REDIRECT_URIS: readonly string[] = [
+  // Primary Supabase OAuth callback (required for Supabase signInWithOAuth)
+  'https://dthlgsnakhoftinssokm.supabase.co/auth/v1/callback',
+  // Domain auth callbacks
+  'https://talentxcel.in/auth/callback',
+  'https://www.talentxcel.in/auth/callback',
+  'https://jobs.talentxcel.in/auth/callback',
+  'https://learning.talentxcel.in/auth/callback',
+  'https://passport.talentxcel.in/auth/callback',
+  'https://government.talentxcel.in/auth/callback',
+  'https://employers.talentxcel.in/auth/callback',
+  'https://employer.talentxcel.in/auth/callback',
+  'https://colleges.talentxcel.in/auth/callback',
+  'https://careers.talentxcel.in/auth/callback',
+  'https://salary.talentxcel.in/auth/callback',
+  'https://resume.talentxcel.in/auth/callback',
+] as const;
+
+/**
  * Normalizes host strings by stripping ports (e.g. "localhost:8080" -> "localhost")
  * and lowercasing.
  */
 export function normalizeHostname(rawHostname?: string): string {
   if (!rawHostname) return '';
   return rawHostname.split(':')[0].trim().toLowerCase();
+}
+
+/**
+ * Checks whether a given hostname is an allowed TalentXcel authentication host.
+ * Supports production domains, subdomains, local development (localhost, 127.0.0.1),
+ * and preview domains (lovableproject.com, vercel.app).
+ */
+export function isAllowedAuthHostname(hostname?: string): boolean {
+  if (!hostname) return false;
+  const clean = normalizeHostname(hostname);
+  if (AUTH_ALLOWED_HOSTNAMES.includes(clean)) return true;
+  if (clean === 'localhost' || clean === '127.0.0.1') return true;
+  if (clean.endsWith('.talentxcel.in')) return true;
+  if (clean.includes('lovableproject.com') || clean.includes('vercel.app')) return true;
+  return false;
+}
+
+/**
+ * Checks whether a given origin or absolute URL is an allowed TalentXcel auth origin.
+ */
+export function isAllowedAuthOrigin(origin?: string): boolean {
+  if (!origin) return false;
+  try {
+    const url = new URL(origin);
+    return isAllowedAuthHostname(url.hostname);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Resolves the cookie domain for cross-subdomain authentication persistence.
+ * Returns '.talentxcel.in' on production domains, or undefined on localhost/previews.
+ */
+export function getCrossSubdomainCookieDomain(hostname?: string): string | undefined {
+  const host = normalizeHostname(hostname || (typeof window !== 'undefined' ? window.location.hostname : ''));
+  if (host === 'talentxcel.in' || host.endsWith('.talentxcel.in')) {
+    return '.talentxcel.in';
+  }
+  return undefined;
 }
 
 /**

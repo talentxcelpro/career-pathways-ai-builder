@@ -1,6 +1,7 @@
 import { useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { isAllowedAuthHostname } from '@/config/domainArchitecture';
 
 interface GoogleOneTapConfig {
   clientId: string;
@@ -64,11 +65,7 @@ export const useGoogleOneTap = ({
     if (!window.google || disabled) return;
 
     const hostname = window.location.hostname;
-    const isProduction = hostname === 'talentxcel.in' || hostname === 'www.talentxcel.in';
-    const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
-    const isLovableDomain = hostname.includes('lovableproject.com');
-    
-    if (!isProduction && !isLocalhost && !isLovableDomain) {
+    if (!isAllowedAuthHostname(hostname)) {
       if (process.env.NODE_ENV === 'development') {
         console.warn('Google One Tap disabled on origin:', hostname);
       }

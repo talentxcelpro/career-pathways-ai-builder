@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
+import { isAllowedAuthHostname } from '@/config/domainArchitecture';
 
 declare global {
   interface Window {
@@ -95,15 +96,7 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
     }
 
     const hostname = window.location.hostname;
-    const isAllowedOrigin = 
-      hostname === 'talentxcel.in' || 
-      hostname === 'www.talentxcel.in' || 
-      hostname === 'localhost' || 
-      hostname === '127.0.0.1' ||
-      hostname.includes('lovableproject.com') ||
-      hostname.includes('vercel.app');
-    
-    if (!isAllowedOrigin) {
+    if (!isAllowedAuthHostname(hostname)) {
       console.warn('Google One Tap disabled on origin:', hostname);
       return;
     }

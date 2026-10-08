@@ -1,6 +1,8 @@
 import React, { useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { GOOGLE_CLIENT_ID } from '@/config/googleAuth';
+import { isAllowedAuthHostname } from '@/config/domainArchitecture';
 
 declare global {
   interface Window {
@@ -60,9 +62,12 @@ export const GoogleOneTap: React.FC<GoogleOneTapProps> = ({
   const initializeGoogleOneTap = useCallback(() => {
     if (!window.google?.accounts?.id || disabled) return;
 
+    const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
+    if (!isAllowedAuthHostname(hostname)) return;
+
     try {
       window.google.accounts.id.initialize({
-        client_id: '946497516392-8f4mbj0r9nbnr3rctq9c7v0gu1f5gd44.apps.googleusercontent.com', // Replace with your actual Google Client ID
+        client_id: GOOGLE_CLIENT_ID,
         callback: handleCredentialResponse,
         auto_select: true,
         cancel_on_tap_outside: false,
