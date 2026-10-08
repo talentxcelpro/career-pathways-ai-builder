@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
 import { isAllowedAuthHostname } from '@/config/domainArchitecture';
+import { GOOGLE_CLIENT_ID } from '@/config/googleAuth';
 
 declare global {
   interface Window {
@@ -25,6 +26,30 @@ interface FastGoogleOneTapProps {
   disabled?: boolean;
 }
 
+/**
+ * Generates a cryptographically secure random nonce and its SHA-256 hash.
+ * Hashed nonce is sent to Google Identity Services.
+ * Raw nonce is sent to Supabase GoTrue to verify the claim in id_token.
+ */
+async function generateNonce(): Promise<{ rawNonce: string; hashedNonce: string }> {
+  try {
+    if (typeof window !== 'undefined' && window.crypto && window.crypto.subtle) {
+      const array = new Uint8Array(32);
+      window.crypto.getRandomValues(array);
+      const rawNonce = btoa(String.fromCharCode(...array));
+      const encoder = new TextEncoder();
+      const hashBuffer = await window.crypto.subtle.digest('SHA-256', encoder.encode(rawNonce));
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashedNonce = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+      return { rawNonce, hashedNonce };
+    }
+  } catch (err) {
+    console.warn('[FastGoogleOneTap] WebCrypto nonce generation fallback:', err);
+  }
+  const fallback = Math.random().toString(36).substring(2) + Date.now().toString(36);
+  return { rawNonce: fallback, hashedNonce: fallback };
+}
+
 export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
   onSuccess,
   autoSelect = true,
@@ -33,35 +58,60 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
   const { user } = useAuth();
   const initializedRef = useRef(false);
   const scriptLoadedRef = useRef(false);
-
-  // Using the existing Google OAuth Client ID
-  const GOOGLE_CLIENT_ID = "888146676949-fl3fn4ijhgduneqmmpbbpamlio30lm8g.apps.googleusercontent.com";
+  const rawNonceRef = useRef<string | null>(null);
 
   const handleCredentialResponse = useCallback(async (response: any) => {
     try {
       console.log('🔐 Google One Tap credential received');
+      const rawNonce = rawNonceRef.current;
       
-      const { data, error } = await supabase.auth.signInWithIdToken({
+      let { data, error } = await supabase.auth.signInWithIdToken({
         provider: 'google',
         token: response.credential,
+        nonce: rawNonce || undefined,
       });
+
+      // Fallback: If Supabase has "Skip nonce check" enabled or rejects the nonce param, retry without nonce
+      if (error && (error.message?.toLowerCase().includes('nonce') || error.status === 400)) {
+        console.warn('Retrying signInWithIdToken without nonce parameter...');
+        const retryResult = await supabase.auth.signInWithIdToken({
+          provider: 'google',
+          token: response.credential,
+        });
+        if (!retryResult.error && retryResult.data) {
+          data = retryResult.data;
+          error = null;
+        }
+      }
 
       if (error) {
         console.error('Google One Tap sign-in error:', error);
-        toast.error('Failed to sign in with Google');
+        toast.error(error.message || 'Failed to sign in with Google');
         return;
       }
 
-      if (data.session) {
+      if (data?.session) {
         console.log('✅ Google One Tap sign-in successful');
         GrowthFunnelTracker.track('google_onetap_accepted');
         GrowthFunnelTracker.track('auth_completed', { provider: 'google_onetap' });
+        
+        // Ensure user profile slug is properly set to first-middle-last or first-last
+        if (data.user) {
+          try {
+            const { ensureUserProfileSlug } = await import('@/utils/userProfileSlug');
+            const metaName = data.user.user_metadata?.full_name || data.user.user_metadata?.name;
+            await ensureUserProfileSlug(data.user.id, metaName, data.user.email);
+          } catch (e) {
+            console.warn('Silent slug ensure error:', e);
+          }
+        }
+
         toast.success('Welcome back! Signed in with Google');
         onSuccess?.();
       }
     } catch (error: any) {
       console.error('Google One Tap error:', error);
-      toast.error('Google sign in failed');
+      toast.error(error?.message || 'Google sign in failed');
     }
   }, [onSuccess]);
 
@@ -81,7 +131,7 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
     return false;
   };
 
-  const initializeGoogleOneTap = useCallback(() => {
+  const initializeGoogleOneTap = useCallback(async () => {
     if (!window.google || disabled || user || hasActiveAuthSession() || initializedRef.current) {
       if (user && window.google?.accounts?.id?.cancel) {
         window.google.accounts.id.cancel();
@@ -106,6 +156,10 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
       if (typeof window !== 'undefined') {
         sessionStorage.setItem('txc_onetap_shown', 'true');
       }
+
+      // Generate cryptographically secure nonce pair
+      const { rawNonce, hashedNonce } = await generateNonce();
+      rawNonceRef.current = rawNonce;
       
       window.google.accounts.id.initialize({
         client_id: GOOGLE_CLIENT_ID,
@@ -113,7 +167,7 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
         context: 'signin',
         auto_select: autoSelect,
         cancel_on_tap_outside: false,
-        use_fedcm_for_prompt: true,
+        nonce: hashedNonce,
         ux_mode: 'popup',
         itp_support: true,
       });

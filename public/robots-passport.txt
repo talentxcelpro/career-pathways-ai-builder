@@ -1,0 +1,70 @@
+# ==========================================================
+# TalentXcel Career Passport robots.txt
+# Authoritative domain: https://passport.talentxcel.in
+# Privacy Invariant: Public Opt-in Profiles Only
+# ==========================================================
+
+User-agent: Googlebot
+Allow: /
+Allow: /passport/
+
+User-agent: Bingbot
+Allow: /
+Allow: /passport/
+
+User-agent: OAI-SearchBot
+Allow: /
+Allow: /passport/
+
+User-agent: PerplexityBot
+Allow: /
+Allow: /passport/
+
+User-agent: Claude-User
+Allow: /
+Allow: /passport/
+
+# Training / Scraping Bots Restricted
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: *
+Allow: /
+Allow: /passport/
+
+# STRICT PRIVACY PROTECTION: Block all private and unconsented profile paths
+Disallow: /careerpassport/user/
+Disallow: /careerpassport/private/
+Disallow: /profile/edit/
+Disallow: /profile/settings/
+Disallow: /auth/
+Disallow: /admin/
+Disallow: /dashboard
+Disallow: /settings
+Disallow: /api/
+
+Allow: /assets/
+Allow: /*.js$
+Allow: /*.css$
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.svg$
+
+Disallow: /*?*filter=
+Disallow: /*?*sort=
+Disallow: /*?*page=
+Disallow: /*?*utm_
+
+Sitemap: https://passport.talentxcel.in/sitemap.xml

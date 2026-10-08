@@ -93,9 +93,10 @@ function escapeXml(unsafe: string): string {
   });
 }
 
-function buildUrlSetXml(entries: SitemapEntry[]): string {
+function buildUrlSetXml(entries: SitemapEntry[], originOverride?: string): string {
+  const origin = originOverride || PRODUCTION_ORIGIN;
   const urlNodes = entries.map((entry) => {
-    const loc = `${PRODUCTION_ORIGIN}${entry.path === '/' ? '/' : entry.path.replace(/\/+$/, '')}`;
+    const loc = `${origin}${entry.path === '/' ? '/' : entry.path.replace(/\/+$/, '')}`;
     const lines = [
       '  <url>',
       `    <loc>${escapeXml(loc)}</loc>`,
@@ -152,14 +153,15 @@ export async function generateProductionSitemaps() {
     }
   }
 
-  const seenUrls = new Set<string>();
+  const globalSeenLocs = new Set<string>();
 
   const deduplicate = (list: SitemapEntry[]): SitemapEntry[] => {
+    const localSeen = new Set<string>();
     const out: SitemapEntry[] = [];
     for (const item of list) {
       const normalized = item.path.replace(/\/+$/, '') || '/';
-      if (!seenUrls.has(normalized)) {
-        seenUrls.add(normalized);
+      if (!localSeen.has(normalized)) {
+        localSeen.add(normalized);
         out.push({ ...item, path: normalized });
       }
     }
@@ -309,30 +311,93 @@ export async function generateProductionSitemaps() {
     }))
   ]);
 
-  // Master segmented configuration array (12 Verified Sitemaps)
-  const sitemapConfig = [
-    { filename: 'sitemap-base.xml', entries: baseEntries },
-    { filename: 'sitemap-jobs.xml', entries: activeJobEntries },
-    { filename: 'sitemap-colleges.xml', entries: collegeOverviewEntries },
-    { filename: 'sitemap-career-paths.xml', entries: pathwayEntries },
-    { filename: 'sitemap-locations.xml', entries: locationEntries },
-    { filename: 'sitemap-posts.xml', entries: postEntries },
-    { filename: 'sitemap-blog.xml', entries: blogEntries },
-    { filename: 'sitemap-news.xml', entries: newsEntries },
-    { filename: 'sitemap-companies.xml', entries: companyEntries },
-    { filename: 'sitemap-services.xml', entries: serviceEntries },
-    { filename: 'sitemap-rankings.xml', entries: rankingsEntries },
-    { filename: 'sitemap-learning.xml', entries: learningEntries },
+  // 13. Dedicated Subdomain Specific URL Clusters
+  const resumeEntries = deduplicate([
+    { path: '/resume', changefreq: 'daily', priority: '1.0' },
+    { path: '/resume/build', changefreq: 'daily', priority: '0.9' },
+    { path: '/resume/ats-check', changefreq: 'daily', priority: '0.9' },
+    { path: '/resume/cover-letter', changefreq: 'daily', priority: '0.9' },
+    { path: '/resume/interview-prep', changefreq: 'daily', priority: '0.9' },
+    { path: '/resume/software-engineer/ats-keywords', changefreq: 'daily', priority: '0.9' },
+    { path: '/resume/data-analyst/ats-keywords', changefreq: 'daily', priority: '0.9' },
+    { path: '/resume/devops-engineer/ats-keywords', changefreq: 'daily', priority: '0.8' },
+    { path: '/resume/templates', changefreq: 'weekly', priority: '0.8' },
+    { path: '/tools/ats-checker', changefreq: 'daily', priority: '0.9' },
+    { path: '/tools/resume-checker', changefreq: 'daily', priority: '0.9' },
+  ]);
+
+  const salaryEntries = deduplicate([
+    { path: '/salary', changefreq: 'daily', priority: '1.0' },
+    { path: '/salary/software-engineer/bangalore', changefreq: 'weekly', priority: '0.9' },
+    { path: '/salary/data-analyst/hyderabad', changefreq: 'weekly', priority: '0.8' },
+    { path: '/salary/devops-engineer/india', changefreq: 'weekly', priority: '0.8' },
+    { path: '/salary/devops-engineer/pune', changefreq: 'weekly', priority: '0.8' },
+    { path: '/tools/salary-analyzer', changefreq: 'daily', priority: '0.9' },
+  ]);
+
+  const careersEntries = deduplicate([
+    { path: '/career-map', changefreq: 'daily', priority: '1.0' },
+    { path: '/career-map/software-engineer', changefreq: 'weekly', priority: '0.9' },
+    { path: '/career-map/data-analyst', changefreq: 'weekly', priority: '0.9' },
+    { path: '/ai-career-hub', changefreq: 'daily', priority: '0.9' },
+    { path: '/career-intelligence', changefreq: 'daily', priority: '0.9' },
+    { path: '/career-platform', changefreq: 'weekly', priority: '0.8' },
+    { path: '/how-to-become/cloud-architect', changefreq: 'weekly', priority: '0.8' },
+    { path: '/how-to-become/product-manager', changefreq: 'weekly', priority: '0.8' },
+  ]);
+
+  const governmentEntries = deduplicate([
+    { path: '/government-jobs', changefreq: 'daily', priority: '1.0' },
+    { path: '/government-jobs/exams/upsc-2026', changefreq: 'daily', priority: '0.9' },
+    { path: '/government-jobs/exams/ssc-cgl-2026', changefreq: 'daily', priority: '0.9' },
+    { path: '/government-jobs/exams/ibps-po-2026', changefreq: 'daily', priority: '0.9' },
+  ]);
+
+  const employerEntries = deduplicate([
+    { path: '/companies', changefreq: 'daily', priority: '1.0' },
+    { path: '/recruiters', changefreq: 'daily', priority: '0.9' },
+    { path: '/hire', changefreq: 'daily', priority: '0.9' },
+    { path: '/staffing', changefreq: 'weekly', priority: '0.8' },
+    { path: '/recruitment', changefreq: 'weekly', priority: '0.8' },
+    { path: '/rpo', changefreq: 'weekly', priority: '0.8' },
+  ]);
+
+  const passportEntries = deduplicate([
+    { path: '/passport', changefreq: 'weekly', priority: '0.9' },
+  ]);
+
+  // Master segmented configuration array (All 10 Dedicated Production Domains + Supplemental Hubs)
+  const sitemapConfig: { filename: string; entries: SitemapEntry[]; origin?: string }[] = [
+    { filename: 'sitemap-base.xml', entries: baseEntries, origin: 'https://talentxcel.in' },
+    { filename: 'sitemap-core.xml', entries: baseEntries, origin: 'https://talentxcel.in' },
+    { filename: 'sitemap-jobs.xml', entries: activeJobEntries, origin: 'https://jobs.talentxcel.in' },
+    { filename: 'sitemap-learning.xml', entries: learningEntries, origin: 'https://learning.talentxcel.in' },
+    { filename: 'sitemap-passport.xml', entries: passportEntries, origin: 'https://passport.talentxcel.in' },
+    { filename: 'sitemap-government.xml', entries: governmentEntries, origin: 'https://government.talentxcel.in' },
+    { filename: 'sitemap-employers.xml', entries: employerEntries, origin: 'https://employers.talentxcel.in' },
+    { filename: 'sitemap-colleges.xml', entries: collegeOverviewEntries, origin: 'https://colleges.talentxcel.in' },
+    { filename: 'sitemap-careers.xml', entries: careersEntries, origin: 'https://careers.talentxcel.in' },
+    { filename: 'sitemap-salary.xml', entries: salaryEntries, origin: 'https://salary.talentxcel.in' },
+    { filename: 'sitemap-resume.xml', entries: resumeEntries, origin: 'https://resume.talentxcel.in' },
+    { filename: 'sitemap-career-paths.xml', entries: pathwayEntries, origin: 'https://careers.talentxcel.in' },
+    { filename: 'sitemap-locations.xml', entries: locationEntries, origin: 'https://talentxcel.in' },
+    { filename: 'sitemap-posts.xml', entries: postEntries, origin: 'https://talentxcel.in' },
+    { filename: 'sitemap-blog.xml', entries: blogEntries, origin: 'https://talentxcel.in' },
+    { filename: 'sitemap-news.xml', entries: newsEntries, origin: 'https://talentxcel.in' },
+    { filename: 'sitemap-companies.xml', entries: companyEntries, origin: 'https://talentxcel.in' },
+    { filename: 'sitemap-services.xml', entries: serviceEntries, origin: 'https://talentxcel.in' },
+    { filename: 'sitemap-rankings.xml', entries: rankingsEntries, origin: 'https://talentxcel.in' },
   ];
 
   const validSitemapsForIndex: { filename: string; count: number }[] = [];
 
-  sitemapConfig.forEach(({ filename, entries }) => {
+  sitemapConfig.forEach(({ filename, entries, origin }) => {
     if (entries.length > 0) {
-      const xml = buildUrlSetXml(entries);
+      const xml = buildUrlSetXml(entries, origin);
       writeFileSync(resolve(publicDir, filename), xml, 'utf-8');
       validSitemapsForIndex.push({ filename, count: entries.length });
-      console.log(`✓ Generated ${filename}: ${entries.length.toLocaleString()} URLs`);
+      entries.forEach(e => globalSeenLocs.add(`${origin || PRODUCTION_ORIGIN}${e.path}`));
+      console.log(`✓ Generated ${filename}: ${entries.length.toLocaleString()} URLs (Origin: ${origin || PRODUCTION_ORIGIN})`);
     }
   });
 
@@ -340,7 +405,7 @@ export async function generateProductionSitemaps() {
   const masterXml = buildSitemapIndexXml(validSitemapsForIndex);
   writeFileSync(resolve(publicDir, 'sitemap.xml'), masterXml, 'utf-8');
   console.log(`\n✓ Master sitemap.xml generated with ${validSitemapsForIndex.length} segmented sitemaps!`);
-  console.log(`Total URLs Published in Sitemaps: ${seenUrls.size.toLocaleString()}`);
+  console.log(`Total URLs Published in Sitemaps: ${globalSeenLocs.size.toLocaleString()}`);
 }
 
 generateProductionSitemaps().catch(console.error);

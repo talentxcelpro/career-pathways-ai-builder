@@ -44,15 +44,31 @@ interface JobApplication {
 
 const MyApplications = () => {
   const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsAuthenticated(!!session);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(!!session);
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const { data: applications = [], isLoading, error } = useQuery({
-    queryKey: ['my_applications'],
+    queryKey: ['my_applications', isAuthenticated],
+    enabled: isAuthenticated !== false,
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      if (!user) return [];
 
-      // Fix the relationship ambiguity by being more specific with the select
-      const { data, error } = await supabase
+      let rawApps: any[] = [];
+
+      // Primary attempt: using fk_job_applications_job_id without invalid nested companies FK
+      const res1 = await supabase
         .from('job_applications')
         .select(`
           id,
@@ -62,7 +78,7 @@ const MyApplications = () => {
           ai_match_score,
           cover_letter,
           resume_url,
-          jobs!job_applications_job_id_fkey (
+          jobs!fk_job_applications_job_id (
             id,
             title,
             description,
@@ -75,41 +91,129 @@ const MyApplications = () => {
             is_urgent,
             is_hiring_fast,
             applications_count,
-            companies (
-              id,
-              name,
-              logo_url,
-              industry
-            )
+            company_name,
+            company_id
           )
         `)
         .eq('user_id', user.id)
         .order('applied_at', { ascending: false });
 
-      if (error) throw error;
-      
-      // Filter out any applications where the job data failed to load
-      const validApplications = data?.filter(app => 
-        app.jobs && 
-        typeof app.jobs === 'object' && 
-        !('error' in app.jobs) &&
-        app.jobs !== null &&
-        'id' in app.jobs
-      ) || [];
-      
-      return validApplications.map((app: any) => ({
-        ...app,
-        jobs: Array.isArray(app.jobs) ? {
-          ...app.jobs[0],
-          companies: Array.isArray(app.jobs[0]?.companies) ? app.jobs[0].companies[0] : app.jobs[0]?.companies
-        } : app.jobs
-      })) as JobApplication[];
+      if (!res1.error && res1.data) {
+        rawApps = res1.data;
+      } else {
+        // Fallback attempt: using job_applications_job_id_fkey
+        const res2 = await supabase
+          .from('job_applications')
+          .select(`
+            id,
+            status,
+            applied_at,
+            last_activity_at,
+            ai_match_score,
+            cover_letter,
+            resume_url,
+            jobs!job_applications_job_id_fkey (
+              id,
+              title,
+              description,
+              location,
+              salary_min,
+              salary_max,
+              employment_type,
+              experience_level,
+              is_remote,
+              is_urgent,
+              is_hiring_fast,
+              applications_count,
+              company_name,
+              company_id
+            )
+          `)
+          .eq('user_id', user.id)
+          .order('applied_at', { ascending: false });
+
+        if (!res2.error && res2.data) {
+          rawApps = res2.data;
+        } else {
+          // Secondary fallback: separate query to avoid schema relationship mismatch
+          const res3 = await supabase
+            .from('job_applications')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('applied_at', { ascending: false });
+
+          if (res3.error) throw res3.error;
+          const apps = res3.data || [];
+          const jobIds = apps.map((a: any) => a.job_id).filter(Boolean);
+          const jobsMap = new Map<string, any>();
+          if (jobIds.length > 0) {
+            const { data: jobList } = await supabase
+              .from('jobs')
+              .select('id, title, description, location, salary_min, salary_max, employment_type, experience_level, is_remote, is_urgent, is_hiring_fast, applications_count, company_name, company_id')
+              .in('id', jobIds);
+            (jobList || []).forEach((j: any) => jobsMap.set(j.id, j));
+          }
+          rawApps = apps.map((a: any) => ({
+            ...a,
+            jobs: jobsMap.get(a.job_id) || null,
+          }));
+        }
+      }
+
+      // Collect company IDs to resolve company details/logos if available
+      const companyIds = rawApps
+        .map((app: any) => {
+          const j = Array.isArray(app.jobs) ? app.jobs[0] : app.jobs;
+          return j?.company_id;
+        })
+        .filter(Boolean);
+
+      const companiesMap = new Map<string, any>();
+      if (companyIds.length > 0) {
+        try {
+          const { data: compList } = await supabase
+            .from('companies')
+            .select('id, name, logo_url, industry')
+            .in('id', companyIds);
+          (compList || []).forEach((c: any) => companiesMap.set(c.id, c));
+        } catch {
+          // Non-blocking
+        }
+      }
+
+      const validApplications = rawApps
+        .filter((app: any) => {
+          const j = Array.isArray(app.jobs) ? app.jobs[0] : app.jobs;
+          return j && typeof j === 'object' && !('error' in j) && j.id;
+        })
+        .map((app: any) => {
+          const j = Array.isArray(app.jobs) ? app.jobs[0] : app.jobs;
+          const matchedCompany = (j.company_id && companiesMap.get(j.company_id)) || (j.company_name ? {
+            id: j.company_id || '',
+            name: j.company_name,
+            logo_url: undefined,
+            industry: undefined,
+          } : null);
+
+          return {
+            ...app,
+            jobs: {
+              ...j,
+              companies: matchedCompany,
+            },
+          };
+        });
+
+      return validApplications as JobApplication[];
     },
   });
 
-  if (error) {
-    toast.error('Failed to load applications');
-  }
+  useEffect(() => {
+    if (error) {
+      console.error('Failed to load applications:', error);
+      toast.error('Failed to load applications');
+    }
+  }, [error]);
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -170,7 +274,27 @@ const MyApplications = () => {
           </p>
         </div>
 
-        {applications.length === 0 ? (
+        {isAuthenticated === false ? (
+          <Card>
+            <CardContent className="text-center py-12">
+              <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                Sign in to view your applications
+              </h3>
+              <p className="text-gray-500 mb-4">
+                Please log in to track your job applications and see updates.
+              </p>
+              <div className="flex justify-center gap-3">
+                <Button onClick={() => navigate('/auth')}>
+                  Sign In
+                </Button>
+                <Button variant="outline" onClick={() => navigate('/jobs')}>
+                  Browse Jobs
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ) : applications.length === 0 ? (
           <Card>
             <CardContent className="text-center py-12">
               <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />

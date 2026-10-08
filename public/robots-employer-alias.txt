@@ -1,0 +1,9 @@
+# ==========================================================
+# TalentXcel Legacy Employer Alias robots.txt
+# Non-competing host. Authoritative authority: https://employers.talentxcel.in
+# ==========================================================
+
+User-agent: *
+Disallow: /
+
+Sitemap: https://employers.talentxcel.in/sitemap.xml

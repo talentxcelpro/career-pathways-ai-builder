@@ -15,7 +15,7 @@
       ]
     },
     {
-      "source": "/(sitemap.*\\.xml|robots\\.txt)",
+      "source": "/(sitemap.*\\.xml|robots.*\\.txt)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -59,6 +59,17 @@
     }
   ],
   "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "employer.talentxcel.in"
+        }
+      ],
+      "destination": "https://employers.talentxcel.in/:path*",
+      "permanent": true
+    },
     {
       "source": "/job/:path*",
       "destination": "https://talentxcel.in/jobs/:path*",
@@ -116,6 +127,101 @@
     }
   ],
   "rewrites": [
+    {
+      "source": "/sitemap.xml",
+      "has": [{ "type": "host", "value": "jobs.talentxcel.in" }],
+      "destination": "/sitemap-jobs.xml"
+    },
+    {
+      "source": "/robots.txt",
+      "has": [{ "type": "host", "value": "jobs.talentxcel.in" }],
+      "destination": "/robots-jobs.txt"
+    },
+    {
+      "source": "/sitemap.xml",
+      "has": [{ "type": "host", "value": "learning.talentxcel.in" }],
+      "destination": "/sitemap-learning.xml"
+    },
+    {
+      "source": "/robots.txt",
+      "has": [{ "type": "host", "value": "learning.talentxcel.in" }],
+      "destination": "/robots-learning.txt"
+    },
+    {
+      "source": "/sitemap.xml",
+      "has": [{ "type": "host", "value": "resume.talentxcel.in" }],
+      "destination": "/sitemap-resume.xml"
+    },
+    {
+      "source": "/robots.txt",
+      "has": [{ "type": "host", "value": "resume.talentxcel.in" }],
+      "destination": "/robots-resume.txt"
+    },
+    {
+      "source": "/sitemap.xml",
+      "has": [{ "type": "host", "value": "careers.talentxcel.in" }],
+      "destination": "/sitemap-careers.xml"
+    },
+    {
+      "source": "/robots.txt",
+      "has": [{ "type": "host", "value": "careers.talentxcel.in" }],
+      "destination": "/robots-careers.txt"
+    },
+    {
+      "source": "/sitemap.xml",
+      "has": [{ "type": "host", "value": "salary.talentxcel.in" }],
+      "destination": "/sitemap-salary.xml"
+    },
+    {
+      "source": "/robots.txt",
+      "has": [{ "type": "host", "value": "salary.talentxcel.in" }],
+      "destination": "/robots-salary.txt"
+    },
+    {
+      "source": "/sitemap.xml",
+      "has": [{ "type": "host", "value": "colleges.talentxcel.in" }],
+      "destination": "/sitemap-colleges.xml"
+    },
+    {
+      "source": "/robots.txt",
+      "has": [{ "type": "host", "value": "colleges.talentxcel.in" }],
+      "destination": "/robots-colleges.txt"
+    },
+    {
+      "source": "/sitemap.xml",
+      "has": [{ "type": "host", "value": "government.talentxcel.in" }],
+      "destination": "/sitemap-government.xml"
+    },
+    {
+      "source": "/robots.txt",
+      "has": [{ "type": "host", "value": "government.talentxcel.in" }],
+      "destination": "/robots-government.txt"
+    },
+    {
+      "source": "/sitemap.xml",
+      "has": [{ "type": "host", "value": "employers.talentxcel.in" }],
+      "destination": "/sitemap-employers.xml"
+    },
+    {
+      "source": "/robots.txt",
+      "has": [{ "type": "host", "value": "employers.talentxcel.in" }],
+      "destination": "/robots-employers.txt"
+    },
+    {
+      "source": "/sitemap.xml",
+      "has": [{ "type": "host", "value": "passport.talentxcel.in" }],
+      "destination": "/sitemap-passport.xml"
+    },
+    {
+      "source": "/robots.txt",
+      "has": [{ "type": "host", "value": "passport.talentxcel.in" }],
+      "destination": "/robots-passport.txt"
+    },
+    {
+      "source": "/robots.txt",
+      "has": [{ "type": "host", "value": "employer.talentxcel.in" }],
+      "destination": "/robots-employer-alias.txt"
+    },
     {
       "source": "/api/optimized-sitemap-index",
       "destination": "https://dthlgsnakhoftinssokm.supabase.co/functions/v1/optimized-sitemap?type=index"

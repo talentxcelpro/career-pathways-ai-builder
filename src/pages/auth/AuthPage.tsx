@@ -49,6 +49,10 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
 
   // Redirect if already authenticated
   if (!loading && user) {
+    if (redirectTo.startsWith('http://') || redirectTo.startsWith('https://')) {
+      window.location.replace(redirectTo);
+      return null;
+    }
     return <Navigate to={redirectTo} replace />;
   }
 
@@ -131,6 +135,10 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
           userMetadata: data.user?.user_metadata
         });
         if (data.session) {
+          if (destination.startsWith('http://') || destination.startsWith('https://')) {
+            window.location.replace(destination);
+            return;
+          }
           navigate(destination);
           return;
         }
@@ -149,6 +157,10 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
           role: userType,
           userMetadata: data.user?.user_metadata
         });
+        if (destination.startsWith('http://') || destination.startsWith('https://')) {
+          window.location.replace(destination);
+          return;
+        }
         navigate(destination);
         return;
         toast.success('Welcome back!');
@@ -175,6 +187,17 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
   };
 
   const handleSocialAuth = async (provider: 'google' | 'linkedin_oidc') => {
+    // Central SSO Authority: If on a subdomain (e.g. jobs.talentxcel.in, employer.talentxcel.in),
+    // delegate OAuth to talentxcel.in (the registered authorized origin) with returnTo URL.
+    const host = typeof window !== 'undefined' ? window.location.hostname.toLowerCase() : '';
+    const isSubdomain = host && host !== 'talentxcel.in' && host !== 'www.talentxcel.in' && !host.includes('localhost') && host.endsWith('.talentxcel.in');
+
+    if (isSubdomain) {
+      const returnUrl = window.location.href;
+      window.location.href = `https://talentxcel.in/auth?returnTo=${encodeURIComponent(returnUrl)}&flow=${currentFlow}&type=${userType}`;
+      return;
+    }
+
     try {
       setIsLoading(true);
       

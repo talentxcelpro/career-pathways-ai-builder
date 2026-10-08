@@ -1,0 +1,86 @@
+# ==========================================================
+# TalentXcel Jobs Search Engine robots.txt
+# Authoritative domain: https://jobs.talentxcel.in
+# ==========================================================
+
+User-agent: Indeed
+Allow: /jobs/
+
+User-agent: NaukriBot
+Allow: /jobs/
+
+User-agent: CareerBuilder
+Allow: /jobs/
+
+User-agent: JoobleBot
+Allow: /jobs/
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+# Training / Scraping Bots Restricted
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: *
+Allow: /
+
+# Private & User Application Routes
+Disallow: /jobs/apply/
+Disallow: /jobs/dashboard/
+Disallow: /jobs/my-applications/
+Disallow: /auth/
+Disallow: /admin/
+Disallow: /dashboard
+Disallow: /settings
+Disallow: /api/
+
+# Static Rendering Assets
+Allow: /assets/
+Allow: /*.js$
+Allow: /*.css$
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.svg$
+
+# Parameter Filtering Control
+Allow: /jobs?search=
+Disallow: /*?*filter=
+Disallow: /*?*sort=
+Disallow: /*?*page=
+Disallow: /*?*utm_
+
+Sitemap: https://jobs.talentxcel.in/sitemap.xml

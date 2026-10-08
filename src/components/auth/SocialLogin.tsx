@@ -81,6 +81,18 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
 
   const handleFallbackClick = useCallback(async () => {
     if (loadingRef.current) return;
+
+    // Central SSO Authority: If on a subdomain (e.g. jobs.talentxcel.in, employer.talentxcel.in),
+    // delegate OAuth to talentxcel.in (the registered authorized origin) with returnTo URL.
+    const host = typeof window !== 'undefined' ? window.location.hostname.toLowerCase() : '';
+    const isSubdomain = host && host !== 'talentxcel.in' && host !== 'www.talentxcel.in' && !host.includes('localhost') && host.endsWith('.talentxcel.in');
+
+    if (isSubdomain) {
+      const returnUrl = window.location.href;
+      window.location.href = `https://talentxcel.in/auth?returnTo=${encodeURIComponent(returnUrl)}`;
+      return;
+    }
+
     try {
       await loadGoogleIdentityServices();
       const google = (window as any).google;
@@ -103,6 +115,16 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
     if (loadingRef.current) return;
     loadingRef.current = true;
     setLoading(true);
+
+    const host = typeof window !== 'undefined' ? window.location.hostname.toLowerCase() : '';
+    const isSubdomain = host && host !== 'talentxcel.in' && host !== 'www.talentxcel.in' && !host.includes('localhost') && host.endsWith('.talentxcel.in');
+
+    if (isSubdomain) {
+      const returnUrl = window.location.href;
+      window.location.href = `https://talentxcel.in/auth?returnTo=${encodeURIComponent(returnUrl)}`;
+      return;
+    }
+
     try {
       // Don't use skipBrowserRedirect — let Supabase manage PKCE verifier storage naturally
       const { error } = await supabase.auth.signInWithOAuth({
@@ -131,6 +153,13 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
   // straight to Google — never to Supabase's /auth/v1/authorize endpoint.
   useEffect(() => {
     let cancelled = false;
+
+    // Subdomains delegate OAuth to central authority to prevent origin_mismatch
+    const host = typeof window !== 'undefined' ? window.location.hostname.toLowerCase() : '';
+    const isSubdomain = host && host !== 'talentxcel.in' && host !== 'www.talentxcel.in' && !host.includes('localhost') && host.endsWith('.talentxcel.in');
+    if (isSubdomain) {
+      return; // Do not mount GSI overlay on subdomains; button clicks delegate to central SSO
+    }
 
     loadGoogleIdentityServices()
       .then(() => {

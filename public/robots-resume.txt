@@ -1,0 +1,63 @@
+# ==========================================================
+# TalentXcel Resume & ATS Intelligence robots.txt
+# Authoritative domain: https://resume.talentxcel.in
+# ==========================================================
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+# Training / Scraping Bots Restricted
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: *
+Allow: /
+
+# Private Resumes & User Documents
+Disallow: /resume/user/
+Disallow: /resume/private/
+Disallow: /resume/edit/
+Disallow: /resume/my-resumes/
+Disallow: /auth/
+Disallow: /admin/
+Disallow: /dashboard
+Disallow: /settings
+Disallow: /api/
+
+Allow: /assets/
+Allow: /*.js$
+Allow: /*.css$
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.svg$
+
+Disallow: /*?*filter=
+Disallow: /*?*sort=
+Disallow: /*?*page=
+Disallow: /*?*utm_
+
+Sitemap: https://resume.talentxcel.in/sitemap.xml

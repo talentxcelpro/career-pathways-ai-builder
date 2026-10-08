@@ -1,10 +1,10 @@
-﻿/**
+/**
  * TalentXcel Government Job Detail Page (/government-jobs/detail/:id)
  * Canonical single-vacancy detail page with source provenance,
  * timeline tracking, AI eligibility, and official application routing.
  */
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import {
@@ -20,13 +20,9 @@ import { GovernmentJobBadge } from '@/components/jobs/GovernmentJobBadge';
 import { FresherBadge } from '@/components/jobs/FresherBadge';
 import { SourceAttribution } from '@/components/jobs/SourceAttribution';
 import { JobEligibilityCard } from '@/components/jobs/JobEligibilityCard';
-import { EmploymentNewsConnector } from '@/lib/jobs/connectors/india/EmploymentNewsConnector';
-import { USAJobsConnector } from '@/lib/jobs/connectors/usajobs/USAJobsConnector';
-import { CentralGovConnector } from '@/lib/jobs/connectors/india/CentralGovConnector';
-import { StateGovConnector } from '@/lib/jobs/connectors/india/StateGovConnector';
-import { PSUConnector } from '@/lib/jobs/connectors/india/PSUConnector';
 import { buildVacancyTimeline } from '@/lib/jobs/governmentUpdates';
 import { evaluateGovernmentJobPostingEligibility } from '@/lib/seo/governmentJobPostingPolicy';
+import { getInitialGovernmentJobs, fetchAllGovernmentJobs } from '@/lib/jobs/governmentJobsService';
 import { GlobalJob } from '@/types/jobs/globalJob';
 import { toast } from 'sonner';
 
@@ -34,23 +30,31 @@ export default function GovernmentJobDetail() {
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  // Find job from connector feeds
-  const job = useMemo<GlobalJob | undefined>(() => {
-    const en = new EmploymentNewsConnector();
-    const upsc = new CentralGovConnector();
-    const state = new StateGovConnector();
-    const psu = new PSUConnector();
-    const usajobs = new USAJobsConnector();
+  // Find job from initial verified cache, then async refresh if needed
+  const [job, setJob] = useState<GlobalJob | null | undefined>(() => {
+    const pool = getInitialGovernmentJobs();
+    return pool.find((j) => j.id === id || j.slug.includes(id)) || undefined;
+  });
 
-    const pool = [
-      ...en.discoverJobs().map((r) => en.normalize(r)),
-      ...upsc.discoverJobs().map((r) => upsc.normalize(r)),
-      ...state.discoverJobs().map((r) => state.normalize(r)),
-      ...psu.discoverJobs().map((r) => psu.normalize(r)),
-      ...usajobs.discoverJobs().map((r) => usajobs.normalize(r)),
-    ];
+  useEffect(() => {
+    let isMounted = true;
+    fetchAllGovernmentJobs()
+      .then((pool) => {
+        if (isMounted) {
+          const match = pool.find((j) => j.id === id || j.slug.includes(id));
+          setJob(match || null);
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to load government job details:', err);
+        if (isMounted && job === undefined) {
+          setJob(null);
+        }
+      });
 
-    return pool.find((j) => j.id === id || j.slug.includes(id));
+    return () => {
+      isMounted = false;
+    };
   }, [id]);
 
   if (!job) {

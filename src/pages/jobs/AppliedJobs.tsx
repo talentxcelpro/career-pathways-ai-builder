@@ -22,48 +22,124 @@ export default function AppliedJobs() {
     queryKey: ['applied-jobs', searchTerm, statusFilter],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
+      if (!user) return [];
 
-      let query = supabase
+      let rawApps: any[] = [];
+      let query1 = supabase
         .from('job_applications')
         .select(`
           *,
-          jobs!fk_job_applications_job_id (
-            *,
-            companies (
-              id,
-              name,
-              logo_url,
-              industry
-            ),
-            job_categories (
-              name,
-              slug
-            )
-          )
+          jobs!fk_job_applications_job_id (*)
         `)
         .eq('user_id', user.id)
         .order('applied_at', { ascending: false });
 
-      // Apply status filter
       if (statusFilter !== 'all') {
-        query = query.eq('status', statusFilter);
+        query1 = query1.eq('status', statusFilter);
       }
 
-      const { data, error } = await query;
-      
-      if (error) throw error;
-      
+      const res1 = await query1;
+      if (!res1.error && res1.data) {
+        rawApps = res1.data;
+      } else {
+        let query2 = supabase
+          .from('job_applications')
+          .select(`
+            *,
+            jobs!job_applications_job_id_fkey (*)
+          `)
+          .eq('user_id', user.id)
+          .order('applied_at', { ascending: false });
+
+        if (statusFilter !== 'all') {
+          query2 = query2.eq('status', statusFilter);
+        }
+
+        const res2 = await query2;
+        if (!res2.error && res2.data) {
+          rawApps = res2.data;
+        } else {
+          let query3 = supabase
+            .from('job_applications')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('applied_at', { ascending: false });
+
+          if (statusFilter !== 'all') {
+            query3 = query3.eq('status', statusFilter);
+          }
+
+          const res3 = await query3;
+          if (res3.error) throw res3.error;
+
+          const apps = res3.data || [];
+          const jobIds = apps.map((a: any) => a.job_id).filter(Boolean);
+          const jobsMap = new Map<string, any>();
+          if (jobIds.length > 0) {
+            const { data: jobList } = await supabase
+              .from('jobs')
+              .select('*')
+              .in('id', jobIds);
+            (jobList || []).forEach((j: any) => jobsMap.set(j.id, j));
+          }
+          rawApps = apps.map((a: any) => ({
+            ...a,
+            jobs: jobsMap.get(a.job_id) || null,
+          }));
+        }
+      }
+
+      // Collect company IDs
+      const companyIds = rawApps
+        .map((app: any) => {
+          const j = Array.isArray(app.jobs) ? app.jobs[0] : app.jobs;
+          return j?.company_id;
+        })
+        .filter(Boolean);
+
+      const companiesMap = new Map<string, any>();
+      if (companyIds.length > 0) {
+        try {
+          const { data: compList } = await supabase
+            .from('companies')
+            .select('id, name, logo_url, industry')
+            .in('id', companyIds);
+          (compList || []).forEach((c: any) => companiesMap.set(c.id, c));
+        } catch {
+          // Non-blocking
+        }
+      }
+
+      let formattedData = rawApps.map((app: any) => {
+        const j = Array.isArray(app.jobs) ? app.jobs[0] : app.jobs;
+        if (!j) return app;
+        const matchedCompany = (j.company_id && companiesMap.get(j.company_id)) || (j.company_name ? {
+          id: j.company_id || '',
+          name: j.company_name,
+          logo_url: undefined,
+          industry: undefined,
+        } : null);
+
+        return {
+          ...app,
+          jobs: {
+            ...j,
+            companies: matchedCompany,
+            company: matchedCompany,
+          },
+        };
+      });
+
       // Frontend filtering for search term
-      let filteredData = data || [];
       if (searchTerm) {
-        filteredData = filteredData.filter(app => 
+        formattedData = formattedData.filter(app => 
           app.jobs?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          app.jobs?.companies?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+          app.jobs?.companies?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          app.jobs?.company_name?.toLowerCase().includes(searchTerm.toLowerCase())
         );
       }
       
-      return filteredData;
+      return formattedData;
     }
   });
 

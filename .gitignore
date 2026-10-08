@@ -59,3 +59,14 @@ scripts/security-audit/
 scripts/payment_entitlement_test.cjs
 scripts/external_security_test.cjs
 scripts/external_security_test_report.json
+ai_audit*.json
+ai_audit*.txt
+extract_ai.cjs
+*baseline.json
+gsc_*.json
+growth_funnel_metrics.json
+canary_marketplace_metrics.json
+database_growth_metrics.json
+scripts/*_state.json
+scripts/*_metrics.json
+scripts/*_status.json

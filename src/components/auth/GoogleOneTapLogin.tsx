@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { FastGoogleOneTap } from './FastGoogleOneTap';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { resolvePostAuthDestination } from '@/utils/intentRouting';
 
 interface GoogleOneTapLoginProps {
   disabled?: boolean;
@@ -79,18 +80,23 @@ export const GoogleOneTapLogin: React.FC<GoogleOneTapLoginProps> = ({
   const handleSuccess = () => {
     console.log('🎉 Google One Tap login successful!');
     const urlParams = new URLSearchParams(window.location.search);
-    const redirectParam = urlParams.get('redirect') || urlParams.get('returnUrl');
-    const storedRedirect = localStorage.getItem('subdomain_redirect');
+    localStorage.removeItem('subdomain_redirect');
     
-    // If user signed in while on an auth/login page, route them to target or /network
-    if (window.location.pathname.startsWith('/auth') || window.location.pathname === '/') {
-      const redirectPath = redirectParam || storedRedirect || '/network';
-      localStorage.removeItem('subdomain_redirect');
-      navigate(redirectPath, { replace: true });
-    } else {
-      // Content page (job, college, tool): preserve page and clear transient storage
-      localStorage.removeItem('subdomain_redirect');
+    // If user signed in while on an auth/login page, route them cleanly to target
+    if (window.location.pathname.startsWith('/auth') || window.location.pathname.startsWith('/login')) {
+      const destination = resolvePostAuthDestination({
+        searchParams: urlParams,
+      });
+      if (destination.startsWith('http://') || destination.startsWith('https://')) {
+        window.location.replace(destination);
+      } else {
+        navigate(destination, { replace: true });
+      }
+      return;
     }
+
+    // On landing or content page across any domain: reload in place to immediately hydrate session
+    window.location.reload();
   };
 
   return (

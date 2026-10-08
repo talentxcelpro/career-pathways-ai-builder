@@ -1,0 +1,62 @@
+# ==========================================================
+# TalentXcel Education & College Intelligence robots.txt
+# Authoritative domain: https://colleges.talentxcel.in
+# ==========================================================
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+# Training / Scraping Bots Restricted
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: *
+Allow: /
+
+# Private College Admin
+Disallow: /colleges/admin/
+Disallow: /colleges/private/
+Disallow: /auth/
+Disallow: /admin/
+Disallow: /dashboard
+Disallow: /settings
+Disallow: /api/
+
+Allow: /assets/
+Allow: /*.js$
+Allow: /*.css$
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.svg$
+
+Allow: /colleges?search=
+Disallow: /*?*filter=
+Disallow: /*?*sort=
+Disallow: /*?*page=
+Disallow: /*?*utm_
+
+Sitemap: https://colleges.talentxcel.in/sitemap.xml

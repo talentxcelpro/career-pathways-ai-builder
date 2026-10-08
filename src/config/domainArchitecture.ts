@@ -311,6 +311,10 @@ export function getAuthoritativeUniverseForRoute(pathname: string): ProductUnive
     clean.startsWith('/employers/') ||
     clean === '/recruiters' ||
     clean.startsWith('/recruiters/') ||
+    clean === '/companies' ||
+    clean.startsWith('/companies/') ||
+    clean === '/company' ||
+    clean.startsWith('/company/') ||
     clean === '/hire'
   ) {
     return 'EMPLOYERS';
@@ -420,4 +424,19 @@ export function formatCanonicalUrl(pathOrUrl?: string, currentHostname?: string)
   // Normal authoritative mapping
   const authoritativeDomain = UNIVERSE_PRIMARY_DOMAIN[targetUniverse];
   return `${authoritativeDomain}${pathname === '/' ? '/' : pathname}`;
+}
+
+/**
+ * Employer Domain Canonical Rule:
+ * employers.talentxcel.in is the SOLE authoritative employer SEO domain.
+ * employer.talentxcel.in is treated as a legacy non-competing alias.
+ */
+export function isLegacyEmployerAlias(hostname?: string): boolean {
+  if (!hostname) return false;
+  const clean = normalizeHostname(hostname);
+  return clean === 'employer.talentxcel.in';
+}
+
+export function getAuthoritativeEmployerDomain(): string {
+  return UNIVERSE_PRIMARY_DOMAIN.EMPLOYERS; // https://employers.talentxcel.in
 }

@@ -1,9 +1,9 @@
-﻿/**
+/**
  * TalentXcel Government Jobs Discovery Hub (/government-jobs)
  * Curated, authorized government and public-sector vacancy intelligence.
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import {
@@ -18,11 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { GovernmentJobBadge } from '@/components/jobs/GovernmentJobBadge';
 import { FresherBadge } from '@/components/jobs/FresherBadge';
-import { EmploymentNewsConnector } from '@/lib/jobs/connectors/india/EmploymentNewsConnector';
-import { USAJobsConnector } from '@/lib/jobs/connectors/usajobs/USAJobsConnector';
-import { CentralGovConnector } from '@/lib/jobs/connectors/india/CentralGovConnector';
-import { StateGovConnector } from '@/lib/jobs/connectors/india/StateGovConnector';
-import { PSUConnector } from '@/lib/jobs/connectors/india/PSUConnector';
+import { getInitialGovernmentJobs, fetchAllGovernmentJobs } from '@/lib/jobs/governmentJobsService';
 import { GlobalJob } from '@/types/jobs/globalJob';
 import { GOVERNMENT_COUNTRIES } from '@/config/jobs/governmentCountries';
 
@@ -33,31 +29,24 @@ export default function GovernmentJobs() {
   const [fresherOnly, setFresherOnly] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Instantiate connectors & gather verified vacancies
-  const allVacancies = useMemo<GlobalJob[]>(() => {
-    const en = new EmploymentNewsConnector();
-    const upsc = new CentralGovConnector();
-    const state = new StateGovConnector();
-    const psu = new PSUConnector();
-    const usajobs = new USAJobsConnector();
+  // Hydrate initial vacancies synchronously, refresh asynchronously
+  const [allVacancies, setAllVacancies] = useState<GlobalJob[]>(() => getInitialGovernmentJobs());
 
-    // In a production backend these query the normalized jobs table; here we aggregate connector feeds
-    const rawIndia = [
-      ...en.discoverJobs(),
-      ...upsc.discoverJobs(),
-      ...state.discoverJobs(),
-      ...psu.discoverJobs(),
-    ];
-    const rawUSA = usajobs.discoverJobs();
+  useEffect(() => {
+    let isMounted = true;
+    fetchAllGovernmentJobs()
+      .then((jobs) => {
+        if (isMounted && jobs.length > 0) {
+          setAllVacancies(jobs);
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to refresh government jobs:', err);
+      });
 
-    // Map through connectors
-    const indiaJobs = (en.discoverJobs() as any[]).map((r) => en.normalize(r));
-    const upscJobs = (upsc.discoverJobs() as any[]).map((r) => upsc.normalize(r));
-    const stateJobs = (state.discoverJobs() as any[]).map((r) => state.normalize(r));
-    const psuJobs = (psu.discoverJobs() as any[]).map((r) => psu.normalize(r));
-    const usaJobs = (usajobs.discoverJobs() as any[]).map((r) => usajobs.normalize(r));
-
-    return [...indiaJobs, ...upscJobs, ...stateJobs, ...psuJobs, ...usaJobs];
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const filteredJobs = useMemo(() => {

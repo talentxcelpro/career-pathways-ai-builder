@@ -17,7 +17,10 @@
     "postbuild": "npx tsx scripts/prerender-static-seo.ts && npx tsx scripts/seo-ci-gate.ts",
     "gsc:command-center": "node scripts/gsc-command-center.cjs",
     "indexing:jobs": "node scripts/submit-all-jobs-indexing.cjs",
-    "growth:funnel": "node scripts/growth-funnel-dashboard.cjs"
+    "growth:funnel": "node scripts/growth-funnel-dashboard.cjs",
+    "growth:lab": "node scripts/growth-lab-command-center.cjs",
+    "domain:seo": "node scripts/domain-seo-command-center.cjs",
+    "verify:subdomains": "npx tsx scripts/verify-live-subdomain-contracts.ts"
   },
   "dependencies": {
     "@aws-sdk/client-sesv2": "^3.1142.0",

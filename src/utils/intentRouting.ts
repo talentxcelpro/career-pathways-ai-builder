@@ -111,8 +111,8 @@ export interface ResolveDestinationOptions {
 export const resolvePostAuthDestination = (options?: ResolveDestinationOptions): string => {
   const searchParams = options?.searchParams || (typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null);
   
-  // 1. Direct query param redirect / returnUrl
-  const queryRedirect = searchParams?.get('redirect') || searchParams?.get('returnUrl');
+  // 1. Direct query param redirect / returnUrl / returnTo (for central SSO)
+  const queryRedirect = searchParams?.get('redirect') || searchParams?.get('returnUrl') || searchParams?.get('returnTo');
   if (isValidInternalPath(queryRedirect) && queryRedirect !== '/network') {
     clearStoredUserIntent();
     return decodeURIComponent(queryRedirect!);

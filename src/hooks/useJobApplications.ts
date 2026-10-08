@@ -26,25 +26,56 @@ export const useJobApplications = (userId?: string) => {
   return useQuery({
     queryKey: ['job-applications', userId],
     queryFn: async () => {
-      let query = supabase
+      let query1 = supabase
         .from('job_applications')
         .select(`
           *,
-          jobs(title, company_name, location)
+          jobs!fk_job_applications_job_id(title, company_name, location)
         `)
         .order('applied_at', { ascending: false });
 
       if (userId) {
-        query = query.eq('user_id', userId);
+        query1 = query1.eq('user_id', userId);
       }
 
-      const { data, error } = await query;
-
-      if (error) {
-        throw new Error(error.message);
+      const res1 = await query1;
+      if (!res1.error && res1.data) {
+        return res1.data as any[];
       }
 
-      return data as any[];
+      let query2 = supabase
+        .from('job_applications')
+        .select(`
+          *,
+          jobs!job_applications_job_id_fkey(title, company_name, location)
+        `)
+        .order('applied_at', { ascending: false });
+
+      if (userId) {
+        query2 = query2.eq('user_id', userId);
+      }
+
+      const res2 = await query2;
+      if (!res2.error && res2.data) {
+        return res2.data as any[];
+      }
+
+      // Fallback without embed
+      let query3 = supabase
+        .from('job_applications')
+        .select('*')
+        .order('applied_at', { ascending: false });
+
+      if (userId) {
+        query3 = query3.eq('user_id', userId);
+      }
+
+      const res3 = await query3;
+      if (res3.error) {
+        throw new Error(res3.error.message);
+      }
+
+      return res3.data as any[];
     }
   });
 };
