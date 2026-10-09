@@ -15,6 +15,7 @@ import {
   Users, 
   Share2, 
   ArrowLeft, 
+  ArrowRight,
   Briefcase, 
   ShieldCheck, 
   CheckCircle2, 
@@ -124,17 +125,6 @@ export default function JobDetails() {
     toast.success('Job link copied to clipboard');
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-6">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-          <p className="text-slate-400 text-sm">Loading job opening...</p>
-        </div>
-      </div>
-    );
-  }
-
   // Fetch live active jobs as discovery recommendations when the specific job isn't found
   const { data: fallbackJobs = [] } = useQuery({
     queryKey: ['job-details-fallback-jobs', slugOrId],
@@ -147,8 +137,19 @@ export default function JobDetails() {
         .limit(6);
       return data || [];
     },
-    enabled: !job && !isLoading,
+    enabled: !isLoading && !job,
   });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-6">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-slate-400 text-sm">Loading job opening...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!job) {
     const rawRole = slugOrId ? slugOrId.replace(/[-_]+/g, ' ') : 'Career';

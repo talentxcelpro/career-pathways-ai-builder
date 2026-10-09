@@ -25,8 +25,7 @@
     touch-action: manipulation;
   }
   
-  /* Add momentum scrolling for iOS */
-  overflow-y: auto;
+  /* Momentum scrolling for iOS touch */
   -webkit-overflow-scrolling: touch;
 }
 

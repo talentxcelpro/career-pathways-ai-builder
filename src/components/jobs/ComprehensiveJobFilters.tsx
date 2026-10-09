@@ -60,16 +60,16 @@ const FilterSection: React.FC<{
       <CollapsibleTrigger asChild>
         <Button
           variant="ghost"
-          className="w-full justify-between p-2 h-auto text-sm font-medium"
+          className="w-full justify-between px-2.5 py-1.5 h-auto text-xs font-medium hover:bg-muted/60"
         >
           <div className="flex items-center gap-1.5">
             {icon}
-            <span className="text-sm">{title}</span>
+            <span className="text-xs font-semibold">{title}</span>
           </div>
-          {isOpen ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+          {isOpen ? <ChevronUp className="h-3 w-3 text-muted-foreground" /> : <ChevronDown className="h-3 w-3 text-muted-foreground" />}
         </Button>
       </CollapsibleTrigger>
-      <CollapsibleContent className="px-2 pb-2">
+      <CollapsibleContent className="px-2.5 pb-2 pt-0.5">
         {children}
       </CollapsibleContent>
     </Collapsible>
@@ -221,14 +221,14 @@ export const ComprehensiveJobFilters: React.FC<ComprehensiveJobFiltersProps> = (
   ];
 
   return (
-    <Card className={`h-fit sticky top-4 ${className}`}>
-      <CardHeader className="pb-2">
+    <Card className={`h-fit ${className || 'sticky top-4'}`}>
+      <CardHeader className="p-3 pb-2 border-b border-border/20">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-            <Filter className="h-3 w-3" />
-            <CardTitle className="text-sm">Job Filters</CardTitle>
+            <Filter className="h-3.5 w-3.5 text-primary" />
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Job Filters</CardTitle>
             {activeFiltersCount > 0 && (
-              <Badge variant="secondary" className="text-xs h-4 px-1.5">
+              <Badge variant="secondary" className="text-[10px] h-4 px-1.5 font-semibold">
                 {activeFiltersCount}
               </Badge>
             )}
@@ -238,7 +238,7 @@ export const ComprehensiveJobFilters: React.FC<ComprehensiveJobFiltersProps> = (
               variant="ghost"
               size="sm"
               onClick={onClearFilters}
-              className="text-xs h-6 px-2"
+              className="text-xs h-6 px-2 text-muted-foreground hover:text-foreground"
             >
               <X className="h-3 w-3 mr-1" />
               Clear All
@@ -247,11 +247,11 @@ export const ComprehensiveJobFilters: React.FC<ComprehensiveJobFiltersProps> = (
         </div>
       </CardHeader>
 
-      <CardContent className="p-0">
-        <div className="space-y-1">
+      <CardContent className="p-1">
+        <div className="space-y-0.5">
           
           {/* Experience */}
-          <FilterSection title="Experience" icon={<Clock className="h-3 w-3" />}>
+          <FilterSection title="Experience" icon={<Clock className="h-3 w-3 text-muted-foreground" />} defaultOpen={true}>
             <CheckboxFilter
               options={EXPERIENCE_OPTIONS}
               selected={filters.experience_level}
@@ -259,10 +259,21 @@ export const ComprehensiveJobFilters: React.FC<ComprehensiveJobFiltersProps> = (
             />
           </FilterSection>
 
-          <Separator />
+          <Separator className="my-1" />
+
+          {/* Work Mode */}
+          <FilterSection title="Work Mode" icon={<MapPin className="h-3 w-3 text-muted-foreground" />} defaultOpen={true}>
+            <CheckboxFilter
+              options={WORK_MODE_OPTIONS}
+              selected={filters.work_mode || []}
+              onChange={(values) => updateFilters({ work_mode: values })}
+            />
+          </FilterSection>
+
+          <Separator className="my-1" />
 
           {/* Salary Range */}
-          <FilterSection title="Salary" icon={<span className="text-sm">₹</span>}>
+          <FilterSection title="Salary" icon={<span className="text-xs font-semibold">₹</span>} defaultOpen={false}>
             <div className="space-y-3">
               <div className="px-2">
                 <Slider
@@ -296,10 +307,10 @@ export const ComprehensiveJobFilters: React.FC<ComprehensiveJobFiltersProps> = (
             </div>
           </FilterSection>
 
-          <Separator />
+          <Separator className="my-1" />
 
           {/* Department */}
-          <FilterSection title="Department" icon={<Briefcase className="h-3 w-3" />}>
+          <FilterSection title="Department" icon={<Briefcase className="h-3 w-3 text-muted-foreground" />} defaultOpen={false}>
             <CheckboxFilter
               options={DEPARTMENT_OPTIONS}
               selected={filters.department || []}
@@ -307,25 +318,14 @@ export const ComprehensiveJobFilters: React.FC<ComprehensiveJobFiltersProps> = (
             />
           </FilterSection>
 
-          <Separator />
+          <Separator className="my-1" />
 
           {/* Company Type */}
-          <FilterSection title="Company Type" icon={<Building2 className="h-3 w-3" />}>
+          <FilterSection title="Company Type" icon={<Building2 className="h-3 w-3 text-muted-foreground" />} defaultOpen={false}>
             <CheckboxFilter
               options={COMPANY_TYPE_OPTIONS}
               selected={filters.company_type || []}
               onChange={(values) => updateFilters({ company_type: values })}
-            />
-          </FilterSection>
-
-          <Separator />
-
-          {/* Work Mode */}
-          <FilterSection title="Work Mode" icon={<MapPin className="h-3 w-3" />}>
-            <CheckboxFilter
-              options={WORK_MODE_OPTIONS}
-              selected={filters.work_mode || []}
-              onChange={(values) => updateFilters({ work_mode: values })}
             />
           </FilterSection>
 

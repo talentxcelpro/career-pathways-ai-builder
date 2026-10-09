@@ -1,0 +1,230 @@
+# ==========================================================
+# TalentXcel robots.txt
+# Primary indexable domain: https://talentxcel.in
+# ==========================================================
+
+# ------------------------------
+# Job Aggregators
+# ------------------------------
+
+User-agent: Indeed
+Allow: /jobs/
+
+User-agent: NaukriBot
+Allow: /jobs/
+
+User-agent: CareerBuilder
+Allow: /jobs/
+
+User-agent: JoobleBot
+Allow: /jobs/
+
+
+# ------------------------------
+# Media Crawlers
+# ------------------------------
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Googlebot-Video
+Allow: /
+
+User-agent: AdsBot-Google
+Allow: /
+
+
+# ------------------------------
+# Social Crawlers
+# ------------------------------
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+User-agent: TelegramBot
+Allow: /
+
+
+# ------------------------------
+# Generative AI Search Discovery Crawlers (Real-Time Citations & Search)
+# ------------------------------
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+
+# ------------------------------
+# Generative AI & Model Training Crawlers (Restricted to preserve crawl budget & bandwidth)
+# ------------------------------
+
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /
+
+User-agent: Meta-ExternalAgent
+Disallow: /
+
+User-agent: cohere-ai
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+
+# ------------------------------
+# Commercial SEO & Backlink Crawlers (Restricted to preserve edge bandwidth)
+# ------------------------------
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: ScreamingFrogSEOSpider
+Disallow: /
+
+
+# ==========================================================
+# GENERAL CRAWL POLICY
+# ==========================================================
+
+User-agent: *
+Allow: /
+
+# ------------------------------
+# Private / Restricted Areas
+# ------------------------------
+
+Disallow: /auth/
+Disallow: /api/auth/
+Disallow: /api/user/
+Disallow: /api/private/
+
+Disallow: /onboarding
+Disallow: /dashboard
+Disallow: /settings
+Disallow: /my-applications
+
+Disallow: /jobs/apply/
+Disallow: /jobs/dashboard/
+Disallow: /jobs/my-applications/
+
+Disallow: /companies/admin/
+Disallow: /companies/settings/
+
+Disallow: /network/messages/
+Disallow: /network/notifications/
+Disallow: /network/settings/
+
+Disallow: /resume/user/
+Disallow: /resume/private/
+Disallow: /resume/edit/
+Disallow: /resume/my-resumes/
+
+Disallow: /profile/edit/
+Disallow: /profile/settings/
+
+Disallow: /tools/internal/
+Disallow: /tools/private/
+
+Disallow: /learning/my-courses
+Disallow: /learning/my-progress
+Disallow: /learning/progress/
+Disallow: /learning/dashboard/
+
+Disallow: /colleges/admin/
+Disallow: /colleges/private/
+
+Disallow: /careermap/private/
+Disallow: /careermap/user/
+
+Disallow: /careerpassport/user/
+Disallow: /careerpassport/private/
+
+Disallow: /employer/settings/
+Disallow: /employer/dashboard/
+Disallow: /employer/private/
+
+Disallow: /marketplace/orders/
+Disallow: /marketplace/private/
+
+Disallow: /events/private/
+Disallow: /events/settings/
+
+Disallow: /company-os/
+Disallow: /admin/
+Disallow: /diagnostics
+Disallow: /debug
+Disallow: /testing
+Disallow: /launch/
+Disallow: /access-control-test
+Disallow: /realtime-demo
+Disallow: /mobile-demo
+
+# Allow search engine rendering assets
+Allow: /assets/
+Allow: /*.js$
+Allow: /*.css$
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.svg$
+
+# ==========================================================
+# PARAMETER URL CONTROL (Prevent Crawl-Budget Exhaustion)
+# ==========================================================
+
+# Allow /jobs?search= explicitly (used in SearchAction schema and user-facing URL)
+Allow: /jobs?search=
+Allow: /colleges?search=
+
+# Block search/filter parameters on all other pages
+Disallow: /*?*filter=
+Disallow: /*?*sort=
+Disallow: /*?*page=
+Disallow: /*?*utm_
+Disallow: /*?*ref=
+Disallow: /*?*gclid=
+Disallow: /*?*fbclid=
+
+
+# ==========================================================
+# SITEMAP
+# ==========================================================
+
+Sitemap: https://talentxcel.in/sitemap.xml

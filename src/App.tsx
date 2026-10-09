@@ -338,6 +338,8 @@ const App = () => {
                                  {currentUniverse === 'JOBS' && (
                                    <>
                                      <Route path="/" element={<Suspense fallback={<div>Loading Jobs...</div>}><JobsPage /></Suspense>} />
+                                     <Route path="/jobs" element={<Suspense fallback={<div>Loading Jobs...</div>}><JobsPage /></Suspense>} />
+                                     <Route path="/jobs/:slugOrId" element={<Suspense fallback={<div>Loading...</div>}><JobDetails /></Suspense>} />
                                      <Route path="/:slugOrId" element={<Suspense fallback={<div>Loading...</div>}><JobDetails /></Suspense>} />
                                      <Route path="/bangalore" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
                                      <Route path="/mumbai" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />

@@ -146,8 +146,14 @@ const Jobs = () => {
   const { stats: jobStats } = useRealtimeJobStats();
 
   // Google Compliant Listing Schema — WebSite & CollectionPage (No individual JobPosting on listing page)
+  const isJobsSubdomain = typeof window !== 'undefined' && window.location.hostname.includes('jobs.');
+  const canonicalUrl = isJobsSubdomain ? 'https://jobs.talentxcel.in/' : 'https://talentxcel.in/jobs';
+
   const jobsSchema = useMemo(() => {
     if (!allJobs || allJobs.length === 0) return null;
+
+    const domainOrigin = isJobsSubdomain ? 'https://jobs.talentxcel.in' : 'https://talentxcel.in';
+    const pageUrl = isJobsSubdomain ? 'https://jobs.talentxcel.in/' : 'https://talentxcel.in/jobs';
 
     return {
       "@context": "https://schema.org/",
@@ -155,12 +161,12 @@ const Jobs = () => {
         {
           "@type": "WebSite",
           "name": "TalentXcel Jobs",
-          "url": "https://talentxcel.in",
+          "url": domainOrigin,
           "potentialAction": {
             "@type": "SearchAction",
             "target": {
               "@type": "EntryPoint",
-              "urlTemplate": "https://talentxcel.in/jobs?search={search_term_string}"
+              "urlTemplate": `${domainOrigin}/jobs?search={search_term_string}`
             },
             "query-input": "required name=search_term_string"
           }
@@ -168,22 +174,22 @@ const Jobs = () => {
         {
           "@type": "CollectionPage",
           "name": "TalentXcel Job Listings",
-          "description": "Find your next career opportunity with SI-powered job matching",
-          "url": "https://talentxcel.in/jobs",
+          "description": "Find your next career opportunity with AI-powered job matching",
+          "url": pageUrl,
           "mainEntity": {
             "@type": "ItemList",
             "numberOfItems": totalCount,
             "itemListElement": allJobs.slice(0, 10).map((job, index) => ({
               "@type": "ListItem",
               "position": index + 1,
-              "url": `https://talentxcel.in/jobs/${job.id}`,
+              "url": `https://jobs.talentxcel.in/jobs/${job.id}`,
               "name": job.title || 'Career Opportunity'
             }))
           }
         }
       ]
     };
-  }, [allJobs, totalCount]);
+  }, [allJobs, totalCount, isJobsSubdomain]);
 
   useStructuredData({ 
     schema: JSON.stringify(jobsSchema), 
@@ -338,94 +344,104 @@ const Jobs = () => {
 
   return (
     <>
-      <SEOHead title="Jobs | Find Career Opportunities Worldwide | TalentXcel" description="Discover jobs by role, skill, industry and location and build your career with TalentXcel." canonical="https://talentxcel.in/jobs" type="website" />
+      <SEOHead 
+        title="Jobs | Find Career Opportunities Worldwide | TalentXcel" 
+        description="Discover jobs by role, skill, industry and location and build your career with TalentXcel." 
+        canonical={canonicalUrl} 
+        type="website" 
+      />
 
-      <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 mobile-optimized">
+      <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
         
-        {/* Mobile-First Navigation with Quick Filters */}
-        <div className="border-b border-border/10 bg-background/95 backdrop-blur-sm">
-          <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-4">
-            {/* Multi-Domain Professional Quick Filter Categories */}
-            <div className="flex items-center gap-2 mb-3 sm:mb-4 overflow-x-auto scrollbar-hide touch-pan-x">
+        {/* Compact, High-Efficiency Sticky Search & Filter Header */}
+        <div className="border-b border-border/10 bg-background/95 backdrop-blur-md sticky top-0 z-20 shadow-xs">
+          <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2 sm:py-2.5 space-y-1.5">
+            
+            {/* Top Row: Compact Title + Global Search Bar */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+              <div className="shrink-0">
+                <h1 className="text-base sm:text-lg font-bold tracking-tight text-foreground flex items-center gap-2">
+                  <Briefcase className="h-4.5 w-4.5 text-blue-500" />
+                  <span>Search Verified Jobs & Careers</span>
+                </h1>
+                <p className="text-[11px] text-muted-foreground hidden sm:block">
+                  Discover AI-matched opportunities across verified enterprises, startups, and remote teams.
+                </p>
+              </div>
+
+              {/* Compact Global Search Bar */}
+              <div className="w-full md:max-w-xl">
+                <GlobalSearch
+                  value={filters.search}
+                  onChange={(value) => updateFilters({ search: value })}
+                  onSearch={() => refetch()}
+                  onFiltersChange={(newFilters) => {
+                    updateFilters(newFilters);
+                    refetch();
+                  }}
+                  placeholder="Search role, skills, company, or city..."
+                  recentJobs={regularJobs.slice(0, 5)}
+                />
+              </div>
+            </div>
+
+            {/* Bottom Row: Sleek Horizontal Category Chips */}
+            <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide py-0.5 touch-pan-x text-xs">
               <Button
-                variant="outline"
+                variant={filters.is_remote ? "default" : "outline"}
                 size="sm"
-                onClick={() => updateFilters({ is_remote: true })}
-                className="whitespace-nowrap flex items-center gap-1 min-h-[40px] text-xs font-semibold"
+                onClick={() => updateFilters({ is_remote: !filters.is_remote })}
+                className="whitespace-nowrap h-6 px-2.5 text-[11px] rounded-full shrink-0 font-medium"
               >
-                🌐 Global Remote
+                🌐 Remote
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => updateFilters({ search: 'AI Machine Learning' })}
-                className="whitespace-nowrap flex items-center gap-1 text-xs"
+                className="whitespace-nowrap h-6 px-2.5 text-[11px] rounded-full shrink-0"
               >
-                ⚡ AI & Machine Learning
+                ⚡ AI & ML
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => updateFilters({ search: 'Executive Director VP' })}
-                className="whitespace-nowrap flex items-center gap-1 text-xs"
+                onClick={() => updateFilters({ search: 'Software Engineering Developer' })}
+                className="whitespace-nowrap h-6 px-2.5 text-[11px] rounded-full shrink-0"
               >
-                💼 Executive & Leadership
+                💻 Tech & Engineering
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => updateFilters({ search: 'FinTech Banking Finance' })}
-                className="whitespace-nowrap flex items-center gap-1 text-xs"
+                className="whitespace-nowrap h-6 px-2.5 text-[11px] rounded-full shrink-0"
               >
-                💳 FinTech & Finance
+                💳 FinTech
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => updateFilters({ search: 'Product Manager' })}
-                className="whitespace-nowrap flex items-center gap-1 text-xs"
+                onClick={() => updateFilters({ search: 'Product Manager Design UI UX' })}
+                className="whitespace-nowrap h-6 px-2.5 text-[11px] rounded-full shrink-0"
               >
-                🎯 Product Management
+                🎯 Product & Design
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => updateFilters({ search: 'Design UI UX' })}
-                className="whitespace-nowrap flex items-center gap-1 text-xs"
+                onClick={() => updateFilters({ search: 'Cloud DevOps Architecture' })}
+                className="whitespace-nowrap h-6 px-2.5 text-[11px] rounded-full shrink-0"
               >
-                🎨 Product & Design
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => updateFilters({ search: 'Cloud Systems Architecture' })}
-                className="whitespace-nowrap flex items-center gap-1 text-xs"
-              >
-                🏗️ Cloud & Distributed Systems
+                🏗️ Cloud & DevOps
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => updateFilters({ search: 'Marketing Growth' })}
-                className="whitespace-nowrap flex items-center gap-1 text-xs"
+                className="whitespace-nowrap h-6 px-2.5 text-[11px] rounded-full shrink-0"
               >
-                📈 Marketing & Growth
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => updateFilters({ search: 'Healthcare BioTech' })}
-                className="whitespace-nowrap flex items-center gap-1 text-xs"
-              >
-                🏥 Healthcare & BioTech
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => updateFilters({ search: 'Legal Compliance Operations' })}
-                className="whitespace-nowrap flex items-center gap-1 text-xs"
-              >
-                ⚖️ Legal & Operations
+                📈 Marketing
               </Button>
               <Button
                 variant={filters.experience_level?.some((l: string) => ['fresher', 'entry-level', '0-1 years'].includes(l.toLowerCase())) ? "default" : "outline"}
@@ -434,198 +450,94 @@ const Jobs = () => {
                   const isFiltered = filters.experience_level?.some((l: string) => ['fresher', 'entry-level', '0-1 years'].includes(l.toLowerCase()));
                   updateFilters({ experience_level: isFiltered ? [] : ['fresher', 'entry-level', '0-1 years'] });
                 }}
-                className={`whitespace-nowrap flex items-center gap-1.5 text-xs font-medium transition-all ${
+                className={`whitespace-nowrap h-6 px-2.5 text-[11px] rounded-full shrink-0 font-medium transition-all ${
                   filters.experience_level?.some((l: string) => ['fresher', 'entry-level', '0-1 years'].includes(l.toLowerCase()))
-                    ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm'
+                    ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs'
                     : 'border-emerald-500/40 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/10'
                 }`}
               >
-                🎓 Freshers / Entry Level (0-1 yrs)
+                🎓 Freshers (0-1 yrs)
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => updateFilters({ company_type: ['fortune-500'] })}
-                className="whitespace-nowrap flex items-center gap-1 text-xs"
+                className="whitespace-nowrap h-6 px-2.5 text-[11px] rounded-full shrink-0"
               >
                 🏢 Fortune 500
               </Button>
               <Button
-                variant="outline"
-                size="sm"
-                className="whitespace-nowrap flex items-center gap-1 text-xs"
-              >
-                ⚡ Quick Apply
-              </Button>
-              
-              {/* Additional AI Hub CTA */}
-              <Button
                 onClick={() => navigate('/career-dashboard')}
                 variant="default"
                 size="sm"
-                className="whitespace-nowrap flex items-center gap-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-md text-xs"
+                className="whitespace-nowrap h-6 px-2.5 text-[11px] rounded-full shrink-0 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-xs"
               >
-                <Brain className="h-3 w-3" />
-                AI Career Copilot
+                <Brain className="h-3 w-3 mr-1" />
+                Copilot
               </Button>
-            </div>
-
-            {/* Semantic Page Header for Google & Users */}
-            <div className="max-w-4xl mx-auto mb-3 text-center sm:text-left">
-              <h1 className="text-lg sm:text-2xl font-bold tracking-tight text-foreground">
-                Search Verified Global Jobs & Careers
-              </h1>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-                Explore AI-matched career opportunities across top global enterprises, high-growth startups, and international hubs.
-              </p>
-            </div>
-
-            {/* Social Network Conversion Magnet */}
-            <div className="max-w-4xl mx-auto">
-              <SocialNetworkConversionCTA
-                compact={true}
-                roleTitle={filters.search || 'Global Leadership, Tech & Industry'}
-                location={filters.location || 'Worldwide & Remote'}
-              />
-            </div>
-
-            {/* Mobile-First Global Search Bar */}
-            <div className="max-w-4xl mx-auto mb-3 sm:mb-4">
-              <GlobalSearch
-                value={filters.search}
-                onChange={(value) => updateFilters({ search: value })}
-                onSearch={() => refetch()}
-                onFiltersChange={(newFilters) => {
-                  updateFilters(newFilters);
-                  refetch();
-                }}
-                placeholder="Search jobs, skills, companies, locations..."
-                recentJobs={regularJobs.slice(0, 5)}
-              />
-            </div>
-
-            {/* View Mode Selector */}
-            <div className="text-center">
-              <div className="mb-2">
-                <h3 className="font-semibold text-sm text-foreground">Choose Your View</h3>
-                <p className="text-xs text-muted-foreground">Customize how you browse jobs</p>
-              </div>
-              
-              <div className="flex justify-center gap-2">
-                <Button
-                  variant={viewMode === 'card' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setViewMode('card')}
-                  className="rounded-full px-3 sm:px-4 py-2 text-xs transition-all hover:scale-105 min-h-[44px] touch-target"
-                >
-                  <Grid3X3 className="h-3 w-3 mr-1" />
-                  <span className="hidden sm:inline">Card View</span>
-                  <span className="sm:hidden">Cards</span>
-                </Button>
-                <Button
-                  variant={viewMode === 'swipe' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => {
-                    setViewMode('swipe');
-                    setSwipeIndex(0);
-                  }}
-                  className="rounded-full px-4 py-2 text-xs transition-all hover:scale-105"
-                >
-                  <RotateCcw className="h-3 w-3 mr-1" />
-                  Swipe Mode
-                </Button>
-                <Button
-                  variant={viewMode === 'list' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setViewMode('list')}
-                  className="rounded-full px-4 py-2 text-xs transition-all hover:scale-105"
-                >
-                  <List className="h-3 w-3 mr-1" />
-                  List View
-                </Button>
-              </div>
-              
-              <p className="text-xs text-muted-foreground mt-2">
-                {viewMode === 'card' ? 'Detailed cards with full job information' :
-                 viewMode === 'swipe' ? 'Mobile-style swiping for quick browsing' :
-                 'Compact list format for rapid scanning'}
-              </p>
             </div>
           </div>
         </div>
 
         {/* Main Content Area */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-2.5 sm:pt-3 pb-8">
           <div className="flex gap-6">
             
-            {/* Left Sidebar - Job Filters */}
-            <div className="w-80 flex-shrink-0 hidden lg:block">
-              <div className="bg-card rounded-xl border border-border/20 p-6 sticky top-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <Filter className="h-5 w-5 text-primary" />
-                  <h2 className="text-lg font-semibold">Job Filters</h2>
-                </div>
-                
-                <ComprehensiveJobFilters
-                  filters={filters}
-                  onFiltersChange={updateFilters}
-                  onClearFilters={() => {
-                    setFilters({
-                      search: '', location: '', employment_type: [], experience_level: [],
-                      salary_min: 0, salary_max: 0, is_remote: false, skills: [],
-                      department: [], company_type: [], work_mode: [], industry: [],
-                      role_category: [], education: [], posted_by: [], freshness: [], company_id: ''
-                    });
-                    refetch();
-                  }}
-                />
-              </div>
-            </div>
+            {/* Left Sidebar - Job Filters (Direct non-blocking card, 0 duplicate headers) */}
+            <aside className="w-72 flex-shrink-0 hidden lg:block" aria-label="Job Filters">
+              <ComprehensiveJobFilters
+                filters={filters}
+                onFiltersChange={updateFilters}
+                onClearFilters={() => {
+                  setFilters({
+                    search: '', location: '', employment_type: [], experience_level: [],
+                    salary_min: 0, salary_max: 0, is_remote: false, skills: [],
+                    department: [], company_type: [], work_mode: [], industry: [],
+                    role_category: [], education: [], posted_by: [], freshness: [], company_id: ''
+                  });
+                  refetch();
+                }}
+                className="sticky top-20 max-h-[calc(100vh-5.5rem)] overflow-y-auto scrollbar-thin shadow-xs border-border/40"
+              />
+            </aside>
 
             {/* Right Main Content */}
             <div className="flex-1 min-w-0">
-              {/* ==================================================
-                  JOB MATCHING CONVERSION BRIDGE (VALUE BEFORE LOGIN)
-                  ================================================== */}
-              <div className="mb-6 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950/40 dark:via-indigo-950/30 dark:to-purple-950/30 border border-blue-200/80 dark:border-blue-800/60 rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300">
-                      Free ATS Tool
-                    </span>
-                    <h3 className="text-sm sm:text-base font-bold text-foreground">
-                      Applying for jobs? Check your resume before you apply.
-                    </h3>
-                  </div>
-                  <p className="text-xs sm:text-sm text-muted-foreground">
-                    Get your ATS compatibility score and discover jobs that match your skills.
-                  </p>
+              
+              {/* Compact Value Proposition Banner */}
+              <div className="mb-3 bg-blue-500/5 dark:bg-blue-500/10 border border-blue-500/20 rounded-lg px-3 py-1.5 flex items-center justify-between gap-2.5 text-xs">
+                <div className="flex items-center gap-2 min-w-0">
+                  <Sparkles className="h-3.5 w-3.5 text-blue-500 shrink-0" />
+                  <span className="text-foreground truncate text-xs">
+                    <strong className="font-semibold">Optimize Your Application:</strong> Free instant ATS match score against any role.
+                  </span>
                 </div>
                 <Button
                   size="sm"
+                  variant="outline"
                   onClick={() => {
                     conversionTelemetry.track('signup_cta_click', { source: 'jobs' });
                     conversionTelemetry.setAcquisitionContext('jobs', '/jobs');
                     navigate('/resume/ats-check?source=jobs');
                   }}
-                  className="whitespace-nowrap font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-sm h-9 px-4 text-xs sm:text-sm self-start sm:self-auto"
+                  className="h-6 px-2.5 text-[11px] shrink-0 font-semibold border-blue-500/30 text-blue-600 dark:text-blue-400 hover:bg-blue-500/10"
                 >
-                  Check My Resume Free →
+                  Free ATS Audit →
                 </Button>
               </div>
 
               {/* Featured Jobs Section */}
               {featuredJobs.length > 0 && (
-                <div className="mb-8">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Star className="h-5 w-5 text-yellow-500" />
-                    <h2 className="text-xl font-bold">Featured Opportunities</h2>
-                    <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">Premium</Badge>
+                <div className="mb-4">
+                  <div className="flex items-center gap-2 mb-2.5">
+                    <Star className="h-4 w-4 text-yellow-500" />
+                    <h2 className="text-sm sm:text-base font-bold">Featured Opportunities</h2>
+                    <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 text-[10px] px-1.5 py-0">Premium</Badge>
                   </div>
                   <div className={
-                    viewMode === 'card' ? 'grid grid-cols-1 lg:grid-cols-2 gap-4' :
+                    viewMode === 'card' ? 'grid grid-cols-1 lg:grid-cols-2 gap-3.5' :
                     viewMode === 'list' ? 'space-y-2' :
-                    'space-y-4'
+                    'space-y-3.5'
                   }>
                     {featuredJobs.map((job) => (
                       <TalentSparkJobCard
@@ -644,25 +556,64 @@ const Jobs = () => {
 
               {/* Regular Jobs Section */}
               <div>
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between mb-3.5 pb-2.5 border-b border-border/20 flex-wrap gap-2.5">
                   <div className="flex items-center gap-2">
-                    <Briefcase className="h-5 w-5 text-primary" />
-                    <h2 className="text-xl font-bold">All Jobs</h2>
-                    <Badge variant="outline">{totalCount} total jobs</Badge>
+                    <Briefcase className="h-4 w-4 text-primary" />
+                    <h2 className="text-base sm:text-lg font-bold">All Verified Openings</h2>
+                    <Badge variant="outline" className="text-xs font-mono">{totalCount} total</Badge>
                   </div>
                   
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground">Sort by:</span>
-                    <select 
-                      value={sortBy} 
-                      onChange={(e) => setSortBy(e.target.value)}
-                      className="text-sm border border-border rounded-md px-2 py-1 bg-background"
-                    >
-                      <option value="posted_at">Latest First</option>
-                      <option value="salary_max">Highest Salary</option>
-                      <option value="views_count">Most Popular</option>
-                      <option value="applications_count">Easy Apply</option>
-                    </select>
+                  <div className="flex items-center gap-3">
+                    {/* View Switcher: Cards / List / Swipe */}
+                    <div className="inline-flex items-center bg-muted/60 p-0.5 rounded-lg border border-border/40">
+                      <button
+                        type="button"
+                        onClick={() => setViewMode('card')}
+                        className={`px-2 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-1 ${
+                          viewMode === 'card' ? 'bg-background text-foreground shadow-xs' : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                        title="Card View"
+                      >
+                        <Grid3X3 className="h-3 w-3" />
+                        <span className="hidden sm:inline">Cards</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setViewMode('list')}
+                        className={`px-2 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-1 ${
+                          viewMode === 'list' ? 'bg-background text-foreground shadow-xs' : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                        title="List View"
+                      >
+                        <List className="h-3 w-3" />
+                        <span className="hidden sm:inline">List</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setViewMode('swipe'); setSwipeIndex(0); }}
+                        className={`px-2 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-1 ${
+                          viewMode === 'swipe' ? 'bg-background text-foreground shadow-xs' : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                        title="Swipe Mode"
+                      >
+                        <RotateCcw className="h-3 w-3" />
+                        <span className="hidden sm:inline">Swipe</span>
+                      </button>
+                    </div>
+
+                    {/* Sort by dropdown */}
+                    <div className="flex items-center gap-1">
+                      <select 
+                        value={sortBy} 
+                        onChange={(e) => setSortBy(e.target.value)}
+                        className="text-xs border border-border rounded-lg px-2 py-1 bg-background text-foreground h-7"
+                      >
+                        <option value="posted_at">Latest First</option>
+                        <option value="salary_max">Highest Salary</option>
+                        <option value="views_count">Most Popular</option>
+                        <option value="applications_count">Easy Apply</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
 

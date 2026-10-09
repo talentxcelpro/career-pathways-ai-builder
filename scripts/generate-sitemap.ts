@@ -1,4 +1,4 @@
-import { writeFileSync, existsSync, mkdirSync, readdirSync, unlinkSync } from 'fs';
+import { writeFileSync, readFileSync, existsSync, mkdirSync, readdirSync, unlinkSync } from 'fs';
 import { resolve } from 'path';
 import { createClient } from '@supabase/supabase-js';
 import { PRODUCTION_ORIGIN } from '../src/config/seo';
@@ -401,11 +401,20 @@ export async function generateProductionSitemaps() {
     }
   });
 
-  // Generate Master Index (sitemap.xml)
+  // Generate Master Index (sitemap.xml and sitemap-root.xml)
   const masterXml = buildSitemapIndexXml(validSitemapsForIndex);
   writeFileSync(resolve(publicDir, 'sitemap.xml'), masterXml, 'utf-8');
-  console.log(`\n✓ Master sitemap.xml generated with ${validSitemapsForIndex.length} segmented sitemaps!`);
+  writeFileSync(resolve(publicDir, 'sitemap-root.xml'), masterXml, 'utf-8');
+  console.log(`\n✓ Master sitemap.xml & sitemap-root.xml generated with ${validSitemapsForIndex.length} segmented sitemaps!`);
   console.log(`Total URLs Published in Sitemaps: ${globalSeenLocs.size.toLocaleString()}`);
+
+  const robotsSrc = resolve(publicDir, 'robots.txt');
+  const robotsRoot = resolve(publicDir, 'robots-root.txt');
+  if (existsSync(robotsSrc)) {
+    const robotsContent = readFileSync(robotsSrc, 'utf-8');
+    writeFileSync(robotsRoot, robotsContent, 'utf-8');
+    console.log(`✓ Synchronized robots-root.txt`);
+  }
 }
 
 generateProductionSitemaps().catch(console.error);

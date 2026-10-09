@@ -26,16 +26,8 @@
 
 /* Mobile Performance Classes */
 .mobile-optimized {
-  /* Hardware acceleration */
-  transform: translateZ(0);
-  will-change: transform, opacity;
-  
-  /* Smooth scrolling */
+  /* Smooth touch scrolling */
   -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
-  
-  /* Prevent iOS rubber band */
-  overscroll-behavior: contain;
 }
 
 /* Responsive Image Classes */

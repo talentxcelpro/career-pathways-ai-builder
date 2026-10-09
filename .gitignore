@@ -70,3 +70,4 @@ database_growth_metrics.json
 scripts/*_state.json
 scripts/*_metrics.json
 scripts/*_status.json
+*.tsbuildinfo

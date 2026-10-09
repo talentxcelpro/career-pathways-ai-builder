@@ -19,7 +19,15 @@ const VALID_STATIC_JOB_ROUTES = new Set([
 ]);
 
 export const config = {
-  matcher: ['/passport/public/:username*', '/company/:slug*', '/jobs/:path*', '/colleges/:path*', '/salaries/:path*'],
+  matcher: [
+    '/sitemap.xml',
+    '/robots.txt',
+    '/passport/public/:username*',
+    '/company/:slug*',
+    '/jobs/:path*',
+    '/colleges/:path*',
+    '/salaries/:path*'
+  ],
 };
 
 export default async function middleware(req: Request) {
@@ -30,6 +38,81 @@ export default async function middleware(req: Request) {
     const cleanUrl = new URL(req.url);
     cleanUrl.pathname = url.pathname.replace(/\/+$/, '');
     return Response.redirect(cleanUrl.toString(), 301);
+  }
+
+  // 2. Subdomain dedicated sitemap and robots.txt routing
+  const host = (req.headers.get('x-forwarded-host') || req.headers.get('host') || url.hostname || '').toLowerCase();
+  const subdomain = host.split('.')[0];
+
+  if (url.pathname === '/sitemap.xml') {
+    const subdomainMap: Record<string, string> = {
+      jobs: '/sitemap-jobs.xml',
+      resume: '/sitemap-resume.xml',
+      salary: '/sitemap-salary.xml',
+      careers: '/sitemap-careers.xml',
+      learning: '/sitemap-learning.xml',
+      colleges: '/sitemap-colleges.xml',
+      employers: '/sitemap-employers.xml',
+      employer: '/sitemap-employers.xml',
+      government: '/sitemap-government.xml',
+      passport: '/sitemap-passport.xml',
+    };
+
+    const targetFile = subdomainMap[subdomain];
+    if (targetFile) {
+      try {
+        const targetUrl = new URL(targetFile, req.url);
+        const fileRes = await fetch(targetUrl);
+        if (fileRes.ok) {
+          return new Response(fileRes.body, {
+            status: 200,
+            headers: {
+              'content-type': 'application/xml; charset=utf-8',
+              'cache-control': 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800',
+              'access-control-allow-origin': '*',
+            },
+          });
+        }
+      } catch (err) {
+        // Fallback to 301 redirect if internal fetch is unavailable
+        return Response.redirect(new URL(targetFile, req.url).toString(), 301);
+      }
+    }
+  }
+
+  if (url.pathname === '/robots.txt') {
+    const robotsMap: Record<string, string> = {
+      jobs: '/robots-jobs.txt',
+      resume: '/robots-resume.txt',
+      salary: '/robots-salary.txt',
+      careers: '/robots-careers.txt',
+      learning: '/robots-learning.txt',
+      colleges: '/robots-colleges.txt',
+      employers: '/robots-employers.txt',
+      employer: '/robots-employers.txt',
+      government: '/robots-government.txt',
+      passport: '/robots-passport.txt',
+    };
+
+    const targetFile = robotsMap[subdomain];
+    if (targetFile) {
+      try {
+        const targetUrl = new URL(targetFile, req.url);
+        const fileRes = await fetch(targetUrl);
+        if (fileRes.ok) {
+          return new Response(fileRes.body, {
+            status: 200,
+            headers: {
+              'content-type': 'text/plain; charset=utf-8',
+              'cache-control': 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800',
+              'access-control-allow-origin': '*',
+            },
+          });
+        }
+      } catch (err) {
+        return Response.redirect(new URL(targetFile, req.url).toString(), 301);
+      }
+    }
   }
 
   const ua = req.headers.get('user-agent') || '';

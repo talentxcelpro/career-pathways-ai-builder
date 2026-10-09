@@ -223,6 +223,19 @@
       "destination": "/robots-employer-alias.txt"
     },
     {
+      "source": "/sitemap.xml",
+      "has": [{ "type": "host", "value": "employer.talentxcel.in" }],
+      "destination": "/sitemap-employers.xml"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/sitemap-root.xml"
+    },
+    {
+      "source": "/robots.txt",
+      "destination": "/robots-root.txt"
+    },
+    {
       "source": "/api/optimized-sitemap-index",
       "destination": "https://dthlgsnakhoftinssokm.supabase.co/functions/v1/optimized-sitemap?type=index"
     },
