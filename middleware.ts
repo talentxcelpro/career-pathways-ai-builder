@@ -317,7 +317,7 @@ async function fetchJobForMeta(slug: string) {
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
   const filter = isUuid
     ? `or=(seo_slug.eq.${encodeURIComponent(slug)},id.eq.${encodeURIComponent(slug)})`
-    : `seo_slug.eq.${encodeURIComponent(slug)}`;
+    : `seo_slug=eq.${encodeURIComponent(slug)}`;
 
   try {
     const res = await fetch(
