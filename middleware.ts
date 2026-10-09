@@ -20,15 +20,61 @@ const VALID_STATIC_JOB_ROUTES = new Set([
 
 export const config = {
   matcher: [
+    '/',
     '/sitemap.xml',
     '/robots.txt',
     '/passport/public/:username*',
     '/company/:slug*',
     '/jobs/:path*',
     '/colleges/:path*',
-    '/salaries/:path*'
+    '/salaries/:path*',
+    '/salary/:path*',
+    '/career-map/:path*',
+    '/resume/:path*',
+    '/learning/:path*'
   ],
 };
+
+function getCanonicalForRoute(pathname: string, host: string): string {
+  const clean = pathname.toLowerCase();
+  const sub = host.split('.')[0];
+
+  if (clean === '/' || clean === '') {
+    if (sub && sub !== 'talentxcel' && sub !== 'www') {
+      return `https://${sub === 'employer' ? 'employers' : sub}.talentxcel.in/`;
+    }
+    return 'https://talentxcel.in/';
+  }
+
+  if (clean.startsWith('/jobs') || clean.startsWith('/locations') || clean.startsWith('/roles') || clean.startsWith('/industries')) {
+    return `https://jobs.talentxcel.in${pathname}`;
+  }
+  if (clean.startsWith('/salary') || clean.startsWith('/tools/salary-analyzer')) {
+    return `https://salary.talentxcel.in${pathname}`;
+  }
+  if (clean.startsWith('/career-map') || clean.startsWith('/ai-career-hub') || clean.startsWith('/career-intelligence') || clean.startsWith('/how-to-become')) {
+    return `https://careers.talentxcel.in${pathname}`;
+  }
+  if (clean.startsWith('/resume') || clean.startsWith('/tools/ats-checker') || clean.startsWith('/tools/resume-checker') || clean.startsWith('/resume-builder')) {
+    return `https://resume.talentxcel.in${pathname}`;
+  }
+  if (clean.startsWith('/learning') || clean.startsWith('/courses') || clean.startsWith('/course')) {
+    return `https://learning.talentxcel.in${pathname}`;
+  }
+  if (clean.startsWith('/colleges')) {
+    return `https://colleges.talentxcel.in${pathname}`;
+  }
+  if (clean.startsWith('/employers') || clean.startsWith('/recruiters') || clean.startsWith('/companies') || clean.startsWith('/company') || clean.startsWith('/hire') || clean.startsWith('/employer')) {
+    return `https://employers.talentxcel.in${pathname}`;
+  }
+  if (clean.startsWith('/government-jobs')) {
+    return `https://government.talentxcel.in${pathname}`;
+  }
+  if (clean.startsWith('/passport') || clean.startsWith('/public-passport')) {
+    return `https://passport.talentxcel.in${pathname}`;
+  }
+  return `https://talentxcel.in${pathname}`;
+}
 
 export default async function middleware(req: Request) {
   const url = new URL(req.url);
@@ -43,6 +89,42 @@ export default async function middleware(req: Request) {
   // 2. Subdomain dedicated sitemap and robots.txt routing
   const host = (req.headers.get('x-forwarded-host') || req.headers.get('host') || url.hostname || '').toLowerCase();
   const subdomain = host.split('.')[0];
+
+  // 3. Subdomain root entry delivery (/ -> /index-${subdomain}.html)
+  if (url.pathname === '/') {
+    const subdomainFileMap: Record<string, string> = {
+      jobs: '/index-jobs.html',
+      resume: '/index-resume.html',
+      salary: '/index-salary.html',
+      careers: '/index-careers.html',
+      learning: '/index-learning.html',
+      colleges: '/index-colleges.html',
+      employers: '/index-employers.html',
+      employer: '/index-employers.html',
+      government: '/index-government.html',
+      passport: '/index-passport.html',
+    };
+
+    const targetIndex = subdomainFileMap[subdomain];
+    if (targetIndex) {
+      try {
+        const targetUrl = new URL(targetIndex, req.url);
+        const fileRes = await fetch(targetUrl);
+        if (fileRes.ok) {
+          const body = req.method === 'HEAD' ? null : await fileRes.text();
+          return new Response(body, {
+            status: 200,
+            headers: {
+              'content-type': 'text/html; charset=utf-8',
+              'cache-control': 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800',
+            },
+          });
+        }
+      } catch (err) {
+        // Fallback to pass through
+      }
+    }
+  }
 
   if (url.pathname === '/sitemap.xml') {
     const subdomainMap: Record<string, string> = {
@@ -64,7 +146,8 @@ export default async function middleware(req: Request) {
         const targetUrl = new URL(targetFile, req.url);
         const fileRes = await fetch(targetUrl);
         if (fileRes.ok) {
-          return new Response(fileRes.body, {
+          const body = req.method === 'HEAD' ? null : await fileRes.text();
+          return new Response(body, {
             status: 200,
             headers: {
               'content-type': 'application/xml; charset=utf-8',
@@ -100,7 +183,8 @@ export default async function middleware(req: Request) {
         const targetUrl = new URL(targetFile, req.url);
         const fileRes = await fetch(targetUrl);
         if (fileRes.ok) {
-          return new Response(fileRes.body, {
+          const body = req.method === 'HEAD' ? null : await fileRes.text();
+          return new Response(body, {
             status: 200,
             headers: {
               'content-type': 'text/plain; charset=utf-8',
@@ -125,7 +209,7 @@ export default async function middleware(req: Request) {
   const slug = pathParts[pathParts.length - 1];
   if (!slug) return;
 
-  // 2. Eliminate phantom salary matrix URLs with HTTP 410 Gone
+  // 4. Eliminate phantom salary matrix URLs with HTTP 410 Gone
   if (section === 'salaries') {
     return new Response(
       `<!DOCTYPE html><html lang="en"><head><title>410 Gone | TalentXcel</title><meta name="robots" content="noindex, nofollow" /></head><body style="font-family:sans-serif;background:#090d16;color:#e2e8f0;padding:40px;text-align:center;"><h1>410 Gone</h1><p>This automated salary estimate has been retired in favor of verified compensation data.</p><p><a href="/jobs" style="color:#38bdf8;">Explore Live Jobs</a></p></body></html>`,
@@ -133,7 +217,7 @@ export default async function middleware(req: Request) {
     );
   }
 
-  // 3. Eliminate phantom company hiring matrix URLs with HTTP 410 Gone
+  // 5. Eliminate phantom company hiring matrix URLs with HTTP 410 Gone
   if (section === 'jobs' && pathParts.length > 2 && pathParts[1] === 'company') {
     return new Response(
       `<!DOCTYPE html><html lang="en"><head><title>410 Gone | TalentXcel</title><meta name="robots" content="noindex, nofollow" /></head><body style="font-family:sans-serif;background:#090d16;color:#e2e8f0;padding:40px;text-align:center;"><h1>410 Gone</h1><p>This company hiring matrix permutation is no longer active.</p><p><a href="/jobs" style="color:#38bdf8;">Browse Verified Jobs</a></p></body></html>`,
@@ -144,7 +228,7 @@ export default async function middleware(req: Request) {
   let title = 'TalentXcel — AI Career Platform for Jobs, Skills & Hiring';
   let description = 'Search verified jobs, build an ATS-ready resume, prepare for interviews and grow your skills on TalentXcel.';
   let image = 'https://talentxcel.in/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png';
-  let canonicalUrl = `https://talentxcel.in${url.pathname}`;
+  let canonicalUrl = getCanonicalForRoute(url.pathname, host);
 
   if (section === 'jobs') {
     if (pathParts.length > 1) {
@@ -156,7 +240,7 @@ export default async function middleware(req: Request) {
         if (job) {
           title = `${job.title} at ${job.company_name || 'Hiring Employer'} | TalentXcel Jobs`;
           description = job.description?.slice(0, 180) || `Apply now for ${job.title} on TalentXcel. Free 1-click application with instant ATS resume score.`;
-          canonicalUrl = `https://talentxcel.in/jobs/${job.seo_slug || jobSlug}`;
+          canonicalUrl = getCanonicalForRoute(`/jobs/${job.seo_slug || jobSlug}`, host);
         } else {
           // Nonexistent or expired job requested by search bot -> HTTP 410 Gone
           return new Response(
@@ -173,12 +257,12 @@ export default async function middleware(req: Request) {
       const formattedCollege = collegeSlug.replace(/[-_]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
       title = `${formattedCollege} — Courses, Admissions, Fees & Placements | TalentXcel`;
       description = `Comprehensive dossier for ${formattedCollege}: courses, fee structures, cutoff scores, placements, and career pathways.`;
-      canonicalUrl = `https://talentxcel.in/colleges/${collegeSlug}`;
+      canonicalUrl = getCanonicalForRoute(`/colleges/${collegeSlug}`, host);
     } else if (pathParts.length === 2) {
       const formattedCollege = slug.replace(/[-_]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
       title = `${formattedCollege} — Courses, Admissions, Fees & Placements | TalentXcel`;
       description = `Comprehensive guide to ${formattedCollege}: courses, fee structures, cutoff scores, placements, and career pathways.`;
-      canonicalUrl = `https://talentxcel.in/colleges/${slug}`;
+      canonicalUrl = getCanonicalForRoute(`/colleges/${slug}`, host);
     }
   } else if (section === 'company') {
     const company = await fetchCompanyForMeta(slug);
@@ -186,7 +270,7 @@ export default async function middleware(req: Request) {
       title = `${company.name} — AI Product Leaderboard | TalentXcel Rankings`;
       description = company.tagline || company.description || `${company.name} is ranked on the TalentXcel Global AI Product Leaderboard.`;
       if (company.logo_url) image = company.logo_url;
-      canonicalUrl = `https://talentxcel.in/company/${slug}`;
+      canonicalUrl = getCanonicalForRoute(`/company/${slug}`, host);
     }
   } else if (section === 'passport') {
     const profile = await fetchProfileForMeta(slug);
@@ -194,7 +278,7 @@ export default async function middleware(req: Request) {
       title = `${profile.name} — ${profile.headline || profile.title || 'Professional Career Passport'} | TalentXcel`;
       description = profile.summary?.slice(0, 200) || `${profile.name}'s verified professional passport on TalentXcel.`;
       if (profile.photoUrl) image = profile.photoUrl;
-      canonicalUrl = `https://talentxcel.in/passport/public/${slug}`;
+      canonicalUrl = getCanonicalForRoute(`/passport/public/${slug}`, host);
     }
   }
 
@@ -230,9 +314,14 @@ async function fetchJobForMeta(slug: string) {
   const SUPABASE_URL = process.env.SUPABASE_URL || DEFAULT_SUPABASE_URL;
   const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY;
 
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
+  const filter = isUuid
+    ? `or=(seo_slug.eq.${encodeURIComponent(slug)},id.eq.${encodeURIComponent(slug)})`
+    : `seo_slug.eq.${encodeURIComponent(slug)}`;
+
   try {
     const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/jobs?or=(seo_slug.eq.${encodeURIComponent(slug)},id.eq.${encodeURIComponent(slug)})&is_active=eq.true&select=title,company_name,description,location,seo_slug&limit=1`,
+      `${SUPABASE_URL}/rest/v1/jobs?${filter}&is_active=eq.true&select=title,company_name,description,location,seo_slug&limit=1`,
       {
         headers: {
           apikey: SUPABASE_ANON_KEY,

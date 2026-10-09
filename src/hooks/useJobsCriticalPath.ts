@@ -7,6 +7,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { searchService } from '@/services/search/SearchService';
 import { useEffect, useState, useRef } from 'react';
+import { getCompanyLogo } from '@/utils/companyLogos';
 
 interface CriticalJobData {
   id: string;
@@ -29,6 +30,15 @@ interface JobFilters {
   salary_max: number;
   is_remote: boolean;
   skills: string[];
+  department?: string[];
+  company_type?: string[];
+  work_mode?: string[];
+  industry?: string[];
+  role_category?: string[];
+  education?: string[];
+  posted_by?: string[];
+  freshness?: string[];
+  company_id?: string;
 }
 
 export const FALLBACK_JOBS = [
@@ -49,7 +59,7 @@ export const FALLBACK_JOBS = [
     description: 'Lead quarterly financial forecasting, valuation modeling, and capital expenditure analysis for Asia-Pacific operations.',
     companies: {
       name: 'JPMorgan Chase & Co.',
-      logo_url: '/talentxcel-official-logo.png',
+      logo_url: '/assets/company-logos/jpmorgan.svg',
       industry: 'Finance & Banking',
       is_verified: true
     }
@@ -71,7 +81,7 @@ export const FALLBACK_JOBS = [
     description: 'Manage luxury resort operations, guest satisfaction metrics, room inventory logistics, and front office teams.',
     companies: {
       name: 'Taj Hotels & Resorts',
-      logo_url: '/talentxcel-official-logo.png',
+      logo_url: '/assets/company-logos/taj-hotels.svg',
       industry: 'Hospitality & Tourism',
       is_verified: true
     }
@@ -93,7 +103,7 @@ export const FALLBACK_JOBS = [
     description: 'Transform workforce data into strategic insights using Power BI turnover dashboards, compensation models, and retention analytics.',
     companies: {
       name: 'Deloitte Consulting',
-      logo_url: '/talentxcel-official-logo.png',
+      logo_url: '/assets/company-logos/deloitte.svg',
       industry: 'Consulting & Corporate Strategy',
       is_verified: true
     }
@@ -115,7 +125,7 @@ export const FALLBACK_JOBS = [
     description: 'Oversee hospital department workflow, patient discharge efficiency, clinical quality audit compliance, and facility staffing.',
     companies: {
       name: 'Apollo Hospitals Group',
-      logo_url: '/talentxcel-official-logo.png',
+      logo_url: '/assets/company-logos/apollo-hospitals.svg',
       industry: 'Healthcare & Life Sciences',
       is_verified: true
     }
@@ -137,7 +147,7 @@ export const FALLBACK_JOBS = [
     description: 'Architect secure, resilient enterprise cloud infrastructure on AWS for enterprise financial and healthcare clients.',
     companies: {
       name: 'Amazon Web Services (AWS)',
-      logo_url: '/talentxcel-official-logo.png',
+      logo_url: '/assets/company-logos/aws.svg',
       industry: 'Technology & Cloud',
       is_verified: true
     }
@@ -159,7 +169,7 @@ export const FALLBACK_JOBS = [
     description: 'Drive end-to-end supply chain optimization, fulfillment center logistics, carrier negotiation, and demand forecasting.',
     companies: {
       name: 'DHL Supply Chain',
-      logo_url: '/talentxcel-official-logo.png',
+      logo_url: '/assets/company-logos/dhl.svg',
       industry: 'Supply Chain & Logistics',
       is_verified: true
     }
@@ -187,21 +197,137 @@ export const useJobsCriticalPath = (filters: JobFilters, sortBy: string = 'poste
   }, [filterSignature]);
 
   // Normalize experience levels to database enum representation
-  const getMappedLevels = () => (filters.experience_level || []).map(lvl => {
-    const l = lvl.toLowerCase();
-    if (l.includes('entry') || l.includes('fresher') || l.includes('0-1')) return 'fresher';
-    if (l.includes('mid') || l.includes('1-3') || l.includes('2-5')) return 'mid-level';
-    if (l.includes('senior') || l.includes('3-5') || l.includes('5-10')) return 'senior-level';
-    if (l.includes('lead') || l.includes('exec') || l.includes('10+')) return 'executive';
-    return lvl;
-  });
+  const getMappedLevels = () => {
+    const raw = filters.experience_level || [];
+    const mapped = new Set<string>();
+
+    raw.forEach(lvl => {
+      const l = lvl.toLowerCase();
+      if (l === 'fresher' || l.includes('entry') || l.includes('0-1')) {
+        mapped.add('fresher');
+      } else if (l === 'junior' || l.includes('1-3')) {
+        mapped.add('mid-level');
+      } else if (l === 'mid-level' || l.includes('3-7') || l.includes('2-5')) {
+        mapped.add('mid-level');
+      } else if (l === 'senior-level' || l.includes('5-10') || l.includes('senior') || l === 'manager' || l.includes('8+')) {
+        mapped.add('senior-level');
+      } else if (l === 'lead' || l === 'director' || l === 'executive' || l.includes('10+') || l.includes('12+') || l.includes('15+')) {
+        mapped.add('executive');
+      } else {
+        mapped.add(lvl);
+      }
+    });
+
+    return Array.from(mapped);
+  };
+
+  // Helper for applying secondary in-memory filters (department, work_mode, company_type, etc.)
+  const applySecondaryFilters = (jobList: any[]) => {
+    return jobList.filter(job => {
+      // 1. Work Mode filter (remote, hybrid, office)
+      if (filters.work_mode && filters.work_mode.length > 0) {
+        const wantsRemote = filters.work_mode.includes('remote');
+        const wantsHybrid = filters.work_mode.includes('hybrid');
+        const wantsOffice = filters.work_mode.includes('office');
+
+        const loc = (job.location || '').toLowerCase();
+        const wm = (job.work_mode || '').toLowerCase();
+        const isJobRemote = Boolean(job.is_remote || loc.includes('remote') || wm === 'remote');
+        const isJobHybrid = Boolean(wm === 'hybrid' || loc.includes('hybrid'));
+        const isJobOffice = Boolean((!job.is_remote && wm !== 'remote') || wm === 'onsite' || wm === 'office');
+
+        const matchesMode = (wantsRemote && isJobRemote) || (wantsHybrid && isJobHybrid) || (wantsOffice && isJobOffice);
+        if (!matchesMode) return false;
+      }
+
+      // 2. Department filter
+      if (filters.department && filters.department.length > 0) {
+        const deptMatches = filters.department.some(dept => {
+          const text = `${job.department || ''} ${job.title || ''} ${job.description || ''} ${job.industry || ''}`.toLowerCase();
+          return text.includes(dept.toLowerCase());
+        });
+        if (!deptMatches) return false;
+      }
+
+      // 3. Company Type filter
+      if (filters.company_type && filters.company_type.length > 0) {
+        const typeMatches = filters.company_type.some(ctype => {
+          const comp = (job.company_name || job.companies?.name || '').toLowerCase();
+          const ind = (job.companies?.industry || job.industry || '').toLowerCase();
+          if (ctype === 'government') return ind.includes('government') || ['drdo', 'isro', 'upsc', 'rbi', 'iocl', 'cag'].some(c => comp.includes(c));
+          if (ctype === 'mnc' || ctype === 'fortune-500') return ['google', 'microsoft', 'apple', 'amazon', 'aws', 'deloitte', 'mckinsey', 'jpmorgan'].some(c => comp.includes(c));
+          if (ctype === 'startup') return ['zoho', 'stripe', 'crowdstrike'].some(c => comp.includes(c)) || job.is_hiring_fast;
+          if (ctype === 'service') return ind.includes('service') || ind.includes('consulting');
+          if (ctype === 'product') return !ind.includes('service') && !ind.includes('consulting');
+          return true;
+        });
+        if (!typeMatches) return false;
+      }
+
+      // 4. Industry filter
+      if (filters.industry && filters.industry.length > 0) {
+        const indMatches = filters.industry.some(ind => {
+          const text = `${job.companies?.industry || ''} ${job.industry || ''} ${job.industry_domain || ''} ${job.title || ''} ${job.description || ''}`.toLowerCase();
+          return text.includes(ind.toLowerCase());
+        });
+        if (!indMatches) return false;
+      }
+
+      // 5. Role Category filter
+      if (filters.role_category && filters.role_category.length > 0) {
+        const roleMatches = filters.role_category.some(role => {
+          const text = `${job.title || ''} ${(job.skills_required || []).join(' ')}`.toLowerCase();
+          const keywords = role.split('-');
+          return keywords.some(k => text.includes(k.toLowerCase()));
+        });
+        if (!roleMatches) return false;
+      }
+
+      // 6. Freshness filter
+      if (filters.freshness && filters.freshness.length > 0) {
+        const jobTime = new Date(job.posted_at || job.created_at).getTime();
+        const now = Date.now();
+        const dayMs = 24 * 60 * 60 * 1000;
+        const freshnessMatches = filters.freshness.some(fresh => {
+          if (fresh === 'today') return (now - jobTime) <= dayMs;
+          if (fresh === 'week') return (now - jobTime) <= 7 * dayMs;
+          if (fresh === 'month') return (now - jobTime) <= 30 * dayMs;
+          if (fresh === '3months') return (now - jobTime) <= 90 * dayMs;
+          return true;
+        });
+        if (!freshnessMatches) return false;
+      }
+
+      // 7. Education filter
+      if (filters.education && filters.education.length > 0) {
+        const eduMatches = filters.education.some(edu => {
+          const text = `${job.minimum_education || ''} ${job.educational_qualification || ''} ${job.requirements || ''}`.toLowerCase();
+          return text.includes(edu.toLowerCase());
+        });
+        if (!eduMatches) return false;
+      }
+
+      return true;
+    });
+  };
 
   // Step 1: Load initial page of active jobs via SearchService
   const criticalQuery = useQuery({
     queryKey: ['jobs-critical', filters, sortBy],
     queryFn: async () => {
-      console.log('🚀 Loading active database jobs via SearchService (batch: 24)...');
+      console.log('🚀 Loading active database jobs via SearchService...');
       const mappedLevels = getMappedLevels();
+      const isRemoteEffective = filters.is_remote || (filters.work_mode?.includes('remote') ?? false);
+      const hasSecondary = Boolean(
+        (filters.department && filters.department.length > 0) ||
+        (filters.company_type && filters.company_type.length > 0) ||
+        (filters.work_mode && filters.work_mode.length > 0) ||
+        (filters.industry && filters.industry.length > 0) ||
+        (filters.role_category && filters.role_category.length > 0) ||
+        (filters.education && filters.education.length > 0) ||
+        (filters.posted_by && filters.posted_by.length > 0) ||
+        (filters.freshness && filters.freshness.length > 0)
+      );
 
       try {
         const searchResult = await searchService.searchJobs({
@@ -211,10 +337,10 @@ export const useJobsCriticalPath = (filters: JobFilters, sortBy: string = 'poste
           experience_levels: mappedLevels,
           min_salary: filters.salary_min,
           max_salary: filters.salary_max,
-          is_remote: filters.is_remote,
+          is_remote: isRemoteEffective,
           skills: filters.skills,
           page: 1,
-          limit: pageSize,
+          limit: hasSecondary ? 60 : pageSize,
           sortBy
         });
 
@@ -225,10 +351,11 @@ export const useJobsCriticalPath = (filters: JobFilters, sortBy: string = 'poste
           const isFiltered = Boolean(
             (filters.search && filters.search.trim()) ||
             (filters.location && filters.location.trim()) ||
-            filters.is_remote ||
+            isRemoteEffective ||
             (filters.employment_type && filters.employment_type.length > 0) ||
             (filters.experience_level && filters.experience_level.length > 0) ||
-            filters.salary_min > 0
+            filters.salary_min > 0 ||
+            hasSecondary
           );
           return {
             jobs: isFiltered ? [] : FALLBACK_JOBS,
@@ -236,22 +363,35 @@ export const useJobsCriticalPath = (filters: JobFilters, sortBy: string = 'poste
           };
         }
 
-        // Normalize each job with valid companies object & featured distribution
+        // Filter out any Acme test jobs and apply secondary filters
         const isSearchActive = Boolean(filters.search || filters.location);
-        const normalizedJobs = data.map((job: any, index: number) => ({
-          ...job,
-          is_featured: job.is_featured || (!isSearchActive && index < 6),
-          companies: job.companies || {
-            name: job.company_name || 'TalentXcel Services (Client Partner)',
-            logo_url: job.organization_logo_url || '/talentxcel-official-logo.png',
-            industry: job.industry || 'Technology & Enterprise Services',
-            is_verified: true
-          }
-        }));
+        let filteredData = data.filter((job: any) =>
+          job.seo_slug !== 'senior-devops-architect-acme-corp-bengaluru' &&
+          !job.company_name?.toLowerCase().includes('acme')
+        );
+
+        if (hasSecondary) {
+          filteredData = applySecondaryFilters(filteredData);
+        }
+
+        const normalizedJobs = filteredData.map((job: any, index: number) => {
+          const compName = job.companies?.name || job.company_name || 'TalentXcel Services';
+          const resolvedLogo = getCompanyLogo(compName, job.companies?.logo_url || job.organization_logo_url);
+          return {
+            ...job,
+            is_featured: job.is_featured || (!isSearchActive && index < 6),
+            companies: {
+              name: compName,
+              logo_url: resolvedLogo,
+              industry: job.companies?.industry || job.industry || 'Technology & Enterprise Services',
+              is_verified: true
+            }
+          };
+        });
 
         return {
           jobs: normalizedJobs,
-          totalCount: count || normalizedJobs.length
+          totalCount: hasSecondary ? normalizedJobs.length : (Math.max(0, count - (data.length - filteredData.length)) || normalizedJobs.length)
         };
       } catch (error: any) {
         console.warn("Jobs DB query warning:", error?.message || error);
@@ -285,6 +425,18 @@ export const useJobsCriticalPath = (filters: JobFilters, sortBy: string = 'poste
 
     try {
       const mappedLevels = getMappedLevels();
+      const isRemoteEffective = filters.is_remote || (filters.work_mode?.includes('remote') ?? false);
+      const hasSecondary = Boolean(
+        (filters.department && filters.department.length > 0) ||
+        (filters.company_type && filters.company_type.length > 0) ||
+        (filters.work_mode && filters.work_mode.length > 0) ||
+        (filters.industry && filters.industry.length > 0) ||
+        (filters.role_category && filters.role_category.length > 0) ||
+        (filters.education && filters.education.length > 0) ||
+        (filters.posted_by && filters.posted_by.length > 0) ||
+        (filters.freshness && filters.freshness.length > 0)
+      );
+
       const nextResult = await searchService.searchJobs({
         query: filters.search,
         location: filters.location,
@@ -292,25 +444,36 @@ export const useJobsCriticalPath = (filters: JobFilters, sortBy: string = 'poste
         experience_levels: mappedLevels,
         min_salary: filters.salary_min,
         max_salary: filters.salary_max,
-        is_remote: filters.is_remote,
+        is_remote: isRemoteEffective,
         skills: filters.skills,
         page: nextPage,
-        limit: pageSize,
+        limit: hasSecondary ? 60 : pageSize,
         sortBy
       });
 
-      const nextBatch = nextResult.jobs || [];
+      let nextBatch = (nextResult.jobs || []).filter((job: any) =>
+        job.seo_slug !== 'senior-devops-architect-acme-corp-bengaluru' &&
+        !job.company_name?.toLowerCase().includes('acme')
+      );
+
+      if (hasSecondary) {
+        nextBatch = applySecondaryFilters(nextBatch);
+      }
       if (nextBatch.length > 0) {
-        const normalizedBatch = nextBatch.map((job: any) => ({
-          ...job,
-          is_featured: false,
-          companies: job.companies || {
-            name: job.company_name || 'TalentXcel Services (Client Partner)',
-            logo_url: job.organization_logo_url || '/talentxcel-official-logo.png',
-            industry: job.industry || 'Technology & Enterprise Services',
-            is_verified: true
-          }
-        }));
+        const normalizedBatch = nextBatch.map((job: any) => {
+          const compName = job.companies?.name || job.company_name || 'TalentXcel Services';
+          const resolvedLogo = getCompanyLogo(compName, job.companies?.logo_url || job.organization_logo_url);
+          return {
+            ...job,
+            is_featured: false,
+            companies: {
+              name: compName,
+              logo_url: resolvedLogo,
+              industry: job.companies?.industry || job.industry || 'Technology & Enterprise Services',
+              is_verified: true
+            }
+          };
+        });
 
         setAccumulatedJobs(prev => {
           const seen = new Set(prev.map(j => j.id));

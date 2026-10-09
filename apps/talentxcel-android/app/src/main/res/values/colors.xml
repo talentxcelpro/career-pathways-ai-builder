@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- TalentXcel Brand Colors -->
+    <color name="txc_blue_primary">#2563EB</color>
+    <color name="txc_blue_secondary">#1D4ED8</color>
+    <color name="txc_blue_dark">#1E3A8A</color>
+    <color name="txc_blue_light">#DBEAFE</color>
+    
+    <!-- Accent & Highlights -->
+    <color name="txc_purple">#7C3AED</color>
+    <color name="txc_teal">#0D9488</color>
+    <color name="txc_emerald">#059669</color>
+    <color name="txc_amber">#D97706</color>
+    <color name="txc_rose">#E11D48</color>
+
+    <!-- Neutrals (Clean Professional Theme) -->
+    <color name="txc_background">#F8FAFC</color>
+    <color name="txc_surface">#FFFFFF</color>
+    <color name="txc_surface_variant">#F1F5F9</color>
+    <color name="txc_border">#E2E8F0</color>
+    <color name="txc_text_primary">#0F172A</color>
+    <color name="txc_text_secondary">#475569</color>
+    <color name="txc_text_tertiary">#94A3B8</color>
+</resources>

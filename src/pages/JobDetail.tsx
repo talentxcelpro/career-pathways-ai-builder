@@ -34,6 +34,7 @@ import { ReactJobStructuredData } from '@/components/seo/ReactJobStructuredData'
 import { buildJobPostingSchema } from '@/lib/seo/jobPostingSchema';
 import ComprehensiveJobApplicationForm from '@/components/jobs/ComprehensiveJobApplicationForm';
 import { createSafeHtml } from '@/utils/sanitize';
+import { getCompanyLogo } from '@/utils/companyLogos';
 
 const JobDetail = () => {
   const { slugOrId } = useParams<{ slugOrId: string }>();
@@ -59,6 +60,14 @@ const JobDetail = () => {
     queryKey: ['job-detail', slugOrId],
     queryFn: async () => {
       if (!slugOrId) throw new Error('No job slug provided');
+
+      // Purge/block Acme test listing
+      if (
+        slugOrId === 'senior-devops-architect-acme-corp-bengaluru' ||
+        slugOrId.toLowerCase().includes('acme')
+      ) {
+        return null;
+      }
       
       console.log('🔍 JobDetail fetching for:', slugOrId);
       
@@ -178,6 +187,21 @@ const JobDetail = () => {
             }
           };
         }
+      }
+
+      if (jobData) {
+        const compName = jobData.companies?.name || jobData.company_name || 'TalentXcel Services';
+        const resolvedLogo = getCompanyLogo(compName, jobData.companies?.logo_url || jobData.organization_logo_url);
+        jobData = {
+          ...jobData,
+          companies: {
+            ...(jobData.companies || {}),
+            name: compName,
+            logo_url: resolvedLogo,
+            industry: jobData.companies?.industry || jobData.industry || 'Technology & Enterprise Services',
+            is_verified: true
+          }
+        };
       }
 
       return jobData;

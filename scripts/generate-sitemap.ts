@@ -173,6 +173,7 @@ export async function generateProductionSitemaps() {
 
   // 2. Fetch Verified Active Jobs from Supabase (548 live vacancies)
   let activeJobEntriesList: SitemapEntry[] = [
+    { path: '/', changefreq: 'daily', priority: '1.0' },
     { path: '/jobs', changefreq: 'daily', priority: '1.0' },
   ];
   try {
@@ -185,6 +186,7 @@ export async function generateProductionSitemaps() {
     if (dbJobs && dbJobs.length > 0) {
       dbJobs.forEach(j => {
         const slug = j.seo_slug || j.id;
+        if (slug === 'senior-devops-architect-acme-corp-bengaluru' || slug.includes('acme')) return;
         activeJobEntriesList.push({
           path: `/jobs/${slug}`,
           changefreq: 'daily',
@@ -218,7 +220,10 @@ export async function generateProductionSitemaps() {
     }));
   }
 
-  const collegeOverview: SitemapEntry[] = [];
+  const collegeOverview: SitemapEntry[] = [
+    { path: '/', changefreq: 'daily', priority: '1.0' },
+    { path: '/colleges', changefreq: 'daily', priority: '1.0' },
+  ];
   allColleges.forEach(c => {
     if (!c.slug) return;
     collegeOverview.push({ path: `/colleges/${c.slug}`, changefreq: 'weekly', priority: '0.8' });
@@ -283,11 +288,15 @@ export async function generateProductionSitemaps() {
   ]);
 
   // 10. Verified Courses
-  const learningEntries = deduplicate(Object.keys(coursesDatabase || {}).map(cid => ({
-    path: `/learning/course/${cid}`,
-    changefreq: 'weekly',
-    priority: '0.8'
-  })));
+  const learningEntries = deduplicate([
+    { path: '/', changefreq: 'daily', priority: '1.0' },
+    { path: '/learning', changefreq: 'daily', priority: '1.0' },
+    ...Object.keys(coursesDatabase || {}).map(cid => ({
+      path: `/learning/course/${cid}`,
+      changefreq: 'weekly' as const,
+      priority: '0.8'
+    }))
+  ]);
 
   // 11. Authoritative Blog Articles (26 verified articles + /blog)
   const blogEntries = deduplicate([
@@ -313,6 +322,7 @@ export async function generateProductionSitemaps() {
 
   // 13. Dedicated Subdomain Specific URL Clusters
   const resumeEntries = deduplicate([
+    { path: '/', changefreq: 'daily', priority: '1.0' },
     { path: '/resume', changefreq: 'daily', priority: '1.0' },
     { path: '/resume/build', changefreq: 'daily', priority: '0.9' },
     { path: '/resume/ats-check', changefreq: 'daily', priority: '0.9' },
@@ -327,6 +337,7 @@ export async function generateProductionSitemaps() {
   ]);
 
   const salaryEntries = deduplicate([
+    { path: '/', changefreq: 'daily', priority: '1.0' },
     { path: '/salary', changefreq: 'daily', priority: '1.0' },
     { path: '/salary/software-engineer/bangalore', changefreq: 'weekly', priority: '0.9' },
     { path: '/salary/data-analyst/hyderabad', changefreq: 'weekly', priority: '0.8' },
@@ -336,6 +347,7 @@ export async function generateProductionSitemaps() {
   ]);
 
   const careersEntries = deduplicate([
+    { path: '/', changefreq: 'daily', priority: '1.0' },
     { path: '/career-map', changefreq: 'daily', priority: '1.0' },
     { path: '/career-map/software-engineer', changefreq: 'weekly', priority: '0.9' },
     { path: '/career-map/data-analyst', changefreq: 'weekly', priority: '0.9' },
@@ -347,6 +359,7 @@ export async function generateProductionSitemaps() {
   ]);
 
   const governmentEntries = deduplicate([
+    { path: '/', changefreq: 'daily', priority: '1.0' },
     { path: '/government-jobs', changefreq: 'daily', priority: '1.0' },
     { path: '/government-jobs/exams/upsc-2026', changefreq: 'daily', priority: '0.9' },
     { path: '/government-jobs/exams/ssc-cgl-2026', changefreq: 'daily', priority: '0.9' },
@@ -354,8 +367,9 @@ export async function generateProductionSitemaps() {
   ]);
 
   const employerEntries = deduplicate([
-    { path: '/companies', changefreq: 'daily', priority: '1.0' },
-    { path: '/recruiters', changefreq: 'daily', priority: '0.9' },
+    { path: '/', changefreq: 'daily', priority: '1.0' },
+    { path: '/recruiters', changefreq: 'daily', priority: '1.0' },
+    { path: '/companies', changefreq: 'daily', priority: '0.9' },
     { path: '/hire', changefreq: 'daily', priority: '0.9' },
     { path: '/staffing', changefreq: 'weekly', priority: '0.8' },
     { path: '/recruitment', changefreq: 'weekly', priority: '0.8' },
@@ -363,6 +377,7 @@ export async function generateProductionSitemaps() {
   ]);
 
   const passportEntries = deduplicate([
+    { path: '/', changefreq: 'daily', priority: '1.0' },
     { path: '/passport', changefreq: 'weekly', priority: '0.9' },
   ]);
 

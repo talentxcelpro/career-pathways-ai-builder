@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <rect width="48" height="48" rx="8" fill="#1C1B1A"/>
+  <path d="M24 8 L32 20 L24 28 L16 20 Z" fill="#D4AF37"/>
+  <path d="M24 16 L29 24 L24 32 L19 24 Z" fill="#FFF8DC"/>
+  <text x="24" y="42" font-family="Times New Roman, serif" font-weight="bold" font-size="9" fill="#D4AF37" text-anchor="middle" letter-spacing="2">TAJ</text>
+</svg>

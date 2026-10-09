@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base application theme with Material 3 -->
+    <style name="Theme.TalentXcel" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@color/txc_background</item>
+        <item name="android:navigationBarColor">@color/txc_surface</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowBackground">@color/txc_background</item>
+    </style>
+
+    <!-- Splash screen theme for zero-lag startup -->
+    <style name="Theme.TalentXcel.Splash" parent="Theme.TalentXcel">
+        <item name="android:windowBackground">@color/txc_surface</item>
+    </style>
+</resources>

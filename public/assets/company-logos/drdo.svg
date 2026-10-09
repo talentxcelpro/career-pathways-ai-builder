@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <rect width="48" height="48" rx="8" fill="#1C3F6E"/>
+  <polygon points="24,6 40,16 40,32 24,42 8,32 8,16" fill="none" stroke="#D4AF37" stroke-width="2.5"/>
+  <path d="M12 24 L24 12 L36 24" stroke="#FFFFFF" stroke-width="2.5" fill="none"/>
+  <circle cx="24" cy="24" r="5" fill="#D4AF37"/>
+  <text x="24" y="37" font-family="system-ui" font-weight="900" font-size="7" fill="#FFFFFF" text-anchor="middle">DRDO</text>
+</svg>

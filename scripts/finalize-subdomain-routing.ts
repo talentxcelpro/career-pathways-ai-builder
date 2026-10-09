@@ -1,24 +1,6 @@
 import { existsSync, copyFileSync, unlinkSync, readFileSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
-
-/**
- * scripts/finalize-subdomain-routing.ts
- *
- * Post-build finalization for Vercel multi-domain static deployments.
- *
- * GOVERNANCE:
- * - On Vercel, physical static files in the output directory (dist/) take precedence over vercel.json rewrites.
- * - If dist/sitemap.xml or dist/robots.txt exists on disk, Vercel serves that static file on ALL subdomains,
- *   completely bypassing host-specific rewrites.
- * - This caused subdomains (salary, careers, resume, jobs) to serve the parent domain's sitemap.xml,
- *   which Google Search Console flagged with "Couldn't fetch" / Type: Unknown.
- *
- * SOLUTION:
- * 1. Synchronize public/sitemap.xml -> public/sitemap-root.xml and public/robots.txt -> public/robots-root.txt.
- * 2. In dist/, rename sitemap.xml -> sitemap-root.xml and robots.txt -> robots-root.txt, then unlink the originals.
- * 3. Verify that all 10 domain sitemaps (sitemap-jobs.xml, sitemap-salary.xml, etc.) and robots files exist in dist/.
- * 4. This enables vercel.json rewrites to execute cleanly on every subdomain and on the root domain fallback.
- */
+import { generateSubdomainHomepages } from './generate-subdomain-homepages.js';
 
 const publicDir = resolve('public');
 const distDir = resolve('dist');
@@ -48,6 +30,18 @@ const REQUIRED_ROBOTS = [
   'robots-employer-alias.txt',
   'robots-passport.txt',
   'robots-root.txt',
+];
+
+const REQUIRED_SUBDOMAIN_PAGES = [
+  'index-jobs.html',
+  'index-salary.html',
+  'index-careers.html',
+  'index-resume.html',
+  'index-learning.html',
+  'index-colleges.html',
+  'index-employers.html',
+  'index-government.html',
+  'index-passport.html',
 ];
 
 export function finalizeSubdomainRouting(): void {
@@ -124,6 +118,24 @@ export function finalizeSubdomainRouting(): void {
       }
     }
 
+    // 3. Generate and verify dedicated subdomain HTML entry files
+    generateSubdomainHomepages();
+    console.log('--- Verifying Dist Subdomain HTML Entry Pages ---');
+    let allHtmlValid = true;
+    for (const htmlFile of REQUIRED_SUBDOMAIN_PAGES) {
+      const p = resolve(distDir, htmlFile);
+      if (existsSync(p)) {
+        const content = readFileSync(p, 'utf8');
+        const hasTitle = /<title>[^<]+<\/title>/i.test(content);
+        const hasCanonical = /<link\s+rel=["']canonical["']/i.test(content) || /<link[^>]+rel=["']canonical["']/i.test(content);
+        console.log(`  ✓ ${htmlFile.padEnd(26)} : Valid HTML (${content.length.toLocaleString()} bytes, title: ${hasTitle}, canonical: ${hasCanonical})`);
+        if (!hasTitle || !hasCanonical) allHtmlValid = false;
+      } else {
+        console.error(`  ❌ MISSING: ${htmlFile}`);
+        allHtmlValid = false;
+      }
+    }
+
     // Confirm that colliding files are completely removed from dist
     const collisionCheckSitemap = existsSync(resolve(distDir, 'sitemap.xml'));
     const collisionCheckRobots = existsSync(resolve(distDir, 'robots.txt'));
@@ -136,8 +148,8 @@ export function finalizeSubdomainRouting(): void {
       if (collisionCheckRobots) unlinkSync(resolve(distDir, 'robots.txt'));
     }
 
-    if (!allSitemapsValid || !allRobotsValid) {
-      throw new Error('Sitemap or robots validation failed in dist output.');
+    if (!allSitemapsValid || !allRobotsValid || !allHtmlValid) {
+      throw new Error('Sitemap, robots, or HTML homepage validation failed in dist output.');
     }
   } else {
     console.log('ℹ dist/ folder not present; public/ root assets synchronized.');

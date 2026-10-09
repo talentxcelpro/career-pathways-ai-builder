@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <rect width="48" height="48" rx="8" fill="#0A2240"/>
+  <polygon points="24,8 38,16 38,32 24,40 10,32 10,16" fill="none" stroke="#00A3E0" stroke-width="2.5"/>
+  <text x="24" y="27" font-family="system-ui" font-weight="900" font-size="10" fill="#FFFFFF" text-anchor="middle">ASD</text>
+</svg>

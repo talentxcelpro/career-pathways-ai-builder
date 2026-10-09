@@ -16,6 +16,7 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import { formatSalaryRange } from "@/utils/currencyUtils";
 import { useNavigate } from "react-router-dom";
+import { getCompanyLogo } from "@/utils/companyLogos";
 
 interface CompactJobCardProps {
   job: {
@@ -81,19 +82,8 @@ export const CompactJobCard: React.FC<CompactJobCardProps> = ({
     return job.companies?.name || job.company_name || 'Company';
   };
 
-  const getCompanyLogo = () => {
-    if (job.companies?.logo_url) return job.companies.logo_url;
-    
-    // Generate logo from company name
-    const companyName = getCompanyName();
-    const initials = companyName
-      .split(' ')
-      .map(word => word.charAt(0))
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-    
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(companyName)}&background=6366f1&color=ffffff&size=64&font-size=0.33`;
+  const getCompanyLogoUrl = () => {
+    return getCompanyLogo(getCompanyName(), job.companies?.logo_url);
   };
 
   return (
@@ -105,7 +95,7 @@ export const CompactJobCard: React.FC<CompactJobCardProps> = ({
         <div className="flex items-center gap-4">
           {/* Company Logo */}
           <Avatar className="h-12 w-12 shrink-0">
-            <AvatarImage src={getCompanyLogo()} alt={getCompanyName()} />
+            <AvatarImage src={getCompanyLogoUrl()} alt={getCompanyName()} />
             <AvatarFallback className="bg-primary/10 text-primary font-semibold">
               {getCompanyName().slice(0, 2).toUpperCase()}
             </AvatarFallback>

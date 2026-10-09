@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-extraction-rules>
+    <cloud-backup>
+        <!-- Exclude heavy on-device AI weights and cached inference data from cloud backup -->
+        <exclude domain="file" path="ai_models" />
+        <exclude domain="root" path="no_backup/ai_models" />
+    </cloud-backup>
+    <device-to-device-transfer>
+        <exclude domain="file" path="ai_models" />
+        <exclude domain="root" path="no_backup/ai_models" />
+    </device-to-device-transfer>
+</data-extraction-rules>

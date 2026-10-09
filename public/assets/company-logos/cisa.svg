@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <rect width="48" height="48" rx="8" fill="#0C2340"/>
+  <path d="M24 8 L38 14 V26 C38 34, 24 40, 24 40 C24 40, 10 34, 10 26 V14 Z" fill="#1D70B8"/>
+  <text x="24" y="27" font-family="system-ui" font-weight="900" font-size="9" fill="#FFFFFF" text-anchor="middle">CISA</text>
+</svg>

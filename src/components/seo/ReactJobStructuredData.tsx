@@ -28,13 +28,13 @@ export const ReactJobStructuredData: React.FC<ReactJobStructuredDataProps> = ({ 
         '@type': 'ListItem',
         position: 1,
         name: 'Home',
-        item: 'https://talentxcel.in',
+        item: 'https://jobs.talentxcel.in',
       },
       {
         '@type': 'ListItem',
         position: 2,
         name: 'Jobs',
-        item: 'https://talentxcel.in/jobs',
+        item: 'https://jobs.talentxcel.in/jobs',
       },
       {
         '@type': 'ListItem',

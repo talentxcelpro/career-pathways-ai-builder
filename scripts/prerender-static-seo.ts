@@ -687,8 +687,8 @@ async function prerender() {
       for (const job of dbJobs) {
         const schema = buildJobPostingSchema(job);
         const slug = job.seo_slug || job.id;
-        const canonical = `${BASE_URL}/jobs/${slug}`;
-        const title = `${job.title} at ${job.company_name} | TalentXcel`;
+        const canonical = `https://jobs.talentxcel.in/jobs/${slug}`;
+        const title = `${job.title} at ${job.company_name} | TalentXcel Jobs`;
         const description = (job.description || '').slice(0, 160);
 
         const bodyHtml = `

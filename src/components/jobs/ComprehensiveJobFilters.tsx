@@ -143,14 +143,14 @@ export const ComprehensiveJobFilters: React.FC<ComprehensiveJobFiltersProps> = (
     (filters.salary_min > 0 || filters.salary_max > 0 ? 1 : 0);
 
   const EXPERIENCE_OPTIONS = [
-    { value: 'fresher', label: '0-1 Years', count: 245 },
-    { value: 'junior', label: '1-3 Years', count: 189 },
-    { value: 'mid-level', label: '3-7 Years', count: 156 },
-    { value: 'senior-level', label: '5-10 Years', count: 89 },
+    { value: 'fresher', label: '0-1 Years', count: 99 },
+    { value: 'junior', label: '1-3 Years', count: 120 },
+    { value: 'mid-level', label: '3-7 Years', count: 209 },
+    { value: 'senior-level', label: '5-10 Years', count: 182 },
     { value: 'lead', label: '7-12 Years', count: 45 },
-    { value: 'manager', label: '8+ Years', count: 32 },
-    { value: 'director', label: '12+ Years', count: 18 },
-    { value: 'executive', label: '15+ Years', count: 12 }
+    { value: 'manager', label: '8+ Years', count: 35 },
+    { value: 'director', label: '12+ Years', count: 20 },
+    { value: 'executive', label: '15+ Years', count: 58 }
   ];
 
   const DEPARTMENT_OPTIONS = [
@@ -174,9 +174,9 @@ export const ComprehensiveJobFilters: React.FC<ComprehensiveJobFiltersProps> = (
   ];
 
   const WORK_MODE_OPTIONS = [
-    { value: 'remote', label: 'Work from Home', count: 156 },
-    { value: 'hybrid', label: 'Hybrid', count: 234 },
-    { value: 'office', label: 'Work from Office', count: 189 }
+    { value: 'remote', label: 'Work from Home', count: 74 },
+    { value: 'hybrid', label: 'Hybrid', count: 5 },
+    { value: 'office', label: 'Work from Office', count: 474 }
   ];
 
   const INDUSTRY_OPTIONS = [
@@ -277,7 +277,7 @@ export const ComprehensiveJobFilters: React.FC<ComprehensiveJobFiltersProps> = (
             <div className="space-y-3">
               <div className="px-2">
                 <Slider
-                  value={[filters.salary_min / 1000, filters.salary_max / 1000]}
+                  value={[filters.salary_min / 1000, filters.salary_max ? filters.salary_max / 1000 : 5000]}
                   onValueChange={handleSalaryChange}
                   max={5000}
                   min={0}
@@ -286,23 +286,41 @@ export const ComprehensiveJobFilters: React.FC<ComprehensiveJobFiltersProps> = (
                 />
                 <div className="flex justify-between text-xs text-muted-foreground mt-1">
                   <span className="text-xs">₹{filters.salary_min / 1000}k</span>
-                  <span className="text-xs">₹{filters.salary_max / 1000}k</span>
+                  <span className="text-xs">{filters.salary_max ? `₹${filters.salary_max / 1000}k` : '₹5000k+'}</span>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-1 text-xs">
                 {[
-                  { range: '0-3 Lakhs', count: 145 },
-                  { range: '3-6 Lakhs', count: 189 },
-                  { range: '6-10 Lakhs', count: 134 },
-                  { range: '10-15 Lakhs', count: 89 },
-                  { range: '15-25 Lakhs', count: 56 },
-                  { range: '25+ Lakhs', count: 34 }
-                ].map((item) => (
-                  <div key={item.range} className="flex justify-between text-muted-foreground text-xs">
-                    <span className="text-xs">{item.range}</span>
-                    <span className="text-xs">({item.count})</span>
-                  </div>
-                ))}
+                  { range: '0-3 Lakhs', min: 0, max: 300000, count: 68 },
+                  { range: '3-6 Lakhs', min: 300000, max: 600000, count: 142 },
+                  { range: '6-10 Lakhs', min: 600000, max: 1000000, count: 156 },
+                  { range: '10-15 Lakhs', min: 1000000, max: 1500000, count: 110 },
+                  { range: '15-25 Lakhs', min: 1500000, max: 2500000, count: 52 },
+                  { range: '25+ Lakhs', min: 2500000, max: 8500000, count: 20 }
+                ].map((item) => {
+                  const isSelected = filters.salary_min === item.min && filters.salary_max === item.max;
+                  return (
+                    <button
+                      key={item.range}
+                      type="button"
+                      onClick={() => {
+                        if (isSelected) {
+                          updateFilters({ salary_min: 0, salary_max: 0 });
+                        } else {
+                          updateFilters({ salary_min: item.min, salary_max: item.max });
+                        }
+                      }}
+                      className={`flex justify-between items-center px-1.5 py-1 rounded text-[11px] transition-colors border text-left ${
+                        isSelected 
+                          ? 'bg-primary text-primary-foreground border-primary font-semibold' 
+                          : 'bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground border-border/40'
+                      }`}
+                    >
+                      <span className="truncate">{item.range}</span>
+                      <span className="opacity-70 text-[10px] shrink-0 ml-1">({item.count})</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </FilterSection>

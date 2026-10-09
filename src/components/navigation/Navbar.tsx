@@ -40,6 +40,7 @@ import { useAdminAccess } from '@/hooks/useAdminAccess';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { useMobileDetection } from '@/hooks/useMobileDetection';
 import { TalentXcelLogo } from '@/components/common/TalentXcelLogo';
+import { getCurrentUniverse } from '@/config/domainArchitecture';
 import { toast } from 'sonner';
 
 export const Navbar = () => {
@@ -48,6 +49,7 @@ export const Navbar = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { isMobile } = useMobileDetection();
+  const isJobsUniverse = getCurrentUniverse() === 'JOBS' || location.pathname === '/jobs' || location.pathname.startsWith('/jobs/');
 
   // Get profile data — only fetch fields the Navbar actually renders
   const { data: profile } = useQuery({
@@ -187,9 +189,14 @@ export const Navbar = () => {
         <div className="flex justify-between items-center h-14">
           
           {/* Executive Brand Identity */}
-          <div className="flex items-center shrink-0 mr-3 sm:mr-6">
-            <Link to="/" className="flex items-center shrink-0">
+          <div className="flex items-center shrink-0 mr-3 sm:mr-6 gap-2">
+            <Link to={isJobsUniverse ? "/jobs" : "/"} className="flex items-center shrink-0 gap-2">
               <TalentXcelLogo iconSize={26} textSize="text-base sm:text-lg" theme="dark" />
+              {isJobsUniverse && (
+                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-gradient-to-r from-blue-600 to-indigo-600 text-white border border-blue-400/30 shadow-xs">
+                  Jobs
+                </span>
+              )}
             </Link>
           </div>
 
@@ -400,23 +407,60 @@ export const Navbar = () => {
             </>
           ) : (
             <div className="flex items-center space-x-2 sm:space-x-3">
-              {/* Public Social Navigation Links */}
+              {/* Public Navigation Links */}
               <div className="hidden lg:flex items-center gap-1 mr-2">
-                {socialNavItems.slice(0, 5).map(item => {
-                  const Icon = item.icon;
-                  const isActive = isCurrentPath(item.to);
-                  return (
+                {isJobsUniverse ? (
+                  <>
                     <Link
-                      key={item.label}
-                      to={item.to}
+                      to="/jobs"
                       className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap
-                        ${isActive ? 'bg-blue-600 text-white font-bold' : 'text-slate-300 hover:text-white hover:bg-white/10'}`}
+                        ${location.pathname === '/jobs' || location.pathname === '/' ? 'bg-blue-600 text-white font-bold' : 'text-slate-300 hover:text-white hover:bg-white/10'}`}
                     >
-                      <Icon className="h-3.5 w-3.5 text-slate-400" />
-                      <span>{item.label}</span>
+                      <Briefcase className="h-3.5 w-3.5 text-blue-400" />
+                      <span>Find Jobs</span>
                     </Link>
-                  );
-                })}
+                    <Link
+                      to="/companies"
+                      className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap
+                        ${location.pathname.startsWith('/companies') ? 'bg-blue-600 text-white font-bold' : 'text-slate-300 hover:text-white hover:bg-white/10'}`}
+                    >
+                      <Building2 className="h-3.5 w-3.5 text-slate-400" />
+                      <span>Companies</span>
+                    </Link>
+                    <Link
+                      to="/salary"
+                      className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap
+                        ${location.pathname.startsWith('/salary') ? 'bg-blue-600 text-white font-bold' : 'text-slate-300 hover:text-white hover:bg-white/10'}`}
+                    >
+                      <Award className="h-3.5 w-3.5 text-slate-400" />
+                      <span>Salaries</span>
+                    </Link>
+                    <Link
+                      to="/resume/ats-check"
+                      className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap
+                        ${location.pathname.startsWith('/resume') ? 'bg-blue-600 text-white font-bold' : 'text-slate-300 hover:text-white hover:bg-white/10'}`}
+                    >
+                      <BookOpen className="h-3.5 w-3.5 text-slate-400" />
+                      <span>ATS Resume</span>
+                    </Link>
+                  </>
+                ) : (
+                  socialNavItems.slice(0, 5).map(item => {
+                    const Icon = item.icon;
+                    const isActive = isCurrentPath(item.to);
+                    return (
+                      <Link
+                        key={item.label}
+                        to={item.to}
+                        className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap
+                          ${isActive ? 'bg-blue-600 text-white font-bold' : 'text-slate-300 hover:text-white hover:bg-white/10'}`}
+                      >
+                        <Icon className="h-3.5 w-3.5 text-slate-400" />
+                        <span>{item.label}</span>
+                      </Link>
+                    );
+                  })
+                )}
               </div>
 
               {/* Clear Recruiter Entry Door */}
@@ -425,7 +469,7 @@ export const Navbar = () => {
                 className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 shadow-md shadow-blue-500/30 transition-all border border-blue-400/30"
               >
                 <Sparkles className="h-3.5 w-3.5 text-blue-200" />
-                <span>Hire Talent (Recruiter OS) →</span>
+                <span>{isJobsUniverse ? 'Post a Job (Hire) →' : 'Hire Talent (Recruiter OS) →'}</span>
               </Link>
               
               <Button 

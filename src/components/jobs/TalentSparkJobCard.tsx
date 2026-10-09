@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { 
-  Heart, Bookmark, Share2, MapPin, DollarSign, Clock, 
+  Heart, Bookmark, Share2, MapPin, DollarSign, Banknote, Clock, 
   Users, Building2, Zap, Brain, Star, Award, ChevronRight,
   Eye, MessageCircle, TrendingUp, Shield, Target, Sparkles,
   Send
@@ -12,6 +12,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { getJobDetailUrl } from '@/utils/seoUrls';
 import { JobApplicationDialog } from '@/components/jobs/JobApplicationDialog';
+import { getCompanyLogo, generateCompanyMonogram } from '@/utils/companyLogos';
 
 interface TalentSparkJobCardProps {
   job: any;
@@ -51,12 +52,20 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
   });
   const [showApplicationDialog, setShowApplicationDialog] = useState(false);
   
+  const companyName = job.companies?.name || job.company_name || 'TalentXcel Services';
+  const logoUrl = getCompanyLogo(companyName, job.companies?.logo_url || job.organization_logo_url);
+  
   const formatSalary = (min?: number, max?: number) => {
-    if (!min && !max) return 'Salary undisclosed';
+    if (!min && !max) return 'Undisclosed';
     if (min && max) {
+      if (max < 100000) {
+        return `₹${Math.round(min / 1000)}k - ₹${Math.round(max / 1000)}k`;
+      }
       return `₹${(min / 100000).toFixed(1)}L - ₹${(max / 100000).toFixed(1)}L`;
     }
-    return `₹${((min || max || 0) / 100000).toFixed(1)}L+`;
+    const val = min || max || 0;
+    if (val < 100000) return `₹${Math.round(val / 1000)}k+`;
+    return `₹${(val / 100000).toFixed(1)}L+`;
   };
 
   const getTimeAgo = (date: string) => {
@@ -124,16 +133,15 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
         <div className="p-6">
           {/* Company Logo & Info */}
           <div className="flex items-start gap-4 mb-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-xl flex items-center justify-center flex-shrink-0">
-              {job.companies?.logo_url ? (
-                <img 
-                  src={job.companies.logo_url} 
-                  alt={job.companies.name}
-                  className="w-12 h-12 object-contain rounded-lg"
-                />
-              ) : (
-                <Building2 className="h-8 w-8 text-primary" />
-              )}
+            <div className="w-16 h-16 bg-white dark:bg-card rounded-xl p-1.5 flex items-center justify-center flex-shrink-0 border border-border/50 shadow-sm overflow-hidden">
+              <img 
+                src={logoUrl} 
+                alt={companyName}
+                className="w-full h-full object-contain rounded-lg"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = generateCompanyMonogram(companyName);
+                }}
+              />
             </div>
             
             <div className="flex-1 min-w-0">
@@ -161,8 +169,8 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
           <div className="bg-white/50 rounded-lg p-4 mb-4">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <DollarSign className="h-4 w-4 text-green-600" />
-                <span className="text-base font-bold text-green-700">
+                <Banknote className="h-4 w-4 text-emerald-600" />
+                <span className="text-base font-bold text-emerald-700">
                   {formatSalary(job.salary_min, job.salary_max)}
                 </span>
               </div>
@@ -245,16 +253,15 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
         <div className="p-5 h-full flex flex-col" onClick={handleViewJob}>
           {/* Header with Company Logo */}
           <div className="flex items-start gap-4 mb-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
-              {job.companies?.logo_url ? (
-                <img 
-                  src={job.companies.logo_url} 
-                  alt={job.companies.name}
-                  className="w-10 h-10 object-contain rounded-lg"
-                />
-              ) : (
-                <Building2 className="h-8 w-8 text-primary" />
-              )}
+            <div className="w-16 h-16 bg-white dark:bg-card rounded-xl p-1.5 flex items-center justify-center flex-shrink-0 shadow-sm border border-border/50 overflow-hidden">
+              <img 
+                src={logoUrl} 
+                alt={companyName}
+                className="w-full h-full object-contain rounded-lg"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = generateCompanyMonogram(companyName);
+                }}
+              />
             </div>
             
             <div className="flex-1 min-w-0">
@@ -291,8 +298,8 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
           <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 mb-4 border border-green-200">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <DollarSign className="h-5 w-5 text-green-600" />
-                <span className="text-lg font-bold text-green-700">
+                <Banknote className="h-5 w-5 text-emerald-600" />
+                <span className="text-lg font-bold text-emerald-700">
                   {formatSalary(job.salary_min, job.salary_max)}
                 </span>
               </div>
@@ -508,110 +515,99 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
   // Default card view
   return (
     <Card 
-      className="group relative overflow-hidden bg-gradient-to-br from-white to-primary/5 hover:shadow-xl transition-all duration-300 cursor-pointer border-l-4 border-l-primary/20 hover:border-l-primary"
+      className="group relative overflow-hidden bg-card hover:bg-card/90 hover:shadow-xl transition-all duration-300 cursor-pointer border border-border/40 hover:border-primary/40 rounded-xl"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleViewJob}
     >
-      {/* Hot Job Indicator */}
-      {job.applications_count < 5 && (
-        <div className="absolute top-2 right-2">
-          <Badge className="bg-red-500 text-white text-xs animate-pulse">
-            🔥 Hot
-          </Badge>
-        </div>
-      )}
-
-      <div className="p-6">
+      <div className="p-4 sm:p-5">
         {/* Header */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-start gap-4 flex-1">
-            <div className="w-14 h-14 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-xl flex items-center justify-center flex-shrink-0">
-              {job.companies?.logo_url ? (
-                <img 
-                  src={job.companies.logo_url} 
-                  alt={job.companies.name}
-                  className="w-10 h-10 object-contain rounded-lg"
-                />
-              ) : (
-                <Building2 className="h-7 w-7 text-primary" />
-              )}
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <div className="flex items-start gap-3 flex-1 min-w-0">
+            <div className="w-12 h-12 bg-white dark:bg-card rounded-xl p-1.5 flex items-center justify-center flex-shrink-0 border border-border/60 shadow-xs overflow-hidden">
+              <img 
+                src={logoUrl} 
+                alt={companyName}
+                className="w-full h-full object-contain rounded-lg"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = generateCompanyMonogram(companyName);
+                }}
+              />
             </div>
             
             <div className="flex-1 min-w-0">
-              <h3 className="text-base font-bold text-gray-900 group-hover:text-primary transition-colors line-clamp-2">
+              <h3 className="text-sm sm:text-base font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2">
                 {job.title}
               </h3>
-              <p className="text-sm text-primary font-semibold">
+              <p className="text-xs sm:text-sm text-primary font-semibold truncate mt-0.5">
                 {job.companies?.name || job.company_name}
               </p>
-              <div className="flex items-center gap-3 mt-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2.5 mt-1.5 text-xs text-muted-foreground flex-wrap">
                 <div className="flex items-center gap-1">
-                  <MapPin className="h-4 w-4" />
-                  {job.location}
+                  <MapPin className="h-3.5 w-3.5 shrink-0" />
+                  <span className="truncate max-w-[130px] sm:max-w-none">{job.location}</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Clock className="h-4 w-4" />
-                  {getTimeAgo(job.posted_at || job.created_at)}
+                  <Clock className="h-3.5 w-3.5 shrink-0" />
+                  <span>{getTimeAgo(job.posted_at || job.created_at)}</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* AI Match Score */}
-          <div className="text-right">
-            <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg p-2 min-w-[80px]">
-              <div className="text-xs text-muted-foreground mb-1">AI Match</div>
-              <div className="text-sm font-bold text-primary">{aiMatchScore}%</div>
+          {/* AI Match Score & Hot Indicator */}
+          <div className="text-right shrink-0 flex flex-col items-end gap-1">
+            {job.applications_count < 5 && (
+              <Badge className="bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20 text-[10px] px-1.5 py-0 font-medium">
+                🔥 Hot
+              </Badge>
+            )}
+            <div className="bg-primary/5 border border-primary/15 rounded-lg px-2.5 py-1.5 text-center min-w-[72px]">
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Match</div>
+              <div className="text-xs sm:text-sm font-bold text-primary">{aiMatchScore}%</div>
               <Progress value={aiMatchScore} className="h-1 mt-1" />
             </div>
           </div>
         </div>
 
-        {/* Job Details */}
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <DollarSign className="h-4 w-4 text-green-600" />
-              <span className="font-semibold text-green-700">
-                {formatSalary(job.salary_min, job.salary_max)}
-              </span>
+        {/* Job Details Grid */}
+        <div className="grid grid-cols-2 gap-3 mb-3 text-xs">
+          <div className="space-y-1.5 min-w-0">
+            <div className="flex items-center gap-1.5 font-semibold text-emerald-600 dark:text-emerald-400 truncate">
+              <Banknote className="h-3.5 w-3.5 shrink-0" />
+              <span className="truncate">{formatSalary(job.salary_min, job.salary_max)}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Users className="h-4 w-4 text-blue-600" />
-              <span className="text-sm text-muted-foreground">
-                {job.employment_type} • {job.experience_level}
+            <div className="flex items-center gap-1.5 text-muted-foreground truncate">
+              <Users className="h-3.5 w-3.5 text-blue-500 shrink-0" />
+              <span className="truncate">
+                {[job.employment_type, job.experience_level].filter(Boolean).join(' • ') || 'Full-time • Verified'}
               </span>
             </div>
           </div>
           
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Eye className="h-4 w-4 text-purple-600" />
-              <span className="text-sm text-muted-foreground">
-                {job.views_count || 0} views
-              </span>
+          <div className="space-y-1.5 min-w-0">
+            <div className="flex items-center gap-1.5 text-muted-foreground truncate">
+              <Eye className="h-3.5 w-3.5 text-purple-500 shrink-0" />
+              <span className="truncate">{job.views_count || 0} views</span>
             </div>
-            <div className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-orange-600" />
-              <span className="text-sm text-muted-foreground">
-                {job.applications_count || 0} applications
-              </span>
+            <div className="flex items-center gap-1.5 text-muted-foreground truncate">
+              <TrendingUp className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+              <span className="truncate">{job.applications_count || 0} applicants</span>
             </div>
           </div>
         </div>
 
         {/* Skills */}
         {job.skills_required && job.skills_required.length > 0 && (
-          <div className="mb-4">
-            <div className="flex flex-wrap gap-2">
+          <div className="mb-3">
+            <div className="flex flex-wrap gap-1.5">
               {job.skills_required.slice(0, 3).map((skill: string) => (
-                <Badge key={skill} variant="secondary" className="text-xs">
+                <Badge key={skill} variant="secondary" className="text-[11px] px-2 py-0.5 font-medium">
                   {skill}
                 </Badge>
               ))}
               {job.skills_required.length > 3 && (
-                <Badge variant="outline" className="text-xs">
+                <Badge variant="outline" className="text-[11px] px-1.5 py-0.5 text-muted-foreground">
                   +{job.skills_required.length - 3}
                 </Badge>
               )}
@@ -620,61 +616,74 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
         )}
 
         {/* Benefits Preview */}
-        <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-3 mb-4">
-          <div className="text-xs font-medium text-muted-foreground mb-1">Benefits Include</div>
-          <div className="text-sm">
-            🏥 Health Insurance • 💰 Performance Bonus • 🏠 Remote Option • 📚 Learning Budget
+        <div className="bg-muted/40 dark:bg-muted/20 border border-border/30 rounded-lg px-3 py-2 mb-3">
+          <div className="text-[10px] font-bold text-muted-foreground mb-1 uppercase tracking-wider">Benefits Include</div>
+          <div className="text-xs text-foreground/85 flex items-center gap-1.5 flex-wrap">
+            <span>🏥 Health Insurance</span>
+            <span className="text-muted-foreground/40">•</span>
+            <span>💰 Performance Bonus</span>
+            <span className="text-muted-foreground/40">•</span>
+            <span>🏠 Remote Option</span>
+            <span className="text-muted-foreground/40">•</span>
+            <span>📚 Learning Budget</span>
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex items-center justify-between">
-          <div className="flex gap-2">
+        {/* Action Buttons: Sleek, Responsive, Never Cut Off */}
+        <div className="flex items-center justify-between gap-2 pt-2.5 border-t border-border/20 mt-3">
+          <div className="flex items-center gap-1 shrink-0">
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={(e) => {
                 e.stopPropagation();
                 onSave(job.id);
               }}
-              className={isSaved ? 'text-red-500 border-red-200' : ''}
+              className={`h-8 w-8 p-0 rounded-lg hover:bg-muted ${isSaved ? 'text-red-500 hover:text-red-600' : 'text-muted-foreground'}`}
+              title={isSaved ? "Saved" : "Save job"}
             >
               <Heart className={`h-4 w-4 ${isSaved ? 'fill-red-500' : ''}`} />
             </Button>
             
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={(e) => {
                 e.stopPropagation();
                 handleShare();
               }}
+              className="h-8 w-8 p-0 rounded-lg text-muted-foreground hover:bg-muted"
+              title="Share job"
             >
               <Share2 className="h-4 w-4" />
             </Button>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2 min-w-0">
             <Button 
               variant="outline"
+              size="sm"
               onClick={(e) => {
                 e.stopPropagation();
                 handleViewJob();
               }}
+              className="h-8 px-2.5 text-xs font-medium hover:bg-muted shrink-0"
             >
-              View Details
-              <ChevronRight className="h-4 w-4 ml-1" />
+              Details
+              <ChevronRight className="h-3.5 w-3.5 ml-0.5" />
             </Button>
             
             <Button 
-              className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90"
+              size="sm"
+              className="h-8 px-3 text-xs font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-xs shrink-0 flex items-center gap-1"
               onClick={(e) => {
                 e.stopPropagation();
                 setShowApplicationDialog(true);
               }}
             >
-              <Send className="h-4 w-4 mr-2" />
-              Apply Now (+{txcReward} TXC)
+              <Send className="h-3.5 w-3.5 shrink-0" />
+              <span>Apply Now</span>
+              <span className="hidden sm:inline font-normal opacity-90 text-[10px]">(+{txcReward} TXC)</span>
             </Button>
           </div>
         </div>

@@ -228,6 +228,51 @@
       "destination": "/sitemap-employers.xml"
     },
     {
+      "source": "/",
+      "has": [{ "type": "host", "value": "jobs.talentxcel.in" }],
+      "destination": "/index-jobs.html"
+    },
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "salary.talentxcel.in" }],
+      "destination": "/index-salary.html"
+    },
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "careers.talentxcel.in" }],
+      "destination": "/index-careers.html"
+    },
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "resume.talentxcel.in" }],
+      "destination": "/index-resume.html"
+    },
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "learning.talentxcel.in" }],
+      "destination": "/index-learning.html"
+    },
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "colleges.talentxcel.in" }],
+      "destination": "/index-colleges.html"
+    },
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "employers.talentxcel.in" }],
+      "destination": "/index-employers.html"
+    },
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "government.talentxcel.in" }],
+      "destination": "/index-government.html"
+    },
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "passport.talentxcel.in" }],
+      "destination": "/index-passport.html"
+    },
+    {
       "source": "/sitemap.xml",
       "destination": "/sitemap-root.xml"
     },

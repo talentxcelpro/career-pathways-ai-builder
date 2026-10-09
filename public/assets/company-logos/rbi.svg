@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <rect width="48" height="48" rx="8" fill="#1B365D"/>
+  <circle cx="24" cy="24" r="18" fill="none" stroke="#D4AF37" stroke-width="2.5"/>
+  <circle cx="24" cy="24" r="14" fill="#D4AF37"/>
+  <circle cx="24" cy="24" r="10" fill="#1B365D"/>
+  <text x="24" y="27" font-family="system-ui, sans-serif" font-weight="900" font-size="10" fill="#D4AF37" text-anchor="middle">RBI</text>
+</svg>

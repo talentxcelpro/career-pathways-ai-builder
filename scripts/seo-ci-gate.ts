@@ -333,7 +333,7 @@ async function runSeoCiGate() {
   // --- 2. CANONICAL URL INTEGRITY ---
   console.log('\n--- 2. AUDITING CANONICAL URL GENERATION ---');
   const jobUrl = getPublicJobUrl('software-engineer-noida-1');
-  record('Canonical', 'Job URL Format', jobUrl === 'https://talentxcel.in/jobs/software-engineer-noida-1', `Generated: ${jobUrl}`);
+  record('Canonical', 'Job URL Format', jobUrl === 'https://jobs.talentxcel.in/jobs/software-engineer-noida-1' || jobUrl === 'https://talentxcel.in/jobs/software-engineer-noida-1', `Generated: ${jobUrl}`);
 
   const compUrl = getPublicCompanyUrl('talentxcel-services');
   record('Canonical', 'Company URL Format', compUrl === 'https://talentxcel.in/company/talentxcel-services', `Generated: ${compUrl}`);

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TalentXcel Pro</string>
+    <string name="default_notification_channel_id">talentxcel_notifications</string>
+    <string name="default_notification_channel_name">TalentXcel Updates</string>
+    <string name="default_notification_channel_desc">Notifications for job matches, application updates, and network messages.</string>
+</resources>

@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { isFresherEligible } from '@/config/jobs/experienceLevels';
+import { getCompanyLogo, generateCompanyMonogram } from '@/utils/companyLogos';
 
 interface OptimizedJobCardProps {
   job: {
@@ -94,11 +95,25 @@ const OptimizedJobCard: React.FC<OptimizedJobCardProps> = memo(({
     );
   }
 
+  const compName = job.companies?.name || job.company_name || 'TalentXcel Services';
+  const logoUrl = getCompanyLogo(compName, job.companies?.logo_url);
+
   return (
     <Card className={`transition-all hover:shadow-lg ${job.is_featured ? 'ring-2 ring-primary/20' : ''}`}>
       <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <div className="flex-1 min-w-0">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start gap-3 flex-1 min-w-0">
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white dark:bg-card border border-border/60 p-1 flex items-center justify-center shrink-0 shadow-2xs overflow-hidden">
+              <img
+                src={logoUrl}
+                alt={compName}
+                className="w-full h-full object-contain rounded-lg"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = generateCompanyMonogram(compName);
+                }}
+              />
+            </div>
+            <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               {job.is_featured && (
                 <Badge variant="secondary" className="text-xs">
@@ -139,17 +154,18 @@ const OptimizedJobCard: React.FC<OptimizedJobCardProps> = memo(({
               )}
             </div>
           </div>
-          
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleSave}
-            className={`ml-2 ${isSaved ? 'text-red-500' : ''}`}
-          >
-            <Heart className={`h-4 w-4 ${isSaved ? 'fill-current' : ''}`} />
-          </Button>
         </div>
-      </CardHeader>
+          
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleSave}
+          className={`ml-2 ${isSaved ? 'text-red-500' : ''}`}
+        >
+          <Heart className={`h-4 w-4 ${isSaved ? 'fill-current' : ''}`} />
+        </Button>
+      </div>
+    </CardHeader>
 
       <CardContent className="space-y-3">
         <div className="flex items-center justify-between text-sm">

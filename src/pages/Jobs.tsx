@@ -52,7 +52,16 @@ const filtersSchema = z.object({
   salary_max: z.number().min(0).max(10000000).optional(),
   is_remote: z.boolean().optional(),
   skills: z.array(z.string()).optional(),
-});
+  department: z.array(z.string()).optional(),
+  company_type: z.array(z.string()).optional(),
+  work_mode: z.array(z.string()).optional(),
+  industry: z.array(z.string()).optional(),
+  role_category: z.array(z.string()).optional(),
+  education: z.array(z.string()).optional(),
+  posted_by: z.array(z.string()).optional(),
+  freshness: z.array(z.string()).optional(),
+  company_id: z.string().optional(),
+}).passthrough();
 
 const Jobs = () => {
   const navigate = useNavigate();
@@ -345,8 +354,8 @@ const Jobs = () => {
   return (
     <>
       <SEOHead 
-        title="Jobs | Find Career Opportunities Worldwide | TalentXcel" 
-        description="Discover jobs by role, skill, industry and location and build your career with TalentXcel." 
+        title="TalentXcel Jobs | Verified Career Opportunities & Talent Marketplace" 
+        description="Discover verified careers, transparent salaries, and direct recruiter pipelines on TalentXcel Jobs — the authenticated career marketplace." 
         canonical={canonicalUrl} 
         type="website" 
       />
@@ -360,12 +369,18 @@ const Jobs = () => {
             {/* Top Row: Compact Title + Global Search Bar */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
               <div className="shrink-0">
+                <div className="flex items-center gap-2 mb-0.5">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-blue-600/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                    <Briefcase className="h-3 w-3" />
+                    TalentXcel Jobs
+                  </span>
+                  <span className="text-[11px] text-muted-foreground hidden sm:inline">• Verified Career Marketplace</span>
+                </div>
                 <h1 className="text-base sm:text-lg font-bold tracking-tight text-foreground flex items-center gap-2">
-                  <Briefcase className="h-4.5 w-4.5 text-blue-500" />
-                  <span>Search Verified Jobs & Careers</span>
+                  <span>Explore Verified Career Openings</span>
                 </h1>
                 <p className="text-[11px] text-muted-foreground hidden sm:block">
-                  Discover AI-matched opportunities across verified enterprises, startups, and remote teams.
+                  AI-matched opportunities across 42+ verified enterprises, defense labs, banks, and startups.
                 </p>
               </div>
 
@@ -396,49 +411,49 @@ const Jobs = () => {
                 🌐 Remote
               </Button>
               <Button
-                variant="outline"
+                variant={filters.search === 'AI' ? "default" : "outline"}
                 size="sm"
-                onClick={() => updateFilters({ search: 'AI Machine Learning' })}
+                onClick={() => updateFilters({ search: filters.search === 'AI' ? '' : 'AI' })}
                 className="whitespace-nowrap h-6 px-2.5 text-[11px] rounded-full shrink-0"
               >
                 ⚡ AI & ML
               </Button>
               <Button
-                variant="outline"
+                variant={filters.search === 'Engineer' ? "default" : "outline"}
                 size="sm"
-                onClick={() => updateFilters({ search: 'Software Engineering Developer' })}
+                onClick={() => updateFilters({ search: filters.search === 'Engineer' ? '' : 'Engineer' })}
                 className="whitespace-nowrap h-6 px-2.5 text-[11px] rounded-full shrink-0"
               >
                 💻 Tech & Engineering
               </Button>
               <Button
-                variant="outline"
+                variant={filters.search === 'Finance' ? "default" : "outline"}
                 size="sm"
-                onClick={() => updateFilters({ search: 'FinTech Banking Finance' })}
+                onClick={() => updateFilters({ search: filters.search === 'Finance' ? '' : 'Finance' })}
                 className="whitespace-nowrap h-6 px-2.5 text-[11px] rounded-full shrink-0"
               >
                 💳 FinTech
               </Button>
               <Button
-                variant="outline"
+                variant={filters.search === 'Product' ? "default" : "outline"}
                 size="sm"
-                onClick={() => updateFilters({ search: 'Product Manager Design UI UX' })}
+                onClick={() => updateFilters({ search: filters.search === 'Product' ? '' : 'Product' })}
                 className="whitespace-nowrap h-6 px-2.5 text-[11px] rounded-full shrink-0"
               >
                 🎯 Product & Design
               </Button>
               <Button
-                variant="outline"
+                variant={filters.search === 'Cloud' ? "default" : "outline"}
                 size="sm"
-                onClick={() => updateFilters({ search: 'Cloud DevOps Architecture' })}
+                onClick={() => updateFilters({ search: filters.search === 'Cloud' ? '' : 'Cloud' })}
                 className="whitespace-nowrap h-6 px-2.5 text-[11px] rounded-full shrink-0"
               >
                 🏗️ Cloud & DevOps
               </Button>
               <Button
-                variant="outline"
+                variant={filters.search === 'Marketing' ? "default" : "outline"}
                 size="sm"
-                onClick={() => updateFilters({ search: 'Marketing Growth' })}
+                onClick={() => updateFilters({ search: filters.search === 'Marketing' ? '' : 'Marketing' })}
                 className="whitespace-nowrap h-6 px-2.5 text-[11px] rounded-full shrink-0"
               >
                 📈 Marketing
@@ -448,7 +463,7 @@ const Jobs = () => {
                 size="sm"
                 onClick={() => {
                   const isFiltered = filters.experience_level?.some((l: string) => ['fresher', 'entry-level', '0-1 years'].includes(l.toLowerCase()));
-                  updateFilters({ experience_level: isFiltered ? [] : ['fresher', 'entry-level', '0-1 years'] });
+                  updateFilters({ experience_level: isFiltered ? [] : ['fresher'] });
                 }}
                 className={`whitespace-nowrap h-6 px-2.5 text-[11px] rounded-full shrink-0 font-medium transition-all ${
                   filters.experience_level?.some((l: string) => ['fresher', 'entry-level', '0-1 years'].includes(l.toLowerCase()))
@@ -459,9 +474,9 @@ const Jobs = () => {
                 🎓 Freshers (0-1 yrs)
               </Button>
               <Button
-                variant="outline"
+                variant={filters.company_type?.includes('mnc') ? "default" : "outline"}
                 size="sm"
-                onClick={() => updateFilters({ company_type: ['fortune-500'] })}
+                onClick={() => updateFilters({ company_type: filters.company_type?.includes('mnc') ? [] : ['mnc'] })}
                 className="whitespace-nowrap h-6 px-2.5 text-[11px] rounded-full shrink-0"
               >
                 🏢 Fortune 500

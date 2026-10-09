@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <rect width="48" height="48" rx="8" fill="#051C2C"/>
+  <text x="24" y="26" font-family="Baskerville, Georgia, serif" font-weight="bold" font-size="15" fill="#FFFFFF" text-anchor="middle">McK</text>
+  <line x1="12" y1="32" x2="36" y2="32" stroke="#1F69FF" stroke-width="2"/>
+</svg>

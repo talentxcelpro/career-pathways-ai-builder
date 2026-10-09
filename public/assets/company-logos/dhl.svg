@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 48" width="64" height="48">
+  <rect width="64" height="48" rx="8" fill="#FFCC00"/>
+  <text x="32" y="30" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-style="italic" font-size="20" fill="#D40511" text-anchor="middle" letter-spacing="1">DHL</text>
+  <line x1="8" y1="36" x2="56" y2="36" stroke="#D40511" stroke-width="2.5"/>
+</svg>

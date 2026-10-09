@@ -71,3 +71,9 @@ scripts/*_state.json
 scripts/*_metrics.json
 scripts/*_status.json
 *.tsbuildinfo
+
+# Android build artifacts
+apps/**/build/
+apps/**/.gradle/
+*.apk
+*.aab

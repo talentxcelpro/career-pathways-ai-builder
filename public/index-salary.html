@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    
+    <!-- Evict any stale Service Workers on localhost development -->
+    <script>
+      if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(function(regs) {
+            for (var i = 0; i < regs.length; i++) {
+              regs[i].unregister();
+            }
+          });
+        }
+        if ('caches' in window) {
+          caches.keys().then(function(keys) {
+            for (var i = 0; i < keys.length; i++) {
+              caches.delete(keys[i]);
+            }
+          });
+        }
+      }
+    </script>
+
+    <!-- Google Analytics - Deferred -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-CMYNTTNT56');
+      
+      // Load GA script asynchronously after page load
+      window.addEventListener('load', () => {
+        const script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-CMYNTTNT56';
+        script.async = true;
+        document.head.appendChild(script);
+      });
+    </script>
+    <title>TalentXcel Salary Intelligence — Verified Tech & Executive Compensation Data</title>
+    <meta name="description" content="Explore verified compensation data, percentiles (P25, P50, P75, P90), and real-time market salary benchmarks for software engineers, data analysts, DevOps, and cloud architects in India." />
+    <meta name="author" content="TalentXcel" />
+    <link rel="icon" href="/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png" type="image/png">
+
+    
+    <!-- Critical preconnect and DNS prefetch -->
+    <link rel="dns-prefetch" href="https://dthlgsnakhoftinssokm.supabase.co">
+    <link rel="preconnect" href="https://dthlgsnakhoftinssokm.supabase.co" crossorigin>
+    <link rel="dns-prefetch" href="https://accounts.google.com">
+    <link rel="preconnect" href="https://accounts.google.com" crossorigin>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+    
+
+    <!-- Prefetch likely next pages -->
+    <link rel="prefetch" href="/jobs" as="document">
+    <link rel="prefetch" href="/network" as="document">
+    <link rel="prefetch" href="/talent" as="document">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- iOS specific meta tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="TalentXcel">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <link rel="apple-touch-icon" href="/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png" />
+    <link rel="apple-touch-startup-image" href="/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png" />
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="TalentXcel Salary Intelligence — Verified Tech & Executive Compensation Data" />
+    <meta property="og:description" content="Explore verified compensation data, percentiles (P25, P50, P75, P90), and real-time market salary benchmarks for software engineers, data analysts, DevOps, and cloud architects in India." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://salary.talentxcel.in/" />
+    <meta property="og:image" content="https://talentxcel.in/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" />
+    <meta property="og:site_name" content="TalentXcel" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="TalentXcel — The Global Professional Talent Network" />
+    <meta name="twitter:description" content="Connect with Tech & Leadership Professionals Worldwide. Build your Career Passport, discover opportunities and get discovered by hiring teams." />
+    <meta name="twitter:image" content="https://talentxcel.in/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" />
+
+    <!-- Additional SEO Meta Tags -->
+    <meta name="robots" content="index, follow" />
+    <meta name="googlebot" content="index, follow" />
+    <meta name="theme-color" content="#3B82F6" />
+
+    
+    <!-- Additional favicon sizes for better compatibility -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png">
+    <link rel="shortcut icon" href="/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png">
+    <meta name="mobile-web-app-capable" content="yes" />
+    
+    
+    <!-- Typography: SF Pro via system stack (no web font fetch needed) -->
+    
+    
+    
+    <!-- Google One Tap Sign-In - Loaded asynchronously by React -->
+    <!-- Removed to improve initial load time - loaded via AsyncGoogleOneTap component -->
+    
+    <!-- Structured Data -->
+    <!-- WebSite + SearchAction: tells Google the site has a search function at /jobs?search= and /talent?search= -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "TalentXcel",
+      "alternateName": ["TalentXcel", "TalentXcel — The Professional Talent Network", "TalentXcel Recruiter OS"],
+      "url": "https://talentxcel.in",
+      "description": "Connect with Tech & Leadership Professionals worldwide. Build your Career Passport, verify skills with TalentScore, discover jobs and connect with hiring teams.",
+      "inLanguage": "en-IN",
+      "potentialAction": [
+        {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://talentxcel.in/jobs?search={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        },
+        {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://talentxcel.in/talent?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      ]
+    }
+    </script>
+    <!-- Organization: core disambiguated entity signal for Google, LinkedIn, and generative AI systems -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "@id": "https://talentxcel.in/#organization",
+      "name": "TalentXcel",
+      "legalName": "TalentXcel Services Private Limited",
+      "alternateName": [
+        "TalentXcel",
+        "TalentXcel Network",
+        "TalentXcel — The Professional Talent Network",
+        "TalentXcel Recruiter OS"
+      ],
+      "url": "https://talentxcel.in",
+      "logo": {
+        "@type": "ImageObject",
+        "@id": "https://talentxcel.in/#logo",
+        "url": "https://talentxcel.in/talentxcel-official-logo.png",
+        "width": 200,
+        "height": 200,
+        "caption": "TalentXcel — The Professional Talent Network"
+      },
+      "description": "TalentXcel is the global professional talent network where Tech & Leadership Professionals build their Career Passport, verify skills with TalentScore, discover jobs, and get discovered by hiring teams through Recruiter OS.",
+      "foundingDate": "2024",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Noida",
+        "addressRegion": "Uttar Pradesh",
+        "addressCountry": "IN"
+      },
+      "areaServed": [
+        {
+          "@type": "Country",
+          "name": "India"
+        },
+        {
+          "@type": "AdministrativeArea",
+          "name": "Global"
+        }
+      ],
+      "knowsAbout": [
+        "Career Development & Planning",
+        "Employment & Compensation Intelligence",
+        "Resume Parsing & ATS Optimization",
+        "Higher Education & Degree Intelligence",
+        "Skill Verification & Capability Mapping",
+        "Machine-Readable Intent Resolution"
+      ],
+      "sameAs": [
+        "https://www.linkedin.com/company/talentxcel-services/",
+        "https://github.com/talentxcelpro",
+        "https://twitter.com/talentxcel"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer support",
+        "email": "support@talentxcel.in",
+        "areaServed": "IN",
+        "availableLanguage": ["en", "hi"]
+      }
+    }
+    </script>
+
+  <link rel="stylesheet" crossorigin href="/assets/index-CsW6u8oc.css">
+<link rel="canonical" href="https://salary.talentxcel.in/" />
+
+    <meta property="og:title" content="TalentXcel — The Global Professional Talent Network" />
+    <meta property="og:description" content="Connect with Tech &amp; Leadership Professionals worldwide across UAE, Europe, the Americas, and Asia. Build your Career Passport, get verified by TalentScore, discover global opportunities, and let top hiring teams discover you." />
+    <meta property="og:url" content="https://talentxcel.in" />
+    <meta property="og:type" content="website" />
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": "https://talentxcel.in#webpage",
+  "name": "TalentXcel — The Global Professional Talent Network",
+  "description": "Connect with Tech & Leadership Professionals worldwide across UAE, Europe, the Americas, and Asia. Build your Career Passport, get verified by TalentScore, discover global opportunities, and let top hiring teams discover you.",
+  "url": "https://talentxcel.in",
+  "isPartOf": {
+    "@type": "WebSite",
+    "@id": "https://talentxcel.in/#website",
+    "name": "TalentXcel",
+    "url": "https://talentxcel.in"
+  },
+  "about": {
+    "@id": "https://talentxcel.in/#organization"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://talentxcel.in"
+    }
+  ]
+}
+</script>
+    
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "TalentXcel Salary Intelligence",
+  "url": "https://salary.talentxcel.in/",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "All",
+  "description": "Real-time compensation benchmarks, salary percentile breakdowns, and market offer comparisons for tech roles."
+}
+</script>
+</head>
+
+  <body>
+    
+<div id="tx-pre-rendered-seo" style="display:none;" data-subdomain="salary">
+
+      <section class="tx-subdomain-hero" style="max-width:1100px;margin:0 auto;padding:40px 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#e2e8f0;">
+        <h1 style="font-size:2.25rem;font-weight:800;color:#f8fafc;margin-bottom:12px;line-height:1.2;">Tech & Professional Salary Intelligence in India</h1>
+        <p style="font-size:1.1rem;color:#94a3b8;margin-bottom:24px;line-height:1.6;">Compare your compensation against verified market distributions. View 25th, 50th (median), 75th, and 90th percentile salary bands backed by verified employer filings.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:30px;">
+          <a href="/tools/salary-analyzer" style="background:#0284c7;color:#ffffff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;font-size:0.95rem;">Launch Salary Analyzer</a>
+          <a href="/salary/software-engineer/bangalore" style="background:#1e293b;color:#38bdf8;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:0.9rem;border:1px solid #334155;">Software Engineer (Bangalore)</a>
+          <a href="/salary/data-analyst/hyderabad" style="background:#1e293b;color:#38bdf8;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:0.9rem;border:1px solid #334155;">Data Analyst (Hyderabad)</a>
+          <a href="/salary/devops-engineer/india" style="background:#1e293b;color:#38bdf8;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:0.9rem;border:1px solid #334155;">DevOps Engineer (India)</a>
+        </div>
+      </section>
+    
+</div>
+<div id="root"><div class="min-h-screen bg-slate-950 text-slate-100 antialiased font-sans"><header class="border-b border-slate-800 bg-slate-900/80 px-6 py-4"><div class="max-w-7xl mx-auto flex items-center justify-between"><a href="/" class="text-xl font-bold text-white tracking-tight">Talent<span class="text-blue-500">Xcel</span></a><nav class="hidden md:flex gap-6 text-sm font-medium text-slate-300"><a href="/jobs" class="hover:text-white">Jobs</a><a href="/colleges" class="hover:text-white">Colleges</a><a href="/resume" class="hover:text-white">Resume</a><a href="/employer" class="hover:text-white">Employers</a></nav></div></header><main class="max-w-6xl mx-auto px-4 py-8 md:py-12"><h1 class="text-3xl md:text-4xl font-bold tracking-tight text-white mb-6">The Global Professional Talent Network</h1>
+        <div class="space-y-8">
+          <div class="bg-gradient-to-r from-blue-900/60 via-purple-900/60 to-slate-900 border border-blue-800/40 rounded-3xl p-8 text-center space-y-4">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
+              Global Network • UAE • Europe • Americas • Asia
+            </span>
+            <h2 class="text-2xl md:text-3xl font-extrabold text-white">Connect. Discover. Grow. Get Hired.</h2>
+            <p class="text-slate-300 text-sm max-w-2xl mx-auto leading-relaxed">
+              Where professionals build their career identity, discover opportunities, share knowledge through Reels, and get discovered by top hiring teams worldwide.
+            </p>
+            <div class="flex flex-wrap justify-center gap-3 pt-2">
+              <a href="/network" class="px-5 py-2.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-lg">Join the Network &rarr;</a>
+              <a href="/reels" class="px-5 py-2.5 rounded-full bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold transition-all shadow-lg">Watch Reels &rarr;</a>
+              <a href="/hire" class="px-5 py-2.5 rounded-full bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition-all border border-slate-700">Recruiter OS &rarr;</a>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+              <h3 class="text-lg font-bold text-white mb-2">Global Tech & Leadership Jobs</h3>
+              <p class="text-slate-300 text-sm leading-relaxed mb-4">Discover verified career opportunities across UAE, Europe, the Americas, and Asia with transparent compensation.</p>
+              <a href="/jobs" class="text-blue-400 text-xs font-semibold hover:underline">Explore Jobs &rarr;</a>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+              <h3 class="text-lg font-bold text-white mb-2">Verified Career Passport</h3>
+              <p class="text-slate-300 text-sm leading-relaxed mb-4">Benchmark your technical capabilities into a verified TalentScore recognized by leading international employers.</p>
+              <a href="/careerpassport" class="text-blue-400 text-xs font-semibold hover:underline">Build Career Passport &rarr;</a>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+              <h3 class="text-lg font-bold text-white mb-2">Recruiter OS & Candidate 360</h3>
+              <p class="text-slate-300 text-sm leading-relaxed mb-4">Search 12,000+ pre-vetted engineers, AI architects, and leaders with forensic capability scoring.</p>
+              <a href="/hire" class="text-blue-400 text-xs font-semibold hover:underline">Access Recruiter OS &rarr;</a>
+            </div>
+          </div>
+        </div>
+      </main></div></div>
+    
+    <!-- Chunk Error Handler - Must load before main script -->
+    <script src="/chunk-error-handler.js"></script>
+    <script type="module" crossorigin src="/assets/index-xiXuV3wJ.js"></script>
+  </body>
+</html>

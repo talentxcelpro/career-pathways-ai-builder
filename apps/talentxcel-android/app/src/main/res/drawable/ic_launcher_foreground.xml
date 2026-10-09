@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:scaleX="0.6"
+        android:scaleY="0.6"
+        android:translateX="21.6"
+        android:translateY="21.6">
+        <!-- T Bar -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M24,28h60v12h-24v40h-12v-40h-24z" />
+        <!-- Accent Star/Chevron -->
+        <path
+            android:fillColor="#60A5FA"
+            android:pathData="M70,55 L82,67 L70,79 L64,73 L70,67 L64,61 Z" />
+    </group>
+</vector>

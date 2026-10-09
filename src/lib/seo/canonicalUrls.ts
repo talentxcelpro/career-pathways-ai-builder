@@ -33,10 +33,12 @@ export function getPublicPostUrl(postIdOrSlug: string): string {
   return `${BASE_PRODUCTION_ORIGIN}/post/${postIdOrSlug.trim()}`;
 }
 
+export const JOBS_PRODUCTION_ORIGIN = 'https://jobs.talentxcel.in';
+
 /** Returns canonical URL for a public job */
 export function getPublicJobUrl(seoSlugOrId: string): string {
-  if (!seoSlugOrId) return `${BASE_PRODUCTION_ORIGIN}/jobs`;
-  return `${BASE_PRODUCTION_ORIGIN}/jobs/${seoSlugOrId.trim()}`;
+  if (!seoSlugOrId) return `${JOBS_PRODUCTION_ORIGIN}/jobs`;
+  return `${JOBS_PRODUCTION_ORIGIN}/jobs/${seoSlugOrId.trim()}`;
 }
 
 /** Returns canonical URL for a public topic hub */

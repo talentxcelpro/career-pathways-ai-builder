@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <rect width="48" height="48" rx="8" fill="#117ACA"/>
+  <polygon points="12,18 24,6 36,18 36,30 24,42 12,30" fill="none" stroke="#FFFFFF" stroke-width="3"/>
+  <text x="24" y="27" font-family="Georgia, serif" font-weight="bold" font-size="11" fill="#FFFFFF" text-anchor="middle">JPM</text>
+</svg>
