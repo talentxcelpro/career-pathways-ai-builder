@@ -11,7 +11,7 @@ const SUPABASE_URL = 'https://dthlgsnakhoftinssokm.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const BASE_URL = 'https://talentxcel.in';
+const BASE_URL = 'https://jobs.talentxcel.in';
 
 async function getAccessToken(key) {
   const now = Math.floor(Date.now() / 1000);
