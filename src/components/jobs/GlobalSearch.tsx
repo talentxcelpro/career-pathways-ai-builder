@@ -27,6 +27,7 @@ interface GlobalSearchProps {
   onSearch: () => void;
   onFiltersChange: (filters: any) => void;
   placeholder?: string;
+  buttonText?: string;
   className?: string;
   recentJobs?: any[];
 }
@@ -37,6 +38,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
   onSearch,
   onFiltersChange,
   placeholder = "Search jobs, skills, companies...",
+  buttonText = "Search Jobs",
   className = "",
   recentJobs = []
 }) => {
@@ -344,7 +346,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
           className="h-8 sm:h-10 px-2 sm:px-4 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-xs sm:text-sm"
         >
           <Search className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-          <span className="hidden sm:inline">Search</span>
+          <span className="hidden sm:inline">{buttonText}</span>
         </Button>
       </div>
 

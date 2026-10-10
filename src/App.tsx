@@ -486,6 +486,43 @@ const App = () => {
                                     </>
                                   )}
 
+                {/* Universal Product Hub Routes (Accessible on CORE domain, localhost, and cross-subdomain) */}
+                <Route path="/salary" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Salary Analyzer...</div>}><SalaryAnalyzer /></Suspense>} />
+                <Route path="/salary/:role" element={<Suspense fallback={<div>Loading Salary Guide...</div>}><SalaryGuidePage /></Suspense>} />
+                <Route path="/salary/:role/:location" element={<Suspense fallback={<div>Loading Salary Guide...</div>}><SalaryGuidePage /></Suspense>} />
+                <Route path="/analyzer" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Salary Analyzer...</div>}><SalaryAnalyzer /></Suspense>} />
+                <Route path="/salaries" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Salary Analyzer...</div>}><SalaryAnalyzer /></Suspense>} />
+
+                <Route path="/learning" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Learning Hub...</div>}><LearningHub /></Suspense>} />
+                <Route path="/learning/comprehensive-courses" element={<Suspense fallback={null}><AllCourses /></Suspense>} />
+                <Route path="/learning/courses" element={<Suspense fallback={null}><AllCourses /></Suspense>} />
+                <Route path="/learning/courses/:id" element={<Suspense fallback={null}><AggregatedCourseDetail /></Suspense>} />
+                <Route path="/learning/course/:slug" element={<Suspense fallback={null}><AggregatedCourseDetail /></Suspense>} />
+                <Route path="/learning/paths" element={<Suspense fallback={null}><LearningPathsPage /></Suspense>} />
+                <Route path="/learning/paths/:id" element={<Suspense fallback={null}><AggregatedCourseDetail /></Suspense>} />
+                <Route path="/learning/certificates" element={<Suspense fallback={null}><Certificates /></Suspense>} />
+
+                <Route path="/career-map" element={<AICareerHub />} />
+                <Route path="/career-map/ai-roadmap-builder" element={<InteractiveCareerRoadmapBuilder />} />
+                <Route path="/career-map/my-roadmaps" element={<CareerDashboard />} />
+                <Route path="/career-map/skills-gap" element={<SkillsGap />} />
+                <Route path="/career-map/:id" element={<InteractiveCareerRoadmapBuilder />} />
+
+                <Route path="/resume" element={<UnifiedResumeHub />} />
+                <Route path="/resume/build" element={<UnifiedResumeBuilder />} />
+                <Route path="/resume/build/:id" element={<UnifiedResumeBuilder />} />
+                <Route path="/resume/ats-check" element={<ATSChecker />} />
+                <Route path="/resume/templates" element={<ResumeTemplates />} />
+                <Route path="/resume/cover-letter" element={<CoverLetterStudio />} />
+                <Route path="/resume/interview-prep" element={<InterviewPrepSuite />} />
+
+                <Route path="/passport" element={<Suspense fallback={null}><CareerPassportDashboard /></Suspense>} />
+                <Route path="/passport/public/:identifier" element={<Suspense fallback={null}><PublicPassport /></Suspense>} />
+
+                <Route path="/colleges" element={<Suspense fallback={null}><Colleges /></Suspense>} />
+                <Route path="/colleges/:id" element={<Suspense fallback={null}><CollegeDetail /></Suspense>} />
+                <Route path="/colleges/:id/:subTab" element={<Suspense fallback={null}><CollegeDetail /></Suspense>} />
+
                 {/* PRIORITY ROUTES - These must come BEFORE navItems.map to take precedence */}
                 <Route path="/recruiters" element={
                   <Suspense fallback={

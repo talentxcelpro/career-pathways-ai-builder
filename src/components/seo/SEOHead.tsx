@@ -104,7 +104,14 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
       injectStructuredData(structuredData);
     }
 
-    // 7. Track SEO landing view
+    // 7. Enforce official master favicon URL across all routes/subdomains
+    const officialFavicon = 'https://talentxcel.in/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png';
+    const favicons = document.querySelectorAll('link[rel="icon"], link[rel="shortcut icon"], link[rel="apple-touch-icon"]');
+    favicons.forEach((el) => {
+      (el as HTMLLinkElement).href = officialFavicon;
+    });
+
+    // 8. Track SEO landing view
     GrowthFunnelTracker.track('seo_landing_view', {
       landing_page: window.location.pathname,
       page_title: title,

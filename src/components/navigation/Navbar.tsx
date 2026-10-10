@@ -49,7 +49,20 @@ export const Navbar = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { isMobile } = useMobileDetection();
-  const isJobsUniverse = getCurrentUniverse() === 'JOBS' || location.pathname === '/jobs' || location.pathname.startsWith('/jobs/');
+  const currentUniverse = getCurrentUniverse();
+  const isJobsUniverse = currentUniverse === 'JOBS' || location.pathname === '/jobs' || location.pathname.startsWith('/jobs/');
+  const universeBadges: Record<string, string> = {
+    JOBS: 'Jobs',
+    LEARNING: 'Learning',
+    PASSPORT: 'Passport',
+    GOVERNMENT: 'Government',
+    EMPLOYERS: 'Employers',
+    COLLEGES: 'Colleges',
+    CAREERS: 'Careers',
+    SALARY: 'Salary',
+    RESUME: 'Resume',
+  };
+  const productBadge = universeBadges[currentUniverse];
 
   // Get profile data — only fetch fields the Navbar actually renders
   const { data: profile } = useQuery({
@@ -192,9 +205,9 @@ export const Navbar = () => {
           <div className="flex items-center shrink-0 mr-3 sm:mr-6 gap-2">
             <Link to={isJobsUniverse ? "/jobs" : "/"} className="flex items-center shrink-0 gap-2">
               <TalentXcelLogo iconSize={26} textSize="text-base sm:text-lg" theme="dark" />
-              {isJobsUniverse && (
+              {productBadge && (
                 <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-gradient-to-r from-blue-600 to-indigo-600 text-white border border-blue-400/30 shadow-xs">
-                  Jobs
+                  {productBadge}
                 </span>
               )}
             </Link>

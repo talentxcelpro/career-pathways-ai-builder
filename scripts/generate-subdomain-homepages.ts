@@ -47,33 +47,39 @@ export function generateSubdomainHomepages() {
     // 2. Replace Description
     if (/<meta\s+name=["']description["']/i.test(html)) {
       html = html.replace(
-        /(<meta\s+name=["']description["']\s+content=")[^"]*(")/i,
+        /(<meta\s+name=["']description["']\s+content=")[^"]*(")/gi,
         `$1${identity.description}$2`
       );
     } else {
       html = html.replace('</head>', `<meta name="description" content="${identity.description}">\n</head>`);
     }
 
-    // 3. Replace or inject Canonical Tag
-    const canonicalTag = `<link rel="canonical" href="${identity.canonical}" />`;
-    if (/<link\s+rel=["']canonical["'][^>]*>/i.test(html)) {
-      html = html.replace(/<link\s+rel=["']canonical["'][^>]*>/i, canonicalTag);
-    } else if (/<link[^>]*rel=["']canonical["'][^>]*>/i.test(html)) {
-      html = html.replace(/<link[^>]*rel=["']canonical["'][^>]*>/i, canonicalTag);
-    } else {
-      html = html.replace('</head>', `${canonicalTag}\n</head>`);
-    }
+    // 3. Remove all existing canonical tags and inject single accurate canonical tag
+    html = html.replace(/<link[^>]*rel=["']canonical["'][^>]*>\s*/gi, '');
+    const canonicalTag = `<link rel="canonical" href="${identity.canonical}" />\n`;
+    html = html.replace('</head>', `${canonicalTag}</head>`);
 
-    // 4. Inject OpenGraph tags
-    html = html.replace(/(<meta\s+property=["']og:title["']\s+content=")[^"]*(")/i, `$1${identity.title}$2`);
-    html = html.replace(/(<meta\s+property=["']og:description["']\s+content=")[^"]*(")/i, `$1${identity.description}$2`);
-    html = html.replace(/(<meta\s+property=["']og:url["']\s+content=")[^"]*(")/i, `$1${identity.canonical}$2`);
+    // 4. Remove any duplicate prerendered og tags and replace them with subdomain-specific values
+    html = html.replace(/(<meta\s+property=["']og:title["']\s+content=")[^"]*(")/gi, `$1${identity.title}$2`);
+    html = html.replace(/(<meta\s+property=["']og:description["']\s+content=")[^"]*(")/gi, `$1${identity.description}$2`);
+    html = html.replace(/(<meta\s+property=["']og:url["']\s+content=")[^"]*(")/gi, `$1${identity.canonical}$2`);
 
-    // 5. Inject Structured Data JSON-LD
+    // 5. Inject Twitter Card tags
+    html = html.replace(/(<meta\s+name=["']twitter:title["']\s+content=")[^"]*(")/gi, `$1${identity.title}$2`);
+    html = html.replace(/(<meta\s+name=["']twitter:description["']\s+content=")[^"]*(")/gi, `$1${identity.description}$2`);
+
+    // 6. Enforce official absolute favicon URL
+    const officialFaviconUrl = 'https://talentxcel.in/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png';
+    html = html.replace(/href="\/lovable-uploads\/2f30b9a2-a492-4725-b98c-334796c21e32\.png"/g, `href="${officialFaviconUrl}"`);
+
+    // 7. Remove any stale root WebPage JSON-LD schema if present in base template
+    html = html.replace(/<script type="application\/ld\+json">\s*\{\s*"@context":\s*"https:\/\/schema\.org",\s*"@type":\s*"WebPage",\s*"@id":\s*"https:\/\/talentxcel\.in#webpage"[\s\S]*?<\/script>\s*/gi, '');
+
+    // 8. Inject Subdomain Structured Data JSON-LD
     const jsonLdScript = `\n<script type="application/ld+json">\n${JSON.stringify(identity.schemaJsonLd, null, 2)}\n</script>\n`;
     html = html.replace('</head>', `${jsonLdScript}</head>`);
 
-    // 6. Inject Semantic Crawlable Content inside body before root
+    // 9. Inject Semantic Crawlable Content inside body before root
     const crawlableContainer = `\n<div id="tx-pre-rendered-seo" style="display:none;" data-subdomain="${sub}">\n${identity.staticHeroHtml}\n</div>\n`;
     html = html.replace('<div id="root">', `${crawlableContainer}<div id="root">`);
 

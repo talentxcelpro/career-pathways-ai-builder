@@ -388,6 +388,7 @@ export function getCanonicalDomainForRoute(pathname: string): string {
  */
 export function formatCanonicalUrl(pathOrUrl?: string, currentHostname?: string): string {
   let pathname = '/';
+  let hostFromUrl = '';
 
   if (!pathOrUrl) {
     pathname = typeof window !== 'undefined' ? window.location.pathname : '/';
@@ -395,6 +396,7 @@ export function formatCanonicalUrl(pathOrUrl?: string, currentHostname?: string)
     try {
       const parsed = new URL(pathOrUrl);
       pathname = parsed.pathname;
+      hostFromUrl = parsed.hostname;
     } catch {
       pathname = '/';
     }
@@ -412,11 +414,12 @@ export function formatCanonicalUrl(pathOrUrl?: string, currentHostname?: string)
     pathname = pathname.replace(/\/+$/, '');
   }
 
-  // Determine current universe if on a subdomain
-  const activeUniverse = getCurrentUniverse(currentHostname);
+  // Determine current universe if on a subdomain (giving priority to host from explicit URL or currentHostname)
+  const resolvedHost = currentHostname || hostFromUrl;
+  const activeUniverse = getCurrentUniverse(resolvedHost);
   const targetUniverse = getAuthoritativeUniverseForRoute(pathname);
 
-  // If visitor is currently on a subdomain and requesting root '/', canonical is that subdomain's root
+  // If visitor or canonical target is on a subdomain and requesting root '/', canonical is that subdomain's root
   if (activeUniverse !== 'CORE' && pathname === '/') {
     return `${UNIVERSE_PRIMARY_DOMAIN[activeUniverse]}/`;
   }

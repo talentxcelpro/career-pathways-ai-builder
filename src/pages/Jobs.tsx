@@ -354,8 +354,8 @@ const Jobs = () => {
   return (
     <>
       <SEOHead 
-        title="TalentXcel Jobs | Verified Career Opportunities & Talent Marketplace" 
-        description="Discover verified careers, transparent salaries, and direct recruiter pipelines on TalentXcel Jobs — the authenticated career marketplace." 
+        title="TalentXcel Jobs — Discover Jobs That Match Your Ambition" 
+        description="Search relevant jobs by role, skills, location, experience and salary, and take the next step in your career. Verified employers and direct 1-click ATS applications." 
         canonical={canonicalUrl} 
         type="website" 
       />
@@ -374,13 +374,13 @@ const Jobs = () => {
                     <Briefcase className="h-3 w-3" />
                     TalentXcel Jobs
                   </span>
-                  <span className="text-[11px] text-muted-foreground hidden sm:inline">• Verified Career Marketplace</span>
+                  <span className="text-[11px] text-muted-foreground hidden sm:inline">• Active Jobseekers & Professionals</span>
                 </div>
-                <h1 className="text-base sm:text-lg font-bold tracking-tight text-foreground flex items-center gap-2">
-                  <span>Explore Verified Career Openings</span>
+                <h1 className="text-base sm:text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
+                  <span>Discover Jobs That Match Your Ambition</span>
                 </h1>
-                <p className="text-[11px] text-muted-foreground hidden sm:block">
-                  AI-matched opportunities across 42+ verified enterprises, defense labs, banks, and startups.
+                <p className="text-[11px] sm:text-xs text-muted-foreground hidden sm:block">
+                  Search relevant jobs by role, skills, location, experience and salary, and take the next step in your career.
                 </p>
               </div>
 
@@ -394,7 +394,8 @@ const Jobs = () => {
                     updateFilters(newFilters);
                     refetch();
                   }}
-                  placeholder="Search role, skills, company, or city..."
+                  placeholder="Search jobs by role, skills, location, experience..."
+                  buttonText="Search Jobs"
                   recentJobs={regularJobs.slice(0, 5)}
                 />
               </div>
