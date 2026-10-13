@@ -72,14 +72,15 @@ export function generateSubdomainHomepages() {
     const officialFaviconUrl = 'https://talentxcel.in/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png';
     html = html.replace(/href="\/lovable-uploads\/2f30b9a2-a492-4725-b98c-334796c21e32\.png"/g, `href="${officialFaviconUrl}"`);
 
-    // 7. Remove any stale root WebPage JSON-LD schema if present in base template
-    html = html.replace(/<script type="application\/ld\+json">\s*\{\s*"@context":\s*"https:\/\/schema\.org",\s*"@type":\s*"WebPage",\s*"@id":\s*"https:\/\/talentxcel\.in#webpage"[\s\S]*?<\/script>\s*/gi, '');
+    // 7. Strip all stale JSON-LD schemas from base template before injecting authoritative subdomain schema
+    html = html.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>\s*/gi, '');
 
     // 8. Inject Subdomain Structured Data JSON-LD
     const jsonLdScript = `\n<script type="application/ld+json">\n${JSON.stringify(identity.schemaJsonLd, null, 2)}\n</script>\n`;
     html = html.replace('</head>', `${jsonLdScript}</head>`);
 
     // 9. Inject Semantic Crawlable Content inside body before root
+    html = html.replace(/<div id="tx-pre-rendered-seo"[\s\S]*?<\/div>\s*/gi, '');
     const crawlableContainer = `\n<div id="tx-pre-rendered-seo" style="display:none;" data-subdomain="${sub}">\n${identity.staticHeroHtml}\n</div>\n`;
     html = html.replace('<div id="root">', `${crawlableContainer}<div id="root">`);
 

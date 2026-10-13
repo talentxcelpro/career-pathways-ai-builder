@@ -20,6 +20,7 @@ import {
   buildPostSeoData,
   resolveHashtagDestination,
 } from '../src/lib/seo/postSeoModel.js';
+import { formatCanonicalUrl } from '../src/config/domainArchitecture.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -476,7 +477,8 @@ async function prerender() {
   ];
 
   for (const hub of coreHubs) {
-    const canonical = `${BASE_URL}${hub.route === '/' ? '' : hub.route}`;
+    const canonical = formatCanonicalUrl(hub.route);
+    const subOrigin = canonical.split('/').slice(0, 3).join('/');
     const webPageSchema = buildWebPageSchema({
       name: hub.title,
       description: hub.desc,
@@ -484,7 +486,7 @@ async function prerender() {
       aboutOrgId: `${BASE_URL}/#organization`,
     });
     const breadcrumbSchema = buildBreadcrumbSchema([
-      { name: 'Home', url: BASE_URL },
+      { name: 'Home', url: subOrigin },
       ...(hub.route !== '/' ? [{ name: hub.h1, url: canonical }] : []),
     ]);
 
@@ -525,14 +527,15 @@ async function prerender() {
   ];
 
   for (const comp of companyPages) {
-    const canonical = `${BASE_URL}/company/${comp.slug}`;
+    const canonical = formatCanonicalUrl(`/company/${comp.slug}`);
+    const compOrigin = canonical.split('/').slice(0, 3).join('/');
     const title = 'TalentXcel Services | AI Career & Recruitment Platform';
     const description = 'TalentXcel is an AI-powered career, recruitment and professional growth platform connecting job seekers, employers, educators and professionals.';
 
     const orgSchema = buildTalentXcelOrganizationSchema(canonical);
     const breadcrumbSchema = buildBreadcrumbSchema([
-      { name: 'Home', url: BASE_URL },
-      { name: 'Companies', url: `${BASE_URL}/companies` },
+      { name: 'Home', url: compOrigin },
+      { name: 'Companies', url: `${compOrigin}/companies` },
       { name: comp.name, url: canonical },
     ]);
     const webPageSchema = buildWebPageSchema({
@@ -723,8 +726,8 @@ async function prerender() {
         `;
 
         const breadcrumbSchema = buildBreadcrumbSchema([
-          { name: 'Home', url: BASE_URL },
-          { name: 'Jobs', url: `${BASE_URL}/jobs` },
+          { name: 'Home', url: 'https://jobs.talentxcel.in/' },
+          { name: 'Jobs', url: 'https://jobs.talentxcel.in/jobs' },
           { name: job.title, url: canonical },
         ]);
 
@@ -1326,7 +1329,7 @@ async function prerender() {
   console.log(`Pre-rendering ${INDIAN_INSTITUTIONS_CATALOG.length} Higher Ed Institutions...`);
   for (const inst of INDIAN_INSTITUTIONS_CATALOG) {
     const slug = inst.slug;
-    const canonical = `${BASE_URL}/colleges/${slug}`;
+    const canonical = formatCanonicalUrl(`/colleges/${slug}`);
     const feeMin = inst.annual_fee_min || 50000;
     const feeMax = inst.annual_fee_max || 250000;
     const title = `${inst.name} — Fees, Courses, Cutoffs & Placement Intelligence | TalentXcel`;
@@ -1375,8 +1378,8 @@ async function prerender() {
     `;
 
     const collegeBreadcrumb = buildBreadcrumbSchema([
-      { name: 'Home', url: BASE_URL },
-      { name: 'Colleges', url: `${BASE_URL}/colleges` },
+      { name: 'Home', url: 'https://colleges.talentxcel.in/' },
+      { name: 'Colleges', url: 'https://colleges.talentxcel.in/colleges' },
       { name: inst.name, url: canonical },
     ]);
     const collegeOrgSchema = {
@@ -1406,15 +1409,15 @@ async function prerender() {
   console.log(`Pre-rendering ${SEED_PROGRAMS.length} Global Degree Programs...`);
   for (const prog of SEED_PROGRAMS) {
     const slug = (prog as any).slug || prog.program_title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-    const canonical = `${BASE_URL}/colleges/global-programs/${slug}`;
+    const canonical = formatCanonicalUrl(`/colleges/global-programs/${slug}`);
     const tuition = (prog as any).tuition_annual_display || (prog.tuition_cost_usd === 0 ? 'â‚¬0 Tuition' : `$${prog.tuition_cost_usd}`);
     const title = `${prog.program_title} — ${prog.institution_name}, ${prog.country} | TalentXcel Global Intelligence`;
     const description = `Verified details for ${prog.program_title} at ${prog.institution_name} in ${prog.country}. Tuition: ${tuition}. Funding: ${prog.access_type}.`;
 
     const progBreadcrumb = buildBreadcrumbSchema([
-      { name: 'Home', url: BASE_URL },
-      { name: 'Colleges', url: `${BASE_URL}/colleges` },
-      { name: 'Global Programs', url: `${BASE_URL}/colleges/global-programs` },
+      { name: 'Home', url: 'https://colleges.talentxcel.in/' },
+      { name: 'Colleges', url: 'https://colleges.talentxcel.in/colleges' },
+      { name: 'Global Programs', url: 'https://colleges.talentxcel.in/colleges/global-programs' },
       { name: prog.program_title, url: canonical },
     ]);
 
@@ -1577,9 +1580,9 @@ async function prerender() {
     `;
 
     const roleBreadcrumb = buildBreadcrumbSchema([
-      { name: 'Home', url: BASE_URL },
-      { name: 'Jobs', url: `${BASE_URL}/jobs` },
-      { name: role.title.replace(/\b\w/g, (c) => c.toUpperCase()), url: `${BASE_URL}/jobs/${slug}` },
+      { name: 'Home', url: 'https://jobs.talentxcel.in/' },
+      { name: 'Jobs', url: 'https://jobs.talentxcel.in/jobs' },
+      { name: role.title.replace(/\b\w/g, (c) => c.toUpperCase()), url: formatCanonicalUrl(`/jobs/${slug}`) },
     ]);
 
     writePrerenderedPage(`/roles/${slug}`, {
@@ -1594,7 +1597,7 @@ async function prerender() {
     writePrerenderedPage(`/jobs/${slug}`, {
       title,
       description,
-      canonical: `${BASE_URL}/jobs/${slug}`,
+      canonical: formatCanonicalUrl(`/jobs/${slug}`),
       h1: `${role.title.replace(/\b\w/g, (c) => c.toUpperCase())} Jobs`,
       bodyContentHtml: bodyHtml,
       jsonLd: [roleBreadcrumb],
@@ -1602,7 +1605,7 @@ async function prerender() {
 
     // Also write /jobs/:role/:city combinations
     for (const city of TOP_CITIES) {
-      const cityCanonical = `${BASE_URL}/jobs/${slug}/${city.slug}`;
+      const cityCanonical = formatCanonicalUrl(`/jobs/${slug}/${city.slug}`);
       const capitalizedRole = role.title.replace(/\b\w/g, (c) => c.toUpperCase());
       const cityTitle = `${capitalizedRole} Jobs in ${city.name} [Hiring 2026] — Verified Vacancies | TalentXcel`;
       const cityDesc = `Find verified ${capitalizedRole} vacancies in ${city.name}. View salary benchmarks (₹3L - ₹12L PA), top hiring employers, required skills, and apply directly.`;
@@ -1623,9 +1626,9 @@ async function prerender() {
       ];
 
       const breadcrumb = buildBreadcrumbSchema([
-        { name: 'Home', url: BASE_URL },
-        { name: 'Jobs', url: `${BASE_URL}/jobs` },
-        { name: capitalizedRole, url: `${BASE_URL}/jobs/${slug}` },
+        { name: 'Home', url: 'https://jobs.talentxcel.in/' },
+        { name: 'Jobs', url: 'https://jobs.talentxcel.in/jobs' },
+        { name: capitalizedRole, url: formatCanonicalUrl(`/jobs/${slug}`) },
         { name: city.name, url: cityCanonical },
       ]);
       const faqLd = buildFAQSchema(roleCityFaqs);
@@ -1717,7 +1720,7 @@ async function prerender() {
     if (CANONICAL_LOCATIONS) {
       for (const loc of CANONICAL_LOCATIONS) {
         const slug = loc.slug;
-        const canonical = `${BASE_URL}/locations/${slug}`;
+        const canonical = formatCanonicalUrl(`/locations/${slug}`);
         const title = `Jobs & Tech Hiring in ${loc.name} 2026 | TalentXcel`;
         const description = `Explore active tech vacancies, top hiring companies, average salary benchmarks, and career opportunities in ${loc.name}.`;
 
@@ -1737,8 +1740,8 @@ async function prerender() {
         `;
 
         const breadcrumbSchema = buildBreadcrumbSchema([
-          { name: 'Home', url: BASE_URL },
-          { name: 'Locations', url: `${BASE_URL}/locations` },
+          { name: 'Home', url: 'https://jobs.talentxcel.in/' },
+          { name: 'Locations', url: 'https://jobs.talentxcel.in/locations' },
           { name: loc.name, url: canonical },
         ]);
         const collectionSchema = {
