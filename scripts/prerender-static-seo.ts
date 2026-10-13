@@ -594,6 +594,65 @@ async function prerender() {
     });
   }
 
+  // 1b. Pre-render High-Demand Company Role Hubs (e.g. /company/salesforce/jobs/data-engineer)
+  console.log('Pre-rendering Company Role Hubs...');
+  const companyRolePages = [
+    { companySlug: 'salesforce', companyName: 'Salesforce', roleSlug: 'data-engineer', roleTitle: 'Data Engineer', salaryMin: '₹16L', salaryMax: '₹38L', skills: ['Python', 'SQL', 'Apache Spark', 'Kafka', 'Snowflake', 'Salesforce Data Cloud'] },
+    { companySlug: 'salesforce', companyName: 'Salesforce', roleSlug: 'software-engineer', roleTitle: 'Software Engineer', salaryMin: '₹15L', salaryMax: '₹36L', skills: ['Java', 'Python', 'React', 'Apex', 'Lightning Web Components', 'AWS'] },
+    { companySlug: 'google', companyName: 'Google', roleSlug: 'software-engineer', roleTitle: 'Software Engineer', salaryMin: '₹22L', salaryMax: '₹55L', skills: ['C++', 'Python', 'Java', 'Distributed Systems', 'GCP', 'Kubernetes'] },
+    { companySlug: 'microsoft', companyName: 'Microsoft', roleSlug: 'software-engineer', roleTitle: 'Software Engineer', salaryMin: '₹18L', salaryMax: '₹45L', skills: ['C#', '.NET Core', 'Azure', 'TypeScript', 'Distributed Systems', 'SQL'] },
+    { companySlug: 'amazon', companyName: 'Amazon', roleSlug: 'software-engineer', roleTitle: 'Software Engineer', salaryMin: '₹18L', salaryMax: '₹48L', skills: ['Java', 'AWS', 'DynamoDB', 'Distributed Systems', 'Microservices', 'Python'] },
+  ];
+
+  for (const cr of companyRolePages) {
+    const route = `/company/${cr.companySlug}/jobs/${cr.roleSlug}`;
+    const canonical = formatCanonicalUrl(route);
+    const compOrigin = canonical.split('/').slice(0, 3).join('/');
+    const title = `${cr.companyName} ${cr.roleTitle} Jobs [Hiring 2026] — Salaries & Openings | TalentXcel`;
+    const description = `Explore verified ${cr.roleTitle} vacancies, average salary benchmarks (${cr.salaryMin} - ${cr.salaryMax} PA), required tech stack, and direct application links at ${cr.companyName}.`;
+
+    const breadcrumbSchema = buildBreadcrumbSchema([
+      { name: 'Home', url: compOrigin },
+      { name: 'Companies', url: `${compOrigin}/companies` },
+      { name: cr.companyName, url: `${compOrigin}/company/${cr.companySlug}` },
+      { name: `${cr.roleTitle} Jobs`, url: canonical },
+    ]);
+
+    const webPageSchema = buildWebPageSchema({
+      name: title,
+      description,
+      url: canonical,
+      aboutOrgId: `${BASE_URL}/#organization`,
+    });
+
+    const bodyHtml = `
+      <div class="space-y-8">
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-white mb-2">1. Overview of ${escapeHtml(cr.roleTitle)} at ${escapeHtml(cr.companyName)}</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">${escapeHtml(cr.companyName)} is hiring ${escapeHtml(cr.roleTitle)}s for 2026. Explore live vacancies, verified compensation ranges (${escapeHtml(cr.salaryMin)} - ${escapeHtml(cr.salaryMax)} PA), tech stack requirements, and 1-click ATS application.</p>
+        </section>
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-white mb-2">2. Compensation Benchmarks</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Typical market salary ranges for ${escapeHtml(cr.roleTitle)} at ${escapeHtml(cr.companyName)} range from ${escapeHtml(cr.salaryMin)} to ${escapeHtml(cr.salaryMax)} PA depending on experience, seniority tier, and location.</p>
+        </section>
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-white mb-2">3. Required Skills & Tech Stack</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Primary competencies: ${cr.skills.map(s => escapeHtml(s)).join(', ')}.</p>
+          <a href="/jobs?search=${encodeURIComponent(cr.roleTitle)}" class="inline-block mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg">Explore All Active ${escapeHtml(cr.roleTitle)} Jobs &rarr;</a>
+        </section>
+      </div>
+    `;
+
+    writePrerenderedPage(route, {
+      title,
+      description,
+      canonical,
+      h1: `${cr.companyName} ${cr.roleTitle} Jobs`,
+      bodyContentHtml: bodyHtml,
+      jsonLd: [breadcrumbSchema, webPageSchema],
+    });
+  }
+
   // 2. Pre-render All 10 Strategic Services
   console.log('Pre-rendering 10 Strategic Service Pages...');
   const services = [

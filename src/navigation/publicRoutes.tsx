@@ -50,7 +50,7 @@ export const publicRoutes = [
   },
   {
     title: "Career Insights",
-    to: "/public/market-insights",
+    to: "/career-insights",
     icon: <TrendingUp className="h-4 w-4" />,
     page: (
       <TieredAccessGuard

@@ -127,38 +127,38 @@ export const CareerAnalytics: React.FC<CareerAnalyticsProps> = ({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
           >
-            <Card>
+            <Card className="bg-slate-900/90 border-slate-800 text-slate-100 shadow-lg hover:border-slate-700 transition-all">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-medium text-muted-foreground">
+                  <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
                     {metric.label}
                   </h3>
                   {formatChange(metric.change, metric.changeType)}
                 </div>
                 
                 <div className="space-y-3">
-                  <div className="text-2xl font-bold">{metric.value}</div>
+                  <div className="text-2xl font-bold text-white">{metric.value}</div>
                   
                   {metric.target && (
                     <div className="space-y-1">
-                      <div className="flex justify-between text-xs">
+                      <div className="flex justify-between text-xs text-slate-400">
                         <span>Progress to Target</span>
-                        <span>{metric.target}</span>
+                        <span className="text-slate-200 font-medium">{metric.target}</span>
                       </div>
                       <Progress 
                         value={(metric.value / metric.target) * 100} 
-                        className="h-2"
+                        className="h-2 bg-slate-800"
                       />
                     </div>
                   )}
                   
                   {metric.industry_average && (
-                    <div className="flex justify-between text-xs text-muted-foreground">
+                    <div className="flex justify-between text-xs text-slate-400">
                       <span>Industry Avg:</span>
                       <span className={
                         metric.value > metric.industry_average 
-                          ? 'text-green-600 font-medium' 
-                          : 'text-orange-600 font-medium'
+                          ? 'text-emerald-400 font-medium' 
+                          : 'text-amber-400 font-medium'
                       }>
                         {metric.industry_average}
                       </span>
@@ -173,16 +173,16 @@ export const CareerAnalytics: React.FC<CareerAnalyticsProps> = ({
 
       {/* Detailed Analytics Tabs */}
       <Tabs defaultValue="skills" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="skills">Skills Analysis</TabsTrigger>
-          <TabsTrigger value="milestones">Career Path</TabsTrigger>
-          <TabsTrigger value="market">Market Insights</TabsTrigger>
-          <TabsTrigger value="trends">Trends</TabsTrigger>
+        <TabsList className="bg-slate-900 border border-slate-800 p-1 rounded-xl">
+          <TabsTrigger value="skills" className="data-[state=active]:bg-cyan-600 data-[state=active]:text-white text-slate-400 text-xs font-semibold rounded-lg">Skills Analysis</TabsTrigger>
+          <TabsTrigger value="milestones" className="data-[state=active]:bg-cyan-600 data-[state=active]:text-white text-slate-400 text-xs font-semibold rounded-lg">Career Path</TabsTrigger>
+          <TabsTrigger value="market" className="data-[state=active]:bg-cyan-600 data-[state=active]:text-white text-slate-400 text-xs font-semibold rounded-lg">Market Insights</TabsTrigger>
+          <TabsTrigger value="trends" className="data-[state=active]:bg-cyan-600 data-[state=active]:text-white text-slate-400 text-xs font-semibold rounded-lg">Trends</TabsTrigger>
         </TabsList>
 
         {/* Skills Analysis */}
         <TabsContent value="skills" className="space-y-4">
-          <Card>
+          <Card className="bg-slate-900/90 border-slate-800 text-slate-100 shadow-xl">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Brain className="h-5 w-5" />
@@ -217,38 +217,38 @@ export const CareerAnalytics: React.FC<CareerAnalyticsProps> = ({
 
         {/* Career Milestones */}
         <TabsContent value="milestones" className="space-y-4">
-          <Card>
+          <Card className="bg-slate-900/90 border-slate-800 text-slate-100 shadow-xl">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Target className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 text-white text-base">
+                <Target className="h-5 w-5 text-cyan-400" />
                 Career Progression Forecast
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {careerMilestones.map((milestone, index) => (
-                  <div key={milestone.title} className="p-4 border rounded-lg">
+                  <div key={milestone.title} className="p-4 border border-slate-800 bg-slate-950/60 rounded-xl">
                     <div className="flex justify-between items-start mb-3">
                       <div>
-                        <h3 className="font-semibold">{milestone.title}</h3>
+                        <h3 className="font-semibold text-white">{milestone.title}</h3>
                         <div className="flex items-center gap-4 mt-1">
-                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-1 text-xs text-slate-400">
                             <Calendar className="h-3 w-3" />
                             {milestone.timeframe}
                           </div>
-                          <Badge variant={milestone.probability >= 70 ? 'default' : 'secondary'}>
+                          <Badge className={milestone.probability >= 70 ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-slate-800 text-slate-300'}>
                             {milestone.probability}% likely
                           </Badge>
                         </div>
                       </div>
-                      <Progress value={milestone.probability} className="w-20 h-2" />
+                      <Progress value={milestone.probability} className="w-20 h-2 bg-slate-800" />
                     </div>
                     
                     <div>
-                      <p className="text-sm text-muted-foreground mb-2">Requirements:</p>
+                      <p className="text-xs text-slate-400 mb-2">Requirements:</p>
                       <div className="flex flex-wrap gap-1">
                         {milestone.requirements.map((req, i) => (
-                          <Badge key={i} variant="outline" className="text-xs">
+                          <Badge key={i} variant="outline" className="text-xs border-slate-700 bg-slate-900 text-slate-300">
                             {req}
                           </Badge>
                         ))}
@@ -264,20 +264,20 @@ export const CareerAnalytics: React.FC<CareerAnalyticsProps> = ({
         {/* Market Insights */}
         <TabsContent value="market" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card>
+            <Card className="bg-slate-900/90 border-slate-800 text-slate-100 shadow-xl">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <DollarSign className="h-5 w-5" />
+                <CardTitle className="flex items-center gap-2 text-white text-base">
+                  <DollarSign className="h-5 w-5 text-emerald-400" />
                   Salary Benchmarking
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-green-600">
+                    <div className="text-2xl font-bold text-emerald-400">
                       ${industryBenchmarks.avgSalary.toLocaleString()}
                     </div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-xs text-slate-400">
                       Average Industry Salary
                     </div>
                   </div>

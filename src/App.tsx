@@ -93,6 +93,8 @@ const SEODashboard                    = lazy(() => import('./pages/SEODashboard'
 const PublicResumeBuilder             = lazy(() => import('./pages/tools/PublicResumeBuilder'));
 const PublicJobSearch                 = lazy(() => import('./pages/tools/PublicJobSearch'));
 const PublicMarketInsights            = lazy(() => import('./pages/tools/PublicMarketInsights'));
+const CareerInsightsPage              = lazy(() => import('./pages/CareerInsightsPage'));
+const CareerAnalyticsPage             = lazy(() => import('./pages/learning/CareerAnalytics'));
 const PublicInterviewPrep             = lazy(() => import('./pages/tools/PublicInterviewPrep'));
 const ResumeChecker                   = lazy(() => import('./pages/tools/ResumeChecker'));
 const CoverLetterGenerator            = lazy(() => import('./pages/tools/CoverLetterGenerator'));
@@ -198,6 +200,7 @@ const JobsByRoleSkillCityLevel        = lazy(() => import('@/pages/seo/jobs/Jobs
 const JobsByRoleSalaryCity            = lazy(() => import('@/pages/seo/jobs/JobsByRoleSalaryCity').then(m => ({ default: m.JobsByRoleSalaryCity })));
 const JobsByRemoteRoleCity            = lazy(() => import('@/pages/seo/jobs/JobsByRemoteRoleCity').then(m => ({ default: m.JobsByRemoteRoleCity })));
 const JobsByCompanyRoleCity           = lazy(() => import('@/pages/seo/jobs/JobsByCompanyRoleCity').then(m => ({ default: m.JobsByCompanyRoleCity })));
+const CompanyRoleJobsPage             = lazy(() => import('./pages/companies/CompanyRoleJobsPage'));
 const JobCategoryPage                 = lazy(() => import('@/pages/seo/JobCategoryPage'));
 const JobLocationPage                 = lazy(() => import('@/pages/seo/JobLocationPage'));
 const GlobalEmployerAcquisition       = lazy(() => import('./pages/employers/GlobalEmployerAcquisition'));
@@ -355,6 +358,10 @@ const App = () => {
                                       <Route path="/:role/:city" element={<Suspense fallback={<div>Loading...</div>}><JobsByRoleCity /></Suspense>} />
                                       <Route path="/:role/:experience/:city" element={<Suspense fallback={<div>Loading...</div>}><JobsByRoleExperienceCity /></Suspense>} />
                                       <Route path="/:role/:experience/:country/:city" element={<Suspense fallback={<div>Loading...</div>}><JobsByRoleExperienceCity /></Suspense>} />
+                                      <Route path="/company/:company/jobs/:role" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
+                                      <Route path="/company/:company/jobs" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
+                                      <Route path="/top-companies/:company/:role/:city" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
+                                      <Route path="/top-companies/:company/:role" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
                                     </>
                                   )}
 
@@ -406,6 +413,15 @@ const App = () => {
                                       <Route path="/recruiters" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Recruiter OS...</div>}><RecruiterLandingPage /></Suspense>} />
                                       <Route path="/companies" element={<Suspense fallback={null}><Companies /></Suspense>} />
                                       <Route path="/company/:slug" element={<Suspense fallback={null}><CompanyPublicProfile /></Suspense>} />
+                <Route path="/company/:company/jobs/:role/:city" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
+                <Route path="/company/:company/jobs/:role" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
+                <Route path="/company/:company/jobs" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
+                <Route path="/company/:company/salary/:role" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
+                <Route path="/company/:company/salary" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
+                <Route path="/company/:company/interview" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
+                <Route path="/jobs/company/:company/:role" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
+                <Route path="/jobs/top-companies/:company/:role" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
+                <Route path="/jobs/top-companies/:company" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
                                       <Route path="/hire" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Recruiter OS...</div>}><RecruiterLandingPage /></Suspense>} />
                                       <Route path="/staffing" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Recruiter OS...</div>}><RecruiterLandingPage /></Suspense>} />
                                       <Route path="/recruitment" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Recruiter OS...</div>}><RecruiterLandingPage /></Suspense>} />
@@ -439,6 +455,9 @@ const App = () => {
                                       <Route path="/career-map/:role" element={<CareerRoadmapGenerator />} />
                                       <Route path="/ai-career-hub" element={<AICareerHub />} />
                                       <Route path="/career-intelligence" element={<CareerIntelligenceDashboard />} />
+                                      <Route path="/career-insights" element={<Suspense fallback={<div>Loading...</div>}><CareerInsightsPage /></Suspense>} />
+                                      <Route path="/insights" element={<Suspense fallback={<div>Loading...</div>}><CareerInsightsPage /></Suspense>} />
+                                      <Route path="/market-insights" element={<Suspense fallback={<div>Loading...</div>}><PublicMarketInsights /></Suspense>} />
                                       <Route path="/career-platform" element={<CareerPlatformShowcasePage />} />
                                       <Route path="/how-to-become/:role" element={<CareerRoadmapGenerator />} />
                                       <Route path="/roadmap" element={<CareerRoadmapGenerator />} />
@@ -521,6 +540,12 @@ const App = () => {
                 <Route path="/career-map/my-roadmaps" element={<CareerDashboard />} />
                 <Route path="/career-map/skills-gap" element={<SkillsGap />} />
                 <Route path="/career-map/:id" element={<InteractiveCareerRoadmapBuilder />} />
+
+                <Route path="/career-insights" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Career Insights...</div>}><CareerInsightsPage /></Suspense>} />
+                <Route path="/insights" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Career Insights...</div>}><CareerInsightsPage /></Suspense>} />
+                <Route path="/public/market-insights" element={<Suspense fallback={<div>Loading Market Insights...</div>}><PublicMarketInsights /></Suspense>} />
+                <Route path="/tools/market-insights" element={<Suspense fallback={<div>Loading Market Insights...</div>}><PublicMarketInsights /></Suspense>} />
+                <Route path="/career-analytics" element={<Suspense fallback={<div>Loading Career Analytics...</div>}><CareerAnalyticsPage /></Suspense>} />
 
                 <Route path="/resume" element={<UnifiedResumeHub />} />
                 <Route path="/resume/build" element={<UnifiedResumeBuilder />} />
@@ -757,6 +782,15 @@ const App = () => {
                 <Route path="/rankings/:categorySlug" element={<Suspense fallback={null}><LeaderboardPage /></Suspense>} />
                 <Route path="/rankings/:categorySlug/:scopeSlug" element={<Suspense fallback={null}><LeaderboardPage /></Suspense>} />
                 <Route path="/company/:slug" element={<Suspense fallback={null}><CompanyPublicProfile /></Suspense>} />
+                <Route path="/company/:company/jobs/:role/:city" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
+                <Route path="/company/:company/jobs/:role" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
+                <Route path="/company/:company/jobs" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
+                <Route path="/company/:company/salary/:role" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
+                <Route path="/company/:company/salary" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
+                <Route path="/company/:company/interview" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
+                <Route path="/jobs/company/:company/:role" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
+                <Route path="/jobs/top-companies/:company/:role" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
+                <Route path="/jobs/top-companies/:company" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
                 <Route path="/post/:slugOrId" element={<Suspense fallback={null}><PublicPostPage /></Suspense>} />
                 <Route path="/posts/:slugOrId" element={<Suspense fallback={null}><PublicPostPage /></Suspense>} />
                 <Route path="/topics/:slug" element={<Suspense fallback={null}><TopicHubPage /></Suspense>} />

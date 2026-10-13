@@ -55,9 +55,9 @@ const LiveMetric: React.FC<LiveMetricProps> = ({
 
   const getChangeColor = () => {
     switch (changeType) {
-      case 'positive': return 'text-green-600';
-      case 'negative': return 'text-red-600';
-      default: return 'text-gray-600';
+      case 'positive': return 'text-emerald-400';
+      case 'negative': return 'text-red-400';
+      default: return 'text-slate-400';
     }
   };
 
@@ -70,7 +70,7 @@ const LiveMetric: React.FC<LiveMetricProps> = ({
   };
 
   return (
-    <Card className="relative overflow-hidden">
+    <Card className="relative overflow-hidden bg-slate-900/90 border-slate-800 text-slate-100 shadow-md hover:border-slate-700 transition-all">
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
@@ -144,10 +144,10 @@ const RealtimeUpdate: React.FC<RealtimeUpdateProps> = ({ timestamp, message, typ
 
   const getBadgeColor = () => {
     switch (type) {
-      case 'achievement': return 'bg-yellow-100 text-yellow-800';
-      case 'milestone': return 'bg-green-100 text-green-800';
-      case 'alert': return 'bg-red-100 text-red-800';
-      default: return 'bg-blue-100 text-blue-800';
+      case 'achievement': return 'bg-amber-500/20 text-amber-300 border border-amber-500/30';
+      case 'milestone': return 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+      case 'alert': return 'bg-red-500/20 text-red-300 border border-red-500/30';
+      default: return 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30';
     }
   };
 
@@ -155,7 +155,7 @@ const RealtimeUpdate: React.FC<RealtimeUpdateProps> = ({ timestamp, message, typ
     <motion.div
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
-      className="flex items-start gap-3 p-3 border rounded-lg"
+      className="flex items-start gap-3 p-3.5 border border-slate-800 bg-slate-950/60 rounded-xl hover:border-slate-700 transition-all"
     >
       <div className="flex-shrink-0">{getIcon()}</div>
       <div className="flex-1 min-w-0">
@@ -315,20 +315,20 @@ export const RealTimeCareerDashboard: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Real-time Activity Feed */}
-        <Card className="lg:col-span-2">
+        <Card className="lg:col-span-2 bg-slate-900/90 border-slate-800 text-slate-100 shadow-xl">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-white text-base">
               <motion.div
-                animate={{ scale: [1, 1.2, 1] }}
+                animate={{ scale: [1, 1.25, 1] }}
                 transition={{ repeat: Infinity, duration: 2 }}
               >
-                <div className="w-3 h-3 bg-green-500 rounded-full" />
+                <div className="w-2.5 h-2.5 bg-emerald-400 rounded-full shadow-sm shadow-emerald-500/50" />
               </motion.div>
-              Live Career Activity
+              Live Career Activity Stream
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3 max-h-80 overflow-y-auto">
+            <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
               {updates.map((update, index) => (
                 <RealtimeUpdate key={index} {...update} />
               ))}
@@ -337,10 +337,10 @@ export const RealTimeCareerDashboard: React.FC = () => {
         </Card>
 
         {/* Recent Achievements */}
-        <Card>
+        <Card className="bg-slate-900/90 border-slate-800 text-slate-100 shadow-xl">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Award className="h-5 w-5 text-yellow-600" />
+            <CardTitle className="flex items-center gap-2 text-white text-base">
+              <Award className="h-5 w-5 text-amber-400" />
               Recent Achievements
             </CardTitle>
           </CardHeader>
@@ -352,15 +352,15 @@ export const RealTimeCareerDashboard: React.FC = () => {
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className="flex items-start gap-3 p-3 border rounded-lg"
+                  className="flex items-start gap-3 p-3.5 border border-slate-800 bg-slate-950/60 rounded-xl hover:border-slate-700 transition-all"
                 >
-                  <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Award className="h-4 w-4 text-yellow-600" />
+                  <div className="w-8 h-8 bg-amber-500/20 border border-amber-500/30 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <Award className="h-4 w-4 text-amber-400" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-sm">{achievement.title}</h3>
-                    <p className="text-xs text-muted-foreground">{achievement.description}</p>
-                    <span className="text-xs text-muted-foreground">{achievement.date}</span>
+                    <h3 className="font-semibold text-sm text-white">{achievement.title}</h3>
+                    <p className="text-xs text-slate-400">{achievement.description}</p>
+                    <span className="text-[11px] text-slate-500">{achievement.date}</span>
                   </div>
                 </motion.div>
               ))}
@@ -370,15 +370,20 @@ export const RealTimeCareerDashboard: React.FC = () => {
       </div>
 
       {/* Career Opportunities */}
-      <Card>
+      <Card className="bg-slate-900/90 border-slate-800 text-slate-100 shadow-xl">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <Briefcase className="h-5 w-5" />
+            <CardTitle className="flex items-center gap-2 text-white text-base">
+              <Briefcase className="h-5 w-5 text-cyan-400" />
               AI-Matched Career Opportunities
             </CardTitle>
-            <Button variant="outline" size="sm">
-              View All
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => window.location.href = '/jobs'}
+              className="border-slate-800 bg-slate-950 text-cyan-300 hover:bg-slate-800 text-xs"
+            >
+              View All in Index
               <ArrowRight className="h-3 w-3 ml-1" />
             </Button>
           </div>
@@ -391,31 +396,35 @@ export const RealTimeCareerDashboard: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="p-4 border rounded-lg hover:shadow-md transition-shadow"
+                className="p-4 border border-slate-800 bg-slate-950/70 rounded-xl hover:border-slate-700 transition-all"
               >
                 <div className="space-y-3">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="font-semibold text-sm">{opportunity.title}</h3>
-                      <p className="text-sm text-muted-foreground">{opportunity.company}</p>
+                      <h3 className="font-semibold text-sm text-white">{opportunity.title}</h3>
+                      <p className="text-xs text-slate-400">{opportunity.company}</p>
                     </div>
-                    <Badge variant="secondary" className="bg-green-100 text-green-800">
+                    <Badge className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold">
                       {opportunity.match}% match
                     </Badge>
                   </div>
                   
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Salary:</span>
-                      <span className="font-medium">{opportunity.salary}</span>
+                  <div className="space-y-1 text-xs">
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">Salary:</span>
+                      <span className="font-semibold text-slate-200">{opportunity.salary}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Location:</span>
-                      <span>{opportunity.location}</span>
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">Location:</span>
+                      <span className="text-slate-300">{opportunity.location}</span>
                     </div>
                   </div>
                   
-                  <Button size="sm" className="w-full">
+                  <Button 
+                    size="sm" 
+                    onClick={() => window.location.href = '/jobs'}
+                    className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-xs"
+                  >
                     View Details
                   </Button>
                 </div>
