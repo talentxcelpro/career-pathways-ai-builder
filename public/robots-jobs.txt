@@ -84,3 +84,4 @@ Disallow: /*?*page=
 Disallow: /*?*utm_
 
 Sitemap: https://jobs.talentxcel.in/sitemap.xml
+Sitemap: https://jobs.talentxcel.in/sitemap-jobs.xml

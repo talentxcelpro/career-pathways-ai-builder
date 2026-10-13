@@ -61,3 +61,4 @@ Disallow: /*?*page=
 Disallow: /*?*utm_
 
 Sitemap: https://learning.talentxcel.in/sitemap.xml
+Sitemap: https://learning.talentxcel.in/sitemap-learning.xml

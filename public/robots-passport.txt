@@ -68,3 +68,4 @@ Disallow: /*?*page=
 Disallow: /*?*utm_
 
 Sitemap: https://passport.talentxcel.in/sitemap.xml
+Sitemap: https://passport.talentxcel.in/sitemap-passport.xml

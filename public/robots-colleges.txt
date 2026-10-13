@@ -60,3 +60,4 @@ Disallow: /*?*page=
 Disallow: /*?*utm_
 
 Sitemap: https://colleges.talentxcel.in/sitemap.xml
+Sitemap: https://colleges.talentxcel.in/sitemap-colleges.xml

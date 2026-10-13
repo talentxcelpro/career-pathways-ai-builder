@@ -62,3 +62,4 @@ Disallow: /*?*page=
 Disallow: /*?*utm_
 
 Sitemap: https://employers.talentxcel.in/sitemap.xml
+Sitemap: https://employers.talentxcel.in/sitemap-employers.xml
