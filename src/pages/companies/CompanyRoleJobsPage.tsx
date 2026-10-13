@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/integrations/supabase/client';
 import { JobCard } from '@/components/jobs/JobCard';
@@ -41,6 +41,11 @@ export default function CompanyRoleJobsPage() {
   const companySlug = (params.company || params.slug || 'salesforce').toLowerCase().trim();
   const roleSlug = (params.role || '').toLowerCase().trim();
   const citySlug = (params.city || '').toLowerCase().trim();
+
+  // Dedicated Google Sitelink redirect: /company/salesforce/jobs/data-engineer -> /career-insights
+  if (companySlug === 'salesforce' && roleSlug === 'data-engineer') {
+    return <Navigate to="/career-insights" replace />;
+  }
 
   const companyName = companySlug
     .replace(/-/g, ' ')

@@ -209,6 +209,26 @@ async function prerender() {
       `,
     },
     {
+      route: '/career-insights',
+      title: 'AI Career Operating System & Career Insights — Global Tech Telemetry | TalentXcel',
+      desc: 'The AI Career Operating System: Benchmark compensation bands, explore 245+ verified industry sectors, tax arbitrage telemetry, and career progression intelligence across US, Dubai, Europe, and India.',
+      h1: 'AI Career Operating System & Progression Terminal',
+      bodyHtml: `
+        <div class="space-y-8">
+          <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+            <h2 class="text-xl font-bold text-white mb-2">AI Career Operating System &amp; Industry Telemetry</h2>
+            <p class="text-slate-300 text-sm leading-relaxed mb-4">Empowering modern professionals with real-time compensation intelligence, cross-border tax arbitrage calculators, and industry telemetry across 245+ sectors in the United States, Dubai, Europe, and India.</p>
+            <div class="flex flex-wrap gap-2 text-xs">
+              <a href="/career-insights?region=us" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">United States Market</a>
+              <a href="/career-insights?region=ae" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">Dubai &amp; UAE Corridor</a>
+              <a href="/career-insights?region=eu" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">Europe &amp; UK Market</a>
+              <a href="/career-insights?region=in" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">India Tech Ecosystem</a>
+            </div>
+          </section>
+        </div>
+      `,
+    },
+    {
       route: '/reels',
       title: 'TalentXcel Reels — Global Tech, AI & Career Stories',
       desc: 'Watch short-form video stories, system design deep-dives, RAG AI architectures, and salary negotiation strategies from verified tech leaders worldwide across UAE, Europe, Americas, and Asia.',
@@ -597,7 +617,6 @@ async function prerender() {
   // 1b. Pre-render High-Demand Company Role Hubs (e.g. /company/salesforce/jobs/data-engineer)
   console.log('Pre-rendering Company Role Hubs...');
   const companyRolePages = [
-    { companySlug: 'salesforce', companyName: 'Salesforce', roleSlug: 'data-engineer', roleTitle: 'Data Engineer', salaryMin: '₹16L', salaryMax: '₹38L', skills: ['Python', 'SQL', 'Apache Spark', 'Kafka', 'Snowflake', 'Salesforce Data Cloud'] },
     { companySlug: 'salesforce', companyName: 'Salesforce', roleSlug: 'software-engineer', roleTitle: 'Software Engineer', salaryMin: '₹15L', salaryMax: '₹36L', skills: ['Java', 'Python', 'React', 'Apex', 'Lightning Web Components', 'AWS'] },
     { companySlug: 'google', companyName: 'Google', roleSlug: 'software-engineer', roleTitle: 'Software Engineer', salaryMin: '₹22L', salaryMax: '₹55L', skills: ['C++', 'Python', 'Java', 'Distributed Systems', 'GCP', 'Kubernetes'] },
     { companySlug: 'microsoft', companyName: 'Microsoft', roleSlug: 'software-engineer', roleTitle: 'Software Engineer', salaryMin: '₹18L', salaryMax: '₹45L', skills: ['C#', '.NET Core', 'Azure', 'TypeScript', 'Distributed Systems', 'SQL'] },
@@ -652,6 +671,28 @@ async function prerender() {
       jsonLd: [breadcrumbSchema, webPageSchema],
     });
   }
+
+  // 1c. Pre-render Google Sitelink Redirect: /company/salesforce/jobs/data-engineer -> /career-insights
+  console.log('Pre-rendering Google Sitelink Redirect: /company/salesforce/jobs/data-engineer -> /career-insights...');
+  const sfRedirectHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="refresh" content="0; url=https://talentxcel.in/career-insights">
+  <link rel="canonical" href="https://talentxcel.in/career-insights">
+  <title>AI Career Operating System & Career Insights — TalentXcel</title>
+</head>
+<body>
+  <p>Redirecting to <a href="https://talentxcel.in/career-insights">AI Career Operating System & Career Insights</a>...</p>
+  <script>window.location.replace("https://talentxcel.in/career-insights");</script>
+</body>
+</html>`;
+
+  const sfRedirectDir = path.join(DIST_DIR, 'company', 'salesforce', 'jobs', 'data-engineer');
+  fs.mkdirSync(sfRedirectDir, { recursive: true });
+  fs.writeFileSync(path.join(sfRedirectDir, 'index.html'), sfRedirectHtml, 'utf8');
+  fs.writeFileSync(path.join(DIST_DIR, 'company', 'salesforce', 'jobs', 'data-engineer.html'), sfRedirectHtml, 'utf8');
+  generatedCount++;
 
   // 2. Pre-render All 10 Strategic Services
   console.log('Pre-rendering 10 Strategic Service Pages...');

@@ -89,6 +89,26 @@
       "permanent": true
     },
     {
+      "source": "/company/salesforce/jobs/data-engineer",
+      "destination": "https://talentxcel.in/career-insights",
+      "permanent": true
+    },
+    {
+      "source": "/company/salesforce/jobs/data-engineer/",
+      "destination": "https://talentxcel.in/career-insights",
+      "permanent": true
+    },
+    {
+      "source": "/ai-career-operating-system",
+      "destination": "https://talentxcel.in/career-insights",
+      "permanent": true
+    },
+    {
+      "source": "/career-operating-system",
+      "destination": "https://talentxcel.in/career-insights",
+      "permanent": true
+    },
+    {
       "source": "/job/:path*",
       "destination": "https://talentxcel.in/jobs/:path*",
       "permanent": true

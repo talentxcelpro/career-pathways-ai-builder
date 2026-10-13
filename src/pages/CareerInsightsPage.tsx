@@ -335,9 +335,9 @@ export default function CareerInsightsPage() {
   return (
     <>
       <SEOHead
-        title={`Career Insights & Industry Research | ${activeProfile.label} Tech Telemetry | TalentXcel`}
-        description={`Regional career intelligence, compensation bands, and 245+ industry research profiles for ${activeProfile.label}. Benchmark tech salaries and explore hiring trends.`}
-        canonical={formatCanonicalUrl(`/career-insights?region=${selectedRegion.toLowerCase()}`, 'talentxcel.in')}
+        title={`AI Career Operating System & Career Insights | ${activeProfile.label} Tech Telemetry | TalentXcel`}
+        description={`The AI Career Operating System: Regional career intelligence, progression algorithms, compensation bands, and 245+ industry research profiles for ${activeProfile.label}.`}
+        canonical={formatCanonicalUrl(`/career-insights${selectedRegion !== 'IN' ? `?region=${selectedRegion.toLowerCase()}` : ''}`, 'talentxcel.in')}
         type="website"
       />
 
@@ -390,7 +390,7 @@ export default function CareerInsightsPage() {
               <div className="flex items-center gap-2.5">
                 <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs font-semibold tracking-wider uppercase backdrop-blur-md">
                   <Sparkles className="h-3.5 w-3.5 text-cyan-400" />
-                  Regional Career &amp; Industry Intelligence Terminal
+                  AI Career Operating System • Regional Industry Terminal
                 </span>
                 <span className="text-slate-500 text-xs hidden sm:inline">•</span>
                 <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
