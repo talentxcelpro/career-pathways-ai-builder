@@ -217,7 +217,45 @@ export class IndianEducationService {
    * Get single institution by ID or slug
    */
   public getInstitutionById(id: string): IndianInstitution | undefined {
-    return this.catalog.find((i) => i.id === id || i.slug === id);
+    if (!id) return undefined;
+    const cleanId = id.toLowerCase().trim();
+    return this.catalog.find(
+      (i) => (i.id && i.id.toLowerCase() === cleanId) || (i.slug && i.slug.toLowerCase() === cleanId)
+    );
+  }
+
+  /**
+   * Get single institution by slug or ID
+   */
+  public getInstitutionBySlug(slug: string): IndianInstitution | undefined {
+    if (!slug) return undefined;
+    const cleanSlug = slug.toLowerCase().trim();
+    return this.catalog.find(
+      (i) => (i.slug && i.slug.toLowerCase() === cleanSlug) || (i.id && i.id.toLowerCase() === cleanSlug)
+    );
+  }
+
+  /**
+   * Get catalog stats summary for autonomous agents and tools
+   */
+  public async getCatalogStats(): Promise<{
+    total: number;
+    byState: Record<string, number>;
+    byCategory: Record<string, number>;
+  }> {
+    const byState: Record<string, number> = {};
+    const byCategory: Record<string, number> = {};
+    for (const inst of this.catalog) {
+      const state = inst.location?.state || 'Other';
+      byState[state] = (byState[state] || 0) + 1;
+      const cat = inst.category || 'other';
+      byCategory[cat] = (byCategory[cat] || 0) + 1;
+    }
+    return {
+      total: this.catalog.length,
+      byState,
+      byCategory,
+    };
   }
 
   /**
