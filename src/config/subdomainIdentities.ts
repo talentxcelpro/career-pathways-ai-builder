@@ -429,25 +429,26 @@ export const SUBDOMAIN_IDENTITIES: Record<string, SubdomainIdentity> = {
     hostname: 'salary.talentxcel.in',
     origin: 'https://salary.talentxcel.in',
     audience: 'Professionals, jobseekers and people researching compensation.',
-    headline: 'Know Your Worth. Negotiate with Confidence.',
-    supportingCopy: 'Explore salary benchmarks, compare compensation and prepare for your next career or salary negotiation.',
-    primaryCta: 'Explore Salary Insights',
-    primaryCtaUrl: '/tools/salary-analyzer',
-    secondaryCta: 'Software Engineer Pay',
+    headline: 'Know Your Market Value. Discover Your Next Career Move.',
+    supportingCopy: 'Understand your compensation, explore career opportunities and make better-informed decisions about your earning potential with personalised salary intelligence.',
+    primaryCta: 'Discover My Market Value',
+    primaryCtaUrl: '/salary',
+    secondaryCta: 'Explore Salary Insights',
     secondaryCtaUrl: '/salary/software-engineer/bangalore',
-    title: 'TalentXcel Salary — Know Your Worth. Negotiate with Confidence.',
-    description: 'Explore salary benchmarks, compare compensation and prepare for your next career or salary negotiation. Transparent percentiles, location differentials and role insights.',
-    h1: 'Know Your Worth. Negotiate with Confidence.',
-    tagline: 'Market Percentiles (P25 - P90) • Location Differentials • Verified Offer Data',
+    title: 'TalentXcel Salary Intelligence — Know Your Market Value. Discover Your Next Career Move.',
+    description: 'Understand your compensation, explore career opportunities and make better-informed decisions about your earning potential with personalised salary intelligence. Verified percentiles, location differentials and role insights.',
+    h1: 'Know Your Market Value. Discover Your Next Career Move.',
+    tagline: 'Market Percentiles (P10 - P90) • What-If Simulator • Negotiation Coach • Verified CTC Data',
     keywords: [
       'salary benchmarks india',
       'software engineer salary bangalore',
       'tech compensation percentiles',
       'salary negotiation tool',
       'it salary calculator',
+      'ctc to in hand calculator india',
     ],
     canonical: 'https://salary.talentxcel.in/',
-    disclaimer: 'Salary benchmarks and distributions are derived from verified employer filings, self-reported compensation data, and market statistics. Figures represent statistical estimates.',
+    disclaimer: 'Salary benchmarks and distributions are derived from verified employer filings, active job postings, self-reported compensation data, and statistical distributions. Figures represent statistical estimates.',
     schemaType: 'WebApplication',
     schemaJsonLd: {
       '@context': 'https://schema.org',
@@ -456,7 +457,7 @@ export const SUBDOMAIN_IDENTITIES: Record<string, SubdomainIdentity> = {
       'url': 'https://salary.talentxcel.in/',
       'applicationCategory': 'BusinessApplication',
       'operatingSystem': 'All',
-      'description': 'Explore salary benchmarks, compare compensation and prepare for your next career or salary negotiation.',
+      'description': 'Understand your compensation, explore career opportunities and make better-informed decisions about your earning potential with personalised salary intelligence.',
       'parentOrganization': {
         '@type': 'Organization',
         'name': 'TalentXcel',
@@ -464,26 +465,28 @@ export const SUBDOMAIN_IDENTITIES: Record<string, SubdomainIdentity> = {
       }
     },
     featuredInternalLinks: [
-      { text: 'Interactive Salary Analyzer', href: '/tools/salary-analyzer' },
+      { text: 'Salary Intelligence & Benchmarks', href: '/salary' },
+      { text: 'Career What-If Simulator', href: '/salary/scenarios' },
+      { text: 'Salary Negotiation Coach', href: '/salary/negotiation' },
+      { text: 'Skills Gap Diagnostics', href: '/salary/skills-gap' },
       { text: 'Software Engineer Salary in Bangalore', href: '/salary/software-engineer/bangalore' },
       { text: 'Data Analyst Salary in Hyderabad', href: '/salary/data-analyst/hyderabad' },
-      { text: 'DevOps Engineer Salary in India', href: '/salary/devops-engineer/india' },
-      { text: 'Cloud Architect Pay Scale', href: '/salary/devops-engineer/pune' },
     ],
     siblingDomainCrossLinks: [
       { text: 'Search Matching Jobs on TalentXcel Jobs', href: 'https://jobs.talentxcel.in/' },
       { text: 'Optimize Your Resume on TalentXcel Resume', href: 'https://resume.talentxcel.in/' },
       { text: 'Map Skills to Higher Pay on TalentXcel Careers', href: 'https://careers.talentxcel.in/' },
+      { text: 'Learn In-Demand Skills on TalentXcel Learning', href: 'https://learning.talentxcel.in/' },
     ],
     staticHeroHtml: `
       <section class="tx-subdomain-hero" style="max-width:1100px;margin:0 auto;padding:40px 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#e2e8f0;">
         <span style="display:inline-block;padding:4px 12px;background:#0369a1;color:#e0f2fe;font-size:0.8rem;font-weight:700;border-radius:9999px;margin-bottom:14px;text-transform:uppercase;letter-spacing:0.05em;">For Professionals, Jobseekers & Compensation Researchers</span>
-        <h1 style="font-size:2.25rem;font-weight:800;color:#f8fafc;margin-bottom:12px;line-height:1.2;">Know Your Worth. Negotiate with Confidence.</h1>
-        <p style="font-size:1.1rem;color:#94a3b8;margin-bottom:24px;line-height:1.6;">Explore salary benchmarks, compare compensation and prepare for your next career or salary negotiation.</p>
+        <h1 style="font-size:2.25rem;font-weight:800;color:#f8fafc;margin-bottom:12px;line-height:1.2;">Know Your Market Value. Discover Your Next Career Move.</h1>
+        <p style="font-size:1.1rem;color:#94a3b8;margin-bottom:24px;line-height:1.6;">Understand your compensation, explore career opportunities and make better-informed decisions about your earning potential with personalised salary intelligence.</p>
         <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
-          <a href="/tools/salary-analyzer" style="background:#0284c7;color:#ffffff;padding:10px 22px;border-radius:8px;text-decoration:none;font-weight:700;font-size:0.95rem;">Explore Salary Insights</a>
-          <a href="/salary/software-engineer/bangalore" style="background:#1e293b;color:#38bdf8;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:0.9rem;border:1px solid #334155;">Software Engineer (Bangalore)</a>
-          <a href="/salary/data-analyst/hyderabad" style="background:#1e293b;color:#38bdf8;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:0.9rem;border:1px solid #334155;">Data Analyst (Hyderabad)</a>
+          <a href="/salary" style="background:#0284c7;color:#ffffff;padding:10px 22px;border-radius:8px;text-decoration:none;font-weight:700;font-size:0.95rem;">Discover My Market Value</a>
+          <a href="/salary/software-engineer/bangalore" style="background:#1e293b;color:#38bdf8;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:0.9rem;border:1px solid #334155;">Explore Salary Insights</a>
+          <a href="/salary/scenarios" style="background:#1e293b;color:#38bdf8;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:0.9rem;border:1px solid #334155;">What-If Simulator</a>
         </div>
         <p style="font-size:0.8rem;color:#64748b;margin-top:16px;">Notice: Benchmarks are based on verified market distributions, employer filings, and statistical estimates.</p>
       </section>

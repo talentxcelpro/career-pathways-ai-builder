@@ -453,6 +453,15 @@ const App = () => {
                                     <>
                                       <Route path="/" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Salary Analyzer...</div>}><SalaryAnalyzer /></Suspense>} />
                                       <Route path="/salary" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Salary Analyzer...</div>}><SalaryAnalyzer /></Suspense>} />
+                                      <Route path="/salary/scenarios" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading What-If Simulator...</div>}><SalaryAnalyzer defaultTab="scenarios" /></Suspense>} />
+                                      <Route path="/salary/negotiation" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Negotiation Coach...</div>}><SalaryAnalyzer defaultTab="negotiation" /></Suspense>} />
+                                      <Route path="/salary/goals" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Salary Goals...</div>}><SalaryAnalyzer defaultTab="goals" /></Suspense>} />
+                                      <Route path="/salary/skills-gap" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Skills Gap...</div>}><SalaryAnalyzer defaultTab="skills-gap" /></Suspense>} />
+                                      <Route path="/salary/jobs" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Matching Jobs...</div>}><SalaryAnalyzer defaultTab="jobs" /></Suspense>} />
+                                      <Route path="/scenarios" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading What-If Simulator...</div>}><SalaryAnalyzer defaultTab="scenarios" /></Suspense>} />
+                                      <Route path="/negotiation" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Negotiation Coach...</div>}><SalaryAnalyzer defaultTab="negotiation" /></Suspense>} />
+                                      <Route path="/goals" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Salary Goals...</div>}><SalaryAnalyzer defaultTab="goals" /></Suspense>} />
+                                      <Route path="/skills-gap" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Skills Gap...</div>}><SalaryAnalyzer defaultTab="skills-gap" /></Suspense>} />
                                       <Route path="/salary/:role" element={<Suspense fallback={<div>Loading Salary Guide...</div>}><SalaryGuidePage /></Suspense>} />
                                       <Route path="/salary/:role/:location" element={<Suspense fallback={<div>Loading Salary Guide...</div>}><SalaryGuidePage /></Suspense>} />
                                       <Route path="/analyzer" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Salary Analyzer...</div>}><SalaryAnalyzer /></Suspense>} />
@@ -488,6 +497,11 @@ const App = () => {
 
                 {/* Universal Product Hub Routes (Accessible on CORE domain, localhost, and cross-subdomain) */}
                 <Route path="/salary" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Salary Analyzer...</div>}><SalaryAnalyzer /></Suspense>} />
+                <Route path="/salary/scenarios" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading What-If Simulator...</div>}><SalaryAnalyzer defaultTab="scenarios" /></Suspense>} />
+                <Route path="/salary/negotiation" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Negotiation Coach...</div>}><SalaryAnalyzer defaultTab="negotiation" /></Suspense>} />
+                <Route path="/salary/goals" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Salary Goals...</div>}><SalaryAnalyzer defaultTab="goals" /></Suspense>} />
+                <Route path="/salary/skills-gap" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Skills Gap...</div>}><SalaryAnalyzer defaultTab="skills-gap" /></Suspense>} />
+                <Route path="/salary/jobs" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Matching Jobs...</div>}><SalaryAnalyzer defaultTab="jobs" /></Suspense>} />
                 <Route path="/salary/:role" element={<Suspense fallback={<div>Loading Salary Guide...</div>}><SalaryGuidePage /></Suspense>} />
                 <Route path="/salary/:role/:location" element={<Suspense fallback={<div>Loading Salary Guide...</div>}><SalaryGuidePage /></Suspense>} />
                 <Route path="/analyzer" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Salary Analyzer...</div>}><SalaryAnalyzer /></Suspense>} />

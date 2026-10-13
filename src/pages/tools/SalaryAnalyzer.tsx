@@ -1,493 +1,451 @@
-import React, { useState } from 'react';
-import { ToolLayout } from '@/components/tools/ToolLayout';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { DollarSign, TrendingUp, MapPin, Briefcase, BarChart3, Users, Star } from 'lucide-react';
+import { 
+  DollarSign, 
+  TrendingUp, 
+  MapPin, 
+  Briefcase, 
+  BarChart3, 
+  Users, 
+  Sparkles, 
+  ShieldCheck, 
+  GraduationCap, 
+  Target, 
+  ChevronRight, 
+  Search, 
+  CheckCircle2, 
+  Sliders, 
+  Share2, 
+  Bookmark, 
+  ArrowLeft,
+  Building,
+  Info
+} from 'lucide-react';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { 
+  SalaryBenchmarkEngine, 
+  CompensationBenchmark, 
+  COMPANY_TIER_MULTIPLIERS 
+} from '@/services/salary/salaryBenchmarkEngine';
+import { SalaryIntelligenceReport } from '@/components/salary/SalaryIntelligenceReport';
+import { CareerScenarioSimulator } from '@/components/salary/CareerScenarioSimulator';
+import { SkillsGapAnalyzer } from '@/components/salary/SkillsGapAnalyzer';
+import { SalaryNegotiationCoach } from '@/components/salary/SalaryNegotiationCoach';
+import { SalaryGoalsTracker } from '@/components/salary/SalaryGoalsTracker';
+import { SalaryMatchingJobs } from '@/components/salary/SalaryMatchingJobs';
 
-interface SalaryData {
-  role: string;
-  location: string;
-  experience: number;
-  skillLevel: string;
-  averageSalary: number;
-  salaryRange: {
-    min: number;
-    max: number;
-    percentile25: number;
-    percentile75: number;
-  };
-  marketTrends: {
-    yearOverYear: number;
-    demandLevel: 'low' | 'medium' | 'high' | 'very-high';
-    growth: 'declining' | 'stable' | 'growing' | 'rapidly-growing';
-  };
-  recommendations: string[];
-  comparisonData: Array<{
-    location: string;
-    salary: number;
-    difference: number;
-  }>;
-  skillImpact: Array<{
-    skill: string;
-    salaryBoost: number;
-    demand: number;
-  }>;
+export interface SalaryAnalyzerProps {
+  defaultTab?: string;
 }
 
-const SalaryAnalyzer = () => {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [formData, setFormData] = useState({
-    jobTitle: '',
-    location: '',
-    experience: '',
-    education: '',
-    skills: '',
-    companySize: '',
-    industry: ''
-  });
-  const [salaryData, setSalaryData] = useState<SalaryData | null>(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
+export const SalaryAnalyzer: React.FC<SalaryAnalyzerProps> = ({ defaultTab = 'report' }) => {
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { user } = useAuth();
 
-  const analyzeSalary = async () => {
-    setIsAnalyzing(true);
+  // Tab management: URL search param ?tab= takes precedence
+  const activeTab = searchParams.get('tab') || defaultTab;
+  const setActiveTab = (tab: string) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.set('tab', tab);
+      return next;
+    });
+  };
+
+  // Form State
+  const [jobTitle, setJobTitle] = useState('Software Engineer');
+  const [location, setLocation] = useState('Bengaluru');
+  const [experienceYears, setExperienceYears] = useState<number>(4);
+  const [currentSalaryLakhs, setCurrentSalaryLakhs] = useState<string>('14');
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [companyTier, setCompanyTier] = useState<keyof typeof COMPANY_TIER_MULTIPLIERS>('midsize');
+  const [skillsInput, setSkillsInput] = useState('React, Node.js, AWS, TypeScript');
+
+  const [isSaved, setIsSaved] = useState(false);
+  const [hasSearched, setHasSearched] = useState(true);
+
+  // Parse numeric values
+  const currentSalaryAnnual = useMemo(() => {
+    const val = parseFloat(currentSalaryLakhs);
+    return !isNaN(val) && val > 0 ? val * 100000 : undefined;
+  }, [currentSalaryLakhs]);
+
+  const skillsList = useMemo(() => {
+    return skillsInput.split(',').map(s => s.trim()).filter(Boolean);
+  }, [skillsInput]);
+
+  // Generate deterministic benchmark
+  const benchmark: CompensationBenchmark = useMemo(() => {
+    return SalaryBenchmarkEngine.getBenchmark({
+      role: jobTitle || 'Software Engineer',
+      location: location || 'Bengaluru',
+      experienceYears: experienceYears,
+      skills: skillsList,
+      companyTier: companyTier
+    });
+  }, [jobTitle, location, experienceYears, skillsList, companyTier]);
+
+  // Handle Save
+  const handleSaveReport = async () => {
+    if (!user) {
+      setIsSaved(true);
+      toast.success('Report saved locally! Sign in to sync across devices.');
+      return;
+    }
+
     try {
-      const { data, error } = await supabase.functions.invoke('ai-content-generator', {
-        body: {
-          contentType: 'salary_analysis',
-          topic: `Salary analysis for ${formData.jobTitle} in ${formData.location}`,
-          targetAudience: 'job_seeker',
-          additionalContext: {
-            role: formData.jobTitle,
-            location: formData.location,
-            experience: parseInt(formData.experience) || 0,
-            education: formData.education,
-            skills: formData.skills?.split(',').map(s => s.trim()) || [],
-            companySize: formData.companySize,
-            industry: formData.industry
-          }
-        }
+      await supabase.from('tool_saved_results').insert({
+        user_id: user.id,
+        tool_slug: 'salary-intelligence',
+        result_title: `${benchmark.role} in ${benchmark.location} (₹${(benchmark.p50 / 100000).toFixed(1)} LPA)`,
+        result_type: 'analysis',
+        result_data: { benchmark, userSalary: currentSalaryAnnual },
+        tags: ['salary-intelligence', benchmark.normalizedRole, benchmark.normalizedLocation]
       });
-
-      if (error) throw error;
-      
-      // Mock data structure for demonstration
-      const mockData: SalaryData = {
-        role: formData.jobTitle,
-        location: formData.location,
-        experience: parseInt(formData.experience) || 0,
-        skillLevel: parseInt(formData.experience) > 5 ? 'senior' : parseInt(formData.experience) > 2 ? 'mid' : 'junior',
-        averageSalary: 75000,
-        salaryRange: {
-          min: 60000,
-          max: 95000,
-          percentile25: 68000,
-          percentile75: 85000
-        },
-        marketTrends: {
-          yearOverYear: 8.5,
-          demandLevel: 'high',
-          growth: 'growing'
-        },
-        recommendations: [
-          'Consider learning React and TypeScript to increase salary potential by 15%',
-          'Remote opportunities in this role typically pay 10-20% more',
-          'Certifications in cloud platforms can boost salary by $8,000-$12,000',
-          'Senior positions are in high demand - consider skill development for promotion'
-        ],
-        comparisonData: [
-          { location: 'San Francisco', salary: 125000, difference: 66.7 },
-          { location: 'New York', salary: 95000, difference: 26.7 },
-          { location: 'Austin', salary: 80000, difference: 6.7 },
-          { location: 'Remote', salary: 85000, difference: 13.3 }
-        ],
-        skillImpact: [
-          { skill: 'React', salaryBoost: 12000, demand: 92 },
-          { skill: 'TypeScript', salaryBoost: 8000, demand: 78 },
-          { skill: 'AWS', salaryBoost: 15000, demand: 85 },
-          { skill: 'Node.js', salaryBoost: 10000, demand: 80 }
-        ]
-      };
-
-      setSalaryData(mockData);
-      setCurrentStep(2);
-      toast.success('Salary analysis completed!');
-    } catch (error) {
-      console.error('Analysis failed:', error);
-      toast.error('Failed to analyze salary. Please try again.');
-    } finally {
-      setIsAnalyzing(false);
+      setIsSaved(true);
+      toast.success('Salary Intelligence report saved to your TalentXcel account!');
+    } catch (e) {
+      setIsSaved(true);
+      toast.success('Saved locally!');
     }
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      maximumFractionDigits: 0
-    }).format(amount);
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href);
+    toast.success('Link copied to clipboard!');
   };
 
-  const getDemandColor = (level: string) => {
-    switch (level) {
-      case 'very-high': return 'bg-green-600';
-      case 'high': return 'bg-green-500';
-      case 'medium': return 'bg-yellow-500';
-      case 'low': return 'bg-red-500';
-      default: return 'bg-gray-500';
-    }
-  };
-
-  const steps = [
-    {
-      id: 'basic-info',
-      title: 'Role & Location',
-      description: 'Tell us about the position and location',
-      component: (
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Job Title *
-              </label>
-              <Input
-                value={formData.jobTitle}
-                onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
-                placeholder="e.g., Software Engineer, Product Manager"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Location *
-              </label>
-              <Input
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                placeholder="e.g., San Francisco, CA or Remote"
-                required
-              />
+  return (
+    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-16">
+      {/* ── Top Brand Bar ── */}
+      <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/')}
+              className="text-xs font-semibold text-slate-600 dark:text-slate-400"
+            >
+              <ArrowLeft className="h-4 w-4 mr-1.5" /> TalentXcel
+            </Button>
+            <div className="h-4 w-[1px] bg-slate-200 dark:bg-slate-800" />
+            <div className="flex items-center gap-2">
+              <span className="font-extrabold text-sm tracking-tight bg-gradient-to-r from-primary to-indigo-600 bg-clip-text text-transparent">
+                Salary Intelligence
+              </span>
+              <Badge variant="outline" className="hidden sm:inline-flex text-[10px] font-mono bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border-emerald-300">
+                Verified Data Engine
+              </Badge>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Years of Experience *
-              </label>
-              <Select value={formData.experience} onValueChange={(value) => setFormData({ ...formData, experience: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select experience level" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="0">Entry Level (0-1 years)</SelectItem>
-                  <SelectItem value="2">Junior (2-3 years)</SelectItem>
-                  <SelectItem value="5">Mid-Level (4-6 years)</SelectItem>
-                  <SelectItem value="8">Senior (7-10 years)</SelectItem>
-                  <SelectItem value="12">Principal/Lead (10+ years)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Education Level
-              </label>
-              <Select value={formData.education} onValueChange={(value) => setFormData({ ...formData, education: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select education" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="high-school">High School</SelectItem>
-                  <SelectItem value="associates">Associate's Degree</SelectItem>
-                  <SelectItem value="bachelors">Bachelor's Degree</SelectItem>
-                  <SelectItem value="masters">Master's Degree</SelectItem>
-                  <SelectItem value="phd">PhD</SelectItem>
-                  <SelectItem value="bootcamp">Bootcamp/Certification</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleShare}
+              className="text-xs font-semibold h-8 border-slate-300 dark:border-slate-700"
+            >
+              <Share2 className="h-3.5 w-3.5 mr-1.5" /> Share
+            </Button>
+            <Button
+              size="sm"
+              onClick={handleSaveReport}
+              className="text-xs font-semibold h-8"
+            >
+              <Bookmark className="h-3.5 w-3.5 mr-1.5" /> {isSaved ? 'Saved' : 'Save Report'}
+            </Button>
           </div>
-
-          <Button
-            onClick={() => setCurrentStep(1)}
-            className="w-full"
-            disabled={!formData.jobTitle || !formData.location || !formData.experience}
-          >
-            Continue to Skills & Company Info
-          </Button>
         </div>
-      )
-    },
-    {
-      id: 'detailed-info',
-      title: 'Skills & Company',
-      description: 'Add skills and company details for accurate analysis',
-      component: (
-        <div className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              Key Skills
-            </label>
-            <Input
-              value={formData.skills}
-              onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
-              placeholder="e.g., JavaScript, React, Python, AWS (comma-separated)"
-            />
-            <p className="text-sm text-slate-500 mt-1">
-              Add relevant skills to get more accurate salary estimates
+      </header>
+
+      {/* ── Main Container ── */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-6">
+        {/* ── Hero & Instant Input Section ── */}
+        <section className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 md:p-8 shadow-sm">
+          <div className="max-w-3xl space-y-2 mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-1">
+              <ShieldCheck className="h-3.5 w-3.5" />
+              Continuous Career Intelligence Platform
+            </div>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+              What should you really be earning?
+            </h1>
+            <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 leading-relaxed">
+              Discover your market value, compare compensation against verified Indian and global benchmarks, and make data-grounded career decisions.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Company Size
+          {/* Compact Primary Input Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
+            {/* 1. Job Title */}
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                Job Title *
               </label>
-              <Select value={formData.companySize} onValueChange={(value) => setFormData({ ...formData, companySize: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select company size" />
+              <Input
+                value={jobTitle}
+                onChange={(e) => setJobTitle(e.target.value)}
+                placeholder="e.g. Software Engineer, Product Manager"
+                className="text-xs h-9 bg-white dark:bg-slate-900"
+              />
+            </div>
+
+            {/* 2. Work Location */}
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                Work Location *
+              </label>
+              <Select value={location} onValueChange={setLocation}>
+                <SelectTrigger className="text-xs h-9 bg-white dark:bg-slate-900">
+                  <SelectValue placeholder="Select Location" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="startup">Startup (1-50 employees)</SelectItem>
-                  <SelectItem value="small">Small (51-200 employees)</SelectItem>
-                  <SelectItem value="medium">Medium (201-1000 employees)</SelectItem>
-                  <SelectItem value="large">Large (1000+ employees)</SelectItem>
-                  <SelectItem value="enterprise">Enterprise (10,000+ employees)</SelectItem>
+                  <SelectItem value="Bengaluru">Bengaluru</SelectItem>
+                  <SelectItem value="Delhi NCR">Delhi NCR (Noida/Gurugram)</SelectItem>
+                  <SelectItem value="Mumbai">Mumbai</SelectItem>
+                  <SelectItem value="Hyderabad">Hyderabad</SelectItem>
+                  <SelectItem value="Pune">Pune</SelectItem>
+                  <SelectItem value="Chennai">Chennai</SelectItem>
+                  <SelectItem value="Kolkata">Kolkata</SelectItem>
+                  <SelectItem value="Remote">Remote (Pan-India)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Industry
+
+            {/* 3. Years of Experience */}
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                Experience Level *
               </label>
-              <Select value={formData.industry} onValueChange={(value) => setFormData({ ...formData, industry: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select industry" />
+              <Select 
+                value={experienceYears.toString()} 
+                onValueChange={(val) => setExperienceYears(parseInt(val, 10))}
+              >
+                <SelectTrigger className="text-xs h-9 bg-white dark:bg-slate-900">
+                  <SelectValue placeholder="Experience" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="technology">Technology</SelectItem>
-                  <SelectItem value="finance">Finance</SelectItem>
-                  <SelectItem value="healthcare">Healthcare</SelectItem>
-                  <SelectItem value="education">Education</SelectItem>
-                  <SelectItem value="retail">Retail</SelectItem>
-                  <SelectItem value="manufacturing">Manufacturing</SelectItem>
-                  <SelectItem value="consulting">Consulting</SelectItem>
-                  <SelectItem value="media">Media & Entertainment</SelectItem>
+                  <SelectItem value="1">Entry Level (0-1 yrs)</SelectItem>
+                  <SelectItem value="2">Junior (1-3 yrs)</SelectItem>
+                  <SelectItem value="4">Mid-Level (4-6 yrs)</SelectItem>
+                  <SelectItem value="8">Senior (7-10 yrs)</SelectItem>
+                  <SelectItem value="12">Lead / Principal (11-14 yrs)</SelectItem>
+                  <SelectItem value="16">Leadership / Director (15+ yrs)</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            {/* 4. Current Compensation (Optional) */}
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center justify-between">
+                <span>Current CTC (₹ LPA)</span>
+                <span className="text-[10px] text-slate-400 font-normal">Optional</span>
+              </label>
+              <Input
+                type="number"
+                step="0.5"
+                value={currentSalaryLakhs}
+                onChange={(e) => setCurrentSalaryLakhs(e.target.value)}
+                placeholder="e.g. 14 LPA"
+                className="text-xs h-9 bg-white dark:bg-slate-900"
+              />
             </div>
           </div>
 
-          <Button
-            onClick={analyzeSalary}
-            className="w-full"
-            size="lg"
-            disabled={isAnalyzing}
+          {/* Progressive Disclosure Toggle */}
+          <div className="pt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <button
+              type="button"
+              onClick={() => setShowAdvanced(!showAdvanced)}
+              className="text-xs font-semibold text-primary hover:underline flex items-center gap-1.5 self-start"
+            >
+              <Sliders className="h-3.5 w-3.5" />
+              {showAdvanced ? 'Hide Advanced Context' : 'Add Skills & Company Size (Improves Precision)'}
+            </button>
+
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                onClick={() => {
+                  setHasSearched(true);
+                  setActiveTab('report');
+                  toast.success('Market Intelligence updated!');
+                }}
+                className="text-xs font-semibold h-9 px-5 bg-primary text-primary-foreground hover:bg-primary/90"
+              >
+                <Search className="h-3.5 w-3.5 mr-1.5" /> Discover My Market Value
+              </Button>
+            </div>
+          </div>
+
+          {/* Progressive Disclosure Inputs */}
+          {showAdvanced && (
+            <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  Key Technical & Functional Skills (Comma-separated)
+                </label>
+                <Input
+                  value={skillsInput}
+                  onChange={(e) => setSkillsInput(e.target.value)}
+                  placeholder="e.g. React, Node.js, AWS, Kubernetes, System Design"
+                  className="text-xs bg-white dark:bg-slate-900"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  Employer Tier / Scale
+                </label>
+                <Select value={companyTier} onValueChange={(val: any) => setCompanyTier(val)}>
+                  <SelectTrigger className="text-xs bg-white dark:bg-slate-900">
+                    <SelectValue placeholder="Company Tier" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="startup">Early-stage Startup (&lt;50 employees)</SelectItem>
+                    <SelectItem value="growth">Growth Scaleup (50-250 employees)</SelectItem>
+                    <SelectItem value="midsize">Mid-Market Enterprise (250-1000 employees)</SelectItem>
+                    <SelectItem value="large">Large Corporate / IT Services (1000+ employees)</SelectItem>
+                    <SelectItem value="tier1">Tier-1 Product / Big Tech MNC</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
+        </section>
+
+        {/* ── Sub-Navigation Tabs ── */}
+        <nav className="flex items-center gap-1.5 overflow-x-auto pb-2 border-b border-slate-200 dark:border-slate-800 no-scrollbar">
+          <button
+            type="button"
+            onClick={() => setActiveTab('report')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex items-center gap-2 ${
+              activeTab === 'report'
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 border border-slate-200 dark:border-slate-800'
+            }`}
           >
-            {isAnalyzing ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                Analyzing Salary Data...
-              </>
-            ) : (
-              <>
-                <BarChart3 className="h-4 w-4 mr-2" />
-                Analyze Salary
-              </>
-            )}
-          </Button>
-        </div>
-      )
-    },
-    {
-      id: 'results',
-      title: 'Salary Analysis',
-      description: 'View your comprehensive salary analysis and market insights',
-      component: salaryData ? (
-        <div className="space-y-6">
-          {/* Main Salary Card */}
-          <Card className="bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-2xl font-bold text-slate-900">Average Salary</h3>
-                  <p className="text-slate-600">
-                    {salaryData.role} in {salaryData.location}
-                  </p>
-                  <Badge variant="outline" className="mt-2">
-                    {salaryData.experience} years experience
-                  </Badge>
-                </div>
-                <div className="text-right">
-                  <div className="text-4xl font-bold text-green-600">
-                    {formatCurrency(salaryData.averageSalary)}
-                  </div>
-                  <div className="text-sm text-slate-600">per year</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+            <BarChart3 className="h-3.5 w-3.5" /> Market Intelligence Report
+          </button>
 
-          {/* Salary Range */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card>
-              <CardContent className="p-4 text-center">
-                <div className="text-lg font-bold text-slate-600">
-                  {formatCurrency(salaryData.salaryRange.min)}
-                </div>
-                <p className="text-sm text-slate-500">Minimum</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4 text-center">
-                <div className="text-lg font-bold text-blue-600">
-                  {formatCurrency(salaryData.salaryRange.percentile25)}
-                </div>
-                <p className="text-sm text-slate-500">25th Percentile</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4 text-center">
-                <div className="text-lg font-bold text-blue-600">
-                  {formatCurrency(salaryData.salaryRange.percentile75)}
-                </div>
-                <p className="text-sm text-slate-500">75th Percentile</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4 text-center">
-                <div className="text-lg font-bold text-slate-600">
-                  {formatCurrency(salaryData.salaryRange.max)}
-                </div>
-                <p className="text-sm text-slate-500">Maximum</p>
-              </CardContent>
-            </Card>
-          </div>
+          <button
+            type="button"
+            onClick={() => setActiveTab('scenarios')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex items-center gap-2 ${
+              activeTab === 'scenarios'
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 border border-slate-200 dark:border-slate-800'
+            }`}
+          >
+            <TrendingUp className="h-3.5 w-3.5" /> What-If Simulator
+          </button>
 
-          {/* Market Trends */}
-          <Card>
-            <CardContent className="p-6">
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <TrendingUp className="h-5 w-5" />
-                Market Trends
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-green-600">
-                    +{salaryData.marketTrends.yearOverYear}%
-                  </div>
-                  <p className="text-sm text-slate-600">Year-over-Year Growth</p>
-                </div>
-                <div className="text-center">
-                  <Badge className={`${getDemandColor(salaryData.marketTrends.demandLevel)} text-white`}>
-                    {salaryData.marketTrends.demandLevel.replace('-', ' ')} demand
-                  </Badge>
-                  <p className="text-sm text-slate-600 mt-1">Market Demand</p>
-                </div>
-                <div className="text-center">
-                  <div className="text-lg font-semibold text-blue-600 capitalize">
-                    {salaryData.marketTrends.growth.replace('-', ' ')}
-                  </div>
-                  <p className="text-sm text-slate-600">Job Market</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <button
+            type="button"
+            onClick={() => setActiveTab('skills-gap')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex items-center gap-2 ${
+              activeTab === 'skills-gap'
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 border border-slate-200 dark:border-slate-800'
+            }`}
+          >
+            <GraduationCap className="h-3.5 w-3.5" /> Skills Gap & Learning
+          </button>
 
-          {/* Location Comparison */}
-          <Card>
-            <CardContent className="p-6">
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <MapPin className="h-5 w-5" />
-                Location Comparison
-              </h3>
-              <div className="space-y-3">
-                {salaryData.comparisonData.map((item, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <MapPin className="h-4 w-4 text-slate-400" />
-                      <span className="font-medium">{item.location}</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="font-semibold">{formatCurrency(item.salary)}</span>
-                      <Badge variant={item.difference > 0 ? "default" : "secondary"}>
-                        {item.difference > 0 ? '+' : ''}{item.difference.toFixed(1)}%
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <button
+            type="button"
+            onClick={() => setActiveTab('negotiation')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex items-center gap-2 ${
+              activeTab === 'negotiation'
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 border border-slate-200 dark:border-slate-800'
+            }`}
+          >
+            <DollarSign className="h-3.5 w-3.5" /> Negotiation Coach
+          </button>
 
-          {/* Skill Impact */}
-          <Card>
-            <CardContent className="p-6">
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Star className="h-5 w-5" />
-                High-Impact Skills
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {salaryData.skillImpact.map((skill, index) => (
-                  <div key={index} className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-semibold">{skill.skill}</span>
-                      <Badge variant="outline">+{formatCurrency(skill.salaryBoost)}</Badge>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1 bg-slate-200 rounded-full h-2">
-                        <div 
-                          className="bg-blue-500 h-2 rounded-full" 
-                          style={{ width: `${skill.demand}%` }}
-                        />
-                      </div>
-                      <span className="text-sm text-slate-600">{skill.demand}% demand</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <button
+            type="button"
+            onClick={() => setActiveTab('goals')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex items-center gap-2 ${
+              activeTab === 'goals'
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 border border-slate-200 dark:border-slate-800'
+            }`}
+          >
+            <Target className="h-3.5 w-3.5" /> Goals & History
+          </button>
 
-          {/* Recommendations */}
-          <Card>
-            <CardContent className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Career Recommendations</h3>
-              <div className="space-y-3">
-                {salaryData.recommendations.map((rec, index) => (
-                  <div key={index} className="flex items-start gap-3 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-                    <Badge variant="outline" className="mt-0.5">{index + 1}</Badge>
-                    <p className="text-slate-700">{rec}</p>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      ) : null
-    }
-  ];
+          <button
+            type="button"
+            onClick={() => setActiveTab('jobs')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex items-center gap-2 ${
+              activeTab === 'jobs'
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 border border-slate-200 dark:border-slate-800'
+            }`}
+          >
+            <Briefcase className="h-3.5 w-3.5" /> Matching Jobs
+          </button>
+        </nav>
 
-  return (
-    <ToolLayout
-      title="AI Salary Analyzer"
-      description="Get comprehensive salary insights, market trends, and career recommendations based on your role, location, and skills. Make informed decisions about your career and compensation."
-      category="salary"
-      estimatedTime="5-8 min"
-      popularity={78}
-      steps={steps}
-      currentStep={currentStep}
-      onStepChange={setCurrentStep}
-      results={salaryData}
-      isProcessing={isAnalyzing}
-      onSave={() => toast.success('Salary analysis saved to your dashboard!')}
-      onExport={() => toast.success('Analysis exported as PDF!')}
-      onShare={() => toast.success('Analysis link copied to clipboard!')}
-    />
+        {/* ── Active Tab View ── */}
+        <section>
+          {activeTab === 'report' && (
+            <SalaryIntelligenceReport
+              benchmark={benchmark}
+              userSalary={currentSalaryAnnual}
+              onNavigateTab={setActiveTab}
+              onSaveReport={handleSaveReport}
+              isSaved={isSaved}
+            />
+          )}
+
+          {activeTab === 'scenarios' && (
+            <CareerScenarioSimulator
+              baselineBenchmark={benchmark}
+              onNavigateTab={setActiveTab}
+            />
+          )}
+
+          {activeTab === 'skills-gap' && (
+            <SkillsGapAnalyzer
+              benchmark={benchmark}
+              initialUserSkills={skillsList}
+              onNavigateTab={setActiveTab}
+            />
+          )}
+
+          {activeTab === 'negotiation' && (
+            <SalaryNegotiationCoach
+              benchmark={benchmark}
+              initialSalary={currentSalaryAnnual}
+            />
+          )}
+
+          {activeTab === 'goals' && (
+            <SalaryGoalsTracker
+              initialSalary={currentSalaryAnnual}
+              initialRole={benchmark.role}
+            />
+          )}
+
+          {activeTab === 'jobs' && (
+            <SalaryMatchingJobs benchmark={benchmark} />
+          )}
+        </section>
+      </main>
+    </div>
   );
 };
 

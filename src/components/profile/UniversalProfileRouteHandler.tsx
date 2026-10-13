@@ -20,6 +20,7 @@ export const RESERVED_ROUTES = new Set([
   'navigator', 'talent-beacon', 'beacon', 'government-jobs',
   'referrals', 'referral', 'refer-and-earn', 'refer', 'grow', 'growth',
   'salary', 'salaries', 'salary-guide', 'analyzer', 'career-guide', 'interview-questions',
+  'scenarios', 'negotiation', 'goals', 'skills-gap',
   '404', 'not-found'
 ]);
 
