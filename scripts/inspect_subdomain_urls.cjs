@@ -33,7 +33,7 @@ async function run() {
   }
 
   const tests = [
-    { siteUrl: 'sc-domain:talentxcel.in', inspectionUrl: 'https://talentxcel.in/' },
+    { siteUrl: 'https://talentxcel.in/', inspectionUrl: 'https://talentxcel.in/' },
     { siteUrl: 'sc-domain:jobs.talentxcel.in', inspectionUrl: 'https://jobs.talentxcel.in/' },
     { siteUrl: 'sc-domain:salary.talentxcel.in', inspectionUrl: 'https://salary.talentxcel.in/' },
     { siteUrl: 'sc-domain:careers.talentxcel.in', inspectionUrl: 'https://careers.talentxcel.in/' },
