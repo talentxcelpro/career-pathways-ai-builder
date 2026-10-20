@@ -59,7 +59,7 @@ export const ProductVideoSection: React.FC = () => {
         </div>
 
         {/* Video Selector Category Pills */}
-        <div className="flex items-center justify-center gap-2 overflow-x-auto pb-4 mb-8 scrollbar-none">
+        <div className="flex items-center justify-start sm:justify-center gap-2 overflow-x-auto pb-4 mb-8 scrollbar-none px-1 max-w-full">
           {OFFICIAL_TXC_VIDEOS.slice(0, 6).map((video) => {
             const isCurrent = video.id === activeVideo.id;
             return (
@@ -178,7 +178,7 @@ export const ProductVideoSection: React.FC = () => {
             </span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
             {OFFICIAL_TXC_VIDEOS.map((item) => {
               const isCurrent = item.id === activeVideo.id;
               return (

@@ -323,9 +323,9 @@ const App = () => {
                           <PhaseInitializer />
                           <AsyncGoogleOneTap />
                           <GoogleOneTapLogin />
-                         <div className="min-h-screen flex flex-col">
+                         <div className="min-h-screen flex flex-col w-full max-w-full overflow-x-hidden">
                         <Navbar />
-                        <main className="flex-1">
+                        <main className="flex-1 w-full max-w-full overflow-x-hidden">
                           <Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
                               <Routes>
                                 {/* Final Launch Checklist Route */}

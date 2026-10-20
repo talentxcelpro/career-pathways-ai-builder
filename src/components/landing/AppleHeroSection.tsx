@@ -23,36 +23,36 @@ export const AppleHeroSection = () => {
         <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[700px] h-[360px] bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-purple-500/10 rounded-full blur-[120px]" />
       </div>
 
-      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-20 text-center z-10">
+      <div className="relative max-w-6xl mx-auto px-3 sm:px-6 py-8 sm:py-12 md:py-20 text-center z-10 w-full max-w-full">
         
         {/* Top Intelligence Badge */}
-        <div className="flex justify-center mb-5">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs sm:text-sm font-semibold shadow-sm">
-            <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-            <span>TalentXcel SI — Super Intelligence for Careers & Hiring</span>
+        <div className="flex justify-center mb-4 sm:mb-5 px-2">
+          <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs sm:text-sm font-semibold shadow-sm max-w-full">
+            <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600 dark:text-blue-400 shrink-0" />
+            <span className="truncate sm:whitespace-normal">TalentXcel SI — Super Intelligence for Careers &amp; Hiring</span>
           </div>
         </div>
 
         {/* Primary H1 */}
-        <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white mb-5 leading-tight">
-          Your Career. Your Talent. <br className="hidden sm:inline" />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 dark:from-blue-400 dark:via-indigo-300 dark:to-purple-400">
+        <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white mb-4 sm:mb-5 leading-tight break-words">
+          Your Career. Your Talent.{' '}
+          <span className="block sm:inline text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 dark:from-blue-400 dark:via-indigo-300 dark:to-purple-400">
             One Intelligent Platform.
           </span>
         </h1>
 
         {/* Subtitle */}
-        <p className="text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-300 mb-10 max-w-3xl mx-auto leading-relaxed">
+        <p className="text-sm sm:text-base md:text-lg text-slate-600 dark:text-slate-300 mb-8 sm:mb-10 max-w-3xl mx-auto leading-relaxed px-2">
           Powered by TalentXcel SI — context-aware career and talent intelligence from profile to placement. Select your goal to get started instantly.
         </p>
 
         {/* =========================================================
             3-INTENT ARCHITECTURE: HIGH-CLARITY ENTRY PATHWAYS
             ========================================================= */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 text-left mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 text-left mb-10 sm:mb-12">
           
           {/* Card 1: Job Seekers & Professionals */}
-          <div className="relative group flex flex-col justify-between p-6 bg-white dark:bg-slate-900/90 rounded-2xl border-2 border-blue-200 dark:border-blue-900/60 shadow-md hover:shadow-xl hover:border-blue-500 transition-all">
+          <div className="relative group flex flex-col justify-between p-4 sm:p-6 bg-white dark:bg-slate-900/90 rounded-2xl border-2 border-blue-200 dark:border-blue-900/60 shadow-md hover:shadow-xl hover:border-blue-500 transition-all">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400">
@@ -94,7 +94,7 @@ export const AppleHeroSection = () => {
           </div>
 
           {/* Card 2: Employers & Recruiters */}
-          <div className="relative group flex flex-col justify-between p-6 bg-white dark:bg-slate-900/90 rounded-2xl border-2 border-emerald-200 dark:border-emerald-900/60 shadow-md hover:shadow-xl hover:border-emerald-500 transition-all">
+          <div className="relative group flex flex-col justify-between p-4 sm:p-6 bg-white dark:bg-slate-900/90 rounded-2xl border-2 border-emerald-200 dark:border-emerald-900/60 shadow-md hover:shadow-xl hover:border-emerald-500 transition-all">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
@@ -136,7 +136,7 @@ export const AppleHeroSection = () => {
           </div>
 
           {/* Card 3: Career Growth & Education */}
-          <div className="relative group flex flex-col justify-between p-6 bg-white dark:bg-slate-900/90 rounded-2xl border-2 border-purple-200 dark:border-purple-900/60 shadow-md hover:shadow-xl hover:border-purple-500 transition-all">
+          <div className="relative group flex flex-col justify-between p-4 sm:p-6 bg-white dark:bg-slate-900/90 rounded-2xl border-2 border-purple-200 dark:border-purple-900/60 shadow-md hover:shadow-xl hover:border-purple-500 transition-all">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center text-purple-600 dark:text-purple-400">

@@ -39,12 +39,12 @@ export const AboutTalentXcelSEO = () => {
 
   return (
     <section className="py-20 bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800">
-      <div className="max-w-4xl mx-auto px-6">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6">
         <div className="mb-12 text-center">
           <div className="inline-flex items-center justify-center p-3 bg-blue-100 dark:bg-blue-900/40 rounded-full mb-4">
             <HelpCircle className="w-6 h-6 text-blue-600 dark:text-blue-400" />
           </div>
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">About TalentXcel</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-4 break-words">About TalentXcel</h2>
           <p className="text-lg text-slate-600 dark:text-slate-400">Everything you need to know about the Global Professional Talent Network.</p>
         </div>
 
@@ -56,7 +56,7 @@ export const AboutTalentXcelSEO = () => {
           {faqs.map((faq, index) => (
             <div 
               key={index} 
-              className="bg-slate-50 dark:bg-slate-900 rounded-2xl p-6 md:p-8"
+              className="bg-slate-50 dark:bg-slate-900 rounded-2xl p-4 sm:p-6 md:p-8"
               itemScope 
               itemProp="mainEntity" 
               itemType="https://schema.org/Question"

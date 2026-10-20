@@ -145,7 +145,7 @@ export default function RecruiterLandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-slate-950 text-slate-100 font-sans selection:bg-blue-600 selection:text-white">
       <SEOHead title="Recruiter OS | Discover & Hire Talent | TalentXcel" description="Search talent, discover candidates and manage hiring with TalentXcel Recruiter OS." canonical="https://talentxcel.in/recruiters" type="website" />
 
       {/* TOP RECRUITER SUB-NAV */}
@@ -180,7 +180,7 @@ export default function RecruiterLandingPage() {
           <span>Stop Managing ATS Rows. Make The Database Work For You.</span>
         </div>
 
-        <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white max-w-4xl mx-auto leading-[1.1]">
+        <h1 className="text-2xl sm:text-4xl md:text-6xl font-black tracking-tight text-white max-w-4xl mx-auto leading-[1.1] break-words">
           The Talent Database That <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">Actively Hires For You.</span>
         </h1>
 
@@ -190,18 +190,20 @@ export default function RecruiterLandingPage() {
 
         {/* INTERACTIVE LIVE SEARCH BAR (PRODUCT VALUE BEFORE SIGNUP) */}
         <div className="max-w-3xl mx-auto pt-4 space-y-3">
-          <div className="relative flex items-center shadow-2xl rounded-2xl overflow-hidden border border-blue-600/40 bg-slate-900/90 p-1.5 focus-within:border-blue-500 transition-all">
-            <Search className="h-5 w-5 ml-3 text-blue-400 shrink-0 pointer-events-none" />
-            <Input
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              placeholder="Search talent: e.g. Python developers in Dubai, Cloud Architects in Berlin, Full-Stack Engineers..."
-              className="border-0 bg-transparent text-white placeholder:text-slate-500 text-sm sm:text-base focus-visible:ring-0 focus-visible:ring-offset-0 px-3"
-            />
+          <div className="relative flex flex-col sm:flex-row items-stretch sm:items-center gap-2 shadow-2xl rounded-2xl overflow-hidden border border-blue-600/40 bg-slate-900/90 p-1.5 focus-within:border-blue-500 transition-all">
+            <div className="flex items-center flex-1 min-w-0">
+              <Search className="h-5 w-5 ml-3 text-blue-400 shrink-0 pointer-events-none" />
+              <Input
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                placeholder="Search talent: e.g. Python developers in Dubai, Cloud Architects in Berlin, Full-Stack Engineers..."
+                className="border-0 bg-transparent text-white placeholder:text-slate-500 text-sm sm:text-base focus-visible:ring-0 focus-visible:ring-offset-0 px-3"
+              />
+            </div>
             <Button
               onClick={() => handleSearch()}
-              className="bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm px-5 py-2.5 rounded-xl h-11 shrink-0 shadow-lg shadow-blue-600/30"
+              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm px-5 py-2.5 rounded-xl h-11 shrink-0 shadow-lg shadow-blue-600/30"
             >
               Search {PLATFORM_METRICS.totalProfessionalsDisplay} Talent →
             </Button>

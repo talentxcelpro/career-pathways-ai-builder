@@ -198,15 +198,15 @@ export const Navbar = () => {
 
   return (
     <nav className="bg-[#0b0f19] text-white shadow-md border-b border-slate-800/80 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-14">
           
           {/* Executive Brand Identity */}
-          <div className="flex items-center shrink-0 mr-3 sm:mr-6 gap-2">
+          <div className="flex items-center shrink-0 mr-1.5 sm:mr-6 gap-1.5 sm:gap-2">
             <Link to={isJobsUniverse ? "/jobs" : "/"} className="flex items-center shrink-0 gap-2">
-              <TalentXcelLogo iconSize={26} textSize="text-base sm:text-lg" theme="dark" />
+              <TalentXcelLogo iconSize={24} textSize="text-sm sm:text-base md:text-lg" theme="dark" />
               {productBadge && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-gradient-to-r from-blue-600 to-indigo-600 text-white border border-blue-400/30 shadow-xs">
+                <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-gradient-to-r from-blue-600 to-indigo-600 text-white border border-blue-400/30 shadow-xs">
                   {productBadge}
                 </span>
               )}
@@ -489,7 +489,7 @@ export const Navbar = () => {
                 onClick={() => navigate('/auth/login')}
                 variant="ghost" 
                 size="sm"
-                className="text-slate-300 hover:text-white text-xs font-bold px-2.5"
+                className="text-slate-300 hover:text-white text-xs font-bold px-1.5 sm:px-2.5 h-8 shrink-0"
               >
                 Log In
               </Button>
@@ -497,23 +497,24 @@ export const Navbar = () => {
               <Button 
                 onClick={() => navigate('/auth/register')}
                 size="sm"
-                className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl px-3 shadow"
+                className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl px-2.5 sm:px-3 h-8 shadow shrink-0 whitespace-nowrap"
               >
-                Join Network
+                <span className="hidden sm:inline">Join Network</span>
+                <span className="sm:hidden">Join</span>
               </Button>
             </div>
           )}
 
           {/* Mobile Menu Button - Visible to unauthenticated or mobile guests */}
-          <div className="md:hidden flex items-center ml-2">
+          <div className="md:hidden flex items-center ml-1 sm:ml-2 shrink-0">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-1 text-slate-300 hover:text-white"
+              className="p-1 text-slate-300 hover:text-white shrink-0 h-8 w-8 flex items-center justify-center"
               aria-label="Toggle Navigation Menu"
             >
-              {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {isMobileMenuOpen ? <X className="h-5 w-5 sm:h-6 sm:w-6" /> : <Menu className="h-5 w-5 sm:h-6 sm:w-6" />}
             </Button>
           </div>
 

@@ -57,15 +57,15 @@ export const FeaturesSection = () => {
 
   return (
     <section className="py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-16">
-          <h2 className="text-4xl lg:text-5xl font-light text-slate-900 mb-4">
+          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-light text-slate-900 mb-4 break-words">
             Everything You Need to
             <span className="block font-medium bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
               Accelerate Your Career
             </span>
           </h2>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+          <p className="text-sm sm:text-base md:text-xl text-slate-600 max-w-3xl mx-auto">
             From networking to skill-building, discover all the tools and opportunities to reach your professional goals
           </p>
         </div>
@@ -77,7 +77,7 @@ export const FeaturesSection = () => {
               <div 
                 key={index}
                 onClick={() => feature.link.startsWith('http') ? window.open(feature.link, '_blank') : navigate(feature.link)}
-                className="group p-8 bg-gradient-to-br from-slate-50 to-white border border-slate-200 rounded-2xl hover:shadow-lg hover:shadow-blue-100/50 transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                className="group p-5 sm:p-8 bg-gradient-to-br from-slate-50 to-white border border-slate-200 rounded-2xl hover:shadow-lg hover:shadow-blue-100/50 transition-all duration-300 hover:-translate-y-1 cursor-pointer"
               >
                 <div className="flex items-center mb-4">
                   <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">

@@ -21,7 +21,7 @@ const NewsLatestWidget = React.lazy(() =>
 
 export const LandingPage = () => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden">
       <SEOHead title={DEFAULT_TITLE} description={DEFAULT_DESCRIPTION} canonical="https://talentxcel.in/" type="website" />
       <AppleHeroSection />
       <FeaturesSection />

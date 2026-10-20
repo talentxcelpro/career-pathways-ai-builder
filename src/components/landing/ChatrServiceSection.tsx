@@ -54,7 +54,7 @@ export const ChatrServiceSection: React.FC = () => {
           </div>
 
           {/* Headline */}
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 tracking-tight">
+          <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 tracking-tight break-words">
             CHATR — A Communication Service
             <span className="block text-primary">by TalentXcel</span>
           </h2>
@@ -74,7 +74,7 @@ export const ChatrServiceSection: React.FC = () => {
                 <Button 
                   onClick={handleSecondaryCTA}
                   size="lg"
-                  className="min-w-[200px] h-14 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                  className="w-full sm:w-auto sm:min-w-[200px] h-14 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
                 >
                   Install CHATR App
                 </Button>
@@ -82,7 +82,7 @@ export const ChatrServiceSection: React.FC = () => {
                   onClick={handlePrimaryCTA}
                   variant="outline"
                   size="lg"
-                  className="min-w-[200px] h-14 text-lg font-semibold border-2 hover:bg-primary/5 transition-all duration-300"
+                  className="w-full sm:w-auto sm:min-w-[200px] h-14 text-lg font-semibold border-2 hover:bg-primary/5 transition-all duration-300"
                 >
                   Open CHATR Web
                 </Button>
@@ -92,7 +92,7 @@ export const ChatrServiceSection: React.FC = () => {
                 <Button 
                   onClick={handlePrimaryCTA}
                   size="lg"
-                  className="min-w-[200px] h-14 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                  className="w-full sm:w-auto sm:min-w-[200px] h-14 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
                 >
                   Open CHATR
                 </Button>
@@ -100,7 +100,7 @@ export const ChatrServiceSection: React.FC = () => {
                   onClick={handleSecondaryCTA}
                   variant="outline"
                   size="lg"
-                  className="min-w-[200px] h-14 text-lg font-semibold border-2 hover:bg-primary/5 transition-all duration-300"
+                  className="w-full sm:w-auto sm:min-w-[200px] h-14 text-lg font-semibold border-2 hover:bg-primary/5 transition-all duration-300"
                 >
                   Install CHATR App
                 </Button>

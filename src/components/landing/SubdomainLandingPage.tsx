@@ -562,7 +562,7 @@ export const SubdomainLandingPage: React.FC<SubdomainLandingPageProps> = ({ univ
   };
 
   return (
-    <div className="min-h-screen bg-[#070b14] text-slate-100 flex flex-col font-sans">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#070b14] text-slate-100 flex flex-col font-sans">
       <SEOHead
         title={identity.title}
         description={identity.description}
@@ -586,7 +586,7 @@ export const SubdomainLandingPage: React.FC<SubdomainLandingPageProps> = ({ univ
           </div>
 
           {/* Exact Required Headline (H1) */}
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.15] mb-5 max-w-4xl">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.15] mb-5 max-w-4xl break-words">
             {identity.headline}
           </h1>
 
@@ -600,7 +600,7 @@ export const SubdomainLandingPage: React.FC<SubdomainLandingPageProps> = ({ univ
             <Button
               size="lg"
               onClick={() => navigate(identity.primaryCtaUrl)}
-              className="bg-blue-600 hover:bg-blue-500 text-white font-bold px-6 py-3 rounded-xl shadow-lg shadow-blue-600/30 text-base"
+              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-bold px-6 py-3 rounded-xl shadow-lg shadow-blue-600/30 text-base"
             >
               <span>{identity.primaryCta}</span>
               <ArrowRight className="w-4 h-4 ml-2" />
@@ -611,7 +611,7 @@ export const SubdomainLandingPage: React.FC<SubdomainLandingPageProps> = ({ univ
                 size="lg"
                 variant="outline"
                 onClick={() => navigate(identity.secondaryCtaUrl)}
-                className="border-slate-700 bg-slate-900/60 hover:bg-slate-800 text-slate-200 font-semibold px-6 py-3 rounded-xl text-base"
+                className="w-full sm:w-auto border-slate-700 bg-slate-900/60 hover:bg-slate-800 text-slate-200 font-semibold px-6 py-3 rounded-xl text-base"
               >
                 <span>{identity.secondaryCta}</span>
               </Button>
@@ -659,7 +659,7 @@ export const SubdomainLandingPage: React.FC<SubdomainLandingPageProps> = ({ univ
             <p className="text-xs text-slate-400 mb-4">
               Explore interconnected career, compensation, learning, and hiring solutions across TalentXcel:
             </p>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3">
               <a
                 href={UNIVERSE_PRIMARY_DOMAIN.JOBS}
                 className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-blue-500/40 transition-colors flex items-center justify-between text-xs text-slate-300 hover:text-white"

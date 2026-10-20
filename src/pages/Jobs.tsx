@@ -360,7 +360,7 @@ const Jobs = () => {
         type="website" 
       />
 
-      <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
+      <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-gradient-to-br from-background via-primary/5 to-secondary/5">
         
         {/* Compact, High-Efficiency Sticky Search & Filter Header */}
         <div className="border-b border-border/10 bg-background/95 backdrop-blur-md sticky top-0 z-20 shadow-xs">

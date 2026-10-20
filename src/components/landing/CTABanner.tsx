@@ -32,7 +32,7 @@ export const CTABanner = () => {
         ))}
       </div>
 
-      <div className="relative max-w-4xl mx-auto px-6 text-center">
+      <div className="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
         <div className="space-y-8">
           {/* Icon */}
           <div className="flex justify-center">
@@ -42,18 +42,18 @@ export const CTABanner = () => {
           </div>
 
           {/* Headline */}
-          <h2 className="text-4xl lg:text-6xl font-light text-white leading-tight">
+          <h2 className="text-2xl sm:text-4xl lg:text-6xl font-light text-white leading-tight break-words">
             🚀 Join thousands of professionals
             <span className="block font-medium bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
               accelerating their careers
             </span>
-            <span className="block text-3xl lg:text-5xl mt-2">
+            <span className="block text-2xl sm:text-3xl lg:text-5xl mt-2">
               with TalentXcel
             </span>
           </h2>
 
           {/* Description */}
-          <p className="text-xl text-slate-300 max-w-2xl mx-auto font-light leading-relaxed">
+          <p className="text-sm sm:text-base md:text-xl text-slate-300 max-w-2xl mx-auto font-light leading-relaxed">
             Transform your career journey with SI-powered insights, meaningful connections, and opportunities tailored just for you.
           </p>
 
@@ -61,7 +61,7 @@ export const CTABanner = () => {
           <div className="pt-8">
             <Button 
               size="lg" 
-              className="bg-white text-slate-900 hover:bg-slate-100 rounded-full px-12 py-6 text-xl font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 group"
+              className="bg-white text-slate-900 hover:bg-slate-100 rounded-full px-6 py-3 text-base sm:px-12 sm:py-6 sm:text-xl font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 group"
             >
               Learn More
               <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" />
@@ -74,7 +74,7 @@ export const CTABanner = () => {
           </p>
 
           {/* Trust indicators */}
-          <div className="pt-8 flex items-center justify-center space-x-8 text-sm text-slate-400">
+          <div className="pt-8 flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-xs sm:text-sm text-slate-400">
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-green-400 rounded-full"></div>
               <span>Free forever</span>

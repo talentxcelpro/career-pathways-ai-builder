@@ -54,7 +54,7 @@ export const SEOLandingPageLinks = () => {
     <section className="py-16 bg-slate-950 border-t border-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-white mb-4">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4 break-words">
             TalentXcel Complete Career &amp; Hiring Ecosystem
           </h2>
           <p className="text-sm text-slate-400 max-w-3xl mx-auto">
@@ -64,7 +64,7 @@ export const SEOLandingPageLinks = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Jobs by Location */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 sm:p-6">
             <h3 className="text-base font-semibold mb-4 text-blue-400">Tech Hiring by Hub</h3>
             <div className="space-y-1.5">
               {jobLocations.map((location) => (
@@ -80,7 +80,7 @@ export const SEOLandingPageLinks = () => {
           </div>
 
           {/* Jobs by Role */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 sm:p-6">
             <h3 className="text-base font-semibold mb-4 text-purple-400">Career &amp; Role Guides</h3>
             <div className="space-y-1.5">
               {jobRoles.map((role) => (
@@ -96,7 +96,7 @@ export const SEOLandingPageLinks = () => {
           </div>
 
           {/* Skill & Learning Hubs */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 sm:p-6">
             <h3 className="text-base font-semibold mb-4 text-emerald-400">Skills &amp; Technology</h3>
             <div className="space-y-1.5">
               {jobSkills.map((skill) => (
@@ -112,7 +112,7 @@ export const SEOLandingPageLinks = () => {
           </div>
 
           {/* Core Public Product Surfaces */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 sm:p-6">
             <h3 className="text-base font-semibold mb-4 text-amber-400">Public Intelligence Tools</h3>
             <div className="space-y-1.5">
               {coreHubs.map((hub) => (

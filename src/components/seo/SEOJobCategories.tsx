@@ -51,12 +51,12 @@ export const SEOJobCategories = () => {
 
   return (
     <section className="py-16 bg-slate-50/50">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-4 sm:px-6">
         <div className="text-center mb-12">
-          <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 mb-4 break-words">
             Explore Jobs by Category
           </h2>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base md:text-lg text-slate-600 max-w-2xl mx-auto">
             Discover thousands of opportunities across different roles, locations, and skill sets
           </p>
         </div>
@@ -75,7 +75,7 @@ export const SEOJobCategories = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Jobs by Role */}
-          <div className="bg-white rounded-xl border border-slate-200 p-8 shadow-sm hover:shadow-md transition-shadow">
+          <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-6 lg:p-8 shadow-sm hover:shadow-md transition-shadow">
             <h3 className="text-xl font-semibold text-slate-900 mb-6 flex items-center">
               <span className="w-3 h-3 bg-blue-500 rounded-full mr-3"></span>
               Jobs by Role
@@ -100,7 +100,7 @@ export const SEOJobCategories = () => {
           </div>
 
           {/* Jobs by Location */}
-          <div className="bg-white rounded-xl border border-slate-200 p-8 shadow-sm hover:shadow-md transition-shadow">
+          <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-6 lg:p-8 shadow-sm hover:shadow-md transition-shadow">
             <h3 className="text-xl font-semibold text-slate-900 mb-6 flex items-center">
               <span className="w-3 h-3 bg-green-500 rounded-full mr-3"></span>
               Jobs by Location
@@ -125,7 +125,7 @@ export const SEOJobCategories = () => {
           </div>
 
           {/* Jobs by Skills */}
-          <div className="bg-white rounded-xl border border-slate-200 p-8 shadow-sm hover:shadow-md transition-shadow">
+          <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-6 lg:p-8 shadow-sm hover:shadow-md transition-shadow">
             <h3 className="text-xl font-semibold text-slate-900 mb-6 flex items-center">
               <span className="w-3 h-3 bg-purple-500 rounded-full mr-3"></span>
               Jobs by Skills
