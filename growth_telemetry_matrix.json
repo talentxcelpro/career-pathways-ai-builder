@@ -1,0 +1,125 @@
+{
+  "timestamp": "2026-10-22T09:02:22.094Z",
+  "matrix": [
+    {
+      "host": "talentxcel.in",
+      "role": "Core Platform Gateway",
+      "published": 1169,
+      "discoveredInGsc": 3034,
+      "impressions": 10198,
+      "clicks": 220,
+      "ctr": "2.16%",
+      "landingSessions": 232,
+      "signups": 3
+    },
+    {
+      "host": "jobs.talentxcel.in",
+      "role": "Live Job Discovery",
+      "published": 550,
+      "discoveredInGsc": 5,
+      "impressions": 23,
+      "clicks": 3,
+      "ctr": "13.04%",
+      "landingSessions": 3,
+      "signups": 0
+    },
+    {
+      "host": "salary.talentxcel.in",
+      "role": "Salary Intelligence",
+      "published": 183,
+      "discoveredInGsc": 1,
+      "impressions": 6,
+      "clicks": 0,
+      "ctr": "0.00%",
+      "landingSessions": 0,
+      "signups": 0
+    },
+    {
+      "host": "careers.talentxcel.in",
+      "role": "Career Pathways",
+      "published": 177,
+      "discoveredInGsc": 1,
+      "impressions": 3,
+      "clicks": 0,
+      "ctr": "0.00%",
+      "landingSessions": 0,
+      "signups": 0
+    },
+    {
+      "host": "resume.talentxcel.in",
+      "role": "ATS Resume Tools",
+      "published": 39,
+      "discoveredInGsc": 1,
+      "impressions": 18,
+      "clicks": 1,
+      "ctr": "5.56%",
+      "landingSessions": 1,
+      "signups": 0
+    },
+    {
+      "host": "learning.talentxcel.in",
+      "role": "Skill Courses & Paths",
+      "published": 32,
+      "discoveredInGsc": 0,
+      "impressions": 0,
+      "clicks": 0,
+      "ctr": "0.00%",
+      "landingSessions": 0,
+      "signups": 0
+    },
+    {
+      "host": "colleges.talentxcel.in",
+      "role": "Higher Education Hub",
+      "published": 10252,
+      "discoveredInGsc": 0,
+      "impressions": 0,
+      "clicks": 0,
+      "ctr": "0.00%",
+      "landingSessions": 0,
+      "signups": 0
+    },
+    {
+      "host": "employers.talentxcel.in",
+      "role": "Recruiter & Employer OS",
+      "published": 7,
+      "discoveredInGsc": 2,
+      "impressions": 87,
+      "clicks": 5,
+      "ctr": "5.75%",
+      "landingSessions": 5,
+      "signups": 0
+    },
+    {
+      "host": "government.talentxcel.in",
+      "role": "Govt Notices & Exams",
+      "published": 15,
+      "discoveredInGsc": 0,
+      "impressions": 0,
+      "clicks": 0,
+      "ctr": "0.00%",
+      "landingSessions": 0,
+      "signups": 0
+    },
+    {
+      "host": "passport.talentxcel.in",
+      "role": "Career Passport",
+      "published": 7,
+      "discoveredInGsc": 0,
+      "impressions": 0,
+      "clicks": 0,
+      "ctr": "0.00%",
+      "landingSessions": 0,
+      "signups": 0
+    }
+  ],
+  "totals": {
+    "publishedUrls": 12431,
+    "pagesWithImpressions": 3044,
+    "gscImpressions28d": 10335,
+    "gscClicks28d": 229,
+    "candidateProfiles": 541,
+    "employerProfiles": 2,
+    "totalResumes": 101,
+    "totalApps": 8
+  }
+}

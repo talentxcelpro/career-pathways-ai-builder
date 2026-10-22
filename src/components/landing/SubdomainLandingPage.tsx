@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { SubdomainIdentity, getSubdomainIdentity } from '@/config/subdomainIdentities';
 import { ProductUniverse, UNIVERSE_PRIMARY_DOMAIN } from '@/config/domainArchitecture';
+import { conversionTelemetry } from '@/utils/conversionTelemetry';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -42,6 +43,14 @@ export const SubdomainLandingPage: React.FC<SubdomainLandingPageProps> = ({ univ
   const navigate = useNavigate();
   const identityKey = universe.toLowerCase();
   const identity: SubdomainIdentity = getSubdomainIdentity(identityKey);
+
+  useEffect(() => {
+    conversionTelemetry.track('landing_view', {
+      source: `subdomain_${identityKey}`,
+      universe,
+      title: identity.title,
+    });
+  }, [universe, identityKey, identity.title]);
 
   // Universe-specific feature sets
   const renderFeaturesForUniverse = () => {
@@ -599,7 +608,16 @@ export const SubdomainLandingPage: React.FC<SubdomainLandingPageProps> = ({ univ
           <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-10">
             <Button
               size="lg"
-              onClick={() => navigate(identity.primaryCtaUrl)}
+              onClick={() => {
+                conversionTelemetry.track('free_tool_started', {
+                  source: `subdomain_${identityKey}`,
+                  universe,
+                  cta: identity.primaryCta,
+                  destination: identity.primaryCtaUrl,
+                });
+                conversionTelemetry.setAcquisitionContext(`subdomain_${identityKey}`, identity.primaryCtaUrl);
+                navigate(identity.primaryCtaUrl);
+              }}
               className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-bold px-6 py-3 rounded-xl shadow-lg shadow-blue-600/30 text-base"
             >
               <span>{identity.primaryCta}</span>
@@ -610,7 +628,16 @@ export const SubdomainLandingPage: React.FC<SubdomainLandingPageProps> = ({ univ
               <Button
                 size="lg"
                 variant="outline"
-                onClick={() => navigate(identity.secondaryCtaUrl)}
+                onClick={() => {
+                  conversionTelemetry.track('free_tool_started', {
+                    source: `subdomain_${identityKey}_secondary`,
+                    universe,
+                    cta: identity.secondaryCta,
+                    destination: identity.secondaryCtaUrl,
+                  });
+                  conversionTelemetry.setAcquisitionContext(`subdomain_${identityKey}`, identity.secondaryCtaUrl);
+                  navigate(identity.secondaryCtaUrl);
+                }}
                 className="w-full sm:w-auto border-slate-700 bg-slate-900/60 hover:bg-slate-800 text-slate-200 font-semibold px-6 py-3 rounded-xl text-base"
               >
                 <span>{identity.secondaryCta}</span>
