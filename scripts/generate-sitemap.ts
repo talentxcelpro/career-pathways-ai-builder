@@ -321,6 +321,8 @@ export async function generateProductionSitemaps() {
   ]);
 
   // 13. Dedicated Subdomain Specific URL Clusters
+  const TOP_SALARY_LOCATIONS = ['bangalore', 'hyderabad', 'pune', 'mumbai', 'delhi-ncr', 'chennai', 'dubai', 'london', 'united-states', 'remote'];
+  
   const resumeEntries = deduplicate([
     { path: '/', changefreq: 'daily', priority: '1.0' },
     { path: '/resume', changefreq: 'daily', priority: '1.0' },
@@ -328,42 +330,65 @@ export async function generateProductionSitemaps() {
     { path: '/resume/ats-check', changefreq: 'daily', priority: '0.9' },
     { path: '/resume/cover-letter', changefreq: 'daily', priority: '0.9' },
     { path: '/resume/interview-prep', changefreq: 'daily', priority: '0.9' },
-    { path: '/resume/software-engineer/ats-keywords', changefreq: 'daily', priority: '0.9' },
-    { path: '/resume/data-analyst/ats-keywords', changefreq: 'daily', priority: '0.9' },
-    { path: '/resume/devops-engineer/ats-keywords', changefreq: 'daily', priority: '0.8' },
     { path: '/resume/templates', changefreq: 'weekly', priority: '0.8' },
     { path: '/tools/ats-checker', changefreq: 'daily', priority: '0.9' },
     { path: '/tools/resume-checker', changefreq: 'daily', priority: '0.9' },
+    ...CANONICAL_ROLES.slice(0, 30).map((role) => ({
+      path: `/resume/${role}/ats-keywords`,
+      changefreq: 'daily' as const,
+      priority: '0.9',
+    })),
   ]);
 
   const salaryEntries = deduplicate([
     { path: '/', changefreq: 'daily', priority: '1.0' },
     { path: '/salary', changefreq: 'daily', priority: '1.0' },
-    { path: '/salary/software-engineer/bangalore', changefreq: 'weekly', priority: '0.9' },
-    { path: '/salary/data-analyst/hyderabad', changefreq: 'weekly', priority: '0.8' },
-    { path: '/salary/devops-engineer/india', changefreq: 'weekly', priority: '0.8' },
-    { path: '/salary/devops-engineer/pune', changefreq: 'weekly', priority: '0.8' },
     { path: '/tools/salary-analyzer', changefreq: 'daily', priority: '0.9' },
+    ...CANONICAL_ROLES.slice(0, 30).map((role) => ({
+      path: `/salary/${role}`,
+      changefreq: 'weekly' as const,
+      priority: '0.9',
+    })),
+    ...CANONICAL_ROLES.slice(0, 15).flatMap((role) =>
+      TOP_SALARY_LOCATIONS.map((loc) => ({
+        path: `/salary/${role}/${loc}`,
+        changefreq: 'weekly' as const,
+        priority: '0.85',
+      }))
+    ),
   ]);
 
   const careersEntries = deduplicate([
     { path: '/', changefreq: 'daily', priority: '1.0' },
     { path: '/career-map', changefreq: 'daily', priority: '1.0' },
-    { path: '/career-map/software-engineer', changefreq: 'weekly', priority: '0.9' },
-    { path: '/career-map/data-analyst', changefreq: 'weekly', priority: '0.9' },
     { path: '/ai-career-hub', changefreq: 'daily', priority: '0.9' },
     { path: '/career-intelligence', changefreq: 'daily', priority: '0.9' },
     { path: '/career-platform', changefreq: 'weekly', priority: '0.8' },
     { path: '/how-to-become/cloud-architect', changefreq: 'weekly', priority: '0.8' },
     { path: '/how-to-become/product-manager', changefreq: 'weekly', priority: '0.8' },
+    ...CANONICAL_ROLES.map((role) => ({
+      path: `/career-map/${role}`,
+      changefreq: 'weekly' as const,
+      priority: '0.85',
+    })),
   ]);
 
   const governmentEntries = deduplicate([
     { path: '/', changefreq: 'daily', priority: '1.0' },
     { path: '/government-jobs', changefreq: 'daily', priority: '1.0' },
+    { path: '/government-jobs/freshers', changefreq: 'daily', priority: '0.9' },
+    { path: '/government-jobs/india', changefreq: 'daily', priority: '0.9' },
+    { path: '/government-jobs/india/freshers', changefreq: 'daily', priority: '0.9' },
     { path: '/government-jobs/exams/upsc-2026', changefreq: 'daily', priority: '0.9' },
     { path: '/government-jobs/exams/ssc-cgl-2026', changefreq: 'daily', priority: '0.9' },
     { path: '/government-jobs/exams/ibps-po-2026', changefreq: 'daily', priority: '0.9' },
+    { path: '/government-jobs/exams/rbi-grade-b', changefreq: 'daily', priority: '0.9' },
+    { path: '/government-jobs/exams/gate-2026', changefreq: 'daily', priority: '0.9' },
+    { path: '/government-jobs/exams/nda-cds', changefreq: 'daily', priority: '0.9' },
+    { path: '/government-jobs/departments/railways', changefreq: 'daily', priority: '0.9' },
+    { path: '/government-jobs/departments/banking', changefreq: 'daily', priority: '0.9' },
+    { path: '/government-jobs/departments/defence', changefreq: 'daily', priority: '0.9' },
+    { path: '/government-jobs/departments/civil-services', changefreq: 'daily', priority: '0.9' },
   ]);
 
   const employerEntries = deduplicate([
@@ -378,7 +403,12 @@ export async function generateProductionSitemaps() {
 
   const passportEntries = deduplicate([
     { path: '/', changefreq: 'daily', priority: '1.0' },
-    { path: '/passport', changefreq: 'weekly', priority: '0.9' },
+    { path: '/passport', changefreq: 'weekly', priority: '1.0' },
+    { path: '/passport/section/skills', changefreq: 'weekly', priority: '0.9' },
+    { path: '/passport/section/experience', changefreq: 'weekly', priority: '0.9' },
+    { path: '/passport/section/credentials', changefreq: 'weekly', priority: '0.9' },
+    { path: '/passport/section/verifications', changefreq: 'weekly', priority: '0.9' },
+    { path: '/passport/section/achievements', changefreq: 'weekly', priority: '0.9' },
   ]);
 
   // Master segmented configuration array (All 10 Dedicated Production Domains + Supplemental Hubs)
