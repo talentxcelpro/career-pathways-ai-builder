@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-10-22T09:37:33.769Z",
+  "timestamp": "2026-10-22T09:46:24.820Z",
   "auditMode": "TRUTHFUL_MULTI_DIMENSIONAL",
   "attributionRule": "First-touch landing hostname preserved in cross-subdomain cookie .talentxcel.in; fallback to entry point.",
   "notes": {
@@ -18,13 +18,13 @@
       "gscClicks": 220,
       "gscCtr": "2.16%",
       "gscAvgPosition": "28.0",
-      "landingViews": 15,
+      "landingViews": 17,
       "uniqueAnonymousUsers": 1,
-      "signupStarts": 2,
-      "signupCompletedEvents": 5,
-      "attributedRegistrations": 5,
-      "toolStarts": 6,
-      "toolCompletions": 8
+      "signupStarts": 3,
+      "signupCompletedEvents": 6,
+      "attributedRegistrations": 6,
+      "toolStarts": 7,
+      "toolCompletions": 9
     },
     {
       "host": "jobs.talentxcel.in",
