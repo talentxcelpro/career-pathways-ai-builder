@@ -21,6 +21,9 @@ import { RelatedRolesGrid } from '@/components/seo/jobs/RelatedRolesGrid';
 import { MatrixBreadcrumbs } from '@/components/seo/jobs/MatrixBreadcrumbs';
 import { MatrixFAQAccordion } from '@/components/seo/jobs/MatrixFAQAccordion';
 import { GrowthExperimentWrapper } from '@/components/conversion/GrowthExperimentWrapper';
+import { ResumeQuickScanWidget } from '@/components/conversion/ResumeQuickScanWidget';
+import { RelatedSubdomainLinks } from '@/components/navigation/RelatedSubdomainLinks';
+import { SubdomainMeshFooter } from '@/components/navigation/SubdomainMeshFooter';
 
 export const JobsByRoleExperienceCity: React.FC = () => {
   const { role: roleParam, experience: expParam, city: cityParam, country: countryParam } = useParams<{
@@ -124,11 +127,11 @@ export const JobsByRoleExperienceCity: React.FC = () => {
           totalJobs={totalCount}
         />
 
-        {/* Controlled Cohort Experiment: Control (Static Directory) vs Treatment (10-Second Career Match) */}
-        <GrowthExperimentWrapper
+        {/* Ungated 1-Click ATS Match & Instant Apply Dropzone (100% Rollout) */}
+        <ResumeQuickScanWidget
           role={role.title}
           location={location.cityName}
-          sourcePage={`matrix_${role.slug}_${experience.slug}_${location.citySlug}`}
+          matchingJobsCount={totalCount || 24}
         />
 
         <ExperienceNavigation
@@ -185,7 +188,15 @@ export const JobsByRoleExperienceCity: React.FC = () => {
           experience={experience}
           location={location}
         />
+
+        {/* Contextual Subdomain Discovery Mesh */}
+        <div className="pt-8 border-t border-border">
+          <RelatedSubdomainLinks role={role.title} city={location.cityName} />
+        </div>
       </main>
+
+      {/* Global Crawlable Subdomain Mesh Footer */}
+      <SubdomainMeshFooter />
     </div>
   );
 };

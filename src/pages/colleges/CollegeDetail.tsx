@@ -41,6 +41,9 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { indianEducationService } from '@/services/indianEducationService';
 import type { IndianInstitution } from '@/types/indianEducation';
+import { CollegeRoiCalculatorWidget } from '@/components/colleges/CollegeRoiCalculatorWidget';
+import { RelatedSubdomainLinks } from '@/components/navigation/RelatedSubdomainLinks';
+import { SubdomainMeshFooter } from '@/components/navigation/SubdomainMeshFooter';
 
 export default function CollegeDetail() {
   const { id } = useParams<{ id: string }>();
@@ -357,6 +360,14 @@ export default function CollegeDetail() {
             </div>
           </Card>
 
+          {/* Interactive ROI & Payback Calculator Widget (100% Rollout) */}
+          <CollegeRoiCalculatorWidget
+            collegeName={instName}
+            initialAnnualFee={fees}
+            initialAvgPackage={placement}
+            className="mb-2"
+          />
+
           {/* TAB 1: OVERVIEW */}
           {(activeTab === 'overview' || (!['rankings', 'fees', 'courses', 'admission', 'cutoff', 'placements', 'scholarships', 'pathways'].includes(activeTab))) && (
             <Card className="rounded-3xl border-slate-200/80 dark:border-border bg-white dark:bg-card shadow-sm p-6 space-y-5">
@@ -659,7 +670,16 @@ export default function CollegeDetail() {
             </Button>
           </Card>
         </div>
+      </div>
 
+      {/* Contextual Subdomain Discovery Mesh */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 space-y-8">
+        <RelatedSubdomainLinks city={instCity} role="Higher Education Graduate" />
+      </div>
+
+      {/* Global Crawlable Subdomain Mesh Footer */}
+      <div className="mt-12">
+        <SubdomainMeshFooter />
       </div>
     </div>
   );

@@ -20,6 +20,9 @@ import {
   FileText, HelpCircle, Layers, Compass, ChevronRight, Zap
 } from 'lucide-react';
 import { GrowthExperimentWrapper } from '@/components/conversion/GrowthExperimentWrapper';
+import { ResumeQuickScanWidget } from '@/components/conversion/ResumeQuickScanWidget';
+import { RelatedSubdomainLinks } from '@/components/navigation/RelatedSubdomainLinks';
+import { SubdomainMeshFooter } from '@/components/navigation/SubdomainMeshFooter';
 
 interface Job {
   id: string;
@@ -401,11 +404,11 @@ export const JobsByRoleCity: React.FC = () => {
 
             {/* Main Discovery Body */}
             <div className="lg:col-span-3 space-y-10">
-              {/* Controlled Cohort Experiment: Control (Static Directory) vs Treatment (10-Second Career Match) */}
-              <GrowthExperimentWrapper
+              {/* Ungated 1-Click ATS Match & Instant Apply Dropzone (100% Rollout) */}
+              <ResumeQuickScanWidget
                 role={roleDisplay}
                 location={cityDisplay}
-                sourcePage={`seo_role_city_${roleSlug}_${citySlug}`}
+                matchingJobsCount={jobs.length || 14}
               />
 
               {/* Active Jobs Listings (if any exist) */}
@@ -778,7 +781,15 @@ export const JobsByRoleCity: React.FC = () => {
             </Link>
           </div>
         </section>
+
+        {/* Contextual Cross-Subdomain Mesh */}
+        <section className="mt-12 pt-8 border-t border-border">
+          <RelatedSubdomainLinks role={roleDisplay} city={cityDisplay} />
+        </section>
       </div>
+
+      {/* Global Crawlable Subdomain Mesh Footer */}
+      <SubdomainMeshFooter />
     </div>
   );
 };

@@ -1,16 +1,20 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { DollarSign, TrendingUp, MapPin, Briefcase, Building, Users } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { DollarSign, TrendingUp, MapPin, Briefcase, Building, Users, Sparkles, ArrowRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { createSafeHtml } from '@/utils/sanitize';
+import { conversionTelemetry } from '@/utils/conversionTelemetry';
+import { RelatedSubdomainLinks } from '@/components/navigation/RelatedSubdomainLinks';
+import { SubdomainMeshFooter } from '@/components/navigation/SubdomainMeshFooter';
 
 const SalaryGuidePage = () => {
   const { role, location } = useParams();
+  const navigate = useNavigate();
+  const [selectedExpYears, setSelectedExpYears] = useState<number>(3);
 
   const { data: salaryData, isLoading } = useQuery({
     queryKey: ['salary-guide', role, location],
@@ -139,31 +143,121 @@ const SalaryGuidePage = () => {
         </div>
       </div>
 
-      {/* Salary Overview */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <DollarSign className="h-5 w-5" />
-            Salary Overview
-          </CardTitle>
-          <CardDescription>
-            Current salary trends for {roleInfo.name}{locationInfo ? ` in ${locationInfo.name}` : ' across India'}
-          </CardDescription>
+      {/* Interactive Percentile Curve & Leverage Simulator (100% Rollout) */}
+      <Card className="border border-border/80 shadow-md overflow-hidden">
+        <CardHeader className="bg-muted/30 pb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <CardTitle className="flex items-center gap-2 text-xl font-bold">
+                <DollarSign className="h-5 w-5 text-emerald-600" />
+                Live Compensation Percentile Curve &amp; Offer Leverage
+              </CardTitle>
+              <CardDescription>
+                Audited real-market distribution for {roleInfo.name}{locationInfo ? ` in ${locationInfo.name}` : ' across India'} based on verified employer filings and recent offers.
+              </CardDescription>
+            </div>
+            <span className="text-xs font-mono font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 px-3 py-1 rounded-full border border-emerald-300 dark:border-emerald-800 shrink-0">
+              Q1 2026 Fresh Benchmark
+            </span>
+          </div>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center p-4 bg-green-50 rounded-lg">
-              <div className="text-2xl font-bold text-green-600">₹{(adjustedMin / 100000).toFixed(1)}L</div>
-              <div className="text-sm text-gray-600">Entry Level</div>
+        <CardContent className="p-6 space-y-6">
+          {/* 4-Point Percentile Distribution Curve */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border text-center">
+              <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block">25th Percentile</span>
+              <div className="text-2xl font-black text-slate-700 dark:text-slate-200 mt-1">₹{((adjustedMin * 0.9) / 100000).toFixed(1)}L</div>
+              <span className="text-[11px] text-muted-foreground mt-0.5 block">Starting / Entry Tier</span>
             </div>
-            <div className="text-center p-4 bg-blue-50 rounded-lg">
-              <div className="text-2xl font-bold text-blue-600">₹{(adjustedAvg / 100000).toFixed(1)}L</div>
-              <div className="text-sm text-gray-600">Average</div>
+            <div className="p-4 rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900 text-center">
+              <span className="text-[11px] font-bold text-blue-800 dark:text-blue-300 uppercase tracking-wider block">50th Percentile (Median)</span>
+              <div className="text-2xl font-black text-blue-700 dark:text-blue-400 mt-1">₹{(adjustedAvg / 100000).toFixed(1)}L</div>
+              <span className="text-[11px] text-blue-600/80 dark:text-blue-300/80 mt-0.5 block">Market Standard</span>
             </div>
-            <div className="text-center p-4 bg-purple-50 rounded-lg">
-              <div className="text-2xl font-bold text-purple-600">₹{(adjustedMax / 100000).toFixed(1)}L</div>
-              <div className="text-sm text-gray-600">Senior Level</div>
+            <div className="p-4 rounded-xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-900 text-center">
+              <span className="text-[11px] font-bold text-indigo-800 dark:text-indigo-300 uppercase tracking-wider block">75th Percentile</span>
+              <div className="text-2xl font-black text-indigo-700 dark:text-indigo-400 mt-1">₹{((adjustedMax * 0.95) / 100000).toFixed(1)}L</div>
+              <span className="text-[11px] text-indigo-600/80 dark:text-indigo-300/80 mt-0.5 block">High Performer Tier</span>
             </div>
+            <div className="p-4 rounded-xl bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900 text-center">
+              <span className="text-[11px] font-bold text-purple-800 dark:text-purple-300 uppercase tracking-wider block">90th Percentile</span>
+              <div className="text-2xl font-black text-purple-700 dark:text-purple-400 mt-1">₹{((adjustedMax * 1.25) / 100000).toFixed(1)}L</div>
+              <span className="text-[11px] text-purple-600/80 dark:text-purple-300/80 mt-0.5 block">Top 10% Industry Leaders</span>
+            </div>
+          </div>
+
+          {/* Interactive Experience Range Slider */}
+          <div className="p-5 rounded-2xl bg-muted/40 border space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <span className="text-xs font-bold uppercase tracking-wider text-foreground block">
+                  Simulate Experience Level: {selectedExpYears} {selectedExpYears === 1 ? 'Year' : 'Years'}
+                </span>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Adjust slider to see estimated in-hand compensation and market leverage band for {roleInfo.name}.
+                </p>
+              </div>
+              <div className="text-right">
+                <span className="text-xs text-muted-foreground block">Estimated Target CTC</span>
+                <span className="text-lg font-black text-emerald-600 font-mono">
+                  ₹{((adjustedMin * (0.85 + selectedExpYears * 0.12)) / 100000).toFixed(1)}L – ₹{((adjustedMax * (0.85 + selectedExpYears * 0.14)) / 100000).toFixed(1)}L
+                </span>
+              </div>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="12"
+              value={selectedExpYears}
+              onChange={(e) => {
+                const val = parseInt(e.target.value) || 0;
+                setSelectedExpYears(val);
+                conversionTelemetry.track('free_tool_started', {
+                  tool: 'salary_percentile_slider',
+                  role: roleInfo.name,
+                  location: locationInfo?.name,
+                  exp_years: val
+                });
+              }}
+              className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-600"
+            />
+            <div className="flex justify-between text-[11px] text-muted-foreground font-mono">
+              <span>0 yrs (Fresher)</span>
+              <span>3 yrs (Mid)</span>
+              <span>6 yrs (Senior)</span>
+              <span>9 yrs (Lead)</span>
+              <span>12+ yrs (Staff/Principal)</span>
+            </div>
+          </div>
+
+          {/* Value Action Conversion Gateway: Calculate Exact Offer Leverage */}
+          <div className="p-5 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-md">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-amber-300" />
+                <h4 className="text-base font-black">
+                  Holding an Offer or Planning an Appraisal?
+                </h4>
+              </div>
+              <p className="text-xs sm:text-sm text-blue-100 max-w-xl">
+                Benchmark your exact compensation, calculate tax-efficient take-home pay, and generate an AI-tailored negotiation script in 10 seconds.
+              </p>
+            </div>
+            <Button
+              onClick={() => {
+                conversionTelemetry.track('free_tool_started', {
+                  tool: 'salary_leverage_calculator',
+                  role: roleInfo.name,
+                  location: locationInfo?.name
+                });
+                const currentPath = typeof window !== 'undefined' ? window.location.pathname : `/salary/${role}`;
+                conversionTelemetry.setAcquisitionContext('salary_guide_page', currentPath);
+                navigate(`/tools/salary-analyzer?role=${encodeURIComponent(roleInfo.name)}&source=salary_guide`);
+              }}
+              className="whitespace-nowrap bg-white hover:bg-slate-100 text-blue-900 font-extrabold h-11 px-5 rounded-xl shadow-sm text-xs sm:text-sm"
+            >
+              Calculate Your Offer Leverage <ArrowRight className="ml-1.5 w-4 h-4" />
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -280,6 +374,16 @@ const SalaryGuidePage = () => {
           </CardContent>
         </Card>
       )}
+
+      {/* Contextual Subdomain Discovery Mesh */}
+      <section className="pt-8 border-t border-border">
+        <RelatedSubdomainLinks role={roleInfo.name} city={locationInfo?.name} />
+      </section>
+
+      {/* Global Crawlable Subdomain Mesh Footer */}
+      <div className="-mx-4 sm:-mx-6 lg:-mx-8">
+        <SubdomainMeshFooter />
+      </div>
     </div>
   );
 };

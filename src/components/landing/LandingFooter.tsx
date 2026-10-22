@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { SocialConnect } from '@/components/social/SocialConnect';
+import { SubdomainMeshFooter } from '@/components/navigation/SubdomainMeshFooter';
 
 export const LandingFooter: React.FC = () => {
   const platformLinks = [
@@ -119,6 +120,11 @@ export const LandingFooter: React.FC = () => {
           </div>
         </div>
         
+        {/* High-Authority Cross-Subdomain Mesh */}
+        <div className="mt-12 -mx-4 sm:-mx-6 lg:-mx-8">
+          <SubdomainMeshFooter />
+        </div>
+
         {/* Bottom copyright */}
         <div className="border-t border-background/20 mt-8 pt-8 text-center">
           <p className="text-background/50 text-xs">

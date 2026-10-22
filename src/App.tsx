@@ -513,6 +513,9 @@ const App = () => {
                                       <Route path="/interview-prep" element={<InterviewPrepSuite />} />
                                       <Route path="/analytics" element={<ResumeAnalytics />} />
                                       <Route path="/ai-enhancement" element={<AIEnhancement />} />
+                                      <Route path="/resume-builder" element={<UnifiedResumeBuilder />} />
+                                      <Route path="/resume-templates" element={<ResumeTemplates />} />
+                                      <Route path="/ats-checker" element={<ATSChecker />} />
                                     </>
                                   )}
 
@@ -556,6 +559,9 @@ const App = () => {
                 <Route path="/resume/templates" element={<ResumeTemplates />} />
                 <Route path="/resume/cover-letter" element={<CoverLetterStudio />} />
                 <Route path="/resume/interview-prep" element={<InterviewPrepSuite />} />
+                <Route path="/resume-builder" element={<UnifiedResumeBuilder />} />
+                <Route path="/resume-templates" element={<ResumeTemplates />} />
+                <Route path="/ats-checker" element={<ATSChecker />} />
 
                 <Route path="/passport" element={<Suspense fallback={null}><CareerPassportDashboard /></Suspense>} />
                 <Route path="/passport/public/:identifier" element={<Suspense fallback={null}><PublicPassport /></Suspense>} />
@@ -687,6 +693,12 @@ const App = () => {
                 <Route path="/locations/varanasi" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
                 <Route path="/locations/noida" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
                 <Route path="/locations/lucknow" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/locations/bangalore" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/locations/mumbai" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/locations/delhi" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/locations/hyderabad" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/locations/chennai" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/locations/pune" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
                 <Route path="/locations/:location" element={<JobsByLocation />} />
                 <Route path="/locations" element={<JobsByLocation />} />
                 <Route path="/industries/:industry" element={<IndustryJobs />} />

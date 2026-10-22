@@ -58,6 +58,50 @@ export interface FirstTouchAttribution {
   timestamp: string;
 }
 
+export interface LastTouchAttribution {
+  lastHostname: string;
+  lastPath: string;
+  referrer: string;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  timestamp: string;
+}
+
+export function sanitizeUrl(rawUrl?: string): string {
+  if (!rawUrl) return '';
+  try {
+    const dummyBase = 'https://talentxcel.in';
+    const parsed = new URL(rawUrl, dummyBase);
+    const forbidden = ['token', 'access_token', 'refresh_token', 'id_token', 'code', 'state', 'secret', 'password', 'key', 'email', 'phone'];
+    const keysToDelete: string[] = [];
+    parsed.searchParams.forEach((val, key) => {
+      const lower = key.toLowerCase();
+      if (forbidden.some(f => lower.includes(f))) {
+        keysToDelete.push(key);
+      } else if (val && (val.includes('://') || val.startsWith('/'))) {
+        try {
+          const sanitizedNested = sanitizeUrl(val);
+          parsed.searchParams.set(key, sanitizedNested);
+        } catch {}
+      }
+    });
+    keysToDelete.forEach(k => parsed.searchParams.delete(k));
+    
+    if (rawUrl.startsWith('http://') || rawUrl.startsWith('https://')) {
+      return parsed.toString();
+    }
+    return `${parsed.pathname}${parsed.search}`;
+  } catch {
+    return (rawUrl || '').split('?')[0];
+  }
+}
+
+export function sanitizeReferrer(referrer?: string): string {
+  if (!referrer) return '';
+  return sanitizeUrl(referrer);
+}
+
 export interface ConversionStats {
   landing_view: number;
   free_tool_started: number;
@@ -93,7 +137,40 @@ const STORAGE_KEY = 'txc_persistent_funnel_stats';
 const LOG_STORAGE_KEY = 'txc_funnel_events_log';
 const ANON_SID_COOKIE = 'txc_anon_sid';
 const FIRST_TOUCH_KEY = 'txc_first_touch_attribution';
+const LAST_TOUCH_KEY = 'txc_last_touch_attribution';
 const MAX_LOCAL_EVENTS = 50;
+
+const memoryStore = new Map<string, string>();
+
+export function safeGetItem(key: string): string | null {
+  if (typeof window !== 'undefined') {
+    try {
+      const val = localStorage.getItem(key) || sessionStorage.getItem(key);
+      if (val !== null) return val;
+    } catch {}
+  }
+  return memoryStore.get(key) || null;
+}
+
+export function safeSetItem(key: string, value: string): void {
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem(key, value);
+      sessionStorage.setItem(key, value);
+    } catch {}
+  }
+  memoryStore.set(key, value);
+}
+
+export function safeRemoveItem(key: string): void {
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.removeItem(key);
+      sessionStorage.removeItem(key);
+    } catch {}
+  }
+  memoryStore.delete(key);
+}
 
 function getCookie(name: string): string | null {
   if (typeof document === 'undefined') return null;
@@ -130,15 +207,34 @@ function getOrCreateAnonymousSessionId(): string {
   }
 }
 
-function sanitizeMetadata(meta?: Record<string, any>): Record<string, any> {
-  if (!meta) return {};
+export function sanitizeMetadata(meta?: Record<string, any>): Record<string, any> {
+  if (!meta || typeof meta !== 'object') return {};
   const cleaned: Record<string, any> = {};
-  const forbiddenPatterns = [/email/i, /phone/i, /password/i, /token/i, /secret/i, /jwt/i];
+  const forbiddenPatterns = [
+    /email/i,
+    /phone/i,
+    /password/i,
+    /token/i,
+    /secret/i,
+    /jwt/i,
+    /authorization/i,
+    /bearer/i,
+    /credential/i,
+    /resume_text/i,
+    /cv_content/i,
+    /file_bytes/i
+  ];
 
   for (const [key, val] of Object.entries(meta)) {
     if (forbiddenPatterns.some(p => p.test(key))) continue;
-    if (typeof val === 'string' && val.length > 500) {
-      cleaned[key] = val.slice(0, 500);
+    if (typeof val === 'string') {
+      if (val.length > 500) {
+        cleaned[key] = val.slice(0, 500);
+      } else {
+        cleaned[key] = val;
+      }
+    } else if (val && typeof val === 'object' && !Array.isArray(val)) {
+      cleaned[key] = sanitizeMetadata(val);
     } else {
       cleaned[key] = val;
     }
@@ -193,10 +289,14 @@ class ConversionTelemetryManager {
 
   private eventsLog: TelemetryLogEntry[] = [];
   private syncDebounceTimer: any = null;
+  private deduplicationCache = new Map<string, number>();
+  private syncRetryTimer: any = null;
+  private syncRetryAttempts: number = 0;
 
   constructor() {
     this.loadFromStorage();
     this.recordFirstTouchAttribution();
+    this.recordLastTouchAttribution();
   }
 
   private loadFromStorage(): void {
@@ -228,16 +328,25 @@ class ConversionTelemetryManager {
     }
   }
 
+  /**
+   * Preserves first-touch attribution forever across subdomains.
+   * NEVER overwrites first touch once set.
+   * Ignores internal authentication routes (e.g. /auth/callback) to prevent erasing originating domain.
+   */
   private recordFirstTouchAttribution(): void {
     if (typeof window === 'undefined') return;
     try {
       const existing = localStorage.getItem(FIRST_TOUCH_KEY) || getCookie(FIRST_TOUCH_KEY);
       if (!existing) {
+        const pathname = window.location.pathname;
+        // Do not attribute first-touch to an internal OAuth callback
+        if (pathname.startsWith('/auth/callback')) return;
+
         const params = new URLSearchParams(window.location.search);
         const attribution: FirstTouchAttribution = {
           landingHostname: window.location.hostname,
-          landingPath: window.location.pathname,
-          referrer: document.referrer || '',
+          landingPath: sanitizeUrl(pathname),
+          referrer: sanitizeReferrer(document.referrer),
           utmSource: params.get('utm_source') || undefined,
           utmMedium: params.get('utm_medium') || undefined,
           utmCampaign: params.get('utm_campaign') || undefined,
@@ -247,6 +356,33 @@ class ConversionTelemetryManager {
         localStorage.setItem(FIRST_TOUCH_KEY, serialized);
         setCookie(FIRST_TOUCH_KEY, serialized);
       }
+    } catch {}
+  }
+
+  /**
+   * Updates last-touch attribution on navigation.
+   * Skips internal auth screens so the pre-auth intent is preserved.
+   */
+  public recordLastTouchAttribution(): void {
+    if (typeof window === 'undefined') return;
+    try {
+      const pathname = window.location.pathname;
+      if (pathname.startsWith('/auth') || pathname.startsWith('/onboarding')) {
+        return;
+      }
+      const params = new URLSearchParams(window.location.search);
+      const attribution: LastTouchAttribution = {
+        lastHostname: window.location.hostname,
+        lastPath: sanitizeUrl(pathname),
+        referrer: sanitizeReferrer(document.referrer),
+        utmSource: params.get('utm_source') || undefined,
+        utmMedium: params.get('utm_medium') || undefined,
+        utmCampaign: params.get('utm_campaign') || undefined,
+        timestamp: new Date().toISOString(),
+      };
+      const serialized = JSON.stringify(attribution);
+      localStorage.setItem(LAST_TOUCH_KEY, serialized);
+      setCookie(LAST_TOUCH_KEY, serialized);
     } catch {}
   }
 
@@ -260,27 +396,58 @@ class ConversionTelemetryManager {
     }
   }
 
+  public getLastTouchAttribution(): LastTouchAttribution | null {
+    if (typeof window === 'undefined') return null;
+    try {
+      const raw = localStorage.getItem(LAST_TOUCH_KEY) || getCookie(LAST_TOUCH_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  }
+
   /**
    * Records a conversion event locally, classifies funnel type, and syncs to Supabase.
+   * Includes idempotency deduplication to avoid double counting from React 18 re-renders.
    */
   track(event: ConversionEvent, meta?: { source?: string; score?: number; [key: string]: any }): void {
+    const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
+    const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
+    const search = typeof window !== 'undefined' ? window.location.search : '';
+
+    // Idempotency check: prevent duplicate event within 1.5 seconds on exact same event + path
+    const dedupKey = `${event}:${hostname}:${pathname}:${JSON.stringify(meta || {})}`;
+    const now = Date.now();
+    const lastTime = this.deduplicationCache.get(dedupKey);
+    if (lastTime && (now - lastTime) < 1500) {
+      return;
+    }
+    this.deduplicationCache.set(dedupKey, now);
+    if (this.deduplicationCache.size > 100) {
+      const cutoff = now - 10000;
+      for (const [k, t] of this.deduplicationCache.entries()) {
+        if (t < cutoff) this.deduplicationCache.delete(k);
+      }
+    }
+
     if (this.counts[event] !== undefined) {
       this.counts[event]++;
     }
 
-    const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
-    const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
-    const search = typeof window !== 'undefined' ? window.location.search : '';
+    // Refresh last touch on non-auth user actions
+    this.recordLastTouchAttribution();
+
+    const sanitizedUrlString = sanitizeUrl(`${pathname}${search}`);
     const params = new URLSearchParams(search);
 
     const logEntry: TelemetryLogEntry = {
       event,
       timestamp: new Date().toISOString(),
-      url: `${pathname}${search}`,
+      url: sanitizedUrlString,
       hostname,
       funnelType: resolveFunnelCategory(hostname, pathname, event),
       anonymousSessionId: getOrCreateAnonymousSessionId(),
-      referrer: typeof document !== 'undefined' ? document.referrer : '',
+      referrer: sanitizeReferrer(typeof document !== 'undefined' ? document.referrer : ''),
       utmSource: params.get('utm_source') || undefined,
       utmMedium: params.get('utm_medium') || undefined,
       utmCampaign: params.get('utm_campaign') || undefined,
@@ -299,7 +466,7 @@ class ConversionTelemetryManager {
     if (this.syncDebounceTimer) clearTimeout(this.syncDebounceTimer);
     this.syncDebounceTimer = setTimeout(() => {
       this.syncPendingToSupabase();
-    }, 600);
+    }, 500);
 
     if (typeof window !== 'undefined' && (import.meta as any).env?.DEV) {
       console.log(`[GrowthTelemetry:${logEntry.funnelType}] ${event}`, meta || '');
@@ -314,6 +481,9 @@ class ConversionTelemetryManager {
       const { data: { session } } = await supabase.auth.getSession();
       const userId = session?.user?.id || null;
 
+      const firstTouch = this.getFirstTouchAttribution();
+      const lastTouch = this.getLastTouchAttribution();
+
       const rows = pending.map(e => ({
         user_id: userId,
         anonymous_session_id: e.anonymousSessionId,
@@ -326,6 +496,10 @@ class ConversionTelemetryManager {
         utm_campaign: e.utmCampaign || null,
         event_data: {
           hostname: e.hostname,
+          first_touch_hostname: firstTouch?.landingHostname || null,
+          first_touch_path: firstTouch?.landingPath || null,
+          last_touch_hostname: lastTouch?.lastHostname || null,
+          last_touch_path: lastTouch?.lastPath || null,
           ...e.metadata,
         },
         created_at: e.timestamp,
@@ -335,23 +509,33 @@ class ConversionTelemetryManager {
       if (!error) {
         pending.forEach(e => { e.synced = true; });
         this.saveToStorage();
+        this.syncRetryAttempts = 0;
+      } else {
+        // Retry transient sync error with exponential backoff up to 30s
+        this.syncRetryAttempts = (this.syncRetryAttempts || 0) + 1;
+        const delay = Math.min(30000, 1000 * Math.pow(2, this.syncRetryAttempts));
+        if (this.syncRetryTimer) clearTimeout(this.syncRetryTimer);
+        this.syncRetryTimer = setTimeout(() => {
+          this.syncPendingToSupabase();
+        }, delay);
       }
     } catch {
-      // Non-blocking telemetry failure
+      // Non-blocking telemetry retry
+      this.syncRetryAttempts = (this.syncRetryAttempts || 0) + 1;
+      const delay = Math.min(30000, 1000 * Math.pow(2, this.syncRetryAttempts));
+      if (this.syncRetryTimer) clearTimeout(this.syncRetryTimer);
+      this.syncRetryTimer = setTimeout(() => {
+        this.syncPendingToSupabase();
+      }, delay);
     }
   }
 
-  /**
-   * Sets acquisition context for the signup return flow
-   */
   setAcquisitionContext(source: string, returnUrl?: string): void {
-    if (typeof window === 'undefined') return;
     try {
-      localStorage.setItem('txc_acquisition_source', source);
-      sessionStorage.setItem('txc_acquisition_source', source);
+      safeSetItem('txc_acquisition_source', source);
       if (returnUrl) {
-        localStorage.setItem('txc_acquisition_return_url', returnUrl);
-        sessionStorage.setItem('txc_acquisition_return_url', returnUrl);
+        const sanitized = sanitizeUrl(returnUrl);
+        safeSetItem('txc_acquisition_return_url', sanitized);
       }
     } catch {}
   }
@@ -360,12 +544,10 @@ class ConversionTelemetryManager {
    * Retrieves and clears the acquisition return URL
    */
   consumeAcquisitionReturnUrl(): { source: string | null; returnUrl: string | null } {
-    if (typeof window === 'undefined') return { source: null, returnUrl: null };
     try {
-      const source = localStorage.getItem('txc_acquisition_source') || sessionStorage.getItem('txc_acquisition_source');
-      const returnUrl = localStorage.getItem('txc_acquisition_return_url') || sessionStorage.getItem('txc_acquisition_return_url');
-      localStorage.removeItem('txc_acquisition_return_url');
-      sessionStorage.removeItem('txc_acquisition_return_url');
+      const source = safeGetItem('txc_acquisition_source');
+      const returnUrl = safeGetItem('txc_acquisition_return_url');
+      safeRemoveItem('txc_acquisition_return_url');
       return { source, returnUrl };
     } catch {
       return { source: null, returnUrl: null };
@@ -397,6 +579,7 @@ class ConversionTelemetryManager {
       this.counts[k as ConversionEvent] = 0;
     });
     this.eventsLog = [];
+    this.deduplicationCache.clear();
     if (typeof window !== 'undefined') {
       try {
         localStorage.removeItem(STORAGE_KEY);
@@ -413,3 +596,4 @@ export const conversionTelemetry = new ConversionTelemetryManager();
 if (typeof window !== 'undefined') {
   (window as any).conversionTelemetry = conversionTelemetry;
 }
+
