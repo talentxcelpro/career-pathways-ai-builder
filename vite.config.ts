@@ -61,7 +61,17 @@ export default defineConfig(({ mode }) => ({
           if (id.includes('node_modules/html2canvas')) {
             return 'html2canvas-vendor';
           }
-          // 3. Keep all React core runtime and vendor libraries in a unified vendor chunk
+          // 3. Standalone heavy compute/rendering engines (loaded only when their specific route/tool is active)
+          if (id.includes('node_modules/fabric')) {
+            return 'fabric-vendor';
+          }
+          if (id.includes('node_modules/tesseract.js')) {
+            return 'tesseract-vendor';
+          }
+          if (id.includes('node_modules/docx')) {
+            return 'docx-vendor';
+          }
+          // 4. Keep all React core runtime and vendor libraries in a unified vendor chunk
           // to prevent cross-chunk circular dependencies and uninitialized createContext calls
           if (id.includes('node_modules')) {
             return 'vendor';
