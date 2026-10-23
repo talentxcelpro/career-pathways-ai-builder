@@ -24,6 +24,7 @@ interface Post {
     id: string;
     full_name: string;
     avatar_url?: string;
+    profile_picture_url?: string;
   };
   tags?: string[];
   location?: string;
@@ -62,8 +63,8 @@ const PostCard = memo<{ post: Post; onInteraction: (postId: string, type: string
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10">
-              <AvatarImage src={post.user.avatar_url} />
-              <AvatarFallback>{post.user.full_name?.[0]}</AvatarFallback>
+              <AvatarImage src={post.user?.profile_picture_url || post.user?.avatar_url} />
+              <AvatarFallback>{post.user?.full_name?.[0]}</AvatarFallback>
             </Avatar>
             <div>
               <p className="font-semibold text-sm">{post.user.full_name}</p>
@@ -185,18 +186,20 @@ export const OptimizedSocialPulse = memo<OptimizedSocialPulseProps>(({
         content,
         media_urls,
         author_id,
+        user_id,
         created_at,
         likes_count,
         comments_count,
         shares_count,
         tags,
         location,
-        user:profiles!posts_author_id_fkey(
+        user:profiles(
           id,
           full_name,
-          avatar_url
+          profile_picture_url
         )
       `)
+      .eq('is_deleted', false)
       .order('created_at', { ascending: false })
       .range((page - 1) * 10, page * 10 - 1);
 

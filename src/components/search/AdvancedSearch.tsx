@@ -141,11 +141,11 @@ export const AdvancedSearch: React.FC = () => {
           const { data: posts } = await supabase
             .from('posts')
             .select(`
-              id, content, headline, created_at, author_id,
-              profiles!posts_author_id_fkey(full_name, profile_picture_url)
+              id, content, headline, created_at, user_id,
+              profiles(full_name, profile_picture_url)
             `)
             .or(`content.ilike.%${filters.query}%,headline.ilike.%${filters.query}%`)
-            .eq('is_active', true)
+            .eq('is_deleted', false)
             .limit(10);
 
           if (posts) {

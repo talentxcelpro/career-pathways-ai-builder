@@ -141,7 +141,7 @@ export const useArticleBookmarks = (userId?: string) => {
             reading_time,
             created_at,
             author_id,
-            profiles!posts_author_id_fkey(
+            profiles(
               id,
               full_name,
               profile_picture_url,

@@ -27,10 +27,15 @@ export interface ProfilePost {
   profiles?: any;
 }
 
+const isValidUUID = (id?: string | null): boolean =>
+  Boolean(id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id));
+
 export function useProfilePosts(userId: string) {
   const queryClient = useQueryClient();
   const { earnTXC } = useTXCMining();
   const { refreshBalance } = useTokenBalance();
+
+  const isProfileQueryEnabled = isValidUUID(userId);
 
   // Get posts for a user's profile (both their own posts and posts visible to them)
   const { data: profilePosts, isLoading } = useQuery({
@@ -42,7 +47,7 @@ export function useProfilePosts(userId: string) {
         .from('posts')
         .select(`
           *,
-          profiles!posts_author_id_fkey (
+          profiles (
             id,
             full_name,
             profile_picture_url,
@@ -66,7 +71,7 @@ export function useProfilePosts(userId: string) {
       if (error) throw error;
       return data as ProfilePost[];
     },
-    enabled: !!userId
+    enabled: isProfileQueryEnabled
   });
 
   // Get posts for global feed (all public posts)
@@ -77,7 +82,7 @@ export function useProfilePosts(userId: string) {
         .from('posts')
         .select(`
           *,
-          profiles!posts_author_id_fkey (
+          profiles (
             id,
             full_name,
             profile_picture_url,
@@ -93,7 +98,8 @@ export function useProfilePosts(userId: string) {
 
       if (error) throw error;
       return data as ProfilePost[];
-    }
+    },
+    enabled: userId === 'global'
   });
 
   // Create a new post

@@ -8,19 +8,18 @@ import { supabase } from '@/integrations/supabase/client';
 
 // Critical resource preloading for jobs page
 export const preloadJobsPageResources = () => {
-  console.log('🚀 Preloading jobs page resources...');
-  
-  // Preload critical images
+  // Preload critical images into browser cache safely without link preload warnings
   const criticalImages = [
     '/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png', // TalentXcel logo
   ];
   
   criticalImages.forEach(src => {
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.as = 'image';
-    link.href = src;
-    document.head.appendChild(link);
+    try {
+      const img = new Image();
+      img.src = src;
+    } catch {
+      // Ignore background image pre-fetch errors
+    }
   });
 };
 

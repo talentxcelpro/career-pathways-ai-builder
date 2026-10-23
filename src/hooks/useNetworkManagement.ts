@@ -15,7 +15,7 @@ export const useNetworkManagement = () => {
         .from('posts')
         .select(`
           *,
-          profiles!posts_author_id_fkey(full_name, profile_picture_url)
+          profiles(full_name, profile_picture_url)
         `)
         .order('created_at', { ascending: false });
 

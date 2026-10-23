@@ -54,7 +54,7 @@ export const SocialPulse: React.FC<SocialPulseProps> = ({
         .from('posts')
         .select(`
           *,
-          profiles!posts_author_id_fkey(
+          profiles(
             id,
             full_name,
             profile_picture_url,
@@ -62,7 +62,7 @@ export const SocialPulse: React.FC<SocialPulseProps> = ({
             current_company
           )
         `)
-        .eq('is_active', true)
+        .eq('is_deleted', false)
         .order('created_at', { ascending: false });
 
       // Apply filters based on Pulse type

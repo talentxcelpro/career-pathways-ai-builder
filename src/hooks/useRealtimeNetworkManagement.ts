@@ -171,7 +171,7 @@ export const useRealtimeNetworkManagement = () => {
         .from('posts')
         .select(`
           *,
-          profiles!posts_author_id_fkey(full_name, profile_picture_url, email),
+          profiles(full_name, profile_picture_url, email),
           post_comments(
             id,
             content,

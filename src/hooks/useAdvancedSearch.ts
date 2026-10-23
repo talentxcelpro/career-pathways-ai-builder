@@ -62,7 +62,7 @@ export const useAdvancedSearch = () => {
           .from('posts')
           .select(`
             id, content, created_at, likes_count, comments_count,
-            profiles!posts_author_id_fkey (full_name, profile_picture_url)
+            profiles (full_name, profile_picture_url)
           `)
           .ilike('content', `%${searchQuery}%`)
           .eq('status', 'published')

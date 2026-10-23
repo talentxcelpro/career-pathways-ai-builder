@@ -238,16 +238,17 @@ export class AISearchService {
       .from('posts')
       .select(`
         *,
-        profiles!posts_author_id_fkey (
+        profiles (
           id,
           full_name,
-          avatar_url,
+          profile_picture_url,
           user_role
         )
-      `);
+      `)
+      .eq('is_deleted', false);
 
     if (filters.query) {
-      dbQuery = dbQuery.or(`content.ilike.%${filters.query}%,title.ilike.%${filters.query}%`);
+      dbQuery = dbQuery.or(`content.ilike.%${filters.query}%,headline.ilike.%${filters.query}%`);
     }
 
     const { data, error } = await dbQuery
