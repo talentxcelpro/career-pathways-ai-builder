@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { FOUNDATION_NEWS_ARTICLES } from '@/data/newsArticles';
 
 export interface NewsArticle {
   id: string;
@@ -20,24 +20,32 @@ export interface NewsArticle {
   updated_at: string;
 }
 
+const MAPPED_ARTICLES: NewsArticle[] = FOUNDATION_NEWS_ARTICLES.map((a, idx) => ({
+  id: a.id,
+  title: a.title,
+  description: a.summary,
+  content: a.content,
+  url: `/news/${a.slug}`,
+  source_name: 'TalentXcel Intelligence',
+  author: a.author?.name || 'Editorial Desk',
+  published_at: a.publishedAt,
+  category: a.category,
+  tags: a.tags || [],
+  sentiment_score: 0.85,
+  engagement_score: 95 - idx * 2,
+  is_trending: a.isFeatured || idx < 3,
+  image_url: a.imageUrl,
+  created_at: a.publishedAt,
+  updated_at: a.updatedAt || a.publishedAt,
+}));
+
 export const useNewsArticles = (limit = 10) => {
   return useQuery({
     queryKey: ['news-articles', limit],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('news_articles')
-        .select('*')
-        .order('published_at', { ascending: false })
-        .limit(limit);
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      return data as NewsArticle[];
+      return MAPPED_ARTICLES.slice(0, limit);
     },
-    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
-    refetchInterval: 30 * 60 * 1000, // Refetch every 30 minutes
+    staleTime: 5 * 60 * 1000,
   });
 };
 
@@ -45,20 +53,8 @@ export const useTrendingNews = (limit = 5) => {
   return useQuery({
     queryKey: ['trending-news', limit],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('news_articles')
-        .select('*')
-        .eq('is_trending', true)
-        .order('engagement_score', { ascending: false })
-        .order('published_at', { ascending: false })
-        .limit(limit);
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      return data as NewsArticle[];
+      return MAPPED_ARTICLES.filter(a => a.is_trending).slice(0, limit);
     },
-    staleTime: 10 * 60 * 1000, // Consider data fresh for 10 minutes
+    staleTime: 10 * 60 * 1000,
   });
 };

@@ -13,50 +13,7 @@ export class NewsService {
     search?: string, 
     archetype?: NewsArchetype | 'All'
   ): Promise<NewsArticle[]> {
-    let articles: NewsArticle[] = [];
-
-    try {
-      const { data, error } = await (supabase as any)
-        .from('news_articles')
-        .select('*')
-        .eq('published_status', 'published')
-        .order('published_at', { ascending: false });
-
-      if (!error && data && data.length > 0) {
-        // Map database records if available
-        articles = data.map((d: any) => ({
-          id: d.id,
-          slug: d.slug || d.url || d.id,
-          title: d.title,
-          summary: d.summary || d.description || '',
-          content: d.content || '',
-          category: (d.category || 'Company News') as Exclude<NewsCategory, 'All'>,
-          archetype: d.archetype as NewsArchetype | undefined,
-          publishedAt: d.published_at || d.created_at,
-          updatedAt: d.updated_at,
-          lastRefreshedAt: d.last_refreshed_at || d.updated_at,
-          editionVersion: d.edition_version || 'v1.0 - September 2026 Edition',
-          refreshCadenceDays: d.refresh_cadence_days || 15,
-          metricsSnapshot: d.metrics_snapshot,
-          author: {
-            name: d.author_name || 'TalentXcel Editorial Desk',
-            role: d.author_role || 'Platform Intelligence',
-            avatar: d.author_avatar || '/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png'
-          },
-          imageUrl: (d.image_url && !d.image_url.includes('lovable-uploads') && !d.image_url.includes('placeholder'))
-            ? d.image_url
-            : (FOUNDATION_NEWS_ARTICLES.find(f => f.slug === (d.slug || d.url || d.id))?.imageUrl || '/images/news/sector-report-executives.jpg'),
-          readTime: d.read_time || '4 min read',
-          tags: d.tags || ['TalentXcel', 'Career News'],
-          keyTakeaways: d.key_takeaways || [],
-          isFeatured: d.is_featured || false
-        }));
-      } else {
-        articles = FOUNDATION_NEWS_ARTICLES;
-      }
-    } catch {
-      articles = FOUNDATION_NEWS_ARTICLES;
-    }
+    let articles: NewsArticle[] = [...FOUNDATION_NEWS_ARTICLES];
 
     // 15-Day Automated Freshness Evaluation
     const freshness = evaluateAndRefreshArticles(articles);
