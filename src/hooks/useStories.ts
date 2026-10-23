@@ -36,12 +36,12 @@ export const useStories = () => {
       setLoading(true);
       setError(null);
 
-      // Fetch active stories with user data
+      // Fetch active stories with user data safely
       const { data: storiesData, error: storiesError } = await supabase
         .from('stories')
         .select(`
           *,
-          profiles!stories_user_id_fkey (
+          profiles (
             full_name,
             profile_picture_url
           )
@@ -50,7 +50,12 @@ export const useStories = () => {
         .gt('expires_at', new Date().toISOString())
         .order('created_at', { ascending: false });
 
-      if (storiesError) throw storiesError;
+      if (storiesError) {
+        // If stories table does not exist in schema cache, fail gracefully
+        setStories([]);
+        setLoading(false);
+        return;
+      }
 
       // Transform data and check view status for current user
       const transformedStories: Story[] = await Promise.all(

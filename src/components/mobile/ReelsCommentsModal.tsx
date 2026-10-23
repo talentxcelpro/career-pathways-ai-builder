@@ -94,30 +94,41 @@ export const ReelsCommentsModal: React.FC<ReelsCommentsModalProps> = ({
           content,
           created_at,
           author_id,
-          likes_count,
-          profiles!post_comments_author_id_fkey(
-            full_name,
-            profile_picture_url
-          )
+          likes_count
         `)
         .eq('post_id', postId)
         .order('created_at', { ascending: true });
 
       if (error) throw error;
 
-      const formattedComments = (commentsData || []).map(comment => ({
-        id: comment.id,
-        content: comment.content,
-        created_at: comment.created_at,
-        user_id: comment.author_id,
-        likes_count: comment.likes_count || 0,
-        is_liked: false, // TODO: Check if current user liked this comment
-        author: {
-          full_name: (comment.profiles as any)?.full_name || (comment.profiles as any)?.display_name || 'TalentXcel User',
-          profile_picture_url: (comment.profiles as any)?.profile_picture_url
-        },
-        replies_count: 0 // TODO: Implement replies
-      }));
+      const authorIds = Array.from(new Set((commentsData || []).map((c: any) => c.author_id).filter(Boolean)));
+      const profileMap = new Map<string, any>();
+      if (authorIds.length > 0) {
+        const { data: profilesData } = await supabase
+          .from('profiles')
+          .select('id, full_name, profile_picture_url')
+          .in('id', authorIds);
+        if (profilesData) {
+          profilesData.forEach(p => profileMap.set(p.id, p));
+        }
+      }
+
+      const formattedComments = (commentsData || []).map(comment => {
+        const profile = profileMap.get(comment.author_id);
+        return {
+          id: comment.id,
+          content: comment.content,
+          created_at: comment.created_at,
+          user_id: comment.author_id,
+          likes_count: comment.likes_count || 0,
+          is_liked: false,
+          author: {
+            full_name: profile?.full_name || 'TalentXcel User',
+            profile_picture_url: profile?.profile_picture_url
+          },
+          replies_count: 0
+        };
+      });
 
       setComments(formattedComments);
     } catch (error) {

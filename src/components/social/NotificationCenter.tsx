@@ -45,13 +45,7 @@ export const NotificationCenter: React.FC = () => {
 
       const { data, error } = await supabase
         .from('notifications')
-        .select(`
-          *,
-          profiles!notifications_actor_user_id_fkey (
-            full_name,
-            profile_picture_url
-          )
-        `)
+        .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(50);
@@ -60,7 +54,7 @@ export const NotificationCenter: React.FC = () => {
 
       return (data || []).map(notification => ({
         ...notification,
-        actor_user: notification.profiles
+        actor_user: null
       }));
     },
     enabled: !!user

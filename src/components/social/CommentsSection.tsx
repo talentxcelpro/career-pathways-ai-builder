@@ -67,50 +67,53 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({
           created_at,
           likes_count,
           author_id,
-          parent_comment_id,
-          profiles!post_comments_author_id_fkey(
-            id,
-            full_name,
-            profile_picture_url,
-            headline
-          )
+          parent_comment_id
         `)
         .eq('post_id', postId)
-        .is('parent_comment_id', null)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
+      if (!data || data.length === 0) return [];
 
-      // Fetch replies for each comment
-      const commentsWithReplies = await Promise.all(
-        (data as any[]).map(async (comment) => {
-          const { data: replies } = await supabase
-            .from('post_comments')
-            .select(`
-              id,
-              content,
-              created_at,
-              likes_count,
-              author_id,
-              parent_comment_id,
-              profiles!post_comments_author_id_fkey(
-                id,
-                full_name,
-                profile_picture_url,
-                headline
-              )
-            `)
-            .eq('parent_comment_id', comment.id)
-            .order('created_at', { ascending: true });
+      const authorIds = Array.from(new Set(data.map((c: any) => c.author_id).filter(Boolean)));
+      const profileMap = new Map<string, any>();
+      if (authorIds.length > 0) {
+        const { data: profilesData } = await supabase
+          .from('profiles')
+          .select('id, full_name, profile_picture_url, headline')
+          .in('id', authorIds);
+        if (profilesData) {
+          profilesData.forEach(p => profileMap.set(p.id, p));
+        }
+      }
 
-          return {
-            ...comment,
-            replies: replies || []
-          };
-        })
-      );
+      // Separate root comments and replies
+      const rootComments: any[] = [];
+      const repliesByParent = new Map<string, any[]>();
 
-      return commentsWithReplies as Comment[];
+      data.forEach((comment: any) => {
+        const fullComment = {
+          ...comment,
+          profiles: profileMap.get(comment.author_id) || {
+            id: comment.author_id,
+            full_name: 'Member'
+          }
+        };
+
+        if (comment.parent_comment_id) {
+          if (!repliesByParent.has(comment.parent_comment_id)) {
+            repliesByParent.set(comment.parent_comment_id, []);
+          }
+          repliesByParent.get(comment.parent_comment_id)!.push(fullComment);
+        } else {
+          rootComments.push(fullComment);
+        }
+      });
+
+      return rootComments.map(c => ({
+        ...c,
+        replies: (repliesByParent.get(c.id) || []).reverse()
+      })) as Comment[];
     },
     enabled: isOpen
   });

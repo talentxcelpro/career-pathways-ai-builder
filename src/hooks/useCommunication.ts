@@ -89,7 +89,7 @@ export const useCommunication = () => {
         .from('conversations')
         .select(`
           *,
-          messages!conversations_last_message_id_fkey(
+          messages(
             id,
             content,
             created_at,

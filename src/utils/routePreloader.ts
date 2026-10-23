@@ -20,9 +20,13 @@ const routeImports: Record<string, () => Promise<any>> = {
   '/passport': () => import('@/pages/TalentScorePage'),
   '/reels': () => import('@/pages/MobileReelsPage'),
   '/my-applications': () => import('@/pages/jobs/MyApplications'),
+  '/saved-jobs': () => import('@/pages/jobs/SavedJobs'),
   '/gamification': () => import('@/pages/GamificationCenter'),
   '/resume/ats-check': () => import('@/pages/resume/ATSChecker'),
   '/resume': () => import('@/pages/resume/UnifiedResumeHub'),
+  '/blog': () => import('@/pages/Blog'),
+  '/news': () => import('@/pages/NewsPage'),
+  '/refer-and-earn': () => import('@/pages/ReferAndEarn'),
 };
 
 /**

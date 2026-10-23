@@ -52,21 +52,23 @@ a, button, input, select, textarea, [role="button"], [tabindex] {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Fluid page transition animation */
+/* Fluid, hardware-accelerated page transition animation */
 @keyframes pageSlideFade {
   0% {
-    opacity: 0;
-    transform: translateY(3px);
+    opacity: 0.88;
+    transform: translate3d(0, 3px, 0);
   }
   100% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 .page-transition {
-  animation: pageSlideFade 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: pageSlideFade 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   will-change: opacity, transform;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -157,10 +159,6 @@ a, button, input, select, textarea, [role="button"], [tabindex] {
   display: none;
 }
 
-/* Smooth page transitions */
-.page-transition {
-  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
-}
 
 .page-enter {
   opacity: 0;

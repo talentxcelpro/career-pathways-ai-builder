@@ -56,24 +56,35 @@ export const PostComments: React.FC<PostCommentsProps> = ({
   // Fetch comments
   const { data: comments = [], isLoading } = useQuery({
     queryKey: ['post-comments', postId],
-    queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: commentsData, error } = await supabase
         .from('post_comments')
-        .select(`
-          *,
-          profiles!post_comments_author_id_fkey(
-            id,
-            full_name,
-            profile_picture_url,
-            headline,
-            current_company
-          )
-        `)
+        .select('*')
         .eq('post_id', postId)
         .order('created_at', { ascending: true });
 
       if (error) throw error;
-      return data as Comment[];
+      if (!commentsData || commentsData.length === 0) return [];
+
+      const authorIds = Array.from(new Set(commentsData.map((c: any) => c.author_id || c.user_id).filter(Boolean)));
+      const profileMap = new Map<string, any>();
+      if (authorIds.length > 0) {
+        const { data: profilesData } = await supabase
+          .from('profiles')
+          .select('id, full_name, profile_picture_url, headline, current_company')
+          .in('id', authorIds);
+        
+        if (profilesData) {
+          profilesData.forEach(p => profileMap.set(p.id, p));
+        }
+      }
+
+      return commentsData.map((c: any) => ({
+        ...c,
+        profiles: profileMap.get(c.author_id || c.user_id) || {
+          id: c.author_id || '',
+          full_name: 'Member'
+        }
+      })) as Comment[];
     },
     enabled: isOpen && !!postId
   });

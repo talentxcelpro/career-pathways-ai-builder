@@ -35,12 +35,12 @@ export const useAdvancedStories = () => {
       setLoading(true);
       setError(null);
 
-      // Fetch active stories with user data and view status
+      // Fetch active stories with user data and view status safely
       const { data: storiesData, error: storiesError } = await supabase
         .from('stories')
         .select(`
           *,
-          profiles!stories_user_id_fkey (
+          profiles (
             full_name,
             profile_picture_url
           )
@@ -49,7 +49,11 @@ export const useAdvancedStories = () => {
         .gt('expires_at', new Date().toISOString())
         .order('created_at', { ascending: false });
 
-      if (storiesError) throw storiesError;
+      if (storiesError) {
+        setStories([]);
+        setLoading(false);
+        return;
+      }
 
       // Check view status for current user
       const transformedStories: Story[] = await Promise.all(

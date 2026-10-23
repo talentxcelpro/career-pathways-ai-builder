@@ -12,6 +12,7 @@ import { Navbar } from "./components/navigation/Navbar";
 import { TopLoadingBar } from '@/components/navigation/TopLoadingBar';
 import { ScrollRestoration } from '@/components/navigation/ScrollRestoration';
 import { PageFallbackSkeleton } from '@/components/navigation/PageFallbackSkeleton';
+import { RouteTransition } from '@/components/navigation/RouteTransition';
 import { FooterWrapper } from "./components/layout/FooterWrapper";
 import { OptimizedAuthProvider } from "./contexts/OptimizedAuthContext";
 import { VoicePlayerProvider } from "@/contexts/VoicePlayerContext";
@@ -338,8 +339,9 @@ const App = () => {
                           <GoogleOneTapLogin />
                          <div className="min-h-screen flex flex-col w-full max-w-full overflow-x-hidden">
                         <Navbar />
-                        <main className="flex-1 w-full max-w-full overflow-x-hidden page-transition">
+                        <main className="flex-1 w-full max-w-full overflow-x-hidden flex flex-col">
                           <Suspense fallback={<PageFallbackSkeleton />}>
+                            <RouteTransition>
                               <Routes>
                                 {/* Final Launch Checklist Route */}
                                 <Route path="/launch/final" element={
@@ -1115,6 +1117,7 @@ const App = () => {
                                 {/* Catchall 404 route - must be last */}
                                 <Route path="*" element={<NotFound />} />
                               </Routes>
+                            </RouteTransition>
                             </Suspense>
                           </main>
                           

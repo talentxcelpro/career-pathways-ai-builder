@@ -165,9 +165,10 @@ export const useReelComments = (reelId: string) => {
             user_id,
             created_at,
             reel_id,
-            profiles!comments_user_id_fkey (
+            profiles (
               display_name,
-              avatar_url
+              full_name,
+              profile_picture_url
             )
           `)
           .eq('content_id', reelId)
@@ -223,9 +224,10 @@ export const useReelComments = (reelId: string) => {
               content,
               user_id,
               created_at,
-              profiles!comments_user_id_fkey (
+              profiles (
                 display_name,
-                avatar_url
+                full_name,
+                profile_picture_url
               )
             `)
             .single();
