@@ -43,7 +43,13 @@ export const ComingSoonPage: React.FC<ComingSoonPageProps> = ({
         {/* Back Button */}
         <Button 
           variant="ghost" 
-          onClick={() => navigate(-1)}
+          onClick={() => {
+            if (window.history.length > 2) {
+              navigate(-1);
+            } else {
+              navigate('/');
+            }
+          }}
           className="mb-4"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />

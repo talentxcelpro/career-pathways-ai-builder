@@ -186,7 +186,13 @@ const CollegeApply = () => {
         <Card className="mb-6 bg-white/80 backdrop-blur-sm border-0 shadow-lg">
           <CardHeader>
             <div className="flex items-center gap-4 mb-4">
-              <Button variant="ghost" onClick={() => navigate(-1)}>
+              <Button variant="ghost" onClick={() => {
+                if (window.history.length > 2) {
+                  navigate(-1);
+                } else {
+                  navigate('/colleges');
+                }
+              }}>
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back
               </Button>

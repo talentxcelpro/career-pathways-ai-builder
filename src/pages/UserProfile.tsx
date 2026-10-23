@@ -200,7 +200,13 @@ const UserProfile = () => {
           <Button 
             variant="ghost" 
             size="sm" 
-            onClick={() => navigate(-1)}
+            onClick={() => {
+              if (window.history.length > 2) {
+                navigate(-1);
+              } else {
+                navigate('/');
+              }
+            }}
             className="p-2"
           >
             <ArrowLeft className="w-5 h-5" />

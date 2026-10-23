@@ -22,7 +22,13 @@ const GamificationCenter: React.FC = () => {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => navigate(-1)}
+              onClick={() => {
+                if (window.history.length > 2) {
+                  navigate(-1);
+                } else {
+                  navigate('/');
+                }
+              }}
               className="flex items-center gap-2 h-8 touch-feedback"
             >
               <ArrowLeft className="h-4 w-4" />

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { 
   ChevronRight, Play, Building2, Sparkles, Briefcase, 
   GraduationCap, FileText, CheckCircle2, ArrowRight, Zap, ShieldCheck 
@@ -73,22 +74,22 @@ export const AppleHeroSection = () => {
             </div>
 
             <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800/80 space-y-2">
-              <a
-                href="/resume/ats-check?intent=resume"
+              <Link
+                to="/resume/ats-check?intent=resume"
                 onClick={() => handleIntentClick('resume', '/resume/ats-check')}
                 className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow transition-colors"
               >
                 <span>Check ATS &amp; Match Score</span>
                 <ArrowRight className="w-4 h-4" />
-              </a>
+              </Link>
               <div className="text-center">
-                <a 
-                  href="/jobs"
+                <Link 
+                  to="/jobs"
                   className="text-xs font-semibold text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors inline-flex items-center gap-1"
                 >
                   <Briefcase className="w-3 h-3" />
                   <span>Browse 500+ Verified Openings →</span>
-                </a>
+                </Link>
               </div>
             </div>
           </div>
@@ -115,22 +116,22 @@ export const AppleHeroSection = () => {
             </div>
 
             <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800/80 space-y-2">
-              <a
-                href="/recruiters?intent=hire"
+              <Link
+                to="/recruiters?intent=hire"
                 onClick={() => handleIntentClick('hire', '/recruiters')}
                 className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow transition-colors"
               >
                 <span>Access Recruiter OS</span>
                 <ArrowRight className="w-4 h-4" />
-              </a>
+              </Link>
               <div className="text-center">
-                <a 
-                  href="/auth/register?role=employer&intent=hire"
+                <Link 
+                  to="/auth/register?role=employer&intent=hire"
                   className="text-xs font-semibold text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors inline-flex items-center gap-1"
                 >
                   <Zap className="w-3 h-3 text-amber-500" />
                   <span>Post a Job Opening in 2 Minutes →</span>
-                </a>
+                </Link>
               </div>
             </div>
           </div>
@@ -157,22 +158,22 @@ export const AppleHeroSection = () => {
             </div>
 
             <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800/80 space-y-2">
-              <a
-                href="/career-map?intent=career"
+              <Link
+                to="/career-map?intent=career"
                 onClick={() => handleIntentClick('career', '/career-map')}
                 className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow transition-colors"
               >
                 <span>Generate Career Map</span>
                 <ArrowRight className="w-4 h-4" />
-              </a>
+              </Link>
               <div className="text-center">
-                <a 
-                  href="/colleges"
+                <Link 
+                  to="/colleges"
                   className="text-xs font-semibold text-slate-500 hover:text-purple-600 dark:hover:text-purple-400 transition-colors inline-flex items-center gap-1"
                 >
                   <CheckCircle2 className="w-3 h-3 text-purple-500" />
                   <span>Explore Verified Colleges &amp; Degrees →</span>
-                </a>
+                </Link>
               </div>
             </div>
           </div>

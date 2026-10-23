@@ -18,5 +18,14 @@ export const useOptimizedNavigation = () => {
     navigate(path, options);
   }, [navigate]);
 
-  return { navigate: optimizedNavigate };
+  const goBack = useCallback((fallbackPath: string = '/') => {
+    if (typeof window !== 'undefined' && window.history.length > 2) {
+      navigate(-1);
+    } else {
+      navigate(fallbackPath);
+    }
+  }, [navigate]);
+
+  return { navigate: optimizedNavigate, goBack };
 };
+

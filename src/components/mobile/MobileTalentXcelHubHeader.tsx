@@ -26,7 +26,13 @@ export const MobileTalentXcelHubHeader: React.FC<MobileTalentXcelHubHeaderProps>
           variant="ghost"
           size="sm"
           className="p-2 h-auto"
-          onClick={() => navigate(-1)}
+          onClick={() => {
+            if (window.history.length > 2) {
+              navigate(-1);
+            } else {
+              navigate('/');
+            }
+          }}
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>

@@ -7,6 +7,14 @@ import { Link, useNavigate } from "react-router-dom";
 const NotFound = () => {
   const navigate = useNavigate();
 
+  const handleGoBack = () => {
+    if (window.history.length > 2) {
+      navigate(-1);
+    } else {
+      navigate('/');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-md text-center">
@@ -25,7 +33,7 @@ const NotFound = () => {
                 Go Home
               </Link>
             </Button>
-            <Button variant="outline" onClick={() => navigate(-1)} className="w-full">
+            <Button variant="outline" onClick={handleGoBack} className="w-full">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Go Back
             </Button>
