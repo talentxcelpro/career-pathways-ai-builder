@@ -11,6 +11,7 @@ import { GrowthExperimentWrapper } from '@/components/conversion/GrowthExperimen
 import { ResumeQuickScanWidget } from '@/components/conversion/ResumeQuickScanWidget';
 import { RelatedSubdomainLinks } from '@/components/navigation/RelatedSubdomainLinks';
 import { SubdomainMeshFooter } from '@/components/navigation/SubdomainMeshFooter';
+import { getTier2LocationConfig } from '@/data/tier2LocationsData';
 
 interface JobLocationPageProps {}
 
@@ -18,6 +19,7 @@ const JobLocationPage: React.FC<JobLocationPageProps> = () => {
   const { location: routeLocation } = useParams<{ location: string }>();
   const navigate = useNavigate();
   const [realJobs, setRealJobs] = useState<any[]>([]);
+  const [totalJobsCount, setTotalJobsCount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
 
   // Robust location resolution: supports route params and direct URL segments (/locations/varanasi, /jobs/varanasi)
@@ -38,28 +40,37 @@ const JobLocationPage: React.FC<JobLocationPageProps> = () => {
   const locationData = getLocationData(derivedLocation);
   const canonicalUrl = `https://talentxcel.in/locations/${derivedLocation}`;
 
+  const verifiedCompaniesCount = useMemo(() => {
+    const set = new Set(realJobs.map((j) => j.company_name).filter(Boolean));
+    return set.size > 0 ? set.size : (locationData.topCompanies?.length || 6);
+  }, [realJobs, locationData.topCompanies]);
+
   useEffect(() => {
     async function loadJobs() {
       setLoading(true);
       try {
         const locClean = derivedLocation.replace(/-/g, ' ').trim();
-        const { data, error } = await supabase
+        const { data, count, error } = await supabase
           .from('jobs')
-          .select('*')
+          .select('*', { count: 'exact' })
           .or(`location.ilike.%${locClean}%,location_city.ilike.%${locClean}%`)
-          .limit(20);
+          .eq('is_active', true)
+          .order('posted_at', { ascending: false })
+          .limit(30);
 
         if (!error && data && data.length > 0) {
           setRealJobs(data);
+          setTotalJobsCount(count || data.length);
         } else {
           // If no immediate local match, supply high-performing verified fresher & remote jobs
-          const { data: fallbackData } = await supabase
+          const { data: fallbackData, count: fallbackCount } = await supabase
             .from('jobs')
-            .select('*')
+            .select('*', { count: 'exact' })
             .or('is_remote.eq.true,location_country.ilike.%india%')
             .eq('is_active', true)
             .limit(10);
           setRealJobs(fallbackData || []);
+          setTotalJobsCount(fallbackCount || (fallbackData ? fallbackData.length : 0));
         }
       } catch (err) {
         console.warn('[JobLocationPage] Error loading location jobs:', err);
@@ -142,7 +153,7 @@ const JobLocationPage: React.FC<JobLocationPageProps> = () => {
                   }}
                 >
                   <Search className="h-5 w-5" />
-                  View {realJobs.length || locationData.stats.jobs} Verified Jobs
+                  View {totalJobsCount || realJobs.length} Verified Jobs
                 </Button>
                 <Button 
                   variant="outline" 
@@ -160,7 +171,7 @@ const JobLocationPage: React.FC<JobLocationPageProps> = () => {
                 <ResumeQuickScanWidget
                   role={`Jobs in ${locationData.name}`}
                   location={locationData.name}
-                  matchingJobsCount={realJobs.length || parseInt(locationData.stats?.jobs) || 16}
+                  matchingJobsCount={totalJobsCount || realJobs.length || 10}
                 />
               </div>
 
@@ -169,14 +180,14 @@ const JobLocationPage: React.FC<JobLocationPageProps> = () => {
                 <div className="bg-card p-5 sm:p-6 rounded-xl border shadow-sm">
                   <div className="flex items-center gap-3 mb-1">
                     <Building className="h-7 w-7 text-primary" />
-                    <span className="text-2xl font-black text-foreground">{locationData.stats.companies}+</span>
+                    <span className="text-2xl font-black text-foreground">{verifiedCompaniesCount}+</span>
                   </div>
                   <p className="text-xs sm:text-sm text-muted-foreground">Companies Hiring</p>
                 </div>
                 <div className="bg-card p-5 sm:p-6 rounded-xl border shadow-sm">
                   <div className="flex items-center gap-3 mb-1">
                     <MapPin className="h-7 w-7 text-primary" />
-                    <span className="text-2xl font-black text-foreground">{realJobs.length || locationData.stats.jobs}+</span>
+                    <span className="text-2xl font-black text-foreground">{totalJobsCount || realJobs.length}+</span>
                   </div>
                   <p className="text-xs sm:text-sm text-muted-foreground">Active Verified Openings</p>
                 </div>
@@ -742,6 +753,11 @@ function getLocationData(location: string) {
 
   if (locations[norm]) {
     return locations[norm];
+  }
+
+  const tier2Data = getTier2LocationConfig(norm);
+  if (tier2Data) {
+    return tier2Data;
   }
 
   // Dynamic fallback for any unlisted city

@@ -419,14 +419,16 @@ export function formatCanonicalUrl(pathOrUrl?: string, currentHostname?: string)
   const activeUniverse = getCurrentUniverse(resolvedHost);
   const targetUniverse = getAuthoritativeUniverseForRoute(pathname);
 
-  // If visitor or canonical target is on a subdomain and requesting root '/', canonical is that subdomain's root
+  // If visitor is on a subdomain and requesting root '/', canonical is that subdomain's root
   if (activeUniverse !== 'CORE' && pathname === '/') {
     return `${UNIVERSE_PRIMARY_DOMAIN[activeUniverse]}/`;
   }
 
-  // Normal authoritative mapping
-  const authoritativeDomain = UNIVERSE_PRIMARY_DOMAIN[targetUniverse];
-  return `${authoritativeDomain}${pathname === '/' ? '/' : pathname}`;
+  // APEX AUTHORITY CONSOLIDATION (Naukri / AmbitionBox Architecture):
+  // All programmatic catalog and search routes (/colleges, /salary, /jobs, /locations, /resume, /directory, /compare, /p)
+  // consolidate their canonical authority onto the apex domain (https://talentxcel.in).
+  // Subdomains operate as dedicated landing surfaces while funneling all indexing equity into the apex.
+  return `https://talentxcel.in${pathname === '/' ? '/' : pathname}`;
 }
 
 /**

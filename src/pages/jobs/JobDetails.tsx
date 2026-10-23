@@ -34,6 +34,7 @@ import { ReactJobStructuredData } from '@/components/seo/ReactJobStructuredData'
 import { getPublicJobUrl, getPublicCompanyUrl } from '@/lib/seo/canonicalUrls';
 import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
 import { InteractiveJobMatchWidget } from '@/components/jobs/InteractiveJobMatchWidget';
+import { EmployerHiringBadgeGenerator } from '@/components/employer/EmployerHiringBadgeGenerator';
 
 export default function JobDetails() {
   const { slugOrId = '' } = useParams<{ slugOrId: string }>();
@@ -459,6 +460,14 @@ export default function JobDetails() {
                   </Button>
                 </Link>
               </section>
+
+              {/* Employer Embed Badge Generator */}
+              <EmployerHiringBadgeGenerator
+                companyName={companyName}
+                companySlug={companySlug}
+                openRolesCount={1}
+                className="mt-6"
+              />
             </div>
 
             {/* Right Column: Key Summary */}

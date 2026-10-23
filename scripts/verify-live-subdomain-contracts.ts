@@ -325,14 +325,14 @@ console.log('\n--- 4. AUDITING CANONICAL URL RESOLUTION (formatCanonicalUrl) ---
 const canonicalTests = [
   { path: '/', host: 'talentxcel.in', expected: 'https://talentxcel.in/' },
   { path: '/', host: 'jobs.talentxcel.in', expected: 'https://jobs.talentxcel.in/' },
-  { path: '/jobs', host: 'jobs.talentxcel.in', expected: 'https://jobs.talentxcel.in/jobs' },
-  { path: '/jobs/software-engineer-bangalore', host: 'jobs.talentxcel.in', expected: 'https://jobs.talentxcel.in/jobs/software-engineer-bangalore' },
-  { path: '/resume', host: 'resume.talentxcel.in', expected: 'https://resume.talentxcel.in/resume' },
-  { path: '/salary', host: 'salary.talentxcel.in', expected: 'https://salary.talentxcel.in/salary' },
-  { path: '/colleges', host: 'colleges.talentxcel.in', expected: 'https://colleges.talentxcel.in/colleges' },
-  { path: '/learning', host: 'learning.talentxcel.in', expected: 'https://learning.talentxcel.in/learning' },
-  { path: '/companies', host: 'employers.talentxcel.in', expected: 'https://employers.talentxcel.in/companies' },
-  { path: '/companies', host: 'employer.talentxcel.in', expected: 'https://employers.talentxcel.in/companies' },
+  { path: '/jobs', host: 'jobs.talentxcel.in', expected: 'https://talentxcel.in/jobs' },
+  { path: '/jobs/software-engineer-bangalore', host: 'jobs.talentxcel.in', expected: 'https://talentxcel.in/jobs/software-engineer-bangalore' },
+  { path: '/resume', host: 'resume.talentxcel.in', expected: 'https://talentxcel.in/resume' },
+  { path: '/salary', host: 'salary.talentxcel.in', expected: 'https://talentxcel.in/salary' },
+  { path: '/colleges', host: 'colleges.talentxcel.in', expected: 'https://talentxcel.in/colleges' },
+  { path: '/learning', host: 'learning.talentxcel.in', expected: 'https://talentxcel.in/learning' },
+  { path: '/companies', host: 'employers.talentxcel.in', expected: 'https://talentxcel.in/companies' },
+  { path: '/companies', host: 'employer.talentxcel.in', expected: 'https://talentxcel.in/companies' },
 ];
 
 for (const ct of canonicalTests) {

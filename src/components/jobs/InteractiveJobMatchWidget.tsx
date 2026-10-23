@@ -29,6 +29,7 @@ import {
 import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
 import { getPublicJobUrl } from '@/lib/seo/canonicalUrls';
 import { useNavigate } from 'react-router-dom';
+import { ViralResultShareCard } from '@/components/growth/ViralResultShareCard';
 
 interface InteractiveJobMatchWidgetProps {
   job: {
@@ -484,41 +485,17 @@ export const InteractiveJobMatchWidget: React.FC<InteractiveJobMatchWidgetProps>
             </div>
           )}
 
-          {/* Viral Sharing Loop */}
-          <div className="pt-2 border-t border-slate-800 space-y-2">
-            <span className="text-[11px] font-semibold text-slate-400 block text-center uppercase tracking-wider">
-              Share Your Score & Challenge Colleagues
-            </span>
-            <div className="flex items-center justify-center gap-2 flex-wrap">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={handleShareLinkedIn}
-                className="border-slate-700 bg-slate-900/60 hover:bg-blue-900/30 text-xs text-blue-300 gap-1.5 h-8"
-              >
-                <ExternalLink className="w-3.5 h-3.5" />
-                LinkedIn
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={handleShareWhatsApp}
-                className="border-slate-700 bg-slate-900/60 hover:bg-emerald-900/30 text-xs text-emerald-300 gap-1.5 h-8"
-              >
-                <Share2 className="w-3.5 h-3.5" />
-                WhatsApp
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={handleCopyLink}
-                className="border-slate-700 bg-slate-900/60 hover:bg-slate-800 text-xs text-slate-300 gap-1.5 h-8"
-              >
-                <Copy className="w-3.5 h-3.5" />
-                {hasCopiedShare ? 'Copied!' : 'Copy Link'}
-              </Button>
-            </div>
-          </div>
+          {/* Dynamic Viral Result Share Card */}
+          <ViralResultShareCard
+            headline={job.title}
+            subheadline="TalentXcel Interactive Match Diagnostic"
+            metricValue={`${calculatedScore}%`}
+            metricLabel="Relevance Match Score"
+            badgeText={calculatedScore >= 80 ? 'Top 5% Match' : 'Strong Candidate'}
+            canonicalPath={`/jobs/${job.seo_slug || job.id}`}
+            category="job_match"
+            className="mt-4"
+          />
         </div>
       )}
     </Card>

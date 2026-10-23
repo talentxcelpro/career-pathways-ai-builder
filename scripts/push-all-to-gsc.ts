@@ -1,7 +1,7 @@
 // scripts/push-all-to-gsc.ts
 // Submits all authoritative segmented sitemaps and individual canonical Job URLs to Google Search Console & Google Indexing API
 
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync, existsSync, readdirSync } from 'fs';
 import { resolve } from 'path';
 
 interface ServiceAccountKey {
@@ -98,10 +98,18 @@ async function main() {
   console.log('📡 TALENTXCEL GOOGLE SEARCH CONSOLE & INDEXING DISPATCH');
   console.log('================================================================\n');
 
-  const keyPath = resolve('gcp-key.json');
-  if (!existsSync(keyPath)) {
-    throw new Error('gcp-key.json not found in root directory');
+  const candidateKeys = [
+    'gsc-service-account.json',
+    'gcp-key.json',
+    'talentxcel-indexing.json',
+    'gcp-indexing-key.json',
+  ];
+  const foundKey = candidateKeys.find(f => existsSync(resolve(f)));
+  if (!foundKey) {
+    throw new Error('No Google service account key found in candidate list.');
   }
+  const keyPath = resolve(foundKey);
+  console.log(`✓ Using Key File: ${foundKey}`);
 
   const serviceAccount: ServiceAccountKey = JSON.parse(readFileSync(keyPath, 'utf-8'));
   console.log(`✓ Authenticated Service Account: ${serviceAccount.client_email}`);
@@ -111,37 +119,16 @@ async function main() {
 
   const siteUrl = 'https://talentxcel.in/';
 
-  // 1. All authoritative segmented sitemaps
-  const sitemaps = [
+  // 1. All authoritative segmented sitemaps discovered from public/
+  const publicDir = resolve('public');
+  const discoveredFiles = readdirSync(publicDir).filter(f => f.startsWith('sitemap') && f.endsWith('.xml'));
+  const sitemaps = Array.from(new Set([
     'https://talentxcel.in/sitemap.xml',
-    'https://talentxcel.in/sitemap-base.xml',
-    'https://talentxcel.in/sitemap-jobs.xml',
-    'https://talentxcel.in/sitemap-colleges.xml',
-    'https://talentxcel.in/sitemap-companies.xml',
-    'https://talentxcel.in/sitemap-global-programs.xml',
-    'https://talentxcel.in/sitemap-scholarships.xml',
-    'https://talentxcel.in/sitemap-rankings.xml',
-    'https://talentxcel.in/sitemap-learning.xml',
-    'https://talentxcel.in/sitemap-services.xml',
-    'https://talentxcel.in/sitemap-career-paths.xml',
-    'https://talentxcel.in/sitemap-articles.xml',
-    'https://talentxcel.in/sitemap-posts.xml',
-    'https://talentxcel.in/sitemap-topics.xml',
-    'https://talentxcel.in/sitemap-industries.xml',
-    'https://talentxcel.in/sitemap-locations.xml',
-    'https://talentxcel.in/sitemap-resources.xml',
-    'https://talentxcel.in/sitemap-tools.xml',
-    'https://talentxcel.in/sitemap-skills-1.xml',
-    'https://talentxcel.in/sitemap-job-roles-1.xml',
-    'https://talentxcel.in/sitemap-job-roles-2.xml',
-    'https://talentxcel.in/sitemap-job-experience-1.xml',
-    'https://talentxcel.in/sitemap-job-experience-2.xml',
-    'https://talentxcel.in/sitemap-job-experience-3.xml',
-    'https://talentxcel.in/sitemap-job-experience-4.xml',
-    'https://talentxcel.in/sitemap-companies-hiring.xml',
-  ];
+    'https://talentxcel.in/sitemap-root.xml',
+    ...discoveredFiles.map(f => `https://talentxcel.in/${f}`),
+  ]));
 
-  console.log(`📡 1. Submitting ${sitemaps.length} Sitemaps to Google Search Console...`);
+  console.log(`📡 1. Submitting ${sitemaps.length} Sitemaps to Google Search Console for ${siteUrl}...`);
   let sitemapSuccess = 0;
   let sitemapFail = 0;
 

@@ -1,4 +1,5 @@
 {
+  "cleanUrls": true,
   "trailingSlash": false,
   "headers": [
     {
@@ -417,6 +418,14 @@
     {
       "source": "/api/email/:path*",
       "destination": "/api/email/:path*"
+    },
+    {
+      "source": "/api/seo-render",
+      "destination": "/api/seo-render"
+    },
+    {
+      "source": "/((?:locations|colleges|salary|jobs|compare|directory|p)(?:/.*)?)",
+      "destination": "/api/seo-render?path=$1"
     },
     {
       "source": "/(.*)",

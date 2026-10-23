@@ -3,11 +3,19 @@
 
 const { createClient } = require('@supabase/supabase-js');
 
+const fs = require('fs');
+
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://dthlgsnakhoftinssokm.supabase.co';
 const ANON_KEY = process.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
-const SERVICE_KEY = process.env.TALENTXCEL_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+let SERVICE_KEY = process.env.TALENTXCEL_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
-const supabaseAdmin = createClient(SUPABASE_URL, SERVICE_KEY);
+if (!SERVICE_KEY && fs.existsSync('.env.local')) {
+  const envContent = fs.readFileSync('.env.local', 'utf8');
+  const m = envContent.match(/TALENTXCEL_SERVICE_ROLE_KEY="([^"]+)"/) || envContent.match(/SUPABASE_SERVICE_ROLE_KEY="([^"]+)"/);
+  if (m && m[1]) SERVICE_KEY = m[1];
+}
+
+const supabaseAdmin = createClient(SUPABASE_URL, SERVICE_KEY || ANON_KEY);
 
 async function runProductionSmokeTests() {
   console.log('================================================================');

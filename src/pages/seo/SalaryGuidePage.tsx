@@ -10,6 +10,7 @@ import { createSafeHtml } from '@/utils/sanitize';
 import { conversionTelemetry } from '@/utils/conversionTelemetry';
 import { RelatedSubdomainLinks } from '@/components/navigation/RelatedSubdomainLinks';
 import { SubdomainMeshFooter } from '@/components/navigation/SubdomainMeshFooter';
+import { GiveToGetContributionWidget } from '@/components/conversion/GiveToGetContributionWidget';
 
 const SalaryGuidePage = () => {
   const { role, location } = useParams();
@@ -259,6 +260,14 @@ const SalaryGuidePage = () => {
               Calculate Your Offer Leverage <ArrowRight className="ml-1.5 w-4 h-4" />
             </Button>
           </div>
+
+          {/* Give-to-Get Community Salary Unlock Widget */}
+          <GiveToGetContributionWidget
+            mode="salary"
+            prefilledRole={roleInfo?.name || role}
+            prefilledLocation={locationInfo?.name || location || 'Bangalore'}
+            className="rounded-2xl"
+          />
         </CardContent>
       </Card>
 

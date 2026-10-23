@@ -42,6 +42,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { indianEducationService } from '@/services/indianEducationService';
 import type { IndianInstitution } from '@/types/indianEducation';
 import { CollegeRoiCalculatorWidget } from '@/components/colleges/CollegeRoiCalculatorWidget';
+import { CollegeEmbedBadgeGenerator } from '@/components/colleges/CollegeEmbedBadgeGenerator';
+import { GiveToGetContributionWidget } from '@/components/conversion/GiveToGetContributionWidget';
 import { RelatedSubdomainLinks } from '@/components/navigation/RelatedSubdomainLinks';
 import { SubdomainMeshFooter } from '@/components/navigation/SubdomainMeshFooter';
 
@@ -554,6 +556,15 @@ export default function CollegeDetail() {
                   <span className="font-bold text-blue-700">JoSAA / CSAB / MCC / State CET</span>
                 </div>
               </div>
+
+              {/* Give-to-Get Cutoff Contribution & Forensic Unlock */}
+              <div className="pt-2">
+                <GiveToGetContributionWidget
+                  mode="cutoff"
+                  prefilledCollege={instName}
+                  className="rounded-2xl"
+                />
+              </div>
             </Card>
           )}
 
@@ -669,6 +680,15 @@ export default function CollegeDetail() {
               View Career Passport
             </Button>
           </Card>
+
+          {/* Programmatic Backlink Embed Generator */}
+          <CollegeEmbedBadgeGenerator
+            collegeName={instName}
+            collegeSlug={canonicalCollegeSlug}
+            avgPackage={medianPackage ? `₹${medianPackage} LPA` : '₹12.5 LPA'}
+            placementRate={placementRate ? `${placementRate}%` : '85%+'}
+            className="mt-6"
+          />
         </div>
       </div>
 

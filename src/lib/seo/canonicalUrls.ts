@@ -33,9 +33,9 @@ export function getPublicPostUrl(postIdOrSlug: string): string {
   return `${BASE_PRODUCTION_ORIGIN}/post/${postIdOrSlug.trim()}`;
 }
 
-export const JOBS_PRODUCTION_ORIGIN = 'https://jobs.talentxcel.in';
+export const JOBS_PRODUCTION_ORIGIN = 'https://talentxcel.in';
 
-/** Returns canonical URL for a public job */
+/** Returns canonical URL for a public job - consolidated on apex domain */
 export function getPublicJobUrl(seoSlugOrId: string): string {
   if (!seoSlugOrId) return `${JOBS_PRODUCTION_ORIGIN}/jobs`;
   return `${JOBS_PRODUCTION_ORIGIN}/jobs/${seoSlugOrId.trim()}`;

@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { conversionTelemetry } from '@/utils/conversionTelemetry';
 import { useNavigate } from 'react-router-dom';
+import { ATSScoreEmbedBadge } from '@/components/resume/ATSScoreEmbedBadge';
 
 interface ResumeQuickScanWidgetProps {
   role?: string;
@@ -293,6 +294,14 @@ export const ResumeQuickScanWidget: React.FC<ResumeQuickScanWidgetProps> = ({
                 </div>
               </div>
             </div>
+
+            {/* Embeddable ATS Badge for Candidate Portfolios / GitHub */}
+            <ATSScoreEmbedBadge
+              score={scanResult.score}
+              candidateName="Verified Candidate"
+              roleTarget={role}
+              className="mt-3"
+            />
 
             <div className="pt-1 flex items-center justify-between text-[11px] text-slate-400">
               <button

@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { conversionTelemetry } from '@/utils/conversionTelemetry';
 import { useNavigate } from 'react-router-dom';
+import { ViralResultShareCard } from '@/components/growth/ViralResultShareCard';
 
 interface CollegeRoiCalculatorWidgetProps {
   collegeName?: string;
@@ -197,6 +198,18 @@ export const CollegeRoiCalculatorWidget: React.FC<CollegeRoiCalculatorWidgetProp
             </Button>
           </div>
         </div>
+
+        {hasInteracted && (
+          <ViralResultShareCard
+            headline={`${collegeName} ROI: +${roiMultiplier}×`}
+            subheadline="TalentXcel Placement & Career Payback Analysis"
+            metricValue={`${paybackMonths} Mo`}
+            metricLabel="Payback Duration"
+            badgeText="Audited Placement ROI"
+            category="college_roi"
+            className="mt-6"
+          />
+        )}
       </CardContent>
     </Card>
   );

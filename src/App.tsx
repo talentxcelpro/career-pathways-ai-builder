@@ -62,6 +62,9 @@ const MyApplications = lazy(() => import('@/pages/jobs/MyApplications'));
 const JobAlerts = lazy(() => import('@/pages/jobs/Alerts'));
 const RecruiterLandingPage = lazy(() => import('@/pages/recruiters/RecruiterLandingPage'));
 const UnsubscribePage = lazy(() => import('@/pages/email/UnsubscribePage'));
+const DirectoryHubPage = lazy(() => import('@/pages/directory/DirectoryHubPage'));
+const IndiaTechSalaryReport2026 = lazy(() => import('@/pages/benchmarks/IndiaTechSalaryReport2026'));
+const Tier2CityJobsIndex2026 = lazy(() => import('@/pages/benchmarks/Tier2CityJobsIndex2026'));
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
@@ -215,6 +218,11 @@ const Scholarships = lazy(() => import('./pages/colleges/Scholarships'));
 const CareerPathway = lazy(() => import('./pages/colleges/CareerPathway'));
 const Colleges = lazy(() => import('./pages/Colleges'));
 const CollegeDetail = lazy(() => import('./pages/colleges/CollegeDetail'));
+const CollegeComparePage = lazy(() => import('./pages/colleges/CollegeComparePage'));
+const DirectoryIndex = lazy(() => import('./pages/directory/DirectoryIndex'));
+const CollegesAzDirectory = lazy(() => import('./pages/directory/CollegesAzDirectory'));
+const SalariesRoleDirectory = lazy(() => import('./pages/directory/SalariesRoleDirectory'));
+const JobsCityDirectory = lazy(() => import('./pages/directory/JobsCityDirectory'));
 const RankingsHub = lazy(() => import('./pages/claim1/RankingsHub'));
 const LeaderboardPage = lazy(() => import('./pages/claim1/LeaderboardPage'));
 const CompanyRankingProfile = lazy(() => import('./pages/claim1/CompanyRankingProfile'));
@@ -569,6 +577,14 @@ const App = () => {
                 <Route path="/colleges" element={<Suspense fallback={null}><Colleges /></Suspense>} />
                 <Route path="/colleges/:id" element={<Suspense fallback={null}><CollegeDetail /></Suspense>} />
                 <Route path="/colleges/:id/:subTab" element={<Suspense fallback={null}><CollegeDetail /></Suspense>} />
+                <Route path="/compare/:comparisonSlug" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold text-slate-300">Loading College Comparison...</div>}><CollegeComparePage /></Suspense>} />
+
+                {/* Authority Mega-Directories */}
+                <Route path="/directory" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold text-slate-300">Loading Directory Hub...</div>}><DirectoryIndex /></Suspense>} />
+                <Route path="/directory/index" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold text-slate-300">Loading Directory Hub...</div>}><DirectoryIndex /></Suspense>} />
+                <Route path="/directory/colleges-a-z" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold text-slate-300">Loading Colleges Directory...</div>}><CollegesAzDirectory /></Suspense>} />
+                <Route path="/directory/salaries-by-role" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold text-slate-300">Loading Salary Directory...</div>}><SalariesRoleDirectory /></Suspense>} />
+                <Route path="/directory/jobs-by-city" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold text-slate-300">Loading City Job Directory...</div>}><JobsCityDirectory /></Suspense>} />
 
                 {/* PRIORITY ROUTES - These must come BEFORE navItems.map to take precedence */}
                 <Route path="/recruiters" element={
@@ -699,6 +715,26 @@ const App = () => {
                 <Route path="/locations/hyderabad" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
                 <Route path="/locations/chennai" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
                 <Route path="/locations/pune" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/locations/indore" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/locations/bhopal" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/locations/patna" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/locations/chandigarh" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/locations/jaipur" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/locations/coimbatore" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/locations/visakhapatnam" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/locations/nagpur" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/locations/surat" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/locations/kochi" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/locations/bhubaneswar" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/locations/dehradun" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/locations/jammu" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/locations/srinagar" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/locations/guwahati" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/locations/kanpur" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/locations/agra" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/locations/nashik" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/locations/vadodara" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/locations/mysuru" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
                 <Route path="/locations/:location" element={<JobsByLocation />} />
                 <Route path="/locations" element={<JobsByLocation />} />
                 <Route path="/industries/:industry" element={<IndustryJobs />} />
@@ -729,6 +765,26 @@ const App = () => {
                 <Route path="/jobs/varanasi" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
                 <Route path="/jobs/noida" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
                 <Route path="/jobs/lucknow" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/indore" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/bhopal" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/patna" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/chandigarh" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/jaipur" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/coimbatore" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/visakhapatnam" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/nagpur" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/surat" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/kochi" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/bhubaneswar" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/dehradun" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/jammu" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/srinagar" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/guwahati" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/kanpur" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/agra" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/nashik" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/vadodara" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/mysuru" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
 
                 {/* Specific Job Detail Routes - UUID and slug patterns */}
                 <Route path="/jobs/:slugOrId" element={
@@ -814,6 +870,13 @@ const App = () => {
                 <Route path="/topic/:slug" element={<Suspense fallback={null}><TopicHubPage /></Suspense>} />
                 <Route path="/services/:slug" element={<Suspense fallback={null}><ServiceLandingPage /></Suspense>} />
                 <Route path="/claim1/watch" element={<Suspense fallback={null}><WatchPage /></Suspense>} />
+                
+                {/* ── Public Open-Data Benchmarks & High-Density Directory Hub ── */}
+                <Route path="/directory" element={<Suspense fallback={<div className="p-8 text-center text-sm text-muted-foreground">Loading Directory...</div>}><DirectoryHubPage /></Suspense>} />
+                <Route path="/directory/index" element={<Navigate to="/directory" replace />} />
+                <Route path="/benchmarks/india-tech-salary-report-2026" element={<Suspense fallback={<div className="p-8 text-center text-sm text-muted-foreground">Loading Salary Benchmark Report...</div>}><IndiaTechSalaryReport2026 /></Suspense>} />
+                <Route path="/benchmarks/tier-2-city-jobs-index-2026" element={<Suspense fallback={<div className="p-8 text-center text-sm text-muted-foreground">Loading Tier-2 Jobs Index...</div>}><Tier2CityJobsIndex2026 /></Suspense>} />
+                <Route path="/benchmarks" element={<Navigate to="/benchmarks/india-tech-salary-report-2026" replace />} />
                                 
                                 {navItems.map((item: NavItem) => {
                                   console.log('🔍 Registering route:', item.to, 'Title:', item.title);

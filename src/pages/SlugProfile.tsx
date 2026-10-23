@@ -13,6 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { ProfileSidebarNav } from '@/components/navigation/ProfileSidebarNav';
+import { CareerPassportEmbedBadge } from '@/components/passport/CareerPassportEmbedBadge';
 
 import { 
   Loader2, 
@@ -121,18 +122,41 @@ const SlugProfile = () => {
   });
   const isIndexable = indexabilityDecision.isIndexable;
 
-  const canonicalUrl = `https://talentxcel.in/profile/${profileSlug}`;
+  const isPassportRoute = typeof window !== 'undefined' && window.location.pathname.startsWith('/p');
+  const canonicalUrl = isPassportRoute ? `https://talentxcel.in/p/${profileSlug}` : `https://talentxcel.in/profile/${profileSlug}`;
+
+  const profileSchema = profile ? JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    "mainEntity": {
+      "@type": "Person",
+      "name": profile.full_name,
+      "jobTitle": profile.title || 'Verified Professional',
+      "description": profile.about || `${profile.full_name}'s verified career passport on TalentXcel`,
+      "url": canonicalUrl,
+      "image": profile.avatar_url || undefined,
+      "knowsAbout": (profile as any)?.skills || [],
+      "sameAs": [
+        profile.linkedin_url,
+        profile.github_url,
+        profile.website
+      ].filter(Boolean)
+    }
+  }) : undefined;
 
   // Set up SEO
   useSEO({
-    title: profile ? `${profile.full_name} (@${profileSlug}) - TalentXcel` : 'Profile - TalentXcel',
+    title: profile 
+      ? `${profile.full_name} (@${profileSlug}) - ${isPassportRoute ? 'Verified Career Passport' : 'Professional Profile'} | TalentXcel` 
+      : 'Career Passport - TalentXcel',
     description: profile
-      ? `${profile.full_name}'s professional profile on TalentXcel. ${profile.title ? `${profile.title}. ` : ''}${profile.about ? profile.about.substring(0, 150) + '...' : 'Connect and explore their career journey.'}`
-      : 'View professional profile on TalentXcel.',
+      ? `${profile.full_name}'s verified career passport on TalentXcel. ${profile.title ? `${profile.title}. ` : ''}${profile.about ? profile.about.substring(0, 150) + '...' : 'Verified skills, ATS score benchmark, and authenticated achievements.'}`
+      : 'View verified career passport on TalentXcel.',
     keywords: profile
-      ? [profile.full_name, profileSlug, 'professional profile', 'TalentXcel', profile.title, profile.location].filter(Boolean)
-      : ['professional profile', 'TalentXcel'],
+      ? [profile.full_name, profileSlug, 'career passport', 'verified skills', 'TalentXcel', profile.title, profile.location].filter(Boolean)
+      : ['career passport', 'TalentXcel'],
     canonical: canonicalUrl,
+    structuredData: profileSchema,
   });
 
   // Helper to safely verify auth state without redirecting during auth loading
@@ -733,6 +757,14 @@ const SlugProfile = () => {
                     Get In Touch <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>
                 </div>
+
+                {/* 2b. Career Passport Embed Badge & Verified Resume Link */}
+                <CareerPassportEmbedBadge
+                  candidateSlug={profileSlug}
+                  candidateName={profile?.full_name || 'TalentXcel Professional'}
+                  verifiedSkillsCount={((profile as any)?.skills || []).length || 6}
+                  className="shadow-md border-border/60"
+                />
 
                 {/* 3. Download vCard Card */}
                 <Card className="border border-border/60 shadow-sm bg-card">
