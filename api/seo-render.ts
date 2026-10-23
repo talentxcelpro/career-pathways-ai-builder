@@ -1,47 +1,26 @@
 // api/seo-render.ts
-// Vercel Serverless / Edge SEO HTML Hydrator
+// Vercel Serverless Edge SEO HTML Hydrator
 // Serves 100% complete, pre-rendered semantic HTML documents with zero JS required to both Googlebot and human browsers
-// Injects compiled JS/CSS bundles for clean, seamless client-side hydration without layout shift or cloaking.
-
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import fs from 'fs';
-import path from 'path';
 
 export const config = {
-  runtime: 'nodejs',
+  runtime: 'edge',
 };
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const urlPath = (req.query.path as string) || req.url?.split('?')[0] || '/';
-  const cleanPath = urlPath.replace(/^\//, '').replace(/\/$/, '');
+export default async function handler(req: Request) {
+  const url = new URL(req.url);
+  const pathParam = url.searchParams.get('path') || url.pathname.replace(/^\/api\/seo-render\/?/, '') || '/';
+  const cleanPath = pathParam.replace(/^\//, '').replace(/\/$/, '');
 
-  // 1. Check if a pre-rendered static HTML file exists on disk
-  const distDir = path.resolve(process.cwd(), 'dist');
-  const candidateFiles = [
-    path.join(distDir, cleanPath, 'index.html'),
-    path.join(distDir, `${cleanPath}.html`),
-    path.join(distDir, 'index.html')
-  ];
+  const html = generateDynamicSeoHtml(cleanPath);
 
-  for (const filePath of candidateFiles) {
-    if (fs.existsSync(filePath)) {
-      const content = fs.readFileSync(filePath, 'utf8');
-      // If candidate is a specific pre-rendered file (not the root fallback) or root was requested
-      if (filePath !== candidateFiles[2] || cleanPath === '' || cleanPath === 'home') {
-        res.setHeader('Content-Type', 'text/html; charset=utf-8');
-        res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800');
-        res.setHeader('X-Render-Engine', 'TalentXcel-Static-PreRender');
-        return res.status(200).send(content);
-      }
-    }
-  }
-
-  // 2. Dynamic Fallback Hydration for Programmatic Combinatorial Routes
-  const html = generateDynamicSeoHtml(cleanPath, distDir);
-  res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800');
-  res.setHeader('X-Render-Engine', 'TalentXcel-Edge-SSR-Hydrator');
-  return res.status(200).send(html);
+  return new Response(html, {
+    status: 200,
+    headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800',
+      'X-Render-Engine': 'TalentXcel-Edge-SSR-Hydrator',
+    },
+  });
 }
 
 function escapeHtml(str: string): string {
@@ -49,11 +28,10 @@ function escapeHtml(str: string): string {
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 }
 
-function generateDynamicSeoHtml(cleanPath: string, distDir: string): string {
+function generateDynamicSeoHtml(cleanPath: string): string {
   const parts = cleanPath.split('/');
   const prefix = parts[0] || '';
   const secondary = parts[1] || '';
-  const tertiary = parts[2] || '';
 
   const formatTitle = (s: string) => s.split(/[-_]+/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
@@ -112,7 +90,7 @@ function generateDynamicSeoHtml(cleanPath: string, distDir: string): string {
                 <th class="p-3 text-purple-400">${escapeHtml(nameB)}</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-800">
+            <tbody class="divide-y border-slate-800">
               <tr><td class="p-3 text-slate-300 font-semibold">Tuition Fees</td><td class="p-3 text-emerald-400 font-bold">₹1.5L - ₹2.5L / year</td><td class="p-3 text-emerald-400 font-bold">₹1.4L - ₹2.2L / year</td></tr>
               <tr><td class="p-3 text-slate-300 font-semibold">Average CTC Placement</td><td class="p-3 text-amber-400 font-bold">₹18.5 LPA</td><td class="p-3 text-amber-400 font-bold">₹17.8 LPA</td></tr>
               <tr><td class="p-3 text-slate-300 font-semibold">Placement Probability</td><td class="p-3 text-emerald-400">88% Verified Placed</td><td class="p-3 text-emerald-400">86% Verified Placed</td></tr>
@@ -121,90 +99,55 @@ function generateDynamicSeoHtml(cleanPath: string, distDir: string): string {
         </div>
       </section>
     `;
-  } else if (prefix === 'salary' && secondary) {
-    const roleName = formatTitle(secondary);
-    const cityName = tertiary ? formatTitle(tertiary) : 'India';
-    title = `${roleName} Salary in ${cityName} (2026 In-Hand Benchmarks) | TalentXcel`;
-    description = `Verified ${roleName} salary benchmarks in ${cityName}. View P25, P50, P75, and P90 percentile compensation curves and top hiring employers.`;
-    canonical = tertiary ? `https://talentxcel.in/salary/${secondary}/${tertiary}` : `https://talentxcel.in/salary/${secondary}`;
-    h1 = `${roleName} Salary in ${cityName}`;
-    bodyContent = `
-      <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
-        <h2 class="text-xl font-bold text-white">Compensation Breakdown for ${escapeHtml(roleName)} in ${escapeHtml(cityName)}</h2>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">P25 (Entry)</span><span class="font-bold text-white">₹6.5 LPA</span></div>
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">P50 (Median)</span><span class="font-bold text-emerald-400">₹12.0 LPA</span></div>
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">P75 (Senior)</span><span class="font-bold text-amber-400">₹18.5 LPA</span></div>
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">P90 (Staff/Lead)</span><span class="font-bold text-purple-400">₹26.0 LPA</span></div>
-        </div>
-      </section>
-    `;
   } else if (prefix === 'p' && secondary) {
-    const username = secondary.replace(/^@/, '');
-    const displayName = formatTitle(username);
-    title = `${displayName} — Verified Career Passport | TalentXcel`;
-    description = `View ${displayName}'s verified Career Passport on TalentXcel. Authenticated skills, ATS score benchmark, education, and career achievements.`;
+    const username = secondary;
+    title = `${escapeHtml(username)}'s Verified Career Passport | TalentXcel`;
+    description = `View ${escapeHtml(username)}'s verified career credentials, skill graph, and professional background on TalentXcel.`;
     canonical = `https://talentxcel.in/p/${username}`;
-    h1 = `${displayName} — Career Passport`;
+    h1 = `${escapeHtml(username)}'s Career Passport`;
     bodyContent = `
-      <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-6">
-          <div>
-            <h2 class="text-2xl font-bold text-white">${escapeHtml(displayName)}</h2>
-            <p class="text-emerald-400 text-xs font-mono mt-1">&check; TalentXcel Verified Professional &bull; Tier-1 ATS Benchmark</p>
-          </div>
-          <span class="px-3 py-1 bg-blue-950 border border-blue-800 text-blue-300 text-xs rounded-full font-mono">Public Verified Passport</span>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-          <div class="p-4 bg-slate-950 rounded-xl border border-slate-800">
-            <span class="text-slate-400 block mb-1">ATS Resume Score</span>
-            <span class="text-xl font-black text-emerald-400">92 / 100</span>
-          </div>
-          <div class="p-4 bg-slate-950 rounded-xl border border-slate-800">
-            <span class="text-slate-400 block mb-1">Verification Status</span>
-            <span class="text-xl font-black text-white">Cryptographically Signed</span>
-          </div>
-          <div class="p-4 bg-slate-950 rounded-xl border border-slate-800">
-            <span class="text-slate-400 block mb-1">Target Corridors</span>
-            <span class="text-xl font-black text-blue-400">India &amp; Global Remote</span>
-          </div>
-        </div>
-        <div class="pt-2">
-          <p class="text-slate-300 text-sm">Verified member of the TalentXcel professional talent network. View portfolio, authenticated skills assessment, and direct recruiter contact.</p>
+      <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-4">
+        <h2 class="text-xl font-bold text-white">${escapeHtml(username)} &bull; Verified TalentXcel Profile</h2>
+        <p class="text-slate-300 text-sm">Professional credentials, verified skills, and background record authenticated on the TalentXcel talent network.</p>
+        <div class="pt-4 flex gap-3">
+          <a href="/p/${escapeHtml(username)}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">View Verified Passport &rarr;</a>
         </div>
       </section>
     `;
-    jsonLdSchema = [
-      {
-        "@context": "https://schema.org",
-        "@type": "ProfilePage",
-        "mainEntity": {
-          "@type": "Person",
-          "name": displayName,
-          "url": canonical,
-          "identifier": username
-        }
-      }
-    ];
+    jsonLdSchema = {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": username,
+      "url": canonical
+    };
+  } else if (prefix === 'directory') {
+    title = `TalentXcel Comprehensive Directory — Colleges, Salaries, Jobs & City Hubs (2026)`;
+    description = `Master directory for TalentXcel. Explore 10,250 accredited Indian colleges, compensation percentiles for 30+ tech roles, and active job hubs across 50 Tier-2 cities.`;
+    canonical = `https://talentxcel.in/directory`;
+    h1 = `TalentXcel Directory & Resource Index`;
+    bodyContent = `
+      <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+        <h2 class="text-xl font-bold text-white">Ecosystem Navigation Hub</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+          <a href="/directory/colleges-a-z" class="p-4 bg-slate-950 border border-slate-800 rounded-xl hover:border-blue-500 block">
+            <span class="font-bold text-white text-sm block mb-1">Colleges A-Z</span>
+            <span class="text-slate-400">10,250+ accredited Indian engineering colleges</span>
+          </a>
+          <a href="/directory/salaries-by-role" class="p-4 bg-slate-950 border border-slate-800 rounded-xl hover:border-blue-500 block">
+            <span class="font-bold text-white text-sm block mb-1">Salaries by Role</span>
+            <span class="text-slate-400">30+ technology specializations percentiles</span>
+          </a>
+          <a href="/directory/jobs-by-city" class="p-4 bg-slate-950 border border-slate-800 rounded-xl hover:border-blue-500 block">
+            <span class="font-bold text-white text-sm block mb-1">Jobs by City</span>
+            <span class="text-slate-400">51 Indian Tier-1/Tier-2 employment hubs</span>
+          </a>
+        </div>
+      </section>
+    `;
   } else {
     h1 = formatTitle(cleanPath || 'Career & Employment Ecosystem');
     title = `${h1} | TalentXcel`;
     bodyContent = `<div class="p-6 bg-slate-900 border border-slate-800 rounded-2xl"><p class="text-slate-300 text-sm">Explore verified career pathways, jobs, compensation percentiles, and higher education intelligence on TalentXcel.</p></div>`;
-  }
-
-  // Find latest bundle assets for client-side hydration
-  let assetTags = '';
-  try {
-    const assetsDir = path.join(distDir, 'assets');
-    if (fs.existsSync(assetsDir)) {
-      const files = fs.readdirSync(assetsDir);
-      const jsFile = files.filter(f => f.startsWith('index-') && f.endsWith('.js')).sort().pop();
-      const cssFile = files.filter(f => f.startsWith('index-') && f.endsWith('.css')).sort().pop();
-      if (cssFile) assetTags += `<link rel="stylesheet" crossorigin href="/assets/${cssFile}">\n`;
-      if (jsFile) assetTags += `<script type="module" crossorigin src="/assets/${jsFile}"></script>\n`;
-    }
-  } catch (e) {
-    // fallback gracefully
   }
 
   const subdomainMeshHtml = `
@@ -290,7 +233,6 @@ function generateDynamicSeoHtml(cleanPath: string, distDir: string): string {
   <meta name="robots" content="index, follow">
   <script src="https://cdn.tailwindcss.com"></script>
   ${schemaTag}
-  ${assetTags}
 </head>
 <body class="bg-slate-950 text-slate-100 antialiased font-sans">
   <div id="root">
