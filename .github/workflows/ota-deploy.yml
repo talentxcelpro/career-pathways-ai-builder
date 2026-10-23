@@ -1,0 +1,54 @@
+name: Live OTA Bundle Deploy
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'index.html'
+      - 'vite.config.ts'
+      - 'package.json'
+  workflow_dispatch:
+    inputs:
+      notes:
+        description: 'Release notes / description for this OTA update'
+        required: false
+        default: 'Manual OTA push deployment'
+
+jobs:
+  deploy-ota:
+    name: Build & Push Live OTA Delta
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Web Production Assets
+        env:
+          NODE_OPTIONS: "--max-old-space-size=8192"
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        run: npm run build
+
+      - name: Package & Push OTA Bundle to Supabase Storage
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || secrets.VITE_SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          OTA_NOTES: ${{ github.event.inputs.notes || github.event.head_commit.message || 'Automated main branch release' }}
+        run: npx tsx scripts/ota-push.ts
+
+# NOTE ON NATIVE REBUILDS:
+# Day-to-day React code, UI updates, and API features ship instantly via the job above without store review.
+# If you make modifications to Android Kotlin code (android/) or iOS Swift code (ios/),
+# run a standard native compile and submit the new AAB/IPA to Google Play Console and Apple App Store.

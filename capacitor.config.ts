@@ -6,7 +6,8 @@ const config: CapacitorConfig = {
   webDir: 'dist',
   bundledWebRuntime: false,
   server: {
-    androidScheme: 'https'
+    androidScheme: 'https',
+    cleartext: false
   },
   plugins: {
     PushNotifications: {
@@ -14,6 +15,14 @@ const config: CapacitorConfig = {
     },
     Camera: {
       permissions: ["camera", "photos"]
+    },
+    CapacitorUpdater: {
+      autoUpdate: false,   // Controlled manually via ota-updater.ts for atomic stability
+      statsUrl: '',        // Disable external telemetry (self-hosted Supabase)
+      channelUrl: '',      // Handled via Supabase Storage manifest
+      updateUrl: '',       // Handled via dynamic code bundle fetching
+      resetWhenUpdate: false,
+      directUpdate: false
     }
   }
 };

@@ -8,9 +8,11 @@ import { ErrorBoundary } from 'react-error-boundary';
 
 import { BundleErrorFallback } from '@/components/BundleErrorFallback';
 import { MobileAppInitializer } from '@/components/MobileAppInitializer';
+import { OtaUpdateBanner } from '@/components/OtaUpdateBanner';
 import { PageSpecificBottomNav } from '@/components/navigation/PageSpecificBottomNav';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { OptimizedAuthProvider, useOptimizedAuth } from '@/contexts/OptimizedAuthContext';
+import { useIncomingCall } from '@/hooks/useIncomingCall';
 import TalentXcelCore from '@/pages/TalentXcelCore';
 
 const OAuthCallback = lazy(() => import('@/pages/auth/OAuthCallback'));
@@ -185,6 +187,8 @@ function NativeRouteUnavailable() {
 }
 
 function NativeRoutes() {
+  useIncomingCall();
+
   return (
     <>
       <NativeDeepLinkHandler />
@@ -323,6 +327,7 @@ function NativeRoutes() {
         </Suspense>
       </main>
       <PageSpecificBottomNav />
+      <OtaUpdateBanner />
     </>
   );
 }
