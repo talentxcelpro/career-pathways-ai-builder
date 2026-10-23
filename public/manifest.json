@@ -35,15 +35,15 @@
   ],
   "screenshots": [
     {
-      "src": "/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png",
-      "sizes": "1280x720",
+      "src": "/lovable-uploads/b2b11916-7030-4136-b908-ca59a4b9fec3.png",
+      "sizes": "1434x797",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "TalentXcel Dashboard"
+      "label": "TalentXcel Platform"
     },
     {
-      "src": "/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png",
-      "sizes": "750x1334",
+      "src": "/lovable-uploads/d97f4973-604b-4716-b6eb-374c3ee6effb.png",
+      "sizes": "1024x1536",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "TalentXcel Mobile"
@@ -55,21 +55,21 @@
       "short_name": "Jobs",
       "description": "Search and apply for jobs",
       "url": "/jobs",
-      "icons": [{"src": "/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png", "sizes": "96x96"}]
+      "icons": [{"src": "/icon-192.png", "sizes": "192x192"}]
     },
     {
       "name": "Network",
       "short_name": "Network",
       "description": "Connect with professionals",
       "url": "/network",
-      "icons": [{"src": "/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png", "sizes": "96x96"}]
+      "icons": [{"src": "/icon-192.png", "sizes": "192x192"}]
     },
     {
       "name": "Learn",
       "short_name": "Learn",
       "description": "Develop your skills",
       "url": "/learn",
-      "icons": [{"src": "/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png", "sizes": "96x96"}]
+      "icons": [{"src": "/icon-192.png", "sizes": "192x192"}]
     }
   ],
   "share_target": {
@@ -97,8 +97,8 @@
       },
       "icons": [
         {
-          "src": "/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png",
-          "sizes": "96x96"
+          "src": "/icon-192.png",
+          "sizes": "192x192"
         }
       ],
       "launch_type": "single-client"
@@ -106,7 +106,7 @@
   ],
   "protocol_handlers": [
     {
-      "protocol": "web+careercatalyst",
+      "protocol": "web+talentxcel",
       "url": "/connect?target=%s"
     }
   ],
