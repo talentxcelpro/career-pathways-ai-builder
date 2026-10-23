@@ -171,20 +171,39 @@ export async function generateProductionSitemaps() {
   // 1. Base Static Pages (30 core pages)
   const baseEntries = deduplicate(BASE_PAGES);
 
-  // 2. Fetch Verified Active Jobs from Supabase (548 live vacancies)
   let activeJobEntriesList: SitemapEntry[] = [
     { path: '/', changefreq: 'daily', priority: '1.0' },
     { path: '/jobs', changefreq: 'daily', priority: '1.0' },
   ];
   try {
-    const { data: dbJobs } = await supabase
-      .from('jobs')
-      .select('id, seo_slug, created_at, posted_at')
-      .eq('is_active', true)
-      .limit(2000);
+    let allDbJobs: any[] = [];
+    let page = 0;
+    const pageSize = 1000;
+    let hasMore = true;
 
-    if (dbJobs && dbJobs.length > 0) {
-      dbJobs.forEach(j => {
+    while (hasMore) {
+      const from = page * pageSize;
+      const to = from + pageSize - 1;
+      const { data: chunk, error } = await supabase
+        .from('jobs')
+        .select('id, seo_slug, created_at, posted_at')
+        .eq('is_active', true)
+        .range(from, to);
+
+      if (error || !chunk || chunk.length === 0) {
+        hasMore = false;
+      } else {
+        allDbJobs.push(...chunk);
+        if (chunk.length < pageSize) {
+          hasMore = false;
+        } else {
+          page++;
+        }
+      }
+    }
+
+    if (allDbJobs.length > 0) {
+      allDbJobs.forEach(j => {
         const slug = j.seo_slug || j.id;
         if (slug === 'senior-devops-architect-acme-corp-bengaluru' || slug.includes('acme')) return;
         activeJobEntriesList.push({
@@ -195,6 +214,7 @@ export async function generateProductionSitemaps() {
         });
       });
     }
+    console.log(`✓ Fetched ${allDbJobs.length} active jobs from database for sitemap-jobs.xml`);
   } catch (e) {
     console.error('Error fetching active jobs for sitemap:', e);
   }
