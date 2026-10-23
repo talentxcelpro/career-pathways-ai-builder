@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useCallback } from 'react';
 import { advancedPerformanceMonitor } from '@/utils/advancedPerformanceMonitor';
+import { preloadRoute } from '@/utils/routePreloader';
 
 /**
  * Optimized navigation hook with performance tracking
@@ -9,6 +10,9 @@ export const useOptimizedNavigation = () => {
   const navigate = useNavigate();
 
   const optimizedNavigate = useCallback((path: string, options?: any) => {
+    if (typeof path === 'string') {
+      preloadRoute(path);
+    }
     const startTime = performance.now();
     
     // Track navigation

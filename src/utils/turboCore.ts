@@ -76,22 +76,11 @@ class TurboCore {
     });
   }
 
-  /**
-   * Ultra-fast navigation with aggressive prefetching
-   */
   private enableInstantNav() {
-    const prefetched = new Set<string>();
-
-    document.addEventListener('mouseover', (e) => {
-      const link = (e.target as Element)?.closest('a[href]') as HTMLAnchorElement;
-      if (link?.hostname === location.hostname && !prefetched.has(link.href)) {
-        const prefetch = document.createElement('link');
-        prefetch.rel = 'prefetch';
-        prefetch.href = link.href;
-        document.head.appendChild(prefetch);
-        prefetched.add(link.href);
-      }
-    }, { passive: true });
+    // Handled natively via routePreloader with desktop and mobile touch support
+    import('@/utils/routePreloader').then(({ enableRoutePreloading }) => {
+      enableRoutePreloading();
+    }).catch(() => {});
   }
 
   /**

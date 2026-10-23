@@ -49,15 +49,15 @@ export const preloadCriticalResources = () => {
   // Preconnect and DNS prefetch are handled in criticalPerformance and HTML head
 };
 
-// Service Worker registration
+// Service Worker cleanup (safely unregisters any legacy workers)
 export const registerServiceWorker = async () => {
-  if ('serviceWorker' in navigator && !import.meta.env.DEV) {
+  if ('serviceWorker' in navigator) {
     try {
-      const registration = await navigator.serviceWorker.register('/sw.js');
-      console.log('SW registered:', registration);
-    } catch (error) {
-      console.error('SW registration failed:', error);
-    }
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      for (const registration of registrations) {
+        await registration.unregister();
+      }
+    } catch {}
   }
 };
 

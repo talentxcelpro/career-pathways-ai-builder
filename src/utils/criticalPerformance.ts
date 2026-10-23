@@ -46,21 +46,15 @@ export const optimizePageImages = () => {
   });
 };
 
-// Prefetch critical routes
+// Prefetch critical routes via JS module preloader
 export const prefetchCriticalRoutes = () => {
-  if (typeof document === 'undefined') return;
+  if (typeof window === 'undefined') return;
 
   const routes = ['/jobs', '/network', '/passport'];
   
-  routes.forEach(route => {
-    const link = document.createElement('link');
-    link.rel = 'prefetch';
-    link.href = route;
-    link.as = 'document';
-    if (!document.head.querySelector(`link[href="${route}"][rel="prefetch"]`)) {
-      document.head.appendChild(link);
-    }
-  });
+  import('@/utils/routePreloader').then(({ preloadRoute }) => {
+    routes.forEach(route => preloadRoute(route));
+  }).catch(() => {});
 };
 
 // Initialize all critical optimizations
