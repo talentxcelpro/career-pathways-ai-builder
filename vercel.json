@@ -448,6 +448,17 @@
       "destination": "/api/seo/:path*"
     },
     {
+      "source": "/((?!api|_next|static|favicon.ico|manifest.json|robots.txt|sitemap.xml|sitemaps).*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "User-Agent",
+          "value": ".*(Googlebot|bingbot|Baiduspider|YandexBot|DuckDuckBot|Slurp|facebookexternalhit|LinkedInBot|Twitterbot|Applebot|WhatsApp|TelegramBot|ChatGPT|PerplexityBot|ClaudeBot).*"
+        }
+      ],
+      "destination": "/api/seo-render?path=$1"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
