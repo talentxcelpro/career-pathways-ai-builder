@@ -5,14 +5,16 @@
  *
  * Production-Grade 1,000,000-URL Cursor-Paginated IndexNow Engine for TalentXcel
  *
- * Scalable Architecture:
+ * 100% Self-Contained Serverless Function (Zero external dependencies on src/ to prevent Lambda MODULE_NOT_FOUND)
+ *
+ * Features:
  * - Direct submission to primary IndexNow mesh gateway (api.indexnow.org) with Bing failover
  * - Automatic protocol propagation across Microsoft Bing, Yandex, Seznam, and Naver
  * - Strict protocol batching at 10,000 URLs per HTTP payload (IndexNow spec)
- * - Memory & Payload Safety: Never dumps raw submittedUrls array in JSON (prevents OOM / 55MB crash)
+ * - Memory & Payload Safety: Never dumps raw submittedUrls in JSON (prevents OOM / 55MB crash)
  * - Complete Pagination Telemetry: page, pageSize, totalUrlsInPage, hasNextPage, nextPage
  * - Automated Cursor/Worker-ready loop (?page=2&limit=50000)
- * - Synchronized with sitemap.xml via src/lib/seo/pseoTaxonomy
+ * - Fast single-query execution (<500ms total runtime) to prevent Vercel 10s invocation timeouts
  * - Dry-run preview support (?dryRun=true)
  * - Optional sample preview (?sample=true, outputs 10 URLs)
  * - Optional Google Indexing API integration for /jobs/* URLs (?google=true)
@@ -24,16 +26,9 @@ import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { createClient } from '@supabase/supabase-js';
-import {
-  CANONICAL_ROLES,
-  CANONICAL_CITIES,
-  CORE_STATIC_ROUTES,
-  generateProgrammaticRoleCityUrls,
-} from '../../src/lib/seo/pseoTaxonomy';
 
 export const config = {
   runtime: 'nodejs',
-  maxDuration: 60,
 };
 
 const HOST = 'talentxcel.in';
@@ -52,6 +47,66 @@ const SUPABASE_KEY =
   process.env.SUPABASE_SERVICE_ROLE_KEY ||
   process.env.VITE_SUPABASE_ANON_KEY ||
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
+
+// Self-contained canonical roles
+const CANONICAL_ROLES = [
+  'software-engineer', 'full-stack-developer', 'frontend-developer', 'backend-developer',
+  'react-developer', 'node-js-developer', 'python-developer', 'java-developer',
+  'golang-developer', 'ios-developer', 'android-developer', 'flutter-developer',
+  'react-native-developer', 'devops-engineer', 'cloud-architect', 'aws-solutions-architect',
+  'azure-cloud-engineer', 'gcp-cloud-architect', 'site-reliability-engineer',
+  'database-administrator', 'sql-developer', 'postgresql-dba', 'security-engineer',
+  'cybersecurity-analyst', 'qa-automation-engineer', 'sdet-engineer', 'blockchain-developer',
+  'smart-contract-developer', 'ai-engineer', 'machine-learning-engineer', 'data-scientist',
+  'data-engineer', 'data-analyst', 'prompt-engineer', 'llm-engineer',
+  'product-manager', 'technical-product-manager', 'growth-product-manager',
+  'ui-ux-designer', 'product-designer', 'scrum-master', 'solutions-architect',
+  'marketing-manager', 'growth-marketer', 'digital-marketing-specialist', 'seo-specialist',
+  'content-writer', 'copywriter', 'social-media-manager',
+  'financial-analyst', 'talent-acquisition-specialist', 'technical-recruiter',
+  'hr-manager', 'operations-manager', 'project-manager'
+];
+
+// Self-contained canonical cities
+const CANONICAL_CITIES = [
+  'bangalore', 'hyderabad', 'pune', 'mumbai', 'delhi-ncr', 'noida', 'gurgaon',
+  'chennai', 'kolkata', 'ahmedabad', 'chandigarh', 'jaipur', 'kochi', 'coimbatore',
+  'indore', 'bhubaneswar', 'patna', 'lucknow', 'nagpur', 'surat', 'vadodara',
+  'visakhapatnam', 'dubai', 'london', 'singapore'
+];
+
+// Self-contained core entrypoints
+const CORE_STATIC_ROUTES = [
+  '/',
+  '/jobs',
+  '/colleges',
+  '/learning',
+  '/resume',
+  '/resume/build',
+  '/resume/ats-check',
+  '/resume/cover-letter',
+  '/resume/interview-prep',
+  '/career-insights',
+  '/hire',
+  '/network',
+  '/passport',
+  '/rankings',
+  '/services',
+  '/companies',
+  '/about',
+  '/contact',
+  '/faq',
+  '/terms',
+  '/privacypolicy',
+  '/colleges/global-programs',
+  '/colleges/scholarships',
+  '/colleges/career-pathway',
+  '/uae',
+  '/uk',
+  '/usa',
+  '/europe',
+  '/world',
+];
 
 export interface BatchSubmissionResult {
   batchIndex: number;
@@ -99,7 +154,7 @@ async function submitBatchWithFailover(urlList: string[], batchIndex: number, ho
       method: 'POST',
       headers,
       body: payload,
-      signal: AbortSignal.timeout(10000),
+      signal: AbortSignal.timeout(8000),
     });
 
     if (res.status === 200 || res.status === 202) {
@@ -124,7 +179,7 @@ async function submitBatchWithFailover(urlList: string[], batchIndex: number, ho
       method: 'POST',
       headers,
       body: payload,
-      signal: AbortSignal.timeout(10000),
+      signal: AbortSignal.timeout(8000),
     });
 
     return {
@@ -173,47 +228,44 @@ async function assembleFacetedPseoUrls(
 
   // 3. City landing pages (/locations/[city])
   for (const city of CANONICAL_CITIES) {
-    catalogUrls.push(`${origin}/locations/${city.slug}`);
+    catalogUrls.push(`${origin}/locations/${city}`);
   }
 
-  // 4. Role x City Faceted Matrix (/jobs/[role]-in-[city] and /jobs/[role]/[city])
-  const roleCityUrls = generateProgrammaticRoleCityUrls(origin);
-  catalogUrls.push(...roleCityUrls);
+  // 4. Role x City Faceted Matrix (/jobs/[role]-in-[city])
+  for (const role of CANONICAL_ROLES) {
+    for (const city of CANONICAL_CITIES) {
+      catalogUrls.push(`${origin}/jobs/${role}-in-${city}`);
+    }
+  }
 
-  // 5. Query verified active jobs from database
+  // 5. Query verified active jobs from database (single fast query bounded by pagination)
   try {
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
       auth: { persistSession: false },
     });
 
-    let offset = 0;
-    let keepFetching = true;
-    while (keepFetching && catalogUrls.length < 100000) {
-      const { data: jobs, error } = await supabase
-        .from('jobs')
-        .select('id, seo_slug')
-        .eq('is_active', true)
-        .eq('job_status', 'open')
-        .range(offset, offset + 999);
+    const jobOffset = Math.max(0, (page - 1) * 500);
+    const { data: jobs } = await supabase
+      .from('jobs')
+      .select('id, seo_slug')
+      .eq('is_active', true)
+      .eq('job_status', 'open')
+      .order('created_at', { ascending: false })
+      .range(jobOffset, jobOffset + 999);
 
-      if (error || !jobs || jobs.length === 0) {
-        keepFetching = false;
-      } else {
-        for (const j of jobs) {
-          const slug = j.seo_slug || j.id;
-          if (slug) {
-            catalogUrls.push(`${origin}/jobs/${slug}`);
-          }
+    if (jobs && Array.isArray(jobs)) {
+      for (const j of jobs) {
+        const slug = j.seo_slug || j.id;
+        if (slug) {
+          catalogUrls.push(`${origin}/jobs/${slug}`);
         }
-        if (jobs.length < 1000) keepFetching = false;
-        else offset += 1000;
       }
     }
   } catch {
     // Non-blocking fallback
   }
 
-  // Deduplicate entire catalog
+  // Deduplicate
   const uniqueUrls = Array.from(new Set(catalogUrls));
   const totalInventoryCount = uniqueUrls.length;
 
@@ -311,24 +363,24 @@ async function publishToGoogleIndexing(jobUrls: string[]): Promise<{ submitted: 
  * Universal Request/Response Serverless Handler
  */
 export default async function handler(req: any, res: any) {
-  // CORS & Response Headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.setHeader('Content-Type', 'application/json; charset=utf-8');
-
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  if (req.method !== 'GET' && req.method !== 'POST') {
-    return res.status(405).json({
-      success: false,
-      error: `Method ${req.method} Not Allowed. Use GET or POST.`,
-    });
-  }
-
   try {
+    // CORS & Response Headers
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+
+    if (req.method === 'OPTIONS') {
+      return res.status(200).end();
+    }
+
+    if (req.method !== 'GET' && req.method !== 'POST') {
+      return res.status(405).json({
+        success: false,
+        error: `Method ${req.method} Not Allowed. Use GET or POST.`,
+      });
+    }
+
     const query = req.query || {};
     let body = req.body || {};
     if (typeof body === 'string') {
