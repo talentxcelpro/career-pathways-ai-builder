@@ -436,6 +436,14 @@
       "destination": "/api/seo-render"
     },
     {
+      "source": "/api/seo/indexnow",
+      "destination": "/api/seo/indexnow"
+    },
+    {
+      "source": "/api/seo/:path*",
+      "destination": "/api/seo/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

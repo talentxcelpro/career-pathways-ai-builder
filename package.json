@@ -17,6 +17,7 @@
     "postbuild": "node scripts/syndicate-external-backlinks.cjs && npx tsx scripts/prerender-static-seo.ts && npx tsx scripts/seo-ci-gate.ts && npx tsx scripts/finalize-subdomain-routing.ts",
     "gsc:command-center": "node scripts/gsc-command-center.cjs",
     "indexing:jobs": "node scripts/submit-all-jobs-indexing.cjs",
+    "seo:indexnow": "npx tsx scripts/trigger-indexnow.ts",
     "growth:funnel": "node scripts/growth-funnel-dashboard.cjs",
     "growth:lab": "node scripts/growth-lab-command-center.cjs",
     "domain:seo": "node scripts/domain-seo-command-center.cjs",
