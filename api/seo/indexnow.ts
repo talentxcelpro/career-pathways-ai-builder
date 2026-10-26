@@ -151,18 +151,45 @@ function getUrlAtIndex(index: number, host: string = DEFAULT_HOST): string {
     return `${origin}/courses/${getSkill(s)}-courses-in-${getCity(c)}`;
   }
 
+  // Cohort 6: Colleges, Careers, Passports, Network, Posts & User Profiles (990,000 URLs)
   const offset = index - (C1_COUNT + C2_COUNT + C3_COUNT + C4_COUNT + C5_COUNT);
-  if (offset < 350_000) {
+  if (offset < 250_000) {
+    // 6A: Colleges & Higher Ed (250,000 URLs)
     const c = offset % 500;
     const v = Math.floor(offset / 500);
     return `${origin}/colleges/${getCity(c)}-institute-of-technology${v > 0 ? `-campus-${v}` : ''}`;
-  } else if (offset < 650_000) {
-    const r = (offset - 350_000) % 500;
-    const v = Math.floor((offset - 350_000) / 500);
+  } else if (offset < 400_000) {
+    // 6B: Career Pathways & Roadmaps (150,000 URLs)
+    const rel = offset - 250_000;
+    const r = rel % 500;
+    const v = Math.floor(rel / 500);
     return `${origin}/careers/${getRole(r)}${v > 0 ? `-roadmap-${v}` : ''}`;
+  } else if (offset < 550_000) {
+    // 6C: Verified Career Passports & Proof Credentials (150,000 URLs)
+    const rel = offset - 400_000;
+    const r = rel % 500;
+    const v = Math.floor(rel / 500);
+    return `${origin}/passport/proof/txc-verify-${getRole(r)}-${1000 + v}`;
+  } else if (offset < 690_000) {
+    // 6D: Professional Network & Communities (140,000 URLs)
+    const rel = offset - 550_000;
+    const r = rel % 500;
+    const c = Math.floor(rel / 500) % 280;
+    return `${origin}/network/communities/${getRole(r)}-leaders-in-${getCity(c)}`;
+  } else if (offset < 840_000) {
+    // 6E: Knowledge Posts & Industry Insights (150,000 URLs)
+    const rel = offset - 690_000;
+    const r = rel % 500;
+    const v = Math.floor(rel / 500);
+    return `${origin}/posts/${getRole(r)}-market-trends-and-insights${v > 0 ? `-edition-${v + 1}` : ''}`;
   } else {
-    const id = offset - 650_000;
-    return `${origin}/jobs/verified-position-${100000 + id}`;
+    // 6F: Verified Talent & Public User Profiles (150,000 URLs)
+    const rel = offset - 840_000;
+    const r = rel % 500;
+    const v = Math.floor(rel / 500);
+    const role = getRole(r);
+    const badge = role.endsWith('-specialist') ? '' : '-specialist';
+    return `${origin}/profile/${role}${badge}-${1000 + v}`;
   }
 }
 

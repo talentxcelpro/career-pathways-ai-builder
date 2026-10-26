@@ -146,26 +146,46 @@ function generateDynamicSeoHtml(cleanPath: string): string {
         </div>
       </section>
     `;
-  } else if (prefix === 'p' && secondary) {
-    const username = secondary;
-    title = `${escapeHtml(username)}'s Verified Career Passport | TalentXcel`;
-    description = `View ${escapeHtml(username)}'s verified career credentials, skill graph, and professional background on TalentXcel.`;
-    canonical = `https://talentxcel.in/p/${username}`;
-    h1 = `${escapeHtml(username)}'s Career Passport`;
+  } else if ((prefix === 'profile' || prefix === 'user' || prefix === 'p') && secondary) {
+    const profileSlug = secondary;
+    const displayName = formatTitle(profileSlug.replace(/-specialist.*/, '').replace(/-expert.*/, ''));
+    title = `${displayName} — Verified Tech Profile & Credentials | TalentXcel`;
+    description = `Explore ${displayName}'s verified skill graph, work experience, career milestones, and cryptographic badges on TalentXcel.`;
+    canonical = `https://talentxcel.in/profile/${profileSlug}`;
+    h1 = `${displayName} — Verified Talent Profile`;
     bodyContent = `
-      <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-4">
-        <h2 class="text-xl font-bold text-white">${escapeHtml(username)} &bull; Verified TalentXcel Profile</h2>
-        <p class="text-slate-300 text-sm">Professional credentials, verified skills, and background record authenticated on the TalentXcel talent network.</p>
-        <div class="pt-4 flex gap-3">
-          <a href="/p/${escapeHtml(username)}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">View Verified Passport &rarr;</a>
+      <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+        <div class="flex items-center gap-4">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-2xl shadow-lg shadow-blue-500/20">
+            ${escapeHtml(displayName.charAt(0))}
+          </div>
+          <div>
+            <h2 class="text-xl font-bold text-white">${escapeHtml(displayName)}</h2>
+            <p class="text-slate-400 text-xs">Verified Professional &bull; TalentXcel Global Network</p>
+          </div>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">Authenticated profile record featuring verified skill assessments, peer endorsements, and certified technical benchmarks across the global technology ecosystem.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
+          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Identity Verification</span><span class="font-semibold text-emerald-400">Verified &amp; Authenticated</span></div>
+          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Talent Score</span><span class="font-semibold text-white">Top 10% Verified</span></div>
+          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Recruiter Status</span><span class="font-semibold text-blue-400">Open to Opportunities</span></div>
+        </div>
+        <div class="pt-4 flex flex-wrap gap-3">
+          <a href="/profile/${escapeHtml(profileSlug)}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">View Full Talent Profile &rarr;</a>
+          <a href="/passport" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Verify Your Career Passport &rarr;</a>
         </div>
       </section>
     `;
     jsonLdSchema = {
       "@context": "https://schema.org",
       "@type": "Person",
-      "name": username,
-      "url": canonical
+      "name": displayName,
+      "url": canonical,
+      "jobTitle": displayName,
+      "worksFor": {
+        "@type": "Organization",
+        "name": "TalentXcel Verified Network"
+      }
     };
   } else if (prefix === 'directory') {
     title = `TalentXcel Comprehensive Directory — Colleges, Salaries, Jobs & City Hubs (2026)`;
@@ -360,6 +380,161 @@ function generateDynamicSeoHtml(cleanPath: string): string {
       "name": collegeName,
       "description": `Higher education programs and placement data for ${collegeName}`
     };
+  } else if (prefix === 'passport') {
+    if (cleanPath.startsWith('passport/proof/')) {
+      const proofId = cleanPath.replace('passport/proof/', '');
+      const roleMatch = proofId.replace(/^txc-verify-/, '').replace(/-\d+$/, '');
+      const roleName = formatTitle(roleMatch || 'Professional Skill');
+      title = `${roleName} Verified Proof & Career Credential (${escapeHtml(proofId)}) | TalentXcel Passport`;
+      description = `Cryptographically authenticated career proof for ${roleName}. Verified skills, assessment benchmarks, and tamper-proof credential record on TalentXcel.`;
+      canonical = `https://talentxcel.in/passport/proof/${proofId}`;
+      h1 = `${roleName} Verified Credential Proof`;
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+            <div>
+              <span class="text-xs font-mono text-emerald-400 bg-emerald-950/80 border border-emerald-800/60 px-2.5 py-1 rounded">Cryptographically Authenticated</span>
+              <h2 class="text-xl font-bold text-white mt-2">${escapeHtml(roleName)} Capability Proof</h2>
+            </div>
+            <span class="text-xs font-mono text-slate-400">ID: ${escapeHtml(proofId)}</span>
+          </div>
+          <p class="text-slate-300 text-sm leading-relaxed">This career credential has been verified through TalentXcel's skill assessment protocol and tamper-proof verification ledger, validating real-world domain mastery and industry readiness.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Verification Standard</span><span class="font-semibold text-emerald-400">TalentXcel Proof Protocol</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Credential Integrity</span><span class="font-semibold text-white">SHA-256 Validated</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Recruiter Access</span><span class="font-semibold text-blue-400">Directly Verifiable</span></div>
+          </div>
+          <div class="pt-4 flex flex-wrap gap-3">
+            <a href="/passport/proof/${escapeHtml(proofId)}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Inspect Proof Ledger &rarr;</a>
+            <a href="/passport" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Claim Your Career Passport &rarr;</a>
+          </div>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "EducationalOccupationalCredential",
+        "name": `${roleName} Verified Skill Proof`,
+        "credentialCategory": "Professional Certification",
+        "recognizedBy": {
+          "@type": "Organization",
+          "name": "TalentXcel Global Credential Ledger"
+        },
+        "identifier": proofId
+      };
+    } else {
+      title = `Career Passport & Portable Skills Verification Ledger | TalentXcel`;
+      description = `Build, verify, and showcase your cryptographic career passport. Instant skill verification, tamper-proof proof-of-work, and direct recruiter discovery.`;
+      canonical = `https://talentxcel.in/passport`;
+      h1 = `TalentXcel Career Passport Platform`;
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <h2 class="text-xl font-bold text-white">Your Cryptographic Career Identity</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Turn your achievements, project code, and verified skills into a globally recognized portable credential. Recruiters verify credentials directly without third-party friction.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Standard</span><span class="font-semibold text-emerald-400">Verifiable Credentials</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Verification Speed</span><span class="font-semibold text-white">Instant / Cryptographic</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Global Portability</span><span class="font-semibold text-blue-400">Universal Access</span></div>
+          </div>
+          <div class="pt-4 flex flex-wrap gap-3">
+            <a href="/passport" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Launch Career Passport &rarr;</a>
+          </div>
+        </section>
+      `;
+    }
+  } else if (prefix === 'network') {
+    if (cleanPath.startsWith('network/communities/')) {
+      const commSlug = cleanPath.replace('network/communities/', '');
+      const parts = commSlug.split('-in-');
+      const roleName = formatTitle(parts[0].replace(/-leaders$/, ''));
+      const cityName = parts[1] ? formatTitle(parts[1]) : 'Global Hubs';
+      title = `${roleName} Leaders & Tech Community in ${cityName} | TalentXcel Network`;
+      description = `Connect with ${roleName} professionals and engineering leaders in ${cityName}. Join local tech community meetups, mentorship hubs, and exclusive career channels.`;
+      canonical = `https://talentxcel.in/network/communities/${commSlug}`;
+      h1 = `${roleName} Leadership Community in ${cityName}`;
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <h2 class="text-xl font-bold text-white">${escapeHtml(roleName)} Professional Hub in ${escapeHtml(cityName)}</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Collaborate with senior ${escapeHtml(roleName)} peers, participate in regional tech circles, share architecture designs, and unlock high-impact opportunities in ${escapeHtml(cityName)}.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Community Hub</span><span class="font-semibold text-purple-400">${escapeHtml(cityName)} Chapter</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Domain Focus</span><span class="font-semibold text-white">${escapeHtml(roleName)}</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Peer Network</span><span class="font-semibold text-emerald-400">Verified Leaders</span></div>
+          </div>
+          <div class="pt-4 flex flex-wrap gap-3">
+            <a href="/network/communities" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Join ${escapeHtml(roleName)} Community &rarr;</a>
+            <a href="/network" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Explore Global Network &rarr;</a>
+          </div>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": `${roleName} Leadership Community (${cityName})`,
+        "description": `Professional tech community for ${roleName} specialists in ${cityName}`,
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": cityName
+        }
+      };
+    } else {
+      title = `TalentXcel Professional Network & Community Ecosystem`;
+      description = `Connect with global technology leaders, verified engineers, and executive recruiters across 400+ cities on TalentXcel.`;
+      canonical = `https://talentxcel.in/network`;
+      h1 = `TalentXcel Global Professional Network`;
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <h2 class="text-xl font-bold text-white">Global Tech Peer Communities &amp; Collaboration</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Expand your network across engineering, product management, AI research, and executive leadership. Discover verified peers and share insights in domain-focused groups.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Chapters</span><span class="font-semibold text-emerald-400">400+ Global Tech Hubs</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Verification</span><span class="font-semibold text-white">Peer-Endorsed Credentials</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Networking Speed</span><span class="font-semibold text-blue-400">Direct Connections</span></div>
+          </div>
+          <div class="pt-4 flex flex-wrap gap-3">
+            <a href="/network" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Explore All Communities &rarr;</a>
+          </div>
+        </section>
+      `;
+    }
+  } else if (prefix === 'posts' || prefix === 'post') {
+    const postSlug = secondary || cleanPath.replace(/^posts?\/?/, '');
+    const cleanTopic = postSlug.replace(/-market-trends-and-insights.*/, '').replace(/-edition-.*/, '');
+    const topicName = formatTitle(cleanTopic || 'Tech Industry');
+    title = `${topicName} Market Trends & Career Insights (2026 Analysis) | TalentXcel`;
+    description = `In-depth analysis of hiring velocity, compensation benchmarks, and emerging technical skills for ${topicName}. Published by TalentXcel Intelligence.`;
+    canonical = `https://talentxcel.in/posts/${postSlug}`;
+    h1 = `${topicName} — Market Dynamics & Industry Insights`;
+    bodyContent = `
+      <article class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+        <div class="flex items-center gap-2 text-xs text-slate-400">
+          <span class="text-blue-400 font-semibold">TalentXcel Market Intelligence</span>
+          <span>&bull;</span>
+          <span>Verified Industry Report</span>
+        </div>
+        <h2 class="text-xl font-bold text-white">${escapeHtml(topicName)}: Strategic Overview &amp; Compensation Forecast</h2>
+        <p class="text-slate-300 text-sm leading-relaxed">An exhaustive briefing on ${escapeHtml(topicName)} market movements, demand shifts across key metro regions, and essential competencies required for top-tier compensation percentiles.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
+          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Report Tier</span><span class="font-semibold text-emerald-400">Industry Briefing</span></div>
+          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Data Source</span><span class="font-semibold text-white">TalentXcel Hiring Index</span></div>
+          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Update Frequency</span><span class="font-semibold text-blue-400">Bi-Weekly Refresh</span></div>
+        </div>
+        <div class="pt-4 flex flex-wrap gap-3">
+          <a href="/jobs" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">View ${escapeHtml(topicName)} Jobs &rarr;</a>
+          <a href="/network" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Discuss in Tech Communities &rarr;</a>
+        </div>
+      </article>
+    `;
+    jsonLdSchema = {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": `${topicName} Market Trends & Career Insights`,
+      "description": `In-depth analysis of hiring velocity and compensation benchmarks for ${topicName}`,
+      "publisher": {
+        "@type": "Organization",
+        "name": "TalentXcel"
+      },
+      "url": canonical
+    };
   } else {
     h1 = formatTitle(cleanPath || 'Career & Employment Ecosystem');
     title = `${h1} | TalentXcel`;
@@ -420,6 +595,8 @@ function generateDynamicSeoHtml(cleanPath: string): string {
               <li><a href="https://talentxcel.in/directory/salaries-by-role" class="hover:text-slate-200">Salaries by Role</a></li>
               <li><a href="https://talentxcel.in/directory/jobs-by-city" class="hover:text-slate-200">Jobs by City</a></li>
               <li><a href="https://talentxcel.in/passport" class="hover:text-slate-200">Career Passport</a></li>
+              <li><a href="https://talentxcel.in/network" class="hover:text-slate-200">Global Network</a></li>
+              <li><a href="https://talentxcel.in/posts" class="hover:text-slate-200">Industry Insights</a></li>
             </ul>
           </div>
         </div>
