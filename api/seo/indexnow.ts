@@ -22,9 +22,7 @@
  * Runtime: Node.js (Vercel Serverless Function)
  */
 
-import crypto from 'crypto';
-import fs from 'fs';
-import path from 'path';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
 
 export const config = {
@@ -286,6 +284,10 @@ async function assembleFacetedPseoUrls(
  */
 async function publishToGoogleIndexing(jobUrls: string[]): Promise<{ submitted: number; status: string }> {
   try {
+    const fs = await import('fs');
+    const path = await import('path');
+    const { createSign } = await import('crypto');
+
     let keyData: any = null;
     const keyCandidates = [
       path.resolve(process.cwd(), 'talentxcel-indexing.json'),
@@ -319,7 +321,7 @@ async function publishToGoogleIndexing(jobUrls: string[]): Promise<{ submitted: 
 
     const base64Url = (obj: any) => Buffer.from(JSON.stringify(obj)).toString('base64url');
     const unsignedToken = `${base64Url(header)}.${base64Url(claimSet)}`;
-    const sign = crypto.createSign('RSA-SHA256');
+    const sign = createSign('RSA-SHA256');
     sign.update(unsignedToken);
     const signature = sign.sign(keyData.private_key, 'base64url');
     const jwt = `${unsignedToken}.${signature}`;
@@ -362,7 +364,7 @@ async function publishToGoogleIndexing(jobUrls: string[]): Promise<{ submitted: 
 /**
  * Universal Request/Response Serverless Handler
  */
-export default async function handler(req: any, res: any) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     // CORS & Response Headers
     res.setHeader('Access-Control-Allow-Origin', '*');
