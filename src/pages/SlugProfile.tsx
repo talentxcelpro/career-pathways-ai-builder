@@ -64,6 +64,8 @@ const SlugProfile = () => {
     queryKey: ['profile-connection-status', user?.id, profile?.id],
     queryFn: async () => {
       if (!user?.id || !profile?.id) return { status: 'none', id: null };
+      const isProfileUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(profile.id);
+      if (!isProfileUUID) return { status: 'none', id: null };
       const { data } = await supabase
         .from('connections')
         .select('id, status, requester_id, recipient_id')

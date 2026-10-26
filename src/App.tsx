@@ -938,7 +938,7 @@ const App = () => {
                                 <Route path="/diagnostics" element={<SystemDiagnostics />} />
                                 <Route path="/passport" element={<PassportLayout />} />
                                 <Route path="/passport/section/:section" element={<PassportLayout />} />
-                                <Route path="/passport/proof/:credentialId" element={<ProofRedirect />} />
+                                <Route path="/passport/proof/:credentialId" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-400">Loading proof...</div>}><ProofRedirect /></Suspense>} />
                                 <Route path="/passport/public/:identifier" element={<PublicPassport />} />
                                 <Route path="/passport/legacy" element={<CareerPassportDashboard />} />
                                 <Route path="/passport/user/:userId" element={<CareerPassportDashboard />} />

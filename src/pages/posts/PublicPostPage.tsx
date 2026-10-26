@@ -67,29 +67,37 @@ export default function PublicPostPage() {
   const { data: post, isLoading } = useQuery({
     queryKey: ['public-post', postId],
     queryFn: async () => {
-      if (!postId) throw new Error('Post identifier is required');
+      if (!postId) return null;
 
-      const { data: postData, error: postErr } = await supabase
-        .from('posts')
-        .select('*')
-        .eq('id', postId)
-        .maybeSingle();
+      // Programmatic slugs are not UUIDs; immediately return null so effectivePost renders instantly
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(postId);
+      if (!isUUID) return null;
 
-      if (postErr) throw postErr;
-      if (!postData) return null;
+      try {
+        const { data: postData, error: postErr } = await supabase
+          .from('posts')
+          .select('*')
+          .eq('id', postId)
+          .maybeSingle();
 
-      const { data: authorData } = await supabase
-        .from('profiles')
-        .select('id, full_name, username, title, profile_picture_url')
-        .eq('id', postData.author_id)
-        .maybeSingle();
+        if (postErr || !postData) return null;
 
-      return {
-        ...postData,
-        author: authorData,
-      };
+        const { data: authorData } = await supabase
+          .from('profiles')
+          .select('id, full_name, username, title, profile_picture_url')
+          .eq('id', postData.author_id)
+          .maybeSingle();
+
+        return {
+          ...postData,
+          author: authorData,
+        };
+      } catch {
+        return null;
+      }
     },
     enabled: Boolean(postId),
+    retry: false,
   });
 
   if (isLoading) {
