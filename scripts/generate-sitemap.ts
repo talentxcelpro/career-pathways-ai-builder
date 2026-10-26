@@ -469,6 +469,11 @@ export async function generateProductionSitemaps() {
     }
   });
 
+  // Append 41 Programmatic 50,000-URL Dynamic Shards for Googlebot (2,050,000 URLs)
+  for (let i = 1; i <= 41; i++) {
+    validSitemapsForIndex.push({ filename: `sitemaps/${i}.xml`, count: 50_000 });
+  }
+
   // Generate Master Index (sitemap.xml and sitemap-root.xml)
   const masterXml = buildSitemapIndexXml(validSitemapsForIndex);
   writeFileSync(resolve(publicDir, 'sitemap.xml'), masterXml, 'utf-8');
