@@ -436,16 +436,8 @@
       "destination": "/api/seo-render"
     },
     {
-      "source": "/sitemaps/:shard.xml",
-      "destination": "/api/sitemaps?shard=:shard"
-    },
-    {
-      "source": "/sitemaps/:shard",
-      "destination": "/api/sitemaps?shard=:shard"
-    },
-    {
-      "source": "/api/sitemaps",
-      "destination": "/api/sitemaps"
+      "source": "/sitemaps/:path*",
+      "destination": "/api/sitemaps?shard=:path*"
     },
     {
       "source": "/api/seo/indexnow",
