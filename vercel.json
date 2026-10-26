@@ -436,11 +436,11 @@
       "destination": "/api/seo-render"
     },
     {
-      "source": "/sitemaps/:shard(\\d+)\\.xml",
+      "source": "/sitemaps/:shard.xml",
       "destination": "/api/sitemaps?shard=:shard"
     },
     {
-      "source": "/sitemaps/:shard(\\d+)",
+      "source": "/sitemaps/:shard",
       "destination": "/api/sitemaps?shard=:shard"
     },
     {
